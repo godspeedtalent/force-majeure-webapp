@@ -67,6 +67,10 @@ export default function Merch() {
     }
   };
 
+  const formatPrice = (price: number) => {
+    return price % 1 === 0 ? `$${price.toFixed(0)}` : `$${price.toFixed(2)}`;
+  };
+
   const handleAddToCart = (item: MerchItem) => {
     toast.success(`Added ${item.name} to cart!`);
   };
@@ -149,7 +153,7 @@ export default function Merch() {
                 )}
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-2xl font-bold text-foreground">
-                    ${item.price.toFixed(2)}
+                    {formatPrice(item.price)}
                   </span>
                   {!item.in_stock && (
                     <Badge variant="destructive">Out of Stock</Badge>

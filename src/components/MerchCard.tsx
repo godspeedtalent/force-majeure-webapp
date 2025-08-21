@@ -28,7 +28,7 @@ export const MerchCard = ({
       image={image_url || '/placeholder.svg'}
       imageAlt={name}
       title={name}
-      subtitle={description ? `$${price.toFixed(2)}` : undefined}
+      subtitle={description ? undefined : `$${price % 1 === 0 ? price.toFixed(0) : price.toFixed(2)}`}
       badge={type}
       badgeVariant="secondary"
       onClick={onClick}
