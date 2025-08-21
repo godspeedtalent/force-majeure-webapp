@@ -176,7 +176,7 @@ const EventDetails = () => {
           <div className="max-w-4xl">
             <div className="relative h-32 md:h-40">
               {/* Background copy with exclusion blending */}
-              <h1 className="absolute bottom-0 left-0 text-white text-8xl md:text-[12rem] font-bold opacity-30 mix-blend-exclusion pointer-events-none leading-none">
+              <h1 className="absolute bottom-0 left-0 text-black text-8xl md:text-[12rem] font-bold opacity-30 mix-blend-exclusion pointer-events-none leading-none">
                 {event.headliner.name}
               </h1>
               {/* Main heading */}
