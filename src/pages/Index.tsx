@@ -108,11 +108,11 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen bg-background flex flex-col">
       <Navigation />
       
       {/* Main Split Layout */}
-      <div className="pt-16 min-h-screen flex">
+      <div className="flex-1 flex pt-16">
         {/* Left Panel - Hero Content */}
         <div className="w-full lg:w-1/3 relative overflow-hidden">
           <div className="absolute inset-0 bg-topographic opacity-5 bg-repeat bg-center" />
@@ -237,98 +237,27 @@ const Index = () => {
         </div>
       </div>
       
-      {/* Mobile Events Section */}
-      <section className="lg:hidden py-20 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-screamer mb-4" style={{ fontWeight: 475 }}>
-              Upcoming Events
-            </h2>
-            <p className="text-xl font-canela text-muted-foreground max-w-2xl mx-auto">
-              Carefully curated experiences featuring the most innovative artists
-            </p>
-          </div>
-          
-          <div className="grid gap-6">
-            {upcomingEvents.map((event, index) => (
-              <div
-                key={event.id}
-                className="animate-fade-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <EventCard event={event} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section id="contact" className="py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-screamer mb-8" style={{ fontWeight: 475 }}>
-            Get In Touch
-          </h2>
-          <p className="text-xl font-canela text-muted-foreground mb-12">
-            Ready to collaborate or book an event? Let's create something extraordinary together.
-          </p>
-          
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <div className="group hover:scale-105 transition-transform duration-300">
-              <div className="bg-card border border-border rounded-lg p-6 h-full shadow-elegant">
-                <Mail className="w-8 h-8 text-fm-gold mx-auto mb-4" />
-                <h3 className="font-canela font-medium mb-2">Email</h3>
-                <p className="font-canela text-muted-foreground">hello@forcemajeure.com</p>
-              </div>
-            </div>
-            
-            <div className="group hover:scale-105 transition-transform duration-300">
-              <div className="bg-card border border-border rounded-lg p-6 h-full shadow-elegant">
-                <Phone className="w-8 h-8 text-fm-gold mx-auto mb-4" />
-                <h3 className="font-canela font-medium mb-2">Phone</h3>
-                <p className="font-canela text-muted-foreground">+1 (555) 123-4567</p>
-              </div>
-            </div>
-            
-            <div className="group hover:scale-105 transition-transform duration-300">
-              <div className="bg-card border border-border rounded-lg p-6 h-full shadow-elegant">
-                <Instagram className="w-8 h-8 text-fm-gold mx-auto mb-4" />
-                <h3 className="font-canela font-medium mb-2">Social</h3>
-                <p className="font-canela text-muted-foreground">@forcemajeure</p>
-              </div>
-            </div>
-          </div>
-          
-          <Button 
-            size="lg" 
-            className="bg-fm-crimson text-white hover:bg-fm-crimson/90 shadow-crimson font-canela"
-          >
-            Start Conversation
-          </Button>
-        </div>
-      </section>
-
       {/* Footer */}
-      <footer className="bg-slate-700 text-white py-12">
+      <footer style={{ backgroundColor: '#121212' }} className="text-white py-3">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-4 md:mb-0">
-              <h3 className="text-2xl font-screamer tracking-tight" style={{ fontWeight: 475 }}>FORCE MAJEURE</h3>
-              <p className="font-canela text-background/70 mt-1">Promotions & A&R</p>
+            <div className="mb-2 md:mb-0">
+              <h3 className="text-lg font-screamer tracking-tight text-white" style={{ fontWeight: 475 }}>FORCE MAJEURE</h3>
+              <p className="font-canela text-white/70 text-sm">Promotions & A&R</p>
             </div>
             
-            <div className="flex items-center gap-6">
-              <button className="text-background/70 hover:text-fm-gold transition-colors">
-                <Instagram className="w-5 h-5" />
+            <div className="flex items-center gap-4">
+              <button className="text-white/70 hover:text-fm-gold transition-colors">
+                <Instagram className="w-4 h-4" />
               </button>
-              <button className="text-background/70 hover:text-fm-gold transition-colors">
-                <Music className="w-5 h-5" />
+              <button className="text-white/70 hover:text-fm-gold transition-colors">
+                <Music className="w-4 h-4" />
               </button>
             </div>
           </div>
           
-          <div className="border-t border-background/20 mt-8 pt-8 text-center text-background/70">
-            <p className="font-canela">&copy; 2024 Force Majeure. All rights reserved.</p>
+          <div className="border-t border-white/20 mt-3 pt-3 text-center text-white/70">
+            <p className="font-canela text-xs">&copy; 2024 Force Majeure. All rights reserved.</p>
           </div>
         </div>
       </footer>
