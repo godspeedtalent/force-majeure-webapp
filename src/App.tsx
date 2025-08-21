@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { MusicPlayerProvider } from "@/contexts/MusicPlayerContext";
 import { MusicPlayer } from "@/components/MusicPlayer/MusicPlayer";
 import Index from "./pages/Index";
+import EventDetails from "./pages/EventDetails";
 import Merch from "./pages/Merch";
 import NotFound from "./pages/NotFound";
 
@@ -22,6 +23,7 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/event/:id" element={<EventDetails />} />
               <Route path="/merch" element={<Merch />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
