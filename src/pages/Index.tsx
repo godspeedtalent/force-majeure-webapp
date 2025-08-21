@@ -13,18 +13,18 @@ const Index = () => {
   // Force cache refresh
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const { data, error } = await supabase
-          .from('events')
-          .select(`
+        const {
+          data,
+          error
+        } = await supabase.from('events').select(`
             *,
             headliner_artist:artists!events_headliner_id_fkey(id, name, genre, image_url)
-          `)
-          .order('date', { ascending: true });
-
+          `).order('date', {
+          ascending: true
+        });
         if (error) {
           console.error('Error fetching events:', error);
           return;
@@ -38,26 +38,26 @@ const Index = () => {
 
         // Get undercard artists for all events
         const eventIds = data.map(event => event.id);
-        const undercardArtists = eventIds.length > 0 ? await Promise.all(
-          eventIds.map(async (eventId) => {
-            const event = data.find(e => e.id === eventId);
-            if (!event.undercard_ids || event.undercard_ids.length === 0) {
-              return { eventId, artists: [] };
-            }
-            
-            const { data: artists } = await supabase
-              .from('artists')
-              .select('id, name, genre, image_url')
-              .in('id', event.undercard_ids);
-            
-            return { eventId, artists: artists || [] };
-          })
-        ) : [];
+        const undercardArtists = eventIds.length > 0 ? await Promise.all(eventIds.map(async eventId => {
+          const event = data.find(e => e.id === eventId);
+          if (!event.undercard_ids || event.undercard_ids.length === 0) {
+            return {
+              eventId,
+              artists: []
+            };
+          }
+          const {
+            data: artists
+          } = await supabase.from('artists').select('id, name, genre, image_url').in('id', event.undercard_ids);
+          return {
+            eventId,
+            artists: artists || []
+          };
+        })) : [];
 
         // Transform the data to match the EventCard expected format
         const transformedEvents = data.map(event => {
           const undercard = undercardArtists.find(u => u.eventId === event.id)?.artists || [];
-
           return {
             id: event.id,
             title: event.title,
@@ -65,7 +65,10 @@ const Index = () => {
               name: event.headliner_artist.name,
               genre: event.headliner_artist.genre || 'Electronic',
               image: event.headliner_artist.image_url
-            } : { name: 'TBA', genre: 'Electronic' },
+            } : {
+              name: 'TBA',
+              genre: 'Electronic'
+            },
             undercard: undercard.map(artist => ({
               name: artist.name,
               genre: artist.genre || 'Electronic',
@@ -79,7 +82,6 @@ const Index = () => {
             ticketUrl: event.ticket_url
           };
         });
-
         setUpcomingEvents(transformedEvents);
       } catch (error) {
         console.error('Error fetching events:', error);
@@ -87,7 +89,6 @@ const Index = () => {
         setLoading(false);
       }
     };
-
     fetchEvents();
   }, []);
   return <div className="h-screen bg-background flex flex-col animate-fade-in">
@@ -100,9 +101,9 @@ const Index = () => {
           <div className="absolute inset-0 bg-topographic opacity-15 bg-repeat bg-center" />
           <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
           
-          <div className="relative h-full flex flex-col px-8 lg:px-16 py-20">
+          <div className="relative h-full flex flex-col px-8 py-20 lg:px-0">
             <div className="flex-1 flex flex-col justify-center">
-              <div className="max-w-2xl">
+              <div className="max-w-2xl px-[64px]">
                 <Badge variant="outline" className="mb-8 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-colors duration-300">
                   Promotions & A&R
                 </Badge>
@@ -135,19 +136,11 @@ const Index = () => {
             </div>
             
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-              {loading ? (
-                <div className="col-span-full text-center py-8">
+              {loading ? <div className="col-span-full text-center py-8">
                   <p className="text-muted-foreground">Loading events...</p>
-                </div>
-              ) : upcomingEvents.length > 0 ? (
-                upcomingEvents.slice(0, 6).map(event => (
-                  <EventCard key={event.id} event={event} />
-                ))
-              ) : (
-                <div className="col-span-full text-center py-8">
+                </div> : upcomingEvents.length > 0 ? upcomingEvents.slice(0, 6).map(event => <EventCard key={event.id} event={event} />) : <div className="col-span-full text-center py-8">
                   <p className="text-muted-foreground">No upcoming events</p>
-                </div>
-              )}
+                </div>}
             </div>
             
             
