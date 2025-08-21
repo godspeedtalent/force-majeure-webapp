@@ -174,13 +174,13 @@ const EventDetails = () => {
         {/* Hero Content */}
         <div className="absolute bottom-0 left-0 right-0 p-8">
           <div className="max-w-4xl">
-            <div className="relative">
+            <div className="relative h-32 md:h-40">
               {/* Background copy with exclusion blending */}
-              <h1 className="absolute text-white text-8xl md:text-[12rem] font-bold mb-4 opacity-30 mix-blend-exclusion -translate-x-2 -translate-y-2 pointer-events-none">
+              <h1 className="absolute bottom-0 left-0 text-white text-8xl md:text-[12rem] font-bold opacity-30 mix-blend-exclusion pointer-events-none leading-none">
                 {event.headliner.name}
               </h1>
               {/* Main heading */}
-              <h1 className="relative text-white text-6xl md:text-8xl font-bold mb-4 z-10">
+              <h1 className="absolute bottom-0 left-0 text-white text-6xl md:text-8xl font-bold z-10 leading-none">
                 {event.headliner.name}
               </h1>
             </div>
