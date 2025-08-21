@@ -118,7 +118,7 @@ const Index = () => {
                     </h3>
                     
                     <p className="font-canela text-sm text-muted-foreground mb-4">
-                      {event.headliner.name} • {event.venue}
+                      {event.undercard.map(artist => artist.name).join(' • ')}
                     </p>
                     
                     <Button size="sm" variant="outline" className="w-full font-canela text-xs border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black">
