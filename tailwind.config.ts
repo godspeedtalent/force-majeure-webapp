@@ -63,6 +63,12 @@ export default {
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
 			},
+			fontFamily: {
+				'screamer': ['FK Screamer', 'system-ui', 'sans-serif'],
+				'canela': ['Canela Deck', 'Georgia', 'serif'],
+				'display': ['FK Screamer', 'system-ui', 'sans-serif'],
+				'body': ['Canela Deck', 'Georgia', 'serif'],
+			},
 			keyframes: {
 				'accordion-down': {
 					from: { height: '0', opacity: '0' },
@@ -105,7 +111,8 @@ export default {
 			backgroundImage: {
 				'gradient-gold': 'var(--gradient-gold)',
 				'gradient-crimson': 'var(--gradient-crimson)',
-				'gradient-monochrome': 'var(--gradient-monochrome)'
+				'gradient-monochrome': 'var(--gradient-monochrome)',
+				'topographic': 'var(--topographic-pattern)'
 			},
 			boxShadow: {
 				'elegant': 'var(--shadow-elegant)',

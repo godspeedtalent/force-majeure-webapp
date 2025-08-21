@@ -81,7 +81,8 @@ const Index = () => {
       
       {/* Hero Section */}
       <section className="relative pt-16 pb-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-monochrome opacity-5" />
+        <div className="absolute inset-0 bg-topographic opacity-5 bg-repeat bg-center" />
+        <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16">
           <div className="text-center animate-fade-in">
             <Badge 
@@ -90,7 +91,7 @@ const Index = () => {
             >
               Promotions & A&R
             </Badge>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-6">
+            <h1 className="text-5xl md:text-7xl font-screamer font-black tracking-tight mb-6">
               <span className="bg-gradient-monochrome bg-clip-text text-transparent">
                 FORCE
               </span>
@@ -99,7 +100,7 @@ const Index = () => {
                 MAJEURE
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
+            <p className="text-xl md:text-2xl font-canela text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
               Where underground culture meets sophisticated curation. 
               Experience electronic music's most compelling artists in unforgettable settings.
             </p>
@@ -128,10 +129,10 @@ const Index = () => {
       <section id="events" className="py-20 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            <h2 className="text-4xl md:text-5xl font-screamer font-bold mb-4">
               Upcoming Events
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-xl font-canela text-muted-foreground max-w-2xl mx-auto">
               Carefully curated experiences featuring the most innovative artists in electronic music
             </p>
           </div>
@@ -153,10 +154,10 @@ const Index = () => {
       {/* Contact Section */}
       <section id="contact" className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-8">
+          <h2 className="text-4xl md:text-5xl font-screamer font-bold mb-8">
             Get In Touch
           </h2>
-          <p className="text-xl text-muted-foreground mb-12">
+          <p className="text-xl font-canela text-muted-foreground mb-12">
             Ready to collaborate or book an event? Let's create something extraordinary together.
           </p>
           
@@ -164,24 +165,24 @@ const Index = () => {
             <div className="group hover:scale-105 transition-transform duration-300">
               <div className="bg-card border border-border rounded-lg p-6 h-full shadow-elegant">
                 <Mail className="w-8 h-8 text-fm-gold mx-auto mb-4" />
-                <h3 className="font-semibold mb-2">Email</h3>
-                <p className="text-muted-foreground">hello@forcemajeure.com</p>
+                <h3 className="font-canela font-semibold mb-2">Email</h3>
+                <p className="font-canela text-muted-foreground">hello@forcemajeure.com</p>
               </div>
             </div>
             
             <div className="group hover:scale-105 transition-transform duration-300">
               <div className="bg-card border border-border rounded-lg p-6 h-full shadow-elegant">
                 <Phone className="w-8 h-8 text-fm-gold mx-auto mb-4" />
-                <h3 className="font-semibold mb-2">Phone</h3>
-                <p className="text-muted-foreground">+1 (555) 123-4567</p>
+                <h3 className="font-canela font-semibold mb-2">Phone</h3>
+                <p className="font-canela text-muted-foreground">+1 (555) 123-4567</p>
               </div>
             </div>
             
             <div className="group hover:scale-105 transition-transform duration-300">
               <div className="bg-card border border-border rounded-lg p-6 h-full shadow-elegant">
                 <Instagram className="w-8 h-8 text-fm-gold mx-auto mb-4" />
-                <h3 className="font-semibold mb-2">Social</h3>
-                <p className="text-muted-foreground">@forcemajeure</p>
+                <h3 className="font-canela font-semibold mb-2">Social</h3>
+                <p className="font-canela text-muted-foreground">@forcemajeure</p>
               </div>
             </div>
           </div>
@@ -200,8 +201,8 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-4 md:mb-0">
-              <h3 className="text-2xl font-bold tracking-tighter">FORCE MAJEURE</h3>
-              <p className="text-background/70 mt-1">Promotions & A&R</p>
+              <h3 className="text-2xl font-screamer font-black tracking-tight">FORCE MAJEURE</h3>
+              <p className="font-canela text-background/70 mt-1">Promotions & A&R</p>
             </div>
             
             <div className="flex items-center gap-6">

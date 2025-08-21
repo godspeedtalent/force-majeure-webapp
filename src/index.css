@@ -6,6 +6,74 @@
 All colors MUST be HSL.
 */
 
+/* Custom Fonts */
+@font-face {
+  font-family: 'FK Screamer';
+  src: url('/fonts/FKScreamer.woff2') format('woff2'),
+       url('/fonts/FKScreamer.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FK Screamer';
+  src: url('/fonts/FKScreamer-Bold.woff2') format('woff2'),
+       url('/fonts/FKScreamer-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FK Screamer';
+  src: url('/fonts/FKScreamer-Black.woff2') format('woff2'),
+       url('/fonts/FKScreamer-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Canela Deck';
+  src: url('/fonts/CanelaDeck-Regular-Trial.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Canela Deck';
+  src: url('/fonts/CanelaDeck-Light-Trial.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Canela Deck';
+  src: url('/fonts/CanelaDeck-Medium-Trial.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Canela Deck';
+  src: url('/fonts/CanelaDeck-Bold-Trial.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Canela Deck';
+  src: url('/fonts/CanelaDeck-Black-Trial.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
     /* Force Majeure - Black & White Primary with Dusty Gold & Crimson Accents */
@@ -62,8 +130,11 @@ All colors MUST be HSL.
     --shadow-crimson: 0 8px 30px -8px hsl(var(--fm-crimson) / 0.3);
 
     /* Typography */
-    --font-display: 'Inter', system-ui, sans-serif;
-    --font-body: 'Inter', system-ui, sans-serif;
+    --font-display: 'FK Screamer', system-ui, sans-serif;
+    --font-body: 'Canela Deck', Georgia, serif;
+    
+    /* Background Patterns */
+    --topographic-pattern: url('/images/topographic-pattern.png');
   }
 
   .dark {
@@ -106,6 +177,10 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-canela;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-screamer;
   }
 }

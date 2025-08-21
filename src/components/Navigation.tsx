@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
 import { Menu, X, ShoppingBag, Calendar, Mail, Users } from 'lucide-react';
 
 export const Navigation = () => {
@@ -18,8 +19,9 @@ export const Navigation = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex-shrink-0">
-            <h1 className="text-2xl font-bold tracking-tighter bg-gradient-monochrome bg-clip-text text-transparent">
+          <div className="flex items-center space-x-3">
+            <ForceMajeureLogo size="md" />
+            <h1 className="text-2xl font-screamer font-black tracking-tight bg-gradient-monochrome bg-clip-text text-transparent">
               FORCE MAJEURE
             </h1>
           </div>
@@ -31,7 +33,7 @@ export const Navigation = () => {
                 <a
                   key={item.label}
                   href={item.href}
-                  className="group relative px-3 py-2 text-sm font-medium text-foreground hover:text-fm-gold transition-colors duration-200"
+                  className="group relative px-3 py-2 text-sm font-canela font-medium text-foreground hover:text-fm-gold transition-colors duration-200"
                 >
                   <span className="flex items-center gap-2">
                     <item.icon className="w-4 h-4" />
@@ -71,7 +73,7 @@ export const Navigation = () => {
               <a
                 key={item.label}
                 href={item.href}
-                className="flex items-center gap-3 px-3 py-2 text-base font-medium text-foreground hover:text-fm-gold hover:bg-hover-overlay rounded-md transition-colors duration-200"
+                className="flex items-center gap-3 px-3 py-2 text-base font-canela font-medium text-foreground hover:text-fm-gold hover:bg-hover-overlay rounded-md transition-colors duration-200"
                 onClick={() => setIsOpen(false)}
               >
                 <item.icon className="w-5 h-5" />
