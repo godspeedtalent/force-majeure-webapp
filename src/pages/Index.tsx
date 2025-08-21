@@ -108,134 +108,61 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black text-white overflow-x-hidden">
       <Navigation />
       
-      {/* Main Split Layout */}
-      <div className="pt-16 min-h-screen flex">
-        {/* Left Panel - Hero Content */}
-        <div className="w-full lg:w-2/3 relative overflow-hidden">
-          <div className="absolute inset-0 bg-topographic opacity-5 bg-repeat bg-center" />
-          <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
-          
-          <div className="relative h-full flex flex-col justify-center px-8 lg:px-16 py-20">
-            <div className="max-w-2xl">
-              <Badge 
-                variant="outline" 
-                className="mb-8 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-colors duration-300"
-              >
-                Promotions & A&R
-              </Badge>
-              
-              <h1 className="text-6xl lg:text-8xl font-screamer tracking-tight mb-8 leading-none" style={{ fontWeight: 475 }}>
-                <span className="block text-foreground">FORCE</span>
-                <span className="block bg-gradient-gold bg-clip-text text-transparent">MAJEURE</span>
-              </h1>
-              
-              <p className="text-xl lg:text-2xl font-canela text-muted-foreground leading-relaxed mb-12 max-w-xl">
-                Where underground culture meets sophisticated curation. Experience electronic music's most compelling artists.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                  size="lg" 
-                  className="bg-fm-gold text-black hover:bg-fm-gold/90 shadow-gold group font-canela"
-                >
-                  <Calendar className="w-5 h-5 mr-2" />
-                  View Events
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  className="border-fm-crimson text-fm-crimson hover:bg-fm-crimson hover:text-white font-canela"
-                >
-                  Join Community
-                </Button>
-              </div>
-            </div>
-            
-            {/* Featured Release Section */}
-            <div className="mt-20 max-w-md">
-              <div className="border-l-2 border-fm-gold pl-6">
-                <h3 className="text-2xl font-screamer mb-2" style={{ fontWeight: 475 }}>LATEST RELEASE</h3>
-                <p className="font-canela text-sm text-muted-foreground mb-4">NEW COMPILATION • OUT NOW</p>
-                
-                <div className="bg-card border border-border rounded-lg p-4 mb-4">
-                  <img 
-                    src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop" 
-                    alt="Underground Frequencies Vol. 1" 
-                    className="w-full aspect-square object-cover rounded mb-3"
-                  />
-                  <h4 className="font-canela font-medium">Underground Frequencies Vol. 1</h4>
-                  <p className="font-canela text-sm text-muted-foreground">Various Artists</p>
-                </div>
-                
-                <Button variant="outline" size="sm" className="w-full font-canela">
-                  LISTEN
-                </Button>
-              </div>
-            </div>
-          </div>
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex flex-col justify-center items-center">
+        {/* Background Hero Image */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="https://images.unsplash.com/photo-1571266028243-d220c9c814d2?w=1920&h=1080&fit=crop"
+            alt="Force Majeure Heroes"
+            className="w-full h-full object-cover opacity-60"
+          />
+          <div className="absolute inset-0 bg-black/40" />
         </div>
         
-        {/* Right Panel - Events Sidebar */}
-        <div className="hidden lg:block w-1/3 bg-muted/30 border-l border-border">
-          <div className="p-8 h-full overflow-y-auto">
-            <div className="mb-8">
-              <h2 className="text-2xl font-screamer mb-2" style={{ fontWeight: 475 }}>UPCOMING</h2>
-              <p className="font-canela text-sm text-muted-foreground">Events & Showcases</p>
-            </div>
-            
-            <div className="space-y-6">
-              {upcomingEvents.slice(0, 6).map((event) => (
-                <div key={event.id} className="group">
-                  <div className="flex items-start justify-between py-4 border-b border-border last:border-b-0">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="font-canela text-sm text-muted-foreground">
-                          {new Date(event.date).toLocaleDateString('en-US', { 
-                            day: '2-digit',
-                            month: 'short' 
-                          }).toUpperCase()}
-                        </span>
-                        <span className="font-canela text-sm font-medium">
-                          {event.location.split(',')[1]?.trim() || event.location}
-                        </span>
-                      </div>
-                      
-                      <h3 className="font-screamer text-lg mb-1 group-hover:text-fm-gold transition-colors" style={{ fontWeight: 475 }}>
-                        {event.title}
-                      </h3>
-                      
-                      <p className="font-canela text-sm text-muted-foreground mb-3">
-                        {event.headliner.name} • {event.venue}
-                      </p>
-                    </div>
-                    
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      className="ml-4 font-canela text-xs px-3 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black"
-                    >
-                      TICKETS
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            <div className="mt-8 pt-8 border-t border-border">
-              <Button 
-                variant="ghost" 
-                className="w-full font-canela text-sm hover:text-fm-gold"
-              >
-                View All Events →
-              </Button>
-            </div>
-          </div>
+        {/* Main Content */}
+        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+          <h1 className="text-8xl md:text-9xl lg:text-[12rem] font-screamer tracking-tight mb-8 leading-none" style={{ fontWeight: 475 }}>
+            FORCE
+          </h1>
+          <h2 className="text-6xl md:text-7xl lg:text-8xl font-screamer tracking-tight mb-16 leading-none text-white/90" style={{ fontWeight: 475 }}>
+            MAJEURE
+          </h2>
         </div>
-      </div>
+
+        {/* Featured Release */}
+        <div className="relative z-10 text-center max-w-md mx-auto px-4">
+          <h3 className="text-2xl font-screamer mb-4 tracking-wide" style={{ fontWeight: 475 }}>
+            DEEP END
+          </h3>
+          <p className="font-canela text-sm text-white/60 mb-6 tracking-widest">
+            NEW ALBUM • OUT NOW
+          </p>
+          
+          <div className="mb-8">
+            <img 
+              src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop"
+              alt="Deep End Album Cover"
+              className="w-64 h-64 mx-auto object-cover mb-6 shadow-2xl"
+            />
+          </div>
+          
+          <Button 
+            variant="outline" 
+            className="px-8 py-3 border-white/30 text-white hover:bg-white/10 font-canela tracking-wide"
+          >
+            LISTEN
+          </Button>
+        </div>
+
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
+          <div className="w-px h-16 bg-white/30"></div>
+        </div>
+      </section>
       
       {/* Mobile Events Section */}
       <section className="lg:hidden py-20 bg-muted/30">
