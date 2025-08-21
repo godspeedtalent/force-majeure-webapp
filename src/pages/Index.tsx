@@ -120,7 +120,9 @@ const Index = () => {
               </div>
 
               {/* Expandable Music Player */}
-              <ExpandableMusicPlayer />
+              <div className="mt-auto">
+                <ExpandableMusicPlayer />
+              </div>
             </div>
           </PageTransition>
         </div>

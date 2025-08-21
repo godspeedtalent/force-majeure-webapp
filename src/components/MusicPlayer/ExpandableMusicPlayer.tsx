@@ -39,7 +39,7 @@ export const ExpandableMusicPlayer: React.FC = () => {
 
   if (!currentSong) {
     return (
-      <div className="mt-auto border-t border-border">
+      <div className="border-t border-border bg-background/50 backdrop-blur-sm">
         <div className="p-4">
           <div className="flex items-center gap-3 text-muted-foreground">
             <Music className="w-5 h-5" />
@@ -51,7 +51,7 @@ export const ExpandableMusicPlayer: React.FC = () => {
   }
 
   return (
-    <div className="mt-auto border-t border-border bg-background/50 backdrop-blur-sm">
+    <div className="border-t border-border bg-background/50 backdrop-blur-sm">
       {/* Expand/Collapse Handle */}
       <div className="px-4 py-2 border-b border-border/50">
         <button

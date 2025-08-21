@@ -169,7 +169,9 @@ const EventDetails = () => {
             </Button>
             
             {/* Expandable Music Player */}
-            <ExpandableMusicPlayer />
+            <div className="mt-auto">
+              <ExpandableMusicPlayer />
+            </div>
           </PageTransition>
         </div>
 
