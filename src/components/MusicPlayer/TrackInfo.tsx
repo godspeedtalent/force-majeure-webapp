@@ -2,23 +2,20 @@ import React from 'react';
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext';
 import { Badge } from '@/components/ui/badge';
 import { Music } from 'lucide-react';
-
 export const TrackInfo: React.FC = () => {
-  const { currentSong } = useMusicPlayer();
-
+  const {
+    currentSong
+  } = useMusicPlayer();
   if (!currentSong) {
-    return (
-      <div className="flex-1 flex items-center gap-3 min-w-0">
+    return <div className="flex-1 flex items-center gap-3 min-w-0">
         <div className="w-12 h-12 rounded-md bg-muted flex items-center justify-center">
           <Music className="w-6 h-6 text-muted-foreground" />
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm text-muted-foreground">No track selected</p>
         </div>
-      </div>
-    );
+      </div>;
   }
-
   const getMusicSourceColor = (source: string) => {
     switch (source) {
       case 'spotify':
@@ -33,9 +30,7 @@ export const TrackInfo: React.FC = () => {
         return 'bg-muted text-muted-foreground border-border';
     }
   };
-
-  return (
-    <div className="flex-1 flex items-center gap-3 min-w-0">
+  return <div className="flex-1 flex items-center gap-3 min-w-0">
       {/* Track Artwork Placeholder */}
       <div className="w-12 h-12 rounded-md bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center flex-shrink-0">
         <Music className="w-6 h-6 text-primary" />
@@ -50,14 +45,8 @@ export const TrackInfo: React.FC = () => {
           <p className="text-xs text-muted-foreground truncate">
             {currentSong.artist_name}
           </p>
-          <Badge 
-            variant="outline" 
-            className={`text-xs px-2 py-0.5 ${getMusicSourceColor(currentSong.music_source)}`}
-          >
-            {currentSong.music_source}
-          </Badge>
+          
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
