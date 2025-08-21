@@ -108,7 +108,7 @@ const Index = () => {
               fontWeight: 475
             }}>
                 <span className="block text-foreground">FORCE</span>
-                <span className="block bg-gradient-gold bg-clip-text text-transparent">MAJEURE</span>
+                <span className="block bg-gradient-gold bg-clip-text text-transparent -mt-4">MAJEURE</span>
               </h1>
               
               <p className="text-lg lg:text-xl font-canela text-muted-foreground leading-relaxed mb-12 max-w-xl">
