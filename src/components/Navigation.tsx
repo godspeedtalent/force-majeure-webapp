@@ -12,8 +12,9 @@ export const Navigation = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center space-x-3">
-            <ForceMajeureLogo size="sm" />
-            
+            <Link to="/" className="transition-transform duration-200 hover:scale-110">
+              <ForceMajeureLogo size="sm" />
+            </Link>
           </div>
 
           {/* Desktop Actions */}
