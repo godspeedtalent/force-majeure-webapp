@@ -95,7 +95,7 @@ const Index = () => {
               <p className="font-canela text-sm text-muted-foreground">Events & Showcases</p>
             </div>
             
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
               {upcomingEvents.slice(0, 6).map(event => <div key={event.id} className="group bg-card border-l-4 border-l-fm-gold border-t border-r border-b border-border rounded-lg overflow-hidden hover:border-fm-gold/50 transition-all duration-300">
                   {event.heroImage && <div className="aspect-square w-full overflow-hidden">
                       <img src={event.heroImage} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -109,7 +109,7 @@ const Index = () => {
                     }).toUpperCase()}
                       </span>
                       <span className="font-canela text-xs font-medium text-fm-gold">
-                        {event.venue}
+                        {event.location}
                       </span>
                     </div>
                     
@@ -118,7 +118,7 @@ const Index = () => {
                     </h3>
                     
                     <p className="font-canela text-sm text-muted-foreground mb-4">
-                      {event.undercard.map(artist => artist.name).join(' • ')}
+                      {event.headliner.name} • {event.venue}
                     </p>
                     
                     <Button size="sm" variant="outline" className="w-full font-canela text-xs border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black">
@@ -134,29 +134,7 @@ const Index = () => {
       </div>
       
       {/* Footer */}
-      <footer style={{
-      backgroundColor: '#121212'
-    }} className="text-white py-3">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-2 md:mb-0">
-              
-              <p className="font-canela text-white/70 text-sm">Promotions & A&R</p>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <button className="text-white/70 hover:text-fm-gold transition-colors">
-                <Instagram className="w-4 h-4" />
-              </button>
-              <button className="text-white/70 hover:text-fm-gold transition-colors">
-                <Music className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-          
-          
-        </div>
-      </footer>
+      
     </div>;
 };
 export default Index;
