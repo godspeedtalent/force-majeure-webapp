@@ -75,7 +75,7 @@ const Index = () => {
               </h1>
               
               <p className="text-xl lg:text-2xl font-canela text-muted-foreground leading-relaxed mb-12 max-w-xl">
-                Where underground culture meets sophisticated curation. Experience electronic music's most compelling artists.
+                elevating the Austin, TX electronic scene.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4">
