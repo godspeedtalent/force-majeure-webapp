@@ -95,7 +95,7 @@ const Index = () => {
               <p className="font-canela text-sm text-muted-foreground">Events & Showcases</p>
             </div>
             
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 max-h-96 overflow-hidden">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
               {upcomingEvents.slice(0, 6).map(event => <div key={event.id} className="group bg-card border-l-4 border-l-fm-gold border-t border-r border-b border-border rounded-lg overflow-hidden hover:border-fm-gold/50 transition-all duration-300">
                   {event.heroImage && <div className="aspect-square w-full overflow-hidden">
                       <img src={event.heroImage} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
