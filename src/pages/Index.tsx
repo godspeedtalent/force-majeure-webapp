@@ -110,34 +110,45 @@ const Index = () => {
             
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
               {upcomingEvents.slice(0, 6).map((event) => (
-                <div key={event.id} className="group bg-card border border-border rounded-lg p-6 hover:border-fm-gold/50 transition-all duration-300">
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="font-canela text-sm text-muted-foreground bg-muted px-2 py-1 rounded">
-                      {new Date(event.date).toLocaleDateString('en-US', { 
-                        day: '2-digit',
-                        month: 'short' 
-                      }).toUpperCase()}
-                    </span>
-                    <span className="font-canela text-xs font-medium text-fm-gold">
-                      {event.location.split(',')[1]?.trim() || event.location}
-                    </span>
+                <div key={event.id} className="group bg-card border-l-4 border-l-fm-gold border-t border-r border-b border-border rounded-lg overflow-hidden hover:border-fm-gold/50 transition-all duration-300">
+                  {event.heroImage && (
+                    <div className="aspect-square w-full overflow-hidden">
+                      <img 
+                        src={event.heroImage} 
+                        alt={event.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  )}
+                  <div className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="font-canela text-sm text-muted-foreground bg-muted px-2 py-1 rounded">
+                        {new Date(event.date).toLocaleDateString('en-US', { 
+                          day: '2-digit',
+                          month: 'short' 
+                        }).toUpperCase()}
+                      </span>
+                      <span className="font-canela text-xs font-medium text-fm-gold">
+                        {event.location}
+                      </span>
+                    </div>
+                    
+                    <h3 className="font-canela font-bold text-lg mb-2 group-hover:text-fm-gold transition-colors">
+                      {event.title}
+                    </h3>
+                    
+                    <p className="font-canela text-sm text-muted-foreground mb-4">
+                      {event.headliner.name} • {event.venue}
+                    </p>
+                    
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      className="w-full font-canela text-xs border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black"
+                    >
+                      GET TICKETS
+                    </Button>
                   </div>
-                  
-                  <h3 className="font-canela font-bold text-lg mb-2 group-hover:text-fm-gold transition-colors">
-                    {event.title}
-                  </h3>
-                  
-                  <p className="font-canela text-sm text-muted-foreground mb-4">
-                    {event.headliner.name} • {event.venue}
-                  </p>
-                  
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    className="w-full font-canela text-xs border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black"
-                  >
-                    GET TICKETS
-                  </Button>
                 </div>
               ))}
             </div>
