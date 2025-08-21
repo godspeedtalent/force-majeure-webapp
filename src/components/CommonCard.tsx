@@ -40,7 +40,7 @@ export const CommonCard = ({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
         <div className="absolute bottom-4 left-4 right-4">
-          <h3 className="text-white text-xl font-bold mb-1 line-clamp-2">
+          <h3 className="text-white text-xl font-canela font-medium mb-1 line-clamp-2">
             {title}
           </h3>
           {subtitle && (
