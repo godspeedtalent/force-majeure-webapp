@@ -109,7 +109,7 @@ const Index = () => {
                     }).toUpperCase()}
                       </span>
                       <span className="font-canela text-xs font-medium text-fm-gold">
-                        {event.location}
+                        {event.venue}
                       </span>
                     </div>
                     
