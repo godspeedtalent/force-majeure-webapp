@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigation } from '@/components/Navigation';
+import { ExpandableMusicPlayer } from '@/components/MusicPlayer/ExpandableMusicPlayer';
 import { EventCard } from '@/components/EventCard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -98,7 +99,7 @@ const Index = () => {
           <div className="absolute inset-0 bg-repeat bg-center opacity-20" style={{ backgroundImage: 'url(/images/topographic-pattern.png)' }} />
           <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
           
-          <div className="relative h-full flex flex-col justify-center px-8 lg:px-16 py-20">
+          <div className="relative h-full flex flex-col px-8 lg:px-16 py-20">
             <div className="max-w-2xl">
               <Badge variant="outline" className="mb-8 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-colors duration-300">
                 Promotions & A&R
@@ -114,10 +115,10 @@ const Index = () => {
               <p className="text-lg lg:text-xl font-canela text-muted-foreground leading-relaxed mb-12 max-w-xl">
                 The biggest rave fam in the world is deep in the heart of Austin, TX.
               </p>
-              
-              
             </div>
-            
+
+            {/* Expandable Music Player */}
+            <ExpandableMusicPlayer />
           </div>
         </div>
         
