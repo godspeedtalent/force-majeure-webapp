@@ -134,7 +134,7 @@ const Index = () => {
               </div>
               
               <div className="flex-1 flex items-center">
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 max-h-[50vh] overflow-y-auto items-stretch p-4 w-full">
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 max-h-[50vh] overflow-y-auto items-stretch p-4 w-full h-full">
                   {loading ? (
                     <div className="col-span-full text-center py-8">
                       <p className="text-muted-foreground">Loading events...</p>
