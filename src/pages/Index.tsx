@@ -181,7 +181,7 @@ const Index = () => {
         
         {/* Right Panel - Events Sidebar */}
         <div className="hidden lg:block w-2/3 bg-muted/30 border-l border-border">
-          <div className="p-8 h-full overflow-y-auto">
+          <div className="p-8 h-[calc(100vh-4rem)] overflow-y-auto">
             <div className="mb-8">
               <h2 className="text-2xl font-screamer mb-2" style={{ fontWeight: 475 }}>UPCOMING</h2>
               <p className="font-canela text-sm text-muted-foreground">Events & Showcases</p>
