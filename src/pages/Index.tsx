@@ -1,111 +1,53 @@
+import { useEffect, useState } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { EventCard } from '@/components/EventCard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, ArrowRight, Instagram, Music, Phone, Mail } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const Index = () => {
-  // Mock event data - this will be replaced with Supabase data later
-  const upcomingEvents = [
-    {
-      id: '1',
-      title: 'Warehouse Sessions Vol. 1',
-      headliner: { name: 'ARTBAT', genre: 'Melodic Techno' },
-      undercard: [
-        { name: 'Yotto', genre: 'Progressive House' },
-        { name: 'Marsh', genre: 'Melodic House' },
-        { name: 'Local Resident', genre: 'Techno' }
-      ],
-      date: '2024-02-15',
-      time: '10:00 PM',
-      venue: 'Underground Warehouse',
-      location: 'Brooklyn, NY',
-      heroImage: 'https://images.unsplash.com/photo-1571266028243-d220c9c814d2?w=800&h=800&fit=crop',
-      description: 'Experience the raw energy of underground electronic music in an authentic warehouse setting. This intimate gathering features world-class artists in a stripped-down environment that celebrates the purest form of electronic music culture.',
-      ticketUrl: '#'
-    },
-    {
-      id: '2',
-      title: 'Neon Nights',
-      headliner: { name: 'Charlotte de Witte', genre: 'Techno' },
-      undercard: [
-        { name: 'I Hate Models', genre: 'Industrial Techno' },
-        { name: 'Kobosil', genre: 'Hard Techno' }
-      ],
-      date: '2024-02-28',
-      time: '11:00 PM',
-      venue: 'The Black Box',
-      location: 'Los Angeles, CA',
-      heroImage: 'https://images.unsplash.com/photo-1574391884720-bfab8cb872b4?w=800&h=800&fit=crop',
-      description: 'Dark, pulsating rhythms meet cutting-edge visual production in this immersive techno experience. Charlotte de Witte brings her signature sound to an evening of relentless beats and hypnotic atmospheres.',
-      ticketUrl: '#'
-    },
-    {
-      id: '3',
-      title: 'Deep House Collective',
-      headliner: { name: 'Black Coffee', genre: 'Deep House' },
-      undercard: [
-        { name: 'Âme', genre: 'Deep House' },
-        { name: 'Dixon', genre: 'Minimal House' },
-        { name: 'Recondite', genre: 'Ambient Techno' }
-      ],
-      date: '2024-03-10',
-      time: '9:00 PM',
-      venue: 'Rooftop Terrace',
-      location: 'Miami, FL',
-      heroImage: 'https://images.unsplash.com/photo-1539375665275-f9de415ef9ac?w=800&h=800&fit=crop',
-      description: 'Sunset vibes meet sophisticated house music on Miami\'s most exclusive rooftop. An evening of deep, soulful rhythms with panoramic city views and world-class cocktails.',
-      ticketUrl: '#'
-    },
-    {
-      id: '4',
-      title: 'Industrial Revolution',
-      headliner: { name: 'Surgeon', genre: 'Industrial Techno' },
-      undercard: [
-        { name: 'Ancient Methods', genre: 'Industrial' },
-        { name: 'Shifted', genre: 'Experimental Techno' }
-      ],
-      date: '2024-03-25',
-      time: '10:30 PM',
-      venue: 'Factory Floor',
-      location: 'Detroit, MI',
-      heroImage: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=800&fit=crop',
-      description: 'Raw industrial sounds in Detroit\'s historic underground. A night dedicated to the harder edge of electronic music, featuring legendary artists who shaped the industrial techno movement.',
-      ticketUrl: '#'
-    },
-    {
-      id: '5',
-      title: 'Minimal Sessions',
-      headliner: { name: 'Max Richter', genre: 'Minimal' },
-      undercard: [
-        { name: 'Nils Frahm', genre: 'Minimal Techno' },
-        { name: 'Kiasmos', genre: 'Minimal' }
-      ],
-      date: '2024-04-08',
-      time: '9:30 PM',
-      venue: 'Concert Hall',
-      location: 'Berlin, DE',
-      heroImage: 'https://images.unsplash.com/photo-1571266028243-d220c9c814d2?w=800&h=800&fit=crop',
-      description: 'An evening of minimal compositions and ambient soundscapes.',
-      ticketUrl: '#'
-    },
-    {
-      id: '6',
-      title: 'Bass Underground',
-      headliner: { name: 'Skrillex', genre: 'Bass' },
-      undercard: [
-        { name: 'Noisia', genre: 'Drum & Bass' },
-        { name: 'Ivy Lab', genre: 'Bass' }
-      ],
-      date: '2024-04-20',
-      time: '11:00 PM',
-      venue: 'Underground Club',
-      location: 'London, UK',
-      heroImage: 'https://images.unsplash.com/photo-1574391884720-bfab8cb872b4?w=800&h=800&fit=crop',
-      description: 'Heavy bass and cutting-edge sound design.',
-      ticketUrl: '#'
-    }
-  ];
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('events')
+          .select('*')
+          .order('date', { ascending: true });
+
+        if (error) {
+          console.error('Error fetching events:', error);
+          return;
+        }
+
+        // Transform the data to match our expected format
+        const transformedEvents = data.map(event => ({
+          id: event.id,
+          title: event.title,
+          headliner: event.headliner,
+          undercard: event.undercard,
+          date: event.date,
+          time: event.time,
+          venue: event.venue,
+          location: event.location,
+          heroImage: event.hero_image,
+          description: event.description,
+          ticketUrl: event.ticket_url
+        }));
+
+        setUpcomingEvents(transformedEvents);
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
 
   return (
     <div className="h-screen bg-background flex flex-col">
