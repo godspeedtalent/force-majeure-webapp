@@ -4,6 +4,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Menu, X, User, LogIn, UserPlus, ShoppingCart } from 'lucide-react';
+import { Link } from 'react-router-dom';
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   return <nav className="w-full bg-background/50 backdrop-blur-md border-b border-border">
@@ -17,8 +18,10 @@ export const Navigation = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" size="sm" className="text-foreground hover:text-fm-gold hover:bg-hover-overlay">
-              <ShoppingCart className="h-4 w-4" />
+            <Button variant="ghost" size="sm" className="text-foreground hover:text-fm-gold hover:bg-hover-overlay" asChild>
+              <Link to="/merch">
+                <ShoppingCart className="h-4 w-4" />
+              </Link>
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -42,8 +45,10 @@ export const Navigation = () => {
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center space-x-2">
-            <Button variant="ghost" size="sm" className="text-foreground hover:text-fm-gold hover:bg-hover-overlay">
-              <ShoppingCart className="h-4 w-4" />
+            <Button variant="ghost" size="sm" className="text-foreground hover:text-fm-gold hover:bg-hover-overlay" asChild>
+              <Link to="/merch">
+                <ShoppingCart className="h-4 w-4" />
+              </Link>
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -73,9 +78,13 @@ export const Navigation = () => {
       {/* Mobile Navigation */}
       {isOpen && <div className="md:hidden animate-slide-up">
           <div className="px-2 pt-2 pb-3 space-y-1 bg-background border-b border-border">
-            <p className="px-3 py-2 text-base font-canela font-medium text-muted-foreground">
-              Menu coming soon...
-            </p>
+            <Link 
+              to="/merch" 
+              className="block px-3 py-2 text-base font-canela font-medium text-foreground hover:text-fm-gold hover:bg-hover-overlay rounded-md transition-colors"
+              onClick={() => setIsOpen(false)}
+            >
+              Merchandise
+            </Link>
           </div>
         </div>}
     </nav>;
