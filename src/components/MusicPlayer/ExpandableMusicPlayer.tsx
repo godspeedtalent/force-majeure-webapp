@@ -4,6 +4,7 @@ import { PlayerControls } from './PlayerControls';
 import { TrackInfo } from './TrackInfo';
 import { VolumeControl } from './VolumeControl';
 import { TrackQueue } from './TrackQueue';
+import { SpotifyAuth } from '@/components/SpotifyAuth';
 import { cn } from '@/lib/utils';
 import { ChevronUp, ChevronDown, Music } from 'lucide-react';
 
@@ -39,11 +40,12 @@ export const ExpandableMusicPlayer: React.FC = () => {
   if (!currentSong) {
     return (
       <div className="mt-auto border-t border-border">
-        <div className="p-4">
+        <div className="p-4 space-y-4">
           <div className="flex items-center gap-3 text-muted-foreground">
             <Music className="w-5 h-5" />
             <span className="text-sm">No track playing</span>
           </div>
+          <SpotifyAuth />
         </div>
       </div>
     );
@@ -102,6 +104,9 @@ export const ExpandableMusicPlayer: React.FC = () => {
           <div className="max-h-48 overflow-y-auto">
             <TrackQueue />
           </div>
+
+          {/* Spotify Auth */}
+          <SpotifyAuth />
         </div>
       )}
 
