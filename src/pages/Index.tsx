@@ -75,7 +75,7 @@ const Index = () => {
               </h1>
               
               <p className="text-xl lg:text-2xl font-canela text-muted-foreground leading-relaxed mb-12 max-w-xl">
-                elevating the Austin, TX electronic scene.
+                The biggest rave fam in the world is deep in the heart of Austin, TX.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4">
