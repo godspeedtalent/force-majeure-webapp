@@ -112,7 +112,7 @@ const Index = () => {
       <Navigation />
       
       {/* Main Split Layout */}
-      <div className="flex-1 flex pt-16">
+      <div className="flex-1 flex">
         {/* Left Panel - Hero Content */}
         <div className="w-full lg:w-1/3 relative overflow-hidden">
           <div className="absolute inset-0 bg-topographic opacity-5 bg-repeat bg-center" />
