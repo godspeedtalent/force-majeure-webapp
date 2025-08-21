@@ -272,31 +272,7 @@ const EventDetails = () => {
           </div>}
 
         {/* Actions */}
-        <div className="flex flex-wrap gap-4 justify-center">
-          {event.ticketUrl && <Button asChild size="lg" className="bg-fm-crimson text-white hover:bg-fm-crimson/90">
-              <a href={event.ticketUrl} target="_blank" rel="noopener noreferrer">
-                Get Tickets
-                <ExternalLink className="w-4 h-4 ml-2" />
-              </a>
-            </Button>}
-          
-          <Button variant="outline" size="lg">
-            Share Event
-          </Button>
-          
-          <Button onClick={() => songs.length > 0 && playQueue(songs)} disabled={songsLoading || songs.length === 0} variant="outline" size="lg" className="border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black">
-            {songsLoading ? <>
-                <Music className="w-4 h-4 mr-2 animate-pulse" />
-                Loading Songs...
-              </> : songs.length > 0 ? <>
-                <Play className="w-4 h-4 mr-2" />
-                Play Full Lineup
-              </> : <>
-                <Music className="w-4 h-4 mr-2" />
-                No Songs Available
-              </>}
-          </Button>
-        </div>
+        
       </div>
     </div>;
 };
