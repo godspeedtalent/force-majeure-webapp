@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, ArrowRight, Instagram, Music, Phone, Mail } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import lfSystemCover from '@/assets/lf-system-cover.jpg';
 import ninajirachiCover from '@/assets/ninajirachi-cover.jpg';
+import lfSystemCover from '@/assets/lf-system-cover.jpg';
 
 const Index = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
@@ -27,8 +27,8 @@ const Index = () => {
 
         // Map of database image paths to imported images
         const imageMap = {
-          '/src/assets/lf-system-cover.jpg': lfSystemCover,
-          '/src/assets/ninajirachi-cover.jpg': ninajirachiCover
+          '/src/assets/ninajirachi-cover.jpg': ninajirachiCover,
+          '/src/assets/lf-system-cover.jpg': lfSystemCover
         };
 
         // Transform the data to match our expected format
