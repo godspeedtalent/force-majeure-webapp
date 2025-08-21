@@ -128,38 +128,32 @@ const Index = () => {
         {/* Right Panel - Events Sidebar */}
         <div className="hidden lg:block w-3/4 bg-muted/30 border-l border-border">
           <PageTransition>
-            <div className="p-8 h-[calc(100vh-4rem)] overflow-y-auto flex flex-col justify-center">
-            <div>
+            <div className="p-8 h-[calc(100vh-4rem)] overflow-y-auto flex flex-col">
               <div className="mb-8">
-                
                 <p className="font-canela text-sm text-muted-foreground">Events & Showcases</p>
               </div>
               
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 max-h-[50vh] overflow-y-auto items-stretch p-4">
-                {loading ? (
-                  <div className="col-span-full text-center py-8">
-                    <p className="text-muted-foreground">Loading events...</p>
-                  </div>
-                ) : upcomingEvents.length > 0 ? (
-                  upcomingEvents.slice(0, 6).map(event => (
-                    <EventCard key={event.id} event={event} />
-                  ))
-                ) : (
-                  <div className="col-span-full text-center py-8">
-                    <p className="text-muted-foreground">No upcoming events</p>
-                  </div>
-                )}
+              <div className="flex-1 flex items-center">
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 max-h-[50vh] overflow-y-auto items-stretch p-4 w-full">
+                  {loading ? (
+                    <div className="col-span-full text-center py-8">
+                      <p className="text-muted-foreground">Loading events...</p>
+                    </div>
+                  ) : upcomingEvents.length > 0 ? (
+                    upcomingEvents.slice(0, 6).map(event => (
+                      <EventCard key={event.id} event={event} />
+                    ))
+                  ) : (
+                    <div className="col-span-full text-center py-8">
+                      <p className="text-muted-foreground">No upcoming events</p>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-              
-              
             </div>
           </PageTransition>
         </div>
       </div>
-      
-      {/* Footer */}
-      
     </div>;
 };
 export default Index;
