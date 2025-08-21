@@ -111,7 +111,7 @@ const Index = () => {
                 <span className="block bg-gradient-gold bg-clip-text text-transparent">MAJEURE</span>
               </h1>
               
-              <p className="text-xl lg:text-2xl font-canela text-muted-foreground leading-relaxed mb-12 max-w-xl">
+              <p className="text-lg lg:text-xl font-canela text-muted-foreground leading-relaxed mb-12 max-w-xl">
                 The biggest rave fam in the world is deep in the heart of Austin, TX.
               </p>
               
