@@ -155,9 +155,9 @@ const EventDetails = () => {
         </div>
 
         {/* Right Panel - Event Content */}
-        <div className="w-3/4 overflow-y-auto">
+        <div className="w-3/4 overflow-y-auto h-[calc(100vh-80px)]">
           {/* Hero Section */}
-          <div className="relative h-[60vh] min-h-[400px] overflow-hidden">
+          <div className="relative h-[40vh] min-h-[300px] overflow-hidden">
             <img src={event.heroImage} alt={event.headliner.name} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
