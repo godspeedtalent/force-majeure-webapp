@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, ArrowRight, Instagram, Music, Phone, Mail } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getImageUrl } from '@/lib/imageUtils';
+import { ExpandableMusicPlayer } from '@/components/MusicPlayer/ExpandableMusicPlayer';
 import ninajirachiCover from '@/assets/ninajirachi-cover.jpg';
 import lfSystemCover from '@/assets/lf-system-cover.jpg';
 const Index = () => {
@@ -115,7 +116,7 @@ const Index = () => {
                 The biggest rave fam in the world is deep in the heart of Austin, TX.
               </p>
 
-              <MusicPlayer />
+              <ExpandableMusicPlayer />
               
             </div>
             
