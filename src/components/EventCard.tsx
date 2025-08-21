@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { CommonCard } from '@/components/CommonCard';
 import { Calendar, MapPin, Clock, Play, X } from 'lucide-react';
 
 interface Artist {
@@ -42,44 +43,23 @@ export const EventCard = ({ event }: EventCardProps) => {
 
   return (
     <>
-      <Card 
-        className="group cursor-pointer overflow-hidden bg-card border-border hover:shadow-elegant transition-all duration-300 hover:scale-[1.02]"
+      <CommonCard
+        image={event.heroImage}
+        imageAlt={`${event.headliner.name} at ${event.title}`}
+        title={event.headliner.name}
+        subtitle={event.title}
+        badge={formatDate(event.date)}
         onClick={() => setIsExpanded(true)}
       >
-        <div className="relative aspect-square overflow-hidden">
-          <img
-            src={event.heroImage}
-            alt={`${event.headliner.name} at ${event.title}`}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-          <div className="absolute bottom-4 left-4 right-4">
-            <h3 className="text-white text-xl font-bold mb-1 line-clamp-2">
-              {event.headliner.name}
-            </h3>
-            <p className="text-white/90 text-sm font-medium">
-              {event.title}
-            </p>
-          </div>
-          <Badge 
-            variant="secondary" 
-            className="absolute top-4 right-4 bg-background/90 text-foreground"
-          >
-            {formatDate(event.date)}
-          </Badge>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+          <Clock className="w-4 h-4" />
+          <span>{event.time}</span>
         </div>
-        
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-            <Clock className="w-4 h-4" />
-            <span>{event.time}</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <MapPin className="w-4 h-4" />
-            <span className="line-clamp-1">{event.venue}, {event.location}</span>
-          </div>
-        </CardContent>
-      </Card>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <MapPin className="w-4 h-4" />
+          <span className="line-clamp-1">{event.venue}, {event.location}</span>
+        </div>
+      </CommonCard>
 
       {/* Expanded Event Modal */}
       {isExpanded && (

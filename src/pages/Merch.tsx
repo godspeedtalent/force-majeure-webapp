@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { MerchCard } from '@/components/MerchCard';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
@@ -131,51 +131,39 @@ export default function Merch() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredItems.map((item) => (
-              <Card key={item.id} className="group hover:shadow-lg transition-shadow duration-200">
-                <CardHeader className="p-0">
-                  <div className="aspect-square bg-muted rounded-t-lg overflow-hidden">
-                    <img
-                      src={item.image_url || '/placeholder.svg'}
-                      alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                    />
-                  </div>
-                </CardHeader>
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between mb-2">
-                    <CardTitle className="text-lg font-medium line-clamp-2">
-                      {item.name}
-                    </CardTitle>
-                    <Badge variant="secondary" className="ml-2 shrink-0">
-                      {item.type}
-                    </Badge>
-                  </div>
-                  {item.description && (
-                    <CardDescription className="line-clamp-2 mb-3">
-                      {item.description}
-                    </CardDescription>
+              <MerchCard
+                key={item.id}
+                id={item.id}
+                name={item.name}
+                description={item.description}
+                price={item.price}
+                type={item.type}
+                image_url={item.image_url}
+                in_stock={item.in_stock}
+              >
+                {item.description && (
+                  <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                    {item.description}
+                  </p>
+                )}
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-2xl font-bold text-foreground">
+                    ${item.price.toFixed(2)}
+                  </span>
+                  {!item.in_stock && (
+                    <Badge variant="destructive">Out of Stock</Badge>
                   )}
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-foreground">
-                      ${item.price.toFixed(2)}
-                    </span>
-                    {!item.in_stock && (
-                      <Badge variant="destructive">Out of Stock</Badge>
-                    )}
-                  </div>
-                </CardContent>
-                <CardFooter className="p-4 pt-0">
-                  <Button
-                    onClick={() => handleAddToCart(item)}
-                    disabled={!item.in_stock}
-                    className="w-full"
-                    variant={item.in_stock ? "default" : "secondary"}
-                  >
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    {item.in_stock ? 'Add to Cart' : 'Out of Stock'}
-                  </Button>
-                </CardFooter>
-              </Card>
+                </div>
+                <Button
+                  onClick={() => handleAddToCart(item)}
+                  disabled={!item.in_stock}
+                  className="w-full"
+                  variant={item.in_stock ? "default" : "secondary"}
+                >
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  {item.in_stock ? 'Add to Cart' : 'Out of Stock'}
+                </Button>
+              </MerchCard>
             ))}
           </div>
         )}
