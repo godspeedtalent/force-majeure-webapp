@@ -97,27 +97,6 @@ const Index = () => {
               </div>
             </div>
             
-            {/* Featured Release Section */}
-            <div className="mt-20 max-w-md">
-              <div className="border-l-2 border-fm-gold pl-6">
-                <h3 className="text-2xl font-screamer mb-2" style={{ fontWeight: 475 }}>LATEST RELEASE</h3>
-                <p className="font-canela text-sm text-muted-foreground mb-4">NEW COMPILATION • OUT NOW</p>
-                
-                <div className="bg-card border border-border rounded-lg p-4 mb-4">
-                  <img 
-                    src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop" 
-                    alt="Underground Frequencies Vol. 1" 
-                    className="w-full aspect-square object-cover rounded mb-3"
-                  />
-                  <h4 className="font-canela font-medium">Underground Frequencies Vol. 1</h4>
-                  <p className="font-canela text-sm text-muted-foreground">Various Artists</p>
-                </div>
-                
-                <Button variant="outline" size="sm" className="w-full font-canela">
-                  LISTEN
-                </Button>
-              </div>
-            </div>
           </div>
         </div>
         
@@ -129,40 +108,36 @@ const Index = () => {
               <p className="font-canela text-sm text-muted-foreground">Events & Showcases</p>
             </div>
             
-            <div className="space-y-6">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
               {upcomingEvents.slice(0, 6).map((event) => (
-                <div key={event.id} className="group">
-                  <div className="flex items-start justify-between py-4 border-b border-border last:border-b-0">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="font-canela text-sm text-muted-foreground">
-                          {new Date(event.date).toLocaleDateString('en-US', { 
-                            day: '2-digit',
-                            month: 'short' 
-                          }).toUpperCase()}
-                        </span>
-                        <span className="font-canela text-sm font-medium">
-                          {event.location.split(',')[1]?.trim() || event.location}
-                        </span>
-                      </div>
-                      
-                      <h3 className="font-screamer text-lg mb-1 group-hover:text-fm-gold transition-colors" style={{ fontWeight: 475 }}>
-                        {event.title}
-                      </h3>
-                      
-                      <p className="font-canela text-sm text-muted-foreground mb-3">
-                        {event.headliner.name} • {event.venue}
-                      </p>
-                    </div>
-                    
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      className="ml-4 font-canela text-xs px-3 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black"
-                    >
-                      TICKETS
-                    </Button>
+                <div key={event.id} className="group bg-card border border-border rounded-lg p-6 hover:border-fm-gold/50 transition-all duration-300">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="font-canela text-sm text-muted-foreground bg-muted px-2 py-1 rounded">
+                      {new Date(event.date).toLocaleDateString('en-US', { 
+                        day: '2-digit',
+                        month: 'short' 
+                      }).toUpperCase()}
+                    </span>
+                    <span className="font-canela text-xs font-medium text-fm-gold">
+                      {event.location.split(',')[1]?.trim() || event.location}
+                    </span>
                   </div>
+                  
+                  <h3 className="font-screamer text-lg mb-2 group-hover:text-fm-gold transition-colors" style={{ fontWeight: 475 }}>
+                    {event.title}
+                  </h3>
+                  
+                  <p className="font-canela text-sm text-muted-foreground mb-4">
+                    {event.headliner.name} • {event.venue}
+                  </p>
+                  
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    className="w-full font-canela text-xs border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black"
+                  >
+                    GET TICKETS
+                  </Button>
                 </div>
               ))}
             </div>
