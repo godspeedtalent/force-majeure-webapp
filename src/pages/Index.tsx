@@ -94,7 +94,7 @@ const Index = () => {
       {/* Main Split Layout */}
       <div className="flex-1 flex">
         {/* Left Panel - Hero Content */}
-        <div className="w-full lg:w-1/3 relative overflow-hidden">
+        <div className="w-full lg:w-1/3 relative overflow-hidden border-r border-border">
           <div className="absolute inset-0 bg-repeat bg-center opacity-20" style={{ backgroundImage: 'url(/images/topographic-pattern.png)' }} />
           <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
           

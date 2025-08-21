@@ -143,7 +143,7 @@ const EventDetails = () => {
       {/* Split Layout */}
       <div className="flex min-h-[calc(100vh-80px)]">
         {/* Left Panel - Back Button */}
-        <div className="w-1/4 p-8 flex flex-col justify-start relative overflow-hidden">
+        <div className="w-1/4 p-8 flex flex-col justify-start relative overflow-hidden border-r border-border">
           <div className="absolute inset-0 bg-repeat bg-center opacity-20" style={{ backgroundImage: 'url(/images/topographic-pattern.png)' }} />
           <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
           <Button asChild variant="ghost" size="sm" className="self-start relative z-10">
