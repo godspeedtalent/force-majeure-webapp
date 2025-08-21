@@ -18,37 +18,45 @@ export const useSongsByEvent = (eventId: string | null) => {
       setError(null);
 
       try {
-        // First get the artists for this event
-        const { data: eventArtists, error: eventError } = await supabase
-          .from('event_artists')
-          .select(`
-            artist_id,
-            is_headliner,
-            performance_order,
-            artists (
-              id,
-              name,
-              genre,
-              image_url
-            )
-          `)
-          .eq('event_id', eventId)
-          .order('performance_order', { ascending: true });
+        // Get the event with headliner and undercard artist IDs
+        const { data: eventData, error: eventError } = await supabase
+          .from('events')
+          .select('headliner_id, undercard_ids')
+          .eq('id', eventId)
+          .single();
 
         if (eventError) throw eventError;
 
-        if (!eventArtists || eventArtists.length === 0) {
+        if (!eventData) {
           setSongs([]);
           return;
         }
 
-        // Get all artist IDs
-        const artistIds = eventArtists.map(ea => ea.artist_id);
+        // Collect all artist IDs
+        const artistIds: string[] = [];
+        
+        // Add headliner artist
+        if (eventData.headliner_id) {
+          artistIds.push(eventData.headliner_id);
+        }
+        
+        // Add undercard artists
+        if (eventData.undercard_ids && Array.isArray(eventData.undercard_ids)) {
+          artistIds.push(...eventData.undercard_ids);
+        }
+
+        if (artistIds.length === 0) {
+          setSongs([]);
+          return;
+        }
 
         // Fetch songs for these artists
         const { data: songsData, error: songsError } = await supabase
           .from('songs')
-          .select('*')
+          .select(`
+            *,
+            artists(name)
+          `)
           .in('artist_id', artistIds)
           .eq('is_preview', true);
 
@@ -56,14 +64,11 @@ export const useSongsByEvent = (eventId: string | null) => {
 
         // Transform songs to include artist names
         const songsWithArtists: Song[] = (songsData || []).map(song => {
-          const eventArtist = eventArtists.find(ea => ea.artist_id === song.artist_id);
-          const artist = eventArtist?.artists;
-
           return {
             id: song.id,
             song_name: song.song_name,
             artist_id: song.artist_id,
-            artist_name: artist?.name || 'Unknown Artist',
+            artist_name: song.artists?.name || 'Unknown Artist',
             streaming_link: song.streaming_link,
             music_source: song.music_source as Song['music_source'],
             duration: song.duration,

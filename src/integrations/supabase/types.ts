@@ -47,61 +47,18 @@ export type Database = {
         }
         Relationships: []
       }
-      event_artists: {
-        Row: {
-          artist_id: string
-          created_at: string
-          event_id: string
-          id: string
-          is_headliner: boolean | null
-          performance_order: number | null
-        }
-        Insert: {
-          artist_id: string
-          created_at?: string
-          event_id: string
-          id?: string
-          is_headliner?: boolean | null
-          performance_order?: number | null
-        }
-        Update: {
-          artist_id?: string
-          created_at?: string
-          event_id?: string
-          id?: string
-          is_headliner?: boolean | null
-          performance_order?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "event_artists_artist_id_fkey"
-            columns: ["artist_id"]
-            isOneToOne: false
-            referencedRelation: "artists"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "event_artists_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "events"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       events: {
         Row: {
           created_at: string
           date: string
           description: string | null
-          headliner: Json
+          headliner_id: string | null
           hero_image: string | null
           id: string
-          location: string
           ticket_url: string | null
           time: string
           title: string
-          undercard: Json
+          undercard_ids: string[] | null
           updated_at: string
           venue: string
         }
@@ -109,14 +66,13 @@ export type Database = {
           created_at?: string
           date: string
           description?: string | null
-          headliner: Json
+          headliner_id?: string | null
           hero_image?: string | null
           id?: string
-          location: string
           ticket_url?: string | null
           time: string
           title: string
-          undercard?: Json
+          undercard_ids?: string[] | null
           updated_at?: string
           venue: string
         }
@@ -124,18 +80,25 @@ export type Database = {
           created_at?: string
           date?: string
           description?: string | null
-          headliner?: Json
+          headliner_id?: string | null
           hero_image?: string | null
           id?: string
-          location?: string
           ticket_url?: string | null
           time?: string
           title?: string
-          undercard?: Json
+          undercard_ids?: string[] | null
           updated_at?: string
           venue?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "events_headliner_id_fkey"
+            columns: ["headliner_id"]
+            isOneToOne: false
+            referencedRelation: "artists"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       merch: {
         Row: {

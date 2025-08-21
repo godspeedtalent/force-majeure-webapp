@@ -16,7 +16,6 @@ interface Event {
   date: string;
   time: string;
   venue: string;
-  location: string;
   heroImage: string;
   description: string;
   ticketUrl?: string;
@@ -52,7 +51,7 @@ export const EventCard = ({ event }: EventCardProps) => {
       </div>
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <MapPin className="w-4 h-4" />
-        <span className="line-clamp-1">{event.venue}, {event.location}</span>
+        <span className="line-clamp-1">{event.venue}</span>
       </div>
     </CommonCard>
   );

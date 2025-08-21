@@ -19,16 +19,7 @@ const Index = () => {
           .from('events')
           .select(`
             *,
-            event_artists (
-              is_headliner,
-              performance_order,
-              artists (
-                id,
-                name,
-                genre,
-                image_url
-              )
-            )
+            headliner_artist:artists!events_headliner_id_fkey(id, name, genre, image_url)
           `)
           .order('date', { ascending: true });
 
@@ -43,21 +34,35 @@ const Index = () => {
           '/src/assets/lf-system-cover.jpg': lfSystemCover
         };
 
+        // Get undercard artists for all events
+        const eventIds = data.map(event => event.id);
+        const undercardArtists = eventIds.length > 0 ? await Promise.all(
+          eventIds.map(async (eventId) => {
+            const event = data.find(e => e.id === eventId);
+            if (!event.undercard_ids || event.undercard_ids.length === 0) {
+              return { eventId, artists: [] };
+            }
+            
+            const { data: artists } = await supabase
+              .from('artists')
+              .select('id, name, genre, image_url')
+              .in('id', event.undercard_ids);
+            
+            return { eventId, artists: artists || [] };
+          })
+        ) : [];
+
         // Transform the data to match the EventCard expected format
         const transformedEvents = data.map(event => {
-          const headliner = event.event_artists?.find(ea => ea.is_headliner)?.artists;
-          const undercard = event.event_artists
-            ?.filter(ea => !ea.is_headliner)
-            ?.sort((a, b) => (a.performance_order || 0) - (b.performance_order || 0))
-            ?.map(ea => ea.artists) || [];
+          const undercard = undercardArtists.find(u => u.eventId === event.id)?.artists || [];
 
           return {
             id: event.id,
             title: event.title,
-            headliner: headliner ? {
-              name: headliner.name,
-              genre: headliner.genre || 'Electronic',
-              image: headliner.image_url
+            headliner: event.headliner_artist ? {
+              name: event.headliner_artist.name,
+              genre: event.headliner_artist.genre || 'Electronic',
+              image: event.headliner_artist.image_url
             } : { name: 'TBA', genre: 'Electronic' },
             undercard: undercard.map(artist => ({
               name: artist.name,
@@ -67,7 +72,6 @@ const Index = () => {
             date: event.date,
             time: event.time,
             venue: event.venue,
-            location: event.location,
             heroImage: imageMap[event.hero_image] || getImageUrl(event.hero_image),
             description: event.description,
             ticketUrl: event.ticket_url
