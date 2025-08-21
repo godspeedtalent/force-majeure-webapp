@@ -134,7 +134,7 @@ const Index = () => {
                 <p className="font-canela text-sm text-muted-foreground">Events & Showcases</p>
               </div>
               
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 max-h-[50vh] overflow-y-auto place-items-center">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 max-h-[50vh] overflow-y-auto items-stretch p-4">
                 {loading ? (
                   <div className="col-span-full text-center py-8">
                     <p className="text-muted-foreground">Loading events...</p>
