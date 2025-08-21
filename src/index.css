@@ -110,7 +110,7 @@ All colors MUST be HSL.
     --radius: 0.125rem;
 
     /* Force Majeure Brand Colors */
-    --fm-gold: 38 45% 60%;
+    --fm-gold: 348 100% 22%;
     --fm-crimson: 348 83% 47%;
     --fm-charcoal: 0 0% 13%;
     --fm-silver: 0 0% 85%;
@@ -120,13 +120,13 @@ All colors MUST be HSL.
     --active-overlay: 0 0% 0% / 0.1;
 
     /* Gradients */
-    --gradient-gold: linear-gradient(135deg, hsl(var(--fm-gold)), hsl(38 60% 70%));
+    --gradient-gold: linear-gradient(135deg, hsl(348 100% 22%), hsl(348 90% 30%));
     --gradient-crimson: linear-gradient(135deg, hsl(var(--fm-crimson)), hsl(348 70% 55%));
     --gradient-monochrome: linear-gradient(135deg, hsl(0 0% 0%), hsl(0 0% 20%));
 
     /* Shadows */
     --shadow-elegant: 0 4px 20px -4px hsl(0 0% 0% / 0.1);
-    --shadow-gold: 0 8px 30px -8px hsl(var(--fm-gold) / 0.3);
+    --shadow-gold: 0 8px 30px -8px hsl(348 100% 22% / 0.3);
     --shadow-crimson: 0 8px 30px -8px hsl(var(--fm-crimson) / 0.3);
 
     /* Typography */
