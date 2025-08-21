@@ -53,7 +53,7 @@ const Index = () => {
     };
     fetchEvents();
   }, []);
-  return <div className="h-screen bg-background flex flex-col">
+  return <div className="h-screen bg-background flex flex-col animate-fade-in">
       <Navigation />
       
       {/* Main Split Layout */}

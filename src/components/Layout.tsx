@@ -11,7 +11,7 @@ export const Layout = ({ children }: LayoutProps) => {
     <div className="min-h-screen bg-background flex flex-col">
       <Navigation />
       
-      <main className="flex-1">
+      <main className="flex-1 animate-fade-in">
         {children}
       </main>
       

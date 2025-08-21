@@ -85,7 +85,7 @@ export default function Merch() {
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in">
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-canela font-bold text-foreground mb-4">
