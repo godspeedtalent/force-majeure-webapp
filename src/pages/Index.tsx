@@ -94,7 +94,7 @@ const Index = () => {
       {/* Main Split Layout */}
       <div className="flex-1 flex">
         {/* Left Panel - Hero Content */}
-        <div className="w-full lg:w-1/3 relative overflow-hidden border-r border-border">
+        <div className="w-full lg:w-1/4 relative overflow-hidden border-r border-border">
           <div className="absolute inset-0 bg-repeat bg-center opacity-20" style={{ backgroundImage: 'url(/images/topographic-pattern.png)' }} />
           <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
           
@@ -122,7 +122,7 @@ const Index = () => {
         </div>
         
         {/* Right Panel - Events Sidebar */}
-        <div className="hidden lg:block w-2/3 bg-muted/30 border-l border-border">
+        <div className="hidden lg:block w-3/4 bg-muted/30 border-l border-border">
           <div className="p-8 h-[calc(100vh-4rem)] overflow-y-auto">
             <div className="mb-8">
               
