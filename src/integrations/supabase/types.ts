@@ -143,7 +143,7 @@ export type Database = {
           duration: number | null
           id: string
           is_preview: boolean | null
-          music_source: string
+          music_source: string | null
           song_name: string
           streaming_link: string
           updated_at: string
@@ -154,7 +154,7 @@ export type Database = {
           duration?: number | null
           id?: string
           is_preview?: boolean | null
-          music_source: string
+          music_source?: string | null
           song_name: string
           streaming_link: string
           updated_at?: string
@@ -165,7 +165,7 @@ export type Database = {
           duration?: number | null
           id?: string
           is_preview?: boolean | null
-          music_source?: string
+          music_source?: string | null
           song_name?: string
           streaming_link?: string
           updated_at?: string
