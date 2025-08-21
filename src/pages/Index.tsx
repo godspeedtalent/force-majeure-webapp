@@ -100,26 +100,29 @@ const Index = () => {
           <div className="absolute inset-0 bg-topographic opacity-15 bg-repeat bg-center" />
           <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
           
-          <div className="relative h-full flex flex-col justify-center px-8 lg:px-16 py-20">
-            <div className="max-w-2xl">
-              <Badge variant="outline" className="mb-8 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-colors duration-300">
-                Promotions & A&R
-              </Badge>
-              
-              <h1 className="text-6xl lg:text-8xl font-screamer tracking-tight mb-8 leading-none" style={{
-              fontWeight: 475
-            }}>
-                <span className="block text-foreground">FORCE</span>
-                <span className="block bg-gradient-gold bg-clip-text text-transparent -mt-4">MAJEURE</span>
-              </h1>
-              
-              <p className="text-lg lg:text-xl font-canela text-muted-foreground leading-relaxed mb-12 max-w-xl">
-                The biggest rave fam in the world is deep in the heart of Austin, TX.
-              </p>
-
-              <ExpandableMusicPlayer />
+          <div className="relative h-full flex flex-col px-8 lg:px-16 py-20">
+            <div className="flex-1 flex flex-col justify-center">
+              <div className="max-w-2xl">
+                <Badge variant="outline" className="mb-8 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-colors duration-300">
+                  Promotions & A&R
+                </Badge>
+                
+                <h1 className="text-6xl lg:text-8xl font-screamer tracking-tight mb-8 leading-none" style={{
+                fontWeight: 475
+              }}>
+                  <span className="block text-foreground">FORCE</span>
+                  <span className="block bg-gradient-gold bg-clip-text text-transparent -mt-4">MAJEURE</span>
+                </h1>
+                
+                <p className="text-lg lg:text-xl font-canela text-muted-foreground leading-relaxed mb-12 max-w-xl">
+                  The biggest rave fam in the world is deep in the heart of Austin, TX.
+                </p>
+              </div>
             </div>
             
+            <div className="mt-auto">
+              <ExpandableMusicPlayer />
+            </div>
           </div>
         </div>
         
