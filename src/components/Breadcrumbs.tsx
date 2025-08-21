@@ -72,12 +72,6 @@ export const Breadcrumbs = () => {
 
   return (
     <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
-      <Link 
-        to="/" 
-        className="flex items-center hover:text-foreground transition-colors"
-      >
-        <Home className="w-4 h-4" />
-      </Link>
       
       {breadcrumbs.map((item, index) => (
         <div key={item.path} className="flex items-center space-x-2">

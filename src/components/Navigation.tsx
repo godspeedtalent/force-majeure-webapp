@@ -14,7 +14,7 @@ export const Navigation = () => {
           {/* Logo and Breadcrumbs */}
           <div className="flex items-center space-x-6">
             <Link to="/" className="transition-transform duration-200 hover:scale-110">
-              <ForceMajeureLogo size="sm" />
+              <ForceMajeureLogo className="h-8 w-8" />
             </Link>
             <Breadcrumbs />
           </div>
