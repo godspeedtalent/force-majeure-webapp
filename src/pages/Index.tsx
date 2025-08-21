@@ -10,6 +10,7 @@ import { ExpandableMusicPlayer } from '@/components/MusicPlayer/ExpandableMusicP
 import ninajirachiCover from '@/assets/ninajirachi-cover.jpg';
 import lfSystemCover from '@/assets/lf-system-cover.jpg';
 const Index = () => {
+  // Force cache refresh
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -117,7 +118,6 @@ const Index = () => {
               </p>
 
               <ExpandableMusicPlayer />
-              
             </div>
             
           </div>
