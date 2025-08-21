@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { Layout } from '@/components/Layout';
 import { MerchCard } from '@/components/MerchCard';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -72,18 +73,18 @@ export default function Merch() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <Layout>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
             <p className="text-muted-foreground">Loading merchandise...</p>
           </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="text-center mb-12">
@@ -168,6 +169,6 @@ export default function Merch() {
           </div>
         )}
       </div>
-    </div>
+    </Layout>
   );
 }
