@@ -2,11 +2,27 @@ import React from 'react';
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext';
 import { Badge } from '@/components/ui/badge';
 import { Music } from 'lucide-react';
-export const TrackInfo: React.FC = () => {
+
+interface TrackInfoProps {
+  showArtworkOnly?: boolean;
+  showDetailsOnly?: boolean;
+}
+
+export const TrackInfo: React.FC<TrackInfoProps> = ({ showArtworkOnly, showDetailsOnly }) => {
   const {
     currentSong
   } = useMusicPlayer();
   if (!currentSong) {
+    if (showArtworkOnly) {
+      return <div className="w-16 h-16 rounded-md bg-muted flex items-center justify-center">
+        <Music className="w-8 h-8 text-muted-foreground" />
+      </div>;
+    }
+    if (showDetailsOnly) {
+      return <div className="text-center">
+        <p className="text-sm text-muted-foreground">No track selected</p>
+      </div>;
+    }
     return <div className="flex-1 flex items-center gap-3 min-w-0">
         <div className="w-12 h-12 rounded-md bg-muted flex items-center justify-center">
           <Music className="w-6 h-6 text-muted-foreground" />
@@ -30,6 +46,23 @@ export const TrackInfo: React.FC = () => {
         return 'bg-muted text-muted-foreground border-border';
     }
   };
+  if (showArtworkOnly) {
+    return <div className="w-16 h-16 rounded-md bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center flex-shrink-0">
+      <Music className="w-8 h-8 text-primary" />
+    </div>;
+  }
+
+  if (showDetailsOnly) {
+    return <div className="text-center">
+      <h4 className="font-medium text-lg truncate text-foreground">
+        {currentSong.song_name}
+      </h4>
+      <p className="text-sm text-muted-foreground truncate mt-1">
+        {currentSong.artist_name}
+      </p>
+    </div>;
+  }
+
   return <div className="flex-1 flex items-center gap-3 min-w-0">
       {/* Track Artwork Placeholder */}
       <div className="w-12 h-12 rounded-md bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center flex-shrink-0">

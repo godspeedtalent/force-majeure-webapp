@@ -46,13 +46,19 @@ export const MusicPlayer: React.FC = () => {
     <div className="fixed bottom-4 left-4 z-50">
       <div className={cn(
         "bg-background/95 backdrop-blur-md border border-border rounded-lg shadow-lg transition-all duration-300 ease-out",
-        isExpanded ? "w-96 h-96" : "w-80 h-20"
+        isExpanded ? "w-96 h-96" : "w-80 h-auto"
       )}>
-        {/* Main Player Controls */}
-        <div className="flex items-center gap-3 p-4 h-20">
+        {/* Album Art Row */}
+        <div className="flex justify-center p-4 pb-2">
+          <TrackInfo showArtworkOnly />
+        </div>
+
+        {/* Track Info & Controls Row */}
+        <div className="flex items-center gap-3 px-4 pb-2">
+          <div className="flex-1">
+            <TrackInfo showDetailsOnly />
+          </div>
           <PlayerControls />
-          <TrackInfo />
-          <VolumeControl />
           
           {/* Expand/Collapse Button */}
           <button
@@ -66,6 +72,11 @@ export const MusicPlayer: React.FC = () => {
               <ChevronUp className="w-4 h-4" />
             )}
           </button>
+        </div>
+
+        {/* Volume Control Row */}
+        <div className="px-4 pb-4">
+          <VolumeControl />
         </div>
 
         {/* Expanded Queue View */}
