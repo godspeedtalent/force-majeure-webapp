@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { CommonCard } from '@/components/CommonCard';
+import { getImageUrl } from '@/lib/imageUtils';
 
 interface MerchCardProps {
   id: string;
@@ -25,7 +26,7 @@ export const MerchCard = ({
 }: MerchCardProps) => {
   return (
     <CommonCard
-      image={image_url || '/placeholder.svg'}
+      image={getImageUrl(image_url)}
       imageAlt={name}
       title={name}
       subtitle={description ? undefined : `$${price % 1 === 0 ? price.toFixed(0) : price.toFixed(2)}`}

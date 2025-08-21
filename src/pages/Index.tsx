@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, ArrowRight, Instagram, Music, Phone, Mail } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { getImageUrl } from '@/lib/imageUtils';
 import ninajirachiCover from '@/assets/ninajirachi-cover.jpg';
 import lfSystemCover from '@/assets/lf-system-cover.jpg';
 const Index = () => {
@@ -40,7 +41,7 @@ const Index = () => {
           time: event.time,
           venue: event.venue,
           location: event.location,
-          heroImage: imageMap[event.hero_image] || event.hero_image,
+          heroImage: imageMap[event.hero_image] || getImageUrl(event.hero_image),
           description: event.description,
           ticketUrl: event.ticket_url
         }));
