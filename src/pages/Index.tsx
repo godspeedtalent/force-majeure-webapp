@@ -123,7 +123,7 @@ const Index = () => {
                     </span>
                   </div>
                   
-                  <h3 className="font-screamer text-lg mb-2 group-hover:text-fm-gold transition-colors" style={{ fontWeight: 475 }}>
+                  <h3 className="font-canela font-bold text-lg mb-2 group-hover:text-fm-gold transition-colors">
                     {event.title}
                   </h3>
                   
