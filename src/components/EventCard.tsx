@@ -3,7 +3,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CommonCard } from '@/components/CommonCard';
-import { Calendar, MapPin, Clock, Play, X } from 'lucide-react';
+import { Calendar, MapPin, Clock, Play, X, Music } from 'lucide-react';
+import { useMusicPlayer } from '@/contexts/MusicPlayerContext';
+import { useSongsByEvent } from '@/hooks/useSongsByEvent';
 
 interface Artist {
   name: string;
@@ -31,7 +33,8 @@ interface EventCardProps {
 
 export const EventCard = ({ event }: EventCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [showPlayer, setShowPlayer] = useState(false);
+  const { playQueue } = useMusicPlayer();
+  const { songs, loading: songsLoading } = useSongsByEvent(isExpanded ? event.id : null);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -110,11 +113,26 @@ export const EventCard = ({ event }: EventCardProps) => {
                   </div>
                   <div className="flex gap-2">
                     <Button
-                      onClick={() => setShowPlayer(true)}
+                      onClick={() => songs.length > 0 && playQueue(songs)}
+                      disabled={songsLoading || songs.length === 0}
                       className="bg-fm-gold text-black hover:bg-fm-gold/90 flex-1"
                     >
-                      <Play className="w-4 h-4 mr-2" />
-                      Play Preview
+                      {songsLoading ? (
+                        <>
+                          <Music className="w-4 h-4 mr-2 animate-pulse" />
+                          Loading...
+                        </>
+                      ) : songs.length > 0 ? (
+                        <>
+                          <Play className="w-4 h-4 mr-2" />
+                          Play Lineup ({songs.length})
+                        </>
+                      ) : (
+                        <>
+                          <Music className="w-4 h-4 mr-2" />
+                          No Songs Available
+                        </>
+                      )}
                     </Button>
                   </div>
                 </div>
@@ -173,36 +191,6 @@ export const EventCard = ({ event }: EventCardProps) => {
         </div>
       )}
 
-      {/* Media Player Modal */}
-      {showPlayer && (
-        <div className="fixed inset-0 z-60 bg-black/90 backdrop-blur-sm animate-fade-in">
-          <div className="flex items-center justify-center min-h-screen p-4">
-            <div className="bg-background rounded-lg max-w-md w-full p-6 animate-scale-in">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold">Now Playing</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowPlayer(false)}
-                >
-                  <X className="w-5 h-5" />
-                </Button>
-              </div>
-              <div className="text-center">
-                <p className="text-muted-foreground mb-4">
-                  Media player coming soon! This will play preview tracks from {event.headliner.name} and supporting artists.
-                </p>
-                <div className="bg-muted rounded-lg p-8 mb-4">
-                  <Play className="w-12 h-12 mx-auto text-fm-gold" />
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Integration with Spotify, SoundCloud, and other platforms in development.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };

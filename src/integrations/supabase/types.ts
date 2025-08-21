@@ -14,6 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
+      artists: {
+        Row: {
+          bio: string | null
+          created_at: string
+          genre: string | null
+          id: string
+          image_url: string | null
+          name: string
+          social_links: Json | null
+          updated_at: string
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          genre?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          social_links?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          genre?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          social_links?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      event_artists: {
+        Row: {
+          artist_id: string
+          created_at: string
+          event_id: string
+          id: string
+          is_headliner: boolean | null
+          performance_order: number | null
+        }
+        Insert: {
+          artist_id: string
+          created_at?: string
+          event_id: string
+          id?: string
+          is_headliner?: boolean | null
+          performance_order?: number | null
+        }
+        Update: {
+          artist_id?: string
+          created_at?: string
+          event_id?: string
+          id?: string
+          is_headliner?: boolean | null
+          performance_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_artists_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "artists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_artists_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           created_at: string
@@ -97,6 +172,50 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      songs: {
+        Row: {
+          artist_id: string
+          created_at: string
+          duration: number | null
+          id: string
+          is_preview: boolean | null
+          music_source: string
+          song_name: string
+          streaming_link: string
+          updated_at: string
+        }
+        Insert: {
+          artist_id: string
+          created_at?: string
+          duration?: number | null
+          id?: string
+          is_preview?: boolean | null
+          music_source: string
+          song_name: string
+          streaming_link: string
+          updated_at?: string
+        }
+        Update: {
+          artist_id?: string
+          created_at?: string
+          duration?: number | null
+          id?: string
+          is_preview?: boolean | null
+          music_source?: string
+          song_name?: string
+          streaming_link?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "songs_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "artists"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
