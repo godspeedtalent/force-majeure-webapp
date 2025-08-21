@@ -129,6 +129,7 @@ const Index = () => {
         <div className="hidden lg:block w-3/4 bg-muted/30 border-l border-border">
           <PageTransition>
             <div className="p-8 h-[calc(100vh-4rem)] overflow-y-auto flex flex-col justify-center">
+            <div>
               <div className="mb-8">
                 
                 <p className="font-canela text-sm text-muted-foreground">Events & Showcases</p>
@@ -149,6 +150,7 @@ const Index = () => {
                   </div>
                 )}
               </div>
+            </div>
               
               
             </div>
