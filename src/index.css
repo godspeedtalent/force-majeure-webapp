@@ -95,9 +95,9 @@ All colors MUST be HSL.
     --muted: 0 0% 94%;
     --muted-foreground: 0 0% 40%;
 
-    /* Dusty Gold Accent */
-    --accent: 38 45% 60%;
-    --accent-foreground: 0 0% 0%;
+    /* Deep Crimson Accent */
+    --accent: 348 100% 22%;
+    --accent-foreground: 0 0% 100%;
 
     /* Crimson Accent */
     --destructive: 348 83% 47%;
