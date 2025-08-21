@@ -101,7 +101,7 @@ const Index = () => {
           <div className="absolute inset-0 bg-topographic opacity-15 bg-repeat bg-center" />
           <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
           
-          <div className="relative h-full flex flex-col px-8 py-20 lg:px-0">
+          <div className="relative h-full flex flex-col px-8 lg:px-0 py-0">
             <div className="flex-1 flex flex-col justify-center">
               <div className="max-w-2xl px-[64px]">
                 <Badge variant="outline" className="mb-8 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-colors duration-300">
