@@ -65,7 +65,7 @@ const Index = () => {
       <div className="flex-1 flex">
         {/* Left Panel - Hero Content */}
         <div className="w-full lg:w-1/3 relative overflow-hidden">
-          <div className="absolute inset-0 bg-topographic opacity-5 bg-repeat bg-center" />
+          <div className="absolute inset-0 bg-topographic opacity-15 bg-repeat bg-center" />
           <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
           
           <div className="relative h-full flex flex-col justify-center px-8 lg:px-16 py-20">
