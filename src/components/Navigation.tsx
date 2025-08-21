@@ -14,7 +14,7 @@ export const Navigation = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center space-x-3">
-            <ForceMajeureLogo size="md" />
+            <ForceMajeureLogo size="sm" />
             <h1 className="text-2xl font-screamer font-black tracking-tight bg-gradient-monochrome bg-clip-text text-transparent">
               FORCE MAJEURE
             </h1>
