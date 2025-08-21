@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, ArrowRight, Instagram, Music, Phone, Mail } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import lfSystemCover from '@/assets/lf-system-cover.jpg';
+import ninajirachiCover from '@/assets/ninajirachi-cover.jpg';
 
 const Index = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
@@ -23,6 +25,12 @@ const Index = () => {
           return;
         }
 
+        // Map of database image paths to imported images
+        const imageMap = {
+          '/src/assets/lf-system-cover.jpg': lfSystemCover,
+          '/src/assets/ninajirachi-cover.jpg': ninajirachiCover
+        };
+
         // Transform the data to match our expected format
         const transformedEvents = data.map(event => ({
           id: event.id,
@@ -33,7 +41,7 @@ const Index = () => {
           time: event.time,
           venue: event.venue,
           location: event.location,
-          heroImage: event.hero_image,
+          heroImage: imageMap[event.hero_image] || event.hero_image,
           description: event.description,
           ticketUrl: event.ticket_url
         }));
