@@ -94,7 +94,7 @@ const Index = () => {
       {/* Main Split Layout */}
       <div className="flex-1 flex">
         {/* Left Panel - Hero Content */}
-        <div className="w-full h-full lg:w-1/3 relative overflow-hidden">
+        <div className="w-full lg:w-1/3 relative overflow-hidden">
           <div className="absolute inset-0 bg-topographic opacity-15 bg-repeat bg-center" />
           <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
           
@@ -114,7 +114,8 @@ const Index = () => {
               <p className="text-lg lg:text-xl font-canela text-muted-foreground leading-relaxed mb-12 max-w-xl">
                 The biggest rave fam in the world is deep in the heart of Austin, TX.
               </p>
-              
+
+              <MusicPlayer />
               
             </div>
             
