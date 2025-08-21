@@ -137,142 +137,146 @@ const EventDetails = () => {
         </div>
       </div>;
   }
-  return <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background animate-fade-in">
       <Navigation />
       
-      {/* Hero Section */}
-      <div className="relative h-[60vh] min-h-[400px] overflow-hidden">
-        <img src={event.heroImage} alt={event.headliner.name} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-        
-        {/* Back Button */}
-        <Button asChild variant="ghost" size="sm" className="absolute top-4 left-4 text-white hover:bg-white/20">
-          <Link to="/">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Events
-          </Link>
-        </Button>
-
-        {/* Hero Content */}
-        <div className="absolute bottom-0 left-0 right-0 p-8">
-          <div className="max-w-4xl">
-            <div className="relative h-32 md:h-40">
-              {/* Background copy with exclusion blending */}
-              <h1 className="absolute bottom-0 left-0 text-black text-8xl md:text-[12rem] font-bold opacity-30 mix-blend-exclusion pointer-events-none leading-none">
-                {event.headliner.name}
-              </h1>
-              {/* Main heading */}
-              <h1 className="absolute bottom-0 left-0 text-white text-6xl md:text-8xl font-bold z-10 leading-none">
-                {event.headliner.name}
-              </h1>
-            </div>
-            
-            
-            {/* Quick Actions */}
-            <div className="flex flex-wrap gap-4">
-              <Button onClick={() => songs.length > 0 && playQueue(songs)} disabled={songsLoading || songs.length === 0} className="bg-fm-gold text-black hover:bg-fm-gold/90">
-                {songsLoading ? <>
-                    <Music className="w-4 h-4 mr-2 animate-pulse" />
-                    Loading...
-                  </> : songs.length > 0 ? <>
-                    <Play className="w-4 h-4 mr-2" />
-                    Play Lineup ({songs.length})
-                  </> : <>
-                    <Music className="w-4 h-4 mr-2" />
-                    No Songs Available
-                  </>}
-              </Button>
-              
-              {event.ticketUrl && <Button asChild className="bg-fm-crimson text-white hover:bg-fm-crimson/90">
-                  <a href={event.ticketUrl} target="_blank" rel="noopener noreferrer">
-                    Get Tickets
-                    <ExternalLink className="w-4 h-4 ml-2" />
-                  </a>
-                </Button>}
-            </div>
-          </div>
+      {/* Split Layout */}
+      <div className="flex min-h-[calc(100vh-80px)]">
+        {/* Left Panel - Back Button */}
+        <div className="w-1/4 p-8 flex flex-col justify-start">
+          <Button asChild variant="ghost" size="sm" className="self-start">
+            <Link to="/">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Events
+            </Link>
+          </Button>
         </div>
-      </div>
 
-      {/* Event Details Content */}
-      <div className="max-w-4xl mx-auto px-8 py-12">
-        {/* Event Info Grid */}
-        <div className="grid md:grid-cols-3 gap-8 mb-12">
-          <div className="flex items-start gap-4">
-            <Calendar className="w-6 h-6 text-fm-gold mt-1" />
-            <div>
-              <h3 className="font-semibold text-lg mb-1">Date & Time</h3>
-              <p className="text-foreground">{formatDate(event.date)}</p>
-              <p className="text-muted-foreground">{event.time}</p>
+        {/* Right Panel - Event Content */}
+        <div className="w-3/4 overflow-y-auto">
+          {/* Hero Section */}
+          <div className="relative h-[60vh] min-h-[400px] overflow-hidden">
+            <img src={event.heroImage} alt={event.headliner.name} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+            {/* Hero Content */}
+            <div className="absolute bottom-0 left-0 right-0 p-8">
+              <div className="max-w-4xl">
+                <div className="relative h-32 md:h-40">
+                  {/* Background copy with exclusion blending */}
+                  <h1 className="absolute bottom-0 left-0 text-black text-8xl md:text-[12rem] font-bold opacity-30 mix-blend-exclusion pointer-events-none leading-none">
+                    {event.headliner.name}
+                  </h1>
+                  {/* Main heading */}
+                  <h1 className="absolute bottom-0 left-0 text-white text-6xl md:text-8xl font-bold z-10 leading-none">
+                    {event.headliner.name}
+                  </h1>
+                </div>
+                
+                {/* Quick Actions */}
+                <div className="flex flex-wrap gap-4">
+                  <Button onClick={() => songs.length > 0 && playQueue(songs)} disabled={songsLoading || songs.length === 0} className="bg-fm-gold text-black hover:bg-fm-gold/90">
+                    {songsLoading ? <>
+                        <Music className="w-4 h-4 mr-2 animate-pulse" />
+                        Loading...
+                      </> : songs.length > 0 ? <>
+                        <Play className="w-4 h-4 mr-2" />
+                        Play Lineup ({songs.length})
+                      </> : <>
+                        <Music className="w-4 h-4 mr-2" />
+                        No Songs Available
+                      </>}
+                  </Button>
+                  
+                  {event.ticketUrl && <Button asChild className="bg-fm-crimson text-white hover:bg-fm-crimson/90">
+                      <a href={event.ticketUrl} target="_blank" rel="noopener noreferrer">
+                        Get Tickets
+                        <ExternalLink className="w-4 h-4 ml-2" />
+                      </a>
+                    </Button>}
+                </div>
+              </div>
             </div>
           </div>
-          
-          <div className="flex items-start gap-4">
-            <MapPin className="w-6 h-6 text-fm-gold mt-1" />
-            <div>
-              <h3 className="font-semibold text-lg mb-1">Venue</h3>
-              <p className="text-foreground">{event.venue}</p>
+
+          {/* Event Details Content */}
+          <div className="max-w-4xl mx-auto px-8 py-12">
+            {/* Event Info Grid */}
+            <div className="grid md:grid-cols-3 gap-8 mb-12">
+              <div className="flex items-start gap-4">
+                <Calendar className="w-6 h-6 text-fm-gold mt-1" />
+                <div>
+                  <h3 className="font-semibold text-lg mb-1">Date & Time</h3>
+                  <p className="text-foreground">{formatDate(event.date)}</p>
+                  <p className="text-muted-foreground">{event.time}</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-4">
+                <MapPin className="w-6 h-6 text-fm-gold mt-1" />
+                <div>
+                  <h3 className="font-semibold text-lg mb-1">Venue</h3>
+                  <p className="text-foreground">{event.venue}</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-4">
+                <Music className="w-6 h-6 text-fm-gold mt-1" />
+                <div>
+                  <h3 className="font-semibold text-lg mb-1">Lineup</h3>
+                  <p className="text-foreground">{event.headliner.name}</p>
+                  <p className="text-muted-foreground">
+                    {event.undercard.length > 0 ? `+${event.undercard.length} more` : 'Solo performance'}
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
-          
-          <div className="flex items-start gap-4">
-            <Music className="w-6 h-6 text-fm-gold mt-1" />
-            <div>
-              <h3 className="font-semibold text-lg mb-1">Lineup</h3>
-              <p className="text-foreground">{event.headliner.name}</p>
-              <p className="text-muted-foreground">
-                {event.undercard.length > 0 ? `+${event.undercard.length} more` : 'Solo performance'}
+
+            {/* About Section */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold mb-4">About This Event</h2>
+              <p className="text-muted-foreground leading-relaxed text-lg">
+                {event.description}
               </p>
             </div>
-          </div>
-        </div>
 
-        {/* About Section */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-4">About This Event</h2>
-          <p className="text-muted-foreground leading-relaxed text-lg">
-            {event.description}
-          </p>
-        </div>
-
-        {/* Headliner Section */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-6">Headliner</h2>
-          <div className="bg-muted/30 border border-border rounded-lg p-6">
-            <div className="flex items-center gap-6">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center">
-                <Music className="w-8 h-8 text-primary" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-1">{event.headliner.name}</h3>
-                <Badge variant="outline" className="text-sm">
-                  {event.headliner.genre}
-                </Badge>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Supporting Artists */}
-        {event.undercard.length > 0 && <div className="mb-12">
-            <h2 className="text-2xl font-bold mb-6">Supporting Artists</h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {event.undercard.map((artist, index) => <div key={index} className="bg-muted/30 border border-border rounded-lg p-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-secondary/20 to-secondary/40 flex items-center justify-center">
-                      <Music className="w-6 h-6 text-secondary" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium">{artist.name}</h4>
-                      <p className="text-sm text-muted-foreground">{artist.genre}</p>
-                    </div>
+            {/* Headliner Section */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold mb-6">Headliner</h2>
+              <div className="bg-muted/30 border border-border rounded-lg p-6">
+                <div className="flex items-center gap-6">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center">
+                    <Music className="w-8 h-8 text-primary" />
                   </div>
-                </div>)}
+                  <div>
+                    <h3 className="text-xl font-semibold mb-1">{event.headliner.name}</h3>
+                    <Badge variant="outline" className="text-sm">
+                      {event.headliner.genre}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>}
 
-        {/* Actions */}
-        
+            {/* Supporting Artists */}
+            {event.undercard.length > 0 && <div className="mb-12">
+                <h2 className="text-2xl font-bold mb-6">Supporting Artists</h2>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {event.undercard.map((artist, index) => <div key={index} className="bg-muted/30 border border-border rounded-lg p-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-secondary/20 to-secondary/40 flex items-center justify-center">
+                          <Music className="w-6 h-6 text-secondary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium">{artist.name}</h4>
+                          <p className="text-sm text-muted-foreground">{artist.genre}</p>
+                        </div>
+                      </div>
+                    </div>)}
+                </div>
+              </div>}
+          </div>
+        </div>
       </div>
     </div>;
 };
