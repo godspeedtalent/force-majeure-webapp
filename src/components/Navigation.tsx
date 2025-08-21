@@ -2,17 +2,11 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
-import { Menu, X, ShoppingBag, Calendar, Mail, Users } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Menu, X, User, LogIn, UserPlus } from 'lucide-react';
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
-
-  const navItems = [
-    { label: 'Events', icon: Calendar, href: '#events' },
-    { label: 'Shop', icon: ShoppingBag, href: '#shop' },
-    { label: 'Members', icon: Users, href: '#members' },
-    { label: 'Contact', icon: Mail, href: '#contact' },
-  ];
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-background/50 backdrop-blur-md border-b border-border">
@@ -26,33 +20,62 @@ export const Navigation = () => {
             </h1>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-8">
-              {navItems.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className="group relative px-3 py-2 text-sm font-canela font-medium text-foreground hover:text-fm-gold transition-colors duration-200"
-                >
-                  <span className="flex items-center gap-2">
-                    <item.icon className="w-4 h-4" />
-                    {item.label}
-                  </span>
-                  <span className="absolute inset-x-0 bottom-0 h-0.5 bg-fm-gold scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-                </a>
-              ))}
-            </div>
-          </div>
-
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
             <ThemeToggle />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="text-foreground hover:text-fm-gold hover:bg-hover-overlay"
+                >
+                  <User className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent 
+                align="end" 
+                className="w-56 bg-background border border-border shadow-lg z-50"
+              >
+                <DropdownMenuItem className="cursor-pointer hover:bg-hover-overlay">
+                  <LogIn className="mr-2 h-4 w-4" />
+                  <span>Sign In</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer hover:bg-hover-overlay">
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  <span>Sign Up</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center space-x-2">
             <ThemeToggle />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="text-foreground hover:text-fm-gold hover:bg-hover-overlay"
+                >
+                  <User className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent 
+                align="end" 
+                className="w-56 bg-background border border-border shadow-lg z-50"
+              >
+                <DropdownMenuItem className="cursor-pointer hover:bg-hover-overlay">
+                  <LogIn className="mr-2 h-4 w-4" />
+                  <span>Sign In</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer hover:bg-hover-overlay">
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  <span>Sign Up</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button
               variant="ghost"
               size="sm"
@@ -69,17 +92,9 @@ export const Navigation = () => {
       {isOpen && (
         <div className="md:hidden animate-slide-up">
           <div className="px-2 pt-2 pb-3 space-y-1 bg-background border-b border-border">
-            {navItems.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="flex items-center gap-3 px-3 py-2 text-base font-canela font-medium text-foreground hover:text-fm-gold hover:bg-hover-overlay rounded-md transition-colors duration-200"
-                onClick={() => setIsOpen(false)}
-              >
-                <item.icon className="w-5 h-5" />
-                {item.label}
-              </a>
-            ))}
+            <p className="px-3 py-2 text-base font-canela font-medium text-muted-foreground">
+              Menu coming soon...
+            </p>
           </div>
         </div>
       )}
