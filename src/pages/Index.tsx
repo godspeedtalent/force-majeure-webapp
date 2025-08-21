@@ -11,15 +11,27 @@ import lfSystemCover from '@/assets/lf-system-cover.jpg';
 const Index = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const {
-          data,
-          error
-        } = await supabase.from('events').select('*').order('date', {
-          ascending: true
-        });
+        const { data, error } = await supabase
+          .from('events')
+          .select(`
+            *,
+            event_artists (
+              is_headliner,
+              performance_order,
+              artists (
+                id,
+                name,
+                genre,
+                image_url
+              )
+            )
+          `)
+          .order('date', { ascending: true });
+
         if (error) {
           console.error('Error fetching events:', error);
           return;
@@ -31,20 +43,37 @@ const Index = () => {
           '/src/assets/lf-system-cover.jpg': lfSystemCover
         };
 
-        // Transform the data to match our expected format
-        const transformedEvents = data.map(event => ({
-          id: event.id,
-          title: event.title,
-          headliner: event.headliner,
-          undercard: event.undercard,
-          date: event.date,
-          time: event.time,
-          venue: event.venue,
-          location: event.location,
-          heroImage: imageMap[event.hero_image] || getImageUrl(event.hero_image),
-          description: event.description,
-          ticketUrl: event.ticket_url
-        }));
+        // Transform the data to match the EventCard expected format
+        const transformedEvents = data.map(event => {
+          const headliner = event.event_artists?.find(ea => ea.is_headliner)?.artists;
+          const undercard = event.event_artists
+            ?.filter(ea => !ea.is_headliner)
+            ?.sort((a, b) => (a.performance_order || 0) - (b.performance_order || 0))
+            ?.map(ea => ea.artists) || [];
+
+          return {
+            id: event.id,
+            title: event.title,
+            headliner: headliner ? {
+              name: headliner.name,
+              genre: headliner.genre || 'Electronic',
+              image: headliner.image_url
+            } : { name: 'TBA', genre: 'Electronic' },
+            undercard: undercard.map(artist => ({
+              name: artist.name,
+              genre: artist.genre || 'Electronic',
+              image: artist.image_url
+            })),
+            date: event.date,
+            time: event.time,
+            venue: event.venue,
+            location: event.location,
+            heroImage: imageMap[event.hero_image] || getImageUrl(event.hero_image),
+            description: event.description,
+            ticketUrl: event.ticket_url
+          };
+        });
+
         setUpcomingEvents(transformedEvents);
       } catch (error) {
         console.error('Error fetching events:', error);
@@ -52,6 +81,7 @@ const Index = () => {
         setLoading(false);
       }
     };
+
     fetchEvents();
   }, []);
   return <div className="h-screen bg-background flex flex-col animate-fade-in">
@@ -96,36 +126,19 @@ const Index = () => {
             </div>
             
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-              {upcomingEvents.slice(0, 6).map(event => <div key={event.id} className="group bg-card border-l-4 border-l-fm-gold border-t border-r border-b border-border rounded-lg overflow-hidden hover:border-fm-gold/50 transition-all duration-300">
-                  {event.heroImage && <div className="aspect-square w-full overflow-hidden">
-                      <img src={event.heroImage} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                    </div>}
-                  <div className="p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                      <span className="font-canela text-sm text-muted-foreground bg-muted px-2 py-1 rounded">
-                        {new Date(event.date).toLocaleDateString('en-US', {
-                      day: '2-digit',
-                      month: 'short'
-                    }).toUpperCase()}
-                      </span>
-                      <span className="font-canela text-xs font-medium text-fm-gold">
-                        {event.location}
-                      </span>
-                    </div>
-                    
-                    <h3 className="font-canela font-bold text-lg mb-2 group-hover:text-fm-gold transition-colors">
-                      {event.title}
-                    </h3>
-                    
-                    <p className="font-canela text-sm text-muted-foreground mb-4">
-                      {event.headliner.name} • {event.venue}
-                    </p>
-                    
-                    <Button size="sm" variant="outline" className="w-full font-canela text-xs border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black">
-                      GET TICKETS
-                    </Button>
-                  </div>
-                </div>)}
+              {loading ? (
+                <div className="col-span-full text-center py-8">
+                  <p className="text-muted-foreground">Loading events...</p>
+                </div>
+              ) : upcomingEvents.length > 0 ? (
+                upcomingEvents.slice(0, 6).map(event => (
+                  <EventCard key={event.id} event={event} />
+                ))
+              ) : (
+                <div className="col-span-full text-center py-8">
+                  <p className="text-muted-foreground">No upcoming events</p>
+                </div>
+              )}
             </div>
             
             
