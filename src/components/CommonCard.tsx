@@ -32,7 +32,7 @@ export const CommonCard = ({
       className={`group cursor-pointer overflow-hidden bg-card border-border hover:shadow-elegant transition-all duration-300 ${showHoverEffect ? 'hover:scale-[1.02]' : ''} ${className}`}
       onClick={onClick}
     >
-      <div className="relative aspect-square overflow-hidden">
+      <div className="relative aspect-[4/5] overflow-hidden">
         <img
           src={image}
           alt={imageAlt}
