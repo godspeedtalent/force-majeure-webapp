@@ -95,12 +95,12 @@ const Index = () => {
       
       {/* Main Split Layout */}
       <div className="flex-1 flex">
-        <PageTransition>
-          {/* Left Panel - Hero Content */}
-          <div className="w-full lg:w-1/4 relative overflow-hidden border-r border-border">
-            <div className="absolute inset-0 bg-repeat bg-center opacity-20" style={{ backgroundImage: 'url(/images/topographic-pattern.png)' }} />
-            <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
-            
+        {/* Left Panel - Hero Content */}
+        <div className="w-full lg:w-1/4 relative overflow-hidden border-r border-border">
+          <div className="absolute inset-0 bg-repeat bg-center opacity-20" style={{ backgroundImage: 'url(/images/topographic-pattern.png)' }} />
+          <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
+          
+          <PageTransition>
             <div className="relative h-full flex flex-col px-8 lg:px-16 py-20">
               <div className="max-w-2xl">
                 <Badge variant="outline" className="mb-8 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-colors duration-300">
@@ -122,10 +122,12 @@ const Index = () => {
               {/* Expandable Music Player */}
               <ExpandableMusicPlayer />
             </div>
-          </div>
-          
-          {/* Right Panel - Events Sidebar */}
-          <div className="hidden lg:block w-3/4 bg-muted/30 border-l border-border">
+          </PageTransition>
+        </div>
+        
+        {/* Right Panel - Events Sidebar */}
+        <div className="hidden lg:block w-3/4 bg-muted/30 border-l border-border">
+          <PageTransition>
             <div className="p-8 h-[calc(100vh-4rem)] overflow-y-auto">
               <div className="mb-8">
                 
@@ -150,8 +152,8 @@ const Index = () => {
               
               
             </div>
-          </div>
-        </PageTransition>
+          </PageTransition>
+        </div>
       </div>
       
       {/* Footer */}

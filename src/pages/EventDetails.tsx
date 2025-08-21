@@ -12,11 +12,13 @@ import { useMusicPlayer } from '@/contexts/MusicPlayerContext';
 import { useSongsByEvent } from '@/hooks/useSongsByEvent';
 import ninajirachiCover from '@/assets/ninajirachi-cover.jpg';
 import lfSystemCover from '@/assets/lf-system-cover.jpg';
+
 interface Artist {
   name: string;
   genre: string;
   image?: string;
 }
+
 interface Event {
   id: string;
   title: string;
@@ -29,22 +31,15 @@ interface Event {
   description: string;
   ticketUrl?: string;
 }
+
 const EventDetails = () => {
-  const {
-    id
-  } = useParams<{
-    id: string;
-  }>();
+  const { id } = useParams<{ id: string }>();
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const {
-    playQueue
-  } = useMusicPlayer();
-  const {
-    songs,
-    loading: songsLoading
-  } = useSongsByEvent(id || null);
+  const { playQueue } = useMusicPlayer();
+  const { songs, loading: songsLoading } = useSongsByEvent(id || null);
+
   useEffect(() => {
     const fetchEvent = async () => {
       if (!id) {
@@ -52,14 +47,17 @@ const EventDetails = () => {
         setLoading(false);
         return;
       }
+
       try {
-        const {
-          data,
-          error: fetchError
-        } = await supabase.from('events').select(`
+        const { data, error: fetchError } = await supabase
+          .from('events')
+          .select(`
             *,
             headliner_artist:artists!events_headliner_id_fkey(name, genre, image_url)
-          `).eq('id', id).single();
+          `)
+          .eq('id', id)
+          .single();
+
         if (fetchError) throw fetchError;
 
         // Map of database image paths to imported images
@@ -71,11 +69,13 @@ const EventDetails = () => {
         // Fetch undercard artists separately
         let undercardArtists = [];
         if (data.undercard_ids && data.undercard_ids.length > 0) {
-          const {
-            data: undercardData
-          } = await supabase.from('artists').select('name, genre, image_url').in('id', data.undercard_ids);
+          const { data: undercardData } = await supabase
+            .from('artists')
+            .select('name, genre, image_url')
+            .in('id', data.undercard_ids);
           undercardArtists = undercardData || [];
         }
+
         const transformedEvent: Event = {
           id: data.id,
           title: data.title,
@@ -99,6 +99,7 @@ const EventDetails = () => {
           description: data.description,
           ticketUrl: data.ticket_url
         };
+
         setEvent(transformedEvent);
       } catch (err) {
         console.error('Error fetching event:', err);
@@ -107,8 +108,10 @@ const EventDetails = () => {
         setLoading(false);
       }
     };
+
     fetchEvent();
   }, [id]);
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       weekday: 'long',
@@ -117,16 +120,21 @@ const EventDetails = () => {
       day: 'numeric'
     });
   };
+
   if (loading) {
-    return <div className="min-h-screen bg-background">
+    return (
+      <div className="min-h-screen bg-background">
         <Navigation />
         <div className="flex items-center justify-center min-h-[50vh]">
           <p className="text-muted-foreground">Loading event details...</p>
         </div>
-      </div>;
+      </div>
+    );
   }
+
   if (error || !event) {
-    return <div className="min-h-screen bg-background">
+    return (
+      <div className="min-h-screen bg-background">
         <Navigation />
         <div className="flex items-center justify-center min-h-[50vh] flex-col gap-4">
           <p className="text-destructive">{error || 'Event not found'}</p>
@@ -137,18 +145,22 @@ const EventDetails = () => {
             </Link>
           </Button>
         </div>
-      </div>;
+      </div>
+    );
   }
-  return <div className="min-h-screen bg-background animate-fade-in">
+
+  return (
+    <div className="min-h-screen bg-background animate-fade-in">
       <Navigation />
       
       {/* Split Layout */}
       <div className="flex min-h-[calc(100vh-80px)]">
-        <PageTransition>
-          {/* Left Panel - Back Button */}
-          <div className="w-1/4 p-8 flex flex-col relative overflow-hidden border-r border-border h-[calc(100vh-80px)]">
-            <div className="absolute inset-0 bg-repeat bg-center opacity-20" style={{ backgroundImage: 'url(/images/topographic-pattern.png)' }} />
-            <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
+        {/* Left Panel - Back Button */}
+        <div className="w-1/4 p-8 flex flex-col relative overflow-hidden border-r border-border h-[calc(100vh-80px)]">
+          <div className="absolute inset-0 bg-repeat bg-center opacity-20" style={{ backgroundImage: 'url(/images/topographic-pattern.png)' }} />
+          <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
+          
+          <PageTransition>
             <Button asChild variant="ghost" size="sm" className="self-start relative z-10 mb-4">
               <Link to="/">
                 <ArrowLeft className="w-4 h-4 mr-2" />
@@ -158,10 +170,12 @@ const EventDetails = () => {
             
             {/* Expandable Music Player */}
             <ExpandableMusicPlayer />
-          </div>
+          </PageTransition>
+        </div>
 
-          {/* Right Panel - Event Content */}
-          <div className="w-3/4 overflow-y-auto h-[calc(100vh-80px)]">
+        {/* Right Panel - Event Content */}
+        <div className="w-3/4 overflow-y-auto h-[calc(100vh-80px)]">
+          <PageTransition>
             {/* Hero Section */}
             <div className="relative h-[40vh] min-h-[300px] overflow-hidden">
               <img src={event.heroImage} alt={event.headliner.name} className="w-full h-full object-cover" />
@@ -184,24 +198,32 @@ const EventDetails = () => {
                   {/* Quick Actions */}
                   <div className="flex flex-wrap gap-4">
                     <Button onClick={() => songs.length > 0 && playQueue(songs)} disabled={songsLoading || songs.length === 0} className="bg-fm-gold text-black hover:bg-fm-gold/90">
-                      {songsLoading ? <>
+                      {songsLoading ? (
+                        <>
                           <Music className="w-4 h-4 mr-2 animate-pulse" />
                           Loading...
-                        </> : songs.length > 0 ? <>
+                        </>
+                      ) : songs.length > 0 ? (
+                        <>
                           <Play className="w-4 h-4 mr-2" />
                           Play Lineup ({songs.length})
-                        </> : <>
+                        </>
+                      ) : (
+                        <>
                           <Music className="w-4 h-4 mr-2" />
                           No Songs Available
-                        </>}
+                        </>
+                      )}
                     </Button>
                     
-                    {event.ticketUrl && <Button asChild className="bg-fm-crimson text-white hover:bg-fm-crimson/90">
+                    {event.ticketUrl && (
+                      <Button asChild className="bg-fm-crimson text-white hover:bg-fm-crimson/90">
                         <a href={event.ticketUrl} target="_blank" rel="noopener noreferrer">
                           Get Tickets
                           <ExternalLink className="w-4 h-4 ml-2" />
                         </a>
-                      </Button>}
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -267,10 +289,12 @@ const EventDetails = () => {
               </div>
 
               {/* Supporting Artists */}
-              {event.undercard.length > 0 && <div className="mb-12">
+              {event.undercard.length > 0 && (
+                <div className="mb-12">
                   <h2 className="text-2xl font-bold mb-6">Supporting Artists</h2>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {event.undercard.map((artist, index) => <div key={index} className="bg-muted/30 border border-border rounded-lg p-4">
+                    {event.undercard.map((artist, index) => (
+                      <div key={index} className="bg-muted/30 border border-border rounded-lg p-4">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-secondary/20 to-secondary/40 flex items-center justify-center">
                             <Music className="w-6 h-6 text-secondary" />
@@ -280,13 +304,17 @@ const EventDetails = () => {
                             <p className="text-sm text-muted-foreground">{artist.genre}</p>
                           </div>
                         </div>
-                      </div>)}
+                      </div>
+                    ))}
                   </div>
-                </div>}
+                </div>
+              )}
             </div>
-          </div>
-        </PageTransition>
+          </PageTransition>
+        </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default EventDetails;
