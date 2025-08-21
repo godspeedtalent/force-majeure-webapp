@@ -11,16 +11,16 @@ All colors MUST be HSL.
   font-family: 'FK Screamer';
   src: url('/fonts/FKScreamer.woff2') format('woff2'),
        url('/fonts/FKScreamer.ttf') format('truetype');
-  font-weight: normal;
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
   font-family: 'FK Screamer';
-  src: url('/fonts/FKScreamer-Bold.woff2') format('woff2'),
-       url('/fonts/FKScreamer-Bold.ttf') format('truetype');
-  font-weight: bold;
+  src: url('/fonts/FKScreamer-Medium.woff2') format('woff2'),
+       url('/fonts/FKScreamer-Medium.ttf') format('truetype');
+  font-weight: 475;
   font-style: normal;
   font-display: swap;
 }
@@ -182,5 +182,7 @@ All colors MUST be HSL.
   
   h1, h2, h3, h4, h5, h6 {
     @apply font-screamer;
+    font-weight: 475;
+    font-variation-settings: 'wght' 475;
   }
 }

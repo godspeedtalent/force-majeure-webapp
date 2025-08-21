@@ -72,6 +72,38 @@ const Index = () => {
       heroImage: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=800&fit=crop',
       description: 'Raw industrial sounds in Detroit\'s historic underground. A night dedicated to the harder edge of electronic music, featuring legendary artists who shaped the industrial techno movement.',
       ticketUrl: '#'
+    },
+    {
+      id: '5',
+      title: 'Minimal Sessions',
+      headliner: { name: 'Max Richter', genre: 'Minimal' },
+      undercard: [
+        { name: 'Nils Frahm', genre: 'Minimal Techno' },
+        { name: 'Kiasmos', genre: 'Minimal' }
+      ],
+      date: '2024-04-08',
+      time: '9:30 PM',
+      venue: 'Concert Hall',
+      location: 'Berlin, DE',
+      heroImage: 'https://images.unsplash.com/photo-1571266028243-d220c9c814d2?w=800&h=800&fit=crop',
+      description: 'An evening of minimal compositions and ambient soundscapes.',
+      ticketUrl: '#'
+    },
+    {
+      id: '6',
+      title: 'Bass Underground',
+      headliner: { name: 'Skrillex', genre: 'Bass' },
+      undercard: [
+        { name: 'Noisia', genre: 'Drum & Bass' },
+        { name: 'Ivy Lab', genre: 'Bass' }
+      ],
+      date: '2024-04-20',
+      time: '11:00 PM',
+      venue: 'Underground Club',
+      location: 'London, UK',
+      heroImage: 'https://images.unsplash.com/photo-1574391884720-bfab8cb872b4?w=800&h=800&fit=crop',
+      description: 'Heavy bass and cutting-edge sound design.',
+      ticketUrl: '#'
     }
   ];
 
@@ -79,65 +111,145 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      {/* Hero Section */}
-      <section className="relative pt-16 pb-20 overflow-hidden">
-        <div className="absolute inset-0 bg-topographic opacity-5 bg-repeat bg-center" />
-        <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16">
-          <div className="text-center animate-fade-in">
-            <Badge 
-              variant="outline" 
-              className="mb-6 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-colors duration-300"
-            >
-              Promotions & A&R
-            </Badge>
-            <h1 className="text-5xl md:text-7xl font-screamer font-black tracking-tight mb-6">
-              <span className="bg-gradient-monochrome bg-clip-text text-transparent">
-                FORCE
-              </span>
-              <br />
-              <span className="bg-gradient-gold bg-clip-text text-transparent">
-                MAJEURE
-              </span>
-            </h1>
-            <p className="text-xl md:text-2xl font-canela text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
-              Where underground culture meets sophisticated curation. 
-              Experience electronic music's most compelling artists in unforgettable settings.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg" 
-                className="bg-fm-gold text-black hover:bg-fm-gold/90 shadow-gold group"
-              >
-                <Calendar className="w-5 h-5 mr-2" />
-                View Events
-                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button 
+      {/* Main Split Layout */}
+      <div className="pt-16 min-h-screen flex">
+        {/* Left Panel - Hero Content */}
+        <div className="w-full lg:w-2/3 relative overflow-hidden">
+          <div className="absolute inset-0 bg-topographic opacity-5 bg-repeat bg-center" />
+          <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
+          
+          <div className="relative h-full flex flex-col justify-center px-8 lg:px-16 py-20">
+            <div className="max-w-2xl">
+              <Badge 
                 variant="outline" 
-                size="lg"
-                className="border-fm-crimson text-fm-crimson hover:bg-fm-crimson hover:text-white"
+                className="mb-8 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-colors duration-300"
               >
-                Join Community
+                Promotions & A&R
+              </Badge>
+              
+              <h1 className="text-6xl lg:text-8xl font-screamer tracking-tight mb-8 leading-none" style={{ fontWeight: 475 }}>
+                <span className="block text-foreground">FORCE</span>
+                <span className="block bg-gradient-gold bg-clip-text text-transparent">MAJEURE</span>
+              </h1>
+              
+              <p className="text-xl lg:text-2xl font-canela text-muted-foreground leading-relaxed mb-12 max-w-xl">
+                Where underground culture meets sophisticated curation. Experience electronic music's most compelling artists.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button 
+                  size="lg" 
+                  className="bg-fm-gold text-black hover:bg-fm-gold/90 shadow-gold group font-canela"
+                >
+                  <Calendar className="w-5 h-5 mr-2" />
+                  View Events
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  className="border-fm-crimson text-fm-crimson hover:bg-fm-crimson hover:text-white font-canela"
+                >
+                  Join Community
+                </Button>
+              </div>
+            </div>
+            
+            {/* Featured Release Section */}
+            <div className="mt-20 max-w-md">
+              <div className="border-l-2 border-fm-gold pl-6">
+                <h3 className="text-2xl font-screamer mb-2" style={{ fontWeight: 475 }}>LATEST RELEASE</h3>
+                <p className="font-canela text-sm text-muted-foreground mb-4">NEW COMPILATION • OUT NOW</p>
+                
+                <div className="bg-card border border-border rounded-lg p-4 mb-4">
+                  <img 
+                    src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop" 
+                    alt="Underground Frequencies Vol. 1" 
+                    className="w-full aspect-square object-cover rounded mb-3"
+                  />
+                  <h4 className="font-canela font-medium">Underground Frequencies Vol. 1</h4>
+                  <p className="font-canela text-sm text-muted-foreground">Various Artists</p>
+                </div>
+                
+                <Button variant="outline" size="sm" className="w-full font-canela">
+                  LISTEN
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Right Panel - Events Sidebar */}
+        <div className="hidden lg:block w-1/3 bg-muted/30 border-l border-border">
+          <div className="p-8 h-full overflow-y-auto">
+            <div className="mb-8">
+              <h2 className="text-2xl font-screamer mb-2" style={{ fontWeight: 475 }}>UPCOMING</h2>
+              <p className="font-canela text-sm text-muted-foreground">Events & Showcases</p>
+            </div>
+            
+            <div className="space-y-6">
+              {upcomingEvents.slice(0, 6).map((event) => (
+                <div key={event.id} className="group">
+                  <div className="flex items-start justify-between py-4 border-b border-border last:border-b-0">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="font-canela text-sm text-muted-foreground">
+                          {new Date(event.date).toLocaleDateString('en-US', { 
+                            day: '2-digit',
+                            month: 'short' 
+                          }).toUpperCase()}
+                        </span>
+                        <span className="font-canela text-sm font-medium">
+                          {event.location.split(',')[1]?.trim() || event.location}
+                        </span>
+                      </div>
+                      
+                      <h3 className="font-screamer text-lg mb-1 group-hover:text-fm-gold transition-colors" style={{ fontWeight: 475 }}>
+                        {event.title}
+                      </h3>
+                      
+                      <p className="font-canela text-sm text-muted-foreground mb-3">
+                        {event.headliner.name} • {event.venue}
+                      </p>
+                    </div>
+                    
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      className="ml-4 font-canela text-xs px-3 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black"
+                    >
+                      TICKETS
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="mt-8 pt-8 border-t border-border">
+              <Button 
+                variant="ghost" 
+                className="w-full font-canela text-sm hover:text-fm-gold"
+              >
+                View All Events →
               </Button>
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Events Section */}
-      <section id="events" className="py-20 bg-muted/30">
+      </div>
+      
+      {/* Mobile Events Section */}
+      <section className="lg:hidden py-20 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-screamer font-bold mb-4">
+            <h2 className="text-4xl font-screamer mb-4" style={{ fontWeight: 475 }}>
               Upcoming Events
             </h2>
             <p className="text-xl font-canela text-muted-foreground max-w-2xl mx-auto">
-              Carefully curated experiences featuring the most innovative artists in electronic music
+              Carefully curated experiences featuring the most innovative artists
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid gap-6">
             {upcomingEvents.map((event, index) => (
               <div
                 key={event.id}
@@ -154,7 +266,7 @@ const Index = () => {
       {/* Contact Section */}
       <section id="contact" className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-screamer font-bold mb-8">
+          <h2 className="text-4xl md:text-5xl font-screamer mb-8" style={{ fontWeight: 475 }}>
             Get In Touch
           </h2>
           <p className="text-xl font-canela text-muted-foreground mb-12">
@@ -165,7 +277,7 @@ const Index = () => {
             <div className="group hover:scale-105 transition-transform duration-300">
               <div className="bg-card border border-border rounded-lg p-6 h-full shadow-elegant">
                 <Mail className="w-8 h-8 text-fm-gold mx-auto mb-4" />
-                <h3 className="font-canela font-semibold mb-2">Email</h3>
+                <h3 className="font-canela font-medium mb-2">Email</h3>
                 <p className="font-canela text-muted-foreground">hello@forcemajeure.com</p>
               </div>
             </div>
@@ -173,7 +285,7 @@ const Index = () => {
             <div className="group hover:scale-105 transition-transform duration-300">
               <div className="bg-card border border-border rounded-lg p-6 h-full shadow-elegant">
                 <Phone className="w-8 h-8 text-fm-gold mx-auto mb-4" />
-                <h3 className="font-canela font-semibold mb-2">Phone</h3>
+                <h3 className="font-canela font-medium mb-2">Phone</h3>
                 <p className="font-canela text-muted-foreground">+1 (555) 123-4567</p>
               </div>
             </div>
@@ -181,7 +293,7 @@ const Index = () => {
             <div className="group hover:scale-105 transition-transform duration-300">
               <div className="bg-card border border-border rounded-lg p-6 h-full shadow-elegant">
                 <Instagram className="w-8 h-8 text-fm-gold mx-auto mb-4" />
-                <h3 className="font-canela font-semibold mb-2">Social</h3>
+                <h3 className="font-canela font-medium mb-2">Social</h3>
                 <p className="font-canela text-muted-foreground">@forcemajeure</p>
               </div>
             </div>
@@ -189,7 +301,7 @@ const Index = () => {
           
           <Button 
             size="lg" 
-            className="bg-fm-crimson text-white hover:bg-fm-crimson/90 shadow-crimson"
+            className="bg-fm-crimson text-white hover:bg-fm-crimson/90 shadow-crimson font-canela"
           >
             Start Conversation
           </Button>
@@ -201,7 +313,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-4 md:mb-0">
-              <h3 className="text-2xl font-screamer font-black tracking-tight">FORCE MAJEURE</h3>
+              <h3 className="text-2xl font-screamer tracking-tight" style={{ fontWeight: 475 }}>FORCE MAJEURE</h3>
               <p className="font-canela text-background/70 mt-1">Promotions & A&R</p>
             </div>
             
@@ -216,7 +328,7 @@ const Index = () => {
           </div>
           
           <div className="border-t border-background/20 mt-8 pt-8 text-center text-background/70">
-            <p>&copy; 2024 Force Majeure. All rights reserved.</p>
+            <p className="font-canela">&copy; 2024 Force Majeure. All rights reserved.</p>
           </div>
         </div>
       </footer>
