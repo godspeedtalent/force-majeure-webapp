@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Menu, X, User, LogIn, UserPlus, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -10,11 +11,12 @@ export const Navigation = () => {
   return <nav className="w-full bg-background/50 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <div className="flex items-center space-x-3">
+          {/* Logo and Breadcrumbs */}
+          <div className="flex items-center space-x-6">
             <Link to="/" className="transition-transform duration-200 hover:scale-110">
               <ForceMajeureLogo size="sm" />
             </Link>
+            <Breadcrumbs />
           </div>
 
           {/* Desktop Actions */}
