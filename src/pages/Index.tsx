@@ -101,7 +101,7 @@ const Index = () => {
           <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
           
           <PageTransition>
-            <div className="relative h-full flex flex-col px-8 lg:px-16 py-20">
+            <div className="relative h-full flex flex-col justify-between px-8 lg:px-16 py-8">
               <div className="max-w-2xl">
                 <Badge variant="outline" className="mb-8 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-colors duration-300">
                   Promotions & A&R
