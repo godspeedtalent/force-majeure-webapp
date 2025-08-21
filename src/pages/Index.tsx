@@ -114,7 +114,7 @@ const Index = () => {
       {/* Main Split Layout */}
       <div className="pt-16 min-h-screen flex">
         {/* Left Panel - Hero Content */}
-        <div className="w-full lg:w-2/3 relative overflow-hidden">
+        <div className="w-full lg:w-1/3 relative overflow-hidden">
           <div className="absolute inset-0 bg-topographic opacity-5 bg-repeat bg-center" />
           <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
           
@@ -180,7 +180,7 @@ const Index = () => {
         </div>
         
         {/* Right Panel - Events Sidebar */}
-        <div className="hidden lg:block w-1/3 bg-muted/30 border-l border-border">
+        <div className="hidden lg:block w-2/3 bg-muted/30 border-l border-border">
           <div className="p-8 h-full overflow-y-auto">
             <div className="mb-8">
               <h2 className="text-2xl font-screamer mb-2" style={{ fontWeight: 475 }}>UPCOMING</h2>
