@@ -97,9 +97,7 @@ export const CommonCard = ({
                   <span className="truncate">{subtitle || title}</span>
                 </Badge>
               ) : (
-                <div className={`inline-flex items-center rounded-full border border-border bg-secondary text-secondary-foreground ${pillBase} font-medium mb-3 w-fit`}>
-                  {subtitle || title}
-                </div>
+                null
               )}
               {!titleHidden && title && subtitle && (
                 <h3 className="text-foreground text-xl font-canela font-medium line-clamp-2 mb-3">{title}</h3>
