@@ -60,6 +60,15 @@ export const Breadcrumbs = () => {
         });
       }
 
+      // Handle profile page
+      if (pathSegments[0] === 'profile') {
+        items.push({
+          label: 'Profile Settings',
+          path: '/profile',
+          isLast: true
+        });
+      }
+
       setBreadcrumbs(items.slice(1)); // Remove home from display (we show it differently)
     };
 

@@ -8,7 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { SplitPageLayout } from '@/components/SplitPageLayout';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Music, CheckCircle, XCircle, ExternalLink } from 'lucide-react';
+import { Loader2, Music, CheckCircle, XCircle, ExternalLink, ArrowLeft } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const Profile = () => {
@@ -129,8 +129,26 @@ const Profile = () => {
 
   const leftPane = (
     <div className="h-full flex flex-col justify-center p-8">
-      <div className="space-y-4">
-        <h1 className="text-4xl font-canela font-medium text-foreground">Profile Settings</h1>
+      <div className="space-y-6">
+        {/* Back Button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate('/')}
+          className="self-start -ml-2 text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Events
+        </Button>
+        
+        {/* Stacked Title like Force Majeure */}
+        <h1 
+          className="text-5xl lg:text-6xl font-screamer tracking-tight leading-none"
+          style={{ fontWeight: 475 }}
+        >
+          <span className="block text-foreground">PROFILE</span>
+          <span className="block bg-gradient-gold bg-clip-text text-transparent -mt-2">SETTINGS</span>
+        </h1>
         <p className="text-muted-foreground">
           Manage your account settings and streaming preferences
         </p>
