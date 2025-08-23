@@ -23,7 +23,18 @@ export const PlayerControls: React.FC = () => {
   const RepeatIcon = repeatMode === 'one' ? Repeat1 : Repeat;
   return <div className="flex items-center gap-2">
       {/* Shuffle Button */}
-      
+      <button
+        onClick={toggleShuffle}
+        className={cn(
+          "p-2 rounded-md transition-colors",
+          isShuffled 
+            ? "text-fm-gold hover:text-fm-gold/80 bg-accent/50" 
+            : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+        )}
+        aria-label={isShuffled ? "Disable shuffle" : "Enable shuffle"}
+      >
+        <Shuffle className="w-4 h-4" />
+      </button>
 
       {/* Previous Button */}
       <button onClick={previousSong} disabled={queue.length <= 1} className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors disabled:opacity-50 disabled:hover:bg-transparent" aria-label="Previous track">
@@ -41,6 +52,17 @@ export const PlayerControls: React.FC = () => {
       </button>
 
       {/* Repeat Button */}
-      
+      <button
+        onClick={handleRepeatClick}
+        className={cn(
+          "p-2 rounded-md transition-colors",
+          repeatMode !== 'none' 
+            ? "text-fm-gold hover:text-fm-gold/80 bg-accent/50" 
+            : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+        )}
+        aria-label={`Repeat: ${repeatMode}`}
+      >
+        <RepeatIcon className="w-4 h-4" />
+      </button>
     </div>;
 };
