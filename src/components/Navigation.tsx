@@ -3,11 +3,19 @@ import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Menu, X, User, LogIn, UserPlus, ShoppingCart } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { Menu, X, User, LogIn, UserPlus, ShoppingCart, LogOut, Settings } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, signOut, profile } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
   return <nav className="w-full bg-background/50 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
@@ -33,14 +41,45 @@ export const Navigation = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 bg-background border border-border shadow-lg z-50">
-                <DropdownMenuItem className="cursor-pointer hover:bg-hover-overlay">
-                  <LogIn className="mr-2 h-4 w-4" />
-                  <span>Sign In</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer hover:bg-hover-overlay">
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  <span>Sign Up</span>
-                </DropdownMenuItem>
+                {user ? (
+                  <>
+                    <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                      {profile?.display_name || 'User'}
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      className="cursor-pointer hover:bg-hover-overlay"
+                      onClick={() => navigate('/profile')}
+                    >
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Profile Settings</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      className="cursor-pointer hover:bg-hover-overlay text-destructive"
+                      onClick={handleSignOut}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Sign Out</span>
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuItem 
+                      className="cursor-pointer hover:bg-hover-overlay"
+                      onClick={() => navigate('/auth')}
+                    >
+                      <LogIn className="mr-2 h-4 w-4" />
+                      <span>Sign In</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      className="cursor-pointer hover:bg-hover-overlay"
+                      onClick={() => navigate('/auth')}
+                    >
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      <span>Sign Up</span>
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
             <ThemeToggle />
@@ -60,14 +99,45 @@ export const Navigation = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 bg-background border border-border shadow-lg z-50">
-                <DropdownMenuItem className="cursor-pointer hover:bg-hover-overlay">
-                  <LogIn className="mr-2 h-4 w-4" />
-                  <span>Sign In</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer hover:bg-hover-overlay">
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  <span>Sign Up</span>
-                </DropdownMenuItem>
+                {user ? (
+                  <>
+                    <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                      {profile?.display_name || 'User'}
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      className="cursor-pointer hover:bg-hover-overlay"
+                      onClick={() => navigate('/profile')}
+                    >
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Profile Settings</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      className="cursor-pointer hover:bg-hover-overlay text-destructive"
+                      onClick={handleSignOut}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Sign Out</span>
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuItem 
+                      className="cursor-pointer hover:bg-hover-overlay"
+                      onClick={() => navigate('/auth')}
+                    >
+                      <LogIn className="mr-2 h-4 w-4" />
+                      <span>Sign In</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      className="cursor-pointer hover:bg-hover-overlay"
+                      onClick={() => navigate('/auth')}
+                    >
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      <span>Sign Up</span>
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
             <ThemeToggle />
