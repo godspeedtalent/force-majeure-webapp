@@ -247,8 +247,11 @@ All colors MUST be HSL.
     }
   }
   
-  /* Event hover effects */
+  /* Event hover effects with frosted glass */
   .event-hover-invert {
+    background-color: hsl(var(--foreground) / 0.8);
+    backdrop-blur: 10px;
+    border: 1px solid hsl(var(--foreground) / 0.2);
     transition: all 0.3s ease;
   }
   
