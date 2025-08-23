@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, ArrowRight, Instagram, Music, Phone, Mail } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getImageUrl } from '@/lib/imageUtils';
-import { MusicPlayer } from '@/components/MusicPlayer/MusicPlayer';
+import { ExpandableMusicPlayer } from '@/components/MusicPlayer/ExpandableMusicPlayer';
 import ninajirachiCover from '@/assets/ninajirachi-cover.jpg';
 import lfSystemCover from '@/assets/lf-system-cover.jpg';
 import SplitPageLayout from '@/components/SplitPageLayout';
@@ -137,7 +137,7 @@ const Index = () => {
             </div>
           </div>
           <div className="mt-auto">
-            <MusicPlayer />
+            <ExpandableMusicPlayer />
           </div>
         </div>
       }
