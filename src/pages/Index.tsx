@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { EventCard } from '@/components/EventCard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, ArrowRight, Instagram, Music, Phone, Mail } from 'lucide-react';
+import { Calendar, ArrowRight, Instagram, Music, Phone, Mail, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getImageUrl } from '@/lib/imageUtils';
 import { ExpandableMusicPlayer } from '@/components/MusicPlayer/ExpandableMusicPlayer';
@@ -11,10 +11,23 @@ import lfSystemCover from '@/assets/lf-system-cover.jpg';
 import SplitPageLayout from '@/components/SplitPageLayout';
 import { EventCardSkeleton } from '@/components/EventCardSkeleton';
 import { logApiError } from '@/lib/logger';
+import { useFontLoader } from '@/hooks/useFontLoader';
 const Index = () => {
-  // Force cache refresh
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const fontsLoaded = useFontLoader();
+  const [contentReady, setContentReady] = useState(false);
+
+  // Content is ready when both fonts are loaded and data loading is complete
+  useEffect(() => {
+    if (fontsLoaded && !loading) {
+      // Add a small delay for smooth transition
+      const timer = setTimeout(() => {
+        setContentReady(true);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [fontsLoaded, loading]);
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -119,23 +132,34 @@ const Index = () => {
     <SplitPageLayout
       left={
         <div className="relative h-full flex flex-col lg:px-0 py-0 px-0">
-          <div className="flex-1 flex flex-col justify-center">
-            <div className="max-w-2xl px-[64px]">
-              <Badge variant="outline" className="mb-8 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-colors duration-300">
-                Promotions & A&R
-              </Badge>
-              <h1
-                className="text-6xl lg:text-8xl font-screamer tracking-tight mb-8 leading-none"
-                style={{ fontWeight: 475 }}
-              >
-                <span className="block text-foreground">FORCE</span>
-                <span className="block bg-gradient-gold bg-clip-text text-transparent -mt-4">MAJEURE</span>
-              </h1>
-              <p className="text-lg lg:text-xl font-canela text-muted-foreground leading-relaxed mb-12 max-w-xl">
-                The biggest rave fam in the world is deep in the heart of Austin, TX.
-              </p>
+          {!contentReady ? (
+            // Loading state with spinner
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center">
+                <Loader2 className="w-8 h-8 animate-spin text-fm-gold mx-auto mb-4" />
+                <p className="text-sm text-muted-foreground">Loading...</p>
+              </div>
             </div>
-          </div>
+          ) : (
+            // Content with fade and slide animation
+            <div className="flex-1 flex flex-col justify-center animate-fade-in animate-slide-up">
+              <div className="max-w-2xl px-[64px]">
+                <Badge variant="outline" className="mb-8 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-colors duration-300">
+                  Promotions & A&R
+                </Badge>
+                <h1
+                  className="text-6xl lg:text-8xl font-screamer tracking-tight mb-8 leading-none"
+                  style={{ fontWeight: 475 }}
+                >
+                  <span className="block text-foreground">FORCE</span>
+                  <span className="block bg-gradient-gold bg-clip-text text-transparent -mt-4">MAJEURE</span>
+                </h1>
+                <p className="text-lg lg:text-xl font-canela text-muted-foreground leading-relaxed mb-12 max-w-xl">
+                  The biggest rave fam in the world is deep in the heart of Austin, TX.
+                </p>
+              </div>
+            </div>
+          )}
           <div className="mt-auto">
             <ExpandableMusicPlayer />
           </div>
