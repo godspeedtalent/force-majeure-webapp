@@ -85,9 +85,9 @@ export const EventRow = ({ event }: EventRowProps) => {
 
   return (
     <>
-      <div className="group flex items-center gap-4 p-4 bg-card border border-border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
+      <div className="group flex items-stretch bg-card border-b border-border hover:bg-background hover:shadow-lg hover:shadow-foreground/10 transition-all duration-300 cursor-pointer">
         {/* Event Image */}
-        <div className="flex-shrink-0 w-20 h-20 rounded-md overflow-hidden">
+        <div className="flex-shrink-0 w-20 overflow-hidden">
           <img 
             src={event.heroImage} 
             alt={event.title}
@@ -96,43 +96,45 @@ export const EventRow = ({ event }: EventRowProps) => {
         </div>
 
         {/* Event Info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between mb-2">
-            <div>
-              <h3 className="font-semibold text-lg truncate">{event.title}</h3>
-              <p className="text-foreground font-medium">{event.headliner.name}</p>
-              {event.undercard.length > 0 && (
-                <p className="text-sm text-muted-foreground truncate">
-                  + {event.undercard.map(artist => artist.name).join(', ')}
-                </p>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="whitespace-nowrap">
-                <Calendar className="w-3 h-3 mr-1" />
-                {formatDate(event.date)}
-              </Badge>
-              {isAfterHours && (
-                <Badge variant="secondary" className="bg-fm-crimson/20 text-fm-crimson border-fm-crimson/30">
-                  After Hours
+        <div className="flex-1 min-w-0 p-4 flex items-center justify-between">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between mb-2">
+              <div>
+                <h3 className="font-semibold text-lg truncate">{event.title}</h3>
+                <p className="text-foreground font-medium">{event.headliner.name}</p>
+                {event.undercard.length > 0 && (
+                  <p className="text-sm text-muted-foreground truncate">
+                    + {event.undercard.map(artist => artist.name).join(', ')}
+                  </p>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="whitespace-nowrap">
+                  <Calendar className="w-3 h-3 mr-1" />
+                  {formatDate(event.date)}
                 </Badge>
-              )}
+                {isAfterHours && (
+                  <Badge variant="secondary" className="bg-fm-gold/20 text-fm-gold border-fm-gold/30">
+                    After Hours
+                  </Badge>
+                )}
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
-            <div className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              {formatTimeDisplay(event.time)}
-            </div>
-            <div className="flex items-center gap-1">
-              <MapPin className="w-3 h-3" />
-              {event.venue}
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                {formatTimeDisplay(event.time)}
+              </div>
+              <div className="flex items-center gap-1">
+                <MapPin className="w-3 h-3" />
+                {event.venue}
+              </div>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-2 ml-4">
             {event.ticketUrl && (
               <Button
                 variant="default"

@@ -8,7 +8,7 @@ interface DisplayToggleProps {
 
 export const DisplayToggle = ({ displayMode, onDisplayModeChange }: DisplayToggleProps) => {
   return (
-    <div className="flex items-center gap-1 border border-border rounded-md p-1">
+    <div className="flex items-center gap-1 rounded-md p-1">
       <Button
         variant={displayMode === 'grid' ? 'default' : 'ghost'}
         size="sm"
