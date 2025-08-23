@@ -136,6 +136,45 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          spotify_access_token: string | null
+          spotify_connected: boolean | null
+          spotify_refresh_token: string | null
+          spotify_token_expires_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          spotify_access_token?: string | null
+          spotify_connected?: boolean | null
+          spotify_refresh_token?: string | null
+          spotify_token_expires_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          spotify_access_token?: string | null
+          spotify_connected?: boolean | null
+          spotify_refresh_token?: string | null
+          spotify_token_expires_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       songs: {
         Row: {
           artist_id: string
