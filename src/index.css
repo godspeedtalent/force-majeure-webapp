@@ -189,7 +189,7 @@ All colors MUST be HSL.
 }
 
 @layer components {
-  /* Shimmer effect for accent borders */
+  /* Shimmer effect for accent borders and buttons */
   .shimmer-border {
     position: relative;
     overflow: hidden;
@@ -210,6 +210,32 @@ All colors MUST be HSL.
     );
     animation: shimmer 2s infinite;
     z-index: 1;
+  }
+  
+  .shimmer-on-hover {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .shimmer-on-hover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(0 0% 100% / 0.4),
+      transparent
+    );
+    animation: none;
+    z-index: 1;
+  }
+  
+  .shimmer-on-hover:hover::before {
+    animation: shimmer 2s infinite;
   }
   
   @keyframes shimmer {

@@ -110,7 +110,7 @@ export const EventRow = ({ event }: EventRowProps) => {
                       <Badge 
                         key={index}
                         variant="secondary" 
-                        className="shimmer-border bg-accent/20 text-accent border-accent/30 text-xs"
+                        className="bg-accent/20 text-accent border-accent/30 text-xs"
                       >
                         {artist.name}
                       </Badge>
@@ -124,7 +124,7 @@ export const EventRow = ({ event }: EventRowProps) => {
                   {formatDate(event.date)}
                 </Badge>
                 {isAfterHours && (
-                  <Badge variant="secondary" className="shimmer-border bg-accent/20 text-accent border-accent/30">
+                  <Badge variant="secondary" className="bg-accent/20 text-accent border-accent/30">
                     After Hours
                   </Badge>
                 )}
@@ -150,7 +150,7 @@ export const EventRow = ({ event }: EventRowProps) => {
                 variant="default"
                 size="sm"
                 onClick={handleTicketsClick}
-                className="shimmer-border bg-accent hover:bg-accent/90 text-accent-foreground font-medium"
+                className="shimmer-on-hover bg-accent hover:bg-accent/90 text-accent-foreground font-medium"
               >
                 <ExternalLink className="w-3 h-3 mr-1" />
                 Get Tickets

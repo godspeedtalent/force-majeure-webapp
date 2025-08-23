@@ -195,7 +195,7 @@ export const EventCard = ({ event }: EventCardProps) => {
               <Badge 
                 key={index}
                 variant="secondary" 
-                className="shimmer-border bg-accent/20 text-accent border-accent/30 text-xs"
+                className="bg-accent/20 text-accent border-accent/30 text-xs"
               >
                 {artist.name}
               </Badge>
@@ -215,7 +215,7 @@ export const EventCard = ({ event }: EventCardProps) => {
         <div className="mt-3 flex flex-wrap gap-2">
           <Badge variant="secondary" className="invert-badge">{formatDate(event.date)}</Badge>
           {isAfterHours && (
-            <Badge className="shimmer-border bg-accent/20 text-accent border-accent/30">After Hours</Badge>
+            <Badge className="bg-accent/20 text-accent border-accent/30">After Hours</Badge>
           )}
         </div>
 
@@ -224,7 +224,7 @@ export const EventCard = ({ event }: EventCardProps) => {
           {event.ticketUrl && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button size="sm" variant="default" onClick={handleTicketsClick} className="shimmer-border bg-accent hover:bg-accent/90 text-accent-foreground">
+                <Button size="sm" variant="default" onClick={handleTicketsClick} className="shimmer-on-hover bg-accent hover:bg-accent/90 text-accent-foreground">
                   <ExternalLink className="w-4 h-4" />
                   Get Tickets
                 </Button>
