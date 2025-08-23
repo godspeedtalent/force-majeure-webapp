@@ -16,7 +16,7 @@ export const Navigation = () => {
     await signOut();
     navigate('/');
   };
-  return <nav className="w-full bg-background/50 backdrop-blur-md border-b border-border">
+  return <nav className="sticky top-0 z-50 w-full bg-background/50 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo and Breadcrumbs */}
@@ -82,7 +82,6 @@ export const Navigation = () => {
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
-            <ThemeToggle />
           </div>
 
           {/* Mobile menu button */}
@@ -140,7 +139,7 @@ export const Navigation = () => {
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
-            <ThemeToggle />
+            
             <Button variant="ghost" size="sm" onClick={() => setIsOpen(!isOpen)} className="text-foreground hover:text-fm-gold hover:bg-hover-overlay">
               {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>

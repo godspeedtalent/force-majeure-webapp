@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { Navigation } from '@/components/Navigation';
+import { Footer } from '@/components/Footer';
 
 interface ForceMajeureRootLayoutProps {
   children: ReactNode;
@@ -20,10 +21,12 @@ export const ForceMajeureRootLayout = ({
         <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
         
         {/* Content */}
-        <div className="relative">
+        <div className="relative pb-10">
           {children}
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 };
