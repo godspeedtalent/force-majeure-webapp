@@ -142,7 +142,7 @@ const Index = () => {
             </div>
           ) : (
             // Content with fade and slide animation
-            <div className="flex-1 flex flex-col justify-center animate-fade-in animate-slide-up">
+            <div className="flex-1 flex flex-col justify-center animate-fade-in animate-slide-down-in">
               <div className="max-w-2xl px-[64px]">
                 <Badge variant="outline" className="mb-8 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-colors duration-300">
                   Promotions & A&R
