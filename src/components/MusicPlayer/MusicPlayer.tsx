@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext';
 import { PlayerControls } from './PlayerControls';
 import { TrackInfo } from './TrackInfo';
@@ -12,31 +12,8 @@ export const MusicPlayer: React.FC = () => {
     isPlayerVisible,
     isExpanded,
     currentSong,
-    isPlaying,
-    volume,
-    isMuted,
     toggleExpanded,
-    audioRef,
   } = useMusicPlayer();
-
-  useEffect(() => {
-    if (!audioRef.current || !currentSong) return;
-
-    const audio = audioRef.current;
-    
-    if (isPlaying) {
-      audio.play().catch(console.error);
-    } else {
-      audio.pause();
-    }
-  }, [isPlaying, currentSong]);
-
-  useEffect(() => {
-    if (!audioRef.current) return;
-    
-    const audio = audioRef.current;
-    audio.volume = isMuted ? 0 : volume;
-  }, [volume, isMuted]);
 
   if (!isPlayerVisible || !currentSong) {
     return null;
@@ -45,25 +22,18 @@ export const MusicPlayer: React.FC = () => {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50">
       <div className={cn(
-        "bg-background/95 backdrop-blur-md border border-border rounded-lg shadow-lg transition-all duration-300 ease-out",
-        isExpanded ? "w-96 h-96" : "w-80 h-auto"
+        "bg-background/95 backdrop-blur-md border border-border rounded-lg shadow-lg transition-all duration-300 ease-out mx-auto",
+        isExpanded ? "w-[680px]" : "w-[560px]"
       )}>
-        {/* Album Art Row */}
-        <div className="flex justify-center p-4 pb-2">
-          <TrackInfo showArtworkOnly />
-        </div>
-
-        {/* Track Info & Controls Row */}
-        <div className="flex items-center gap-3 px-4 pb-2">
-          <div className="flex-1">
-            <TrackInfo showDetailsOnly />
-          </div>
+        {/* Single Row: Artwork, Info, Divider, Controls, Expand, Volume */}
+        <div className="flex items-center gap-3 px-4 py-3">
+          <TrackInfo />
+          <div className="h-8 w-px bg-border mx-1" />
           <PlayerControls />
-          
           {/* Expand/Collapse Button */}
           <button
             onClick={toggleExpanded}
-            className="p-2 rounded-md hover:bg-accent/50 transition-colors"
+            className="ml-auto p-2 rounded-md hover:bg-accent/50 transition-colors"
             aria-label={isExpanded ? "Collapse player" : "Expand player"}
           >
             {isExpanded ? (
@@ -72,11 +42,9 @@ export const MusicPlayer: React.FC = () => {
               <ChevronUp className="w-4 h-4" />
             )}
           </button>
-        </div>
-
-        {/* Volume Control Row */}
-        <div className="px-4 pb-4">
-          <VolumeControl />
+          <div className="w-48">
+            <VolumeControl />
+          </div>
         </div>
 
         {/* Expanded Queue View */}
@@ -86,14 +54,6 @@ export const MusicPlayer: React.FC = () => {
           </div>
         )}
       </div>
-
-      {/* Hidden Audio Element */}
-      <audio
-        ref={audioRef}
-        src={currentSong?.streaming_link}
-        preload="metadata"
-        className="hidden"
-      />
     </div>
   );
 };

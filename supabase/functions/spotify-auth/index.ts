@@ -14,9 +14,25 @@ serve(async (req) => {
   try {
     const SPOTIFY_CLIENT_ID = "86af655c93cf4488a361d436be7eb995";
     const SPOTIFY_CLIENT_SECRET = Deno.env.get('SPOTIFY_CLIENT_SECRET');
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
     if (!SPOTIFY_CLIENT_SECRET) {
       console.error('SPOTIFY_CLIENT_SECRET environment variable is not set');
+      // Server-side log
+      if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
+        try {
+          await fetch(`${SUPABASE_URL}/rest/v1/api_logs`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': SUPABASE_SERVICE_ROLE_KEY,
+              'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+            },
+            body: JSON.stringify([{ level: 'error', source: 'edge_function', endpoint: 'spotify-auth', message: 'SPOTIFY_CLIENT_SECRET not set' }])
+          });
+        } catch (_) {}
+      }
       return new Response(
         JSON.stringify({ error: 'Spotify client secret not configured' }),
         { 
@@ -45,6 +61,20 @@ serve(async (req) => {
 
       if (!tokenResponse.ok) {
         console.error('Error getting client credentials token:', tokenData);
+        // Server-side log
+        if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
+          try {
+            await fetch(`${SUPABASE_URL}/rest/v1/api_logs`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'apikey': SUPABASE_SERVICE_ROLE_KEY,
+                'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+              },
+              body: JSON.stringify([{ level: 'error', source: 'edge_function', endpoint: 'spotify-auth', method: 'POST', status: tokenResponse.status, message: 'Failed to get client credentials token', details: tokenData }])
+            });
+          } catch (_) {}
+        }
         return new Response(
           JSON.stringify({ error: 'Failed to get client credentials token', details: tokenData }),
           { 
@@ -74,6 +104,22 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in spotify-auth function:', error);
+    // Server-side log
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
+      try {
+        await fetch(`${SUPABASE_URL}/rest/v1/api_logs`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_SERVICE_ROLE_KEY,
+            'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+          },
+          body: JSON.stringify([{ level: 'error', source: 'edge_function', endpoint: 'spotify-auth', message: 'Unhandled error', details: { message: (error as any)?.message || String(error) } }])
+        });
+      } catch (_) {}
+    }
     return new Response(
       JSON.stringify({ error: 'Internal server error', details: error.message }),
       { 

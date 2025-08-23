@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Navigation } from '@/components/Navigation';
 import { EventCard } from '@/components/EventCard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +8,9 @@ import { getImageUrl } from '@/lib/imageUtils';
 import { ExpandableMusicPlayer } from '@/components/MusicPlayer/ExpandableMusicPlayer';
 import ninajirachiCover from '@/assets/ninajirachi-cover.jpg';
 import lfSystemCover from '@/assets/lf-system-cover.jpg';
+import SplitPageLayout from '@/components/SplitPageLayout';
+import { EventCardSkeleton } from '@/components/EventCardSkeleton';
+import { logApiError } from '@/lib/logger';
 const Index = () => {
   // Force cache refresh
   const [upcomingEvents, setUpcomingEvents] = useState([]);
@@ -27,6 +29,12 @@ const Index = () => {
         });
         if (error) {
           console.error('Error fetching events:', error);
+          await logApiError({
+            endpoint: 'supabase:events',
+            method: 'SELECT',
+            message: 'Error fetching events',
+            details: error
+          });
           return;
         }
 
@@ -46,9 +54,19 @@ const Index = () => {
               artists: []
             };
           }
-          const {
-            data: artists
-          } = await supabase.from('artists').select('id, name, genre, image_url').in('id', event.undercard_ids);
+          const { data: artists, error: artistsError } = await supabase
+            .from('artists')
+            .select('id, name, genre, image_url')
+            .in('id', event.undercard_ids);
+          if (artistsError) {
+            console.error('Error fetching undercard artists:', artistsError);
+            await logApiError({
+              endpoint: 'supabase:artists',
+              method: 'SELECT',
+              message: 'Error fetching undercard artists',
+              details: { eventId, error: artistsError }
+            });
+          }
           return {
             eventId,
             artists: artists || []
@@ -85,71 +103,68 @@ const Index = () => {
         setUpcomingEvents(transformedEvents);
       } catch (error) {
         console.error('Error fetching events:', error);
+        await logApiError({
+          endpoint: 'page:Index',
+          method: 'INIT',
+          message: 'Unhandled error fetching events',
+          details: String(error)
+        });
       } finally {
         setLoading(false);
       }
     };
     fetchEvents();
   }, []);
-  return <div className="h-screen bg-background flex flex-col animate-fade-in">
-      <Navigation />
-      
-      {/* Main Split Layout */}
-      <div className="flex-1 flex">
-        {/* Left Panel - Hero Content */}
-        <div className="w-full lg:w-1/3 relative overflow-hidden">
-          <div className="absolute inset-0 bg-topographic opacity-15 bg-repeat bg-center" />
-          <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
-          
-          <div className="relative h-full flex flex-col lg:px-0 py-0 px-0">
-            <div className="flex-1 flex flex-col justify-center">
-              <div className="max-w-2xl px-[64px]">
-                <Badge variant="outline" className="mb-8 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-colors duration-300">
-                  Promotions & A&R
-                </Badge>
-                
-                <h1 className="text-6xl lg:text-8xl font-screamer tracking-tight mb-8 leading-none" style={{
-                fontWeight: 475
-              }}>
-                  <span className="block text-foreground">FORCE</span>
-                  <span className="block bg-gradient-gold bg-clip-text text-transparent -mt-4">MAJEURE</span>
-                </h1>
-                
-                <p className="text-lg lg:text-xl font-canela text-muted-foreground leading-relaxed mb-12 max-w-xl">
-                  The biggest rave fam in the world is deep in the heart of Austin, TX.
-                </p>
+  return (
+    <SplitPageLayout
+      left={
+        <div className="relative h-full flex flex-col lg:px-0 py-0 px-0">
+          <div className="flex-1 flex flex-col justify-center">
+            <div className="max-w-2xl px-[64px]">
+              <Badge variant="outline" className="mb-8 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-colors duration-300">
+                Promotions & A&R
+              </Badge>
+              <h1
+                className="text-6xl lg:text-8xl font-screamer tracking-tight mb-8 leading-none"
+                style={{ fontWeight: 475 }}
+              >
+                <span className="block text-foreground">FORCE</span>
+                <span className="block bg-gradient-gold bg-clip-text text-transparent -mt-4">MAJEURE</span>
+              </h1>
+              <p className="text-lg lg:text-xl font-canela text-muted-foreground leading-relaxed mb-12 max-w-xl">
+                The biggest rave fam in the world is deep in the heart of Austin, TX.
+              </p>
+            </div>
+          </div>
+          <div className="mt-auto">
+            <ExpandableMusicPlayer />
+          </div>
+        </div>
+      }
+      right={
+        <div className="p-8 h-full overflow-y-auto">
+          <div className="mb-8">
+            <p className="font-canela text-sm text-muted-foreground">Events & Showcases</p>
+          </div>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,360px))] justify-around gap-y-6">
+            {loading ? (
+              // Show a handful of skeleton cards to represent loading state
+              Array.from({ length: 6 }).map((_, idx) => (
+                <EventCardSkeleton key={`skeleton-${idx}`} />
+              ))
+            ) : upcomingEvents.length > 0 ? (
+              upcomingEvents.slice(0, 6).map((event) => (
+                <EventCard key={event.id} event={event} />
+              ))
+            ) : (
+              <div className="col-span-full text-center py-8">
+                <p className="text-muted-foreground">No upcoming events</p>
               </div>
-            </div>
-            
-            <div className="mt-auto">
-              <ExpandableMusicPlayer />
-            </div>
+            )}
           </div>
         </div>
-        
-        {/* Right Panel - Events Sidebar */}
-        <div className="hidden lg:block w-2/3 bg-muted/30 border-l border-border">
-          <div className="p-8 h-[calc(100vh-4rem)] overflow-y-auto">
-            <div className="mb-8">
-              
-              <p className="font-canela text-sm text-muted-foreground">Events & Showcases</p>
-            </div>
-            
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-              {loading ? <div className="col-span-full text-center py-8">
-                  <p className="text-muted-foreground">Loading events...</p>
-                </div> : upcomingEvents.length > 0 ? upcomingEvents.slice(0, 6).map(event => <EventCard key={event.id} event={event} />) : <div className="col-span-full text-center py-8">
-                  <p className="text-muted-foreground">No upcoming events</p>
-                </div>}
-            </div>
-            
-            
-          </div>
-        </div>
-      </div>
-      
-      {/* Footer */}
-      
-    </div>;
+      }
+    />
+  );
 };
 export default Index;

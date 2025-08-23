@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext';
 import { PlayerControls } from './PlayerControls';
 import { TrackInfo } from './TrackInfo';
@@ -12,30 +12,7 @@ export const ExpandableMusicPlayer: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const {
     currentSong,
-    isPlaying,
-    volume,
-    isMuted,
-    audioRef,
   } = useMusicPlayer();
-
-  useEffect(() => {
-    if (!audioRef.current || !currentSong) return;
-
-    const audio = audioRef.current;
-    
-    if (isPlaying) {
-      audio.play().catch(console.error);
-    } else {
-      audio.pause();
-    }
-  }, [isPlaying, currentSong]);
-
-  useEffect(() => {
-    if (!audioRef.current) return;
-    
-    const audio = audioRef.current;
-    audio.volume = isMuted ? 0 : volume;
-  }, [volume, isMuted]);
 
   if (!currentSong) {
     return (
@@ -70,34 +47,26 @@ export const ExpandableMusicPlayer: React.FC = () => {
       {/* Collapsed View */}
       {!isExpanded && (
         <div className="p-4">
-          <div className="flex items-center gap-3 mb-3">
-            <TrackInfo showArtworkOnly />
-            <div className="flex-1 min-w-0">
-              <TrackInfo showDetailsOnly />
-            </div>
+          <div className="flex items-center gap-3">
+            <TrackInfo />
+            <div className="h-8 w-px bg-border mx-1" />
+            <PlayerControls />
           </div>
-          <PlayerControls />
         </div>
       )}
 
       {/* Expanded View */}
       {isExpanded && (
         <div className="p-4 space-y-4">
-          {/* Album Art */}
-          <div className="flex justify-center">
-            <TrackInfo showArtworkOnly />
+          {/* Top row with art, info, divider, controls and volume */}
+          <div className="flex items-center gap-3">
+            <TrackInfo />
+            <div className="h-8 w-px bg-border mx-1" />
+            <PlayerControls />
+            <div className="ml-auto w-56">
+              <VolumeControl />
+            </div>
           </div>
-
-          {/* Track Info */}
-          <div className="text-center">
-            <TrackInfo showDetailsOnly />
-          </div>
-
-          {/* Controls */}
-          <PlayerControls />
-
-          {/* Volume Control */}
-          <VolumeControl />
 
           {/* Queue */}
           <div className="max-h-48 overflow-y-auto">
@@ -106,13 +75,6 @@ export const ExpandableMusicPlayer: React.FC = () => {
         </div>
       )}
 
-      {/* Hidden Audio Element */}
-      <audio
-        ref={audioRef}
-        src={currentSong?.streaming_link}
-        preload="metadata"
-        className="hidden"
-      />
     </div>
   );
 };
