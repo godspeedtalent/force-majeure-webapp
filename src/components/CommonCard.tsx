@@ -44,7 +44,7 @@ export const CommonCard = ({
 
   return (
     <Card
-      className={`group cursor-pointer overflow-hidden bg-card hover:shadow-elegant transition-all duration-300 border-0 border-l-[3px] border-l-fm-crimson dark:border-l-fm-gold hover:border-l-[6px] hover:animate-border-shimmer hover:invert ${showHoverEffect ? 'hover:scale-[1.02]' : ''} ${className}`}
+      className={`group cursor-pointer overflow-hidden bg-card hover:shadow-elegant transition-all duration-300 border-0 border-l-[3px] border-l-fm-crimson dark:border-l-fm-gold hover:border-l-[6px] hover:animate-border-shimmer ${showHoverEffect ? 'hover:scale-[1.02]' : ''} ${className}`}
       onClick={onClick}
     >
       <div className="relative aspect-[4/5] overflow-hidden max-h-[400px]">
@@ -54,42 +54,15 @@ export const CommonCard = ({
           className="w-full h-full object-cover max-h-[675px]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-        <div className="absolute bottom-4 left-4 right-4">
-          {badgeInline ? (
-            <div className="flex items-center gap-2 mb-1">
-              {titleAsBadge ? (
-                <Badge className={`border-white/20 bg-background/90 text-foreground ${pillBase} font-medium max-w-full truncate`}>
-                  <span className="truncate">{subtitle || title}</span>
-                </Badge>
-              ) : (
-                <div className={`inline-flex items-center rounded-full border border-white/20 bg-background/90 text-foreground ${pillBase} font-medium max-w-full truncate`}>
-                  <span className="truncate">{subtitle || title}</span>
-                </div>
-              )}
-              {badge && (
-                <Badge variant={badgeVariant} className="bg-background/90 text-foreground shrink-0">
-                  {badge}
-                </Badge>
-              )}
-            </div>
-          ) : (
-            <>
-              {titleAsBadge ? (
-                <Badge className={`border-white/20 bg-background/90 text-foreground ${pillBase} font-medium mb-1 max-w-full truncate`}>
-                  <span className="truncate">{subtitle || title}</span>
-                </Badge>
-              ) : (
-                <div className={`inline-flex items-center rounded-full border border-white/20 bg-background/90 text-foreground ${pillBase} font-medium mb-1`}>
-                  {subtitle || title}
-                </div>
-              )}
-              {!titleHidden && title && (
-                <h3 className="text-white text-xl font-canela font-medium line-clamp-2">{title}</h3>
-              )}
-            </>
-          )}
-          {belowTitle && <div className="mt-2">{belowTitle}</div>}
-        </div>
+        
+        {/* Only show belowTitle content in overlay if provided */}
+        {belowTitle && (
+          <div className="absolute bottom-4 left-4 right-4">
+            {belowTitle}
+          </div>
+        )}
+        
+        {/* Keep non-inline badges in top-right corner */}
         {!badgeInline && badge && (
           <Badge variant={badgeVariant} className="absolute top-4 right-4 bg-background/90 text-foreground">
             {badge}
@@ -97,7 +70,45 @@ export const CommonCard = ({
         )}
       </div>
 
-      {children && <CardContent className="p-4">{children}</CardContent>}
+      {children && (
+        <CardContent className="p-4">
+          {/* Move title badge to card body */}
+          {badgeInline ? (
+            <div className="flex items-center gap-2 mb-3">
+              {titleAsBadge ? (
+                <Badge className={`${pillBase} font-medium max-w-full truncate`}>
+                  <span className="truncate">{subtitle || title}</span>
+                </Badge>
+              ) : (
+                <div className={`inline-flex items-center rounded-full border border-border bg-secondary text-secondary-foreground ${pillBase} font-medium max-w-full truncate`}>
+                  <span className="truncate">{subtitle || title}</span>
+                </div>
+              )}
+              {badge && (
+                <Badge variant={badgeVariant} className="shrink-0">
+                  {badge}
+                </Badge>
+              )}
+            </div>
+          ) : (
+            <>
+              {titleAsBadge ? (
+                <Badge className={`${pillBase} font-medium mb-3 max-w-full truncate`}>
+                  <span className="truncate">{subtitle || title}</span>
+                </Badge>
+              ) : (
+                <div className={`inline-flex items-center rounded-full border border-border bg-secondary text-secondary-foreground ${pillBase} font-medium mb-3 w-fit`}>
+                  {subtitle || title}
+                </div>
+              )}
+              {!titleHidden && title && subtitle && (
+                <h3 className="text-foreground text-xl font-canela font-medium line-clamp-2 mb-3">{title}</h3>
+              )}
+            </>
+          )}
+          {children}
+        </CardContent>
+      )}
     </Card>
   );
 };
