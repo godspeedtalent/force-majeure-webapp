@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { EventCard } from '@/components/EventCard';
+import { EventRow } from '@/components/EventRow';
+import { DisplayToggle } from '@/components/DisplayToggle';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, ArrowRight, Instagram, Music, Phone, Mail, Loader2 } from 'lucide-react';
@@ -10,11 +12,13 @@ import ninajirachiCover from '@/assets/ninajirachi-cover.jpg';
 import lfSystemCover from '@/assets/lf-system-cover.jpg';
 import SplitPageLayout from '@/components/SplitPageLayout';
 import { EventCardSkeleton } from '@/components/EventCardSkeleton';
+import { EventRowSkeleton } from '@/components/EventRowSkeleton';
 import { logApiError } from '@/lib/logger';
 import { useFontLoader } from '@/hooks/useFontLoader';
 const Index = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [displayMode, setDisplayMode] = useState<'grid' | 'row'>('grid');
   const fontsLoaded = useFontLoader();
   const [contentReady, setContentReady] = useState(false);
 
@@ -167,25 +171,48 @@ const Index = () => {
       }
       right={
         <div className="p-8 h-full overflow-y-auto">
-          <div className="mb-8">
+          <div className="mb-8 flex items-center justify-between">
             <p className="font-canela text-sm text-muted-foreground">Events & Showcases</p>
+            <div className="hidden lg:block">
+              <DisplayToggle 
+                displayMode={displayMode} 
+                onDisplayModeChange={setDisplayMode} 
+              />
+            </div>
           </div>
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,360px))] justify-around gap-y-6">
-            {loading ? (
-              // Show a handful of skeleton cards to represent loading state
-              Array.from({ length: 6 }).map((_, idx) => (
-                <EventCardSkeleton key={`skeleton-${idx}`} />
-              ))
-            ) : upcomingEvents.length > 0 ? (
-              upcomingEvents.slice(0, 6).map((event) => (
-                <EventCard key={event.id} event={event} />
-              ))
-            ) : (
-              <div className="col-span-full text-center py-8">
-                <p className="text-muted-foreground">No upcoming events</p>
-              </div>
-            )}
-          </div>
+          {displayMode === 'grid' ? (
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,360px))] justify-around gap-y-6">
+              {loading ? (
+                Array.from({ length: 6 }).map((_, idx) => (
+                  <EventCardSkeleton key={`skeleton-${idx}`} />
+                ))
+              ) : upcomingEvents.length > 0 ? (
+                upcomingEvents.slice(0, 6).map((event) => (
+                  <EventCard key={event.id} event={event} />
+                ))
+              ) : (
+                <div className="col-span-full text-center py-8">
+                  <p className="text-muted-foreground">No upcoming events</p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {loading ? (
+                Array.from({ length: 6 }).map((_, idx) => (
+                  <EventRowSkeleton key={`skeleton-${idx}`} />
+                ))
+              ) : upcomingEvents.length > 0 ? (
+                upcomingEvents.slice(0, 6).map((event) => (
+                  <EventRow key={event.id} event={event} />
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">No upcoming events</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       }
     />
