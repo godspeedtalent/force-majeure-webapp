@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { CustomInput } from '@/components/ui/custom-input';
+import { CustomLabel } from '@/components/ui/custom-label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
@@ -67,12 +67,12 @@ const Auth = () => {
       
       {/* Background with topography */}
       <div className="flex-1 relative overflow-hidden">
-        <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
+        <div className="absolute inset-0 bg-topographic opacity-25 bg-cover bg-center bg-no-repeat" />
         <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
         
         {/* Content */}
         <div className="relative flex items-center justify-center min-h-full px-4 py-8">
-          <Card className="w-full max-w-md border-border/50 bg-card/95 backdrop-blur-sm animate-fade-in">
+          <Card className="w-full max-w-md border-border/30 bg-card/20 backdrop-blur-lg shadow-2xl animate-fade-in">
             <CardHeader className="text-center pb-6">
               <div className="flex justify-center mb-4">
                 <ForceMajeureLogo className="w-16 h-16" />
@@ -92,11 +92,11 @@ const Auth = () => {
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="signin" className="space-y-4">
-                <form onSubmit={handleSignIn} className="space-y-4">
+              <TabsContent value="signin" className="space-y-6">
+                <form onSubmit={handleSignIn} className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="signin-email">Email</Label>
-                    <Input
+                    <CustomLabel htmlFor="signin-email">Email</CustomLabel>
+                    <CustomInput
                       id="signin-email"
                       type="email"
                       placeholder="Enter your email"
@@ -107,9 +107,9 @@ const Auth = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signin-password">Password</Label>
+                    <CustomLabel htmlFor="signin-password">Password</CustomLabel>
                     <div className="relative">
-                      <Input
+                      <CustomInput
                         id="signin-password"
                         type={showPassword ? 'text' : 'password'}
                         placeholder="Enter your password"
@@ -146,11 +146,11 @@ const Auth = () => {
                 </form>
               </TabsContent>
 
-              <TabsContent value="signup" className="space-y-4">
-                <form onSubmit={handleSignUp} className="space-y-4">
+              <TabsContent value="signup" className="space-y-6">
+                <form onSubmit={handleSignUp} className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="signup-name">Display Name (Optional)</Label>
-                    <Input
+                    <CustomLabel htmlFor="signup-name">Display Name (Optional)</CustomLabel>
+                    <CustomInput
                       id="signup-name"
                       type="text"
                       placeholder="Enter your display name"
@@ -160,8 +160,8 @@ const Auth = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
-                    <Input
+                    <CustomLabel htmlFor="signup-email">Email</CustomLabel>
+                    <CustomInput
                       id="signup-email"
                       type="email"
                       placeholder="Enter your email"
@@ -172,9 +172,9 @@ const Auth = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
+                    <CustomLabel htmlFor="signup-password">Password</CustomLabel>
                     <div className="relative">
-                      <Input
+                      <CustomInput
                         id="signup-password"
                         type={showPassword ? 'text' : 'password'}
                         placeholder="Create a password"
