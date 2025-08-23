@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
-import { PageTransition } from '@/components/PageTransition';
+import { Navigation } from '@/components/Navigation';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 
 const Auth = () => {
@@ -52,27 +52,38 @@ const Auth = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="w-8 h-8 animate-spin text-fm-gold" />
+      <div className="min-h-screen bg-background flex flex-col">
+        <Navigation />
+        <div className="flex-1 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-fm-gold" />
+        </div>
       </div>
     );
   }
 
   return (
-    <PageTransition>
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-fm-gold/5 px-4">
-        <Card className="w-full max-w-md border-border/50 bg-card/95 backdrop-blur-sm">
-          <CardHeader className="text-center pb-6">
-            <div className="flex justify-center mb-4">
-              <ForceMajeureLogo className="w-16 h-16" />
-            </div>
-            <CardTitle className="text-2xl font-bold text-foreground">
-              Welcome to Force Majeure
-            </CardTitle>
-            <CardDescription className="text-muted-foreground">
-              Sign in to access full Spotify streaming and personalized features
-            </CardDescription>
-          </CardHeader>
+    <div className="min-h-screen bg-background flex flex-col">
+      <Navigation />
+      
+      {/* Background with topography */}
+      <div className="flex-1 relative overflow-hidden">
+        <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
+        <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
+        
+        {/* Content */}
+        <div className="relative flex items-center justify-center min-h-full px-4 py-8">
+          <Card className="w-full max-w-md border-border/50 bg-card/95 backdrop-blur-sm animate-fade-in">
+            <CardHeader className="text-center pb-6">
+              <div className="flex justify-center mb-4">
+                <ForceMajeureLogo className="w-16 h-16" />
+              </div>
+              <CardTitle className="text-2xl font-canela font-medium text-foreground">
+                Join the rave fam.
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">
+                Sign in to access full Spotify streaming and personalized features
+              </CardDescription>
+            </CardHeader>
 
           <CardContent>
             <Tabs defaultValue="signin" className="w-full">
@@ -202,8 +213,9 @@ const Auth = () => {
             </Tabs>
           </CardContent>
         </Card>
+        </div>
       </div>
-    </PageTransition>
+    </div>
   );
 };
 
