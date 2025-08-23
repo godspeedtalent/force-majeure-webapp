@@ -173,47 +173,62 @@ export const EventCard = ({ event }: EventCardProps) => {
   };
 
   return (
-    <CommonCard
-      image={event.heroImage}
-      imageAlt={`${event.title}`}
-      title={event.title}
-      // Remove badges from the title/overlay area; show standard title instead
-      subtitleSize="lg"
-      onClick={() => navigate(`/event/${event.id}`)}
-    >
-      {/* Footer content: undercard list, then time and venue */}
-      {event.undercard && event.undercard.length > 0 && (
-        <div className="mb-2 text-sm text-muted-foreground line-clamp-2">
-          {event.undercard.map((a) => a.name).join('  •  ')}
-        </div>
-      )}
-      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-        <Clock className="w-4 h-4" />
-  <span>{formatTimeDisplay(event.time)}</span>
-      </div>
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <MapPin className="w-4 h-4" />
-        <span className="line-clamp-1">{event.venue}</span>
-      </div>
-
-      {/* Moved badges to footer */}
-      <div className="mt-3 flex flex-wrap gap-2">
-        <Badge variant="secondary">{formatDate(event.date)}</Badge>
-        {isAfterHours && (
-          <Badge className="bg-accent/30 text-accent-foreground border-accent/40">After Hours</Badge>
+    <div className="event-hover-invert">
+      <CommonCard
+        image={event.heroImage}
+        imageAlt={`${event.title}`}
+        title={event.title || ''}
+        titleHidden={!event.title}
+        // Remove badges from the title/overlay area; show standard title instead
+        subtitleSize="lg"
+        onClick={() => navigate(`/event/${event.id}`)}
+      >
+        {/* Display title in Canela Deck Medium if it exists */}
+        {event.title && (
+          <h3 className="text-foreground text-xl font-canela font-medium line-clamp-2 mb-3 invert-text">{event.title}</h3>
         )}
-      </div>
+        
+        {/* Footer content: undercard badges, then time and venue */}
+        {event.undercard && event.undercard.length > 0 && (
+          <div className="mb-3 flex flex-wrap gap-1">
+            {event.undercard.map((artist, index) => (
+              <Badge 
+                key={index}
+                variant="secondary" 
+                className="shimmer-border bg-accent/20 text-accent border-accent/30 text-xs"
+              >
+                {artist.name}
+              </Badge>
+            ))}
+          </div>
+        )}
+        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+          <Clock className="w-4 h-4" />
+          <span className="invert-text">{formatTimeDisplay(event.time)}</span>
+        </div>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <MapPin className="w-4 h-4" />
+          <span className="invert-text line-clamp-1">{event.venue}</span>
+        </div>
 
-      {/* Actions */}
-      <div className="mt-4 flex flex-wrap gap-2">
-        {event.ticketUrl && (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button size="sm" variant="accent" onClick={handleTicketsClick}>
-                <ExternalLink className="w-4 h-4" />
-                Get Tickets
-              </Button>
-            </AlertDialogTrigger>
+        {/* Moved badges to footer */}
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Badge variant="secondary" className="invert-badge">{formatDate(event.date)}</Badge>
+          {isAfterHours && (
+            <Badge className="shimmer-border bg-accent/20 text-accent border-accent/30">After Hours</Badge>
+          )}
+        </div>
+
+        {/* Actions */}
+        <div className="mt-4 flex flex-wrap gap-2">
+          {event.ticketUrl && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button size="sm" variant="default" onClick={handleTicketsClick} className="shimmer-border bg-accent hover:bg-accent/90 text-accent-foreground">
+                  <ExternalLink className="w-4 h-4" />
+                  Get Tickets
+                </Button>
+              </AlertDialogTrigger>
             <AlertDialogContent onClick={(e) => e.stopPropagation()}>
               <AlertDialogHeader>
                 <AlertDialogTitle>Leaving Force Majeure</AlertDialogTitle>
@@ -235,20 +250,21 @@ export const EventCard = ({ event }: EventCardProps) => {
             </AlertDialogContent>
           </AlertDialog>
         )}
-        <Button size="sm" variant="secondary" onClick={handlePlayLineup} disabled={playing}>
-          {playing ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Loading…
-            </>
-          ) : (
-            <>
-              <Play className="w-4 h-4" />
-              Play Lineup
-            </>
-          )}
-        </Button>
-      </div>
-    </CommonCard>
+          <Button size="sm" variant="secondary" onClick={handlePlayLineup} disabled={playing} className="invert-button">
+            {playing ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Loading…
+              </>
+            ) : (
+              <>
+                <Play className="w-4 h-4" />
+                Play Lineup
+              </>
+            )}
+          </Button>
+        </div>
+      </CommonCard>
+    </div>
   );
 };

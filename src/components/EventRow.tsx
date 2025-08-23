@@ -85,7 +85,7 @@ export const EventRow = ({ event }: EventRowProps) => {
 
   return (
     <>
-      <div className="group flex items-stretch bg-card border-b border-border hover:bg-background hover:shadow-lg hover:shadow-foreground/10 transition-all duration-300 cursor-pointer">
+      <div className="group event-hover-invert flex items-stretch bg-card border-b border-border transition-all duration-300 cursor-pointer">
         {/* Event Image */}
         <div className="flex-shrink-0 w-20 overflow-hidden">
           <img 
@@ -100,21 +100,31 @@ export const EventRow = ({ event }: EventRowProps) => {
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between mb-2">
               <div>
-                <h3 className="font-semibold text-lg truncate">{event.title}</h3>
-                <p className="text-foreground font-medium">{event.headliner.name}</p>
+                {event.title && (
+                  <h3 className="font-canela font-medium text-lg truncate mb-1">{event.title}</h3>
+                )}
+                <p className="invert-text text-foreground font-medium">{event.headliner.name}</p>
                 {event.undercard.length > 0 && (
-                  <p className="text-sm text-muted-foreground truncate">
-                    + {event.undercard.map(artist => artist.name).join(', ')}
-                  </p>
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {event.undercard.map((artist, index) => (
+                      <Badge 
+                        key={index}
+                        variant="secondary" 
+                        className="shimmer-border bg-accent/20 text-accent border-accent/30 text-xs"
+                      >
+                        {artist.name}
+                      </Badge>
+                    ))}
+                  </div>
                 )}
               </div>
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="whitespace-nowrap">
+                <Badge variant="outline" className="invert-badge whitespace-nowrap">
                   <Calendar className="w-3 h-3 mr-1" />
                   {formatDate(event.date)}
                 </Badge>
                 {isAfterHours && (
-                  <Badge variant="secondary" className="bg-fm-gold/20 text-fm-gold border-fm-gold/30">
+                  <Badge variant="secondary" className="shimmer-border bg-accent/20 text-accent border-accent/30">
                     After Hours
                   </Badge>
                 )}
@@ -124,11 +134,11 @@ export const EventRow = ({ event }: EventRowProps) => {
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Clock className="w-3 h-3" />
-                {formatTimeDisplay(event.time)}
+                <span className="invert-text">{formatTimeDisplay(event.time)}</span>
               </div>
               <div className="flex items-center gap-1">
                 <MapPin className="w-3 h-3" />
-                {event.venue}
+                <span className="invert-text">{event.venue}</span>
               </div>
             </div>
           </div>
@@ -140,7 +150,7 @@ export const EventRow = ({ event }: EventRowProps) => {
                 variant="default"
                 size="sm"
                 onClick={handleTicketsClick}
-                className="bg-fm-gold hover:bg-fm-gold/90 text-black font-medium"
+                className="shimmer-border bg-accent hover:bg-accent/90 text-accent-foreground font-medium"
               >
                 <ExternalLink className="w-3 h-3 mr-1" />
                 Get Tickets
@@ -151,6 +161,7 @@ export const EventRow = ({ event }: EventRowProps) => {
               size="sm"
               onClick={handlePlayLineup}
               disabled={eventSongs.length === 0}
+              className="invert-button"
             >
               <Play className="w-3 h-3 mr-1" />
               Play Lineup

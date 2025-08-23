@@ -188,6 +188,66 @@ All colors MUST be HSL.
   }
 }
 
+@layer components {
+  /* Shimmer effect for accent borders */
+  .shimmer-border {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .shimmer-border::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(0 0% 100% / 0.4),
+      transparent
+    );
+    animation: shimmer 2s infinite;
+    z-index: 1;
+  }
+  
+  @keyframes shimmer {
+    0% {
+      left: -100%;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+  
+  /* Event hover effects */
+  .event-hover-invert {
+    transition: all 0.3s ease;
+  }
+  
+  .event-hover-invert:hover {
+    background-color: hsl(var(--foreground));
+    color: hsl(var(--background));
+  }
+  
+  .event-hover-invert:hover .invert-text {
+    color: hsl(var(--background));
+  }
+  
+  .event-hover-invert:hover .invert-badge {
+    background-color: hsl(var(--background) / 0.2);
+    color: hsl(var(--background));
+    border-color: hsl(var(--background) / 0.3);
+  }
+  
+  .event-hover-invert:hover .invert-button {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--background) / 0.3);
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
