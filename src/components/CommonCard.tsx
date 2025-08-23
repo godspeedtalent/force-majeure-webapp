@@ -44,14 +44,14 @@ export const CommonCard = ({
 
   return (
     <Card
-      className={`group cursor-pointer overflow-hidden bg-card hover:shadow-elegant transition-all duration-300 border-0 border-l-[3px] border-l-fm-crimson dark:border-l-fm-gold ${showHoverEffect ? 'hover:scale-[1.02]' : ''} ${className}`}
+      className={`group cursor-pointer overflow-hidden bg-card hover:shadow-elegant transition-all duration-300 border-0 border-l-[3px] border-l-fm-crimson dark:border-l-fm-gold hover:border-l-[6px] hover:animate-border-shimmer hover:invert ${showHoverEffect ? 'hover:scale-[1.02]' : ''} ${className}`}
       onClick={onClick}
     >
       <div className="relative aspect-[4/5] overflow-hidden max-h-[400px]">
         <img
           src={image}
           alt={imageAlt}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 max-h-[675px]"
+          className="w-full h-full object-cover max-h-[675px]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
         <div className="absolute bottom-4 left-4 right-4">

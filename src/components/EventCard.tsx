@@ -209,7 +209,7 @@ export const EventCard = ({ event }: EventCardProps) => {
         {event.ticketUrl && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button size="sm" variant="default" onClick={handleTicketsClick}>
+              <Button size="sm" variant="accent" onClick={handleTicketsClick}>
                 <ExternalLink className="w-4 h-4" />
                 Get Tickets
               </Button>

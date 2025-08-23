@@ -95,8 +95,19 @@ export default {
 					'50%': { boxShadow: '0 0 0 10px hsl(var(--fm-gold) / 0)' }
 				},
 				'shimmer': {
-					'0%': { transform: 'translateX(-100%)' },
-					'100%': { transform: 'translateX(100%)' }
+					'0%': { 
+						backgroundPosition: '-200% 0',
+						borderImage: 'linear-gradient(45deg, transparent, hsl(var(--accent)), transparent) 1'
+					},
+					'100%': { 
+						backgroundPosition: '200% 0',
+						borderImage: 'linear-gradient(45deg, transparent, hsl(var(--accent)), transparent) 1'
+					}
+				},
+				'border-shimmer': {
+					'0%': { borderColor: 'hsl(var(--fm-crimson))' },
+					'50%': { borderColor: 'hsl(var(--accent))' },
+					'100%': { borderColor: 'hsl(var(--fm-crimson))' }
 				}
 			},
 			animation: {
@@ -106,7 +117,8 @@ export default {
 				'scale-in': 'scale-in 0.3s ease-out',
 				'slide-up': 'slide-up 0.4s ease-out',
 				'pulse-gold': 'pulse-gold 2s infinite',
-				'shimmer': 'shimmer 2s infinite'
+				'shimmer': 'shimmer 2s infinite',
+				'border-shimmer': 'border-shimmer 2s infinite'
 			},
 			backgroundImage: {
 				'gradient-gold': 'var(--gradient-gold)',
