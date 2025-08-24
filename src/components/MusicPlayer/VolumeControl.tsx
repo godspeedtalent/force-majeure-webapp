@@ -19,7 +19,7 @@ export const VolumeControl: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center gap-2 w-24">
+    <div className="flex items-center gap-2 w-full">
       <button
         onClick={toggleMute}
         className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors"
