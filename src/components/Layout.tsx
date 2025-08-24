@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
+import { ExpandableMusicPlayer } from '@/components/MusicPlayer/ExpandableMusicPlayer';
 
 interface LayoutProps {
   children: ReactNode;
@@ -15,6 +16,7 @@ export const Layout = ({ children }: LayoutProps) => {
         {children}
       </main>
       
+      <ExpandableMusicPlayer />
       <Footer />
     </div>
   );

@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
+import { ExpandableMusicPlayer } from '@/components/MusicPlayer/ExpandableMusicPlayer';
 
 interface ForceMajeureRootLayoutProps {
   children: ReactNode;
@@ -26,6 +27,7 @@ export const ForceMajeureRootLayout = ({
         </div>
       </div>
       
+      <ExpandableMusicPlayer />
       <Footer />
     </div>
   );

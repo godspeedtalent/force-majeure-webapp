@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import SplitPageLayout from '@/components/SplitPageLayout';
-import { ExpandableMusicPlayer } from '@/components/MusicPlayer/ExpandableMusicPlayer';
+
 import { PageTransition } from '@/components/PageTransition';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -167,9 +167,6 @@ const EventDetails = () => {
                 Back to Events
               </Link>
             </Button>
-            <div className="mt-auto">
-              <ExpandableMusicPlayer />
-            </div>
           </div>
         </PageTransition>
       }

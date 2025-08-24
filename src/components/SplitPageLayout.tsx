@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
+import { ExpandableMusicPlayer } from '@/components/MusicPlayer/ExpandableMusicPlayer';
 
 interface SplitPageLayoutProps {
   left: ReactNode;
@@ -48,6 +49,7 @@ export const SplitPageLayout = ({
         </div>
       </div>
       
+      <ExpandableMusicPlayer />
       <Footer />
     </div>
   );
