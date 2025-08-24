@@ -24,7 +24,7 @@ export const SplitPageLayout = ({
     <div className={`min-h-screen bg-background flex flex-col ${className}`}>
       <Navigation />
 
-      <div className="flex-1 flex min-h-[calc(100vh-120px)]">
+      <div className="flex-1 flex min-h-[calc(100vh-160px)]">
         {/* Left Panel */}
         <div className={`${leftWidthClass} relative overflow-hidden`}>
           {leftDecor && (
@@ -43,14 +43,17 @@ export const SplitPageLayout = ({
 
         {/* Right Panel */}
         <div className={`${rightWidthClass} bg-muted/30 border-l border-border overflow-y-auto`}>
-          <div className="h-[calc(100vh-120px)]">
+          <div className="h-[calc(100vh-160px)] pb-20">
             {right}
           </div>
         </div>
       </div>
       
-      <ExpandableMusicPlayer />
-      <Footer />
+      {/* Fixed music player and footer at bottom */}
+      <div className="fixed bottom-0 left-0 right-0 z-40">
+        <ExpandableMusicPlayer />
+        <Footer />
+      </div>
     </div>
   );
 };

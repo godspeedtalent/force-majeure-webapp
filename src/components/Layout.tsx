@@ -12,12 +12,15 @@ export const Layout = ({ children }: LayoutProps) => {
     <div className="min-h-screen bg-background flex flex-col">
       <Navigation />
       
-      <main className="flex-1 animate-fade-in pb-10">
+      <main className="flex-1 animate-fade-in pb-20">
         {children}
       </main>
       
-      <ExpandableMusicPlayer />
-      <Footer />
+      {/* Fixed music player and footer at bottom */}
+      <div className="fixed bottom-0 left-0 right-0 z-40">
+        <ExpandableMusicPlayer />
+        <Footer />
+      </div>
     </div>
   );
 };

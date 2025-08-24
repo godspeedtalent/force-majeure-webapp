@@ -22,13 +22,16 @@ export const ForceMajeureRootLayout = ({
         <div className="absolute inset-0 bg-gradient-monochrome opacity-10" />
         
         {/* Content */}
-        <div className="relative pb-10">
+        <div className="relative pb-20">
           {children}
         </div>
       </div>
       
-      <ExpandableMusicPlayer />
-      <Footer />
+      {/* Fixed music player and footer at bottom */}
+      <div className="fixed bottom-0 left-0 right-0 z-40">
+        <ExpandableMusicPlayer />
+        <Footer />
+      </div>
     </div>
   );
 };
