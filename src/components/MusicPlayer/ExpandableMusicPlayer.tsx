@@ -16,7 +16,7 @@ export const ExpandableMusicPlayer: React.FC = () => {
 
   if (!currentSong) {
     return (
-      <div className="border-t border-border bg-background/50 backdrop-blur-sm">
+      <div className="sticky bottom-0 z-50 w-full bg-background/80 backdrop-blur-md border-t border-border">
         <div className="p-4">
           <div className="flex items-center gap-3 text-muted-foreground">
             <Music className="w-5 h-5" />
@@ -28,7 +28,7 @@ export const ExpandableMusicPlayer: React.FC = () => {
   }
 
   return (
-    <div className="w-full border-t border-border bg-background/50 backdrop-blur-sm">
+    <div className="sticky bottom-0 z-50 w-full bg-background/80 backdrop-blur-md border-t border-border">
       {/* Expand/Collapse Handle */}
       <div className="px-4 py-2 border-b border-border/50">
         <button
@@ -57,20 +57,28 @@ export const ExpandableMusicPlayer: React.FC = () => {
 
       {/* Expanded View */}
       {isExpanded && (
-        <div className="p-4 space-y-4">
-          {/* Top row with art, info, divider, controls and volume */}
-          <div className="flex items-center gap-3">
-            <TrackInfo />
-            <div className="h-8 w-px bg-border mx-1" />
-            <PlayerControls />
-            <div className="ml-auto w-56">
-              <VolumeControl />
+        <div className="p-4">
+          <div className="flex gap-6">
+            {/* Left Column - Now Playing Info and Controls */}
+            <div className="flex-1 space-y-4">
+              <div className="space-y-3">
+                <TrackInfo />
+                <PlayerControls />
+                <div className="w-64">
+                  <VolumeControl />
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* Queue */}
-          <div className="max-h-48 overflow-y-auto">
-            <TrackQueue />
+            {/* Right Column - Queue */}
+            <div className="flex-1 min-w-0">
+              <div className="h-48">
+                <h4 className="text-sm font-canela font-medium text-foreground mb-3">Queue</h4>
+                <div className="h-40 overflow-y-auto">
+                  <TrackQueue />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
