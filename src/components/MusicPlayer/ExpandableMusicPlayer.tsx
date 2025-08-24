@@ -57,16 +57,13 @@ export const ExpandableMusicPlayer: React.FC = () => {
 
       {/* Expanded View */}
       {isExpanded && (
-        <div className="p-4">
+        <div className="p-4 space-y-4">
           <div className="flex gap-6">
             {/* Left Column - Now Playing Info and Controls */}
             <div className="flex-1 space-y-4">
               <div className="space-y-3">
                 <TrackInfo />
                 <PlayerControls />
-                <div className="w-64">
-                  <VolumeControl />
-                </div>
               </div>
             </div>
 
@@ -79,6 +76,11 @@ export const ExpandableMusicPlayer: React.FC = () => {
                 </div>
               </div>
             </div>
+          </div>
+          
+          {/* Bottom Row - Volume Control */}
+          <div className="w-full pt-2 border-t border-border/50">
+            <VolumeControl />
           </div>
         </div>
       )}
