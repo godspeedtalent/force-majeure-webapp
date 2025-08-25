@@ -44,7 +44,7 @@ export const CommonCard = ({
 
   return (
     <Card
-      className={`group cursor-pointer overflow-hidden bg-card hover:shadow-elegant transition-all duration-300 border-0 border-l-[3px] border-l-fm-crimson dark:border-l-fm-gold hover:border-l-white hover:border-l-[6px] hover:animate-border-shimmer ${showHoverEffect ? 'hover:scale-[1.02]' : ''} ${className}`}
+      className={`group cursor-pointer overflow-hidden bg-card hover:bg-white hover:shadow-elegant transition-all duration-300 border-0 border-t-0 border-r-0 border-b-0 border-l-[3px] border-l-fm-crimson dark:border-l-fm-gold hover:border-l-white hover:border-l-[6px] hover:animate-border-shimmer ${showHoverEffect ? 'hover:scale-[1.02]' : ''} ${className}`}
       onClick={onClick}
     >
       <div className="relative aspect-[4/5] overflow-hidden max-h-[400px]">
