@@ -142,10 +142,8 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
-          spotify_access_token: string | null
           spotify_access_token_encrypted: string | null
           spotify_connected: boolean | null
-          spotify_refresh_token: string | null
           spotify_refresh_token_encrypted: string | null
           spotify_token_expires_at: string | null
           updated_at: string
@@ -156,10 +154,8 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
-          spotify_access_token?: string | null
           spotify_access_token_encrypted?: string | null
           spotify_connected?: boolean | null
-          spotify_refresh_token?: string | null
           spotify_refresh_token_encrypted?: string | null
           spotify_token_expires_at?: string | null
           updated_at?: string
@@ -170,10 +166,8 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
-          spotify_access_token?: string | null
           spotify_access_token_encrypted?: string | null
           spotify_connected?: boolean | null
-          spotify_refresh_token?: string | null
           spotify_refresh_token_encrypted?: string | null
           spotify_token_expires_at?: string | null
           updated_at?: string
