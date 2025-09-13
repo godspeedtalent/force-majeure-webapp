@@ -143,8 +143,10 @@ export type Database = {
           display_name: string | null
           id: string
           spotify_access_token: string | null
+          spotify_access_token_encrypted: string | null
           spotify_connected: boolean | null
           spotify_refresh_token: string | null
+          spotify_refresh_token_encrypted: string | null
           spotify_token_expires_at: string | null
           updated_at: string
           user_id: string
@@ -155,8 +157,10 @@ export type Database = {
           display_name?: string | null
           id?: string
           spotify_access_token?: string | null
+          spotify_access_token_encrypted?: string | null
           spotify_connected?: boolean | null
           spotify_refresh_token?: string | null
+          spotify_refresh_token_encrypted?: string | null
           spotify_token_expires_at?: string | null
           updated_at?: string
           user_id: string
@@ -167,8 +171,10 @@ export type Database = {
           display_name?: string | null
           id?: string
           spotify_access_token?: string | null
+          spotify_access_token_encrypted?: string | null
           spotify_connected?: boolean | null
           spotify_refresh_token?: string | null
+          spotify_refresh_token_encrypted?: string | null
           spotify_token_expires_at?: string | null
           updated_at?: string
           user_id?: string
@@ -224,7 +230,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      decrypt_token: {
+        Args: { encrypted_token: string; user_salt: string }
+        Returns: string
+      }
+      encrypt_token: {
+        Args: { token_value: string; user_salt: string }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
