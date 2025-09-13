@@ -85,7 +85,7 @@ class EnhancedSpotifyService implements SpotifyAuthService {
       // First, get the user's profile to check token expiration
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('spotify_access_token, spotify_token_expires_at, spotify_connected')
+        .select('spotify_token_expires_at, spotify_connected')
         .eq('user_id', userId)
         .single();
 
@@ -102,7 +102,19 @@ class EnhancedSpotifyService implements SpotifyAuthService {
         return await this.refreshUserToken(userId);
       }
 
-      return { accessToken: profile.spotify_access_token };
+      // Get decrypted access token from secure storage
+      const { data: tokens, error: tokensError } = await supabase.functions.invoke('secure-tokens', {
+        body: {
+          action: 'retrieve',
+          userId: userId
+        }
+      });
+
+      if (tokensError || !tokens?.accessToken) {
+        return { error: 'No access token found' };
+      }
+
+      return { accessToken: tokens.accessToken };
     } catch (error) {
       console.error('Error getting user access token:', error);
       return { error };

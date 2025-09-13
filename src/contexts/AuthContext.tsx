@@ -8,8 +8,6 @@ interface Profile {
   user_id: string;
   display_name?: string;
   avatar_url?: string;
-  spotify_access_token?: string;
-  spotify_refresh_token?: string;
   spotify_token_expires_at?: string;
   spotify_connected: boolean;
   created_at: string;

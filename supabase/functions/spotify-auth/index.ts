@@ -123,11 +123,28 @@ Deno.serve(async (req) => {
       // Store tokens in user profile
       const expiresAt = new Date(Date.now() + (tokenData.expires_in * 1000));
       
+      // Store tokens securely using encryption
+      const { error: secureStoreError } = await supabase.functions.invoke('secure-tokens', {
+        body: {
+          action: 'store',
+          userId: userId,
+          accessToken: tokenData.access_token,
+          refreshToken: tokenData.refresh_token
+        }
+      });
+
+      if (secureStoreError) {
+        console.error('Error storing secure tokens:', secureStoreError);
+        return new Response(
+          JSON.stringify({ error: 'Failed to store tokens securely' }),
+          { status: 500, headers: corsHeaders }
+        );
+      }
+
+      // Update profile with connection status and expiry (but not tokens)
       const { error: updateError } = await supabase
         .from('profiles')
         .update({
-          spotify_access_token: tokenData.access_token,
-          spotify_refresh_token: tokenData.refresh_token,
           spotify_token_expires_at: expiresAt.toISOString(),
           spotify_connected: true
         })
@@ -154,14 +171,15 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'refresh_token') {
-      // Get user's refresh token
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('spotify_refresh_token')
-        .eq('user_id', userId)
-        .single();
+      // Get user's encrypted refresh token
+      const { data: tokens, error: tokensError } = await supabase.functions.invoke('secure-tokens', {
+        body: {
+          action: 'retrieve',
+          userId: userId
+        }
+      });
 
-      if (profileError || !profile?.spotify_refresh_token) {
+      if (tokensError || !tokens?.refreshToken) {
         return new Response(
           JSON.stringify({ error: 'No refresh token found' }),
           { 
@@ -180,7 +198,7 @@ Deno.serve(async (req) => {
         },
         body: new URLSearchParams({
           grant_type: 'refresh_token',
-          refresh_token: profile.spotify_refresh_token
+          refresh_token: tokens.refreshToken
         })
       });
 
@@ -199,12 +217,28 @@ Deno.serve(async (req) => {
       const tokenData = await tokenResponse.json();
       const expiresAt = new Date(Date.now() + (tokenData.expires_in * 1000));
       
-      // Update stored tokens
+      // Store refreshed tokens securely
+      const { error: secureStoreError } = await supabase.functions.invoke('secure-tokens', {
+        body: {
+          action: 'store',
+          userId: userId,
+          accessToken: tokenData.access_token,
+          refreshToken: tokenData.refresh_token || tokens.refreshToken
+        }
+      });
+
+      if (secureStoreError) {
+        console.error('Error storing refreshed tokens:', secureStoreError);
+        return new Response(
+          JSON.stringify({ error: 'Failed to store refreshed tokens securely' }),
+          { status: 500, headers: corsHeaders }
+        );
+      }
+
+      // Update profile with expiry only
       const { error: updateError } = await supabase
         .from('profiles')
         .update({
-          spotify_access_token: tokenData.access_token,
-          spotify_refresh_token: tokenData.refresh_token || profile.spotify_refresh_token,
           spotify_token_expires_at: expiresAt.toISOString()
         })
         .eq('user_id', userId);
