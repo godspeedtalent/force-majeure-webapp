@@ -6,7 +6,7 @@ import { LocationCard } from '@/components/scavenger/LocationCard';
 import { LeaderboardTable } from '@/components/scavenger/LeaderboardTable';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Layout } from '@/components/Layout';
+
 
 export default function ScavengerLeaderboard() {
   const { user } = useAuth();
@@ -81,16 +81,14 @@ export default function ScavengerLeaderboard() {
 
   if (locationsLoading) {
     return (
-      <Layout>
-        <div className="min-h-screen flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-fm-gold" />
-        </div>
-      </Layout>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-fm-gold" />
+      </div>
     );
   }
 
   return (
-    <Layout>
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12 max-w-6xl">
         {/* Header */}
         <div className="text-center mb-12">
@@ -173,6 +171,6 @@ export default function ScavengerLeaderboard() {
           </TabsContent>
         </Tabs>
       </div>
-    </Layout>
+    </div>
   );
 }
