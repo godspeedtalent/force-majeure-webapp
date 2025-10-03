@@ -3,17 +3,82 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { MusicPlayerProvider } from "@/contexts/MusicPlayerContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 import Index from "./pages/Index";
 import EventDetails from "./pages/EventDetails";
 import Merch from "./pages/Merch";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
+import ComingSoon from "./pages/ComingSoon";
+import ScavengerSignup from "./pages/ScavengerSignup";
+import ScavengerLeaderboard from "./pages/ScavengerLeaderboard";
 import NotFound from "./pages/NotFound";
+import { FeatureFlagGuard } from "@/components/FeatureFlagGuard";
+import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient();
+
+const AppRoutes = () => {
+  const { data: flags, isLoading } = useFeatureFlags();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-fm-gold" />
+      </div>
+    );
+  }
+
+  const comingSoonMode = flags?.coming_soon_mode ?? false;
+
+  return (
+    <Routes>
+      {/* Coming Soon Mode - Show only scavenger hunt and coming soon page */}
+      {comingSoonMode ? (
+        <>
+          <Route path="/" element={<ComingSoon />} />
+          <Route 
+            path="/lf-system-scavenger-hunt" 
+            element={
+              <FeatureFlagGuard flagName="scavenger_hunt_active" redirectTo="/">
+                <ScavengerSignup />
+              </FeatureFlagGuard>
+            } 
+          />
+          <Route path="/scavenger-leaderboard" element={<ScavengerLeaderboard />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </>
+      ) : (
+        <>
+          {/* Normal App Routes */}
+          <Route path="/" element={<Index />} />
+          <Route path="/event/:id" element={<EventDetails />} />
+          <Route path="/merch" element={<Merch />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/profile" element={<Profile />} />
+          
+          {/* Scavenger Hunt Routes (available even when coming_soon_mode is off) */}
+          <Route 
+            path="/lf-system-scavenger-hunt" 
+            element={
+              <FeatureFlagGuard flagName="scavenger_hunt_active" redirectTo="/">
+                <ScavengerSignup />
+              </FeatureFlagGuard>
+            } 
+          />
+          <Route path="/scavenger-leaderboard" element={<ScavengerLeaderboard />} />
+          
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </>
+      )}
+    </Routes>
+  );
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -24,15 +89,7 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/event/:id" element={<EventDetails />} />
-                <Route path="/merch" element={<Merch />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/profile" element={<Profile />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <AppRoutes />
             </BrowserRouter>
           </TooltipProvider>
         </MusicPlayerProvider>
