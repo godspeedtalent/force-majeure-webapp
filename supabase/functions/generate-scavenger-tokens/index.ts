@@ -9,7 +9,11 @@ const corsHeaders = {
 
 interface GenerateTokensRequest {
   location_id: string;
-  tokens_count?: number;
+  tokens_config?: Array<{
+    reward_type: 'free_ticket' | 'promo_code_20';
+    count: number;
+    promo_code?: string;
+  }>;
 }
 
 serve(async (req) => {
@@ -31,7 +35,7 @@ serve(async (req) => {
       );
     }
 
-    const { location_id, tokens_count = 5 }: GenerateTokensRequest = await req.json();
+    const { location_id, tokens_config = [] }: GenerateTokensRequest = await req.json();
 
     if (!location_id) {
       return new Response(
@@ -54,32 +58,38 @@ serve(async (req) => {
       );
     }
 
-    // Generate tokens
+    // Generate tokens based on config
     const tokens = [];
     const tokenRecords = [];
 
-    for (let i = 0; i < tokens_count; i++) {
-      // Generate cryptographically secure random token (32 characters)
-      const tokenBytes = crypto.getRandomValues(new Uint8Array(16));
-      const token = Array.from(tokenBytes, byte => byte.toString(16).padStart(2, '0')).join('');
-      
-      // Generate unique salt for this token
-      const salt = await bcrypt.genSalt(10);
-      
-      // Hash the token
-      const tokenHash = await bcrypt.hash(token, salt);
+    for (const config of tokens_config) {
+      for (let i = 0; i < config.count; i++) {
+        // Generate cryptographically secure random token (32 characters)
+        const tokenBytes = crypto.getRandomValues(new Uint8Array(16));
+        const token = Array.from(tokenBytes, byte => byte.toString(16).padStart(2, '0')).join('');
+        
+        // Generate unique salt for this token
+        const salt = await bcrypt.genSalt(10);
+        
+        // Hash the token
+        const tokenHash = await bcrypt.hash(token, salt);
 
-      tokens.push({
-        unhashed: token,
-        url: `${location.location_name.replace(/\s+/g, '-')}-${i + 1}`
-      });
+        tokens.push({
+          unhashed: token,
+          reward_type: config.reward_type,
+          promo_code: config.promo_code,
+          url: `${location.location_name.replace(/\s+/g, '-')}-${config.reward_type}-${i + 1}`
+        });
 
-      tokenRecords.push({
-        location_id,
-        token_hash: tokenHash,
-        token_salt: salt,
-        is_claimed: false
-      });
+        tokenRecords.push({
+          location_id,
+          token_hash: tokenHash,
+          token_salt: salt,
+          reward_type: config.reward_type,
+          promo_code: config.promo_code || null,
+          is_claimed: false
+        });
+      }
     }
 
     // Insert all tokens into database
@@ -95,13 +105,13 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Generated ${tokens_count} tokens for location ${location.location_name}`);
+    console.log(`Generated ${tokens.length} tokens for location ${location.location_name}`);
 
     return new Response(
       JSON.stringify({
         success: true,
         location_name: location.location_name,
-        tokens_generated: tokens_count,
+        tokens_generated: tokens.length,
         tokens: tokens,
         message: 'Use these unhashed tokens to create QR codes. They will NOT be stored in the database.',
         qr_code_format: 'https://yourdomain.com/lf-system-scavenger-hunt?token={unhashed_token}'

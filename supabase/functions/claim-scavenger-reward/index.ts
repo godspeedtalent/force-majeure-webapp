@@ -171,8 +171,8 @@ serve(async (req) => {
         token_id: matchedToken.id,
         claim_position: claimPosition,
         show_on_leaderboard,
-        reward_type: location.reward_type,
-        promo_code: location.promo_code,
+        reward_type: matchedToken.reward_type,
+        promo_code: matchedToken.promo_code,
         claimed_at: new Date().toISOString()
       });
 
@@ -199,7 +199,7 @@ serve(async (req) => {
     
     if (mailchimpApiKey) {
       try {
-        const rewardTypeDisplay = location.reward_type === 'free_ticket' 
+        const rewardTypeDisplay = matchedToken.reward_type === 'free_ticket' 
           ? '🎫 Free Ticket' 
           : '🎟️ 20% Off';
 
@@ -209,7 +209,7 @@ serve(async (req) => {
             from_email: "noreply@forcemajeure.com",
             from_name: "Force Majeure",
             subject: "🎉 You found it! Here's your LF System reward",
-            text: `Congratulations ${display_name}!\n\nYou found location: ${location.location_name}\nYou were person #${claimPosition} to find this spot!\n\nYour reward: ${rewardTypeDisplay}\nPromo Code: ${location.promo_code}\n\nSee the leaderboard: ${supabaseUrl.replace('.supabase.co', '')}/scavenger-leaderboard`,
+            text: `Congratulations ${display_name}!\n\nYou found location: ${location.location_name}\nYou were person #${claimPosition} to find this spot!\n\nYour reward: ${rewardTypeDisplay}\nPromo Code: ${matchedToken.promo_code}\n\nSee the leaderboard: ${supabaseUrl.replace('.supabase.co', '')}/scavenger-leaderboard`,
             html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                 <h1 style="color: #000; font-size: 28px; margin-bottom: 20px;">🎉 Congratulations ${display_name}!</h1>
@@ -217,7 +217,7 @@ serve(async (req) => {
                 <p style="font-size: 16px; color: #333;">You were person <strong>#${claimPosition}</strong> to find this location!</p>
                 <div style="background: #f0f0f0; padding: 30px; margin: 30px 0; border-radius: 8px; text-align: center;">
                   <h2 style="color: #000; margin: 0 0 15px 0;">${rewardTypeDisplay}</h2>
-                  <p style="font-size: 28px; font-weight: bold; color: hsl(348 100% 22%); margin: 0; letter-spacing: 2px;">${location.promo_code}</p>
+                  <p style="font-size: 28px; font-weight: bold; color: hsl(348 100% 22%); margin: 0; letter-spacing: 2px;">${matchedToken.promo_code}</p>
                 </div>
                 <p style="font-size: 14px; color: #666; margin-top: 30px;">
                   <a href="${supabaseUrl.replace('.supabase.co', '')}/scavenger-leaderboard" style="color: hsl(348 100% 22%); text-decoration: none; font-weight: bold;">View Leaderboard →</a>
@@ -252,8 +252,8 @@ serve(async (req) => {
         success: true,
         claim_position: claimPosition,
         location_name: location.location_name,
-        reward_type: location.reward_type,
-        promo_code: location.promo_code,
+        reward_type: matchedToken.reward_type,
+        promo_code: matchedToken.promo_code,
         tokens_remaining: location.tokens_remaining - 1,
         message: `You're the ${claimPosition === 1 ? '1st' : claimPosition === 2 ? '2nd' : claimPosition === 3 ? '3rd' : `${claimPosition}th`} person to find this location! Check your email for your reward.`
       }),

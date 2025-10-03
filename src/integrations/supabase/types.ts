@@ -258,7 +258,7 @@ export type Database = {
           location_description: string | null
           location_name: string
           promo_code: string | null
-          reward_type: Database["public"]["Enums"]["reward_type"]
+          reward_type: Database["public"]["Enums"]["reward_type"] | null
           tokens_remaining: number
           total_tokens: number
           updated_at: string
@@ -270,7 +270,7 @@ export type Database = {
           location_description?: string | null
           location_name: string
           promo_code?: string | null
-          reward_type: Database["public"]["Enums"]["reward_type"]
+          reward_type?: Database["public"]["Enums"]["reward_type"] | null
           tokens_remaining?: number
           total_tokens?: number
           updated_at?: string
@@ -282,7 +282,7 @@ export type Database = {
           location_description?: string | null
           location_name?: string
           promo_code?: string | null
-          reward_type?: Database["public"]["Enums"]["reward_type"]
+          reward_type?: Database["public"]["Enums"]["reward_type"] | null
           tokens_remaining?: number
           total_tokens?: number
           updated_at?: string
@@ -297,6 +297,8 @@ export type Database = {
           id: string
           is_claimed: boolean
           location_id: string
+          promo_code: string | null
+          reward_type: Database["public"]["Enums"]["reward_type"]
           token_hash: string
           token_salt: string
           updated_at: string
@@ -308,6 +310,8 @@ export type Database = {
           id?: string
           is_claimed?: boolean
           location_id: string
+          promo_code?: string | null
+          reward_type?: Database["public"]["Enums"]["reward_type"]
           token_hash: string
           token_salt: string
           updated_at?: string
@@ -319,6 +323,8 @@ export type Database = {
           id?: string
           is_claimed?: boolean
           location_id?: string
+          promo_code?: string | null
+          reward_type?: Database["public"]["Enums"]["reward_type"]
           token_hash?: string
           token_salt?: string
           updated_at?: string
