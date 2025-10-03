@@ -17,6 +17,7 @@ import ScavengerSignup from "./pages/ScavengerSignup";
 import ScavengerLeaderboard from "./pages/ScavengerLeaderboard";
 import NotFound from "./pages/NotFound";
 import { FeatureFlagGuard } from "@/components/FeatureFlagGuard";
+import { FeatureFlagDevToggle } from "@/components/FeatureFlagDevToggle";
 import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient();
@@ -88,9 +89,10 @@ const App = () => (
           <TooltipProvider>
             <Toaster />
             <Sonner />
-            <BrowserRouter>
-              <AppRoutes />
-            </BrowserRouter>
+      <BrowserRouter>
+        <AppRoutes />
+        <FeatureFlagDevToggle />
+      </BrowserRouter>
           </TooltipProvider>
         </MusicPlayerProvider>
       </AuthProvider>
