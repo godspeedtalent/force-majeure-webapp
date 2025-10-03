@@ -11,12 +11,17 @@ export const FeatureFlagDevToggle = () => {
 
   const toggleMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('feature_flags')
         .update({ is_enabled: !flags?.coming_soon_mode })
-        .eq('flag_name', 'coming_soon_mode');
+        .eq('flag_name', 'coming_soon_mode')
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Toggle error:', error);
+        throw error;
+      }
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feature-flags'] });
