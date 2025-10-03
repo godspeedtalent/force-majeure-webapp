@@ -37,27 +37,6 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      {/* Coming Soon Mode - Show only coming soon page, auth, and scavenger routes */}
-      {comingSoonMode ? (
-        <>
-          <Route path="/" element={<ComingSoon />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </>
-      ) : (
-        <>
-          {/* Normal App Routes */}
-          <Route path="/" element={<Index />} />
-          <Route path="/event/:id" element={<EventDetails />} />
-          <Route path="/merch" element={<Merch />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/profile" element={<Profile />} />
-          
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </>
-      )}
-      
       {/* Scavenger Hunt Routes - Always available regardless of coming_soon_mode */}
       <Route 
         path="/lf-system-scavenger-hunt" 
@@ -68,6 +47,26 @@ const AppRoutes = () => {
         } 
       />
       <Route path="/scavenger-leaderboard" element={<ScavengerLeaderboard />} />
+      <Route path="/auth" element={<Auth />} />
+      
+      {/* Coming Soon Mode - Show only coming soon page for other routes */}
+      {comingSoonMode ? (
+        <>
+          <Route path="/" element={<ComingSoon />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </>
+      ) : (
+        <>
+          {/* Normal App Routes */}
+          <Route path="/" element={<Index />} />
+          <Route path="/event/:id" element={<EventDetails />} />
+          <Route path="/merch" element={<Merch />} />
+          <Route path="/profile" element={<Profile />} />
+          
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </>
+      )}
     </Routes>
   );
 };
