@@ -37,7 +37,7 @@ export const useFeatureFlags = () => {
 
       return flags;
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes cache
+    staleTime: 30 * 1000, // 30 seconds cache (better for dev)
     refetchOnWindowFocus: true,
   });
 };

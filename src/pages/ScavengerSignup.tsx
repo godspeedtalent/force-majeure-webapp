@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 import { validateScavengerToken } from '@/lib/scavengerApi';
 import { useScavengerClaim } from '@/hooks/useScavengerClaim';
 import { RewardPreview } from '@/components/scavenger/RewardPreview';
@@ -18,6 +19,7 @@ export default function ScavengerSignup() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, signUp } = useAuth();
+  const { data: flags } = useFeatureFlags();
   const { claim, loading: claimLoading, result: claimResult } = useScavengerClaim();
 
   const [validating, setValidating] = useState(true);
@@ -88,6 +90,24 @@ export default function ScavengerSignup() {
       setSubmitting(false);
     }
   };
+
+  // Check if scavenger hunt is active
+  if (!flags?.scavenger_hunt_active) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background px-4">
+        <Card className="p-8 max-w-md w-full text-center">
+          <AlertCircle className="w-12 h-12 text-fm-gold mx-auto mb-4" />
+          <h2 className="font-display text-2xl mb-2">Scavenger Hunt Not Active</h2>
+          <p className="text-muted-foreground mb-6">
+            The scavenger hunt is currently not running. Check back later!
+          </p>
+          <Button onClick={() => navigate('/')} variant="outline">
+            Go Home
+          </Button>
+        </Card>
+      </div>
+    );
+  }
 
   if (validating) {
     return (

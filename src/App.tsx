@@ -34,20 +34,17 @@ const AppRoutes = () => {
   }
 
   const comingSoonMode = flags?.coming_soon_mode ?? false;
+  
+  // Debug logging
+  console.log('Feature Flags:', { flags, comingSoonMode });
+  console.log('Current Path:', window.location.pathname);
 
   return (
     <Routes>
-      {/* Scavenger Hunt Routes - Always available regardless of coming_soon_mode */}
-      <Route 
-        path="/lf-system-scavenger-hunt" 
-        element={
-          <FeatureFlagGuard flagName="scavenger_hunt_active" redirectTo="/">
-            <ScavengerSignup />
-          </FeatureFlagGuard>
-        } 
-      />
-      <Route path="/scavenger-leaderboard" element={<ScavengerLeaderboard />} />
+      {/* Always-accessible routes - highest priority */}
       <Route path="/auth" element={<Auth />} />
+      <Route path="/lf-system-scavenger-hunt" element={<ScavengerSignup />} />
+      <Route path="/scavenger-leaderboard" element={<ScavengerLeaderboard />} />
       
       {/* Coming Soon Mode - Show only coming soon page for other routes */}
       {comingSoonMode ? (
