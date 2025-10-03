@@ -100,6 +100,30 @@ export type Database = {
           },
         ]
       }
+      feature_flags: {
+        Row: {
+          description: string | null
+          flag_name: string
+          id: string
+          is_enabled: boolean
+          updated_at: string
+        }
+        Insert: {
+          description?: string | null
+          flag_name: string
+          id?: string
+          is_enabled?: boolean
+          updated_at?: string
+        }
+        Update: {
+          description?: string | null
+          flag_name?: string
+          id?: string
+          is_enabled?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       merch: {
         Row: {
           created_at: string
@@ -175,6 +199,140 @@ export type Database = {
         }
         Relationships: []
       }
+      scavenger_claims: {
+        Row: {
+          claim_position: number
+          claimed_at: string
+          id: string
+          location_id: string
+          promo_code: string | null
+          reward_type: string
+          show_on_leaderboard: boolean
+          token_id: string
+          user_id: string
+        }
+        Insert: {
+          claim_position: number
+          claimed_at?: string
+          id?: string
+          location_id: string
+          promo_code?: string | null
+          reward_type: string
+          show_on_leaderboard?: boolean
+          token_id: string
+          user_id: string
+        }
+        Update: {
+          claim_position?: number
+          claimed_at?: string
+          id?: string
+          location_id?: string
+          promo_code?: string | null
+          reward_type?: string
+          show_on_leaderboard?: boolean
+          token_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scavenger_claims_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "scavenger_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scavenger_claims_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "scavenger_tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scavenger_locations: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          location_description: string | null
+          location_name: string
+          promo_code: string | null
+          reward_type: Database["public"]["Enums"]["reward_type"]
+          tokens_remaining: number
+          total_tokens: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          location_description?: string | null
+          location_name: string
+          promo_code?: string | null
+          reward_type: Database["public"]["Enums"]["reward_type"]
+          tokens_remaining?: number
+          total_tokens?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          location_description?: string | null
+          location_name?: string
+          promo_code?: string | null
+          reward_type?: Database["public"]["Enums"]["reward_type"]
+          tokens_remaining?: number
+          total_tokens?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      scavenger_tokens: {
+        Row: {
+          claimed_at: string | null
+          claimed_by_user_id: string | null
+          created_at: string
+          id: string
+          is_claimed: boolean
+          location_id: string
+          token_hash: string
+          token_salt: string
+          updated_at: string
+        }
+        Insert: {
+          claimed_at?: string | null
+          claimed_by_user_id?: string | null
+          created_at?: string
+          id?: string
+          is_claimed?: boolean
+          location_id: string
+          token_hash: string
+          token_salt: string
+          updated_at?: string
+        }
+        Update: {
+          claimed_at?: string | null
+          claimed_by_user_id?: string | null
+          created_at?: string
+          id?: string
+          is_claimed?: boolean
+          location_id?: string
+          token_hash?: string
+          token_salt?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scavenger_tokens_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "scavenger_locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       songs: {
         Row: {
           artist_id: string
@@ -234,7 +392,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      reward_type: "free_ticket" | "promo_code_20"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -361,6 +519,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      reward_type: ["free_ticket", "promo_code_20"],
+    },
   },
 } as const
