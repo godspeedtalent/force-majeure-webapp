@@ -37,19 +37,10 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      {/* Coming Soon Mode - Show only scavenger hunt and coming soon page */}
+      {/* Coming Soon Mode - Show only coming soon page, auth, and scavenger routes */}
       {comingSoonMode ? (
         <>
           <Route path="/" element={<ComingSoon />} />
-          <Route 
-            path="/lf-system-scavenger-hunt" 
-            element={
-              <FeatureFlagGuard flagName="scavenger_hunt_active" redirectTo="/">
-                <ScavengerSignup />
-              </FeatureFlagGuard>
-            } 
-          />
-          <Route path="/scavenger-leaderboard" element={<ScavengerLeaderboard />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </>
@@ -62,21 +53,21 @@ const AppRoutes = () => {
           <Route path="/auth" element={<Auth />} />
           <Route path="/profile" element={<Profile />} />
           
-          {/* Scavenger Hunt Routes (available even when coming_soon_mode is off) */}
-          <Route 
-            path="/lf-system-scavenger-hunt" 
-            element={
-              <FeatureFlagGuard flagName="scavenger_hunt_active" redirectTo="/">
-                <ScavengerSignup />
-              </FeatureFlagGuard>
-            } 
-          />
-          <Route path="/scavenger-leaderboard" element={<ScavengerLeaderboard />} />
-          
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </>
       )}
+      
+      {/* Scavenger Hunt Routes - Always available regardless of coming_soon_mode */}
+      <Route 
+        path="/lf-system-scavenger-hunt" 
+        element={
+          <FeatureFlagGuard flagName="scavenger_hunt_active" redirectTo="/">
+            <ScavengerSignup />
+          </FeatureFlagGuard>
+        } 
+      />
+      <Route path="/scavenger-leaderboard" element={<ScavengerLeaderboard />} />
     </Routes>
   );
 };
