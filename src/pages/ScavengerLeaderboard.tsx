@@ -6,6 +6,7 @@ import { LocationCard } from '@/components/scavenger/LocationCard';
 import { LeaderboardTable } from '@/components/scavenger/LeaderboardTable';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import lfSystemImage from '@/assets/lf-system-scavenger.jpg';
 
 
 export default function ScavengerLeaderboard() {
@@ -88,88 +89,100 @@ export default function ScavengerLeaderboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-12 max-w-6xl">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="font-display text-4xl md:text-5xl mb-4">
-            <span className="text-fm-gold">LF System</span> Scavenger Hunt
-          </h1>
-          <p className="text-lg text-muted-foreground">
-            Find all 5 locations to complete the hunt!
-          </p>
-        </div>
+    <div className="min-h-screen flex">
+      {/* Left Column - Image */}
+      <div className="w-1/2 bg-muted flex items-center justify-center p-8">
+        <img 
+          src={lfSystemImage} 
+          alt="LF System" 
+          className="max-w-full max-h-full object-contain"
+        />
+      </div>
 
-        <Tabs defaultValue="locations" className="space-y-8">
-          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
-            <TabsTrigger value="locations" className="gap-2">
-              <MapPin className="w-4 h-4" />
-              Locations
-            </TabsTrigger>
-            <TabsTrigger value="leaderboard" className="gap-2">
-              <Trophy className="w-4 h-4" />
-              Leaderboard
-            </TabsTrigger>
-          </TabsList>
+      {/* Right Column - Content */}
+      <div className="w-1/2 flex items-center justify-center overflow-y-auto">
+        <div className="w-full max-w-3xl px-8 py-12">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="font-display text-4xl md:text-5xl mb-4">
+              <span className="text-fm-gold">LF System</span> Scavenger Hunt
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              Find all 5 locations to complete the hunt!
+            </p>
+          </div>
 
-          {/* Locations Tab */}
-          <TabsContent value="locations" className="space-y-8">
-            <div className="grid gap-4 md:grid-cols-2">
-              {locations?.map((location) => (
-                <LocationCard
-                  key={location.id}
-                  locationName={location.location_name}
-                  rewardType={location.reward_type}
-                  totalTokens={location.total_tokens}
-                  tokensRemaining={location.tokens_remaining}
-                />
-              ))}
-            </div>
+          <Tabs defaultValue="locations" className="space-y-8">
+            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+              <TabsTrigger value="locations" className="gap-2">
+                <MapPin className="w-4 h-4" />
+                Locations
+              </TabsTrigger>
+              <TabsTrigger value="leaderboard" className="gap-2">
+                <Trophy className="w-4 h-4" />
+                Leaderboard
+              </TabsTrigger>
+            </TabsList>
 
-            {/* User's stats */}
-            {user && userClaims && userClaims.length > 0 && (
-              <Card className="p-6 bg-gradient-gold border-none text-primary-foreground">
-                <h3 className="font-display text-2xl mb-4">Your Progress</h3>
-                <div className="space-y-3">
-                  <p className="text-lg">
-                    You've found <span className="font-bold">{userClaims.length}</span> of 5 locations!
-                  </p>
-                  <div className="space-y-2">
-                    {userClaims.map((claim) => (
-                      <div key={claim.id} className="flex items-center justify-between bg-primary-foreground/10 rounded-lg p-3">
-                        <span className="font-medium">
-                          {(claim.scavenger_locations as any).location_name}
-                        </span>
-                        <span className="text-sm">
-                          Position #{claim.claim_position}
-                        </span>
-                      </div>
-                    ))}
+            {/* Locations Tab */}
+            <TabsContent value="locations" className="space-y-8">
+              <div className="grid gap-4 md:grid-cols-2">
+                {locations?.map((location) => (
+                  <LocationCard
+                    key={location.id}
+                    locationName={location.location_name}
+                    rewardType={location.reward_type}
+                    totalTokens={location.total_tokens}
+                    tokensRemaining={location.tokens_remaining}
+                  />
+                ))}
+              </div>
+
+              {/* User's stats */}
+              {user && userClaims && userClaims.length > 0 && (
+                <Card className="p-6 bg-gradient-gold border-none text-primary-foreground">
+                  <h3 className="font-display text-2xl mb-4">Your Progress</h3>
+                  <div className="space-y-3">
+                    <p className="text-lg">
+                      You've found <span className="font-bold">{userClaims.length}</span> of 5 locations!
+                    </p>
+                    <div className="space-y-2">
+                      {userClaims.map((claim) => (
+                        <div key={claim.id} className="flex items-center justify-between bg-primary-foreground/10 rounded-lg p-3">
+                          <span className="font-medium">
+                            {(claim.scavenger_locations as any).location_name}
+                          </span>
+                          <span className="text-sm">
+                            Position #{claim.claim_position}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </Card>
-            )}
-          </TabsContent>
+                </Card>
+              )}
+            </TabsContent>
 
-          {/* Leaderboard Tab */}
-          <TabsContent value="leaderboard">
-            {leaderboardLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-fm-gold" />
-              </div>
-            ) : (
-              <div>
-                <div className="text-center mb-6">
-                  <h2 className="font-display text-2xl mb-2">Top Hunters</h2>
-                  <p className="text-sm text-muted-foreground">
-                    Only showing users who opted in to the leaderboard
-                  </p>
+            {/* Leaderboard Tab */}
+            <TabsContent value="leaderboard">
+              {leaderboardLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-8 h-8 animate-spin text-fm-gold" />
                 </div>
-                <LeaderboardTable entries={leaderboardEntries || []} />
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
+              ) : (
+                <div>
+                  <div className="text-center mb-6">
+                    <h2 className="font-display text-2xl mb-2">Top Hunters</h2>
+                    <p className="text-sm text-muted-foreground">
+                      Only showing users who opted in to the leaderboard
+                    </p>
+                  </div>
+                  <LeaderboardTable entries={leaderboardEntries || []} />
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </div>
   );
