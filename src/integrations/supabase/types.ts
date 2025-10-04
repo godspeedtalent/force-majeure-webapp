@@ -393,6 +393,31 @@ export type Database = {
         Args: { token_value: string; user_salt: string }
         Returns: string
       }
+      get_location_preview: {
+        Args: { p_location_id: string }
+        Returns: {
+          id: string
+          is_active: boolean
+          location_description: string
+          location_name: string
+          reward_type: string
+          tokens_remaining: number
+          total_tokens: number
+        }[]
+      }
+      get_location_with_promo: {
+        Args: { p_location_id: string }
+        Returns: {
+          id: string
+          is_active: boolean
+          location_description: string
+          location_name: string
+          promo_code: string
+          reward_type: string
+          tokens_remaining: number
+          total_tokens: number
+        }[]
+      }
     }
     Enums: {
       reward_type: "free_ticket" | "promo_code_20"

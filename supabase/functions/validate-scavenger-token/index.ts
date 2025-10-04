@@ -45,8 +45,8 @@ serve(async (req) => {
     }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const { token } = await req.json();
 
@@ -57,10 +57,10 @@ serve(async (req) => {
       );
     }
 
-    // Get all unclaimed tokens
+    // Get all unclaimed tokens (using service role to bypass RLS)
     const { data: tokens, error: tokensError } = await supabase
       .from('scavenger_tokens')
-      .select('*, scavenger_locations(*)')
+      .select('id, token_hash, token_salt, location_id')
       .eq('is_claimed', false);
 
     if (tokensError) {
@@ -108,19 +108,23 @@ serve(async (req) => {
       );
     }
 
-    const location = matchedToken.scavenger_locations;
+    // Get location preview using security definer function (no promo code exposed)
+    const { data: locationData, error: locationError } = await supabase
+      .rpc('get_location_preview', { p_location_id: matchedToken.location_id });
 
-    // Check if location is still active
-    if (!location.is_active) {
+    if (locationError || !locationData || locationData.length === 0) {
+      console.error('Error fetching location:', locationError);
       return new Response(
         JSON.stringify({ 
           valid: false,
-          error: 'Location inactive',
+          error: 'Location not found',
           message: 'This location is no longer active.'
         }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    const location = locationData[0];
 
     // Check if tokens are still available
     if (location.tokens_remaining <= 0) {
@@ -134,7 +138,7 @@ serve(async (req) => {
       );
     }
 
-    // Token is valid
+    // Token is valid - return preview without promo code
     return new Response(
       JSON.stringify({
         valid: true,

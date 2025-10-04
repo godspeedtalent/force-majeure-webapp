@@ -66,10 +66,10 @@ serve(async (req) => {
       );
     }
 
-    // Get all unclaimed tokens
+    // Get all unclaimed tokens (using service role to bypass RLS)
     const { data: tokens, error: tokensError } = await supabase
       .from('scavenger_tokens')
-      .select('*, scavenger_locations(*)')
+      .select('id, token_hash, token_salt, location_id')
       .eq('is_claimed', false);
 
     if (tokensError || !tokens || tokens.length === 0) {
@@ -101,7 +101,19 @@ serve(async (req) => {
       );
     }
 
-    const location = matchedToken.scavenger_locations;
+    // Get location details with promo code using security definer function
+    const { data: locationData, error: locationError } = await supabase
+      .rpc('get_location_with_promo', { p_location_id: matchedToken.location_id });
+
+    if (locationError || !locationData || locationData.length === 0) {
+      console.error('Error fetching location:', locationError);
+      return new Response(
+        JSON.stringify({ error: 'Location not found or inactive' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const location = locationData[0];
 
     // Check if location has tokens remaining
     if (location.tokens_remaining <= 0) {
