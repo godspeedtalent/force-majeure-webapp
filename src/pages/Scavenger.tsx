@@ -232,8 +232,17 @@ export default function Scavenger() {
       return (
         <>
           <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
-          <div className="min-h-screen flex">
-            <div className="w-1/2 flex items-center justify-center overflow-y-auto relative z-10 shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] border-r border-border">
+          {/* Mobile/Tablet: Hero image at top */}
+          <div className="lg:hidden h-[33vh] max-h-[400px] w-full bg-muted relative overflow-hidden">
+            <ImageWithSkeleton 
+              src={lfSystemImage} 
+              alt="LF System" 
+              className="w-full h-full object-cover object-top brightness-90"
+            />
+          </div>
+          {/* Desktop: Split layout */}
+          <div className="min-h-screen flex flex-col lg:flex-row">
+            <div className="flex-1 lg:w-1/2 flex items-center justify-center overflow-y-auto relative z-10 lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] lg:border-r border-border">
               <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
               <div className="w-full max-w-md px-8 py-12 relative z-10">
                 <MessagePanel 
@@ -260,7 +269,8 @@ export default function Scavenger() {
                 </div>
               </div>
             </div>
-            <div className="w-1/2 bg-muted relative overflow-hidden">
+            {/* Desktop only: Right side image */}
+            <div className="hidden lg:block lg:w-1/2 bg-muted relative overflow-hidden">
               <ImageWithSkeleton 
                 src={lfSystemImage} 
                 alt="LF System" 
@@ -284,8 +294,17 @@ export default function Scavenger() {
       return (
         <>
           <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
-          <div className="min-h-screen flex">
-            <div className="w-1/2 flex items-center justify-center overflow-y-auto relative z-10 shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] border-r border-border">
+          {/* Mobile/Tablet: Hero image at top */}
+          <div className="lg:hidden h-[33vh] max-h-[400px] w-full bg-muted relative overflow-hidden">
+            <ImageWithSkeleton 
+              src={lfSystemImage} 
+              alt="LF System" 
+              className="w-full h-full object-cover object-top brightness-90"
+            />
+          </div>
+          {/* Desktop: Split layout */}
+          <div className="min-h-screen flex flex-col lg:flex-row">
+            <div className="flex-1 lg:w-1/2 flex items-center justify-center overflow-y-auto relative z-10 lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] lg:border-r border-border">
               <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
               <div className="w-full max-w-md px-8 py-12 relative z-10">
                 <MessagePanel 
@@ -300,7 +319,8 @@ export default function Scavenger() {
                 </div>
               </div>
             </div>
-            <div className="w-1/2 bg-muted relative overflow-hidden">
+            {/* Desktop only: Right side image */}
+            <div className="hidden lg:block lg:w-1/2 bg-muted relative overflow-hidden">
               <ImageWithSkeleton 
                 src={lfSystemImage} 
                 alt="LF System" 
@@ -319,8 +339,17 @@ export default function Scavenger() {
       return (
         <>
           <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
-          <div className="min-h-screen flex">
-            <div className="w-1/2 flex items-center justify-center overflow-y-auto relative z-10 shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] border-r border-border">
+          {/* Mobile/Tablet: Hero image at top */}
+          <div className="lg:hidden h-[33vh] max-h-[400px] w-full bg-muted relative overflow-hidden">
+            <ImageWithSkeleton 
+              src={lfSystemImage} 
+              alt="LF System" 
+              className="w-full h-full object-cover object-top brightness-90"
+            />
+          </div>
+          {/* Desktop: Split layout */}
+          <div className="min-h-screen flex flex-col lg:flex-row">
+            <div className="flex-1 lg:w-1/2 flex items-center justify-center overflow-y-auto relative z-10 lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] lg:border-r border-border">
               <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
               <div className="w-full max-w-md px-8 py-12 relative z-10">
                 <MessagePanel 
@@ -330,7 +359,8 @@ export default function Scavenger() {
                 />
               </div>
             </div>
-            <div className="w-1/2 bg-muted relative overflow-hidden">
+            {/* Desktop only: Right side image */}
+            <div className="hidden lg:block lg:w-1/2 bg-muted relative overflow-hidden">
               <ImageWithSkeleton 
                 src={lfSystemImage} 
                 alt="LF System" 
