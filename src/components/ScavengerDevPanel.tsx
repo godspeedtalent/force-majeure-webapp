@@ -32,9 +32,9 @@ export const ScavengerDevPanel = () => {
 
   const handleScenario = (token: string | null) => {
     if (token) {
-      navigate(`/scavenger?token=${token}`);
+      navigate(`/scavenger-leaderboard?token=${token}`);
     } else {
-      navigate('/scavenger');
+      navigate('/scavenger-leaderboard');
     }
     setIsOpen(false);
   };
