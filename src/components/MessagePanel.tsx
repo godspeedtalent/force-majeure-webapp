@@ -23,7 +23,7 @@ export const MessagePanel = ({
 
   return (
     <div className={cn(
-      'bg-background/60 backdrop-blur-md border border-border p-12 text-center w-full',
+      'bg-background/60 backdrop-blur-md border-2 border-border/40 p-12 text-center w-full shadow-2xl',
       'animate-slide-up-fade',
       className
     )}>

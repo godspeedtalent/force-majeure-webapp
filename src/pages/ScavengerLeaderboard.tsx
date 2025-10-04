@@ -158,7 +158,7 @@ export default function ScavengerLeaderboard() {
                   </p>
                   <Button 
                     size="lg" 
-                    className="w-full max-w-xs mx-auto bg-gradient-gold hover:opacity-90 font-semibold text-black"
+                    className="w-full max-w-xs mx-auto bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]"
                     onClick={() => setIsJoinModalOpen(true)}
                   >
                     Join

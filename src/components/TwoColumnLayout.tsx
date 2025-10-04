@@ -23,7 +23,7 @@ export const TwoColumnLayout = ({
     <div className={cn('min-h-screen flex', className)}>
       {/* Left Column */}
       <div className={cn(
-        'w-1/2 flex items-center justify-center overflow-y-auto relative',
+        'w-1/2 flex items-center justify-center overflow-y-auto relative z-10 shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)]',
         border && 'border-r border-border'
       )}>
         {leftDecor && (
@@ -41,9 +41,10 @@ export const TwoColumnLayout = ({
             <ImageWithSkeleton 
               src={rightImage} 
               alt="Background" 
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover brightness-90"
             />
             <div className="absolute inset-0 bg-background/5 backdrop-blur-[0.5px]" />
+            <div className="absolute inset-0 bg-black/[0.03]" />
           </>
         ) : (
           right
