@@ -5,7 +5,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Trophy, MapPin } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -15,6 +14,7 @@ import { LeaderboardTable } from '@/components/scavenger/LeaderboardTable';
 import { LoadingState } from '@/components/LoadingState';
 import { TwoColumnLayout } from '@/components/TwoColumnLayout';
 import { MessagePanel } from '@/components/MessagePanel';
+import { WizardPanel, useWizardNavigation } from '@/components/WizardPanel';
 import { ImageWithSkeleton } from '@/components/ImageWithSkeleton';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -25,7 +25,7 @@ export default function ScavengerLeaderboard() {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
-  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const { currentStep, nextStep, prevStep, setCurrentStep } = useWizardNavigation();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -128,7 +128,7 @@ export default function ScavengerLeaderboard() {
       if (error) throw error;
 
       toast.success('Check your email to complete registration!');
-      setIsJoinModalOpen(false);
+      setCurrentStep(0); // Reset to first step
     } catch (error: any) {
       toast.error(error.message || 'Failed to register');
     } finally {
@@ -136,58 +136,47 @@ export default function ScavengerLeaderboard() {
     }
   };
 
-  // Show error state if no token
+  // Show wizard if no token
   if (!token) {
-    return (
-      <div className="min-h-screen flex">
-        {/* Left Column - Content */}
-        <div className="w-1/2 flex items-center justify-center overflow-y-auto relative border-r border-border">
-          <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
-          <div className="w-full max-w-md px-8 py-12 relative z-10 flex items-center justify-center">
-            <MessagePanel
-              isLoading={locationsLoading}
-              title="You got here too early."
-              description="But the free tickets are still out there. Keep searching!"
-              action={
-                <>
-                  <h2 className="font-display text-2xl md:text-3xl text-fm-gold">
-                    Register for the Rave Fam
-                  </h2>
-                  <p className="text-lg text-muted-foreground">
-                    You'll need to join the rave fam to snag the free tix once you find them. You can get a head start now.
-                  </p>
-                  <Button 
-                    size="lg" 
-                    className="w-full max-w-xs mx-auto bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]"
-                    onClick={() => setIsJoinModalOpen(true)}
-                  >
-                    Join
-                  </Button>
-                </>
-              }
-            />
-          </div>
-        </div>
-
-        {/* Right Column - Image */}
-        <div className="w-1/2 bg-muted relative overflow-hidden">
-          <ImageWithSkeleton 
-            src={lfSystemImage} 
-            alt="LF System" 
-            className="w-full h-full object-cover"
+    const wizardSteps = [
+      // Step 1: Welcome Message
+      {
+        content: (
+          <MessagePanel
+            isLoading={locationsLoading}
+            title="You got here too early."
+            description="But the free tickets are still out there. Keep searching!"
+            action={
+              <>
+                <h2 className="font-display text-2xl md:text-3xl text-fm-gold">
+                  Register for the Rave Fam
+                </h2>
+                <p className="text-lg text-muted-foreground">
+                  You'll need to join the rave fam to snag the free tix once you find them. You can get a head start now.
+                </p>
+                <Button 
+                  size="lg" 
+                  className="w-full max-w-xs mx-auto bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]"
+                  onClick={nextStep}
+                >
+                  Join
+                </Button>
+              </>
+            }
           />
-          <div className="absolute inset-0 bg-background/5 backdrop-blur-[0.5px]" />
-        </div>
-
-        {/* Join Modal */}
-        <Dialog open={isJoinModalOpen} onOpenChange={setIsJoinModalOpen}>
-          <DialogContent className="sm:max-w-lg bg-background/60 backdrop-blur-md border border-border p-8">
-            <DialogHeader className="mb-6">
-              <DialogTitle className="font-display text-3xl">Join the Rave Fam</DialogTitle>
-              <DialogDescription>
+        ),
+        canGoBack: false,
+      },
+      // Step 2: Registration Form
+      {
+        content: (
+          <div className="bg-background/60 backdrop-blur-md border-2 border-border/40 p-12 w-full shadow-2xl animate-slide-up-fade">
+            <div className="mb-6 text-center">
+              <h1 className="font-display text-3xl md:text-4xl mb-2">Join the Rave Fam</h1>
+              <p className="text-muted-foreground">
                 Register to claim your free tickets when you find them.
-              </DialogDescription>
-            </DialogHeader>
+              </p>
+            </div>
             <form onSubmit={handleJoinSubmit} className="space-y-6">
               {/* Personal Information Section */}
               <div className="space-y-4">
@@ -263,14 +252,42 @@ export default function ScavengerLeaderboard() {
 
               <Button 
                 type="submit" 
-                className="w-full bg-gradient-gold hover:opacity-90 font-semibold text-black"
+                className="w-full bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? 'Joining...' : 'Join Now'}
               </Button>
             </form>
-          </DialogContent>
-        </Dialog>
+          </div>
+        ),
+        canGoBack: true,
+      },
+    ];
+
+    return (
+      <div className="min-h-screen flex">
+        {/* Left Column - Content */}
+        <div className="w-1/2 flex items-center justify-center overflow-y-auto relative z-10 shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] border-r border-border">
+          <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
+          <div className="w-full max-w-md px-8 py-12 relative z-10 flex items-center justify-center">
+            <WizardPanel
+              steps={wizardSteps}
+              currentStep={currentStep}
+              onStepChange={setCurrentStep}
+            />
+          </div>
+        </div>
+
+        {/* Right Column - Image */}
+        <div className="w-1/2 bg-muted relative overflow-hidden">
+          <ImageWithSkeleton 
+            src={lfSystemImage} 
+            alt="LF System" 
+            className="w-full h-full object-cover brightness-90"
+          />
+          <div className="absolute inset-0 bg-background/5 backdrop-blur-[0.5px]" />
+          <div className="absolute inset-0 bg-black/[0.03]" />
+        </div>
       </div>
     );
   }
