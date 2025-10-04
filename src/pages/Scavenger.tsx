@@ -33,6 +33,7 @@ export default function Scavenger() {
   const parallaxRef1 = useRef<HTMLDivElement>(null);
   const parallaxRef2 = useRef<HTMLDivElement>(null);
   const parallaxRef3 = useRef<HTMLDivElement>(null);
+  const autoScrollCancelled = useRef(false);
   
   const [isLoginMode, setIsLoginMode] = useState(false);
   const [loginEmail, setLoginEmail] = useState('');
@@ -40,6 +41,51 @@ export default function Scavenger() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [validationResult, setValidationResult] = useState<any>(null);
   const [isValidating, setIsValidating] = useState(false);
+
+  // Auto-scroll animation on mount
+  useEffect(() => {
+    const targetScroll = window.innerHeight * 0.25; // 25% of viewport
+    const duration = 3000; // 3 seconds
+    const startTime = Date.now();
+    let animationFrame: number;
+
+    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+
+    const animate = () => {
+      if (autoScrollCancelled.current) return;
+
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOutCubic(progress);
+      
+      window.scrollTo(0, targetScroll * easedProgress);
+
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(animate);
+      }
+    };
+
+    // Start animation after a brief delay
+    const timeout = setTimeout(() => {
+      animationFrame = requestAnimationFrame(animate);
+    }, 300);
+
+    // Cancel on user scroll
+    const handleUserScroll = () => {
+      autoScrollCancelled.current = true;
+      cancelAnimationFrame(animationFrame);
+    };
+
+    window.addEventListener('wheel', handleUserScroll, { once: true, passive: true });
+    window.addEventListener('touchstart', handleUserScroll, { once: true, passive: true });
+
+    return () => {
+      clearTimeout(timeout);
+      cancelAnimationFrame(animationFrame);
+      window.removeEventListener('wheel', handleUserScroll);
+      window.removeEventListener('touchstart', handleUserScroll);
+    };
+  }, []);
 
   // Parallax scroll effect
   useEffect(() => {
@@ -252,7 +298,7 @@ export default function Scavenger() {
         <>
           <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
           {/* Mobile/Tablet: Hero image at top */}
-          <div className="lg:hidden h-[75vh] w-full bg-muted relative overflow-hidden shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)]">
+          <div className="lg:hidden h-[75vh] w-full bg-muted relative overflow-hidden shadow-[0_12px_48px_-4px_rgba(0,0,0,0.7)]">
             <div 
               ref={parallaxRef1}
               className="absolute inset-0 w-full h-[120%] -top-[10%]"
@@ -320,7 +366,7 @@ export default function Scavenger() {
         <>
           <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
           {/* Mobile/Tablet: Hero image at top */}
-          <div className="lg:hidden h-[75vh] w-full bg-muted relative overflow-hidden shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)]">
+          <div className="lg:hidden h-[75vh] w-full bg-muted relative overflow-hidden shadow-[0_12px_48px_-4px_rgba(0,0,0,0.7)]">
             <div 
               ref={parallaxRef2}
               className="absolute inset-0 w-full h-[120%] -top-[10%]"
@@ -371,7 +417,7 @@ export default function Scavenger() {
         <>
           <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
           {/* Mobile/Tablet: Hero image at top */}
-          <div className="lg:hidden h-[75vh] w-full bg-muted relative overflow-hidden shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)]">
+          <div className="lg:hidden h-[75vh] w-full bg-muted relative overflow-hidden shadow-[0_12px_48px_-4px_rgba(0,0,0,0.7)]">
             <div 
               ref={parallaxRef3}
               className="absolute inset-0 w-full h-[120%] -top-[10%]"
