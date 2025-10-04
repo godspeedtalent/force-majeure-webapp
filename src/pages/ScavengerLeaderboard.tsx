@@ -14,6 +14,8 @@ import { LocationCard } from '@/components/scavenger/LocationCard';
 import { LeaderboardTable } from '@/components/scavenger/LeaderboardTable';
 import { LoadingState } from '@/components/LoadingState';
 import { TwoColumnLayout } from '@/components/TwoColumnLayout';
+import { MessagePanel } from '@/components/MessagePanel';
+import { ImageWithSkeleton } from '@/components/ImageWithSkeleton';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import lfSystemImage from '@/assets/lf-system-scavenger.jpg';
@@ -142,36 +144,34 @@ export default function ScavengerLeaderboard() {
         <div className="w-1/2 flex items-center justify-center overflow-y-auto relative border-r border-border">
           <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
           <div className="w-full max-w-md px-8 py-12 relative z-10 flex items-center justify-center">
-            <div className="bg-background/60 backdrop-blur-md border border-border p-12 text-center w-full">
-              <h1 className="font-display text-5xl md:text-6xl mb-4">
-                You got here too early.
-              </h1>
-              <p className="text-lg text-muted-foreground mb-8">
-                But the free tickets are still out there. Keep searching!
-              </p>
-              
-              <div className="space-y-6">
-                <h2 className="font-display text-2xl md:text-3xl text-fm-gold">
-                  Register for the Rave Fam
-                </h2>
-                <p className="text-lg text-muted-foreground">
-                  You'll need to join the rave fam to snag the free tix once you find them. You can get a head start now.
-                </p>
-                <Button 
-                  size="lg" 
-                  className="w-full max-w-xs mx-auto bg-gradient-gold hover:opacity-90 font-semibold text-black"
-                  onClick={() => setIsJoinModalOpen(true)}
-                >
-                  Join
-                </Button>
-              </div>
-            </div>
+            <MessagePanel
+              isLoading={locationsLoading}
+              title="You got here too early."
+              description="But the free tickets are still out there. Keep searching!"
+              action={
+                <>
+                  <h2 className="font-display text-2xl md:text-3xl text-fm-gold">
+                    Register for the Rave Fam
+                  </h2>
+                  <p className="text-lg text-muted-foreground">
+                    You'll need to join the rave fam to snag the free tix once you find them. You can get a head start now.
+                  </p>
+                  <Button 
+                    size="lg" 
+                    className="w-full max-w-xs mx-auto bg-gradient-gold hover:opacity-90 font-semibold text-black"
+                    onClick={() => setIsJoinModalOpen(true)}
+                  >
+                    Join
+                  </Button>
+                </>
+              }
+            />
           </div>
         </div>
 
         {/* Right Column - Image */}
         <div className="w-1/2 bg-muted relative overflow-hidden">
-          <img 
+          <ImageWithSkeleton 
             src={lfSystemImage} 
             alt="LF System" 
             className="w-full h-full object-cover"
@@ -364,7 +364,7 @@ export default function ScavengerLeaderboard() {
 
       {/* Right Column - Image */}
       <div className="w-1/2 bg-muted relative overflow-hidden">
-        <img 
+        <ImageWithSkeleton 
           src={lfSystemImage} 
           alt="LF System" 
           className="w-full h-full object-cover"

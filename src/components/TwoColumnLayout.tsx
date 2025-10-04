@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
+import { ImageWithSkeleton } from './ImageWithSkeleton';
 
 interface TwoColumnLayoutProps {
   left: ReactNode;
@@ -37,7 +38,7 @@ export const TwoColumnLayout = ({
       <div className="w-1/2 bg-muted relative overflow-hidden">
         {rightImage ? (
           <>
-            <img 
+            <ImageWithSkeleton 
               src={rightImage} 
               alt="Background" 
               className="w-full h-full object-cover"

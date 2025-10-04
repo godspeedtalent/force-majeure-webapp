@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ImageWithSkeleton } from './ImageWithSkeleton';
 
 interface CommonCardProps {
   image: string;
@@ -48,10 +49,11 @@ export const CommonCard = ({
       onClick={onClick}
     >
       <div className="relative aspect-[4/5] overflow-hidden max-h-[400px]">
-        <img
+        <ImageWithSkeleton
           src={image}
           alt={imageAlt}
           className="w-full h-full object-cover object-center max-h-[675px]"
+          aspectRatio="4/5"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
         

@@ -112,6 +112,10 @@ export default {
 					'0%': { borderColor: 'hsl(var(--fm-crimson))' },
 					'50%': { borderColor: 'hsl(var(--accent))' },
 					'100%': { borderColor: 'hsl(var(--fm-crimson))' }
+				},
+				'slide-up-fade': {
+					'0%': { transform: 'translateY(20px)', opacity: '0' },
+					'100%': { transform: 'translateY(0)', opacity: '1' }
 				}
 			},
 			animation: {
@@ -123,7 +127,8 @@ export default {
 				'slide-down-in': 'slide-down-in 0.6s ease-in',
 				'pulse-gold': 'pulse-gold 2s infinite',
 				'shimmer': 'shimmer 2s infinite',
-				'border-shimmer': 'border-shimmer 2s infinite'
+				'border-shimmer': 'border-shimmer 2s infinite',
+				'slide-up-fade': 'slide-up-fade 0.6s ease-out'
 			},
 			backgroundImage: {
 				'gradient-gold': 'var(--gradient-gold)',
