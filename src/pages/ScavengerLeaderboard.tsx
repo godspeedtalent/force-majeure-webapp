@@ -22,8 +22,10 @@ export default function ScavengerLeaderboard() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [showOnLeaderboard, setShowOnLeaderboard] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -137,8 +139,8 @@ export default function ScavengerLeaderboard() {
         {/* Left Column - Content */}
         <div className="w-1/2 flex items-center justify-center overflow-y-auto relative border-r border-border">
           <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
-          <div className="w-full max-w-md px-8 py-12 relative z-10">
-            <div className="bg-background/80 backdrop-blur-md border border-border rounded-2xl p-8 text-center">
+          <div className="w-full max-w-md px-8 py-12 relative z-10 flex items-center justify-center">
+            <div className="bg-background/60 backdrop-blur-md border border-border p-12 text-center w-full">
               <h1 className="font-display text-5xl md:text-6xl mb-4">
                 You got here too early.
               </h1>
@@ -155,7 +157,7 @@ export default function ScavengerLeaderboard() {
                 </p>
                 <Button 
                   size="lg" 
-                  className="w-full max-w-xs mx-auto bg-gradient-gold hover:opacity-90 text-primary font-semibold"
+                  className="w-full max-w-xs mx-auto bg-gradient-gold hover:opacity-90 font-semibold text-black"
                   onClick={() => setIsJoinModalOpen(true)}
                 >
                   Join
@@ -177,36 +179,75 @@ export default function ScavengerLeaderboard() {
 
         {/* Join Modal */}
         <Dialog open={isJoinModalOpen} onOpenChange={setIsJoinModalOpen}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
+          <DialogContent className="sm:max-w-lg bg-background/60 backdrop-blur-md border border-border p-8">
+            <DialogHeader className="mb-6">
               <DialogTitle className="font-display text-3xl">Join the Rave Fam</DialogTitle>
               <DialogDescription>
                 Register to claim your free tickets when you find them.
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleJoinSubmit} className="space-y-4">
+            <form onSubmit={handleJoinSubmit} className="space-y-6">
+              {/* Personal Information Section */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">Full Name</Label>
+                  <Input
+                    id="fullName"
+                    type="text"
+                    placeholder="John Doe"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="displayName">Display Name</Label>
+                  <Input
+                    id="displayName"
+                    type="text"
+                    placeholder="Your display name"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border" />
+                </div>
+              </div>
+
+              {/* Phone Number Section */}
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="phoneNumber">Phone Number</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="your@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="phoneNumber"
+                  type="tel"
+                  placeholder="+1 (555) 123-4567"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
                   required
                 />
+                <p className="text-xs text-muted-foreground">
+                  This is required to receive promo tickets.
+                </p>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="displayName">Display Name</Label>
-                <Input
-                  id="displayName"
-                  type="text"
-                  placeholder="Your name"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  required
-                />
-              </div>
+
+              {/* Leaderboard Option */}
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="leaderboard"
@@ -217,9 +258,10 @@ export default function ScavengerLeaderboard() {
                   Show me on the leaderboard
                 </Label>
               </div>
+
               <Button 
                 type="submit" 
-                className="w-full bg-gradient-gold hover:opacity-90 text-primary font-semibold"
+                className="w-full bg-gradient-gold hover:opacity-90 font-semibold text-black"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? 'Joining...' : 'Join Now'}
