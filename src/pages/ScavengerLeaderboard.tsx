@@ -12,12 +12,14 @@ import { toast } from 'sonner';
 import { LocationCard } from '@/components/scavenger/LocationCard';
 import { LeaderboardTable } from '@/components/scavenger/LeaderboardTable';
 import { LoadingState } from '@/components/LoadingState';
-import { TwoColumnLayout } from '@/components/TwoColumnLayout';
 import { MessagePanel } from '@/components/MessagePanel';
 import { WizardPanel, useWizardNavigation } from '@/components/WizardPanel';
 import { ImageWithSkeleton } from '@/components/ImageWithSkeleton';
+import { ScavengerNavigation } from '@/components/ScavengerNavigation';
+import { Footer } from '@/components/Footer';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 import lfSystemImage from '@/assets/lf-system-scavenger.jpg';
 
 
@@ -25,7 +27,8 @@ export default function ScavengerLeaderboard() {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
-  const { currentStep, nextStep, prevStep, setCurrentStep } = useWizardNavigation();
+  const { data: featureFlags } = useFeatureFlags();
+  const { currentStep, setCurrentStep, nextStep } = useWizardNavigation();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -123,14 +126,22 @@ export default function ScavengerLeaderboard() {
     setIsSubmitting(true);
 
     try {
+      // Build redirect URL to preserve token if it exists
+      const currentUrl = window.location.origin + window.location.pathname;
+      const redirectUrl = token ? `${currentUrl}?token=${token}` : currentUrl;
+
       const { error } = await supabase.auth.signUp({
         email,
         password: Math.random().toString(36).slice(-12),
         options: {
           data: {
             display_name: displayName,
-            show_on_leaderboard: showOnLeaderboard
-          }
+            full_name: fullName,
+            phone_number: phoneNumber,
+            instagram_handle: instagramHandle,
+            show_on_leaderboard: showOnLeaderboard,
+          },
+          emailRedirectTo: redirectUrl,
         }
       });
 
@@ -190,7 +201,7 @@ export default function ScavengerLeaderboard() {
               {/* Personal Information Section */}
               <div className="space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name</Label>
+                  <Label htmlFor="fullName">Full Name <span className="text-fm-gold">*</span></Label>
                   <Input
                     id="fullName"
                     type="text"
@@ -201,7 +212,7 @@ export default function ScavengerLeaderboard() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">Email <span className="text-fm-gold">*</span></Label>
                   <Input
                     id="email"
                     type="email"
@@ -212,7 +223,7 @@ export default function ScavengerLeaderboard() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="displayName">Display Name</Label>
+                  <Label htmlFor="displayName">Display Name <span className="text-fm-gold">*</span></Label>
                   <Input
                     id="displayName"
                     type="text"
@@ -234,7 +245,7 @@ export default function ScavengerLeaderboard() {
               {/* Phone Number Section */}
               <div className="space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="phoneNumber">Phone Number</Label>
+                  <Label htmlFor="phoneNumber">Phone Number <span className="text-fm-gold">*</span></Label>
                   <Input
                     id="phoneNumber"
                     type="tel"
@@ -248,7 +259,7 @@ export default function ScavengerLeaderboard() {
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="instagram">Instagram Handle (Optional)</Label>
+                  <Label htmlFor="instagram">Instagram Handle</Label>
                   <Input
                     id="instagram"
                     type="text"
@@ -269,7 +280,7 @@ export default function ScavengerLeaderboard() {
                     required
                   />
                   <Label htmlFor="contact" className="text-sm cursor-pointer leading-relaxed">
-                    I agree to be contacted via email or by SMS to receive any award.
+                    I agree to be contacted via email or by SMS to receive any award. <span className="text-fm-gold">*</span>
                   </Label>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -299,16 +310,123 @@ export default function ScavengerLeaderboard() {
     ];
 
     return (
+      <>
+        <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
+        <div className="min-h-screen flex">
+          {/* Left Column - Content */}
+          <div className="w-1/2 flex items-center justify-center overflow-y-auto relative z-10 shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] border-r border-border">
+            <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
+            <div className="w-full max-w-md px-8 py-12 relative z-10 flex items-center justify-center">
+              <WizardPanel
+                steps={wizardSteps}
+                currentStep={currentStep}
+                onStepChange={setCurrentStep}
+              />
+            </div>
+          </div>
+
+          {/* Right Column - Image */}
+          <div className="w-1/2 bg-muted relative overflow-hidden">
+            <ImageWithSkeleton 
+              src={lfSystemImage} 
+              alt="LF System" 
+              className="w-full h-full object-cover brightness-90"
+            />
+            <div className="absolute inset-0 bg-background/5 backdrop-blur-[0.5px]" />
+            <div className="absolute inset-0 bg-black/[0.03]" />
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
       <div className="min-h-screen flex">
         {/* Left Column - Content */}
         <div className="w-1/2 flex items-center justify-center overflow-y-auto relative z-10 shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] border-r border-border">
           <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
-          <div className="w-full max-w-md px-8 py-12 relative z-10 flex items-center justify-center">
-            <WizardPanel
-              steps={wizardSteps}
-              currentStep={currentStep}
-              onStepChange={setCurrentStep}
-            />
+          <div className="w-full max-w-3xl px-8 py-12 relative z-10">
+            {/* Header */}
+            <div className="text-center mb-12">
+              <h1 className="font-display text-4xl md:text-5xl mb-4">
+                <span className="text-fm-gold">LF System</span> Scavenger Hunt
+              </h1>
+              <p className="text-lg text-muted-foreground">
+                Find all 5 locations to complete the hunt!
+              </p>
+            </div>
+
+            <Tabs defaultValue="locations" className="space-y-8">
+              <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+                <TabsTrigger value="locations" className="gap-2">
+                  <MapPin className="w-4 h-4" />
+                  Locations
+                </TabsTrigger>
+                <TabsTrigger value="leaderboard" className="gap-2">
+                  <Trophy className="w-4 h-4" />
+                  Leaderboard
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Locations Tab */}
+              <TabsContent value="locations" className="space-y-8">
+                <div className="grid gap-4 md:grid-cols-2">
+                  {locations?.map((location) => (
+                    <LocationCard
+                      key={location.id}
+                      locationName={location.location_name}
+                      rewardType={location.reward_type}
+                      totalTokens={location.total_tokens}
+                      tokensRemaining={location.tokens_remaining}
+                    />
+                  ))}
+                </div>
+
+                {/* User's stats */}
+                {user && userClaims && userClaims.length > 0 && (
+                  <Card className="p-6 bg-gradient-gold border-none text-primary-foreground">
+                    <h3 className="font-display text-2xl mb-4">Your Progress</h3>
+                    <div className="space-y-3">
+                      <p className="text-lg">
+                        You've found <span className="font-bold">{userClaims.length}</span> of 5 locations!
+                      </p>
+                      <div className="space-y-2">
+                        {userClaims.map((claim) => (
+                          <div key={claim.id} className="flex items-center justify-between bg-primary-foreground/10 rounded-lg p-3">
+                            <span className="font-medium">
+                              {(claim.scavenger_locations as any).location_name}
+                            </span>
+                            <span className="text-sm">
+                              Position #{claim.claim_position}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </Card>
+                )}
+              </TabsContent>
+
+              {/* Leaderboard Tab */}
+              <TabsContent value="leaderboard">
+                {leaderboardLoading ? (
+                  <LoadingState />
+                ) : (
+                  <div>
+                    <div className="text-center mb-6">
+                      <h2 className="font-display text-2xl mb-2">Top Hunters</h2>
+                      <p className="text-sm text-muted-foreground">
+                        Only showing users who opted in to the leaderboard
+                      </p>
+                    </div>
+                    <LeaderboardTable entries={leaderboardEntries || []} />
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
 
@@ -323,105 +441,7 @@ export default function ScavengerLeaderboard() {
           <div className="absolute inset-0 bg-black/[0.03]" />
         </div>
       </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen flex">
-      {/* Left Column - Content */}
-      <div className="w-1/2 flex items-center justify-center overflow-y-auto relative border-r border-border">
-        <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
-        <div className="w-full max-w-3xl px-8 py-12 relative z-10">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="font-display text-4xl md:text-5xl mb-4">
-              <span className="text-fm-gold">LF System</span> Scavenger Hunt
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              Find all 5 locations to complete the hunt!
-            </p>
-          </div>
-
-          <Tabs defaultValue="locations" className="space-y-8">
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
-              <TabsTrigger value="locations" className="gap-2">
-                <MapPin className="w-4 h-4" />
-                Locations
-              </TabsTrigger>
-              <TabsTrigger value="leaderboard" className="gap-2">
-                <Trophy className="w-4 h-4" />
-                Leaderboard
-              </TabsTrigger>
-            </TabsList>
-
-            {/* Locations Tab */}
-            <TabsContent value="locations" className="space-y-8">
-              <div className="grid gap-4 md:grid-cols-2">
-                {locations?.map((location) => (
-                  <LocationCard
-                    key={location.id}
-                    locationName={location.location_name}
-                    rewardType={location.reward_type}
-                    totalTokens={location.total_tokens}
-                    tokensRemaining={location.tokens_remaining}
-                  />
-                ))}
-              </div>
-
-              {/* User's stats */}
-              {user && userClaims && userClaims.length > 0 && (
-                <Card className="p-6 bg-gradient-gold border-none text-primary-foreground">
-                  <h3 className="font-display text-2xl mb-4">Your Progress</h3>
-                  <div className="space-y-3">
-                    <p className="text-lg">
-                      You've found <span className="font-bold">{userClaims.length}</span> of 5 locations!
-                    </p>
-                    <div className="space-y-2">
-                      {userClaims.map((claim) => (
-                        <div key={claim.id} className="flex items-center justify-between bg-primary-foreground/10 rounded-lg p-3">
-                          <span className="font-medium">
-                            {(claim.scavenger_locations as any).location_name}
-                          </span>
-                          <span className="text-sm">
-                            Position #{claim.claim_position}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </Card>
-              )}
-            </TabsContent>
-
-            {/* Leaderboard Tab */}
-            <TabsContent value="leaderboard">
-              {leaderboardLoading ? (
-                <LoadingState />
-              ) : (
-                <div>
-                  <div className="text-center mb-6">
-                    <h2 className="font-display text-2xl mb-2">Top Hunters</h2>
-                    <p className="text-sm text-muted-foreground">
-                      Only showing users who opted in to the leaderboard
-                    </p>
-                  </div>
-                  <LeaderboardTable entries={leaderboardEntries || []} />
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
-        </div>
-      </div>
-
-      {/* Right Column - Image */}
-      <div className="w-1/2 bg-muted relative overflow-hidden">
-        <ImageWithSkeleton 
-          src={lfSystemImage} 
-          alt="LF System" 
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-background/5 backdrop-blur-[0.5px]" />
-      </div>
-    </div>
+      <Footer />
+    </>
   );
 }
