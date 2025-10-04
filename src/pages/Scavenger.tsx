@@ -252,7 +252,7 @@ export default function Scavenger() {
         <>
           <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
           {/* Mobile/Tablet: Hero image at top */}
-          <div className="lg:hidden h-[40vh] w-full bg-muted relative overflow-hidden">
+          <div className="lg:hidden h-[75vh] w-full bg-muted relative overflow-hidden shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)]">
             <div 
               ref={parallaxRef1}
               className="absolute inset-0 w-full h-[120%] -top-[10%]"
@@ -264,14 +264,12 @@ export default function Scavenger() {
                 className="w-full h-full object-cover object-top brightness-90"
               />
             </div>
-            {/* Gradient overlay - fades image into background */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/40 to-background pointer-events-none z-10" />
           </div>
           {/* Desktop: Split layout */}
           <div className="min-h-screen flex flex-col lg:flex-row">
             <div className="flex-1 lg:w-1/2 flex items-center justify-center lg:overflow-y-auto relative z-10 lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] lg:border-r border-border">
               <div className="absolute inset-0 bg-topographic opacity-15 lg:opacity-25 bg-repeat bg-center" />
-              <div className="w-full max-w-md px-4 -mt-16 pb-6 lg:px-8 lg:py-12 lg:mt-0 relative z-10">
+              <div className="w-full max-w-md px-4 py-6 lg:px-8 lg:py-12 relative z-10">
                 <MessagePanel 
                   title="Invalid Token"
                   description="This QR code doesn't seem to be valid. Please try scanning it again."
@@ -322,7 +320,7 @@ export default function Scavenger() {
         <>
           <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
           {/* Mobile/Tablet: Hero image at top */}
-          <div className="lg:hidden h-[40vh] w-full bg-muted relative overflow-hidden">
+          <div className="lg:hidden h-[75vh] w-full bg-muted relative overflow-hidden shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)]">
             <div 
               ref={parallaxRef2}
               className="absolute inset-0 w-full h-[120%] -top-[10%]"
@@ -334,14 +332,12 @@ export default function Scavenger() {
                 className="w-full h-full object-cover object-top brightness-90"
               />
             </div>
-            {/* Gradient overlay - fades image into background */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/40 to-background pointer-events-none z-10" />
           </div>
           {/* Desktop: Split layout */}
           <div className="min-h-screen flex flex-col lg:flex-row">
             <div className="flex-1 lg:w-1/2 flex items-center justify-center lg:overflow-y-auto relative z-10 lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] lg:border-r border-border">
               <div className="absolute inset-0 bg-topographic opacity-15 lg:opacity-25 bg-repeat bg-center" />
-              <div className="w-full max-w-md px-4 -mt-16 pb-6 lg:px-8 lg:py-12 lg:mt-0 relative z-10">
+              <div className="w-full max-w-md px-4 py-6 lg:px-8 lg:py-12 relative z-10">
                 <MessagePanel 
                   title="Already Claimed!"
                   description={`You've already claimed a reward from ${validationResult.location_name}. You can only claim one reward per location!`}
@@ -375,7 +371,7 @@ export default function Scavenger() {
         <>
           <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
           {/* Mobile/Tablet: Hero image at top */}
-          <div className="lg:hidden h-[40vh] w-full bg-muted relative overflow-hidden">
+          <div className="lg:hidden h-[75vh] w-full bg-muted relative overflow-hidden shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)]">
             <div 
               ref={parallaxRef3}
               className="absolute inset-0 w-full h-[120%] -top-[10%]"
@@ -387,14 +383,12 @@ export default function Scavenger() {
                 className="w-full h-full object-cover object-top brightness-90"
               />
             </div>
-            {/* Gradient overlay - fades image into background */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/40 to-background pointer-events-none z-10" />
           </div>
           {/* Desktop: Split layout */}
           <div className="min-h-screen flex flex-col lg:flex-row">
             <div className="flex-1 lg:w-1/2 flex items-center justify-center lg:overflow-y-auto relative z-10 lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] lg:border-r border-border">
               <div className="absolute inset-0 bg-topographic opacity-15 lg:opacity-25 bg-repeat bg-center" />
-              <div className="w-full max-w-md px-4 -mt-16 pb-6 lg:px-8 lg:py-12 lg:mt-0 relative z-10">
+              <div className="w-full max-w-md px-4 py-6 lg:px-8 lg:py-12 relative z-10">
                 <MessagePanel 
                   title="All Claimed!"
                   description={`All rewards from ${validationResult.location_name} have been claimed. Try finding another location!`}
