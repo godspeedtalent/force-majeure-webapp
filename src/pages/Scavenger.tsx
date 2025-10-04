@@ -233,7 +233,7 @@ export default function Scavenger() {
         <>
           <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
           {/* Mobile/Tablet: Hero image at top */}
-          <div className="lg:hidden h-[33vh] max-h-[400px] w-full bg-muted relative overflow-hidden">
+          <div className="lg:hidden h-[25vh] w-full bg-muted relative overflow-hidden">
             <ImageWithSkeleton 
               src={lfSystemImage} 
               alt="LF System" 
@@ -242,15 +242,15 @@ export default function Scavenger() {
           </div>
           {/* Desktop: Split layout */}
           <div className="min-h-screen flex flex-col lg:flex-row">
-            <div className="flex-1 lg:w-1/2 flex items-center justify-center overflow-y-auto relative z-10 lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] lg:border-r border-border">
+            <div className="flex-1 lg:w-1/2 flex items-center justify-center lg:overflow-y-auto relative z-10 lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] lg:border-r border-border">
               <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
-              <div className="w-full max-w-md px-8 py-12 relative z-10">
+              <div className="w-full max-w-md px-4 py-6 lg:px-8 lg:py-12 relative z-10">
                 <MessagePanel 
                   title="Invalid Token"
                   description="This QR code doesn't seem to be valid. Please try scanning it again."
-                  className="mb-6"
+                  className="mb-4"
                 />
-                <div className="text-center space-y-4">
+                <div className="text-center space-y-3 text-sm lg:text-base">
                   <p className="text-foreground font-canela">
                     If you keep having issues, take a photo of the poster with your hand holding up 3 fingers next to it.
                   </p>
@@ -295,7 +295,7 @@ export default function Scavenger() {
         <>
           <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
           {/* Mobile/Tablet: Hero image at top */}
-          <div className="lg:hidden h-[33vh] max-h-[400px] w-full bg-muted relative overflow-hidden">
+          <div className="lg:hidden h-[25vh] w-full bg-muted relative overflow-hidden">
             <ImageWithSkeleton 
               src={lfSystemImage} 
               alt="LF System" 
@@ -304,16 +304,16 @@ export default function Scavenger() {
           </div>
           {/* Desktop: Split layout */}
           <div className="min-h-screen flex flex-col lg:flex-row">
-            <div className="flex-1 lg:w-1/2 flex items-center justify-center overflow-y-auto relative z-10 lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] lg:border-r border-border">
+            <div className="flex-1 lg:w-1/2 flex items-center justify-center lg:overflow-y-auto relative z-10 lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] lg:border-r border-border">
               <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
-              <div className="w-full max-w-md px-8 py-12 relative z-10">
+              <div className="w-full max-w-md px-4 py-6 lg:px-8 lg:py-12 relative z-10">
                 <MessagePanel 
                   title="Already Claimed!"
                   description={`You've already claimed a reward from ${validationResult.location_name}. You can only claim one reward per location!`}
-                  className="mb-6"
+                  className="mb-4"
                 />
                 <div className="text-center">
-                  <p className="text-foreground font-canela text-lg">
+                  <p className="text-foreground font-canela text-sm lg:text-lg">
                     But you can share this secret location with your friends! 🎉
                   </p>
                 </div>
@@ -340,7 +340,7 @@ export default function Scavenger() {
         <>
           <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
           {/* Mobile/Tablet: Hero image at top */}
-          <div className="lg:hidden h-[33vh] max-h-[400px] w-full bg-muted relative overflow-hidden">
+          <div className="lg:hidden h-[25vh] w-full bg-muted relative overflow-hidden">
             <ImageWithSkeleton 
               src={lfSystemImage} 
               alt="LF System" 
@@ -349,13 +349,13 @@ export default function Scavenger() {
           </div>
           {/* Desktop: Split layout */}
           <div className="min-h-screen flex flex-col lg:flex-row">
-            <div className="flex-1 lg:w-1/2 flex items-center justify-center overflow-y-auto relative z-10 lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] lg:border-r border-border">
+            <div className="flex-1 lg:w-1/2 flex items-center justify-center lg:overflow-y-auto relative z-10 lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] lg:border-r border-border">
               <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
-              <div className="w-full max-w-md px-8 py-12 relative z-10">
+              <div className="w-full max-w-md px-4 py-6 lg:px-8 lg:py-12 relative z-10">
                 <MessagePanel 
                   title="All Claimed!"
                   description={`All rewards from ${validationResult.location_name} have been claimed. Try finding another location!`}
-                  className="mb-6"
+                  className="mb-4"
                 />
               </div>
             </div>
