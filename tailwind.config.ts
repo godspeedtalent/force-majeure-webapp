@@ -116,6 +116,10 @@ export default {
 				'slide-up-fade': {
 					'0%': { transform: 'translateY(20px)', opacity: '0' },
 					'100%': { transform: 'translateY(0)', opacity: '1' }
+				},
+				'input-pulse': {
+					'0%, 100%': { backgroundColor: 'hsl(var(--background))' },
+					'50%': { backgroundColor: 'hsl(var(--muted) / 0.3)' }
 				}
 			},
 			animation: {
@@ -128,7 +132,8 @@ export default {
 				'pulse-gold': 'pulse-gold 2s infinite',
 				'shimmer': 'shimmer 2s infinite',
 				'border-shimmer': 'border-shimmer 2s infinite',
-				'slide-up-fade': 'slide-up-fade 0.6s ease-out'
+				'slide-up-fade': 'slide-up-fade 0.6s ease-out',
+				'input-pulse': 'input-pulse 0.15s ease-out'
 			},
 			backgroundImage: {
 				'gradient-gold': 'var(--gradient-gold)',

@@ -177,9 +177,9 @@ export default function ScavengerLeaderboard() {
                 Register to claim your free tickets when you find them.
               </p>
             </div>
-            <form onSubmit={handleJoinSubmit} className="space-y-6">
+            <form onSubmit={handleJoinSubmit} className="space-y-8">
               {/* Personal Information Section */}
-              <div className="space-y-4">
+              <div className="space-y-5">
                 <div className="space-y-2">
                   <Label htmlFor="fullName">Full Name</Label>
                   <Input
