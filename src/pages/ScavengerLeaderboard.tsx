@@ -15,6 +15,7 @@ import { LoadingState } from '@/components/LoadingState';
 import { MessagePanel } from '@/components/MessagePanel';
 import { WizardPanel, useWizardNavigation } from '@/components/WizardPanel';
 import { ImageWithSkeleton } from '@/components/ImageWithSkeleton';
+import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { ScavengerNavigation } from '@/components/ScavengerNavigation';
 import { Footer } from '@/components/Footer';
 import { Card } from '@/components/ui/card';
@@ -24,7 +25,7 @@ import lfSystemImage from '@/assets/lf-system-scavenger.jpg';
 
 
 export default function ScavengerLeaderboard() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
   const { data: featureFlags } = useFeatureFlags();
@@ -156,8 +157,78 @@ export default function ScavengerLeaderboard() {
     }
   };
 
-  // Show wizard if no token
-  if (!token) {
+  // Calculate total unclaimed rewards
+  const totalUnclaimedRewards = locations?.reduce((sum, location) => sum + location.tokens_remaining, 0) || 0;
+
+  // Show authenticated state without token
+  if (user && !token) {
+    return (
+      <>
+        <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
+        <div className="min-h-screen flex">
+          {/* Left Column - Content */}
+          <div className="w-1/2 flex items-center justify-center overflow-y-auto relative z-10 shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] border-r border-border">
+            <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
+            <div className="w-full max-w-md px-8 py-12 relative z-10 flex items-center justify-center">
+              <MessagePanel
+                isLoading={locationsLoading}
+                title={`Welcome back, ${profile?.display_name || 'Raver'}!`}
+                description="Ready to claim your free tickets? Head out and scan a QR code at one of the locations."
+                action={
+                  <>
+                    <div className="text-center mb-8">
+                      {totalUnclaimedRewards > 0 ? (
+                        <>
+                          <p className="text-lg text-muted-foreground mb-4">
+                            Unclaimed Rewards
+                          </p>
+                          <AnimatedCounter value={totalUnclaimedRewards} />
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-xl text-muted-foreground mb-6">
+                            Everything's been claimed! Tickets are still available below:
+                          </p>
+                          <Button 
+                            size="lg" 
+                            className="bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]"
+                            asChild
+                          >
+                            <a 
+                              href="https://www.etix.com/ticket/p/45040939/lf-system-austin-kingdom-nightclub?partner_id=100&_gl=1*1nkxwlr*_gcl_au*ODMxOTAwNDA1LjE3NTMxMDk5NzU.*_ga*MTYzNTgzMjU4MS4xNzUzMTA5OTc1*_ga_FE6TSQF71T*czE3NTYyMjUzMTkkbzkkZzEkdDE3NTYyMjUzNTIkajI3JGwwJGgxMjA5MDYyMDIx"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Get Tickets
+                            </a>
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </>
+                }
+              />
+            </div>
+          </div>
+
+          {/* Right Column - Image */}
+          <div className="w-1/2 bg-muted relative overflow-hidden">
+            <ImageWithSkeleton 
+              src={lfSystemImage} 
+              alt="LF System" 
+              className="w-full h-full object-cover brightness-90"
+            />
+            <div className="absolute inset-0 bg-background/5 backdrop-blur-[0.5px]" />
+            <div className="absolute inset-0 bg-black/[0.03]" />
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  // Show wizard if not authenticated (no user)
+  if (!user) {
     const wizardSteps = [
       // Step 1: Welcome Message
       {
@@ -361,6 +432,7 @@ export default function ScavengerLeaderboard() {
     );
   }
 
+  // User is authenticated and has a token - show full scavenger hunt interface
   return (
     <>
       <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />

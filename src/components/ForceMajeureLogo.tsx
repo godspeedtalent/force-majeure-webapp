@@ -5,8 +5,8 @@ interface ForceMajeureLogoProps {
 
 export const ForceMajeureLogo = ({ className = '', size = 'md' }: ForceMajeureLogoProps) => {
   const sizeClasses = {
-    sm: 'h-10 w-10',
-    md: 'h-14 w-14',
+    sm: 'h-8 w-8',
+    md: 'h-12 w-12',
     lg: 'h-20 w-20',
     xl: 'h-28 w-28'
   };

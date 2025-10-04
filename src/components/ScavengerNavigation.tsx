@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { User, ShoppingCart, LogOut } from 'lucide-react';
+import { User, ShoppingCart, LogOut, Instagram } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -40,6 +40,17 @@ export const ScavengerNavigation = ({ showShoppingCart = true }: ScavengerNaviga
                 </Link>
               </Button>
             )}
+            
+            <Button variant="ghost" size="sm" className="text-foreground hover:text-fm-gold hover:bg-hover-overlay" asChild>
+              <a
+                href="https://www.instagram.com/force.majeure.events/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Follow Force Majeure Events on Instagram"
+              >
+                <Instagram className="h-4 w-4" />
+              </a>
+            </Button>
             
             {user && (
               <DropdownMenu>
