@@ -1,9 +1,15 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2, Trophy, MapPin } from 'lucide-react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from 'sonner';
 import { LocationCard } from '@/components/scavenger/LocationCard';
 import { LeaderboardTable } from '@/components/scavenger/LeaderboardTable';
 import { Card } from '@/components/ui/card';
@@ -14,8 +20,12 @@ import lfSystemImage from '@/assets/lf-system-scavenger.jpg';
 export default function ScavengerLeaderboard() {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const token = searchParams.get('token');
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [email, setEmail] = useState('');
+  const [displayName, setDisplayName] = useState('');
+  const [showOnLeaderboard, setShowOnLeaderboard] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch all locations with progress
   const { data: locations, isLoading: locationsLoading } = useQuery({
@@ -93,6 +103,33 @@ export default function ScavengerLeaderboard() {
     );
   }
 
+  const handleJoinSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password: Math.random().toString(36).slice(-12),
+        options: {
+          data: {
+            display_name: displayName,
+            show_on_leaderboard: showOnLeaderboard
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      toast.success('Check your email to complete registration!');
+      setIsJoinModalOpen(false);
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to register');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   // Show error state if no token
   if (!token) {
     return (
@@ -100,25 +137,30 @@ export default function ScavengerLeaderboard() {
         {/* Left Column - Content */}
         <div className="w-1/2 flex items-center justify-center overflow-y-auto relative border-r border-border">
           <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
-          <div className="w-full max-w-md px-8 py-12 relative z-10 text-center">
-            <h1 className="font-display text-5xl md:text-6xl mb-8">
-              You got here too early.
-            </h1>
-            
-            <div className="space-y-6">
-              <h2 className="font-display text-2xl md:text-3xl text-fm-gold">
-                Register for the Rave Fam
-              </h2>
-              <p className="text-lg text-muted-foreground">
-                You'll need to join the rave fam to snag the free tix once you find them. You can get a head start now.
+          <div className="w-full max-w-md px-8 py-12 relative z-10">
+            <div className="bg-background/80 backdrop-blur-md border border-border rounded-2xl p-8 text-center">
+              <h1 className="font-display text-5xl md:text-6xl mb-4">
+                You got here too early.
+              </h1>
+              <p className="text-lg text-muted-foreground mb-8">
+                But the free tickets are still out there. Keep searching!
               </p>
-              <Button 
-                size="lg" 
-                className="w-full max-w-xs mx-auto"
-                onClick={() => navigate('/scavenger-signup')}
-              >
-                Join
-              </Button>
+              
+              <div className="space-y-6">
+                <h2 className="font-display text-2xl md:text-3xl text-fm-gold">
+                  Register for the Rave Fam
+                </h2>
+                <p className="text-lg text-muted-foreground">
+                  You'll need to join the rave fam to snag the free tix once you find them. You can get a head start now.
+                </p>
+                <Button 
+                  size="lg" 
+                  className="w-full max-w-xs mx-auto bg-gradient-gold hover:opacity-90 text-primary font-semibold"
+                  onClick={() => setIsJoinModalOpen(true)}
+                >
+                  Join
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -132,6 +174,59 @@ export default function ScavengerLeaderboard() {
           />
           <div className="absolute inset-0 bg-background/5 backdrop-blur-[0.5px]" />
         </div>
+
+        {/* Join Modal */}
+        <Dialog open={isJoinModalOpen} onOpenChange={setIsJoinModalOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="font-display text-3xl">Join the Rave Fam</DialogTitle>
+              <DialogDescription>
+                Register to claim your free tickets when you find them.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleJoinSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="displayName">Display Name</Label>
+                <Input
+                  id="displayName"
+                  type="text"
+                  placeholder="Your name"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="leaderboard"
+                  checked={showOnLeaderboard}
+                  onCheckedChange={(checked) => setShowOnLeaderboard(checked as boolean)}
+                />
+                <Label htmlFor="leaderboard" className="text-sm cursor-pointer">
+                  Show me on the leaderboard
+                </Label>
+              </div>
+              <Button 
+                type="submit" 
+                className="w-full bg-gradient-gold hover:opacity-90 text-primary font-semibold"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Joining...' : 'Join Now'}
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }
