@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Trophy, MapPin } from 'lucide-react';
@@ -21,6 +21,7 @@ import { Footer } from '@/components/Footer';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useFeatureFlags } from '@/hooks/useFeatureFlags';
+import { ScavengerDevPanel } from '@/components/ScavengerDevPanel';
 import lfSystemImage from '@/assets/lf-system-scavenger.jpg';
 
 
@@ -30,10 +31,83 @@ export default function ScavengerLeaderboard() {
   const token = searchParams.get('token');
   const { data: featureFlags } = useFeatureFlags();
   const { currentStep, setCurrentStep, nextStep } = useWizardNavigation();
+  
   const [isLoginMode, setIsLoginMode] = useState(false);
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [validationResult, setValidationResult] = useState<any>(null);
+  const [isValidating, setIsValidating] = useState(false);
+  const [deviceId, setDeviceId] = useState<string>('');
+
+  // Generate or retrieve device ID
+  useEffect(() => {
+    let id = localStorage.getItem('scavenger_device_id');
+    if (!id) {
+      id = `device_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      localStorage.setItem('scavenger_device_id', id);
+    }
+    setDeviceId(id);
+  }, []);
+
+  // Validate token when present
+  useEffect(() => {
+    const validateToken = async () => {
+      if (!token) {
+        setValidationResult(null);
+        return;
+      }
+
+      setIsValidating(true);
+      try {
+        const { data, error } = await supabase.functions.invoke('validate-scavenger-token', {
+          body: { token }
+        });
+
+        if (error) throw error;
+        setValidationResult(data);
+      } catch (error) {
+        console.error('Token validation error:', error);
+        setValidationResult({ valid: false, error: 'Failed to validate token' });
+      } finally {
+        setIsValidating(false);
+      }
+    };
+
+    validateToken();
+  }, [token]);
+
+  const claim = useMutation({
+    mutationFn: async (params: {
+      token: string;
+      userEmail: string;
+      displayName: string;
+      showOnLeaderboard: boolean;
+    }) => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('Not authenticated');
+      }
+
+      const { data, error } = await supabase.functions.invoke('claim-scavenger-reward', {
+        body: { 
+          token: params.token, 
+          user_email: params.userEmail,
+          display_name: params.displayName,
+          show_on_leaderboard: params.showOnLeaderboard,
+          device_id: deviceId
+        },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
+        }
+      });
+
+      if (error) throw error;
+      return data;
+    }
+  });
+  
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -184,6 +258,412 @@ export default function ScavengerLeaderboard() {
   // Calculate total unclaimed rewards
   const totalUnclaimedRewards = locations?.reduce((sum, location) => sum + location.tokens_remaining, 0) || 0;
 
+  // Handle token validation states
+  if (token && validationResult) {
+    // State 1: Invalid Token
+    if (!validationResult.valid) {
+      return (
+        <>
+          <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
+          <div className="min-h-screen flex">
+            <div className="w-1/2 flex items-center justify-center overflow-y-auto relative z-10 shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] border-r border-border">
+              <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
+              <div className="w-full max-w-md px-8 py-12 relative z-10">
+                <MessagePanel 
+                  title="Invalid Token"
+                  description="This QR code doesn't seem to be valid. Please try scanning it again."
+                  className="mb-6"
+                />
+                <div className="text-center space-y-4">
+                  <p className="text-foreground font-canela">
+                    If you keep having issues, take a photo of the poster with your hand holding up 3 fingers next to it.
+                  </p>
+                  <p className="text-foreground font-canela">
+                    Send that photo in a DM to{' '}
+                    <a 
+                      href="https://www.instagram.com/force.majeure.events/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-fm-gold hover:underline"
+                    >
+                      @force.majeure.events
+                    </a>
+                    {' '}on Instagram.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="w-1/2 bg-muted relative overflow-hidden">
+              <ImageWithSkeleton 
+                src={lfSystemImage} 
+                alt="LF System" 
+                className="w-full h-full object-cover brightness-90"
+              />
+            </div>
+          </div>
+          <Footer />
+          <ScavengerDevPanel />
+        </>
+      );
+    }
+
+    // Check if already claimed by checking user's claims
+    const alreadyClaimed = userClaims?.some(
+      claim => claim.scavenger_locations?.location_name === validationResult.location_name
+    );
+
+    // State 2: Already Claimed
+    if (alreadyClaimed) {
+      return (
+        <>
+          <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
+          <div className="min-h-screen flex">
+            <div className="w-1/2 flex items-center justify-center overflow-y-auto relative z-10 shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] border-r border-border">
+              <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
+              <div className="w-full max-w-md px-8 py-12 relative z-10">
+                <MessagePanel 
+                  title="Already Claimed!"
+                  description={`You've already claimed a reward from ${validationResult.location_name}. You can only claim one reward per location!`}
+                  className="mb-6"
+                />
+                <div className="text-center">
+                  <p className="text-foreground font-canela text-lg">
+                    But you can share this secret location with your friends! 🎉
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="w-1/2 bg-muted relative overflow-hidden">
+              <ImageWithSkeleton 
+                src={lfSystemImage} 
+                alt="LF System" 
+                className="w-full h-full object-cover brightness-90"
+              />
+            </div>
+          </div>
+          <Footer />
+          <ScavengerDevPanel />
+        </>
+      );
+    }
+
+    // State 3: Valid unclaimed token
+    if (validationResult.tokens_remaining <= 0) {
+      return (
+        <>
+          <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
+          <div className="min-h-screen flex">
+            <div className="w-1/2 flex items-center justify-center overflow-y-auto relative z-10 shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] border-r border-border">
+              <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
+              <div className="w-full max-w-md px-8 py-12 relative z-10">
+                <MessagePanel 
+                  title="All Claimed!"
+                  description={`All rewards from ${validationResult.location_name} have been claimed. Try finding another location!`}
+                  className="mb-6"
+                />
+              </div>
+            </div>
+            <div className="w-1/2 bg-muted relative overflow-hidden">
+              <ImageWithSkeleton 
+                src={lfSystemImage} 
+                alt="LF System" 
+                className="w-full h-full object-cover brightness-90"
+              />
+            </div>
+          </div>
+          <Footer />
+          <ScavengerDevPanel />
+        </>
+      );
+    }
+
+    // Valid unclaimed token - show reward and claim flow
+    if (!user) {
+      // Not authenticated - show wizard to join
+      const wizardSteps = [
+        {
+          content: (
+            <MessagePanel
+              isLoading={locationsLoading}
+              title="🎉 Reward Found!"
+              description={`You found ${validationResult.location_name}! You're eligible for: ${validationResult.reward_type || 'an exclusive reward'}`}
+              action={
+                <>
+                  <p className="text-lg text-muted-foreground mb-6">
+                    Join the rave fam to claim your reward!
+                  </p>
+                  <Button 
+                    size="lg" 
+                    className="w-full max-w-xs mx-auto bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]"
+                    onClick={nextStep}
+                  >
+                    Join
+                  </Button>
+                  <Button 
+                    size="lg" 
+                    className="w-full max-w-xs mx-auto mt-4 bg-transparent border-2 border-white text-white hover:bg-white hover:text-black font-semibold transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]"
+                    onClick={() => setIsLoginMode(true)}
+                  >
+                    Sign In
+                  </Button>
+                </>
+              }
+            />
+          ),
+          canGoBack: false,
+        },
+        {
+          content: (
+            <div className="bg-background/60 backdrop-blur-md border-2 border-border/40 p-12 w-full shadow-2xl animate-slide-up-fade">
+              <div className="mb-6 text-center">
+                <h1 className="font-display text-3xl md:text-4xl mb-2">Join the Rave Fam</h1>
+                <p className="text-muted-foreground">
+                  Register to claim your reward.
+                </p>
+              </div>
+              <form onSubmit={handleJoinSubmit} className="space-y-8">
+                <div className="space-y-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">Full Name <span className="text-fm-gold">*</span></Label>
+                    <Input
+                      id="fullName"
+                      type="text"
+                      placeholder="John Doe"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email <span className="text-fm-gold">*</span></Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="your@email.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="displayName">Display Name <span className="text-fm-gold">*</span></Label>
+                    <Input
+                      id="displayName"
+                      type="text"
+                      placeholder="Your display name"
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phoneNumber">Phone Number <span className="text-fm-gold">*</span></Label>
+                    <Input
+                      id="phoneNumber"
+                      type="tel"
+                      placeholder="(555) 123-4567"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="instagramHandle">Instagram Handle</Label>
+                    <Input
+                      id="instagramHandle"
+                      type="text"
+                      placeholder="@yourhandle"
+                      value={instagramHandle}
+                      onChange={(e) => setInstagramHandle(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="showOnLeaderboard"
+                      checked={showOnLeaderboard}
+                      onCheckedChange={(checked) => setShowOnLeaderboard(checked as boolean)}
+                    />
+                    <label htmlFor="showOnLeaderboard" className="text-sm">
+                      Show my name on the leaderboard
+                    </label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="agreeToContact"
+                      checked={agreeToContact}
+                      onCheckedChange={(checked) => setAgreeToContact(checked as boolean)}
+                    />
+                    <label htmlFor="agreeToContact" className="text-sm">
+                      I agree to receive event updates via email and SMS <span className="text-fm-gold">*</span>
+                    </label>
+                  </div>
+                </div>
+
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]"
+                  disabled={isSubmitting || !isFormValid}
+                >
+                  {isSubmitting ? 'Submitting...' : 'Submit'}
+                </Button>
+              </form>
+            </div>
+          ),
+          canGoBack: true,
+        },
+        {
+          content: (
+            <MessagePanel
+              title="Check Your Email"
+              description={`We've sent a verification link to ${email}. Click the link to verify your account and claim your reward!`}
+            />
+          ),
+          canGoBack: false,
+        }
+      ];
+
+      return (
+        <>
+          <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
+          <div className="min-h-screen flex">
+            <div className="w-1/2 flex items-center justify-center overflow-y-auto relative z-10 shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] border-r border-border">
+              <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
+              <div className="w-full max-w-md px-8 py-12 relative z-10">
+                {isLoginMode ? (
+                  <div className="w-full">
+                    <Button
+                      variant="ghost"
+                      onClick={() => setIsLoginMode(false)}
+                      className="mb-4 text-muted-foreground hover:text-foreground"
+                    >
+                      ← Back
+                    </Button>
+                    
+                    <div className="bg-background/60 backdrop-blur-md border-2 border-border/40 p-12 w-full shadow-2xl">
+                      <div className="mb-6 text-center">
+                        <h1 className="font-display text-3xl md:text-4xl mb-2">Welcome Back</h1>
+                        <p className="text-muted-foreground">
+                          Sign in to claim your reward
+                        </p>
+                      </div>
+                      
+                      <form onSubmit={handleLoginSubmit} className="space-y-6">
+                        <div className="space-y-2">
+                          <Label htmlFor="loginEmail">Email <span className="text-fm-gold">*</span></Label>
+                          <Input
+                            id="loginEmail"
+                            type="email"
+                            placeholder="your@email.com"
+                            value={loginEmail}
+                            onChange={(e) => setLoginEmail(e.target.value)}
+                            required
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="loginPassword">Password <span className="text-fm-gold">*</span></Label>
+                          <Input
+                            id="loginPassword"
+                            type="password"
+                            placeholder="Enter your password"
+                            value={loginPassword}
+                            onChange={(e) => setLoginPassword(e.target.value)}
+                            required
+                          />
+                        </div>
+
+                        <Button 
+                          type="submit" 
+                          className="w-full bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]"
+                          disabled={isLoggingIn}
+                        >
+                          {isLoggingIn ? 'Signing In...' : 'Sign In'}
+                        </Button>
+                      </form>
+                    </div>
+                  </div>
+                ) : (
+                  <WizardPanel
+                    steps={wizardSteps}
+                    currentStep={currentStep}
+                    onStepChange={setCurrentStep}
+                  />
+                )}
+              </div>
+            </div>
+            <div className="w-1/2 bg-muted relative overflow-hidden">
+              <ImageWithSkeleton 
+                src={lfSystemImage} 
+                alt="LF System" 
+                className="w-full h-full object-cover brightness-90"
+              />
+            </div>
+          </div>
+          <Footer />
+          <ScavengerDevPanel />
+        </>
+      );
+    }
+
+    // Authenticated - show claim button
+    return (
+      <>
+        <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
+        <div className="min-h-screen flex">
+          <div className="w-1/2 flex items-center justify-center overflow-y-auto relative z-10 shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] border-r border-border">
+            <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
+            <div className="w-full max-w-md px-8 py-12 relative z-10">
+              <MessagePanel 
+                title="🎉 Ready to Claim!"
+                description={`${validationResult.location_name} - ${validationResult.reward_type || 'Exclusive Reward'}`}
+                className="mb-6"
+              />
+              <div className="text-center">
+                <Button
+                  size="lg"
+                  className="bg-gradient-gold hover:opacity-90 font-screamer text-xl px-12 py-6 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(212,175,55,0.6)]"
+                  onClick={async () => {
+                    if (!profile?.display_name || !user?.email) return;
+                    
+                    const result = await claim.mutateAsync({
+                      token: token!,
+                      userEmail: user.email,
+                      displayName: profile.display_name,
+                      showOnLeaderboard: true
+                    });
+
+                    if (result.success) {
+                      toast.success('Reward claimed! Check your email for the promo code.');
+                      window.location.href = '/scavenger';
+                    } else {
+                      toast.error(result.error || 'Failed to claim reward');
+                    }
+                  }}
+                  disabled={claim.isPending}
+                >
+                  {claim.isPending ? 'Claiming...' : 'Claim Reward'}
+                </Button>
+              </div>
+            </div>
+          </div>
+          <div className="w-1/2 bg-muted relative overflow-hidden">
+            <ImageWithSkeleton 
+              src={lfSystemImage} 
+              alt="LF System" 
+              className="w-full h-full object-cover brightness-90"
+            />
+          </div>
+        </div>
+        <Footer />
+        <ScavengerDevPanel />
+      </>
+    );
+  }
+
   // Show authenticated state without token
   if (user && !token) {
     return (
@@ -247,6 +727,7 @@ export default function ScavengerLeaderboard() {
           </div>
         </div>
         <Footer />
+        <ScavengerDevPanel />
       </>
     );
   }
@@ -646,6 +1127,7 @@ export default function ScavengerLeaderboard() {
         </div>
       </div>
       <Footer />
+      <ScavengerDevPanel />
     </>
   );
 }
