@@ -30,6 +30,10 @@ export default function ScavengerLeaderboard() {
   const token = searchParams.get('token');
   const { data: featureFlags } = useFeatureFlags();
   const { currentStep, setCurrentStep, nextStep } = useWizardNavigation();
+  const [isLoginMode, setIsLoginMode] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -157,6 +161,26 @@ export default function ScavengerLeaderboard() {
     }
   };
 
+  const handleLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoggingIn(true);
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: loginEmail,
+        password: loginPassword,
+      });
+
+      if (error) throw error;
+
+      toast.success('Successfully logged in!');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to login');
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
   // Calculate total unclaimed rewards
   const totalUnclaimedRewards = locations?.reduce((sum, location) => sum + location.tokens_remaining, 0) || 0;
 
@@ -229,6 +253,87 @@ export default function ScavengerLeaderboard() {
 
   // Show wizard if not authenticated (no user)
   if (!user) {
+    // Login panel
+    if (isLoginMode) {
+      return (
+        <>
+          <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
+          <div className="min-h-screen flex">
+            {/* Left Column - Content */}
+            <div className="w-1/2 flex items-center justify-center overflow-y-auto relative z-10 shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] border-r border-border">
+              <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
+              <div className="w-full max-w-md px-8 py-12 relative z-10 flex items-center justify-center">
+                <div className="w-full">
+                  <Button
+                    variant="ghost"
+                    onClick={() => setIsLoginMode(false)}
+                    className="mb-4 text-muted-foreground hover:text-foreground"
+                  >
+                    ← Back
+                  </Button>
+                  
+                  <div className="bg-background/60 backdrop-blur-md border-2 border-border/40 p-12 w-full shadow-2xl">
+                    <div className="mb-6 text-center">
+                      <h1 className="font-display text-3xl md:text-4xl mb-2">Welcome Back</h1>
+                      <p className="text-muted-foreground">
+                        Sign in to continue the scavenger hunt
+                      </p>
+                    </div>
+                    
+                    <form onSubmit={handleLoginSubmit} className="space-y-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="loginEmail">Email <span className="text-fm-gold">*</span></Label>
+                        <Input
+                          id="loginEmail"
+                          type="email"
+                          placeholder="your@email.com"
+                          value={loginEmail}
+                          onChange={(e) => setLoginEmail(e.target.value)}
+                          required
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="loginPassword">Password <span className="text-fm-gold">*</span></Label>
+                        <Input
+                          id="loginPassword"
+                          type="password"
+                          placeholder="Enter your password"
+                          value={loginPassword}
+                          onChange={(e) => setLoginPassword(e.target.value)}
+                          required
+                        />
+                      </div>
+
+                      <Button 
+                        type="submit" 
+                        className="w-full bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]"
+                        disabled={isLoggingIn}
+                      >
+                        {isLoggingIn ? 'Signing In...' : 'Sign In'}
+                      </Button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column - Image */}
+            <div className="w-1/2 bg-muted relative overflow-hidden">
+              <ImageWithSkeleton 
+                src={lfSystemImage} 
+                alt="LF System" 
+                className="w-full h-full object-cover brightness-90"
+              />
+              <div className="absolute inset-0 bg-background/5 backdrop-blur-[0.5px]" />
+              <div className="absolute inset-0 bg-black/[0.03]" />
+            </div>
+          </div>
+          <Footer />
+        </>
+      );
+    }
+
     const wizardSteps = [
       // Step 1: Welcome Message
       {
@@ -251,6 +356,14 @@ export default function ScavengerLeaderboard() {
                   onClick={nextStep}
                 >
                   Join
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="ghost"
+                  className="w-full max-w-xs mx-auto mt-4 text-foreground hover:text-fm-gold"
+                  onClick={() => setIsLoginMode(true)}
+                >
+                  Already have an account? Sign In
                 </Button>
               </>
             }
