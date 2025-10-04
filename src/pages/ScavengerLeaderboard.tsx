@@ -359,11 +359,10 @@ export default function ScavengerLeaderboard() {
                 </Button>
                 <Button 
                   size="lg" 
-                  variant="ghost"
-                  className="w-full max-w-xs mx-auto mt-4 text-foreground hover:text-fm-gold"
+                  className="w-full max-w-xs mx-auto mt-4 bg-transparent border-2 border-white text-white hover:bg-white hover:text-black font-semibold transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]"
                   onClick={() => setIsLoginMode(true)}
                 >
-                  Already have an account? Sign In
+                  Sign In
                 </Button>
               </>
             }
