@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { Trophy, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +10,6 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { LocationCard } from '@/components/scavenger/LocationCard';
-import { LeaderboardTable } from '@/components/scavenger/LeaderboardTable';
 import { LoadingState } from '@/components/LoadingState';
 import { MessagePanel } from '@/components/MessagePanel';
 import { WizardPanel, useWizardNavigation } from '@/components/WizardPanel';
@@ -19,13 +18,12 @@ import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { ScavengerNavigation } from '@/components/ScavengerNavigation';
 import { Footer } from '@/components/Footer';
 import { Card } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useFeatureFlags } from '@/hooks/useFeatureFlags';
 import { ScavengerDevPanel } from '@/components/ScavengerDevPanel';
 import lfSystemImage from '@/assets/lf-system-scavenger.jpg';
 
 
-export default function ScavengerLeaderboard() {
+export default function Scavenger() {
   const { user, profile } = useAuth();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
@@ -38,17 +36,6 @@ export default function ScavengerLeaderboard() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [validationResult, setValidationResult] = useState<any>(null);
   const [isValidating, setIsValidating] = useState(false);
-  const [deviceId, setDeviceId] = useState<string>('');
-
-  // Generate or retrieve device ID
-  useEffect(() => {
-    let id = localStorage.getItem('scavenger_device_id');
-    if (!id) {
-      id = `device_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      localStorage.setItem('scavenger_device_id', id);
-    }
-    setDeviceId(id);
-  }, []);
 
   // Validate token when present
   useEffect(() => {
@@ -90,13 +77,20 @@ export default function ScavengerLeaderboard() {
         throw new Error('Not authenticated');
       }
 
+      // Create device fingerprint
+      const userAgent = navigator.userAgent;
+      const language = navigator.language;
+      const platform = navigator.platform;
+      const screenResolution = `${window.screen.width}x${window.screen.height}`;
+      const deviceFingerprint = `${userAgent}::${language}::${platform}::${screenResolution}`;
+
       const { data, error } = await supabase.functions.invoke('claim-scavenger-reward', {
         body: { 
           token: params.token, 
           user_email: params.userEmail,
           display_name: params.displayName,
           show_on_leaderboard: params.showOnLeaderboard,
-          device_id: deviceId
+          device_fingerprint: deviceFingerprint
         },
         headers: {
           Authorization: `Bearer ${session.access_token}`
@@ -139,33 +133,6 @@ export default function ScavengerLeaderboard() {
     }
   });
 
-  // Fetch leaderboard entries (only users who opted in)
-  const { data: leaderboardEntries, isLoading: leaderboardLoading } = useQuery({
-    queryKey: ['scavenger-leaderboard'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('scavenger_claims')
-        .select(`
-          id,
-          claim_position,
-          claimed_at,
-          profiles!inner(display_name),
-          scavenger_locations!inner(location_name)
-        `)
-        .eq('show_on_leaderboard', true)
-        .order('claimed_at', { ascending: true });
-
-      if (error) throw error;
-
-      return data.map(entry => ({
-        id: entry.id,
-        display_name: (entry.profiles as any).display_name,
-        location_name: (entry.scavenger_locations as any).location_name,
-        claim_position: entry.claim_position,
-        claimed_at: entry.claimed_at
-      }));
-    }
-  });
 
   // Fetch user's claims (if logged in)
   const { data: userClaims } = useQuery({
@@ -1044,20 +1011,7 @@ export default function ScavengerLeaderboard() {
               </p>
             </div>
 
-            <Tabs defaultValue="locations" className="space-y-8">
-              <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
-                <TabsTrigger value="locations" className="gap-2">
-                  <MapPin className="w-4 h-4" />
-                  Locations
-                </TabsTrigger>
-                <TabsTrigger value="leaderboard" className="gap-2">
-                  <Trophy className="w-4 h-4" />
-                  Leaderboard
-                </TabsTrigger>
-              </TabsList>
-
-              {/* Locations Tab */}
-              <TabsContent value="locations" className="space-y-8">
+            <div className="space-y-8">
                 <div className="grid gap-4 md:grid-cols-2">
                   {locations?.map((location) => (
                     <LocationCard
@@ -1093,25 +1047,7 @@ export default function ScavengerLeaderboard() {
                     </div>
                   </Card>
                 )}
-              </TabsContent>
-
-              {/* Leaderboard Tab */}
-              <TabsContent value="leaderboard">
-                {leaderboardLoading ? (
-                  <LoadingState />
-                ) : (
-                  <div>
-                    <div className="text-center mb-6">
-                      <h2 className="font-display text-2xl mb-2">Top Hunters</h2>
-                      <p className="text-sm text-muted-foreground">
-                        Only showing users who opted in to the leaderboard
-                      </p>
-                    </div>
-                    <LeaderboardTable entries={leaderboardEntries || []} />
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
+            </div>
           </div>
         </div>
 

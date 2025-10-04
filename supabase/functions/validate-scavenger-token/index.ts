@@ -142,10 +142,8 @@ serve(async (req) => {
         location_id: location.id,
         location_name: location.location_name,
         location_description: location.location_description,
-        reward_type: matchedToken.reward_type,
         tokens_remaining: location.tokens_remaining,
-        total_tokens: location.total_tokens,
-        promo_code: matchedToken.promo_code
+        total_tokens: location.total_tokens
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

@@ -66,9 +66,9 @@ export const ScavengerDevPanel = () => {
 
   const handleScenario = (token: string | null) => {
     if (token) {
-      navigate(`/scavenger-leaderboard?token=${token}`);
+      navigate(`/scavenger?token=${token}`);
     } else {
-      navigate('/scavenger-leaderboard');
+      navigate('/scavenger');
     }
     setIsOpen(false);
   };

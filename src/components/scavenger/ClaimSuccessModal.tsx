@@ -89,11 +89,11 @@ export const ClaimSuccessModal = ({
           <Button
             onClick={() => {
               onClose();
-              navigate('/scavenger-leaderboard');
+              navigate('/scavenger');
             }}
             className="w-full bg-gradient-gold hover:opacity-90 text-primary-foreground font-display text-lg py-6"
           >
-            View Leaderboard
+            Continue
             <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
         </div>

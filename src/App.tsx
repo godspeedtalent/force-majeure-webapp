@@ -12,8 +12,7 @@ import Merch from "./pages/Merch";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import ComingSoon from "./pages/ComingSoon";
-import ScavengerSignup from "./pages/ScavengerSignup";
-import ScavengerLeaderboard from "./pages/ScavengerLeaderboard";
+import Scavenger from "./pages/Scavenger";
 import NotFound from "./pages/NotFound";
 import { Loader2 } from "lucide-react";
 
@@ -40,8 +39,7 @@ const AppRoutes = () => {
     <Routes>
       {/* Always-accessible routes - highest priority */}
       <Route path="/auth" element={<Auth />} />
-      <Route path="/lf-system-scavenger-hunt" element={<ScavengerSignup />} />
-      <Route path="/scavenger-leaderboard" element={<ScavengerLeaderboard />} />
+      <Route path="/scavenger" element={<Scavenger />} />
       
       {/* Coming Soon Mode - Show only coming soon page for other routes */}
       {comingSoonMode ? (
