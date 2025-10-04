@@ -147,8 +147,8 @@ export default function ScavengerLeaderboard() {
 
       if (error) throw error;
 
-      toast.success('Check your email to complete registration!');
-      setCurrentStep(0); // Reset to first step
+      toast.success('Verification email sent');
+      setCurrentStep(2); // Go to confirmation step
     } catch (error: any) {
       toast.error(error.message || 'Failed to register');
     } finally {
@@ -306,6 +306,26 @@ export default function ScavengerLeaderboard() {
           </div>
         ),
         canGoBack: true,
+      },
+      // Step 3: Confirmation Message
+      {
+        content: (
+          <MessagePanel
+            title="Check Your Email"
+            description="We've sent a verification link to your email address."
+            action={
+              <>
+                <p className="text-lg text-muted-foreground">
+                  Click the link in the email to complete your registration and return here to continue the scavenger hunt.
+                </p>
+                <p className="text-sm text-muted-foreground mt-4">
+                  You can safely navigate away from this page. The link will bring you back.
+                </p>
+              </>
+            }
+          />
+        ),
+        canGoBack: false,
       },
     ];
 

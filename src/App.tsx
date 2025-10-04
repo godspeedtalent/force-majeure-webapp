@@ -1,7 +1,6 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { ThemeProvider } from "@/components/theme-provider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { MusicPlayerProvider } from "@/contexts/MusicPlayerContext";
@@ -68,23 +67,28 @@ const AppRoutes = () => {
   );
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="dark" storageKey="fm-theme">
+const App = () => {
+  // Force dark mode by adding class to html element
+  if (typeof document !== 'undefined') {
+    document.documentElement.classList.add('dark');
+  }
+
+  return (
+    <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <MusicPlayerProvider>
           <TooltipProvider>
             <Toaster />
             <Sonner />
-      <BrowserRouter>
-        <AppRoutes />
-        <FeatureFlagDevToggle />
-      </BrowserRouter>
+            <BrowserRouter>
+              <AppRoutes />
+              <FeatureFlagDevToggle />
+            </BrowserRouter>
           </TooltipProvider>
         </MusicPlayerProvider>
       </AuthProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
+    </QueryClientProvider>
+  );
+};
 
 export default App;

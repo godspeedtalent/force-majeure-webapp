@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '@/components/ThemeToggle';
 import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
@@ -64,8 +63,6 @@ export const ScavengerNavigation = ({ showShoppingCart = true }: ScavengerNaviga
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
-            
-            <ThemeToggle />
           </div>
         </div>
       </div>
