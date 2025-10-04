@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { Loader2, Trophy, MapPin } from 'lucide-react';
+import { Loader2, Trophy, MapPin, AlertCircle } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import { LocationCard } from '@/components/scavenger/LocationCard';
 import { LeaderboardTable } from '@/components/scavenger/LeaderboardTable';
 import { Card } from '@/components/ui/card';
@@ -11,6 +12,8 @@ import lfSystemImage from '@/assets/lf-system-scavenger.jpg';
 
 export default function ScavengerLeaderboard() {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token');
 
   // Fetch all locations with progress
   const { data: locations, isLoading: locationsLoading } = useQuery({
@@ -88,10 +91,44 @@ export default function ScavengerLeaderboard() {
     );
   }
 
+  // Show error state if no token
+  if (!token) {
+    return (
+      <div className="min-h-screen flex">
+        {/* Left Column - Content */}
+        <div className="w-1/2 flex items-center justify-center overflow-y-auto relative border-r border-border">
+          <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
+          <div className="w-full max-w-md px-8 py-12 relative z-10 text-center">
+            <AlertCircle className="w-16 h-16 text-fm-gold mx-auto mb-6" />
+            <h1 className="font-display text-3xl md:text-4xl mb-4">
+              QR Code Required
+            </h1>
+            <p className="text-lg text-muted-foreground mb-6">
+              You need to scan a QR code to access this scavenger hunt location.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Find one of our QR codes around the event to get started!
+            </p>
+          </div>
+        </div>
+
+        {/* Right Column - Image */}
+        <div className="w-1/2 bg-muted relative overflow-hidden">
+          <img 
+            src={lfSystemImage} 
+            alt="LF System" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-background/5 backdrop-blur-[0.5px]" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex">
       {/* Left Column - Content */}
-      <div className="w-1/2 flex items-center justify-center overflow-y-auto relative">
+      <div className="w-1/2 flex items-center justify-center overflow-y-auto relative border-r border-border">
         <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
         <div className="w-full max-w-3xl px-8 py-12 relative z-10">
           {/* Header */}
