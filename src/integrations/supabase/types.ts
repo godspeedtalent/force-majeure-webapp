@@ -203,6 +203,7 @@ export type Database = {
         Row: {
           claim_position: number
           claimed_at: string
+          device_fingerprint: string | null
           id: string
           location_id: string
           promo_code: string | null
@@ -214,6 +215,7 @@ export type Database = {
         Insert: {
           claim_position: number
           claimed_at?: string
+          device_fingerprint?: string | null
           id?: string
           location_id: string
           promo_code?: string | null
@@ -225,6 +227,7 @@ export type Database = {
         Update: {
           claim_position?: number
           claimed_at?: string
+          device_fingerprint?: string | null
           id?: string
           location_id?: string
           promo_code?: string | null
@@ -297,8 +300,6 @@ export type Database = {
           id: string
           is_claimed: boolean
           location_id: string
-          promo_code: string | null
-          reward_type: Database["public"]["Enums"]["reward_type"]
           token_hash: string
           token_salt: string
           updated_at: string
@@ -310,8 +311,6 @@ export type Database = {
           id?: string
           is_claimed?: boolean
           location_id: string
-          promo_code?: string | null
-          reward_type?: Database["public"]["Enums"]["reward_type"]
           token_hash: string
           token_salt: string
           updated_at?: string
@@ -323,8 +322,6 @@ export type Database = {
           id?: string
           is_claimed?: boolean
           location_id?: string
-          promo_code?: string | null
-          reward_type?: Database["public"]["Enums"]["reward_type"]
           token_hash?: string
           token_salt?: string
           updated_at?: string

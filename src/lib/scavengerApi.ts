@@ -47,7 +47,8 @@ export const claimScavengerReward = async (
   token: string,
   userEmail: string,
   displayName: string,
-  showOnLeaderboard: boolean
+  showOnLeaderboard: boolean,
+  deviceFingerprint?: string
 ): Promise<ClaimResult> => {
   try {
     const { data: { session } } = await supabase.auth.getSession();
@@ -61,7 +62,8 @@ export const claimScavengerReward = async (
         token, 
         user_email: userEmail,
         display_name: displayName,
-        show_on_leaderboard: showOnLeaderboard
+        show_on_leaderboard: showOnLeaderboard,
+        device_fingerprint: deviceFingerprint
       },
       headers: {
         Authorization: `Bearer ${session.access_token}`

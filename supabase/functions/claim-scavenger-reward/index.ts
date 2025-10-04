@@ -12,6 +12,7 @@ interface ClaimRequest {
   user_email: string;
   display_name: string;
   show_on_leaderboard: boolean;
+  device_fingerprint?: string;
 }
 
 serve(async (req) => {
@@ -47,8 +48,16 @@ serve(async (req) => {
       token: qrToken, 
       user_email, 
       display_name,
-      show_on_leaderboard = false 
+      show_on_leaderboard = false,
+      device_fingerprint
     }: ClaimRequest = await req.json();
+
+    // Create device fingerprint from IP and User-Agent if not provided
+    const fingerprint = device_fingerprint || (() => {
+      const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+      const userAgent = req.headers.get('user-agent') || 'unknown';
+      return `${ip}::${userAgent}`;
+    })();
 
     if (!qrToken) {
       return new Response(
@@ -103,22 +112,42 @@ serve(async (req) => {
     }
 
     // Check if user already claimed at this location
-    const { data: existingClaim } = await supabase
+    const { data: existingUserClaim } = await supabase
       .from('scavenger_claims')
       .select('*')
       .eq('user_id', user.id)
       .eq('location_id', location.id)
-      .single();
+      .maybeSingle();
 
-    if (existingClaim) {
+    if (existingUserClaim) {
       return new Response(
         JSON.stringify({ error: 'You have already claimed a reward at this location' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    // Check if device already claimed at this location
+    const { data: existingDeviceClaim } = await supabase
+      .from('scavenger_claims')
+      .select('*')
+      .eq('device_fingerprint', fingerprint)
+      .eq('location_id', location.id)
+      .maybeSingle();
+
+    if (existingDeviceClaim) {
+      return new Response(
+        JSON.stringify({ error: 'This device has already claimed a reward at this location' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Calculate claim position (how many have been claimed at this location)
     const claimPosition = (location.total_tokens - location.tokens_remaining) + 1;
+
+    // Determine reward type based on claim position
+    // 1st claim = free_ticket, claims 2-5 = promo_code_20
+    const rewardType = claimPosition === 1 ? 'free_ticket' : 'promo_code_20';
+    const promoCode = rewardType === 'promo_code_20' ? location.promo_code : null;
 
     // Begin atomic transaction
     // 1. Mark token as claimed
@@ -171,8 +200,9 @@ serve(async (req) => {
         token_id: matchedToken.id,
         claim_position: claimPosition,
         show_on_leaderboard,
-        reward_type: matchedToken.reward_type,
-        promo_code: matchedToken.promo_code,
+        reward_type: rewardType,
+        promo_code: promoCode,
+        device_fingerprint: fingerprint,
         claimed_at: new Date().toISOString()
       });
 
@@ -199,7 +229,7 @@ serve(async (req) => {
     
     if (mailchimpApiKey) {
       try {
-        const rewardTypeDisplay = matchedToken.reward_type === 'free_ticket' 
+        const rewardTypeDisplay = rewardType === 'free_ticket' 
           ? '🎫 Free Ticket' 
           : '🎟️ 20% Off';
 
@@ -209,7 +239,7 @@ serve(async (req) => {
             from_email: "noreply@forcemajeure.com",
             from_name: "Force Majeure",
             subject: "🎉 You found it! Here's your LF System reward",
-            text: `Congratulations ${display_name}!\n\nYou found location: ${location.location_name}\nYou were person #${claimPosition} to find this spot!\n\nYour reward: ${rewardTypeDisplay}\nPromo Code: ${matchedToken.promo_code}\n\nSee the leaderboard: ${supabaseUrl.replace('.supabase.co', '')}/scavenger-leaderboard`,
+            text: `Congratulations ${display_name}!\n\nYou found location: ${location.location_name}\nYou were person #${claimPosition} to find this spot!\n\nYour reward: ${rewardTypeDisplay}${promoCode ? `\nPromo Code: ${promoCode}` : ''}\n\nSee the leaderboard: ${supabaseUrl.replace('.supabase.co', '')}/scavenger-leaderboard`,
             html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                 <h1 style="color: #000; font-size: 28px; margin-bottom: 20px;">🎉 Congratulations ${display_name}!</h1>
@@ -217,7 +247,7 @@ serve(async (req) => {
                 <p style="font-size: 16px; color: #333;">You were person <strong>#${claimPosition}</strong> to find this location!</p>
                 <div style="background: #f0f0f0; padding: 30px; margin: 30px 0; border-radius: 8px; text-align: center;">
                   <h2 style="color: #000; margin: 0 0 15px 0;">${rewardTypeDisplay}</h2>
-                  <p style="font-size: 28px; font-weight: bold; color: hsl(348 100% 22%); margin: 0; letter-spacing: 2px;">${matchedToken.promo_code}</p>
+                  ${promoCode ? `<p style="font-size: 28px; font-weight: bold; color: hsl(348 100% 22%); margin: 0; letter-spacing: 2px;">${promoCode}</p>` : '<p style="font-size: 16px; color: #333;">You\'re on the guest list!</p>'}
                 </div>
                 <p style="font-size: 14px; color: #666; margin-top: 30px;">
                   <a href="${supabaseUrl.replace('.supabase.co', '')}/scavenger-leaderboard" style="color: hsl(348 100% 22%); text-decoration: none; font-weight: bold;">View Leaderboard →</a>
@@ -252,8 +282,8 @@ serve(async (req) => {
         success: true,
         claim_position: claimPosition,
         location_name: location.location_name,
-        reward_type: matchedToken.reward_type,
-        promo_code: matchedToken.promo_code,
+        reward_type: rewardType,
+        promo_code: promoCode,
         tokens_remaining: location.tokens_remaining - 1,
         message: `You're the ${claimPosition === 1 ? '1st' : claimPosition === 2 ? '2nd' : claimPosition === 3 ? '3rd' : `${claimPosition}th`} person to find this location! Check your email for your reward.`
       }),
