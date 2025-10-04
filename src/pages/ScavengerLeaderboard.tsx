@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { Loader2, Trophy, MapPin, AlertCircle } from 'lucide-react';
-import { useSearchParams } from 'react-router-dom';
+import { Loader2, Trophy, MapPin } from 'lucide-react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import { LocationCard } from '@/components/scavenger/LocationCard';
 import { LeaderboardTable } from '@/components/scavenger/LeaderboardTable';
 import { Card } from '@/components/ui/card';
@@ -13,6 +14,7 @@ import lfSystemImage from '@/assets/lf-system-scavenger.jpg';
 export default function ScavengerLeaderboard() {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const token = searchParams.get('token');
 
   // Fetch all locations with progress
@@ -99,16 +101,25 @@ export default function ScavengerLeaderboard() {
         <div className="w-1/2 flex items-center justify-center overflow-y-auto relative border-r border-border">
           <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
           <div className="w-full max-w-md px-8 py-12 relative z-10 text-center">
-            <AlertCircle className="w-16 h-16 text-fm-gold mx-auto mb-6" />
-            <h1 className="font-display text-3xl md:text-4xl mb-4">
-              QR Code Required
+            <h1 className="font-display text-5xl md:text-6xl mb-8">
+              You got here too early.
             </h1>
-            <p className="text-lg text-muted-foreground mb-6">
-              You need to scan a QR code to access this scavenger hunt location.
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Find one of our QR codes around the event to get started!
-            </p>
+            
+            <div className="space-y-6">
+              <h2 className="font-display text-2xl md:text-3xl text-fm-gold">
+                Register for the Rave Fam
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                You'll need to join the rave fam to snag the free tix once you find them. You can get a head start now.
+              </p>
+              <Button 
+                size="lg" 
+                className="w-full max-w-xs mx-auto"
+                onClick={() => navigate('/scavenger-signup')}
+              >
+                Join
+              </Button>
+            </div>
           </div>
         </div>
 
