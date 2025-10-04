@@ -30,8 +30,17 @@ export default function ScavengerLeaderboard() {
   const [email, setEmail] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [instagramHandle, setInstagramHandle] = useState('');
   const [showOnLeaderboard, setShowOnLeaderboard] = useState(true);
+  const [agreeToContact, setAgreeToContact] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Check if all required fields are filled
+  const isFormValid = fullName.trim() !== '' && 
+                       email.trim() !== '' && 
+                       displayName.trim() !== '' && 
+                       phoneNumber.trim() !== '' &&
+                       agreeToContact;
 
   // Fetch all locations with progress
   const { data: locations, isLoading: locationsLoading } = useQuery({
@@ -223,37 +232,62 @@ export default function ScavengerLeaderboard() {
               </div>
 
               {/* Phone Number Section */}
-              <div className="space-y-2">
-                <Label htmlFor="phoneNumber">Phone Number</Label>
-                <Input
-                  id="phoneNumber"
-                  type="tel"
-                  placeholder="+1 (555) 123-4567"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  required
-                />
-                <p className="text-xs text-muted-foreground">
-                  This is required to receive promo tickets.
-                </p>
+              <div className="space-y-5">
+                <div className="space-y-2">
+                  <Label htmlFor="phoneNumber">Phone Number</Label>
+                  <Input
+                    id="phoneNumber"
+                    type="tel"
+                    placeholder="+1 (555) 123-4567"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    This is required to receive promo tickets.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="instagram">Instagram Handle (Optional)</Label>
+                  <Input
+                    id="instagram"
+                    type="text"
+                    placeholder="@yourhandle"
+                    value={instagramHandle}
+                    onChange={(e) => setInstagramHandle(e.target.value)}
+                  />
+                </div>
               </div>
 
-              {/* Leaderboard Option */}
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="leaderboard"
-                  checked={showOnLeaderboard}
-                  onCheckedChange={(checked) => setShowOnLeaderboard(checked as boolean)}
-                />
-                <Label htmlFor="leaderboard" className="text-sm cursor-pointer">
-                  Show me on the leaderboard
-                </Label>
+              {/* Agreements */}
+              <div className="space-y-4">
+                <div className="flex items-start space-x-3">
+                  <Checkbox
+                    id="contact"
+                    checked={agreeToContact}
+                    onCheckedChange={(checked) => setAgreeToContact(checked as boolean)}
+                    required
+                  />
+                  <Label htmlFor="contact" className="text-sm cursor-pointer leading-relaxed">
+                    I agree to be contacted via email or by SMS to receive any award.
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Checkbox
+                    id="leaderboard"
+                    checked={showOnLeaderboard}
+                    onCheckedChange={(checked) => setShowOnLeaderboard(checked as boolean)}
+                  />
+                  <Label htmlFor="leaderboard" className="text-sm cursor-pointer">
+                    Show me on the leaderboard
+                  </Label>
+                </div>
               </div>
 
               <Button 
                 type="submit" 
                 className="w-full bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !isFormValid}
               >
                 {isSubmitting ? 'Joining...' : 'Join Now'}
               </Button>
