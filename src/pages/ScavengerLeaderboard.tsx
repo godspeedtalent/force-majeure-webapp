@@ -90,16 +90,7 @@ export default function ScavengerLeaderboard() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Column - Image */}
-      <div className="w-1/2 bg-muted relative overflow-hidden">
-        <img 
-          src={lfSystemImage} 
-          alt="LF System" 
-          className="w-full h-full object-cover"
-        />
-      </div>
-
-      {/* Right Column - Content */}
+      {/* Left Column - Content */}
       <div className="w-1/2 flex items-center justify-center overflow-y-auto relative">
         <div className="absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center" />
         <div className="w-full max-w-3xl px-8 py-12 relative z-10">
@@ -184,6 +175,16 @@ export default function ScavengerLeaderboard() {
             </TabsContent>
           </Tabs>
         </div>
+      </div>
+
+      {/* Right Column - Image */}
+      <div className="w-1/2 bg-muted relative overflow-hidden">
+        <img 
+          src={lfSystemImage} 
+          alt="LF System" 
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-background/5 backdrop-blur-[0.5px]" />
       </div>
     </div>
   );
