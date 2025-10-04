@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { Loader2, Trophy, MapPin } from 'lucide-react';
+import { Trophy, MapPin } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -12,6 +12,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { LocationCard } from '@/components/scavenger/LocationCard';
 import { LeaderboardTable } from '@/components/scavenger/LeaderboardTable';
+import { LoadingState } from '@/components/LoadingState';
+import { TwoColumnLayout } from '@/components/TwoColumnLayout';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import lfSystemImage from '@/assets/lf-system-scavenger.jpg';
@@ -100,7 +102,7 @@ export default function ScavengerLeaderboard() {
   if (locationsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="w-8 h-8 animate-spin text-fm-gold" />
+        <LoadingState />
       </div>
     );
   }
@@ -343,9 +345,7 @@ export default function ScavengerLeaderboard() {
             {/* Leaderboard Tab */}
             <TabsContent value="leaderboard">
               {leaderboardLoading ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="w-8 h-8 animate-spin text-fm-gold" />
-                </div>
+                <LoadingState />
               ) : (
                 <div>
                   <div className="text-center mb-6">

@@ -4,20 +4,11 @@ import { CommonCard } from '@/components/CommonCard';
 import { MapPin, Clock, Play, ExternalLink, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import { ExternalLinkDialog } from '@/components/ExternalLinkDialog';
 import { useMusicPlayer, type Song } from '@/contexts/MusicPlayerContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { formatTimeDisplay, parseTimeToMinutes } from '@/lib/timeUtils';
 
 interface Artist {
   name: string;
@@ -46,6 +37,7 @@ export const EventCard = ({ event }: EventCardProps) => {
   const navigate = useNavigate();
   const { playQueue } = useMusicPlayer();
   const [playing, setPlaying] = useState(false);
+  const [showTicketDialog, setShowTicketDialog] = useState(false);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -55,50 +47,9 @@ export const EventCard = ({ event }: EventCardProps) => {
     });
   };
 
-  // Format times like "9:00PM" => "9PM". Works across ranges too.
-  const formatTimeDisplay = (timeStr?: string | null): string => {
-    if (!timeStr) return '';
-    let out = timeStr;
-    // Remove :00 before AM/PM (e.g., 9:00 PM -> 9 PM)
-    out = out.replace(/:00(?=\s*(?:AM|PM|am|pm)\b)/g, "");
-    // Remove trailing :00 for 24h formats (e.g., 21:00 -> 21)
-    out = out.replace(/:00(?!\d)/g, "");
-    // Uppercase am/pm
-    out = out.replace(/\b(am|pm)\b/g, (m) => m.toUpperCase());
-    return out;
-  };
-
-  // Parse time string and determine if end time is at or after 2:00 AM
-  const parseTimeToMinutes = (timeStr?: string | null): number | null => {
-    if (!timeStr) return null;
-    const clean = timeStr.trim().toLowerCase();
-    // if a range provided, use the ending part
-    const parts = clean.split(/\s*(?:-|–|—|to)\s*/);
-    const target = parts.length > 1 ? parts[parts.length - 1] : clean;
-
-    const m12 = target.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)$/i);
-    if (m12) {
-      let h = parseInt(m12[1], 10);
-      const min = m12[2] ? parseInt(m12[2], 10) : 0;
-      const ap = m12[3].toLowerCase();
-      if (ap === 'pm' && h !== 12) h += 12;
-      if (ap === 'am' && h === 12) h = 0;
-      return h * 60 + min;
-    }
-
-    const m24 = target.match(/^(\d{1,2})(?::(\d{2}))?$/);
-    if (m24) {
-      const h = parseInt(m24[1], 10);
-      const min = m24[2] ? parseInt(m24[2], 10) : 0;
-      if (h >= 0 && h < 24 && min >= 0 && min < 60) return h * 60 + min;
-    }
-
-    return null;
-  };
-
   const isAfterHours = (() => {
     const minutes = parseTimeToMinutes(event.time);
-  return minutes !== null && minutes > 120; // strictly past 2:00 AM
+    return minutes !== null && minutes > 120; // strictly past 2:00 AM
   })();
 
   const handlePlayLineup = async (e: React.MouseEvent) => {
@@ -168,8 +119,8 @@ export const EventCard = ({ event }: EventCardProps) => {
   };
 
   const handleTicketsClick = (e: React.MouseEvent) => {
-    // Prevent navigating to event details when clicking the button
     e.stopPropagation();
+    setShowTicketDialog(true);
   };
 
   return (
@@ -222,34 +173,16 @@ export const EventCard = ({ event }: EventCardProps) => {
         {/* Actions */}
         <div className="mt-4 flex flex-wrap gap-2">
           {event.ticketUrl && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button size="sm" variant="default" onClick={handleTicketsClick} className="shimmer-on-hover bg-accent hover:bg-accent/90 text-accent-foreground">
-                  <ExternalLink className="w-4 h-4" />
-                  Get Tickets
-                </Button>
-              </AlertDialogTrigger>
-            <AlertDialogContent onClick={(e) => e.stopPropagation()}>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Leaving Force Majeure</AlertDialogTitle>
-                <AlertDialogDescription>
-                  You’re about to be redirected to an external site to purchase tickets. Continue?
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Stay Here</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    window.open(event.ticketUrl!, '_blank', 'noopener,noreferrer');
-                  }}
-                >
-                  Continue
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
+            <Button 
+              size="sm" 
+              variant="default" 
+              onClick={handleTicketsClick} 
+              className="shimmer-on-hover bg-accent hover:bg-accent/90 text-accent-foreground"
+            >
+              <ExternalLink className="w-4 h-4" />
+              Get Tickets
+            </Button>
+          )}
           <Button size="sm" variant="secondary" onClick={handlePlayLineup} disabled={playing} className="invert-button">
             {playing ? (
               <>
@@ -265,6 +198,17 @@ export const EventCard = ({ event }: EventCardProps) => {
           </Button>
         </div>
       </CommonCard>
+
+      {event.ticketUrl && (
+        <ExternalLinkDialog
+          open={showTicketDialog}
+          onOpenChange={setShowTicketDialog}
+          url={event.ticketUrl}
+          title="Leaving Force Majeure"
+          description="You're about to be redirected to an external site to purchase tickets. Continue?"
+          onStopPropagation={true}
+        />
+      )}
     </div>
   );
 };

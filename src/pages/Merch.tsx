@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { ForceMajeureRootLayout } from '@/components/ForceMajeureRootLayout';
 import { MerchCard } from '@/components/MerchCard';
+import { LoadingState } from '@/components/LoadingState';
+import { EmptyState } from '@/components/EmptyState';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
@@ -79,9 +81,7 @@ export default function Merch() {
     return (
       <ForceMajeureRootLayout>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="text-center">
-            <p className="text-muted-foreground">Loading merchandise...</p>
-          </div>
+          <LoadingState message="Loading merchandise..." />
         </div>
       </ForceMajeureRootLayout>
     );
@@ -130,9 +130,11 @@ export default function Merch() {
 
         {/* Grid */}
         {filteredItems.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">No items found matching your criteria.</p>
-          </div>
+          <EmptyState
+            icon={ShoppingCart}
+            title="No items found"
+            description="No items found matching your criteria."
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredItems.map((item) => (

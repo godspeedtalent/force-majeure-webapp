@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { Calendar, Clock, MapPin, Play, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { ExternalLinkDialog } from '@/components/ExternalLinkDialog';
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext';
 import { useSongsByEvent } from '@/hooks/useSongsByEvent';
+import { formatTimeDisplay, parseTimeToMinutes } from '@/lib/timeUtils';
 
 interface Artist {
   name: string;
@@ -43,33 +44,10 @@ export const EventRow = ({ event }: EventRowProps) => {
     });
   };
 
-  const formatTimeDisplay = (timeString: string) => {
-    if (!timeString) return '';
-    
-    if (timeString.includes(' - ')) {
-      const [startTime, endTime] = timeString.split(' - ');
-      return `${startTime.replace(':00', '')} - ${endTime.replace(':00', '')}`;
-    }
-    
-    return timeString.replace(':00', '');
-  };
-
-  const parseTimeToMinutes = (timeString: string) => {
-    if (!timeString) return 0;
-    const cleanTime = timeString.split(' - ')[0].trim();
-    const [time, period] = cleanTime.split(/\s+/);
-    const [hours, minutes] = time.split(':').map(Number);
-    
-    if (period?.toLowerCase() === 'pm' && hours !== 12) {
-      return (hours + 12) * 60 + (minutes || 0);
-    } else if (period?.toLowerCase() === 'am' && hours === 12) {
-      return minutes || 0;
-    }
-    
-    return hours * 60 + (minutes || 0);
-  };
-
-  const isAfterHours = parseTimeToMinutes(event.time) >= 120; // 2:00 AM = 120 minutes
+  const isAfterHours = (() => {
+    const minutes = parseTimeToMinutes(event.time);
+    return minutes !== null && minutes >= 120; // 2:00 AM = 120 minutes
+  })();
 
   const handlePlayLineup = async () => {
     if (eventSongs.length > 0) {
@@ -170,25 +148,16 @@ export const EventRow = ({ event }: EventRowProps) => {
         </div>
       </div>
 
-      <AlertDialog open={showTicketDialog} onOpenChange={setShowTicketDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>External Link</AlertDialogTitle>
-            <AlertDialogDescription>
-              You're about to visit an external ticketing site. This will open in a new tab.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={() => window.open(event.ticketUrl, '_blank')}
-              className="bg-fm-gold hover:bg-fm-gold/90 text-black"
-            >
-              Continue to Tickets
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {event.ticketUrl && (
+        <ExternalLinkDialog
+          open={showTicketDialog}
+          onOpenChange={setShowTicketDialog}
+          url={event.ticketUrl}
+          title="External Link"
+          description="You're about to visit an external ticketing site. This will open in a new tab."
+          continueText="Continue to Tickets"
+        />
+      )}
     </>
   );
 };

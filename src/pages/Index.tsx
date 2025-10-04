@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { EventCard } from '@/components/EventCard';
 import { EventRow } from '@/components/EventRow';
 import { DisplayToggle } from '@/components/DisplayToggle';
-import { Button } from '@/components/ui/button';
+import { LoadingState } from '@/components/LoadingState';
+import { EmptyState } from '@/components/EmptyState';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, ArrowRight, Instagram, Music, Phone, Mail, Loader2 } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getImageUrl } from '@/lib/imageUtils';
 
@@ -137,12 +138,8 @@ const Index = () => {
       left={
         <div className="relative h-full flex flex-col lg:px-0 py-0 px-0">
           {!contentReady ? (
-            // Loading state with spinner
             <div className="flex-1 flex items-center justify-center">
-              <div className="text-center">
-                <Loader2 className="w-8 h-8 animate-spin text-fm-gold mx-auto mb-4" />
-                <p className="text-sm text-muted-foreground">Loading...</p>
-              </div>
+              <LoadingState message="Loading..." />
             </div>
           ) : (
             // Content with fade and slide animation
@@ -188,9 +185,11 @@ const Index = () => {
                   <EventCard key={event.id} event={event} />
                 ))
               ) : (
-                <div className="col-span-full text-center py-8">
-                  <p className="text-muted-foreground">No upcoming events</p>
-                </div>
+                <EmptyState 
+                  icon={Calendar}
+                  title="No upcoming events" 
+                  className="col-span-full"
+                />
               )}
             </div>
           ) : (
@@ -204,9 +203,10 @@ const Index = () => {
                   <EventRow key={event.id} event={event} />
                 ))
               ) : (
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground">No upcoming events</p>
-                </div>
+                <EmptyState 
+                  icon={Calendar}
+                  title="No upcoming events"
+                />
               )}
             </div>
           )}
