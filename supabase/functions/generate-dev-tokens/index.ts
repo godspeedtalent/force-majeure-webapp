@@ -17,52 +17,80 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Get first location
+    // Get all 5 scavenger hunt locations
     const { data: locations, error: locError } = await supabase
       .from('scavenger_locations')
       .select('id, location_name')
-      .limit(1)
-      .single();
+      .in('location_name', ['BOOGIE', 'MIRRORBALL', 'DISCO', 'LADYBIRD', 'KEEPITWEIRD'])
+      .order('location_name');
 
-    if (locError || !locations) {
+    if (locError || !locations || locations.length === 0) {
       return new Response(
         JSON.stringify({ error: 'No locations found' }),
         { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Generate 3 test tokens with known values
-    const testTokens = [
-      { plaintext: 'VALID_UNCLAIMED_TOKEN', reward_type: 'free_ticket', should_claim: false },
-      { plaintext: 'ALREADY_CLAIMED_TOKEN', reward_type: 'free_ticket', should_claim: true },
-      { plaintext: 'ANOTHER_VALID_TOKEN', reward_type: 'promo_code_20', should_claim: false }
-    ];
+    // Delete ALL existing tokens first
+    await supabase
+      .from('scavenger_tokens')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
 
     const tokenRecords = [];
+    const generatedTokens = [];
     
+    // Generate exactly 1 token per location
+    // The plaintext token is just the location name itself
+    for (const location of locations) {
+      const plaintextToken = location.location_name; // e.g., "BOOGIE"
+      const salt = await bcrypt.genSalt(10);
+      const tokenHash = await bcrypt.hash(plaintextToken, salt);
+
+      tokenRecords.push({
+        location_id: location.id,
+        token_hash: tokenHash,
+        token_salt: salt,
+        is_claimed: false
+      });
+
+      generatedTokens.push({
+        location: location.location_name,
+        token: plaintextToken
+      });
+    }
+
+    // Also add the test tokens for dev panel
+    const testTokens = [
+      { plaintext: 'VALID_UNCLAIMED_TOKEN', location_name: 'BOOGIE', should_claim: false },
+      { plaintext: 'ALREADY_CLAIMED_TOKEN', location_name: 'MIRRORBALL', should_claim: true },
+      { plaintext: 'ANOTHER_VALID_TOKEN', location_name: 'DISCO', should_claim: false }
+    ];
+
     for (const testToken of testTokens) {
+      const location = locations.find(l => l.location_name === testToken.location_name);
+      if (!location) continue;
+
       const salt = await bcrypt.genSalt(10);
       const tokenHash = await bcrypt.hash(testToken.plaintext, salt);
 
       tokenRecords.push({
-        location_id: locations.id,
+        location_id: location.id,
         token_hash: tokenHash,
         token_salt: salt,
-        reward_type: testToken.reward_type,
-        promo_code: testToken.reward_type === 'promo_code_20' ? 'TEST20' : null,
         is_claimed: testToken.should_claim,
         claimed_by_user_id: testToken.should_claim ? '00000000-0000-0000-0000-000000000000' : null,
         claimed_at: testToken.should_claim ? new Date().toISOString() : null
       });
+
+      generatedTokens.push({
+        location: testToken.location_name,
+        token: testToken.plaintext,
+        is_claimed: testToken.should_claim
+      });
     }
 
-    // Delete existing test tokens first
-    await supabase
-      .from('scavenger_tokens')
-      .delete()
-      .eq('location_id', locations.id);
-
-    // Insert new test tokens
+    // Insert new tokens
     const { error: insertError } = await supabase
       .from('scavenger_tokens')
       .insert(tokenRecords);
@@ -75,17 +103,13 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Generated ${testTokens.length} test tokens for ${locations.location_name}`);
+    console.log(`Generated ${tokenRecords.length} tokens across ${locations.length} locations`);
 
     return new Response(
       JSON.stringify({
         success: true,
-        location_name: locations.location_name,
-        tokens: testTokens.map(t => ({
-          token: t.plaintext,
-          reward_type: t.reward_type,
-          is_claimed: t.should_claim
-        }))
+        message: `Generated ${tokenRecords.length} tokens for ${locations.length} locations`,
+        tokens: generatedTokens
       }),
       { 
         status: 200,
