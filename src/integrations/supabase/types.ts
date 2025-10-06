@@ -209,7 +209,6 @@ export type Database = {
           promo_code: string | null
           reward_type: string
           show_on_leaderboard: boolean
-          token_id: string
           user_id: string
         }
         Insert: {
@@ -221,7 +220,6 @@ export type Database = {
           promo_code?: string | null
           reward_type: string
           show_on_leaderboard?: boolean
-          token_id: string
           user_id: string
         }
         Update: {
@@ -233,7 +231,6 @@ export type Database = {
           promo_code?: string | null
           reward_type?: string
           show_on_leaderboard?: boolean
-          token_id?: string
           user_id?: string
         }
         Relationships: [
@@ -244,13 +241,6 @@ export type Database = {
             referencedRelation: "scavenger_locations"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "scavenger_claims_token_id_fkey"
-            columns: ["token_id"]
-            isOneToOne: false
-            referencedRelation: "scavenger_tokens"
-            referencedColumns: ["id"]
-          },
         ]
       }
       scavenger_locations: {
@@ -258,10 +248,12 @@ export type Database = {
           created_at: string
           id: string
           is_active: boolean
+          label: string | null
           location_description: string | null
           location_name: string
           promo_code: string | null
           reward_type: Database["public"]["Enums"]["reward_type"] | null
+          secret_code: string
           tokens_remaining: number
           total_tokens: number
           updated_at: string
@@ -270,10 +262,12 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean
+          label?: string | null
           location_description?: string | null
           location_name: string
           promo_code?: string | null
           reward_type?: Database["public"]["Enums"]["reward_type"] | null
+          secret_code?: string
           tokens_remaining?: number
           total_tokens?: number
           updated_at?: string
@@ -282,59 +276,17 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean
+          label?: string | null
           location_description?: string | null
           location_name?: string
           promo_code?: string | null
           reward_type?: Database["public"]["Enums"]["reward_type"] | null
+          secret_code?: string
           tokens_remaining?: number
           total_tokens?: number
           updated_at?: string
         }
         Relationships: []
-      }
-      scavenger_tokens: {
-        Row: {
-          claimed_at: string | null
-          claimed_by_user_id: string | null
-          created_at: string
-          id: string
-          is_claimed: boolean
-          location_id: string
-          token_hash: string
-          token_salt: string
-          updated_at: string
-        }
-        Insert: {
-          claimed_at?: string | null
-          claimed_by_user_id?: string | null
-          created_at?: string
-          id?: string
-          is_claimed?: boolean
-          location_id: string
-          token_hash: string
-          token_salt: string
-          updated_at?: string
-        }
-        Update: {
-          claimed_at?: string | null
-          claimed_by_user_id?: string | null
-          created_at?: string
-          id?: string
-          is_claimed?: boolean
-          location_id?: string
-          token_hash?: string
-          token_salt?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "scavenger_tokens_location_id_fkey"
-            columns: ["location_id"]
-            isOneToOne: false
-            referencedRelation: "scavenger_locations"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       songs: {
         Row: {
@@ -423,7 +375,7 @@ export type Database = {
         Returns: string
       }
       get_location_preview: {
-        Args: { p_location_id: string }
+        Args: { p_secret_code: string }
         Returns: {
           id: string
           is_active: boolean
@@ -435,7 +387,7 @@ export type Database = {
         }[]
       }
       get_location_with_promo: {
-        Args: { p_location_id: string }
+        Args: { p_secret_code: string }
         Returns: {
           id: string
           is_active: boolean
