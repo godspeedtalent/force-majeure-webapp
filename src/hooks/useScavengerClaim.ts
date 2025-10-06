@@ -8,8 +8,10 @@ const getDeviceFingerprint = (): string => {
   const language = navigator.language;
   const platform = navigator.platform;
   const screenResolution = `${window.screen.width}x${window.screen.height}`;
+  const colorDepth = window.screen.colorDepth;
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   
-  return `${userAgent}::${language}::${platform}::${screenResolution}`;
+  return `${userAgent}::${language}::${platform}::${screenResolution}::${colorDepth}::${timezone}`;
 };
 
 export const useScavengerClaim = () => {

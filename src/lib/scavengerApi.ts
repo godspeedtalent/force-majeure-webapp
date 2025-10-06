@@ -2,7 +2,6 @@ import { supabase } from "@/integrations/supabase/client";
 
 export interface ValidationResult {
   valid: boolean;
-  token_id?: string;
   location_id?: string;
   location_name?: string;
   location_description?: string;

@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -52,73 +51,46 @@ serve(async (req) => {
 
     if (!token) {
       return new Response(
-        JSON.stringify({ error: 'Token is required' }),
+        JSON.stringify({ error: 'Code is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Get all unclaimed tokens (using service role to bypass RLS)
-    const { data: tokens, error: tokensError } = await supabase
-      .from('scavenger_tokens')
-      .select('id, token_hash, token_salt, location_id')
-      .eq('is_claimed', false);
-
-    if (tokensError) {
-      console.error('Error fetching tokens:', tokensError);
-      return new Response(
-        JSON.stringify({ error: 'Failed to validate token' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    if (!tokens || tokens.length === 0) {
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(token)) {
       return new Response(
         JSON.stringify({ 
           valid: false,
-          error: 'No tokens available',
-          message: 'All rewards have been claimed!'
+          error: 'Invalid code format',
+          message: 'This code is not valid. Please scan a valid QR code.'
         }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Check each token hash
-    let matchedToken = null;
-    for (const tokenRecord of tokens) {
-      try {
-        const isMatch = await bcrypt.compare(token, tokenRecord.token_hash);
-        if (isMatch) {
-          matchedToken = tokenRecord;
-          break;
-        }
-      } catch (error) {
-        console.error('Error comparing token hash:', error);
-        continue;
-      }
-    }
-
-    if (!matchedToken) {
-      return new Response(
-        JSON.stringify({ 
-          valid: false,
-          error: 'Invalid token',
-          message: 'This QR code is not valid. Please check you scanned correctly.'
-        }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Get location preview using security definer function (no promo code exposed)
+    // Get location using secret code
     const { data: locationData, error: locationError } = await supabase
-      .rpc('get_location_preview', { p_location_id: matchedToken.location_id });
+      .rpc('get_location_preview', { p_secret_code: token });
 
-    if (locationError || !locationData || locationData.length === 0) {
+    if (locationError) {
       console.error('Error fetching location:', locationError);
       return new Response(
         JSON.stringify({ 
           valid: false,
-          error: 'Location not found',
-          message: 'This location is no longer active.'
+          error: 'Database error',
+          message: 'Unable to validate code. Please try again.'
+        }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!locationData || locationData.length === 0) {
+      return new Response(
+        JSON.stringify({ 
+          valid: false,
+          error: 'Invalid code',
+          message: 'This QR code is not valid. Please check you scanned correctly.'
         }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
@@ -131,18 +103,17 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ 
           valid: false,
-          error: 'No tokens remaining',
+          error: 'No rewards remaining',
           message: `All rewards for ${location.location_name} have been claimed!`
         }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Token is valid - return preview without promo code
+    // Code is valid - return preview without promo code
     return new Response(
       JSON.stringify({
         valid: true,
-        token_id: matchedToken.id,
         location_id: location.id,
         location_name: location.location_name,
         location_description: location.location_description,

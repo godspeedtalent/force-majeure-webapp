@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -45,7 +44,7 @@ serve(async (req) => {
     }
 
     const { 
-      token: qrToken, 
+      token: secretCode, 
       user_email, 
       display_name,
       show_on_leaderboard = false,
@@ -59,51 +58,25 @@ serve(async (req) => {
       return `${ip}::${userAgent}`;
     })();
 
-    if (!qrToken) {
+    if (!secretCode) {
       return new Response(
-        JSON.stringify({ error: 'Token is required' }),
+        JSON.stringify({ error: 'Code is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Get all unclaimed tokens (using service role to bypass RLS)
-    const { data: tokens, error: tokensError } = await supabase
-      .from('scavenger_tokens')
-      .select('id, token_hash, token_salt, location_id')
-      .eq('is_claimed', false);
-
-    if (tokensError || !tokens || tokens.length === 0) {
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(secretCode)) {
       return new Response(
-        JSON.stringify({ error: 'No valid tokens found' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Find matching token
-    let matchedToken = null;
-    for (const tokenRecord of tokens) {
-      try {
-        const isMatch = await bcrypt.compare(qrToken, tokenRecord.token_hash);
-        if (isMatch) {
-          matchedToken = tokenRecord;
-          break;
-        }
-      } catch (error) {
-        console.error('Error comparing token:', error);
-        continue;
-      }
-    }
-
-    if (!matchedToken) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid token' }),
+        JSON.stringify({ error: 'Invalid code format' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     // Get location details with promo code using security definer function
     const { data: locationData, error: locationError } = await supabase
-      .rpc('get_location_with_promo', { p_location_id: matchedToken.location_id });
+      .rpc('get_location_with_promo', { p_secret_code: secretCode });
 
     if (locationError || !locationData || locationData.length === 0) {
       console.error('Error fetching location:', locationError);
@@ -118,7 +91,7 @@ serve(async (req) => {
     // Check if location has tokens remaining
     if (location.tokens_remaining <= 0) {
       return new Response(
-        JSON.stringify({ error: 'No tokens remaining at this location' }),
+        JSON.stringify({ error: 'No rewards remaining at this location' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -161,26 +134,7 @@ serve(async (req) => {
     const rewardType = claimPosition === 1 ? 'free_ticket' : 'promo_code_20';
     const promoCode = rewardType === 'promo_code_20' ? location.promo_code : null;
 
-    // Begin atomic transaction
-    // 1. Mark token as claimed
-    const { error: updateTokenError } = await supabase
-      .from('scavenger_tokens')
-      .update({
-        is_claimed: true,
-        claimed_by_user_id: user.id,
-        claimed_at: new Date().toISOString()
-      })
-      .eq('id', matchedToken.id);
-
-    if (updateTokenError) {
-      console.error('Error updating token:', updateTokenError);
-      return new Response(
-        JSON.stringify({ error: 'Failed to claim token' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // 2. Decrement tokens_remaining
+    // 1. Decrement tokens_remaining
     const { error: updateLocationError } = await supabase
       .from('scavenger_locations')
       .update({
@@ -191,25 +145,18 @@ serve(async (req) => {
 
     if (updateLocationError) {
       console.error('Error updating location:', updateLocationError);
-      // Rollback token claim
-      await supabase
-        .from('scavenger_tokens')
-        .update({ is_claimed: false, claimed_by_user_id: null, claimed_at: null })
-        .eq('id', matchedToken.id);
-      
       return new Response(
         JSON.stringify({ error: 'Failed to update location' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // 3. Create claim record
+    // 2. Create claim record
     const { error: createClaimError } = await supabase
       .from('scavenger_claims')
       .insert({
         user_id: user.id,
         location_id: location.id,
-        token_id: matchedToken.id,
         claim_position: claimPosition,
         show_on_leaderboard,
         reward_type: rewardType,
@@ -220,11 +167,7 @@ serve(async (req) => {
 
     if (createClaimError) {
       console.error('Error creating claim:', createClaimError);
-      // Rollback
-      await supabase
-        .from('scavenger_tokens')
-        .update({ is_claimed: false, claimed_by_user_id: null, claimed_at: null })
-        .eq('id', matchedToken.id);
+      // Rollback location update
       await supabase
         .from('scavenger_locations')
         .update({ tokens_remaining: location.tokens_remaining })
@@ -236,7 +179,7 @@ serve(async (req) => {
       );
     }
 
-    // 4. Send email via Mailchimp Transactional
+    // 3. Send email via Mailchimp Transactional
     const mailchimpApiKey = Deno.env.get('MAILCHIMP_TRANSACTIONAL_API_KEY');
     
     if (mailchimpApiKey) {
