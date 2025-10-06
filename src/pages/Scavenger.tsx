@@ -26,7 +26,7 @@ import lfSystemImage from '@/assets/lf-system-scavenger.jpg';
 export default function Scavenger() {
   const { user, profile } = useAuth();
   const [searchParams] = useSearchParams();
-  const token = searchParams.get('token');
+  const code = searchParams.get('code');
   const { data: featureFlags } = useFeatureFlags();
   const { currentStep, setCurrentStep, nextStep } = useWizardNavigation();
   
@@ -102,10 +102,10 @@ export default function Scavenger() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Validate token when present
+  // Validate code when present
   useEffect(() => {
-    const validateToken = async () => {
-      if (!token) {
+    const validateCode = async () => {
+      if (!code) {
         setValidationResult(null);
         return;
       }
@@ -113,25 +113,25 @@ export default function Scavenger() {
       setIsValidating(true);
       try {
         const { data, error } = await supabase.functions.invoke('validate-scavenger-token', {
-          body: { token }
+          body: { code }
         });
 
         if (error) throw error;
         setValidationResult(data);
       } catch (error) {
-        console.error('Token validation error:', error);
-        setValidationResult({ valid: false, error: 'Failed to validate token' });
+        console.error('Code validation error:', error);
+        setValidationResult({ valid: false, error: 'Failed to validate code' });
       } finally {
         setIsValidating(false);
       }
     };
 
-    validateToken();
-  }, [token]);
+    validateCode();
+  }, [code]);
 
   const claim = useMutation({
     mutationFn: async (params: {
-      token: string;
+      code: string;
       userEmail: string;
       displayName: string;
       showOnLeaderboard: boolean;
@@ -151,7 +151,7 @@ export default function Scavenger() {
 
       const { data, error } = await supabase.functions.invoke('claim-scavenger-reward', {
         body: { 
-          token: params.token, 
+          token: params.code, 
           user_email: params.userEmail,
           display_name: params.displayName,
           show_on_leaderboard: params.showOnLeaderboard,
@@ -237,9 +237,9 @@ export default function Scavenger() {
     setIsSubmitting(true);
 
     try {
-      // Build redirect URL to preserve token if it exists
+      // Build redirect URL to preserve code if it exists
       const currentUrl = window.location.origin + window.location.pathname;
-      const redirectUrl = token ? `${currentUrl}?token=${token}` : currentUrl;
+      const redirectUrl = code ? `${currentUrl}?code=${code}` : currentUrl;
 
       const { error } = await supabase.auth.signUp({
         email,
@@ -290,9 +290,9 @@ export default function Scavenger() {
   // Calculate total unclaimed rewards
   const totalUnclaimedRewards = locations?.reduce((sum, location) => sum + location.tokens_remaining, 0) || 0;
 
-  // Handle token validation states
-  if (token && validationResult) {
-    // State 1: Invalid Token
+  // Handle code validation states
+  if (code && validationResult) {
+    // State 1: Invalid Code
     if (!validationResult.valid) {
       return (
         <>
@@ -741,7 +741,7 @@ export default function Scavenger() {
                     if (!profile?.display_name || !user?.email) return;
                     
                     const result = await claim.mutateAsync({
-                      token: token!,
+                      code: code!,
                       userEmail: user.email,
                       displayName: profile.display_name,
                       showOnLeaderboard: true
@@ -776,8 +776,8 @@ export default function Scavenger() {
     );
   }
 
-  // Show authenticated state without token
-  if (user && !token) {
+  // Show authenticated state without code
+  if (user && !code) {
     return (
       <>
         <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />

@@ -6,10 +6,49 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Secret key for decryption (must match proxy-token function)
+const SECRET_KEY = Deno.env.get('PROXY_SECRET_KEY') || 'force-majeure-scavenger-2024';
+
 // Rate limiting storage (in-memory, resets on function restart)
 const rateLimitMap = new Map<string, { attempts: number; resetAt: number }>();
 const RATE_LIMIT_ATTEMPTS = 10;
 const RATE_LIMIT_WINDOW_MS = 60000; // 1 minute
+const CODE_EXPIRY_MS = 60000; // 1 minute
+
+async function decryptPayload(encryptedCode: string): Promise<{ uuid: string; timestamp: number } | null> {
+  try {
+    // Restore base64 from URL-safe encoding
+    const base64 = encryptedCode
+      .replace(/-/g, '+')
+      .replace(/_/g, '/');
+    
+    // Pad base64 string if needed
+    const padded = base64 + '==='.slice((base64.length + 3) % 4);
+    
+    const decoder = new TextDecoder();
+    const encoder = new TextEncoder();
+    const key = encoder.encode(SECRET_KEY.padEnd(32, '0').slice(0, 32));
+    
+    // Decode base64
+    const binaryString = atob(padded);
+    const encrypted = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      encrypted[i] = binaryString.charCodeAt(i);
+    }
+    
+    // XOR decrypt
+    const decrypted = new Uint8Array(encrypted.length);
+    for (let i = 0; i < encrypted.length; i++) {
+      decrypted[i] = encrypted[i] ^ key[i % key.length];
+    }
+    
+    const payload = decoder.decode(decrypted);
+    return JSON.parse(payload);
+  } catch (error) {
+    console.error('Decryption error:', error);
+    return null;
+  }
+}
 
 function checkRateLimit(ip: string): boolean {
   const now = Date.now();
@@ -47,12 +86,44 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { token } = await req.json();
+    const { code } = await req.json();
 
-    if (!token) {
+    if (!code) {
       return new Response(
         JSON.stringify({ error: 'Code is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Decrypt the code to get UUID and timestamp
+    const decrypted = await decryptPayload(code);
+    
+    if (!decrypted) {
+      return new Response(
+        JSON.stringify({ 
+          valid: false,
+          error: 'Invalid code format',
+          message: 'This code is not valid. Please scan a valid QR code.'
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { uuid: token, timestamp } = decrypted;
+
+    // Check if code has expired (older than 1 minute)
+    const now = Date.now();
+    const age = now - timestamp;
+    
+    if (age > CODE_EXPIRY_MS) {
+      console.log('Code expired:', { age, limit: CODE_EXPIRY_MS });
+      return new Response(
+        JSON.stringify({ 
+          valid: false,
+          error: 'Code expired',
+          message: 'This QR code has expired. Please scan it again.'
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -62,7 +133,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ 
           valid: false,
-          error: 'Invalid code format',
+          error: 'Invalid token format',
           message: 'This code is not valid. Please scan a valid QR code.'
         }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

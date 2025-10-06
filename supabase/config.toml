@@ -13,6 +13,9 @@ verify_jwt = false
 [functions.generate-scavenger-tokens]
 verify_jwt = false
 
+[functions.proxy-token]
+verify_jwt = false
+
 [functions.validate-scavenger-token]
 verify_jwt = false
 

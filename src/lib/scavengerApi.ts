@@ -24,19 +24,19 @@ export interface ClaimResult {
   error?: string;
 }
 
-export const validateScavengerToken = async (token: string): Promise<ValidationResult> => {
+export const validateScavengerToken = async (code: string): Promise<ValidationResult> => {
   try {
     const { data, error } = await supabase.functions.invoke('validate-scavenger-token', {
-      body: { token }
+      body: { code }
     });
 
     if (error) throw error;
     return data as ValidationResult;
   } catch (error: any) {
-    console.error('Error validating token:', error);
+    console.error('Error validating code:', error);
     return {
       valid: false,
-      error: error.message || 'Failed to validate token',
+      error: error.message || 'Failed to validate code',
       message: 'Something went wrong. Please try again.'
     };
   }
