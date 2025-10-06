@@ -786,7 +786,7 @@ export default function Scavenger() {
               <MessagePanel
                 isLoading={locationsLoading}
                 title={`Welcome back, ${profile?.display_name || 'Raver'}!`}
-                description="Ready to claim your free tickets? Head out and scan a QR code at one of the locations."
+                description={totalUnclaimedRewards > 0 ? "Ready to claim your free tickets? Head out and scan a QR code at one of the locations." : undefined}
                 action={
                   <>
                     <div className="text-center mb-8">
