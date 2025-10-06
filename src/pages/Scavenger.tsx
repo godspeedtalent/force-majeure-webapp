@@ -298,7 +298,7 @@ export default function Scavenger() {
         <>
           <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
           {/* Mobile/Tablet: Hero image at top */}
-          <div className="lg:hidden h-[75vh] w-full bg-muted relative overflow-hidden shadow-[0_12px_48px_-4px_rgba(0,0,0,0.7)]">
+          <div className="lg:hidden h-[50vh] w-full bg-muted relative overflow-hidden shadow-[0_12px_48px_-4px_rgba(0,0,0,0.7)]">
             <div 
               ref={parallaxRef1}
               className="absolute inset-0 w-full h-[120%] -top-[10%]"
@@ -366,7 +366,7 @@ export default function Scavenger() {
         <>
           <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
           {/* Mobile/Tablet: Hero image at top */}
-          <div className="lg:hidden h-[75vh] w-full bg-muted relative overflow-hidden shadow-[0_12px_48px_-4px_rgba(0,0,0,0.7)]">
+          <div className="lg:hidden h-[50vh] w-full bg-muted relative overflow-hidden shadow-[0_12px_48px_-4px_rgba(0,0,0,0.7)]">
             <div 
               ref={parallaxRef2}
               className="absolute inset-0 w-full h-[120%] -top-[10%]"
@@ -417,7 +417,7 @@ export default function Scavenger() {
         <>
           <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
           {/* Mobile/Tablet: Hero image at top */}
-          <div className="lg:hidden h-[75vh] w-full bg-muted relative overflow-hidden shadow-[0_12px_48px_-4px_rgba(0,0,0,0.7)]">
+          <div className="lg:hidden h-[50vh] w-full bg-muted relative overflow-hidden shadow-[0_12px_48px_-4px_rgba(0,0,0,0.7)]">
             <div 
               ref={parallaxRef3}
               className="absolute inset-0 w-full h-[120%] -top-[10%]"
