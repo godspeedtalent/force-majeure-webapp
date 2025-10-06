@@ -465,8 +465,8 @@ export default function Scavenger() {
           content: (
             <MessagePanel
               isLoading={locationsLoading}
-              title="🎉 Reward Found!"
-              description={`You found ${validationResult.location_name}! You're eligible for: ${validationResult.reward_type || 'an exclusive reward'}`}
+              title={`Welcome to the ${validationResult.location_name} Checkpoint`}
+              description={`You're eligible for: ${validationResult.reward_type || 'an exclusive reward'}`}
               action={
                 <>
                   <p className="text-lg text-muted-foreground mb-6">
@@ -729,8 +729,8 @@ export default function Scavenger() {
             <div className="absolute inset-0 bg-topographic opacity-15 lg:opacity-25 bg-no-repeat bg-cover bg-center backdrop-blur-sm" />
             <div className="w-full max-w-md px-4 py-6 lg:px-8 lg:py-12 relative z-10">
               <MessagePanel 
-                title="🎉 Ready to Claim!"
-                description={`${validationResult.location_name} - ${validationResult.reward_type || 'Exclusive Reward'}`}
+                title={`Welcome to the ${validationResult.location_name} Checkpoint`}
+                description={`You're ready to claim: ${validationResult.reward_type || 'Exclusive Reward'}`}
                 className="mb-6"
               />
               <div className="text-center">
