@@ -1,5 +1,5 @@
 import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
-import { Instagram, Facebook } from 'lucide-react';
+import { Instagram } from 'lucide-react';
 
 export default function ComingSoon() {
   return (
@@ -37,14 +37,6 @@ export default function ComingSoon() {
             className="p-4 rounded-full bg-muted/30 hover:bg-fm-gold hover:text-primary-foreground transition-all duration-300 hover:scale-110"
           >
             <Instagram className="w-6 h-6" />
-          </a>
-          <a
-            href="https://facebook.com/forcemajeure"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-4 rounded-full bg-muted/30 hover:bg-fm-gold hover:text-primary-foreground transition-all duration-300 hover:scale-110"
-          >
-            <Facebook className="w-6 h-6" />
           </a>
         </div>
 
