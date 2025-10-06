@@ -611,11 +611,17 @@ export default function Scavenger() {
           <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
           {/* Mobile/Tablet: Hero image at top */}
           <div className="lg:hidden h-[50vh] w-full bg-muted relative overflow-hidden shadow-[0_12px_48px_-4px_rgba(0,0,0,0.7)]">
-            <ImageWithSkeleton 
-              src={lfSystemImage} 
-              alt="LF System" 
-              className="w-full h-full object-cover object-top brightness-90"
-            />
+            <div 
+              ref={parallaxRef1}
+              className="absolute inset-0 w-full h-[120%] -top-[10%]"
+              style={{ willChange: 'transform' }}
+            >
+              <ImageWithSkeleton 
+                src={lfSystemImage} 
+                alt="LF System" 
+                className="w-full h-full object-cover object-top brightness-90"
+              />
+            </div>
           </div>
           {/* Desktop: Split layout */}
           <div className="min-h-screen flex flex-col lg:flex-row">
@@ -705,11 +711,17 @@ export default function Scavenger() {
         <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
         {/* Mobile/Tablet: Hero image at top */}
         <div className="lg:hidden h-[50vh] w-full bg-muted relative overflow-hidden shadow-[0_12px_48px_-4px_rgba(0,0,0,0.7)]">
-          <ImageWithSkeleton 
-            src={lfSystemImage} 
-            alt="LF System" 
-            className="w-full h-full object-cover object-top brightness-90"
-          />
+          <div 
+            ref={parallaxRef1}
+            className="absolute inset-0 w-full h-[120%] -top-[10%]"
+            style={{ willChange: 'transform' }}
+          >
+            <ImageWithSkeleton 
+              src={lfSystemImage} 
+              alt="LF System" 
+              className="w-full h-full object-cover object-top brightness-90"
+            />
+          </div>
         </div>
         {/* Desktop: Split layout */}
         <div className="min-h-screen flex flex-col lg:flex-row">
@@ -771,11 +783,17 @@ export default function Scavenger() {
         <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
         {/* Mobile/Tablet: Hero image at top */}
         <div className="lg:hidden h-[50vh] w-full bg-muted relative overflow-hidden shadow-[0_12px_48px_-4px_rgba(0,0,0,0.7)]">
-          <ImageWithSkeleton 
-            src={lfSystemImage} 
-            alt="LF System" 
-            className="w-full h-full object-cover object-top brightness-90"
-          />
+          <div 
+            ref={parallaxRef1}
+            className="absolute inset-0 w-full h-[120%] -top-[10%]"
+            style={{ willChange: 'transform' }}
+          >
+            <ImageWithSkeleton 
+              src={lfSystemImage} 
+              alt="LF System" 
+              className="w-full h-full object-cover object-top brightness-90"
+            />
+          </div>
         </div>
         {/* Desktop: Split layout */}
         <div className="min-h-screen flex flex-col lg:flex-row">
@@ -850,11 +868,17 @@ export default function Scavenger() {
           <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
           {/* Mobile/Tablet: Hero image at top */}
           <div className="lg:hidden h-[50vh] w-full bg-muted relative overflow-hidden shadow-[0_12px_48px_-4px_rgba(0,0,0,0.7)]">
-            <ImageWithSkeleton 
-              src={lfSystemImage} 
-              alt="LF System" 
-              className="w-full h-full object-cover object-top brightness-90"
-            />
+            <div 
+              ref={parallaxRef1}
+              className="absolute inset-0 w-full h-[120%] -top-[10%]"
+              style={{ willChange: 'transform' }}
+            >
+              <ImageWithSkeleton 
+                src={lfSystemImage} 
+                alt="LF System" 
+                className="w-full h-full object-cover object-top brightness-90"
+              />
+            </div>
           </div>
           {/* Desktop: Split layout */}
           <div className="min-h-screen flex flex-col lg:flex-row">
@@ -1116,11 +1140,17 @@ export default function Scavenger() {
         <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
         {/* Mobile/Tablet: Hero image at top */}
         <div className="lg:hidden h-[50vh] w-full bg-muted relative overflow-hidden shadow-[0_12px_48px_-4px_rgba(0,0,0,0.7)]">
-          <ImageWithSkeleton 
-            src={lfSystemImage} 
-            alt="LF System" 
-            className="w-full h-full object-cover object-top brightness-90"
-          />
+          <div 
+            ref={parallaxRef1}
+            className="absolute inset-0 w-full h-[120%] -top-[10%]"
+            style={{ willChange: 'transform' }}
+          >
+            <ImageWithSkeleton 
+              src={lfSystemImage} 
+              alt="LF System" 
+              className="w-full h-full object-cover object-top brightness-90"
+            />
+          </div>
         </div>
         {/* Desktop: Split layout */}
         <div className="min-h-screen flex flex-col lg:flex-row">
@@ -1158,11 +1188,17 @@ export default function Scavenger() {
       <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />
       {/* Mobile/Tablet: Hero image at top */}
       <div className="lg:hidden h-[50vh] w-full bg-muted relative overflow-hidden shadow-[0_12px_48px_-4px_rgba(0,0,0,0.7)]">
-        <ImageWithSkeleton 
-          src={lfSystemImage} 
-          alt="LF System" 
-          className="w-full h-full object-cover object-top brightness-90"
-        />
+        <div 
+          ref={parallaxRef1}
+          className="absolute inset-0 w-full h-[120%] -top-[10%]"
+          style={{ willChange: 'transform' }}
+        >
+          <ImageWithSkeleton 
+            src={lfSystemImage} 
+            alt="LF System" 
+            className="w-full h-full object-cover object-top brightness-90"
+          />
+        </div>
       </div>
       {/* Desktop: Split layout */}
       <div className="min-h-screen flex flex-col lg:flex-row">
