@@ -27,8 +27,17 @@ export default function Scavenger() {
   const { user, profile } = useAuth();
   const [searchParams] = useSearchParams();
   const code = searchParams.get('code');
+  const legacyToken = searchParams.get('token'); // Handle old URL format
   const { data: featureFlags } = useFeatureFlags();
   const { currentStep, setCurrentStep, nextStep } = useWizardNavigation();
+  
+  // Redirect legacy token URLs to proxy for encryption
+  useEffect(() => {
+    if (legacyToken && !code) {
+      console.log('Redirecting legacy token URL to proxy...');
+      window.location.href = `/proxy-token?token=${legacyToken}`;
+    }
+  }, [legacyToken, code]);
   
   const parallaxRef1 = useRef<HTMLDivElement>(null);
   const parallaxRef2 = useRef<HTMLDivElement>(null);
@@ -317,7 +326,7 @@ export default function Scavenger() {
               <div className="absolute inset-0 bg-topographic opacity-15 lg:opacity-25 bg-no-repeat bg-cover bg-center backdrop-blur-sm" />
               <div className="w-full max-w-md px-4 py-6 lg:px-8 lg:py-12 relative z-10">
                 <MessagePanel 
-                  title="Invalid Token"
+                  title="Invalid Code"
                   description="This QR code doesn't seem to be valid. Please try scanning it again."
                   className="mb-4"
                 />
@@ -411,7 +420,7 @@ export default function Scavenger() {
       );
     }
 
-    // State 3: Valid unclaimed token
+    // State 3: Valid unclaimed code
     if (validationResult.tokens_remaining <= 0) {
       return (
         <>
@@ -457,7 +466,7 @@ export default function Scavenger() {
       );
     }
 
-    // Valid unclaimed token - show reward and claim flow
+    // Valid unclaimed code - show reward and claim flow
     if (!user) {
       // Not authenticated - show wizard to join
       const wizardSteps = [
@@ -1182,7 +1191,7 @@ export default function Scavenger() {
     );
   }
 
-  // User is authenticated and has a token - show full scavenger hunt interface
+  // User is authenticated and has a code - show full scavenger hunt interface
   return (
     <>
       <ScavengerNavigation showShoppingCart={!featureFlags?.coming_soon_mode} />

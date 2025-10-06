@@ -66,7 +66,8 @@ export const ScavengerDevPanel = () => {
 
   const handleScenario = (token: string | null) => {
     if (token) {
-      navigate(`/scavenger?token=${token}`);
+      // Use the proxy URL to get a properly encrypted code
+      navigate(`/proxy-token?token=${token}`);
     } else {
       navigate('/scavenger');
     }
