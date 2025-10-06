@@ -799,7 +799,7 @@ export default function Scavenger() {
         <div className="min-h-screen flex flex-col lg:flex-row">
           {/* Left Column - Content */}
           <div className="flex-1 lg:w-1/2 flex items-center justify-center lg:overflow-y-auto relative z-10 lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] lg:border-r border-border">
-            <div className="absolute top-0 left-0 right-0 h-[25vh] bg-topographic opacity-15 lg:opacity-25 bg-no-repeat bg-cover bg-center backdrop-blur-sm" />
+            <div className="absolute top-0 left-0 right-0 h-[25vh] lg:inset-0 bg-topographic opacity-15 lg:opacity-25 bg-no-repeat bg-cover bg-center backdrop-blur-sm" />
             <div className="w-full max-w-md px-4 py-6 lg:px-8 lg:py-12 relative z-10 flex items-center justify-center">
               <MessagePanel
                 isLoading={locationsLoading}
