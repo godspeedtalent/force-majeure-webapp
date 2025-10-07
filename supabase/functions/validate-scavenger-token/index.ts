@@ -140,9 +140,9 @@ serve(async (req) => {
       );
     }
 
-    // Get location using secret code
+    // Get location using location ID
     const { data: locationData, error: locationError } = await supabase
-      .rpc('get_location_preview', { p_secret_code: token });
+      .rpc('get_location_preview', { p_location_id: token });
 
     if (locationError) {
       console.error('Error fetching location:', locationError);

@@ -253,7 +253,6 @@ export type Database = {
           location_name: string
           promo_code: string | null
           reward_type: Database["public"]["Enums"]["reward_type"] | null
-          secret_code: string
           tokens_remaining: number
           total_tokens: number
           updated_at: string
@@ -267,7 +266,6 @@ export type Database = {
           location_name: string
           promo_code?: string | null
           reward_type?: Database["public"]["Enums"]["reward_type"] | null
-          secret_code?: string
           tokens_remaining?: number
           total_tokens?: number
           updated_at?: string
@@ -281,7 +279,6 @@ export type Database = {
           location_name?: string
           promo_code?: string | null
           reward_type?: Database["public"]["Enums"]["reward_type"] | null
-          secret_code?: string
           tokens_remaining?: number
           total_tokens?: number
           updated_at?: string
@@ -375,7 +372,7 @@ export type Database = {
         Returns: string
       }
       get_location_preview: {
-        Args: { p_secret_code: string }
+        Args: { p_location_id: string }
         Returns: {
           id: string
           is_active: boolean
@@ -387,7 +384,7 @@ export type Database = {
         }[]
       }
       get_location_with_promo: {
-        Args: { p_secret_code: string }
+        Args: { p_location_id: string }
         Returns: {
           id: string
           is_active: boolean

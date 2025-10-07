@@ -137,9 +137,9 @@ serve(async (req) => {
       );
     }
 
-    // Get location details with promo code using security definer function
+    // Get location details with promo code using location ID
     const { data: locationData, error: locationError } = await supabase
-      .rpc('get_location_with_promo', { p_secret_code: secretCode });
+      .rpc('get_location_with_promo', { p_location_id: secretCode });
 
     if (locationError || !locationData || locationData.length === 0) {
       console.error('Error fetching location:', locationError);
