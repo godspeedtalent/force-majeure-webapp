@@ -17,13 +17,13 @@ export default function ComingSoon() {
 
         {/* Main message */}
         <h1 className="font-display text-4xl md:text-6xl mb-6 animate-slide-down-in">
-          Something special on its way,
+          Force Majeure Hub
           <br />
-          <span className="text-fm-gold">Is Coming</span>
+          <span className="text-fm-gold">Coming Soon</span>
         </h1>
 
         <p className="text-lg md:text-l text-muted-foreground mb-12 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-          just hang tight.
+          Just hang tight.
           <br />
           Stay tuned for the reveal.
         </p>
