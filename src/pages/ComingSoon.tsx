@@ -29,7 +29,7 @@ export default function ComingSoon() {
         </p>
 
         {/* Decorative elements */}
-        <div className="mt-16 flex items-center justify-center gap-2 opacity-30">
+        <div className="mt-8 mb-8 flex items-center justify-center gap-2 opacity-30">
           <div className="w-12 h-px bg-gradient-to-r from-transparent to-fm-gold" />
           <div className="w-2 h-2 rounded-full bg-fm-gold animate-pulse-gold" />
           <div className="w-12 h-px bg-gradient-to-l from-transparent to-fm-gold" />
