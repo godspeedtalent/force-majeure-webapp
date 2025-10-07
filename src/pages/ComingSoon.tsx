@@ -17,16 +17,23 @@ export default function ComingSoon() {
 
         {/* Main message */}
         <h1 className="font-display text-4xl md:text-6xl mb-6 animate-slide-down-in">
-          Force Majeure Hub
+          Something special on its way,
           <br />
-          <span className="text-fm-gold">Coming Soon</span>
+          <span className="text-fm-gold">Is Coming</span>
         </h1>
 
         <p className="text-lg md:text-l text-muted-foreground mb-12 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-          Just hang tight.
+          just hang tight.
           <br />
           Stay tuned for the reveal.
         </p>
+
+        {/* Decorative elements */}
+        <div className="mt-16 flex items-center justify-center gap-2 opacity-30">
+          <div className="w-12 h-px bg-gradient-to-r from-transparent to-fm-gold" />
+          <div className="w-2 h-2 rounded-full bg-fm-gold animate-pulse-gold" />
+          <div className="w-12 h-px bg-gradient-to-l from-transparent to-fm-gold" />
+        </div>
 
         {/* Social links */}
         <div className="flex items-center justify-center gap-6 animate-fade-in" style={{ animationDelay: "0.4s" }}>
@@ -38,13 +45,6 @@ export default function ComingSoon() {
           >
             <Instagram className="w-6 h-6" />
           </a>
-        </div>
-
-        {/* Decorative elements */}
-        <div className="mt-16 flex items-center justify-center gap-2 opacity-30">
-          <div className="w-12 h-px bg-gradient-to-r from-transparent to-fm-gold" />
-          <div className="w-2 h-2 rounded-full bg-fm-gold animate-pulse-gold" />
-          <div className="w-12 h-px bg-gradient-to-l from-transparent to-fm-gold" />
         </div>
       </div>
     </div>
