@@ -1,5 +1,5 @@
-import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
-import { Instagram } from 'lucide-react';
+import { ForceMajeureLogo } from "@/components/ForceMajeureLogo";
+import { Instagram } from "lucide-react";
 
 export default function ComingSoon() {
   return (
@@ -7,7 +7,7 @@ export default function ComingSoon() {
       {/* Background patterns */}
       <div className="absolute inset-0 bg-topographic opacity-10 bg-repeat bg-center" />
       <div className="absolute inset-0 bg-gradient-monochrome opacity-5" />
-      
+
       {/* Content */}
       <div className="relative z-10 text-center px-6 max-w-2xl mx-auto">
         {/* Logo */}
@@ -17,19 +17,19 @@ export default function ComingSoon() {
 
         {/* Main message */}
         <h1 className="font-display text-4xl md:text-6xl mb-6 animate-slide-down-in">
-          Something Special
+          Something special on its way,
           <br />
           <span className="text-fm-gold">Is Coming</span>
         </h1>
 
-        <p className="text-lg md:text-xl text-muted-foreground mb-12 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-          We're preparing an exclusive experience.
+        <p className="text-lg md:text-l text-muted-foreground mb-12 animate-fade-in" style={{ animationDelay: "0.2s" }}>
+          just hang tight.
           <br />
           Stay tuned for the reveal.
         </p>
 
         {/* Social links */}
-        <div className="flex items-center justify-center gap-6 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+        <div className="flex items-center justify-center gap-6 animate-fade-in" style={{ animationDelay: "0.4s" }}>
           <a
             href="https://instagram.com/forcemajeure"
             target="_blank"
