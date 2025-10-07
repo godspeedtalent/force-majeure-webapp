@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { MapPin } from 'lucide-react';
+import { MapPin, Eye, EyeOff } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -48,6 +48,7 @@ export default function Scavenger() {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [validationResult, setValidationResult] = useState<any>(null);
   const [isValidating, setIsValidating] = useState(false);
 
@@ -670,14 +671,30 @@ export default function Scavenger() {
                         
                         <div className="space-y-2">
                           <Label htmlFor="loginPassword">Password <span className="text-fm-gold">*</span></Label>
-                          <Input
-                            id="loginPassword"
-                            type="password"
-                            placeholder="Enter your password"
-                            value={loginPassword}
-                            onChange={(e) => setLoginPassword(e.target.value)}
-                            required
-                          />
+                          <div className="relative">
+                            <Input
+                              id="loginPassword"
+                              type={showPassword ? "text" : "password"}
+                              placeholder="Enter your password"
+                              value={loginPassword}
+                              onChange={(e) => setLoginPassword(e.target.value)}
+                              required
+                              className="pr-12"
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                              onClick={() => setShowPassword(!showPassword)}
+                            >
+                              {showPassword ? (
+                                <EyeOff className="h-4 w-4 text-muted-foreground" />
+                              ) : (
+                                <Eye className="h-4 w-4 text-muted-foreground" />
+                              )}
+                            </Button>
+                          </div>
                         </div>
 
                         <Button 
@@ -927,14 +944,30 @@ export default function Scavenger() {
                       
                       <div className="space-y-2">
                         <Label htmlFor="loginPassword">Password <span className="text-fm-gold">*</span></Label>
-                        <Input
-                          id="loginPassword"
-                          type="password"
-                          placeholder="Enter your password"
-                          value={loginPassword}
-                          onChange={(e) => setLoginPassword(e.target.value)}
-                          required
-                        />
+                        <div className="relative">
+                          <Input
+                            id="loginPassword"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Enter your password"
+                            value={loginPassword}
+                            onChange={(e) => setLoginPassword(e.target.value)}
+                            required
+                            className="pr-12"
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4 text-muted-foreground" />
+                            ) : (
+                              <Eye className="h-4 w-4 text-muted-foreground" />
+                            )}
+                          </Button>
+                        </div>
                       </div>
 
                       <Button 
