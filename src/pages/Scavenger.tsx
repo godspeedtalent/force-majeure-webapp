@@ -3,7 +3,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { MapPin, Eye, EyeOff } from 'lucide-react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,6 +26,7 @@ import lfSystemImage from '@/assets/lf-system-scavenger.jpg';
 export default function Scavenger() {
   const { user, profile } = useAuth();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const code = searchParams.get('code');
   const legacyToken = searchParams.get('token'); // Handle old URL format
   const { data: featureFlags } = useFeatureFlags();
@@ -303,6 +304,11 @@ export default function Scavenger() {
       if (error) throw error;
 
       toast.success('Successfully logged in!');
+      
+      // Preserve the code parameter after login
+      if (code) {
+        navigate(`/scavenger?code=${code}`);
+      }
     } catch (error: any) {
       toast.error(error.message || 'Failed to login');
     } finally {
