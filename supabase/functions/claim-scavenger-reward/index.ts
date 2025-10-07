@@ -151,15 +151,21 @@ serve(async (req) => {
 
     const location = locationData[0];
 
-    // Check if location has tokens remaining
-    if (location.tokens_remaining <= 0) {
+    // Check if this checkpoint has already been discovered by ANYONE
+    const { data: existingClaim } = await supabase
+      .from('scavenger_claims')
+      .select('*')
+      .eq('location_id', location.id)
+      .maybeSingle();
+
+    if (existingClaim) {
       return new Response(
-        JSON.stringify({ error: 'No rewards remaining at this location' }),
+        JSON.stringify({ error: 'This checkpoint has already been discovered by another explorer!' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Check if user already claimed at this location
+    // Check if user already claimed at this location (redundant but keeping for safety)
     const { data: existingUserClaim } = await supabase
       .from('scavenger_claims')
       .select('*')
@@ -189,32 +195,12 @@ serve(async (req) => {
       );
     }
 
-    // Calculate claim position (how many have been claimed at this location)
-    const claimPosition = (location.total_tokens - location.tokens_remaining) + 1;
+    // Each checkpoint is claimed once and adds 2 people to guestlist
+    const claimPosition = 1;
+    const rewardType = 'guestlist_2';
+    const promoCode = null; // No promo code needed - they're on the list!
 
-    // Determine reward type based on claim position
-    // 1st claim = free_ticket, claims 2-5 = promo_code_20
-    const rewardType = claimPosition === 1 ? 'free_ticket' : 'promo_code_20';
-    const promoCode = rewardType === 'promo_code_20' ? location.promo_code : null;
-
-    // 1. Decrement tokens_remaining
-    const { error: updateLocationError } = await supabase
-      .from('scavenger_locations')
-      .update({
-        tokens_remaining: location.tokens_remaining - 1,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', location.id);
-
-    if (updateLocationError) {
-      console.error('Error updating location:', updateLocationError);
-      return new Response(
-        JSON.stringify({ error: 'Failed to update location' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // 2. Create claim record
+    // Create claim record (location is now discovered)
     const { error: createClaimError } = await supabase
       .from('scavenger_claims')
       .insert({
@@ -230,12 +216,6 @@ serve(async (req) => {
 
     if (createClaimError) {
       console.error('Error creating claim:', createClaimError);
-      // Rollback location update
-      await supabase
-        .from('scavenger_locations')
-        .update({ tokens_remaining: location.tokens_remaining })
-        .eq('id', location.id);
-      
       return new Response(
         JSON.stringify({ error: 'Failed to create claim record' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -247,28 +227,23 @@ serve(async (req) => {
     
     if (mailchimpApiKey) {
       try {
-        const rewardTypeDisplay = rewardType === 'free_ticket' 
-          ? '🎫 Free Ticket' 
-          : '🎟️ 20% Off';
-
         const emailPayload = {
           key: mailchimpApiKey,
           message: {
             from_email: "noreply@forcemajeure.com",
             from_name: "Force Majeure",
-            subject: "🎉 You found it! Here's your LF System reward",
-            text: `Congratulations ${display_name}!\n\nYou found location: ${location.location_name}\nYou were person #${claimPosition} to find this spot!\n\nYour reward: ${rewardTypeDisplay}${promoCode ? `\nPromo Code: ${promoCode}` : ''}\n\nSee the leaderboard: ${supabaseUrl.replace('.supabase.co', '')}/scavenger-leaderboard`,
+            subject: "🎉 Checkpoint Discovered! You + 1 are on the list",
+            text: `Congratulations ${display_name}!\n\nYou discovered checkpoint: ${location.location_name}\n\nYour reward: You and a friend are on the guestlist for LF SYSTEM!\n\nSee the leaderboard: ${supabaseUrl.replace('.supabase.co', '')}/scavenger`,
             html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                <h1 style="color: #000; font-size: 28px; margin-bottom: 20px;">🎉 Congratulations ${display_name}!</h1>
+                <h1 style="color: #000; font-size: 28px; margin-bottom: 20px;">🎉 Checkpoint Discovered!</h1>
                 <p style="font-size: 16px; color: #333;">You found: <strong>${location.location_name}</strong></p>
-                <p style="font-size: 16px; color: #333;">You were person <strong>#${claimPosition}</strong> to find this location!</p>
                 <div style="background: #f0f0f0; padding: 30px; margin: 30px 0; border-radius: 8px; text-align: center;">
-                  <h2 style="color: #000; margin: 0 0 15px 0;">${rewardTypeDisplay}</h2>
-                  ${promoCode ? `<p style="font-size: 28px; font-weight: bold; color: hsl(348 100% 22%); margin: 0; letter-spacing: 2px;">${promoCode}</p>` : '<p style="font-size: 16px; color: #333;">You\'re on the guest list!</p>'}
+                  <h2 style="color: #000; margin: 0 0 15px 0;">🎫 You + 1 on the Guestlist</h2>
+                  <p style="font-size: 16px; color: #333; margin: 0;">You and a friend are on the list for LF SYSTEM!</p>
                 </div>
                 <p style="font-size: 14px; color: #666; margin-top: 30px;">
-                  <a href="${supabaseUrl.replace('.supabase.co', '')}/scavenger-leaderboard" style="color: hsl(348 100% 22%); text-decoration: none; font-weight: bold;">View Leaderboard →</a>
+                  <a href="${supabaseUrl.replace('.supabase.co', '')}/scavenger" style="color: hsl(348 100% 22%); text-decoration: none; font-weight: bold;">View Your Progress →</a>
                 </p>
               </div>
             `,
@@ -302,8 +277,7 @@ serve(async (req) => {
         location_name: location.location_name,
         reward_type: rewardType,
         promo_code: promoCode,
-        tokens_remaining: location.tokens_remaining - 1,
-        message: `You're the ${claimPosition === 1 ? '1st' : claimPosition === 2 ? '2nd' : claimPosition === 3 ? '3rd' : `${claimPosition}th`} person to find this location! Check your email for your reward.`
+        message: `Checkpoint discovered! You and a friend are on the guestlist. Check your email for confirmation.`
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

@@ -234,6 +234,19 @@ export default function Scavenger() {
     enabled: !!user
   });
 
+  // Fetch ALL claims to determine which checkpoints are still undiscovered globally
+  const { data: allClaims } = useQuery({
+    queryKey: ['all-scavenger-claims'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('scavenger_claims')
+        .select('location_id');
+
+      if (error) throw error;
+      return data;
+    }
+  });
+
   if (locationsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -297,8 +310,11 @@ export default function Scavenger() {
     }
   };
 
-  // Calculate total unclaimed rewards
-  const totalUnclaimedRewards = locations?.reduce((sum, location) => sum + location.tokens_remaining, 0) || 0;
+  // Calculate undiscovered checkpoints (locations with no claims from anyone)
+  const claimedLocationIds = new Set(allClaims?.map(claim => claim.location_id) || []);
+  const totalUndiscoveredCheckpoints = locations?.filter(location => 
+    !claimedLocationIds.has(location.id)
+  ).length || 0;
 
   // Handle code validation states
   if (code && validationResult) {
@@ -756,34 +772,34 @@ export default function Scavenger() {
             <div className="w-full max-w-md px-4 py-6 lg:px-8 lg:py-12 relative z-10">
               <MessagePanel 
                 title={`Welcome to the ${validationResult.location_name} Checkpoint`}
-                description={`You're ready to claim: ${validationResult.reward_type || 'Exclusive Reward'}`}
+                description="Discover this checkpoint to get you and a friend on the guestlist!"
                 className="mb-6"
               />
               <div className="text-center">
-                <Button
-                  size="lg"
-                  className="bg-gradient-gold hover:opacity-90 font-screamer text-xl px-12 py-6 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(212,175,55,0.6)]"
-                  onClick={async () => {
-                    if (!profile?.display_name || !user?.email) return;
-                    
-                    const result = await claim.mutateAsync({
-                      code: code!,
-                      userEmail: user.email,
-                      displayName: profile.display_name,
-                      showOnLeaderboard: true
-                    });
+                  <Button
+                    size="lg"
+                    className="bg-gradient-gold hover:opacity-90 font-screamer text-xl px-12 py-6 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(212,175,55,0.6)]"
+                    onClick={async () => {
+                      if (!profile?.display_name || !user?.email) return;
+                      
+                      const result = await claim.mutateAsync({
+                        code: code!,
+                        userEmail: user.email,
+                        displayName: profile.display_name,
+                        showOnLeaderboard: true
+                      });
 
-                    if (result.success) {
-                      toast.success('Reward claimed! Check your email for the promo code.');
-                      window.location.href = '/scavenger';
-                    } else {
-                      toast.error(result.error || 'Failed to claim reward');
-                    }
-                  }}
-                  disabled={claim.isPending}
-                >
-                  {claim.isPending ? 'Claiming...' : 'Claim Reward'}
-                </Button>
+                      if (result.success) {
+                        toast.success('Checkpoint discovered! You and a friend are on the list.');
+                        window.location.href = '/scavenger';
+                      } else {
+                        toast.error(result.error || 'Failed to claim checkpoint');
+                      }
+                    }}
+                    disabled={claim.isPending}
+                  >
+                    {claim.isPending ? 'Claiming...' : 'Claim Checkpoint'}
+                  </Button>
               </div>
             </div>
           </div>
@@ -830,21 +846,21 @@ export default function Scavenger() {
               <MessagePanel
                 isLoading={locationsLoading}
                 title={`Welcome back, ${profile?.display_name || 'Raver'}!`}
-                description={totalUnclaimedRewards > 0 ? "Ready to claim your free tickets? Head out and scan a QR code at one of the locations." : undefined}
+                description={totalUndiscoveredCheckpoints > 0 ? "Each checkpoint you discover gets you and a friend on the guestlist! Head out and scan the QR codes." : undefined}
                 action={
                   <>
                     <div className="text-center mb-8">
-                      {totalUnclaimedRewards > 0 ? (
+                      {totalUndiscoveredCheckpoints > 0 ? (
                         <>
                           <p className="text-lg text-muted-foreground mb-4">
-                            Unclaimed Rewards
+                            Undiscovered Checkpoints
                           </p>
-                          <AnimatedCounter value={totalUnclaimedRewards} />
+                          <AnimatedCounter value={totalUndiscoveredCheckpoints} />
                         </>
                       ) : (
                         <>
                           <p className="text-xl text-muted-foreground mb-6">
-                            Everything's been claimed! Tickets are still available below:
+                            All checkpoints have been discovered! Tickets are still available below:
                           </p>
                           <Button 
                             size="lg" 
