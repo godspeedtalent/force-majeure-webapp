@@ -13,7 +13,7 @@ export default function ProxyToken() {
 
       if (!token) {
         console.error('Missing token parameter');
-        navigate('/scavenger');
+        navigate('/scavenger?error=invalid_token');
         return;
       }
 
@@ -45,11 +45,11 @@ export default function ProxyToken() {
         if (data?.code) {
           navigate(`/scavenger?code=${data.code}`);
         } else {
-          navigate('/scavenger');
+          navigate('/scavenger?error=proxy_error');
         }
       } catch (err) {
         console.error('Error processing token:', err);
-        navigate('/scavenger');
+        navigate('/scavenger?error=proxy_error');
       }
     };
 

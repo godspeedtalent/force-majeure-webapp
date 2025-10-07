@@ -29,6 +29,7 @@ export default function Scavenger() {
   const navigate = useNavigate();
   const code = searchParams.get('code');
   const legacyToken = searchParams.get('token'); // Handle old URL format
+  const errorParam = searchParams.get('error'); // Handle error from proxy
   const { data: featureFlags } = useFeatureFlags();
   const { currentStep, setCurrentStep, nextStep } = useWizardNavigation();
   
@@ -39,6 +40,18 @@ export default function Scavenger() {
       window.location.href = `/proxy-token?token=${legacyToken}`;
     }
   }, [legacyToken, code]);
+
+  // Handle error from proxy-token
+  useEffect(() => {
+    if (errorParam) {
+      const errorMessage = errorParam === 'invalid_token' 
+        ? 'Invalid QR code. Please try scanning again.' 
+        : 'Error processing code. Please try again.';
+      toast.error(errorMessage);
+      // Clear error param from URL
+      navigate('/scavenger', { replace: true });
+    }
+  }, [errorParam, navigate]);
   
   const parallaxRef1 = useRef<HTMLDivElement>(null);
   const parallaxRef2 = useRef<HTMLDivElement>(null);

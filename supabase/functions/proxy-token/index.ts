@@ -38,20 +38,26 @@ serve(async (req) => {
 
     if (!token) {
       console.error('Missing token parameter');
-      return new Response(
-        'Missing token parameter',
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'text/plain' } }
-      );
+      return new Response(null, {
+        status: 302,
+        headers: {
+          ...corsHeaders,
+          'Location': '/scavenger?error=invalid_token',
+        },
+      });
     }
 
     // Validate UUID format
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(token)) {
       console.error('Invalid UUID format:', token);
-      return new Response(
-        'Invalid token format',
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'text/plain' } }
-      );
+      return new Response(null, {
+        status: 302,
+        headers: {
+          ...corsHeaders,
+          'Location': '/scavenger?error=invalid_token',
+        },
+      });
     }
 
     // Create encrypted payload with current timestamp
@@ -72,9 +78,12 @@ serve(async (req) => {
     });
   } catch (error: any) {
     console.error('Error in proxy-token:', error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return new Response(null, {
+      status: 302,
+      headers: {
+        ...corsHeaders,
+        'Location': '/scavenger?error=proxy_error',
+      },
+    });
   }
 });
