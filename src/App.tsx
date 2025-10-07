@@ -13,6 +13,7 @@ import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import ComingSoon from "./pages/ComingSoon";
 import Scavenger from "./pages/Scavenger";
+import AdminConfig from "./pages/AdminConfig";
 import NotFound from "./pages/NotFound";
 import { Loader2 } from "lucide-react";
 
@@ -54,6 +55,7 @@ const AppRoutes = () => {
           <Route path="/event/:id" element={<EventDetails />} />
           <Route path="/merch" element={<Merch />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/admin" element={<AdminConfig />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

@@ -4,11 +4,18 @@ import { Code, X, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useUserRole } from '@/hooks/useUserRole';
 
 export const ScavengerDevPanel = () => {
+  const { data: role } = useUserRole();
+  const isAdmin = role === 'admin';
   const [isOpen, setIsOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const navigate = useNavigate();
+
+  if (!isAdmin) {
+    return null;
+  }
 
   const testScenarios = [
     {

@@ -4,13 +4,16 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { Menu, X, User, LogIn, UserPlus, ShoppingCart, LogOut, Settings } from 'lucide-react';
+import { Menu, X, User, LogIn, UserPlus, ShoppingCart, LogOut, Settings, SettingsIcon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUserRole } from '@/hooks/useUserRole';
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, signOut, profile } = useAuth();
   const navigate = useNavigate();
+  const { data: role } = useUserRole();
+  const isAdmin = role === 'admin';
 
   const handleSignOut = async () => {
     await signOut();
@@ -29,6 +32,13 @@ export const Navigation = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
+            {isAdmin && (
+              <Button variant="ghost" size="sm" className="text-foreground hover:text-fm-gold hover:bg-hover-overlay" asChild>
+                <Link to="/admin">
+                  <SettingsIcon className="h-4 w-4" />
+                </Link>
+              </Button>
+            )}
             <Button variant="ghost" size="sm" className="text-foreground hover:text-fm-gold hover:bg-hover-overlay" asChild>
               <Link to="/merch">
                 <ShoppingCart className="h-4 w-4" />
@@ -86,6 +96,13 @@ export const Navigation = () => {
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center space-x-2">
+            {isAdmin && (
+              <Button variant="ghost" size="sm" className="text-foreground hover:text-fm-gold hover:bg-hover-overlay" asChild>
+                <Link to="/admin">
+                  <SettingsIcon className="h-4 w-4" />
+                </Link>
+              </Button>
+            )}
             <Button variant="ghost" size="sm" className="text-foreground hover:text-fm-gold hover:bg-hover-overlay" asChild>
               <Link to="/merch">
                 <ShoppingCart className="h-4 w-4" />
