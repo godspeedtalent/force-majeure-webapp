@@ -18,31 +18,34 @@ export default function ProxyToken() {
       }
 
       try {
-        // Call the proxy-token edge function
-        const { data, error } = await supabase.functions.invoke('proxy-token', {
-          body: { token },
-        });
+        // Call the proxy-token edge function directly via HTTP
+        const response = await fetch(
+          `https://orgxcrnnecblhuxjfruy.supabase.co/functions/v1/proxy-token?token=${token}`,
+          {
+            redirect: 'manual' // Don't follow redirects automatically
+          }
+        );
 
-        if (error) {
-          console.error('Error calling proxy-token:', error);
-          navigate('/scavenger');
-          return;
+        // The edge function returns a 302 redirect with Location header
+        if (response.status === 302 || response.type === 'opaqueredirect') {
+          const location = response.headers.get('Location');
+          if (location) {
+            // Extract the code from the redirect URL
+            const url = new URL(location, window.location.origin);
+            const code = url.searchParams.get('code');
+            if (code) {
+              navigate(`/scavenger?code=${code}`);
+              return;
+            }
+          }
         }
 
-        // The edge function returns the encrypted code
+        // If no redirect, try to parse as JSON (fallback)
+        const data = await response.json();
         if (data?.code) {
           navigate(`/scavenger?code=${data.code}`);
         } else {
-          // Fallback: construct the URL ourselves
-          const response = await fetch(
-            `https://orgxcrnnecblhuxjfruy.supabase.co/functions/v1/proxy-token?token=${token}`
-          );
-          
-          if (response.redirected) {
-            window.location.href = response.url;
-          } else {
-            navigate('/scavenger');
-          }
+          navigate('/scavenger');
         }
       } catch (err) {
         console.error('Error processing token:', err);
