@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUserRole } from '@/hooks/useUserRole';
 import { MapPin, Eye, EyeOff } from 'lucide-react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -25,11 +26,14 @@ import lfSystemImage from '@/assets/lf-system-scavenger.jpg';
 
 export default function Scavenger() {
   const { user, profile } = useAuth();
+  const { data: userRole } = useUserRole();
+  const isAdmin = userRole === 'admin';
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const code = searchParams.get('code');
   const legacyToken = searchParams.get('token'); // Handle old URL format
   const errorParam = searchParams.get('error'); // Handle error from proxy
+  const debugMode = searchParams.get('debug') === 'true';
   const { data: featureFlags } = useFeatureFlags();
   const { currentStep, setCurrentStep, nextStep } = useWizardNavigation();
   
@@ -134,24 +138,65 @@ export default function Scavenger() {
         return;
       }
 
+      const startTime = Date.now();
+      if (isAdmin && debugMode) {
+        console.log('[SCAVENGER DEBUG] Starting code validation:', {
+          timestamp: new Date().toISOString(),
+          code: `${code.substring(0, 20)}...`,
+          codeLength: code.length,
+          user: user ? `${user.id.substring(0, 8)}...` : 'anonymous'
+        });
+      }
+
       setIsValidating(true);
       try {
+        if (isAdmin && debugMode) {
+          console.log('[SCAVENGER DEBUG] Invoking validate-scavenger-token function');
+        }
+
         const { data, error } = await supabase.functions.invoke('validate-scavenger-token', {
           body: { code }
         });
 
+        if (isAdmin && debugMode) {
+          console.log('[SCAVENGER DEBUG] Validation response:', {
+            success: !error,
+            data,
+            error: error?.message,
+            processingTime: `${Date.now() - startTime}ms`
+          });
+        }
+
         if (error) throw error;
         setValidationResult(data);
+        
+        if (isAdmin && debugMode) {
+          console.log('[SCAVENGER DEBUG] Validation result set:', {
+            valid: data?.valid,
+            locationName: data?.location_name,
+            tokensRemaining: data?.tokens_remaining
+          });
+        }
       } catch (error) {
         console.error('Code validation error:', error);
+        if (isAdmin && debugMode) {
+          console.log('[SCAVENGER DEBUG] Validation error:', {
+            error: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+            processingTime: `${Date.now() - startTime}ms`
+          });
+        }
         setValidationResult({ valid: false, error: 'Failed to validate code' });
       } finally {
         setIsValidating(false);
+        if (isAdmin && debugMode) {
+          console.log('[SCAVENGER DEBUG] Validation complete');
+        }
       }
     };
 
     validateCode();
-  }, [code]);
+  }, [code, isAdmin, debugMode, user]);
 
   const claim = useMutation({
     mutationFn: async (params: {
@@ -160,10 +205,31 @@ export default function Scavenger() {
       displayName: string;
       showOnLeaderboard: boolean;
     }) => {
+      const startTime = Date.now();
+      if (isAdmin && debugMode) {
+        console.log('[SCAVENGER DEBUG] Starting claim process:', {
+          timestamp: new Date().toISOString(),
+          code: `${params.code.substring(0, 20)}...`,
+          userEmail: params.userEmail,
+          displayName: params.displayName,
+          showOnLeaderboard: params.showOnLeaderboard
+        });
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
+        if (isAdmin && debugMode) {
+          console.log('[SCAVENGER DEBUG] Claim failed: Not authenticated');
+        }
         throw new Error('Not authenticated');
+      }
+
+      if (isAdmin && debugMode) {
+        console.log('[SCAVENGER DEBUG] Session validated:', {
+          userId: `${session.user.id.substring(0, 8)}...`,
+          expiresAt: new Date(session.expires_at! * 1000).toISOString()
+        });
       }
 
       // Create device fingerprint
@@ -172,6 +238,17 @@ export default function Scavenger() {
       const platform = navigator.platform;
       const screenResolution = `${window.screen.width}x${window.screen.height}`;
       const deviceFingerprint = `${userAgent}::${language}::${platform}::${screenResolution}`;
+
+      if (isAdmin && debugMode) {
+        console.log('[SCAVENGER DEBUG] Device fingerprint created:', {
+          fingerprint: deviceFingerprint.substring(0, 50) + '...',
+          components: { userAgent, language, platform, screenResolution }
+        });
+      }
+
+      if (isAdmin && debugMode) {
+        console.log('[SCAVENGER DEBUG] Invoking claim-scavenger-reward function');
+      }
 
       const { data, error } = await supabase.functions.invoke('claim-scavenger-reward', {
         body: { 
@@ -185,6 +262,15 @@ export default function Scavenger() {
           Authorization: `Bearer ${session.access_token}`
         }
       });
+
+      if (isAdmin && debugMode) {
+        console.log('[SCAVENGER DEBUG] Claim response:', {
+          success: !error,
+          data,
+          error: error?.message,
+          processingTime: `${Date.now() - startTime}ms`
+        });
+      }
 
       if (error) throw error;
       return data;
