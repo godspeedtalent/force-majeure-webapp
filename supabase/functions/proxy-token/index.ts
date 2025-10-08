@@ -64,7 +64,7 @@ serve(async req => {
         status: 302,
         headers: {
           ...corsHeaders,
-          Location: '/scavenger?error=invalid_token',
+          Location: '/scavenger?error=invalid_token&token=',
         },
       });
     }
@@ -87,7 +87,7 @@ serve(async req => {
         status: 302,
         headers: {
           ...corsHeaders,
-          Location: '/scavenger?error=invalid_token',
+          Location: `/scavenger?error=invalid_token&token=${encodeURIComponent(token)}`,
         },
       });
     }
@@ -136,6 +136,7 @@ serve(async req => {
   } catch (error: any) {
     console.error('Error in proxy-token:', error);
     const url = new URL(req.url);
+    const token = url.searchParams.get('token');
     const debugMode = url.searchParams.get('debug') === 'true';
 
     if (debugMode) {
@@ -150,7 +151,7 @@ serve(async req => {
       status: 302,
       headers: {
         ...corsHeaders,
-        Location: `/scavenger?error=proxy_error${debugMode ? '&debug=true' : ''}`,
+        Location: `/scavenger?error=proxy_error&token=${encodeURIComponent(token || '')}${debugMode ? '&debug=true' : ''}`,
       },
     });
   }
