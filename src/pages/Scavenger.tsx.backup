@@ -1,0 +1,200 @@
+import { LoadingState } from '@/components/LoadingState';
+import { useAuth } from '@/contexts/AuthContext';
+import { useFeatureFlags } from '@/hooks/useFeatureFlags';
+import {
+  useAllClaims,
+  useAutoScroll,
+  useClaimReward,
+  useScavengerLocations,
+  useScavengerNavigation,
+  useUserClaims
+} from '@/hooks/useScavenger';
+
+// Layout components
+// Scavenger components
+import {
+  AllTokensClaimedView,
+  AuthenticatedUserView,
+  InvalidTokenView,
+  ScavengerFullLayout,
+  ScavengerSplitLayout,
+  UnauthenticatedWizard
+} from '@/components/scavenger';
+
+
+export default function Scavenger() {
+  const { user, profile, loading: authLoading } = useAuth();
+  const { data: featureFlags } = useFeatureFlags();
+
+  // Use custom hooks
+  const { locationId, debugMode, showInvalidToken, navigate } = useScavengerNavigation();
+  const claimMutation = useClaimReward();
+  const { data: locations, isLoading: locationsLoading } = useScavengerLocations();
+  const { data: userClaims } = useUserClaims();
+  const { data: allClaims } = useAllClaims();
+
+  // Auto-scroll effect
+  useAutoScroll();
+
+  // Calculate undiscovered checkpoints (locations with no claims from anyone)
+  const claimedLocationIds = new Set(allClaims?.map(claim => claim.location_id) || []);
+  const totalUndiscoveredCheckpoints = locations?.filter(location =>
+    !claimedLocationIds.has(location.id)
+  ).length || 0;
+
+  // Loading state - check both auth and locations loading
+  if (authLoading || locationsLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <LoadingState />
+      </div>
+    );
+  }
+
+  // Handle invalid token state (from error parameter)
+  if (showInvalidToken) {
+    return (
+      <ScavengerSplitLayout showShoppingCart={!featureFlags?.coming_soon_mode}>
+        <InvalidTokenView />
+      </ScavengerSplitLayout>
+    );
+  }
+
+  // Handle location-based scavenger states using orchestrator
+  if (locationId) {
+    return (
+      <ScavengerSplitLayout showShoppingCart={!featureFlags?.coming_soon_mode}>
+        <ScavengerOrchestrator initialLocationId={locationId}>
+          {(state, actions) => {
+            // Get location details for token check
+            const location = locations?.find(loc => loc.id === locationId);
+
+            // State 1: All tokens claimed
+            if (location && location.tokens_remaining <= 0) {
+              return <AllTokensClaimedView locationName={location.location_name} />;
+            }
+
+            // State 2: Already claimed - show success
+            if (state.hasAlreadyClaimed && state.isAuthenticated) {
+              return (
+                <ClaimSuccessPanel userDisplayName={state.userDisplayName} />
+              );
+            }
+
+            // State 3: Authenticated user with valid checkpoint - show claim interface
+            if (state.location && state.isAuthenticated) {
+              return (
+                <CheckpointClaimPanel
+                  locationName={state.location.location_name}
+                  onClaimClick={actions.claimCheckpoint}
+                  isLoading={state.isClaimLoading}
+                />
+              );
+            }
+
+            // State 4: Unauthenticated user with checkpoint - show welcome flow
+            if (state.location && !state.isAuthenticated) {
+              // If we're still on the welcome step, show the checkpoint welcome panel directly
+              if (state.currentStep === 'welcome') {
+                return (
+                  <CheckpointWelcomePanel
+                    locationName={state.location.location_name}
+                    rewardType={state.location.reward_type}
+                    onJoinClick={actions.handleJoin}
+                    onSignInClick={actions.handleSignIn}
+                  />
+                );
+              }
+
+              // Otherwise show the wizard flow for signup/login
+              return (
+                <UnauthenticatedWizard
+                  validationResult={{
+                    location_name: state.location.location_name,
+                    reward_type: state.location.reward_type
+                  }}
+                  onLoginSuccess={() => {
+                    navigate(`/scavenger?locationId=${locationId}${debugMode ? '&debug=true' : ''}`);
+                  }}
+                  currentStep={state.wizardStep}
+                  isLoginMode={state.isLoginMode}
+                  registrationEmail={state.registrationEmail}
+                  onSetStep={actions.setWizardStep}
+                  onSetLoginMode={actions.setLoginMode}
+                  onSetRegistrationEmail={actions.setRegistrationEmail}
+                  onSignIn={actions.handleSignIn}
+                  onJoin={actions.handleJoin}
+                />
+              );
+            }
+
+            // Fallback - should not reach here
+            return (
+              <NoCheckpointPanel
+                onJoinClick={actions.handleJoin}
+                onSignInClick={actions.handleSignIn}
+              />
+            );
+          }}
+        </ScavengerOrchestrator>
+      </ScavengerSplitLayout>
+    );
+  }
+
+  // Show authenticated state without locationId
+  if (user && !locationId) {
+    // Check if user has any claims - if so, show success panel
+    const hasAnyClaim = userClaims && userClaims.length > 0;
+
+    if (hasAnyClaim) {
+      return (
+        <ScavengerSplitLayout showShoppingCart={!featureFlags?.coming_soon_mode}>
+          <ClaimSuccessPanel userDisplayName={profile?.display_name} />
+        </ScavengerSplitLayout>
+      );
+    }
+
+    return (
+      <ScavengerSplitLayout showShoppingCart={!featureFlags?.coming_soon_mode}>
+        <AuthenticatedUserView
+          displayName={profile?.display_name}
+          totalUndiscoveredCheckpoints={totalUndiscoveredCheckpoints}
+          isLoading={locationsLoading}
+        />
+      </ScavengerSplitLayout>
+    );
+  }
+
+  // Show wizard if not authenticated (no user) using orchestrator
+  if (!user) {
+    return (
+      <ScavengerSplitLayout showShoppingCart={!featureFlags?.coming_soon_mode}>
+        <ScavengerOrchestrator>
+          {(state, actions) => (
+            <UnauthenticatedWizard
+              validationResult={null}
+              onLoginSuccess={() => navigate('/scavenger')}
+              currentStep={state.currentStep === 'unauthenticated-wizard' ? state.wizardStep : 1}
+              isLoginMode={state.isLoginMode}
+              registrationEmail={state.registrationEmail}
+              onSetStep={actions.setWizardStep}
+              onSetLoginMode={actions.setLoginMode}
+              onSetRegistrationEmail={actions.setRegistrationEmail}
+              onSignIn={actions.handleSignIn}
+              onJoin={actions.handleJoin}
+            />
+          )}
+        </ScavengerOrchestrator>
+      </ScavengerSplitLayout>
+    );
+  }
+
+  // User is authenticated and has a locationId - show full scavenger hunt interface
+  return (
+    <ScavengerFullLayout
+      showShoppingCart={!featureFlags?.coming_soon_mode}
+      locations={locations}
+      userClaims={userClaims}
+    />
+  );
+}
