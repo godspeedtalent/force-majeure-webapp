@@ -1,85 +1,50 @@
-import { useState, useEffect } from 'react';
-import { Button } from './ui/button';
-import { Code, X, RefreshCw } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 import { useUserRole } from '@/hooks/useUserRole';
+import { supabase } from '@/integrations/supabase/client';
+import { Code, RefreshCw, X } from 'lucide-react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { Button } from './ui/button';
 
 export const ScavengerDevPanel = () => {
+  // ✅ ALL HOOKS MUST BE CALLED UNCONDITIONALLY FIRST
   const { data: role } = useUserRole();
-  const isAdmin = role === 'admin';
   const [isOpen, setIsOpen] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [isClearingClaims, setIsClearingClaims] = useState(false);
   const navigate = useNavigate();
 
+  // ✅ Determine admin status AFTER all hooks are called
+  const isAdmin = role === 'admin';
+
+  const clearAllClaims = async () => {
+    setIsClearingClaims(true);
+    try {
+      const { error } = await supabase
+        .from('scavenger_claims')
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
+
+      if (error) throw error;
+
+      toast.success('All claims cleared successfully!');
+
+      // Redirect to the same URL to refresh the page
+      const currentUrl = window.location.pathname + window.location.search;
+      navigate(currentUrl);
+
+      setIsOpen(false);
+    } catch (error) {
+      console.error('Error clearing claims:', error);
+      toast.error('Failed to clear claims');
+    } finally {
+      setIsClearingClaims(false);
+    }
+  };
+
+  // ✅ Early return AFTER all hooks are called
   if (!isAdmin) {
     return null;
   }
-
-  const testScenarios = [
-    {
-      name: 'Invalid Token',
-      token: 'INVALID_TOKEN_123',
-      description: 'Token that does not exist in database'
-    },
-    {
-      name: 'Already Claimed',
-      token: 'ALREADY_CLAIMED_TOKEN',
-      description: 'Valid token but already claimed'
-    },
-    {
-      name: 'Valid Unclaimed',
-      token: 'VALID_UNCLAIMED_TOKEN',
-      description: 'Valid token ready to claim'
-    },
-    {
-      name: 'No Token',
-      token: null,
-      description: 'Navigate without a token'
-    }
-  ];
-
-  const generateTestTokens = async () => {
-    setIsGenerating(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('generate-dev-tokens');
-      
-      if (error) throw error;
-      
-      if (data?.success) {
-        toast.success('Test tokens generated successfully!');
-        console.log('Generated tokens:', data.tokens);
-      }
-    } catch (error) {
-      console.error('Error generating tokens:', error);
-      toast.error('Failed to generate test tokens');
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  useEffect(() => {
-    // Auto-generate tokens on first open if needed
-    if (isOpen) {
-      const hasGenerated = localStorage.getItem('dev_tokens_generated');
-      if (!hasGenerated) {
-        generateTestTokens().then(() => {
-          localStorage.setItem('dev_tokens_generated', 'true');
-        });
-      }
-    }
-  }, [isOpen]);
-
-  const handleScenario = (token: string | null) => {
-    if (token) {
-      // Use the proxy URL to get a properly encrypted code
-      navigate(`/proxy-token?token=${token}`);
-    } else {
-      navigate('/scavenger');
-    }
-    setIsOpen(false);
-  };
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
@@ -96,41 +61,35 @@ export const ScavengerDevPanel = () => {
         <div className="bg-background border-2 border-fm-gold rounded-lg shadow-xl p-4 w-80">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-screamer text-lg text-fm-gold">Dev Panel</h3>
-            <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={generateTestTokens}
-                disabled={isGenerating}
-                className="h-6 w-6"
-                title="Regenerate test tokens"
-              >
-                <RefreshCw className={`h-4 w-4 ${isGenerating ? 'animate-spin' : ''}`} />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsOpen(false)}
-                className="h-6 w-6"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsOpen(false)}
+              className="h-6 w-6"
+            >
+              <X className="h-4 w-4" />
+            </Button>
           </div>
-          
-          <div className="space-y-2">
-            {testScenarios.map((scenario) => (
-              <div key={scenario.name} className="border border-border rounded p-2">
-                <Button
-                  variant="outline"
-                  className="w-full justify-start mb-1 text-xs"
-                  onClick={() => handleScenario(scenario.token)}
-                >
-                  {scenario.name}
-                </Button>
-                <p className="text-xs text-muted-foreground">{scenario.description}</p>
-              </div>
-            ))}
+
+          <div className="space-y-4">
+            <Button
+              variant="destructive"
+              className="w-full"
+              onClick={clearAllClaims}
+              disabled={isClearingClaims}
+            >
+              {isClearingClaims ? (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  Clearing Claims...
+                </>
+              ) : (
+                'Clear All Claims'
+              )}
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              This will delete all claims from the scavenger_claims table and refresh the page.
+            </p>
           </div>
         </div>
       )}

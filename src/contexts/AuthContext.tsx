@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { sessionPersistence } from '@/lib/sessionPersistence';
 import { useToast } from '@/hooks/use-toast';
 
 interface Profile {
@@ -76,6 +77,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        // Check if session should be maintained based on remember device preference
+        if (session && event === 'SIGNED_IN') {
+          // Update session start time on fresh sign-in
+          sessionPersistence.updateSessionStart();
+        } else if (session && !sessionPersistence.shouldRememberDevice() && sessionPersistence.isSessionExpired()) {
+          // If device shouldn't be remembered and session is expired, sign out
+          await supabase.auth.signOut();
+          return;
+        }
+        
         setSession(session);
         setUser(session?.user ?? null);
         
@@ -94,6 +105,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      // Perform the same remember device check for existing sessions
+      if (session && !sessionPersistence.shouldRememberDevice() && sessionPersistence.isSessionExpired()) {
+        // Session is expired and device isn't remembered, sign out
+        supabase.auth.signOut();
+        return;
+      }
+      
       setSession(session);
       setUser(session?.user ?? null);
       
@@ -178,6 +196,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signOut = async () => {
     try {
+      // Clear session persistence when user explicitly logs out
+      sessionPersistence.clearRememberDevice();
+      
       const { error } = await supabase.auth.signOut();
       if (error) {
         toast({

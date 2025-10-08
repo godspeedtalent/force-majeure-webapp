@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ImageAnchor, getObjectPositionClass } from '@/types/imageAnchor';
 
 interface ImageWithSkeletonProps {
   src: string;
@@ -8,6 +9,7 @@ interface ImageWithSkeletonProps {
   className?: string;
   skeletonClassName?: string;
   aspectRatio?: string;
+  anchor?: ImageAnchor;
 }
 
 export const ImageWithSkeleton = ({
@@ -16,6 +18,7 @@ export const ImageWithSkeleton = ({
   className,
   skeletonClassName,
   aspectRatio,
+  anchor = ImageAnchor.CENTER,
 }: ImageWithSkeletonProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -28,6 +31,8 @@ export const ImageWithSkeleton = ({
     setHasError(true);
     setIsLoaded(true);
   };
+
+  const objectPositionClass = getObjectPositionClass(anchor);
 
   return (
     <div className="relative w-full h-full">
@@ -45,6 +50,7 @@ export const ImageWithSkeleton = ({
         alt={alt}
         className={cn(
           'transition-opacity duration-300',
+          objectPositionClass,
           isLoaded ? 'opacity-100' : 'opacity-0',
           className
         )}
