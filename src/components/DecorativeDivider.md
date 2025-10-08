@@ -1,90 +1,30 @@
-# DecorativeDivider Component
+interface DecorativeDividerProps {
+  className?: string;
+  marginTop?: string;
+  marginBottom?: string;
+  opacity?: number;
+  lineWidth?: string;
+  dotSize?: string;
+  animate?: boolean;
+}
 
-A reusable decorative divider component with animated gold elements.
-
-## Usage
-
-### Basic Usage
-```tsx
-import { DecorativeDivider } from '@/components/DecorativeDivider';
-
-// Default styling
-<DecorativeDivider />
-```
-
-### Customization Options
-
-```tsx
-// Custom margins
-<DecorativeDivider marginTop="mt-8" marginBottom="mb-8" />
-
-// Custom opacity
-<DecorativeDivider opacity={0.5} />
-
-// Custom line width and dot size
-<DecorativeDivider lineWidth="w-16" dotSize="w-3 h-3" />
-
-// Without animation
-<DecorativeDivider animate={false} />
-
-// Combined customization
-<DecorativeDivider 
-  marginTop="mt-4" 
-  marginBottom="mb-12" 
-  opacity={0.7}
-  lineWidth="w-20"
-  dotSize="w-4 h-4"
-  className="my-custom-class"
-/>
-```
-
-## Props
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `className` | `string` | `""` | Additional CSS classes |
-| `marginTop` | `string` | `"mt-16"` | Top margin Tailwind class |
-| `marginBottom` | `string` | `"mb-16"` | Bottom margin Tailwind class |
-| `opacity` | `number` | `0.3` | Opacity value (0-1) |
-| `lineWidth` | `string` | `"w-12"` | Width of the gradient lines |
-| `dotSize` | `string` | `"w-2 h-2"` | Size of the center dot |
-| `animate` | `boolean` | `true` | Whether to animate the center dot |
-
-## Features
-
-- 🎨 Gold gradient lines that fade from transparent
-- ⚡ Animated pulsing center dot
-- 📱 Fully responsive design
-- 🔧 Highly customizable
-- 💨 Lightweight and performant
-
-## Examples
-
-### Compact Divider
-```tsx
-<DecorativeDivider 
-  marginTop="mt-4" 
-  marginBottom="mb-4" 
-  lineWidth="w-8" 
-  dotSize="w-1.5 h-1.5" 
-/>
-```
-
-### Prominent Divider
-```tsx
-<DecorativeDivider 
-  marginTop="mt-20" 
-  marginBottom="mb-20" 
-  opacity={0.6}
-  lineWidth="w-20" 
-  dotSize="w-3 h-3" 
-/>
-```
-
-### Static Divider
-```tsx
-<DecorativeDivider 
-  animate={false}
-  opacity={0.2}
-/>
-```
+export function DecorativeDivider({ 
+  className = "",
+  marginTop = "mt-16",
+  marginBottom = "mb-16", 
+  opacity = 0.3,
+  lineWidth = "w-12",
+  dotSize = "w-2 h-2",
+  animate = true
+}: DecorativeDividerProps) {
+  return (
+    <div 
+      className={`${marginTop} ${marginBottom} flex items-center justify-center gap-2 ${className}`}
+      style={{ opacity }}
+    >
+      <div className={`${lineWidth} h-px bg-gradient-to-r from-transparent to-fm-gold`} />
+      <div className={`${dotSize} rounded-full bg-fm-gold ${animate ? 'animate-pulse-gold' : ''}`} />
+      <div className={`${lineWidth} h-px bg-gradient-to-l from-transparent to-fm-gold`} />
+    </div>
+  );
+}
