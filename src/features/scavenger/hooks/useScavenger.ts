@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { supabase } from '@/shared/api/supabase/client';
 import { useUserRole } from '@/shared/hooks/useUserRole';
+import { toast } from '@/shared/hooks/use-toast';
 
 // Hook for URL parameter handling and redirection logic
 export function useScavengerNavigation() {
@@ -18,13 +19,41 @@ export function useScavengerNavigation() {
   // Handle error from proxy-token
   useEffect(() => {
     if (errorParam === 'invalid_token') {
+      const token = searchParams.get('token');
       setShowInvalidToken(true);
+
+      // Show toast with the invalid token
+      if (token) {
+        toast({
+          title: 'Invalid Token',
+          description: `The token "${token}" is not valid or has expired.`,
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Invalid Token',
+          description: 'The provided token is not valid or has expired.',
+          variant: 'destructive',
+        });
+      }
+
       // Clear error param from URL after setting state
       navigate('/scavenger', { replace: true });
     } else if (errorParam) {
+      const token = searchParams.get('token');
+
+      // Show toast for other errors
+      toast({
+        title: 'Error',
+        description: token
+          ? `An error occurred with token: ${token}`
+          : 'An error occurred while processing your request.',
+        variant: 'destructive',
+      });
+
       navigate('/scavenger', { replace: true });
     }
-  }, [errorParam, navigate]);
+  }, [errorParam, navigate, searchParams]);
 
   return {
     locationId,
