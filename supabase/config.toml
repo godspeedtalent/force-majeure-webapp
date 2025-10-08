@@ -13,7 +13,7 @@ verify_jwt = false
 [functions.generate-scavenger-tokens]
 verify_jwt = false
 
-[functions.proxy-token]
+[functions.validate-location]
 verify_jwt = false
 
 [functions.validate-scavenger-token]

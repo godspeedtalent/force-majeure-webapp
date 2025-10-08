@@ -46,7 +46,7 @@ export function useProxyToken() {
     }
 
     try {
-      // Validate token using the existing validate-location function
+      // Validate token using the validate-location function
       debug.log('Validating token with Supabase function', {
         tokenMasked: token.substring(0, 8) + '...',
       });
@@ -64,17 +64,17 @@ export function useProxyToken() {
         processingTime: `${Date.now() - startTime}ms`,
       });
 
-      if (error || !data?.success) {
+      if (error || !data?.valid) {
         debug.log('Token is invalid', {
-          error: error?.message || data?.error,
+          error: error?.message || data?.reason,
           token: token.substring(0, 8) + '...',
         });
-        navigate('/scavenger?error=invalid_token');
+        navigate(`/scavenger?error=invalid_token&token=${encodeURIComponent(token)}`);
         return;
       }
 
-      const locationId = data.location_id;
-      const locationName = data.location_name;
+      const locationId = data.locationId;
+      const locationName = data.locationName;
 
       debug.log('Token is valid, redirecting to scavenger', {
         locationId,

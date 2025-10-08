@@ -16,7 +16,7 @@ export function useScavengerNavigation() {
   const debugMode = searchParams.get('debug') === 'true';
   const [showInvalidToken, setShowInvalidToken] = useState(false);
 
-  // Handle error from proxy-token
+  // Handle error from validate-location
   useEffect(() => {
     if (errorParam === 'invalid_token') {
       const token = searchParams.get('token');

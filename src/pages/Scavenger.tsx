@@ -69,13 +69,13 @@ export default function Scavenger() {
 
   // Handle location-based scavenger states
   if (locationId) {
-    // proxy-token already validated this location exists and is active
+    // validate-location already validated this location exists and is active
     // Just check if user already claimed from this location
     const alreadyClaimed = userClaims?.some(
       claim => claim.location_id === locationId
     );
 
-    // Get location details for display (we know it exists since proxy-token validated it)
+    // Get location details for display (we know it exists since validate-location validated it)
     const location = locations?.find(loc => loc.id === locationId);
 
     // State 1: Already Claimed - show success panel

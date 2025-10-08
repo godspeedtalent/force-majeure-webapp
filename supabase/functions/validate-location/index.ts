@@ -16,8 +16,11 @@ serve(async req => {
 
   try {
     const url = new URL(req.url);
-    const locationId = url.searchParams.get('locationId');
+    // Support both 'token' (for QR codes) and 'locationId' (for API calls)
+    const locationId = url.searchParams.get('token') || url.searchParams.get('locationId');
     const debug = url.searchParams.get('debug') === 'true';
+    // Determine if this is a redirect request (from QR code) or API request
+    const shouldRedirect = url.searchParams.has('token');
 
     if (debug) {
       console.log('🔍 Validate Location Debug:', {
@@ -25,15 +28,59 @@ serve(async req => {
         locationId,
         method: req.method,
         url: req.url,
+        shouldRedirect,
       });
     }
 
     if (!locationId) {
+      if (shouldRedirect) {
+        // Redirect mode - send to scavenger with error
+        return new Response(null, {
+          status: 302,
+          headers: {
+            ...corsHeaders,
+            Location: '/scavenger?error=invalid_token&token=',
+          },
+        });
+      }
+
+      // API mode - return JSON
       return new Response(
         JSON.stringify({
           valid: false,
           reason: 'locationId_required',
           message: 'locationId parameter is required',
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // Validate UUID format
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(locationId)) {
+      if (debug) {
+        console.log('❌ Invalid UUID format:', locationId);
+      }
+
+      if (shouldRedirect) {
+        return new Response(null, {
+          status: 302,
+          headers: {
+            ...corsHeaders,
+            Location: `/scavenger?error=invalid_token&token=${encodeURIComponent(locationId)}`,
+          },
+        });
+      }
+
+      return new Response(
+        JSON.stringify({
+          valid: false,
+          reason: 'invalid_format',
+          message: 'Invalid locationId format',
         }),
         {
           status: 400,
@@ -65,6 +112,16 @@ serve(async req => {
 
       if (error.code === 'PGRST116') {
         // No rows returned
+        if (shouldRedirect) {
+          return new Response(null, {
+            status: 302,
+            headers: {
+              ...corsHeaders,
+              Location: `/scavenger?error=invalid_token&token=${encodeURIComponent(locationId)}`,
+            },
+          });
+        }
+
         return new Response(
           JSON.stringify({
             valid: false,
@@ -87,6 +144,16 @@ serve(async req => {
         console.log('❌ Location exists but is inactive:', location);
       }
 
+      if (shouldRedirect) {
+        return new Response(null, {
+          status: 302,
+          headers: {
+            ...corsHeaders,
+            Location: `/scavenger?error=invalid_token&token=${encodeURIComponent(locationId)}`,
+          },
+        });
+      }
+
       return new Response(
         JSON.stringify({
           valid: false,
@@ -105,6 +172,24 @@ serve(async req => {
     }
 
     // Location exists and is active
+    if (shouldRedirect) {
+      // Redirect mode - send to scavenger with locationId
+      const redirectUrl = `/scavenger?locationId=${locationId}${debug ? '&debug=true' : ''}`;
+
+      if (debug) {
+        console.log('🔄 Redirecting to:', redirectUrl);
+      }
+
+      return new Response(null, {
+        status: 302,
+        headers: {
+          ...corsHeaders,
+          Location: redirectUrl,
+        },
+      });
+    }
+
+    // API mode - return JSON
     return new Response(
       JSON.stringify({
         valid: true,
@@ -119,6 +204,20 @@ serve(async req => {
     );
   } catch (error) {
     console.error('Validate location error:', error);
+
+    const url = new URL(req.url);
+    const shouldRedirect = url.searchParams.has('token');
+    const locationId = url.searchParams.get('token') || url.searchParams.get('locationId');
+
+    if (shouldRedirect) {
+      return new Response(null, {
+        status: 302,
+        headers: {
+          ...corsHeaders,
+          Location: `/scavenger?error=proxy_error&token=${encodeURIComponent(locationId || '')}`,
+        },
+      });
+    }
 
     return new Response(
       JSON.stringify({
