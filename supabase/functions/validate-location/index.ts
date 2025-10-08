@@ -16,11 +16,23 @@ serve(async req => {
 
   try {
     const url = new URL(req.url);
-    // Support both 'token' (for QR codes) and 'locationId' (for API calls)
-    const locationId = url.searchParams.get('token') || url.searchParams.get('locationId');
-    const debug = url.searchParams.get('debug') === 'true';
-    // Determine if this is a redirect request (from QR code) or API request
-    const shouldRedirect = url.searchParams.has('token');
+
+    // Get token/locationId from either query params or POST body
+    let locationId = url.searchParams.get('token') || url.searchParams.get('locationId');
+    let debug = url.searchParams.get('debug') === 'true';
+    let shouldRedirect = url.searchParams.has('token');
+
+    // If not in query params, check POST body
+    if (!locationId && req.method === 'POST') {
+      try {
+        const body = await req.json();
+        locationId = body.token || body.locationId;
+        debug = debug || body.debug === true;
+        shouldRedirect = false; // POST requests want JSON response, not redirect
+      } catch (e) {
+        // Invalid JSON body, continue with null locationId
+      }
+    }
 
     if (debug) {
       console.log('🔍 Validate Location Debug:', {
