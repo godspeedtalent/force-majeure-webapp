@@ -1,36 +1,11 @@
 import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers':
     'authorization, x-client-info, apikey, content-type',
 };
-
-// Use a secret key for encryption (in production, this should be an environment variable)
-const SECRET_KEY =
-  Deno.env.get('PROXY_SECRET_KEY') || 'force-majeure-scavenger-2024';
-
-async function encryptPayload(
-  uuid: string,
-  timestamp: number
-): Promise<string> {
-  const payload = JSON.stringify({ uuid, timestamp });
-  const encoder = new TextEncoder();
-  const data = encoder.encode(payload);
-  const key = encoder.encode(SECRET_KEY.padEnd(32, '0').slice(0, 32));
-
-  // Simple XOR encryption with base64 encoding
-  const encrypted = new Uint8Array(data.length);
-  for (let i = 0; i < data.length; i++) {
-    encrypted[i] = data[i] ^ key[i % key.length];
-  }
-
-  // Convert to base64 URL-safe encoding
-  return btoa(String.fromCharCode(...encrypted))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '');
-}
 
 serve(async req => {
   const startTime = Date.now();
@@ -92,35 +67,67 @@ serve(async req => {
       });
     }
 
-    if (debugMode) {
-      console.log('[PROXY-TOKEN DEBUG] UUID validation passed:', {
-        token: `${token.substring(0, 8)}...`,
-        isValid: true,
+    // Token is the locationId - validate it exists in database
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    const { data: location, error: locationError } = await supabase
+      .from('scavenger_locations')
+      .select('id, location_name, is_active')
+      .eq('id', token)
+      .single();
+
+    if (locationError || !location) {
+      console.error('Location not found:', token);
+      if (debugMode) {
+        console.log('[PROXY-TOKEN DEBUG] Location not found in database:', {
+          token,
+          error: locationError?.message,
+        });
+      }
+      return new Response(null, {
+        status: 302,
+        headers: {
+          ...corsHeaders,
+          Location: `/scavenger?error=invalid_token&token=${encodeURIComponent(token)}`,
+        },
       });
     }
 
-    // Create encrypted payload with current timestamp
-    const timestamp = Date.now();
-    const encryptedCode = await encryptPayload(token, timestamp);
+    if (!location.is_active) {
+      console.error('Location is not active:', token);
+      if (debugMode) {
+        console.log('[PROXY-TOKEN DEBUG] Location is not active:', {
+          token,
+          locationName: location.location_name,
+        });
+      }
+      return new Response(null, {
+        status: 302,
+        headers: {
+          ...corsHeaders,
+          Location: `/scavenger?error=invalid_token&token=${encodeURIComponent(token)}`,
+        },
+      });
+    }
 
     if (debugMode) {
-      console.log('[PROXY-TOKEN DEBUG] Encryption complete:', {
-        timestamp: new Date(timestamp).toISOString(),
-        encryptedLength: encryptedCode.length,
-        encrypted: `${encryptedCode.substring(0, 20)}...`,
+      console.log('[PROXY-TOKEN DEBUG] Valid location found:', {
+        locationId: token,
+        locationName: location.location_name,
         processingTime: `${Date.now() - startTime}ms`,
       });
     }
 
     console.log(
-      'Proxying token:',
+      'Valid token - redirecting to location:',
       token.substring(0, 8) + '...',
-      'at',
-      new Date(timestamp).toISOString()
+      location.location_name
     );
 
-    // Redirect to scavenger page with encrypted code
-    const redirectUrl = `/scavenger?code=${encryptedCode}${debugMode ? '&debug=true' : ''}`;
+    // Redirect to scavenger page with locationId (token IS the locationId)
+    const redirectUrl = `/scavenger?locationId=${token}${debugMode ? '&debug=true' : ''}`;
 
     if (debugMode) {
       console.log('[PROXY-TOKEN DEBUG] Redirecting to:', redirectUrl);
