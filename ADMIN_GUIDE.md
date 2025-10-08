@@ -17,6 +17,7 @@ VALUES ('USER_ID_HERE', 'admin');
 ```
 
 **To find a user's ID:**
+
 1. Go to Supabase Dashboard → Authentication → Users
 2. Click on the user to see their details
 3. Copy the UUID from the "User UID" field
@@ -75,10 +76,12 @@ VALUES ('new_feature_name', false, 'Description of what this flag controls');
 ## Troubleshooting
 
 ### "Permission denied" errors when updating feature flags
+
 - Verify the user has an `admin` role in the `user_roles` table
 - Check that the user is authenticated (has a valid session)
 - Ensure the RLS policies are correctly applied to the `feature_flags` table
 
 ### User can't see their role
+
 - Users can view their own roles via the SELECT policy on `user_roles`
 - Query: `SELECT * FROM user_roles WHERE user_id = auth.uid()`

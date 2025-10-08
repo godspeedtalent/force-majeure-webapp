@@ -44,7 +44,7 @@ export const ExternalLinkDialog = ({
         <AlertDialogFooter>
           <AlertDialogCancel onClick={handleClick}>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            onClick={(e) => {
+            onClick={e => {
               handleClick(e);
               window.open(url, '_blank', 'noopener,noreferrer');
             }}

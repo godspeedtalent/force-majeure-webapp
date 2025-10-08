@@ -1,7 +1,11 @@
 import { useState } from 'react';
-import { cn } from '@/lib/utils';
+
 import { Skeleton } from '@/components/ui/skeleton';
-import { ImageAnchor, getObjectPositionClass } from '@/types/imageAnchor';
+import {
+  ImageAnchor,
+  getObjectPositionClass,
+} from '@/shared/types/imageAnchor';
+import { cn } from '@/shared/utils/utils';
 
 interface ImageWithSkeletonProps {
   src: string;
@@ -35,14 +39,14 @@ export const ImageWithSkeleton = ({
   const objectPositionClass = getObjectPositionClass(anchor);
 
   return (
-    <div className="relative w-full h-full">
+    <div className='relative w-full h-full'>
       {!isLoaded && (
-        <Skeleton 
+        <Skeleton
           className={cn(
             'absolute inset-0 w-full h-full',
             aspectRatio && `aspect-[${aspectRatio}]`,
             skeletonClassName
-          )} 
+          )}
         />
       )}
       <img

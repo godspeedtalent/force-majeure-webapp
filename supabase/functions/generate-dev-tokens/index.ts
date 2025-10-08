@@ -1,13 +1,14 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts";
+import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import * as bcrypt from 'https://deno.land/x/bcrypt@v0.4.1/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type',
 };
 
-serve(async (req) => {
+serve(async req => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -21,14 +22,20 @@ serve(async (req) => {
     const { data: locations, error: locError } = await supabase
       .from('scavenger_locations')
       .select('id, location_name')
-      .in('location_name', ['BOOGIE', 'MIRRORBALL', 'DISCO', 'LADYBIRD', 'KEEPITWEIRD'])
+      .in('location_name', [
+        'BOOGIE',
+        'MIRRORBALL',
+        'DISCO',
+        'LADYBIRD',
+        'KEEPITWEIRD',
+      ])
       .order('location_name');
 
     if (locError || !locations || locations.length === 0) {
-      return new Response(
-        JSON.stringify({ error: 'No locations found' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: 'No locations found' }), {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     // Delete ALL existing tokens first
@@ -39,7 +46,7 @@ serve(async (req) => {
 
     const tokenRecords = [];
     const generatedTokens = [];
-    
+
     // Generate exactly 1 token per location
     // The plaintext token is just the location name itself
     for (const location of locations) {
@@ -51,24 +58,38 @@ serve(async (req) => {
         location_id: location.id,
         token_hash: tokenHash,
         token_salt: salt,
-        is_claimed: false
+        is_claimed: false,
       });
 
       generatedTokens.push({
         location: location.location_name,
-        token: plaintextToken
+        token: plaintextToken,
       });
     }
 
     // Also add the test tokens for dev panel
     const testTokens = [
-      { plaintext: 'VALID_UNCLAIMED_TOKEN', location_name: 'BOOGIE', should_claim: false },
-      { plaintext: 'ALREADY_CLAIMED_TOKEN', location_name: 'MIRRORBALL', should_claim: true },
-      { plaintext: 'ANOTHER_VALID_TOKEN', location_name: 'DISCO', should_claim: false }
+      {
+        plaintext: 'VALID_UNCLAIMED_TOKEN',
+        location_name: 'BOOGIE',
+        should_claim: false,
+      },
+      {
+        plaintext: 'ALREADY_CLAIMED_TOKEN',
+        location_name: 'MIRRORBALL',
+        should_claim: true,
+      },
+      {
+        plaintext: 'ANOTHER_VALID_TOKEN',
+        location_name: 'DISCO',
+        should_claim: false,
+      },
     ];
 
     for (const testToken of testTokens) {
-      const location = locations.find(l => l.location_name === testToken.location_name);
+      const location = locations.find(
+        l => l.location_name === testToken.location_name
+      );
       if (!location) continue;
 
       const salt = await bcrypt.genSalt(10);
@@ -79,14 +100,16 @@ serve(async (req) => {
         token_hash: tokenHash,
         token_salt: salt,
         is_claimed: testToken.should_claim,
-        claimed_by_user_id: testToken.should_claim ? '00000000-0000-0000-0000-000000000000' : null,
-        claimed_at: testToken.should_claim ? new Date().toISOString() : null
+        claimed_by_user_id: testToken.should_claim
+          ? '00000000-0000-0000-0000-000000000000'
+          : null,
+        claimed_at: testToken.should_claim ? new Date().toISOString() : null,
       });
 
       generatedTokens.push({
         location: testToken.location_name,
         token: testToken.plaintext,
-        is_claimed: testToken.should_claim
+        is_claimed: testToken.should_claim,
       });
     }
 
@@ -98,29 +121,37 @@ serve(async (req) => {
     if (insertError) {
       console.error('Error inserting tokens:', insertError);
       return new Response(
-        JSON.stringify({ error: 'Failed to generate tokens', details: insertError.message }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({
+          error: 'Failed to generate tokens',
+          details: insertError.message,
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
       );
     }
 
-    console.log(`Generated ${tokenRecords.length} tokens across ${locations.length} locations`);
+    console.log(
+      `Generated ${tokenRecords.length} tokens across ${locations.length} locations`
+    );
 
     return new Response(
       JSON.stringify({
         success: true,
         message: `Generated ${tokenRecords.length} tokens for ${locations.length} locations`,
-        tokens: generatedTokens
+        tokens: generatedTokens,
       }),
-      { 
+      {
         status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );
   } catch (error: any) {
     console.error('Error in generate-dev-tokens:', error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 });

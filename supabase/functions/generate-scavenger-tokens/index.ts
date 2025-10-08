@@ -1,10 +1,11 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.1/mod.ts";
+import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import * as bcrypt from 'https://deno.land/x/bcrypt@v0.4.1/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type',
 };
 
 interface GenerateTokensRequest {
@@ -16,7 +17,7 @@ interface GenerateTokensRequest {
   }>;
 }
 
-serve(async (req) => {
+serve(async req => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -31,16 +32,23 @@ serve(async (req) => {
     if (!authHeader || !authHeader.includes(supabaseServiceKey)) {
       return new Response(
         JSON.stringify({ error: 'Unauthorized - Service role key required' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
       );
     }
 
-    const { location_id, tokens_config = [] }: GenerateTokensRequest = await req.json();
+    const { location_id, tokens_config = [] }: GenerateTokensRequest =
+      await req.json();
 
     if (!location_id) {
       return new Response(
         JSON.stringify({ error: 'location_id is required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
       );
     }
 
@@ -52,10 +60,10 @@ serve(async (req) => {
       .single();
 
     if (locationError || !location) {
-      return new Response(
-        JSON.stringify({ error: 'Location not found' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: 'Location not found' }), {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     // Generate tokens based on config
@@ -66,11 +74,13 @@ serve(async (req) => {
       for (let i = 0; i < config.count; i++) {
         // Generate cryptographically secure random token (32 characters)
         const tokenBytes = crypto.getRandomValues(new Uint8Array(16));
-        const token = Array.from(tokenBytes, byte => byte.toString(16).padStart(2, '0')).join('');
-        
+        const token = Array.from(tokenBytes, byte =>
+          byte.toString(16).padStart(2, '0')
+        ).join('');
+
         // Generate unique salt for this token
         const salt = await bcrypt.genSalt(10);
-        
+
         // Hash the token
         const tokenHash = await bcrypt.hash(token, salt);
 
@@ -78,7 +88,7 @@ serve(async (req) => {
           unhashed: token,
           reward_type: config.reward_type,
           promo_code: config.promo_code,
-          url: `${location.location_name.replace(/\s+/g, '-')}-${config.reward_type}-${i + 1}`
+          url: `${location.location_name.replace(/\s+/g, '-')}-${config.reward_type}-${i + 1}`,
         });
 
         tokenRecords.push({
@@ -87,7 +97,7 @@ serve(async (req) => {
           token_salt: salt,
           reward_type: config.reward_type,
           promo_code: config.promo_code || null,
-          is_claimed: false
+          is_claimed: false,
         });
       }
     }
@@ -100,12 +110,20 @@ serve(async (req) => {
     if (insertError) {
       console.error('Error inserting tokens:', insertError);
       return new Response(
-        JSON.stringify({ error: 'Failed to generate tokens', details: insertError.message }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({
+          error: 'Failed to generate tokens',
+          details: insertError.message,
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
       );
     }
 
-    console.log(`Generated ${tokens.length} tokens for location ${location.location_name}`);
+    console.log(
+      `Generated ${tokens.length} tokens for location ${location.location_name}`
+    );
 
     return new Response(
       JSON.stringify({
@@ -113,19 +131,21 @@ serve(async (req) => {
         location_name: location.location_name,
         tokens_generated: tokens.length,
         tokens: tokens,
-        message: 'Use these unhashed tokens to create QR codes. They will NOT be stored in the database.',
-        qr_code_format: 'https://yourdomain.com/lf-system-scavenger-hunt?token={unhashed_token}'
+        message:
+          'Use these unhashed tokens to create QR codes. They will NOT be stored in the database.',
+        qr_code_format:
+          'https://yourdomain.com/lf-system-scavenger-hunt?token={unhashed_token}',
       }),
-      { 
+      {
         status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );
   } catch (error: any) {
     console.error('Error in generate-scavenger-tokens:', error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 });

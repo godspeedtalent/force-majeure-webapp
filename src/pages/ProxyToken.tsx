@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import { useProxyToken } from '@/hooks/useProxyToken';
-import { ProcessingLoader } from '@/components/ProcessingLoader';
+
+import { ProcessingLoader } from '@/components/common/ProcessingLoader';
+import { useProxyToken } from '@/shared/hooks/useProxyToken';
 
 export default function ProxyToken() {
   const { processToken } = useProxyToken();
@@ -9,5 +10,5 @@ export default function ProxyToken() {
     processToken();
   }, [processToken]);
 
-  return <ProcessingLoader message="Processing QR code..." />;
+  return <ProcessingLoader message='Processing QR code...' />;
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { cn } from '@/lib/utils';
+
+import { cn } from '@/shared/utils/utils';
 
 interface AnimatedCounterProps {
   value: number;
@@ -7,7 +8,11 @@ interface AnimatedCounterProps {
   className?: string;
 }
 
-export const AnimatedCounter = ({ value, duration = 1000, className }: AnimatedCounterProps) => {
+export const AnimatedCounter = ({
+  value,
+  duration = 1000,
+  className,
+}: AnimatedCounterProps) => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
@@ -17,10 +22,10 @@ export const AnimatedCounter = ({ value, duration = 1000, className }: AnimatedC
     const animate = (currentTime: number) => {
       if (!startTime) startTime = currentTime;
       const progress = Math.min((currentTime - startTime) / duration, 1);
-      
+
       // Ease out cubic
       const easeOutCubic = 1 - Math.pow(1 - progress, 3);
-      
+
       setCount(Math.floor(easeOutCubic * value));
 
       if (progress < 1) {
@@ -38,7 +43,12 @@ export const AnimatedCounter = ({ value, duration = 1000, className }: AnimatedC
   }, [value, duration]);
 
   return (
-    <span className={cn('font-display text-6xl md:text-8xl text-fm-gold', className)}>
+    <span
+      className={cn(
+        'font-display text-6xl md:text-8xl text-fm-gold',
+        className
+      )}
+    >
       {count}
     </span>
   );

@@ -3,12 +3,15 @@ interface ForceMajeureLogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
-export const ForceMajeureLogo = ({ className = '', size = 'md' }: ForceMajeureLogoProps) => {
+export const ForceMajeureLogo = ({
+  className = '',
+  size = 'md',
+}: ForceMajeureLogoProps) => {
   const sizeClasses = {
     sm: 'h-8 w-8',
     md: 'h-12 w-12',
     lg: 'h-20 w-20',
-    xl: 'h-28 w-28'
+    xl: 'h-28 w-28',
   };
 
   // Always use dark theme logo since app is forced to dark mode
@@ -17,7 +20,7 @@ export const ForceMajeureLogo = ({ className = '', size = 'md' }: ForceMajeureLo
   return (
     <img
       src={logoSrc}
-      alt="Force Majeure"
+      alt='Force Majeure'
       className={`${sizeClasses[size]} object-contain transition-opacity duration-200 ${className}`}
     />
   );

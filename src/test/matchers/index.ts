@@ -17,7 +17,7 @@ declare global {
  */
 export const toBeVisible = (received: HTMLElement) => {
   const isVisible = received.offsetParent !== null;
-  
+
   if (isVisible) {
     return {
       message: () => `expected element to not be visible`,
@@ -35,10 +35,12 @@ export const toBeVisible = (received: HTMLElement) => {
  * Custom matcher to check if a component has loading state
  */
 export const toHaveLoadingState = (received: HTMLElement) => {
-  const hasLoadingIndicator = received.querySelector('[data-testid="loading"]') !== null ||
-                             received.querySelector('.animate-spin') !== null ||
-                             received.textContent?.includes('Loading...') || false;
-  
+  const hasLoadingIndicator =
+    received.querySelector('[data-testid="loading"]') !== null ||
+    received.querySelector('.animate-spin') !== null ||
+    received.textContent?.includes('Loading...') ||
+    false;
+
   if (hasLoadingIndicator) {
     return {
       message: () => `expected element to not have loading state`,
@@ -56,10 +58,12 @@ export const toHaveLoadingState = (received: HTMLElement) => {
  * Custom matcher to check if a component has error state
  */
 export const toHaveErrorState = (received: HTMLElement) => {
-  const hasErrorIndicator = received.querySelector('[data-testid="error"]') !== null ||
-                           received.querySelector('.text-red-500') !== null ||
-                           received.textContent?.includes('Error') || false;
-  
+  const hasErrorIndicator =
+    received.querySelector('[data-testid="error"]') !== null ||
+    received.querySelector('.text-red-500') !== null ||
+    received.textContent?.includes('Error') ||
+    false;
+
   if (hasErrorIndicator) {
     return {
       message: () => `expected element to not have error state`,

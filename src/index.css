@@ -9,8 +9,9 @@ All colors MUST be HSL.
 /* Custom Fonts */
 @font-face {
   font-family: 'FK Screamer';
-  src: url('/fonts/FKScreamer.woff2') format('woff2'),
-       url('/fonts/FKScreamer.ttf') format('truetype');
+  src:
+    url('/fonts/FKScreamer.woff2') format('woff2'),
+    url('/fonts/FKScreamer.ttf') format('truetype');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
@@ -18,8 +19,9 @@ All colors MUST be HSL.
 
 @font-face {
   font-family: 'FK Screamer';
-  src: url('/fonts/FKScreamer-Medium.woff2') format('woff2'),
-       url('/fonts/FKScreamer-Medium.ttf') format('truetype');
+  src:
+    url('/fonts/FKScreamer-Medium.woff2') format('woff2'),
+    url('/fonts/FKScreamer-Medium.ttf') format('truetype');
   font-weight: 475;
   font-style: normal;
   font-display: swap;
@@ -27,8 +29,9 @@ All colors MUST be HSL.
 
 @font-face {
   font-family: 'FK Screamer';
-  src: url('/fonts/FKScreamer-Black.woff2') format('woff2'),
-       url('/fonts/FKScreamer-Black.ttf') format('truetype');
+  src:
+    url('/fonts/FKScreamer-Black.woff2') format('woff2'),
+    url('/fonts/FKScreamer-Black.ttf') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -120,8 +123,16 @@ All colors MUST be HSL.
     --active-overlay: 0 0% 0% / 0.1;
 
     /* Gradients */
-    --gradient-gold: linear-gradient(135deg, hsl(348 100% 22%), hsl(348 90% 30%));
-    --gradient-crimson: linear-gradient(135deg, hsl(var(--fm-crimson)), hsl(348 70% 55%));
+    --gradient-gold: linear-gradient(
+      135deg,
+      hsl(348 100% 22%),
+      hsl(348 90% 30%)
+    );
+    --gradient-crimson: linear-gradient(
+      135deg,
+      hsl(var(--fm-crimson)),
+      hsl(348 70% 55%)
+    );
     --gradient-monochrome: linear-gradient(135deg, hsl(0 0% 0%), hsl(0 0% 20%));
 
     /* Shadows */
@@ -132,7 +143,7 @@ All colors MUST be HSL.
     /* Typography */
     --font-display: 'FK Screamer', system-ui, sans-serif;
     --font-body: 'Canela Deck', Georgia, serif;
-    
+
     /* Background Patterns */
     --topographic-pattern: url('/images/topographic-pattern.png');
   }
@@ -178,7 +189,11 @@ All colors MUST be HSL.
 
     /* Gradients - Dark Mode */
     --gradient-gold: linear-gradient(135deg, hsl(38 60% 68%), hsl(38 70% 75%));
-    --gradient-crimson: linear-gradient(135deg, hsl(var(--fm-crimson)), hsl(348 70% 55%));
+    --gradient-crimson: linear-gradient(
+      135deg,
+      hsl(var(--fm-crimson)),
+      hsl(348 70% 55%)
+    );
     --gradient-monochrome: linear-gradient(135deg, hsl(0 0% 0%), hsl(0 0% 20%));
 
     /* Shadows - Dark Mode */
@@ -194,7 +209,7 @@ All colors MUST be HSL.
     position: relative;
     overflow: hidden;
   }
-  
+
   .shimmer-border::before {
     content: '';
     position: absolute;
@@ -211,12 +226,12 @@ All colors MUST be HSL.
     animation: shimmer 2s infinite;
     z-index: 1;
   }
-  
+
   .shimmer-on-hover {
     position: relative;
     overflow: hidden;
   }
-  
+
   .shimmer-on-hover::before {
     content: '';
     position: absolute;
@@ -233,11 +248,11 @@ All colors MUST be HSL.
     animation: none;
     z-index: 1;
   }
-  
+
   .shimmer-on-hover:hover::before {
     animation: shimmer 2s infinite;
   }
-  
+
   @keyframes shimmer {
     0% {
       left: -100%;
@@ -246,7 +261,7 @@ All colors MUST be HSL.
       left: 100%;
     }
   }
-  
+
   /* Event hover effects with frosted glass */
   .event-hover-invert {
     background-color: hsl(var(--foreground) / 0.8);
@@ -254,22 +269,22 @@ All colors MUST be HSL.
     border: 1px solid hsl(var(--foreground) / 0.2);
     transition: all 0.3s ease;
   }
-  
+
   .event-hover-invert:hover {
     background-color: hsl(var(--foreground));
     color: hsl(var(--background));
   }
-  
+
   .event-hover-invert:hover .invert-text {
     color: hsl(var(--background));
   }
-  
+
   .event-hover-invert:hover .invert-badge {
     background-color: hsl(var(--background) / 0.2);
     color: hsl(var(--background));
     border-color: hsl(var(--background) / 0.3);
   }
-  
+
   .event-hover-invert:hover .invert-button {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
@@ -279,14 +294,19 @@ All colors MUST be HSL.
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
 
   body {
     @apply bg-background text-foreground font-canela;
   }
-  
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-screamer;
     font-weight: 475;
     font-variation-settings: 'wght' 475;

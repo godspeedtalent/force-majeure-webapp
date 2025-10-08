@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
+
 import { CommonCard } from '@/components/CommonCard';
-import { getImageUrl } from '@/lib/imageUtils';
+import { getImageUrl } from '@/shared/utils/imageUtils';
 
 interface MerchCardProps {
   id: string;
@@ -14,24 +15,28 @@ interface MerchCardProps {
   onClick?: () => void;
 }
 
-export const MerchCard = ({ 
-  name, 
-  description, 
-  price, 
-  type, 
-  image_url, 
-  in_stock,
+export const MerchCard = ({
+  name,
+  description,
+  price,
+  type,
+  image_url,
+  in_stock: _in_stock,
   children,
-  onClick
+  onClick,
 }: MerchCardProps) => {
   return (
     <CommonCard
       image={getImageUrl(image_url)}
       imageAlt={name}
       title={name}
-      subtitle={description ? undefined : `$${price % 1 === 0 ? price.toFixed(0) : price.toFixed(2)}`}
+      subtitle={
+        description
+          ? undefined
+          : `$${price % 1 === 0 ? price.toFixed(0) : price.toFixed(2)}`
+      }
       badge={type}
-      badgeVariant="secondary"
+      badgeVariant='secondary'
       onClick={onClick}
       showHoverEffect={!onClick} // Only show hover effect if not clickable for expansion
     >

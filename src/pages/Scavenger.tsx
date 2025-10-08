@@ -1,26 +1,24 @@
-import { LoadingState } from '@/components/LoadingState';
-import { useAuth } from '@/contexts/AuthContext';
-import { useFeatureFlags } from '@/hooks/useFeatureFlags';
+import { useQueryClient } from '@tanstack/react-query';
+
+import { LoadingState } from '@/components/common/LoadingState';
+import { useAuth } from '@/features/auth/services/AuthContext';
+import { UnauthenticatedWizard } from '@/features/scavenger/components/auth/UnauthenticatedWizard';
+import { ScavengerFullLayout } from '@/features/scavenger/components/layouts/ScavengerFullLayout';
+import { ScavengerSplitLayout } from '@/features/scavenger/components/layouts/ScavengerSplitLayout';
+import { AuthenticatedUserView } from '@/features/scavenger/components/views/AuthenticatedUserView';
+import { InvalidTokenView } from '@/features/scavenger/components/views/InvalidTokenView';
 import {
   useAllClaims,
   useAutoScroll,
   useClaimReward,
   useScavengerLocations,
   useScavengerNavigation,
-  useUserClaims
-} from '@/hooks/useScavenger';
-import { useQueryClient } from '@tanstack/react-query';
+  useUserClaims,
+} from '@/features/scavenger/hooks/useScavenger';
+import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
 
 // Layout components
 // Scavenger components
-import {
-  AuthenticatedUserView,
-  InvalidTokenView,
-  ScavengerFullLayout,
-  ScavengerSplitLayout,
-  UnauthenticatedWizard
-} from '@/components/scavenger';
-
 
 export default function Scavenger() {
   const { user, profile, loading: authLoading } = useAuth();
@@ -28,9 +26,15 @@ export default function Scavenger() {
   const queryClient = useQueryClient();
 
   // Use custom hooks
-  const { locationId, debugMode, showInvalidToken, navigate } = useScavengerNavigation();
+  const {
+    locationId,
+    debugMode: _debugMode,
+    showInvalidToken,
+    navigate,
+  } = useScavengerNavigation();
   const claimMutation = useClaimReward();
-  const { data: locations, isLoading: locationsLoading } = useScavengerLocations();
+  const { data: locations, isLoading: locationsLoading } =
+    useScavengerLocations();
   const { data: userClaims } = useUserClaims();
   const { data: allClaims } = useAllClaims();
 
@@ -38,15 +42,17 @@ export default function Scavenger() {
   useAutoScroll();
 
   // Calculate undiscovered checkpoints (locations with no claims from anyone)
-  const claimedLocationIds = new Set(allClaims?.map(claim => claim.location_id) || []);
-  const totalUndiscoveredCheckpoints = locations?.filter(location =>
-    !claimedLocationIds.has(location.id)
-  ).length || 0;
+  const claimedLocationIds = new Set(
+    allClaims?.map(claim => claim.location_id) || []
+  );
+  const totalUndiscoveredCheckpoints =
+    locations?.filter(location => !claimedLocationIds.has(location.id))
+      .length || 0;
 
   // Loading state - check both auth and locations loading
   if (authLoading || locationsLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className='min-h-screen flex items-center justify-center bg-background'>
         <LoadingState />
       </div>
     );
@@ -75,10 +81,12 @@ export default function Scavenger() {
     // State 1: Already Claimed - show success panel
     if (alreadyClaimed) {
       return (
-        <ScavengerSplitLayout showShoppingCart={!featureFlags?.coming_soon_mode}>
+        <ScavengerSplitLayout
+          showShoppingCart={!featureFlags?.coming_soon_mode}
+        >
           <UnauthenticatedWizard
             locationName={location?.location_name}
-            onLoginSuccess={() => { }}
+            onLoginSuccess={() => {}}
             userDisplayName={profile?.display_name}
             isAuthenticated={true}
             hasAlreadyClaimed={true}
@@ -93,17 +101,22 @@ export default function Scavenger() {
       console.log('👤 User not authenticated, showing wizard:', {
         locationId,
         locationName: location?.location_name,
-        hasLocation: !!location
+        hasLocation: !!location,
       });
 
       return (
-        <ScavengerSplitLayout showShoppingCart={!featureFlags?.coming_soon_mode}>
+        <ScavengerSplitLayout
+          showShoppingCart={!featureFlags?.coming_soon_mode}
+        >
           <UnauthenticatedWizard
             locationName={location?.location_name}
             onLoginSuccess={() => {
-              console.log('✅ Login success, navigating to refresh with current params');
+              console.log(
+                '✅ Login success, navigating to refresh with current params'
+              );
               // Navigate to current URL to refresh and show authenticated state
-              const currentUrl = window.location.pathname + window.location.search;
+              const currentUrl =
+                window.location.pathname + window.location.search;
               navigate(currentUrl);
             }}
           />
@@ -117,9 +130,12 @@ export default function Scavenger() {
         <UnauthenticatedWizard
           locationName={location?.location_name}
           onLoginSuccess={() => {
-            console.log('✅ Login success, navigating to refresh with current params');
+            console.log(
+              '✅ Login success, navigating to refresh with current params'
+            );
             // Navigate to current URL to refresh and show authenticated state
-            const currentUrl = window.location.pathname + window.location.search;
+            const currentUrl =
+              window.location.pathname + window.location.search;
             navigate(currentUrl);
           }}
           onClaimCheckpoint={async () => {
@@ -130,16 +146,21 @@ export default function Scavenger() {
                 locationId: locationId!,
                 userEmail: user.email,
                 displayName: profile.display_name,
-                showOnLeaderboard: true
+                showOnLeaderboard: true,
               });
 
               // Invalidate relevant queries to refetch updated data
-              await queryClient.invalidateQueries({ queryKey: ['user-claims'] });
+              await queryClient.invalidateQueries({
+                queryKey: ['user-claims'],
+              });
               await queryClient.invalidateQueries({ queryKey: ['all-claims'] });
-              await queryClient.invalidateQueries({ queryKey: ['scavenger-locations'] });
+              await queryClient.invalidateQueries({
+                queryKey: ['scavenger-locations'],
+              });
 
               // Navigate to current URL to refresh and show success state
-              const currentUrl = window.location.pathname + window.location.search;
+              const currentUrl =
+                window.location.pathname + window.location.search;
               navigate(currentUrl);
             } catch (error) {
               // Error is handled by the mutation
@@ -162,10 +183,12 @@ export default function Scavenger() {
 
     if (hasAnyClaim) {
       return (
-        <ScavengerSplitLayout showShoppingCart={!featureFlags?.coming_soon_mode}>
+        <ScavengerSplitLayout
+          showShoppingCart={!featureFlags?.coming_soon_mode}
+        >
           <UnauthenticatedWizard
             locationName={undefined}
-            onLoginSuccess={() => { }}
+            onLoginSuccess={() => {}}
             userDisplayName={profile?.display_name}
             isAuthenticated={true}
             hasAlreadyClaimed={true}
@@ -193,7 +216,8 @@ export default function Scavenger() {
           onLoginSuccess={() => {
             console.log('✅ Login success from general page, refreshing');
             // Navigate to current URL to refresh and show authenticated state
-            const currentUrl = window.location.pathname + window.location.search;
+            const currentUrl =
+              window.location.pathname + window.location.search;
             navigate(currentUrl);
           }}
         />

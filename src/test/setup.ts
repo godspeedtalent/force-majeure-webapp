@@ -1,15 +1,16 @@
-import '@testing-library/jest-dom'
-import { afterEach, beforeAll, afterAll } from 'vitest'
-import { cleanup } from '@testing-library/react'
-import { server } from './mocks/server'
+import '@testing-library/jest-dom';
+import { cleanup } from '@testing-library/react';
+import { afterEach, beforeAll, afterAll } from 'vitest';
+
+import { server } from './mocks/server';
 
 // Setup MSW
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
-afterAll(() => server.close())
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+afterAll(() => server.close());
 afterEach(() => {
-  server.resetHandlers()
-  cleanup()
-})
+  server.resetHandlers();
+  cleanup();
+});
 
 // Mock environment variables
 Object.defineProperty(window, 'matchMedia', {
@@ -24,25 +25,29 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
-})
+});
 
 // Mock IntersectionObserver
 global.IntersectionObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn(),
-}))
+}));
 
 // Mock ResizeObserver
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn(),
-}))
+}));
 
 // Mock requestAnimationFrame
-global.requestAnimationFrame = vi.fn().mockImplementation(cb => setTimeout(cb, 0))
-global.cancelAnimationFrame = vi.fn().mockImplementation(id => clearTimeout(id))
+global.requestAnimationFrame = vi
+  .fn()
+  .mockImplementation(cb => setTimeout(cb, 0));
+global.cancelAnimationFrame = vi
+  .fn()
+  .mockImplementation(id => clearTimeout(id));
 
 // Mock console methods to reduce noise in tests
 global.console = {
@@ -52,4 +57,4 @@ global.console = {
   info: vi.fn(),
   warn: vi.fn(),
   error: vi.fn(),
-}
+};

@@ -1,4 +1,4 @@
-import { vi } from 'vitest'
+import { vi } from 'vitest';
 
 // Mock Supabase client
 export const mockSupabaseClient = {
@@ -22,29 +22,29 @@ export const mockSupabaseClient = {
   functions: {
     invoke: vi.fn(),
   },
-}
+};
 
 // Mock React Router
-export const mockNavigate = vi.fn()
+export const mockNavigate = vi.fn();
 export const mockUseSearchParams = vi.fn(() => [
   new URLSearchParams(),
-  vi.fn()
-])
+  vi.fn(),
+]);
 
 // Mock React Query
-export const mockUseQuery = vi.fn()
-export const mockUseMutation = vi.fn()
+export const mockUseQuery = vi.fn();
+export const mockUseMutation = vi.fn();
 
 // Mock Auth Context
 export const mockAuthContext = {
   user: null,
   profile: null,
   loading: false,
-}
+};
 
 // Mock Feature Flags
 export const mockFeatureFlags = {
   scavenger_hunt_active: true,
   coming_soon_mode: false,
   show_leaderboard: true,
-}
+};

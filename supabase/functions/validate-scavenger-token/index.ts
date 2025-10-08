@@ -1,13 +1,15 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type',
 };
 
 // Secret key for decryption (must match proxy-token function)
-const SECRET_KEY = Deno.env.get('PROXY_SECRET_KEY') || 'force-majeure-scavenger-2024';
+const SECRET_KEY =
+  Deno.env.get('PROXY_SECRET_KEY') || 'force-majeure-scavenger-2024';
 
 // Rate limiting storage (in-memory, resets on function restart)
 const rateLimitMap = new Map<string, { attempts: number; resetAt: number }>();
@@ -15,33 +17,33 @@ const RATE_LIMIT_ATTEMPTS = 10;
 const RATE_LIMIT_WINDOW_MS = 60000; // 1 minute
 const CODE_EXPIRY_MS = 60000; // 1 minute
 
-async function decryptPayload(encryptedCode: string): Promise<{ uuid: string; timestamp: number } | null> {
+async function decryptPayload(
+  encryptedCode: string
+): Promise<{ uuid: string; timestamp: number } | null> {
   try {
     // Restore base64 from URL-safe encoding
-    const base64 = encryptedCode
-      .replace(/-/g, '+')
-      .replace(/_/g, '/');
-    
+    const base64 = encryptedCode.replace(/-/g, '+').replace(/_/g, '/');
+
     // Pad base64 string if needed
     const padded = base64 + '==='.slice((base64.length + 3) % 4);
-    
+
     const decoder = new TextDecoder();
     const encoder = new TextEncoder();
     const key = encoder.encode(SECRET_KEY.padEnd(32, '0').slice(0, 32));
-    
+
     // Decode base64
     const binaryString = atob(padded);
     const encrypted = new Uint8Array(binaryString.length);
     for (let i = 0; i < binaryString.length; i++) {
       encrypted[i] = binaryString.charCodeAt(i);
     }
-    
+
     // XOR decrypt
     const decrypted = new Uint8Array(encrypted.length);
     for (let i = 0; i < encrypted.length; i++) {
       decrypted[i] = encrypted[i] ^ key[i % key.length];
     }
-    
+
     const payload = decoder.decode(decrypted);
     return JSON.parse(payload);
   } catch (error) {
@@ -67,7 +69,7 @@ function checkRateLimit(ip: string): boolean {
   return true;
 }
 
-serve(async (req) => {
+serve(async req => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -77,8 +79,13 @@ serve(async (req) => {
     const ip = req.headers.get('x-forwarded-for') || 'unknown';
     if (!checkRateLimit(ip)) {
       return new Response(
-        JSON.stringify({ error: 'Too many validation attempts. Please try again in 1 minute.' }),
-        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({
+          error: 'Too many validation attempts. Please try again in 1 minute.',
+        }),
+        {
+          status: 429,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
       );
     }
 
@@ -89,23 +96,26 @@ serve(async (req) => {
     const { code } = await req.json();
 
     if (!code) {
-      return new Response(
-        JSON.stringify({ error: 'Code is required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: 'Code is required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     // Decrypt the code to get UUID and timestamp
     const decrypted = await decryptPayload(code);
-    
+
     if (!decrypted) {
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           valid: false,
           error: 'Invalid code format',
-          message: 'This code is not valid. Please scan a valid QR code.'
+          message: 'This code is not valid. Please scan a valid QR code.',
         }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
       );
     }
 
@@ -114,56 +124,72 @@ serve(async (req) => {
     // Check if code has expired (older than 1 minute)
     const now = Date.now();
     const age = now - timestamp;
-    
+
     if (age > CODE_EXPIRY_MS) {
       console.log('Code expired:', { age, limit: CODE_EXPIRY_MS });
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           valid: false,
           error: 'Code expired',
-          message: 'This QR code has expired. Please scan it again.'
+          message: 'This QR code has expired. Please scan it again.',
         }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
       );
     }
 
     // Validate UUID format
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(token)) {
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           valid: false,
           error: 'Invalid token format',
-          message: 'This code is not valid. Please scan a valid QR code.'
+          message: 'This code is not valid. Please scan a valid QR code.',
         }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
       );
     }
 
     // Get location using location ID
-    const { data: locationData, error: locationError } = await supabase
-      .rpc('get_location_preview', { p_location_id: token });
+    const { data: locationData, error: locationError } = await supabase.rpc(
+      'get_location_preview',
+      { p_location_id: token }
+    );
 
     if (locationError) {
       console.error('Error fetching location:', locationError);
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           valid: false,
           error: 'Database error',
-          message: 'Unable to validate code. Please try again.'
+          message: 'Unable to validate code. Please try again.',
         }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
       );
     }
 
     if (!locationData || locationData.length === 0) {
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           valid: false,
           error: 'Invalid code',
-          message: 'This QR code is not valid. Please check you scanned correctly.'
+          message:
+            'This QR code is not valid. Please check you scanned correctly.',
         }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
       );
     }
 
@@ -172,12 +198,15 @@ serve(async (req) => {
     // Check if tokens are still available
     if (location.tokens_remaining <= 0) {
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           valid: false,
           error: 'No rewards remaining',
-          message: `All rewards for ${location.location_name} have been claimed!`
+          message: `All rewards for ${location.location_name} have been claimed!`,
         }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
       );
     }
 
@@ -189,15 +218,18 @@ serve(async (req) => {
         location_name: location.location_name,
         location_description: location.location_description,
         tokens_remaining: location.tokens_remaining,
-        total_tokens: location.total_tokens
+        total_tokens: location.total_tokens,
       }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
     );
   } catch (error: any) {
     console.error('Error in validate-scavenger-token:', error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 });

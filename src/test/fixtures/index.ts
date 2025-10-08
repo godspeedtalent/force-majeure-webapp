@@ -7,7 +7,7 @@ export const TEST_USER = {
   email: 'test@example.com',
   email_confirmed_at: '2024-01-01T00:00:00.000Z',
   created_at: '2024-01-01T00:00:00.000Z',
-}
+};
 
 export const TEST_PROFILE = {
   id: 'test-user-id',
@@ -17,7 +17,7 @@ export const TEST_PROFILE = {
   instagram_handle: '@testuser',
   show_on_leaderboard: true,
   created_at: '2024-01-01T00:00:00.000Z',
-}
+};
 
 export const TEST_LOCATIONS = [
   {
@@ -35,8 +35,8 @@ export const TEST_LOCATIONS = [
     tokens_remaining: 2,
     is_active: true,
     created_at: '2024-01-01T00:00:00.000Z',
-  }
-]
+  },
+];
 
 export const TEST_CLAIMS = [
   {
@@ -47,25 +47,25 @@ export const TEST_CLAIMS = [
     promo_code: 'TEST123',
     claimed_at: '2024-01-01T00:00:00.000Z',
     scavenger_locations: {
-      location_name: 'Test Location 1'
-    }
-  }
-]
+      location_name: 'Test Location 1',
+    },
+  },
+];
 
 export const TEST_FEATURE_FLAGS = {
   scavenger_hunt_active: true,
   coming_soon_mode: false,
   show_leaderboard: true,
-}
+};
 
 export const TEST_TOKENS = {
   VALID_TOKEN: 'valid-test-token-123',
   INVALID_TOKEN: 'invalid-test-token-456',
   EXPIRED_TOKEN: 'expired-test-token-789',
-}
+};
 
 export const TEST_LOCATION_IDS = {
   VALID_LOCATION: 'test-location-id-valid',
   INVALID_LOCATION: 'test-location-id-invalid',
   CLAIMED_LOCATION: 'test-location-id-claimed',
-}
+};

@@ -1,14 +1,18 @@
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { CommonCard } from '@/components/CommonCard';
 import { MapPin, Clock, Play, ExternalLink, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ExternalLinkDialog } from '@/components/ExternalLinkDialog';
-import { useMusicPlayer, type Song } from '@/contexts/MusicPlayerContext';
-import { supabase } from '@/integrations/supabase/client';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { formatTimeDisplay, parseTimeToMinutes } from '@/lib/timeUtils';
+
+import { CommonCard } from '@/components/CommonCard';
+import { ExternalLinkDialog } from '@/components/ExternalLinkDialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { useMusicPlayer, type Song } from '@/contexts/MusicPlayerContext';
+import { supabase } from '@/shared/api/supabase/client';
+import {
+  formatTimeDisplay,
+  parseTimeToMinutes,
+} from '@/shared/utils/timeUtils';
 
 interface Artist {
   name: string;
@@ -68,20 +72,23 @@ export const EventCard = ({ event }: EventCardProps) => {
 
       const artistOrder: string[] = [];
       if (eventData?.headliner_id) artistOrder.push(eventData.headliner_id);
-      if (Array.isArray(eventData?.undercard_ids)) artistOrder.push(...eventData.undercard_ids);
+      if (Array.isArray(eventData?.undercard_ids))
+        artistOrder.push(...eventData.undercard_ids);
 
       if (artistOrder.length === 0) {
-        toast("No lineup available for this event yet.");
+        toast('No lineup available for this event yet.');
         return;
       }
 
       // Fetch preview songs for these artists
       const { data: songsData, error: songsError } = await supabase
         .from('songs')
-        .select(`
+        .select(
+          `
           *,
           artists(name)
-        `)
+        `
+        )
         .in('artist_id', artistOrder)
         .eq('is_preview', true);
 
@@ -99,13 +106,14 @@ export const EventCard = ({ event }: EventCardProps) => {
       }));
 
       if (songs.length === 0) {
-        toast("No preview tracks found for this lineup.");
+        toast('No preview tracks found for this lineup.');
         return;
       }
 
       // Order songs by artist order so headliner appears first
-      const ordered = songs.sort((a, b) =>
-        artistOrder.indexOf(a.artist_id) - artistOrder.indexOf(b.artist_id)
+      const ordered = songs.sort(
+        (a, b) =>
+          artistOrder.indexOf(a.artist_id) - artistOrder.indexOf(b.artist_id)
       );
 
       playQueue(ordered, 0);
@@ -124,74 +132,86 @@ export const EventCard = ({ event }: EventCardProps) => {
   };
 
   return (
-    <div className="event-hover-invert">
+    <div className='event-hover-invert'>
       <CommonCard
         image={event.heroImage}
         imageAlt={`${event.title}`}
         title={event.title || ''}
         titleHidden={!event.title}
         // Remove badges from the title/overlay area; show standard title instead
-        subtitleSize="lg"
+        subtitleSize='lg'
         onClick={() => navigate(`/event/${event.id}`)}
       >
         {/* Display title in Canela Deck Medium if it exists */}
         {event.title && (
-          <h3 className="text-foreground text-xl font-canela font-medium line-clamp-2 mb-3 invert-text">{event.title}</h3>
+          <h3 className='text-foreground text-xl font-canela font-medium line-clamp-2 mb-3 invert-text'>
+            {event.title}
+          </h3>
         )}
-        
+
         {/* Footer content: undercard badges, then time and venue */}
         {event.undercard && event.undercard.length > 0 && (
-          <div className="mb-3 flex flex-wrap gap-1">
+          <div className='mb-3 flex flex-wrap gap-1'>
             {event.undercard.map((artist, index) => (
-              <Badge 
+              <Badge
                 key={index}
-                variant="secondary" 
-                className="bg-accent/20 text-accent border-accent/30 text-xs"
+                variant='secondary'
+                className='bg-accent/20 text-accent border-accent/30 text-xs'
               >
                 {artist.name}
               </Badge>
             ))}
           </div>
         )}
-        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-          <Clock className="w-4 h-4" />
-          <span className="invert-text">{formatTimeDisplay(event.time)}</span>
+        <div className='flex items-center gap-2 text-sm text-muted-foreground mb-2'>
+          <Clock className='w-4 h-4' />
+          <span className='invert-text'>{formatTimeDisplay(event.time)}</span>
         </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <MapPin className="w-4 h-4" />
-          <span className="invert-text line-clamp-1">{event.venue}</span>
+        <div className='flex items-center gap-2 text-sm text-muted-foreground'>
+          <MapPin className='w-4 h-4' />
+          <span className='invert-text line-clamp-1'>{event.venue}</span>
         </div>
 
         {/* Moved badges to footer */}
-        <div className="mt-3 flex flex-wrap gap-2">
-          <Badge variant="secondary" className="invert-badge">{formatDate(event.date)}</Badge>
+        <div className='mt-3 flex flex-wrap gap-2'>
+          <Badge variant='secondary' className='invert-badge'>
+            {formatDate(event.date)}
+          </Badge>
           {isAfterHours && (
-            <Badge className="bg-accent/20 text-accent border-accent/30">After Hours</Badge>
+            <Badge className='bg-accent/20 text-accent border-accent/30'>
+              After Hours
+            </Badge>
           )}
         </div>
 
         {/* Actions */}
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className='mt-4 flex flex-wrap gap-2'>
           {event.ticketUrl && (
-            <Button 
-              size="sm" 
-              variant="default" 
-              onClick={handleTicketsClick} 
-              className="shimmer-on-hover bg-accent hover:bg-accent/90 text-accent-foreground"
+            <Button
+              size='sm'
+              variant='default'
+              onClick={handleTicketsClick}
+              className='shimmer-on-hover bg-accent hover:bg-accent/90 text-accent-foreground'
             >
-              <ExternalLink className="w-4 h-4" />
+              <ExternalLink className='w-4 h-4' />
               Get Tickets
             </Button>
           )}
-          <Button size="sm" variant="secondary" onClick={handlePlayLineup} disabled={playing} className="invert-button">
+          <Button
+            size='sm'
+            variant='secondary'
+            onClick={handlePlayLineup}
+            disabled={playing}
+            className='invert-button'
+          >
             {playing ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className='w-4 h-4 animate-spin' />
                 Loading…
               </>
             ) : (
               <>
-                <Play className="w-4 h-4" />
+                <Play className='w-4 h-4' />
                 Play Lineup
               </>
             )}
@@ -204,7 +224,7 @@ export const EventCard = ({ event }: EventCardProps) => {
           open={showTicketDialog}
           onOpenChange={setShowTicketDialog}
           url={event.ticketUrl}
-          title="Leaving Force Majeure"
+          title='Leaving Force Majeure'
           description="You're about to be redirected to an external site to purchase tickets. Continue?"
           onStopPropagation={true}
         />

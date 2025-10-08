@@ -1,11 +1,12 @@
-import * as React from "react"
-import * as LabelPrimitive from "@radix-ui/react-label"
-import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "@/lib/utils"
+import * as LabelPrimitive from '@radix-ui/react-label';
+import { cva, type VariantProps } from 'class-variance-authority';
+import * as React from 'react';
+
+import { cn } from '@/shared/utils/utils';
 
 const customLabelVariants = cva(
-  "text-sm font-canela font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground mb-2 block"
-)
+  'text-sm font-canela font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground mb-2 block'
+);
 
 const CustomLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
@@ -17,7 +18,7 @@ const CustomLabel = React.forwardRef<
     className={cn(customLabelVariants(), className)}
     {...props}
   />
-))
-CustomLabel.displayName = LabelPrimitive.Root.displayName
+));
+CustomLabel.displayName = LabelPrimitive.Root.displayName;
 
-export { CustomLabel }
+export { CustomLabel };

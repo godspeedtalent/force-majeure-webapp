@@ -1,10 +1,12 @@
-import { useUserRole } from '@/hooks/useUserRole';
-import { supabase } from '@/integrations/supabase/client';
 import { Code, RefreshCw, X } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+
 import { Button } from './ui/button';
+
+import { supabase } from '@/shared/api/supabase/client';
+import { useUserRole } from '@/shared/hooks/useUserRole';
 
 export const ScavengerDevPanel = () => {
   // ✅ ALL HOOKS MUST BE CALLED UNCONDITIONALLY FIRST
@@ -47,48 +49,49 @@ export const ScavengerDevPanel = () => {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className='fixed bottom-6 right-6 z-50'>
       {!isOpen ? (
         <Button
           onClick={() => setIsOpen(true)}
-          size="icon"
-          className="h-12 w-12 rounded-full shadow-lg bg-fm-gold hover:bg-fm-gold/80"
-          title="Dev Panel"
+          size='icon'
+          className='h-12 w-12 rounded-full shadow-lg bg-fm-gold hover:bg-fm-gold/80'
+          title='Dev Panel'
         >
-          <Code className="h-5 w-5" />
+          <Code className='h-5 w-5' />
         </Button>
       ) : (
-        <div className="bg-background border-2 border-fm-gold rounded-lg shadow-xl p-4 w-80">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-screamer text-lg text-fm-gold">Dev Panel</h3>
+        <div className='bg-background border-2 border-fm-gold rounded-lg shadow-xl p-4 w-80'>
+          <div className='flex items-center justify-between mb-4'>
+            <h3 className='font-screamer text-lg text-fm-gold'>Dev Panel</h3>
             <Button
-              variant="ghost"
-              size="icon"
+              variant='ghost'
+              size='icon'
               onClick={() => setIsOpen(false)}
-              className="h-6 w-6"
+              className='h-6 w-6'
             >
-              <X className="h-4 w-4" />
+              <X className='h-4 w-4' />
             </Button>
           </div>
 
-          <div className="space-y-4">
+          <div className='space-y-4'>
             <Button
-              variant="destructive"
-              className="w-full"
+              variant='destructive'
+              className='w-full'
               onClick={clearAllClaims}
               disabled={isClearingClaims}
             >
               {isClearingClaims ? (
                 <>
-                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  <RefreshCw className='mr-2 h-4 w-4 animate-spin' />
                   Clearing Claims...
                 </>
               ) : (
                 'Clear All Claims'
               )}
             </Button>
-            <p className="text-xs text-muted-foreground">
-              This will delete all claims from the scavenger_claims table and refresh the page.
+            <p className='text-xs text-muted-foreground'>
+              This will delete all claims from the scavenger_claims table and
+              refresh the page.
             </p>
           </div>
         </div>

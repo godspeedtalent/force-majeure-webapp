@@ -1,7 +1,8 @@
+import { Loader2 } from 'lucide-react';
 import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useFeatureFlags } from '@/hooks/useFeatureFlags';
-import { Loader2 } from 'lucide-react';
+
+import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
 
 interface FeatureFlagGuardProps {
   children: ReactNode;
@@ -10,18 +11,18 @@ interface FeatureFlagGuardProps {
   invert?: boolean; // If true, show children when flag is false
 }
 
-export const FeatureFlagGuard = ({ 
-  children, 
-  flagName, 
+export const FeatureFlagGuard = ({
+  children,
+  flagName,
   redirectTo = '/',
-  invert = false 
+  invert = false,
 }: FeatureFlagGuardProps) => {
   const { data: flags, isLoading } = useFeatureFlags();
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="w-8 h-8 animate-spin text-fm-gold" />
+      <div className='min-h-screen flex items-center justify-center bg-background'>
+        <Loader2 className='w-8 h-8 animate-spin text-fm-gold' />
       </div>
     );
   }

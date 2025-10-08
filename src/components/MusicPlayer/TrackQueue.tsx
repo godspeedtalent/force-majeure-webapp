@@ -1,18 +1,24 @@
-import React from 'react';
-import { useMusicPlayer } from '@/contexts/MusicPlayerContext';
-import { Badge } from '@/components/ui/badge';
 import { Music, Play } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React from 'react';
+
 import spotifyLogo from '@/assets/spotify-logo.png';
+import { Badge } from '@/components/ui/badge';
+import { useMusicPlayer } from '@/contexts/MusicPlayerContext';
+import { cn } from '@/shared/utils/utils';
 
 export const TrackQueue: React.FC = () => {
-  const { queue, currentIndex, currentSong, playSong } = useMusicPlayer();
+  const {
+    queue,
+    currentIndex: _currentIndex,
+    currentSong,
+    playSong,
+  } = useMusicPlayer();
 
   if (queue.length === 0) {
     return (
-      <div className="p-4 text-center">
-        <Music className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-        <p className="text-sm text-muted-foreground">No songs in queue</p>
+      <div className='p-4 text-center'>
+        <Music className='w-8 h-8 text-muted-foreground mx-auto mb-2' />
+        <p className='text-sm text-muted-foreground'>No songs in queue</p>
       </div>
     );
   }
@@ -33,53 +39,55 @@ export const TrackQueue: React.FC = () => {
   };
 
   return (
-    <div className="space-y-2">
+    <div className='space-y-2'>
       {queue.map((song, index) => {
         const isCurrentSong = song.id === currentSong?.id;
-        
+
         return (
           <div
             key={`${song.id}-${index}`}
             className={cn(
-              "flex items-center gap-3 p-2 rounded-md cursor-pointer transition-colors group",
-              isCurrentSong 
-                ? "bg-primary/20 border border-primary/30" 
-                : "hover:bg-accent/50"
+              'flex items-center gap-3 p-2 rounded-md cursor-pointer transition-colors group',
+              isCurrentSong
+                ? 'bg-primary/20 border border-primary/30'
+                : 'hover:bg-accent/50'
             )}
             onClick={() => playSong(song)}
           >
             {/* Track Number or Play Icon */}
-            <div className="w-6 h-6 flex items-center justify-center text-xs">
+            <div className='w-6 h-6 flex items-center justify-center text-xs'>
               {isCurrentSong ? (
-                <Play className="w-3 h-3 text-primary" />
+                <Play className='w-3 h-3 text-primary' />
               ) : (
-                <span className="text-muted-foreground group-hover:text-foreground">
+                <span className='text-muted-foreground group-hover:text-foreground'>
                   {index + 1}
                 </span>
               )}
             </div>
 
             {/* Track Info */}
-            <div className="flex-1 min-w-0">
-              <p className={cn(
-                "text-sm truncate font-canela font-medium",
-                isCurrentSong ? "text-primary" : "text-foreground"
-              )}>
+            <div className='flex-1 min-w-0'>
+              <p
+                className={cn(
+                  'text-sm truncate font-canela font-medium',
+                  isCurrentSong ? 'text-primary' : 'text-foreground'
+                )}
+              >
                 {song.song_name}
               </p>
-              <div className="flex items-center gap-2 mt-1">
-                <p className="text-xs text-muted-foreground truncate font-canela">
+              <div className='flex items-center gap-2 mt-1'>
+                <p className='text-xs text-muted-foreground truncate font-canela'>
                   {song.artist_name}
                 </p>
                 {song.music_source === 'spotify' ? (
-                  <img 
-                    src={spotifyLogo} 
-                    alt="Spotify" 
-                    className="w-3 h-3 brightness-0 invert" 
+                  <img
+                    src={spotifyLogo}
+                    alt='Spotify'
+                    className='w-3 h-3 brightness-0 invert'
                   />
                 ) : (
-                  <Badge 
-                    variant="outline" 
+                  <Badge
+                    variant='outline'
                     className={`text-xs px-1.5 py-0.5 ${getMusicSourceColor(song.music_source)}`}
                   >
                     {song.music_source}

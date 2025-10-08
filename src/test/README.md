@@ -42,6 +42,7 @@ To use this testing infrastructure, install the following dependencies:
 ```
 
 Install with:
+
 ```bash
 npm install --save-dev vitest @testing-library/react @testing-library/jest-dom @testing-library/user-event msw jsdom @vitest/coverage-v8
 ```
@@ -67,6 +68,7 @@ npm install --save-dev vitest @testing-library/react @testing-library/jest-dom @
 ### Supabase Client Mock
 
 Comprehensive mock of Supabase client including:
+
 - Authentication methods
 - Database queries (select, insert, update, delete)
 - Real-time subscriptions
@@ -75,6 +77,7 @@ Comprehensive mock of Supabase client including:
 ### API Mocking with MSW
 
 Pre-configured handlers for:
+
 - Authentication endpoints
 - Scavenger hunt locations
 - User profiles and claims
@@ -83,6 +86,7 @@ Pre-configured handlers for:
 ### Component Mocks
 
 Common React component mocks:
+
 - React Router navigation
 - External libraries
 - Complex UI components
@@ -105,6 +109,7 @@ Common React component mocks:
 ### Test Fixtures
 
 Predefined test data including:
+
 - User profiles and authentication states
 - Scavenger hunt locations and claims
 - Feature flag configurations
@@ -113,6 +118,7 @@ Predefined test data including:
 ## Custom Matchers
 
 Extended Jest/Vitest matchers for React testing:
+
 - `toBeVisible()`: Check element visibility
 - `toHaveLoadingState()`: Verify loading indicators
 - `toHaveErrorState()`: Verify error states
@@ -134,13 +140,13 @@ test('renders correctly', () => {
 ### Hook Testing
 
 ```typescript
-import { renderHook } from '@testing-library/react'
-import { useMyHook } from '@/hooks/useMyHook'
+import { renderHook } from '@testing-library/react';
+import { useMyHook } from '@/hooks/useMyHook';
 
 test('hook returns expected value', () => {
-  const { result } = renderHook(() => useMyHook())
-  expect(result.current.value).toBe('expected')
-})
+  const { result } = renderHook(() => useMyHook());
+  expect(result.current.value).toBe('expected');
+});
 ```
 
 ### API Testing with MSW
@@ -153,7 +159,7 @@ test('handles API response', async () => {
   server.use(
     http.get('/api/test', () => HttpResponse.json({ data: 'test' }))
   )
-  
+
   render(<ComponentThatFetchesData />)
   await screen.findByText('test')
 })
@@ -199,12 +205,12 @@ renderWithProviders(<ProtectedComponent />, {
 Components using Supabase should mock the client appropriately:
 
 ```typescript
-import { mockSupabaseClient } from '@/test/mocks'
+import { mockSupabaseClient } from '@/test/mocks';
 
 // Mock successful query
 mockSupabaseClient.from.mockReturnValue({
-  select: vi.fn().mockResolvedValue({ data: TEST_DATA, error: null })
-})
+  select: vi.fn().mockResolvedValue({ data: TEST_DATA, error: null }),
+});
 ```
 
 ### Feature Flags

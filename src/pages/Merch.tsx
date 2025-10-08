@@ -1,14 +1,21 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { ForceMajeureRootLayout } from '@/components/ForceMajeureRootLayout';
-import { MerchCard } from '@/components/MerchCard';
-import { LoadingState } from '@/components/LoadingState';
-import { EmptyState } from '@/components/EmptyState';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { ShoppingCart, Filter } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+
+import { EmptyState } from '@/components/common/EmptyState';
+import { LoadingState } from '@/components/common/LoadingState';
+import { ForceMajeureRootLayout } from '@/components/layout/ForceMajeureRootLayout';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { MerchCard } from '@/features/merch/components/MerchCard';
+import { supabase } from '@/shared/api/supabase/client';
 
 interface MerchItem {
   id: string;
@@ -42,7 +49,10 @@ export default function Merch() {
 
     // Apply sorting
     if (sortBy === 'date') {
-      filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      filtered.sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
     } else if (sortBy === 'price-low') {
       filtered.sort((a, b) => a.price - b.price);
     } else if (sortBy === 'price-high') {
@@ -80,8 +90,8 @@ export default function Merch() {
   if (loading) {
     return (
       <ForceMajeureRootLayout>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <LoadingState message="Loading merchandise..." />
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12'>
+          <LoadingState message='Loading merchandise...' />
         </div>
       </ForceMajeureRootLayout>
     );
@@ -89,41 +99,41 @@ export default function Merch() {
 
   return (
     <ForceMajeureRootLayout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in">
+      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in'>
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-canela font-bold text-foreground mb-4">
+        <div className='text-center mb-12'>
+          <h1 className='text-4xl font-canela font-bold text-foreground mb-4'>
             Force Majeure Merchandise
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className='text-lg text-muted-foreground max-w-2xl mx-auto'>
             Exclusive prints and stickers from the Force Majeure collection
           </p>
         </div>
 
         {/* Controls */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-muted-foreground" />
+        <div className='flex flex-col sm:flex-row gap-4 mb-8'>
+          <div className='flex items-center gap-2'>
+            <Filter className='h-4 w-4 text-muted-foreground' />
             <Select value={filterType} onValueChange={setFilterType}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Filter by type" />
+              <SelectTrigger className='w-48'>
+                <SelectValue placeholder='Filter by type' />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Items</SelectItem>
-                <SelectItem value="Limited Prints">Limited Prints</SelectItem>
-                <SelectItem value="Stickers">Stickers</SelectItem>
+                <SelectItem value='all'>All Items</SelectItem>
+                <SelectItem value='Limited Prints'>Limited Prints</SelectItem>
+                <SelectItem value='Stickers'>Stickers</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Sort by" />
+            <SelectTrigger className='w-48'>
+              <SelectValue placeholder='Sort by' />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="date">Date Added</SelectItem>
-              <SelectItem value="price-low">Price: Low to High</SelectItem>
-              <SelectItem value="price-high">Price: High to Low</SelectItem>
+              <SelectItem value='date'>Date Added</SelectItem>
+              <SelectItem value='price-low'>Price: Low to High</SelectItem>
+              <SelectItem value='price-high'>Price: High to Low</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -132,12 +142,12 @@ export default function Merch() {
         {filteredItems.length === 0 ? (
           <EmptyState
             icon={ShoppingCart}
-            title="No items found"
-            description="No items found matching your criteria."
+            title='No items found'
+            description='No items found matching your criteria.'
           />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredItems.map((item) => (
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
+            {filteredItems.map(item => (
               <MerchCard
                 key={item.id}
                 id={item.id}
@@ -149,25 +159,25 @@ export default function Merch() {
                 in_stock={item.in_stock}
               >
                 {item.description && (
-                  <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                  <p className='text-sm text-muted-foreground line-clamp-2 mb-3'>
                     {item.description}
                   </p>
                 )}
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-2xl font-bold text-foreground">
+                <div className='flex items-center justify-between mb-3'>
+                  <span className='text-2xl font-bold text-foreground'>
                     {formatPrice(item.price)}
                   </span>
                   {!item.in_stock && (
-                    <Badge variant="destructive">Out of Stock</Badge>
+                    <Badge variant='destructive'>Out of Stock</Badge>
                   )}
                 </div>
                 <Button
                   onClick={() => handleAddToCart(item)}
                   disabled={!item.in_stock}
-                  className="w-full"
-                  variant={item.in_stock ? "default" : "secondary"}
+                  className='w-full'
+                  variant={item.in_stock ? 'default' : 'secondary'}
                 >
-                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  <ShoppingCart className='h-4 w-4 mr-2' />
                   {item.in_stock ? 'Add to Cart' : 'Out of Stock'}
                 </Button>
               </MerchCard>

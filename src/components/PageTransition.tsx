@@ -14,7 +14,7 @@ export const PageTransition: React.FC<PageTransitionProps> = ({ children }) => {
     if (displayChildren !== children) {
       // Start fade out
       setIsTransitioning(true);
-      
+
       // After fade out completes, update content and fade in
       const timer = setTimeout(() => {
         setDisplayChildren(children);
@@ -31,7 +31,7 @@ export const PageTransition: React.FC<PageTransitionProps> = ({ children }) => {
   }, [location.pathname]);
 
   return (
-    <div 
+    <div
       className={`transition-opacity duration-200 ${
         isTransitioning ? 'opacity-0' : 'opacity-100'
       }`}

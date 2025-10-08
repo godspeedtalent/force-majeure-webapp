@@ -9,7 +9,7 @@ export const createMockUser = (overrides = {}) => ({
   email_confirmed_at: new Date().toISOString(),
   created_at: new Date().toISOString(),
   ...overrides,
-})
+});
 
 /**
  * Helper to create mock profile data
@@ -23,7 +23,7 @@ export const createMockProfile = (overrides = {}) => ({
   show_on_leaderboard: true,
   created_at: new Date().toISOString(),
   ...overrides,
-})
+});
 
 /**
  * Helper to create mock scavenger location data
@@ -36,7 +36,7 @@ export const createMockLocation = (overrides = {}) => ({
   is_active: true,
   created_at: new Date().toISOString(),
   ...overrides,
-})
+});
 
 /**
  * Helper to create mock scavenger claim data
@@ -49,24 +49,24 @@ export const createMockClaim = (overrides = {}) => ({
   promo_code: 'TEST123',
   claimed_at: new Date().toISOString(),
   scavenger_locations: {
-    location_name: 'Test Location'
+    location_name: 'Test Location',
   },
   ...overrides,
-})
+});
 
 /**
  * Helper to wait for async operations to complete
  */
 export const waitForAsyncOperations = () =>
-  new Promise(resolve => setTimeout(resolve, 0))
+  new Promise(resolve => setTimeout(resolve, 0));
 
 /**
  * Helper to create a mock URL with search params
  */
 export const createMockURL = (params: Record<string, string> = {}) => {
-  const url = new URL('http://localhost:3000/test')
+  const url = new URL('http://localhost:3000/test');
   Object.entries(params).forEach(([key, value]) => {
-    url.searchParams.set(key, value)
-  })
-  return url
-}
+    url.searchParams.set(key, value);
+  });
+  return url;
+};

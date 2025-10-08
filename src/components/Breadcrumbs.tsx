@@ -1,7 +1,8 @@
-import { useLocation, Link } from 'react-router-dom';
+import { ChevronRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { ChevronRight, Home } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { Link, useLocation } from 'react-router-dom';
+
+import { supabase } from '@/shared/api/supabase/client';
 
 interface BreadcrumbItem {
   label: string;
@@ -31,7 +32,9 @@ export const Breadcrumbs = () => {
         try {
           const { data: eventData } = await supabase
             .from('events')
-            .select('title, headliner_artist:artists!events_headliner_id_fkey(name)')
+            .select(
+              'title, headliner_artist:artists!events_headliner_id_fkey(name)'
+            )
             .eq('id', pathSegments[1])
             .single();
 
@@ -39,14 +42,14 @@ export const Breadcrumbs = () => {
             items.push({
               label: eventData.headliner_artist?.name || 'Event',
               path: `/event/${pathSegments[1]}`,
-              isLast: true
+              isLast: true,
             });
           }
-        } catch (error) {
+        } catch (_error) {
           items.push({
             label: 'Event',
             path: `/event/${pathSegments[1]}`,
-            isLast: true
+            isLast: true,
           });
         }
       }
@@ -56,7 +59,7 @@ export const Breadcrumbs = () => {
         items.push({
           label: 'Merchandise',
           path: '/merch',
-          isLast: true
+          isLast: true,
         });
       }
 
@@ -65,7 +68,7 @@ export const Breadcrumbs = () => {
         items.push({
           label: 'Profile Settings',
           path: '/profile',
-          isLast: true
+          isLast: true,
         });
       }
 
@@ -80,17 +83,16 @@ export const Breadcrumbs = () => {
   }
 
   return (
-    <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
-      
-      {breadcrumbs.map((item, index) => (
-        <div key={item.path} className="flex items-center space-x-2">
-          <ChevronRight className="w-4 h-4" />
+    <nav className='flex items-center space-x-2 text-sm text-muted-foreground'>
+      {breadcrumbs.map((item, _index) => (
+        <div key={item.path} className='flex items-center space-x-2'>
+          <ChevronRight className='w-4 h-4' />
           {item.isLast ? (
-            <span className="text-foreground font-medium">{item.label}</span>
+            <span className='text-foreground font-medium'>{item.label}</span>
           ) : (
-            <Link 
+            <Link
               to={item.path}
-              className="hover:text-foreground transition-colors"
+              className='hover:text-foreground transition-colors'
             >
               {item.label}
             </Link>

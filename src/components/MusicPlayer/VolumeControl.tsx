@@ -1,7 +1,8 @@
-import React from 'react';
-import { useMusicPlayer } from '@/contexts/MusicPlayerContext';
 import { Volume2, VolumeX, Volume1 } from 'lucide-react';
+import React from 'react';
+
 import { Slider } from '@/components/ui/slider';
+import { useMusicPlayer } from '@/contexts/MusicPlayerContext';
 
 export const VolumeControl: React.FC = () => {
   const { volume, isMuted, setVolume, toggleMute } = useMusicPlayer();
@@ -19,13 +20,13 @@ export const VolumeControl: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center gap-2 w-full">
+    <div className='flex items-center gap-2 w-full'>
       <button
         onClick={toggleMute}
-        className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors"
-        aria-label={isMuted ? "Unmute" : "Mute"}
+        className='p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors'
+        aria-label={isMuted ? 'Unmute' : 'Mute'}
       >
-        <VolumeIcon className="w-4 h-4" />
+        <VolumeIcon className='w-4 h-4' />
       </button>
 
       <Slider
@@ -33,8 +34,8 @@ export const VolumeControl: React.FC = () => {
         onValueChange={handleVolumeChange}
         max={1}
         step={0.1}
-        className="flex-1"
-        aria-label="Volume"
+        className='flex-1'
+        aria-label='Volume'
       />
     </div>
   );

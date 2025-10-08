@@ -1,7 +1,9 @@
-import { ReactNode, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { ReactNode, useState } from 'react';
+
 import { Button } from './ui/button';
+
+import { cn } from '@/shared/utils/utils';
 
 export interface WizardStep {
   content: ReactNode;
@@ -22,9 +24,10 @@ export const WizardPanel = ({
   className,
 }: WizardPanelProps) => {
   const [internalStep, setInternalStep] = useState(0);
-  
+
   // Use controlled or uncontrolled step
-  const currentStep = controlledStep !== undefined ? controlledStep : internalStep;
+  const currentStep =
+    controlledStep !== undefined ? controlledStep : internalStep;
   const setCurrentStep = (step: number) => {
     if (controlledStep === undefined) {
       setInternalStep(step);
@@ -33,7 +36,7 @@ export const WizardPanel = ({
   };
 
   const currentStepData = steps[currentStep];
-  const canGoBack = currentStep > 0 && (currentStepData?.canGoBack !== false);
+  const canGoBack = currentStep > 0 && currentStepData?.canGoBack !== false;
 
   const handleBack = () => {
     if (canGoBack) {
@@ -41,7 +44,7 @@ export const WizardPanel = ({
     }
   };
 
-  const goToStep = (step: number) => {
+  const _goToStep = (step: number) => {
     if (step >= 0 && step < steps.length) {
       setCurrentStep(step);
     }
@@ -52,20 +55,18 @@ export const WizardPanel = ({
       {/* Back Button */}
       {canGoBack && (
         <Button
-          variant="ghost"
-          size="sm"
+          variant='ghost'
+          size='sm'
           onClick={handleBack}
-          className="absolute -top-12 left-0 text-muted-foreground hover:text-foreground transition-colors"
+          className='absolute -top-12 left-0 text-muted-foreground hover:text-foreground transition-colors'
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className='w-4 h-4 mr-2' />
           Back
         </Button>
       )}
 
       {/* Step Content */}
-      <div className="w-full">
-        {currentStepData?.content}
-      </div>
+      <div className='w-full'>{currentStepData?.content}</div>
     </div>
   );
 };

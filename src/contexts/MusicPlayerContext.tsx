@@ -1,5 +1,13 @@
-import React, { createContext, useContext, useState, useRef, useCallback, useEffect } from 'react';
-import { SpotifyService } from '@/lib/spotify';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+
+import { SpotifyService } from '@/shared/utils/spotify';
 
 export interface Song {
   id: string;
@@ -50,7 +58,9 @@ interface MusicPlayerContextType extends MusicPlayerState {
   audioRef: React.RefObject<HTMLAudioElement>;
 }
 
-const MusicPlayerContext = createContext<MusicPlayerContextType | undefined>(undefined);
+const MusicPlayerContext = createContext<MusicPlayerContextType | undefined>(
+  undefined
+);
 
 export const useMusicPlayer = () => {
   const context = useContext(MusicPlayerContext);
@@ -60,9 +70,11 @@ export const useMusicPlayer = () => {
   return context;
 };
 
-export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const audioRef = useRef<HTMLAudioElement>(null);
-  
+
   const [state, setState] = useState<MusicPlayerState>({
     currentSong: null,
     isPlaying: false,
@@ -117,25 +129,36 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     (async () => {
       const svc = SpotifyService.getInstance();
       let firstPlayableIndex = -1;
-  const updated: Song[] = [...songs];
+      const updated: Song[] = [...songs];
 
       for (let i = startIndex; i < songs.length; i++) {
         const s = songs[i];
-  if (s.music_source === 'spotify') {
+        if (s.music_source === 'spotify') {
           // If already a direct preview URL, take it; else resolve
-          let link = s.streaming_link;
-          if (!(/p\.scdn\.co\/mp3-preview\//.test(link) || /\.mp3($|\?)/i.test(link))) {
+          const link = s.streaming_link;
+          if (
+            !(
+              /p\.scdn\.co\/mp3-preview\//.test(link) ||
+              /\.mp3($|\?)/i.test(link)
+            )
+          ) {
             try {
               const preview = await svc.getPreviewUrl(link);
               if (preview) {
-    // also fetch album art lazily
-    let art: string | null = null;
-    try { art = await svc.getAlbumArtUrl(link, 'small'); } catch {}
-    updated[i] = { ...s, streaming_link: preview, album_art: art ?? s.album_art };
+                // also fetch album art lazily
+                let art: string | null = null;
+                try {
+                  art = await svc.getAlbumArtUrl(link, 'small');
+                } catch {}
+                updated[i] = {
+                  ...s,
+                  streaming_link: preview,
+                  album_art: art ?? s.album_art,
+                };
                 if (firstPlayableIndex === -1) firstPlayableIndex = i;
                 break; // we can start with this one; resolve others lazily later
               }
-            } catch (e) {
+            } catch (_e) {
               // continue to next
             }
           } else {
@@ -160,7 +183,9 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
         // try to autoplay if audio is ready
         if (audioRef.current) {
-          try { await audioRef.current.play(); } catch {}
+          try {
+            await audioRef.current.play();
+          } catch {}
         }
       } else {
         // No playable tracks; stop playing
@@ -188,7 +213,7 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const nextSong = useCallback(() => {
     setState(prev => {
       if (prev.queue.length === 0) return prev;
-      
+
       let nextIndex = prev.currentIndex + 1;
       if (nextIndex >= prev.queue.length) {
         if (prev.repeatMode === 'all') {
@@ -197,7 +222,7 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
           return { ...prev, isPlaying: false };
         }
       }
-      
+
       return {
         ...prev,
         currentIndex: nextIndex,
@@ -285,7 +310,10 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
       if (!current) return;
       if (current.music_source !== 'spotify') return;
       // If it already looks like a preview mp3, skip
-      if (/p\.scdn\.co\/mp3-preview\//.test(current.streaming_link) || /\.mp3($|\?)/i.test(current.streaming_link)) {
+      if (
+        /p\.scdn\.co\/mp3-preview\//.test(current.streaming_link) ||
+        /\.mp3($|\?)/i.test(current.streaming_link)
+      ) {
         // ensure autoplay
         if (audioRef.current && state.isPlaying) {
           const a = audioRef.current;
@@ -297,13 +325,23 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         if (!current.album_art) {
           try {
             const svc = SpotifyService.getInstance();
-            const art = await svc.getAlbumArtUrl(current.streaming_link, 'small');
+            const art = await svc.getAlbumArtUrl(
+              current.streaming_link,
+              'small'
+            );
             if (art) {
               setState(prev => {
-                if (!prev.currentSong || prev.currentSong.id !== current.id) return prev;
+                if (!prev.currentSong || prev.currentSong.id !== current.id)
+                  return prev;
                 const updatedSong = { ...prev.currentSong, album_art: art };
-                const updatedQueue = prev.queue.map(s => s.id === updatedSong.id ? updatedSong : s);
-                return { ...prev, currentSong: updatedSong, queue: updatedQueue };
+                const updatedQueue = prev.queue.map(s =>
+                  s.id === updatedSong.id ? updatedSong : s
+                );
+                return {
+                  ...prev,
+                  currentSong: updatedSong,
+                  queue: updatedQueue,
+                };
               });
             }
           } catch {}
@@ -319,24 +357,41 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
           setState(prev => {
             if (!prev.currentSong) return prev;
             if (prev.currentSong.id !== current.id) return prev; // race guard
-            const updatedSong = { ...prev.currentSong!, streaming_link: preview };
-            const updatedQueue = prev.queue.map(s => s.id === updatedSong.id ? updatedSong : s);
+            const updatedSong = {
+              ...prev.currentSong!,
+              streaming_link: preview,
+            };
+            const updatedQueue = prev.queue.map(s =>
+              s.id === updatedSong.id ? updatedSong : s
+            );
             return { ...prev, currentSong: updatedSong, queue: updatedQueue };
           });
           // After state update, attempt autoplay
           if (audioRef.current && state.isPlaying) {
-            try { await audioRef.current.play(); } catch {}
+            try {
+              await audioRef.current.play();
+            } catch {}
           }
           // Fetch album art if missing
           try {
             const svc = SpotifyService.getInstance();
-            const art = await svc.getAlbumArtUrl(current.streaming_link, 'small');
+            const art = await svc.getAlbumArtUrl(
+              current.streaming_link,
+              'small'
+            );
             if (art) {
               setState(prev => {
-                if (!prev.currentSong || prev.currentSong.id !== current.id) return prev;
+                if (!prev.currentSong || prev.currentSong.id !== current.id)
+                  return prev;
                 const updatedSong = { ...prev.currentSong!, album_art: art };
-                const updatedQueue = prev.queue.map(s => s.id === updatedSong.id ? updatedSong : s);
-                return { ...prev, currentSong: updatedSong, queue: updatedQueue };
+                const updatedQueue = prev.queue.map(s =>
+                  s.id === updatedSong.id ? updatedSong : s
+                );
+                return {
+                  ...prev,
+                  currentSong: updatedSong,
+                  queue: updatedQueue,
+                };
               });
             }
           } catch {}
@@ -442,11 +497,12 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     <MusicPlayerContext.Provider value={value}>
       {children}
       {/* Single hidden audio element owned by the provider to avoid duplicate refs */}
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio
         ref={audioRef}
         src={state.currentSong?.streaming_link}
-        preload="metadata"
-        className="hidden"
+        preload='metadata'
+        className='hidden'
       />
     </MusicPlayerContext.Provider>
   );

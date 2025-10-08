@@ -1,25 +1,30 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type',
 };
 
 // Use a secret key for encryption (in production, this should be an environment variable)
-const SECRET_KEY = Deno.env.get('PROXY_SECRET_KEY') || 'force-majeure-scavenger-2024';
+const SECRET_KEY =
+  Deno.env.get('PROXY_SECRET_KEY') || 'force-majeure-scavenger-2024';
 
-async function encryptPayload(uuid: string, timestamp: number): Promise<string> {
+async function encryptPayload(
+  uuid: string,
+  timestamp: number
+): Promise<string> {
   const payload = JSON.stringify({ uuid, timestamp });
   const encoder = new TextEncoder();
   const data = encoder.encode(payload);
   const key = encoder.encode(SECRET_KEY.padEnd(32, '0').slice(0, 32));
-  
+
   // Simple XOR encryption with base64 encoding
   const encrypted = new Uint8Array(data.length);
   for (let i = 0; i < data.length; i++) {
     encrypted[i] = data[i] ^ key[i % key.length];
   }
-  
+
   // Convert to base64 URL-safe encoding
   return btoa(String.fromCharCode(...encrypted))
     .replace(/\+/g, '-')
@@ -27,9 +32,9 @@ async function encryptPayload(uuid: string, timestamp: number): Promise<string> 
     .replace(/=/g, '');
 }
 
-serve(async (req) => {
+serve(async req => {
   const startTime = Date.now();
-  
+
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -44,39 +49,45 @@ serve(async (req) => {
         timestamp: new Date().toISOString(),
         url: req.url,
         token: token ? `${token.substring(0, 8)}...` : null,
-        method: req.method
+        method: req.method,
       });
     }
 
     if (!token) {
       console.error('Missing token parameter');
       if (debugMode) {
-        console.log('[PROXY-TOKEN DEBUG] Validation failed: Missing token parameter');
+        console.log(
+          '[PROXY-TOKEN DEBUG] Validation failed: Missing token parameter'
+        );
       }
       return new Response(null, {
         status: 302,
         headers: {
           ...corsHeaders,
-          'Location': '/scavenger?error=invalid_token',
+          Location: '/scavenger?error=invalid_token',
         },
       });
     }
 
     // Validate UUID format
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(token)) {
       console.error('Invalid UUID format:', token);
       if (debugMode) {
-        console.log('[PROXY-TOKEN DEBUG] Validation failed: Invalid UUID format', {
-          token,
-          regex: uuidRegex.toString()
-        });
+        console.log(
+          '[PROXY-TOKEN DEBUG] Validation failed: Invalid UUID format',
+          {
+            token,
+            regex: uuidRegex.toString(),
+          }
+        );
       }
       return new Response(null, {
         status: 302,
         headers: {
           ...corsHeaders,
-          'Location': '/scavenger?error=invalid_token',
+          Location: '/scavenger?error=invalid_token',
         },
       });
     }
@@ -84,7 +95,7 @@ serve(async (req) => {
     if (debugMode) {
       console.log('[PROXY-TOKEN DEBUG] UUID validation passed:', {
         token: `${token.substring(0, 8)}...`,
-        isValid: true
+        isValid: true,
       });
     }
 
@@ -97,44 +108,49 @@ serve(async (req) => {
         timestamp: new Date(timestamp).toISOString(),
         encryptedLength: encryptedCode.length,
         encrypted: `${encryptedCode.substring(0, 20)}...`,
-        processingTime: `${Date.now() - startTime}ms`
+        processingTime: `${Date.now() - startTime}ms`,
       });
     }
 
-    console.log('Proxying token:', token.substring(0, 8) + '...', 'at', new Date(timestamp).toISOString());
+    console.log(
+      'Proxying token:',
+      token.substring(0, 8) + '...',
+      'at',
+      new Date(timestamp).toISOString()
+    );
 
     // Redirect to scavenger page with encrypted code
     const redirectUrl = `/scavenger?code=${encryptedCode}${debugMode ? '&debug=true' : ''}`;
-    
+
     if (debugMode) {
       console.log('[PROXY-TOKEN DEBUG] Redirecting to:', redirectUrl);
     }
-    
+
     return new Response(null, {
       status: 302,
       headers: {
         ...corsHeaders,
-        'Location': redirectUrl,
+        Location: redirectUrl,
       },
     });
   } catch (error: any) {
     console.error('Error in proxy-token:', error);
     const url = new URL(req.url);
     const debugMode = url.searchParams.get('debug') === 'true';
-    
+
     if (debugMode) {
       console.log('[PROXY-TOKEN DEBUG] Error occurred:', {
         error: error.message,
         stack: error.stack,
-        processingTime: `${Date.now() - startTime}ms`
+        processingTime: `${Date.now() - startTime}ms`,
       });
     }
-    
+
     return new Response(null, {
       status: 302,
       headers: {
         ...corsHeaders,
-        'Location': `/scavenger?error=proxy_error${debugMode ? '&debug=true' : ''}`,
+        Location: `/scavenger?error=proxy_error${debugMode ? '&debug=true' : ''}`,
       },
     });
   }
