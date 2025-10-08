@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-import { ImageWithSkeleton } from './ImageWithSkeleton';
+import { ImageWithSkeleton } from '@/components/ImageWithSkeleton';
 
 import { cn } from '@/shared/utils/utils';
 
