@@ -22,20 +22,12 @@ export function useScavengerNavigation() {
       const token = searchParams.get('token');
       setShowInvalidToken(true);
 
-      // Show toast with the invalid token
-      if (token) {
-        toast({
-          title: 'Invalid Token',
-          description: `The token "${token}" is not valid or has expired.`,
-          variant: 'destructive',
-        });
-      } else {
-        toast({
-          title: 'Invalid Token',
-          description: 'The provided token is not valid or has expired.',
-          variant: 'destructive',
-        });
-      }
+      // Show toast with the invalid token (for debugging)
+      toast({
+        title: 'Invalid Token',
+        description: token || '(no token provided)',
+        variant: 'destructive',
+      });
 
       // Clear error param from URL after setting state
       navigate('/scavenger', { replace: true });
@@ -44,10 +36,8 @@ export function useScavengerNavigation() {
 
       // Show toast for other errors
       toast({
-        title: 'Error',
-        description: token
-          ? `An error occurred with token: ${token}`
-          : 'An error occurred while processing your request.',
+        title: `Error: ${errorParam}`,
+        description: token || '(no token provided)',
         variant: 'destructive',
       });
 
