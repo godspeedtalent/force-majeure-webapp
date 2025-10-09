@@ -1,5 +1,5 @@
 -- Create events table
-CREATE TABLE public.events (
+CREATE TABLE IF NOT EXISTS public.events (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   title TEXT NOT NULL,
   headliner JSONB NOT NULL, -- {name: string, genre: string}
@@ -19,10 +19,20 @@ CREATE TABLE public.events (
 ALTER TABLE public.events ENABLE ROW LEVEL SECURITY;
 
 -- Create policy for public read access (events are public)
-CREATE POLICY "Events are publicly viewable" 
-ON public.events 
-FOR SELECT 
-USING (true);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'public'
+    AND tablename = 'events'
+    AND policyname = 'Events are publicly viewable'
+  ) THEN
+    CREATE POLICY "Events are publicly viewable"
+    ON public.events
+    FOR SELECT
+    USING (true);
+  END IF;
+END $$;
 
 -- Create trigger for automatic timestamp updates
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
@@ -33,6 +43,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS update_events_updated_at ON public.events;
 CREATE TRIGGER update_events_updated_at
   BEFORE UPDATE ON public.events
   FOR EACH ROW
@@ -81,4 +92,5 @@ INSERT INTO public.events (
   'https://images.unsplash.com/photo-1574391884720-bfab8cb872b4?w=800&h=800&fit=crop',
   'Experience the future of electronic music with LF SYSTEM and an incredible lineup of supporting artists.',
   '#'
-);
+)
+ON CONFLICT (id) DO NOTHING;
