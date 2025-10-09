@@ -15,6 +15,7 @@ interface Profile {
   id: string;
   user_id: string;
   display_name?: string;
+  full_name?: string;
   avatar_url?: string;
   spotify_token_expires_at?: string;
   spotify_connected: boolean;

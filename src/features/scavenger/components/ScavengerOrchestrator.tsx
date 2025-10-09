@@ -90,11 +90,12 @@ export function ScavengerOrchestrator({
   const [isLoginMode, setIsLoginMode] = useState(false);
   const [registrationEmail, setRegistrationEmail] = useState('');
 
-  // Generate user display name
+  // Generate user display name (prefer full_name, fallback to display_name)
   const userDisplayName =
+    profile?.full_name ||
     profile?.display_name ||
-    user?.user_metadata?.display_name ||
     user?.user_metadata?.full_name ||
+    user?.user_metadata?.display_name ||
     user?.email;
 
   // Find location data for current locationId
