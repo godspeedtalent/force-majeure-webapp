@@ -145,7 +145,7 @@ All colors MUST be HSL.
     --font-body: 'Canela Deck', Georgia, serif;
 
     /* Background Patterns */
-    --topographic-pattern: url('/images/topographic-pattern.jpg');
+    --topographic-pattern: url('/images/topographic-pattern.png');
   }
 
   .dark {
