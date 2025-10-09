@@ -31,7 +31,7 @@ export const TwoColumnLayout = ({
         )}
       >
         {leftDecor && (
-          <div className='absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center' />
+          <div className='absolute inset-0 bg-topographic opacity-25 bg-cover bg-center' />
         )}
         <div className='w-full max-w-3xl px-8 py-12 relative z-10'>{left}</div>
       </div>
