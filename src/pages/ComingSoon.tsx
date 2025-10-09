@@ -30,7 +30,7 @@ export default function ComingSoon() {
   return (
     <div className='min-h-screen bg-background flex items-center justify-center relative overflow-hidden'>
       {/* Background patterns */}
-      <div className='absolute inset-0 bg-topographic opacity-10 bg-cover bg-center' />
+      <div className='absolute inset-0 bg-topographic opacity-10 bg-contain bg-center bg-no-repeat' />
       <div className='absolute inset-0 bg-gradient-monochrome opacity-5' />
 
       {/* Content */}
