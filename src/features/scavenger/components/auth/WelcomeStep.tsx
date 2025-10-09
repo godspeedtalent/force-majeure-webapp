@@ -1,8 +1,12 @@
-import { Loader2 } from 'lucide-react';
+import { ExternalLink, Loader2 } from 'lucide-react';
 
 import { DecorativeDivider } from '@/components/DecorativeDivider';
 import { MessagePanel } from '@/components/MessagePanel';
 import { Button } from '@/components/ui/button';
+import { PromoCodePanel } from './PromoCodePanel';
+
+const TICKET_URL =
+  'https://www.etix.com/ticket/p/45040939/lf-system-austin-kingdom-nightclub?partner_id=100&_gl=1*fq6012*_gcl_au*MzU4MzE0NzgxLjE3NTk5Njg1MjM.*_ga*MTkwMzY4MjE5LjE3NTk5Njg1MjM.*_ga_FE6TSQF71T*czE3NTk5Njg1MjMkbzEkZzAkdDE3NTk5Njg1MjMkajYwJGwwJGgxNTA3MTgzNjUw';
 
 // Simple component interfaces - no state management
 interface ClaimSuccessPanelProps {
@@ -39,13 +43,27 @@ export function ClaimSuccessPanel({ userDisplayName }: ClaimSuccessPanelProps) {
             <span className='text-fm-gold font-semibold'>LF SYSTEM</span>{' '}
             guestlist. See you there.
           </p>
-          <p className='text-sm text-muted-foreground'>
+          <p className='text-sm text-muted-foreground mb-6'>
             Your name will be listed as{' '}
             <span className='text-white font-medium'>{userDisplayName}</span> in
             the guestlist. If this is incorrect, please reach out to{' '}
             <span className='text-fm-gold'>@force.majeure.events</span> on
             Instagram to correct it.
           </p>
+          <DecorativeDivider />
+          <p className='text-base text-white mb-6'>
+            Need more tickets for friends? Use code{' '}
+            <span className='text-fm-gold font-bold'>FM-RAVE-FAM</span> for 20%
+            off!
+          </p>
+          <Button
+            size='lg'
+            className='w-full max-w-xs mx-auto bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]'
+            onClick={() => window.open(TICKET_URL, '_blank')}
+          >
+            <ExternalLink className='mr-2 h-4 w-4' />
+            Buy Tickets
+          </Button>
         </>
       }
     />
@@ -184,6 +202,7 @@ interface CheckpointClaimStepProps {
   isAuthenticated?: boolean;
   hasAlreadyClaimed?: boolean;
   isClaimLoading?: boolean;
+  claimCount?: number;
 }
 
 export function WelcomeStep({
@@ -195,10 +214,22 @@ export function WelcomeStep({
   isAuthenticated = false,
   hasAlreadyClaimed = false,
   isClaimLoading = false,
+  claimCount = 0,
 }: CheckpointClaimStepProps) {
   // Show success panel if user has already claimed
   if (hasAlreadyClaimed && isAuthenticated) {
     return <ClaimSuccessPanel userDisplayName={userDisplayName} />;
+  }
+
+  // Check if claim limit reached (2 claims per checkpoint)
+  if (locationName && claimCount >= 2) {
+    return (
+      <PromoCodePanel
+        userDisplayName={userDisplayName}
+        onJoinClick={onJoinClick}
+        onSignInClick={onSignInClick}
+      />
+    );
   }
 
   // Show claim interface for authenticated users with valid checkpoint

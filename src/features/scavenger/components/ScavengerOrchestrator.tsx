@@ -21,7 +21,6 @@ export interface ScavengerState {
   location: {
     id: string;
     location_name: string;
-    reward_type?: string;
     tokens_remaining: number;
     is_active: boolean;
   } | null;

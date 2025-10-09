@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/shared/api/supabase/client';
 
 interface RegistrationFormProps {
@@ -46,6 +46,23 @@ export function RegistrationForm({
     formData.displayName.trim() !== '' &&
     formData.phoneNumber.trim() !== '' &&
     formData.agreeToContact;
+
+  const formatPhoneNumber = (value: string) => {
+    // Remove all non-numeric characters
+    const cleaned = value.replace(/\D/g, '');
+
+    // Limit to 10 digits
+    const limited = cleaned.substring(0, 10);
+
+    // Format as (XXX) XXX-XXXX
+    if (limited.length <= 3) {
+      return limited;
+    } else if (limited.length <= 6) {
+      return `(${limited.slice(0, 3)}) ${limited.slice(3)}`;
+    } else {
+      return `(${limited.slice(0, 3)}) ${limited.slice(3, 6)}-${limited.slice(6)}`;
+    }
+  };
 
   const updateFormData = (field: keyof FormData, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -153,7 +170,9 @@ export function RegistrationForm({
               type='tel'
               placeholder='(555) 123-4567'
               value={formData.phoneNumber}
-              onChange={e => updateFormData('phoneNumber', e.target.value)}
+              onChange={e =>
+                updateFormData('phoneNumber', formatPhoneNumber(e.target.value))
+              }
               required
               className='h-9'
             />
@@ -175,19 +194,6 @@ export function RegistrationForm({
         </div>
 
         <div className='space-y-2'>
-          <div className='flex items-center space-x-2'>
-            <Checkbox
-              id='showOnLeaderboard'
-              checked={formData.showOnLeaderboard}
-              onCheckedChange={checked =>
-                updateFormData('showOnLeaderboard', checked as boolean)
-              }
-            />
-            <label htmlFor='showOnLeaderboard' className='text-xs'>
-              Show my name on the leaderboard
-            </label>
-          </div>
-
           <div className='flex items-center space-x-2'>
             <Checkbox
               id='agreeToContact'

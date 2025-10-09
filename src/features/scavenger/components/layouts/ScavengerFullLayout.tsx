@@ -5,14 +5,12 @@ import { LocationCard } from '../shared';
 import lfSystemImage from '@/assets/lf-system-scavenger.jpg';
 import { Footer } from '@/components/Footer';
 import { ImageWithSkeleton } from '@/components/ImageWithSkeleton';
-import { ScavengerDevPanel } from '@/components/ScavengerDevPanel';
 import { ScavengerNavigation } from '@/components/ScavengerNavigation';
 import { Card } from '@/components/ui/card';
 import { ImageAnchor } from '@/shared/types/imageAnchor';
 
 interface ScavengerFullLayoutProps {
   showShoppingCart?: boolean;
-  showDevPanel?: boolean;
   locations?: any[];
   userClaims?: any[];
   children?: ReactNode;
@@ -20,7 +18,6 @@ interface ScavengerFullLayoutProps {
 
 export function ScavengerFullLayout({
   showShoppingCart = true,
-  showDevPanel = true,
   locations = [],
   userClaims = [],
   children,
@@ -137,7 +134,6 @@ export function ScavengerFullLayout({
       </div>
 
       <Footer />
-      {showDevPanel && <ScavengerDevPanel />}
     </>
   );
 }

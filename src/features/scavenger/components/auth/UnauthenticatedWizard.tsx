@@ -14,6 +14,7 @@ interface UnauthenticatedWizardProps {
   isAuthenticated?: boolean;
   hasAlreadyClaimed?: boolean;
   isClaimLoading?: boolean;
+  claimCount?: number;
   onLoginSuccess?: () => void;
   onClaimCheckpoint?: () => void;
 }
@@ -26,6 +27,7 @@ export function UnauthenticatedWizard({
   isAuthenticated = false,
   hasAlreadyClaimed = false,
   isClaimLoading = false,
+  claimCount = 0,
 }: UnauthenticatedWizardProps) {
   const { currentStep, setCurrentStep, nextStep } = useWizardNavigation();
   const [isLoginMode, setIsLoginMode] = useState(false);
@@ -81,6 +83,7 @@ export function UnauthenticatedWizard({
           isAuthenticated={isAuthenticated}
           hasAlreadyClaimed={hasAlreadyClaimed}
           isClaimLoading={isClaimLoading}
+          claimCount={claimCount}
         />
       ),
       canGoBack: false,

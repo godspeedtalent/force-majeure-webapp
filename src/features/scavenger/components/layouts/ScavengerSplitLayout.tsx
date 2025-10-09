@@ -3,20 +3,17 @@ import { ReactNode, useRef, useEffect } from 'react';
 import lfSystemImage from '@/assets/lf-system-scavenger.jpg';
 import { Footer } from '@/components/Footer';
 import { ImageWithSkeleton } from '@/components/ImageWithSkeleton';
-import { ScavengerDevPanel } from '@/components/ScavengerDevPanel';
 import { ScavengerNavigation } from '@/components/ScavengerNavigation';
 import { ImageAnchor } from '@/shared/types/imageAnchor';
 
 interface ScavengerSplitLayoutProps {
   children: ReactNode;
   showShoppingCart?: boolean;
-  showDevPanel?: boolean;
 }
 
 export function ScavengerSplitLayout({
   children,
   showShoppingCart = true,
-  showDevPanel = true,
 }: ScavengerSplitLayoutProps) {
   const parallaxRef = useRef<HTMLDivElement>(null);
 
@@ -76,7 +73,6 @@ export function ScavengerSplitLayout({
       </div>
 
       <Footer />
-      {showDevPanel && <ScavengerDevPanel />}
     </>
   );
 }

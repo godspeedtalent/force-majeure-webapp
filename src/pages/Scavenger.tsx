@@ -11,6 +11,7 @@ import {
   useAllClaims,
   useAutoScroll,
   useClaimReward,
+  useLocationClaimCount,
   useScavengerLocations,
   useScavengerNavigation,
   useUserClaims,
@@ -37,6 +38,7 @@ export default function Scavenger() {
     useScavengerLocations();
   const { data: userClaims } = useUserClaims();
   const { data: allClaims } = useAllClaims();
+  const { data: claimCount } = useLocationClaimCount(locationId);
 
   // Auto-scroll effect
   useAutoScroll();
@@ -86,10 +88,13 @@ export default function Scavenger() {
         >
           <UnauthenticatedWizard
             locationName={location?.location_name}
-            onLoginSuccess={() => {}}
+            onLoginSuccess={() => {
+              // Auth context will trigger re-render, no navigation needed
+            }}
             userDisplayName={profile?.display_name}
             isAuthenticated={true}
             hasAlreadyClaimed={true}
+            claimCount={claimCount}
           />
         </ScavengerSplitLayout>
       );
@@ -111,14 +116,10 @@ export default function Scavenger() {
           <UnauthenticatedWizard
             locationName={location?.location_name}
             onLoginSuccess={() => {
-              console.log(
-                '✅ Login success, navigating to refresh with current params'
-              );
-              // Navigate to current URL to refresh and show authenticated state
-              const currentUrl =
-                window.location.pathname + window.location.search;
-              navigate(currentUrl);
+              console.log('✅ Login success - auth context will trigger re-render');
+              // Auth context will automatically trigger re-render and show authenticated state
             }}
+            claimCount={claimCount}
           />
         </ScavengerSplitLayout>
       );
@@ -130,13 +131,8 @@ export default function Scavenger() {
         <UnauthenticatedWizard
           locationName={location?.location_name}
           onLoginSuccess={() => {
-            console.log(
-              '✅ Login success, navigating to refresh with current params'
-            );
-            // Navigate to current URL to refresh and show authenticated state
-            const currentUrl =
-              window.location.pathname + window.location.search;
-            navigate(currentUrl);
+            console.log('✅ Login success - auth context will trigger re-render');
+            // Auth context will automatically trigger re-render and show claim interface
           }}
           onClaimCheckpoint={async () => {
             if (!profile?.display_name || !user?.email) return;
@@ -171,6 +167,7 @@ export default function Scavenger() {
           isAuthenticated={true}
           hasAlreadyClaimed={false}
           isClaimLoading={claimMutation.isPending}
+          claimCount={claimCount}
         />
       </ScavengerSplitLayout>
     );
@@ -188,7 +185,9 @@ export default function Scavenger() {
         >
           <UnauthenticatedWizard
             locationName={undefined}
-            onLoginSuccess={() => {}}
+            onLoginSuccess={() => {
+              // Auth context will trigger re-render, no navigation needed
+            }}
             userDisplayName={profile?.display_name}
             isAuthenticated={true}
             hasAlreadyClaimed={true}
@@ -214,11 +213,8 @@ export default function Scavenger() {
       <ScavengerSplitLayout showShoppingCart={!featureFlags?.coming_soon_mode}>
         <UnauthenticatedWizard
           onLoginSuccess={() => {
-            console.log('✅ Login success from general page, refreshing');
-            // Navigate to current URL to refresh and show authenticated state
-            const currentUrl =
-              window.location.pathname + window.location.search;
-            navigate(currentUrl);
+            console.log('✅ Login success - auth context will trigger re-render');
+            // Auth context will automatically trigger re-render and show authenticated state
           }}
         />
       </ScavengerSplitLayout>

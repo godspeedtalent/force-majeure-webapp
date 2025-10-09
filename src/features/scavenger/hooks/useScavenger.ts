@@ -106,7 +106,6 @@ export function useClaimReward() {
           show_on_leaderboard: params.showOnLeaderboard,
           claimed_at: new Date().toISOString(),
           claim_position: 1, // Single position per location now
-          reward_type: 'guestlist_2', // TODO: Remove after database schema update
         })
         .select('id, claim_position')
         .single();
@@ -189,6 +188,26 @@ export function useAllClaims() {
     },
     enabled: isAdmin,
     staleTime: 60000, // 1 minute
+  });
+}
+
+// Hook for counting claims for a specific location
+export function useLocationClaimCount(locationId: string | null) {
+  return useQuery({
+    queryKey: ['location-claim-count', locationId],
+    queryFn: async () => {
+      if (!locationId) return 0;
+
+      const { count, error } = await supabase
+        .from('scavenger_claims')
+        .select('*', { count: 'exact', head: true })
+        .eq('location_id', locationId);
+
+      if (error) throw error;
+      return count || 0;
+    },
+    enabled: !!locationId,
+    staleTime: 30000, // 30 seconds
   });
 }
 
