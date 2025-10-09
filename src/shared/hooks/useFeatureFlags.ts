@@ -36,11 +36,6 @@ export const useFeatureFlags = () => {
         }
       });
 
-      // Override coming_soon_mode in development if env variable is set
-      if (import.meta.env.VITE_DISABLE_COMING_SOON === 'true') {
-        flags.coming_soon_mode = false;
-      }
-
       return flags;
     },
     staleTime: 30 * 1000, // 30 seconds cache (better for dev)
