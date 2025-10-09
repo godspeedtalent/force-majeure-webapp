@@ -6,7 +6,8 @@
       "Bash(git log:*)",
       "Bash(rm:*)",
       "Bash(npx supabase db diff:*)",
-      "Bash(npx supabase sql:*)"
+      "Bash(npx supabase sql:*)",
+      "Bash(npx supabase:*)"
     ],
     "deny": [],
     "ask": []

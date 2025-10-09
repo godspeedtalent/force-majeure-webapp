@@ -36,6 +36,8 @@ export const useFeatureFlags = () => {
         }
       });
 
+      console.log('🚩 Feature flags from database:', { data, flags });
+
       return flags;
     },
     staleTime: 30 * 1000, // 30 seconds cache (better for dev)

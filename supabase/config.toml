@@ -7,8 +7,8 @@ site_url = "https://www.forcemajeure.vip"
 
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication
 additional_redirect_urls = [
-  "https://www.forcemajeure.vip",
-  "https://forcemajeure.vip",
+  "https://www.forcemajeure.vip/**",
+  "https://**.forcemajeure.vip",
   "http://localhost:3000"
 ]
 
