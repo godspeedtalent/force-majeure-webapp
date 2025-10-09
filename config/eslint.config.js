@@ -67,6 +67,7 @@ export default tseslint.config(
       ...jsxA11y.configs.recommended.rules,
 
       // React specific
+      'react/no-unescaped-entities': 'off', // Allow characters like ' " > in JSX
       'react/prop-types': 'off', // Using TypeScript for prop validation
       'react/react-in-jsx-scope': 'off', // Not needed with new JSX transform
       'react/jsx-uses-react': 'off', // Not needed with new JSX transform

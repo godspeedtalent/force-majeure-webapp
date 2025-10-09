@@ -1,12 +1,12 @@
 import { useQueryClient } from '@tanstack/react-query';
 
 import { LoadingState } from '@/components/common/LoadingState';
+import { UnauthenticatedWizard } from '@/components/scavenger/auth/UnauthenticatedWizard';
+import { ScavengerFullLayout } from '@/components/scavenger/layouts/ScavengerFullLayout';
+import { ScavengerSplitLayout } from '@/components/scavenger/layouts/ScavengerSplitLayout';
+import { AuthenticatedUserView } from '@/components/scavenger/views/AuthenticatedUserView';
+import { InvalidTokenView } from '@/components/scavenger/views/InvalidTokenView';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { UnauthenticatedWizard } from '@/features/scavenger/components/auth/UnauthenticatedWizard';
-import { ScavengerFullLayout } from '@/features/scavenger/components/layouts/ScavengerFullLayout';
-import { ScavengerSplitLayout } from '@/features/scavenger/components/layouts/ScavengerSplitLayout';
-import { AuthenticatedUserView } from '@/features/scavenger/components/views/AuthenticatedUserView';
-import { InvalidTokenView } from '@/features/scavenger/components/views/InvalidTokenView';
 import {
   useAllClaims,
   useAutoScroll,
@@ -116,7 +116,9 @@ export default function Scavenger() {
           <UnauthenticatedWizard
             locationName={location?.location_name}
             onLoginSuccess={() => {
-              console.log('✅ Login success - auth context will trigger re-render');
+              console.log(
+                '✅ Login success - auth context will trigger re-render'
+              );
               // Auth context will automatically trigger re-render and show authenticated state
             }}
             claimCount={claimCount}
@@ -131,7 +133,9 @@ export default function Scavenger() {
         <UnauthenticatedWizard
           locationName={location?.location_name}
           onLoginSuccess={() => {
-            console.log('✅ Login success - auth context will trigger re-render');
+            console.log(
+              '✅ Login success - auth context will trigger re-render'
+            );
             // Auth context will automatically trigger re-render and show claim interface
           }}
           onClaimCheckpoint={async () => {
@@ -213,7 +217,9 @@ export default function Scavenger() {
       <ScavengerSplitLayout showShoppingCart={!featureFlags?.coming_soon_mode}>
         <UnauthenticatedWizard
           onLoginSuccess={() => {
-            console.log('✅ Login success - auth context will trigger re-render');
+            console.log(
+              '✅ Login success - auth context will trigger re-render'
+            );
             // Auth context will automatically trigger re-render and show authenticated state
           }}
         />
