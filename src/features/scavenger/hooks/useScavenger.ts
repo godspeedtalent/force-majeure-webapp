@@ -100,13 +100,13 @@ export function useClaimReward() {
       // Create the claim with required fields
       const { data: claim, error: claimError } = await supabase
         .from('scavenger_claims')
-        .insert({
+        .insert([{
           user_id: session.user.id,
           location_id: params.locationId,
           show_on_leaderboard: params.showOnLeaderboard,
           claimed_at: new Date().toISOString(),
           claim_position: 1, // Single position per location now
-        })
+        }] as any)
         .select('id, claim_position')
         .single();
 
