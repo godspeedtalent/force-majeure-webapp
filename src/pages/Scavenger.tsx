@@ -72,16 +72,20 @@ export default function Scavenger() {
   // Handle location-based scavenger states
   if (locationId) {
     // validate-location already validated this location exists and is active
-    // Just check if user already claimed from this location
+    // Check if user already claimed from this location
     const alreadyClaimed = userClaims?.some(
       claim => claim.location_id === locationId
     );
+
+    // Check if user has ANY claims at all (regardless of checkpoint)
+    const hasAnyClaim = userClaims && userClaims.length > 0;
 
     // Get location details for display (we know it exists since validate-location validated it)
     const location = locations?.find(loc => loc.id === locationId);
 
     // State 1: Already Claimed - show success panel
-    if (alreadyClaimed) {
+    // Also show success if user has any claims at all, even if not from this checkpoint
+    if (alreadyClaimed || (hasAnyClaim && user)) {
       return (
         <ScavengerSplitLayout
           showShoppingCart={!featureFlags?.coming_soon_mode}

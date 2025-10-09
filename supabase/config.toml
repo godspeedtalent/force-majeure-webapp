@@ -3,11 +3,11 @@ project_id = "orgxcrnnecblhuxjfruy"
 [auth]
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
 # in emails. Set this to your production URL.
-site_url = "https://your-production-domain.com"
+site_url = "https://forcemajeure.vip"
 
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication
 additional_redirect_urls = [
-  "https://www.forcemajeure.vip"
+  "https://forcemajeure.vip"
 ]
 
 # How long email confirmation tokens are valid (in seconds). Default is 24 hours.

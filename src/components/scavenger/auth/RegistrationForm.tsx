@@ -164,12 +164,12 @@ export function RegistrationForm({
   };
 
   return (
-    <div className='max-h-72 bg-background/60 backdrop-blur-md border-2 border-border/40 w-full shadow-2xl animate-slide-up-fade'>
+    <div className='mh-72 bg-background/60 backdrop-blur-md border-2 border-border/40 w-full shadow-2xl animate-slide-up-fade'>
       <div className='px-8 lg:px-12 pt-6 lg:pt-8 pb-4 text-center'>
         <h1 className='font-display text-2xl md:text-3xl mb-2'>{title}</h1>
         <p className='text-muted-foreground text-sm'>{description}</p>
       </div>
-      <ScrollArea className='w-full h-full'>
+      <ScrollArea>
         <form
           id='registration-form'
           onSubmit={handleSubmit}

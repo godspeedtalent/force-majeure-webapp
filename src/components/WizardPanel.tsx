@@ -51,7 +51,7 @@ export const WizardPanel = ({
   };
 
   return (
-    <div className={cn('relative w-full', className)}>
+    <div className={cn('relative w-full mt-20 mb-20', className)}>
       {/* Back Button */}
       {canGoBack && (
         <Button
