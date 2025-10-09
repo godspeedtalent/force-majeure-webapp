@@ -38,14 +38,20 @@ export function ClaimSuccessPanel({ userFullName }: ClaimSuccessPanelProps) {
       description=''
       action={
         <>
-          <p className='text-lg text-white mb-6'>
+          <p className='text-m text-white mb-6'>
             You&apos;ve been added to the <br />
-            <span className='text-fm-gold font-semibold'>LF SYSTEM</span> <br />
+            <span className='text-fm-gold font-semibold'>LF SYSTEM @ Kingdom | Sat 10.18</span> <br />
             guestlist. See you there.
           </p>
+          <DecorativeDivider />
           <p className='text-sm text-muted-foreground mb-6'>
-            Your name will be listed as{' '}
-            <span className='text-white font-medium'>{userFullName}</span> in
+            Check into the host stand as usual and give them your full name.
+          </p>
+          <p className='text-sm text-white mb-6'>  Your name will be listed as{' '}
+            <span className='text-fm-gold font-medium'>{userFullName}</span>.
+          </p>
+          <p className='text-sm text-muted-foreground mb-6'>
+           in
             the guestlist. If this is incorrect, please reach out to{' '}
             <span className='text-fm-gold'>@force.majeure.events</span> on
             Instagram to correct it.
@@ -203,6 +209,7 @@ interface CheckpointClaimStepProps {
   hasAlreadyClaimed?: boolean;
   isClaimLoading?: boolean;
   claimCount?: number;
+  lowClaimLocationsCount?: number;
 }
 
 export function WelcomeStep({
@@ -215,6 +222,7 @@ export function WelcomeStep({
   hasAlreadyClaimed = false,
   isClaimLoading = false,
   claimCount = 0,
+  lowClaimLocationsCount,
 }: CheckpointClaimStepProps) {
   // Show success panel if user has already claimed
   if (hasAlreadyClaimed && isAuthenticated) {
@@ -228,6 +236,7 @@ export function WelcomeStep({
         userDisplayName={userFullName}
         onJoinClick={onJoinClick}
         onSignInClick={onSignInClick}
+        lowClaimLocationsCount={lowClaimLocationsCount}
       />
     );
   }

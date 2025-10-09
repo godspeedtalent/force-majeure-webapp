@@ -1,6 +1,7 @@
 import { ExternalLink } from 'lucide-react';
 
 import { DecorativeDivider } from '@/components/DecorativeDivider';
+import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { MessagePanel } from '@/components/MessagePanel';
 import { Button } from '@/components/ui/button';
 
@@ -13,12 +14,14 @@ interface PromoCodePanelProps {
   userDisplayName?: string;
   onJoinClick?: () => void;
   onSignInClick?: () => void;
+  lowClaimLocationsCount?: number;
 }
 
 export function PromoCodePanel({
   userDisplayName,
   onJoinClick,
   onSignInClick,
+  lowClaimLocationsCount,
 }: PromoCodePanelProps) {
   return (
     <MessagePanel
@@ -34,6 +37,20 @@ export function PromoCodePanel({
             you&apos;re not leaving empty handed! Sign up to receive a promo
             code for 20% off tickets.
           </p>
+          <DecorativeDivider />
+          {typeof lowClaimLocationsCount === 'number' && (
+            <p className='text-sm text-muted-foreground mb-4'>
+              There are still{' '}
+              <AnimatedCounter
+                value={lowClaimLocationsCount}
+                duration={1200}
+                className='inline text-fm-gold font-bold text-xl align-baseline mx-2'
+              />{' '}
+              locations that have guest passes available, check the reel at{' '}
+              <span className='text-fm-gold font-semibold'>@force.majeure.events</span> on
+              Instagram for hints.
+            </p>
+          )}
           <DecorativeDivider />
 
           {userDisplayName ? (

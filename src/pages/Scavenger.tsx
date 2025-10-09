@@ -51,6 +51,17 @@ export default function Scavenger() {
     locations?.filter(location => !claimedLocationIds.has(location.id))
       .length || 0;
 
+  // Count locations with 1 or fewer total claims
+  const lowClaimLocationsCount = (() => {
+    if (!locations || !allClaims) return undefined as number | undefined;
+    const counts = new Map<string, number>();
+    allClaims.forEach(c => {
+      const id = c.location_id;
+      counts.set(id, (counts.get(id) || 0) + 1);
+    });
+    return locations.filter(loc => (counts.get(loc.id) || 0) <= 1).length;
+  })();
+
   // Loading state - check both auth and locations loading
   if (authLoading || locationsLoading) {
     return (
@@ -93,12 +104,13 @@ export default function Scavenger() {
           <UnauthenticatedWizard
             locationName={location?.location_name}
             onLoginSuccess={() => {
-              // Auth context will trigger re-render, no navigation needed
+              window.location.href = window.location.href;
             }}
             userFullName={profile?.full_name}
             isAuthenticated={true}
             hasAlreadyClaimed={true}
             claimCount={claimCount}
+            lowClaimLocationsCount={lowClaimLocationsCount}
           />
         </ScavengerSplitLayout>
       );
@@ -120,12 +132,10 @@ export default function Scavenger() {
           <UnauthenticatedWizard
             locationName={location?.location_name}
             onLoginSuccess={() => {
-              console.log(
-                '✅ Login success - auth context will trigger re-render'
-              );
-              // Auth context will automatically trigger re-render and show authenticated state
+              window.location.href = window.location.href;
             }}
             claimCount={claimCount}
+            lowClaimLocationsCount={lowClaimLocationsCount}
           />
         </ScavengerSplitLayout>
       );
@@ -137,10 +147,7 @@ export default function Scavenger() {
         <UnauthenticatedWizard
           locationName={location?.location_name}
           onLoginSuccess={() => {
-            console.log(
-              '✅ Login success - auth context will trigger re-render'
-            );
-            // Auth context will automatically trigger re-render and show claim interface
+            window.location.href = window.location.href;
           }}
           onClaimCheckpoint={async () => {
             if (!profile?.display_name || !user?.email) return;
@@ -176,6 +183,7 @@ export default function Scavenger() {
           hasAlreadyClaimed={false}
           isClaimLoading={claimMutation.isPending}
           claimCount={claimCount}
+          lowClaimLocationsCount={lowClaimLocationsCount}
         />
       </ScavengerSplitLayout>
     );
@@ -194,7 +202,7 @@ export default function Scavenger() {
           <UnauthenticatedWizard
             locationName={undefined}
             onLoginSuccess={() => {
-              // Auth context will trigger re-render, no navigation needed
+              window.location.href = window.location.href;
             }}
             userFullName={profile?.full_name}
             isAuthenticated={true}
@@ -221,10 +229,7 @@ export default function Scavenger() {
       <ScavengerSplitLayout showShoppingCart={!featureFlags?.coming_soon_mode}>
         <UnauthenticatedWizard
           onLoginSuccess={() => {
-            console.log(
-              '✅ Login success - auth context will trigger re-render'
-            );
-            // Auth context will automatically trigger re-render and show authenticated state
+            window.location.href = window.location.href;
           }}
         />
       </ScavengerSplitLayout>

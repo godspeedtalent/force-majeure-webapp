@@ -44,10 +44,7 @@ export const AnimatedCounter = ({
 
   return (
     <span
-      className={cn(
-        'font-display text-6xl md:text-8xl text-fm-gold',
-        className
-      )}
+      className={cn('font-display text-fm-gold', className)}
     >
       {count}
     </span>

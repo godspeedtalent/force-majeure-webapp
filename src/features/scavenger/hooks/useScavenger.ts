@@ -172,9 +172,7 @@ export function useUserClaims() {
 
 // Hook for fetching all claims (for admin purposes)
 export function useAllClaims() {
-  const { data: userRole } = useUserRole();
-  const isAdmin = userRole === 'admin';
-
+  // Needed for aggregate counts client-side; do not gate by role
   return useQuery({
     queryKey: ['all-claims'],
     queryFn: async () => {
@@ -186,7 +184,6 @@ export function useAllClaims() {
       if (error) throw error;
       return data || [];
     },
-    enabled: isAdmin,
     staleTime: 60000, // 1 minute
   });
 }

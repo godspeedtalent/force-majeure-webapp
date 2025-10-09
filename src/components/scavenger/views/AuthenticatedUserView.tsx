@@ -30,7 +30,10 @@ export function AuthenticatedUserView({
                 <p className='text-lg text-muted-foreground mb-4'>
                   Undiscovered Checkpoints
                 </p>
-                <AnimatedCounter value={totalUndiscoveredCheckpoints} />
+                <AnimatedCounter
+                  value={totalUndiscoveredCheckpoints}
+                  className='text-6xl md:text-8xl'
+                />
               </>
             ) : (
               <>
