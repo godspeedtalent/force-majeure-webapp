@@ -10,7 +10,7 @@ const TICKET_URL =
 
 // Simple component interfaces - no state management
 interface ClaimSuccessPanelProps {
-  userDisplayName?: string;
+  userFullName?: string;
 }
 
 interface CheckpointClaimPanelProps {
@@ -31,7 +31,7 @@ interface NoCheckpointPanelProps {
 }
 
 // Dumb component: Success state for users who have already claimed
-export function ClaimSuccessPanel({ userDisplayName }: ClaimSuccessPanelProps) {
+export function ClaimSuccessPanel({ userFullName }: ClaimSuccessPanelProps) {
   return (
     <MessagePanel
       title='Congratulations!'
@@ -39,13 +39,13 @@ export function ClaimSuccessPanel({ userDisplayName }: ClaimSuccessPanelProps) {
       action={
         <>
           <p className='text-lg text-white mb-6'>
-            You&apos;ve been added to the{' '}
-            <span className='text-fm-gold font-semibold'>LF SYSTEM</span>{' '}
+            You&apos;ve been added to the <br />
+            <span className='text-fm-gold font-semibold'>LF SYSTEM</span> <br />
             guestlist. See you there.
           </p>
           <p className='text-sm text-muted-foreground mb-6'>
             Your name will be listed as{' '}
-            <span className='text-white font-medium'>{userDisplayName}</span> in
+            <span className='text-white font-medium'>{userFullName}</span> in
             the guestlist. If this is incorrect, please reach out to{' '}
             <span className='text-fm-gold'>@force.majeure.events</span> on
             Instagram to correct it.
@@ -198,7 +198,7 @@ interface CheckpointClaimStepProps {
   onJoinClick: () => void;
   onSignInClick: () => void;
   onClaimCheckpoint?: () => void;
-  userDisplayName?: string;
+  userFullName?: string;
   isAuthenticated?: boolean;
   hasAlreadyClaimed?: boolean;
   isClaimLoading?: boolean;
@@ -210,7 +210,7 @@ export function WelcomeStep({
   onJoinClick,
   onSignInClick,
   onClaimCheckpoint,
-  userDisplayName,
+  userFullName,
   isAuthenticated = false,
   hasAlreadyClaimed = false,
   isClaimLoading = false,
@@ -218,14 +218,14 @@ export function WelcomeStep({
 }: CheckpointClaimStepProps) {
   // Show success panel if user has already claimed
   if (hasAlreadyClaimed && isAuthenticated) {
-    return <ClaimSuccessPanel userDisplayName={userDisplayName} />;
+    return <ClaimSuccessPanel userFullName={userFullName} />;
   }
 
   // Check if claim limit reached (2 claims per checkpoint)
   if (locationName && claimCount >= 2) {
     return (
       <PromoCodePanel
-        userDisplayName={userDisplayName}
+        userDisplayName={userFullName}
         onJoinClick={onJoinClick}
         onSignInClick={onSignInClick}
       />

@@ -10,7 +10,7 @@ import { WizardPanel, useWizardNavigation } from '@/components/WizardPanel';
 // Simplified interface - clean and minimal
 interface UnauthenticatedWizardProps {
   locationName?: string;
-  userDisplayName?: string;
+  userFullName?: string;
   isAuthenticated?: boolean;
   hasAlreadyClaimed?: boolean;
   isClaimLoading?: boolean;
@@ -23,7 +23,7 @@ export function UnauthenticatedWizard({
   locationName,
   onLoginSuccess,
   onClaimCheckpoint,
-  userDisplayName,
+  userFullName,
   isAuthenticated = false,
   hasAlreadyClaimed = false,
   isClaimLoading = false,
@@ -79,7 +79,7 @@ export function UnauthenticatedWizard({
             setIsLoginMode(true);
           }}
           onClaimCheckpoint={onClaimCheckpoint}
-          userDisplayName={userDisplayName}
+          userFullName={userFullName}
           isAuthenticated={isAuthenticated}
           hasAlreadyClaimed={hasAlreadyClaimed}
           isClaimLoading={isClaimLoading}

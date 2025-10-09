@@ -66,7 +66,12 @@ export const WizardPanel = ({
       )}
 
       {/* Step Content */}
-      <div className='w-full'>{currentStepData?.content}</div>
+      <div
+        className='w-full'
+        style={{ marginTop: '20vh', marginBottom: '20vh' }}
+      >
+        {currentStepData?.content}
+      </div>
     </div>
   );
 };

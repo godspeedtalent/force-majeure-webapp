@@ -91,7 +91,7 @@ export default function Scavenger() {
             onLoginSuccess={() => {
               // Auth context will trigger re-render, no navigation needed
             }}
-            userDisplayName={profile?.display_name}
+            userFullName={profile?.full_name}
             isAuthenticated={true}
             hasAlreadyClaimed={true}
             claimCount={claimCount}
@@ -167,7 +167,7 @@ export default function Scavenger() {
               console.error('Claim failed:', error);
             }
           }}
-          userDisplayName={profile?.display_name}
+          userFullName={profile?.full_name}
           isAuthenticated={true}
           hasAlreadyClaimed={false}
           isClaimLoading={claimMutation.isPending}
@@ -192,7 +192,7 @@ export default function Scavenger() {
             onLoginSuccess={() => {
               // Auth context will trigger re-render, no navigation needed
             }}
-            userDisplayName={profile?.display_name}
+            userFullName={profile?.full_name}
             isAuthenticated={true}
             hasAlreadyClaimed={true}
           />

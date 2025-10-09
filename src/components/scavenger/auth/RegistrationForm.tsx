@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
-import { toast } from 'sonner';
 import { Check, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { FormSection } from '@/components/ui/FormSection';
+import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/ui/PasswordInput';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { TextField } from '@/components/ui/TextField';
-import { FormSection } from '@/components/ui/FormSection';
-import { PasswordInput } from '@/components/ui/PasswordInput';
 import { supabase } from '@/shared/api/supabase/client';
 
 interface RegistrationFormProps {
@@ -164,13 +164,12 @@ export function RegistrationForm({
   };
 
   return (
-    <ScrollArea className='w-full max-h-[75vh]'>
-      <div className='bg-background/60 backdrop-blur-md border-2 border-border/40 w-full shadow-2xl animate-slide-up-fade'>
-        <div className='px-8 lg:px-12 pt-6 lg:pt-8 pb-4 text-center'>
-          <h1 className='font-display text-2xl md:text-3xl mb-2'>{title}</h1>
-          <p className='text-muted-foreground text-sm'>{description}</p>
-        </div>
-
+    <div className='max-h-72 bg-background/60 backdrop-blur-md border-2 border-border/40 w-full shadow-2xl animate-slide-up-fade'>
+      <div className='px-8 lg:px-12 pt-6 lg:pt-8 pb-4 text-center'>
+        <h1 className='font-display text-2xl md:text-3xl mb-2'>{title}</h1>
+        <p className='text-muted-foreground text-sm'>{description}</p>
+      </div>
+      <ScrollArea className='w-full h-full'>
         <form
           id='registration-form'
           onSubmit={handleSubmit}
@@ -416,7 +415,7 @@ export function RegistrationForm({
             {isSubmitting ? 'Submitting...' : 'Submit'}
           </Button>
         </div>
-      </div>
-    </ScrollArea>
+      </ScrollArea>
+    </div>
   );
 }
