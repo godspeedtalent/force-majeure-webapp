@@ -248,6 +248,7 @@ export type Database = {
           location_description: string | null
           location_name: string
           updated_at: string
+          validation_count: number
         }
         Insert: {
           created_at?: string
@@ -256,6 +257,7 @@ export type Database = {
           location_description?: string | null
           location_name: string
           updated_at?: string
+          validation_count?: number
         }
         Update: {
           created_at?: string
@@ -264,6 +266,7 @@ export type Database = {
           location_description?: string | null
           location_name?: string
           updated_at?: string
+          validation_count?: number
         }
         Relationships: []
       }
@@ -363,6 +366,7 @@ export type Database = {
           reward_type: string
           tokens_remaining: number
           total_tokens: number
+          validation_count: number
         }[]
       }
       get_location_with_promo: {
@@ -376,6 +380,7 @@ export type Database = {
           reward_type: string
           tokens_remaining: number
           total_tokens: number
+          validation_count: number
         }[]
       }
       has_role: {

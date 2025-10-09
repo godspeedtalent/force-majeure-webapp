@@ -256,6 +256,7 @@ export type Database = {
           tokens_remaining: number;
           total_tokens: number;
           updated_at: string;
+          validation_count: number;
         };
         Insert: {
           created_at?: string;
@@ -269,6 +270,7 @@ export type Database = {
           tokens_remaining?: number;
           total_tokens?: number;
           updated_at?: string;
+          validation_count?: number;
         };
         Update: {
           created_at?: string;
@@ -282,6 +284,7 @@ export type Database = {
           tokens_remaining?: number;
           total_tokens?: number;
           updated_at?: string;
+          validation_count?: number;
         };
         Relationships: [];
       };

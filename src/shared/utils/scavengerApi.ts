@@ -6,6 +6,7 @@ export interface ClaimResult {
   location_name?: string;
   promo_code?: string;
   tokens_remaining?: number;
+  validation_count?: number;
   message?: string;
   error?: string;
 }

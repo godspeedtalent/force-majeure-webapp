@@ -4,28 +4,41 @@ Custom email templates for Supabase authentication emails.
 
 ## Setup Instructions
 
-### 1. Access Supabase Dashboard
+### 1. Configure URL Settings (REQUIRED FIRST)
 
 1. Go to your Supabase project: https://supabase.com/dashboard/project/orgxcrnnecblhuxjfruy
-2. Navigate to **Authentication** → **Email Templates**
+2. Navigate to **Authentication** → **URL Configuration**
+3. Set **Site URL** to: `https://www.forcemajeure.vip`
+4. Add these to **Redirect URLs** (one per line):
+   - `https://www.forcemajeure.vip/**`
+   - `https://forcemajeure.vip/**`
+   - `http://localhost:3000/**`
+5. Click **Save**
 
-### 2. Update Confirm Signup Template
+### 2. Disable Custom Email Hook (if enabled)
 
-1. Click on **Confirm signup** template
-2. Update the **Subject line**:
+1. Navigate to **Authentication** → **Hooks**
+2. If the **Send Email** hook is enabled, disable it
+3. Click **Save**
+
+### 3. Update Email Template
+
+1. Navigate to **Authentication** → **Email Templates**
+2. Click on **Confirm signup** template
+3. Update the **Subject line**:
    ```
    Welcome to Force Majeure - Confirm Your Email
    ```
+4. Copy the contents of `confirm-signup.html` and paste into the **Message (Body)** field
+5. Make sure "Enable email confirmations" is ON
+6. Click **Save**
 
-3. Copy the contents of `confirm-signup.html` and paste into the **Message (Body)** field
-4. Click **Save**
-
-### 3. Test Your Template
+### 4. Test Your Template
 
 1. Create a test account with a personal email
 2. Check your inbox for the confirmation email
 3. Verify:
-   - All links work correctly
+   - All links work correctly and redirect to https://www.forcemajeure.vip
    - Styling displays properly
    - Mobile responsiveness looks good
 

@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(npm run build:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(git log:*)",
+      "Bash(rm:*)",
+      "Bash(npx supabase db diff:*)"
     ],
     "deny": [],
     "ask": []

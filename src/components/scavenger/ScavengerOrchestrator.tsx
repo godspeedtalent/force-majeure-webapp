@@ -23,6 +23,7 @@ export interface ScavengerState {
     location_name: string;
     tokens_remaining: number;
     is_active: boolean;
+    validation_count: number;
   } | null;
 
   // Claim state
@@ -101,7 +102,7 @@ export function ScavengerOrchestrator({
   // Find location data for current locationId
   const location =
     locationId && locations
-      ? locations.find(loc => loc.id === locationId)
+      ? locations.find(loc => loc.id === locationId) ?? null
       : null;
 
   // Determine if user has already claimed this location

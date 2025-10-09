@@ -113,7 +113,7 @@ serve(async req => {
     // Check if location exists in scavenger_locations table
     const { data: location, error } = await supabase
       .from('scavenger_locations')
-      .select('id, location_name, location_description, is_active')
+      .select('id, location_name, location_description, is_active, validation_count')
       .eq('id', locationId)
       .single();
 
@@ -181,6 +181,19 @@ serve(async req => {
 
     if (debug) {
       console.log('✅ Location is valid:', location);
+    }
+
+    // Increment validation_count for successful validations
+    const { error: updateError } = await supabase
+      .from('scavenger_locations')
+      .update({ validation_count: location.validation_count + 1 })
+      .eq('id', locationId);
+
+    if (updateError) {
+      console.error('Failed to increment validation_count:', updateError);
+      // Don't fail the validation if counter update fails
+    } else if (debug) {
+      console.log('✅ Incremented validation_count');
     }
 
     // Location exists and is active
