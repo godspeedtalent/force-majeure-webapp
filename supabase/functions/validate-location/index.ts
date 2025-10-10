@@ -18,15 +18,27 @@ serve(async req => {
     const url = new URL(req.url);
 
     // Get token/locationId from either query params or POST body
-    let locationId = url.searchParams.get('token') || url.searchParams.get('locationId');
+    // Accept aliases: token, locationId, proxy-token, proxy_token
+    let locationId =
+      url.searchParams.get('token') ||
+      url.searchParams.get('locationId') ||
+      url.searchParams.get('proxy-token') ||
+      url.searchParams.get('proxy_token');
     let debug = url.searchParams.get('debug') === 'true';
-    let shouldRedirect = url.searchParams.has('token');
+    let shouldRedirect =
+      url.searchParams.has('token') ||
+      url.searchParams.has('proxy-token') ||
+      url.searchParams.has('proxy_token');
 
     // If not in query params, check POST body
     if (!locationId && req.method === 'POST') {
       try {
         const body = await req.json();
-        locationId = body.token || body.locationId;
+        locationId =
+          body.token ||
+          body.locationId ||
+          body['proxy-token'] ||
+          body.proxy_token;
         debug = debug || body.debug === true;
         shouldRedirect = false; // POST requests want JSON response, not redirect
       } catch (e) {
@@ -113,7 +125,7 @@ serve(async req => {
     // Check if location exists in scavenger_locations table
     const { data: location, error } = await supabase
       .from('scavenger_locations')
-      .select('id, location_name, location_description, is_active, validation_count')
+      .select('id, location_name, location_description, is_active, checkin_count')
       .eq('id', locationId)
       .single();
 
@@ -181,19 +193,6 @@ serve(async req => {
 
     if (debug) {
       console.log('✅ Location is valid:', location);
-    }
-
-    // Increment validation_count for successful validations
-    const { error: updateError } = await supabase
-      .from('scavenger_locations')
-      .update({ validation_count: location.validation_count + 1 })
-      .eq('id', locationId);
-
-    if (updateError) {
-      console.error('Failed to increment validation_count:', updateError);
-      // Don't fail the validation if counter update fails
-    } else if (debug) {
-      console.log('✅ Incremented validation_count');
     }
 
     // Increment checkin_count for each scan
