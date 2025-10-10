@@ -23,7 +23,7 @@ import { getImageUrl } from '@/shared/utils/imageUtils';
 interface Artist {
   name: string;
   genre: string;
-  image?: string;
+  image?: string | null;
 }
 
 interface Event {
@@ -70,13 +70,17 @@ const EventDetails = () => {
         if (fetchError) throw fetchError;
 
         // Map of database image paths to imported images
-        const imageMap = {
+        const imageMap: Record<string, string> = {
           '/src/assets/ninajirachi-cover.jpg': ninajirachiCover,
           '/src/assets/lf-system-cover.jpg': lfSystemCover,
         };
 
         // Fetch undercard artists separately
-        let undercardArtists = [];
+        let undercardArtists: Array<{
+          name: string;
+          genre: string | null;
+          image_url: string | null;
+        }> = [];
         if (data.undercard_ids && data.undercard_ids.length > 0) {
           const { data: undercardData } = await supabase
             .from('artists')
@@ -92,7 +96,7 @@ const EventDetails = () => {
             ? {
                 name: data.headliner_artist.name,
                 genre: data.headliner_artist.genre || 'Electronic',
-                image: data.headliner_artist.image_url,
+                image: data.headliner_artist.image_url || undefined,
               }
             : {
                 name: 'TBA',
@@ -101,14 +105,14 @@ const EventDetails = () => {
           undercard: undercardArtists.map(artist => ({
             name: artist.name,
             genre: artist.genre || 'Electronic',
-            image: artist.image_url,
+            image: artist.image_url || undefined,
           })),
           date: data.date,
           time: data.time,
-          venue: data.venue,
-          heroImage: imageMap[data.hero_image] || getImageUrl(data.hero_image),
-          description: data.description,
-          ticketUrl: data.ticket_url,
+          venue: data.venue || 'TBA',
+          heroImage: (data.hero_image && imageMap[data.hero_image]) || getImageUrl(data.hero_image),
+          description: data.description || '',
+          ticketUrl: data.ticket_url || undefined,
         };
 
         setEvent(transformedEvent);

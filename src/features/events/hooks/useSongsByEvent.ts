@@ -74,8 +74,8 @@ export const useSongsByEvent = (eventId: string | null) => {
             artist_name: song.artists?.name || 'Unknown Artist',
             streaming_link: song.streaming_link,
             music_source: song.music_source as Song['music_source'],
-            duration: song.duration,
-            is_preview: song.is_preview,
+            duration: song.duration ?? undefined,
+            is_preview: song.is_preview ?? false,
           };
         });
 
