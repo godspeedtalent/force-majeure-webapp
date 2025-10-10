@@ -7,9 +7,8 @@ site_url = "https://www.forcemajeure.vip"
 
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication
 additional_redirect_urls = [
-  "https://forcemajeure.vip/**",
-  "https://www.forcemajeure.vip/**",
-  "http://localhost:3000/**"
+  "https://www.forcemajeure.vip",
+  "http://localhost:8080"
 ]
 
 # How long email confirmation tokens are valid (in seconds). Default is 24 hours.

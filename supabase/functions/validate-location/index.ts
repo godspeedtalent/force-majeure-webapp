@@ -196,6 +196,19 @@ serve(async req => {
       console.log('✅ Incremented validation_count');
     }
 
+    // Increment checkin_count for each scan
+    const { error: updateCheckinError } = await supabase
+      .from('scavenger_locations')
+      .update({ checkin_count: (location.checkin_count ?? 0) + 1 })
+      .eq('id', locationId);
+
+    if (updateCheckinError) {
+      console.error('Failed to increment checkin_count:', updateCheckinError);
+      // Don't fail the validation if counter update fails
+    } else if (debug) {
+      console.log('�o. Incremented checkin_count');
+    }
+
     // Location exists and is active
     if (shouldRedirect) {
       // Redirect mode - send to scavenger with locationId
@@ -258,3 +271,4 @@ serve(async req => {
     );
   }
 });
+

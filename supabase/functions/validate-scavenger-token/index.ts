@@ -195,6 +195,31 @@ serve(async req => {
 
     const location = locationData[0];
 
+    // Increment checkin_count for each valid scan
+    try {
+      const { data: countsRow, error: countsError } = await supabase
+        .from('scavenger_locations')
+        .select('checkin_count')
+        .eq('id', location.id)
+        .single();
+
+      if (!countsError && countsRow) {
+        const { error: updateError } = await supabase
+          .from('scavenger_locations')
+          .update({ checkin_count: (countsRow.checkin_count ?? 0) + 1 })
+          .eq('id', location.id);
+
+        if (updateError) {
+          console.error('Failed to increment checkin_count:', updateError);
+        }
+      } else if (countsError) {
+        console.error('Failed to fetch checkin_count:', countsError);
+      }
+    } catch (e) {
+      console.error('Unexpected error updating checkin_count:', e);
+      // Do not fail the validation on counter update errors
+    }
+
     // Check if tokens are still available
     if (location.tokens_remaining <= 0) {
       return new Response(
