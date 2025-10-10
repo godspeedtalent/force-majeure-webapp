@@ -164,12 +164,12 @@ export function RegistrationForm({
   };
 
   return (
-    <div className='flex flex-col min-h-0 max-h-full bg-background/60 backdrop-blur-md border-2 border-border/40 w-full shadow-2xl animate-slide-up-fade'>
-      <div className='px-8 lg:px-12 pt-6 lg:pt-8 pb-4 text-center flex-shrink-0'>
+    <div className='mh-72 bg-background/60 backdrop-blur-md border-2 border-border/40 w-full shadow-2xl animate-slide-up-fade'>
+      <div className='px-8 lg:px-12 pt-6 lg:pt-8 pb-4 text-center'>
         <h1 className='font-display text-2xl md:text-3xl mb-2'>{title}</h1>
         <p className='text-muted-foreground text-sm'>{description}</p>
       </div>
-      <ScrollArea className='flex-1 min-h-0'>
+      <ScrollArea>
         <form
           id='registration-form'
           onSubmit={handleSubmit}
@@ -405,17 +405,17 @@ export function RegistrationForm({
           </div>
         </form>
 
+        <div className='px-8 lg:px-12 py-6 border-t border-border/40'>
+          <Button
+            type='submit'
+            form='registration-form'
+            className='w-full bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] h-9'
+            disabled={isSubmitting || !isFormValid}
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit'}
+          </Button>
+        </div>
       </ScrollArea>
-      <div className='px-8 lg:px-12 py-6 border-t border-border/40 flex-shrink-0'>
-        <Button
-          type='submit'
-          form='registration-form'
-          className='w-full bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] h-9'
-          disabled={isSubmitting || !isFormValid}
-        >
-          {isSubmitting ? 'Submitting...' : 'Submit'}
-        </Button>
-      </div>
     </div>
   );
 }

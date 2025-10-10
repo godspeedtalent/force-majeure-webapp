@@ -20,10 +20,10 @@ import { supabase } from '@/shared/api/supabase/client';
 interface MerchItem {
   id: string;
   name: string;
-  description: string | null;
+  description: string;
   price: number;
   type: string;
-  image_url: string | null;
+  image_url: string;
   in_stock: boolean;
   created_at: string;
 }

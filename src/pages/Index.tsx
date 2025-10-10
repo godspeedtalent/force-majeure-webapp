@@ -16,28 +16,8 @@ import { supabase } from '@/shared/api/supabase/client';
 import { useFontLoader } from '@/shared/hooks/useFontLoader';
 import { getImageUrl } from '@/shared/utils/imageUtils';
 import { logApiError } from '@/shared/utils/logger';
-
-interface Artist {
-  name: string;
-  genre: string;
-  image?: string | null;
-}
-
-interface EventData {
-  id: string;
-  title: string;
-  headliner: Artist;
-  undercard: Artist[];
-  date: string;
-  time: string;
-  venue: string;
-  heroImage: string;
-  description: string;
-  ticketUrl?: string | null;
-}
-
 const Index = () => {
-  const [upcomingEvents, setUpcomingEvents] = useState<EventData[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [displayMode, setDisplayMode] = useState<'grid' | 'row'>('grid');
   const fontsLoaded = useFontLoader();
@@ -79,7 +59,7 @@ const Index = () => {
         }
 
         // Map of database image paths to imported images
-        const imageMap: Record<string, string> = {
+        const imageMap = {
           '/src/assets/ninajirachi-cover.jpg': ninajirachiCover,
           '/src/assets/lf-system-cover.jpg': lfSystemCover,
         };
@@ -92,7 +72,6 @@ const Index = () => {
                 eventIds.map(async eventId => {
                   const event = data.find(e => e.id === eventId);
                   if (
-                    !event ||
                     !event.undercard_ids ||
                     event.undercard_ids.length === 0
                   ) {
@@ -136,7 +115,7 @@ const Index = () => {
               ? {
                   name: event.headliner_artist.name,
                   genre: event.headliner_artist.genre || 'Electronic',
-                  image: event.headliner_artist.image_url || undefined,
+                  image: event.headliner_artist.image_url,
                 }
               : {
                   name: 'TBA',
@@ -145,15 +124,15 @@ const Index = () => {
             undercard: undercard.map(artist => ({
               name: artist.name,
               genre: artist.genre || 'Electronic',
-              image: artist.image_url || undefined,
+              image: artist.image_url,
             })),
             date: event.date,
             time: event.time,
-            venue: event.venue || 'TBA',
+            venue: event.venue,
             heroImage:
-              (event.hero_image && imageMap[event.hero_image]) || getImageUrl(event.hero_image),
-            description: event.description || '',
-            ticketUrl: event.ticket_url || undefined,
+              imageMap[event.hero_image] || getImageUrl(event.hero_image),
+            description: event.description,
+            ticketUrl: event.ticket_url,
           };
         });
         setUpcomingEvents(transformedEvents);

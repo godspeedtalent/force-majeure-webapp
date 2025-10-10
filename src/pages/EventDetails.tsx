@@ -23,7 +23,7 @@ import { getImageUrl } from '@/shared/utils/imageUtils';
 interface Artist {
   name: string;
   genre: string;
-  image?: string | null;
+  image?: string;
 }
 
 interface Event {
@@ -70,17 +70,13 @@ const EventDetails = () => {
         if (fetchError) throw fetchError;
 
         // Map of database image paths to imported images
-        const imageMap: Record<string, string> = {
+        const imageMap = {
           '/src/assets/ninajirachi-cover.jpg': ninajirachiCover,
           '/src/assets/lf-system-cover.jpg': lfSystemCover,
         };
 
         // Fetch undercard artists separately
-        let undercardArtists: Array<{
-          name: string;
-          genre: string | null;
-          image_url: string | null;
-        }> = [];
+        let undercardArtists = [];
         if (data.undercard_ids && data.undercard_ids.length > 0) {
           const { data: undercardData } = await supabase
             .from('artists')
@@ -96,7 +92,7 @@ const EventDetails = () => {
             ? {
                 name: data.headliner_artist.name,
                 genre: data.headliner_artist.genre || 'Electronic',
-                image: data.headliner_artist.image_url || undefined,
+                image: data.headliner_artist.image_url,
               }
             : {
                 name: 'TBA',
@@ -105,14 +101,14 @@ const EventDetails = () => {
           undercard: undercardArtists.map(artist => ({
             name: artist.name,
             genre: artist.genre || 'Electronic',
-            image: artist.image_url || undefined,
+            image: artist.image_url,
           })),
           date: data.date,
           time: data.time,
-          venue: data.venue || 'TBA',
-          heroImage: (data.hero_image && imageMap[data.hero_image]) || getImageUrl(data.hero_image),
-          description: data.description || '',
-          ticketUrl: data.ticket_url || undefined,
+          venue: data.venue,
+          heroImage: imageMap[data.hero_image] || getImageUrl(data.hero_image),
+          description: data.description,
+          ticketUrl: data.ticket_url,
         };
 
         setEvent(transformedEvent);

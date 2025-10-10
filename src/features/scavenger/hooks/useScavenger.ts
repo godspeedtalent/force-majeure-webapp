@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { supabase } from '@/shared/api/supabase/client';
+import { useUserRole } from '@/shared/hooks/useUserRole';
 import { toast } from '@/shared/hooks/use-toast';
 
 // Hook for URL parameter handling and redirection logic

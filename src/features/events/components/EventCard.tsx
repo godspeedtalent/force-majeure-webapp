@@ -17,7 +17,7 @@ import {
 interface Artist {
   name: string;
   genre: string;
-  image?: string | null;
+  image?: string;
 }
 
 interface Event {
@@ -30,7 +30,7 @@ interface Event {
   venue: string;
   heroImage: string;
   description: string;
-  ticketUrl?: string | null;
+  ticketUrl?: string;
 }
 
 interface EventCardProps {

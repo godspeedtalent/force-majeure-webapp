@@ -44,6 +44,12 @@ export const WizardPanel = ({
     }
   };
 
+  const _goToStep = (step: number) => {
+    if (step >= 0 && step < steps.length) {
+      setCurrentStep(step);
+    }
+  };
+
   return (
     <div className={cn('relative w-full mt-20 mb-20', className)}>
       {/* Back Button */}

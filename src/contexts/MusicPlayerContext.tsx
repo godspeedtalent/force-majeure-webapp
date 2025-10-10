@@ -16,8 +16,8 @@ export interface Song {
   artist_name: string;
   streaming_link: string;
   music_source: 'spotify' | 'soundcloud' | 'youtube' | 'apple_music';
-  duration?: number | null;
-  is_preview: boolean | null;
+  duration?: number;
+  is_preview: boolean;
   album_art?: string | null;
 }
 
