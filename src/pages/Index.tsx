@@ -16,8 +16,27 @@ import { supabase } from '@/shared/api/supabase/client';
 import { useFontLoader } from '@/shared/hooks/useFontLoader';
 import { getImageUrl } from '@/shared/utils/imageUtils';
 import { logApiError } from '@/shared/utils/logger';
+interface Artist {
+  name: string;
+  genre: string;
+  image?: string | null;
+}
+
+interface EventData {
+  id: string;
+  title: string;
+  headliner: Artist;
+  undercard: Artist[];
+  date: string;
+  time: string;
+  venue: string;
+  heroImage: string;
+  description: string | null;
+  ticketUrl?: string | null;
+}
+
 const Index = () => {
-  const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<EventData[]>([]);
   const [loading, setLoading] = useState(true);
   const [displayMode, setDisplayMode] = useState<'grid' | 'row'>('grid');
   const fontsLoaded = useFontLoader();
@@ -59,7 +78,7 @@ const Index = () => {
         }
 
         // Map of database image paths to imported images
-        const imageMap = {
+        const imageMap: Record<string, string> = {
           '/src/assets/ninajirachi-cover.jpg': ninajirachiCover,
           '/src/assets/lf-system-cover.jpg': lfSystemCover,
         };
@@ -72,6 +91,7 @@ const Index = () => {
                 eventIds.map(async eventId => {
                   const event = data.find(e => e.id === eventId);
                   if (
+                    !event ||
                     !event.undercard_ids ||
                     event.undercard_ids.length === 0
                   ) {
@@ -105,7 +125,7 @@ const Index = () => {
             : [];
 
         // Transform the data to match the EventCard expected format
-        const transformedEvents = data.map(event => {
+        const transformedEvents: EventData[] = data.map(event => {
           const undercard =
             undercardArtists.find(u => u.eventId === event.id)?.artists || [];
           return {
@@ -115,24 +135,25 @@ const Index = () => {
               ? {
                   name: event.headliner_artist.name,
                   genre: event.headliner_artist.genre || 'Electronic',
-                  image: event.headliner_artist.image_url,
+                  image: event.headliner_artist.image_url || null,
                 }
               : {
                   name: 'TBA',
                   genre: 'Electronic',
+                  image: null,
                 },
             undercard: undercard.map(artist => ({
               name: artist.name,
               genre: artist.genre || 'Electronic',
-              image: artist.image_url,
+              image: artist.image_url || null,
             })),
             date: event.date,
             time: event.time,
             venue: event.venue,
             heroImage:
-              imageMap[event.hero_image] || getImageUrl(event.hero_image),
-            description: event.description,
-            ticketUrl: event.ticket_url,
+              (event.hero_image && imageMap[event.hero_image]) || getImageUrl(event.hero_image),
+            description: event.description || null,
+            ticketUrl: event.ticket_url || null,
           };
         });
         setUpcomingEvents(transformedEvents);

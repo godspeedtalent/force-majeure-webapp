@@ -6,10 +6,10 @@ import { getImageUrl } from '@/shared/utils/imageUtils';
 interface MerchCardProps {
   id: string;
   name: string;
-  description?: string;
+  description?: string | null;
   price: number;
   type: string;
-  image_url: string;
+  image_url: string | null;
   in_stock: boolean;
   children?: ReactNode;
   onClick?: () => void;

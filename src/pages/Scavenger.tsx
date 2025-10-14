@@ -106,7 +106,7 @@ export default function Scavenger() {
             onLoginSuccess={() => {
               window.location.href = window.location.href;
             }}
-            userFullName={profile?.full_name}
+          userFullName={profile?.full_name ?? undefined}
             isAuthenticated={true}
             hasAlreadyClaimed={true}
             claimCount={claimCount}
@@ -178,7 +178,7 @@ export default function Scavenger() {
               console.error('Claim failed:', error);
             }
           }}
-          userFullName={profile?.full_name}
+          userFullName={profile?.full_name ?? undefined}
           isAuthenticated={true}
           hasAlreadyClaimed={false}
           isClaimLoading={claimMutation.isPending}
@@ -204,7 +204,7 @@ export default function Scavenger() {
             onLoginSuccess={() => {
               window.location.href = window.location.href;
             }}
-            userFullName={profile?.full_name}
+            userFullName={profile?.full_name ?? undefined}
             isAuthenticated={true}
             hasAlreadyClaimed={true}
           />
@@ -215,7 +215,7 @@ export default function Scavenger() {
     return (
       <ScavengerSplitLayout showShoppingCart={!featureFlags?.coming_soon_mode}>
         <AuthenticatedUserView
-          displayName={profile?.display_name}
+          displayName={profile?.display_name ?? undefined}
           totalUndiscoveredCheckpoints={totalUndiscoveredCheckpoints}
           isLoading={locationsLoading}
         />

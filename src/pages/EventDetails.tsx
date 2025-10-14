@@ -23,7 +23,7 @@ import { getImageUrl } from '@/shared/utils/imageUtils';
 interface Artist {
   name: string;
   genre: string;
-  image?: string;
+  image?: string | null;
 }
 
 interface Event {
@@ -35,8 +35,8 @@ interface Event {
   time: string;
   venue: string;
   heroImage: string;
-  description: string;
-  ticketUrl?: string;
+  description: string | null;
+  ticketUrl?: string | null;
 }
 
 const EventDetails = () => {
@@ -76,7 +76,7 @@ const EventDetails = () => {
         };
 
         // Fetch undercard artists separately
-        let undercardArtists = [];
+        let undercardArtists: Array<{ name: string; genre: string | null; image_url: string | null }> = [];
         if (data.undercard_ids && data.undercard_ids.length > 0) {
           const { data: undercardData } = await supabase
             .from('artists')
@@ -92,23 +92,24 @@ const EventDetails = () => {
             ? {
                 name: data.headliner_artist.name,
                 genre: data.headliner_artist.genre || 'Electronic',
-                image: data.headliner_artist.image_url,
+                image: data.headliner_artist.image_url || null,
               }
             : {
                 name: 'TBA',
                 genre: 'Electronic',
+                image: null,
               },
           undercard: undercardArtists.map(artist => ({
             name: artist.name,
             genre: artist.genre || 'Electronic',
-            image: artist.image_url,
+            image: artist.image_url || null,
           })),
           date: data.date,
           time: data.time,
           venue: data.venue,
-          heroImage: imageMap[data.hero_image] || getImageUrl(data.hero_image),
-          description: data.description,
-          ticketUrl: data.ticket_url,
+          heroImage: (data.hero_image && imageMap[data.hero_image as keyof typeof imageMap]) || getImageUrl(data.hero_image),
+          description: data.description || null,
+          ticketUrl: data.ticket_url || null,
         };
 
         setEvent(transformedEvent);

@@ -261,7 +261,7 @@ serve(async req => {
         valid: false,
         reason: 'server_error',
         message: 'Internal server error',
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
       }),
       {
         status: 500,

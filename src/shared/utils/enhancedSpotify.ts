@@ -110,7 +110,7 @@ class EnhancedSpotifyService implements SpotifyAuthService {
       }
 
       // Check if token is expired
-      const expiresAt = new Date(profile.spotify_token_expires_at);
+      const expiresAt = new Date(profile.spotify_token_expires_at || 0);
       const now = new Date();
 
       if (expiresAt <= now) {
