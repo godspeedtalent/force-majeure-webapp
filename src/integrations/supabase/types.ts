@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      api_logs: {
+        Row: {
+          created_at: string
+          details: Json | null
+          endpoint: string | null
+          id: string
+          ip: string | null
+          level: string
+          message: string | null
+          method: string | null
+          request_id: string | null
+          source: string | null
+          status: number | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          details?: Json | null
+          endpoint?: string | null
+          id?: string
+          ip?: string | null
+          level?: string
+          message?: string | null
+          method?: string | null
+          request_id?: string | null
+          source?: string | null
+          status?: number | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          details?: Json | null
+          endpoint?: string | null
+          id?: string
+          ip?: string | null
+          level?: string
+          message?: string | null
+          method?: string | null
+          request_id?: string | null
+          source?: string | null
+          status?: number | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       artists: {
         Row: {
           bio: string | null
@@ -47,6 +92,48 @@ export type Database = {
         }
         Relationships: []
       }
+      event_artists: {
+        Row: {
+          artist_id: string
+          created_at: string
+          event_id: string
+          id: string
+          is_headliner: boolean | null
+          performance_order: number | null
+        }
+        Insert: {
+          artist_id: string
+          created_at?: string
+          event_id: string
+          id?: string
+          is_headliner?: boolean | null
+          performance_order?: number | null
+        }
+        Update: {
+          artist_id?: string
+          created_at?: string
+          event_id?: string
+          id?: string
+          is_headliner?: boolean | null
+          performance_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_artists_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "artists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_artists_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           created_at: string
@@ -60,7 +147,7 @@ export type Database = {
           title: string
           undercard_ids: string[] | null
           updated_at: string
-          venue: string
+          venue_id: string | null
         }
         Insert: {
           created_at?: string
@@ -74,7 +161,7 @@ export type Database = {
           title: string
           undercard_ids?: string[] | null
           updated_at?: string
-          venue: string
+          venue_id?: string | null
         }
         Update: {
           created_at?: string
@@ -88,7 +175,7 @@ export type Database = {
           title?: string
           undercard_ids?: string[] | null
           updated_at?: string
-          venue?: string
+          venue_id?: string | null
         }
         Relationships: [
           {
@@ -98,11 +185,19 @@ export type Database = {
             referencedRelation: "artists"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "fk_events_venue_id"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
         ]
       }
       feature_flags: {
         Row: {
           description: string | null
+          environment: string
           flag_name: string
           id: string
           is_enabled: boolean
@@ -110,6 +205,7 @@ export type Database = {
         }
         Insert: {
           description?: string | null
+          environment?: string
           flag_name: string
           id?: string
           is_enabled?: boolean
@@ -117,6 +213,7 @@ export type Database = {
         }
         Update: {
           description?: string | null
+          environment?: string
           flag_name?: string
           id?: string
           is_enabled?: boolean
@@ -167,6 +264,10 @@ export type Database = {
           display_name: string | null
           full_name: string | null
           id: string
+          instagram_handle: string | null
+          is_public: boolean | null
+          phone_number: string | null
+          show_on_leaderboard: boolean | null
           spotify_access_token_encrypted: string | null
           spotify_connected: boolean | null
           spotify_refresh_token_encrypted: string | null
@@ -180,6 +281,10 @@ export type Database = {
           display_name?: string | null
           full_name?: string | null
           id?: string
+          instagram_handle?: string | null
+          is_public?: boolean | null
+          phone_number?: string | null
+          show_on_leaderboard?: boolean | null
           spotify_access_token_encrypted?: string | null
           spotify_connected?: boolean | null
           spotify_refresh_token_encrypted?: string | null
@@ -193,6 +298,10 @@ export type Database = {
           display_name?: string | null
           full_name?: string | null
           id?: string
+          instagram_handle?: string | null
+          is_public?: boolean | null
+          phone_number?: string | null
+          show_on_leaderboard?: boolean | null
           spotify_access_token_encrypted?: string | null
           spotify_connected?: boolean | null
           spotify_refresh_token_encrypted?: string | null
@@ -242,33 +351,77 @@ export type Database = {
       }
       scavenger_locations: {
         Row: {
+          checkin_count: number
           created_at: string
           id: string
           is_active: boolean
           location_description: string | null
           location_name: string
           updated_at: string
-          validation_count: number
         }
         Insert: {
+          checkin_count?: number
           created_at?: string
           id?: string
           is_active?: boolean
           location_description?: string | null
           location_name: string
           updated_at?: string
-          validation_count?: number
         }
         Update: {
+          checkin_count?: number
           created_at?: string
           id?: string
           is_active?: boolean
           location_description?: string | null
           location_name?: string
           updated_at?: string
-          validation_count?: number
         }
         Relationships: []
+      }
+      scavenger_tokens: {
+        Row: {
+          claimed_at: string | null
+          claimed_by_user_id: string | null
+          created_at: string
+          id: string
+          is_claimed: boolean
+          location_id: string
+          token_hash: string
+          token_salt: string
+          updated_at: string
+        }
+        Insert: {
+          claimed_at?: string | null
+          claimed_by_user_id?: string | null
+          created_at?: string
+          id?: string
+          is_claimed?: boolean
+          location_id: string
+          token_hash: string
+          token_salt: string
+          updated_at?: string
+        }
+        Update: {
+          claimed_at?: string | null
+          claimed_by_user_id?: string | null
+          created_at?: string
+          id?: string
+          is_claimed?: boolean
+          location_id?: string
+          token_hash?: string
+          token_salt?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scavenger_tokens_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "scavenger_locations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       songs: {
         Row: {
@@ -343,6 +496,39 @@ export type Database = {
           },
         ]
       }
+      venues: {
+        Row: {
+          address: string | null
+          capacity: number | null
+          city: string | null
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          capacity?: number | null
+          city?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          capacity?: number | null
+          city?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -366,7 +552,6 @@ export type Database = {
           reward_type: string
           tokens_remaining: number
           total_tokens: number
-          validation_count: number
         }[]
       }
       get_location_with_promo: {
@@ -380,7 +565,6 @@ export type Database = {
           reward_type: string
           tokens_remaining: number
           total_tokens: number
-          validation_count: number
         }[]
       }
       has_role: {

@@ -1,6 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { supabase } from '@/shared/api/supabase/client';
+import {
+  getFeatureFlagEnvironment,
+  getEnvironmentOverride,
+  isDevelopment,
+} from '@/shared/utils/environment';
 
 interface FeatureFlags {
   scavenger_hunt_active: boolean;
@@ -8,15 +13,29 @@ interface FeatureFlags {
   show_leaderboard: boolean;
 }
 
+interface FeatureFlagRow {
+  flag_name: string;
+  is_enabled: boolean;
+  environment?: string;
+}
+
 export const useFeatureFlags = () => {
   return useQuery({
     queryKey: ['feature-flags'],
     queryFn: async (): Promise<FeatureFlags> => {
+      const currentEnv = getFeatureFlagEnvironment();
+
+      // Fetch all flags (types will be updated after migration)
       const { data, error } = await supabase
         .from('feature_flags')
-        .select('flag_name, is_enabled');
+        .select('flag_name, is_enabled, environment');
 
       if (error) throw error;
+
+      // Filter flags by environment
+      const filteredData = (data as unknown as FeatureFlagRow[])?.filter(
+        flag => flag.environment === currentEnv || flag.environment === 'all'
+      ) || [];
 
       const flags: FeatureFlags = {
         scavenger_hunt_active: false,
@@ -24,7 +43,7 @@ export const useFeatureFlags = () => {
         show_leaderboard: false,
       };
 
-      data?.forEach(flag => {
+      filteredData.forEach(flag => {
         if (flag.flag_name === 'scavenger_hunt_active') {
           flags.scavenger_hunt_active = flag.is_enabled;
         }
@@ -36,11 +55,33 @@ export const useFeatureFlags = () => {
         }
       });
 
-      console.log('🚩 Feature flags from database:', { data, flags });
+      // Apply local .env overrides in development only
+      if (isDevelopment()) {
+        const scavengerOverride = getEnvironmentOverride('scavenger_hunt_active');
+        const comingSoonOverride = getEnvironmentOverride('coming_soon_mode');
+        const leaderboardOverride = getEnvironmentOverride('show_leaderboard');
+
+        if (scavengerOverride !== null) {
+          flags.scavenger_hunt_active = scavengerOverride;
+        }
+        if (comingSoonOverride !== null) {
+          flags.coming_soon_mode = comingSoonOverride;
+        }
+        if (leaderboardOverride !== null) {
+          flags.show_leaderboard = leaderboardOverride;
+        }
+      }
+
+      console.log('🚩 Feature flags loaded:', {
+        environment: currentEnv,
+        dbFlags: filteredData,
+        finalFlags: flags,
+        isDev: isDevelopment(),
+      });
 
       return flags;
     },
-    staleTime: 30 * 1000, // 30 seconds cache (better for dev)
+    staleTime: 30 * 1000, // 30 seconds cache
     refetchOnWindowFocus: true,
   });
 };
