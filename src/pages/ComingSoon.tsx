@@ -2,6 +2,7 @@ import { Instagram } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { DecorativeDivider } from '@/components/DecorativeDivider';
+import { FloatingInstagramButton } from '@/components/FloatingInstagramButton';
 import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
 
 export default function ComingSoon() {
@@ -77,6 +78,9 @@ export default function ComingSoon() {
           </a>
         </div>
       </div>
+
+      {/* Floating Instagram Button */}
+      <FloatingInstagramButton className='bottom-6' />
 
       {/* Loading fallback */}
       {!fontsLoaded && (
