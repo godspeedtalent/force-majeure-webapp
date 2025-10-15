@@ -1,4 +1,4 @@
-import { Calendar } from 'lucide-react';
+import { Calendar, Instagram } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import lfSystemCover from '@/assets/lf-system-cover.jpg';
@@ -9,6 +9,7 @@ import { DecorativeDivider } from '@/components/DecorativeDivider';
 import { FloatingInstagramButton } from '@/components/FloatingInstagramButton';
 import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
 import { Layout } from '@/components/layout/Layout';
+import { SocialButton } from '@/components/SocialButton';
 import { EventCard } from '@/features/events/components/EventCard';
 import { EventCardSkeleton } from '@/features/events/components/EventCardSkeleton';
 import { supabase } from '@/shared/api/supabase/client';
@@ -210,7 +211,7 @@ const Index = () => {
                 <ForceMajeureLogo size='xl' className='mb-8 h-40 w-40' />
                 
                 <h1
-                  className='text-4xl lg:text-6xl font-screamer tracking-tight leading-none'
+                  className='text-4xl lg:text-6xl font-screamer tracking-tight leading-none mb-6'
                   style={{ fontWeight: 475 }}
                 >
                   <span className='text-foreground'>FORCE </span>
@@ -218,6 +219,13 @@ const Index = () => {
                     MAJEURE
                   </span>
                 </h1>
+
+                {/* Social Button */}
+                <SocialButton
+                  href='https://instagram.com/forcemajeure.atx'
+                  icon={Instagram}
+                  label='Follow us on Instagram'
+                />
               </div>
 
               {/* Decorative Divider */}
