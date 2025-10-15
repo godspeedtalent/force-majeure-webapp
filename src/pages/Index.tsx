@@ -1,5 +1,5 @@
 import { Calendar } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import lfSystemCover from '@/assets/lf-system-cover.jpg';
 import ninajirachiCover from '@/assets/ninajirachi-cover.jpg';
@@ -37,6 +37,17 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const fontsLoaded = useFontLoader();
   const [contentReady, setContentReady] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+  const heroRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Content is ready when both fonts are loaded and data loading is complete
   useEffect(() => {
@@ -167,47 +178,66 @@ const Index = () => {
     };
     fetchEvents();
   }, []);
+  const parallaxOffset = scrollY * 0.5;
+  const fadeOpacity = Math.max(0, 1 - scrollY / 400);
+
   return (
-    <div className='min-h-screen pt-24 pb-32 px-4'>
+    <div className='min-h-screen relative'>
+      {/* Topography Background */}
+      <div className='fixed inset-0 bg-topographic opacity-25 bg-repeat bg-center pointer-events-none' />
+      <div className='fixed inset-0 bg-gradient-monochrome opacity-10 pointer-events-none' />
+
       {!contentReady ? (
-        <div className='flex items-center justify-center min-h-[60vh]'>
+        <div className='flex items-center justify-center min-h-screen relative z-10'>
           <LoadingState message='Loading...' />
         </div>
       ) : (
-        <div className='max-w-7xl mx-auto animate-fade-in'>
-          {/* Logo and Title Section */}
-          <div className='flex flex-col items-center text-center mb-8'>
-            <ForceMajeureLogo size='xl' className='mb-8' />
-            
-            <h1
-              className='text-6xl lg:text-8xl font-screamer tracking-tight leading-none'
-              style={{ fontWeight: 475 }}
-            >
-              <span className='block text-foreground'>FORCE</span>
-              <span className='block bg-gradient-gold bg-clip-text text-transparent -mt-4'>
-                MAJEURE
-              </span>
-            </h1>
+        <div className='relative z-10 pt-24 pb-32 px-4'>
+          {/* Hero Section with Parallax */}
+          <div
+            ref={heroRef}
+            className='max-w-7xl mx-auto mb-16'
+            style={{
+              transform: `translateY(${parallaxOffset}px)`,
+              opacity: fadeOpacity,
+            }}
+          >
+            {/* Logo and Title Section */}
+            <div className='flex flex-col items-center text-center'>
+              <ForceMajeureLogo size='xl' className='mb-8 h-40 w-40' />
+              
+              <h1
+                className='text-4xl lg:text-6xl font-screamer tracking-tight leading-none'
+                style={{ fontWeight: 475 }}
+              >
+                <span className='text-foreground'>FORCE </span>
+                <span className='bg-gradient-gold bg-clip-text text-transparent'>
+                  MAJEURE
+                </span>
+              </h1>
+            </div>
+
+            {/* Decorative Divider */}
+            <DecorativeDivider />
           </div>
 
-          {/* Decorative Divider */}
-          <DecorativeDivider />
-
           {/* Events Grid */}
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center'>
-            {loading ? (
-              Array.from({ length: 6 }).map((_, idx) => (
-                <EventCardSkeleton key={`skeleton-${idx}`} />
-              ))
-            ) : upcomingEvents.length > 0 ? (
-              upcomingEvents.map(event => (
-                <EventCard key={event.id} event={event} />
-              ))
-            ) : (
-              <div className='col-span-full'>
-                <EmptyState icon={Calendar} title='No upcoming events' />
-              </div>
-            )}
+          <div className='max-w-7xl mx-auto animate-fade-in'>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center'>
+              {loading ? (
+                Array.from({ length: 6 }).map((_, idx) => (
+                  <EventCardSkeleton key={`skeleton-${idx}`} />
+                ))
+              ) : upcomingEvents.length > 0 ? (
+                upcomingEvents.map(event => (
+                  <EventCard key={event.id} event={event} />
+                ))
+              ) : (
+                <div className='col-span-full'>
+                  <EmptyState icon={Calendar} title='No upcoming events' />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
