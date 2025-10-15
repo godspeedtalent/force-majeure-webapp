@@ -5,10 +5,13 @@ import lfSystemCover from '@/assets/lf-system-cover.jpg';
 import ninajirachiCover from '@/assets/ninajirachi-cover.jpg';
 import { EmptyState } from '@/components/common/EmptyState';
 import { LoadingState } from '@/components/common/LoadingState';
-import { DecorativeDivider } from '@/components/DecorativeDivider';
-import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
+import { DisplayToggle } from '@/components/DisplayToggle';
+import SplitPageLayout from '@/components/layout/SplitPageLayout';
+import { Badge } from '@/components/ui/badge';
 import { EventCard } from '@/features/events/components/EventCard';
 import { EventCardSkeleton } from '@/features/events/components/EventCardSkeleton';
+import { EventRow } from '@/features/events/components/EventRow';
+import { EventRowSkeleton } from '@/features/events/components/EventRowSkeleton';
 import { supabase } from '@/shared/api/supabase/client';
 import { useFontLoader } from '@/shared/hooks/useFontLoader';
 import { getImageUrl } from '@/shared/utils/imageUtils';
@@ -35,6 +38,7 @@ interface EventData {
 const Index = () => {
   const [upcomingEvents, setUpcomingEvents] = useState<EventData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [displayMode, setDisplayMode] = useState<'grid' | 'row'>('grid');
   const fontsLoaded = useFontLoader();
   const [contentReady, setContentReady] = useState(false);
 
@@ -168,50 +172,90 @@ const Index = () => {
     fetchEvents();
   }, []);
   return (
-    <div className='min-h-screen pt-24 pb-32 px-4'>
-      {!contentReady ? (
-        <div className='flex items-center justify-center min-h-[60vh]'>
-          <LoadingState message='Loading...' />
-        </div>
-      ) : (
-        <div className='max-w-7xl mx-auto animate-fade-in'>
-          {/* Logo and Title Section */}
-          <div className='flex flex-col items-center text-center mb-8'>
-            <ForceMajeureLogo size='xl' className='mb-8' />
-            
-            <h1
-              className='text-6xl lg:text-8xl font-screamer tracking-tight leading-none'
-              style={{ fontWeight: 475 }}
-            >
-              <span className='block text-foreground'>FORCE</span>
-              <span className='block bg-gradient-gold bg-clip-text text-transparent -mt-4'>
-                MAJEURE
-              </span>
-            </h1>
-          </div>
-
-          {/* Decorative Divider */}
-          <DecorativeDivider />
-
-          {/* Events Grid */}
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center'>
-            {loading ? (
-              Array.from({ length: 6 }).map((_, idx) => (
-                <EventCardSkeleton key={`skeleton-${idx}`} />
-              ))
-            ) : upcomingEvents.length > 0 ? (
-              upcomingEvents.map(event => (
-                <EventCard key={event.id} event={event} />
-              ))
-            ) : (
-              <div className='col-span-full'>
-                <EmptyState icon={Calendar} title='No upcoming events' />
+    <SplitPageLayout
+      left={
+        <div className='relative h-full flex flex-col lg:px-0 py-0 px-0'>
+          {!contentReady ? (
+            <div className='flex-1 flex items-center justify-center'>
+              <LoadingState message='Loading...' />
+            </div>
+          ) : (
+            // Content with fade and slide animation
+            <div className='flex-1 flex flex-col justify-center animate-fade-in animate-slide-down-in'>
+              <div className='max-w-2xl px-[64px]'>
+                <Badge
+                  variant='outline'
+                  className='mb-8 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-colors duration-300'
+                >
+                  Promotions & A&R
+                </Badge>
+                <h1
+                  className='text-6xl lg:text-8xl font-screamer tracking-tight mb-8 leading-none'
+                  style={{ fontWeight: 475 }}
+                >
+                  <span className='block text-foreground'>FORCE</span>
+                  <span className='block bg-gradient-gold bg-clip-text text-transparent -mt-4'>
+                    MAJEURE
+                  </span>
+                </h1>
+                <p className='text-lg lg:text-xl font-canela text-muted-foreground leading-relaxed mb-12 max-w-xl'>
+                  The biggest rave fam in the world is deep in the heart of
+                  Austin, TX.
+                </p>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      }
+      right={
+        <div className='p-8 h-full overflow-y-auto'>
+          <div className='mb-8 flex items-center justify-between'>
+            <p className='font-canela text-sm text-muted-foreground'>
+              Events & Showcases
+            </p>
+            <div className='hidden lg:block'>
+              <DisplayToggle
+                displayMode={displayMode}
+                onDisplayModeChange={setDisplayMode}
+              />
+            </div>
+          </div>
+          {displayMode === 'grid' ? (
+            <div className='grid grid-cols-[repeat(auto-fit,minmax(280px,360px))] justify-around gap-y-6'>
+              {loading ? (
+                Array.from({ length: 6 }).map((_, idx) => (
+                  <EventCardSkeleton key={`skeleton-${idx}`} />
+                ))
+              ) : upcomingEvents.length > 0 ? (
+                upcomingEvents
+                  .slice(0, 6)
+                  .map(event => <EventCard key={event.id} event={event} />)
+              ) : (
+                <EmptyState
+                  icon={Calendar}
+                  title='No upcoming events'
+                  className='col-span-full'
+                />
+              )}
+            </div>
+          ) : (
+            <div className='space-y-4'>
+              {loading ? (
+                Array.from({ length: 6 }).map((_, idx) => (
+                  <EventRowSkeleton key={`skeleton-${idx}`} />
+                ))
+              ) : upcomingEvents.length > 0 ? (
+                upcomingEvents
+                  .slice(0, 6)
+                  .map(event => <EventRow key={event.id} event={event} />)
+              ) : (
+                <EmptyState icon={Calendar} title='No upcoming events' />
+              )}
+            </div>
+          )}
+        </div>
+      }
+    />
   );
 };
 export default Index;
