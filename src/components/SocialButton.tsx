@@ -23,11 +23,11 @@ export const SocialButton = ({
 }: SocialButtonProps) => {
   const baseClasses =
     variant === 'floating'
-      ? 'h-14 w-14 rounded-full shadow-elegant hover:shadow-glow bg-gradient-gold hover:scale-110'
-      : 'rounded-full hover:scale-110 bg-gradient-gold';
+      ? 'h-14 w-14 rounded-full bg-background/30 hover:bg-fm-gold hover:text-primary-foreground hover:scale-110'
+      : 'p-4 rounded-full bg-background/30 hover:bg-fm-gold hover:text-primary-foreground hover:scale-110';
 
   const defaultIconClasses =
-    variant === 'floating' ? 'h-6 w-6 text-background' : 'h-5 w-5 text-background';
+    variant === 'floating' ? 'h-6 w-6' : 'h-6 w-6';
 
   return (
     <Button

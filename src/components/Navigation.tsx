@@ -9,7 +9,7 @@ import {
   UserPlus,
   X,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -26,17 +26,34 @@ import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserRole } from '@/shared/hooks/useUserRole';
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
   const { user, signOut, profile } = useAuth();
   const navigate = useNavigate();
   const { data: role } = useUserRole();
   const isAdmin = role === 'admin';
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
   };
+
+  // Calculate opacity based on scroll (fade in by 400px, same as logo fade)
+  const navOpacity = Math.min(1, scrollY / 400);
+
   return (
-    <nav className='sticky top-0 z-50 w-full bg-background/50 backdrop-blur-md border-b border-border'>
+    <nav 
+      className='sticky top-0 z-50 w-full bg-background/50 backdrop-blur-md border-b border-border transition-opacity duration-300'
+      style={{ opacity: navOpacity }}
+    >
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='flex justify-between items-center h-16'>
           {/* Logo and Breadcrumbs */}
