@@ -6,7 +6,6 @@ import ninajirachiCover from '@/assets/ninajirachi-cover.jpg';
 import { EmptyState } from '@/components/common/EmptyState';
 import { LoadingState } from '@/components/common/LoadingState';
 import { DecorativeDivider } from '@/components/DecorativeDivider';
-import { FloatingInstagramButton } from '@/components/FloatingInstagramButton';
 import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
 import { Layout } from '@/components/layout/Layout';
 import { SocialButton } from '@/components/SocialButton';
@@ -252,9 +251,6 @@ const Index = () => {
             </div>
           </div>
         )}
-
-        {/* Floating Instagram Button */}
-        <FloatingInstagramButton />
       </div>
     </Layout>
   );
