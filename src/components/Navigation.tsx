@@ -23,6 +23,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserRole } from '@/shared/hooks/useUserRole';
 export const Navigation = () => {
@@ -65,15 +71,38 @@ export const Navigation = () => {
             >
               <ForceMajeureLogo className='h-8 w-8' />
             </Link>
-            <a
-              href='https://www.instagram.com/force.majeure.events'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='ml-6 text-foreground hover:text-fm-gold transition-colors duration-200'
-              aria-label='Follow us on Instagram'
-            >
-              <Instagram className='h-5 w-5' />
-            </a>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a
+                    href='https://www.instagram.com/force.majeure.events'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='ml-6 text-foreground hover:text-fm-gold transition-colors duration-200'
+                    aria-label='Follow us on Instagram'
+                  >
+                    <Instagram className='h-5 w-5' />
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>@force.majeure.events</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    to='/merch'
+                    className='text-foreground hover:text-fm-gold transition-colors duration-200'
+                    aria-label='Shop Merch'
+                  >
+                    <ShoppingCart className='h-5 w-5' />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Shop Merch</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <Breadcrumbs />
           </div>
 
