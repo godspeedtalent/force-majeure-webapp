@@ -221,7 +221,7 @@ const Index = () => {
 
                 {/* Social Button */}
                 <SocialButton
-                  href='https://instagram.com/forcemajeure.atx'
+                  href='https://www.instagram.com/force.majeure.events'
                   icon={Instagram}
                   label='Follow us on Instagram'
                 />

@@ -1,4 +1,5 @@
 import {
+  Instagram,
   LogIn,
   LogOut,
   Menu,
@@ -64,6 +65,15 @@ export const Navigation = () => {
             >
               <ForceMajeureLogo className='h-8 w-8' />
             </Link>
+            <a
+              href='https://www.instagram.com/force.majeure.events'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='ml-6 text-foreground hover:text-fm-gold transition-colors duration-200'
+              aria-label='Follow us on Instagram'
+            >
+              <Instagram className='h-5 w-5' />
+            </a>
             <Breadcrumbs />
           </div>
 

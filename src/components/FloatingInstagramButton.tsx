@@ -12,7 +12,7 @@ export const FloatingInstagramButton = ({
   return (
     <div className={`fixed bottom-24 right-6 z-50 ${className}`}>
       <SocialButton
-        href='https://instagram.com/forcemajeure.atx'
+        href='https://www.instagram.com/force.majeure.events'
         icon={Instagram}
         label='Follow us on Instagram'
         variant='floating'

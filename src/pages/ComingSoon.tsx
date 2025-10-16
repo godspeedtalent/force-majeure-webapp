@@ -69,7 +69,7 @@ export default function ComingSoon() {
           style={{ animationDelay: fontsLoaded ? '0.4s' : '0s' }}
         >
           <a
-            href='https://instagram.com/force.majeure.events'
+            href='https://www.instagram.com/force.majeure.events'
             target='_blank'
             rel='noopener noreferrer'
             className='p-4 rounded-full bg-muted/30 hover:bg-fm-gold hover:text-primary-foreground transition-all duration-300 hover:scale-110'
