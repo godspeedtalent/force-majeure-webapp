@@ -15,10 +15,11 @@ export const Layout = ({ children }: LayoutProps) => {
 
       <main className='flex-1 animate-fade-in pb-20'>{children}</main>
 
-      {/* Fixed music player and footer at bottom */}
+      <Footer />
+
+      {/* Fixed music player at bottom */}
       <div className='fixed bottom-0 left-0 right-0 z-40'>
         <ExpandableMusicPlayer />
-        <Footer />
       </div>
     </div>
   );
