@@ -17,22 +17,7 @@ export const FloatingInstagramButton = ({
 }: FloatingInstagramButtonProps) => {
   return (
     <TooltipProvider>
-      <div className={`fixed bottom-24 right-6 z-50 flex flex-col gap-4 ${className}`}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div>
-              <SocialButton
-                href='/merch'
-                icon={ShoppingCart}
-                label='Shop Merch'
-                variant='floating'
-              />
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side='left'>
-            <p>Shop Merch</p>
-          </TooltipContent>
-        </Tooltip>
+      <div className={`fixed bottom-24 right-6 z-50 flex flex-row gap-4 ${className}`}>
         <Tooltip>
           <TooltipTrigger asChild>
             <div>
@@ -46,6 +31,21 @@ export const FloatingInstagramButton = ({
           </TooltipTrigger>
           <TooltipContent side='left'>
             <p>@force.majeure.events</p>
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div>
+              <SocialButton
+                href='/merch'
+                icon={ShoppingCart}
+                label='Shop Merch'
+                variant='floating'
+              />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side='left'>
+            <p>Shop Merch</p>
           </TooltipContent>
         </Tooltip>
       </div>
