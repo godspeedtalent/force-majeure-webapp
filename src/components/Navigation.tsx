@@ -60,8 +60,8 @@ export const Navigation = () => {
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link to='/merch' className='text-foreground hover:text-fm-gold transition-colors duration-200' aria-label='Shop Merch'>
-                    
+                  <Link to='/merch' className='ml-4 text-foreground hover:text-fm-gold transition-colors duration-200' aria-label='Shop Merch'>
+                    <ShoppingCart className='h-5 w-5' />
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent>
