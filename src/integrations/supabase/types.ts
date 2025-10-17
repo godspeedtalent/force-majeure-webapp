@@ -467,6 +467,59 @@ export type Database = {
           },
         ]
       }
+      ticket_tiers: {
+        Row: {
+          created_at: string
+          description: string | null
+          event_id: string
+          hide_until_previous_sold_out: boolean
+          id: string
+          is_active: boolean
+          name: string
+          price: number
+          tickets_sold: number
+          tier_order: number
+          total_tickets: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          event_id: string
+          hide_until_previous_sold_out?: boolean
+          id?: string
+          is_active?: boolean
+          name: string
+          price: number
+          tickets_sold?: number
+          tier_order: number
+          total_tickets: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          event_id?: string
+          hide_until_previous_sold_out?: boolean
+          id?: string
+          is_active?: boolean
+          name?: string
+          price?: number
+          tickets_sold?: number
+          tier_order?: number
+          total_tickets?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_tiers_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
