@@ -72,6 +72,13 @@ export const Navigation = () => {
             <Breadcrumbs />
           </div>
 
+          {/* Center Title */}
+          <div className='absolute left-1/2 transform -translate-x-1/2 hidden lg:block'>
+            <h2 className='font-screamer text-white tracking-[0.15em] text-sm' style={{ fontWeight: 475 }}>
+              FORCE MAJEURE
+            </h2>
+          </div>
+
           {/* Desktop Actions */}
           <div className='hidden md:flex items-center space-x-4'>
             {isAdmin && <Button variant='ghost' size='sm' className='text-foreground hover:text-fm-gold hover:bg-hover-overlay' asChild>

@@ -210,7 +210,7 @@ const Index = () => {
                 <ForceMajeureLogo size='xl' className='mb-8 h-40 w-40' />
                 
                 <h1
-                  className='text-4xl lg:text-6xl font-screamer tracking-tight leading-none mb-6'
+                  className='text-4xl lg:text-6xl font-screamer tracking-[0.2em] leading-none mb-6'
                   style={{ fontWeight: 475 }}
                 >
                   <span className='text-foreground'>FORCE </span>
