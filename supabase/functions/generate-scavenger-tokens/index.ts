@@ -27,14 +27,26 @@ serve(async req => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // This function should only be called by admins/service role
+    // Verify service role authentication with exact match
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader || !authHeader.includes(supabaseServiceKey)) {
+    
+    if (!authHeader) {
       return new Response(
-        JSON.stringify({ error: 'Unauthorized - Service role key required' }),
-        {
+        JSON.stringify({ error: 'Unauthorized' }),
+        { 
           status: 401,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    if (token !== supabaseServiceKey) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { 
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       );
     }
