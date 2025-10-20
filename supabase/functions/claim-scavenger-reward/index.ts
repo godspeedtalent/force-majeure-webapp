@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -55,6 +56,15 @@ interface ClaimRequest {
   device_fingerprint?: string;
 }
 
+// Server-side input validation schema
+const ClaimSchema = z.object({
+  token: z.string().min(1).max(1000),
+  user_email: z.string().email().max(255),
+  display_name: z.string().min(1).max(100).trim(),
+  show_on_leaderboard: z.boolean(),
+  device_fingerprint: z.string().max(500).optional(),
+});
+
 serve(async req => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -87,13 +97,32 @@ serve(async req => {
       });
     }
 
+    // Parse and validate input
+    const requestBody = await req.json();
+    
+    let validatedInput;
+    try {
+      validatedInput = ClaimSchema.parse(requestBody);
+    } catch (validationError) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid input data',
+          details: validationError instanceof z.ZodError ? validationError.errors : 'Validation failed'
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
     const {
       token: encryptedCode,
       user_email,
       display_name,
       show_on_leaderboard = false,
       device_fingerprint,
-    }: ClaimRequest = await req.json();
+    } = validatedInput;
 
     if (!encryptedCode) {
       return new Response(JSON.stringify({ error: 'Code is required' }), {

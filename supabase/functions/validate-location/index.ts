@@ -8,6 +8,26 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 };
 
+// Rate limiting storage
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT = 20; // requests per minute
+const RATE_WINDOW = 60000; // 1 minute
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(ip) || { count: 0, resetTime: now + RATE_WINDOW };
+  
+  if (now > record.resetTime) {
+    record.count = 1;
+    record.resetTime = now + RATE_WINDOW;
+  } else {
+    record.count++;
+  }
+  
+  rateLimitMap.set(ip, record);
+  return record.count <= RATE_LIMIT;
+}
+
 serve(async req => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -15,6 +35,34 @@ serve(async req => {
   }
 
   try {
+    // Rate limiting
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 
+               req.headers.get('x-real-ip') || 
+               'unknown';
+    if (!checkRateLimit(ip)) {
+      const shouldRedirect = req.url.includes('token=');
+      if (shouldRedirect) {
+        return new Response(null, {
+          status: 302,
+          headers: {
+            ...corsHeaders,
+            Location: '/scavenger?error=rate_limit',
+          },
+        });
+      }
+      return new Response(
+        JSON.stringify({ 
+          valid: false,
+          reason: 'rate_limit',
+          message: 'Too many requests. Please try again in 1 minute.' 
+        }),
+        {
+          status: 429,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+    
     const url = new URL(req.url);
 
     // Get token/locationId from either query params or POST body
