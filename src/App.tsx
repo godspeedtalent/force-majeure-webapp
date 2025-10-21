@@ -7,8 +7,11 @@ import Auth from './pages/Auth';
 import ComingSoon from './pages/ComingSoon';
 import EventDetails from './pages/EventDetails';
 import Index from './pages/Index';
+import DemoIndex from './pages/demo/DemoIndex';
+import EventCheckout from './pages/demo/EventCheckout';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { DemoProtectedRoute } from '@/components/DemoProtectedRoute';
 import { Toaster as Sonner } from '@/components/ui/sonner';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -59,6 +62,24 @@ const AppRoutes = () => {
           <Route path='/merch' element={<Merch />} />
           <Route path='/profile' element={<Profile />} />
           <Route path='/admin' element={<AdminConfig />} />
+
+          {/* Demo Routes - Protected by role and feature flag */}
+          <Route
+            path='/demo'
+            element={
+              <DemoProtectedRoute>
+                <DemoIndex />
+              </DemoProtectedRoute>
+            }
+          />
+          <Route
+            path='/demo/event-checkout'
+            element={
+              <DemoProtectedRoute>
+                <EventCheckout />
+              </DemoProtectedRoute>
+            }
+          />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path='*' element={<NotFound />} />

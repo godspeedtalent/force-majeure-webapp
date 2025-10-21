@@ -11,6 +11,7 @@ interface FeatureFlags {
   scavenger_hunt_active: boolean;
   coming_soon_mode: boolean;
   show_leaderboard: boolean;
+  demo_pages: boolean;
 }
 
 interface FeatureFlagRow {
@@ -37,11 +38,12 @@ export const useFeatureFlags = () => {
         flag => flag.environment === currentEnv || flag.environment === 'all'
       ) || [];
 
-      const flags: FeatureFlags = {
-        scavenger_hunt_active: false,
-        coming_soon_mode: false,
-        show_leaderboard: false,
-      };
+    const flags: FeatureFlags = {
+      scavenger_hunt_active: false,
+      coming_soon_mode: false,
+      show_leaderboard: false,
+      demo_pages: false,
+    };
 
       filteredData.forEach(flag => {
         if (flag.flag_name === 'scavenger_hunt_active') {
@@ -53,6 +55,9 @@ export const useFeatureFlags = () => {
         if (flag.flag_name === 'show_leaderboard') {
           flags.show_leaderboard = flag.is_enabled;
         }
+        if (flag.flag_name === 'demo_pages') {
+          flags.demo_pages = flag.is_enabled;
+        }
       });
 
       // Apply local .env overrides in development only
@@ -60,6 +65,7 @@ export const useFeatureFlags = () => {
         const scavengerOverride = getEnvironmentOverride('scavenger_hunt_active');
         const comingSoonOverride = getEnvironmentOverride('coming_soon_mode');
         const leaderboardOverride = getEnvironmentOverride('show_leaderboard');
+        const demoPagesOverride = getEnvironmentOverride('demo_pages');
 
         if (scavengerOverride !== null) {
           flags.scavenger_hunt_active = scavengerOverride;
@@ -69,6 +75,9 @@ export const useFeatureFlags = () => {
         }
         if (leaderboardOverride !== null) {
           flags.show_leaderboard = leaderboardOverride;
+        }
+        if (demoPagesOverride !== null) {
+          flags.demo_pages = demoPagesOverride;
         }
       }
 
