@@ -14,7 +14,7 @@ export default function EventCheckout() {
   const [selectedEventId, setSelectedEventId] = useState<string | undefined>();
   const { data: events, isLoading: eventsLoading } = useEvents();
   const { data: ticketTiers, isLoading: tiersLoading } = useTicketTiers(selectedEventId);
-  const { initiateCheckout } = useCheckout();
+  const { initiateCheckout, isLoading: checkoutLoading } = useCheckout();
 
   const handlePurchase = (selections: { tierId: string; quantity: number }[]) => {
     if (!selectedEventId) return;
@@ -109,12 +109,13 @@ export default function EventCheckout() {
                     description: tier.description,
                     price: tier.price_cents / 100,
                     total_tickets: tier.total_tickets,
-                    tickets_sold: tier.sold_inventory,
+                    available_inventory: tier.available_inventory,
                     tier_order: tier.tier_order,
                     is_active: tier.is_active,
                     hide_until_previous_sold_out: tier.hide_until_previous_sold_out,
                   }))}
                   onPurchase={handlePurchase}
+                  isLoading={checkoutLoading}
                 />
               ) : (
                 <Card>

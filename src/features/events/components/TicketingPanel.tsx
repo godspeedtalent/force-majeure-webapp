@@ -12,7 +12,7 @@ interface TicketTier {
   description?: string;
   price: number;
   total_tickets: number;
-  tickets_sold: number;
+  available_inventory: number;
   tier_order: number;
   is_active: boolean;
   hide_until_previous_sold_out: boolean;
@@ -22,9 +22,10 @@ interface TicketingPanelProps {
   eventId: string;
   tiers: TicketTier[];
   onPurchase?: (selections: { tierId: string; quantity: number }[]) => void;
+  isLoading?: boolean;
 }
 
-export const TicketingPanel = ({ tiers, onPurchase }: TicketingPanelProps) => {
+export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: TicketingPanelProps) => {
   const [selections, setSelections] = useState<Record<string, number>>({});
 
   // Sort tiers by order
@@ -36,7 +37,7 @@ export const TicketingPanel = ({ tiers, onPurchase }: TicketingPanelProps) => {
     
     if (tier.hide_until_previous_sold_out && index > 0) {
       const previousTier = sortedTiers[index - 1];
-      return previousTier.tickets_sold >= previousTier.total_tickets;
+      return previousTier.available_inventory === 0;
     }
     
     return true;
@@ -44,12 +45,12 @@ export const TicketingPanel = ({ tiers, onPurchase }: TicketingPanelProps) => {
 
   // Check if tier is sold out
   const isSoldOut = (tier: TicketTier): boolean => {
-    return tier.tickets_sold >= tier.total_tickets;
+    return tier.available_inventory === 0;
   };
 
   // Get remaining tickets
   const getRemainingTickets = (tier: TicketTier): number => {
-    return Math.max(0, tier.total_tickets - tier.tickets_sold);
+    return Math.max(0, tier.available_inventory);
   };
 
   // Handle quantity selection
@@ -165,9 +166,10 @@ export const TicketingPanel = ({ tiers, onPurchase }: TicketingPanelProps) => {
               className='w-full bg-fm-gold hover:bg-fm-gold/90 text-primary-foreground' 
               size='lg'
               onClick={handlePurchase}
+              disabled={isLoading}
             >
               <ShoppingCart className='h-4 w-4 mr-2' />
-              Purchase Tickets
+              {isLoading ? 'Processing...' : 'Purchase Tickets'}
             </Button>
           </>
         )}
