@@ -4,6 +4,8 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import AdminConfig from './pages/AdminConfig';
 import Auth from './pages/Auth';
+import CheckoutCancel from './pages/CheckoutCancel';
+import CheckoutSuccess from './pages/CheckoutSuccess';
 import ComingSoon from './pages/ComingSoon';
 import EventDetails from './pages/EventDetails';
 import Index from './pages/Index';
@@ -62,6 +64,10 @@ const AppRoutes = () => {
           <Route path='/merch' element={<Merch />} />
           <Route path='/profile' element={<Profile />} />
           <Route path='/admin' element={<AdminConfig />} />
+          
+          {/* Checkout Routes */}
+          <Route path='/checkout/success' element={<CheckoutSuccess />} />
+          <Route path='/checkout/cancel' element={<CheckoutCancel />} />
 
           {/* Demo Routes - Protected by role and feature flag */}
           <Route
