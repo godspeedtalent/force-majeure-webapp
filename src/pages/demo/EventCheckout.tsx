@@ -1,19 +1,35 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingCart, ArrowLeft, Loader2 } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { TicketingPanel } from '@/features/events/components/TicketingPanel';
+import { useEvents } from '@/features/events/hooks/useEvents';
+import { useTicketTiers } from '@/features/events/hooks/useTicketTiers';
+import { useCheckout } from '@/features/events/hooks/useCheckout';
+import { LoadingState } from '@/components/common/LoadingState';
+import { format } from 'date-fns';
 
 export default function EventCheckout() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState<string | undefined>();
+  const { data: events, isLoading: eventsLoading } = useEvents();
+  const { data: ticketTiers, isLoading: tiersLoading } = useTicketTiers(selectedEventId);
+  const { initiateCheckout } = useCheckout();
 
-  const handleCheckout = async () => {
-    setIsLoading(true);
-    // TODO: Implement checkout flow
-    console.log('Checkout initiated');
-    setTimeout(() => setIsLoading(false), 2000);
+  const handlePurchase = (selections: { tierId: string; quantity: number }[]) => {
+    if (!selectedEventId) return;
+    
+    const tickets = selections.map(s => ({
+      tier_id: s.tierId,
+      quantity: s.quantity,
+    }));
+
+    initiateCheckout(selectedEventId, tickets);
   };
+
+  if (eventsLoading) {
+    return <LoadingState />;
+  }
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -48,77 +64,70 @@ export default function EventCheckout() {
                 Choose an event to test ticket purchasing
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="p-4 border rounded-lg">
-                <h3 className="font-semibold mb-2">Sample Event</h3>
-                <p className="text-sm text-muted-foreground">
-                  This will be populated with actual events from the database
+            <CardContent className="space-y-3">
+              {events && events.length > 0 ? (
+                events.map((event) => (
+                  <button
+                    key={event.id}
+                    onClick={() => setSelectedEventId(event.id)}
+                    className={`w-full p-4 border rounded-lg text-left transition-all hover:border-primary ${
+                      selectedEventId === event.id ? 'border-primary bg-primary/5' : 'border-border'
+                    }`}
+                  >
+                    <h3 className="font-semibold mb-2">{event.title}</h3>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4" />
+                        {format(new Date(event.date), 'MMM d, yyyy')} at {event.time}
+                      </div>
+                    </div>
+                  </button>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground p-4 text-center">
+                  No events available. Create events in the admin panel first.
                 </p>
-              </div>
+              )}
             </CardContent>
           </Card>
 
           {/* Ticket Selection */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Step 2: Select Tickets</CardTitle>
-              <CardDescription>
-                Choose ticket tiers and quantities
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="p-4 border rounded-lg">
-                <p className="text-sm text-muted-foreground">
-                  Ticket tier selection UI will be implemented here
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Checkout Summary */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Step 3: Review & Checkout</CardTitle>
-              <CardDescription>
-                Review your order and proceed to payment
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-4 border rounded-lg space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Subtotal</span>
-                  <span>$0.00</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Fees</span>
-                  <span>$0.00</span>
-                </div>
-                <div className="h-px bg-border my-2" />
-                <div className="flex justify-between font-semibold">
-                  <span>Total</span>
-                  <span>$0.00</span>
-                </div>
-              </div>
-
-              <Button 
-                onClick={handleCheckout} 
-                className="w-full"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <ShoppingCart className="mr-2 h-4 w-4" />
-                    Proceed to Checkout
-                  </>
-                )}
-              </Button>
-            </CardContent>
-          </Card>
+          {selectedEventId && (
+            <>
+              {tiersLoading ? (
+                <Card>
+                  <CardContent className="py-8">
+                    <LoadingState />
+                  </CardContent>
+                </Card>
+              ) : ticketTiers && ticketTiers.length > 0 ? (
+                <TicketingPanel
+                  eventId={selectedEventId}
+                  tiers={ticketTiers.map(tier => ({
+                    id: tier.id,
+                    name: tier.name,
+                    description: tier.description,
+                    price: tier.price_cents / 100,
+                    total_tickets: tier.total_tickets,
+                    tickets_sold: tier.sold_inventory,
+                    tier_order: tier.tier_order,
+                    is_active: tier.is_active,
+                    hide_until_previous_sold_out: tier.hide_until_previous_sold_out,
+                  }))}
+                  onPurchase={handlePurchase}
+                />
+              ) : (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>No Tickets Available</CardTitle>
+                    <CardDescription>
+                      This event doesn't have any ticket tiers configured yet
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              )}
+            </>
+          )}
 
           {/* Debug Info */}
           <Card>
