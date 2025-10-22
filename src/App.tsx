@@ -9,6 +9,7 @@ import CheckoutSuccess from './pages/CheckoutSuccess';
 import ComingSoon from './pages/ComingSoon';
 import EventDetails from './pages/EventDetails';
 import Index from './pages/Index';
+import Orders from './pages/Orders';
 import DemoIndex from './pages/demo/DemoIndex';
 import EventCheckout from './pages/demo/EventCheckout';
 
@@ -64,6 +65,7 @@ const AppRoutes = () => {
           <Route path='/merch' element={<Merch />} />
           <Route path='/profile' element={<Profile />} />
           <Route path='/admin' element={<AdminConfig />} />
+          <Route path='/orders' element={<Orders />} />
           
           {/* Checkout Routes */}
           <Route path='/checkout/success' element={<CheckoutSuccess />} />
