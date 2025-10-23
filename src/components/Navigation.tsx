@@ -1,6 +1,6 @@
 import { Instagram, LogIn, LogOut, Menu, Settings, SettingsIcon, ShoppingCart, User, UserPlus, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
 import { Button } from '@/components/ui/button';
@@ -17,10 +17,12 @@ export const Navigation = () => {
     profile
   } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     data: role
   } = useUserRole();
   const isAdmin = role === 'admin';
+  const isHomePage = location.pathname === '/';
   useEffect(() => {
     const handleScroll = () => {
       setScrollY(window.scrollY);
@@ -35,8 +37,8 @@ export const Navigation = () => {
     navigate('/');
   };
 
-  // Calculate opacity based on scroll (fade in by 400px, same as logo fade)
-  const navOpacity = Math.min(1, scrollY / 400);
+  // Calculate opacity based on scroll (fade in by 400px, same as logo fade) - only on home page
+  const navOpacity = isHomePage ? Math.min(1, scrollY / 400) : 1;
   return <nav className='sticky top-0 z-50 w-full bg-background/50 backdrop-blur-md border-b border-border transition-opacity duration-300' style={{
     opacity: navOpacity
   }}>
