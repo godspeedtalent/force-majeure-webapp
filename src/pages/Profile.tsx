@@ -12,8 +12,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { SplitPageLayout } from '@/components/layout/SplitPageLayout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CustomInput } from '@/components/ui/custom-input';
-import { CustomLabel } from '@/components/ui/custom-label';
+import { FmCommonTextField } from '@/components/ui/FmCommonTextField';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useToast } from '@/shared/hooks/use-toast';
@@ -190,30 +189,24 @@ const Profile = () => {
 
         <form onSubmit={handleUpdateProfile} className='space-y-6'>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-            <div className='space-y-2'>
-              <CustomLabel htmlFor='email'>Email</CustomLabel>
-              <CustomInput
-                id='email'
-                type='email'
-                value={user.email || ''}
-                disabled
-                className='opacity-60'
-              />
-              <p className='text-xs text-muted-foreground'>
-                Email cannot be changed
-              </p>
-            </div>
+            <FmCommonTextField
+              label='Email'
+              id='email'
+              type='email'
+              value={user.email || ''}
+              disabled
+              className='opacity-60'
+              description='Email cannot be changed'
+            />
 
-            <div className='space-y-2'>
-              <CustomLabel htmlFor='displayName'>Display Name</CustomLabel>
-              <CustomInput
-                id='displayName'
-                type='text'
-                placeholder='Enter your display name'
-                value={displayName}
-                onChange={e => setDisplayName(e.target.value)}
-              />
-            </div>
+            <FmCommonTextField
+              label='Display Name'
+              id='displayName'
+              type='text'
+              placeholder='Enter your display name'
+              value={displayName}
+              onChange={e => setDisplayName(e.target.value)}
+            />
           </div>
 
           <Button

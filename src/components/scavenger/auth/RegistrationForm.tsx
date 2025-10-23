@@ -8,7 +8,7 @@ import { FormSection } from '@/components/ui/FormSection';
 import { Label } from '@/components/ui/label';
 import { PasswordInput } from '@/components/ui/PasswordInput';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { TextField } from '@/components/ui/TextField';
+import { FmCommonTextField } from '@/components/ui/FmCommonTextField';
 import { supabase } from '@/shared/api/supabase/client';
 
 interface RegistrationFormProps {
@@ -176,7 +176,7 @@ export function RegistrationForm({
           className='px-8 lg:px-12 pb-6'
         >
           <FormSection title='Contact Info' showTopDivider={false}>
-            <TextField
+            <FmCommonTextField
               label='Full Name'
               id='fullName'
               type='text'
@@ -186,7 +186,7 @@ export function RegistrationForm({
               required
             />
 
-            <TextField
+            <FmCommonTextField
               label='Email'
               id='email'
               type='email'
@@ -196,7 +196,7 @@ export function RegistrationForm({
               required
             />
 
-            <TextField
+            <FmCommonTextField
               label='Phone Number'
               id='phoneNumber'
               type='tel'
@@ -211,7 +211,7 @@ export function RegistrationForm({
 
           <FormSection title='Social'>
             <div className='space-y-3'>
-              <TextField
+              <FmCommonTextField
                 label='Display Name'
                 id='displayName'
                 type='text'
@@ -237,7 +237,7 @@ export function RegistrationForm({
               </div>
             </div>
 
-            <TextField
+            <FmCommonTextField
               label='Instagram Handle'
               id='instagramHandle'
               type='text'

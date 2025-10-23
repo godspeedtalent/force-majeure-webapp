@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/shared/utils/utils';
 
-interface TextFieldProps extends React.ComponentPropsWithoutRef<typeof Input> {
+interface FmCommonTextFieldProps extends React.ComponentPropsWithoutRef<typeof Input> {
   label: string;
   required?: boolean;
   description?: string;
@@ -13,7 +13,7 @@ interface TextFieldProps extends React.ComponentPropsWithoutRef<typeof Input> {
   prepend?: string;
 }
 
-export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
+export const FmCommonTextField = React.forwardRef<HTMLInputElement, FmCommonTextFieldProps>(
   (
     {
       label,
@@ -32,15 +32,7 @@ export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     const inputId = id || label.toLowerCase().replace(/\s+/g, '-');
 
     return (
-      <div className={cn('space-y-2', containerClassName)}>
-        <div>
-          <Label htmlFor={inputId} className='text-sm'>
-            {label} {required && <span className='text-fm-gold'>*</span>}
-          </Label>
-          {description && (
-            <p className='text-xs text-muted-foreground mt-1'>{description}</p>
-          )}
-        </div>
+      <div className={cn('space-y-1', containerClassName)}>
         {prepend ? (
           <div className='relative flex items-center'>
             <div className='absolute left-0 top-0 h-9 w-9 bg-muted flex items-center justify-center text-sm font-medium text-foreground/70 border-r border-border'>
@@ -63,10 +55,18 @@ export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
             {...props}
           />
         )}
+        <div>
+          <Label htmlFor={inputId} className='text-xs text-muted-foreground'>
+            {label} {required && <span className='text-fm-gold'>*</span>}
+          </Label>
+          {description && (
+            <p className='text-xs text-muted-foreground/70 mt-0.5'>{description}</p>
+          )}
+        </div>
         {error && <p className='text-xs text-red-500 mt-1'>{error}</p>}
       </div>
     );
   }
 );
 
-TextField.displayName = 'TextField';
+FmCommonTextField.displayName = 'FmCommonTextField';

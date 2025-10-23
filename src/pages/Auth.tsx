@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/card';
 import { CustomInput } from '@/components/ui/custom-input';
 import { CustomLabel } from '@/components/ui/custom-label';
+import { FmCommonTextField } from '@/components/ui/FmCommonTextField';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/features/auth/services/AuthContext';
 
@@ -96,24 +97,19 @@ const Auth = () => {
 
               <TabsContent value='signin' className='space-y-6'>
                 <form onSubmit={handleSignIn} className='space-y-6'>
-                  <div className='space-y-2'>
-                    <CustomLabel htmlFor='signin-email'>Email</CustomLabel>
-                    <CustomInput
-                      id='signin-email'
-                      type='email'
-                      placeholder='Enter your email'
-                      value={signInForm.email}
-                      onChange={e =>
-                        setSignInForm({ ...signInForm, email: e.target.value })
-                      }
-                      required
-                    />
-                  </div>
+                  <FmCommonTextField
+                    label='Email'
+                    id='signin-email'
+                    type='email'
+                    placeholder='Enter your email'
+                    value={signInForm.email}
+                    onChange={e =>
+                      setSignInForm({ ...signInForm, email: e.target.value })
+                    }
+                    required
+                  />
 
-                  <div className='space-y-2'>
-                    <CustomLabel htmlFor='signin-password'>
-                      Password
-                    </CustomLabel>
+                  <div className='space-y-1'>
                     <div className='relative'>
                       <CustomInput
                         id='signin-password'
@@ -142,6 +138,7 @@ const Auth = () => {
                         )}
                       </Button>
                     </div>
+                    <CustomLabel htmlFor='signin-password'>Password</CustomLabel>
                   </div>
 
                   <Button
@@ -159,42 +156,33 @@ const Auth = () => {
 
               <TabsContent value='signup' className='space-y-6'>
                 <form onSubmit={handleSignUp} className='space-y-8'>
-                  <div className='space-y-2'>
-                    <CustomLabel htmlFor='signup-name'>
-                      Display Name (Optional)
-                    </CustomLabel>
-                    <CustomInput
-                      id='signup-name'
-                      type='text'
-                      placeholder='Enter your display name'
-                      value={signUpForm.displayName}
-                      onChange={e =>
-                        setSignUpForm({
-                          ...signUpForm,
-                          displayName: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
+                  <FmCommonTextField
+                    label='Display Name (Optional)'
+                    id='signup-name'
+                    type='text'
+                    placeholder='Enter your display name'
+                    value={signUpForm.displayName}
+                    onChange={e =>
+                      setSignUpForm({
+                        ...signUpForm,
+                        displayName: e.target.value,
+                      })
+                    }
+                  />
 
-                  <div className='space-y-2'>
-                    <CustomLabel htmlFor='signup-email'>Email</CustomLabel>
-                    <CustomInput
-                      id='signup-email'
-                      type='email'
-                      placeholder='Enter your email'
-                      value={signUpForm.email}
-                      onChange={e =>
-                        setSignUpForm({ ...signUpForm, email: e.target.value })
-                      }
-                      required
-                    />
-                  </div>
+                  <FmCommonTextField
+                    label='Email'
+                    id='signup-email'
+                    type='email'
+                    placeholder='Enter your email'
+                    value={signUpForm.email}
+                    onChange={e =>
+                      setSignUpForm({ ...signUpForm, email: e.target.value })
+                    }
+                    required
+                  />
 
-                  <div className='space-y-2'>
-                    <CustomLabel htmlFor='signup-password'>
-                      Password
-                    </CustomLabel>
+                  <div className='space-y-1'>
                     <div className='relative'>
                       <CustomInput
                         id='signup-password'
@@ -223,6 +211,7 @@ const Auth = () => {
                         )}
                       </Button>
                     </div>
+                    <CustomLabel htmlFor='signup-password'>Password</CustomLabel>
                   </div>
 
                   <Button
