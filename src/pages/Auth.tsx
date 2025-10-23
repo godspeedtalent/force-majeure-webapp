@@ -73,7 +73,7 @@ const Auth = () => {
 
   return (
     <ForceMajeureRootLayout>
-      <div className='flex items-center justify-center min-h-full px-4 py-8'>
+      <div className='flex items-center justify-center min-h-full px-4 py-12'>
         <Card className='w-full max-w-md border-border/30 bg-card/20 backdrop-blur-lg shadow-2xl animate-fade-in'>
           <CardHeader className='text-center pb-6'>
             <div className='flex justify-center mb-4'>
@@ -158,7 +158,7 @@ const Auth = () => {
               </TabsContent>
 
               <TabsContent value='signup' className='space-y-6'>
-                <form onSubmit={handleSignUp} className='space-y-6'>
+                <form onSubmit={handleSignUp} className='space-y-8'>
                   <div className='space-y-2'>
                     <CustomLabel htmlFor='signup-name'>
                       Display Name (Optional)
