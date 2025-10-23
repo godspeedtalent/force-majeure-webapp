@@ -1,4 +1,4 @@
-import { Calendar, Instagram } from 'lucide-react';
+import { Calendar, Instagram, LogIn } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import lfSystemCover from '@/assets/lf-system-cover.jpg';
@@ -182,6 +182,8 @@ const Index = () => {
   }, []);
   const parallaxOffset = scrollY * 0.5;
   const fadeOpacity = Math.max(0, 1 - scrollY / 400);
+  // Login button fades in twice as fast (appears when nav starts hiding)
+  const loginButtonOpacity = Math.min(1, scrollY / 200);
 
   return (
     <Layout>
@@ -189,6 +191,26 @@ const Index = () => {
         {/* Topography Background */}
         <div className='fixed inset-0 bg-topographic opacity-25 bg-repeat bg-center pointer-events-none' />
         <div className='fixed inset-0 bg-gradient-monochrome opacity-10 pointer-events-none' />
+
+        {/* Floating Login Button */}
+        {contentReady && (
+          <div
+            className='fixed top-6 right-6 z-50 transition-opacity duration-300'
+            style={{
+              opacity: loginButtonOpacity,
+              pointerEvents: loginButtonOpacity > 0 ? 'auto' : 'none',
+            }}
+          >
+            <FmCommonButton
+              href='/auth'
+              icon={LogIn}
+              label='Login'
+              tooltip='Login'
+              variant='floating'
+              isExternal={false}
+            />
+          </div>
+        )}
 
         {!contentReady ? (
           <div className='flex items-center justify-center min-h-screen relative z-10'>
