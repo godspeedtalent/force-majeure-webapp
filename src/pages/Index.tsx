@@ -8,7 +8,7 @@ import { LoadingState } from '@/components/common/LoadingState';
 import { DecorativeDivider } from '@/components/DecorativeDivider';
 import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
 import { Layout } from '@/components/layout/Layout';
-import { SocialButton } from '@/components/SocialButton';
+import { FmCommonButton } from '@/components/FmCommonButton';
 import { EventCard } from '@/features/events/components/EventCard';
 import { EventCardSkeleton } from '@/features/events/components/EventCardSkeleton';
 import { supabase } from '@/shared/api/supabase/client';
@@ -220,10 +220,11 @@ const Index = () => {
                 </h1>
 
                 {/* Social Button */}
-                <SocialButton
+                <FmCommonButton
                   href='https://www.instagram.com/force.majeure.events'
                   icon={Instagram}
                   label='Follow us on Instagram'
+                  isExternal={true}
                 />
               </div>
 

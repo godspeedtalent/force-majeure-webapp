@@ -1,8 +1,8 @@
-import { Instagram } from 'lucide-react';
+import { Instagram, ShoppingCart } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { DecorativeDivider } from '@/components/DecorativeDivider';
-import { FloatingInstagramButton } from '@/components/FloatingInstagramButton';
+import { FmCommonButton } from '@/components/FmCommonButton';
 import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
 
 export default function ComingSoon() {
@@ -79,8 +79,25 @@ export default function ComingSoon() {
         </div>
       </div>
 
-      {/* Floating Instagram Button */}
-      <FloatingInstagramButton className='bottom-6' />
+      {/* Floating Buttons */}
+      <div className='fixed bottom-6 right-6 z-50 flex flex-row gap-4'>
+        <FmCommonButton
+          href='https://www.instagram.com/force.majeure.events'
+          icon={Instagram}
+          label='Follow us on Instagram'
+          tooltip='@force.majeure.events'
+          variant='floating'
+          isExternal={true}
+        />
+        <FmCommonButton
+          href='/merch'
+          icon={ShoppingCart}
+          label='Shop Merch'
+          tooltip='Shop Merch'
+          variant='floating'
+          isExternal={false}
+        />
+      </div>
 
       {/* Loading fallback */}
       {!fontsLoaded && (
