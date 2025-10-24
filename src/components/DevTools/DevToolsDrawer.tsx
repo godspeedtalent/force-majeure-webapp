@@ -45,8 +45,15 @@ export const DevToolsDrawer = () => {
       className="fixed bottom-0 right-0 z-[100] transition-all duration-300 ease-in-out"
       style={{ width: isOpen ? '320px' : '0px', marginBottom: '96px' }}
     >
+      {/* Label strip */}
+      <div className="absolute bottom-0 right-full w-4 h-[calc(100vh-96px)] bg-black/95 border-l border-white/10 flex items-start justify-center pt-8">
+        <span className="text-white/40 text-[10px] font-medium tracking-widest whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
+          DEVELOPER TOOLS
+        </span>
+      </div>
+
       {/* Tabs - positioned absolutely at the left edge */}
-      <div className="absolute bottom-0 right-full flex flex-col gap-2 pr-0">
+      <div className="absolute bottom-0 right-full flex flex-col gap-2 pr-4">
         <FmCommonTab
           icon={Hammer}
           label="Developer Tools"

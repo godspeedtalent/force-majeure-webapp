@@ -25,8 +25,8 @@ export const DemoLayout = ({
         <div className="max-w-7xl mx-auto">
           {/* Header with Demo Tools on the Right */}
           <div className="mb-4 flex gap-6">
-            {/* Left: Header Info */}
-            <div className="flex-1">
+            {/* Left: Header Info - 33% */}
+            <div className="w-1/3 flex-shrink-0">
               <div className="flex items-center gap-3 mb-2">
                 <Icon className="h-6 w-6 text-fm-gold" />
                 <h1 className="text-3xl font-canela font-bold">{title}</h1>
@@ -37,9 +37,9 @@ export const DemoLayout = ({
               </Badge>
             </div>
 
-            {/* Right: Demo Tools */}
+            {/* Right: Demo Tools - 67% */}
             {demoTools && (
-              <div className="w-80 flex-shrink-0">
+              <div className="flex-1">
                 <div className="p-4 bg-black/40 backdrop-blur-md border border-white/20 rounded-lg">
                   <h3 className="font-canela text-lg text-white mb-4">
                     Demo Tools
