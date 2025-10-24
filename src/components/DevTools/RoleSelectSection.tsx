@@ -42,8 +42,8 @@ export const RoleSelectSection = ({ currentRole, onRoleChange }: RoleSelectSecti
 
       <FmCommonToggleHeader title="Role Select">
         <div>
-          <p className="text-xs text-white/60 mb-3">
-            Select a role to simulate during your session
+          <p className="text-xs text-white/50 mb-3">
+            Simulate different user roles to test permissions and access control
           </p>
           <FmCommonDropdown
             trigger={

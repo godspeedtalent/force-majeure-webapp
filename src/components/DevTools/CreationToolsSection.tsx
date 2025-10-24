@@ -14,22 +14,27 @@ export const CreationToolsSection = () => {
   };
 
   return (
-    <div className="space-y-3">
-      <FmCreateEventButton 
-        onModalOpen={handleModalOpen}
-        variant="outline"
-        className="w-full"
-      />
-      <FmCreateArtistButton
-        onModalOpen={handleModalOpen}
-        variant="outline"
-        className="w-full"
-      />
-      <FmCreateVenueButton
-        onModalOpen={handleModalOpen}
-        variant="outline"
-        className="w-full"
-      />
+    <div className="space-y-4">
+      <p className="text-xs text-white/50">
+        Create new events, artists, and venues for the platform
+      </p>
+      <div className="space-y-3">
+        <FmCreateEventButton 
+          onModalOpen={handleModalOpen}
+          variant="outline"
+          className="w-full"
+        />
+        <FmCreateArtistButton
+          onModalOpen={handleModalOpen}
+          variant="outline"
+          className="w-full"
+        />
+        <FmCreateVenueButton
+          onModalOpen={handleModalOpen}
+          variant="outline"
+          className="w-full"
+        />
+      </div>
     </div>
   );
 };

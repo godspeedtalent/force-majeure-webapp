@@ -13,6 +13,8 @@ import Orders from './pages/Orders';
 import DemoIndex from './pages/demo/DemoIndex';
 import EventCheckout from './pages/demo/EventCheckout';
 import MemberHome from './pages/members/MemberHome';
+import Statistics from './pages/admin/Statistics';
+import AdminControls from './pages/admin/AdminControls';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { DemoProtectedRoute } from '@/components/DemoProtectedRoute';
@@ -95,6 +97,24 @@ const AppRoutes = () => {
             element={
               <DemoProtectedRoute>
                 <EventCheckout />
+              </DemoProtectedRoute>
+            }
+          />
+
+          {/* Admin Routes - Protected by role */}
+          <Route
+            path='/admin/statistics'
+            element={
+              <DemoProtectedRoute>
+                <Statistics />
+              </DemoProtectedRoute>
+            }
+          />
+          <Route
+            path='/admin/controls'
+            element={
+              <DemoProtectedRoute>
+                <AdminControls />
               </DemoProtectedRoute>
             }
           />

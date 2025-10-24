@@ -743,6 +743,7 @@ export type Database = {
       ticketing_fees: {
         Row: {
           created_at: string
+          environment: string
           fee_name: string
           fee_type: string
           fee_value: number
@@ -752,6 +753,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          environment?: string
           fee_name: string
           fee_type: string
           fee_value: number
@@ -761,6 +763,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          environment?: string
           fee_name?: string
           fee_type?: string
           fee_value?: number

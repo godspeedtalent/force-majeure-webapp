@@ -3,6 +3,16 @@ import { DollarSign, Percent } from 'lucide-react';
 import { FmCommonToggleHeader } from '@/components/ui/FmCommonToggleHeader';
 import { FmCommonTextField } from '@/components/ui/FmCommonTextField';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/shared/utils/utils';
@@ -13,6 +23,7 @@ interface Fee {
   fee_type: 'flat' | 'percentage';
   fee_value: number;
   is_active: boolean;
+  environment: string;
 }
 
 const feeLabels: Record<string, string> = {
@@ -25,13 +36,15 @@ export const TicketingSection = () => {
   const [fees, setFees] = useState<Fee[]>([]);
   const [localFees, setLocalFees] = useState<Record<string, { type: 'flat' | 'percentage'; value: string }>>({});
   const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const environment = 'dev'; // Currently always dev
 
   const fetchFees = async () => {
     try {
       const { data, error } = await supabase
         .from('ticketing_fees')
         .select('*')
+        .or(`environment.eq.${environment},environment.eq.all`)
         .order('fee_name', { ascending: true });
 
       if (error) throw error;
@@ -81,17 +94,21 @@ export const TicketingSection = () => {
   };
 
   const handleSave = async () => {
-    setIsSaving(true);
+    setShowConfirmDialog(false);
+    
     try {
       const updates = Object.entries(localFees).map(([feeName, feeData]) => {
         const numValue = parseFloat(feeData.value) || 0;
+        const fee = fees.find(f => f.fee_name === feeName);
+        
         return supabase
           .from('ticketing_fees')
           .update({
             fee_type: feeData.type,
             fee_value: numValue,
           })
-          .eq('fee_name', feeName);
+          .eq('fee_name', feeName)
+          .eq('environment', fee?.environment || environment);
       });
 
       await Promise.all(updates);
@@ -100,8 +117,6 @@ export const TicketingSection = () => {
     } catch (error) {
       console.error('Failed to update fees:', error);
       toast.error('Failed to update ticketing fees');
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -117,6 +132,10 @@ export const TicketingSection = () => {
 
   return (
     <div className="space-y-6">
+      <p className="text-xs text-white/50">
+        Configure site-wide fees and taxes applied to all ticket purchases
+      </p>
+      
       <FmCommonToggleHeader title="Taxes and Fees">
         <div className="space-y-4">
           {fees.map((fee) => {
@@ -176,13 +195,36 @@ export const TicketingSection = () => {
 
       <div className="pt-4 border-t border-white/10">
         <Button
-          onClick={handleSave}
-          disabled={!hasChanges || isSaving}
+          onClick={() => setShowConfirmDialog(true)}
+          disabled={!hasChanges}
           className="w-full bg-fm-gold hover:bg-fm-gold/90 text-black disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSaving ? 'Saving...' : 'Save Fees'}
+          Save Fees
         </Button>
       </div>
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent className="bg-black/90 backdrop-blur-md border border-white/20 text-white z-[200]">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-canela text-white">Confirm Fee Changes</AlertDialogTitle>
+            <AlertDialogDescription className="text-white/70">
+              This will update ticketing fees in the database for the <span className="font-semibold text-fm-gold">{environment}</span> environment. These changes will affect all future ticket purchases. Continue?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-white/5 border-white/20 hover:bg-white/10 text-white">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleSave}
+              className="bg-fm-gold hover:bg-fm-gold/90 text-black"
+            >
+              Save Changes
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

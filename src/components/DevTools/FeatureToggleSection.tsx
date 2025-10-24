@@ -139,6 +139,10 @@ export const FeatureToggleSection = () => {
 
   return (
     <>
+      <p className="text-xs text-white/50 mb-4">
+        Enable or disable features across the application per environment
+      </p>
+      
       <div className="space-y-6">
         {/* Editable Toggles */}
         {editableFlags.length > 0 && (
