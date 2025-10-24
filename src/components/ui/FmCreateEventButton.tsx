@@ -9,10 +9,12 @@ import { FmVenueSearchDropdown } from '@/components/ui/FmVenueSearchDropdown';
 import { FmCommonEventDatePicker } from '@/components/ui/FmCommonEventDatePicker';
 import { FmCommonTimePicker } from '@/components/ui/FmCommonTimePicker';
 import { FmCommonRowManager } from '@/components/ui/FmCommonRowManager';
+import { FmCommonLoadingSpinner } from '@/components/ui/FmCommonLoadingSpinner';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/shared/api/supabase/client';
+import { toast } from '@/components/ui/FmCommonToast';
 import { cn } from '@/shared/utils/utils';
 
 interface UndercardArtist {
@@ -40,6 +42,7 @@ export const FmCreateEventButton = ({
   className,
 }: FmCreateEventButtonProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [createdEventTitle, setCreatedEventTitle] = useState('');
   const [headlinerId, setHeadlinerId] = useState<string>('');
@@ -98,6 +101,10 @@ export const FmCreateEventButton = ({
   };
 
   const handleSubmit = async () => {
+    // Close modal and show loading overlay
+    setIsModalOpen(false);
+    setIsLoading(true);
+
     try {
       // Format the date and time for the database
       const eventDateString = eventDate ? format(eventDate, 'yyyy-MM-dd') : null;
@@ -145,15 +152,28 @@ export const FmCreateEventButton = ({
         if (tiersError) throw tiersError;
       }
 
-      setIsModalOpen(false);
       onEventCreated?.((newEvent as any).id);
       
-      // Show success message
+      // Hide loading and show success modal
+      setIsLoading(false);
       setShowSuccessModal(true);
       setCreatedEventTitle((newEvent as any).title || 'Event');
+      
+      // Reset form
+      setHeadlinerId('');
+      setEventDate(undefined);
+      setEndTime('02:00');
+      setIsAfterHours(false);
+      setVenueId('');
+      setVenueCapacity(0);
+      setUndercardArtists([]);
+      setTicketTiers([]);
     } catch (error) {
       console.error('Error creating event:', error);
-      // TODO: Show error toast
+      setIsLoading(false);
+      toast.error('Failed to create event', {
+        description: error instanceof Error ? error.message : 'An unexpected error occurred',
+      });
     }
   };
 
@@ -199,6 +219,16 @@ export const FmCreateEventButton = ({
         <Plus className="h-4 w-4" />
         Create Event
       </Button>
+
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="flex flex-col items-center gap-4">
+            <FmCommonLoadingSpinner size="lg" />
+            <p className="text-white/70 text-sm">Creating event...</p>
+          </div>
+        </div>
+      )}
 
       <FmCommonModal
         open={showSuccessModal}
