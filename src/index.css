@@ -114,6 +114,7 @@ All colors MUST be HSL.
 
     /* Force Majeure Brand Colors */
     --fm-gold: 348 100% 22%;
+    --fm-gold-rgb: 138 0 0; /* RGB equivalent for rgba usage */
     --fm-crimson: 348 83% 47%;
     --fm-charcoal: 0 0% 13%;
     --fm-silver: 0 0% 85%;
@@ -179,6 +180,7 @@ All colors MUST be HSL.
 
     /* Force Majeure Brand Colors - Dark Mode */
     --fm-gold: 38 60% 68%;
+    --fm-gold-rgb: 207 173 118; /* RGB equivalent for rgba usage */
     --fm-crimson: 348 83% 47%;
     --fm-charcoal: 0 0% 13%;
     --fm-silver: 0 0% 85%;

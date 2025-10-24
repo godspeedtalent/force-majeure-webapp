@@ -20,10 +20,10 @@ export const FmCommonToggleHeader = ({
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className={className}>
-      <CollapsibleTrigger className="flex items-center justify-between w-full py-3 hover:bg-white/5 transition-colors">
-        <span className="font-canela text-sm text-white">{title}</span>
+      <CollapsibleTrigger className="flex items-center justify-between w-full py-3 hover:bg-white/5 transition-colors group">
+        <span className="font-canela text-sm text-white group-hover:text-fm-gold transition-colors">{title}</span>
         <ChevronDown
-          className={cn('h-4 w-4 text-white transition-transform duration-300', isOpen && 'rotate-180')}
+          className={cn('h-4 w-4 text-white group-hover:text-fm-gold transition-all duration-300', isOpen && 'rotate-180')}
         />
       </CollapsibleTrigger>
       <CollapsibleContent className="data-[state=open]:animate-slide-down data-[state=closed]:animate-slide-up">

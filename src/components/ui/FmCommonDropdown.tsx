@@ -30,9 +30,11 @@ export function FmCommonDropdown({ trigger, items, align = 'end' }: FmCommonDrop
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div className="relative inline-flex w-full">
-          {trigger}
-          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" />
+        <div className="relative inline-flex w-full group">
+          <div className="w-full group-hover:text-fm-gold transition-colors">
+            {trigger}
+          </div>
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none group-hover:text-fm-gold transition-colors" />
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align={align} className='w-48'>

@@ -1,7 +1,6 @@
 import { Music, Map } from 'lucide-react';
 import { FmCommonToggleHeader } from '@/components/ui/FmCommonToggleHeader';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
+import { FmCommonToggle } from '@/components/ui/FmCommonToggle';
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
@@ -29,29 +28,22 @@ export const FeatureToggleSection = () => {
   return (
     <FmCommonToggleHeader title="Feature Toggles">
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="music-player" className="flex items-center gap-2 text-white cursor-pointer">
-            <Music className="h-4 w-4" />
-            Music Player
-          </Label>
-          <Switch
-            id="music-player"
-            checked={flags?.music_player ?? false}
-            onCheckedChange={(checked) => handleToggle('music_player', checked)}
-          />
-        </div>
+        <FmCommonToggle
+          id="music-player"
+          label="Music Player"
+          icon={Music}
+          checked={flags?.music_player ?? false}
+          onCheckedChange={(checked) => handleToggle('music_player', checked)}
+        />
 
-        <div className="flex items-center justify-between opacity-50">
-          <Label htmlFor="scavenger-hunt" className="flex items-center gap-2 text-white cursor-not-allowed">
-            <Map className="h-4 w-4" />
-            Scavenger Hunt
-          </Label>
-          <Switch
-            id="scavenger-hunt"
-            checked={flags?.scavenger_hunt ?? false}
-            disabled
-          />
-        </div>
+        <FmCommonToggle
+          id="scavenger-hunt"
+          label="Scavenger Hunt"
+          icon={Map}
+          checked={flags?.scavenger_hunt ?? false}
+          onCheckedChange={(checked) => handleToggle('scavenger_hunt', checked)}
+          disabled
+        />
       </div>
     </FmCommonToggleHeader>
   );
