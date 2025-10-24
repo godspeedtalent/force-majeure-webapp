@@ -11,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/shared/api/supabase/client';
 import { cn } from '@/shared/utils/utils';
+import { useDevTools } from '@/contexts/DevToolsContext';
 
 interface UndercardArtist {
   artistId: string;
@@ -31,6 +32,7 @@ export const CreationToolsSection = () => {
   const [venueCapacity, setVenueCapacity] = useState<number>(0);
   const [undercardArtists, setUndercardArtists] = useState<UndercardArtist[]>([]);
   const [ticketTiers, setTicketTiers] = useState<TicketTier[]>([]);
+  const { isDrawerOpen, toggleDrawer } = useDevTools();
 
   // Fetch venue capacity when venue changes
   useEffect(() => {
@@ -75,6 +77,10 @@ export const CreationToolsSection = () => {
 
   const handleCreateEvent = () => {
     setIsModalOpen(true);
+    // Auto-collapse the dev tools drawer when opening modal
+    if (isDrawerOpen) {
+      toggleDrawer();
+    }
   };
 
   const handleSubmit = () => {
