@@ -257,6 +257,7 @@ export type Database = {
       feature_flags: {
         Row: {
           description: string | null
+          disabled: boolean
           environment: string
           flag_name: string
           id: string
@@ -265,6 +266,7 @@ export type Database = {
         }
         Insert: {
           description?: string | null
+          disabled?: boolean
           environment?: string
           flag_name: string
           id?: string
@@ -273,6 +275,7 @@ export type Database = {
         }
         Update: {
           description?: string | null
+          disabled?: boolean
           environment?: string
           flag_name?: string
           id?: string
