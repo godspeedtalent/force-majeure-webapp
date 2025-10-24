@@ -1,7 +1,9 @@
 import { Plus } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { FmCommonFormModal } from '@/components/ui/FmCommonFormModal';
+import { FmCommonModal } from '@/components/ui/FmCommonModal';
 import { FmArtistSearchDropdown } from '@/components/ui/FmArtistSearchDropdown';
 import { FmVenueSearchDropdown } from '@/components/ui/FmVenueSearchDropdown';
 import { FmCommonEventDatePicker } from '@/components/ui/FmCommonEventDatePicker';
@@ -38,6 +40,8 @@ export const FmCreateEventButton = ({
   className,
 }: FmCreateEventButtonProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [createdEventTitle, setCreatedEventTitle] = useState('');
   const [headlinerId, setHeadlinerId] = useState<string>('');
   const [eventDate, setEventDate] = useState<Date>();
   const [endTime, setEndTime] = useState<string>('02:00');
@@ -93,20 +97,64 @@ export const FmCreateEventButton = ({
     onModalOpen?.();
   };
 
-  const handleSubmit = () => {
-    console.log('Creating event:', {
-      headlinerId,
-      eventDate,
-      endTime: isAfterHours ? null : endTime,
-      isAfterHours,
-      venueId,
-      undercardArtists,
-      ticketTiers,
-    });
-    // TODO: Implement event creation
-    const mockEventId = 'new-event-id';
-    setIsModalOpen(false);
-    onEventCreated?.(mockEventId);
+  const handleSubmit = async () => {
+    try {
+      // Format the date and time for the database
+      const eventDateString = eventDate ? format(eventDate, 'yyyy-MM-dd') : null;
+      const eventTimeString = eventDate ? format(eventDate, 'HH:mm') : null;
+
+      // Insert the event
+      const { data: newEvent, error: eventError } = await supabase
+        .from('events' as any)
+        .insert({
+          title: `${headlinerId ? 'Event' : 'New Event'}`, // TODO: Get actual artist name
+          headliner_id: headlinerId || null,
+          venue_id: venueId || null,
+          date: eventDateString,
+          time: eventTimeString,
+          end_time: isAfterHours ? null : endTime,
+          is_after_hours: isAfterHours,
+          undercard_ids: undercardArtists.map(a => a.artistId).filter(Boolean),
+        })
+        .select()
+        .single();
+
+      if (eventError) throw eventError;
+
+      // Create ticket tiers for the event
+      if (ticketTiers.length > 0 && newEvent) {
+        const tiersToInsert = ticketTiers.map((tier, index) => ({
+          event_id: (newEvent as any).id,
+          name: tier.name || `Tier ${index + 1}`,
+          price_cents: tier.priceInCents,
+          total_tickets: tier.quantity,
+          available_inventory: tier.quantity,
+          reserved_inventory: 0,
+          sold_inventory: 0,
+          tier_order: index,
+          hide_until_previous_sold_out: tier.hideUntilPreviousSoldOut,
+          is_active: true,
+          fee_flat_cents: 0,
+          fee_pct_bps: 0,
+        }));
+
+        const { error: tiersError } = await supabase
+          .from('ticket_tiers' as any)
+          .insert(tiersToInsert);
+
+        if (tiersError) throw tiersError;
+      }
+
+      setIsModalOpen(false);
+      onEventCreated?.((newEvent as any).id);
+      
+      // Show success message
+      setShowSuccessModal(true);
+      setCreatedEventTitle((newEvent as any).title || 'Event');
+    } catch (error) {
+      console.error('Error creating event:', error);
+      // TODO: Show error toast
+    }
   };
 
   const handleCancel = () => {
@@ -151,6 +199,25 @@ export const FmCreateEventButton = ({
         <Plus className="h-4 w-4" />
         Create Event
       </Button>
+
+      <FmCommonModal
+        open={showSuccessModal}
+        onOpenChange={setShowSuccessModal}
+        title="Event Created"
+        className="max-w-md"
+      >
+        <div className="space-y-4">
+          <p className="text-white/80 text-center">
+            <span className="font-semibold text-fm-gold">{createdEventTitle}</span> has been successfully created!
+          </p>
+          <Button
+            onClick={() => setShowSuccessModal(false)}
+            className="w-full bg-fm-gold hover:bg-fm-gold/90 text-black"
+          >
+            Done
+          </Button>
+        </div>
+      </FmCommonModal>
 
       <FmCommonFormModal
         open={isModalOpen}
