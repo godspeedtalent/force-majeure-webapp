@@ -12,6 +12,7 @@ import Index from './pages/Index';
 import Orders from './pages/Orders';
 import DemoIndex from './pages/demo/DemoIndex';
 import EventCheckout from './pages/demo/EventCheckout';
+import MemberHome from './pages/members/MemberHome';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { DemoProtectedRoute } from '@/components/DemoProtectedRoute';
@@ -65,7 +66,13 @@ const AppRoutes = () => {
           {/* Normal App Routes */}
           <Route path='/' element={<Index />} />
           <Route path='/event/:id' element={<EventDetails />} />
-          <Route path='/merch' element={<Merch />} />
+          
+          {/* Conditionally render merch route based on feature flag */}
+          {flags?.merch_store && <Route path='/merch' element={<Merch />} />}
+          
+          {/* Conditionally render member profiles route based on feature flag */}
+          {flags?.member_profiles && <Route path='/members/home' element={<MemberHome />} />}
+          
           <Route path='/profile' element={<Profile />} />
           <Route path='/admin' element={<AdminConfig />} />
           <Route path='/orders' element={<Orders />} />

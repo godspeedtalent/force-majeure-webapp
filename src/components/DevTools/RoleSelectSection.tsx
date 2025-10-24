@@ -1,4 +1,5 @@
-import { User, UserCog, Shield, UserX } from 'lucide-react';
+import { User, UserCog, Shield, UserX, Compass } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { FmCommonDropdown, DropdownItem } from '@/components/ui/FmCommonDropdown';
 import { Button } from '@/components/ui/button';
 import { FmCommonToggleHeader } from '@/components/ui/FmCommonToggleHeader';
@@ -17,6 +18,8 @@ const roleConfig: Record<DevRole, { label: string; icon: typeof User }> = {
 };
 
 export const RoleSelectSection = ({ currentRole, onRoleChange }: RoleSelectSectionProps) => {
+  const navigate = useNavigate();
+  
   const roleItems: DropdownItem[] = (Object.keys(roleConfig) as DevRole[]).map((role) => ({
     label: roleConfig[role].label,
     onClick: () => onRoleChange(role),
@@ -28,24 +31,37 @@ export const RoleSelectSection = ({ currentRole, onRoleChange }: RoleSelectSecti
 
   return (
     <FmCommonToggleHeader title="Role Select">
-      <p className="text-xs text-white/60 mb-3">
-        Select a role to simulate during your session
-      </p>
-      <FmCommonDropdown
-        trigger={
-          <Button
-            variant="outline"
-            className="w-full justify-between bg-white/5 border-white/30 hover:bg-white/10 text-white pr-10"
-          >
-            <span className="flex items-center gap-2">
-              <CurrentIcon className="h-4 w-4" />
-              {roleConfig[effectiveRole].label}
-            </span>
-          </Button>
-        }
-        items={roleItems}
-        align="start"
-      />
+      <div className="space-y-3">
+        <Button
+          onClick={() => navigate('/demo')}
+          variant="outline"
+          className="w-full bg-fm-gold/10 border-fm-gold/30 hover:bg-fm-gold/20 hover:border-fm-gold text-white"
+        >
+          <Compass className="h-4 w-4 mr-2" />
+          Go to Demos
+        </Button>
+        
+        <div>
+          <p className="text-xs text-white/60 mb-3">
+            Select a role to simulate during your session
+          </p>
+          <FmCommonDropdown
+            trigger={
+              <Button
+                variant="outline"
+                className="w-full justify-between bg-white/5 border-white/30 hover:bg-white/10 text-white pr-10"
+              >
+                <span className="flex items-center gap-2">
+                  <CurrentIcon className="h-4 w-4" />
+                  {roleConfig[effectiveRole].label}
+                </span>
+              </Button>
+            }
+            items={roleItems}
+            align="start"
+          />
+        </div>
+      </div>
     </FmCommonToggleHeader>
   );
 };

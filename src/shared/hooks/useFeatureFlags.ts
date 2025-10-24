@@ -15,6 +15,8 @@ interface FeatureFlags {
   music_player: boolean;
   scavenger_hunt: boolean;
   event_checkout_timer: boolean;
+  merch_store: boolean;
+  member_profiles: boolean;
 }
 
 interface FeatureFlagRow {
@@ -49,6 +51,8 @@ export const useFeatureFlags = () => {
       music_player: false,
       scavenger_hunt: false,
       event_checkout_timer: false,
+      merch_store: false,
+      member_profiles: false,
     };
 
       filteredData.forEach(flag => {
@@ -73,6 +77,12 @@ export const useFeatureFlags = () => {
         if (flag.flag_name === 'event_checkout_timer') {
           flags.event_checkout_timer = flag.is_enabled;
         }
+        if (flag.flag_name === 'merch_store') {
+          flags.merch_store = flag.is_enabled;
+        }
+        if (flag.flag_name === 'member_profiles') {
+          flags.member_profiles = flag.is_enabled;
+        }
       });
 
       // Apply local .env overrides in development only
@@ -84,6 +94,8 @@ export const useFeatureFlags = () => {
         const musicPlayerOverride = getEnvironmentOverride('music_player');
         const scavengerHuntOverride = getEnvironmentOverride('scavenger_hunt');
         const checkoutTimerOverride = getEnvironmentOverride('event_checkout_timer');
+        const merchStoreOverride = getEnvironmentOverride('merch_store');
+        const memberProfilesOverride = getEnvironmentOverride('member_profiles');
 
         if (scavengerOverride !== null) {
           flags.scavenger_hunt_active = scavengerOverride;
@@ -105,6 +117,12 @@ export const useFeatureFlags = () => {
         }
         if (checkoutTimerOverride !== null) {
           flags.event_checkout_timer = checkoutTimerOverride;
+        }
+        if (merchStoreOverride !== null) {
+          flags.merch_store = merchStoreOverride;
+        }
+        if (memberProfilesOverride !== null) {
+          flags.member_profiles = memberProfilesOverride;
         }
       }
 

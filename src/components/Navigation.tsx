@@ -63,6 +63,20 @@ export const Navigation = () => {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
+            {flags?.merch_store && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link to='/merch' className='ml-4 text-foreground hover:text-fm-gold transition-colors duration-200' aria-label='Shop Merch'>
+                      <ShoppingCart className='h-5 w-5' />
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Shop Merch</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
             <Breadcrumbs />
           </div>
 
