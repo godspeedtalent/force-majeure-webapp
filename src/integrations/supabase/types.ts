@@ -905,10 +905,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      convert_hold_to_sale: {
-        Args: { p_hold_id: string }
-        Returns: boolean
-      }
+      convert_hold_to_sale: { Args: { p_hold_id: string }; Returns: boolean }
       create_ticket_hold: {
         Args: {
           p_fingerprint: string
@@ -962,10 +959,7 @@ export type Database = {
         }
         Returns: boolean
       }
-      release_ticket_hold: {
-        Args: { p_hold_id: string }
-        Returns: boolean
-      }
+      release_ticket_hold: { Args: { p_hold_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "user" | "developer"
