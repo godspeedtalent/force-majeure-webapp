@@ -1,4 +1,4 @@
-import { Calendar, Instagram, LogIn } from 'lucide-react';
+import { Calendar, Instagram, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import lfSystemCover from '@/assets/lf-system-cover.jpg';
@@ -182,8 +182,8 @@ const Index = () => {
   }, []);
   const parallaxOffset = scrollY * 0.5;
   const fadeOpacity = Math.max(0, 1 - scrollY / 400);
-  // Login button fades in twice as fast (appears when nav starts hiding)
-  const loginButtonOpacity = Math.min(1, scrollY / 200);
+  // Login button fades out as you scroll down (opposite of nav fade)
+  const loginButtonOpacity = Math.max(0, 1 - scrollY / 200);
 
   return (
     <Layout>
@@ -203,7 +203,7 @@ const Index = () => {
           >
             <FmCommonButton
               href='/auth'
-              icon={LogIn}
+              icon={User}
               label='Login'
               tooltip='Login'
               variant='floating'
@@ -246,6 +246,7 @@ const Index = () => {
                   href='https://www.instagram.com/force.majeure.events'
                   icon={Instagram}
                   label='Follow us on Instagram'
+                  tooltip='@force.majeure.vip'
                   isExternal={true}
                 />
               </div>
