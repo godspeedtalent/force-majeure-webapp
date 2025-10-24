@@ -3,7 +3,7 @@ import { FmCommonToggleHeader } from '@/components/ui/FmCommonToggleHeader';
 import { FmCommonToggle } from '@/components/ui/FmCommonToggle';
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
 import { supabase } from '@/shared/api/supabase/client';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/FmCommonToast';
 
 export const FeatureToggleSection = () => {
   const { data: flags, refetch } = useFeatureFlags();

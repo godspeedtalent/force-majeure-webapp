@@ -309,9 +309,8 @@ All colors MUST be HSL.
   h4,
   h5,
   h6 {
-    @apply font-screamer;
-    font-weight: 475;
-    font-variation-settings: 'wght' 475;
+    @apply font-canela;
+    font-weight: 500;
   }
 
   /* Sleek scrollbars for light mode */

@@ -9,6 +9,7 @@ import { useTicketTiers } from '@/features/events/hooks/useTicketTiers';
 import { useCheckout } from '@/features/events/hooks/useCheckout';
 import { LoadingState } from '@/components/common/LoadingState';
 import { format } from 'date-fns';
+import { Navigation } from '@/components/Navigation';
 
 export default function EventCheckout() {
   const [selectedEventId, setSelectedEventId] = useState<string | undefined>();
@@ -32,7 +33,9 @@ export default function EventCheckout() {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <>
+      <Navigation />
+      <div className="container mx-auto py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <Link 
           to="/demo" 
@@ -157,6 +160,7 @@ export default function EventCheckout() {
           </Card>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

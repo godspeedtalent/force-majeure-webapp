@@ -1,14 +1,15 @@
-import { Hammer, ToggleLeft } from 'lucide-react';
+import { Hammer, ToggleLeft, Wrench } from 'lucide-react';
 import { useState } from 'react';
 import { FmCommonTab } from '@/components/ui/FmCommonTab';
 import { RoleSelectSection } from './RoleSelectSection';
 import { FeatureToggleSection } from './FeatureToggleSection';
+import { CreationToolsSection } from './CreationToolsSection';
 import { cn } from '@/shared/utils/utils';
 import { isDevelopment } from '@/shared/utils/environment';
 import { useDevTools } from '@/contexts/DevToolsContext';
 import type { DevRole } from '@/contexts/DevToolsContext';
 
-type TabId = 'tools' | 'features';
+type TabId = 'tools' | 'features' | 'creation';
 
 export const DevToolsDrawer = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -57,6 +58,13 @@ export const DevToolsDrawer = () => {
           onClick={() => handleTabClick('features')}
           variant="vertical"
         />
+        <FmCommonTab
+          icon={Wrench}
+          label="Creation Tools"
+          isActive={activeTab === 'creation'}
+          onClick={() => handleTabClick('creation')}
+          variant="vertical"
+        />
       </div>
 
       {/* Drawer */}
@@ -69,7 +77,7 @@ export const DevToolsDrawer = () => {
         {isOpen && (
           <div className="pt-8 px-6">
             <h2 className="font-canela text-2xl text-white mb-6">
-              {activeTab === 'tools' ? 'Developer Tools' : 'Feature Toggles'}
+              {activeTab === 'tools' ? 'Developer Tools' : activeTab === 'features' ? 'Feature Toggles' : 'Creation Tools'}
             </h2>
 
             {activeTab === 'tools' && (
@@ -81,6 +89,12 @@ export const DevToolsDrawer = () => {
             {activeTab === 'features' && (
               <div className="space-y-0">
                 <FeatureToggleSection />
+              </div>
+            )}
+
+            {activeTab === 'creation' && (
+              <div className="space-y-0">
+                <CreationToolsSection />
               </div>
             )}
           </div>

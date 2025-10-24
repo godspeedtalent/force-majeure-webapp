@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Code, ShoppingCart, ArrowRight } from 'lucide-react';
+import { Navigation } from '@/components/Navigation';
 
 export default function DemoIndex() {
   const demos = [
@@ -15,8 +16,10 @@ export default function DemoIndex() {
   ];
 
   return (
-    <div className="container mx-auto py-12 px-4">
-      <div className="max-w-3xl mx-auto">
+    <>
+      <Navigation />
+      <div className="container mx-auto py-12 px-4">
+        <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-3">
@@ -77,5 +80,6 @@ export default function DemoIndex() {
         </div>
       </div>
     </div>
+    </>
   );
 }
