@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/shared/api/supabase/client';
-import { toast } from '@/shared/hooks/use-toast';
+import { toast } from '@/components/ui/FmCommonToast';
 
 export interface TicketSelection {
   tier_id: string;
@@ -31,10 +31,8 @@ export const useCheckout = () => {
       window.location.href = data.url;
     } catch (error) {
       console.error('Checkout error:', error);
-      toast({
-        title: 'Checkout Failed',
+      toast.error('Checkout Failed', {
         description: error instanceof Error ? error.message : 'Failed to create checkout session',
-        variant: 'destructive',
       });
       setIsLoading(false);
     }

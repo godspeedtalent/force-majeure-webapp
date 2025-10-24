@@ -1,9 +1,8 @@
 import { Plus } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { FmCommonFormModal } from '@/components/ui/FmCommonFormModal';
-import { FmCommonModal } from '@/components/ui/FmCommonModal';
 import { FmArtistSearchDropdown } from '@/components/ui/FmArtistSearchDropdown';
 import { FmVenueSearchDropdown } from '@/components/ui/FmVenueSearchDropdown';
 import { FmCommonEventDatePicker } from '@/components/ui/FmCommonEventDatePicker';
@@ -43,8 +42,6 @@ export const FmCreateEventButton = ({
 }: FmCreateEventButtonProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [createdEventTitle, setCreatedEventTitle] = useState('');
   const [headlinerId, setHeadlinerId] = useState<string>('');
   const [eventDate, setEventDate] = useState<Date>();
   const [endTime, setEndTime] = useState<string>('02:00');
@@ -62,7 +59,16 @@ export const FmCreateEventButton = ({
         .select('capacity')
         .eq('id', venueId)
         .single()
-        .then(({ data }: any) => {
+        .then(({ data, error }: any) => {
+          if (error) {
+            console.error('Error fetching venue capacity:', error);
+            toast.error('Failed to fetch venue capacity', {
+              description: 'Using default capacity of 100',
+            });
+            setVenueCapacity(100);
+            return;
+          }
+          
           if (data && data.capacity) {
             setVenueCapacity(data.capacity);
             // Initialize default tiers
@@ -95,17 +101,103 @@ export const FmCreateEventButton = ({
     }
   }, [venueId]);
 
+  // Reset form helper
+  const resetForm = useCallback(() => {
+    setHeadlinerId('');
+    setEventDate(undefined);
+    setEndTime('02:00');
+    setIsAfterHours(false);
+    setVenueId('');
+    setVenueCapacity(0);
+    setUndercardArtists([]);
+    setTicketTiers([]);
+  }, []);
+
   const handleCreateEvent = () => {
     setIsModalOpen(true);
     onModalOpen?.();
   };
 
+  const validateForm = (): string | null => {
+    if (!headlinerId) {
+      return 'Please select a headliner';
+    }
+    if (!eventDate) {
+      return 'Please select an event date';
+    }
+    if (!venueId) {
+      return 'Please select a venue';
+    }
+    if (ticketTiers.length === 0) {
+      return 'Please add at least one ticket tier';
+    }
+    
+    // Validate ticket tiers
+    for (let i = 0; i < ticketTiers.length; i++) {
+      const tier = ticketTiers[i];
+      if (!tier.name || tier.name.trim() === '') {
+        return `Ticket tier ${i + 1} must have a name`;
+      }
+      if (tier.priceInCents < 0) {
+        return `Ticket tier "${tier.name}" cannot have a negative price`;
+      }
+      if (tier.quantity <= 0) {
+        return `Ticket tier "${tier.name}" must have at least 1 ticket`;
+      }
+    }
+
+    const totalTickets = ticketTiers.reduce((sum, tier) => sum + tier.quantity, 0);
+    if (totalTickets > venueCapacity) {
+      return `Total tickets (${totalTickets}) exceeds venue capacity (${venueCapacity})`;
+    }
+
+    return null;
+  };
+
   const handleSubmit = async () => {
+    // Validate form
+    const validationError = validateForm();
+    if (validationError) {
+      toast.error('Validation Error', {
+        description: validationError,
+      });
+      return;
+    }
+
     // Close modal and show loading overlay
     setIsModalOpen(false);
     setIsLoading(true);
 
     try {
+      // Fetch headliner name for event title
+      const { data: headliner, error: headlinerError } = await supabase
+        .from('artists' as any)
+        .select('name')
+        .eq('id', headlinerId)
+        .single();
+
+      if (headlinerError) {
+        console.error('Error fetching headliner:', headlinerError);
+      }
+
+      // Fetch venue name for event title
+      const { data: venue, error: venueError } = await supabase
+        .from('venues' as any)
+        .select('name')
+        .eq('id', venueId)
+        .single();
+
+      if (venueError) {
+        console.error('Error fetching venue:', venueError);
+      }
+
+      // Construct event title
+      const eventTitle = (headliner as any) && (venue as any)
+        ? `${(headliner as any).name} @ ${(venue as any).name}`
+        : (headliner as any)
+        ? (headliner as any).name
+        : 'New Event';
+
       // Format the date and time for the database
       const eventDateString = eventDate ? format(eventDate, 'yyyy-MM-dd') : null;
       const eventTimeString = eventDate ? format(eventDate, 'HH:mm') : null;
@@ -114,7 +206,7 @@ export const FmCreateEventButton = ({
       const { data: newEvent, error: eventError } = await supabase
         .from('events' as any)
         .insert({
-          title: `${headlinerId ? 'Event' : 'New Event'}`, // TODO: Get actual artist name
+          title: eventTitle,
           headliner_id: headlinerId || null,
           venue_id: venueId || null,
           date: eventDateString,
@@ -132,7 +224,7 @@ export const FmCreateEventButton = ({
       if (ticketTiers.length > 0 && newEvent) {
         const tiersToInsert = ticketTiers.map((tier, index) => ({
           event_id: (newEvent as any).id,
-          name: tier.name || `Tier ${index + 1}`,
+          name: tier.name,
           price_cents: tier.priceInCents,
           total_tickets: tier.quantity,
           available_inventory: tier.quantity,
@@ -154,20 +246,14 @@ export const FmCreateEventButton = ({
 
       onEventCreated?.((newEvent as any).id);
       
-      // Hide loading and show success modal
+      // Hide loading and show success toast with auto-dismiss
       setIsLoading(false);
-      setShowSuccessModal(true);
-      setCreatedEventTitle((newEvent as any).title || 'Event');
+      toast.success('Event Created', {
+        description: `${eventTitle} has been successfully created!`,
+      });
       
       // Reset form
-      setHeadlinerId('');
-      setEventDate(undefined);
-      setEndTime('02:00');
-      setIsAfterHours(false);
-      setVenueId('');
-      setVenueCapacity(0);
-      setUndercardArtists([]);
-      setTicketTiers([]);
+      resetForm();
     } catch (error) {
       console.error('Error creating event:', error);
       setIsLoading(false);
@@ -179,15 +265,7 @@ export const FmCreateEventButton = ({
 
   const handleCancel = () => {
     setIsModalOpen(false);
-    // Reset form
-    setHeadlinerId('');
-    setEventDate(undefined);
-    setEndTime('02:00');
-    setIsAfterHours(false);
-    setVenueId('');
-    setVenueCapacity(0);
-    setUndercardArtists([]);
-    setTicketTiers([]);
+    resetForm();
   };
 
   const totalTickets = ticketTiers.reduce((sum, tier) => sum + tier.quantity, 0);
@@ -222,32 +300,13 @@ export const FmCreateEventButton = ({
 
       {/* Loading Overlay */}
       {isLoading && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[160] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
           <div className="flex flex-col items-center gap-4">
             <FmCommonLoadingSpinner size="lg" />
             <p className="text-white/70 text-sm">Creating event...</p>
           </div>
         </div>
       )}
-
-      <FmCommonModal
-        open={showSuccessModal}
-        onOpenChange={setShowSuccessModal}
-        title="Event Created"
-        className="max-w-md"
-      >
-        <div className="space-y-4">
-          <p className="text-white/80 text-center">
-            <span className="font-semibold text-fm-gold">{createdEventTitle}</span> has been successfully created!
-          </p>
-          <Button
-            onClick={() => setShowSuccessModal(false)}
-            className="w-full bg-fm-gold hover:bg-fm-gold/90 text-black"
-          >
-            Done
-          </Button>
-        </div>
-      </FmCommonModal>
 
       <FmCommonFormModal
         open={isModalOpen}
@@ -374,14 +433,15 @@ export const FmCreateEventButton = ({
                           <Label className="text-white/70 text-xs">Price ($)</Label>
                           <Input
                             type="number"
+                            min="0"
+                            step="0.01"
                             value={tier.priceInCents / 100}
                             onChange={(e) => {
                               const updated = [...ticketTiers];
-                              updated[index].priceInCents = Math.round(parseFloat(e.target.value || '0') * 100);
+                              updated[index].priceInCents = Math.max(0, Math.round(parseFloat(e.target.value || '0') * 100));
                               setTicketTiers(updated);
                             }}
                             placeholder="0.00"
-                            step="0.01"
                             className="bg-black/40 border-white/20 text-white"
                           />
                         </div>
@@ -389,10 +449,11 @@ export const FmCreateEventButton = ({
                           <Label className="text-white/70 text-xs">Quantity</Label>
                           <Input
                             type="number"
+                            min="1"
                             value={tier.quantity}
                             onChange={(e) => {
                               const updated = [...ticketTiers];
-                              updated[index].quantity = parseInt(e.target.value || '0');
+                              updated[index].quantity = Math.max(1, parseInt(e.target.value || '1'));
                               setTicketTiers(updated);
                             }}
                             placeholder="0"

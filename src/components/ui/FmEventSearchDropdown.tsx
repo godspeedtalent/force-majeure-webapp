@@ -23,11 +23,11 @@ export function FmEventSearchDropdown({
   React.useEffect(() => {
     if (value) {
       supabase
-        .from('events' as any)
+        .from('events')
         .select('title')
         .eq('id', value)
         .maybeSingle()
-        .then(({ data }: any) => {
+        .then(({ data }) => {
           if (data) {
             setSelectedEvent({ title: data.title });
           }
@@ -39,7 +39,7 @@ export function FmEventSearchDropdown({
 
   const handleSearch = async (query: string): Promise<SearchDropdownOption[]> => {
     const { data, error } = await supabase
-      .from('events' as any)
+      .from('events')
       .select(`
         id,
         title,
@@ -61,23 +61,36 @@ export function FmEventSearchDropdown({
 
     if (error || !data) return [];
 
-    // Get undercard artist names for events with undercard_ids
-    const eventsWithUndercards = await Promise.all(
-      (data as any[]).map(async (event: any) => {
-        if (event.undercard_ids && event.undercard_ids.length > 0) {
-          const { data: undercards } = await supabase
-            .from('artists' as any)
-            .select('name')
-            .in('id', event.undercard_ids);
-          
-          return {
-            ...event,
-            undercards: undercards || [],
-          };
-        }
-        return { ...event, undercards: [] };
-      })
-    );
+    // Collect all unique undercard IDs across all events
+    const allUndercardIds = new Set<string>();
+    data.forEach((event: any) => {
+      if (event.undercard_ids && event.undercard_ids.length > 0) {
+        event.undercard_ids.forEach((id: string) => allUndercardIds.add(id));
+      }
+    });
+
+    // Fetch all undercard artists in a single query
+    let undercardMap = new Map<string, string>();
+    if (allUndercardIds.size > 0) {
+      const { data: undercards } = await supabase
+        .from('artists')
+        .select('id, name')
+        .in('id', Array.from(allUndercardIds));
+      
+      if (undercards) {
+        undercards.forEach((artist: any) => {
+          undercardMap.set(artist.id, artist.name);
+        });
+      }
+    }
+
+    // Map undercard IDs to names for each event
+    const eventsWithUndercards = data.map((event: any) => ({
+      ...event,
+      undercards: event.undercard_ids 
+        ? event.undercard_ids.map((id: string) => ({ name: undercardMap.get(id) })).filter((uc: any) => uc.name)
+        : [],
+    }));
 
     // Filter results to match search query against multiple fields
     const filtered = eventsWithUndercards.filter((event: any) => {

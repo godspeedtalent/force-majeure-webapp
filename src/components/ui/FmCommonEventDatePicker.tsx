@@ -8,6 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { supabase } from '@/shared/api/supabase/client';
+import { useDateTimePicker } from '@/shared/hooks/useDateTimePicker';
 
 interface FmCommonEventDatePickerProps {
   value?: Date;
@@ -28,19 +29,19 @@ export function FmCommonEventDatePicker({
   placeholder = 'Pick a date and time',
   disabled = false,
 }: FmCommonEventDatePickerProps) {
-  const [time, setTime] = React.useState('21:00');
-  const [tempDate, setTempDate] = React.useState<Date | undefined>(value);
-  const [tempTime, setTempTime] = React.useState('21:00');
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [eventsOnDates, setEventsOnDates] = React.useState<Record<string, EventOnDate[]>>({});
+  const {
+    tempDate,
+    tempTime,
+    isOpen,
+    setIsOpen,
+    handleDateSelect,
+    handleDayClick,
+    handleTimeChange,
+    handleConfirm,
+    handleCancel,
+  } = useDateTimePicker({ value, onChange });
 
-  React.useEffect(() => {
-    if (value) {
-      setTime(format(value, 'HH:mm'));
-      setTempDate(value);
-      setTempTime(format(value, 'HH:mm'));
-    }
-  }, [value]);
+  const [eventsOnDates, setEventsOnDates] = React.useState<Record<string, EventOnDate[]>>({});
 
   // Fetch future events
   React.useEffect(() => {
@@ -69,42 +70,6 @@ export function FmCommonEventDatePicker({
 
     fetchEvents();
   }, []);
-
-  const handleDateSelect = (date: Date | undefined) => {
-    setTempDate(date);
-  };
-
-  const handleDateDoubleClick = (date: Date | undefined) => {
-    if (date) {
-      const [hours, minutes] = tempTime.split(':').map(Number);
-      const newDate = new Date(date);
-      newDate.setHours(hours, minutes);
-      onChange(newDate);
-      setTime(tempTime);
-      setIsOpen(false);
-    }
-  };
-
-  const handleTimeChange = (newTime: string) => {
-    setTempTime(newTime);
-  };
-
-  const handleConfirm = () => {
-    if (tempDate) {
-      const [hours, minutes] = tempTime.split(':').map(Number);
-      const newDate = new Date(tempDate);
-      newDate.setHours(hours, minutes);
-      onChange(newDate);
-      setTime(tempTime);
-    }
-    setIsOpen(false);
-  };
-
-  const handleCancel = () => {
-    setTempDate(value);
-    setTempTime(time);
-    setIsOpen(false);
-  };
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -179,14 +144,7 @@ export function FmCommonEventDatePicker({
           mode="single"
           selected={tempDate}
           onSelect={handleDateSelect}
-          onDayClick={(date) => {
-            const now = Date.now();
-            const lastClick = (window as any).lastEventCalendarClick || 0;
-            if (now - lastClick < 300) {
-              handleDateDoubleClick(date);
-            }
-            (window as any).lastEventCalendarClick = now;
-          }}
+          onDayClick={handleDayClick}
           disabled={(date) => date < today}
           modifiers={modifiers}
           modifiersClassNames={modifiersClassNames}
