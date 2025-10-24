@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { DecorativeDivider } from '@/components/DecorativeDivider';
+import { FmUserDataGrid } from '@/components/ui/FmUserDataGrid';
 import { Settings, Users, Sliders } from 'lucide-react';
 import {
   Sidebar,
@@ -77,10 +78,13 @@ export default function AdminControls() {
 
               {activeTab === 'users' && (
                 <div className="space-y-6">
-                  <h2 className="text-xl font-canela font-semibold">User Management</h2>
-                  <p className="text-muted-foreground">
-                    User management tools coming soon...
-                  </p>
+                  <div>
+                    <h2 className="text-xl font-canela font-semibold">User Management</h2>
+                    <p className="text-muted-foreground text-sm mt-1">
+                      View and manage all registered users, their roles, and permissions
+                    </p>
+                  </div>
+                  <FmUserDataGrid />
                 </div>
               )}
 
