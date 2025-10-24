@@ -5,14 +5,18 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
 import { UserMenuDropdown } from '@/components/Navigation/UserMenuDropdown';
+import { CheckoutCountdown } from '@/components/CheckoutCountdown';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useScrollPosition } from '@/shared/hooks/useScrollPosition';
 import { useUserRole } from '@/shared/hooks/useUserRole';
+import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
+import { useCheckoutTimer } from '@/contexts/CheckoutContext';
 import { SCROLL_THRESHOLDS } from '@/shared/constants/scrollThresholds';
 import { SOCIAL_LINKS } from '@/shared/constants/socialLinks';
+
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const scrollY = useScrollPosition();
@@ -20,6 +24,8 @@ export const Navigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { data: role } = useUserRole();
+  const { data: flags } = useFeatureFlags();
+  const { isCheckoutActive, endCheckout, redirectUrl } = useCheckoutTimer();
   const isAdmin = role === 'admin';
   const isHomePage = location.pathname === '/';
 
@@ -60,11 +66,15 @@ export const Navigation = () => {
             <Breadcrumbs />
           </div>
 
-          {/* Center Title */}
+          {/* Center Title or Countdown */}
           <div className='absolute left-1/2 transform -translate-x-1/2 hidden lg:block'>
-            <h2 className='font-screamer text-white tracking-[0.15em] text-sm' style={{ fontWeight: 475 }}>
-              FORCE MAJEURE
-            </h2>
+            {flags?.event_checkout_timer && isCheckoutActive ? (
+              <CheckoutCountdown onExpire={endCheckout} redirectUrl={redirectUrl} />
+            ) : (
+              <h2 className='font-canela text-white tracking-[0.15em] text-sm'>
+                FORCE MAJEURE
+              </h2>
+            )}
           </div>
 
           {/* Desktop Actions */}

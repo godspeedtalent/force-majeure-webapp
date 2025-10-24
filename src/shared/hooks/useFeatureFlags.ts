@@ -14,6 +14,7 @@ interface FeatureFlags {
   demo_pages: boolean;
   music_player: boolean;
   scavenger_hunt: boolean;
+  event_checkout_timer: boolean;
 }
 
 interface FeatureFlagRow {
@@ -47,6 +48,7 @@ export const useFeatureFlags = () => {
       demo_pages: false,
       music_player: false,
       scavenger_hunt: false,
+      event_checkout_timer: false,
     };
 
       filteredData.forEach(flag => {
@@ -68,6 +70,9 @@ export const useFeatureFlags = () => {
         if (flag.flag_name === 'scavenger_hunt') {
           flags.scavenger_hunt = flag.is_enabled;
         }
+        if (flag.flag_name === 'event_checkout_timer') {
+          flags.event_checkout_timer = flag.is_enabled;
+        }
       });
 
       // Apply local .env overrides in development only
@@ -78,6 +83,7 @@ export const useFeatureFlags = () => {
         const demoPagesOverride = getEnvironmentOverride('demo_pages');
         const musicPlayerOverride = getEnvironmentOverride('music_player');
         const scavengerHuntOverride = getEnvironmentOverride('scavenger_hunt');
+        const checkoutTimerOverride = getEnvironmentOverride('event_checkout_timer');
 
         if (scavengerOverride !== null) {
           flags.scavenger_hunt_active = scavengerOverride;
@@ -96,6 +102,9 @@ export const useFeatureFlags = () => {
         }
         if (scavengerHuntOverride !== null) {
           flags.scavenger_hunt = scavengerHuntOverride;
+        }
+        if (checkoutTimerOverride !== null) {
+          flags.event_checkout_timer = checkoutTimerOverride;
         }
       }
 

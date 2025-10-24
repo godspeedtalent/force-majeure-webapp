@@ -1,18 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ShoppingCart } from 'lucide-react';
 import { TicketingPanel } from '@/features/events/components/TicketingPanel';
-import { useEvents } from '@/features/events/hooks/useEvents';
 import { useTicketTiers } from '@/features/events/hooks/useTicketTiers';
 import { useCheckout } from '@/features/events/hooks/useCheckout';
-import { LoadingState } from '@/components/common/LoadingState';
 import { DemoLayout } from '@/components/demo/DemoLayout';
 import { EventCheckoutDemoTools } from '@/components/demo/EventCheckoutDemoTools';
+import { useCheckoutTimer } from '@/contexts/CheckoutContext';
 
 export default function EventCheckout() {
   const [selectedEventId, setSelectedEventId] = useState<string | undefined>();
-  const { isLoading: eventsLoading } = useEvents();
   const { data: ticketTiers, isLoading: tiersLoading } = useTicketTiers(selectedEventId);
   const { initiateCheckout, isLoading: checkoutLoading } = useCheckout();
+  const { startCheckout } = useCheckoutTimer();
+
+  useEffect(() => {
+    if (selectedEventId) {
+      // Start the checkout timer when an event is selected
+      // Redirect to current page to reset selection
+      startCheckout(window.location.pathname);
+    }
+  }, [selectedEventId, startCheckout]);
 
   const handlePurchase = (selections: { tierId: string; quantity: number }[]) => {
     if (!selectedEventId) return;
@@ -24,10 +31,6 @@ export default function EventCheckout() {
 
     initiateCheckout(selectedEventId, tickets);
   };
-
-  if (eventsLoading) {
-    return <LoadingState />;
-  }
 
   return (
     <DemoLayout

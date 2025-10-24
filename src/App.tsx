@@ -25,6 +25,7 @@ import { AuthProvider } from '@/features/auth/services/AuthContext';
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
 import { DevToolsDrawer } from '@/components/DevTools/DevToolsDrawer';
 import { DevToolsProvider } from '@/contexts/DevToolsContext';
+import { CheckoutProvider } from '@/contexts/CheckoutContext';
 
 import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
@@ -110,16 +111,18 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <DevToolsProvider>
           <AuthProvider>
-            <MusicPlayerProvider>
-              <TooltipProvider>
-                <Toaster />
-                <Sonner />
-                <BrowserRouter>
-                  <AppRoutes />
-                  <DevToolsDrawer />
-                </BrowserRouter>
-              </TooltipProvider>
-            </MusicPlayerProvider>
+            <CheckoutProvider>
+              <MusicPlayerProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
+                  <BrowserRouter>
+                    <AppRoutes />
+                    <DevToolsDrawer />
+                  </BrowserRouter>
+                </TooltipProvider>
+              </MusicPlayerProvider>
+            </CheckoutProvider>
           </AuthProvider>
         </DevToolsProvider>
       </QueryClientProvider>

@@ -1,4 +1,4 @@
-import { Music, Map } from 'lucide-react';
+import { Music, Map, Clock } from 'lucide-react';
 import { FmCommonToggleHeader } from '@/components/ui/FmCommonToggleHeader';
 import { FmCommonToggle } from '@/components/ui/FmCommonToggle';
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
@@ -34,6 +34,14 @@ export const FeatureToggleSection = () => {
           icon={Music}
           checked={flags?.music_player ?? false}
           onCheckedChange={(checked) => handleToggle('music_player', checked)}
+        />
+
+        <FmCommonToggle
+          id="checkout-timer"
+          label="Checkout Timer"
+          icon={Clock}
+          checked={flags?.event_checkout_timer ?? false}
+          onCheckedChange={(checked) => handleToggle('event_checkout_timer', checked)}
         />
 
         <FmCommonToggle

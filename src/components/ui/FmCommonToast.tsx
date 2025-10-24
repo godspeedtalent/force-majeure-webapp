@@ -18,8 +18,13 @@ const createToast = (
   message: string,
   options?: ToastOptions
 ) => {
-  const { title, description, ...rest } = options || {};
+  const { title, description, className: customClassName, ...rest } = options || {};
   const styles = getToastStyles();
+
+  // Override styles for error toasts
+  const errorStyles = type === 'error' 
+    ? 'bg-[hsl(348,60%,20%)]/90 backdrop-blur-md border-[hsl(348,60%,30%)] hover:border-[hsl(348,70%,40%)]'
+    : '';
 
   const content = (
     <div 
@@ -61,13 +66,15 @@ const createToast = (
   // Map type to sonnerToast method
   if (type === 'message') {
     return sonnerToast(content, {
-      ...styles,
+      className: `${styles.className} ${errorStyles} ${customClassName || ''}`,
+      descriptionClassName: styles.descriptionClassName,
       ...rest,
     });
   }
   
   return sonnerToast[type](content, {
-    ...styles,
+    className: `${styles.className} ${errorStyles} ${customClassName || ''}`,
+    descriptionClassName: styles.descriptionClassName,
     ...rest,
   });
 };
