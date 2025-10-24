@@ -139,9 +139,11 @@ export type Database = {
           created_at: string
           date: string
           description: string | null
+          end_time: string | null
           headliner_id: string | null
           hero_image: string | null
           id: string
+          is_after_hours: boolean
           ticket_url: string | null
           time: string
           title: string
@@ -153,9 +155,11 @@ export type Database = {
           created_at?: string
           date: string
           description?: string | null
+          end_time?: string | null
           headliner_id?: string | null
           hero_image?: string | null
           id?: string
+          is_after_hours?: boolean
           ticket_url?: string | null
           time: string
           title: string
@@ -167,9 +171,11 @@ export type Database = {
           created_at?: string
           date?: string
           description?: string | null
+          end_time?: string | null
           headliner_id?: string | null
           hero_image?: string | null
           id?: string
+          is_after_hours?: boolean
           ticket_url?: string | null
           time?: string
           title?: string

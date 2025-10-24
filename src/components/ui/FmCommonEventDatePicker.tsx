@@ -28,9 +28,9 @@ export function FmCommonEventDatePicker({
   placeholder = 'Pick a date and time',
   disabled = false,
 }: FmCommonEventDatePickerProps) {
-  const [time, setTime] = React.useState('19:00');
+  const [time, setTime] = React.useState('21:00');
   const [tempDate, setTempDate] = React.useState<Date | undefined>(value);
-  const [tempTime, setTempTime] = React.useState('19:00');
+  const [tempTime, setTempTime] = React.useState('21:00');
   const [isOpen, setIsOpen] = React.useState(false);
   const [eventsOnDates, setEventsOnDates] = React.useState<Record<string, EventOnDate[]>>({});
 
@@ -72,6 +72,17 @@ export function FmCommonEventDatePicker({
 
   const handleDateSelect = (date: Date | undefined) => {
     setTempDate(date);
+  };
+
+  const handleDateDoubleClick = (date: Date | undefined) => {
+    if (date) {
+      const [hours, minutes] = tempTime.split(':').map(Number);
+      const newDate = new Date(date);
+      newDate.setHours(hours, minutes);
+      onChange(newDate);
+      setTime(tempTime);
+      setIsOpen(false);
+    }
   };
 
   const handleTimeChange = (newTime: string) => {
@@ -168,6 +179,14 @@ export function FmCommonEventDatePicker({
           mode="single"
           selected={tempDate}
           onSelect={handleDateSelect}
+          onDayClick={(date) => {
+            const now = Date.now();
+            const lastClick = (window as any).lastEventCalendarClick || 0;
+            if (now - lastClick < 300) {
+              handleDateDoubleClick(date);
+            }
+            (window as any).lastEventCalendarClick = now;
+          }}
           disabled={(date) => date < today}
           modifiers={modifiers}
           modifiersClassNames={modifiersClassNames}

@@ -5,6 +5,7 @@ import { FmCommonFormModal } from '@/components/ui/FmCommonFormModal';
 import { FmArtistSearchDropdown } from '@/components/ui/FmArtistSearchDropdown';
 import { FmVenueSearchDropdown } from '@/components/ui/FmVenueSearchDropdown';
 import { FmCommonEventDatePicker } from '@/components/ui/FmCommonEventDatePicker';
+import { FmCommonTimePicker } from '@/components/ui/FmCommonTimePicker';
 import { FmCommonRowManager } from '@/components/ui/FmCommonRowManager';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -39,6 +40,8 @@ export const FmCreateEventButton = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [headlinerId, setHeadlinerId] = useState<string>('');
   const [eventDate, setEventDate] = useState<Date>();
+  const [endTime, setEndTime] = useState<string>('02:00');
+  const [isAfterHours, setIsAfterHours] = useState(false);
   const [venueId, setVenueId] = useState<string>('');
   const [venueCapacity, setVenueCapacity] = useState<number>(0);
   const [undercardArtists, setUndercardArtists] = useState<UndercardArtist[]>([]);
@@ -94,6 +97,8 @@ export const FmCreateEventButton = ({
     console.log('Creating event:', {
       headlinerId,
       eventDate,
+      endTime: isAfterHours ? null : endTime,
+      isAfterHours,
       venueId,
       undercardArtists,
       ticketTiers,
@@ -109,6 +114,8 @@ export const FmCreateEventButton = ({
     // Reset form
     setHeadlinerId('');
     setEventDate(undefined);
+    setEndTime('02:00');
+    setIsAfterHours(false);
     setVenueId('');
     setVenueCapacity(0);
     setUndercardArtists([]);
@@ -172,6 +179,31 @@ export const FmCreateEventButton = ({
                     onChange={setEventDate}
                     placeholder="Select event date and time"
                   />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-white">End Time</Label>
+                    <FmCommonTimePicker
+                      value={endTime}
+                      onChange={setEndTime}
+                      disabled={isAfterHours}
+                      placeholder="Select end time"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-white opacity-0">Checkbox</Label>
+                    <div className="flex items-center gap-2 h-10">
+                      <Checkbox
+                        id="after-hours"
+                        checked={isAfterHours}
+                        onCheckedChange={(checked) => setIsAfterHours(checked === true)}
+                      />
+                      <Label htmlFor="after-hours" className="text-white/70 cursor-pointer">
+                        After Hours
+                      </Label>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
