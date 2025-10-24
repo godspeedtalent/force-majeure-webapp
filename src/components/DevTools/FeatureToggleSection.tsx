@@ -19,6 +19,7 @@ import {
   ShoppingBag, 
   UserCircle,
   Ticket,
+  Map,
   LucideIcon
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -38,6 +39,7 @@ const iconMap: Record<string, LucideIcon> = {
   merch_store: ShoppingBag,
   member_profiles: UserCircle,
   ticketing: Ticket,
+  scavenger_hunt: Map,
 };
 
 // Format flag name for display

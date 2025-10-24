@@ -1,16 +1,23 @@
 import { useState } from 'react';
+import { FmCommonCreateButton } from './FmCommonCreateButton';
 import { FmCommonFormModal } from '@/components/ui/FmCommonFormModal';
 import { FmCommonTextField } from '@/components/ui/FmCommonTextField';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-interface CreateVenueModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+interface FmCreateVenueButtonProps {
+  onModalOpen?: () => void;
+  variant?: 'default' | 'outline';
+  className?: string;
 }
 
-export const CreateVenueModal = ({ open, onOpenChange }: CreateVenueModalProps) => {
+export const FmCreateVenueButton = ({
+  onModalOpen,
+  variant = 'outline',
+  className,
+}: FmCreateVenueButtonProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -19,6 +26,11 @@ export const CreateVenueModal = ({ open, onOpenChange }: CreateVenueModalProps) 
     website: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleClick = () => {
+    onModalOpen?.();
+    setIsModalOpen(true);
+  };
 
   const handleSubmit = async () => {
     if (!formData.name.trim()) {
@@ -39,7 +51,7 @@ export const CreateVenueModal = ({ open, onOpenChange }: CreateVenueModalProps) 
       if (error) throw error;
 
       toast.success('Venue created successfully');
-      onOpenChange(false);
+      setIsModalOpen(false);
       setFormData({
         name: '',
         address: '',
@@ -100,7 +112,7 @@ export const CreateVenueModal = ({ open, onOpenChange }: CreateVenueModalProps) 
     <div className="flex gap-3 justify-end">
       <Button
         variant="outline"
-        onClick={() => onOpenChange(false)}
+        onClick={() => setIsModalOpen(false)}
         disabled={isSubmitting}
         className="bg-white/5 border-white/20 hover:bg-white/10"
       >
@@ -117,13 +129,22 @@ export const CreateVenueModal = ({ open, onOpenChange }: CreateVenueModalProps) 
   );
 
   return (
-    <FmCommonFormModal
-      open={open}
-      onOpenChange={onOpenChange}
-      title="Create New Venue"
-      description="Add a new venue to the database"
-      sections={sections}
-      actions={actions}
-    />
+    <>
+      <FmCommonCreateButton
+        onClick={handleClick}
+        label="Create Venue"
+        variant={variant}
+        className={className}
+      />
+      <FmCommonFormModal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        title="Create New Venue"
+        description="Add a new venue to the database"
+        sections={sections}
+        actions={actions}
+        className="z-[200]"
+      />
+    </>
   );
 };

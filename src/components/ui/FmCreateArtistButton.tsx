@@ -1,16 +1,23 @@
 import { useState } from 'react';
+import { FmCommonCreateButton } from './FmCommonCreateButton';
 import { FmCommonFormModal } from '@/components/ui/FmCommonFormModal';
 import { FmCommonTextField } from '@/components/ui/FmCommonTextField';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-interface CreateArtistModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+interface FmCreateArtistButtonProps {
+  onModalOpen?: () => void;
+  variant?: 'default' | 'outline';
+  className?: string;
 }
 
-export const CreateArtistModal = ({ open, onOpenChange }: CreateArtistModalProps) => {
+export const FmCreateArtistButton = ({
+  onModalOpen,
+  variant = 'outline',
+  className,
+}: FmCreateArtistButtonProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     image_url: '',
@@ -19,6 +26,11 @@ export const CreateArtistModal = ({ open, onOpenChange }: CreateArtistModalProps
     social_links: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleClick = () => {
+    onModalOpen?.();
+    setIsModalOpen(true);
+  };
 
   const handleSubmit = async () => {
     if (!formData.name.trim()) {
@@ -39,7 +51,7 @@ export const CreateArtistModal = ({ open, onOpenChange }: CreateArtistModalProps
       if (error) throw error;
 
       toast.success('Artist created successfully');
-      onOpenChange(false);
+      setIsModalOpen(false);
       setFormData({
         name: '',
         image_url: '',
@@ -100,7 +112,7 @@ export const CreateArtistModal = ({ open, onOpenChange }: CreateArtistModalProps
     <div className="flex gap-3 justify-end">
       <Button
         variant="outline"
-        onClick={() => onOpenChange(false)}
+        onClick={() => setIsModalOpen(false)}
         disabled={isSubmitting}
         className="bg-white/5 border-white/20 hover:bg-white/10"
       >
@@ -117,13 +129,22 @@ export const CreateArtistModal = ({ open, onOpenChange }: CreateArtistModalProps
   );
 
   return (
-    <FmCommonFormModal
-      open={open}
-      onOpenChange={onOpenChange}
-      title="Create New Artist"
-      description="Add a new artist to the database"
-      sections={sections}
-      actions={actions}
-    />
+    <>
+      <FmCommonCreateButton
+        onClick={handleClick}
+        label="Create Artist"
+        variant={variant}
+        className={className}
+      />
+      <FmCommonFormModal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        title="Create New Artist"
+        description="Add a new artist to the database"
+        sections={sections}
+        actions={actions}
+        className="z-[200]"
+      />
+    </>
   );
 };

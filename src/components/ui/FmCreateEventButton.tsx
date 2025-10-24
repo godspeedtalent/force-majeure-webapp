@@ -1,7 +1,7 @@
-import { Plus } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
+import { FmCommonCreateButton } from '@/components/ui/FmCommonCreateButton';
 import { FmCommonFormModal } from '@/components/ui/FmCommonFormModal';
 import { FmArtistSearchDropdown } from '@/components/ui/FmArtistSearchDropdown';
 import { FmVenueSearchDropdown } from '@/components/ui/FmVenueSearchDropdown';
@@ -285,18 +285,12 @@ export const FmCreateEventButton = ({
 
   return (
     <>
-      <Button
+      <FmCommonCreateButton
         onClick={handleCreateEvent}
+        label="Create Event"
         variant={variant}
-        className={cn(
-          'justify-start gap-2',
-          variant === 'outline' && 'bg-white/5 border-white/30 hover:bg-fm-gold/20 hover:border-fm-gold hover:text-fm-gold transition-all',
-          className
-        )}
-      >
-        <Plus className="h-4 w-4" />
-        Create Event
-      </Button>
+        className={className}
+      />
 
       {/* Loading Overlay */}
       {isLoading && (
