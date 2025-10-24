@@ -23,11 +23,11 @@ export function FmEventSearchDropdown({
   React.useEffect(() => {
     if (value) {
       supabase
-        .from('events')
+        .from('events' as any)
         .select('title')
         .eq('id', value)
-        .single()
-        .then(({ data }) => {
+        .maybeSingle()
+        .then(({ data }: any) => {
           if (data) {
             setSelectedEvent({ title: data.title });
           }
@@ -39,24 +39,61 @@ export function FmEventSearchDropdown({
 
   const handleSearch = async (query: string): Promise<SearchDropdownOption[]> => {
     const { data, error } = await supabase
-      .from('events')
+      .from('events' as any)
       .select(`
         id,
         title,
         date,
-        artists:headliner_id (
+        headliner:headliner_id (
+          id,
+          name,
           image_url
-        )
+        ),
+        venue:venue_id (
+          id,
+          name
+        ),
+        undercard_ids
       `)
-      .ilike('title', `%${query}%`)
-      .limit(10);
+      .gte('date', new Date().toISOString().split('T')[0])
+      .order('date', { ascending: true })
+      .limit(50);
 
     if (error || !data) return [];
 
-    return data.map((event) => {
-      const headlinerImage = event.artists && typeof event.artists === 'object' && 'image_url' in event.artists
-        ? event.artists.image_url
-        : null;
+    // Get undercard artist names for events with undercard_ids
+    const eventsWithUndercards = await Promise.all(
+      (data as any[]).map(async (event: any) => {
+        if (event.undercard_ids && event.undercard_ids.length > 0) {
+          const { data: undercards } = await supabase
+            .from('artists' as any)
+            .select('name')
+            .in('id', event.undercard_ids);
+          
+          return {
+            ...event,
+            undercards: undercards || [],
+          };
+        }
+        return { ...event, undercards: [] };
+      })
+    );
+
+    // Filter results to match search query against multiple fields
+    const filtered = eventsWithUndercards.filter((event: any) => {
+      const searchLower = query.toLowerCase();
+      const titleMatch = event.title?.toLowerCase().includes(searchLower);
+      const headlinerMatch = event.headliner?.name?.toLowerCase().includes(searchLower);
+      const venueMatch = event.venue?.name?.toLowerCase().includes(searchLower);
+      const undercardMatch = event.undercards?.some((uc: any) => 
+        uc.name?.toLowerCase().includes(searchLower)
+      );
+      
+      return titleMatch || headlinerMatch || venueMatch || undercardMatch;
+    });
+
+    return filtered.slice(0, 10).map((event: any) => {
+      const headlinerImage = event.headliner?.image_url;
 
       return {
         id: event.id,
