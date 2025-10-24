@@ -145,7 +145,7 @@ export const FeatureToggleSection = () => {
               const Icon = iconMap[flag.flag_name] || Music;
               return (
                 <TooltipProvider key={flag.flag_name}>
-                  <Tooltip>
+                  <Tooltip delayDuration={300}>
                     <TooltipTrigger asChild>
                       <div>
                         <FmCommonToggle
@@ -158,7 +158,7 @@ export const FeatureToggleSection = () => {
                       </div>
                     </TooltipTrigger>
                     {flag.description && (
-                      <TooltipContent side="left" className="max-w-xs bg-black/95 border-white/20">
+                      <TooltipContent side="left" className="max-w-xs bg-black/95 border-white/20 z-[150]">
                         <p className="text-sm text-white">{flag.description}</p>
                       </TooltipContent>
                     )}
@@ -179,7 +179,7 @@ export const FeatureToggleSection = () => {
               const Icon = iconMap[flag.flag_name] || Music;
               return (
                 <TooltipProvider key={flag.flag_name}>
-                  <Tooltip>
+                  <Tooltip delayDuration={300}>
                     <TooltipTrigger asChild>
                       <div className="opacity-50 pointer-events-none">
                         <FmCommonToggle
@@ -193,7 +193,7 @@ export const FeatureToggleSection = () => {
                       </div>
                     </TooltipTrigger>
                     {flag.description && (
-                      <TooltipContent side="left" className="max-w-xs bg-black/95 border-white/20">
+                      <TooltipContent side="left" className="max-w-xs bg-black/95 border-white/20 z-[150]">
                         <p className="text-sm text-white">{flag.description}</p>
                       </TooltipContent>
                     )}
@@ -218,7 +218,7 @@ export const FeatureToggleSection = () => {
 
       {/* Confirmation Dialog */}
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <AlertDialogContent className="bg-black/90 backdrop-blur-md border border-white/20 text-white">
+        <AlertDialogContent className="bg-black/90 backdrop-blur-md border border-white/20 text-white z-[200]">
           <AlertDialogHeader>
             <AlertDialogTitle className="font-canela text-white">Confirm Feature Flag Changes</AlertDialogTitle>
             <AlertDialogDescription className="text-white/70">

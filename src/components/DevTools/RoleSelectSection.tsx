@@ -30,17 +30,17 @@ export const RoleSelectSection = ({ currentRole, onRoleChange }: RoleSelectSecti
   const CurrentIcon = roleConfig[effectiveRole].icon;
 
   return (
-    <FmCommonToggleHeader title="Role Select">
-      <div className="space-y-3">
-        <Button
-          onClick={() => navigate('/demo')}
-          variant="outline"
-          className="w-full bg-fm-gold/10 border-fm-gold/30 hover:bg-fm-gold/20 hover:border-fm-gold text-white"
-        >
-          <Compass className="h-4 w-4 mr-2" />
-          Go to Demos
-        </Button>
-        
+    <div className="space-y-6">
+      <Button
+        onClick={() => navigate('/demo')}
+        variant="outline"
+        className="w-full bg-fm-gold/10 border-fm-gold/30 hover:bg-fm-gold/20 hover:border-fm-gold text-white"
+      >
+        <Compass className="h-4 w-4 mr-2" />
+        Go to Demos
+      </Button>
+
+      <FmCommonToggleHeader title="Role Select">
         <div>
           <p className="text-xs text-white/60 mb-3">
             Select a role to simulate during your session
@@ -61,7 +61,7 @@ export const RoleSelectSection = ({ currentRole, onRoleChange }: RoleSelectSecti
             align="start"
           />
         </div>
-      </div>
-    </FmCommonToggleHeader>
+      </FmCommonToggleHeader>
+    </div>
   );
 };
