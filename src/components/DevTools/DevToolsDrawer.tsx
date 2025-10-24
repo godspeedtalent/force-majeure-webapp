@@ -35,15 +35,13 @@ export const DevToolsDrawer = () => {
     console.log('Dev role changed to:', role);
   };
 
-  const drawerWidth = isOpen ? 320 : 0;
-
   return (
-    <div className="fixed top-1/2 right-0 -translate-y-1/2 z-50 flex items-center">
-      {/* Tabs */}
-      <div
-        className="flex flex-col gap-2 transition-transform duration-300 ease-in-out"
-        style={{ transform: `translateX(-${drawerWidth}px)` }}
-      >
+    <div
+      className="fixed bottom-6 right-0 z-50 transition-all duration-300 ease-in-out"
+      style={{ width: isOpen ? '320px' : '0px' }}
+    >
+      {/* Tabs - positioned absolutely at the left edge */}
+      <div className="absolute bottom-0 right-full flex flex-col gap-2 pr-0">
         <FmCommonTab
           icon={Hammer}
           label="Developer Tools"
@@ -63,7 +61,7 @@ export const DevToolsDrawer = () => {
       {/* Drawer */}
       <div
         className={cn(
-          'h-screen bg-fm-gold/20 backdrop-blur-md border-l border-fm-gold/30 overflow-y-auto transition-all duration-300 ease-in-out',
+          'h-[calc(100vh-3rem)] bg-fm-gold/20 backdrop-blur-md border-l border-fm-gold/30 overflow-y-auto transition-all duration-300 ease-in-out',
           isOpen ? 'w-80' : 'w-0'
         )}
       >
