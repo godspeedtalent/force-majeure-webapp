@@ -21,7 +21,7 @@ export const DemoLayout = ({
   return (
     <>
       <Navigation />
-      <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto pt-24 pb-8 px-4">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-4">

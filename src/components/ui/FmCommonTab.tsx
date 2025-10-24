@@ -19,14 +19,14 @@ export const FmCommonTab = ({
   className = '',
 }: FmCommonTabProps) => {
   const baseClasses =
-    'flex items-center justify-center bg-white/50 hover:bg-fm-gold hover:text-primary-foreground transition-all duration-300 cursor-pointer';
+    'flex items-center justify-center bg-black/80 backdrop-blur-md border border-white/10 hover:bg-fm-gold hover:text-black hover:border-fm-gold transition-all duration-300 cursor-pointer';
 
   const variantClasses = {
     vertical: 'w-12 h-12 writing-mode-vertical',
     horizontal: 'h-12 px-4',
   };
 
-  const activeClasses = isActive ? 'bg-fm-gold text-primary-foreground' : '';
+  const activeClasses = isActive ? 'bg-fm-gold text-black border-fm-gold' : 'text-white';
 
   return (
     <button
