@@ -61,13 +61,13 @@ export const DevToolsDrawer = () => {
       {/* Drawer */}
       <div
         className={cn(
-          'h-[calc(100vh-3rem)] bg-fm-gold/20 backdrop-blur-md border-l border-fm-gold/30 overflow-y-auto transition-all duration-300 ease-in-out',
+          'h-screen bg-black border-l border-white/20 overflow-y-auto transition-all duration-300 ease-in-out',
           isOpen ? 'w-80' : 'w-0'
         )}
       >
         {isOpen && (
           <div className="p-6">
-            <h2 className="font-screamer text-2xl text-fm-gold mb-6">
+            <h2 className="font-canela text-2xl text-white mb-6">
               {activeTab === 'tools' ? 'Developer Tools' : 'Placeholder Tab'}
             </h2>
 
@@ -78,7 +78,7 @@ export const DevToolsDrawer = () => {
             )}
 
             {activeTab === 'placeholder' && (
-              <p className="text-sm text-muted-foreground">This is a placeholder tab.</p>
+              <p className="text-sm text-white/60">This is a placeholder tab.</p>
             )}
           </div>
         )}

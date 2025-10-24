@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { ChevronDown } from 'lucide-react';
 
 import {
   DropdownMenu,
@@ -28,7 +29,12 @@ interface FmCommonDropdownProps {
 export function FmCommonDropdown({ trigger, items, align = 'end' }: FmCommonDropdownProps) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>
+        <div className="relative inline-flex w-full">
+          {trigger}
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" />
+        </div>
+      </DropdownMenuTrigger>
       <DropdownMenuContent align={align} className='w-48'>
         {items.map((item, index) => (
           <React.Fragment key={index}>
