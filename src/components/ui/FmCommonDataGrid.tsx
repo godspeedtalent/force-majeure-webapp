@@ -235,7 +235,7 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
       </div>
 
       {/* Data Table */}
-      <div className="rounded-lg border border-border/50 overflow-hidden bg-background/30 backdrop-blur-sm">
+      <div className="rounded-lg border border-border/50 overflow-x-auto bg-background/30 backdrop-blur-sm">
         <Table>
           <TableHeader>
             <TableRow className="border-border/50 hover:bg-transparent">

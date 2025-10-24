@@ -31,7 +31,7 @@ export default function AdminControls() {
       <Navigation />
       <SidebarProvider>
         <div className="flex min-h-screen w-full pt-16">
-          <Sidebar className="border-r border-white/20 bg-black/40">
+          <Sidebar className="border-r border-white/20 bg-black/40 w-48">
             <SidebarContent className="pt-8">
               <SidebarGroup>
                 <SidebarGroupLabel className="text-white/70 px-4">

@@ -24,42 +24,23 @@ export function FmUserDataGrid() {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      // Fetch profiles with user email from auth
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
+      // Get current session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('Not authenticated');
+      }
 
-      if (profilesError) throw profilesError;
+      // Call edge function to get users with full details (including emails)
+      const { data, error } = await supabase.functions.invoke('get-users', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
 
-      // For each profile, get the user's email and roles
-      const usersWithDetails = await Promise.all(
-        (profiles || []).map(async (profile) => {
-          // Get user email from auth.users (requires service role or admin RLS)
-          const { data: { user } } = await supabase.auth.admin.getUserById(
-            profile.user_id
-          );
+      if (error) throw error;
 
-          // Get user roles
-          const { data: roles } = await supabase
-            .from('user_roles')
-            .select('role')
-            .eq('user_id', profile.user_id);
-
-          return {
-            id: profile.user_id,
-            email: user?.email || 'N/A',
-            display_name: profile.display_name || 'N/A',
-            full_name: profile.full_name || 'N/A',
-            created_at: profile.created_at,
-            role: roles && roles.length > 0 ? roles[0].role : 'user',
-            is_public: profile.is_public || false,
-            show_on_leaderboard: profile.show_on_leaderboard || false,
-          };
-        })
-      );
-
-      setUsers(usersWithDetails);
+      setUsers(data.users || []);
     } catch (error: any) {
       console.error('Error fetching users:', error);
       toast.error('Failed to load users', {
