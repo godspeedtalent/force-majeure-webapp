@@ -12,9 +12,9 @@ import type { DevRole } from '@/contexts/DevToolsContext';
 type TabId = 'tools' | 'features' | 'creation';
 
 export const DevToolsDrawer = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId | null>(null);
-  const { devRole, setDevRole } = useDevTools();
+  const { devRole, setDevRole, isDrawerOpen, toggleDrawer } = useDevTools();
+  const isOpen = isDrawerOpen;
 
   // Only render in development
   if (!isDevelopment()) {
@@ -24,11 +24,13 @@ export const DevToolsDrawer = () => {
   const handleTabClick = (tabId: TabId) => {
     if (activeTab === tabId && isOpen) {
       // Clicking active tab closes the drawer
-      setIsOpen(false);
+      toggleDrawer();
       setActiveTab(null);
     } else {
       // Open drawer and switch to this tab
-      setIsOpen(true);
+      if (!isOpen) {
+        toggleDrawer();
+      }
       setActiveTab(tabId);
     }
   };
@@ -39,7 +41,7 @@ export const DevToolsDrawer = () => {
 
   return (
     <div
-      className="fixed bottom-0 right-0 z-[45] transition-all duration-300 ease-in-out"
+      className="fixed bottom-0 right-0 z-[100] transition-all duration-300 ease-in-out"
       style={{ width: isOpen ? '320px' : '0px', marginBottom: '96px' }}
     >
       {/* Tabs - positioned absolutely at the left edge */}

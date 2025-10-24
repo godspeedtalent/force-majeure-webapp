@@ -1,7 +1,6 @@
 import { Plus } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { FmCommonToggleHeader } from '@/components/ui/FmCommonToggleHeader';
 import { FmCommonFormModal } from '@/components/ui/FmCommonFormModal';
 import { FmArtistSearchDropdown } from '@/components/ui/FmArtistSearchDropdown';
 import { FmVenueSearchDropdown } from '@/components/ui/FmVenueSearchDropdown';
@@ -118,18 +117,16 @@ export const CreationToolsSection = () => {
 
   return (
     <>
-      <FmCommonToggleHeader title="Creation Tools">
-        <div className="space-y-4">
-          <Button
-            onClick={handleCreateEvent}
-            variant="outline"
-            className="w-full justify-start gap-2 bg-white/5 border-white/30 hover:bg-fm-gold/20 hover:border-fm-gold hover:text-fm-gold transition-all"
-          >
-            <Plus className="h-4 w-4" />
-            Create Event
-          </Button>
-        </div>
-      </FmCommonToggleHeader>
+      <div className="space-y-4">
+        <Button
+          onClick={handleCreateEvent}
+          variant="outline"
+          className="w-full justify-start gap-2 bg-white/5 border-white/30 hover:bg-fm-gold/20 hover:border-fm-gold hover:text-fm-gold transition-all"
+        >
+          <Plus className="h-4 w-4" />
+          Create Event
+        </Button>
+      </div>
 
       <FmCommonFormModal
         open={isModalOpen}

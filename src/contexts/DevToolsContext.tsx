@@ -7,6 +7,8 @@ interface DevToolsContextType {
   devRole: DevRole | null;
   setDevRole: (role: DevRole | null) => void;
   isDevMode: boolean;
+  isDrawerOpen: boolean;
+  toggleDrawer: () => void;
 }
 
 const DevToolsContext = createContext<DevToolsContextType | undefined>(undefined);
@@ -20,6 +22,7 @@ export const DevToolsProvider = ({ children }: { children: ReactNode }) => {
     const stored = localStorage.getItem(DEV_ROLE_KEY);
     return stored as DevRole | null;
   });
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const setDevRole = (role: DevRole | null) => {
     if (!isDevMode) return;
@@ -32,6 +35,11 @@ export const DevToolsProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const toggleDrawer = () => {
+    if (!isDevMode) return;
+    setIsDrawerOpen(prev => !prev);
+  };
+
   useEffect(() => {
     if (!isDevMode && devRole) {
       setDevRoleState(null);
@@ -39,8 +47,23 @@ export const DevToolsProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [isDevMode, devRole]);
 
+  // Hotkey listener: Ctrl+Shift+D or Cmd+Shift+D
+  useEffect(() => {
+    if (!isDevMode) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'D') {
+        e.preventDefault();
+        toggleDrawer();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isDevMode]);
+
   return (
-    <DevToolsContext.Provider value={{ devRole, setDevRole, isDevMode }}>
+    <DevToolsContext.Provider value={{ devRole, setDevRole, isDevMode, isDrawerOpen, toggleDrawer }}>
       {children}
     </DevToolsContext.Provider>
   );
