@@ -23,6 +23,7 @@ import Merch from './pages/Merch';
 import { MusicPlayerProvider } from '@/contexts/MusicPlayerContext';
 import { AuthProvider } from '@/features/auth/services/AuthContext';
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
+import { DevToolsDrawer } from '@/components/DevTools/DevToolsDrawer';
 
 import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
@@ -113,6 +114,7 @@ const App = () => {
               <Sonner />
               <BrowserRouter>
                 <AppRoutes />
+                <DevToolsDrawer />
               </BrowserRouter>
             </TooltipProvider>
           </MusicPlayerProvider>
