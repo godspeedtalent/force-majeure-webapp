@@ -37,7 +37,7 @@ export const FmCommonFormModal = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={cn(
-          'bg-black/90 backdrop-blur-md border border-white/20 text-white max-w-2xl',
+          'bg-black/90 backdrop-blur-md border border-white/20 text-white max-w-2xl pointer-events-auto',
           className
         )}
       >

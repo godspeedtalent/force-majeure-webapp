@@ -740,6 +740,36 @@ export type Database = {
           },
         ]
       }
+      ticketing_fees: {
+        Row: {
+          created_at: string
+          fee_name: string
+          fee_type: string
+          fee_value: number
+          id: string
+          is_active: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          fee_name: string
+          fee_type: string
+          fee_value: number
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          fee_name?: string
+          fee_type?: string
+          fee_value?: number
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tickets: {
         Row: {
           apple_wallet_url: string | null

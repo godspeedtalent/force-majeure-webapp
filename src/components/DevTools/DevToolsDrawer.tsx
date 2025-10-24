@@ -1,16 +1,17 @@
-import { Hammer, ToggleLeft, Wrench, X } from 'lucide-react';
+import { Hammer, ToggleLeft, Wrench, Ticket, X } from 'lucide-react';
 import { useState } from 'react';
 import { FmCommonTab } from '@/components/ui/FmCommonTab';
 import { RoleSelectSection } from './RoleSelectSection';
 import { FeatureToggleSection } from './FeatureToggleSection';
 import { CreationToolsSection } from './CreationToolsSection';
+import { TicketingSection } from './TicketingSection';
 import { cn } from '@/shared/utils/utils';
 import { isDevelopment } from '@/shared/utils/environment';
 import { useDevTools } from '@/contexts/DevToolsContext';
 import type { DevRole } from '@/contexts/DevToolsContext';
 import { Button } from '@/components/ui/button';
 
-type TabId = 'tools' | 'features' | 'creation';
+type TabId = 'tools' | 'features' | 'creation' | 'ticketing';
 
 export const DevToolsDrawer = () => {
   const [activeTab, setActiveTab] = useState<TabId | null>(null);
@@ -75,6 +76,13 @@ export const DevToolsDrawer = () => {
           onClick={() => handleTabClick('creation')}
           variant="vertical"
         />
+        <FmCommonTab
+          icon={Ticket}
+          label="Ticketing"
+          isActive={activeTab === 'ticketing'}
+          onClick={() => handleTabClick('ticketing')}
+          variant="vertical"
+        />
       </div>
 
       {/* Drawer */}
@@ -97,7 +105,13 @@ export const DevToolsDrawer = () => {
             </Button>
 
             <h2 className="font-canela text-2xl text-white mb-6">
-              {activeTab === 'tools' ? 'Developer Tools' : activeTab === 'features' ? 'Feature Toggles' : 'Creation Tools'}
+              {activeTab === 'tools' 
+                ? 'Developer Tools' 
+                : activeTab === 'features' 
+                ? 'Feature Toggles' 
+                : activeTab === 'ticketing'
+                ? 'Ticketing'
+                : 'Creation Tools'}
             </h2>
 
             {activeTab === 'tools' && (
@@ -115,6 +129,12 @@ export const DevToolsDrawer = () => {
             {activeTab === 'creation' && (
               <div className="space-y-0">
                 <CreationToolsSection />
+              </div>
+            )}
+
+            {activeTab === 'ticketing' && (
+              <div className="space-y-0">
+                <TicketingSection />
               </div>
             )}
           </div>

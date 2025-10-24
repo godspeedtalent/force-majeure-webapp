@@ -5,7 +5,7 @@ import { FmCommonCreateButton } from '@/components/ui/FmCommonCreateButton';
 import { FmCommonFormModal } from '@/components/ui/FmCommonFormModal';
 import { FmArtistSearchDropdown } from '@/components/ui/FmArtistSearchDropdown';
 import { FmVenueSearchDropdown } from '@/components/ui/FmVenueSearchDropdown';
-import { FmCommonEventDatePicker } from '@/components/ui/FmCommonEventDatePicker';
+import { FmCommonDatePicker } from '@/components/ui/FmCommonDatePicker';
 import { FmCommonTimePicker } from '@/components/ui/FmCommonTimePicker';
 import { FmCommonRowManager } from '@/components/ui/FmCommonRowManager';
 import { FmCommonLoadingSpinner } from '@/components/ui/FmCommonLoadingSpinner';
@@ -323,15 +323,30 @@ export const FmCreateEventButton = ({
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-white">Date & Time</Label>
-                  <FmCommonEventDatePicker
+                  <Label className="text-white">Date</Label>
+                  <FmCommonDatePicker
                     value={eventDate}
                     onChange={setEventDate}
-                    placeholder="Select event date and time"
+                    placeholder="Select event date"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-white">Start Time</Label>
+                    <FmCommonTimePicker
+                      value={eventDate ? format(eventDate, 'HH:mm') : '20:00'}
+                      onChange={(time) => {
+                        if (eventDate) {
+                          const [hours, minutes] = time.split(':');
+                          const newDate = new Date(eventDate);
+                          newDate.setHours(parseInt(hours), parseInt(minutes));
+                          setEventDate(newDate);
+                        }
+                      }}
+                      placeholder="Select start time"
+                    />
+                  </div>
                   <div className="space-y-2">
                     <Label className="text-white">End Time</Label>
                     <FmCommonTimePicker
@@ -341,19 +356,17 @@ export const FmCreateEventButton = ({
                       placeholder="Select end time"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-white opacity-0">Checkbox</Label>
-                    <div className="flex items-center gap-2 h-10">
-                      <Checkbox
-                        id="after-hours"
-                        checked={isAfterHours}
-                        onCheckedChange={(checked) => setIsAfterHours(checked === true)}
-                      />
-                      <Label htmlFor="after-hours" className="text-white/70 cursor-pointer">
-                        After Hours
-                      </Label>
-                    </div>
-                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="after-hours"
+                    checked={isAfterHours}
+                    onCheckedChange={(checked) => setIsAfterHours(checked === true)}
+                  />
+                  <Label htmlFor="after-hours" className="text-white/70 cursor-pointer">
+                    After Hours Event
+                  </Label>
                 </div>
 
                 <div className="space-y-2">
@@ -428,14 +441,16 @@ export const FmCreateEventButton = ({
                           <Input
                             type="number"
                             min="0"
-                            step="0.01"
-                            value={tier.priceInCents / 100}
+                            step="1"
+                            value={tier.priceInCents === 0 ? '' : (tier.priceInCents / 100).toString()}
                             onChange={(e) => {
                               const updated = [...ticketTiers];
-                              updated[index].priceInCents = Math.max(0, Math.round(parseFloat(e.target.value || '0') * 100));
+                              const value = e.target.value === '' ? 0 : parseFloat(e.target.value);
+                              updated[index].priceInCents = Math.max(0, Math.round(value * 100));
                               setTicketTiers(updated);
                             }}
-                            placeholder="0.00"
+                            onFocus={(e) => e.target.select()}
+                            placeholder="0"
                             className="bg-black/40 border-white/20 text-white"
                           />
                         </div>
@@ -444,12 +459,15 @@ export const FmCreateEventButton = ({
                           <Input
                             type="number"
                             min="1"
-                            value={tier.quantity}
+                            step="1"
+                            value={tier.quantity === 0 ? '' : tier.quantity.toString()}
                             onChange={(e) => {
                               const updated = [...ticketTiers];
-                              updated[index].quantity = Math.max(1, parseInt(e.target.value || '1'));
+                              const value = e.target.value === '' ? 0 : parseInt(e.target.value);
+                              updated[index].quantity = Math.max(1, value);
                               setTicketTiers(updated);
                             }}
+                            onFocus={(e) => e.target.select()}
                             placeholder="0"
                             className="bg-black/40 border-white/20 text-white"
                           />
