@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 interface FmEventSearchDropdownProps {
   value?: string;
   onChange: (value: string) => void;
+  onCreateNew?: () => void;
   placeholder?: string;
   disabled?: boolean;
 }
@@ -13,6 +14,7 @@ interface FmEventSearchDropdownProps {
 export function FmEventSearchDropdown({
   value,
   onChange,
+  onCreateNew,
   placeholder = 'Search for an event...',
   disabled = false,
 }: FmEventSearchDropdownProps) {
@@ -74,7 +76,9 @@ export function FmEventSearchDropdown({
     <FmCommonSearchDropdown
       onChange={onChange}
       onSearch={handleSearch}
+      onCreateNew={onCreateNew}
       placeholder={placeholder}
+      createNewLabel="+ Create New Event"
       selectedLabel={selectedEvent?.title}
       disabled={disabled}
     />

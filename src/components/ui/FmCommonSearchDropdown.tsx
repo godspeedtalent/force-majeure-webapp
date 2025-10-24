@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Search, Plus } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
+import { FmCommonLoadingSpinner } from '@/components/ui/FmCommonLoadingSpinner';
 import { cn } from '@/shared/utils/utils';
 
 export interface SearchDropdownOption {
@@ -104,7 +105,10 @@ export function FmCommonSearchDropdown({
         </div>
         <div className="max-h-[300px] overflow-y-auto">
           {loading ? (
-            <div className="p-4 text-center text-white/50">Searching...</div>
+            <div className="p-4 flex flex-col items-center gap-2">
+              <FmCommonLoadingSpinner size="md" />
+              <span className="text-white/50 text-sm">Searching...</span>
+            </div>
           ) : options.length === 0 && query.length > 0 ? (
             <div className="p-4 text-center text-white/50">No results found</div>
           ) : (
