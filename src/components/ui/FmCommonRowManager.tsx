@@ -30,19 +30,19 @@ export function FmCommonRowManager<T>({
   return (
     <div className={cn('space-y-3', className)}>
       {items.map((item, index) => (
-        <div key={index} className="flex items-start gap-2">
-          <div className="flex-1">{renderRow(item, index)}</div>
+        <div key={index} className="relative">
           {canRemove && (
             <Button
               type="button"
               variant="ghost"
               size="icon"
               onClick={() => onRemove(index)}
-              className="text-white/50 hover:text-red-400 hover:bg-red-400/10 mt-1"
+              className="absolute -top-2 -right-2 z-10 h-6 w-6 text-white/50 hover:text-red-400 hover:bg-red-400/10"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-3 w-3" />
             </Button>
           )}
+          {renderRow(item, index)}
         </div>
       ))}
       {canAdd && (

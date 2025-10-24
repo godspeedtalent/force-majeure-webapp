@@ -6,26 +6,33 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { supabase } from '@/shared/api/supabase/client';
 
-interface FmCommonDatePickerProps {
+interface FmCommonEventDatePickerProps {
   value?: Date;
   onChange: (date: Date | undefined) => void;
   placeholder?: string;
   disabled?: boolean;
-  disablePastDates?: boolean;
 }
 
-export function FmCommonDatePicker({
+interface EventOnDate {
+  id: string;
+  title: string;
+  date: string;
+}
+
+export function FmCommonEventDatePicker({
   value,
   onChange,
   placeholder = 'Pick a date and time',
   disabled = false,
-  disablePastDates = true,
-}: FmCommonDatePickerProps) {
+}: FmCommonEventDatePickerProps) {
   const [time, setTime] = React.useState('19:00');
   const [tempDate, setTempDate] = React.useState<Date | undefined>(value);
   const [tempTime, setTempTime] = React.useState('19:00');
   const [isOpen, setIsOpen] = React.useState(false);
+  const [eventsOnDates, setEventsOnDates] = React.useState<Record<string, EventOnDate[]>>({});
 
   React.useEffect(() => {
     if (value) {
@@ -34,6 +41,34 @@ export function FmCommonDatePicker({
       setTempTime(format(value, 'HH:mm'));
     }
   }, [value]);
+
+  // Fetch future events
+  React.useEffect(() => {
+    const fetchEvents = async () => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const { data, error } = await supabase
+        .from('events')
+        .select('id, title, date')
+        .gte('date', today.toISOString().split('T')[0])
+        .order('date', { ascending: true });
+
+      if (!error && data) {
+        const grouped: Record<string, EventOnDate[]> = {};
+        data.forEach((event) => {
+          const dateKey = event.date;
+          if (!grouped[dateKey]) {
+            grouped[dateKey] = [];
+          }
+          grouped[dateKey].push(event);
+        });
+        setEventsOnDates(grouped);
+      }
+    };
+
+    fetchEvents();
+  }, []);
 
   const handleDateSelect = (date: Date | undefined) => {
     setTempDate(date);
@@ -63,6 +98,54 @@ export function FmCommonDatePicker({
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
+  // Custom day renderer to show gold text for dates with events
+  const modifiers = {
+    hasEvent: (date: Date) => {
+      const dateKey = format(date, 'yyyy-MM-dd');
+      return !!eventsOnDates[dateKey];
+    },
+  };
+
+  const modifiersClassNames = {
+    hasEvent: 'text-fm-gold font-bold',
+  };
+
+  const DayContent = ({ date }: { date: Date }) => {
+    const dateKey = format(date, 'yyyy-MM-dd');
+    const events = eventsOnDates[dateKey];
+
+    if (!events || events.length === 0) {
+      return <>{format(date, 'd')}</>;
+    }
+
+    return (
+      <TooltipProvider>
+        <Tooltip delayDuration={100}>
+          <TooltipTrigger asChild>
+            <span className="cursor-pointer">{format(date, 'd')}</span>
+          </TooltipTrigger>
+          <TooltipContent 
+            side="top" 
+            className="bg-black/95 border border-fm-gold/30 text-white max-w-xs"
+          >
+            <div className="space-y-1">
+              <p className="font-semibold text-fm-gold text-xs">
+                {events.length} scheduled event{events.length > 1 ? 's' : ''}
+              </p>
+              <ul className="space-y-0.5 text-xs">
+                {events.map((event) => (
+                  <li key={event.id} className="text-white/80">
+                    • {event.title}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  };
+
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild disabled={disabled}>
@@ -85,7 +168,12 @@ export function FmCommonDatePicker({
           mode="single"
           selected={tempDate}
           onSelect={handleDateSelect}
-          disabled={disablePastDates ? (date) => date < today : undefined}
+          disabled={(date) => date < today}
+          modifiers={modifiers}
+          modifiersClassNames={modifiersClassNames}
+          components={{
+            DayContent: ({ date }) => <DayContent date={date} />,
+          }}
           initialFocus
           className="pointer-events-auto"
           classNames={{
