@@ -1,5 +1,5 @@
 import { Calendar, Instagram, User } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useMemo, useState } from 'react';
 
 import lfSystemCover from '@/assets/lf-system-cover.jpg';
 import ninajirachiCover from '@/assets/ninajirachi-cover.jpg';
@@ -13,6 +13,9 @@ import { EventCard } from '@/features/events/components/EventCard';
 import { EventCardSkeleton } from '@/features/events/components/EventCardSkeleton';
 import { supabase } from '@/shared/api/supabase/client';
 import { useFontLoader } from '@/shared/hooks/useFontLoader';
+import { useScrollPosition } from '@/shared/hooks/useScrollPosition';
+import { SCROLL_THRESHOLDS } from '@/shared/constants/scrollThresholds';
+import { SOCIAL_LINKS } from '@/shared/constants/socialLinks';
 import { getImageUrl } from '@/shared/utils/imageUtils';
 import { logApiError } from '@/shared/utils/logger';
 interface Artist {
@@ -38,18 +41,9 @@ const Index = () => {
   const [upcomingEvents, setUpcomingEvents] = useState<EventData[]>([]);
   const [loading, setLoading] = useState(true);
   const fontsLoaded = useFontLoader();
+  const scrollY = useScrollPosition();
   const [contentReady, setContentReady] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
   const heroRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Content is ready when both fonts are loaded and data loading is complete
   useEffect(() => {
@@ -97,7 +91,7 @@ const Index = () => {
         const undercardArtists =
           eventIds.length > 0
             ? await Promise.all(
-                eventIds.map(async eventId => {
+                eventIds.map(async (eventId) => {
                   const event = data.find(e => e.id === eventId);
                   if (
                     !event ||
@@ -180,10 +174,13 @@ const Index = () => {
     };
     fetchEvents();
   }, []);
-  const parallaxOffset = scrollY * 0.5;
-  const fadeOpacity = Math.max(0, 1 - scrollY / 400);
-  // Login button fades out as you scroll down (opposite of nav fade)
-  const loginButtonOpacity = Math.max(0, 1 - scrollY / 200);
+
+  // Memoize scroll-based calculations
+  const { parallaxOffset, fadeOpacity, loginButtonOpacity } = useMemo(() => ({
+    parallaxOffset: scrollY * SCROLL_THRESHOLDS.PARALLAX_MULTIPLIER,
+    fadeOpacity: Math.max(0, 1 - scrollY / SCROLL_THRESHOLDS.CONTENT_FADE),
+    loginButtonOpacity: Math.max(0, 1 - scrollY / SCROLL_THRESHOLDS.FLOATING_BUTTON_FADE),
+  }), [scrollY]);
 
   return (
     <Layout>
@@ -243,10 +240,10 @@ const Index = () => {
 
                 {/* Social Button */}
                 <FmCommonButton
-                  href='https://www.instagram.com/force.majeure.events'
+                  href={SOCIAL_LINKS.instagram}
                   icon={Instagram}
                   label='Follow us on Instagram'
-                  tooltip='@force.majeure.vip'
+                  tooltip={SOCIAL_LINKS.instagramHandle}
                   isExternal={true}
                 />
               </div>

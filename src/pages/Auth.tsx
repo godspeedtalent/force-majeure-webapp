@@ -1,4 +1,4 @@
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -12,15 +12,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { CustomInput } from '@/components/ui/custom-input';
-import { CustomLabel } from '@/components/ui/custom-label';
 import { FmCommonTextField } from '@/components/ui/FmCommonTextField';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/features/auth/services/AuthContext';
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [signInForm, setSignInForm] = useState({ email: '', password: '' });
   const [signUpForm, setSignUpForm] = useState({
     email: '',
@@ -109,37 +106,20 @@ const Auth = () => {
                     required
                   />
 
-                  <div className='space-y-1'>
-                    <div className='relative'>
-                      <CustomInput
-                        id='signin-password'
-                        type={showPassword ? 'text' : 'password'}
-                        placeholder='Enter your password'
-                        value={signInForm.password}
-                        onChange={e =>
-                          setSignInForm({
-                            ...signInForm,
-                            password: e.target.value,
-                          })
-                        }
-                        required
-                      />
-                      <Button
-                        type='button'
-                        variant='ghost'
-                        size='sm'
-                        className='absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent'
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? (
-                          <EyeOff className='h-4 w-4 text-muted-foreground' />
-                        ) : (
-                          <Eye className='h-4 w-4 text-muted-foreground' />
-                        )}
-                      </Button>
-                    </div>
-                    <CustomLabel htmlFor='signin-password'>Password</CustomLabel>
-                  </div>
+                  <FmCommonTextField
+                    label='Password'
+                    id='signin-password'
+                    password
+                    placeholder='Enter your password'
+                    value={signInForm.password}
+                    onChange={e =>
+                      setSignInForm({
+                        ...signInForm,
+                        password: e.target.value,
+                      })
+                    }
+                    required
+                  />
 
                   <Button
                     type='submit'
@@ -182,37 +162,20 @@ const Auth = () => {
                     required
                   />
 
-                  <div className='space-y-1'>
-                    <div className='relative'>
-                      <CustomInput
-                        id='signup-password'
-                        type={showPassword ? 'text' : 'password'}
-                        placeholder='Create a password'
-                        value={signUpForm.password}
-                        onChange={e =>
-                          setSignUpForm({
-                            ...signUpForm,
-                            password: e.target.value,
-                          })
-                        }
-                        required
-                      />
-                      <Button
-                        type='button'
-                        variant='ghost'
-                        size='sm'
-                        className='absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent'
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? (
-                          <EyeOff className='h-4 w-4 text-muted-foreground' />
-                        ) : (
-                          <Eye className='h-4 w-4 text-muted-foreground' />
-                        )}
-                      </Button>
-                    </div>
-                    <CustomLabel htmlFor='signup-password'>Password</CustomLabel>
-                  </div>
+                  <FmCommonTextField
+                    label='Password'
+                    id='signup-password'
+                    password
+                    placeholder='Create a password'
+                    value={signUpForm.password}
+                    onChange={e =>
+                      setSignUpForm({
+                        ...signUpForm,
+                        password: e.target.value,
+                      })
+                    }
+                    required
+                  />
 
                   <Button
                     type='submit'

@@ -1,44 +1,30 @@
-import { Instagram, LogIn, LogOut, Menu, Settings, SettingsIcon, ShoppingCart, User, UserPlus, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Instagram, LogIn, Menu, SettingsIcon, ShoppingCart, User, UserPlus, X } from 'lucide-react';
+import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
+import { UserMenuDropdown } from '@/components/Navigation/UserMenuDropdown';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAuth } from '@/features/auth/services/AuthContext';
+import { useScrollPosition } from '@/shared/hooks/useScrollPosition';
 import { useUserRole } from '@/shared/hooks/useUserRole';
+import { SCROLL_THRESHOLDS } from '@/shared/constants/scrollThresholds';
+import { SOCIAL_LINKS } from '@/shared/constants/socialLinks';
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
-  const {
-    user,
-    signOut,
-    profile
-  } = useAuth();
+  const scrollY = useScrollPosition();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const {
-    data: role
-  } = useUserRole();
+  const { data: role } = useUserRole();
   const isAdmin = role === 'admin';
   const isHomePage = location.pathname === '/';
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    window.addEventListener('scroll', handleScroll, {
-      passive: true
-    });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/');
-  };
 
-  // Calculate opacity based on scroll (fade in by 400px, same as logo fade) - only on home page
-  const navOpacity = isHomePage ? Math.min(1, scrollY / 400) : 1;
+  // Calculate opacity based on scroll - only on home page
+  const navOpacity = isHomePage ? Math.min(1, scrollY / SCROLL_THRESHOLDS.CONTENT_FADE) : 1;
   return <nav className='sticky top-0 z-50 w-full bg-background/50 backdrop-blur-md border-b border-border transition-opacity duration-300' style={{
     opacity: navOpacity
   }}>
@@ -52,12 +38,12 @@ export const Navigation = () => {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <a href='https://www.instagram.com/force.majeure.events' target='_blank' rel='noopener noreferrer' className='ml-6 text-foreground hover:text-fm-gold transition-colors duration-200' aria-label='Follow us on Instagram'>
+                  <a href={SOCIAL_LINKS.instagram} target='_blank' rel='noopener noreferrer' className='ml-6 text-foreground hover:text-fm-gold transition-colors duration-200' aria-label='Follow us on Instagram'>
                     <Instagram className='h-5 w-5' />
                   </a>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>@force.majeure.events</p>
+                  <p>{SOCIAL_LINKS.instagramHandle}</p>
                 </TooltipContent>
               </Tooltip>
               <Tooltip>
@@ -83,94 +69,66 @@ export const Navigation = () => {
 
           {/* Desktop Actions */}
           <div className='hidden md:flex items-center space-x-4'>
-            {isAdmin && <Button variant='ghost' size='sm' className='text-foreground hover:text-fm-gold hover:bg-hover-overlay' asChild>
+            {isAdmin && (
+              <Button variant='ghost' size='sm' className='text-foreground hover:text-fm-gold hover:bg-hover-overlay' asChild>
                 <Link to='/admin'>
                   <SettingsIcon className='h-4 w-4' />
                 </Link>
-              </Button>}
-            <Button variant='ghost' size='sm' className='text-foreground hover:text-fm-gold hover:bg-hover-overlay' asChild>
-              <Link to='/merch'>
-                <ShoppingCart className='h-4 w-4' />
-              </Link>
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant='ghost' size='sm' className='text-foreground hover:text-fm-gold hover:bg-hover-overlay'>
-                  <User className='h-4 w-4' />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align='end' className='w-56 bg-background border border-border shadow-lg z-50'>
-                {user ? <>
-                    <div className='px-2 py-1.5 text-sm text-muted-foreground'>
-                      {profile?.display_name || 'User'}
-                    </div>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className='cursor-pointer hover:bg-hover-overlay' onClick={() => navigate('/profile')}>
-                      <Settings className='mr-2 h-4 w-4' />
-                      <span>Profile Settings</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className='cursor-pointer hover:bg-hover-overlay text-destructive' onClick={handleSignOut}>
-                      <LogOut className='mr-2 h-4 w-4' />
-                      <span>Sign Out</span>
-                    </DropdownMenuItem>
-                  </> : <>
-                    <DropdownMenuItem className='cursor-pointer hover:bg-hover-overlay' onClick={() => navigate('/auth')}>
-                      <LogIn className='mr-2 h-4 w-4' />
-                      <span>Sign In</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className='cursor-pointer hover:bg-hover-overlay' onClick={() => navigate('/auth')}>
-                      <UserPlus className='mr-2 h-4 w-4' />
-                      <span>Sign Up</span>
-                    </DropdownMenuItem>
-                  </>}
-              </DropdownMenuContent>
-            </DropdownMenu>
+              </Button>
+            )}
+            {user ? (
+              <UserMenuDropdown />
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant='ghost' size='sm' className='text-foreground hover:text-fm-gold hover:bg-hover-overlay'>
+                    <User className='h-4 w-4' />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align='end' className='w-56 bg-background border border-border shadow-lg z-50'>
+                  <DropdownMenuItem className='cursor-pointer hover:bg-hover-overlay' onClick={() => navigate('/auth')}>
+                    <LogIn className='mr-2 h-4 w-4' />
+                    <span>Sign In</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className='cursor-pointer hover:bg-hover-overlay' onClick={() => navigate('/auth')}>
+                    <UserPlus className='mr-2 h-4 w-4' />
+                    <span>Sign Up</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
 
           {/* Mobile menu button */}
           <div className='md:hidden flex items-center space-x-2'>
-            {isAdmin && <Button variant='ghost' size='sm' className='text-foreground hover:text-fm-gold hover:bg-hover-overlay' asChild>
+            {isAdmin && (
+              <Button variant='ghost' size='sm' className='text-foreground hover:text-fm-gold hover:bg-hover-overlay' asChild>
                 <Link to='/admin'>
                   <SettingsIcon className='h-4 w-4' />
                 </Link>
-              </Button>}
-            <Button variant='ghost' size='sm' className='text-foreground hover:text-fm-gold hover:bg-hover-overlay' asChild>
-              <Link to='/merch'>
-                <ShoppingCart className='h-4 w-4' />
-              </Link>
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant='ghost' size='sm' className='text-foreground hover:text-fm-gold hover:bg-hover-overlay'>
-                  <User className='h-4 w-4' />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align='end' className='w-56 bg-background border border-border shadow-lg z-50'>
-                {user ? <>
-                    <div className='px-2 py-1.5 text-sm text-muted-foreground'>
-                      {profile?.display_name || 'User'}
-                    </div>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className='cursor-pointer hover:bg-hover-overlay' onClick={() => navigate('/profile')}>
-                      <Settings className='mr-2 h-4 w-4' />
-                      <span>Profile Settings</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className='cursor-pointer hover:bg-hover-overlay text-destructive' onClick={handleSignOut}>
-                      <LogOut className='mr-2 h-4 w-4' />
-                      <span>Sign Out</span>
-                    </DropdownMenuItem>
-                  </> : <>
-                    <DropdownMenuItem className='cursor-pointer hover:bg-hover-overlay' onClick={() => navigate('/auth')}>
-                      <LogIn className='mr-2 h-4 w-4' />
-                      <span>Sign In</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className='cursor-pointer hover:bg-hover-overlay' onClick={() => navigate('/auth')}>
-                      <UserPlus className='mr-2 h-4 w-4' />
-                      <span>Sign Up</span>
-                    </DropdownMenuItem>
-                  </>}
-              </DropdownMenuContent>
-            </DropdownMenu>
+              </Button>
+            )}
+            {user ? (
+              <UserMenuDropdown />
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant='ghost' size='sm' className='text-foreground hover:text-fm-gold hover:bg-hover-overlay'>
+                    <User className='h-4 w-4' />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align='end' className='w-56 bg-background border border-border shadow-lg z-50'>
+                  <DropdownMenuItem className='cursor-pointer hover:bg-hover-overlay' onClick={() => navigate('/auth')}>
+                    <LogIn className='mr-2 h-4 w-4' />
+                    <span>Sign In</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className='cursor-pointer hover:bg-hover-overlay' onClick={() => navigate('/auth')}>
+                    <UserPlus className='mr-2 h-4 w-4' />
+                    <span>Sign Up</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
 
             <Button variant='ghost' size='sm' onClick={() => setIsOpen(!isOpen)} className='text-foreground hover:text-fm-gold hover:bg-hover-overlay'>
               {isOpen ? <X className='h-5 w-5' /> : <Menu className='h-5 w-5' />}
