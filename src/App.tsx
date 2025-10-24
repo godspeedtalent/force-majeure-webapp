@@ -24,6 +24,7 @@ import { MusicPlayerProvider } from '@/contexts/MusicPlayerContext';
 import { AuthProvider } from '@/features/auth/services/AuthContext';
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
 import { DevToolsDrawer } from '@/components/DevTools/DevToolsDrawer';
+import { DevToolsProvider } from '@/contexts/DevToolsContext';
 
 import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
@@ -107,18 +108,20 @@ const App = () => {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <MusicPlayerProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <AppRoutes />
-                <DevToolsDrawer />
-              </BrowserRouter>
-            </TooltipProvider>
-          </MusicPlayerProvider>
-        </AuthProvider>
+        <DevToolsProvider>
+          <AuthProvider>
+            <MusicPlayerProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <AppRoutes />
+                  <DevToolsDrawer />
+                </BrowserRouter>
+              </TooltipProvider>
+            </MusicPlayerProvider>
+          </AuthProvider>
+        </DevToolsProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );

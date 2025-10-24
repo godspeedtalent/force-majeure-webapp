@@ -75,11 +75,24 @@ const feedbackAnimations = {
   },
 };
 
+// Collapsible animations
+const collapsibleAnimations = {
+  'slide-down': {
+    from: { height: '0', opacity: '0' },
+    to: { height: 'var(--radix-collapsible-content-height)', opacity: '1' },
+  },
+  'slide-up': {
+    from: { height: 'var(--radix-collapsible-content-height)', opacity: '1' },
+    to: { height: '0', opacity: '0' },
+  },
+};
+
 export const keyframes = {
   ...layoutAnimations,
   ...entryAnimations,
   ...brandAnimations,
   ...feedbackAnimations,
+  ...collapsibleAnimations,
 };
 
 // Animation configurations with consistent timing
@@ -95,12 +108,15 @@ export const animations = {
   'accordion-down': createAnimation('accordion-down', '0.3s'),
   'accordion-up': createAnimation('accordion-up', '0.3s'),
 
+  // Collapsible animations
+  'slide-down': createAnimation('slide-down', '0.3s'),
+  'slide-up': createAnimation('slide-up', '0.3s'),
+
   // Entry animations
   'fade-in': createAnimation('fade-in', '0.5s'),
   'scale-in': createAnimation('scale-in', '0.3s'),
-  'slide-up': createAnimation('slide-up', '0.4s'),
-  'slide-down-in': createAnimation('slide-down-in', '0.6s', 'ease-in'),
   'slide-up-fade': createAnimation('slide-up-fade', '0.6s'),
+  'slide-down-in': createAnimation('slide-down-in', '0.6s', 'ease-in'),
 
   // Brand animations
   'pulse-gold': createAnimation('pulse-gold', '2s', 'infinite'),

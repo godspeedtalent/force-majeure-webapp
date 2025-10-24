@@ -1,16 +1,19 @@
-import { Hammer, Package } from 'lucide-react';
+import { Hammer, ToggleLeft } from 'lucide-react';
 import { useState } from 'react';
 import { FmCommonTab } from '@/components/ui/FmCommonTab';
-import { RoleSelectSection, DevRole } from './RoleSelectSection';
+import { RoleSelectSection } from './RoleSelectSection';
+import { FeatureToggleSection } from './FeatureToggleSection';
 import { cn } from '@/shared/utils/utils';
 import { isDevelopment } from '@/shared/utils/environment';
+import { useDevTools } from '@/contexts/DevToolsContext';
+import type { DevRole } from '@/contexts/DevToolsContext';
 
-type TabId = 'tools' | 'placeholder';
+type TabId = 'tools' | 'features';
 
 export const DevToolsDrawer = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId | null>(null);
-  const [currentRole, setCurrentRole] = useState<DevRole>('fan');
+  const { devRole, setDevRole } = useDevTools();
 
   // Only render in development
   if (!isDevelopment()) {
@@ -30,15 +33,13 @@ export const DevToolsDrawer = () => {
   };
 
   const handleRoleChange = (role: DevRole) => {
-    setCurrentRole(role);
-    // TODO: Implement role mocking logic here
-    console.log('Dev role changed to:', role);
+    setDevRole(role);
   };
 
   return (
     <div
-      className="fixed bottom-6 right-0 z-50 transition-all duration-300 ease-in-out"
-      style={{ width: isOpen ? '320px' : '0px' }}
+      className="fixed bottom-0 right-0 z-[45] transition-all duration-300 ease-in-out"
+      style={{ width: isOpen ? '320px' : '0px', marginBottom: '96px' }}
     >
       {/* Tabs - positioned absolutely at the left edge */}
       <div className="absolute bottom-0 right-full flex flex-col gap-2 pr-0">
@@ -50,10 +51,10 @@ export const DevToolsDrawer = () => {
           variant="vertical"
         />
         <FmCommonTab
-          icon={Package}
-          label="Placeholder"
-          isActive={activeTab === 'placeholder'}
-          onClick={() => handleTabClick('placeholder')}
+          icon={ToggleLeft}
+          label="Feature Toggles"
+          isActive={activeTab === 'features'}
+          onClick={() => handleTabClick('features')}
           variant="vertical"
         />
       </div>
@@ -61,24 +62,26 @@ export const DevToolsDrawer = () => {
       {/* Drawer */}
       <div
         className={cn(
-          'h-screen bg-black border-l border-white/20 overflow-y-auto transition-all duration-300 ease-in-out',
+          'h-[calc(100vh-96px)] bg-black/90 backdrop-blur-md border-l border-white/20 overflow-y-auto transition-all duration-300 ease-in-out',
           isOpen ? 'w-80' : 'w-0'
         )}
       >
         {isOpen && (
-          <div className="p-6">
+          <div className="pt-8 px-6">
             <h2 className="font-canela text-2xl text-white mb-6">
-              {activeTab === 'tools' ? 'Developer Tools' : 'Placeholder Tab'}
+              {activeTab === 'tools' ? 'Developer Tools' : 'Feature Toggles'}
             </h2>
 
             {activeTab === 'tools' && (
-              <div className="space-y-2">
-                <RoleSelectSection currentRole={currentRole} onRoleChange={handleRoleChange} />
+              <div className="space-y-0">
+                <RoleSelectSection currentRole={devRole} onRoleChange={handleRoleChange} />
               </div>
             )}
 
-            {activeTab === 'placeholder' && (
-              <p className="text-sm text-white/60">This is a placeholder tab.</p>
+            {activeTab === 'features' && (
+              <div className="space-y-0">
+                <FeatureToggleSection />
+              </div>
             )}
           </div>
         )}

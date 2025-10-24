@@ -12,6 +12,8 @@ interface FeatureFlags {
   coming_soon_mode: boolean;
   show_leaderboard: boolean;
   demo_pages: boolean;
+  music_player: boolean;
+  scavenger_hunt: boolean;
 }
 
 interface FeatureFlagRow {
@@ -43,6 +45,8 @@ export const useFeatureFlags = () => {
       coming_soon_mode: false,
       show_leaderboard: false,
       demo_pages: false,
+      music_player: false,
+      scavenger_hunt: false,
     };
 
       filteredData.forEach(flag => {
@@ -58,6 +62,12 @@ export const useFeatureFlags = () => {
         if (flag.flag_name === 'demo_pages') {
           flags.demo_pages = flag.is_enabled;
         }
+        if (flag.flag_name === 'music_player') {
+          flags.music_player = flag.is_enabled;
+        }
+        if (flag.flag_name === 'scavenger_hunt') {
+          flags.scavenger_hunt = flag.is_enabled;
+        }
       });
 
       // Apply local .env overrides in development only
@@ -66,6 +76,8 @@ export const useFeatureFlags = () => {
         const comingSoonOverride = getEnvironmentOverride('coming_soon_mode');
         const leaderboardOverride = getEnvironmentOverride('show_leaderboard');
         const demoPagesOverride = getEnvironmentOverride('demo_pages');
+        const musicPlayerOverride = getEnvironmentOverride('music_player');
+        const scavengerHuntOverride = getEnvironmentOverride('scavenger_hunt');
 
         if (scavengerOverride !== null) {
           flags.scavenger_hunt_active = scavengerOverride;
@@ -78,6 +90,12 @@ export const useFeatureFlags = () => {
         }
         if (demoPagesOverride !== null) {
           flags.demo_pages = demoPagesOverride;
+        }
+        if (musicPlayerOverride !== null) {
+          flags.music_player = musicPlayerOverride;
+        }
+        if (scavengerHuntOverride !== null) {
+          flags.scavenger_hunt = scavengerHuntOverride;
         }
       }
 

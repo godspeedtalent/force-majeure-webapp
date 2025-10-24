@@ -1,9 +1,8 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/features/auth/services/AuthContext';
-import { useUserRole } from '@/shared/hooks/useUserRole';
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
 import { LoadingState } from '@/components/common/LoadingState';
+import { useDevRole } from '@/shared/hooks/useDevRole';
 
 interface DemoProtectedRouteProps {
   children: ReactNode;
@@ -16,19 +15,18 @@ interface DemoProtectedRouteProps {
  * 3. User to have either 'developer' or 'admin' role
  */
 export const DemoProtectedRoute = ({ children }: DemoProtectedRouteProps) => {
-  const { user, loading: authLoading } = useAuth();
-  const { data: userRole, isLoading: roleLoading } = useUserRole();
+  const { role, isAuthenticated, isLoading: roleLoading } = useDevRole();
   const { data: flags, isLoading: flagsLoading } = useFeatureFlags();
   const [canAccess, setCanAccess] = useState<boolean | null>(null);
 
   useEffect(() => {
     const checkAccess = () => {
-      if (authLoading || roleLoading || flagsLoading) {
+      if (roleLoading || flagsLoading) {
         return;
       }
 
       // Check if user is authenticated
-      if (!user) {
+      if (!isAuthenticated) {
         setCanAccess(false);
         return;
       }
@@ -40,17 +38,15 @@ export const DemoProtectedRoute = ({ children }: DemoProtectedRouteProps) => {
       }
 
       // Check if user has developer or admin role
-      // Note: 'developer' role exists in DB but types haven't regenerated yet
-      const roleAsString = userRole as string | null;
-      const hasAccess = roleAsString === 'developer' || roleAsString === 'admin';
+      const hasAccess = role === 'developer' || role === 'admin';
       setCanAccess(hasAccess);
     };
 
     checkAccess();
-  }, [user, userRole, flags, authLoading, roleLoading, flagsLoading]);
+  }, [isAuthenticated, role, flags, roleLoading, flagsLoading]);
 
   // Still loading
-  if (authLoading || roleLoading || flagsLoading || canAccess === null) {
+  if (roleLoading || flagsLoading || canAccess === null) {
     return <LoadingState />;
   }
 

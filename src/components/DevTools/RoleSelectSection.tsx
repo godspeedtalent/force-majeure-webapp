@@ -2,11 +2,10 @@ import { User, UserCog, Shield, UserX } from 'lucide-react';
 import { FmCommonDropdown, DropdownItem } from '@/components/ui/FmCommonDropdown';
 import { Button } from '@/components/ui/button';
 import { FmCommonToggleHeader } from '@/components/ui/FmCommonToggleHeader';
-
-export type DevRole = 'unauthenticated' | 'fan' | 'admin' | 'developer';
+import type { DevRole } from '@/contexts/DevToolsContext';
 
 interface RoleSelectSectionProps {
-  currentRole: DevRole;
+  currentRole: DevRole | null;
   onRoleChange: (role: DevRole) => void;
 }
 
@@ -24,7 +23,8 @@ export const RoleSelectSection = ({ currentRole, onRoleChange }: RoleSelectSecti
     icon: roleConfig[role].icon,
   }));
 
-  const CurrentIcon = roleConfig[currentRole].icon;
+  const effectiveRole = currentRole || 'fan';
+  const CurrentIcon = roleConfig[effectiveRole].icon;
 
   return (
     <FmCommonToggleHeader title="Role Select">
@@ -39,7 +39,7 @@ export const RoleSelectSection = ({ currentRole, onRoleChange }: RoleSelectSecti
           >
             <span className="flex items-center gap-2">
               <CurrentIcon className="h-4 w-4" />
-              {roleConfig[currentRole].label}
+              {roleConfig[effectiveRole].label}
             </span>
           </Button>
         }
