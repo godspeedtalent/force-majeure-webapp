@@ -1,4 +1,4 @@
-import { Hammer, ToggleLeft, Wrench } from 'lucide-react';
+import { Hammer, ToggleLeft, Wrench, X } from 'lucide-react';
 import { useState } from 'react';
 import { FmCommonTab } from '@/components/ui/FmCommonTab';
 import { RoleSelectSection } from './RoleSelectSection';
@@ -8,6 +8,7 @@ import { cn } from '@/shared/utils/utils';
 import { isDevelopment } from '@/shared/utils/environment';
 import { useDevTools } from '@/contexts/DevToolsContext';
 import type { DevRole } from '@/contexts/DevToolsContext';
+import { Button } from '@/components/ui/button';
 
 type TabId = 'tools' | 'features' | 'creation';
 
@@ -78,6 +79,16 @@ export const DevToolsDrawer = () => {
       >
         {isOpen && (
           <div className="pt-8 px-6">
+            {/* Close button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleDrawer}
+              className="absolute top-4 right-4 h-8 w-8 text-white/50 hover:text-white hover:bg-white/10"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+
             <h2 className="font-canela text-2xl text-white mb-6">
               {activeTab === 'tools' ? 'Developer Tools' : activeTab === 'features' ? 'Feature Toggles' : 'Creation Tools'}
             </h2>
