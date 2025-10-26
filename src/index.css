@@ -147,6 +147,15 @@ All colors MUST be HSL.
 
     /* Background Patterns */
     --topographic-pattern: url('/images/topographic-pattern.png');
+
+    /* Z-Index System */
+    --z-base: 0;
+    --z-dropdown: 50;
+    --z-navigation: 50;
+    --z-dialog: 50;
+    --z-popover: 200;
+    --z-tooltip: 250;
+    --z-toast: 300;
   }
 
   .dark {

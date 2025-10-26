@@ -143,7 +143,6 @@ export function FmCommonEventDatePicker({
         className="w-auto p-0 bg-black/90 backdrop-blur-md border border-white/20 pointer-events-auto" 
         align="start"
         sideOffset={4}
-        style={{ zIndex: 200 }}
       >
         <Calendar
           mode="single"

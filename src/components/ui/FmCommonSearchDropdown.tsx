@@ -91,7 +91,7 @@ export function FmCommonSearchDropdown({
         </button>
       </PopoverTrigger>
       <PopoverContent 
-        className="w-[400px] p-0 bg-black/90 backdrop-blur-md border border-white/20 z-[200]"
+        className="w-[400px] p-0 bg-black/90 backdrop-blur-md border border-white/20"
         align="start"
       >
         <div className="p-2 border-b border-white/10">
