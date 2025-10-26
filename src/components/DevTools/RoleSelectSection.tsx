@@ -1,8 +1,8 @@
-import { User, UserCog, Shield, UserX, Compass } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { User, UserCog, Shield, UserX, Code, BarChart3, Settings } from 'lucide-react';
 import { FmCommonDropdown, DropdownItem } from '@/components/ui/FmCommonDropdown';
 import { Button } from '@/components/ui/button';
 import { FmCommonToggleHeader } from '@/components/ui/FmCommonToggleHeader';
+import { FmCommonNavigationButton } from '@/components/ui/FmCommonNavigationButton';
 import type { DevRole } from '@/contexts/DevToolsContext';
 
 interface RoleSelectSectionProps {
@@ -18,8 +18,6 @@ const roleConfig: Record<DevRole, { label: string; icon: typeof User }> = {
 };
 
 export const RoleSelectSection = ({ currentRole, onRoleChange }: RoleSelectSectionProps) => {
-  const navigate = useNavigate();
-  
   const roleItems: DropdownItem[] = (Object.keys(roleConfig) as DevRole[]).map((role) => ({
     label: roleConfig[role].label,
     onClick: () => onRoleChange(role),
@@ -31,16 +29,36 @@ export const RoleSelectSection = ({ currentRole, onRoleChange }: RoleSelectSecti
 
   return (
     <div className="space-y-6">
-      <Button
-        onClick={() => navigate('/demo')}
-        variant="outline"
-        className="w-full bg-fm-gold/10 border-fm-gold/30 hover:bg-fm-gold/20 hover:border-fm-gold text-white"
-      >
-        <Compass className="h-4 w-4 mr-2" />
-        Go to Demos
-      </Button>
+      <FmCommonToggleHeader title="Quick Navigation" defaultOpen={true}>
+        <div className="space-y-2">
+          <p className="text-xs text-white/50 mb-3">
+            Quick navigation to developer-only pages and tools
+          </p>
+          <FmCommonNavigationButton
+            to="/demo"
+            label="Demos"
+            icon={Code}
+            description="Test application features"
+            variant="outline"
+          />
+          <FmCommonNavigationButton
+            to="/admin/statistics"
+            label="Statistics"
+            icon={BarChart3}
+            description="View application metrics"
+            variant="outline"
+          />
+          <FmCommonNavigationButton
+            to="/admin/controls"
+            label="Admin Controls"
+            icon={Settings}
+            description="Manage users and settings"
+            variant="outline"
+          />
+        </div>
+      </FmCommonToggleHeader>
 
-      <FmCommonToggleHeader title="Role Select">
+      <FmCommonToggleHeader title="Role Select" defaultOpen={true}>
         <div>
           <p className="text-xs text-white/50 mb-3">
             Simulate different user roles to test permissions and access control

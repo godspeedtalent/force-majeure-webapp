@@ -1,18 +1,17 @@
-import { Hammer, ToggleLeft, Ticket, PlusCircle, Navigation as NavIcon, X } from 'lucide-react';
+import { Hammer, ToggleLeft, Ticket, PlusCircle, X } from 'lucide-react';
 import { useState } from 'react';
 import { FmCommonTab } from '@/components/ui/FmCommonTab';
 import { RoleSelectSection } from './RoleSelectSection';
 import { FeatureToggleSection } from './FeatureToggleSection';
 import { CreationToolsSection } from './CreationToolsSection';
 import { TicketingSection } from './TicketingSection';
-import { DevNavigationSection } from './DevNavigationSection';
 import { cn } from '@/shared/utils/utils';
 import { isDevelopment } from '@/shared/utils/environment';
 import { useDevTools } from '@/contexts/DevToolsContext';
 import type { DevRole } from '@/contexts/DevToolsContext';
 import { Button } from '@/components/ui/button';
 
-type TabId = 'navigation' | 'creation' | 'tools' | 'ticketing' | 'features';
+type TabId = 'creation' | 'tools' | 'ticketing' | 'features';
 
 export const DevToolsDrawer = () => {
   const [activeTab, setActiveTab] = useState<TabId | null>(null);
@@ -56,13 +55,6 @@ export const DevToolsDrawer = () => {
 
       {/* Tabs - positioned absolutely at the left edge */}
       <div className="absolute bottom-0 right-full flex flex-col gap-2 pr-4">
-        <FmCommonTab
-          icon={NavIcon}
-          label="Dev Navigation"
-          isActive={activeTab === 'navigation'}
-          onClick={() => handleTabClick('navigation')}
-          variant="vertical"
-        />
         <FmCommonTab
           icon={PlusCircle}
           label="Creation Tools"
@@ -113,9 +105,7 @@ export const DevToolsDrawer = () => {
             </Button>
 
             <h2 className="font-canela text-2xl text-white mb-6">
-              {activeTab === 'navigation'
-                ? 'Dev Navigation'
-                : activeTab === 'creation'
+              {activeTab === 'creation'
                 ? 'Creation Tools'
                 : activeTab === 'tools' 
                 ? 'Developer Tools' 
@@ -123,12 +113,6 @@ export const DevToolsDrawer = () => {
                 ? 'Ticketing'
                 : 'Feature Toggles'}
             </h2>
-
-            {activeTab === 'navigation' && (
-              <div className="space-y-0">
-                <DevNavigationSection />
-              </div>
-            )}
 
             {activeTab === 'creation' && (
               <div className="space-y-0">
