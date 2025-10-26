@@ -96,12 +96,12 @@ export const DevToolsDrawer = () => {
       {/* Drawer */}
       <div
         className={cn(
-          'h-[calc(100vh-96px)] bg-black/90 backdrop-blur-md border-l border-white/20 overflow-y-auto transition-all duration-300 ease-in-out',
+          'h-[calc(100vh-96px)] bg-black/90 backdrop-blur-md border-l border-white/20 overflow-y-auto transition-all duration-300 ease-in-out pointer-events-auto',
           isOpen ? 'w-80' : 'w-0'
         )}
       >
         {isOpen && (
-          <div className="pt-8 px-6">
+          <div className="pt-8 px-6 pointer-events-auto">
             {/* Close button */}
             <Button
               variant="ghost"
