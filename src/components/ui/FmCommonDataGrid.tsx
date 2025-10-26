@@ -7,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useToast } from '@/shared/hooks/use-toast';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -38,6 +39,7 @@ export interface DataGridColumn<T = any> {
   label: string;
   sortable?: boolean;
   filterable?: boolean;
+  editable?: boolean;
   render?: (value: any, row: T) => React.ReactNode;
   width?: string;
 }
@@ -57,6 +59,8 @@ export interface FmCommonDataGridProps<T = any> {
   loading?: boolean;
   pageSize?: number;
   className?: string;
+  onUpdate?: (row: T, columnKey: string, newValue: any) => Promise<void>;
+  resourceName?: string;
 }
 
 export function FmCommonDataGrid<T extends Record<string, any>>({
@@ -67,7 +71,10 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
   loading = false,
   pageSize = 10,
   className,
+  onUpdate,
+  resourceName = 'Resource',
 }: FmCommonDataGridProps<T>) {
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -75,6 +82,8 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
   const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
   const [columnFilters, setColumnFilters] = useState<Record<string, string>>({});
+  const [editingCell, setEditingCell] = useState<{ rowIndex: number; columnKey: string } | null>(null);
+  const [editValue, setEditValue] = useState<string>('');
 
   // Reset page when data changes
   useEffect(() => {
@@ -196,6 +205,57 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
 
   const isAllSelected = paginatedData.length > 0 && 
     paginatedData.every((_, idx) => selectedRows.has((currentPage - 1) * pageSize + idx));
+
+  const handleCellEdit = (rowIndex: number, columnKey: string, currentValue: any) => {
+    setEditingCell({ rowIndex, columnKey });
+    setEditValue(currentValue?.toString() || '');
+  };
+
+  const handleCellSave = async (row: T, columnKey: string) => {
+    if (!onUpdate || !editingCell) return;
+
+    const newValue = editValue;
+    const oldValue = row[columnKey];
+
+    // Don't update if value hasn't changed
+    if (newValue === oldValue?.toString()) {
+      setEditingCell(null);
+      return;
+    }
+
+    // Show loading toast
+    const loadingToast = toast({
+      title: `Updating ${resourceName}...`,
+      duration: Infinity,
+    });
+
+    try {
+      await onUpdate(row, columnKey, newValue);
+      
+      // Dismiss loading and show success
+      loadingToast.dismiss();
+      toast({
+        title: `${resourceName} updated.`,
+        duration: 2000,
+      });
+      
+      setEditingCell(null);
+    } catch (error) {
+      // Dismiss loading and show error
+      loadingToast.dismiss();
+      toast({
+        title: `Failed to update ${resourceName}`,
+        description: error instanceof Error ? error.message : 'Unknown error',
+        variant: 'destructive',
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleCellCancel = () => {
+    setEditingCell(null);
+    setEditValue('');
+  };
 
   return (
     <div className={cn('space-y-4', className)}>
@@ -338,7 +398,7 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                     <ContextMenuTrigger asChild>
                       <TableRow
                         className={cn(
-                          'border-border/50 transition-all duration-200 cursor-pointer',
+                          'border-border/50 transition-all duration-200 cursor-pointer group',
                           isSelected && 'bg-fm-gold/10 border-fm-gold/30',
                           'hover:bg-fm-gold/5'
                         )}
@@ -360,13 +420,53 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                             className="data-[state=checked]:bg-fm-gold data-[state=checked]:border-fm-gold transition-all duration-200"
                           />
                         </TableCell>
-                        {columns.map((column) => (
-                          <TableCell key={column.key} className="font-medium">
-                            {column.render
-                              ? column.render(row[column.key], row)
-                              : row[column.key]?.toString() || '-'}
-                          </TableCell>
-                        ))}
+                        {columns.map((column) => {
+                          const isEditing = editingCell?.rowIndex === globalIndex && editingCell?.columnKey === column.key;
+                          const cellValue = row[column.key];
+
+                          return (
+                            <TableCell 
+                              key={column.key} 
+                              className="font-medium"
+                              onDoubleClick={() => {
+                                if (column.editable && onUpdate) {
+                                  handleCellEdit(globalIndex, column.key, cellValue);
+                                }
+                              }}
+                            >
+                              {isEditing ? (
+                                <Input
+                                  value={editValue}
+                                  onChange={(e) => setEditValue(e.target.value)}
+                                  onBlur={() => handleCellSave(row, column.key)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                      handleCellSave(row, column.key);
+                                    } else if (e.key === 'Escape') {
+                                      handleCellCancel();
+                                    }
+                                  }}
+                                  autoFocus
+                                  className="h-8 bg-background/50 border-fm-gold/50"
+                                />
+                              ) : (
+                                <div className={cn(
+                                  'flex items-center gap-2',
+                                  column.editable && onUpdate && 'cursor-pointer hover:bg-fm-gold/5 -mx-2 px-2 py-1 rounded'
+                                )}>
+                                  {column.render
+                                    ? column.render(cellValue, row)
+                                    : cellValue?.toString() || '-'}
+                                  {column.editable && onUpdate && (
+                                    <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                                      Double-click to edit
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                            </TableCell>
+                          );
+                        })}
                         {actions.length > 0 && (
                           <TableCell className="text-right">
                             <DropdownMenu>

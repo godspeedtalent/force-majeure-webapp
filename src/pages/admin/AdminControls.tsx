@@ -5,7 +5,7 @@ import { FmUserDataGrid } from '@/components/ui/FmUserDataGrid';
 import { FmCommonDataGrid, DataGridColumn } from '@/components/ui/FmCommonDataGrid';
 import { Settings, Users, Sliders, MapPin, Database } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Sidebar,
   SidebarContent,
@@ -105,6 +105,7 @@ function AdminSidebar({ activeTab, setActiveTab }: { activeTab: AdminTab; setAct
 
 export default function AdminControls() {
   const [activeTab, setActiveTab] = useState<AdminTab>('users');
+  const queryClient = useQueryClient();
 
   // Fetch venues data
   const { data: venues = [], isLoading: venuesLoading } = useQuery({
@@ -127,23 +128,27 @@ export default function AdminControls() {
       label: 'Name',
       sortable: true,
       filterable: true,
+      editable: true,
     },
     {
       key: 'city',
       label: 'City',
       sortable: true,
       filterable: true,
+      editable: true,
     },
     {
       key: 'address',
       label: 'Address',
       sortable: true,
       filterable: true,
+      editable: true,
     },
     {
       key: 'capacity',
       label: 'Capacity',
       sortable: true,
+      editable: true,
       render: (value) => value ? value.toLocaleString() : '-',
     },
     {
@@ -153,6 +158,32 @@ export default function AdminControls() {
       render: (value) => new Date(value).toLocaleDateString(),
     },
   ];
+
+  // Handle venue updates
+  const handleVenueUpdate = async (row: any, columnKey: string, newValue: any) => {
+    const updateData: any = {};
+    
+    // Convert capacity to integer if updating that field
+    if (columnKey === 'capacity') {
+      const numValue = parseInt(newValue, 10);
+      if (isNaN(numValue)) {
+        throw new Error('Capacity must be a valid number');
+      }
+      updateData[columnKey] = numValue;
+    } else {
+      updateData[columnKey] = newValue;
+    }
+
+    const { error } = await supabase
+      .from('venues')
+      .update(updateData)
+      .eq('id', row.id);
+
+    if (error) throw error;
+
+    // Invalidate and refetch venues
+    queryClient.invalidateQueries({ queryKey: ['admin-venues'] });
+  };
 
   return (
     <>
@@ -203,6 +234,8 @@ export default function AdminControls() {
                     columns={venueColumns}
                     loading={venuesLoading}
                     pageSize={15}
+                    onUpdate={handleVenueUpdate}
+                    resourceName="Venue"
                   />
                 </div>
               )}
