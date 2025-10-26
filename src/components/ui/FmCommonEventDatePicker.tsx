@@ -139,7 +139,7 @@ export function FmCommonEventDatePicker({
           {value ? format(value, 'PPP p') : <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 bg-black/90 backdrop-blur-md border border-white/20" align="start">
+      <PopoverContent className="w-auto p-0 bg-black/90 backdrop-blur-md border border-white/20 z-[200]" align="start">
         <Calendar
           mode="single"
           selected={tempDate}
