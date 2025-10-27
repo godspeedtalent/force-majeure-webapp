@@ -6,6 +6,7 @@ import { FmCommonDataGrid, DataGridColumn } from '@/components/ui/FmCommonDataGr
 import { Settings, Users, Sliders, MapPin, Database } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
 import {
   Sidebar,
   SidebarContent,
@@ -301,10 +302,14 @@ export default function AdminControls() {
               )}
 
               {activeTab === 'settings' && (
-                <div className="space-y-4">
-                  <p className="text-muted-foreground">
-                    Site configuration options coming soon...
-                  </p>
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-canela font-semibold mb-2">Feature Flags</h3>
+                    <p className="text-muted-foreground text-sm mb-4">
+                      Control feature availability across different environments
+                    </p>
+                    <FeatureToggleSection />
+                  </div>
                 </div>
               )}
             </div>

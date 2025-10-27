@@ -1036,6 +1036,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_dev_admin: { Args: never; Returns: boolean }
       release_ticket_hold: { Args: { p_hold_id: string }; Returns: boolean }
     }
     Enums: {
