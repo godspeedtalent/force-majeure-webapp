@@ -213,8 +213,15 @@ export default function AdminControls() {
 
     if (error) throw error;
 
-    // Refetch venues to show updated data
-    await queryClient.refetchQueries({ queryKey: ['admin-venues'] });
+    // Update local data instead of refetching to maintain sort order
+    queryClient.setQueryData(['admin-venues'], (oldData: any[]) => {
+      if (!oldData) return oldData;
+      return oldData.map(venue => 
+        venue.id === row.id 
+          ? { ...venue, ...updateData, updated_at: new Date().toISOString() }
+          : venue
+      );
+    });
   };
 
   // Calculate statistics for current data

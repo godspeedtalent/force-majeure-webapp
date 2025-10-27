@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/shared/utils/utils';
 import { LucideIcon } from 'lucide-react';
+import { useDevTools } from '@/contexts/DevToolsContext';
 
 interface FmCommonNavigationButtonProps {
   to: string;
@@ -21,10 +22,19 @@ export const FmCommonNavigationButton = ({
   description,
 }: FmCommonNavigationButtonProps) => {
   const navigate = useNavigate();
+  const { isDrawerOpen, toggleDrawer } = useDevTools();
+
+  const handleClick = () => {
+    // Close dev tools drawer if open
+    if (isDrawerOpen) {
+      toggleDrawer();
+    }
+    navigate(to);
+  };
 
   return (
     <Button
-      onClick={() => navigate(to)}
+      onClick={handleClick}
       variant={variant}
       className={cn(
         'w-full justify-start gap-3 h-auto py-3',
