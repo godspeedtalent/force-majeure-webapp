@@ -428,8 +428,9 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                             <TableCell 
                               key={column.key} 
                               className="font-medium"
-                              onDoubleClick={() => {
-                                if (column.editable && onUpdate) {
+                              onClick={(e) => {
+                                // Only trigger edit if not clicking on checkbox
+                                if (column.editable && onUpdate && !(e.target as HTMLElement).closest('[role="checkbox"]')) {
                                   handleCellEdit(globalIndex, column.key, cellValue);
                                 }
                               }}
@@ -459,7 +460,7 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                                     : cellValue?.toString() || '-'}
                                   {column.editable && onUpdate && (
                                     <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                                      Double-click to edit
+                                      Click to edit
                                     </span>
                                   )}
                                 </div>

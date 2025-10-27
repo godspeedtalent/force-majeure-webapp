@@ -181,8 +181,8 @@ export default function AdminControls() {
 
     if (error) throw error;
 
-    // Invalidate and refetch venues
-    queryClient.invalidateQueries({ queryKey: ['admin-venues'] });
+    // Refetch venues to show updated data
+    await queryClient.refetchQueries({ queryKey: ['admin-venues'] });
   };
 
   return (

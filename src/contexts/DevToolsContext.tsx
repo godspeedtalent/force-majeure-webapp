@@ -20,7 +20,7 @@ export const DevToolsProvider = ({ children }: { children: ReactNode }) => {
   const [devRole, setDevRoleState] = useState<DevRole | null>(() => {
     if (!isDevMode) return null;
     const stored = localStorage.getItem(DEV_ROLE_KEY);
-    return stored as DevRole | null;
+    return (stored as DevRole | null) || 'admin';
   });
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
