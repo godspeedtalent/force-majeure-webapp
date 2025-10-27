@@ -1,5 +1,5 @@
 import { Hammer, ToggleLeft, Ticket, PlusCircle, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { FmCommonTab } from '@/components/ui/FmCommonTab';
 import { RoleSelectSection } from './RoleSelectSection';
 import { FeatureToggleSection } from './FeatureToggleSection';
@@ -17,6 +17,13 @@ export const DevToolsDrawer = () => {
   const [activeTab, setActiveTab] = useState<TabId | null>(null);
   const { devRole, setDevRole, isDrawerOpen, toggleDrawer } = useDevTools();
   const isOpen = isDrawerOpen;
+  
+  // Drag state
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [startY, setStartY] = useState(0);
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
+  const dragStartTimeRef = useRef<number>(0);
 
   // Only render in development
   if (!isDevelopment()) {
@@ -41,6 +48,56 @@ export const DevToolsDrawer = () => {
     setDevRole(role);
   };
 
+  // Drag handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    dragStartTimeRef.current = Date.now();
+    setIsDragging(true);
+    setStartY(e.clientY);
+  };
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!tabsContainerRef.current) return;
+
+    const deltaY = e.clientY - startY;
+    const containerHeight = tabsContainerRef.current.offsetHeight;
+    const viewportHeight = window.innerHeight - 96; // Account for bottom margin
+    
+    // Calculate bounds
+    const maxOffset = 0; // Top bound
+    const minOffset = -(containerHeight - viewportHeight); // Bottom bound
+    
+    // Clamp the offset within bounds
+    const newOffset = Math.max(minOffset, Math.min(maxOffset, deltaY));
+    setDragOffset(newOffset);
+  }, [startY]);
+
+  const handleMouseUp = useCallback(() => {
+    const dragDuration = Date.now() - dragStartTimeRef.current;
+    
+    // If drag was very short (less than 200ms), treat it as a click
+    if (dragDuration < 200 && Math.abs(dragOffset) < 5) {
+      setIsDragging(false);
+      setDragOffset(0);
+      setStartY(0);
+      return;
+    }
+    
+    setIsDragging(false);
+    setStartY(0);
+    // Keep the offset to maintain position
+  }, [dragOffset]);
+
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging, handleMouseMove, handleMouseUp]);
+
   return (
     <div
       className="fixed bottom-0 right-0 z-[100] transition-all duration-300 ease-in-out"
@@ -54,33 +111,41 @@ export const DevToolsDrawer = () => {
       </div>
 
       {/* Tabs - positioned absolutely at the left edge */}
-      <div className="absolute bottom-0 right-full flex flex-col gap-2 pr-4">
+      <div 
+        ref={tabsContainerRef}
+        className="absolute bottom-0 right-full flex flex-col gap-2 pr-4 transition-transform"
+        style={{ 
+          transform: `translateY(${dragOffset}px)`,
+          cursor: isDragging ? 'grabbing' : 'grab'
+        }}
+        onMouseDown={handleMouseDown}
+      >
         <FmCommonTab
           icon={PlusCircle}
           label="Creation Tools"
           isActive={activeTab === 'creation'}
-          onClick={() => handleTabClick('creation')}
+          onClick={() => !isDragging && handleTabClick('creation')}
           variant="vertical"
         />
         <FmCommonTab
           icon={Hammer}
           label="Developer Tools"
           isActive={activeTab === 'tools'}
-          onClick={() => handleTabClick('tools')}
+          onClick={() => !isDragging && handleTabClick('tools')}
           variant="vertical"
         />
         <FmCommonTab
           icon={Ticket}
           label="Ticketing"
           isActive={activeTab === 'ticketing'}
-          onClick={() => handleTabClick('ticketing')}
+          onClick={() => !isDragging && handleTabClick('ticketing')}
           variant="vertical"
         />
         <FmCommonTab
           icon={ToggleLeft}
           label="Feature Toggles"
           isActive={activeTab === 'features'}
-          onClick={() => handleTabClick('features')}
+          onClick={() => !isDragging && handleTabClick('features')}
           variant="vertical"
         />
       </div>
