@@ -223,9 +223,18 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
       return;
     }
 
-    // Show loading toast
+    // Get resource name for display
+    const displayName = row['name'] || resourceName;
+
+    // Show loading toast with spinner (using description for spinner)
     const loadingToast = toast({
-      title: `Updating ${resourceName}...`,
+      title: `Updating ${displayName}...`,
+      description: (
+        <div className="flex items-center gap-2">
+          <div className="h-4 w-4 border-2 border-fm-gold border-t-transparent rounded-full animate-spin" />
+          <span>Please wait...</span>
+        </div>
+      ),
       duration: Infinity,
     });
 
@@ -235,7 +244,7 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
       // Dismiss loading and show success
       loadingToast.dismiss();
       toast({
-        title: `${resourceName} updated.`,
+        title: `${displayName} updated.`,
         duration: 2000,
       });
       
@@ -244,7 +253,7 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
       // Dismiss loading and show error
       loadingToast.dismiss();
       toast({
-        title: `Failed to update ${resourceName}`,
+        title: `Failed to update ${displayName}`,
         description: error instanceof Error ? error.message : 'Unknown error',
         variant: 'destructive',
         duration: 3000,
@@ -298,7 +307,7 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
       <div className="rounded-lg border border-border/50 overflow-x-auto bg-background/30 backdrop-blur-sm">
         <Table>
           <TableHeader>
-            <TableRow className="border-border/50 hover:bg-transparent">
+            <TableRow className="border-border/50 hover:bg-transparent group">
               <TableHead className="w-12">
                 <Checkbox
                   checked={isAllSelected}
@@ -307,50 +316,51 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                   className="data-[state=checked]:bg-fm-gold data-[state=checked]:border-fm-gold transition-all duration-200"
                 />
               </TableHead>
-              {columns.map((column) => (
+              {columns.map((column, colIndex) => (
                 <TableHead
                   key={column.key}
                   className={cn(
-                    'font-canela text-foreground/90',
-                    column.width
+                    'font-canela text-foreground/90 relative',
+                    column.width,
+                    column.sortable && 'cursor-pointer select-none hover:bg-muted/50',
+                    sortColumn === column.key && 'bg-fm-gold text-black hover:bg-fm-gold/90',
+                    colIndex > 0 && 'border-l border-border/30'
                   )}
+                  onClick={() => column.sortable && handleSort(column.key)}
+                  onContextMenu={(e) => {
+                    if (column.filterable) {
+                      e.preventDefault();
+                      // Open filter dropdown
+                      const target = e.currentTarget.querySelector('[data-filter-trigger]') as HTMLElement;
+                      target?.click();
+                    }
+                  }}
                 >
                   <div className="flex items-center gap-2">
                     <span>{column.label}</span>
-                    {column.sortable && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleSort(column.key)}
-                        className="h-6 w-6 p-0 hover:bg-fm-gold/20 transition-all duration-200"
-                      >
-                        {sortColumn === column.key ? (
-                          sortDirection === 'asc' ? (
-                            <ChevronUp className="h-3 w-3 text-fm-gold" />
-                          ) : (
-                            <ChevronDown className="h-3 w-3 text-fm-gold" />
-                          )
-                        ) : (
-                          <ChevronDown className="h-3 w-3 text-muted-foreground" />
-                        )}
-                      </Button>
+                    {column.sortable && sortColumn === column.key && (
+                      sortDirection === 'asc' ? (
+                        <ChevronUp className="h-3 w-3" />
+                      ) : (
+                        <ChevronDown className="h-3 w-3" />
+                      )
                     )}
                     {column.filterable && (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
+                          <button
+                            data-filter-trigger
                             className={cn(
-                              'h-6 w-6 p-0 hover:bg-fm-gold/20 transition-all duration-200',
-                              columnFilters[column.key] && 'bg-fm-gold/20'
+                              'h-6 w-6 p-0 hover:bg-fm-gold/20 transition-all duration-200 rounded opacity-0 group-hover:opacity-100',
+                              columnFilters[column.key] && 'opacity-100 bg-fm-gold/20'
                             )}
+                            onClick={(e) => e.stopPropagation()}
                           >
                             <Filter className={cn(
-                              'h-3 w-3',
+                              'h-3 w-3 mx-auto',
                               columnFilters[column.key] ? 'text-fm-gold' : 'text-muted-foreground'
                             )} />
-                          </Button>
+                          </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start" className="w-64">
                           <div className="p-2">
@@ -359,6 +369,7 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                               value={columnFilters[column.key] || ''}
                               onChange={(e) => handleColumnFilter(column.key, e.target.value)}
                               className="h-8"
+                              onClick={(e) => e.stopPropagation()}
                             />
                           </div>
                         </DropdownMenuContent>
