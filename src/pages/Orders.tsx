@@ -4,6 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { useOrders } from '@/features/events/hooks/useOrders';
 import { LoadingState } from '@/components/common/LoadingState';
 import { EmptyState } from '@/components/common/EmptyState';
+import { Layout } from '@/components/layout/Layout';
 import { format } from 'date-fns';
 import { Receipt, Calendar } from 'lucide-react';
 
@@ -26,14 +27,17 @@ export default function Orders() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8 px-4">
-        <LoadingState />
-      </div>
+      <Layout>
+        <div className="container mx-auto py-8 px-4">
+          <LoadingState />
+        </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-4xl">
+    <Layout>
+      <div className="container mx-auto py-8 px-4 max-w-4xl">
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-2">
           <Receipt className="h-6 w-6 text-fm-gold" />
@@ -123,5 +127,6 @@ export default function Orders() {
         </div>
       )}
     </div>
+    </Layout>
   );
 }

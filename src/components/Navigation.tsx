@@ -41,42 +41,6 @@ export const Navigation = () => {
             <Link to='/' className='transition-transform duration-200 hover:scale-110'>
               <ForceMajeureLogo className='h-8 w-8' />
             </Link>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <a href={SOCIAL_LINKS.instagram} target='_blank' rel='noopener noreferrer' className='ml-6 text-foreground hover:text-fm-gold transition-colors duration-200' aria-label='Follow us on Instagram'>
-                    <Instagram className='h-5 w-5' />
-                  </a>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{SOCIAL_LINKS.instagramHandle}</p>
-                </TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link to='/merch' className='ml-4 text-foreground hover:text-fm-gold transition-colors duration-200' aria-label='Shop Merch'>
-                    <ShoppingCart className='h-5 w-5' />
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Shop Merch</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            {flags?.merch_store && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link to='/merch' className='ml-4 text-foreground hover:text-fm-gold transition-colors duration-200' aria-label='Shop Merch'>
-                      <ShoppingCart className='h-5 w-5' />
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Shop Merch</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
             <Breadcrumbs />
           </div>
 
@@ -100,6 +64,39 @@ export const Navigation = () => {
                 </Link>
               </Button>
             )}
+            
+            {/* Social and Shopping Icons */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a href={SOCIAL_LINKS.instagram} target='_blank' rel='noopener noreferrer' className='text-foreground hover:text-fm-gold transition-colors duration-200' aria-label='Follow us on Instagram'>
+                    <Instagram className='h-5 w-5' />
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{SOCIAL_LINKS.instagramHandle}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
+            {flags?.merch_store && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link to='/merch' className='text-foreground hover:text-fm-gold transition-colors duration-200' aria-label='Shop Merch'>
+                      <ShoppingCart className='h-5 w-5' />
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Shop Merch</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+            
+            {/* Vertical Divider */}
+            <div className='h-6 w-px bg-border/50' />
+            
             {user ? (
               <UserMenuDropdown />
             ) : (

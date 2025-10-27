@@ -92,6 +92,30 @@ export type Database = {
         }
         Relationships: []
       }
+      cities: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          state: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          state: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          state?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       event_artists: {
         Row: {
           artist_id: string
@@ -890,6 +914,7 @@ export type Database = {
           address: string | null
           capacity: number | null
           city: string | null
+          city_id: string | null
           created_at: string
           id: string
           name: string
@@ -900,6 +925,7 @@ export type Database = {
           address?: string | null
           capacity?: number | null
           city?: string | null
+          city_id?: string | null
           created_at?: string
           id?: string
           name: string
@@ -910,13 +936,22 @@ export type Database = {
           address?: string | null
           capacity?: number | null
           city?: string | null
+          city_id?: string | null
           created_at?: string
           id?: string
           name?: string
           updated_at?: string
           website?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "venues_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       webhook_events: {
         Row: {
