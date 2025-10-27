@@ -22,6 +22,7 @@ export const DevToolsDrawer = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
   const [startY, setStartY] = useState(0);
+  const [initialDragOffset, setInitialDragOffset] = useState(0);
   const tabsContainerRef = useRef<HTMLDivElement>(null);
   const dragStartTimeRef = useRef<number>(0);
 
@@ -53,6 +54,7 @@ export const DevToolsDrawer = () => {
     dragStartTimeRef.current = Date.now();
     setIsDragging(true);
     setStartY(e.clientY);
+    setInitialDragOffset(dragOffset); // Remember the current offset when starting the drag
   };
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -66,10 +68,10 @@ export const DevToolsDrawer = () => {
     const maxOffset = 0; // Top bound
     const minOffset = -(containerHeight - viewportHeight); // Bottom bound
     
-    // Clamp the offset within bounds
-    const newOffset = Math.max(minOffset, Math.min(maxOffset, deltaY));
+    // Add delta to initial offset instead of using delta directly
+    const newOffset = Math.max(minOffset, Math.min(maxOffset, initialDragOffset + deltaY));
     setDragOffset(newOffset);
-  }, [startY]);
+  }, [startY, initialDragOffset]);
 
   const handleMouseUp = useCallback(() => {
     const dragDuration = Date.now() - dragStartTimeRef.current;
