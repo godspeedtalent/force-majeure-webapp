@@ -72,6 +72,15 @@ export const Breadcrumbs = () => {
         });
       }
 
+      // Handle admin pages
+      if (pathSegments[0] === 'admin') {
+        items.push({
+          label: 'Admin',
+          path: '/admin/controls',
+          isLast: true,
+        });
+      }
+
       setBreadcrumbs(items.slice(1)); // Remove home from display (we show it differently)
     };
 

@@ -107,6 +107,21 @@ export default function AdminControls() {
   const [activeTab, setActiveTab] = useState<AdminTab>('users');
   const queryClient = useQueryClient();
 
+  // Fetch users data
+  const { data: users = [] } = useQuery({
+    queryKey: ['admin-users'],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('get-users', {
+        headers: {
+          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+        },
+      });
+      
+      if (error) throw error;
+      return data.users || [];
+    },
+  });
+
   // Fetch venues data with city join
   const { data: venues = [], isLoading: venuesLoading } = useQuery({
     queryKey: ['admin-venues'],
@@ -195,6 +210,45 @@ export default function AdminControls() {
     await queryClient.refetchQueries({ queryKey: ['admin-venues'] });
   };
 
+  // Calculate statistics for current data
+  const getCurrentData = () => {
+    if (activeTab === 'users') return users;
+    if (activeTab === 'venues') return venues;
+    return [];
+  };
+
+  const calculateIncompleteness = (data: any[]) => {
+    if (!data.length) return 0;
+    
+    let totalFields = 0;
+    let emptyFields = 0;
+    
+    data.forEach(record => {
+      const fields = Object.entries(record);
+      fields.forEach(([key, value]) => {
+        // Skip internal fields
+        if (['id', 'created_at', 'updated_at'].includes(key)) return;
+        totalFields++;
+        if (value === null || value === undefined || value === '') {
+          emptyFields++;
+        }
+      });
+    });
+    
+    return totalFields > 0 ? Math.round((emptyFields / totalFields) * 100) : 0;
+  };
+
+  const currentData = getCurrentData();
+  const totalRecords = currentData.length;
+  const incompleteness = calculateIncompleteness(currentData);
+
+  const getTabTitle = () => {
+    if (activeTab === 'users') return 'Users';
+    if (activeTab === 'venues') return 'Venues';
+    if (activeTab === 'settings') return 'Site Settings';
+    return 'Admin Controls';
+  };
+
   return (
     <>
       <Navigation />
@@ -204,13 +258,25 @@ export default function AdminControls() {
 
           <main className="flex-1 pt-6 pb-6 px-6">
             <div className="max-w-full">
-              <div className="flex items-center gap-3 mb-2">
-                <Settings className="h-6 w-6 text-fm-gold" />
-                <h1 className="text-3xl font-canela font-bold">Admin Controls</h1>
+              <div className="mb-4">
+                <div className="flex items-center gap-3 mb-4">
+                  <Settings className="h-6 w-6 text-fm-gold" />
+                  <h1 className="text-3xl font-canela font-bold">{getTabTitle()}</h1>
+                </div>
+
+                {activeTab !== 'settings' && (
+                  <div className="flex gap-4 mb-6">
+                    <div className="bg-muted/30 border border-border rounded-lg px-4 py-3">
+                      <div className="text-2xl font-bold text-foreground">{totalRecords}</div>
+                      <div className="text-xs text-muted-foreground">Total Records</div>
+                    </div>
+                    <div className="bg-muted/30 border border-border rounded-lg px-4 py-3">
+                      <div className="text-2xl font-bold text-foreground">{incompleteness}%</div>
+                      <div className="text-xs text-muted-foreground">Incomplete Data</div>
+                    </div>
+                  </div>
+                )}
               </div>
-              <p className="text-muted-foreground mb-6">
-                Manage users and application settings
-              </p>
 
               <DecorativeDivider
                 marginTop="mt-0"
@@ -220,39 +286,22 @@ export default function AdminControls() {
               />
 
               {activeTab === 'users' && (
-                <div className="space-y-4">
-                  <div>
-                    <h2 className="text-xl font-canela font-semibold">User Management</h2>
-                    <p className="text-muted-foreground text-sm mt-1">
-                      View and manage all registered users, their roles, and permissions
-                    </p>
-                  </div>
-                  <FmUserDataGrid />
-                </div>
+                <FmUserDataGrid />
               )}
 
               {activeTab === 'venues' && (
-                <div className="space-y-4">
-                  <div>
-                    <h2 className="text-xl font-canela font-semibold">Venue Management</h2>
-                    <p className="text-muted-foreground text-sm mt-1">
-                      View and manage all venues in the system
-                    </p>
-                  </div>
-                  <FmCommonDataGrid
-                    data={venues}
-                    columns={venueColumns}
-                    loading={venuesLoading}
-                    pageSize={15}
-                    onUpdate={handleVenueUpdate}
-                    resourceName="Venue"
-                  />
-                </div>
+                <FmCommonDataGrid
+                  data={venues}
+                  columns={venueColumns}
+                  loading={venuesLoading}
+                  pageSize={15}
+                  onUpdate={handleVenueUpdate}
+                  resourceName="Venue"
+                />
               )}
 
               {activeTab === 'settings' && (
                 <div className="space-y-4">
-                  <h2 className="text-xl font-canela font-semibold">Site Settings</h2>
                   <p className="text-muted-foreground">
                     Site configuration options coming soon...
                   </p>
