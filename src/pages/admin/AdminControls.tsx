@@ -25,7 +25,7 @@ import { cn } from '@/shared/utils/utils';
 type AdminTab = 'users' | 'venues' | 'settings';
 
 function AdminSidebar({ activeTab, setActiveTab }: { activeTab: AdminTab; setActiveTab: (tab: AdminTab) => void }) {
-  const { open } = useSidebar();
+  const { open, toggleSidebar } = useSidebar();
 
   const databaseTabs = [
     { id: 'users' as AdminTab, label: 'Users', icon: Users },
@@ -46,7 +46,10 @@ function AdminSidebar({ activeTab, setActiveTab }: { activeTab: AdminTab; setAct
         {/* Database Group */}
         <SidebarGroup>
           {open && (
-            <SidebarGroupLabel className="text-white/70 px-4 flex items-center gap-2">
+            <SidebarGroupLabel 
+              className="text-white/70 px-4 flex items-center gap-2 cursor-pointer hover:bg-white/5 transition-colors rounded-md"
+              onClick={toggleSidebar}
+            >
               <Database className="h-3 w-3" />
               Database
             </SidebarGroupLabel>
@@ -75,7 +78,10 @@ function AdminSidebar({ activeTab, setActiveTab }: { activeTab: AdminTab; setAct
         {/* Settings Group */}
         <SidebarGroup>
           {open && (
-            <SidebarGroupLabel className="text-white/70 px-4">
+            <SidebarGroupLabel 
+              className="text-white/70 px-4 cursor-pointer hover:bg-white/5 transition-colors rounded-md"
+              onClick={toggleSidebar}
+            >
               Settings
             </SidebarGroupLabel>
           )}
