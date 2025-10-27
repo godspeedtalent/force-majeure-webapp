@@ -33,6 +33,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Search, Filter, ChevronDown, ChevronUp, MoreVertical } from 'lucide-react';
 import { cn } from '@/shared/utils/utils';
+import { isRelationField, getRelationConfig } from './dataGridRelations';
 
 export interface DataGridColumn<T = any> {
   key: string;
@@ -42,6 +43,7 @@ export interface DataGridColumn<T = any> {
   editable?: boolean;
   render?: (value: any, row: T) => React.ReactNode;
   width?: string;
+  isRelation?: boolean; // Mark this column as a foreign key relation
 }
 
 export interface DataGridAction<T = any> {
@@ -217,8 +219,8 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
     const newValue = editValue;
     const oldValue = row[columnKey];
 
-    // Don't update if value hasn't changed
-    if (newValue === oldValue?.toString()) {
+    // Don't update if value is empty or hasn't changed
+    if (!newValue || newValue.trim() === '' || newValue === oldValue?.toString()) {
       setEditingCell(null);
       return;
     }
@@ -434,6 +436,7 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                         {columns.map((column) => {
                           const isEditing = editingCell?.rowIndex === globalIndex && editingCell?.columnKey === column.key;
                           const cellValue = row[column.key];
+                          const relationConfig = isRelationField(column.key) ? getRelationConfig(column.key) : null;
 
                           return (
                             <TableCell 
@@ -447,20 +450,32 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                               }}
                             >
                               {isEditing ? (
-                                <Input
-                                  value={editValue}
-                                  onChange={(e) => setEditValue(e.target.value)}
-                                  onBlur={() => handleCellSave(row, column.key)}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                      handleCellSave(row, column.key);
-                                    } else if (e.key === 'Escape') {
-                                      handleCellCancel();
-                                    }
-                                  }}
-                                  autoFocus
-                                  className="h-8 bg-background/50 border-fm-gold/50"
-                                />
+                                relationConfig ? (
+                                  // Render relation dropdown
+                                  <div onClick={(e) => e.stopPropagation()}>
+                                    {relationConfig.component({
+                                      value: editValue,
+                                      onChange: setEditValue,
+                                      onComplete: () => handleCellSave(row, column.key),
+                                    })}
+                                  </div>
+                                ) : (
+                                  // Render text input
+                                  <Input
+                                    value={editValue}
+                                    onChange={(e) => setEditValue(e.target.value)}
+                                    onBlur={() => handleCellSave(row, column.key)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') {
+                                        handleCellSave(row, column.key);
+                                      } else if (e.key === 'Escape') {
+                                        handleCellCancel();
+                                      }
+                                    }}
+                                    autoFocus
+                                    className="h-8 bg-background/50 border-fm-gold/50"
+                                  />
+                                )
                               ) : (
                                 <div className={cn(
                                   'flex items-center gap-2',

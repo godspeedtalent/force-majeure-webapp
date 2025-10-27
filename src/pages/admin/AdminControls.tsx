@@ -107,17 +107,25 @@ export default function AdminControls() {
   const [activeTab, setActiveTab] = useState<AdminTab>('users');
   const queryClient = useQueryClient();
 
-  // Fetch venues data
+  // Fetch venues data with city join
   const { data: venues = [], isLoading: venuesLoading } = useQuery({
     queryKey: ['admin-venues'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('venues')
-        .select('*')
+        .select(`
+          *,
+          cities!city_id(name, state)
+        `)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data;
+      
+      // Flatten the city data for easier access
+      return data.map(venue => ({
+        ...venue,
+        city: venue.cities ? `${venue.cities.name}, ${venue.cities.state}` : null,
+      }));
     },
   });
 
@@ -131,11 +139,13 @@ export default function AdminControls() {
       editable: true,
     },
     {
-      key: 'city',
+      key: 'city_id',
       label: 'City',
       sortable: true,
       filterable: true,
       editable: true,
+      isRelation: true,
+      render: (_value, row) => row.city || '-',
     },
     {
       key: 'address',
