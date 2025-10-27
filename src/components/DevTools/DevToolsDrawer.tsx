@@ -21,8 +21,8 @@ export const DevToolsDrawer = () => {
   // Drag state
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
-  const [startY, setStartY] = useState(0);
-  const [initialDragOffset, setInitialDragOffset] = useState(0);
+  const startYRef = useRef<number>(0);
+  const initialDragOffsetRef = useRef<number>(0);
   const tabsContainerRef = useRef<HTMLDivElement>(null);
   const dragStartTimeRef = useRef<number>(0);
 
@@ -51,42 +51,39 @@ export const DevToolsDrawer = () => {
 
   // Drag handlers
   const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent text selection
     dragStartTimeRef.current = Date.now();
+    startYRef.current = e.clientY;
+    initialDragOffsetRef.current = dragOffset;
     setIsDragging(true);
-    setStartY(e.clientY);
-    setInitialDragOffset(dragOffset); // Remember the current offset when starting the drag
   };
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!tabsContainerRef.current) return;
 
-    const deltaY = e.clientY - startY;
+    const deltaY = e.clientY - startYRef.current;
     const containerHeight = tabsContainerRef.current.offsetHeight;
     const viewportHeight = window.innerHeight - 96; // Account for bottom margin
     
     // Calculate bounds
-    const maxOffset = 0; // Top bound
-    const minOffset = -(containerHeight - viewportHeight); // Bottom bound
+    const maxOffset = 0; // Top bound (tabs can't go above their starting position)
+    const minOffset = Math.min(0, -(containerHeight - viewportHeight)); // Bottom bound
     
     // Add delta to initial offset instead of using delta directly
-    const newOffset = Math.max(minOffset, Math.min(maxOffset, initialDragOffset + deltaY));
+    const newOffset = Math.max(minOffset, Math.min(maxOffset, initialDragOffsetRef.current + deltaY));
     setDragOffset(newOffset);
-  }, [startY, initialDragOffset]);
+  }, []);
 
   const handleMouseUp = useCallback(() => {
     const dragDuration = Date.now() - dragStartTimeRef.current;
+    const dragDistance = Math.abs(dragOffset - initialDragOffsetRef.current);
     
-    // If drag was very short (less than 200ms), treat it as a click
-    if (dragDuration < 200 && Math.abs(dragOffset) < 5) {
-      setIsDragging(false);
-      setDragOffset(0);
-      setStartY(0);
-      return;
+    // If drag was very short (less than 200ms) and small movement, treat it as a click
+    if (dragDuration < 200 && dragDistance < 5) {
+      setDragOffset(initialDragOffsetRef.current); // Reset to initial position
     }
     
     setIsDragging(false);
-    setStartY(0);
-    // Keep the offset to maintain position
   }, [dragOffset]);
 
   useEffect(() => {
