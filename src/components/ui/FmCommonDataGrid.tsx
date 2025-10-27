@@ -174,8 +174,8 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
         newSelection.add(i);
       }
       setSelectedRows(newSelection);
-    } else if (event.ctrlKey || event.metaKey) {
-      // Ctrl/Cmd+Click: Toggle selection
+    } else {
+      // Regular click or Ctrl/Cmd+Click: Add to selection
       const newSelection = new Set(selectedRows);
       if (newSelection.has(globalIndex)) {
         newSelection.delete(globalIndex);
@@ -183,10 +183,6 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
         newSelection.add(globalIndex);
       }
       setSelectedRows(newSelection);
-      setLastSelectedIndex(globalIndex);
-    } else {
-      // Regular click: Select only this row
-      setSelectedRows(new Set([globalIndex]));
       setLastSelectedIndex(globalIndex);
     }
   };
@@ -530,23 +526,39 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                         )}
                       </TableRow>
                     </ContextMenuTrigger>
-                    {contextMenuActions.length > 0 && (
-                      <ContextMenuContent>
-                        {contextMenuActions.map((action, idx) => (
-                          <ContextMenuItem
-                            key={idx}
-                            onClick={() => action.onClick(row)}
-                            className={cn(
-                              'cursor-pointer transition-colors duration-200',
-                              action.variant === 'destructive' && 'text-destructive focus:text-destructive'
-                            )}
-                          >
-                            {action.icon && <span className="mr-2">{action.icon}</span>}
-                            {action.label}
-                          </ContextMenuItem>
-                        ))}
-                      </ContextMenuContent>
-                    )}
+                    <ContextMenuContent>
+                      {/* Default context menu items */}
+                      <ContextMenuItem
+                        onClick={() => {
+                          const newSelection = new Set(selectedRows);
+                          if (newSelection.has(globalIndex)) {
+                            newSelection.delete(globalIndex);
+                          } else {
+                            newSelection.add(globalIndex);
+                          }
+                          setSelectedRows(newSelection);
+                        }}
+                        className="cursor-pointer transition-colors duration-200"
+                      >
+                        <Checkbox className="mr-2 h-4 w-4" checked={isSelected} />
+                        Select
+                      </ContextMenuItem>
+                      
+                      {/* Custom context menu actions */}
+                      {contextMenuActions.length > 0 && contextMenuActions.map((action, idx) => (
+                        <ContextMenuItem
+                          key={idx}
+                          onClick={() => action.onClick(row)}
+                          className={cn(
+                            'cursor-pointer transition-colors duration-200',
+                            action.variant === 'destructive' && 'text-destructive focus:text-destructive'
+                          )}
+                        >
+                          {action.icon && <span className="mr-2">{action.icon}</span>}
+                          {action.label}
+                        </ContextMenuItem>
+                      ))}
+                    </ContextMenuContent>
                   </ContextMenu>
                 );
               })

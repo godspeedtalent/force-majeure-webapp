@@ -57,8 +57,8 @@ function AdminSidebar({ activeTab, setActiveTab }: { activeTab: AdminTab; setAct
                   <SidebarMenuButton
                     onClick={() => setActiveTab(tab.id)}
                     className={cn(
-                      'cursor-pointer',
-                      activeTab === tab.id && 'bg-fm-gold/20 text-fm-gold'
+                      'cursor-pointer transition-colors',
+                      activeTab === tab.id && 'bg-fm-gold/20 text-fm-gold hover:bg-fm-gold/30'
                     )}
                     tooltip={tab.label}
                   >
@@ -85,8 +85,8 @@ function AdminSidebar({ activeTab, setActiveTab }: { activeTab: AdminTab; setAct
                   <SidebarMenuButton
                     onClick={() => setActiveTab(tab.id)}
                     className={cn(
-                      'cursor-pointer',
-                      activeTab === tab.id && 'bg-fm-gold/20 text-fm-gold'
+                      'cursor-pointer transition-colors',
+                      activeTab === tab.id && 'bg-fm-gold/20 text-fm-gold hover:bg-fm-gold/30'
                     )}
                     tooltip={tab.label}
                   >
