@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Edit } from 'lucide-react';
-import { DemoLayout } from '@/components/demo/DemoLayout';
+import { Edit, FileText, Ticket, DollarSign, ShoppingBag } from 'lucide-react';
+import { Navigation } from '@/components/Navigation';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,7 +15,22 @@ import { FmCommonTimePicker } from '@/components/ui/FmCommonTimePicker';
 import { FormSection } from '@/components/ui/FormSection';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { TopographicBackground } from '@/components/ui/TopographicBackground';
+import { DecorativeDivider } from '@/components/DecorativeDivider';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+  useSidebar,
+} from '@/components/ui/sidebar';
+import { cn } from '@/shared/utils/utils';
 
 interface TicketTier {
   id?: string;
@@ -27,9 +42,65 @@ interface TicketTier {
   hide_until_previous_sold_out: boolean;
 }
 
+type EventTab = 'overview' | 'ticketing' | 'sales' | 'orders';
+
+function EventEditSidebar({ activeTab, setActiveTab }: { activeTab: EventTab; setActiveTab: (tab: EventTab) => void }) {
+  const { open, toggleSidebar } = useSidebar();
+
+  const eventTabs = [
+    { id: 'overview' as EventTab, label: 'Overview', icon: FileText },
+    { id: 'ticketing' as EventTab, label: 'Ticketing', icon: Ticket },
+    { id: 'sales' as EventTab, label: 'Sales', icon: DollarSign },
+    { id: 'orders' as EventTab, label: 'Orders', icon: ShoppingBag },
+  ];
+
+  return (
+    <Sidebar className="border-r border-white/20 bg-black/40" collapsible="icon">
+      <SidebarContent className="pt-4">
+        <div className="px-2 mb-4">
+          <SidebarTrigger className="hover:bg-fm-gold/20 transition-colors" />
+        </div>
+
+        <SidebarGroup>
+          {open && (
+            <SidebarGroupLabel
+              className="text-white/90 px-4 flex items-center gap-2 cursor-pointer hover:bg-white/5 transition-colors rounded-md text-base font-semibold mb-1"
+              onClick={toggleSidebar}
+            >
+              <Edit className="h-4 w-4" />
+              Event Details
+            </SidebarGroupLabel>
+          )}
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {eventTabs.map((tab) => (
+                <SidebarMenuItem key={tab.id}>
+                  <SidebarMenuButton
+                    onClick={() => setActiveTab(tab.id)}
+                    className={cn(
+                      'cursor-pointer transition-colors',
+                      open ? 'justify-start pl-4' : 'justify-center',
+                      activeTab === tab.id && 'bg-fm-gold/20 text-fm-gold hover:bg-fm-gold/30'
+                    )}
+                    tooltip={tab.label}
+                  >
+                    <tab.icon className="h-4 w-4" />
+                    {open && <span className="ml-3">{tab.label}</span>}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
+  );
+}
+
 export default function EventEdit() {
   const { eventId } = useParams<{ eventId: string }>();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<EventTab>('overview');
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
 
@@ -207,27 +278,59 @@ export default function EventEdit() {
     }
   };
 
+  const getTabTitle = () => {
+    if (activeTab === 'overview') return 'Overview';
+    if (activeTab === 'ticketing') return 'Ticketing';
+    if (activeTab === 'sales') return 'Sales';
+    if (activeTab === 'orders') return 'Orders';
+    return 'Event Details';
+  };
+
   if (isFetching) {
     return (
-      <DemoLayout title="Edit Event Details" description="Loading event information" icon={Edit}>
-        <div className="flex items-center justify-center py-12">
-          <div className="text-muted-foreground">Loading event details...</div>
-        </div>
-      </DemoLayout>
+      <>
+        <Navigation />
+        <SidebarProvider defaultOpen={true}>
+          <div className="flex min-h-screen w-full pt-16">
+            <EventEditSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+            <main className="flex-1 pt-6 pb-6 px-6 relative overflow-hidden">
+              <TopographicBackground />
+              <div className="flex items-center justify-center py-12 relative z-10">
+                <div className="text-muted-foreground">Loading event details...</div>
+              </div>
+            </main>
+          </div>
+        </SidebarProvider>
+      </>
     );
   }
 
   return (
-    <DemoLayout title="Edit Event Details" description="Comprehensive event editing" icon={Edit}>
-      <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 mb-6">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="ticketing">Ticketing</TabsTrigger>
-          <TabsTrigger value="sales">Sales</TabsTrigger>
-          <TabsTrigger value="orders">Orders</TabsTrigger>
-        </TabsList>
+    <>
+      <Navigation />
+      <SidebarProvider defaultOpen={true}>
+        <div className="flex min-h-screen w-full pt-16">
+          <EventEditSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        <TabsContent value="overview" className="max-w-4xl mx-auto space-y-6">
+          <main className="flex-1 pt-6 pb-6 px-6 relative overflow-hidden">
+            <TopographicBackground />
+            <div className="max-w-full relative z-10">
+              <div className="mb-4">
+                <div className="flex items-center gap-3 mb-4">
+                  <Edit className="h-6 w-6 text-fm-gold" />
+                  <h1 className="text-3xl font-canela font-bold">{title || getTabTitle()}</h1>
+                </div>
+              </div>
+
+              <DecorativeDivider
+                marginTop="mt-0"
+                marginBottom="mb-6"
+                lineWidth="w-32"
+                opacity={0.5}
+              />
+
+              {activeTab === 'overview' && (
+                <div className="max-w-4xl space-y-6">
         <FormSection title="Basic Information">
           <div className="space-y-4">
             <div>
@@ -349,10 +452,12 @@ export default function EventEdit() {
           </div>
         </FormSection>
 
-        </TabsContent>
+                </div>
+              )}
 
-        <TabsContent value="ticketing" className="max-w-4xl mx-auto space-y-6">
-          <FormSection title="Ticket Tiers">
+              {activeTab === 'ticketing' && (
+                <div className="max-w-4xl space-y-6">
+                  <FormSection title="Ticket Tiers">
           <div className="space-y-6">
             {ticketTiers.map((tier, index) => (
               <div key={index} className="border rounded-lg p-4 space-y-4">
@@ -437,7 +542,7 @@ export default function EventEdit() {
           </div>
         </FormSection>
 
-          <div className="flex justify-end gap-3 mt-6">
+                  <div className="flex justify-end gap-3 mt-6">
           <Button variant="outline" onClick={() => navigate('/demo/event-checkout')}>
             Cancel
           </Button>
@@ -447,22 +552,26 @@ export default function EventEdit() {
             className="bg-fm-gold hover:bg-fm-gold/90 text-black"
           >
             {isLoading ? 'Saving...' : 'Save Changes'}
-          </Button>
-          </div>
-        </TabsContent>
+                  </Button>
+                  </div>
+                </div>
+              )}
 
-        <TabsContent value="sales" className="max-w-4xl mx-auto">
-          <div className="text-center py-12 text-muted-foreground">
-            Sales analytics coming soon
-          </div>
-        </TabsContent>
+              {activeTab === 'sales' && (
+                <div className="text-center py-12 text-muted-foreground">
+                  Sales analytics coming soon
+                </div>
+              )}
 
-        <TabsContent value="orders" className="max-w-4xl mx-auto">
-          <div className="text-center py-12 text-muted-foreground">
-            Orders management coming soon
-          </div>
-        </TabsContent>
-      </Tabs>
-    </DemoLayout>
+              {activeTab === 'orders' && (
+                <div className="text-center py-12 text-muted-foreground">
+                  Orders management coming soon
+                </div>
+              )}
+            </div>
+          </main>
+        </div>
+      </SidebarProvider>
+    </>
   );
 }
