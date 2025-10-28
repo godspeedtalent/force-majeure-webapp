@@ -93,65 +93,78 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
         <CardDescription>Select your tickets and quantity</CardDescription>
       </CardHeader>
       <CardContent className='space-y-4'>
-        {sortedTiers.map((tier, index) => {
-          const isVisible = isTierVisible(tier, index);
-          const soldOut = isSoldOut(tier);
-          const remaining = getRemainingTickets(tier);
-
-          if (!isVisible) return null;
-
-          return (
-            <div key={tier.id} className='space-y-2'>
-              <div className='flex items-start justify-between gap-4'>
-                <div className='flex-1'>
-                  <div className='flex items-center gap-2'>
-                    <h3 className='font-canela font-semibold text-foreground'>{tier.name}</h3>
-                    {soldOut && (
-                      <span className='text-xs bg-destructive/20 text-destructive px-2 py-0.5 rounded'>
-                        SOLD OUT
-                      </span>
-                    )}
-                  </div>
-                  {tier.description && (
-                    <p className='text-sm text-muted-foreground mt-1'>{tier.description}</p>
-                  )}
-                  <p className='text-sm text-muted-foreground mt-1'>
-                    {remaining} of {tier.total_tickets} remaining
-                  </p>
-                </div>
-                <div className='flex items-center gap-3'>
-                  <span className='font-canela text-lg text-fm-gold'>
-                    ${Number(tier.price).toFixed(2)}
-                  </span>
-                  <Select
-                    value={selections[tier.id]?.toString() || '0'}
-                    onValueChange={(value) => handleQuantityChange(tier.id, parseInt(value))}
-                    disabled={soldOut || remaining === 0}
-                  >
-                    <SelectTrigger className='w-20 bg-background border-border'>
-                      <SelectValue placeholder='0' />
-                    </SelectTrigger>
-                    <SelectContent className='bg-background border-border'>
-                      <SelectItem value='0'>0</SelectItem>
-                      {[1, 2, 3, 4].map(num => (
-                        <SelectItem 
-                          key={num} 
-                          value={num.toString()}
-                          disabled={num > remaining}
-                        >
-                          {num}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              {index < sortedTiers.filter((_, i) => isTierVisible(sortedTiers[i], i)).length - 1 && (
-                <Separator className='my-4' />
-              )}
+          {sortedTiers.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              No ticket tiers available for this event
             </div>
-          );
-        })}
+          ) : (
+            sortedTiers.map((tier, index) => {
+              const isVisible = isTierVisible(tier, index);
+              const soldOut = isSoldOut(tier);
+              const remaining = getRemainingTickets(tier);
+
+              if (!isVisible) return null;
+
+              return (
+                <div key={tier.id} className='space-y-3 pb-4'>
+                  <div className='flex items-start justify-between gap-4'>
+                    <div className='flex-1 space-y-2'>
+                      <div className='flex items-center gap-2 flex-wrap'>
+                        <h3 className='font-canela font-semibold text-lg text-foreground'>{tier.name}</h3>
+                        {soldOut && (
+                          <span className='text-xs bg-destructive/20 text-destructive px-2 py-0.5 rounded font-medium'>
+                            SOLD OUT
+                          </span>
+                        )}
+                      </div>
+                      {tier.description && (
+                        <p className='text-sm text-muted-foreground'>{tier.description}</p>
+                      )}
+                      <div className='flex items-center gap-4 text-sm'>
+                        <span className='font-canela text-xl text-fm-gold font-semibold'>
+                          ${Number(tier.price).toFixed(2)}
+                        </span>
+                        <span className='text-muted-foreground'>
+                          {remaining} of {tier.total_tickets} available
+                        </span>
+                      </div>
+                    </div>
+                    <div className='flex flex-col items-end gap-2'>
+                      <Select
+                        value={selections[tier.id]?.toString() || '0'}
+                        onValueChange={(value) => handleQuantityChange(tier.id, parseInt(value))}
+                        disabled={soldOut || remaining === 0}
+                      >
+                        <SelectTrigger className='w-24 bg-background border-border'>
+                          <SelectValue placeholder='Qty: 0' />
+                        </SelectTrigger>
+                        <SelectContent className='bg-popover border-border z-50'>
+                          <SelectItem value='0'>Qty: 0</SelectItem>
+                          {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
+                            <SelectItem 
+                              key={num} 
+                              value={num.toString()}
+                              disabled={num > remaining}
+                            >
+                              Qty: {num}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {selections[tier.id] > 0 && (
+                        <span className='text-xs text-muted-foreground'>
+                          Subtotal: ${(Number(tier.price) * selections[tier.id]).toFixed(2)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  {index < sortedTiers.filter((_, i) => isTierVisible(sortedTiers[i], i)).length - 1 && (
+                    <Separator className='mt-4' />
+                  )}
+                </div>
+              );
+            })
+          )}
 
         {hasSelections && (
           <>
