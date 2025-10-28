@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { FmTicketTierList } from './FmTicketTierList';
+import { FmPromoCodeInput } from '@/components/ui/FmPromoCodeInput';
 import { useFees } from '../hooks/useFees';
 import { cn } from '@/shared/utils/utils';
 
@@ -28,8 +29,16 @@ interface TicketingPanelProps {
   isLoading?: boolean;
 }
 
+interface PromoCode {
+  id: string;
+  code: string;
+  discount_type: 'percentage' | 'flat';
+  discount_value: number;
+}
+
 export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: TicketingPanelProps) => {
   const [selections, setSelections] = useState<Record<string, number>>({});
+  const [promoCode, setPromoCode] = useState<PromoCode | null>(null);
   const { calculateFees, getTotalFees } = useFees();
 
   // Sort tiers by order
@@ -84,10 +93,23 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
     }, 0);
   };
 
+  const calculatePromoDiscount = (subtotal: number): number => {
+    if (!promoCode) return 0;
+    
+    if (promoCode.discount_type === 'percentage') {
+      return (subtotal * Number(promoCode.discount_value)) / 100;
+    } else {
+      // Flat discount in dollars
+      return Math.min(Number(promoCode.discount_value), subtotal);
+    }
+  };
+
   const subtotal = calculateSubtotal();
-  const fees = calculateFees(subtotal);
-  const totalFees = getTotalFees(subtotal);
-  const grandTotal = subtotal + totalFees;
+  const promoDiscount = calculatePromoDiscount(subtotal);
+  const subtotalAfterPromo = Math.max(0, subtotal - promoDiscount);
+  const fees = calculateFees(subtotalAfterPromo);
+  const totalFees = getTotalFees(subtotalAfterPromo);
+  const grandTotal = subtotalAfterPromo + totalFees;
   const hasSelections = Object.values(selections).some(qty => qty > 0);
 
   // Get selections for breakdown
@@ -101,6 +123,10 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
         subtotal: tier.price * quantity,
       };
     });
+
+  const handlePromoCodeApplied = (promo: PromoCode | null) => {
+    setPromoCode(promo);
+  };
 
   return (
     <div className='space-y-4'>
@@ -189,6 +215,14 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
           )}
 
         <Separator className='mt-4' />
+
+        {/* Promo Code Input */}
+        <div className='px-3 py-3 bg-muted/10 rounded-md'>
+          <div className='text-xs text-muted-foreground mb-2'>Have a promo code?</div>
+          <FmPromoCodeInput onPromoCodeApplied={handlePromoCodeApplied} />
+        </div>
+        
+        <Separator className='mt-4' />
         
         {/* Order Summary - Always visible */}
         <div className='space-y-3 bg-muted/20 rounded-lg p-4'>
@@ -205,6 +239,14 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
                 <span className='text-muted-foreground'>Subtotal</span>
                 <span className='text-foreground'>${subtotal.toFixed(2)}</span>
               </div>
+              
+              {/* Promo Discount */}
+              {promoCode && promoDiscount > 0 && (
+                <div className='flex justify-between text-xs text-green-600'>
+                  <span>Promo ({promoCode.code})</span>
+                  <span>-${promoDiscount.toFixed(2)}</span>
+                </div>
+              )}
               
               {/* Fees */}
               {fees.map((fee, index) => (
