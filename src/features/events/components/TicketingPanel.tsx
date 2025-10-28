@@ -2,7 +2,6 @@ import { ShoppingCart, Ticket } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 
@@ -84,15 +83,15 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
   const hasSelections = Object.values(selections).some(qty => qty > 0);
 
   return (
-    <Card className='bg-card border-border'>
-      <CardHeader>
-        <CardTitle className='flex items-center gap-2 text-foreground'>
+    <div className='space-y-4'>
+      <div>
+        <h3 className='flex items-center gap-2 text-foreground font-canela text-xl font-semibold mb-1'>
           <Ticket className='h-5 w-5 text-fm-gold' />
           Get Tickets
-        </CardTitle>
-        <CardDescription>Select your tickets and quantity</CardDescription>
-      </CardHeader>
-      <CardContent className='space-y-4'>
+        </h3>
+        <p className='text-sm text-muted-foreground'>Select your tickets and quantity</p>
+      </div>
+      <div className='space-y-4'>
           {sortedTiers.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               No ticket tiers available for this event
@@ -186,7 +185,7 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
             </Button>
           </>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };

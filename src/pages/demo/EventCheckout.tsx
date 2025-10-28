@@ -73,10 +73,10 @@ export default function EventCheckout() {
           Select an event from Demo Tools to begin
         </div>
       ) : (
-        <div className="space-y-8">
+        <div className="bg-card border-border rounded-lg overflow-hidden">
           {/* Event Information Section */}
           {eventDetails && (
-            <div className="bg-black/40 backdrop-blur-md border border-white/20 rounded-lg p-6">
+            <div className="p-6">
               <div className="flex gap-6">
                 {/* Event Image */}
                 {eventDetails.headliner?.image_url && (
@@ -89,11 +89,11 @@ export default function EventCheckout() {
                 
                 {/* Event Details */}
                 <div className="flex-1 space-y-3">
-                  <h2 className="text-3xl font-canela font-bold text-white">
+                  <h2 className="text-3xl font-canela font-bold text-foreground">
                     {eventDetails.title}
                   </h2>
                   
-                  <div className="flex flex-wrap gap-4 text-white/70">
+                  <div className="flex flex-wrap gap-4 text-muted-foreground">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-fm-gold" />
                       <span>{new Date(eventDetails.date).toLocaleDateString('en-US', {
@@ -123,7 +123,7 @@ export default function EventCheckout() {
                   </div>
                   
                   {eventDetails.description && (
-                    <p className="text-white/60 text-sm">
+                    <p className="text-muted-foreground text-sm">
                       {eventDetails.description}
                     </p>
                   )}
@@ -132,16 +132,23 @@ export default function EventCheckout() {
             </div>
           )}
 
-          {/* Ticketing Panel */}
-          <TicketingPanel
-            eventId={selectedEventId}
-            tiers={ticketTiers?.map(tier => ({
-              ...tier,
-              price: tier.price_cents / 100,
-            })) || []}
-            onPurchase={handlePurchase}
-            isLoading={tiersLoading || checkoutLoading}
-          />
+          {/* Divider */}
+          {eventDetails && (
+            <div className="border-t border-border" />
+          )}
+
+          {/* Ticketing Section */}
+          <div className="p-6">
+            <TicketingPanel
+              eventId={selectedEventId}
+              tiers={ticketTiers?.map(tier => ({
+                ...tier,
+                price: tier.price_cents / 100,
+              })) || []}
+              onPurchase={handlePurchase}
+              isLoading={tiersLoading || checkoutLoading}
+            />
+          </div>
         </div>
       )}
     </DemoLayout>
