@@ -8,6 +8,7 @@ import { FmCommonDatePicker } from '@/components/ui/forms/FmCommonDatePicker';
 import { FmCommonTimePicker } from '@/components/ui/forms/FmCommonTimePicker';
 import { FmCommonRowManager } from '@/components/ui/forms/FmCommonRowManager';
 import { FmCommonLoadingOverlay } from '@/components/common/FmCommonLoadingOverlay';
+import { FmCommonLoadingSpinner } from '@/components/ui/feedback/FmCommonLoadingSpinner';
 import { Input } from '@/components/ui/shadcn/input';
 import { Checkbox } from '@/components/ui/shadcn/checkbox';
 import { Label } from '@/components/ui/shadcn/label';
@@ -238,7 +239,7 @@ export const FmEditEventButton = ({
       const eventTimeString = eventDate ? format(eventDate, 'HH:mm') : null;
 
       // Update the event
-      const { data: updatedEvent, error: eventError } = await supabase
+      const { error: eventError } = await supabase
         .from('events' as any)
         .update({
           title: eventTitle,
@@ -297,7 +298,7 @@ export const FmEditEventButton = ({
           fee_pct_bps: 0,
         }));
 
-        const { data: insertedTiers, error: tiersError } = await supabase
+        const { error: tiersError } = await supabase
           .from('ticket_tiers' as any)
           .insert(tiersToInsert)
           .select();

@@ -9,7 +9,7 @@ import { TopographicBackground } from '@/components/ui/misc/TopographicBackgroun
 import { Settings, Users, Sliders, MapPin, Database, Calendar, Edit, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { FeatureToggleSection } from '@/components/devtools/FeatureToggleSection';
+import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
 import { AdminFeesSection } from '@/components/admin/AdminFeesSection';
 import { EventsManagement } from './EventsManagement';
 import { toast } from 'sonner';

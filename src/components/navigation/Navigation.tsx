@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { Breadcrumbs } from '@/components/primitives/Breadcrumbs';
 import { ForceMajeureLogo } from './ForceMajeureLogo';
-import { UserMenuDropdown } from '@/components/navigation/UserMenuDropdown';
+import { UserMenuDropdown } from '@/components/Navigation/UserMenuDropdown';
 import { CheckoutCountdown } from '@/components/business/CheckoutCountdown';
 import { Button } from '@/components/ui/shadcn/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/shadcn/dropdown-menu';

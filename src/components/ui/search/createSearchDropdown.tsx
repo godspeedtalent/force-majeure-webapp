@@ -82,7 +82,7 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
     React.useEffect(() => {
       if (value) {
         supabase
-          .from(tableName)
+          .from(tableName as any)
           .select(selectFields)
           .eq('id', value)
           .single()
@@ -99,7 +99,7 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
     // Search handler
     const handleSearch = async (query: string): Promise<SearchDropdownOption[]> => {
       let queryBuilder = supabase
-        .from(tableName)
+        .from(tableName as any)
         .select(selectFields);
 
       // Apply search filter
@@ -125,7 +125,7 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
       if (!useRecents || recentItems.length === 0) return [];
 
       const { data, error } = await supabase
-        .from(tableName)
+        .from(tableName as any)
         .select(selectFields)
         .in('id', recentItems.map(item => item.id));
 
