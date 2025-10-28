@@ -264,16 +264,29 @@ export const FmEditEventButton = ({
       
       console.log('Event updated successfully:', updatedEvent);
 
-      // Update ticket tiers - Delete and recreate
+      // Update ticket tiers - Delete ALL existing tiers first
       console.log('Deleting existing ticket tiers...');
-      const { error: deleteError } = await supabase
+      
+      // First, fetch all existing tiers to ensure we're deleting them
+      const { data: existingTiers } = await supabase
         .from('ticket_tiers' as any)
-        .delete()
+        .select('id')
         .eq('event_id', eventId);
+      
+      console.log('Found existing tiers:', existingTiers?.length || 0);
+      
+      if (existingTiers && existingTiers.length > 0) {
+        const { error: deleteError } = await supabase
+          .from('ticket_tiers' as any)
+          .delete()
+          .eq('event_id', eventId);
 
-      if (deleteError) {
-        console.error('Ticket tier delete error:', deleteError);
-        throw deleteError;
+        if (deleteError) {
+          console.error('Ticket tier delete error:', deleteError);
+          throw deleteError;
+        }
+        
+        console.log('Successfully deleted existing tiers');
       }
 
       // Then insert updated tiers

@@ -125,7 +125,10 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
               if (!isVisible) return null;
 
               return (
-                <div key={tier.id} className='group transition-colors hover:bg-muted/40 rounded-md'>
+                <div key={tier.id} className={cn(
+                  'group transition-colors hover:bg-muted/40 rounded-md',
+                  index % 2 === 1 && 'bg-white/5'
+                )}>
                   <div className='flex items-start justify-between gap-4 px-3 py-2'>
                     <div className='flex-1 space-y-1'>
                       <h3 className='font-medium text-xs text-foreground'>{tier.name}</h3>

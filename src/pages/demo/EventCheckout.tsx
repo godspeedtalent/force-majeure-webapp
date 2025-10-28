@@ -8,6 +8,7 @@ import { EventCheckoutDemoTools } from '@/components/demo/EventCheckoutDemoTools
 import { useCheckoutTimer } from '@/contexts/CheckoutContext';
 import { supabase } from '@/integrations/supabase/client';
 import { formatTimeDisplay } from '@/shared/utils/timeUtils';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Undercard artist display component
 const UndercardDisplay = ({ undercardIds }: { undercardIds: string[] }) => {
@@ -46,10 +47,15 @@ export default function EventCheckout() {
   const { data: ticketTiers, isLoading: tiersLoading } = useTicketTiers(selectedEventId);
   const { initiateCheckout, isLoading: checkoutLoading } = useCheckout();
   const { startCheckout } = useCheckoutTimer();
+  const queryClient = useQueryClient();
 
   const handleEventUpdated = () => {
     // Trigger a refresh of the event details
     setRefreshKey(prev => prev + 1);
+    // Also invalidate the ticket tiers query to refetch them
+    if (selectedEventId) {
+      queryClient.invalidateQueries({ queryKey: ['ticket-tiers', selectedEventId] });
+    }
   };
 
   useEffect(() => {
@@ -115,6 +121,17 @@ export default function EventCheckout() {
         </div>
       ) : (
         <div className="bg-card border-border rounded-lg overflow-hidden">
+          {/* Event Hero Image */}
+          {eventDetails && eventDetails.hero_image && (
+            <div className="w-full h-64 overflow-hidden">
+              <img
+                src={eventDetails.hero_image}
+                alt={eventDetails.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+
           {/* Event Information Section */}
           {eventDetails && (
             <div className="p-6">
@@ -129,8 +146,8 @@ export default function EventCheckout() {
                 )}
                 
                 {/* Event Details */}
-                <div className="flex-1 space-y-3">
-                  <h2 className="text-3xl font-canela text-foreground">
+                <div className="flex-1 space-y-2">
+                  <h2 className="text-2xl font-canela text-foreground">
                     {eventDetails.title}
                   </h2>
                   
@@ -139,27 +156,27 @@ export default function EventCheckout() {
                     <UndercardDisplay undercardIds={eventDetails.undercard_ids} />
                   )}
                   
-                  <div className="flex flex-wrap gap-4 text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-fm-gold" />
+                  <div className="flex flex-wrap gap-3 text-muted-foreground text-sm">
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="h-3.5 w-3.5 text-fm-gold" />
                       <span>{new Date(eventDetails.date).toLocaleDateString('en-US', {
-                        weekday: 'long',
+                        weekday: 'short',
                         year: 'numeric',
-                        month: 'long',
+                        month: 'short',
                         day: 'numeric'
                       })}</span>
                     </div>
                     
                     {eventDetails.time && (
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-fm-gold" />
+                      <div className="flex items-center gap-1.5">
+                        <Clock className="h-3.5 w-3.5 text-fm-gold" />
                         <span>{formatTimeDisplay(eventDetails.time)}</span>
                       </div>
                     )}
                     
                     {eventDetails.venue && (
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-fm-gold" />
+                      <div className="flex items-center gap-1.5">
+                        <MapPin className="h-3.5 w-3.5 text-fm-gold" />
                         <span>
                           {eventDetails.venue.name}
                           {eventDetails.venue.city && ` • ${eventDetails.venue.city}`}
@@ -169,7 +186,7 @@ export default function EventCheckout() {
                   </div>
                   
                   {eventDetails.description && (
-                    <p className="text-muted-foreground text-sm">
+                    <p className="text-muted-foreground text-xs">
                       {eventDetails.description}
                     </p>
                   )}

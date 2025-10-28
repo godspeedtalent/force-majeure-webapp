@@ -61,7 +61,7 @@ export function FmCommonList<T extends Record<string, any>>({
             className={cn(
               'grid grid-cols-1 gap-2 transition-colors',
               dense ? 'px-3 py-2' : 'px-4 py-3',
-              isStriped && 'bg-muted/30',
+              isStriped && 'bg-white/5',
               computedRowClassName
             )}
             style={{
