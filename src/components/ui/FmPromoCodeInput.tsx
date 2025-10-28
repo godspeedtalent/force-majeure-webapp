@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { FmCommonQueryInput } from './FmCommonQueryInput';
 import { supabase } from '@/shared/api/supabase/client';
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { CheckCircle2, XCircle, X } from 'lucide-react';
+import { Button } from './button';
 import { cn } from '@/shared/utils/utils';
 
 interface PromoCode {
@@ -63,18 +64,34 @@ export const FmPromoCodeInput = ({ onPromoCodeApplied, className }: FmPromoCodeI
     }
   };
 
+  const handleClearPromo = () => {
+    setValidationState('idle');
+    setAppliedPromo(null);
+    setErrorMessage('');
+    onPromoCodeApplied?.(null);
+  };
+
   return (
     <div className={cn('space-y-2', className)}>
-      <FmCommonQueryInput
-        placeholder='Enter promo code'
-        onQuery={handleQuery}
-        disabled={validationState === 'valid'}
-      />
-      
-      {validationState === 'valid' && appliedPromo && (
-        <div className='flex items-center gap-1.5 text-xs text-green-600'>
-          <CheckCircle2 className='h-3 w-3' />
-          <span>Promo code applied: {getDiscountText()}</span>
+      {validationState !== 'valid' ? (
+        <FmCommonQueryInput
+          placeholder='Enter promo code'
+          onQuery={handleQuery}
+        />
+      ) : (
+        <div className='flex items-center gap-2'>
+          <div className='flex-1 flex items-center gap-1.5 text-xs text-green-600 bg-green-600/10 px-3 py-2 rounded-md'>
+            <CheckCircle2 className='h-3 w-3' />
+            <span>{appliedPromo?.code} applied: {getDiscountText()}</span>
+          </div>
+          <Button
+            size='sm'
+            variant='ghost'
+            onClick={handleClearPromo}
+            className='h-8 px-2 hover:bg-destructive/10'
+          >
+            <X className='h-3 w-3' />
+          </Button>
         </div>
       )}
       

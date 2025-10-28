@@ -94,12 +94,14 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
   };
 
   const calculatePromoDiscount = (subtotal: number): number => {
-    if (!promoCode) return 0;
+    if (!promoCode || subtotal === 0) return 0;
     
     if (promoCode.discount_type === 'percentage') {
-      return (subtotal * Number(promoCode.discount_value)) / 100;
+      const discount = (subtotal * Number(promoCode.discount_value)) / 100;
+      // Ensure discount doesn't exceed subtotal
+      return Math.min(discount, subtotal);
     } else {
-      // Flat discount in dollars
+      // Flat discount in dollars - cannot exceed subtotal
       return Math.min(Number(promoCode.discount_value), subtotal);
     }
   };
@@ -109,7 +111,7 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
   const subtotalAfterPromo = Math.max(0, subtotal - promoDiscount);
   const fees = calculateFees(subtotalAfterPromo);
   const totalFees = getTotalFees(subtotalAfterPromo);
-  const grandTotal = subtotalAfterPromo + totalFees;
+  const grandTotal = Math.max(0, subtotalAfterPromo + totalFees);
   const hasSelections = Object.values(selections).some(qty => qty > 0);
 
   // Get selections for breakdown

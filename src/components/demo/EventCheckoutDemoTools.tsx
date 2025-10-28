@@ -1,4 +1,7 @@
+import { useNavigate } from 'react-router-dom';
+import { FileEdit } from 'lucide-react';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { FmEventSearchDropdown } from '@/components/ui/FmEventSearchDropdown';
 import { FmCreateEventButton } from '@/components/ui/FmCreateEventButton';
 import { FmEditEventButton } from '@/components/ui/FmEditEventButton';
@@ -14,6 +17,8 @@ export const EventCheckoutDemoTools = ({
   onEventChange,
   onEventUpdated,
 }: EventCheckoutDemoToolsProps) => {
+  const navigate = useNavigate();
+  
   const handleEventCreated = (eventId: string) => {
     onEventChange(eventId);
   };
@@ -40,19 +45,28 @@ export const EventCheckoutDemoTools = ({
             className="flex-1"
           />
           {selectedEventId && (
-            <FmEditEventButton
-              eventId={selectedEventId}
-              onEventUpdated={() => {
-                // Refresh the event selection to show updated data
-                onEventChange(selectedEventId);
-                onEventUpdated?.();
-              }}
-              trigger={
-                <button className="flex-1 inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-white/20 bg-white/5 hover:bg-white/10 text-white h-10 px-4 py-2 rounded-md">
-                  Edit Event
-                </button>
-              }
-            />
+            <>
+              <FmEditEventButton
+                eventId={selectedEventId}
+                onEventUpdated={() => {
+                  onEventChange(selectedEventId);
+                  onEventUpdated?.();
+                }}
+                trigger={
+                  <button className="flex-1 inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-white/20 bg-white/5 hover:bg-white/10 text-white h-10 px-4 py-2 rounded-md">
+                    Quick Edit
+                  </button>
+                }
+              />
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => navigate(`/demo/event-edit/${selectedEventId}`)}
+              >
+                <FileEdit className="h-4 w-4 mr-2" />
+                Edit Details
+              </Button>
+            </>
           )}
         </div>
       </div>

@@ -12,6 +12,7 @@ import Index from './pages/Index';
 import Orders from './pages/Orders';
 import DemoIndex from './pages/demo/DemoIndex';
 import EventCheckout from './pages/demo/EventCheckout';
+import EventEdit from './pages/demo/EventEdit';
 import MemberHome from './pages/members/MemberHome';
 import Statistics from './pages/admin/Statistics';
 import AdminControls from './pages/admin/AdminControls';
@@ -97,6 +98,14 @@ const AppRoutes = () => {
             element={
               <DemoProtectedRoute>
                 <EventCheckout />
+              </DemoProtectedRoute>
+            }
+          />
+          <Route
+            path='/demo/event-edit/:eventId'
+            element={
+              <DemoProtectedRoute>
+                <EventEdit />
               </DemoProtectedRoute>
             }
           />
