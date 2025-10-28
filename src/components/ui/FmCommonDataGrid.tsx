@@ -8,12 +8,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useToast } from '@/shared/hooks/use-toast';
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-} from '@/components/ui/context-menu';
+import { FmCommonDataGridContextMenu } from './FmCommonDataGridContextMenu';
+import { ContextMenuAction } from './FmCommonContextMenu';
 import {
   Pagination,
   PaginationContent,
@@ -41,17 +37,14 @@ export interface DataGridColumn<T = any> {
   sortable?: boolean;
   filterable?: boolean;
   editable?: boolean;
+  readonly?: boolean; // Mark field as readonly (cannot be edited inline or in forms)
   render?: (value: any, row: T) => React.ReactNode;
   width?: string;
   isRelation?: boolean; // Mark this column as a foreign key relation
 }
 
-export interface DataGridAction<T = any> {
-  label: string;
-  icon?: React.ReactNode;
-  onClick: (row: T) => void;
-  variant?: 'default' | 'destructive';
-}
+// Re-export ContextMenuAction as DataGridAction for backward compatibility
+export type DataGridAction<T = any> = ContextMenuAction<T>;
 
 export interface FmCommonDataGridProps<T = any> {
   data: T[];
@@ -305,7 +298,7 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
       <div className="rounded-lg border border-border/50 overflow-x-auto bg-background/30 backdrop-blur-sm">
         <Table>
           <TableHeader>
-            <TableRow className="border-border/50 hover:bg-transparent group">
+            <TableRow className="border-border/50 bg-muted/50 hover:bg-muted/50 group">
               <TableHead className="w-12">
                 <Checkbox
                   checked={isAllSelected}
@@ -318,9 +311,9 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                 <TableHead
                   key={column.key}
                   className={cn(
-                    'font-canela text-foreground/90 relative',
+                    'font-canela text-foreground font-semibold relative',
                     column.width,
-                    column.sortable && 'cursor-pointer select-none hover:bg-muted/50',
+                    column.sortable && 'cursor-pointer select-none hover:bg-muted',
                     sortColumn === column.key && 'bg-fm-gold text-black hover:bg-fm-gold/90',
                     colIndex > 0 && 'border-l border-border/30'
                   )}
@@ -401,18 +394,23 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
               paginatedData.map((row, index) => {
                 const globalIndex = (currentPage - 1) * pageSize + index;
                 const isSelected = selectedRows.has(globalIndex);
+                const isEvenRow = index % 2 === 0;
 
                 return (
-                  <ContextMenu key={globalIndex}>
-                    <ContextMenuTrigger asChild>
-                      <TableRow
-                        className={cn(
-                          'border-border/50 transition-all duration-200 cursor-pointer group',
-                          isSelected && 'bg-fm-gold/10 border-fm-gold/30',
-                          'hover:bg-fm-gold/5'
-                        )}
-                        onClick={(e) => handleSelectRow(index, e)}
-                      >
+                  <FmCommonDataGridContextMenu
+                    key={globalIndex}
+                    row={row}
+                    actions={contextMenuActions}
+                  >
+                    <TableRow
+                      className={cn(
+                        'border-border/50 transition-all duration-200 cursor-pointer group',
+                        isEvenRow && 'bg-muted/20',
+                        isSelected && 'bg-fm-gold/10 border-fm-gold/30',
+                        'hover:bg-fm-gold/5'
+                      )}
+                      onClick={(e) => handleSelectRow(index, e)}
+                    >
                         <TableCell>
                           <Checkbox
                             checked={isSelected}
@@ -439,8 +437,8 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                               key={column.key} 
                               className="font-medium"
                               onClick={(e) => {
-                                // Only trigger edit if not clicking on checkbox
-                                if (column.editable && onUpdate && !(e.target as HTMLElement).closest('[role="checkbox"]')) {
+                                // Only trigger edit if not clicking on checkbox and field is not readonly
+                                if (column.editable && !column.readonly && onUpdate && !(e.target as HTMLElement).closest('[role="checkbox"]')) {
                                   handleCellEdit(globalIndex, column.key, cellValue);
                                 }
                               }}
@@ -475,12 +473,12 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                               ) : (
                                 <div className={cn(
                                   'flex items-center gap-2',
-                                  column.editable && onUpdate && 'cursor-pointer hover:bg-fm-gold/5 -mx-2 px-2 py-1 rounded'
+                                  column.editable && !column.readonly && onUpdate && 'cursor-pointer hover:bg-fm-gold/5 -mx-2 px-2 py-1 rounded'
                                 )}>
                                   {column.render
                                     ? column.render(cellValue, row)
                                     : cellValue?.toString() || '-'}
-                                  {column.editable && onUpdate && (
+                                  {column.editable && !column.readonly && onUpdate && (
                                     <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                                       Click to edit
                                     </span>
@@ -525,27 +523,7 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                           </TableCell>
                         )}
                       </TableRow>
-                    </ContextMenuTrigger>
-                    <ContextMenuContent className="w-48">
-                      {/* Custom context menu actions */}
-                      {contextMenuActions.length > 0 && contextMenuActions.map((action, idx) => (
-                        <ContextMenuItem
-                          key={idx}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            action.onClick(row);
-                          }}
-                          className={cn(
-                            'cursor-pointer transition-colors duration-200',
-                            action.variant === 'destructive' && 'text-destructive focus:text-destructive focus:bg-destructive/10'
-                          )}
-                        >
-                          {action.icon && <span className="mr-2">{action.icon}</span>}
-                          {action.label}
-                        </ContextMenuItem>
-                      ))}
-                    </ContextMenuContent>
-                  </ContextMenu>
+                  </FmCommonDataGridContextMenu>
                 );
               })
             )}

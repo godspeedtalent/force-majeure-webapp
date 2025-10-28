@@ -171,6 +171,7 @@ export default function AdminControls() {
       sortable: true,
       filterable: true,
       editable: true,
+      readonly: true, // City shown but edit via form only
       isRelation: true,
       render: (_value, row) => row.city || '-',
     },
@@ -192,6 +193,7 @@ export default function AdminControls() {
       key: 'created_at',
       label: 'Created',
       sortable: true,
+      readonly: true,
       render: (value) => new Date(value).toLocaleDateString(),
     },
   ];

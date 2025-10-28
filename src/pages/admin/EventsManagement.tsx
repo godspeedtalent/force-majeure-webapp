@@ -70,6 +70,7 @@ export const EventsManagement = () => {
       isRelation: true,
       sortable: true,
       filterable: true,
+      readonly: true, // Venue shown but not editable inline
     },
     {
       key: 'headliner_id',
@@ -77,6 +78,7 @@ export const EventsManagement = () => {
       isRelation: true,
       sortable: true,
       filterable: true,
+      readonly: true, // Headliner shown but not editable inline
     },
   ];
 
