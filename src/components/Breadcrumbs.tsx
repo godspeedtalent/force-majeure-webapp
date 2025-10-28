@@ -1,113 +1,88 @@
-import { ChevronRight } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 
-import { supabase } from '@/shared/api/supabase/client';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import { cn } from '@/shared/utils/utils';
 
-interface BreadcrumbItem {
-  label: string;
-  path: string;
-  isLast?: boolean;
-}
-
+/**
+ * Comprehensive breadcrumb navigation component
+ * Automatically generates breadcrumbs based on current route
+ * Supports nested routes, dynamic segments, and async data resolution
+ */
 export const Breadcrumbs = () => {
-  const location = useLocation();
-  const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([]);
-
-  useEffect(() => {
-    const generateBreadcrumbs = async () => {
-      const pathSegments = location.pathname.split('/').filter(Boolean);
-      const items: BreadcrumbItem[] = [];
-
-      // Home is always first
-      items.push({ label: 'Home', path: '/' });
-
-      if (pathSegments.length === 0) {
-        setBreadcrumbs([]);
-        return;
-      }
-
-      // Handle event details page
-      if (pathSegments[0] === 'event' && pathSegments[1]) {
-        try {
-          const { data: eventData } = await supabase
-            .from('events')
-            .select(
-              'title, headliner_artist:artists!events_headliner_id_fkey(name)'
-            )
-            .eq('id', pathSegments[1])
-            .single();
-
-          if (eventData) {
-            items.push({
-              label: eventData.headliner_artist?.name || 'Event',
-              path: `/event/${pathSegments[1]}`,
-              isLast: true,
-            });
-          }
-        } catch (_error) {
-          items.push({
-            label: 'Event',
-            path: `/event/${pathSegments[1]}`,
-            isLast: true,
-          });
-        }
-      }
-
-      // Handle merch page
-      if (pathSegments[0] === 'merch') {
-        items.push({
-          label: 'Merchandise',
-          path: '/merch',
-          isLast: true,
-        });
-      }
-
-      // Handle profile page
-      if (pathSegments[0] === 'profile') {
-        items.push({
-          label: 'Profile Settings',
-          path: '/profile',
-          isLast: true,
-        });
-      }
-
-      // Handle admin pages
-      if (pathSegments[0] === 'admin') {
-        items.push({
-          label: 'Admin',
-          path: '/admin/controls',
-          isLast: true,
-        });
-      }
-
-      setBreadcrumbs(items.slice(1)); // Remove home from display (we show it differently)
-    };
-
-    generateBreadcrumbs();
-  }, [location.pathname]);
+  const { breadcrumbs, isLoading } = useBreadcrumbs();
+  const navigate = useNavigate();
+  const [animatingAfter, setAnimatingAfter] = useState<number | null>(null);
 
   if (breadcrumbs.length === 0) {
     return null;
   }
 
+  const handleBreadcrumbClick = (path: string, index: number) => {
+    // Trigger animation for all breadcrumbs after this one
+    setAnimatingAfter(index);
+
+    // Navigate after animation starts
+    setTimeout(() => {
+      navigate(path);
+      setAnimatingAfter(null);
+    }, 300);
+  };
+
   return (
-    <nav className='flex items-center space-x-2 text-sm text-muted-foreground'>
-      {breadcrumbs.map((item, _index) => (
-        <div key={item.path} className='flex items-center space-x-2'>
-          <ChevronRight className='w-4 h-4' />
-          {item.isLast ? (
-            <span className='text-foreground font-medium'>{item.label}</span>
-          ) : (
-            <Link
-              to={item.path}
-              className='hover:text-foreground transition-colors'
+    <Breadcrumb>
+      <BreadcrumbList>
+        {breadcrumbs.map((item, index) => {
+          const shouldAnimate = animatingAfter !== null && index > animatingAfter;
+
+          return (
+            <div
+              key={item.path}
+              className={cn(
+                "flex items-center gap-1.5 transition-all duration-300",
+                shouldAnimate && "opacity-0 -translate-y-2"
+              )}
             >
-              {item.label}
-            </Link>
-          )}
-        </div>
-      ))}
-    </nav>
+              {index > 0 && <BreadcrumbSeparator />}
+              <BreadcrumbItem>
+                {item.isLast ? (
+                  <BreadcrumbPage>
+                    {isLoading ? (
+                      <span className="flex items-center gap-1">
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        {item.label}
+                      </span>
+                    ) : (
+                      item.label
+                    )}
+                  </BreadcrumbPage>
+                ) : (
+                  <BreadcrumbLink asChild>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleBreadcrumbClick(item.path, index);
+                      }}
+                      className="hover:underline cursor-pointer"
+                    >
+                      {item.label}
+                    </button>
+                  </BreadcrumbLink>
+                )}
+              </BreadcrumbItem>
+            </div>
+          );
+        })}
+      </BreadcrumbList>
+    </Breadcrumb>
   );
 };

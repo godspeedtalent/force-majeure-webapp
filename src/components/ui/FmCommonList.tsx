@@ -17,6 +17,7 @@ interface FmCommonListProps<T> {
   className?: string;
   rowClassName?: string | ((item: T, index: number) => string);
   emptyMessage?: string;
+  onRowClick?: (item: T, index: number) => void;
 }
 
 export function FmCommonList<T extends Record<string, any>>({
@@ -27,6 +28,7 @@ export function FmCommonList<T extends Record<string, any>>({
   className,
   rowClassName,
   emptyMessage = 'No items to display',
+  onRowClick,
 }: FmCommonListProps<T>) {
   if (items.length === 0) {
     return (
@@ -62,11 +64,13 @@ export function FmCommonList<T extends Record<string, any>>({
               'grid grid-cols-1 gap-2 transition-colors',
               dense ? 'px-3 py-2' : 'px-4 py-3',
               isStriped && 'bg-white/5',
+              onRowClick && 'cursor-pointer',
               computedRowClassName
             )}
             style={{
               gridTemplateColumns: columns.map(() => '1fr').join(' '),
             }}
+            onClick={() => onRowClick?.(item, index)}
           >
             {columns.map((column, colIndex) => {
               const value = item[column.key as keyof T];

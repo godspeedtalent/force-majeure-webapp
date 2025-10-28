@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FmCommonDataGrid, DataGridColumn, DataGridAction } from '@/components/ui/FmCommonDataGrid';
 import { FmCreateEventButton } from '@/components/ui/FmCreateEventButton';
 import { FmEditEventButton } from '@/components/ui/FmEditEventButton';
@@ -9,10 +9,21 @@ import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
-export const EventsManagement = () => {
+interface EventsManagementProps {
+  initialEditEventId?: string;
+}
+
+export const EventsManagement = ({ initialEditEventId }: EventsManagementProps) => {
   const { data: events, isLoading } = useEvents();
   const queryClient = useQueryClient();
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
+
+  // Open edit modal if initial event ID is provided
+  useEffect(() => {
+    if (initialEditEventId) {
+      setEditingEventId(initialEditEventId);
+    }
+  }, [initialEditEventId]);
 
   const handleEventUpdated = () => {
     queryClient.invalidateQueries({ queryKey: ['events'] });

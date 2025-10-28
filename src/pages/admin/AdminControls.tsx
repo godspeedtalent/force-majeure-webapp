@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Navigation } from '@/components/Navigation';
 import { DecorativeDivider } from '@/components/DecorativeDivider';
 import { FmUserDataGrid } from '@/components/ui/FmUserDataGrid';
@@ -130,9 +131,18 @@ function AdminSidebar({ activeTab, setActiveTab }: { activeTab: AdminTab; setAct
 }
 
 export default function AdminControls() {
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState<AdminTab>('users');
   const [editingVenueId, setEditingVenueId] = useState<string | null>(null);
   const queryClient = useQueryClient();
+
+  // Handle navigation from Event List dev tool
+  useEffect(() => {
+    const state = location.state as { editEventId?: string; openTab?: string } | null;
+    if (state?.openTab) {
+      setActiveTab(state.openTab as AdminTab);
+    }
+  }, [location.state]);
 
   // Fetch users data
   const { data: users = [] } = useQuery({
@@ -393,7 +403,7 @@ export default function AdminControls() {
               )}
 
               {activeTab === 'events' && (
-                <EventsManagement />
+                <EventsManagement initialEditEventId={(location.state as any)?.editEventId} />
               )}
 
               {activeTab === 'settings' && (

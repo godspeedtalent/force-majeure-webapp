@@ -1,17 +1,18 @@
-import { Hammer, ToggleLeft, Ticket, PlusCircle, X } from 'lucide-react';
+import { Hammer, ToggleLeft, Ticket, PlusCircle, X, Calendar } from 'lucide-react';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { FmCommonTab } from '@/components/ui/FmCommonTab';
 import { RoleSelectSection } from './RoleSelectSection';
 import { FeatureToggleSection } from './FeatureToggleSection';
 import { CreationToolsSection } from './CreationToolsSection';
 import { TicketingSection } from './TicketingSection';
+import { EventListSection } from './EventListSection';
 import { cn } from '@/shared/utils/utils';
 import { isDevelopment } from '@/shared/utils/environment';
 import { useDevTools } from '@/contexts/DevToolsContext';
 import type { DevRole } from '@/contexts/DevToolsContext';
 import { Button } from '@/components/ui/button';
 
-type TabId = 'creation' | 'tools' | 'ticketing' | 'features';
+type TabId = 'creation' | 'tools' | 'ticketing' | 'features' | 'events';
 
 export const DevToolsDrawer = () => {
   const [activeTab, setActiveTab] = useState<TabId | null>(null);
@@ -147,6 +148,13 @@ export const DevToolsDrawer = () => {
           onClick={() => !isDragging && handleTabClick('features')}
           variant="vertical"
         />
+        <FmCommonTab
+          icon={Calendar}
+          label="Event List"
+          isActive={activeTab === 'events'}
+          onClick={() => !isDragging && handleTabClick('events')}
+          variant="vertical"
+        />
       </div>
 
       {/* Drawer */}
@@ -171,10 +179,12 @@ export const DevToolsDrawer = () => {
             <h2 className="font-canela text-2xl text-white mb-6">
               {activeTab === 'creation'
                 ? 'Creation Tools'
-                : activeTab === 'tools' 
-                ? 'Developer Tools' 
+                : activeTab === 'tools'
+                ? 'Developer Tools'
                 : activeTab === 'ticketing'
                 ? 'Ticketing'
+                : activeTab === 'events'
+                ? 'Event List'
                 : 'Feature Toggles'}
             </h2>
 
@@ -199,6 +209,12 @@ export const DevToolsDrawer = () => {
             {activeTab === 'features' && (
               <div className="space-y-0">
                 <FeatureToggleSection />
+              </div>
+            )}
+
+            {activeTab === 'events' && (
+              <div className="space-y-0">
+                <EventListSection />
               </div>
             )}
           </div>
