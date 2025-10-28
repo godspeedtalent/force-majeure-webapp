@@ -15,6 +15,7 @@ import { FmCommonTimePicker } from '@/components/ui/FmCommonTimePicker';
 import { FormSection } from '@/components/ui/FormSection';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface TicketTier {
   id?: string;
@@ -218,7 +219,15 @@ export default function EventEdit() {
 
   return (
     <DemoLayout title="Edit Event Details" description="Comprehensive event editing" icon={Edit}>
-      <div className="max-w-4xl mx-auto space-y-6">
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="grid w-full grid-cols-4 mb-6">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="ticketing">Ticketing</TabsTrigger>
+          <TabsTrigger value="sales">Sales</TabsTrigger>
+          <TabsTrigger value="orders">Orders</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="max-w-4xl mx-auto space-y-6">
         <FormSection title="Basic Information">
           <div className="space-y-4">
             <div>
@@ -340,9 +349,10 @@ export default function EventEdit() {
           </div>
         </FormSection>
 
-        <Separator />
+        </TabsContent>
 
-        <FormSection title="Ticket Tiers">
+        <TabsContent value="ticketing" className="max-w-4xl mx-auto space-y-6">
+          <FormSection title="Ticket Tiers">
           <div className="space-y-6">
             {ticketTiers.map((tier, index) => (
               <div key={index} className="border rounded-lg p-4 space-y-4">
@@ -427,9 +437,7 @@ export default function EventEdit() {
           </div>
         </FormSection>
 
-        <Separator />
-
-        <div className="flex justify-end gap-3">
+          <div className="flex justify-end gap-3 mt-6">
           <Button variant="outline" onClick={() => navigate('/demo/event-checkout')}>
             Cancel
           </Button>
@@ -440,8 +448,21 @@ export default function EventEdit() {
           >
             {isLoading ? 'Saving...' : 'Save Changes'}
           </Button>
-        </div>
-      </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="sales" className="max-w-4xl mx-auto">
+          <div className="text-center py-12 text-muted-foreground">
+            Sales analytics coming soon
+          </div>
+        </TabsContent>
+
+        <TabsContent value="orders" className="max-w-4xl mx-auto">
+          <div className="text-center py-12 text-muted-foreground">
+            Orders management coming soon
+          </div>
+        </TabsContent>
+      </Tabs>
     </DemoLayout>
   );
 }

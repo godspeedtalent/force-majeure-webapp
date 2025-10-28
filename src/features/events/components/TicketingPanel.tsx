@@ -251,15 +251,27 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
               )}
               
               {/* Fees */}
-              {fees.map((fee, index) => (
-                <div key={index} className='flex justify-between text-xs'>
-                  <span className='text-muted-foreground capitalize'>
-                    {fee.name.replace(/_/g, ' ')}
-                    {fee.type === 'percentage' && ` (${fee.value}%)`}
-                  </span>
-                  <span className='text-foreground'>${fee.amount.toFixed(2)}</span>
-                </div>
-              ))}
+              {fees.map((fee, index) => {
+                const isSalesTax = fee.name.toLowerCase().includes('tax');
+                const tooltipText = fee.type === 'percentage' 
+                  ? `${fee.value}% of $${subtotalAfterPromo.toFixed(2)} = $${fee.amount.toFixed(2)}`
+                  : `$${fee.value.toFixed(2)} flat fee`;
+                
+                return (
+                  <div key={index} className='flex justify-between text-xs group relative'>
+                    <span className='text-muted-foreground capitalize'>
+                      {fee.name.replace(/_/g, ' ')}
+                      {isSalesTax && fee.type === 'percentage' && ` (${fee.value}%)`}
+                    </span>
+                    <span className='text-foreground'>${fee.amount.toFixed(2)}</span>
+                    
+                    {/* Tooltip */}
+                    <div className='absolute left-0 bottom-full mb-1 hidden group-hover:block bg-popover text-popover-foreground text-xs px-2 py-1 rounded border border-border whitespace-nowrap z-10'>
+                      {tooltipText}
+                    </div>
+                  </div>
+                );
+              })}
               
               <Separator className='mt-3' />
               
