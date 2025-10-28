@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { DecorativeDivider } from '@/components/DecorativeDivider';
 import { FmUserDataGrid } from '@/components/ui/FmUserDataGrid';
-import { FmCommonDataGrid, DataGridColumn } from '@/components/ui/FmCommonDataGrid';
-import { Settings, Users, Sliders, MapPin, Database, Calendar } from 'lucide-react';
+import { FmCommonDataGrid, DataGridColumn, DataGridAction } from '@/components/ui/FmCommonDataGrid';
+import { FmEditVenueButton } from '@/components/ui/FmEditVenueButton';
+import { Settings, Users, Sliders, MapPin, Database, Calendar, Edit, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
 import { EventsManagement } from './EventsManagement';
+import { toast } from 'sonner';
 import {
   Sidebar,
   SidebarContent,
@@ -114,6 +116,7 @@ function AdminSidebar({ activeTab, setActiveTab }: { activeTab: AdminTab; setAct
 
 export default function AdminControls() {
   const [activeTab, setActiveTab] = useState<AdminTab>('users');
+  const [editingVenueId, setEditingVenueId] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   // Fetch users data
@@ -226,6 +229,47 @@ export default function AdminControls() {
     });
   };
 
+  const handleVenueUpdated = () => {
+    queryClient.invalidateQueries({ queryKey: ['admin-venues'] });
+    setEditingVenueId(null);
+  };
+
+  const handleDeleteVenue = async (venue: any) => {
+    if (!confirm(`Are you sure you want to delete "${venue.name}"?`)) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('venues')
+        .delete()
+        .eq('id', venue.id);
+
+      if (error) throw error;
+
+      toast.success('Venue deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ['admin-venues'] });
+    } catch (error) {
+      console.error('Error deleting venue:', error);
+      toast.error('Failed to delete venue');
+    }
+  };
+
+  // Context menu actions for venues
+  const venueContextActions: DataGridAction[] = [
+    {
+      label: 'Edit Venue',
+      icon: <Edit className="h-4 w-4" />,
+      onClick: (row) => setEditingVenueId(row.id),
+    },
+    {
+      label: 'Delete Venue',
+      icon: <Trash2 className="h-4 w-4" />,
+      onClick: handleDeleteVenue,
+      variant: 'destructive',
+    },
+  ];
+
   // Calculate statistics for current data
   const getCurrentData = () => {
     if (activeTab === 'users') return users;
@@ -308,14 +352,25 @@ export default function AdminControls() {
               )}
 
               {activeTab === 'venues' && (
-                <FmCommonDataGrid
-                  data={venues}
-                  columns={venueColumns}
-                  loading={venuesLoading}
-                  pageSize={15}
-                  onUpdate={handleVenueUpdate}
-                  resourceName="Venue"
-                />
+                <>
+                  <FmCommonDataGrid
+                    data={venues}
+                    columns={venueColumns}
+                    contextMenuActions={venueContextActions}
+                    loading={venuesLoading}
+                    pageSize={15}
+                    onUpdate={handleVenueUpdate}
+                    resourceName="Venue"
+                  />
+                  
+                  {editingVenueId && (
+                    <FmEditVenueButton
+                      venueId={editingVenueId}
+                      onVenueUpdated={handleVenueUpdated}
+                      autoOpen={true}
+                    />
+                  )}
+                </>
               )}
 
               {activeTab === 'events' && (

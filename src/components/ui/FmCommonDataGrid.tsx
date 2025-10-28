@@ -526,32 +526,18 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                         )}
                       </TableRow>
                     </ContextMenuTrigger>
-                    <ContextMenuContent>
-                      {/* Default context menu items */}
-                      <ContextMenuItem
-                        onClick={() => {
-                          const newSelection = new Set(selectedRows);
-                          if (newSelection.has(globalIndex)) {
-                            newSelection.delete(globalIndex);
-                          } else {
-                            newSelection.add(globalIndex);
-                          }
-                          setSelectedRows(newSelection);
-                        }}
-                        className="cursor-pointer transition-colors duration-200"
-                      >
-                        <Checkbox className="mr-2 h-4 w-4" checked={isSelected} />
-                        Select
-                      </ContextMenuItem>
-                      
+                    <ContextMenuContent className="w-48">
                       {/* Custom context menu actions */}
                       {contextMenuActions.length > 0 && contextMenuActions.map((action, idx) => (
                         <ContextMenuItem
                           key={idx}
-                          onClick={() => action.onClick(row)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            action.onClick(row);
+                          }}
                           className={cn(
                             'cursor-pointer transition-colors duration-200',
-                            action.variant === 'destructive' && 'text-destructive focus:text-destructive'
+                            action.variant === 'destructive' && 'text-destructive focus:text-destructive focus:bg-destructive/10'
                           )}
                         >
                           {action.icon && <span className="mr-2">{action.icon}</span>}

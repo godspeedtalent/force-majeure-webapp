@@ -53,12 +53,12 @@ export const FmEditEventButton = ({
   const [undercardArtists, setUndercardArtists] = useState<UndercardArtist[]>([]);
   const [ticketTiers, setTicketTiers] = useState<TicketTier[]>([]);
 
-  // Auto-open modal if autoOpen is true
+  // Auto-open modal if autoOpen is true and load data
   useEffect(() => {
-    if (autoOpen) {
+    if (autoOpen && eventId) {
       setIsModalOpen(true);
     }
-  }, [autoOpen]);
+  }, [autoOpen, eventId]);
 
   // Fetch venue capacity when venue changes
   useEffect(() => {
