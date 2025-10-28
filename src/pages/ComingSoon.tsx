@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { DecorativeDivider } from '@/components/DecorativeDivider';
 import { FmCommonButton } from '@/components/FmCommonButton';
 import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
+import { TopographicBackground } from '@/components/ui/TopographicBackground';
 
 export default function ComingSoon() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -31,7 +32,7 @@ export default function ComingSoon() {
   return (
     <div className='min-h-screen bg-background flex items-center justify-center relative overflow-hidden'>
       {/* Background patterns */}
-      <div className='absolute inset-0 bg-topographic opacity-10 bg-repeat bg-center' />
+      <TopographicBackground opacity={0.1} />
       <div className='absolute inset-0 bg-gradient-monochrome opacity-5' />
 
       {/* Content */}

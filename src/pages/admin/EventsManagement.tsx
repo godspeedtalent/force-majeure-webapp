@@ -4,7 +4,7 @@ import { FmCreateEventButton } from '@/components/ui/FmCreateEventButton';
 import { FmEditEventButton } from '@/components/ui/FmEditEventButton';
 import { useEvents } from '@/features/events/hooks/useEvents';
 import { useQueryClient } from '@tanstack/react-query';
-import { Edit, Trash2, Calendar } from 'lucide-react';
+import { Edit, Trash2 } from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -44,6 +44,23 @@ export const EventsManagement = () => {
     }
   };
 
+  const handleUpdate = async (row: any, columnKey: string, newValue: any) => {
+    try {
+      const { error } = await supabase
+        .from('events')
+        .update({ [columnKey]: newValue || null })
+        .eq('id', row.id);
+
+      if (error) throw error;
+
+      // Invalidate queries to refetch updated data
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+    } catch (error) {
+      console.error('Error updating event:', error);
+      throw error;
+    }
+  };
+
   const columns: DataGridColumn[] = [
     {
       key: 'title',
@@ -68,17 +85,17 @@ export const EventsManagement = () => {
       key: 'venue_id',
       label: 'Venue',
       isRelation: true,
+      editable: true,
       sortable: true,
       filterable: true,
-      readonly: true, // Venue shown but not editable inline
     },
     {
       key: 'headliner_id',
       label: 'Headliner',
       isRelation: true,
+      editable: true,
       sortable: true,
       filterable: true,
-      readonly: true, // Headliner shown but not editable inline
     },
   ];
 
@@ -96,16 +113,19 @@ export const EventsManagement = () => {
     },
   ];
 
+  const [isCreatingEvent, setIsCreatingEvent] = useState(false);
+
+  const handleCreateClick = () => {
+    setIsCreatingEvent(true);
+  };
+
+  const handleEventCreatedWrapper = () => {
+    handleEventCreated();
+    setIsCreatingEvent(false);
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Calendar className="h-6 w-6 text-fm-gold" />
-          <h2 className="text-2xl font-canela font-bold text-foreground">Events Management</h2>
-        </div>
-        <FmCreateEventButton onEventCreated={handleEventCreated} />
-      </div>
-
       <FmCommonDataGrid
         data={events || []}
         columns={columns}
@@ -113,7 +133,17 @@ export const EventsManagement = () => {
         loading={isLoading}
         pageSize={15}
         resourceName="Event"
+        onCreateButtonClick={handleCreateClick}
+        onUpdate={handleUpdate}
       />
+
+      {/* Create Event Modal */}
+      {isCreatingEvent && (
+        <FmCreateEventButton
+          onEventCreated={handleEventCreatedWrapper}
+          onModalOpen={() => setIsCreatingEvent(true)}
+        />
+      )}
 
       {/* Edit Event Modal - Opens automatically when editingEventId is set */}
       {editingEventId && (

@@ -50,6 +50,7 @@ export const FmCreateEventButton = ({
   const [venueCapacity, setVenueCapacity] = useState<number>(0);
   const [undercardArtists, setUndercardArtists] = useState<UndercardArtist[]>([]);
   const [ticketTiers, setTicketTiers] = useState<TicketTier[]>([]);
+  const [heroImage, setHeroImage] = useState<string>('');
 
   // Fetch venue capacity when venue changes
   useEffect(() => {
@@ -111,6 +112,7 @@ export const FmCreateEventButton = ({
     setVenueCapacity(0);
     setUndercardArtists([]);
     setTicketTiers([]);
+    setHeroImage('');
   }, []);
 
   const handleCreateEvent = () => {
@@ -214,6 +216,7 @@ export const FmCreateEventButton = ({
           end_time: isAfterHours ? null : endTime,
           is_after_hours: isAfterHours,
           undercard_ids: undercardArtists.map(a => a.artistId).filter(Boolean),
+          hero_image: heroImage || null,
         })
         .select()
         .single();
@@ -375,6 +378,16 @@ export const FmCreateEventButton = ({
                     value={venueId}
                     onChange={setVenueId}
                     placeholder="Search for venue..."
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-white">Hero Image URL</Label>
+                  <Input
+                    value={heroImage}
+                    onChange={(e) => setHeroImage(e.target.value)}
+                    placeholder="https://example.com/image.jpg"
+                    className="bg-black/40 border-white/20 text-white"
                   />
                 </div>
               </div>

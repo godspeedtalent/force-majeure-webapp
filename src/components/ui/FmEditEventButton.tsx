@@ -52,6 +52,7 @@ export const FmEditEventButton = ({
   const [venueCapacity, setVenueCapacity] = useState<number>(0);
   const [undercardArtists, setUndercardArtists] = useState<UndercardArtist[]>([]);
   const [ticketTiers, setTicketTiers] = useState<TicketTier[]>([]);
+  const [heroImage, setHeroImage] = useState<string>('');
 
   // Auto-open modal if autoOpen is true and load data
   useEffect(() => {
@@ -106,6 +107,7 @@ export const FmEditEventButton = ({
       setVenueId((event as any).venue_id || '');
       setIsAfterHours((event as any).is_after_hours || false);
       setEndTime((event as any).end_time || '02:00');
+      setHeroImage((event as any).hero_image || '');
       
       // Parse date and time
       if ((event as any).date) {
@@ -248,6 +250,7 @@ export const FmEditEventButton = ({
           end_time: isAfterHours ? null : endTime,
           is_after_hours: isAfterHours,
           undercard_ids: undercardArtists.map(a => a.artistId).filter(Boolean),
+          hero_image: heroImage || null,
         })
         .eq('id', eventId)
         .select();
@@ -451,6 +454,16 @@ export const FmEditEventButton = ({
                           value={venueId}
                           onChange={setVenueId}
                           placeholder="Search for venue..."
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-white">Hero Image URL</Label>
+                        <Input
+                          value={heroImage}
+                          onChange={(e) => setHeroImage(e.target.value)}
+                          placeholder="https://example.com/image.jpg"
+                          className="bg-black/40 border-white/20 text-white"
                         />
                       </div>
                     </div>

@@ -63,6 +63,20 @@ export const RELATION_MAPPING: Record<string, RelationConfig> = {
     ),
     displayField: 'artist',
   },
+  headliner_id: {
+    component: (props: RelationComponentProps) => (
+      <FmArtistSearchDropdown
+        value={props.value}
+        onChange={(value) => {
+          props.onChange(value);
+          props.onComplete?.();
+        }}
+        placeholder="Select headliner..."
+        disabled={props.disabled}
+      />
+    ),
+    displayField: 'headliner',
+  },
 };
 
 /**

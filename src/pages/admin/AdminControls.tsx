@@ -4,7 +4,8 @@ import { DecorativeDivider } from '@/components/DecorativeDivider';
 import { FmUserDataGrid } from '@/components/ui/FmUserDataGrid';
 import { FmCommonDataGrid, DataGridColumn, DataGridAction } from '@/components/ui/FmCommonDataGrid';
 import { FmEditVenueButton } from '@/components/ui/FmEditVenueButton';
-import { Settings, Users, Sliders, MapPin, Database, Calendar, Edit, Trash2 } from 'lucide-react';
+import { TopographicBackground } from '@/components/ui/TopographicBackground';
+import { Settings, Users, Sliders, MapPin, Database, Calendar, Edit, Trash2, Minus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
@@ -46,15 +47,15 @@ function AdminSidebar({ activeTab, setActiveTab }: { activeTab: AdminTab; setAct
         <div className="px-2 mb-4">
           <SidebarTrigger className="hover:bg-fm-gold/20 transition-colors" />
         </div>
-        
+
         {/* Database Group */}
         <SidebarGroup>
           {open && (
-            <SidebarGroupLabel 
-              className="text-white/70 px-4 flex items-center gap-2 cursor-pointer hover:bg-white/5 transition-colors rounded-md"
+            <SidebarGroupLabel
+              className="text-white/90 px-4 flex items-center gap-2 cursor-pointer hover:bg-white/5 transition-colors rounded-md text-base font-semibold mb-1"
               onClick={toggleSidebar}
             >
-              <Database className="h-3 w-3" />
+              <Database className="h-4 w-4" />
               Database
             </SidebarGroupLabel>
           )}
@@ -66,12 +67,13 @@ function AdminSidebar({ activeTab, setActiveTab }: { activeTab: AdminTab; setAct
                     onClick={() => setActiveTab(tab.id)}
                     className={cn(
                       'cursor-pointer transition-colors',
+                      open ? 'justify-start pl-4' : 'justify-center',
                       activeTab === tab.id && 'bg-fm-gold/20 text-fm-gold hover:bg-fm-gold/30'
                     )}
                     tooltip={tab.label}
                   >
                     <tab.icon className="h-4 w-4" />
-                    {open && <span>{tab.label}</span>}
+                    {open && <span className="ml-3">{tab.label}</span>}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -79,11 +81,22 @@ function AdminSidebar({ activeTab, setActiveTab }: { activeTab: AdminTab; setAct
           </SidebarGroupContent>
         </SidebarGroup>
 
+        {/* Divider */}
+        {open ? (
+          <div className="px-4 my-2">
+            <div className="h-px bg-border/50" />
+          </div>
+        ) : (
+          <div className="px-2 my-2">
+            <div className="h-px bg-border/50" />
+          </div>
+        )}
+
         {/* Settings Group */}
         <SidebarGroup>
           {open && (
-            <SidebarGroupLabel 
-              className="text-white/70 px-4 cursor-pointer hover:bg-white/5 transition-colors rounded-md"
+            <SidebarGroupLabel
+              className="text-white/90 px-4 cursor-pointer hover:bg-white/5 transition-colors rounded-md text-base font-semibold mb-1"
               onClick={toggleSidebar}
             >
               Settings
@@ -97,12 +110,13 @@ function AdminSidebar({ activeTab, setActiveTab }: { activeTab: AdminTab; setAct
                     onClick={() => setActiveTab(tab.id)}
                     className={cn(
                       'cursor-pointer transition-colors',
+                      open ? 'justify-start pl-4' : 'justify-center',
                       activeTab === tab.id && 'bg-fm-gold/20 text-fm-gold hover:bg-fm-gold/30'
                     )}
                     tooltip={tab.label}
                   >
                     <tab.icon className="h-4 w-4" />
-                    {open && <span>{tab.label}</span>}
+                    {open && <span className="ml-3">{tab.label}</span>}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -280,30 +294,30 @@ export default function AdminControls() {
     return [];
   };
 
-  const calculateIncompleteness = (data: any[]) => {
+  const calculateCompleteness = (data: any[]) => {
     if (!data.length) return 0;
-    
+
     let totalFields = 0;
-    let emptyFields = 0;
-    
+    let filledFields = 0;
+
     data.forEach(record => {
       const fields = Object.entries(record);
       fields.forEach(([key, value]) => {
         // Skip internal fields
         if (['id', 'created_at', 'updated_at'].includes(key)) return;
         totalFields++;
-        if (value === null || value === undefined || value === '') {
-          emptyFields++;
+        if (value !== null && value !== undefined && value !== '') {
+          filledFields++;
         }
       });
     });
-    
-    return totalFields > 0 ? Math.round((emptyFields / totalFields) * 100) : 0;
+
+    return totalFields > 0 ? Math.round((filledFields / totalFields) * 100) : 0;
   };
 
   const currentData = getCurrentData();
   const totalRecords = currentData.length;
-  const incompleteness = calculateIncompleteness(currentData);
+  const completeness = calculateCompleteness(currentData);
 
   const getTabTitle = () => {
     if (activeTab === 'users') return 'Users';
@@ -320,8 +334,10 @@ export default function AdminControls() {
         <div className="flex min-h-screen w-full pt-16">
           <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-          <main className="flex-1 pt-6 pb-6 px-6">
-            <div className="max-w-full">
+          <main className="flex-1 pt-6 pb-6 px-6 relative overflow-hidden">
+            {/* Topographic texture background - mirrored for seamless pattern */}
+            <TopographicBackground />
+            <div className="max-w-full relative z-10">
               <div className="mb-4">
                 <div className="flex items-center gap-3 mb-4">
                   <Settings className="h-6 w-6 text-fm-gold" />
@@ -335,8 +351,8 @@ export default function AdminControls() {
                       <div className="text-xs text-muted-foreground">Total Records</div>
                     </div>
                     <div className="bg-muted/30 border border-border rounded-lg px-4 py-3">
-                      <div className="text-2xl font-bold text-foreground">{incompleteness}%</div>
-                      <div className="text-xs text-muted-foreground">Incomplete Data</div>
+                      <div className="text-2xl font-bold text-foreground">{completeness}%</div>
+                      <div className="text-xs text-muted-foreground">Complete Data</div>
                     </div>
                   </div>
                 )}

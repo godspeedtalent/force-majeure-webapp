@@ -9,6 +9,7 @@ import { DecorativeDivider } from '@/components/DecorativeDivider';
 import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
 import { Layout } from '@/components/layout/Layout';
 import { FmCommonButton } from '@/components/FmCommonButton';
+import { TopographicBackground } from '@/components/ui/TopographicBackground';
 import { EventCard } from '@/features/events/components/EventCard';
 import { EventCardSkeleton } from '@/features/events/components/EventCardSkeleton';
 import { supabase } from '@/shared/api/supabase/client';
@@ -186,7 +187,9 @@ const Index = () => {
     <Layout>
       <div className='min-h-screen relative'>
         {/* Topography Background */}
-        <div className='fixed inset-0 bg-topographic opacity-25 bg-repeat bg-center pointer-events-none' />
+        <div className='fixed inset-0 pointer-events-none'>
+          <TopographicBackground opacity={0.25} />
+        </div>
         <div className='fixed inset-0 bg-gradient-monochrome opacity-10 pointer-events-none' />
 
         {/* Floating Login Button */}

@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 
 import { ImageWithSkeleton } from '@/components/ImageWithSkeleton';
+import { TopographicBackground } from '@/components/ui/TopographicBackground';
 
 import { cn } from '@/shared/utils/utils';
 
@@ -30,9 +31,7 @@ export const TwoColumnLayout = ({
           border && 'border-r border-border'
         )}
       >
-        {leftDecor && (
-          <div className='absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center' />
-        )}
+        {leftDecor && <TopographicBackground opacity={0.25} />}
         <div className='w-full max-w-3xl px-8 py-12 relative z-10'>{left}</div>
       </div>
 

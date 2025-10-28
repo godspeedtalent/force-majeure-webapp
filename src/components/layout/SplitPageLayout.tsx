@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { Footer } from '@/components/Footer';
 import { ExpandableMusicPlayer } from '@/components/MusicPlayer/ExpandableMusicPlayer';
 import { Navigation } from '@/components/Navigation';
+import { TopographicBackground } from '@/components/ui/TopographicBackground';
 
 interface SplitPageLayoutProps {
   left: ReactNode;
@@ -30,7 +31,7 @@ export const SplitPageLayout = ({
         <div className={`${leftWidthClass} relative overflow-hidden`}>
           {leftDecor && (
             <>
-              <div className='absolute inset-0 bg-topographic opacity-25 bg-repeat bg-center' />
+              <TopographicBackground opacity={0.25} />
               <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
             </>
           )}

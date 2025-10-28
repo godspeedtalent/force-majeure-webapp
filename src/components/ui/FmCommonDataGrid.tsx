@@ -27,7 +27,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Search, Filter, ChevronDown, ChevronUp, MoreVertical } from 'lucide-react';
+import { Search, Filter, ChevronDown, ChevronUp, MoreVertical, Plus, X } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { cn } from '@/shared/utils/utils';
 import { isRelationField, getRelationConfig } from './dataGridRelations';
 
@@ -38,9 +44,11 @@ export interface DataGridColumn<T = any> {
   filterable?: boolean;
   editable?: boolean;
   readonly?: boolean; // Mark field as readonly (cannot be edited inline or in forms)
+  required?: boolean; // Mark field as required for new row creation
   render?: (value: any, row: T) => React.ReactNode;
   width?: string;
   isRelation?: boolean; // Mark this column as a foreign key relation
+  type?: 'text' | 'number' | 'email' | 'url'; // Input type for editing
 }
 
 // Re-export ContextMenuAction as DataGridAction for backward compatibility
@@ -55,7 +63,10 @@ export interface FmCommonDataGridProps<T = any> {
   pageSize?: number;
   className?: string;
   onUpdate?: (row: T, columnKey: string, newValue: any) => Promise<void>;
+  onCreate?: (newRow: Partial<T>) => Promise<void>;
+  onCreateButtonClick?: () => void;
   resourceName?: string;
+  createButtonLabel?: string;
 }
 
 export function FmCommonDataGrid<T extends Record<string, any>>({
@@ -67,7 +78,10 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
   pageSize = 10,
   className,
   onUpdate,
+  onCreate,
+  onCreateButtonClick,
   resourceName = 'Resource',
+  createButtonLabel,
 }: FmCommonDataGridProps<T>) {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
@@ -79,6 +93,8 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
   const [columnFilters, setColumnFilters] = useState<Record<string, string>>({});
   const [editingCell, setEditingCell] = useState<{ rowIndex: number; columnKey: string } | null>(null);
   const [editValue, setEditValue] = useState<string>('');
+  const [isCreatingRow, setIsCreatingRow] = useState(false);
+  const [newRowData, setNewRowData] = useState<Partial<T>>({});
 
   // Reset page when data changes
   useEffect(() => {
@@ -205,13 +221,26 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
   const handleCellSave = async (row: T, columnKey: string) => {
     if (!onUpdate || !editingCell) return;
 
-    const newValue = editValue;
+    const column = columns.find(col => col.key === columnKey);
+    let newValue = editValue;
     const oldValue = row[columnKey];
 
-    // Don't update if value is empty or hasn't changed
-    if (!newValue || newValue.trim() === '' || newValue === oldValue?.toString()) {
-      setEditingCell(null);
-      return;
+    // Handle number inputs - if empty, set to 0
+    if (column?.type === 'number') {
+      if (!newValue || newValue.trim() === '') {
+        newValue = '0';
+      }
+      // Don't update if value hasn't changed
+      if (parseFloat(newValue) === parseFloat(oldValue?.toString() || '0')) {
+        setEditingCell(null);
+        return;
+      }
+    } else {
+      // For text inputs, don't update if empty or unchanged
+      if (!newValue || newValue.trim() === '' || newValue === oldValue?.toString()) {
+        setEditingCell(null);
+        return;
+      }
     }
 
     // Get resource name for display
@@ -257,6 +286,73 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
     setEditValue('');
   };
 
+  const handleStartCreatingRow = () => {
+    setIsCreatingRow(true);
+    setNewRowData({});
+  };
+
+  const handleCancelCreatingRow = () => {
+    setIsCreatingRow(false);
+    setNewRowData({});
+  };
+
+  const handleSaveNewRow = async () => {
+    if (!onCreate) return;
+
+    // Validate required fields
+    const requiredColumns = columns.filter(col => col.required);
+    const missingFields = requiredColumns.filter(col => !newRowData[col.key as keyof T]);
+
+    if (missingFields.length > 0) {
+      toast({
+        title: 'Missing required fields',
+        description: `Please fill in: ${missingFields.map(col => col.label).join(', ')}`,
+        variant: 'destructive',
+        duration: 3000,
+      });
+      return;
+    }
+
+    const loadingToast = toast({
+      title: `Creating ${resourceName}...`,
+      description: (
+        <div className="flex items-center gap-2">
+          <div className="h-4 w-4 border-2 border-fm-gold border-t-transparent rounded-full animate-spin" />
+          <span>Please wait...</span>
+        </div>
+      ),
+      duration: Infinity,
+    });
+
+    try {
+      await onCreate(newRowData);
+
+      loadingToast.dismiss();
+      toast({
+        title: `${resourceName} created successfully`,
+        duration: 2000,
+      });
+
+      setIsCreatingRow(false);
+      setNewRowData({});
+    } catch (error) {
+      loadingToast.dismiss();
+      toast({
+        title: `Failed to create ${resourceName}`,
+        description: error instanceof Error ? error.message : 'Unknown error',
+        variant: 'destructive',
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleNewRowFieldChange = (columnKey: string, value: any) => {
+    setNewRowData(prev => ({
+      ...prev,
+      [columnKey]: value,
+    }));
+  };
+
   return (
     <div className={cn('space-y-4', className)}>
       {/* Search and Filter Bar */}
@@ -273,7 +369,7 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
             className="pl-10 bg-background/50 border-border/50 focus:border-fm-gold transition-all duration-300"
           />
         </div>
-        
+
         {(searchQuery || Object.values(columnFilters).some(v => v)) && (
           <Button
             variant="outline"
@@ -285,11 +381,24 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
           </Button>
         )}
 
-        <div className="ml-auto text-sm text-muted-foreground">
-          {selectedRows.size > 0 && (
-            <span className="animate-in fade-in slide-in-from-right duration-300">
-              {selectedRows.size} row{selectedRows.size !== 1 ? 's' : ''} selected
-            </span>
+        <div className="ml-auto flex items-center gap-4">
+          <div className="text-sm text-muted-foreground">
+            {selectedRows.size > 0 && (
+              <span className="animate-in fade-in slide-in-from-right duration-300">
+                {selectedRows.size} row{selectedRows.size !== 1 ? 's' : ''} selected
+              </span>
+            )}
+          </div>
+
+          {(onCreate || onCreateButtonClick) && (
+            <Button
+              onClick={onCreateButtonClick || handleStartCreatingRow}
+              size="sm"
+              className="bg-fm-gold hover:bg-fm-gold/90 text-black gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              {createButtonLabel || `Create ${resourceName}`}
+            </Button>
           )}
         </div>
       </div>
@@ -337,34 +446,58 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                       )
                     )}
                     {column.filterable && (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button
-                            data-filter-trigger
-                            className={cn(
-                              'h-6 w-6 p-0 hover:bg-fm-gold/20 transition-all duration-200 rounded opacity-0 group-hover:opacity-100',
-                              columnFilters[column.key] && 'opacity-100 bg-fm-gold/20'
-                            )}
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <Filter className={cn(
-                              'h-3 w-3 mx-auto',
-                              columnFilters[column.key] ? 'text-fm-gold' : 'text-muted-foreground'
-                            )} />
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-64">
-                          <div className="p-2">
-                            <Input
-                              placeholder={`Filter ${column.label}...`}
-                              value={columnFilters[column.key] || ''}
-                              onChange={(e) => handleColumnFilter(column.key, e.target.value)}
-                              className="h-8"
-                              onClick={(e) => e.stopPropagation()}
-                            />
-                          </div>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <TooltipProvider>
+                        <Tooltip delayDuration={300}>
+                          <TooltipTrigger asChild>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <button
+                                  data-filter-trigger
+                                  className={cn(
+                                    'h-6 w-6 p-0 hover:bg-fm-gold/20 transition-all duration-200 rounded opacity-0 group-hover:opacity-100',
+                                    columnFilters[column.key] && 'opacity-100 bg-fm-gold/20'
+                                  )}
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <Filter className={cn(
+                                    'h-3 w-3 mx-auto',
+                                    columnFilters[column.key] ? 'text-fm-gold' : 'text-muted-foreground'
+                                  )} />
+                                </button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="start" className="w-64">
+                                <div className="p-2">
+                                  <div className="relative">
+                                    <Input
+                                      placeholder={`Filter ${column.label}...`}
+                                      value={columnFilters[column.key] || ''}
+                                      onChange={(e) => handleColumnFilter(column.key, e.target.value)}
+                                      className="h-8 pr-8"
+                                      onClick={(e) => e.stopPropagation()}
+                                    />
+                                    {columnFilters[column.key] && (
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleColumnFilter(column.key, '');
+                                        }}
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center hover:bg-muted rounded-sm transition-colors"
+                                      >
+                                        <X className="h-3 w-3 text-muted-foreground" />
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TooltipTrigger>
+                          {columnFilters[column.key] && (
+                            <TooltipContent side="bottom" className="max-w-xs">
+                              <p className="text-xs">Filter: {columnFilters[column.key]}</p>
+                            </TooltipContent>
+                          )}
+                        </Tooltip>
+                      </TooltipProvider>
                     )}
                   </div>
                 </TableHead>
@@ -477,7 +610,9 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                                 )}>
                                   {column.render
                                     ? column.render(cellValue, row)
-                                    : cellValue?.toString() || '-'}
+                                    : relationConfig && relationConfig.displayField && row[relationConfig.displayField]
+                                      ? row[relationConfig.displayField]?.name || row[relationConfig.displayField] || '-'
+                                      : cellValue?.toString() || '-'}
                                   {column.editable && !column.readonly && onUpdate && (
                                     <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                                       Click to edit
@@ -526,6 +661,74 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                   </FmCommonDataGridContextMenu>
                 );
               })
+            )}
+
+            {/* New row creation */}
+            {isCreatingRow && onCreate && (
+              <TableRow className="border-border/50 bg-fm-gold/5">
+                <TableCell>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={handleSaveNewRow}
+                      className="h-7 px-2 text-xs bg-fm-gold/20 hover:bg-fm-gold/30 text-fm-gold"
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={handleCancelCreatingRow}
+                      className="h-7 px-2 text-xs"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </TableCell>
+                {columns.map((column) => {
+                  const relationConfig = isRelationField(column.key) ? getRelationConfig(column.key) : null;
+
+                  return (
+                    <TableCell key={column.key}>
+                      <div className="flex items-center gap-2">
+                        {relationConfig ? (
+                          relationConfig.component({
+                            value: newRowData[column.key as keyof T] as string || '',
+                            onChange: (value) => handleNewRowFieldChange(column.key, value),
+                          })
+                        ) : (
+                          <Input
+                            value={newRowData[column.key as keyof T] as string || ''}
+                            onChange={(e) => handleNewRowFieldChange(column.key, e.target.value)}
+                            placeholder={column.label}
+                            className={cn(
+                              'h-8 bg-background/50',
+                              column.required && 'border-fm-gold/50'
+                            )}
+                          />
+                        )}
+                        {column.required && (
+                          <span className="text-fm-gold text-xs">*</span>
+                        )}
+                      </div>
+                    </TableCell>
+                  );
+                })}
+                {actions.length > 0 && <TableCell />}
+              </TableRow>
+            )}
+
+            {/* Bottom add row button */}
+            {onCreate && !isCreatingRow && (
+              <TableRow className="border-border/50 hover:bg-fm-gold/5 transition-colors cursor-pointer" onClick={handleStartCreatingRow}>
+                <TableCell colSpan={columns.length + 1 + (actions.length > 0 ? 1 : 0)} className="text-center py-3">
+                  <button className="flex items-center justify-center gap-2 mx-auto text-muted-foreground hover:text-fm-gold transition-colors">
+                    <Plus className="h-4 w-4" />
+                    <span className="text-sm">Add new {resourceName.toLowerCase()}</span>
+                  </button>
+                </TableCell>
+              </TableRow>
             )}
           </TableBody>
         </Table>
