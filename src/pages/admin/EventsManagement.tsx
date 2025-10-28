@@ -118,6 +118,7 @@ export const EventsManagement = () => {
       {/* Edit Event Modal - Opens automatically when editingEventId is set */}
       {editingEventId && (
         <FmEditEventButton
+          key={editingEventId} // Force remount on different event
           eventId={editingEventId}
           onEventUpdated={handleEventUpdated}
           autoOpen={true}

@@ -200,6 +200,8 @@ export const FmEditEventButton = ({
     setIsLoading(true);
 
     try {
+      console.log('Updating event with ID:', eventId);
+      
       // Fetch headliner name for event title
       const { data: headliner, error: headlinerError } = await supabase
         .from('artists' as any)
@@ -234,7 +236,8 @@ export const FmEditEventButton = ({
       const eventTimeString = eventDate ? format(eventDate, 'HH:mm') : null;
 
       // Update the event
-      const { error: eventError } = await supabase
+      console.log('Updating event fields...');
+      const { data: updatedEvent, error: eventError } = await supabase
         .from('events' as any)
         .update({
           title: eventTitle,
@@ -246,21 +249,31 @@ export const FmEditEventButton = ({
           is_after_hours: isAfterHours,
           undercard_ids: undercardArtists.map(a => a.artistId).filter(Boolean),
         })
-        .eq('id', eventId);
+        .eq('id', eventId)
+        .select();
 
-      if (eventError) throw eventError;
+      if (eventError) {
+        console.error('Event update error:', eventError);
+        throw eventError;
+      }
+      
+      console.log('Event updated successfully:', updatedEvent);
 
-      // Update ticket tiers
-      // First, delete all existing tiers
+      // Update ticket tiers - Delete and recreate
+      console.log('Deleting existing ticket tiers...');
       const { error: deleteError } = await supabase
         .from('ticket_tiers' as any)
         .delete()
         .eq('event_id', eventId);
 
-      if (deleteError) throw deleteError;
+      if (deleteError) {
+        console.error('Ticket tier delete error:', deleteError);
+        throw deleteError;
+      }
 
       // Then insert updated tiers
       if (ticketTiers.length > 0) {
+        console.log('Inserting new ticket tiers:', ticketTiers.length);
         const tiersToInsert = ticketTiers.map((tier, index) => ({
           event_id: eventId,
           name: tier.name,
@@ -276,11 +289,17 @@ export const FmEditEventButton = ({
           fee_pct_bps: 0,
         }));
 
-        const { error: tiersError } = await supabase
+        const { data: insertedTiers, error: tiersError } = await supabase
           .from('ticket_tiers' as any)
-          .insert(tiersToInsert);
+          .insert(tiersToInsert)
+          .select();
 
-        if (tiersError) throw tiersError;
+        if (tiersError) {
+          console.error('Ticket tier insert error:', tiersError);
+          throw tiersError;
+        }
+        
+        console.log('Ticket tiers inserted successfully:', insertedTiers);
       }
 
       onEventUpdated?.();

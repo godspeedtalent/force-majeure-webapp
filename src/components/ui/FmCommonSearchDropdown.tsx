@@ -12,8 +12,9 @@ export interface SearchDropdownOption {
 }
 
 interface FmCommonSearchDropdownProps {
-  onChange: (value: string) => void;
+  onChange: (value: string, label?: string) => void;
   onSearch: (query: string) => Promise<SearchDropdownOption[]>;
+  onGetRecentOptions?: () => Promise<SearchDropdownOption[]>;
   onCreateNew?: () => void;
   placeholder?: string;
   createNewLabel?: string;
@@ -24,6 +25,7 @@ interface FmCommonSearchDropdownProps {
 export function FmCommonSearchDropdown({
   onChange,
   onSearch,
+  onGetRecentOptions,
   onCreateNew,
   placeholder = 'Search...',
   createNewLabel = 'Create New',
@@ -33,7 +35,15 @@ export function FmCommonSearchDropdown({
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState('');
   const [options, setOptions] = React.useState<SearchDropdownOption[]>([]);
+  const [recentOptions, setRecentOptions] = React.useState<SearchDropdownOption[]>([]);
   const [loading, setLoading] = React.useState(false);
+
+  // Load recent options when dropdown opens
+  React.useEffect(() => {
+    if (open && onGetRecentOptions && query.length === 0) {
+      onGetRecentOptions().then(setRecentOptions);
+    }
+  }, [open, onGetRecentOptions, query]);
 
   React.useEffect(() => {
     if (!open) return;
@@ -58,8 +68,8 @@ export function FmCommonSearchDropdown({
     return () => clearTimeout(searchDebounce);
   }, [query, onSearch, open]);
 
-  const handleSelect = (optionId: string) => {
-    onChange(optionId);
+  const handleSelect = (optionId: string, optionLabel: string) => {
+    onChange(optionId, optionLabel);
     setOpen(false);
     setQuery('');
   };
@@ -109,13 +119,27 @@ export function FmCommonSearchDropdown({
               <FmCommonLoadingSpinner size="md" />
               <span className="text-white/50 text-sm">Searching...</span>
             </div>
+          ) : query.length === 0 && recentOptions.length > 0 ? (
+            <div>
+              <div className="px-3 py-2 text-xs text-white/50 font-semibold uppercase">Recent</div>
+              {recentOptions.map((option) => (
+                <button
+                  key={option.id}
+                  onClick={() => handleSelect(option.id, option.label)}
+                  className="w-full flex items-center gap-3 px-3 py-2 hover:bg-white/10 transition-colors text-left"
+                >
+                  {option.icon}
+                  <span className="text-white">{option.label}</span>
+                </button>
+              ))}
+            </div>
           ) : options.length === 0 && query.length > 0 ? (
             <div className="p-4 text-center text-white/50">No results found</div>
           ) : (
             options.map((option) => (
               <button
                 key={option.id}
-                onClick={() => handleSelect(option.id)}
+                onClick={() => handleSelect(option.id, option.label)}
                 className="w-full flex items-center gap-3 px-3 py-2 hover:bg-white/10 transition-colors text-left"
               >
                 {option.icon}

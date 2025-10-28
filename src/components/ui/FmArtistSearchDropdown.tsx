@@ -2,6 +2,7 @@ import * as React from 'react';
 import { User } from 'lucide-react';
 import { FmCommonSearchDropdown, SearchDropdownOption } from './FmCommonSearchDropdown';
 import { supabase } from '@/integrations/supabase/client';
+import { useRecentSelections } from '@/shared/hooks/useRecentSelections';
 
 interface FmArtistSearchDropdownProps {
   value?: string;
@@ -19,6 +20,7 @@ export function FmArtistSearchDropdown({
   disabled = false,
 }: FmArtistSearchDropdownProps) {
   const [selectedArtist, setSelectedArtist] = React.useState<{ name: string; imageUrl?: string } | null>(null);
+  const { recentItems, addRecentItem } = useRecentSelections('artists');
 
   React.useEffect(() => {
     if (value) {
@@ -59,10 +61,41 @@ export function FmArtistSearchDropdown({
     }));
   };
 
+  const handleGetRecentOptions = async (): Promise<SearchDropdownOption[]> => {
+    if (recentItems.length === 0) return [];
+
+    const { data, error } = await supabase
+      .from('artists')
+      .select('id, name, image_url')
+      .in('id', recentItems.map(item => item.id));
+
+    if (error || !data) return [];
+
+    return data.map((artist) => ({
+      id: artist.id,
+      label: artist.name,
+      icon: artist.image_url ? (
+        <img src={artist.image_url} alt={artist.name} className="h-8 w-8 rounded-full object-cover" />
+      ) : (
+        <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center">
+          <User className="h-4 w-4 text-white/50" />
+        </div>
+      ),
+    }));
+  };
+
+  const handleChange = (newValue: string, label?: string) => {
+    onChange(newValue);
+    if (label) {
+      addRecentItem(newValue, label);
+    }
+  };
+
   return (
     <FmCommonSearchDropdown
-      onChange={onChange}
+      onChange={handleChange}
       onSearch={handleSearch}
+      onGetRecentOptions={handleGetRecentOptions}
       onCreateNew={onCreateNew}
       placeholder={placeholder}
       createNewLabel="+ Create New Artist"
