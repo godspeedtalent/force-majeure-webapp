@@ -23,6 +23,7 @@ interface UndercardArtist {
 interface TicketTier {
   id?: string;
   name: string;
+  description?: string;
   priceInCents: number;
   quantity: number;
   hideUntilPreviousSoldOut: boolean;
@@ -136,6 +137,7 @@ export const FmEditEventButton = ({
       setTicketTiers((tiers || []).map((tier: any) => ({
         id: tier.id,
         name: tier.name,
+        description: tier.description || '',
         priceInCents: tier.price_cents,
         quantity: tier.total_tickets,
         hideUntilPreviousSoldOut: tier.hide_until_previous_sold_out,
@@ -280,6 +282,7 @@ export const FmEditEventButton = ({
         const tiersToInsert = ticketTiers.map((tier, index) => ({
           event_id: eventId,
           name: tier.name,
+          description: tier.description || null,
           price_cents: tier.priceInCents,
           total_tickets: tier.quantity,
           available_inventory: tier.quantity,
@@ -502,7 +505,7 @@ export const FmEditEventButton = ({
                         onAdd={() =>
                           setTicketTiers([
                             ...ticketTiers,
-                            { name: '', priceInCents: 0, quantity: 0, hideUntilPreviousSoldOut: false },
+                            { name: '', description: '', priceInCents: 0, quantity: 0, hideUntilPreviousSoldOut: false },
                           ])
                         }
                         onRemove={(index) => setTicketTiers(ticketTiers.filter((_, i) => i !== index))}
@@ -561,6 +564,19 @@ export const FmEditEventButton = ({
                                   className="bg-black/40 border-white/20 text-white"
                                 />
                               </div>
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-white/70 text-xs">Description (Optional)</Label>
+                              <Input
+                                value={tier.description || ''}
+                                onChange={(e) => {
+                                  const updated = [...ticketTiers];
+                                  updated[index].description = e.target.value;
+                                  setTicketTiers(updated);
+                                }}
+                                placeholder="e.g., Includes coat check and one drink"
+                                className="bg-black/40 border-white/20 text-white"
+                              />
                             </div>
                             <div className="flex items-center gap-2">
                               <Checkbox

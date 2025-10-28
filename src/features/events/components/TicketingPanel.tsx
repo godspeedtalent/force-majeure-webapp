@@ -3,9 +3,11 @@ import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { FmTicketTierList } from './FmTicketTierList';
 import { useFees } from '../hooks/useFees';
+import { cn } from '@/shared/utils/utils';
 
 interface TicketTier {
   id: string;
@@ -123,53 +125,60 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
               if (!isVisible) return null;
 
               return (
-                <div key={tier.id} className='space-y-3 pb-4'>
-                  <div className='flex items-start justify-between gap-4'>
-                    <div className='flex-1 space-y-2'>
-                      <div className='flex items-center gap-2 flex-wrap'>
-                        <h3 className='font-canela font-semibold text-lg text-foreground'>{tier.name}</h3>
-                        {soldOut && (
-                          <span className='text-xs bg-destructive/20 text-destructive px-2 py-0.5 rounded font-medium'>
-                            SOLD OUT
-                          </span>
-                        )}
-                      </div>
+                <div key={tier.id} className='group transition-colors hover:bg-muted/40 rounded-md'>
+                  <div className='flex items-start justify-between gap-4 px-3 py-2'>
+                    <div className='flex-1 space-y-1'>
+                      <h3 className='font-medium text-xs text-foreground'>{tier.name}</h3>
                       {tier.description && (
-                        <p className='text-sm text-muted-foreground'>{tier.description}</p>
+                        <p className='text-xs italic text-muted-foreground'>{tier.description}</p>
                       )}
-                      <div className='flex items-center text-sm'>
-                        <span className='font-canela text-xl text-fm-gold font-semibold'>
-                          ${Number(tier.price).toFixed(2)}
+                      {soldOut && (
+                        <span className='text-[10px] bg-destructive/20 text-destructive px-1.5 py-0.5 rounded font-medium inline-block'>
+                          SOLD OUT
                         </span>
-                      </div>
+                      )}
                     </div>
-                    <div className='flex flex-col items-end gap-2'>
-                      <label className='text-xs text-muted-foreground'>Qty:</label>
-                      <Select
-                        value={selections[tier.id]?.toString() || '0'}
-                        onValueChange={(value) => handleQuantityChange(tier.id, parseInt(value))}
-                        disabled={soldOut || remaining === 0}
-                      >
-                        <SelectTrigger className='w-16 bg-background border-border text-xs h-8'>
-                          <SelectValue placeholder='0' />
-                        </SelectTrigger>
-                        <SelectContent className='bg-popover border-border z-50'>
-                          <SelectItem value='0'>0</SelectItem>
-                          {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
-                            <SelectItem 
-                              key={num} 
-                              value={num.toString()}
-                              disabled={num > remaining}
-                            >
-                              {num}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                    <div className='flex items-center gap-3'>
+                      <span className='text-xs text-fm-gold font-medium'>
+                        ${Number(tier.price).toFixed(2)}
+                      </span>
+                      <div className='flex items-center gap-2'>
+                        <Label htmlFor={`qty-${tier.id}`} className='text-xs text-muted-foreground'>
+                          Qty:
+                        </Label>
+                        <Select
+                          value={selections[tier.id]?.toString() || '0'}
+                          onValueChange={(value) => handleQuantityChange(tier.id, parseInt(value))}
+                          disabled={soldOut || remaining === 0}
+                        >
+                          <SelectTrigger 
+                            id={`qty-${tier.id}`}
+                            className={cn(
+                              'w-14 h-7 bg-background border-border text-xs',
+                              'focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background',
+                              'disabled:cursor-not-allowed disabled:opacity-50'
+                            )}
+                          >
+                            <SelectValue placeholder='0' />
+                          </SelectTrigger>
+                          <SelectContent className='bg-popover border-border z-50 min-w-[80px]'>
+                            <SelectItem value='0'>0</SelectItem>
+                            {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
+                              <SelectItem 
+                                key={num} 
+                                value={num.toString()}
+                                disabled={num > remaining}
+                              >
+                                {num}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                   </div>
                   {index < sortedTiers.filter((_, i) => isTierVisible(sortedTiers[i], i)).length - 1 && (
-                    <Separator className='mt-4' />
+                    <Separator className='mx-3' />
                   )}
                 </div>
               );
@@ -224,7 +233,7 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
 
         {hasSelections && (
           <Button 
-            className='w-full bg-fm-gold hover:bg-fm-gold/90 text-primary-foreground mt-4' 
+            className='w-full bg-fm-gold hover:bg-fm-gold/90 text-black font-medium transition-all mt-4' 
             size='lg'
             onClick={handlePurchase}
             disabled={isLoading}
