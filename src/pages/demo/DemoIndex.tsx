@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/shadcn/badge';
 import { Code, ShoppingCart, ArrowRight } from 'lucide-react';
 import { DemoLayout } from '@/components/demo/DemoLayout';
 

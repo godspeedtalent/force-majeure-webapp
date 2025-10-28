@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
-import { Navigation } from '@/components/Navigation';
-import { DecorativeDivider } from '@/components/DecorativeDivider';
-import { Badge } from '@/components/ui/badge';
-import { TopographicBackground } from '@/components/ui/TopographicBackground';
+import { Navigation } from '@/components/navigation/Navigation';
+import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
+import { Badge } from '@/components/ui/shadcn/badge';
+import { TopographicBackground } from '@/components/ui/misc/TopographicBackground';
 import { cn } from '@/shared/utils/utils';
 
 interface DemoLayoutProps {

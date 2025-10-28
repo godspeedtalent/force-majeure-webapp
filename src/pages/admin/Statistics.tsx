@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Navigation } from '@/components/Navigation';
-import { DecorativeDivider } from '@/components/DecorativeDivider';
+import { Navigation } from '@/components/navigation/Navigation';
+import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { BarChart3 } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { Card } from '@/components/ui/shadcn/card';
 import { supabase } from '@/integrations/supabase/client';
 import { LoadingState } from '@/components/common/LoadingState';
 

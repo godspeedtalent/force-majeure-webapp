@@ -1,8 +1,8 @@
 import { User, UserCog, Shield, UserX, Code, BarChart3, Settings } from 'lucide-react';
-import { FmCommonDropdown, DropdownItem } from '@/components/ui/FmCommonDropdown';
-import { Button } from '@/components/ui/button';
-import { FmCommonToggleHeader } from '@/components/ui/FmCommonToggleHeader';
-import { FmCommonNavigationButton } from '@/components/ui/FmCommonNavigationButton';
+import { FmCommonDropdown, DropdownItem } from '@/components/ui/forms/FmCommonDropdown';
+import { Button } from '@/components/ui/shadcn/button';
+import { FmCommonToggleHeader } from '@/components/ui/forms/FmCommonToggleHeader';
+import { FmCommonNavigationButton } from '@/components/ui/buttons/FmCommonNavigationButton';
 import type { DevRole } from '@/contexts/DevToolsContext';
 
 interface RoleSelectSectionProps {

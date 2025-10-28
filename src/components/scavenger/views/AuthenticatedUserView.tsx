@@ -1,6 +1,7 @@
-import { AnimatedCounter } from '@/components/AnimatedCounter';
-import { MessagePanel } from '@/components/MessagePanel';
-import { Button } from '@/components/ui/button';
+import { AnimatedCounter } from '@/components/primitives/AnimatedCounter';
+import { MessagePanel } from '@/components/feedback/MessagePanel';
+import { Button } from '@/components/ui/shadcn/button';
+import { LF_SYSTEM_TICKET_URL } from '@/shared/constants/ticketLinks';
 
 interface AuthenticatedUserViewProps {
   displayName?: string;
@@ -47,7 +48,7 @@ export function AuthenticatedUserView({
                   asChild
                 >
                   <a
-                    href='https://www.etix.com/ticket/p/45040939/lf-system-austin-kingdom-nightclub?partner_id=100&_gl=1*1nkxwlr*_gcl_au*ODMxOTAwNDA1LjE3NTMxMDk5NzU.*_ga*MTYzNTgzMjU4MS4xNzUzMTA5OTc1*_ga_FE6TSQF71T*czE3NTYyMjUzMTkkbzkkZzEkdDE3NTYyMjUzNTIkajI3JGwwJGgxMjA5MDYyMDIx'
+                    href={LF_SYSTEM_TICKET_URL}
                     target='_blank'
                     rel='noopener noreferrer'
                   >

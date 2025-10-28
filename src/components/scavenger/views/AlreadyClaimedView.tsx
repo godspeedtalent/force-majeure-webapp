@@ -1,4 +1,4 @@
-import { MessagePanel } from '@/components/MessagePanel';
+import { MessagePanel } from '@/components/feedback/MessagePanel';
 
 interface AlreadyClaimedViewProps {
   locationName: string;

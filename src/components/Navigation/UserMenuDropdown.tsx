@@ -1,9 +1,9 @@
 import { LogOut, User as UserIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { FmCommonDropdown, DropdownItem } from '@/components/ui/FmCommonDropdown';
+import { Avatar, AvatarFallback } from '@/components/ui/shadcn/avatar';
+import { Button } from '@/components/ui/shadcn/button';
+import { FmCommonDropdown, DropdownItem } from '@/components/ui/forms/FmCommonDropdown';
 import { useAuth } from '@/features/auth/services/AuthContext';
 
 /**

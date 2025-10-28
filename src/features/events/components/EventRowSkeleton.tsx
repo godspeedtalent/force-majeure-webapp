@@ -1,4 +1,4 @@
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '@/components/ui/shadcn/skeleton';
 
 export const EventRowSkeleton = () => {
   return (

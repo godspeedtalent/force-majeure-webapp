@@ -120,29 +120,34 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     });
 
     // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      // Perform the same remember device check for existing sessions
-      if (
-        session &&
-        !sessionPersistence.shouldRememberDevice() &&
-        sessionPersistence.isSessionExpired()
-      ) {
-        // Session is expired and device isn't remembered, sign out
-        supabase.auth.signOut();
-        return;
-      }
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        // Perform the same remember device check for existing sessions
+        if (
+          session &&
+          !sessionPersistence.shouldRememberDevice() &&
+          sessionPersistence.isSessionExpired()
+        ) {
+          // Session is expired and device isn't remembered, sign out
+          supabase.auth.signOut();
+          return;
+        }
 
-      setSession(session);
-      setUser(session?.user ?? null);
+        setSession(session);
+        setUser(session?.user ?? null);
 
-      if (session?.user) {
-        setTimeout(() => {
-          fetchProfile(session.user.id);
-        }, 0);
-      }
+        if (session?.user) {
+          setTimeout(() => {
+            fetchProfile(session.user.id);
+          }, 0);
+        }
 
-      setLoading(false);
-    });
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error getting session:', error);
+        setLoading(false);
+      });
 
     return () => subscription.unsubscribe();
   }, []);

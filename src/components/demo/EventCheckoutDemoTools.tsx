@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { FileEdit } from 'lucide-react';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { FmEventSearchDropdown } from '@/components/ui/FmEventSearchDropdown';
-import { FmCreateEventButton } from '@/components/ui/FmCreateEventButton';
-import { FmEditEventButton } from '@/components/ui/FmEditEventButton';
+import { Label } from '@/components/ui/shadcn/label';
+import { Button } from '@/components/ui/shadcn/button';
+import { FmEventSearchDropdown } from '@/components/ui/search/FmEventSearchDropdown';
+import { FmCreateEventButton } from '@/components/ui/buttons/FmCreateEventButton';
+import { FmEditEventButton } from '@/components/ui/buttons/FmEditEventButton';
 
 interface EventCheckoutDemoToolsProps {
   selectedEventId: string | undefined;

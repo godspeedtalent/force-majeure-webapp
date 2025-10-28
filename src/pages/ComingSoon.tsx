@@ -1,10 +1,10 @@
 import { Instagram, ShoppingCart } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-import { DecorativeDivider } from '@/components/DecorativeDivider';
-import { FmCommonButton } from '@/components/FmCommonButton';
-import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
-import { TopographicBackground } from '@/components/ui/TopographicBackground';
+import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
+import { FmCommonButton } from '@/components/business/FmCommonButton';
+import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
+import { TopographicBackground } from '@/components/ui/misc/TopographicBackground';
 
 export default function ComingSoon() {
   const [fontsLoaded, setFontsLoaded] = useState(false);

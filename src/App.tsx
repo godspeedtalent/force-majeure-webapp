@@ -17,17 +17,17 @@ import MemberHome from './pages/members/MemberHome';
 import Statistics from './pages/admin/Statistics';
 import AdminControls from './pages/admin/AdminControls';
 
-import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { DemoProtectedRoute } from '@/components/DemoProtectedRoute';
-import { Toaster as Sonner } from '@/components/ui/sonner';
-import { Toaster } from '@/components/ui/toaster';
-import { TooltipProvider } from '@/components/ui/tooltip';
+import { ErrorBoundary } from '@/components/feedback/ErrorBoundary';
+import { DemoProtectedRoute } from '@/components/routing/DemoProtectedRoute';
+import { Toaster as Sonner } from '@/components/ui/shadcn/sonner';
+import { Toaster } from '@/components/ui/shadcn/toaster';
+import { TooltipProvider } from '@/components/ui/shadcn/tooltip';
 import Merch from './pages/Merch';
 
 import { MusicPlayerProvider } from '@/contexts/MusicPlayerContext';
 import { AuthProvider } from '@/features/auth/services/AuthContext';
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
-import { DevToolsDrawer } from '@/components/DevTools/DevToolsDrawer';
+import { DevToolsDrawer } from '@/components/devtools/DevToolsDrawer';
 import { DevToolsProvider } from '@/contexts/DevToolsContext';
 import { CheckoutProvider } from '@/contexts/CheckoutContext';
 

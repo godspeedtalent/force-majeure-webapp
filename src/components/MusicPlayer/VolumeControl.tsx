@@ -1,7 +1,7 @@
 import { Volume2, VolumeX, Volume1 } from 'lucide-react';
 import React from 'react';
 
-import { Slider } from '@/components/ui/slider';
+import { Slider } from '@/components/ui/shadcn/slider';
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext';
 
 export const VolumeControl: React.FC = () => {

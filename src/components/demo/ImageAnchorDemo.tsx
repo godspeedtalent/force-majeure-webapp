@@ -3,7 +3,7 @@
  * This is for testing purposes and can be used in development
  */
 import lfSystemImage from '@/assets/lf-system-scavenger.jpg';
-import { ImageWithSkeleton } from '@/components/ImageWithSkeleton';
+import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
 import { ImageAnchor } from '@/shared/types/imageAnchor';
 
 export const ImageAnchorDemo = () => {

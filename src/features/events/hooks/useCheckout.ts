@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/shared/api/supabase/client';
-import { toast } from '@/components/ui/FmCommonToast';
+import { toast } from '@/components/ui/feedback/FmCommonToast';
 
 export interface TicketSelection {
   tier_id: string;

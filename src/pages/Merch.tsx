@@ -5,15 +5,15 @@ import { toast } from 'sonner';
 import { EmptyState } from '@/components/common/EmptyState';
 import { LoadingState } from '@/components/common/LoadingState';
 import { ForceMajeureRootLayout } from '@/components/layout/ForceMajeureRootLayout';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/shadcn/badge';
+import { Button } from '@/components/ui/shadcn/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/components/ui/shadcn/select';
 import { MerchCard } from '@/features/merch/components/MerchCard';
 import { supabase } from '@/shared/api/supabase/client';
 

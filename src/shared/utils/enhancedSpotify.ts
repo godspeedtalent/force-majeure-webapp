@@ -194,13 +194,17 @@ class EnhancedSpotifyService implements SpotifyAuthService {
 
     // Ready
     player.addListener('ready', ({ device_id }) => {
-      console.log('Ready with Device ID', device_id);
+      if (import.meta.env.DEV) {
+        console.log('Ready with Device ID', device_id);
+      }
       resolve(player);
     });
 
     // Not Ready
     player.addListener('not_ready', ({ device_id }) => {
-      console.log('Device ID has gone offline', device_id);
+      if (import.meta.env.DEV) {
+        console.log('Device ID has gone offline', device_id);
+      }
     });
 
     // Connect to the player!

@@ -10,10 +10,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { SplitPageLayout } from '@/components/layout/SplitPageLayout';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { FmCommonTextField } from '@/components/ui/FmCommonTextField';
-import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/shadcn/badge';
+import { Button } from '@/components/ui/shadcn/button';
+import { FmCommonTextField } from '@/components/ui/forms/FmCommonTextField';
+import { Separator } from '@/components/ui/shadcn/separator';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useToast } from '@/shared/hooks/use-toast';
 import { enhancedSpotifyService } from '@/shared/utils/enhancedSpotify';

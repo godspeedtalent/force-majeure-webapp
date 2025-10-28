@@ -2,13 +2,13 @@ import { Check, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { FormSection } from '@/components/ui/FormSection';
-import { Label } from '@/components/ui/label';
-import { PasswordInput } from '@/components/ui/PasswordInput';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { FmCommonTextField } from '@/components/ui/FmCommonTextField';
+import { Button } from '@/components/ui/shadcn/button';
+import { Checkbox } from '@/components/ui/shadcn/checkbox';
+import { FormSection } from '@/components/ui/forms/FormSection';
+import { Label } from '@/components/ui/shadcn/label';
+import { PasswordInput } from '@/components/ui/forms/PasswordInput';
+import { ScrollArea } from '@/components/ui/shadcn/scroll-area';
+import { FmCommonTextField } from '@/components/ui/forms/FmCommonTextField';
 import { supabase } from '@/shared/api/supabase/client';
 
 interface RegistrationFormProps {

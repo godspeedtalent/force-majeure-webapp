@@ -8,7 +8,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from '@/components/ui/shadcn/card';
 import { useUserRole } from '@/shared/hooks/useUserRole';
 
 export default function AdminConfig() {

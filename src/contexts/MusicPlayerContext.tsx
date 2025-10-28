@@ -195,12 +195,16 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const togglePlay = useCallback(() => {
-    setState(prev => ({ ...prev, isPlaying: !prev.isPlaying }));
     const audio = audioRef.current;
     if (!audio) return;
+
+    // Capture the current playing state before update
+    const wasPlaying = state.isPlaying;
+    setState(prev => ({ ...prev, isPlaying: !prev.isPlaying }));
+
     // Defer to next microtask so state updates propagate but respond quickly
     queueMicrotask(() => {
-      if (state.isPlaying) {
+      if (wasPlaying) {
         // was playing, so pause
         audio.pause();
       } else {
@@ -460,9 +464,13 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     const onCanPlay = () => {
-      if (state.isPlaying) {
-        audio.play().catch(() => {});
-      }
+      // Use current state value instead of closure
+      setState(prev => {
+        if (prev.isPlaying) {
+          audio.play().catch(() => {});
+        }
+        return prev;
+      });
     };
 
     audio.addEventListener('ended', onEnded);
@@ -473,7 +481,7 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
       audio.removeEventListener('error', onError);
       audio.removeEventListener('canplay', onCanPlay);
     };
-  }, [audioRef, state.isPlaying]);
+  }, [audioRef]);
 
   // Sync play/pause with state changes
   useEffect(() => {

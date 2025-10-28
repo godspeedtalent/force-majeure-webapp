@@ -5,7 +5,7 @@ import { LoginForm } from './LoginForm';
 import { RegistrationForm } from './RegistrationForm';
 import { WelcomeStep } from './WelcomeStep';
 
-import { WizardPanel, useWizardNavigation } from '@/components/WizardPanel';
+import { WizardPanel, useWizardNavigation } from '@/components/feedback/WizardPanel';
 
 // Simplified interface - clean and minimal
 interface UnauthenticatedWizardProps {
@@ -35,15 +35,6 @@ export function UnauthenticatedWizard({
   const [isLoginMode, setIsLoginMode] = useState(false);
   const [registrationEmail, setRegistrationEmail] = useState('');
 
-  console.log('🔍 UnauthenticatedWizard Debug:', {
-    currentStep,
-    isLoginMode,
-    locationName,
-    hasLocationName: !!locationName,
-    isAuthenticated,
-    hasAlreadyClaimed,
-  });
-
   // If user wants to login instead of register
   if (isLoginMode) {
     return (
@@ -55,11 +46,9 @@ export function UnauthenticatedWizard({
             : 'Sign in to continue the scavenger hunt'
         }
         onSuccess={() => {
-          console.log('✅ Login successful');
           onLoginSuccess?.();
         }}
         onBack={() => {
-          console.log('🔙 Back from login');
           setIsLoginMode(false);
         }}
       />
@@ -73,11 +62,9 @@ export function UnauthenticatedWizard({
         <WelcomeStep
           locationName={locationName}
           onJoinClick={() => {
-            console.log('📝 Join clicked, going to registration');
             nextStep();
           }}
           onSignInClick={() => {
-            console.log('🔑 Sign in clicked, switching to login mode');
             setIsLoginMode(true);
           }}
           onClaimCheckpoint={onClaimCheckpoint}
@@ -103,7 +90,6 @@ export function UnauthenticatedWizard({
               : 'Register to claim your free tickets when you find them.'
           }
           onSuccess={email => {
-            console.log('✅ Registration successful, going to confirmation');
             setRegistrationEmail(email);
             nextStep();
           }}

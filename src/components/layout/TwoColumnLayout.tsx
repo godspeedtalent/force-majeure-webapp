@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 
-import { ImageWithSkeleton } from '@/components/ImageWithSkeleton';
-import { TopographicBackground } from '@/components/ui/TopographicBackground';
+import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
+import { TopographicBackground } from '@/components/ui/misc/TopographicBackground';
 
 import { cn } from '@/shared/utils/utils';
 

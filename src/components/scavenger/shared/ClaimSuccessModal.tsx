@@ -2,8 +2,8 @@ import { ArrowRight, Mail, Trophy } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/shadcn/button';
+import { Dialog, DialogContent } from '@/components/ui/shadcn/dialog';
 
 interface ClaimSuccessModalProps {
   open: boolean;

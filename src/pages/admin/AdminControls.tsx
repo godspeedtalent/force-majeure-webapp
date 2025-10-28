@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Navigation } from '@/components/Navigation';
-import { DecorativeDivider } from '@/components/DecorativeDivider';
-import { FmUserDataGrid } from '@/components/ui/FmUserDataGrid';
-import { FmCommonDataGrid, DataGridColumn, DataGridAction } from '@/components/ui/FmCommonDataGrid';
-import { FmEditVenueButton } from '@/components/ui/FmEditVenueButton';
-import { TopographicBackground } from '@/components/ui/TopographicBackground';
+import { Navigation } from '@/components/navigation/Navigation';
+import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
+import { FmUserDataGrid } from '@/components/ui/data/FmUserDataGrid';
+import { FmCommonDataGrid, DataGridColumn, DataGridAction } from '@/components/ui/data/FmCommonDataGrid';
+import { FmEditVenueButton } from '@/components/ui/buttons/FmEditVenueButton';
+import { TopographicBackground } from '@/components/ui/misc/TopographicBackground';
 import { Settings, Users, Sliders, MapPin, Database, Calendar, Edit, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
+import { FeatureToggleSection } from '@/components/devtools/FeatureToggleSection';
 import { AdminFeesSection } from '@/components/admin/AdminFeesSection';
 import { EventsManagement } from './EventsManagement';
 import { toast } from 'sonner';
@@ -25,7 +25,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
   useSidebar,
-} from '@/components/ui/sidebar';
+} from '@/components/ui/shadcn/sidebar';
 import { cn } from '@/shared/utils/utils';
 
 type AdminTab = 'users' | 'venues' | 'events' | 'settings';

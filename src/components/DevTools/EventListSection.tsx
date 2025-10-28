@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar, Search } from 'lucide-react';
 import { format, isPast, parseISO } from 'date-fns';
 
-import { FmCommonList, FmCommonListColumn } from '@/components/ui/FmCommonList';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
+import { FmCommonList, FmCommonListColumn } from '@/components/ui/data/FmCommonList';
+import { Input } from '@/components/ui/shadcn/input';
+import { Label } from '@/components/ui/shadcn/label';
+import { Switch } from '@/components/ui/shadcn/switch';
 import { useEvents } from '@/features/events/hooks/useEvents';
 
 interface EventListItem {

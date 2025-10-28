@@ -1,6 +1,6 @@
 import { User } from 'lucide-react';
-import { Navigation } from '@/components/Navigation';
-import { DecorativeDivider } from '@/components/DecorativeDivider';
+import { Navigation } from '@/components/navigation/Navigation';
+import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 
 export default function MemberHome() {
   return (

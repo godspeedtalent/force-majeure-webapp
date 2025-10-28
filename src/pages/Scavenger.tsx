@@ -103,8 +103,10 @@ export default function Scavenger() {
         >
           <UnauthenticatedWizard
             locationName={location?.location_name}
-            onLoginSuccess={() => {
-              window.location.href = window.location.href;
+            onLoginSuccess={async () => {
+              await queryClient.invalidateQueries({ queryKey: ['user-claims'] });
+              await queryClient.invalidateQueries({ queryKey: ['all-claims'] });
+              await queryClient.invalidateQueries({ queryKey: ['scavenger-locations'] });
             }}
           userFullName={profile?.full_name ?? undefined}
             isAuthenticated={true}
@@ -119,20 +121,16 @@ export default function Scavenger() {
     // Valid unclaimed location - show reward and claim flow
     if (!user) {
       // Not authenticated - show wizard to join
-      console.log('👤 User not authenticated, showing wizard:', {
-        locationId,
-        locationName: location?.location_name,
-        hasLocation: !!location,
-      });
-
       return (
         <ScavengerSplitLayout
           showShoppingCart={!featureFlags?.coming_soon_mode}
         >
           <UnauthenticatedWizard
             locationName={location?.location_name}
-            onLoginSuccess={() => {
-              window.location.href = window.location.href;
+            onLoginSuccess={async () => {
+              await queryClient.invalidateQueries({ queryKey: ['user-claims'] });
+              await queryClient.invalidateQueries({ queryKey: ['all-claims'] });
+              await queryClient.invalidateQueries({ queryKey: ['scavenger-locations'] });
             }}
             claimCount={claimCount}
             lowClaimLocationsCount={lowClaimLocationsCount}
@@ -146,8 +144,10 @@ export default function Scavenger() {
       <ScavengerSplitLayout showShoppingCart={!featureFlags?.coming_soon_mode}>
         <UnauthenticatedWizard
           locationName={location?.location_name}
-          onLoginSuccess={() => {
-            window.location.href = window.location.href;
+          onLoginSuccess={async () => {
+            await queryClient.invalidateQueries({ queryKey: ['user-claims'] });
+            await queryClient.invalidateQueries({ queryKey: ['all-claims'] });
+            await queryClient.invalidateQueries({ queryKey: ['scavenger-locations'] });
           }}
           onClaimCheckpoint={async () => {
             if (!profile?.display_name || !user?.email) return;
@@ -201,8 +201,10 @@ export default function Scavenger() {
         >
           <UnauthenticatedWizard
             locationName={undefined}
-            onLoginSuccess={() => {
-              window.location.href = window.location.href;
+            onLoginSuccess={async () => {
+              await queryClient.invalidateQueries({ queryKey: ['user-claims'] });
+              await queryClient.invalidateQueries({ queryKey: ['all-claims'] });
+              await queryClient.invalidateQueries({ queryKey: ['scavenger-locations'] });
             }}
             userFullName={profile?.full_name ?? undefined}
             isAuthenticated={true}
@@ -228,8 +230,10 @@ export default function Scavenger() {
     return (
       <ScavengerSplitLayout showShoppingCart={!featureFlags?.coming_soon_mode}>
         <UnauthenticatedWizard
-          onLoginSuccess={() => {
-            window.location.href = window.location.href;
+          onLoginSuccess={async () => {
+            await queryClient.invalidateQueries({ queryKey: ['user-claims'] });
+            await queryClient.invalidateQueries({ queryKey: ['all-claims'] });
+            await queryClient.invalidateQueries({ queryKey: ['scavenger-locations'] });
           }}
         />
       </ScavengerSplitLayout>

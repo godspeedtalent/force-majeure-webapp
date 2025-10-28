@@ -1,6 +1,6 @@
 import { Hammer, ToggleLeft, Ticket, PlusCircle, X, Calendar } from 'lucide-react';
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { FmCommonTab } from '@/components/ui/FmCommonTab';
+import { FmCommonTab } from '@/components/ui/data/FmCommonTab';
 import { RoleSelectSection } from './RoleSelectSection';
 import { FeatureToggleSection } from './FeatureToggleSection';
 import { CreationToolsSection } from './CreationToolsSection';
@@ -10,7 +10,7 @@ import { cn } from '@/shared/utils/utils';
 import { isDevelopment } from '@/shared/utils/environment';
 import { useDevTools } from '@/contexts/DevToolsContext';
 import type { DevRole } from '@/contexts/DevToolsContext';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/shadcn/button';
 
 type TabId = 'creation' | 'tools' | 'ticketing' | 'features' | 'events';
 

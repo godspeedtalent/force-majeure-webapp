@@ -126,12 +126,14 @@ export const useFeatureFlags = () => {
         }
       }
 
-      console.log('🚩 Feature flags loaded:', {
-        environment: currentEnv,
-        dbFlags: filteredData,
-        finalFlags: flags,
-        isDev: isDevelopment(),
-      });
+      if (isDevelopment()) {
+        console.log('🚩 Feature flags loaded:', {
+          environment: currentEnv,
+          dbFlags: filteredData,
+          finalFlags: flags,
+          isDev: true,
+        });
+      }
 
       return flags;
     },

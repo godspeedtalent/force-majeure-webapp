@@ -2,18 +2,18 @@ import { Loader2 } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-import { ForceMajeureLogo } from '@/components/ForceMajeureLogo';
+import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import { ForceMajeureRootLayout } from '@/components/layout/ForceMajeureRootLayout';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/shadcn/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { FmCommonTextField } from '@/components/ui/FmCommonTextField';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+} from '@/components/ui/shadcn/card';
+import { FmCommonTextField } from '@/components/ui/forms/FmCommonTextField';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/shadcn/tabs';
 import { useAuth } from '@/features/auth/services/AuthContext';
 
 const Auth = () => {

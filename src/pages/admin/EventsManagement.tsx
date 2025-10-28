@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { FmCommonDataGrid, DataGridColumn, DataGridAction } from '@/components/ui/FmCommonDataGrid';
-import { FmCreateEventButton } from '@/components/ui/FmCreateEventButton';
-import { FmEditEventButton } from '@/components/ui/FmEditEventButton';
+import { FmCommonDataGrid, DataGridColumn, DataGridAction } from '@/components/ui/data/FmCommonDataGrid';
+import { FmCreateEventButton } from '@/components/ui/buttons/FmCreateEventButton';
+import { FmEditEventButton } from '@/components/ui/buttons/FmEditEventButton';
 import { useEvents } from '@/features/events/hooks/useEvents';
 import { useQueryClient } from '@tanstack/react-query';
 import { Edit, Trash2 } from 'lucide-react';

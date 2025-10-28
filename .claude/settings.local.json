@@ -13,7 +13,15 @@
       "Bash(if not exist migrations_backup mkdir migrations_backup)",
       "Bash(robocopy:*)",
       "Bash(git add:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\nFresh start: clean up migrations and sync with production schema\n\n- Deleted all conflicting migration files\n- Applied critical email confirmation fix directly to production\n- Pulled fresh schema from production as single baseline migration\n- Ready for future migrations to be applied cleanly\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(git commit -m \"$(cat <<''EOF''\nFresh start: clean up migrations and sync with production schema\n\n- Deleted all conflicting migration files\n- Applied critical email confirmation fix directly to production\n- Pulled fresh schema from production as single baseline migration\n- Ready for future migrations to be applied cleanly\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(xargs:*)",
+      "Bash(for dir in /Users/benkulka/source/force-majeure-webapp/src/components/*/)",
+      "Bash(done)",
+      "Bash(for file in data/*.tsx buttons/*.tsx forms/*.tsx modals/*.tsx search/*.tsx feedback/*.tsx misc/*.tsx)",
+      "Bash(do)",
+      "Bash(\"$file\")",
+      "Bash(for dir in data buttons forms modals search feedback misc)",
+      "Bash(do echo \"=== $dir ===\")"
     ],
     "deny": [],
     "ask": []

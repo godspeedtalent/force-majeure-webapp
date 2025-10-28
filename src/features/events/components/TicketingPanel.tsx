@@ -1,12 +1,12 @@
 import { ShoppingCart, Ticket } from 'lucide-react';
 import { useState } from 'react';
 
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/shadcn/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/shadcn/select';
+import { Label } from '@/components/ui/shadcn/label';
+import { Separator } from '@/components/ui/shadcn/separator';
 import { FmTicketTierList } from './FmTicketTierList';
-import { FmPromoCodeInput } from '@/components/ui/FmPromoCodeInput';
+import { FmPromoCodeInput } from '@/components/ui/misc/FmPromoCodeInput';
 import { useFees } from '../hooks/useFees';
 import { cn } from '@/shared/utils/utils';
 

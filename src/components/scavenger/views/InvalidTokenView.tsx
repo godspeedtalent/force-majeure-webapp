@@ -1,10 +1,9 @@
-import { DecorativeDivider } from '@/components/DecorativeDivider';
-import { MessagePanel } from '@/components/MessagePanel';
-import { Button } from '@/components/ui/button';
+import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
+import { MessagePanel } from '@/components/feedback/MessagePanel';
+import { Button } from '@/components/ui/shadcn/button';
 import { ExternalLink } from 'lucide-react';
 
-const TICKET_URL =
-  'https://www.etix.com/ticket/p/45040939/lf-system-austin-kingdom-nightclub?partner_id=100&_gl=1*fq6012*_gcl_au*MzU4MzE0NzgxLjE3NTk5Njg1MjM.*_ga*MTkwMzY4MjE5LjE3NTk5Njg1MjM.*_ga_FE6TSQF71T*czE3NTk5Njg1MjMkbzEkZzAkdDE3NTk5Njg1MjMkajYwJGwwJGgxNTA3MTgzNjUw';
+import { LF_SYSTEM_TICKET_URL } from '@/shared/constants/ticketLinks';
 
 export function InvalidTokenView() {
   return (
@@ -39,7 +38,7 @@ export function InvalidTokenView() {
               <Button
                 size='lg'
                 className='w-full max-w-xs mx-auto bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]'
-                onClick={() => window.open(TICKET_URL, '_blank')}
+                onClick={() => window.open(LF_SYSTEM_TICKET_URL, '_blank')}
               >
                 <ExternalLink className='mr-2 h-4 w-4' />
                 Buy Tickets

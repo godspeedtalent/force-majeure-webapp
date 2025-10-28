@@ -2,6 +2,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import react from '@vitejs/plugin-react-swc';
+import { componentTagger } from 'lovable-tagger';
 import { defineConfig } from 'vite';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -13,7 +14,9 @@ export default defineConfig(({ mode }) => ({
     host: '::',
     port: 8080,
   },
-  plugins: [react()],
+  plugins: [react(), mode === 'development' && componentTagger()].filter(
+    Boolean
+  ),
   resolve: {
     alias: {
       '@': path.resolve(__dirname, '../src'),

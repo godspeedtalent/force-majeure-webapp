@@ -1,4 +1,4 @@
-import { FmCommonList, FmCommonListColumn } from '@/components/ui/FmCommonList';
+import { FmCommonList, FmCommonListColumn } from '@/components/ui/data/FmCommonList';
 
 interface TicketTier {
   id: string;

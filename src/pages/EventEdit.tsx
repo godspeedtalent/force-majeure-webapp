@@ -1,22 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Edit, FileText, Ticket, DollarSign, ShoppingBag } from 'lucide-react';
-import { Navigation } from '@/components/Navigation';
+import { Navigation } from '@/components/navigation/Navigation';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/shadcn/button';
+import { Input } from '@/components/ui/shadcn/input';
+import { Textarea } from '@/components/ui/shadcn/textarea';
+import { Label } from '@/components/ui/shadcn/label';
 import { toast } from 'sonner';
-import { FmArtistSearchDropdown } from '@/components/ui/FmArtistSearchDropdown';
-import { FmVenueSearchDropdown } from '@/components/ui/FmVenueSearchDropdown';
-import { FmCommonDatePicker } from '@/components/ui/FmCommonDatePicker';
-import { FmCommonTimePicker } from '@/components/ui/FmCommonTimePicker';
-import { FormSection } from '@/components/ui/FormSection';
-import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
-import { TopographicBackground } from '@/components/ui/TopographicBackground';
-import { DecorativeDivider } from '@/components/DecorativeDivider';
+import { FmArtistSearchDropdown } from '@/components/ui/search/FmArtistSearchDropdown';
+import { FmVenueSearchDropdown } from '@/components/ui/search/FmVenueSearchDropdown';
+import { FmCommonDatePicker } from '@/components/ui/forms/FmCommonDatePicker';
+import { FmCommonTimePicker } from '@/components/ui/forms/FmCommonTimePicker';
+import { FormSection } from '@/components/ui/forms/FormSection';
+import { Separator } from '@/components/ui/shadcn/separator';
+import { Switch } from '@/components/ui/shadcn/switch';
+import { TopographicBackground } from '@/components/ui/misc/TopographicBackground';
+import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import {
   Sidebar,
   SidebarContent,
@@ -29,7 +29,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
   useSidebar,
-} from '@/components/ui/sidebar';
+} from '@/components/ui/shadcn/sidebar';
 import { cn } from '@/shared/utils/utils';
 
 interface TicketTier {

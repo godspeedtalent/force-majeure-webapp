@@ -1,5 +1,5 @@
-import { Card, CardContent } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardContent } from '@/components/ui/shadcn/card';
+import { Skeleton } from '@/components/ui/shadcn/skeleton';
 
 // A skeleton placeholder that mirrors the EventCard/CommonCard layout
 export const EventCardSkeleton = () => {
