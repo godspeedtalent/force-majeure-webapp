@@ -5,7 +5,7 @@ import { FmUserDataGrid } from '@/components/ui/FmUserDataGrid';
 import { FmCommonDataGrid, DataGridColumn, DataGridAction } from '@/components/ui/FmCommonDataGrid';
 import { FmEditVenueButton } from '@/components/ui/FmEditVenueButton';
 import { TopographicBackground } from '@/components/ui/TopographicBackground';
-import { Settings, Users, Sliders, MapPin, Database, Calendar, Edit, Trash2, Minus } from 'lucide-react';
+import { Settings, Users, Sliders, MapPin, Database, Calendar, Edit, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
