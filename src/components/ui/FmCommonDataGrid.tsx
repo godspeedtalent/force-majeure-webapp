@@ -299,9 +299,20 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
   const handleSaveNewRow = async () => {
     if (!onCreate) return;
 
+    // Process data - convert empty number fields to 0
+    const processedData = { ...newRowData };
+    columns.forEach(col => {
+      if (col.type === 'number') {
+        const value = processedData[col.key as keyof T];
+        if (!value || (typeof value === 'string' && value.trim() === '')) {
+          processedData[col.key as keyof T] = 0 as any;
+        }
+      }
+    });
+
     // Validate required fields
     const requiredColumns = columns.filter(col => col.required);
-    const missingFields = requiredColumns.filter(col => !newRowData[col.key as keyof T]);
+    const missingFields = requiredColumns.filter(col => !processedData[col.key as keyof T]);
 
     if (missingFields.length > 0) {
       toast({
@@ -325,7 +336,7 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
     });
 
     try {
-      await onCreate(newRowData);
+      await onCreate(processedData);
 
       loadingToast.dismiss();
       toast({
@@ -587,8 +598,9 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                                     })}
                                   </div>
                                 ) : (
-                                  // Render text input
+                                  // Render text/number input
                                   <Input
+                                    type={column.type || 'text'}
                                     value={editValue}
                                     onChange={(e) => setEditValue(e.target.value)}
                                     onBlur={() => handleCellSave(row, column.key)}
@@ -699,6 +711,7 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                           })
                         ) : (
                           <Input
+                            type={column.type || 'text'}
                             value={newRowData[column.key as keyof T] as string || ''}
                             onChange={(e) => handleNewRowFieldChange(column.key, e.target.value)}
                             placeholder={column.label}
