@@ -16,6 +16,10 @@ export { FmCommonConfirmDialog } from './modals/FmCommonConfirmDialog';
 
 // Form components
 export { FmCommonFormSection } from './forms/FmCommonFormSection';
+export { FmCommonForm } from './forms/FmCommonForm';
+export { FmCommonFormField } from './forms/FmCommonFormField';
+export { FmCommonFormSelect } from './forms/FmCommonFormSelect';
+export { FmCommonFormActions } from './forms/FmCommonFormActions';
 
 // Layout components
 export { FmCommonGridLayout } from './layout/FmCommonGridLayout';
