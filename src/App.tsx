@@ -12,7 +12,7 @@ import Index from './pages/Index';
 import Orders from './pages/Orders';
 import DemoIndex from './pages/demo/DemoIndex';
 import EventCheckout from './pages/demo/EventCheckout';
-import EventEdit from './pages/demo/EventEdit';
+import EventEdit from './pages/EventEdit';
 import MemberHome from './pages/members/MemberHome';
 import Statistics from './pages/admin/Statistics';
 import AdminControls from './pages/admin/AdminControls';
@@ -69,6 +69,7 @@ const AppRoutes = () => {
           {/* Normal App Routes */}
           <Route path='/' element={<Index />} />
           <Route path='/event/:id' element={<EventDetails />} />
+          <Route path='/event/:id/edit' element={<EventEdit />} />
           
           {/* Conditionally render merch route based on feature flag */}
           {flags?.merch_store && <Route path='/merch' element={<Merch />} />}
@@ -98,14 +99,6 @@ const AppRoutes = () => {
             element={
               <DemoProtectedRoute>
                 <EventCheckout />
-              </DemoProtectedRoute>
-            }
-          />
-          <Route
-            path='/demo/event-edit/:eventId'
-            element={
-              <DemoProtectedRoute>
-                <EventEdit />
               </DemoProtectedRoute>
             }
           />

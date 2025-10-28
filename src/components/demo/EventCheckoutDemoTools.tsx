@@ -61,7 +61,7 @@ export const EventCheckoutDemoTools = ({
               <Button
                 variant="outline"
                 className="flex-1"
-                onClick={() => navigate(`/demo/event-edit/${selectedEventId}`)}
+                onClick={() => navigate(`/event/${selectedEventId}/edit`)}
               >
                 <FileEdit className="h-4 w-4 mr-2" />
                 Edit Details

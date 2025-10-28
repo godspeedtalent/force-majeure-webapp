@@ -269,7 +269,7 @@ export default function EventEdit() {
       if (insertError) throw insertError;
 
       toast.success('Event updated successfully!');
-      navigate('/demo/event-checkout');
+      navigate(`/event/${eventId}`);
     } catch (error) {
       console.error('Error updating event:', error);
       toast.error('Failed to update event');
@@ -543,7 +543,7 @@ export default function EventEdit() {
         </FormSection>
 
                   <div className="flex justify-end gap-3 mt-6">
-          <Button variant="outline" onClick={() => navigate('/demo/event-checkout')}>
+          <Button variant="outline" onClick={() => navigate(`/event/${eventId}`)}>
             Cancel
           </Button>
           <Button
