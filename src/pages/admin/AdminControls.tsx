@@ -3,10 +3,11 @@ import { Navigation } from '@/components/Navigation';
 import { DecorativeDivider } from '@/components/DecorativeDivider';
 import { FmUserDataGrid } from '@/components/ui/FmUserDataGrid';
 import { FmCommonDataGrid, DataGridColumn } from '@/components/ui/FmCommonDataGrid';
-import { Settings, Users, Sliders, MapPin, Database } from 'lucide-react';
+import { Settings, Users, Sliders, MapPin, Database, Calendar } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
+import { EventsManagement } from './EventsManagement';
 import {
   Sidebar,
   SidebarContent,
@@ -22,7 +23,7 @@ import {
 } from '@/components/ui/sidebar';
 import { cn } from '@/shared/utils/utils';
 
-type AdminTab = 'users' | 'venues' | 'settings';
+type AdminTab = 'users' | 'venues' | 'events' | 'settings';
 
 function AdminSidebar({ activeTab, setActiveTab }: { activeTab: AdminTab; setActiveTab: (tab: AdminTab) => void }) {
   const { open, toggleSidebar } = useSidebar();
@@ -30,6 +31,7 @@ function AdminSidebar({ activeTab, setActiveTab }: { activeTab: AdminTab; setAct
   const databaseTabs = [
     { id: 'users' as AdminTab, label: 'Users', icon: Users },
     { id: 'venues' as AdminTab, label: 'Venues', icon: MapPin },
+    { id: 'events' as AdminTab, label: 'Events', icon: Calendar },
   ];
 
   const settingsTabs = [
@@ -228,6 +230,7 @@ export default function AdminControls() {
   const getCurrentData = () => {
     if (activeTab === 'users') return users;
     if (activeTab === 'venues') return venues;
+    if (activeTab === 'events') return []; // Events data is managed in EventsManagement component
     return [];
   };
 
@@ -259,6 +262,7 @@ export default function AdminControls() {
   const getTabTitle = () => {
     if (activeTab === 'users') return 'Users';
     if (activeTab === 'venues') return 'Venues';
+    if (activeTab === 'events') return 'Events';
     if (activeTab === 'settings') return 'Site Settings';
     return 'Admin Controls';
   };
@@ -312,6 +316,10 @@ export default function AdminControls() {
                   onUpdate={handleVenueUpdate}
                   resourceName="Venue"
                 />
+              )}
+
+              {activeTab === 'events' && (
+                <EventsManagement />
               )}
 
               {activeTab === 'settings' && (
