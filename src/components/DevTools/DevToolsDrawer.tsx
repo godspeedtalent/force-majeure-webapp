@@ -1,16 +1,17 @@
-import { Hammer, ToggleLeft, PlusCircle, X } from 'lucide-react';
+import { Hammer, ToggleLeft, Ticket, PlusCircle, X } from 'lucide-react';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { FmCommonTab } from '@/components/ui/FmCommonTab';
 import { RoleSelectSection } from './RoleSelectSection';
 import { FeatureToggleSection } from './FeatureToggleSection';
 import { CreationToolsSection } from './CreationToolsSection';
+import { TicketingSection } from './TicketingSection';
 import { cn } from '@/shared/utils/utils';
 import { isDevelopment } from '@/shared/utils/environment';
 import { useDevTools } from '@/contexts/DevToolsContext';
 import type { DevRole } from '@/contexts/DevToolsContext';
 import { Button } from '@/components/ui/button';
 
-type TabId = 'creation' | 'tools' | 'features';
+type TabId = 'creation' | 'tools' | 'ticketing' | 'features';
 
 export const DevToolsDrawer = () => {
   const [activeTab, setActiveTab] = useState<TabId | null>(null);
@@ -133,6 +134,13 @@ export const DevToolsDrawer = () => {
           variant="vertical"
         />
         <FmCommonTab
+          icon={Ticket}
+          label="Ticketing"
+          isActive={activeTab === 'ticketing'}
+          onClick={() => !isDragging && handleTabClick('ticketing')}
+          variant="vertical"
+        />
+        <FmCommonTab
           icon={ToggleLeft}
           label="Feature Toggles"
           isActive={activeTab === 'features'}
@@ -165,6 +173,8 @@ export const DevToolsDrawer = () => {
                 ? 'Creation Tools'
                 : activeTab === 'tools' 
                 ? 'Developer Tools' 
+                : activeTab === 'ticketing'
+                ? 'Ticketing'
                 : 'Feature Toggles'}
             </h2>
 
@@ -177,6 +187,12 @@ export const DevToolsDrawer = () => {
             {activeTab === 'tools' && (
               <div className="space-y-0">
                 <RoleSelectSection currentRole={devRole} onRoleChange={handleRoleChange} />
+              </div>
+            )}
+
+            {activeTab === 'ticketing' && (
+              <div className="space-y-0">
+                <TicketingSection />
               </div>
             )}
 

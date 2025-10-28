@@ -137,22 +137,20 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
                       {tier.description && (
                         <p className='text-sm text-muted-foreground'>{tier.description}</p>
                       )}
-                      <div className='flex items-center gap-4 text-sm'>
+                      <div className='flex items-center text-sm'>
                         <span className='font-canela text-xl text-fm-gold font-semibold'>
                           ${Number(tier.price).toFixed(2)}
-                        </span>
-                       <span className='text-xs text-muted-foreground'>
-                          {remaining} of {tier.total_tickets} available
                         </span>
                       </div>
                     </div>
                     <div className='flex flex-col items-end gap-2'>
+                      <label className='text-xs text-muted-foreground'>Qty:</label>
                       <Select
                         value={selections[tier.id]?.toString() || '0'}
                         onValueChange={(value) => handleQuantityChange(tier.id, parseInt(value))}
                         disabled={soldOut || remaining === 0}
                       >
-                        <SelectTrigger className='w-20 bg-background border-border text-xs'>
+                        <SelectTrigger className='w-16 bg-background border-border text-xs h-8'>
                           <SelectValue placeholder='0' />
                         </SelectTrigger>
                         <SelectContent className='bg-popover border-border z-50'>

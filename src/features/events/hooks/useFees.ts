@@ -25,7 +25,7 @@ export const useFees = () => {
         .from('ticketing_fees' as any)
         .select('*')
         .eq('is_active', true)
-        .or('environment.eq.dev,environment.eq.all');
+        .eq('environment', 'all'); // Only fetch from 'all' environment
 
       if (error) throw error;
       return (data || []) as unknown as Fee[];

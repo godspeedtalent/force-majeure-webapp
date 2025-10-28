@@ -44,7 +44,7 @@ export const TicketingSection = () => {
       const { data, error } = await supabase
         .from('ticketing_fees')
         .select('*')
-        .or(`environment.eq.${environment},environment.eq.all`)
+        .eq('environment', 'all') // Only fetch from 'all' environment
         .order('fee_name', { ascending: true });
 
       if (error) throw error;
