@@ -1,3 +1,11 @@
-// This file exists to satisfy postcss.config.js
-// The actual config is in config/tailwind.config.ts
-export { default } from './config/tailwind.config';
+import type { Config } from 'tailwindcss';
+
+import { themeConfig } from './src/config/tailwind/theme';
+
+export default {
+  darkMode: ['class'],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  prefix: '',
+  theme: themeConfig,
+  plugins: [require('tailwindcss-animate')],
+} satisfies Config;
