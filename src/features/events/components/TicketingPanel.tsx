@@ -188,7 +188,7 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
             })
           )}
 
-        <Separator className='my-4' />
+        <Separator className='mt-4' />
         
         {/* Order Summary - Always visible */}
         <div className='space-y-3 bg-muted/20 rounded-lg p-4'>
@@ -198,7 +198,7 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
             <>
               <FmTicketTierList selections={ticketSelections} />
               
-              <Separator className='my-3' />
+              <Separator className='mt-3' />
               
               {/* Subtotal */}
               <div className='flex justify-between text-xs'>
@@ -217,7 +217,7 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
                 </div>
               ))}
               
-              <Separator className='my-3' />
+              <Separator className='mt-3' />
               
               {/* Grand Total */}
               <div className='flex justify-between items-center pt-1'>

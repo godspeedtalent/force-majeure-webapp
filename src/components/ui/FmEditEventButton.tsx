@@ -320,14 +320,17 @@ export const FmEditEventButton = ({
         
         console.log('Ticket tiers inserted successfully:', insertedTiers);
       }
-
-      onEventUpdated?.();
       
       // Hide loading and show success toast
       setIsLoading(false);
       toast.success('Event Updated', {
         description: `${eventTitle} has been successfully updated!`,
       });
+
+      // Trigger refresh after a short delay to ensure DB consistency
+      setTimeout(() => {
+        onEventUpdated?.();
+      }, 500);
       
     } catch (error) {
       console.error('Error updating event:', error);
