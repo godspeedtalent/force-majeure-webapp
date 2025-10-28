@@ -6,11 +6,13 @@ import { FmEditEventButton } from '@/components/ui/FmEditEventButton';
 interface EventCheckoutDemoToolsProps {
   selectedEventId: string | undefined;
   onEventChange: (eventId: string) => void;
+  onEventUpdated?: () => void;
 }
 
 export const EventCheckoutDemoTools = ({
   selectedEventId,
   onEventChange,
+  onEventUpdated,
 }: EventCheckoutDemoToolsProps) => {
   const handleEventCreated = (eventId: string) => {
     onEventChange(eventId);
@@ -43,6 +45,7 @@ export const EventCheckoutDemoTools = ({
               onEventUpdated={() => {
                 // Refresh the event selection to show updated data
                 onEventChange(selectedEventId);
+                onEventUpdated?.();
               }}
               trigger={
                 <button className="flex-1 inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-white/20 bg-white/5 hover:bg-white/10 text-white h-10 px-4 py-2 rounded-md">

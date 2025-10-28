@@ -9,41 +9,80 @@ import { useCheckoutTimer } from '@/contexts/CheckoutContext';
 import { supabase } from '@/integrations/supabase/client';
 import { formatTimeDisplay } from '@/shared/utils/timeUtils';
 
+// Undercard artist display component
+const UndercardDisplay = ({ undercardIds }: { undercardIds: string[] }) => {
+  const [artists, setArtists] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchArtists = async () => {
+      const { data } = await supabase
+        .from('artists')
+        .select('name')
+        .in('id', undercardIds);
+      
+      if (data) {
+        setArtists(data.map(a => a.name));
+      }
+    };
+
+    if (undercardIds.length > 0) {
+      fetchArtists();
+    }
+  }, [undercardIds]);
+
+  if (artists.length === 0) return null;
+
+  return (
+    <div className="text-sm text-muted-foreground">
+      {artists.join(' • ')}
+    </div>
+  );
+};
+
 export default function EventCheckout() {
   const [selectedEventId, setSelectedEventId] = useState<string | undefined>();
   const [eventDetails, setEventDetails] = useState<any>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
   const { data: ticketTiers, isLoading: tiersLoading } = useTicketTiers(selectedEventId);
   const { initiateCheckout, isLoading: checkoutLoading } = useCheckout();
   const { startCheckout } = useCheckoutTimer();
 
+  const handleEventUpdated = () => {
+    // Trigger a refresh of the event details
+    setRefreshKey(prev => prev + 1);
+  };
+
   useEffect(() => {
     if (selectedEventId) {
       // Fetch event details
-      supabase
-        .from('events')
-        .select(`
-          *,
-          headliner:headliner_id (
-            name,
-            image_url
-          ),
-          venue:venue_id (
-            name,
-            city
-          )
-        `)
-        .eq('id', selectedEventId)
-        .single()
-        .then(({ data }) => {
-          if (data) {
-            setEventDetails(data);
-          }
-        });
+      const fetchEventDetails = async () => {
+        const { data } = await supabase
+          .from('events')
+          .select(`
+            *,
+            headliner:headliner_id (
+              name,
+              image_url
+            ),
+            venue:venue_id (
+              name,
+              city
+            )
+          `)
+          .eq('id', selectedEventId)
+          .single();
+        
+        if (data) {
+          setEventDetails(data);
+        }
+      };
+
+      fetchEventDetails();
 
       // Start the checkout timer when an event is selected
       startCheckout(window.location.pathname);
     }
-  }, [selectedEventId, startCheckout]);
+  }, [selectedEventId, startCheckout, refreshKey]);
 
   const handlePurchase = (selections: { tierId: string; quantity: number }[]) => {
     if (!selectedEventId) return;
@@ -66,6 +105,7 @@ export default function EventCheckout() {
         <EventCheckoutDemoTools
           selectedEventId={selectedEventId}
           onEventChange={setSelectedEventId}
+          onEventUpdated={handleEventUpdated}
         />
       }
     >
@@ -90,9 +130,14 @@ export default function EventCheckout() {
                 
                 {/* Event Details */}
                 <div className="flex-1 space-y-3">
-                  <h2 className="text-3xl font-canela font-bold text-foreground">
+                  <h2 className="text-3xl font-canela text-foreground">
                     {eventDetails.title}
                   </h2>
+                  
+                  {/* Undercard Artists */}
+                  {eventDetails.undercard_ids && eventDetails.undercard_ids.length > 0 && (
+                    <UndercardDisplay undercardIds={eventDetails.undercard_ids} />
+                  )}
                   
                   <div className="flex flex-wrap gap-4 text-muted-foreground">
                     <div className="flex items-center gap-2">

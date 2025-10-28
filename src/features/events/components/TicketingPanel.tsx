@@ -105,7 +105,7 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
   return (
     <div className='space-y-4'>
       <div>
-        <h3 className='flex items-center gap-2 text-foreground font-canela text-xl font-semibold mb-1'>
+        <h3 className='flex items-center gap-2 text-foreground font-canela text-xl mb-1'>
           <Ticket className='h-5 w-5 text-fm-gold' />
           Get Tickets
         </h3>
@@ -139,7 +139,7 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
                       )}
                     </div>
                     <div className='flex items-center gap-3'>
-                      <span className='text-xs text-fm-gold font-medium'>
+                      <span className='text-xs text-fm-gold'>
                         ${Number(tier.price).toFixed(2)}
                       </span>
                       <div className='flex items-center gap-2'>
@@ -189,7 +189,7 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
         
         {/* Order Summary - Always visible */}
         <div className='space-y-3 bg-muted/20 rounded-lg p-4'>
-          <h4 className='text-sm font-semibold text-foreground mb-2'>Order Summary</h4>
+          <h4 className='text-sm text-foreground mb-2'>Order Summary</h4>
           
           {hasSelections ? (
             <>
@@ -218,7 +218,7 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
               
               {/* Grand Total */}
               <div className='flex justify-between items-center pt-1'>
-                <span className='font-canela text-base font-semibold text-foreground'>Total</span>
+                <span className='font-canela text-base text-foreground'>Total</span>
                 <span className='font-canela text-xl text-fm-gold'>
                   ${grandTotal.toFixed(2)}
                 </span>
