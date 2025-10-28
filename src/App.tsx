@@ -7,6 +7,7 @@ import Auth from './pages/Auth';
 import CheckoutCancel from './pages/CheckoutCancel';
 import CheckoutSuccess from './pages/CheckoutSuccess';
 import ComingSoon from './pages/ComingSoon';
+import CssTest from './pages/CssTest';
 import EventDetails from './pages/EventDetails';
 import Index from './pages/Index';
 import Orders from './pages/Orders';
@@ -54,6 +55,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       {/* Always-accessible routes - highest priority */}
+      <Route path='/css-test' element={<CssTest />} />
       <Route path='/auth' element={<Auth />} />
       <Route path='/scavenger' element={<Scavenger />} />
       <Route path='/proxy-token' element={<ProxyToken />} />
