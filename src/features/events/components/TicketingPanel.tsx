@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { FmTicketTierList } from './FmTicketTierList';
+import { useFees } from '../hooks/useFees';
 
 interface TicketTier {
   id: string;
@@ -26,6 +28,7 @@ interface TicketingPanelProps {
 
 export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: TicketingPanelProps) => {
   const [selections, setSelections] = useState<Record<string, number>>({});
+  const { calculateFees, getTotalFees } = useFees();
 
   // Sort tiers by order
   const sortedTiers = [...tiers].sort((a, b) => a.tier_order - b.tier_order);
@@ -71,16 +74,31 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
     }
   };
 
-  // Calculate total
-  const calculateTotal = (): number => {
+  // Calculate totals
+  const calculateSubtotal = (): number => {
     return Object.entries(selections).reduce((total, [tierId, quantity]) => {
       const tier = tiers.find(t => t.id === tierId);
       return total + (tier ? tier.price * quantity : 0);
     }, 0);
   };
 
-  const totalAmount = calculateTotal();
+  const subtotal = calculateSubtotal();
+  const fees = calculateFees(subtotal);
+  const totalFees = getTotalFees(subtotal);
+  const grandTotal = subtotal + totalFees;
   const hasSelections = Object.values(selections).some(qty => qty > 0);
+
+  // Get selections for breakdown
+  const ticketSelections = Object.entries(selections)
+    .filter(([_, quantity]) => quantity > 0)
+    .map(([tierId, quantity]) => {
+      const tier = tiers.find(t => t.id === tierId)!;
+      return {
+        tier,
+        quantity,
+        subtotal: tier.price * quantity,
+      };
+    });
 
   return (
     <div className='space-y-4'>
@@ -123,7 +141,7 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
                         <span className='font-canela text-xl text-fm-gold font-semibold'>
                           ${Number(tier.price).toFixed(2)}
                         </span>
-                        <span className='text-muted-foreground'>
+                       <span className='text-xs text-muted-foreground'>
                           {remaining} of {tier.total_tickets} available
                         </span>
                       </div>
@@ -134,27 +152,22 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
                         onValueChange={(value) => handleQuantityChange(tier.id, parseInt(value))}
                         disabled={soldOut || remaining === 0}
                       >
-                        <SelectTrigger className='w-24 bg-background border-border'>
-                          <SelectValue placeholder='Qty: 0' />
+                        <SelectTrigger className='w-20 bg-background border-border text-xs'>
+                          <SelectValue placeholder='0' />
                         </SelectTrigger>
                         <SelectContent className='bg-popover border-border z-50'>
-                          <SelectItem value='0'>Qty: 0</SelectItem>
+                          <SelectItem value='0'>0</SelectItem>
                           {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
                             <SelectItem 
                               key={num} 
                               value={num.toString()}
                               disabled={num > remaining}
                             >
-                              Qty: {num}
+                              {num}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
-                      {selections[tier.id] > 0 && (
-                        <span className='text-xs text-muted-foreground'>
-                          Subtotal: ${(Number(tier.price) * selections[tier.id]).toFixed(2)}
-                        </span>
-                      )}
                     </div>
                   </div>
                   {index < sortedTiers.filter((_, i) => isTierVisible(sortedTiers[i], i)).length - 1 && (
@@ -165,25 +178,62 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
             })
           )}
 
-        {hasSelections && (
-          <>
-            <Separator className='my-4' />
-            <div className='flex items-center justify-between pt-2'>
-              <span className='font-canela text-lg text-foreground'>Total</span>
-              <span className='font-canela text-2xl text-fm-gold'>
-                ${totalAmount.toFixed(2)}
-              </span>
+        <Separator className='my-4' />
+        
+        {/* Order Summary - Always visible */}
+        <div className='space-y-3 bg-muted/20 rounded-lg p-4'>
+          <h4 className='text-sm font-semibold text-foreground mb-2'>Order Summary</h4>
+          
+          {hasSelections ? (
+            <>
+              <FmTicketTierList selections={ticketSelections} />
+              
+              <Separator className='my-3' />
+              
+              {/* Subtotal */}
+              <div className='flex justify-between text-xs'>
+                <span className='text-muted-foreground'>Subtotal</span>
+                <span className='text-foreground'>${subtotal.toFixed(2)}</span>
+              </div>
+              
+              {/* Fees */}
+              {fees.map((fee, index) => (
+                <div key={index} className='flex justify-between text-xs'>
+                  <span className='text-muted-foreground capitalize'>
+                    {fee.name.replace(/_/g, ' ')}
+                    {fee.type === 'percentage' && ` (${fee.value}%)`}
+                  </span>
+                  <span className='text-foreground'>${fee.amount.toFixed(2)}</span>
+                </div>
+              ))}
+              
+              <Separator className='my-3' />
+              
+              {/* Grand Total */}
+              <div className='flex justify-between items-center pt-1'>
+                <span className='font-canela text-base font-semibold text-foreground'>Total</span>
+                <span className='font-canela text-xl text-fm-gold'>
+                  ${grandTotal.toFixed(2)}
+                </span>
+              </div>
+            </>
+          ) : (
+            <div className='text-center py-3 text-muted-foreground text-xs'>
+              Select tickets to see order summary
             </div>
-            <Button 
-              className='w-full bg-fm-gold hover:bg-fm-gold/90 text-primary-foreground' 
-              size='lg'
-              onClick={handlePurchase}
-              disabled={isLoading}
-            >
-              <ShoppingCart className='h-4 w-4 mr-2' />
-              {isLoading ? 'Processing...' : 'Purchase Tickets'}
-            </Button>
-          </>
+          )}
+        </div>
+
+        {hasSelections && (
+          <Button 
+            className='w-full bg-fm-gold hover:bg-fm-gold/90 text-primary-foreground mt-4' 
+            size='lg'
+            onClick={handlePurchase}
+            disabled={isLoading}
+          >
+            <ShoppingCart className='h-4 w-4 mr-2' />
+            {isLoading ? 'Processing...' : 'Purchase Tickets'}
+          </Button>
         )}
       </div>
     </div>

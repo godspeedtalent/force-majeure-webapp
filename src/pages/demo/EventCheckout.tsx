@@ -61,6 +61,7 @@ export default function EventCheckout() {
       title="Event Checkout Demo"
       description="Test the complete ticket purchasing flow"
       icon={ShoppingCart}
+      condensed
       demoTools={
         <EventCheckoutDemoTools
           selectedEventId={selectedEventId}

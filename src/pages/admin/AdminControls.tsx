@@ -9,6 +9,7 @@ import { Settings, Users, Sliders, MapPin, Database, Calendar, Edit, Trash2 } fr
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
+import { AdminFeesSection } from '@/components/admin/AdminFeesSection';
 import { EventsManagement } from './EventsManagement';
 import { toast } from 'sonner';
 import {
@@ -396,13 +397,28 @@ export default function AdminControls() {
               )}
 
               {activeTab === 'settings' && (
-                <div className="space-y-6">
+                <div className="space-y-8">
                   <div>
                     <h3 className="text-lg font-canela font-semibold mb-2">Feature Flags</h3>
                     <p className="text-muted-foreground text-sm mb-4">
                       Control feature availability across different environments
                     </p>
                     <FeatureToggleSection />
+                  </div>
+                  
+                  <DecorativeDivider
+                    marginTop="mt-4"
+                    marginBottom="mb-4"
+                    lineWidth="w-24"
+                    opacity={0.3}
+                  />
+                  
+                  <div>
+                    <h3 className="text-lg font-canela font-semibold mb-2">Ticketing Fees</h3>
+                    <p className="text-muted-foreground text-sm mb-4">
+                      Configure site-wide fees and taxes applied to all ticket purchases
+                    </p>
+                    <AdminFeesSection />
                   </div>
                 </div>
               )}

@@ -2,6 +2,8 @@ import { ReactNode } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { DecorativeDivider } from '@/components/DecorativeDivider';
 import { Badge } from '@/components/ui/badge';
+import { TopographicBackground } from '@/components/ui/TopographicBackground';
+import { cn } from '@/shared/utils/utils';
 
 interface DemoLayoutProps {
   title: string;
@@ -9,6 +11,7 @@ interface DemoLayoutProps {
   icon: React.ComponentType<{ className?: string }>;
   children: ReactNode;
   demoTools?: ReactNode;
+  condensed?: boolean;
 }
 
 export const DemoLayout = ({
@@ -17,12 +20,16 @@ export const DemoLayout = ({
   icon: Icon,
   children,
   demoTools,
+  condensed = false,
 }: DemoLayoutProps) => {
   return (
     <>
       <Navigation />
-      <div className="container mx-auto pt-24 pb-8 px-4">
-        <div className="max-w-7xl mx-auto">
+      <div className="relative min-h-screen overflow-hidden">
+        <TopographicBackground opacity={0.03} />
+        
+        <div className="container mx-auto pt-24 pb-8 px-4 relative z-10">
+          <div className={cn("mx-auto", condensed ? "max-w-4xl" : "max-w-7xl")}>
           {/* Header with Demo Tools on the Right */}
           <div className="mb-4 flex gap-6">
             {/* Left: Header Info - 33% */}
@@ -60,6 +67,7 @@ export const DemoLayout = ({
 
           {/* Main Content Below Divider */}
           <div>{children}</div>
+          </div>
         </div>
       </div>
     </>
