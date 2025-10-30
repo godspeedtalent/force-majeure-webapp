@@ -134,19 +134,19 @@ export const AuthPanel = ({
               >
                 Sign In
               </FmCommonButton>
-
-              {showGuestOption && onGuestContinue && (
-                <Button
-                  type='button'
-                  variant='outline'
-                  className='w-full'
-                  onClick={onGuestContinue}
-                >
-                  <UserX className='h-4 w-4 mr-2' />
-                  Continue as Guest
-                </Button>
-              )}
             </form>
+
+            {showGuestOption && onGuestContinue && (
+              <Button
+                type='button'
+                variant='outline'
+                className='w-full mt-3'
+                onClick={onGuestContinue}
+              >
+                <UserX className='h-4 w-4 mr-2' />
+                Continue as Guest
+              </Button>
+            )}
           </TabsContent>
 
           <TabsContent value='signup' className='space-y-6'>
@@ -200,19 +200,19 @@ export const AuthPanel = ({
               >
                 Create Account
               </FmCommonButton>
-
-              {showGuestOption && onGuestContinue && (
-                <Button
-                  type='button'
-                  variant='outline'
-                  className='w-full'
-                  onClick={onGuestContinue}
-                >
-                  <UserX className='h-4 w-4 mr-2' />
-                  Continue as Guest
-                </Button>
-              )}
             </form>
+
+            {showGuestOption && onGuestContinue && (
+              <Button
+                type='button'
+                variant='outline'
+                className='w-full mt-3'
+                onClick={onGuestContinue}
+              >
+                <UserX className='h-4 w-4 mr-2' />
+                Continue as Guest
+              </Button>
+            )}
           </TabsContent>
         </Tabs>
       </CardContent>

@@ -47,6 +47,7 @@ export default function EventCheckoutForm({
 }: CheckoutFormProps) {
   const { user, loading } = useAuth();
   const { initiateCheckout, isLoading } = useCheckout();
+  const [isGuestMode, setIsGuestMode] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -119,11 +120,10 @@ export default function EventCheckoutForm({
   };
 
   const handleGuestContinue = () => {
-    toast.info('Guest checkout', {
-      description: 'Continuing as guest. You can create an account after purchase.',
+    setIsGuestMode(true);
+    toast.info('Continuing as guest', {
+      description: 'You can create an account after purchase.',
     });
-    // For demo purposes, we'll allow guest checkout to proceed
-    // In production, you'd need to handle guest sessions appropriately
   };
 
   const handleAuthSuccess = () => {
@@ -142,7 +142,7 @@ export default function EventCheckoutForm({
     );
   }
 
-  if (!user) {
+  if (!user && !isGuestMode) {
     return (
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex items-center gap-4 mb-6">
@@ -155,56 +155,15 @@ export default function EventCheckoutForm({
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Auth Panel */}
-          <div className="lg:col-span-2 flex items-center justify-center">
-            <AuthPanel
-              showGuestOption={true}
-              onGuestContinue={handleGuestContinue}
-              onAuthSuccess={handleAuthSuccess}
-              title="Sign in to continue"
-              description="Create an account or sign in to complete your ticket purchase"
-            />
-          </div>
-
-          {/* Order Summary Sidebar */}
-          <div className="lg:col-span-1">
-            <Card className="p-6 sticky top-6">
-              <h3 className="text-lg font-canela mb-4">Order Summary</h3>
-              <div className="space-y-3">
-                {orderSummary.tickets.map((ticket, idx) => (
-                  <div key={idx} className="flex justify-between text-sm">
-                    <div>
-                      <div className="font-medium">{ticket.name}</div>
-                      <div className="text-xs text-muted-foreground">Qty: {ticket.quantity}</div>
-                    </div>
-                    <div className="font-medium">${(ticket.price * ticket.quantity).toFixed(2)}</div>
-                  </div>
-                ))}
-
-                <Separator />
-
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Subtotal</span>
-                  <span>${orderSummary.subtotal.toFixed(2)}</span>
-                </div>
-
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Fees & Taxes</span>
-                  <span>${orderSummary.fees.toFixed(2)}</span>
-                </div>
-
-                <Separator />
-
-                <div className="flex justify-between items-center pt-2">
-                  <span className="font-canela text-lg">Total</span>
-                  <span className="font-canela text-2xl text-fm-gold">
-                    ${orderSummary.total.toFixed(2)}
-                  </span>
-                </div>
-              </div>
-            </Card>
-          </div>
+        {/* Auth Panel - Centered, no order summary */}
+        <div className="flex items-center justify-center py-12">
+          <AuthPanel
+            showGuestOption={true}
+            onGuestContinue={handleGuestContinue}
+            onAuthSuccess={handleAuthSuccess}
+            title="Sign in to continue"
+            description="Create an account or sign in to complete your ticket purchase"
+          />
         </div>
       </div>
     );
