@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CreditCard, Lock, User } from 'lucide-react';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useCheckout } from '@/features/events/hooks/useCheckout';
 import { CheckoutTimer } from '@/components/business/CheckoutTimer';
+import { AuthPanel } from '@/features/auth/components/AuthPanel';
 import { Button } from '@/components/ui/shadcn/button';
 import { Input } from '@/components/ui/shadcn/input';
 import { Label } from '@/components/ui/shadcn/label';
@@ -47,7 +47,6 @@ export default function EventCheckoutForm({
 }: CheckoutFormProps) {
   const { user, loading } = useAuth();
   const { initiateCheckout, isLoading } = useCheckout();
-  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -119,6 +118,18 @@ export default function EventCheckoutForm({
     }
   };
 
+  const handleGuestContinue = () => {
+    toast.info('Guest checkout', {
+      description: 'Continuing as guest. You can create an account after purchase.',
+    });
+    // For demo purposes, we'll allow guest checkout to proceed
+    // In production, you'd need to handle guest sessions appropriately
+  };
+
+  const handleAuthSuccess = () => {
+    toast.success('Authentication successful');
+  };
+
   // Redirect if not authenticated
   if (loading) {
     return (
@@ -133,17 +144,67 @@ export default function EventCheckoutForm({
 
   if (!user) {
     return (
-      <div className="text-center py-12 space-y-4">
-        <Lock className="h-12 w-12 mx-auto text-fm-gold" />
-        <h2 className="text-2xl font-canela">Authentication Required</h2>
-        <p className="text-muted-foreground">Please log in or create an account to continue</p>
-        <div className="flex gap-3 justify-center">
-          <Button onClick={() => navigate('/auth', { state: { returnTo: window.location.pathname } })}>
-            Log In / Sign Up
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div className="flex items-center gap-4 mb-6">
+          <Button variant="ghost" size="icon" onClick={onBack}>
+            <ArrowLeft className="h-5 w-5" />
           </Button>
-          <Button variant="outline" onClick={onBack}>
-            Go Back
-          </Button>
+          <div>
+            <h1 className="text-2xl font-canela">Complete Your Purchase</h1>
+            <p className="text-sm text-muted-foreground">Sign in or continue as guest</p>
+          </div>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Auth Panel */}
+          <div className="lg:col-span-2 flex items-center justify-center">
+            <AuthPanel
+              showGuestOption={true}
+              onGuestContinue={handleGuestContinue}
+              onAuthSuccess={handleAuthSuccess}
+              title="Sign in to continue"
+              description="Create an account or sign in to complete your ticket purchase"
+            />
+          </div>
+
+          {/* Order Summary Sidebar */}
+          <div className="lg:col-span-1">
+            <Card className="p-6 sticky top-6">
+              <h3 className="text-lg font-canela mb-4">Order Summary</h3>
+              <div className="space-y-3">
+                {orderSummary.tickets.map((ticket, idx) => (
+                  <div key={idx} className="flex justify-between text-sm">
+                    <div>
+                      <div className="font-medium">{ticket.name}</div>
+                      <div className="text-xs text-muted-foreground">Qty: {ticket.quantity}</div>
+                    </div>
+                    <div className="font-medium">${(ticket.price * ticket.quantity).toFixed(2)}</div>
+                  </div>
+                ))}
+
+                <Separator />
+
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Subtotal</span>
+                  <span>${orderSummary.subtotal.toFixed(2)}</span>
+                </div>
+
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Fees & Taxes</span>
+                  <span>${orderSummary.fees.toFixed(2)}</span>
+                </div>
+
+                <Separator />
+
+                <div className="flex justify-between items-center pt-2">
+                  <span className="font-canela text-lg">Total</span>
+                  <span className="font-canela text-2xl text-fm-gold">
+                    ${orderSummary.total.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            </Card>
+          </div>
         </div>
       </div>
     );

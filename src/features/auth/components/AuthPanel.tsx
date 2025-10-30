@@ -1,0 +1,221 @@
+import { Loader2, UserX } from 'lucide-react';
+import React, { useState } from 'react';
+
+import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
+import { FmCommonButton } from '@/components/ui/buttons/FmCommonButton';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/shadcn/card';
+import { FmCommonTextField } from '@/components/ui/forms/FmCommonTextField';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/shadcn/tabs';
+import { Button } from '@/components/ui/shadcn/button';
+import { useAuth } from '@/features/auth/services/AuthContext';
+
+interface AuthPanelProps {
+  showGuestOption?: boolean;
+  onGuestContinue?: () => void;
+  onAuthSuccess?: () => void;
+  title?: string;
+  description?: string;
+}
+
+export const AuthPanel = ({
+  showGuestOption = false,
+  onGuestContinue,
+  onAuthSuccess,
+  title = 'Join the rave fam.',
+  description = 'Sign in to access full Spotify streaming and personalized features',
+}: AuthPanelProps) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [signInForm, setSignInForm] = useState({ email: '', password: '' });
+  const [signUpForm, setSignUpForm] = useState({
+    email: '',
+    password: '',
+    displayName: '',
+  });
+
+  const { signIn, signUp, loading } = useAuth();
+
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const { error } = await signIn(signInForm.email, signInForm.password);
+
+    if (!error && onAuthSuccess) {
+      onAuthSuccess();
+    }
+
+    setIsLoading(false);
+  };
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const { error } = await signUp(signUpForm.email, signUpForm.password, signUpForm.displayName);
+    
+    if (!error && onAuthSuccess) {
+      onAuthSuccess();
+    }
+
+    setIsLoading(false);
+  };
+
+  if (loading) {
+    return (
+      <Card className='w-full max-w-md border-border/30 bg-card/20 backdrop-blur-lg shadow-2xl'>
+        <CardContent className='flex items-center justify-center py-12'>
+          <Loader2 className='w-8 h-8 animate-spin text-fm-gold' />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className='w-full max-w-md border-border/30 bg-card/20 backdrop-blur-lg shadow-2xl animate-fade-in'>
+      <CardHeader className='text-center pb-6'>
+        <div className='flex justify-center mb-4'>
+          <ForceMajeureLogo className='w-16 h-16' />
+        </div>
+        <CardTitle className='text-2xl font-canela font-medium text-foreground'>
+          {title}
+        </CardTitle>
+        <CardDescription className='text-muted-foreground'>
+          {description}
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent>
+        <Tabs defaultValue='signin' className='w-full'>
+          <TabsList className='grid w-full grid-cols-2'>
+            <TabsTrigger value='signin'>Sign In</TabsTrigger>
+            <TabsTrigger value='signup'>Sign Up</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value='signin' className='space-y-6'>
+            <form onSubmit={handleSignIn} className='space-y-6'>
+              <FmCommonTextField
+                label='Email'
+                id='signin-email'
+                type='email'
+                placeholder='Enter your email'
+                value={signInForm.email}
+                onChange={e =>
+                  setSignInForm({ ...signInForm, email: e.target.value })
+                }
+                required
+              />
+
+              <FmCommonTextField
+                label='Password'
+                id='signin-password'
+                password
+                placeholder='Enter your password'
+                value={signInForm.password}
+                onChange={e =>
+                  setSignInForm({
+                    ...signInForm,
+                    password: e.target.value,
+                  })
+                }
+                required
+              />
+
+              <FmCommonButton
+                type='submit'
+                className='w-full'
+                variant='gold'
+                loading={isLoading}
+              >
+                Sign In
+              </FmCommonButton>
+
+              {showGuestOption && onGuestContinue && (
+                <Button
+                  type='button'
+                  variant='outline'
+                  className='w-full'
+                  onClick={onGuestContinue}
+                >
+                  <UserX className='h-4 w-4 mr-2' />
+                  Continue as Guest
+                </Button>
+              )}
+            </form>
+          </TabsContent>
+
+          <TabsContent value='signup' className='space-y-6'>
+            <form onSubmit={handleSignUp} className='space-y-8'>
+              <FmCommonTextField
+                label='Display Name (Optional)'
+                id='signup-name'
+                type='text'
+                placeholder='Enter your display name'
+                value={signUpForm.displayName}
+                onChange={e =>
+                  setSignUpForm({
+                    ...signUpForm,
+                    displayName: e.target.value,
+                  })
+                }
+              />
+
+              <FmCommonTextField
+                label='Email'
+                id='signup-email'
+                type='email'
+                placeholder='Enter your email'
+                value={signUpForm.email}
+                onChange={e =>
+                  setSignUpForm({ ...signUpForm, email: e.target.value })
+                }
+                required
+              />
+
+              <FmCommonTextField
+                label='Password'
+                id='signup-password'
+                password
+                placeholder='Create a password'
+                value={signUpForm.password}
+                onChange={e =>
+                  setSignUpForm({
+                    ...signUpForm,
+                    password: e.target.value,
+                  })
+                }
+                required
+              />
+
+              <FmCommonButton
+                type='submit'
+                className='w-full'
+                variant='gold'
+                loading={isLoading}
+              >
+                Create Account
+              </FmCommonButton>
+
+              {showGuestOption && onGuestContinue && (
+                <Button
+                  type='button'
+                  variant='outline'
+                  className='w-full'
+                  onClick={onGuestContinue}
+                >
+                  <UserX className='h-4 w-4 mr-2' />
+                  Continue as Guest
+                </Button>
+              )}
+            </form>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
+  );
+};
