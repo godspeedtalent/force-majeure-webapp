@@ -31,7 +31,12 @@ export const TwoColumnLayout = ({
           border && 'border-r border-border'
         )}
       >
-        {leftDecor && <TopographicBackground opacity={0.25} />}
+        {leftDecor && (
+          <>
+            <TopographicBackground opacity={0.35} />
+            <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
+          </>
+        )}
         <div className='w-full max-w-3xl px-8 py-12 relative z-10'>{left}</div>
       </div>
 

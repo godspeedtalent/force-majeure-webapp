@@ -21,7 +21,9 @@
       "Bash(do)",
       "Bash(\"$file\")",
       "Bash(for dir in data buttons forms modals search feedback misc)",
-      "Bash(do echo \"=== $dir ===\")"
+      "Bash(do echo \"=== $dir ===\")",
+      "Bash(git stash:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

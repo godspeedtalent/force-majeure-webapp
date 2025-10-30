@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { CommonCard } from '@/components/common/CommonCard';
 import { ExternalLinkDialog } from '@/components/business/ExternalLinkDialog';
 import { Badge } from '@/components/ui/shadcn/badge';
-import { Button } from '@/components/ui/shadcn/button';
+import { FmCommonButton } from '@/components/ui/buttons/FmCommonButton';
 import { useMusicPlayer, type Song } from '@/contexts/MusicPlayerContext';
 import { supabase } from '@/shared/api/supabase/client';
 import {
@@ -187,35 +187,25 @@ export const EventCard = ({ event }: EventCardProps) => {
         {/* Actions */}
         <div className='mt-4 flex flex-wrap gap-2'>
           {event.ticketUrl && (
-            <Button
+            <FmCommonButton
               size='sm'
               variant='default'
               onClick={handleTicketsClick}
               className='shimmer-on-hover bg-accent hover:bg-accent/90 text-accent-foreground'
+              icon={ExternalLink}
             >
-              <ExternalLink className='w-4 h-4' />
               Get Tickets
-            </Button>
+            </FmCommonButton>
           )}
-          <Button
+          <FmCommonButton
             size='sm'
-            variant='secondary'
+            variant='outline'
             onClick={handlePlayLineup}
-            disabled={playing}
-            className='invert-button'
+            loading={playing}
+            icon={Play}
           >
-            {playing ? (
-              <>
-                <Loader2 className='w-4 h-4 animate-spin' />
-                Loading…
-              </>
-            ) : (
-              <>
-                <Play className='w-4 h-4' />
-                Play Lineup
-              </>
-            )}
-          </Button>
+            {playing ? 'Loading…' : 'Play Lineup'}
+          </FmCommonButton>
         </div>
       </CommonCard>
 

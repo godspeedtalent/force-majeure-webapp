@@ -12,7 +12,7 @@ import Index from './pages/Index';
 import Orders from './pages/Orders';
 import DemoIndex from './pages/demo/DemoIndex';
 import EventCheckout from './pages/demo/EventCheckout';
-import EventEdit from './pages/EventEdit';
+import EventManagement from './pages/EventManagement';
 import MemberHome from './pages/members/MemberHome';
 import Statistics from './pages/admin/Statistics';
 import AdminControls from './pages/admin/AdminControls';
@@ -30,6 +30,8 @@ import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
 import { DevToolsDrawer } from '@/components/DevTools/DevToolsDrawer';
 import { DevToolsProvider } from '@/contexts/DevToolsContext';
 import { CheckoutProvider } from '@/contexts/CheckoutContext';
+import { GlobalSearchProvider, useGlobalSearch } from '@/contexts/GlobalSearchContext';
+import { GlobalSearch } from '@/components/search/GlobalSearch';
 
 import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
@@ -37,6 +39,11 @@ import ProxyToken from './pages/ProxyToken';
 import Scavenger from './pages/Scavenger';
 
 const queryClient = new QueryClient();
+
+const GlobalSearchWrapper = () => {
+  const { isOpen, closeSearch } = useGlobalSearch();
+  return <GlobalSearch isOpen={isOpen} onClose={closeSearch} />;
+};
 
 const AppRoutes = () => {
   const { data: flags, isLoading } = useFeatureFlags();
@@ -69,7 +76,7 @@ const AppRoutes = () => {
           {/* Normal App Routes */}
           <Route path='/' element={<Index />} />
           <Route path='/event/:id' element={<EventDetails />} />
-          <Route path='/event/:id/edit' element={<EventEdit />} />
+          <Route path='/event/:id/manage' element={<EventManagement />} />
           
           {/* Conditionally render merch route based on feature flag */}
           {flags?.merch_store && <Route path='/merch' element={<Merch />} />}
@@ -140,18 +147,21 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <DevToolsProvider>
           <AuthProvider>
-            <CheckoutProvider>
-              <MusicPlayerProvider>
-                <TooltipProvider>
-                  <Toaster />
-                  <Sonner />
-                  <BrowserRouter>
-                    <AppRoutes />
-                    <DevToolsDrawer />
-                  </BrowserRouter>
-                </TooltipProvider>
-              </MusicPlayerProvider>
-            </CheckoutProvider>
+            <GlobalSearchProvider>
+              <CheckoutProvider>
+                <MusicPlayerProvider>
+                  <TooltipProvider>
+                    <Toaster />
+                    <Sonner />
+                    <BrowserRouter>
+                      <AppRoutes />
+                      <DevToolsDrawer />
+                      <GlobalSearchWrapper />
+                    </BrowserRouter>
+                  </TooltipProvider>
+                </MusicPlayerProvider>
+              </CheckoutProvider>
+            </GlobalSearchProvider>
           </AuthProvider>
         </DevToolsProvider>
       </QueryClientProvider>

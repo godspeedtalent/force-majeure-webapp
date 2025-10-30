@@ -1,12 +1,11 @@
 import { User } from 'lucide-react';
-import { Navigation } from '@/components/navigation/Navigation';
+import { Layout } from '@/components/layout/Layout';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 
 export default function MemberHome() {
   return (
-    <>
-      <Navigation />
-      <div className="container mx-auto pt-24 pb-8 px-4">
+    <Layout>
+      <div className="container mx-auto pt-8 pb-8 px-4">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8">
@@ -38,6 +37,6 @@ export default function MemberHome() {
           </div>
         </div>
       </div>
-    </>
+    </Layout>
   );
 }

@@ -49,8 +49,9 @@ export const Navigation = () => {
             {flags?.event_checkout_timer && isCheckoutActive ? (
               <CheckoutCountdown onExpire={endCheckout} redirectUrl={redirectUrl} />
             ) : (
-              <h2 className='font-canela text-white tracking-[0.15em] text-sm'>
-                FORCE MAJEURE
+              <h2 className='font-fk-screamer text-sm'>
+                <span className='text-white'>FORCE</span>{' '}
+                <span className='text-fm-gold'>MAJEURE</span>
               </h2>
             )}
           </div>

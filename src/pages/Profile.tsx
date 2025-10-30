@@ -11,7 +11,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { SplitPageLayout } from '@/components/layout/SplitPageLayout';
 import { Badge } from '@/components/ui/shadcn/badge';
-import { Button } from '@/components/ui/shadcn/button';
+import { FmCommonButton } from '@/components/ui/buttons/FmCommonButton';
 import { FmCommonTextField } from '@/components/ui/forms/FmCommonTextField';
 import { Separator } from '@/components/ui/shadcn/separator';
 import { useAuth } from '@/features/auth/services/AuthContext';
@@ -147,15 +147,15 @@ const Profile = () => {
     <div className='h-full flex flex-col justify-center p-8'>
       <div className='space-y-6'>
         {/* Back Button */}
-        <Button
+        <FmCommonButton
           variant='ghost'
           size='sm'
           onClick={() => navigate('/')}
           className='self-start -ml-2 text-muted-foreground hover:text-foreground'
+          icon={ArrowLeft}
         >
-          <ArrowLeft className='w-4 h-4 mr-2' />
           Back to Events
-        </Button>
+        </FmCommonButton>
 
         {/* Stacked Title like Force Majeure */}
         <h1
@@ -209,16 +209,13 @@ const Profile = () => {
             />
           </div>
 
-          <Button
+          <FmCommonButton
             type='submit'
-            className='bg-fm-gold hover:bg-fm-gold/90 text-black font-medium'
-            disabled={isLoading}
+            variant='gold'
+            loading={isLoading}
           >
-            {isLoading ? (
-              <Loader2 className='w-4 h-4 mr-2 animate-spin' />
-            ) : null}
             Update Profile
-          </Button>
+          </FmCommonButton>
         </form>
       </div>
 
@@ -283,18 +280,14 @@ const Profile = () => {
                 </p>
               </div>
 
-              <Button
+              <FmCommonButton
                 onClick={handleConnectSpotify}
                 className='bg-green-500 hover:bg-green-600 text-white font-medium'
-                disabled={isConnectingSpotify}
+                icon={ExternalLink}
+                loading={isConnectingSpotify}
               >
-                {isConnectingSpotify ? (
-                  <Loader2 className='w-4 h-4 mr-2 animate-spin' />
-                ) : (
-                  <ExternalLink className='w-4 h-4 mr-2' />
-                )}
                 Connect to Spotify
-              </Button>
+              </FmCommonButton>
             </div>
           ) : (
             <div className='space-y-3'>

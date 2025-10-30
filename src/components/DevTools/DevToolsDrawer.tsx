@@ -14,10 +14,26 @@ import { Button } from '@/components/ui/shadcn/button';
 
 type TabId = 'creation' | 'tools' | 'ticketing' | 'features' | 'events';
 
+const STORAGE_KEY = 'dev_tools_visibility';
+
 export const DevToolsDrawer = () => {
   const [activeTab, setActiveTab] = useState<TabId | null>(null);
   const { devRole, setDevRole, isDrawerOpen, toggleDrawer } = useDevTools();
   const isOpen = isDrawerOpen;
+
+  // Get visibility settings from localStorage
+  const [visibleSections, setVisibleSections] = useState<Record<string, boolean>>(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch {
+        return {};
+      }
+    }
+    // Default: all enabled
+    return { creation: true, tools: true, ticketing: true, features: true, events: true };
+  });
   
   // Drag state
   const [isDragging, setIsDragging] = useState(false);
@@ -31,6 +47,10 @@ export const DevToolsDrawer = () => {
   if (!isDevelopment()) {
     return null;
   }
+
+  const isSectionVisible = (sectionId: string) => {
+    return visibleSections[sectionId] ?? true;
+  };
 
   const handleTabClick = (tabId: TabId) => {
     if (activeTab === tabId && isOpen) {
@@ -111,50 +131,60 @@ export const DevToolsDrawer = () => {
       </div>
 
       {/* Tabs - positioned absolutely at the left edge */}
-      <div 
+      <div
         ref={tabsContainerRef}
         className="absolute bottom-0 right-full flex flex-col gap-2 pr-4 transition-transform"
-        style={{ 
+        style={{
           transform: `translateY(${dragOffset}px)`,
           cursor: isDragging ? 'grabbing' : 'grab'
         }}
         onMouseDown={handleMouseDown}
       >
-        <FmCommonTab
-          icon={PlusCircle}
-          label="Creation Tools"
-          isActive={activeTab === 'creation'}
-          onClick={() => !isDragging && handleTabClick('creation')}
-          variant="vertical"
-        />
-        <FmCommonTab
-          icon={Hammer}
-          label="Developer Tools"
-          isActive={activeTab === 'tools'}
-          onClick={() => !isDragging && handleTabClick('tools')}
-          variant="vertical"
-        />
-        <FmCommonTab
-          icon={Ticket}
-          label="Ticketing"
-          isActive={activeTab === 'ticketing'}
-          onClick={() => !isDragging && handleTabClick('ticketing')}
-          variant="vertical"
-        />
-        <FmCommonTab
-          icon={ToggleLeft}
-          label="Feature Toggles"
-          isActive={activeTab === 'features'}
-          onClick={() => !isDragging && handleTabClick('features')}
-          variant="vertical"
-        />
-        <FmCommonTab
-          icon={Calendar}
-          label="Event List"
-          isActive={activeTab === 'events'}
-          onClick={() => !isDragging && handleTabClick('events')}
-          variant="vertical"
-        />
+        {isSectionVisible('creation') && (
+          <FmCommonTab
+            icon={PlusCircle}
+            label="Creation Tools"
+            isActive={activeTab === 'creation'}
+            onClick={() => !isDragging && handleTabClick('creation')}
+            variant="vertical"
+          />
+        )}
+        {isSectionVisible('tools') && (
+          <FmCommonTab
+            icon={Hammer}
+            label="Developer Tools"
+            isActive={activeTab === 'tools'}
+            onClick={() => !isDragging && handleTabClick('tools')}
+            variant="vertical"
+          />
+        )}
+        {isSectionVisible('ticketing') && (
+          <FmCommonTab
+            icon={Ticket}
+            label="Ticketing"
+            isActive={activeTab === 'ticketing'}
+            onClick={() => !isDragging && handleTabClick('ticketing')}
+            variant="vertical"
+          />
+        )}
+        {isSectionVisible('features') && (
+          <FmCommonTab
+            icon={ToggleLeft}
+            label="Feature Toggles"
+            isActive={activeTab === 'features'}
+            onClick={() => !isDragging && handleTabClick('features')}
+            variant="vertical"
+          />
+        )}
+        {isSectionVisible('events') && (
+          <FmCommonTab
+            icon={Calendar}
+            label="Event List"
+            isActive={activeTab === 'events'}
+            onClick={() => !isDragging && handleTabClick('events')}
+            variant="vertical"
+          />
+        )}
       </div>
 
       {/* Drawer */}

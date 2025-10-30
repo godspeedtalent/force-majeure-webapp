@@ -188,7 +188,7 @@ const Index = () => {
       <div className='min-h-screen relative'>
         {/* Topography Background */}
         <div className='fixed inset-0 pointer-events-none'>
-          <TopographicBackground opacity={0.25} />
+          <TopographicBackground opacity={0.35} />
         </div>
         <div className='fixed inset-0 bg-gradient-monochrome opacity-10 pointer-events-none' />
 
@@ -232,7 +232,7 @@ const Index = () => {
                 <ForceMajeureLogo size='xl' className='mb-8 h-40 w-40' />
                 
                 <h1
-                  className='text-4xl lg:text-6xl font-screamer tracking-[0.2em] leading-none mb-6'
+                  className='text-3xl lg:text-5xl font-screamer tracking-[0.1em] leading-none mb-10'
                   style={{ fontWeight: 475 }}
                 >
                   <span className='text-foreground'>FORCE </span>

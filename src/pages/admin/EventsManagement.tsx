@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FmCommonDataGrid, DataGridColumn, DataGridAction } from '@/components/ui/data/FmCommonDataGrid';
 import { FmCreateEventButton } from '@/components/ui/buttons/FmCreateEventButton';
 import { FmEditEventButton } from '@/components/ui/buttons/FmEditEventButton';
 import { useEvents } from '@/features/events/hooks/useEvents';
 import { useQueryClient } from '@tanstack/react-query';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, ChevronRight } from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -16,6 +17,7 @@ interface EventsManagementProps {
 export const EventsManagement = ({ initialEditEventId }: EventsManagementProps) => {
   const { data: events, isLoading } = useEvents();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
 
   // Open edit modal if initial event ID is provided
@@ -111,6 +113,13 @@ export const EventsManagement = ({ initialEditEventId }: EventsManagementProps) 
   ];
 
   const contextMenuActions: DataGridAction[] = [
+    {
+      label: 'Manage',
+      icon: <ChevronRight className="h-4 w-4" />,
+      iconPosition: 'right',
+      separator: true,
+      onClick: (row) => navigate(`/event/${row.id}/manage`),
+    },
     {
       label: 'Edit Event',
       icon: <Edit className="h-4 w-4" />,

@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import { ExternalLinkDialog } from '@/components/business/ExternalLinkDialog';
 import { Badge } from '@/components/ui/shadcn/badge';
-import { Button } from '@/components/ui/shadcn/button';
+import { FmCommonButton } from '@/components/ui/buttons/FmCommonButton';
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext';
 import { useSongsByEvent } from '@/features/events/hooks/useSongsByEvent';
 import {
@@ -140,26 +140,25 @@ export const EventRow = ({ event }: EventRowProps) => {
           {/* Action Buttons */}
           <div className='flex flex-col gap-2 ml-4'>
             {event.ticketUrl && (
-              <Button
+              <FmCommonButton
                 variant='default'
                 size='sm'
                 onClick={handleTicketsClick}
                 className='shimmer-on-hover bg-accent hover:bg-accent/90 text-accent-foreground font-medium'
+                icon={ExternalLink}
               >
-                <ExternalLink className='w-3 h-3 mr-1' />
                 Get Tickets
-              </Button>
+              </FmCommonButton>
             )}
-            <Button
+            <FmCommonButton
               variant='outline'
               size='sm'
               onClick={handlePlayLineup}
               disabled={eventSongs.length === 0}
-              className='invert-button'
+              icon={Play}
             >
-              <Play className='w-3 h-3 mr-1' />
               Play Lineup
-            </Button>
+            </FmCommonButton>
           </div>
         </div>
       </div>

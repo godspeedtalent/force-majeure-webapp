@@ -31,7 +31,7 @@ export const SplitPageLayout = ({
         <div className={`${leftWidthClass} relative overflow-hidden`}>
           {leftDecor && (
             <>
-              <TopographicBackground opacity={0.25} />
+              <TopographicBackground opacity={0.35} />
               <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
             </>
           )}

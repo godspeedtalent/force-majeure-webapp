@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/shadcn/button';
-import { Checkbox } from '@/components/ui/shadcn/checkbox';
-import { Input } from '@/components/ui/shadcn/input';
-import { Label } from '@/components/ui/shadcn/label';
-import { PasswordInput } from '@/components/ui/forms/PasswordInput';
+import { FmCommonTextField } from '@/components/ui/forms/FmCommonTextField';
+import { FmCommonToggle } from '@/components/ui/forms/FmCommonToggle';
 import { supabase } from '@/shared/api/supabase/client';
 import { sessionPersistence } from '@/shared/utils/sessionPersistence';
 
@@ -59,13 +56,12 @@ export function LoginForm({
   return (
     <div className='w-full'>
       {onBack && (
-        <Button
-          variant='ghost'
+        <button
           onClick={onBack}
-          className='mb-4 text-muted-foreground hover:text-foreground'
+          className='mb-4 text-muted-foreground hover:text-foreground bg-transparent hover:bg-white/5 px-3 py-2 rounded transition-colors'
         >
           ← Back
-        </Button>
+        </button>
       )}
 
       <div className='bg-background/60 backdrop-blur-md border-2 border-border/40 p-6 lg:p-8 w-full shadow-2xl'>
@@ -75,55 +71,45 @@ export function LoginForm({
         </div>
 
         <form onSubmit={handleSubmit} className='space-y-4'>
-          <div className='space-y-1'>
-            <Label htmlFor='loginEmail' className='text-sm'>
-              Email <span className='text-fm-gold'>*</span>
-            </Label>
-            <Input
-              id='loginEmail'
-              type='email'
-              placeholder='your@email.com'
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-              className='h-9'
-            />
-          </div>
+          <FmCommonTextField
+            label='Email *'
+            id='loginEmail'
+            type='email'
+            placeholder='your@email.com'
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+            className='h-9'
+          />
 
-          <div className='space-y-1'>
-            <Label htmlFor='loginPassword' className='text-sm'>
-              Password <span className='text-fm-gold'>*</span>
-            </Label>
-            <PasswordInput
-              id='loginPassword'
-              value={password}
-              onChange={setPassword}
-              required
-              className='h-9'
-            />
-          </div>
+          <FmCommonTextField
+            label='Password *'
+            id='loginPassword'
+            password
+            placeholder='Enter your password'
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+            className='h-9'
+          />
 
-          <div className='flex items-center space-x-2 pt-2'>
-            <Checkbox
+          <div className='pt-2'>
+            <FmCommonToggle
               id='rememberDevice'
+              label='Remember this device for 30 days'
               checked={rememberDevice}
               onCheckedChange={checked => setRememberDevice(checked as boolean)}
+              className='text-xs'
             />
-            <label
-              htmlFor='rememberDevice'
-              className='text-xs text-muted-foreground'
-            >
-              Remember this device for 30 days
-            </label>
           </div>
 
-          <Button
+          <button
             type='submit'
-            className='w-full bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] h-9 mt-6'
+            className='w-full bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] h-9 mt-6 rounded-md disabled:opacity-50 disabled:cursor-not-allowed'
             disabled={isLogging}
           >
             {isLogging ? 'Signing In...' : 'Sign In'}
-          </Button>
+          </button>
         </form>
       </div>
     </div>

@@ -1,140 +1,47 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Navigation } from '@/components/navigation/Navigation';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { FmUserDataGrid } from '@/components/ui/data/FmUserDataGrid';
 import { FmCommonDataGrid, DataGridColumn, DataGridAction } from '@/components/ui/data/FmCommonDataGrid';
 import { FmEditVenueButton } from '@/components/ui/buttons/FmEditVenueButton';
-import { TopographicBackground } from '@/components/ui/misc/TopographicBackground';
-import { Settings, Users, Sliders, MapPin, Database, Calendar, Edit, Trash2 } from 'lucide-react';
+import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
+import { FmCommonSideNavGroup } from '@/components/ui/navigation/FmCommonSideNav';
+import { Users, Sliders, MapPin, Database, Calendar, Edit, Trash2, Settings, Code } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
 import { AdminFeesSection } from '@/components/admin/AdminFeesSection';
+import { DevToolsManagement } from '@/components/admin/DevToolsManagement';
 import { EventsManagement } from './EventsManagement';
 import { toast } from 'sonner';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-  SidebarTrigger,
-  useSidebar,
-} from '@/components/ui/shadcn/sidebar';
-import { cn } from '@/shared/utils/utils';
 
-type AdminTab = 'users' | 'venues' | 'events' | 'settings';
-
-function AdminSidebar({ activeTab, setActiveTab }: { activeTab: AdminTab; setActiveTab: (tab: AdminTab) => void }) {
-  const { open, toggleSidebar } = useSidebar();
-
-  const databaseTabs = [
-    { id: 'users' as AdminTab, label: 'Users', icon: Users },
-    { id: 'venues' as AdminTab, label: 'Venues', icon: MapPin },
-    { id: 'events' as AdminTab, label: 'Events', icon: Calendar },
-  ];
-
-  const settingsTabs = [
-    { id: 'settings' as AdminTab, label: 'Site Settings', icon: Sliders },
-  ];
-
-  return (
-    <Sidebar className="border-r border-white/20 bg-black/40" collapsible="icon">
-      <SidebarContent className="pt-4">
-        <div className="px-2 mb-4">
-          <SidebarTrigger className="hover:bg-fm-gold/20 transition-colors" />
-        </div>
-
-        {/* Database Group */}
-        <SidebarGroup>
-          {open && (
-            <SidebarGroupLabel
-              className="text-white/90 px-4 flex items-center gap-2 cursor-pointer hover:bg-white/5 transition-colors rounded-md text-base font-semibold mb-1"
-              onClick={toggleSidebar}
-            >
-              <Database className="h-4 w-4" />
-              Database
-            </SidebarGroupLabel>
-          )}
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {databaseTabs.map((tab) => (
-                <SidebarMenuItem key={tab.id}>
-                  <SidebarMenuButton
-                    onClick={() => setActiveTab(tab.id)}
-                    className={cn(
-                      'cursor-pointer transition-colors',
-                      open ? 'justify-start pl-4' : 'justify-center',
-                      activeTab === tab.id && 'bg-fm-gold/20 text-fm-gold hover:bg-fm-gold/30'
-                    )}
-                    tooltip={tab.label}
-                  >
-                    <tab.icon className="h-4 w-4" />
-                    {open && <span className="ml-3">{tab.label}</span>}
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* Divider */}
-        {open ? (
-          <div className="px-4 my-2">
-            <div className="h-px bg-border/50" />
-          </div>
-        ) : (
-          <div className="px-2 my-2">
-            <div className="h-px bg-border/50" />
-          </div>
-        )}
-
-        {/* Settings Group */}
-        <SidebarGroup>
-          {open && (
-            <SidebarGroupLabel
-              className="text-white/90 px-4 cursor-pointer hover:bg-white/5 transition-colors rounded-md text-base font-semibold mb-1"
-              onClick={toggleSidebar}
-            >
-              Settings
-            </SidebarGroupLabel>
-          )}
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {settingsTabs.map((tab) => (
-                <SidebarMenuItem key={tab.id}>
-                  <SidebarMenuButton
-                    onClick={() => setActiveTab(tab.id)}
-                    className={cn(
-                      'cursor-pointer transition-colors',
-                      open ? 'justify-start pl-4' : 'justify-center',
-                      activeTab === tab.id && 'bg-fm-gold/20 text-fm-gold hover:bg-fm-gold/30'
-                    )}
-                    tooltip={tab.label}
-                  >
-                    <tab.icon className="h-4 w-4" />
-                    {open && <span className="ml-3">{tab.label}</span>}
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
-  );
-}
+type AdminTab = 'users' | 'venues' | 'events' | 'settings' | 'devtools';
 
 export default function AdminControls() {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState<AdminTab>('users');
   const [editingVenueId, setEditingVenueId] = useState<string | null>(null);
   const queryClient = useQueryClient();
+
+  // Navigation groups configuration
+  const navigationGroups: FmCommonSideNavGroup<AdminTab>[] = [
+    {
+      label: 'Database',
+      icon: Database,
+      items: [
+        { id: 'users', label: 'Users', icon: Users, description: 'Manage user accounts' },
+        { id: 'venues', label: 'Venues', icon: MapPin, description: 'Manage venue locations' },
+        { id: 'events', label: 'Events', icon: Calendar, description: 'Manage events' },
+      ],
+    },
+    {
+      label: 'Settings',
+      items: [
+        { id: 'settings', label: 'Site Settings', icon: Sliders, description: 'Configure site settings' },
+        { id: 'devtools', label: 'Developer Tools', icon: Code, description: 'Toggle dev environment features' },
+      ],
+    },
+  ];
 
   // Handle navigation from Event List dev tool
   useEffect(() => {
@@ -335,33 +242,30 @@ export default function AdminControls() {
     if (activeTab === 'venues') return 'Venues';
     if (activeTab === 'events') return 'Events';
     if (activeTab === 'settings') return 'Site Settings';
+    if (activeTab === 'devtools') return 'Developer Tools';
     return 'Admin Controls';
   };
 
   return (
-    <>
-      <Navigation />
-      <SidebarProvider defaultOpen={true}>
-        <div className="flex min-h-screen w-full pt-16">
-          <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-
-          <main className="flex-1 pt-6 pb-6 px-6 relative overflow-hidden">
-            {/* Topographic texture background - mirrored for seamless pattern */}
-            <TopographicBackground />
-            <div className="max-w-full relative z-10">
+    <SideNavbarLayout
+      navigationGroups={navigationGroups}
+      activeItem={activeTab}
+      onItemChange={setActiveTab}
+    >
+      <div className="max-w-full">
               <div className="mb-4">
                 <div className="flex items-center gap-3 mb-4">
                   <Settings className="h-6 w-6 text-fm-gold" />
                   <h1 className="text-3xl font-canela font-bold">{getTabTitle()}</h1>
                 </div>
 
-                {activeTab !== 'settings' && (
+                {activeTab !== 'settings' && activeTab !== 'devtools' && (
                   <div className="flex gap-4 mb-6">
-                    <div className="bg-muted/30 border border-border rounded-lg px-4 py-3">
+                    <div className="bg-muted/30 border border-border rounded-lg px-4 py-3 transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]">
                       <div className="text-2xl font-bold text-foreground">{totalRecords}</div>
                       <div className="text-xs text-muted-foreground">Total Records</div>
                     </div>
-                    <div className="bg-muted/30 border border-border rounded-lg px-4 py-3">
+                    <div className="bg-muted/30 border border-border rounded-lg px-4 py-3 transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]">
                       <div className="text-2xl font-bold text-foreground">{completeness}%</div>
                       <div className="text-xs text-muted-foreground">Complete Data</div>
                     </div>
@@ -415,14 +319,14 @@ export default function AdminControls() {
                     </p>
                     <FeatureToggleSection />
                   </div>
-                  
+
                   <DecorativeDivider
                     marginTop="mt-4"
                     marginBottom="mb-4"
                     lineWidth="w-24"
                     opacity={0.3}
                   />
-                  
+
                   <div>
                     <h3 className="text-lg font-canela font-semibold mb-2">Ticketing Fees</h3>
                     <p className="text-muted-foreground text-sm mb-4">
@@ -432,10 +336,19 @@ export default function AdminControls() {
                   </div>
                 </div>
               )}
-            </div>
-          </main>
-        </div>
-      </SidebarProvider>
-    </>
+
+              {activeTab === 'devtools' && (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-canela font-semibold mb-2">Dev Toolbar Sections</h3>
+                    <p className="text-muted-foreground text-sm mb-4">
+                      Control which sections appear in the developer toolbar for testing
+                    </p>
+                    <DevToolsManagement />
+                  </div>
+                </div>
+              )}
+          </div>
+    </SideNavbarLayout>
   );
 }

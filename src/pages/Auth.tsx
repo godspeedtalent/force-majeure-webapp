@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import { ForceMajeureRootLayout } from '@/components/layout/ForceMajeureRootLayout';
-import { Button } from '@/components/ui/shadcn/button';
+import { FmCommonButton } from '@/components/ui/buttons/FmCommonButton';
 import {
   Card,
   CardContent,
@@ -121,16 +121,14 @@ const Auth = () => {
                     required
                   />
 
-                  <Button
+                  <FmCommonButton
                     type='submit'
-                    className='w-full bg-fm-gold hover:bg-fm-gold/90 text-black font-medium'
-                    disabled={isLoading}
+                    className='w-full'
+                    variant='gold'
+                    loading={isLoading}
                   >
-                    {isLoading ? (
-                      <Loader2 className='w-4 h-4 mr-2 animate-spin' />
-                    ) : null}
                     Sign In
-                  </Button>
+                  </FmCommonButton>
                 </form>
               </TabsContent>
 
@@ -177,16 +175,14 @@ const Auth = () => {
                     required
                   />
 
-                  <Button
+                  <FmCommonButton
                     type='submit'
-                    className='w-full bg-fm-gold hover:bg-fm-gold/90 text-black font-medium'
-                    disabled={isLoading}
+                    className='w-full'
+                    variant='gold'
+                    loading={isLoading}
                   >
-                    {isLoading ? (
-                      <Loader2 className='w-4 h-4 mr-2 animate-spin' />
-                    ) : null}
                     Create Account
-                  </Button>
+                  </FmCommonButton>
                 </form>
               </TabsContent>
             </Tabs>

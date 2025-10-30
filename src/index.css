@@ -366,3 +366,25 @@ All colors MUST be HSL.
     scrollbar-color: hsl(var(--border) / 0.8) hsl(var(--muted) / 0.3);
   }
 }
+
+  /* Ripple effect animation */
+  @keyframes ripple {
+    0% {
+      width: 0;
+      height: 0;
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 0.3;
+    }
+    100% {
+      width: 300px;
+      height: 300px;
+      opacity: 0;
+    }
+  }
+
+  .animate-ripple {
+    animation: ripple 600ms cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }

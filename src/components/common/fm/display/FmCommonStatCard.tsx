@@ -1,6 +1,6 @@
 /**
  * FmCommonStatCard
- * 
+ *
  * Standardized stat/metric card for dashboards and admin pages
  * Displays a large value with label and optional icon/badge
  */
@@ -67,12 +67,19 @@ export const FmCommonStatCard = ({
   const config = sizeConfig[size];
 
   return (
-    <Card className={cn('border-border', className)}>
+    <Card
+      className={cn(
+        'border-border transition-all duration-300',
+        'hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)]',
+        'hover:scale-[1.02]',
+        className
+      )}
+    >
       <CardHeader className='pb-2'>
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-2'>
             {Icon && (
-              <Icon className='w-4 h-4 text-muted-foreground' />
+              <Icon className='w-4 h-4 text-muted-foreground transition-colors duration-300 group-hover:text-fm-gold' />
             )}
             <p className={cn(config.label, 'text-muted-foreground font-medium')}>
               {label}

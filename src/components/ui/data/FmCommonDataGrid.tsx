@@ -95,6 +95,7 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
   const [editValue, setEditValue] = useState<string>('');
   const [isCreatingRow, setIsCreatingRow] = useState(false);
   const [newRowData, setNewRowData] = useState<Partial<T>>({});
+  const [contextMenuOpenRow, setContextMenuOpenRow] = useState<number | null>(null);
 
   // Reset page when data changes
   useEffect(() => {
@@ -539,19 +540,22 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                 const globalIndex = (currentPage - 1) * pageSize + index;
                 const isSelected = selectedRows.has(globalIndex);
                 const isEvenRow = index % 2 === 0;
+                const hasContextMenuOpen = contextMenuOpenRow === globalIndex;
 
                 return (
                   <FmCommonDataGridContextMenu
                     key={globalIndex}
                     row={row}
                     actions={contextMenuActions}
+                    onOpenChange={(open) => setContextMenuOpenRow(open ? globalIndex : null)}
                   >
                     <TableRow
                       className={cn(
                         'border-border/50 transition-all duration-200 cursor-pointer group',
                         isEvenRow && 'bg-muted/20',
                         isSelected && 'bg-fm-gold/10 border-fm-gold/30',
-                        'hover:bg-fm-gold/5'
+                        hasContextMenuOpen && 'bg-fm-gold/20 border-fm-gold/50',
+                        !hasContextMenuOpen && 'hover:bg-fm-gold/5'
                       )}
                       onClick={(e) => handleSelectRow(index, e)}
                     >

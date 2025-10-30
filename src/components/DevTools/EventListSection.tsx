@@ -100,8 +100,8 @@ export const EventListSection = () => {
   ];
 
   const handleRowClick = (item: EventListItem) => {
-    // Navigate to admin controls with event ID in state to trigger edit modal
-    navigate('/admin/controls', { state: { editEventId: item.id, openTab: 'events' } });
+    // Navigate directly to event management page
+    navigate(`/event/${item.id}/manage`);
   };
 
   if (isLoading) {

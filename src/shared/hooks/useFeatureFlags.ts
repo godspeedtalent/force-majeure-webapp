@@ -17,6 +17,7 @@ interface FeatureFlags {
   event_checkout_timer: boolean;
   merch_store: boolean;
   member_profiles: boolean;
+  global_search: boolean;
 }
 
 interface FeatureFlagRow {
@@ -53,6 +54,7 @@ export const useFeatureFlags = () => {
       event_checkout_timer: false,
       merch_store: false,
       member_profiles: false,
+      global_search: false,
     };
 
       filteredData.forEach(flag => {
@@ -83,6 +85,9 @@ export const useFeatureFlags = () => {
         if (flag.flag_name === 'member_profiles') {
           flags.member_profiles = flag.is_enabled;
         }
+        if (flag.flag_name === 'global_search') {
+          flags.global_search = flag.is_enabled;
+        }
       });
 
       // Apply local .env overrides in development only
@@ -96,6 +101,7 @@ export const useFeatureFlags = () => {
         const checkoutTimerOverride = getEnvironmentOverride('event_checkout_timer');
         const merchStoreOverride = getEnvironmentOverride('merch_store');
         const memberProfilesOverride = getEnvironmentOverride('member_profiles');
+        const globalSearchOverride = getEnvironmentOverride('global_search');
 
         if (scavengerOverride !== null) {
           flags.scavenger_hunt_active = scavengerOverride;
@@ -123,6 +129,9 @@ export const useFeatureFlags = () => {
         }
         if (memberProfilesOverride !== null) {
           flags.member_profiles = memberProfilesOverride;
+        }
+        if (globalSearchOverride !== null) {
+          flags.global_search = globalSearchOverride;
         }
       }
 

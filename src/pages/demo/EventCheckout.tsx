@@ -115,105 +115,105 @@ export default function EventCheckout() {
         />
       }
     >
-      {!selectedEventId ? (
-        <div className="text-center py-12 text-muted-foreground">
-          Select an event from Demo Tools to begin
-        </div>
-      ) : (
-        <div className="bg-card border-border rounded-lg overflow-hidden">
-          {/* Event Hero Image */}
-          {eventDetails && eventDetails.hero_image && (
-            <div className="w-full h-64 overflow-hidden">
-              <img
-                src={eventDetails.hero_image}
-                alt={eventDetails.title}
-                className="w-full h-full object-cover"
-              />
+          {!selectedEventId ? (
+            <div className="text-center py-12 text-muted-foreground">
+              Select an event from Demo Tools to begin
             </div>
-          )}
-
-          {/* Event Information Section */}
-          {eventDetails && (
-            <div className="p-6">
-              <div className="flex gap-6">
-                {/* Event Image */}
-                {eventDetails.headliner?.image_url && (
+          ) : (
+            <div className="bg-card border-border rounded-lg overflow-hidden">
+              {/* Event Hero Image */}
+              {eventDetails && eventDetails.hero_image && (
+                <div className="w-full h-64 overflow-hidden">
                   <img
-                    src={eventDetails.headliner.image_url}
+                    src={eventDetails.hero_image}
                     alt={eventDetails.title}
-                    className="w-32 h-32 rounded-lg object-cover"
+                    className="w-full h-full object-cover"
                   />
-                )}
-                
-                {/* Event Details */}
-                <div className="flex-1 space-y-2">
-                  <h2 className="text-2xl font-canela text-foreground">
-                    {eventDetails.title}
-                  </h2>
-                  
-                  {/* Undercard Artists */}
-                  {eventDetails.undercard_ids && eventDetails.undercard_ids.length > 0 && (
-                    <UndercardDisplay undercardIds={eventDetails.undercard_ids} />
-                  )}
-                  
-                  <div className="flex flex-wrap gap-3 text-muted-foreground text-sm">
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="h-3.5 w-3.5 text-fm-gold" />
-                      <span>{new Date(eventDetails.date).toLocaleDateString('en-US', {
-                        weekday: 'short',
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric'
-                      })}</span>
-                    </div>
-                    
-                    {eventDetails.time && (
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="h-3.5 w-3.5 text-fm-gold" />
-                        <span>{formatTimeDisplay(eventDetails.time)}</span>
-                      </div>
-                    )}
-                    
-                    {eventDetails.venue && (
-                      <div className="flex items-center gap-1.5">
-                        <MapPin className="h-3.5 w-3.5 text-fm-gold" />
-                        <span>
-                          {eventDetails.venue.name}
-                          {eventDetails.venue.city && ` • ${eventDetails.venue.city}`}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {eventDetails.description && (
-                    <p className="text-muted-foreground text-xs">
-                      {eventDetails.description}
-                    </p>
-                  )}
                 </div>
+              )}
+
+              {/* Event Information Section */}
+              {eventDetails && (
+                <div className="p-6">
+                  <div className="flex gap-6">
+                    {/* Event Image */}
+                    {eventDetails.headliner?.image_url && (
+                      <img
+                        src={eventDetails.headliner.image_url}
+                        alt={eventDetails.title}
+                        className="w-32 h-32 rounded-lg object-cover"
+                      />
+                    )}
+
+                    {/* Event Details */}
+                    <div className="flex-1 space-y-2">
+                      <h2 className="text-2xl font-canela text-foreground">
+                        {eventDetails.title}
+                      </h2>
+
+                      {/* Undercard Artists */}
+                      {eventDetails.undercard_ids && eventDetails.undercard_ids.length > 0 && (
+                        <UndercardDisplay undercardIds={eventDetails.undercard_ids} />
+                      )}
+
+                      <div className="flex flex-wrap gap-3 text-muted-foreground text-sm">
+                        <div className="flex items-center gap-1.5">
+                          <Calendar className="h-3.5 w-3.5 text-fm-gold" />
+                          <span>{new Date(eventDetails.date).toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })}</span>
+                        </div>
+
+                        {eventDetails.time && (
+                          <div className="flex items-center gap-1.5">
+                            <Clock className="h-3.5 w-3.5 text-fm-gold" />
+                            <span>{formatTimeDisplay(eventDetails.time)}</span>
+                          </div>
+                        )}
+
+                        {eventDetails.venue && (
+                          <div className="flex items-center gap-1.5">
+                            <MapPin className="h-3.5 w-3.5 text-fm-gold" />
+                            <span>
+                              {eventDetails.venue.name}
+                              {eventDetails.venue.city && ` • ${eventDetails.venue.city}`}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {eventDetails.description && (
+                        <p className="text-muted-foreground text-xs">
+                          {eventDetails.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Divider */}
+              {eventDetails && (
+                <div className="border-t border-border" />
+              )}
+
+              {/* Ticketing Section */}
+              <div className="p-6">
+                <TicketingPanel
+                  eventId={selectedEventId}
+                  tiers={ticketTiers?.map(tier => ({
+                    ...tier,
+                    price: tier.price_cents / 100,
+                  })) || []}
+                  onPurchase={handlePurchase}
+                  isLoading={tiersLoading || checkoutLoading}
+                />
               </div>
             </div>
           )}
-
-          {/* Divider */}
-          {eventDetails && (
-            <div className="border-t border-border" />
-          )}
-
-          {/* Ticketing Section */}
-          <div className="p-6">
-            <TicketingPanel
-              eventId={selectedEventId}
-              tiers={ticketTiers?.map(tier => ({
-                ...tier,
-                price: tier.price_cents / 100,
-              })) || []}
-              onPurchase={handlePurchase}
-              isLoading={tiersLoading || checkoutLoading}
-            />
-          </div>
-        </div>
-      )}
     </DemoLayout>
   );
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Navigation } from '@/components/navigation/Navigation';
+import { Layout } from '@/components/layout/Layout';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { BarChart3 } from 'lucide-react';
 import { Card } from '@/components/ui/shadcn/card';
@@ -34,9 +34,8 @@ export default function Statistics() {
   }
 
   return (
-    <>
-      <Navigation />
-      <div className="container mx-auto pt-24 pb-8 px-4">
+    <Layout>
+      <div className="container mx-auto pt-8 pb-8 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 mb-2">
             <BarChart3 className="h-6 w-6 text-fm-gold" />
@@ -70,6 +69,6 @@ export default function Statistics() {
           </div>
         </div>
       </div>
-    </>
+    </Layout>
   );
 }

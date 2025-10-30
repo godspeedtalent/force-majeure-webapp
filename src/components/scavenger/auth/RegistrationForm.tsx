@@ -2,11 +2,8 @@ import { Check, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/shadcn/button';
-import { Checkbox } from '@/components/ui/shadcn/checkbox';
+import { FmCommonToggle } from '@/components/ui/forms/FmCommonToggle';
 import { FormSection } from '@/components/ui/forms/FormSection';
-import { Label } from '@/components/ui/shadcn/label';
-import { PasswordInput } from '@/components/ui/forms/PasswordInput';
 import { ScrollArea } from '@/components/ui/shadcn/scroll-area';
 import { FmCommonTextField } from '@/components/ui/forms/FmCommonTextField';
 import { supabase } from '@/shared/api/supabase/client';
@@ -223,18 +220,15 @@ export function RegistrationForm({
                 description='What others will see if your profile is made public.'
                 containerClassName='space-y-2'
               />
-              <div className='flex items-center space-x-2'>
-                <Checkbox
-                  id='sameAsFullName'
-                  checked={formData.sameAsFullName}
-                  onCheckedChange={checked =>
-                    updateFormData('sameAsFullName', checked as boolean)
-                  }
-                />
-                <label htmlFor='sameAsFullName' className='text-xs'>
-                  Same as full name
-                </label>
-              </div>
+              <FmCommonToggle
+                id='sameAsFullName'
+                label='Same as full name'
+                checked={formData.sameAsFullName}
+                onCheckedChange={checked =>
+                  updateFormData('sameAsFullName', checked as boolean)
+                }
+                className='text-xs'
+              />
             </div>
 
             <FmCommonTextField
@@ -247,44 +241,37 @@ export function RegistrationForm({
               prepend='@'
             />
 
-            <div className='flex items-center space-x-2'>
-              <Checkbox
-                id='isPublic'
-                checked={formData.isPublic}
-                onCheckedChange={checked =>
-                  updateFormData('isPublic', checked as boolean)
-                }
-              />
-              <label htmlFor='isPublic' className='text-xs'>
-                Make my profile public
-              </label>
-            </div>
+            <FmCommonToggle
+              id='isPublic'
+              label='Make my profile public'
+              checked={formData.isPublic}
+              onCheckedChange={checked =>
+                updateFormData('isPublic', checked as boolean)
+              }
+              className='text-xs'
+            />
           </FormSection>
 
           <FormSection title='Password'>
-            <div className='space-y-2'>
-              <Label htmlFor='password' className='text-sm'>
-                Password <span className='text-fm-gold'>*</span>
-              </Label>
-              <PasswordInput
-                id='password'
-                placeholder='Enter your password'
-                value={formData.password}
-                onChange={value => updateFormData('password', value)}
-                required
-                className='h-9'
-              />
-            </div>
+            <FmCommonTextField
+              label='Password *'
+              id='password'
+              password
+              placeholder='Enter your password'
+              value={formData.password}
+              onChange={e => updateFormData('password', e.target.value)}
+              required
+              className='h-9'
+            />
 
             <div className='space-y-2'>
-              <Label htmlFor='confirmPassword' className='text-sm'>
-                Confirm Password <span className='text-fm-gold'>*</span>
-              </Label>
-              <PasswordInput
+              <FmCommonTextField
+                label='Confirm Password *'
                 id='confirmPassword'
+                password
                 placeholder='Confirm your password'
                 value={formData.confirmPassword}
-                onChange={value => updateFormData('confirmPassword', value)}
+                onChange={e => updateFormData('confirmPassword', e.target.value)}
                 required
                 className='h-9'
               />
@@ -389,31 +376,27 @@ export function RegistrationForm({
 
           {/* Agreements */}
           <div className='space-y-3 pb-6'>
-            <div className='flex items-center space-x-2'>
-              <Checkbox
-                id='agreeToContact'
-                checked={formData.agreeToContact}
-                onCheckedChange={checked =>
-                  updateFormData('agreeToContact', checked as boolean)
-                }
-              />
-              <label htmlFor='agreeToContact' className='text-xs'>
-                I agree to receive event updates via email and SMS{' '}
-                <span className='text-fm-gold'>*</span>
-              </label>
-            </div>
+            <FmCommonToggle
+              id='agreeToContact'
+              label='I agree to receive event updates via email and SMS *'
+              checked={formData.agreeToContact}
+              onCheckedChange={checked =>
+                updateFormData('agreeToContact', checked as boolean)
+              }
+              className='text-xs'
+            />
           </div>
         </form>
 
         <div className='px-8 lg:px-12 py-6 border-t border-border/40'>
-          <Button
+          <button
             type='submit'
             form='registration-form'
-            className='w-full bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] h-9'
+            className='w-full bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] h-9 rounded-md disabled:opacity-50 disabled:cursor-not-allowed'
             disabled={isSubmitting || !isFormValid}
           >
             {isSubmitting ? 'Submitting...' : 'Submit'}
-          </Button>
+          </button>
         </div>
       </ScrollArea>
     </div>

@@ -26,8 +26,9 @@ export const DemoLayout = ({
     <>
       <Navigation />
       <div className="relative min-h-screen overflow-hidden">
-        <TopographicBackground opacity={0.03} />
-        
+        <TopographicBackground opacity={0.35} />
+        <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
+
         <div className="container mx-auto pt-24 pb-8 px-4 relative z-10">
           <div className={cn("mx-auto", condensed ? "max-w-4xl" : "max-w-7xl")}>
           {/* Header with Demo Tools on the Right */}

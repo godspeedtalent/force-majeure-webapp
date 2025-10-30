@@ -14,7 +14,7 @@ import ninajirachiCover from '@/assets/ninajirachi-cover.jpg';
 import SplitPageLayout from '@/components/layout/SplitPageLayout';
 import { PageTransition } from '@/components/primitives/PageTransition';
 import { Badge } from '@/components/ui/shadcn/badge';
-import { Button } from '@/components/ui/shadcn/button';
+import { FmCommonButton } from '@/components/ui/buttons/FmCommonButton';
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext';
 import { useSongsByEvent } from '@/features/events/hooks/useSongsByEvent';
 import { supabase } from '@/shared/api/supabase/client';
@@ -154,12 +154,11 @@ const EventDetails = () => {
         left={
           <div className='flex items-center justify-center h-full flex-col gap-4'>
             <p className='text-destructive'>{error || 'Event not found'}</p>
-            <Button asChild variant='outline'>
+            <FmCommonButton asChild variant='outline' icon={ArrowLeft}>
               <Link to='/'>
-                <ArrowLeft className='w-4 h-4 mr-2' />
                 Back to Events
               </Link>
-            </Button>
+            </FmCommonButton>
           </div>
         }
         right={<div />}
@@ -177,17 +176,17 @@ const EventDetails = () => {
       left={
         <PageTransition>
           <div className='p-8 h-full flex flex-col'>
-            <Button
+            <FmCommonButton
               asChild
               variant='ghost'
               size='sm'
               className='self-start relative z-10 mb-4'
+              icon={ArrowLeft}
             >
               <Link to='/'>
-                <ArrowLeft className='w-4 h-4 mr-2' />
                 Back to Events
               </Link>
-            </Button>
+            </FmCommonButton>
           </div>
         </PageTransition>
       }
@@ -218,33 +217,21 @@ const EventDetails = () => {
 
                 {/* Quick Actions */}
                 <div className='flex flex-wrap gap-4'>
-                  <Button
+                  <FmCommonButton
                     onClick={() => songs.length > 0 && playQueue(songs)}
                     disabled={songsLoading || songs.length === 0}
-                    className='bg-fm-gold text-black hover:bg-fm-gold/90'
+                    variant='gold'
+                    icon={songsLoading ? Music : songs.length > 0 ? Play : Music}
                   >
-                    {songsLoading ? (
-                      <>
-                        <Music className='w-4 h-4 mr-2 animate-pulse' />
-                        Loading...
-                      </>
-                    ) : songs.length > 0 ? (
-                      <>
-                        <Play className='w-4 h-4 mr-2' />
-                        Play Lineup ({songs.length})
-                      </>
-                    ) : (
-                      <>
-                        <Music className='w-4 h-4 mr-2' />
-                        No Songs Available
-                      </>
-                    )}
-                  </Button>
+                    {songsLoading ? 'Loading...' : songs.length > 0 ? `Play Lineup (${songs.length})` : 'No Songs Available'}
+                  </FmCommonButton>
 
                   {event.ticketUrl && (
-                    <Button
+                    <FmCommonButton
                       asChild
                       className='bg-fm-crimson text-white hover:bg-fm-crimson/90'
+                      icon={ExternalLink}
+                      iconPosition='right'
                     >
                       <a
                         href={event.ticketUrl}
@@ -252,9 +239,8 @@ const EventDetails = () => {
                         rel='noopener noreferrer'
                       >
                         Get Tickets
-                        <ExternalLink className='w-4 h-4 ml-2' />
                       </a>
-                    </Button>
+                    </FmCommonButton>
                   )}
                 </div>
               </div>

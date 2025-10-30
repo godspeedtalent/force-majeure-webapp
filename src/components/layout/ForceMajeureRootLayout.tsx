@@ -20,7 +20,7 @@ export const ForceMajeureRootLayout = ({
 
       {/* Main content area with topography background */}
       <div className='flex-1 relative overflow-hidden'>
-        <TopographicBackground opacity={0.25} />
+        <TopographicBackground opacity={0.35} />
         <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
 
         {/* Content */}
