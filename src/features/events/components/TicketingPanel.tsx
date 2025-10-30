@@ -404,17 +404,15 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
           </div>
         </div>
 
-        {hasSelections && (
-          <Button 
-            className='w-full bg-fm-gold hover:bg-fm-gold/90 text-black font-medium transition-all mt-4' 
-            size='lg'
-            onClick={handlePurchase}
-            disabled={isLoading}
-          >
-            <ShoppingCart className='h-4 w-4 mr-2' />
-            {isLoading ? 'Processing...' : 'Purchase Tickets'}
-          </Button>
-        )}
+        <Button 
+          className='w-full bg-fm-gold hover:bg-fm-gold/90 text-black font-medium transition-all mt-4' 
+          size='lg'
+          onClick={handlePurchase}
+          disabled={!hasSelections || isLoading}
+        >
+          <ShoppingCart className='h-4 w-4 mr-2' />
+          {isLoading ? 'Processing...' : 'Continue to Checkout'}
+        </Button>
       </div>
     </div>
   );

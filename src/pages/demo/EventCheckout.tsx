@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { ShoppingCart, Calendar, MapPin, Clock } from 'lucide-react';
 import { TicketingPanel } from '@/features/events/components/TicketingPanel';
 import { useTicketTiers } from '@/features/events/hooks/useTicketTiers';
-import { useCheckout } from '@/features/events/hooks/useCheckout';
 import { DemoLayout } from '@/components/demo/DemoLayout';
 import { EventCheckoutDemoTools } from '@/components/demo/EventCheckoutDemoTools';
 import { useCheckoutTimer } from '@/contexts/CheckoutContext';
 import { supabase } from '@/integrations/supabase/client';
 import { formatTimeDisplay } from '@/shared/utils/timeUtils';
 import { useQueryClient } from '@tanstack/react-query';
+import EventCheckoutForm from './EventCheckoutForm';
+import { useFees } from '@/features/events/hooks/useFees';
 
 // Undercard artist display component
 const UndercardDisplay = ({ undercardIds }: { undercardIds: string[] }) => {
@@ -44,10 +45,12 @@ export default function EventCheckout() {
   const [selectedEventId, setSelectedEventId] = useState<string | undefined>();
   const [eventDetails, setEventDetails] = useState<any>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [checkoutStep, setCheckoutStep] = useState<'selection' | 'checkout'>('selection');
+  const [ticketSelections, setTicketSelections] = useState<{ tierId: string; quantity: number }[]>([]);
   const { data: ticketTiers, isLoading: tiersLoading } = useTicketTiers(selectedEventId);
-  const { initiateCheckout, isLoading: checkoutLoading } = useCheckout();
   const { startCheckout } = useCheckoutTimer();
   const queryClient = useQueryClient();
+  const { getTotalFees } = useFees();
 
   const handleEventUpdated = () => {
     // Trigger a refresh of the event details
@@ -90,15 +93,37 @@ export default function EventCheckout() {
     }
   }, [selectedEventId, startCheckout, refreshKey]);
 
-  const handlePurchase = (selections: { tierId: string; quantity: number }[]) => {
+  const handleContinueToCheckout = (selections: { tierId: string; quantity: number }[]) => {
     if (!selectedEventId) return;
-    
-    const tickets = selections.map(s => ({
-      tier_id: s.tierId,
-      quantity: s.quantity,
-    }));
+    setTicketSelections(selections);
+    setCheckoutStep('checkout');
+  };
 
-    initiateCheckout(selectedEventId, tickets);
+  const handleBackToSelection = () => {
+    setCheckoutStep('selection');
+    setTicketSelections([]);
+  };
+
+  // Calculate order summary
+  const getOrderSummary = () => {
+    if (!ticketTiers || ticketSelections.length === 0) {
+      return { subtotal: 0, fees: 0, total: 0, tickets: [] };
+    }
+
+    const tickets = ticketSelections.map(sel => {
+      const tier = ticketTiers.find(t => t.id === sel.tierId);
+      return {
+        name: tier?.name || '',
+        quantity: sel.quantity,
+        price: tier?.price_cents ? tier.price_cents / 100 : 0,
+      };
+    });
+
+    const subtotal = tickets.reduce((sum, t) => sum + (t.price * t.quantity), 0);
+    const fees = getTotalFees(subtotal);
+    const total = subtotal + fees;
+
+    return { subtotal, fees, total, tickets };
   };
 
   return (
@@ -119,6 +144,13 @@ export default function EventCheckout() {
             <div className="text-center py-12 text-muted-foreground">
               Select an event from Demo Tools to begin
             </div>
+          ) : checkoutStep === 'checkout' ? (
+            <EventCheckoutForm
+              eventId={selectedEventId}
+              selections={ticketSelections}
+              orderSummary={getOrderSummary()}
+              onBack={handleBackToSelection}
+            />
           ) : (
             <div className="bg-card border-border rounded-lg overflow-hidden">
               {/* Event Hero Image */}
@@ -208,8 +240,8 @@ export default function EventCheckout() {
                     ...tier,
                     price: tier.price_cents / 100,
                   })) || []}
-                  onPurchase={handlePurchase}
-                  isLoading={tiersLoading || checkoutLoading}
+                  onPurchase={handleContinueToCheckout}
+                  isLoading={tiersLoading}
                 />
               </div>
             </div>
