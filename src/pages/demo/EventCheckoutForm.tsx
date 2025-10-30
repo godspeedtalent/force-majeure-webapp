@@ -1,21 +1,21 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, CreditCard, Lock, User, UserPlus } from 'lucide-react';
+import { ArrowLeft, CreditCard, Lock, User, UserPlus, Shield } from 'lucide-react';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { useCheckout } from '@/features/events/hooks/useCheckout';
-import { CheckoutTimer } from '@/components/business/CheckoutTimer';
+import { FmTimerToast } from '@/components/ui/feedback/FmTimerToast';
 import { AuthPanel } from '@/features/auth/components/AuthPanel';
 import { Button } from '@/components/ui/shadcn/button';
 import { Input } from '@/components/ui/shadcn/input';
 import { Label } from '@/components/ui/shadcn/label';
-import { Checkbox } from '@/components/ui/shadcn/checkbox';
+import { FmCommonFormCheckbox } from '@/components/ui/forms/FmCommonFormCheckbox';
 import { Separator } from '@/components/ui/shadcn/separator';
 import { Card } from '@/components/ui/shadcn/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/shadcn/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/shadcn/dialog';
 import { PhoneInput } from '@/components/ui/forms/PhoneInput';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/feedback/FmCommonToast';
 import { z } from 'zod';
 import { emailField, stringRequired, phoneField } from '@/shared/utils/formValidation';
+import { useNavigate } from 'react-router-dom';
 
 const US_STATES = [
   { value: 'AL', label: 'Alabama' }, { value: 'AK', label: 'Alaska' }, { value: 'AZ', label: 'Arizona' },
@@ -54,6 +54,8 @@ const checkoutFormSchema = z.object({
 
 interface CheckoutFormProps {
   eventId: string;
+  eventName: string;
+  eventDate: string;
   selections: { tierId: string; quantity: number }[];
   orderSummary: {
     subtotal: number;
@@ -65,15 +67,17 @@ interface CheckoutFormProps {
 }
 
 export default function EventCheckoutForm({ 
-  eventId, 
-  selections, 
+  eventId,
+  eventName,
+  eventDate,
   orderSummary,
   onBack 
 }: CheckoutFormProps) {
   const { user, loading } = useAuth();
-  const { initiateCheckout, isLoading } = useCheckout();
+  const navigate = useNavigate();
   const [isGuestMode, setIsGuestMode] = useState(false);
   const [showSignUpModal, setShowSignUpModal] = useState(false);
+  const [ticketProtection, setTicketProtection] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -138,6 +142,16 @@ export default function EventCheckoutForm({
     onBack();
   };
 
+  // Calculate ticket protection fee (15% of subtotal)
+  const ticketProtectionFee = ticketProtection ? orderSummary.subtotal * 0.15 : 0;
+  
+  // Break down fees (simulated)
+  const serviceFee = orderSummary.fees * 0.7;
+  const processingFee = orderSummary.fees * 0.2;
+  const tax = orderSummary.fees * 0.1;
+  
+  const finalTotal = orderSummary.total + ticketProtectionFee;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -146,14 +160,14 @@ export default function EventCheckoutForm({
       return;
     }
 
-    try {
-      await initiateCheckout(eventId, selections.map(s => ({
-        tier_id: s.tierId,
-        quantity: s.quantity,
-      })));
-    } catch (error) {
-      console.error('Checkout error:', error);
-    }
+    // Simulate successful checkout
+    toast.success('Order successful!', {
+      description: 'Redirecting to confirmation...',
+    });
+
+    setTimeout(() => {
+      navigate(`/demo/event-checkout-confirmation?eventId=${eventId}&eventName=${encodeURIComponent(eventName)}&eventDate=${encodeURIComponent(eventDate)}&email=${encodeURIComponent(formData.email)}`);
+    }, 1000);
   };
 
   const handleGuestContinue = () => {
@@ -208,7 +222,10 @@ export default function EventCheckoutForm({
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <CheckoutTimer onExpire={handleTimerExpire} duration={600} />
+      <FmTimerToast 
+        duration={600} 
+        onExpire={handleTimerExpire}
+      />
 
       {/* Header */}
       <div className="flex items-center gap-4">
@@ -248,6 +265,33 @@ export default function EventCheckoutForm({
                 </div>
               </Card>
             )}
+
+            {/* Ticket Protection */}
+            <Card className="p-6 bg-muted/20 border-fm-gold/30">
+              <div className="flex items-start gap-3">
+                <Shield className="h-5 w-5 text-fm-gold mt-0.5 flex-shrink-0" />
+                <div className="flex-1">
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <h3 className="font-medium text-sm mb-1">Ticket Protection</h3>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        Get a full refund if you can't attend due to illness, weather, or other covered reasons. 
+                        Adds 15% of ticket price.
+                      </p>
+                    </div>
+                    <span className="text-sm font-medium text-fm-gold ml-4">
+                      +${ticketProtectionFee.toFixed(2)}
+                    </span>
+                  </div>
+                  <FmCommonFormCheckbox
+                    id="ticketProtection"
+                    checked={ticketProtection}
+                    onCheckedChange={setTicketProtection}
+                    label="Add ticket protection to my order"
+                  />
+                </div>
+              </div>
+            </Card>
 
             {/* Customer Information */}
             <Card className="p-6">
@@ -398,38 +442,32 @@ export default function EventCheckoutForm({
             </Card>
 
             {/* Marketing Consent */}
-            <div className="flex items-start gap-3">
-              <Checkbox
-                id="smsConsent"
-                checked={formData.smsConsent}
-                onCheckedChange={(checked) => handleInputChange('smsConsent', checked as boolean)}
-              />
-              <Label htmlFor="smsConsent" className="text-sm font-normal cursor-pointer">
-                Sign up for SMS and email updates about upcoming events and special offers
-              </Label>
-            </div>
+            <FmCommonFormCheckbox
+              id="smsConsent"
+              checked={formData.smsConsent}
+              onCheckedChange={(checked) => handleInputChange('smsConsent', checked)}
+              label="Sign up for SMS and email updates about upcoming events and special offers"
+            />
 
             {/* Terms and Conditions */}
-            <div className="flex items-start gap-3">
-              <Checkbox
-                id="terms"
-                checked={formData.agreeToTerms}
-                onCheckedChange={(checked) => handleInputChange('agreeToTerms', checked as boolean)}
-              />
-              <Label htmlFor="terms" className="text-sm font-normal cursor-pointer">
-                I agree to the{' '}
-                <a href="/terms" className="text-fm-gold hover:underline" target="_blank">
-                  Terms and Conditions
-                </a>{' '}
-                and{' '}
-                <a href="/privacy" className="text-fm-gold hover:underline" target="_blank">
-                  Privacy Policy
-                </a>
-              </Label>
-            </div>
-            {errors.agreeToTerms && (
-              <p className="text-xs text-destructive">{errors.agreeToTerms}</p>
-            )}
+            <FmCommonFormCheckbox
+              id="terms"
+              checked={formData.agreeToTerms}
+              onCheckedChange={(checked) => handleInputChange('agreeToTerms', checked)}
+              label={
+                <>
+                  I agree to the{' '}
+                  <a href="/terms" className="text-fm-gold hover:underline" target="_blank">
+                    Terms and Conditions
+                  </a>{' '}
+                  and{' '}
+                  <a href="/privacy" className="text-fm-gold hover:underline" target="_blank">
+                    Privacy Policy
+                  </a>
+                </>
+              }
+              error={errors.agreeToTerms}
+            />
 
             {/* Order Summary Before Submit */}
             <Card className="p-6 bg-muted/10">
@@ -452,9 +490,26 @@ export default function EventCheckoutForm({
                   <span>${orderSummary.subtotal.toFixed(2)}</span>
                 </div>
 
+                {ticketProtection && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Ticket Protection</span>
+                    <span>${ticketProtectionFee.toFixed(2)}</span>
+                  </div>
+                )}
+
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Fees & Taxes</span>
-                  <span>${orderSummary.fees.toFixed(2)}</span>
+                  <span className="text-muted-foreground">Service Fee</span>
+                  <span>${serviceFee.toFixed(2)}</span>
+                </div>
+
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Processing Fee</span>
+                  <span>${processingFee.toFixed(2)}</span>
+                </div>
+
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Tax</span>
+                  <span>${tax.toFixed(2)}</span>
                 </div>
 
                 <Separator />
@@ -462,7 +517,7 @@ export default function EventCheckoutForm({
                 <div className="flex justify-between items-center pt-2">
                   <span className="font-canela text-lg">Total</span>
                   <span className="font-canela text-2xl text-fm-gold">
-                    ${orderSummary.total.toFixed(2)}
+                    ${finalTotal.toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -473,10 +528,10 @@ export default function EventCheckoutForm({
               type="submit"
               size="lg"
               className="w-full bg-fm-gold hover:bg-fm-gold/90 text-black"
-              disabled={!isFormValid || isLoading}
+              disabled={!isFormValid}
             >
               <Lock className="h-4 w-4 mr-2" />
-              {isLoading ? 'Processing...' : 'Purchase Tickets'}
+              Purchase Tickets
             </Button>
           </form>
         </div>

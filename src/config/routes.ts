@@ -95,6 +95,9 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
   '/demo/event-checkout': {
     label: 'Event Checkout Demo',
   },
+  '/demo/event-checkout-confirmation': {
+    label: 'Order Confirmed',
+  },
 
   // 404
   '/404': {

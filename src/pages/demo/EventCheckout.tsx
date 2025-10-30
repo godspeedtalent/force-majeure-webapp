@@ -147,6 +147,8 @@ export default function EventCheckout() {
           ) : checkoutStep === 'checkout' ? (
             <EventCheckoutForm
               eventId={selectedEventId}
+              eventName={eventDetails?.title || 'Event'}
+              eventDate={eventDetails?.date || ''}
               selections={ticketSelections}
               orderSummary={getOrderSummary()}
               onBack={handleBackToSelection}
