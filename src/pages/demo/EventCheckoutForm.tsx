@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, CreditCard, Lock, User } from 'lucide-react';
+import { ArrowLeft, CreditCard, Lock, User, UserPlus } from 'lucide-react';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useCheckout } from '@/features/events/hooks/useCheckout';
 import { CheckoutTimer } from '@/components/business/CheckoutTimer';
@@ -10,18 +10,43 @@ import { Label } from '@/components/ui/shadcn/label';
 import { Checkbox } from '@/components/ui/shadcn/checkbox';
 import { Separator } from '@/components/ui/shadcn/separator';
 import { Card } from '@/components/ui/shadcn/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/shadcn/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/shadcn/dialog';
+import { PhoneInput } from '@/components/ui/forms/PhoneInput';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { emailField, stringRequired, phoneField } from '@/shared/utils/formValidation';
+
+const US_STATES = [
+  { value: 'AL', label: 'Alabama' }, { value: 'AK', label: 'Alaska' }, { value: 'AZ', label: 'Arizona' },
+  { value: 'AR', label: 'Arkansas' }, { value: 'CA', label: 'California' }, { value: 'CO', label: 'Colorado' },
+  { value: 'CT', label: 'Connecticut' }, { value: 'DE', label: 'Delaware' }, { value: 'FL', label: 'Florida' },
+  { value: 'GA', label: 'Georgia' }, { value: 'HI', label: 'Hawaii' }, { value: 'ID', label: 'Idaho' },
+  { value: 'IL', label: 'Illinois' }, { value: 'IN', label: 'Indiana' }, { value: 'IA', label: 'Iowa' },
+  { value: 'KS', label: 'Kansas' }, { value: 'KY', label: 'Kentucky' }, { value: 'LA', label: 'Louisiana' },
+  { value: 'ME', label: 'Maine' }, { value: 'MD', label: 'Maryland' }, { value: 'MA', label: 'Massachusetts' },
+  { value: 'MI', label: 'Michigan' }, { value: 'MN', label: 'Minnesota' }, { value: 'MS', label: 'Mississippi' },
+  { value: 'MO', label: 'Missouri' }, { value: 'MT', label: 'Montana' }, { value: 'NE', label: 'Nebraska' },
+  { value: 'NV', label: 'Nevada' }, { value: 'NH', label: 'New Hampshire' }, { value: 'NJ', label: 'New Jersey' },
+  { value: 'NM', label: 'New Mexico' }, { value: 'NY', label: 'New York' }, { value: 'NC', label: 'North Carolina' },
+  { value: 'ND', label: 'North Dakota' }, { value: 'OH', label: 'Ohio' }, { value: 'OK', label: 'Oklahoma' },
+  { value: 'OR', label: 'Oregon' }, { value: 'PA', label: 'Pennsylvania' }, { value: 'RI', label: 'Rhode Island' },
+  { value: 'SC', label: 'South Carolina' }, { value: 'SD', label: 'South Dakota' }, { value: 'TN', label: 'Tennessee' },
+  { value: 'TX', label: 'Texas' }, { value: 'UT', label: 'Utah' }, { value: 'VT', label: 'Vermont' },
+  { value: 'VA', label: 'Virginia' }, { value: 'WA', label: 'Washington' }, { value: 'WV', label: 'West Virginia' },
+  { value: 'WI', label: 'Wisconsin' }, { value: 'WY', label: 'Wyoming' }
+];
 
 const checkoutFormSchema = z.object({
   fullName: stringRequired('Full name', 100),
   email: emailField,
   phone: phoneField,
   billingAddress: stringRequired('Billing address', 200),
+  billingAddress2: z.string().max(200, 'Address line 2 must be less than 200 characters').optional(),
   city: stringRequired('City', 100),
   state: stringRequired('State', 50),
   zipCode: stringRequired('ZIP code', 10),
+  smsConsent: z.boolean().optional(),
   agreeToTerms: z.boolean().refine((val) => val === true, {
     message: 'You must agree to the terms and conditions',
   }),
@@ -48,19 +73,23 @@ export default function EventCheckoutForm({
   const { user, loading } = useAuth();
   const { initiateCheckout, isLoading } = useCheckout();
   const [isGuestMode, setIsGuestMode] = useState(false);
+  const [showSignUpModal, setShowSignUpModal] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: '',
     email: user?.email || '',
     phone: '',
     billingAddress: '',
+    billingAddress2: '',
     city: '',
     state: '',
     zipCode: '',
+    smsConsent: false,
     agreeToTerms: false,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
   const [isFormValid, setIsFormValid] = useState(false);
 
   // Pre-fill email from authenticated user
@@ -89,6 +118,14 @@ export default function EventCheckoutForm({
       setIsFormValid(false);
     }
   }, [formData]);
+
+  const handleBlur = (field: string) => {
+    setTouchedFields(prev => ({ ...prev, [field]: true }));
+  };
+
+  const shouldShowError = (field: string) => {
+    return touchedFields[field] && errors[field];
+  };
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -184,10 +221,34 @@ export default function EventCheckoutForm({
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="max-w-2xl mx-auto">
         {/* Checkout Form */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="space-y-6">
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Guest Sign-Up Prompt */}
+            {isGuestMode && (
+              <Card className="p-6 bg-muted/20 border-fm-gold/30">
+                <div className="flex items-start gap-3">
+                  <UserPlus className="h-5 w-5 text-fm-gold mt-0.5" />
+                  <div className="flex-1">
+                    <h3 className="font-medium text-sm mb-1">Create an Account</h3>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      We'll save your information for next time, making checkout faster and easier.
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowSignUpModal(true)}
+                      className="border-fm-gold text-fm-gold hover:bg-fm-gold/10"
+                    >
+                      Sign Up Now
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            )}
+
             {/* Customer Information */}
             <Card className="p-6">
               <div className="flex items-center gap-2 mb-4">
@@ -201,9 +262,10 @@ export default function EventCheckoutForm({
                     id="fullName"
                     value={formData.fullName}
                     onChange={(e) => handleInputChange('fullName', e.target.value)}
+                    onBlur={() => handleBlur('fullName')}
                     placeholder="John Doe"
                   />
-                  {errors.fullName && (
+                  {shouldShowError('fullName') && (
                     <p className="text-xs text-destructive mt-1">{errors.fullName}</p>
                   )}
                 </div>
@@ -214,22 +276,22 @@ export default function EventCheckoutForm({
                     type="email"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
+                    onBlur={() => handleBlur('email')}
                     placeholder="john@example.com"
                   />
-                  {errors.email && (
+                  {shouldShowError('email') && (
                     <p className="text-xs text-destructive mt-1">{errors.email}</p>
                   )}
                 </div>
                 <div>
                   <Label htmlFor="phone">Phone Number *</Label>
-                  <Input
+                  <PhoneInput
                     id="phone"
-                    type="tel"
                     value={formData.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                    placeholder="+1 (555) 123-4567"
+                    onChange={(value) => handleInputChange('phone', value)}
+                    onBlur={() => handleBlur('phone')}
                   />
-                  {errors.phone && (
+                  {shouldShowError('phone') && (
                     <p className="text-xs text-destructive mt-1">{errors.phone}</p>
                   )}
                 </div>
@@ -244,15 +306,29 @@ export default function EventCheckoutForm({
               </div>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="billingAddress">Billing Address *</Label>
+                  <Label htmlFor="billingAddress">Address Line 1 *</Label>
                   <Input
                     id="billingAddress"
                     value={formData.billingAddress}
                     onChange={(e) => handleInputChange('billingAddress', e.target.value)}
+                    onBlur={() => handleBlur('billingAddress')}
                     placeholder="123 Main St"
                   />
-                  {errors.billingAddress && (
+                  {shouldShowError('billingAddress') && (
                     <p className="text-xs text-destructive mt-1">{errors.billingAddress}</p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="billingAddress2">Address Line 2</Label>
+                  <Input
+                    id="billingAddress2"
+                    value={formData.billingAddress2}
+                    onChange={(e) => handleInputChange('billingAddress2', e.target.value)}
+                    onBlur={() => handleBlur('billingAddress2')}
+                    placeholder="Apt, Suite, Unit, etc. (optional)"
+                  />
+                  {shouldShowError('billingAddress2') && (
+                    <p className="text-xs text-destructive mt-1">{errors.billingAddress2}</p>
                   )}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -262,21 +338,31 @@ export default function EventCheckoutForm({
                       id="city"
                       value={formData.city}
                       onChange={(e) => handleInputChange('city', e.target.value)}
+                      onBlur={() => handleBlur('city')}
                       placeholder="New York"
                     />
-                    {errors.city && (
+                    {shouldShowError('city') && (
                       <p className="text-xs text-destructive mt-1">{errors.city}</p>
                     )}
                   </div>
                   <div>
                     <Label htmlFor="state">State *</Label>
-                    <Input
-                      id="state"
+                    <Select
                       value={formData.state}
-                      onChange={(e) => handleInputChange('state', e.target.value)}
-                      placeholder="NY"
-                    />
-                    {errors.state && (
+                      onValueChange={(value) => handleInputChange('state', value)}
+                    >
+                      <SelectTrigger id="state" onBlur={() => handleBlur('state')}>
+                        <SelectValue placeholder="Select state" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {US_STATES.map((state) => (
+                          <SelectItem key={state.value} value={state.value}>
+                            {state.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {shouldShowError('state') && (
                       <p className="text-xs text-destructive mt-1">{errors.state}</p>
                     )}
                   </div>
@@ -287,9 +373,10 @@ export default function EventCheckoutForm({
                     id="zipCode"
                     value={formData.zipCode}
                     onChange={(e) => handleInputChange('zipCode', e.target.value)}
+                    onBlur={() => handleBlur('zipCode')}
                     placeholder="10001"
                   />
-                  {errors.zipCode && (
+                  {shouldShowError('zipCode') && (
                     <p className="text-xs text-destructive mt-1">{errors.zipCode}</p>
                   )}
                 </div>
@@ -309,6 +396,18 @@ export default function EventCheckoutForm({
                 </div>
               </div>
             </Card>
+
+            {/* Marketing Consent */}
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="smsConsent"
+                checked={formData.smsConsent}
+                onCheckedChange={(checked) => handleInputChange('smsConsent', checked as boolean)}
+              />
+              <Label htmlFor="smsConsent" className="text-sm font-normal cursor-pointer">
+                Sign up for SMS and email updates about upcoming events and special offers
+              </Label>
+            </div>
 
             {/* Terms and Conditions */}
             <div className="flex items-start gap-3">
@@ -332,6 +431,43 @@ export default function EventCheckoutForm({
               <p className="text-xs text-destructive">{errors.agreeToTerms}</p>
             )}
 
+            {/* Order Summary Before Submit */}
+            <Card className="p-6 bg-muted/10">
+              <h3 className="text-lg font-canela mb-4">Order Summary</h3>
+              <div className="space-y-3">
+                {orderSummary.tickets.map((ticket, idx) => (
+                  <div key={idx} className="flex justify-between text-sm">
+                    <div>
+                      <div className="font-medium">{ticket.name}</div>
+                      <div className="text-xs text-muted-foreground">Qty: {ticket.quantity}</div>
+                    </div>
+                    <div className="font-medium">${(ticket.price * ticket.quantity).toFixed(2)}</div>
+                  </div>
+                ))}
+
+                <Separator />
+
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Subtotal</span>
+                  <span>${orderSummary.subtotal.toFixed(2)}</span>
+                </div>
+
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Fees & Taxes</span>
+                  <span>${orderSummary.fees.toFixed(2)}</span>
+                </div>
+
+                <Separator />
+
+                <div className="flex justify-between items-center pt-2">
+                  <span className="font-canela text-lg">Total</span>
+                  <span className="font-canela text-2xl text-fm-gold">
+                    ${orderSummary.total.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            </Card>
+
             {/* Submit Button */}
             <Button
               type="submit"
@@ -344,52 +480,25 @@ export default function EventCheckoutForm({
             </Button>
           </form>
         </div>
-
-        {/* Order Summary Sidebar */}
-        <div className="lg:col-span-1">
-          <Card className="p-6 sticky top-6">
-            <h3 className="text-lg font-canela mb-4">Order Summary</h3>
-            <div className="space-y-3">
-              {orderSummary.tickets.map((ticket, idx) => (
-                <div key={idx} className="flex justify-between text-sm">
-                  <div>
-                    <div className="font-medium">{ticket.name}</div>
-                    <div className="text-xs text-muted-foreground">Qty: {ticket.quantity}</div>
-                  </div>
-                  <div className="font-medium">${(ticket.price * ticket.quantity).toFixed(2)}</div>
-                </div>
-              ))}
-
-              <Separator />
-
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Subtotal</span>
-                <span>${orderSummary.subtotal.toFixed(2)}</span>
-              </div>
-
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Fees & Taxes</span>
-                <span>${orderSummary.fees.toFixed(2)}</span>
-              </div>
-
-              <Separator />
-
-              <div className="flex justify-between items-center pt-2">
-                <span className="font-canela text-lg">Total</span>
-                <span className="font-canela text-2xl text-fm-gold">
-                  ${orderSummary.total.toFixed(2)}
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-4 p-3 bg-fm-gold/10 border border-fm-gold/30 rounded-md">
-              <p className="text-xs text-fm-gold">
-                🔒 Your tickets are reserved and will be released if not purchased within the time limit
-              </p>
-            </div>
-          </Card>
-        </div>
       </div>
+
+      {/* Sign Up Modal */}
+      <Dialog open={showSignUpModal} onOpenChange={setShowSignUpModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-canela text-2xl">Create Your Account</DialogTitle>
+          </DialogHeader>
+          <AuthPanel
+            onAuthSuccess={() => {
+              setShowSignUpModal(false);
+              setIsGuestMode(false);
+              toast.success('Account created successfully!');
+            }}
+            title=""
+            description="Save your information for faster checkout next time"
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
