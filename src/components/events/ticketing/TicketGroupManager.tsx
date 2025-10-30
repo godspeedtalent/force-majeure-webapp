@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Plus, GripVertical, Trash2, ChevronDown, ChevronRight, Copy, AlertCircle, BarChart3, Ticket } from 'lucide-react';
+import { Plus, GripVertical, Trash2, ChevronRight, Copy, AlertCircle, BarChart3, Ticket } from 'lucide-react';
 import { Button } from '@/components/ui/shadcn/button';
 import { Input } from '@/components/ui/shadcn/input';
 import { Label } from '@/components/ui/shadcn/label';
 import { Switch } from '@/components/ui/shadcn/switch';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/shadcn/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/shadcn/card';
 import { Badge } from '@/components/ui/shadcn/badge';
 import { Separator } from '@/components/ui/shadcn/separator';
 import { cn } from '@/shared/utils/utils';
@@ -58,8 +58,8 @@ const GROUP_COLORS = [
 
 export function TicketGroupManager({ groups, onChange }: TicketGroupManagerProps) {
   const [activeView, setActiveView] = useState<'overview' | string>('overview');
-  const [draggedGroupIndex, setDraggedGroupIndex] = useState<number | null>(null);
-  const [draggedTierInfo, setDraggedTierInfo] = useState<{ groupIndex: number; tierIndex: number } | null>(null);
+  const [_draggedGroupIndex, _setDraggedGroupIndex] = useState<number | null>(null);
+  const [_draggedTierInfo, _setDraggedTierInfo] = useState<{ groupIndex: number; tierIndex: number } | null>(null);
 
   // Calculate totals for overview
   const totalTickets = groups.reduce((sum, group) => 

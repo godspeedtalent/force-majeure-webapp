@@ -133,11 +133,7 @@ export function EventArtistManagement({
   return (
     <div className={cn('space-y-6', className)}>
       {/* Headliners Section */}
-      <FormSection
-        title="Headliners"
-        icon={Star}
-        description="Main acts for this event"
-      >
+      <FormSection title="Headliners">
         <div className="space-y-3">
           {headliners.length === 0 && (
             <div className="text-center py-8 text-muted-foreground border-2 border-dashed border-white/10 rounded-lg">
@@ -247,11 +243,7 @@ export function EventArtistManagement({
       </FormSection>
 
       {/* Undercard Section */}
-      <FormSection
-        title="Undercard Artists"
-        icon={Users2}
-        description="Supporting acts and openers"
-      >
+      <FormSection title="Undercard Artists">
         <div className="space-y-3">
           {undercards.length === 0 && (
             <div className="text-center py-8 text-muted-foreground border-2 border-dashed border-white/10 rounded-lg">
@@ -348,6 +340,7 @@ export function EventArtistManagement({
         </div>
         <FmCommonToggle
           id="show-scheduling"
+          label="Set Scheduling"
           checked={showScheduling}
           onCheckedChange={setShowScheduling}
         />

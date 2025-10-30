@@ -22,7 +22,7 @@ export const DevToolsDrawer = () => {
   const isOpen = isDrawerOpen;
 
   // Get visibility settings from localStorage
-  const [visibleSections, setVisibleSections] = useState<Record<string, boolean>>(() => {
+  const [visibleSections] = useState<Record<string, boolean>>(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       try {

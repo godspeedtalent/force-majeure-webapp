@@ -215,7 +215,7 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
               No ticket tiers available for this event
             </div>
           ) : (
-            Object.entries(tiersGrouped).map(([groupName, groupTiers], groupIndex) => (
+            Object.entries(tiersGrouped).map(([groupName, groupTiers]) => (
               <div key={groupName} className='space-y-2'>
                 {/* Group Header */}
                 <button

@@ -153,7 +153,7 @@ export default function EventManagement() {
       // Fetch headliner and venue for title generation
       const [headlinerRes, venueRes] = await Promise.all([
         supabase.from('artists').select('name').eq('id', headlinerId).maybeSingle(),
-        supabase.from('venues').select('name').eq('id', venueId).maybeSingle(),
+        supabase.from('venues' as any).select('name').eq('id', venueId).maybeSingle(),
       ]);
 
       const eventTitle = headlinerRes.data && venueRes.data
@@ -175,7 +175,7 @@ export default function EventManagement() {
           is_after_hours: isAfterHours,
           hero_image: heroImage || null,
         })
-        .eq('id', id);
+        .eq('id', id!);
 
       if (error) throw error;
 
@@ -207,7 +207,7 @@ export default function EventManagement() {
     try {
       // Delete ticket tiers first (foreign key constraint)
       const { error: tiersError } = await supabase
-        .from('ticket_tiers')
+        .from('ticket_tiers' as any)
         .delete()
         .eq('event_id', id);
 

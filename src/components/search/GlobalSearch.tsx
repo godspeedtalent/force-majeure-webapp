@@ -74,7 +74,7 @@ export const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
           .ilike('name', `%${query}%`)
           .limit(5),
         supabase
-          .from('venues')
+          .from('venues' as any)
           .select('id, name, cities(name, state)')
           .ilike('name', `%${query}%`)
           .limit(5),
@@ -95,7 +95,7 @@ export const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
         data: artist,
       }));
 
-      const venues: SearchResult[] = (venuesRes.data || []).map(venue => ({
+      const venues: SearchResult[] = ((venuesRes.data as any) || []).map((venue: any) => ({
         id: venue.id,
         title: venue.name,
         subtitle: venue.cities

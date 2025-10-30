@@ -1,4 +1,4 @@
-import { MapPin, Clock, Play, ExternalLink, Loader2 } from 'lucide-react';
+import { MapPin, Clock, Play, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';

@@ -57,7 +57,7 @@ export class TestEventDataService extends TestDataService {
       // Fetch available artists and venues
       const [artistsRes, venuesRes] = await Promise.all([
         supabase.from('artists').select('id, name').limit(100),
-        supabase.from('venues').select('id, name, capacity').limit(50),
+        supabase.from('venues' as any).select('id, name, capacity').limit(50),
       ]);
 
       if (artistsRes.error) throw artistsRes.error;
@@ -83,20 +83,20 @@ export class TestEventDataService extends TestDataService {
       const endTimeString = '02:00'; // 2am next day
 
       // Create event title
-      const eventTitle = `${headliner.name} @ ${venue.name}`;
+      const eventTitle = `${(headliner as any).name} @ ${(venue as any).name}`;
 
       // Create the event
       const { data: event, error: eventError } = await supabase
-        .from('events')
+        .from('events' as any)
         .insert({
           title: eventTitle,
-          headliner_id: headliner.id,
-          venue_id: venue.id,
+          headliner_id: (headliner as any).id,
+          venue_id: (venue as any).id,
           date: eventDateString,
           time: eventTimeString,
           end_time: endTimeString,
           is_after_hours: false,
-          undercard_ids: supports.map(a => a.id),
+          undercard_ids: supports.map((a: any) => a.id),
           test_data: true,
         })
         .select('id')
@@ -106,10 +106,10 @@ export class TestEventDataService extends TestDataService {
       if (!event) throw new Error('Failed to create event');
 
       // Generate ticket tiers
-      const ticketGroups = this.generateTicketGroups(venue.capacity || 500);
-      await this.createTicketTiers(event.id, ticketGroups, venue.capacity || 500);
+      const ticketGroups = this.generateTicketGroups((venue as any).capacity || 500);
+      await this.createTicketTiers((event as any).id, ticketGroups, (venue as any).capacity || 500);
 
-      return event.id;
+      return (event as any).id;
     } catch (error) {
       console.error('Error creating test event:', error);
       throw error;
@@ -163,7 +163,7 @@ export class TestEventDataService extends TestDataService {
   private async createTicketTiers(
     eventId: string,
     ticketGroups: TicketGroup[],
-    venueCapacity: number
+    _venueCapacity: number
   ): Promise<void> {
     const allTiers: any[] = [];
     let tierOrder = 0;
@@ -207,7 +207,7 @@ export class TestEventDataService extends TestDataService {
       }
     }
 
-    const { error } = await supabase.from('ticket_tiers').insert(allTiers);
+    const { error } = await supabase.from('ticket_tiers' as any).insert(allTiers);
     if (error) throw error;
   }
 
@@ -248,7 +248,7 @@ export class TestEventDataService extends TestDataService {
       const eventIds = testEvents.map(e => e.id);
 
       // Delete ticket tiers first (foreign key constraint)
-      await supabase.from('ticket_tiers').delete().in('event_id', eventIds);
+      await supabase.from('ticket_tiers' as any).delete().in('event_id', eventIds);
 
       // Delete events
       const { error: deleteError } = await supabase
