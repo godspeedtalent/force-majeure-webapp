@@ -19,6 +19,7 @@ import { Label } from '@/components/ui/shadcn/label';
 import { Checkbox } from '@/components/ui/shadcn/checkbox';
 import { format, parse } from 'date-fns';
 import { useAuth } from '@/features/auth/services/AuthContext';
+import { logApiError } from '@/shared/utils/logger';
 
 type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'admin';
 
@@ -129,7 +130,12 @@ export default function EventManagement() {
       toast.success('Event updated successfully');
       queryClient.invalidateQueries({ queryKey: ['event', id] });
     } catch (error) {
-      console.error('Error updating event:', error);
+      await logApiError({
+        endpoint: 'EventManagement',
+        method: 'UPDATE',
+        message: 'Error updating event',
+        details: error,
+      });
       toast.error('Failed to update event');
     }
   };
@@ -174,7 +180,12 @@ export default function EventManagement() {
       toast.success('Overview updated successfully');
       queryClient.invalidateQueries({ queryKey: ['event', id] });
     } catch (error) {
-      console.error('Error updating overview:', error);
+      await logApiError({
+        endpoint: 'EventManagement',
+        method: 'UPDATE',
+        message: 'Error updating overview',
+        details: error,
+      });
       toast.error('Failed to update overview');
     } finally {
       setIsSaving(false);
@@ -213,7 +224,12 @@ export default function EventManagement() {
       // Navigate back to admin or home
       navigate('/admin');
     } catch (error) {
-      console.error('Error deleting event:', error);
+      await logApiError({
+        endpoint: 'EventManagement',
+        method: 'DELETE',
+        message: 'Error deleting event',
+        details: error,
+      });
       toast.error('Failed to delete event', {
         description: error instanceof Error ? error.message : 'An unexpected error occurred',
       });
@@ -224,24 +240,16 @@ export default function EventManagement() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <TopographicBackground />
-        <Navigation />
-        <div className="container mx-auto py-8">
-          <p className="text-muted-foreground">Loading event...</p>
-        </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-muted-foreground">Loading event...</p>
       </div>
     );
   }
 
   if (!event) {
     return (
-      <div className="min-h-screen bg-background">
-        <TopographicBackground />
-        <Navigation />
-        <div className="container mx-auto py-8">
-          <p className="text-muted-foreground">Event not found</p>
-        </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-muted-foreground">Event not found</p>
       </div>
     );
   }

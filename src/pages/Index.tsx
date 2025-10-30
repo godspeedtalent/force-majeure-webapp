@@ -56,6 +56,16 @@ const Index = () => {
       return () => clearTimeout(timer);
     }
   }, [fontsLoaded, loading]);
+  // Reusable error handler
+  const handleFetchError = async (context: string, error: any) => {
+    await logApiError({
+      endpoint: 'page:Index',
+      method: 'FETCH',
+      message: `Error ${context}`,
+      details: error,
+    });
+  };
+
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -71,13 +81,7 @@ const Index = () => {
             ascending: true,
           });
         if (error) {
-          console.error('Error fetching events:', error);
-          await logApiError({
-            endpoint: 'supabase:events',
-            method: 'SELECT',
-            message: 'Error fetching events',
-            details: error,
-          });
+          await handleFetchError('fetching events', error);
           return;
         }
 
@@ -109,16 +113,7 @@ const Index = () => {
                     .select('id, name, genre, image_url')
                     .in('id', event.undercard_ids);
                   if (artistsError) {
-                    console.error(
-                      'Error fetching undercard artists:',
-                      artistsError
-                    );
-                    await logApiError({
-                      endpoint: 'supabase:artists',
-                      method: 'SELECT',
-                      message: 'Error fetching undercard artists',
-                      details: { eventId, error: artistsError },
-                    });
+                    await handleFetchError(`fetching undercard for event ${eventId}`, artistsError);
                   }
                   return {
                     eventId,
@@ -162,19 +157,13 @@ const Index = () => {
         });
         setUpcomingEvents(transformedEvents);
       } catch (error) {
-        console.error('Error fetching events:', error);
-        await logApiError({
-          endpoint: 'page:Index',
-          method: 'INIT',
-          message: 'Unhandled error fetching events',
-          details: String(error),
-        });
+        await handleFetchError('in initialization', error);
       } finally {
         setLoading(false);
       }
     };
     fetchEvents();
-  }, []);
+  }, [handleFetchError]);
 
   // Memoize scroll-based calculations
   const { parallaxOffset, fadeOpacity, loginButtonOpacity } = useMemo(() => ({

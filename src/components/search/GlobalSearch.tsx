@@ -4,6 +4,7 @@ import { X, Search, Calendar, Users as UsersIcon, MapPin } from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
 import { Input } from '@/components/ui/shadcn/input';
 import { cn } from '@/shared/utils/utils';
+import { logApiError } from '@/shared/utils/logger';
 
 interface SearchResult {
   id: string;
@@ -107,7 +108,12 @@ export const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
       setResults({ events, artists, venues });
       setSelectedIndex(0);
     } catch (error) {
-      console.error('Search error:', error);
+      await logApiError({
+        endpoint: 'GlobalSearch',
+        method: 'SEARCH',
+        message: 'Search error',
+        details: error,
+      });
     } finally {
       setIsSearching(false);
     }
@@ -127,11 +133,11 @@ export const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
     if (result.type === 'event') {
       navigate(`/event/${result.id}`);
     } else if (result.type === 'artist') {
-      // Navigate to artist page when implemented
-      console.log('Navigate to artist:', result.id);
+      // TODO: Navigate to artist page when implemented
+      onClose();
     } else if (result.type === 'venue') {
-      // Navigate to venue page when implemented
-      console.log('Navigate to venue:', result.id);
+      // TODO: Navigate to venue page when implemented
+      onClose();
     }
     onClose();
   }, [navigate, onClose]);
