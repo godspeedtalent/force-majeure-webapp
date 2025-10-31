@@ -34,6 +34,7 @@ interface AuthContextType {
     displayName?: string
   ) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signInWithGoogle: () => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: any }>;
   refreshProfile: () => Promise<void>;
@@ -224,6 +225,39 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const signInWithGoogle = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+        },
+      });
+
+      if (error) {
+        toast({
+          title: 'Google sign in failed',
+          description: error.message,
+          variant: 'destructive',
+        });
+      }
+
+      return { error };
+    } catch (error: any) {
+      const errorMsg = error?.message || 'An unexpected error occurred';
+      toast({
+        title: 'Google sign in failed',
+        description: errorMsg,
+        variant: 'destructive',
+      });
+      return { error };
+    }
+  };
+
   const signOut = async () => {
     try {
       // Clear session persistence when user explicitly logs out
@@ -290,6 +324,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     loading,
     signUp,
     signIn,
+    signInWithGoogle,
     signOut,
     updateProfile,
     refreshProfile,

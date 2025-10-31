@@ -1,9 +1,24 @@
 /**
  * Format times like "9:00PM" => "9PM". Works across ranges too.
+ * Also handles numeric hour inputs (e.g., 21 => "9PM", 14 => "2PM")
  */
-export const formatTimeDisplay = (timeStr?: string | null): string => {
-  if (!timeStr) return '';
-  let out = timeStr;
+export const formatTimeDisplay = (timeStr?: string | number | null): string => {
+  if (!timeStr && timeStr !== 0) return '';
+
+  let out = String(timeStr);
+
+  // Handle numeric hours (e.g., 21, 14, 9)
+  const numericHour = Number(out);
+  if (!isNaN(numericHour) && out.match(/^\d+$/)) {
+    if (numericHour >= 0 && numericHour < 24) {
+      // Convert 24-hour to 12-hour format with AM/PM
+      if (numericHour === 0) return '12AM';
+      if (numericHour < 12) return `${numericHour}AM`;
+      if (numericHour === 12) return '12PM';
+      return `${numericHour - 12}PM`;
+    }
+  }
+
   // Remove :00 before AM/PM (e.g., 9:00 PM -> 9 PM)
   out = out.replace(/:00(?=\s*(?:AM|PM|am|pm)\b)/g, '');
   // Remove trailing :00 for 24h formats (e.g., 21:00 -> 21)

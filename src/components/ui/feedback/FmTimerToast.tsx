@@ -51,18 +51,22 @@ export const FmTimerToast = ({
     const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
     const progress = ((duration - timeLeft) / duration) * 100;
 
-    // Calculate progress bar color
+    // Calculate progress bar color and clock icon color
     let barColor = 'bg-fm-gold';
+    let iconColor = 'text-fm-gold';
+
     if (progress > 80) {
       barColor = progress > 95 ? 'bg-[hsl(348,60%,50%)]' : 'bg-gradient-to-r from-white to-[hsl(348,60%,50%)]';
+      iconColor = progress > 95 ? 'text-[hsl(348,60%,50%)]' : 'text-white';
     } else if (progress > 0) {
       barColor = progress < 20 ? 'bg-fm-gold' : 'bg-gradient-to-r from-fm-gold to-white';
+      iconColor = progress < 20 ? 'text-fm-gold' : 'text-white';
     }
 
     const content = (
       <div className="relative w-full">
         <div className="flex items-center gap-3 pb-3">
-          <Clock className="h-4 w-4 text-fm-gold flex-shrink-0" />
+          <Clock className={`h-4 w-4 flex-shrink-0 transition-colors duration-1000 ${iconColor}`} />
           <div className="flex-1">
             <div className="font-canela font-semibold">{title}</div>
             <div className="text-xs text-muted-foreground">

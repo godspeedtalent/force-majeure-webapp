@@ -23,7 +23,9 @@
       "Bash(for dir in data buttons forms modals search feedback misc)",
       "Bash(do echo \"=== $dir ===\")",
       "Bash(git stash:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(npm audit:*)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []

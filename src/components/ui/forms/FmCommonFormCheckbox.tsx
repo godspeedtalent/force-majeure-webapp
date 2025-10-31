@@ -1,4 +1,4 @@
-import { Checkbox } from '@/components/ui/shadcn/checkbox';
+import { FmCommonCheckbox } from '@/components/ui/forms/FmCommonCheckbox';
 import { Label } from '@/components/ui/shadcn/label';
 
 interface FmCommonFormCheckboxProps {
@@ -19,10 +19,10 @@ export const FmCommonFormCheckbox = ({
   return (
     <div>
       <div className="flex items-start gap-3">
-        <Checkbox
+        <FmCommonCheckbox
           id={id}
           checked={checked}
-          onCheckedChange={(checked) => onCheckedChange(checked as boolean)}
+          onCheckedChange={onCheckedChange}
         />
         <Label htmlFor={id} className="text-sm font-normal cursor-pointer leading-relaxed">
           {label}

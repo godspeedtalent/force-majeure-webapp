@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/shadcn/dialog';
 import { PhoneInput } from '@/components/ui/forms/PhoneInput';
 import { toast } from '@/components/ui/feedback/FmCommonToast';
+import { FmInfoCard } from '@/components/ui/data/FmInfoCard';
 import { z } from 'zod';
 import { emailField, stringRequired, phoneField } from '@/shared/utils/formValidation';
 import { useNavigate } from 'react-router-dom';
@@ -242,57 +243,6 @@ export default function EventCheckoutForm({
         {/* Checkout Form */}
         <div className="space-y-6">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Guest Sign-Up Prompt */}
-            {isGuestMode && (
-              <Card className="p-6 bg-muted/20 border-fm-gold/30">
-                <div className="flex items-start gap-3">
-                  <UserPlus className="h-5 w-5 text-fm-gold mt-0.5" />
-                  <div className="flex-1">
-                    <h3 className="font-medium text-sm mb-1">Create an Account</h3>
-                    <p className="text-xs text-muted-foreground mb-3">
-                      We'll save your information for next time, making checkout faster and easier.
-                    </p>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowSignUpModal(true)}
-                      className="border-fm-gold text-fm-gold hover:bg-fm-gold/10"
-                    >
-                      Sign Up Now
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            )}
-
-            {/* Ticket Protection */}
-            <Card className="p-6 bg-muted/20 border-fm-gold/30">
-              <div className="flex items-start gap-3">
-                <Shield className="h-5 w-5 text-fm-gold mt-0.5 flex-shrink-0" />
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <h3 className="font-medium text-sm mb-1">Ticket Protection</h3>
-                      <p className="text-xs text-muted-foreground mb-3">
-                        Get a full refund if you can't attend due to illness, weather, or other covered reasons. 
-                        Adds 15% of ticket price.
-                      </p>
-                    </div>
-                    <span className="text-sm font-medium text-fm-gold ml-4">
-                      +${ticketProtectionFee.toFixed(2)}
-                    </span>
-                  </div>
-                  <FmCommonFormCheckbox
-                    id="ticketProtection"
-                    checked={ticketProtection}
-                    onCheckedChange={setTicketProtection}
-                    label="Add ticket protection to my order"
-                  />
-                </div>
-              </div>
-            </Card>
-
             {/* Customer Information */}
             <Card className="p-6">
               <div className="flex items-center gap-2 mb-4">
@@ -427,19 +377,53 @@ export default function EventCheckoutForm({
               </div>
             </Card>
 
-            {/* Payment Information Note */}
-            <Card className="p-6 bg-muted/20">
-              <div className="flex items-start gap-3">
-                <Lock className="h-5 w-5 text-fm-gold mt-0.5" />
-                <div className="flex-1">
-                  <h3 className="font-medium text-sm mb-1">Secure Payment</h3>
-                  <p className="text-xs text-muted-foreground">
-                    You'll be redirected to Stripe's secure checkout page to complete your payment. 
-                    Your payment information is never stored on our servers.
+            {/* Guest Sign-Up Prompt */}
+            {isGuestMode && (
+              <FmInfoCard
+                icon={UserPlus}
+                title="Create an Account"
+                description="We'll save your information for next time, making checkout faster and easier."
+              >
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowSignUpModal(true)}
+                  className="border-fm-gold text-fm-gold hover:bg-fm-gold/10"
+                >
+                  Sign Up Now
+                </Button>
+              </FmInfoCard>
+            )}
+
+            {/* Secure Payment */}
+            <FmInfoCard
+              icon={Lock}
+              title="Secure Payment"
+              description="You'll be redirected to Stripe's secure checkout page to complete your payment. Your payment information is never stored on our servers."
+            />
+
+            {/* Ticket Protection */}
+            <FmInfoCard icon={Shield}>
+              <div className="flex items-start justify-between mb-2">
+                <div>
+                  <h3 className="font-medium text-sm mb-1">Ticket Protection</h3>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    Get a full refund if you can't attend due to illness, weather, or other covered reasons.
+                    Adds 15% of ticket price.
                   </p>
                 </div>
+                <span className="text-sm font-medium text-fm-gold ml-4">
+                  +${ticketProtectionFee.toFixed(2)}
+                </span>
               </div>
-            </Card>
+              <FmCommonFormCheckbox
+                id="ticketProtection"
+                checked={ticketProtection}
+                onCheckedChange={setTicketProtection}
+                label="Add ticket protection to my order"
+              />
+            </FmInfoCard>
 
             {/* Marketing Consent */}
             <FmCommonFormCheckbox

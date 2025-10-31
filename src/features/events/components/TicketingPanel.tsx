@@ -1,5 +1,6 @@
-import { ShoppingCart, Ticket, ChevronDown } from 'lucide-react';
+import { ShoppingCart, Ticket, ChevronDown, Gift, LogIn, Tag } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/shadcn/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/shadcn/select';
@@ -7,8 +8,10 @@ import { Label } from '@/components/ui/shadcn/label';
 import { Separator } from '@/components/ui/shadcn/separator';
 import { FmTicketTierList } from './FmTicketTierList';
 import { FmPromoCodeInput } from '@/components/ui/misc/FmPromoCodeInput';
+import { FmInfoCard } from '@/components/ui/data/FmInfoCard';
 import { useFees } from '../hooks/useFees';
 import { cn } from '@/shared/utils/utils';
+import { useAuth } from '@/features/auth/services/AuthContext';
 
 interface TicketTier {
   id: string;
@@ -44,6 +47,8 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
     'VIP': true,
   });
   const { calculateFees, getTotalFees } = useFees();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   // Sort tiers by order
   const sortedTiers = [...tiers].sort((a, b) => a.tier_order - b.tier_order);
@@ -200,9 +205,9 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
       <div>
         <h3 className='flex items-center gap-2 text-foreground font-canela text-xl mb-1'>
           <Ticket className='h-5 w-5 text-fm-gold' />
-          Get Tickets
+          Select tickets
         </h3>
-        <p className='text-sm text-muted-foreground'>Select your tickets and quantity</p>
+        <p className='text-sm text-muted-foreground'>Choose your tickets and quantity</p>
         <div className='mt-2 px-3 py-2 bg-fm-gold/10 border border-fm-gold/30 rounded-md'>
           <p className='text-xs text-fm-gold'>
             All ticket prices shown include service fees and taxes
@@ -233,7 +238,7 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
 
                 {/* Group Tiers */}
                 {expandedGroups[groupName] && (
-                  <div className='space-y-0 border border-border rounded-md overflow-hidden'>
+                  <div className='space-y-0 border border-border rounded-md overflow-visible relative'>
                     {groupTiers.map((tier, tierIndex) => {
                       const globalIndex = sortedTiers.findIndex(t => t.id === tier.id);
                       const isVisible = isTierVisible(tier, globalIndex);
@@ -266,7 +271,7 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
                                     ${calculateFinalTicketPrice(tier.price).toFixed(2)}
                                   </span>
                                   {/* Price Breakdown Tooltip */}
-                                  <div className='absolute right-0 bottom-full mb-2 hidden group-hover/price:block bg-popover text-popover-foreground px-3 py-2 rounded-md border border-border shadow-lg whitespace-nowrap z-20 min-w-[200px]'>
+                                  <div className='absolute right-0 bottom-full mb-2 hidden group-hover/price:block bg-popover text-popover-foreground px-3 py-2 rounded-md border border-border shadow-lg whitespace-nowrap z-50 min-w-[200px]'>
                                     <div className='text-xs font-medium mb-2 text-foreground'>Price Breakdown</div>
                                     <div className='space-y-1'>
                                       {getPriceBreakdown(tier.price).breakdown.map((item, idx) => (
@@ -337,12 +342,36 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false }: Ticketi
 
         <Separator className='mt-4' />
 
-        {/* Promo Code Input */}
-        <div className='px-3 py-3 bg-muted/10 rounded-md'>
-          <div className='text-xs text-muted-foreground mb-2'>Have a promo code?</div>
-          <FmPromoCodeInput onPromoCodeApplied={handlePromoCodeApplied} />
+        {/* Promo Code & Member Rewards */}
+        <div className='grid grid-cols-2 gap-3'>
+          {/* Promo Code Input */}
+          <FmInfoCard icon={Tag} title="Promo Code" description="Have a promo code?" className="p-4">
+            <FmPromoCodeInput onPromoCodeApplied={handlePromoCodeApplied} />
+          </FmInfoCard>
+
+          {/* Member Rewards */}
+          <FmInfoCard icon={Gift} title="Member Rewards" className="p-4">
+            {!user ? (
+              <div className='flex flex-col items-center justify-center text-center space-y-2'>
+                <div className='text-xs text-muted-foreground'>
+                  Sign in to see your rewards
+                </div>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  onClick={() => navigate('/auth')}
+                  className='text-xs h-8 border-fm-gold text-fm-gold hover:bg-fm-gold/10'
+                >
+                  <LogIn className='h-3 w-3 mr-1' />
+                  Sign In
+                </Button>
+              </div>
+            ) : (
+              <div className='text-xs text-foreground'>No rewards available</div>
+            )}
+          </FmInfoCard>
         </div>
-        
+
         <Separator className='mt-4' />
         
         {/* Order Summary - Always visible */}

@@ -5,7 +5,6 @@ import { Label } from '@/components/ui/shadcn/label';
 import { Button } from '@/components/ui/shadcn/button';
 import { FmEventSearchDropdown } from '@/components/ui/search/FmEventSearchDropdown';
 import { FmCreateEventButton } from '@/components/ui/buttons/FmCreateEventButton';
-import { FmEditEventButton } from '@/components/ui/buttons/FmEditEventButton';
 import { TestEventDataService } from '@/services/testData/TestEventDataService';
 import { toast } from 'sonner';
 
@@ -81,28 +80,14 @@ export const EventCheckoutDemoTools = ({
             className="flex-1"
           />
           {selectedEventId && (
-            <>
-              <FmEditEventButton
-                eventId={selectedEventId}
-                onEventUpdated={() => {
-                  onEventChange(selectedEventId);
-                  onEventUpdated?.();
-                }}
-                trigger={
-                  <button className="flex-1 inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-white/20 bg-white/5 hover:bg-white/10 text-white h-10 px-4 py-2 rounded-md">
-                    Quick Edit
-                  </button>
-                }
-              />
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={() => navigate(`/event/${selectedEventId}/manage`)}
-              >
-                <FileEdit className="h-4 w-4 mr-2" />
-                Manage Event
-              </Button>
-            </>
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => navigate(`/event/${selectedEventId}/manage`)}
+            >
+              <FileEdit className="h-4 w-4 mr-2" />
+              Manage Event
+            </Button>
           )}
         </div>
       </div>

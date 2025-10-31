@@ -1,7 +1,6 @@
 import { ReactNode } from 'react';
 import { Navigation } from '@/components/navigation/Navigation';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
-import { Badge } from '@/components/ui/shadcn/badge';
 import { TopographicBackground } from '@/components/ui/misc/TopographicBackground';
 import { cn } from '@/shared/utils/utils';
 
@@ -31,31 +30,13 @@ export const DemoLayout = ({
 
         <div className="container mx-auto pt-24 pb-8 px-4 relative z-10">
           <div className={cn("mx-auto", condensed ? "max-w-4xl" : "max-w-7xl")}>
-          {/* Header with Demo Tools on the Right */}
-          <div className="mb-4 flex gap-6">
-            {/* Left: Header Info - 33% */}
-            <div className="w-1/3 flex-shrink-0">
-              <div className="flex items-center gap-3 mb-2">
-                <Icon className="h-6 w-6 text-fm-gold" />
-                <h1 className="text-3xl font-canela font-bold">{title}</h1>
-              </div>
-              <p className="text-muted-foreground">{description}</p>
-              <Badge variant="outline" className="mt-2 border-fm-gold/50">
-                Development Only
-              </Badge>
+          {/* Header - Single Row */}
+          <div className="mb-4">
+            <div className="flex items-center gap-3 mb-2">
+              <Icon className="h-6 w-6 text-fm-gold" />
+              <h1 className="text-3xl font-canela font-bold">{title}</h1>
             </div>
-
-            {/* Right: Demo Tools - 67% */}
-            {demoTools && (
-              <div className="flex-1">
-                <div className="p-4 bg-black/40 backdrop-blur-md border border-white/20 rounded-lg">
-                  <h3 className="font-canela text-lg text-white mb-4">
-                    Demo Tools
-                  </h3>
-                  {demoTools}
-                </div>
-              </div>
-            )}
+            <p className="text-muted-foreground">{description}</p>
           </div>
 
           {/* Decorative Divider */}

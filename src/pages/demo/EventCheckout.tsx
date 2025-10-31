@@ -3,13 +3,16 @@ import { ShoppingCart, Calendar, MapPin, Clock } from 'lucide-react';
 import { TicketingPanel } from '@/features/events/components/TicketingPanel';
 import { useTicketTiers } from '@/features/events/hooks/useTicketTiers';
 import { DemoLayout } from '@/components/demo/DemoLayout';
-import { EventCheckoutDemoTools } from '@/components/demo/EventCheckoutDemoTools';
+import { FmCommonDemoToolbar } from '@/components/demo/FmCommonDemoToolbar';
+import { FmEventSelectionDemoTool } from '@/components/demo/tools/FmEventSelectionDemoTool';
 import { useCheckoutTimer } from '@/contexts/CheckoutContext';
 import { supabase } from '@/integrations/supabase/client';
 import { formatTimeDisplay } from '@/shared/utils/timeUtils';
 import { useQueryClient } from '@tanstack/react-query';
 import EventCheckoutForm from './EventCheckoutForm';
 import { useFees } from '@/features/events/hooks/useFees';
+import { FmInfoChip } from '@/components/ui/data/FmInfoChip';
+import { VenueModal } from '@/components/ui/modals/VenueModal';
 
 // Undercard artist display component
 const UndercardDisplay = ({ undercardIds }: { undercardIds: string[] }) => {
@@ -47,6 +50,7 @@ export default function EventCheckout() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [checkoutStep, setCheckoutStep] = useState<'selection' | 'checkout'>('selection');
   const [ticketSelections, setTicketSelections] = useState<{ tierId: string; quantity: number }[]>([]);
+  const [venueModalOpen, setVenueModalOpen] = useState(false);
   const { data: ticketTiers, isLoading: tiersLoading } = useTicketTiers(selectedEventId);
   const { startCheckout } = useCheckoutTimer();
   const queryClient = useQueryClient();
@@ -60,6 +64,13 @@ export default function EventCheckout() {
       queryClient.invalidateQueries({ queryKey: ['ticket-tiers', selectedEventId] });
     }
   };
+
+  // Create demo tool instance
+  const eventSelectionTool = FmEventSelectionDemoTool({
+    selectedEventId,
+    onEventChange: setSelectedEventId,
+    onEventUpdated: handleEventUpdated,
+  });
 
   useEffect(() => {
     if (selectedEventId) {
@@ -132,29 +143,26 @@ export default function EventCheckout() {
       description="Test the complete ticket purchasing flow"
       icon={ShoppingCart}
       condensed
-      demoTools={
-        <EventCheckoutDemoTools
-          selectedEventId={selectedEventId}
-          onEventChange={setSelectedEventId}
-          onEventUpdated={handleEventUpdated}
-        />
-      }
     >
-          {!selectedEventId ? (
-            <div className="text-center py-12 text-muted-foreground">
-              Select an event from Demo Tools to begin
-            </div>
-          ) : checkoutStep === 'checkout' ? (
-            <EventCheckoutForm
-              eventId={selectedEventId}
-              eventName={eventDetails?.title || 'Event'}
-              eventDate={eventDetails?.date || ''}
-              selections={ticketSelections}
-              orderSummary={getOrderSummary()}
-              onBack={handleBackToSelection}
-            />
-          ) : (
-            <div className="bg-card border-border rounded-lg overflow-hidden">
+      {/* Demo Toolbar */}
+      <FmCommonDemoToolbar tools={[eventSelectionTool]} />
+
+      {/* Main Content */}
+      {!selectedEventId ? (
+        <div className="text-center py-12 text-muted-foreground">
+          Select an event from Demo Tools to begin
+        </div>
+      ) : checkoutStep === 'checkout' ? (
+        <EventCheckoutForm
+          eventId={selectedEventId}
+          eventName={eventDetails?.title || 'Event'}
+          eventDate={eventDetails?.date || ''}
+          selections={ticketSelections}
+          orderSummary={getOrderSummary()}
+          onBack={handleBackToSelection}
+        />
+      ) : (
+        <div className="bg-card border-border rounded-lg overflow-hidden">
               {/* Event Hero Image */}
               {eventDetails && eventDetails.hero_image && (
                 <div className="w-full h-64 overflow-hidden">
@@ -190,32 +198,30 @@ export default function EventCheckout() {
                         <UndercardDisplay undercardIds={eventDetails.undercard_ids} />
                       )}
 
-                      <div className="flex flex-wrap gap-3 text-muted-foreground text-sm">
-                        <div className="flex items-center gap-1.5">
-                          <Calendar className="h-3.5 w-3.5 text-fm-gold" />
-                          <span>{new Date(eventDetails.date).toLocaleDateString('en-US', {
+                      <div className="flex flex-wrap gap-3">
+                        <FmInfoChip
+                          icon={Calendar}
+                          label={new Date(eventDetails.date).toLocaleDateString('en-US', {
                             weekday: 'short',
                             year: 'numeric',
                             month: 'short',
                             day: 'numeric'
-                          })}</span>
-                        </div>
+                          })}
+                        />
 
                         {eventDetails.time && (
-                          <div className="flex items-center gap-1.5">
-                            <Clock className="h-3.5 w-3.5 text-fm-gold" />
-                            <span>{formatTimeDisplay(eventDetails.time)}</span>
-                          </div>
+                          <FmInfoChip
+                            icon={Clock}
+                            label={formatTimeDisplay(eventDetails.time)}
+                          />
                         )}
 
                         {eventDetails.venue && (
-                          <div className="flex items-center gap-1.5">
-                            <MapPin className="h-3.5 w-3.5 text-fm-gold" />
-                            <span>
-                              {eventDetails.venue.name}
-                              {eventDetails.venue.city && ` • ${eventDetails.venue.city}`}
-                            </span>
-                          </div>
+                          <FmInfoChip
+                            icon={MapPin}
+                            label={`${eventDetails.venue.name}${eventDetails.venue.city ? ` • ${eventDetails.venue.city}` : ''}`}
+                            onClick={() => setVenueModalOpen(true)}
+                          />
                         )}
                       </div>
 
@@ -248,6 +254,13 @@ export default function EventCheckout() {
               </div>
             </div>
           )}
+
+      {/* Venue Modal */}
+      <VenueModal
+        venueId={eventDetails?.venue_id || null}
+        open={venueModalOpen}
+        onOpenChange={setVenueModalOpen}
+      />
     </DemoLayout>
   );
 }

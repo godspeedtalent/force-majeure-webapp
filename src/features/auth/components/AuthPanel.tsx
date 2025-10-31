@@ -14,6 +14,8 @@ import { FmCommonTextField } from '@/components/ui/forms/FmCommonTextField';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/shadcn/tabs';
 import { Button } from '@/components/ui/shadcn/button';
 import { useAuth } from '@/features/auth/services/AuthContext';
+import { GoogleOAuthButton } from './GoogleOAuthButton';
+import { OAuthDivider } from '@/components/ui/misc/OAuthDivider';
 
 interface AuthPanelProps {
   showGuestOption?: boolean;
@@ -31,6 +33,7 @@ export const AuthPanel = ({
   description = 'Sign in to access full Spotify streaming and personalized features',
 }: AuthPanelProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isOAuthLoading, setIsOAuthLoading] = useState(false);
   const [signInForm, setSignInForm] = useState({ email: '', password: '' });
   const [signUpForm, setSignUpForm] = useState({
     email: '',
@@ -38,7 +41,7 @@ export const AuthPanel = ({
     displayName: '',
   });
 
-  const { signIn, signUp, loading } = useAuth();
+  const { signIn, signUp, signInWithGoogle, loading } = useAuth();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,12 +61,25 @@ export const AuthPanel = ({
     setIsLoading(true);
 
     const { error } = await signUp(signUpForm.email, signUpForm.password, signUpForm.displayName);
-    
+
     if (!error && onAuthSuccess) {
       onAuthSuccess();
     }
 
     setIsLoading(false);
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsOAuthLoading(true);
+
+    const { error } = await signInWithGoogle();
+
+    // Note: OAuth redirects the user, so onAuthSuccess won't be called here
+    // It will be handled on redirect return via AuthContext's onAuthStateChange
+
+    if (error) {
+      setIsOAuthLoading(false);
+    }
   };
 
   if (loading) {
@@ -98,6 +114,15 @@ export const AuthPanel = ({
           </TabsList>
 
           <TabsContent value='signin' className='space-y-6'>
+            {/* Google OAuth */}
+            <GoogleOAuthButton
+              onClick={handleGoogleSignIn}
+              loading={isOAuthLoading}
+              disabled={isLoading}
+            />
+
+            <OAuthDivider />
+
             <form onSubmit={handleSignIn} className='space-y-6'>
               <FmCommonTextField
                 label='Email'
@@ -131,6 +156,7 @@ export const AuthPanel = ({
                 className='w-full'
                 variant='gold'
                 loading={isLoading}
+                disabled={isOAuthLoading}
               >
                 Sign In
               </FmCommonButton>
@@ -150,6 +176,16 @@ export const AuthPanel = ({
           </TabsContent>
 
           <TabsContent value='signup' className='space-y-6'>
+            {/* Google OAuth */}
+            <GoogleOAuthButton
+              onClick={handleGoogleSignIn}
+              loading={isOAuthLoading}
+              disabled={isLoading}
+              text="Sign up with Google"
+            />
+
+            <OAuthDivider />
+
             <form onSubmit={handleSignUp} className='space-y-8'>
               <FmCommonTextField
                 label='Display Name (Optional)'
@@ -197,6 +233,7 @@ export const AuthPanel = ({
                 className='w-full'
                 variant='gold'
                 loading={isLoading}
+                disabled={isOAuthLoading}
               >
                 Create Account
               </FmCommonButton>

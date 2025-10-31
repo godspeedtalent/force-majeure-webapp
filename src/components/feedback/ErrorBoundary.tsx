@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/shadcn/button';
 import React from 'react';
+import { FmErrorDisplay } from '@/components/ui/feedback/FmErrorDisplay';
 
 interface Props {
   children: React.ReactNode;
@@ -9,6 +9,7 @@ interface Props {
 interface State {
   hasError: boolean;
   error: Error | null;
+  errorInfo: React.ErrorInfo | null;
 }
 
 /**
@@ -18,15 +19,18 @@ interface State {
 export class ErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false, error: null, errorInfo: null };
   }
 
-  static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: Error): Partial<State> {
     // Update state so the next render will show the fallback UI
     return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    // Store errorInfo for stacktrace display
+    this.setState({ errorInfo });
+
     // Log error details to console in development
     console.error('ErrorBoundary caught an error:', error, errorInfo);
 
@@ -35,49 +39,34 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 
   private handleReset = () => {
-    // Reset error state and reload the page
-    window.location.reload();
+    // Reset error state before reload to prevent infinite loop
+    this.setState({ hasError: false, error: null, errorInfo: null }, () => {
+      window.location.reload();
+    });
+  };
+
+  private handleGoBack = () => {
+    // Reset error state before navigation to prevent infinite loop
+    this.setState({ hasError: false, error: null, errorInfo: null }, () => {
+      window.history.back();
+    });
   };
 
   render() {
-    if (this.state.hasError) {
+    if (this.state.hasError && this.state.error) {
       // Render custom fallback UI if provided
       if (this.props.fallback) {
         return this.props.fallback;
       }
 
-      // Default fallback UI
+      // Default fallback UI using FmErrorDisplay
       return (
-        <div className='min-h-screen flex items-center justify-center bg-background p-4'>
-          <div className='max-w-md w-full text-center space-y-6'>
-            <div className='space-y-2'>
-              <h1 className='text-3xl font-bold text-foreground'>
-                Something went wrong
-              </h1>
-              <p className='text-muted-foreground'>
-                Sorry, but something unexpected happened. The errorhas been
-                logged.
-              </p>
-            </div>
-
-            {this.state.error && (
-              <div className='p-4 bg-destructive/10 border border-destructive/20 rounded-lg text-left'>
-                <p className='text-sm font-mono text-destructive break-words'>
-                  {this.state.error.message}
-                </p>
-              </div>
-            )}
-
-            <div className='flex flex-col sm:flex-row gap-3 justify-center'>
-              <Button onClick={this.handleReset} variant='default'>
-                Reload Page
-              </Button>
-              <Button onClick={() => window.history.back()} variant='outline'>
-                Go Back
-              </Button>
-            </div>
-          </div>
-        </div>
+        <FmErrorDisplay
+          error={this.state.error}
+          errorInfo={this.state.errorInfo}
+          onReset={this.handleReset}
+          onGoBack={this.handleGoBack}
+        />
       );
     }
 

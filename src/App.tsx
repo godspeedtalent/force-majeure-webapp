@@ -13,6 +13,7 @@ import Orders from './pages/Orders';
 import DemoIndex from './pages/demo/DemoIndex';
 import EventCheckout from './pages/demo/EventCheckout';
 import EventCheckoutConfirmation from './pages/demo/EventCheckoutConfirmation';
+import EmailTemplateDemo from './pages/demo/EmailTemplateDemo';
 import EventManagement from './pages/EventManagement';
 import MemberHome from './pages/members/MemberHome';
 import Statistics from './pages/admin/Statistics';
@@ -118,6 +119,14 @@ const AppRoutes = () => {
               </DemoProtectedRoute>
             }
           />
+          <Route
+            path='/demo/email-template'
+            element={
+              <DemoProtectedRoute>
+                <EmailTemplateDemo />
+              </DemoProtectedRoute>
+            }
+          />
 
           {/* Admin Routes - Protected by role */}
           <Route
@@ -157,19 +166,19 @@ const App = () => {
         <DevToolsProvider>
           <AuthProvider>
             <GlobalSearchProvider>
-              <CheckoutProvider>
-                <MusicPlayerProvider>
-                  <TooltipProvider>
-                    <Toaster />
-                    <Sonner />
-                    <BrowserRouter>
+              <MusicPlayerProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
+                  <BrowserRouter>
+                    <CheckoutProvider>
                       <AppRoutes />
                       <DevToolsDrawer />
                       <GlobalSearchWrapper />
-                    </BrowserRouter>
-                  </TooltipProvider>
-                </MusicPlayerProvider>
-              </CheckoutProvider>
+                    </CheckoutProvider>
+                  </BrowserRouter>
+                </TooltipProvider>
+              </MusicPlayerProvider>
             </GlobalSearchProvider>
           </AuthProvider>
         </DevToolsProvider>

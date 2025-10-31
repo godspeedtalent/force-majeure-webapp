@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/shadcn/badge';
-import { Code, ShoppingCart, ArrowRight } from 'lucide-react';
+import { Code, ShoppingCart, Mail, ArrowRight } from 'lucide-react';
 import { DemoLayout } from '@/components/demo/DemoLayout';
 
 export default function DemoIndex() {
@@ -11,6 +11,14 @@ export default function DemoIndex() {
       path: '/demo/event-checkout',
       icon: ShoppingCart,
       category: 'E-Commerce',
+      status: 'Active',
+    },
+    {
+      title: 'Email Template Preview',
+      description: 'Preview and test order receipt email templates with configurable data and live sending capabilities',
+      path: '/demo/email-template',
+      icon: Mail,
+      category: 'Communication',
       status: 'Active',
     },
   ];

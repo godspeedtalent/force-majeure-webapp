@@ -73,6 +73,40 @@ const feedbackAnimations = {
     '0%, 100%': { backgroundColor: 'hsl(var(--background))' },
     '50%': { backgroundColor: 'hsl(var(--muted) / 0.3)' },
   },
+  'pulse-gold-check': {
+    '0%': {
+      backgroundColor: 'transparent',
+      borderColor: 'hsl(var(--border))',
+      transform: 'scale(1)',
+    },
+    '50%': {
+      backgroundColor: 'hsl(var(--fm-gold))',
+      borderColor: 'hsl(var(--fm-gold))',
+      transform: 'scale(1.1)',
+    },
+    '100%': {
+      backgroundColor: 'hsl(var(--fm-gold))',
+      borderColor: 'hsl(var(--fm-gold))',
+      transform: 'scale(1)',
+    },
+  },
+  'pulse-uncheck': {
+    '0%': {
+      backgroundColor: 'hsl(var(--fm-gold))',
+      borderColor: 'hsl(var(--fm-gold))',
+      transform: 'scale(1)',
+    },
+    '50%': {
+      backgroundColor: 'hsl(var(--fm-gold) / 0.5)',
+      borderColor: 'hsl(var(--fm-gold))',
+      transform: 'scale(1.1)',
+    },
+    '100%': {
+      backgroundColor: 'transparent',
+      borderColor: 'hsl(var(--border))',
+      transform: 'scale(1)',
+    },
+  },
 };
 
 // Collapsible animations
@@ -125,4 +159,6 @@ export const animations = {
 
   // Feedback animations
   'input-pulse': createAnimation('input-pulse', '0.15s'),
+  'pulse-gold-check': createAnimation('pulse-gold-check', '0.3s', 'ease-out'),
+  'pulse-uncheck': createAnimation('pulse-uncheck', '0.3s', 'ease-out'),
 };
