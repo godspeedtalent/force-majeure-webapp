@@ -16,6 +16,7 @@ import EventCheckoutConfirmation from './pages/demo/EventCheckoutConfirmation';
 import EmailTemplateDemo from './pages/demo/EmailTemplateDemo';
 import EventManagement from './pages/EventManagement';
 import TestingIndex from './pages/testing/TestingIndex';
+import CheckoutFlowTests from './pages/testing/CheckoutFlowTests';
 import MemberHome from './pages/members/MemberHome';
 import Statistics from './pages/admin/Statistics';
 import AdminControls from './pages/admin/AdminControls';
@@ -133,6 +134,14 @@ const AppRoutes = () => {
             element={
               <DemoProtectedRoute>
                 <TestingIndex />
+              </DemoProtectedRoute>
+            }
+          />
+          <Route
+            path='/testing/checkout-flow'
+            element={
+              <DemoProtectedRoute>
+                <CheckoutFlowTests />
               </DemoProtectedRoute>
             }
           />

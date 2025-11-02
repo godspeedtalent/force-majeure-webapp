@@ -1,56 +1,28 @@
 import { Badge } from '@/components/ui/shadcn/badge';
-import { 
-  FlaskConical, 
-  Zap, 
-  Database, 
-  Shield, 
-  Users, 
+import {
+  FlaskConical,
+  Zap,
+  Database,
+  Shield,
+  Users,
   ShoppingCart,
-  ArrowRight 
+  ArrowRight
 } from 'lucide-react';
 import { DemoLayout } from '@/components/demo/DemoLayout';
+import { useNavigate } from 'react-router-dom';
 
 export default function TestingIndex() {
+  const navigate = useNavigate();
+
   const testSuites = [
     {
-      title: 'Authentication Tests',
-      description: 'Test user registration, login, logout, password reset, and session management flows',
-      icon: Shield,
-      category: 'Security',
-      status: 'Ready',
-      testCount: 12,
-    },
-    {
-      title: 'Database Tests',
-      description: 'Validate data persistence, relationships, constraints, and query performance across all tables',
-      icon: Database,
-      category: 'Backend',
-      status: 'Ready',
-      testCount: 24,
-    },
-    {
-      title: 'User Management Tests',
-      description: 'Test user roles, permissions, profile updates, and access control mechanisms',
-      icon: Users,
-      category: 'Security',
-      status: 'Ready',
-      testCount: 18,
-    },
-    {
-      title: 'Checkout Flow Tests',
-      description: 'End-to-end testing of ticket purchasing, payment processing, and order confirmation',
+      title: 'Ticket Purchase Load Tests',
+      description: 'Performance load testing simulating thousands of concurrent ticket purchases',
       icon: ShoppingCart,
-      category: 'E-Commerce',
-      status: 'Ready',
-      testCount: 15,
-    },
-    {
-      title: 'Performance Tests',
-      description: 'Load testing, stress testing, and performance benchmarking across critical user paths',
-      icon: Zap,
       category: 'Performance',
       status: 'Ready',
-      testCount: 8,
+      testCount: 7,
+      route: '/testing/checkout-flow',
     },
   ];
 
@@ -65,9 +37,10 @@ export default function TestingIndex() {
         {testSuites.map((suite) => {
           const Icon = suite.icon;
           return (
-            <div 
+            <div
               key={suite.title}
-              className="group"
+              className="group cursor-pointer"
+              onClick={() => navigate(suite.route)}
             >
               <div className="p-6 border border-border rounded-lg bg-card hover:bg-accent/5 hover:border-fm-gold/50 transition-all duration-200">
                 <div className="flex items-start justify-between gap-4">

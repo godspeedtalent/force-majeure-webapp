@@ -5,7 +5,13 @@ import { FmCommonStatCard } from '@/components/common/fm/display/FmCommonStatCar
 import { Button } from '@/components/ui/shadcn/button';
 import { Input } from '@/components/ui/shadcn/input';
 import { Badge } from '@/components/ui/shadcn/badge';
-import { Download, Search, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/shadcn/dropdown-menu';
+import { Download, Search, CheckCircle2, XCircle, AlertCircle, FileJson, FileText } from 'lucide-react';
 
 interface TestResultsPanelProps {
   results: TestResult[];
@@ -118,14 +124,24 @@ export function TestResultsPanel({ results }: TestResultsPanelProps) {
           </Button>
         </div>
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => exportResults('json')}
-        >
-          <Download className="h-4 w-4 mr-2" />
-          Export
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm">
+              <Download className="h-4 w-4 mr-2" />
+              Export
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => exportResults('json')}>
+              <FileJson className="h-4 w-4 mr-2" />
+              Export as JSON
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => exportResults('csv')}>
+              <FileText className="h-4 w-4 mr-2" />
+              Export as CSV
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Results List */}
