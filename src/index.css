@@ -388,3 +388,75 @@ All colors MUST be HSL.
     animation: ripple 600ms cubic-bezier(0.4, 0, 0.2, 1);
     pointer-events: none;
   }
+
+  /* Hero Takeover - Option 1 Animations */
+  @media (prefers-reduced-motion: no-preference) {
+    /* Hero expansion from card to full viewport */
+    ::view-transition-old(hero-takeover),
+    ::view-transition-new(hero-takeover) {
+      animation-duration: 1s;
+      animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Content slides in from bottom with parallax */
+    @keyframes slide-in-bottom {
+      0% {
+        transform: translateY(100px);
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .parallax-content {
+      animation: slide-in-bottom 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
+    }
+
+    /* Ticketing panel fades in from right with delay */
+    @keyframes fade-in-right {
+      0% {
+        transform: translateX(50px);
+        opacity: 0;
+      }
+      100% {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .ticketing-panel {
+      animation: fade-in-right 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.5s both;
+    }
+
+    /* Hero content fade in */
+    @keyframes fade-in-up {
+      0% {
+        transform: translateY(30px);
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .hero-content-fade {
+      animation: fade-in-up 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s both;
+    }
+
+    /* Scroll indicator animation */
+    @keyframes bounce-subtle {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(10px);
+      }
+    }
+
+    .scroll-indicator {
+      animation: bounce-subtle 2s ease-in-out infinite;
+    }
+  }
