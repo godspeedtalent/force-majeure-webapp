@@ -1,24 +1,33 @@
 import {
   ArrowLeft,
   Calendar,
-  ExternalLink,
+  Clock,
   MapPin,
   Music,
   Play,
+  Share2,
+  Heart,
+  Users,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 
 import lfSystemCover from '@/assets/lf-system-cover.jpg';
 import ninajirachiCover from '@/assets/ninajirachi-cover.jpg';
-import SplitPageLayout from '@/components/layout/SplitPageLayout';
+import { EventDetailsLayout } from '@/components/layout/EventDetailsLayout';
 import { PageTransition } from '@/components/primitives/PageTransition';
 import { Badge } from '@/components/ui/shadcn/badge';
-import { FmCommonButton } from '@/components/ui/buttons/FmCommonButton';
+import { Button } from '@/components/ui/shadcn/button';
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext';
+import { TicketingPanel } from '@/features/events/components/TicketingPanel';
+import { SocialProof } from '@/features/events/components/SocialProof';
+import { useTicketTiers } from '@/features/events/hooks/useTicketTiers';
+import { useCheckout } from '@/features/events/hooks/useCheckout';
 import { useSongsByEvent } from '@/features/events/hooks/useSongsByEvent';
 import { supabase } from '@/shared/api/supabase/client';
 import { getImageUrl } from '@/shared/utils/imageUtils';
+import { formatTimeDisplay } from '@/shared/utils/timeUtils';
+import { cn } from '@/shared/utils/utils';
 
 interface Artist {
   name: string;
@@ -41,14 +50,22 @@ interface Event {
 
 const EventDetails = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const { playQueue } = useMusicPlayer();
   const { songs, loading: songsLoading } = useSongsByEvent(id || null);
 
+  // Ticketing hooks
+  const { tiers, loading: tiersLoading } = useTicketTiers(id || '');
+  const { createCheckout, loading: checkoutLoading } = useCheckout();
+
   useEffect(() => {
     const fetchEvent = async () => {
+      console.log('EventDetails mounted, fetching event:', id);
+
       if (!id) {
         setError('Event ID is required');
         setLoading(false);
@@ -56,6 +73,7 @@ const EventDetails = () => {
       }
 
       try {
+        console.log('Fetching event from database...');
         const { data, error: fetchError } = await supabase
           .from('events')
           .select(
@@ -112,12 +130,14 @@ const EventDetails = () => {
           ticketUrl: data.ticket_url || null,
         };
 
+        console.log('Event loaded successfully:', transformedEvent);
         setEvent(transformedEvent);
       } catch (err) {
         console.error('Error fetching event:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch event');
       } finally {
         setLoading(false);
+        console.log('Loading complete');
       }
     };
 
@@ -125,220 +145,319 @@ const EventDetails = () => {
   }, [id]);
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    const date = new Date(dateString);
+    return {
+      full: date.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      }),
+      month: date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
+      day: date.getDate().toString(),
+    };
+  };
+
+  const handlePurchase = async (selections: { tierId: string; quantity: number }[]) => {
+    if (!id) return;
+
+    try {
+      const checkoutUrl = await createCheckout(id, selections);
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
+      }
+    } catch (err) {
+      console.error('Checkout error:', err);
+    }
+  };
+
+  const handlePlayLineup = () => {
+    if (songs.length > 0) {
+      playQueue(songs);
+    }
+  };
+
+  const handleShare = async () => {
+    if (navigator.share && event) {
+      try {
+        await navigator.share({
+          title: event.title || event.headliner.name,
+          text: `Check out ${event.headliner.name} at ${event.venue}!`,
+          url: window.location.href,
+        });
+      } catch (err) {
+        // User cancelled or share failed
+        console.log('Share cancelled');
+      }
+    } else {
+      // Fallback: copy to clipboard
+      navigator.clipboard.writeText(window.location.href);
+    }
   };
 
   if (loading) {
     return (
-      <SplitPageLayout
-        left={
-          <div className='flex items-center justify-center h-full'>
-            <p className='text-muted-foreground'>Loading event details...</p>
-          </div>
-        }
-        right={<div />}
-        leftWidthClass='w-full'
-        rightWidthClass='hidden'
-      />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-fm-gold mx-auto mb-6" />
+          <p className="text-foreground text-lg font-medium">Loading event details...</p>
+          <p className="text-muted-foreground text-sm mt-2">Please wait</p>
+        </div>
+      </div>
     );
   }
 
   if (error || !event) {
     return (
-      <SplitPageLayout
-        left={
-          <div className='flex items-center justify-center h-full flex-col gap-4'>
-            <p className='text-destructive'>{error || 'Event not found'}</p>
-            <FmCommonButton asChild variant='outline' icon={ArrowLeft}>
-              <Link to='/'>
-                Back to Events
-              </Link>
-            </FmCommonButton>
-          </div>
-        }
-        right={<div />}
-        leftWidthClass='w-full'
-        rightWidthClass='hidden'
-      />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <p className="text-destructive text-lg">{error || 'Event not found'}</p>
+          <Button asChild variant="outline">
+            <Link to="/">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Events
+            </Link>
+          </Button>
+        </div>
+      </div>
     );
   }
 
-  return (
-    <SplitPageLayout
-      leftWidthClass='w-1/4'
-      rightWidthClass='w-3/4'
-      leftDecor
-      left={
-        <PageTransition>
-          <div className='p-8 h-full flex flex-col'>
-            <FmCommonButton
-              asChild
-              variant='ghost'
-              size='sm'
-              className='self-start relative z-10 mb-4'
-              icon={ArrowLeft}
+  const dateObj = formatDate(event.date);
+  const displayTitle = event.title || event.headliner.name;
+
+  // Left Column - Event Details
+  const leftColumn = (
+    <PageTransition>
+      <div className="relative">
+        {/* Hero Image - Morphs from card */}
+        <div
+          className="relative h-[60vh] lg:h-[70vh] overflow-hidden bg-muted"
+          style={{ viewTransitionName: `event-hero-${id}` }}
+        >
+          {/* Loading skeleton */}
+          {!imageLoaded && (
+            <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-muted via-muted-foreground/10 to-muted" />
+          )}
+
+          <img
+            src={event.heroImage}
+            alt={displayTitle}
+            className={cn(
+              'h-full w-full object-cover transition-opacity duration-500',
+              imageLoaded ? 'opacity-100' : 'opacity-0'
+            )}
+            onLoad={() => setImageLoaded(true)}
+          />
+
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+
+          {/* Back Button */}
+          <div className="absolute top-6 left-6">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="bg-background/80 backdrop-blur-sm hover:bg-background"
+              onClick={() => navigate('/')}
             >
-              <Link to='/'>
-                Back to Events
-              </Link>
-            </FmCommonButton>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
           </div>
-        </PageTransition>
-      }
-      right={
-        <PageTransition>
-          {/* Hero Section */}
-          <div className='relative h-[40vh] min-h-[300px] overflow-hidden'>
-            <img
-              src={event.heroImage}
-              alt={event.headliner.name}
-              className='w-full h-full object-cover'
-            />
-            <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent' />
 
-            {/* Hero Content */}
-            <div className='absolute bottom-0 left-0 right-0 p-8'>
-              <div className='max-w-4xl'>
-                <div className='relative h-32 md:h-40'>
-                  {/* Background copy with exclusion blending */}
-                  <h1 className='absolute bottom-0 left-0 text-black text-8xl md:text-[12rem] font-bold opacity-30 mix-blend-exclusion pointer-events-none leading-none'>
-                    {event.headliner.name}
-                  </h1>
-                  {/* Main heading */}
-                  <h1 className='absolute bottom-0 left-0 text-white text-6xl md:text-8xl font-bold z-10 leading-none'>
-                    {event.headliner.name}
-                  </h1>
-                </div>
+          {/* Action Buttons - Top Right */}
+          <div className="absolute top-6 right-6 flex gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="bg-background/80 backdrop-blur-sm hover:bg-background"
+              onClick={handleShare}
+            >
+              <Share2 className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="bg-background/80 backdrop-blur-sm hover:bg-background"
+            >
+              <Heart className="w-4 h-4" />
+            </Button>
+          </div>
 
-                {/* Quick Actions */}
-                <div className='flex flex-wrap gap-4'>
-                  <FmCommonButton
-                    onClick={() => songs.length > 0 && playQueue(songs)}
-                    disabled={songsLoading || songs.length === 0}
-                    variant='gold'
-                    icon={songsLoading ? Music : songs.length > 0 ? Play : Music}
-                  >
-                    {songsLoading ? 'Loading...' : songs.length > 0 ? `Play Lineup (${songs.length})` : 'No Songs Available'}
-                  </FmCommonButton>
+          {/* Event Title - Bottom of Hero */}
+          <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-8">
+            <h1 className="font-canela text-4xl lg:text-5xl font-medium text-foreground mb-2">
+              {displayTitle}
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              {event.headliner.name}
+            </p>
+          </div>
+        </div>
 
-                  {event.ticketUrl && (
-                    <FmCommonButton
-                      asChild
-                      className='bg-fm-crimson text-white hover:bg-fm-crimson/90'
-                      icon={ExternalLink}
-                      iconPosition='right'
-                    >
-                      <a
-                        href={event.ticketUrl}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                      >
-                        Get Tickets
-                      </a>
-                    </FmCommonButton>
-                  )}
-                </div>
-              </div>
+        {/* Date Badge - Overlapping hero and content */}
+        <div className="absolute bottom-0 right-6 lg:right-8 translate-y-1/2 flex flex-col items-center justify-center w-20 h-20 bg-background border-2 border-border rounded-lg shadow-lg z-10">
+          <span className="text-xs font-medium text-muted-foreground">{dateObj.month}</span>
+          <span className="text-3xl font-bold text-fm-gold leading-none">{dateObj.day}</span>
+        </div>
+
+        {/* Content Section */}
+        <div className="p-6 lg:p-8 pt-16 space-y-8">
+          {/* Event Details */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 text-base">
+              <Calendar className="w-5 h-5 text-fm-gold flex-shrink-0" />
+              <span>{dateObj.full}</span>
+            </div>
+            <div className="flex items-center gap-3 text-base">
+              <Clock className="w-5 h-5 text-fm-gold flex-shrink-0" />
+              <span>{formatTimeDisplay(event.time)}</span>
+            </div>
+            <div className="flex items-center gap-3 text-base">
+              <MapPin className="w-5 h-5 text-fm-gold flex-shrink-0" />
+              <span>{event.venue}</span>
             </div>
           </div>
 
-          {/* Event Details Content */}
-          <div className='max-w-4xl mx-auto px-8 py-12'>
-            {/* Event Info Grid */}
-            <div className='grid md:grid-cols-3 gap-8 mb-12'>
-              <div className='flex items-start gap-4'>
-                <Calendar className='w-6 h-6 text-fm-gold mt-1' />
-                <div>
-                  <h3 className='font-semibold text-lg mb-1'>Date & Time</h3>
-                  <p className='text-foreground'>{formatDate(event.date)}</p>
-                  <p className='text-muted-foreground'>{event.time}</p>
-                </div>
-              </div>
+          {/* Play Lineup Button */}
+          <Button
+            onClick={handlePlayLineup}
+            disabled={songsLoading || songs.length === 0}
+            variant="outline"
+            className="w-full border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-background"
+          >
+            <Play className="w-4 h-4 mr-2" />
+            {songsLoading ? 'Loading...' : songs.length > 0 ? `Play Lineup (${songs.length})` : 'No Songs Available'}
+          </Button>
 
-              <div className='flex items-start gap-4'>
-                <MapPin className='w-6 h-6 text-fm-gold mt-1' />
-                <div>
-                  <h3 className='font-semibold text-lg mb-1'>Venue</h3>
-                  <p className='text-foreground'>{event.venue}</p>
-                </div>
-              </div>
-
-              <div className='flex items-start gap-4'>
-                <Music className='w-6 h-6 text-fm-gold mt-1' />
-                <div>
-                  <h3 className='font-semibold text-lg mb-1'>Lineup</h3>
-                  <p className='text-foreground'>{event.headliner.name}</p>
-                  <p className='text-muted-foreground'>
-                    {event.undercard.length > 0
-                      ? `+${event.undercard.length} more`
-                      : 'Solo performance'}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* About Section */}
-            <div className='mb-12'>
-              <h2 className='text-2xl font-bold mb-4'>About This Event</h2>
-              <p className='text-muted-foreground leading-relaxed text-lg'>
+          {/* About Event */}
+          {event.description && (
+            <div className="space-y-3">
+              <h2 className="text-xl font-semibold">About This Event</h2>
+              <p className="text-muted-foreground leading-relaxed">
                 {event.description}
               </p>
             </div>
+          )}
 
-            {/* Headliner Section */}
-            <div className='mb-12'>
-              <h2 className='text-2xl font-bold mb-6'>Headliner</h2>
-              <div className='bg-muted/30 border border-border rounded-lg p-6'>
-                <div className='flex items-center gap-6'>
-                  <div className='w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center'>
-                    <Music className='w-8 h-8 text-primary' />
-                  </div>
-                  <div>
-                    <h3 className='text-xl font-semibold mb-1'>
-                      {event.headliner.name}
-                    </h3>
-                    <Badge variant='outline' className='text-sm'>
-                      {event.headliner.genre}
-                    </Badge>
-                  </div>
+          {/* Headliner */}
+          <div className="space-y-3">
+            <h2 className="text-xl font-semibold">Headliner</h2>
+            <div className="bg-muted/30 border border-border rounded-lg p-4">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-fm-gold/20 to-fm-gold/40 flex items-center justify-center">
+                  <Music className="w-7 h-7 text-fm-gold" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold">{event.headliner.name}</h3>
+                  <Badge variant="outline" className="text-xs mt-1">
+                    {event.headliner.genre}
+                  </Badge>
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Supporting Artists */}
-            {event.undercard.length > 0 && (
-              <div className='mb-12'>
-                <h2 className='text-2xl font-bold mb-6'>Supporting Artists</h2>
-                <div className='grid sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-                  {event.undercard.map((artist, index) => (
-                    <div
-                      key={index}
-                      className='bg-muted/30 border border-border rounded-lg p-4'
-                    >
-                      <div className='flex items-center gap-4'>
-                        <div className='w-12 h-12 rounded-full bg-gradient-to-br from-secondary/20 to-secondary/40 flex items-center justify-center'>
-                          <Music className='w-6 h-6 text-secondary' />
-                        </div>
-                        <div>
-                          <h4 className='font-medium'>{artist.name}</h4>
-                          <p className='text-sm text-muted-foreground'>
-                            {artist.genre}
-                          </p>
-                        </div>
+          {/* Supporting Artists */}
+          {event.undercard.length > 0 && (
+            <div className="space-y-3">
+              <h2 className="text-xl font-semibold">Supporting Artists</h2>
+              <div className="grid gap-3">
+                {event.undercard.map((artist, index) => (
+                  <div
+                    key={index}
+                    className="bg-muted/20 border border-border/50 rounded-lg p-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-muted-foreground/20 to-muted-foreground/40 flex items-center justify-center">
+                        <Music className="w-5 h-5 text-muted-foreground" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium">{artist.name}</h4>
+                        <p className="text-sm text-muted-foreground">{artist.genre}</p>
                       </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
-            )}
+            </div>
+          )}
+        </div>
+      </div>
+    </PageTransition>
+  );
+
+  // Right Column - Ticketing & Social Proof
+  const rightColumn = (
+    <PageTransition>
+      <div className="p-6 lg:p-8 space-y-6">
+        {/* Social Proof Section */}
+        <SocialProof eventId={id || ''} />
+
+        {/* Ticketing Panel */}
+        {tiersLoading ? (
+          <div className="bg-card border border-border rounded-lg p-8 text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-fm-gold mx-auto mb-3" />
+            <p className="text-sm text-muted-foreground">Loading tickets...</p>
           </div>
-        </PageTransition>
-      }
+        ) : tiers && tiers.length > 0 ? (
+          <TicketingPanel
+            eventId={id || ''}
+            tiers={tiers}
+            onPurchase={handlePurchase}
+            isLoading={checkoutLoading}
+          />
+        ) : event.ticketUrl ? (
+          <div className="bg-card border border-border rounded-lg p-6 space-y-4">
+            <h3 className="text-lg font-semibold">Get Tickets</h3>
+            <p className="text-sm text-muted-foreground">
+              Tickets for this event are available through an external provider.
+            </p>
+            <Button asChild className="w-full bg-fm-gold hover:bg-fm-gold/90 text-background">
+              <a href={event.ticketUrl} target="_blank" rel="noopener noreferrer">
+                Buy Tickets Externally
+              </a>
+            </Button>
+          </div>
+        ) : (
+          <div className="bg-card border border-border rounded-lg p-6 text-center">
+            <p className="text-muted-foreground">Tickets coming soon...</p>
+          </div>
+        )}
+
+        {/* Quick Info Summary */}
+        <div className="bg-muted/30 border border-border rounded-lg p-5 space-y-3">
+          <h3 className="font-semibold text-sm">Event Summary</h3>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Date</span>
+              <span className="font-medium">{dateObj.full}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Time</span>
+              <span className="font-medium">{formatTimeDisplay(event.time)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Venue</span>
+              <span className="font-medium truncate ml-4">{event.venue}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Lineup</span>
+              <span className="font-medium">
+                {event.undercard.length > 0 ? `${event.undercard.length + 1} artists` : '1 artist'}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </PageTransition>
+  );
+
+  return (
+    <EventDetailsLayout
+      leftColumn={leftColumn}
+      rightColumn={rightColumn}
     />
   );
 };

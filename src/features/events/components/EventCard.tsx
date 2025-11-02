@@ -143,6 +143,22 @@ export const EventCard = ({ event }: EventCardProps) => {
     setShowTicketDialog(true);
   };
 
+  const handleCardClick = () => {
+    console.log('Card clicked, navigating to:', `/event/${event.id}`);
+
+    // Use View Transitions API if supported
+    if ('startViewTransition' in document) {
+      console.log('Using View Transitions API');
+      (document as any).startViewTransition(() => {
+        navigate(`/event/${event.id}`);
+      });
+    } else {
+      // Fallback for browsers that don't support View Transitions
+      console.log('View Transitions not supported, using regular navigation');
+      navigate(`/event/${event.id}`);
+    }
+  };
+
   const dateObj = formatDate(event.date);
 
   // Determine the display title - use event title if available, otherwise headliner name
@@ -154,7 +170,7 @@ export const EventCard = ({ event }: EventCardProps) => {
       label: 'Manage Event',
       icon: <Settings className="w-4 h-4" />,
       onClick: (eventData) => {
-        navigate(`/events/edit/${eventData.id}`);
+        navigate(`/events/${eventData.id}/manage`);
       },
     },
     {
@@ -181,10 +197,13 @@ export const EventCard = ({ event }: EventCardProps) => {
             contextMenuOpen && 'border-fm-gold/50 shadow-lg shadow-fm-gold/10',
             'hover:border-fm-gold/50 hover:shadow-lg hover:shadow-fm-gold/10'
           )}
-          onClick={() => navigate(`/event/${event.id}`)}
+          onClick={handleCardClick}
         >
         {/* Hero Image Section - Takes up more space for 2:3 ratio */}
-        <div className="relative h-[65%] overflow-hidden bg-muted">
+        <div
+          className="relative h-[65%] overflow-hidden bg-muted"
+          style={{ viewTransitionName: `event-hero-${event.id}` }}
+        >
           <img
             src={event.heroImage}
             alt={displayTitle}

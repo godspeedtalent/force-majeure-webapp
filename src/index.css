@@ -388,3 +388,52 @@ All colors MUST be HSL.
     animation: ripple 600ms cubic-bezier(0.4, 0, 0.2, 1);
     pointer-events: none;
   }
+
+  /* View Transitions API - Smooth page transitions */
+  @media (prefers-reduced-motion: no-preference) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: 0.5s;
+    }
+
+    /* Hero image morphing animation */
+    ::view-transition-old(event-hero),
+    ::view-transition-new(event-hero) {
+      animation-duration: 0.7s;
+      animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Smooth fade for old content */
+    ::view-transition-old(root) {
+      animation-name: fade-out, slide-to-left;
+    }
+
+    /* Smooth fade for new content */
+    ::view-transition-new(root) {
+      animation-name: fade-in, slide-from-right;
+    }
+  }
+
+  @keyframes fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes slide-to-left {
+    to {
+      transform: translateX(-30px);
+    }
+  }
+
+  @keyframes slide-from-right {
+    from {
+      transform: translateX(30px);
+    }
+  }
