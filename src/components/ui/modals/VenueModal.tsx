@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MapPin, Globe, Users } from 'lucide-react';
 import { FmCommonModal } from '@/components/ui/modals/FmCommonModal';
-import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { FmInfoChip } from '@/components/ui/data/FmInfoChip';
 

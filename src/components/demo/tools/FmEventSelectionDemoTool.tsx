@@ -87,12 +87,13 @@ export const FmEventSelectionDemoTool = ({
             Select Event
           </Label>
           <div className="flex gap-2">
-            <FmEventSearchDropdown
-              value={selectedEventId}
-              onChange={onEventChange}
-              placeholder="Search for an event..."
-              className="flex-1"
-            />
+            <div className="flex-1">
+              <FmEventSearchDropdown
+                value={selectedEventId}
+                onChange={onEventChange}
+                placeholder="Search for an event..."
+              />
+            </div>
             <Button
               variant="outline"
               onClick={handleSelectRandomEvent}

@@ -18,7 +18,7 @@ export const DemoLayout = ({
   description,
   icon: Icon,
   children,
-  demoTools,
+  demoTools: _demoTools,
   condensed = false,
 }: DemoLayoutProps) => {
   return (

@@ -9,7 +9,7 @@ interface Props {
 interface State {
   hasError: boolean;
   error: Error | null;
-  errorInfo: React.ErrorInfo | null;
+  errorInfo: React.ErrorInfo | undefined;
 }
 
 /**
@@ -19,7 +19,7 @@ interface State {
 export class ErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false, error: null, errorInfo: null };
+    this.state = { hasError: false, error: null, errorInfo: undefined };
   }
 
   static getDerivedStateFromError(error: Error): Partial<State> {
@@ -40,14 +40,14 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   private handleReset = () => {
     // Reset error state before reload to prevent infinite loop
-    this.setState({ hasError: false, error: null, errorInfo: null }, () => {
+    this.setState({ hasError: false, error: null, errorInfo: undefined }, () => {
       window.location.reload();
     });
   };
 
   private handleGoBack = () => {
     // Reset error state before navigation to prevent infinite loop
-    this.setState({ hasError: false, error: null, errorInfo: null }, () => {
+    this.setState({ hasError: false, error: null, errorInfo: undefined }, () => {
       window.history.back();
     });
   };

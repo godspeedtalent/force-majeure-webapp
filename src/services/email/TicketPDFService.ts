@@ -89,7 +89,7 @@ export class TicketPDFService {
    */
   static async generateIndividualTicketPDFs(
     data: OrderReceiptEmailData,
-    options: TicketPDFOptions = {}
+    _options: TicketPDFOptions = {}
   ): Promise<string[]> {
     // STUB: Return empty array for now
     // When implemented, this will return an array of base64 encoded PDFs
@@ -103,67 +103,6 @@ export class TicketPDFService {
     // Should create one PDF per ticket, with unique QR codes/barcodes
 
     return [];
-  }
-
-  /**
-   * Generate QR code for ticket validation
-   * STUB - To be implemented
-   */
-  private static async generateQRCode(orderId: string, ticketId?: string): Promise<string> {
-    console.log('[TicketPDFService] QR code generation stub called');
-    // TODO: Use library like qrcode or qr-image
-    // Should encode: orderId, ticketId, validation token
-    return '';
-  }
-
-  /**
-   * Generate barcode for scanning at venue
-   * STUB - To be implemented
-   */
-  private static async generateBarcode(orderId: string, ticketId?: string): Promise<string> {
-    console.log('[TicketPDFService] Barcode generation stub called');
-    // TODO: Use library like jsbarcode
-    // Should encode: orderId, ticketId in barcode format
-    return '';
-  }
-
-  /**
-   * Generate HTML template for ticket
-   * STUB - To be implemented
-   */
-  private static generateTicketHTML(
-    data: OrderReceiptEmailData,
-    qrCode: string,
-    barcode: string,
-    ticketNumber?: number
-  ): string {
-    console.log('[TicketPDFService] HTML generation stub called');
-    // TODO: Create beautiful ticket HTML template
-    // Should include:
-    // - Event hero image
-    // - Event details
-    // - QR code
-    // - Barcode
-    // - Ticket tier
-    // - Terms and conditions
-    return '';
-  }
-
-  /**
-   * Convert HTML to PDF
-   * STUB - To be implemented
-   */
-  private static async convertHTMLToPDF(
-    html: string,
-    options: TicketPDFOptions
-  ): Promise<Buffer> {
-    console.log('[TicketPDFService] HTML to PDF conversion stub called');
-    // TODO: Implement HTML to PDF conversion
-    // Options:
-    // 1. Use jsPDF or pdfmake (client-side)
-    // 2. Use Supabase Edge Function with Puppeteer (server-side)
-    // 3. Use third-party service
-    return Buffer.from('');
   }
 
   /**
