@@ -1,6 +1,5 @@
 import { Hammer, ToggleLeft, Ticket, PlusCircle, X, Calendar } from 'lucide-react';
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
 import { FmCommonTab } from '@/components/ui/data/FmCommonTab';
 import { RoleSelectSection } from './RoleSelectSection';
 import { FeatureToggleSection } from './FeatureToggleSection';
@@ -226,43 +225,8 @@ export const DevToolsDrawer = () => {
             )}
 
             {activeTab === 'tools' && (
-              <div className="space-y-6">
+              <div className="space-y-0">
                 <RoleSelectSection currentRole={devRole} onRoleChange={handleRoleChange} />
-                
-                {/* Navigation Links */}
-                <div className="space-y-3 pt-4 border-t border-white/10">
-                  <h3 className="text-sm font-medium text-white/70 mb-3">Quick Links</h3>
-                  
-                  <Link
-                    to="/demo"
-                    className="block p-3 bg-white/5 hover:bg-white/10 rounded-md border border-white/10 hover:border-fm-gold/50 transition-all group"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-white/90 group-hover:text-fm-gold transition-colors">
-                        Developer Demos
-                      </span>
-                      <span className="text-xs text-white/50">→</span>
-                    </div>
-                    <p className="text-xs text-white/50 mt-1">
-                      Test features in controlled environment
-                    </p>
-                  </Link>
-
-                  <Link
-                    to="/testing"
-                    className="block p-3 bg-white/5 hover:bg-white/10 rounded-md border border-white/10 hover:border-fm-gold/50 transition-all group"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-white/90 group-hover:text-fm-gold transition-colors">
-                        Testing Dashboard
-                      </span>
-                      <span className="text-xs text-white/50">→</span>
-                    </div>
-                    <p className="text-xs text-white/50 mt-1">
-                      Run smoke tests and validation scripts
-                    </p>
-                  </Link>
-                </div>
               </div>
             )}
 

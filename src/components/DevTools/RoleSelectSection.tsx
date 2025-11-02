@@ -1,4 +1,4 @@
-import { User, UserCog, Shield, UserX, Code, BarChart3, Settings } from 'lucide-react';
+import { User, UserCog, Shield, UserX, Code, BarChart3, Settings, FlaskConical } from 'lucide-react';
 import { FmCommonDropdown, DropdownItem } from '@/components/ui/forms/FmCommonDropdown';
 import { Button } from '@/components/ui/shadcn/button';
 import { FmCommonToggleHeader } from '@/components/ui/forms/FmCommonToggleHeader';
@@ -39,6 +39,13 @@ export const RoleSelectSection = ({ currentRole, onRoleChange }: RoleSelectSecti
             label="Demos"
             icon={Code}
             description="Test application features"
+            variant="outline"
+          />
+          <FmCommonNavigationButton
+            to="/testing"
+            label="Testing Dashboard"
+            icon={FlaskConical}
+            description="Run smoke tests and validations"
             variant="outline"
           />
           <FmCommonNavigationButton
