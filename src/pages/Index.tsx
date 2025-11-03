@@ -8,7 +8,7 @@ import { LoadingState } from '@/components/common/LoadingState';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import { Layout } from '@/components/layout/Layout';
-import { TopographicBackground } from '@/components/ui/misc/TopographicBackground';
+import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { EventCard } from '@/features/events/components/EventCard';
 import { EventCardSkeleton } from '@/features/events/components/EventCardSkeleton';
 import { supabase } from '@/shared/api/supabase/client';

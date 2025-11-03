@@ -2,10 +2,10 @@ import { Check, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import { FmCommonToggle } from '@/components/ui/forms/FmCommonToggle';
-import { FormSection } from '@/components/ui/forms/FormSection';
-import { ScrollArea } from '@/components/ui/shadcn/scroll-area';
-import { FmCommonTextField } from '@/components/ui/forms/FmCommonTextField';
+import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
+import { FormSection } from '@/components/common/forms/FormSection';
+import { ScrollArea } from '@/components/common/shadcn/scroll-area';
+import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { supabase } from '@/shared/api/supabase/client';
 
 interface RegistrationFormProps {

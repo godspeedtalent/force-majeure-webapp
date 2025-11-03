@@ -3,15 +3,15 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Layout } from '@/components/layout/Layout';
-import { FmCommonUserPhoto } from '@/components/ui/display/FmCommonUserPhoto';
-import { FmCommonButton } from '@/components/ui/buttons/FmCommonButton';
-import { FmCommonInfoCard } from '@/components/common/fm/display/FmCommonInfoCard';
-import { FmCommonStatCard } from '@/components/common/fm/display/FmCommonStatCard';
-import { Card, CardContent } from '@/components/ui/shadcn/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/shadcn/tabs';
+import { FmCommonUserPhoto } from '@/components/common/display/FmCommonUserPhoto';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonInfoCard } from '@/components/common/display/FmCommonInfoCard';
+import { FmCommonStatCard } from '@/components/common/display/FmCommonStatCard';
+import { Card, CardContent } from '@/components/common/shadcn/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { supabase } from '@/shared/api/supabase/client';
-import { Badge } from '@/components/ui/shadcn/badge';
+import { Badge } from '@/components/common/shadcn/badge';
 
 interface UpcomingEvent {
   id: string;

@@ -1,11 +1,11 @@
 import { format } from 'date-fns';
-import { Label } from '@/components/ui/shadcn/label';
-import { Input } from '@/components/ui/shadcn/input';
-import { Checkbox } from '@/components/ui/shadcn/checkbox';
-import { FmArtistSearchDropdown } from '@/components/ui/search/FmArtistSearchDropdown';
-import { FmVenueSearchDropdown } from '@/components/ui/search/FmVenueSearchDropdown';
-import { FmCommonDatePicker } from '@/components/ui/forms/FmCommonDatePicker';
-import { FmCommonTimePicker } from '@/components/ui/forms/FmCommonTimePicker';
+import { Label } from '@/components/common/shadcn/label';
+import { Input } from '@/components/common/shadcn/input';
+import { Checkbox } from '@/components/common/shadcn/checkbox';
+import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
+import { FmVenueSearchDropdown } from '@/components/common/search/FmVenueSearchDropdown';
+import { FmCommonDatePicker } from '@/components/common/forms/FmCommonDatePicker';
+import { FmCommonTimePicker } from '@/components/common/forms/FmCommonTimePicker';
 import { EventFormState } from '../hooks/useEventData';
 
 /**

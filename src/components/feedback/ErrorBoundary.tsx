@@ -1,5 +1,5 @@
 import React from 'react';
-import { FmErrorDisplay } from '@/components/ui/feedback/FmErrorDisplay';
+import { FmErrorDisplay } from '@/components/common/feedback/FmErrorDisplay';
 
 interface Props {
   children: React.ReactNode;

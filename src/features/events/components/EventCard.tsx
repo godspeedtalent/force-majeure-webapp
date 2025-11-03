@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { ExternalLinkDialog } from '@/components/business/ExternalLinkDialog';
-import { Badge } from '@/components/ui/shadcn/badge';
-import { Button } from '@/components/ui/shadcn/button';
-import { FmCommonContextMenu, ContextMenuAction } from '@/components/ui/modals/FmCommonContextMenu';
+import { Badge } from '@/components/common/shadcn/badge';
+import { Button } from '@/components/common/shadcn/button';
+import { FmCommonContextMenu, ContextMenuAction } from '@/components/common/modals/FmCommonContextMenu';
 import { useMusicPlayer, type Song } from '@/contexts/MusicPlayerContext';
 import { supabase } from '@/shared/api/supabase/client';
 import { cn } from '@/shared/utils/utils';

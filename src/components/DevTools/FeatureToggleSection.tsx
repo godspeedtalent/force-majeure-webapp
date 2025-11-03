@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { FmCommonToggle } from '@/components/ui/forms/FmCommonToggle';
-import { Button } from '@/components/ui/shadcn/button';
+import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
+import { Button } from '@/components/common/shadcn/button';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,7 +10,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/shadcn/alert-dialog';
+} from '@/components/common/shadcn/alert-dialog';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
 import { 
@@ -22,7 +22,7 @@ import {
   Map,
   LucideIcon
 } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/shadcn/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/common/shadcn/tooltip';
 
 interface FeatureFlag {
   flag_name: string;

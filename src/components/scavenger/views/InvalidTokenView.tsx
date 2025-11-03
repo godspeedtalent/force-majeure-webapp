@@ -1,6 +1,6 @@
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { MessagePanel } from '@/components/feedback/MessagePanel';
-import { Button } from '@/components/ui/shadcn/button';
+import { Button } from '@/components/common/shadcn/button';
 import { ExternalLink } from 'lucide-react';
 
 import { LF_SYSTEM_TICKET_URL } from '@/shared/constants/ticketLinks';

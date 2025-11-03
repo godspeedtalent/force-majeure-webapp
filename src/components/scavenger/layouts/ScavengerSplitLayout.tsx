@@ -4,7 +4,7 @@ import lfSystemImage from '@/assets/lf-system-scavenger.jpg';
 import { Footer } from '@/components/navigation/Footer';
 import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
 import { ScavengerNavigation } from '@/components/navigation/ScavengerNavigation';
-import { TopographicBackground } from '@/components/ui/misc/TopographicBackground';
+import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { ImageAnchor } from '@/shared/types/imageAnchor';
 
 interface ScavengerSplitLayoutProps {

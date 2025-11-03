@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FmCommonDataGrid, DataGridColumn, DataGridAction } from '@/components/ui/data/FmCommonDataGrid';
-import { FmCreateEventButton } from '@/components/ui/buttons/FmCreateEventButton';
-import { FmEditEventButton } from '@/components/ui/buttons/FmEditEventButton';
+import { FmCommonDataGrid, DataGridColumn, DataGridAction } from '@/components/common/data/FmCommonDataGrid';
+import { FmCreateEventButton } from '@/components/common/buttons/FmCreateEventButton';
+import { FmEditEventButton } from '@/components/common/buttons/FmEditEventButton';
 import { useEvents } from '@/features/events/hooks/useEvents';
 import { useQueryClient } from '@tanstack/react-query';
 import { Edit, Trash2, ChevronRight } from 'lucide-react';

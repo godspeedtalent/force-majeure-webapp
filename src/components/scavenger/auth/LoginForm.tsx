@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
-import { FmCommonTextField } from '@/components/ui/forms/FmCommonTextField';
-import { FmCommonToggle } from '@/components/ui/forms/FmCommonToggle';
+import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
+import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
 import { supabase } from '@/shared/api/supabase/client';
 import { sessionPersistence } from '@/shared/utils/sessionPersistence';
 

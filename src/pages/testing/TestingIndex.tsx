@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/shadcn/badge';
+import { Badge } from '@/components/common/shadcn/badge';
 import {
   FlaskConical,
   Zap,

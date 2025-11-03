@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { BarChart3 } from 'lucide-react';
-import { Card } from '@/components/ui/shadcn/card';
+import { Card } from '@/components/common/shadcn/card';
 import { supabase } from '@/shared/api/supabase/client';
 import { LoadingState } from '@/components/common/LoadingState';
 

@@ -3,7 +3,7 @@ import { ExternalLink } from 'lucide-react';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { AnimatedCounter } from '@/components/primitives/AnimatedCounter';
 import { MessagePanel } from '@/components/feedback/MessagePanel';
-import { Button } from '@/components/ui/shadcn/button';
+import { Button } from '@/components/common/shadcn/button';
 import { LF_SYSTEM_TICKET_URL, PROMO_CODE } from '@/shared/constants/ticketLinks';
 
 interface PromoCodePanelProps {

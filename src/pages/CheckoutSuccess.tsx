@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircle2, Loader2 } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/shadcn/card';
-import { Button } from '@/components/ui/shadcn/button';
-import { TopographicBackground } from '@/components/ui/misc/TopographicBackground';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import { Button } from '@/components/common/shadcn/button';
+import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 
 export default function CheckoutSuccess() {
   const [searchParams] = useSearchParams();

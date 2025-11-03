@@ -1,6 +1,6 @@
 import { Grid, List } from 'lucide-react';
 
-import { Button } from '@/components/ui/shadcn/button';
+import { Button } from '@/components/common/shadcn/button';
 
 interface DisplayToggleProps {
   displayMode: 'grid' | 'row';

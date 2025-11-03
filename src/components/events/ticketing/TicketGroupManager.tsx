@@ -1,27 +1,27 @@
 import { useState } from 'react';
 import { Plus, GripVertical, Trash2, ChevronRight, Copy, AlertCircle, BarChart3, Ticket } from 'lucide-react';
-import { Button } from '@/components/ui/shadcn/button';
-import { Input } from '@/components/ui/shadcn/input';
-import { Label } from '@/components/ui/shadcn/label';
-import { Switch } from '@/components/ui/shadcn/switch';
-import { Card, CardContent, CardHeader } from '@/components/ui/shadcn/card';
-import { Badge } from '@/components/ui/shadcn/badge';
-import { Separator } from '@/components/ui/shadcn/separator';
+import { Button } from '@/components/common/shadcn/button';
+import { Input } from '@/components/common/shadcn/input';
+import { Label } from '@/components/common/shadcn/label';
+import { Switch } from '@/components/common/shadcn/switch';
+import { Card, CardContent, CardHeader } from '@/components/common/shadcn/card';
+import { Badge } from '@/components/common/shadcn/badge';
+import { Separator } from '@/components/common/shadcn/separator';
 import { cn } from '@/shared/utils/utils';
-import { FmCommonTextField } from '@/components/ui/forms/FmCommonTextField';
+import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/shadcn/select';
+} from '@/components/common/shadcn/select';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/shadcn/tooltip';
+} from '@/components/common/shadcn/tooltip';
 
 export interface TicketTier {
   id?: string;

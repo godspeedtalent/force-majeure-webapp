@@ -2,7 +2,7 @@ import { Music, Play } from 'lucide-react';
 import React from 'react';
 
 import spotifyLogo from '@/assets/spotify-logo.png';
-import { Badge } from '@/components/ui/shadcn/badge';
+import { Badge } from '@/components/common/shadcn/badge';
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext';
 import { cn } from '@/shared/utils/utils';
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/shadcn/card';
-import { Label } from '@/components/ui/shadcn/label';
-import { Switch } from '@/components/ui/shadcn/switch';
+import { Card } from '@/components/common/shadcn/card';
+import { Label } from '@/components/common/shadcn/label';
+import { Switch } from '@/components/common/shadcn/switch';
 import { Code, PlusCircle, Ticket, ToggleLeft, Calendar, Info } from 'lucide-react';
 import { toast } from 'sonner';
 

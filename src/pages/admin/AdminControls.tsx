@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
-import { FmUserDataGrid } from '@/components/ui/data/FmUserDataGrid';
-import { FmCommonDataGrid, DataGridColumn, DataGridAction } from '@/components/ui/data/FmCommonDataGrid';
-import { FmEditVenueButton } from '@/components/ui/buttons/FmEditVenueButton';
+import { FmUserDataGrid } from '@/components/common/data/FmUserDataGrid';
+import { FmCommonDataGrid, DataGridColumn, DataGridAction } from '@/components/common/data/FmCommonDataGrid';
+import { FmEditVenueButton } from '@/components/common/buttons/FmEditVenueButton';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
-import { FmCommonSideNavGroup } from '@/components/ui/navigation/FmCommonSideNav';
+import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { Users, Sliders, MapPin, Database, Calendar, Edit, Trash2, Settings, Code } from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';

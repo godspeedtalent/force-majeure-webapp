@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
 
 import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
-import { Badge } from '@/components/ui/shadcn/badge';
-import { Card, CardContent } from '@/components/ui/shadcn/card';
+import { Badge } from '@/components/common/shadcn/badge';
+import { Card, CardContent } from '@/components/common/shadcn/card';
 
 interface CommonCardProps {
   image: string;

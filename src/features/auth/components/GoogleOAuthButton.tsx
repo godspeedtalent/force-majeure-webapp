@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/shadcn/button';
+import { Button } from '@/components/common/shadcn/button';
 import { Loader2 } from 'lucide-react';
 
 /**

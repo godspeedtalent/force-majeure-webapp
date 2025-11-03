@@ -1,7 +1,7 @@
 import { MapPin, Tag } from 'lucide-react';
 
-import { Card } from '@/components/ui/shadcn/card';
-import { Progress } from '@/components/ui/shadcn/progress';
+import { Card } from '@/components/common/shadcn/card';
+import { Progress } from '@/components/common/shadcn/progress';
 
 interface LocationCardProps {
   locationName: string;

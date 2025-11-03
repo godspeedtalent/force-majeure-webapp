@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Card } from '@/components/ui/shadcn/card';
-import { Button } from '@/components/ui/shadcn/button';
-import { Input } from '@/components/ui/shadcn/input';
-import { Label } from '@/components/ui/shadcn/label';
-import { Separator } from '@/components/ui/shadcn/separator';
+import { Card } from '@/components/common/shadcn/card';
+import { Button } from '@/components/common/shadcn/button';
+import { Input } from '@/components/common/shadcn/input';
+import { Label } from '@/components/common/shadcn/label';
+import { Separator } from '@/components/common/shadcn/separator';
 import { Mail, Copy, Send, Eye } from 'lucide-react';
 import { OrderReceiptEmailData } from '@/types/email';
 import { generateOrderReceiptEmailHTML } from '@/services/email/templates/OrderReceiptEmail';

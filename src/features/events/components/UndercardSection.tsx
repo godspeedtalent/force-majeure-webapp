@@ -1,5 +1,5 @@
-import { FmCommonRowManager } from '@/components/ui/forms/FmCommonRowManager';
-import { FmArtistSearchDropdown } from '@/components/ui/search/FmArtistSearchDropdown';
+import { FmCommonRowManager } from '@/components/common/forms/FmCommonRowManager';
+import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
 import { EventFormState } from '../hooks/useEventData';
 
 /**

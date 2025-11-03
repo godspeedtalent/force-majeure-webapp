@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Navigation } from '@/components/navigation/Navigation';
-import { TopographicBackground } from '@/components/ui/misc/TopographicBackground';
+import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 
 interface SinglePageLayoutProps {
   children: ReactNode;

@@ -1,9 +1,9 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircle2 } from 'lucide-react';
-import { Card } from '@/components/ui/shadcn/card';
-import { Button } from '@/components/ui/shadcn/button';
-import { TopographicBackground } from '@/components/ui/misc/TopographicBackground';
-import { Separator } from '@/components/ui/shadcn/separator';
+import { Card } from '@/components/common/shadcn/card';
+import { Button } from '@/components/common/shadcn/button';
+import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import { Separator } from '@/components/common/shadcn/separator';
 
 export default function EventCheckoutConfirmation() {
   const navigate = useNavigate();

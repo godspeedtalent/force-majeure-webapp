@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Search, Calendar, Users as UsersIcon, MapPin } from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
-import { Input } from '@/components/ui/shadcn/input';
+import { Input } from '@/components/common/shadcn/input';
 import { cn } from '@/shared/utils/utils';
 import { logApiError } from '@/shared/utils/apiLogger';
 

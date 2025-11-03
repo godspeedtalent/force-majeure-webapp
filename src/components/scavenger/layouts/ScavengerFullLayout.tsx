@@ -6,8 +6,8 @@ import lfSystemImage from '@/assets/lf-system-scavenger.jpg';
 import { Footer } from '@/components/navigation/Footer';
 import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
 import { ScavengerNavigation } from '@/components/navigation/ScavengerNavigation';
-import { Card } from '@/components/ui/shadcn/card';
-import { TopographicBackground } from '@/components/ui/misc/TopographicBackground';
+import { Card } from '@/components/common/shadcn/card';
+import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { ImageAnchor } from '@/shared/types/imageAnchor';
 
 interface ScavengerFullLayoutProps {

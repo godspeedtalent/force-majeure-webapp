@@ -2,8 +2,8 @@ import { Calendar, Clock, MapPin, Play, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 
 import { ExternalLinkDialog } from '@/components/business/ExternalLinkDialog';
-import { Badge } from '@/components/ui/shadcn/badge';
-import { FmCommonButton } from '@/components/ui/buttons/FmCommonButton';
+import { Badge } from '@/components/common/shadcn/badge';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext';
 import { useSongsByEvent } from '@/features/events/hooks/useSongsByEvent';
 import {

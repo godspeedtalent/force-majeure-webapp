@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
 import { Navigation } from '@/components/navigation/Navigation';
-import { TopographicBackground } from '@/components/ui/misc/TopographicBackground';
-import { FmCommonSideNav, FmCommonSideNavGroup } from '@/components/ui/navigation/FmCommonSideNav';
-import { SidebarProvider } from '@/components/ui/shadcn/sidebar';
+import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import { FmCommonSideNav, FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
+import { SidebarProvider } from '@/components/common/shadcn/sidebar';
 
 interface SideNavbarLayoutProps<T extends string> {
   children: ReactNode;

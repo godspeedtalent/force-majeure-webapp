@@ -2,22 +2,22 @@ import { Loader2, UserX } from 'lucide-react';
 import React, { useState } from 'react';
 
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
-import { FmCommonButton } from '@/components/ui/buttons/FmCommonButton';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/shadcn/card';
-import { FmCommonTextField } from '@/components/ui/forms/FmCommonTextField';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/shadcn/tabs';
-import { Button } from '@/components/ui/shadcn/button';
-import { Checkbox } from '@/components/ui/shadcn/checkbox';
-import { Label } from '@/components/ui/shadcn/label';
+} from '@/components/common/shadcn/card';
+import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
+import { Button } from '@/components/common/shadcn/button';
+import { Checkbox } from '@/components/common/shadcn/checkbox';
+import { Label } from '@/components/common/shadcn/label';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { GoogleOAuthButton } from './GoogleOAuthButton';
-import { OAuthDivider } from '@/components/ui/misc/OAuthDivider';
+import { OAuthDivider } from '@/components/common/misc/OAuthDivider';
 
 interface AuthPanelProps {
   showGuestOption?: boolean;

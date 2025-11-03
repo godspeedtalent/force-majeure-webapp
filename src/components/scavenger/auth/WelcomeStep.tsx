@@ -2,7 +2,7 @@ import { ExternalLink, Loader2 } from 'lucide-react';
 
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { MessagePanel } from '@/components/feedback/MessagePanel';
-import { Button } from '@/components/ui/shadcn/button';
+import { Button } from '@/components/common/shadcn/button';
 import { PromoCodePanel } from './PromoCodePanel';
 import { LF_SYSTEM_TICKET_URL, PROMO_CODE } from '@/shared/constants/ticketLinks';
 

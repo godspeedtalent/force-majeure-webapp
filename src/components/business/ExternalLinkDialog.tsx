@@ -7,7 +7,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/shadcn/alert-dialog';
+} from '@/components/common/shadcn/alert-dialog';
 
 interface ExternalLinkDialogProps {
   open: boolean;

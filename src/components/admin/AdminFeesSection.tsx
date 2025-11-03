@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { DollarSign, Percent } from 'lucide-react';
-import { FmCommonTextField } from '@/components/ui/forms/FmCommonTextField';
-import { Button } from '@/components/ui/shadcn/button';
+import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
+import { Button } from '@/components/common/shadcn/button';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,7 +11,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/shadcn/alert-dialog';
+} from '@/components/common/shadcn/alert-dialog';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/shared/utils/utils';

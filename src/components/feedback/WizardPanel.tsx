@@ -1,7 +1,7 @@
 import { ArrowLeft } from 'lucide-react';
 import { ReactNode, useState } from 'react';
 
-import { Button } from '@/components/ui/shadcn/button';
+import { Button } from '@/components/common/shadcn/button';
 
 import { cn } from '@/shared/utils/utils';
 

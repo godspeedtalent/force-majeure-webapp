@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Music, Star, Users2, Clock, Trash2, GripVertical, Plus } from 'lucide-react';
-import { FmArtistSearchDropdown } from '@/components/ui/search/FmArtistSearchDropdown';
-import { FmCommonButton } from '@/components/ui/buttons/FmCommonButton';
-import { FmCommonTextField } from '@/components/ui/forms/FmCommonTextField';
-import { FmCommonToggle } from '@/components/ui/forms/FmCommonToggle';
-import { FormSection } from '@/components/ui/forms/FormSection';
+import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
+import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
+import { FormSection } from '@/components/common/forms/FormSection';
 import { cn } from '@/shared/utils/utils';
 
 export interface ArtistSlot {

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { TopographicBackground } from '@/components/ui/misc/TopographicBackground';
-import { Button } from '@/components/ui/shadcn/button';
+import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import { Button } from '@/components/common/shadcn/button';
 import { Home } from 'lucide-react';
 
 const NotFound = () => {

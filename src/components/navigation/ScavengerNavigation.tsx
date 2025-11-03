@@ -3,14 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { Breadcrumbs } from '@/components/primitives/Breadcrumbs';
 import { ForceMajeureLogo } from './ForceMajeureLogo';
-import { Button } from '@/components/ui/shadcn/button';
+import { Button } from '@/components/common/shadcn/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from '@/components/ui/shadcn/dropdown-menu';
+} from '@/components/common/shadcn/dropdown-menu';
 import { useAuth } from '@/features/auth/services/AuthContext';
 
 interface ScavengerNavigationProps {

@@ -1,6 +1,6 @@
 import { TestResult } from '../types/testing';
-import { FmCommonCollapsibleSection } from '@/components/ui/data/FmCommonCollapsibleSection';
-import { Badge } from '@/components/ui/shadcn/badge';
+import { FmCommonCollapsibleSection } from '@/components/common/data/FmCommonCollapsibleSection';
+import { Badge } from '@/components/common/shadcn/badge';
 import { CheckCircle2, XCircle, Clock, AlertCircle } from 'lucide-react';
 import { cn } from '@/shared/utils/utils';
 

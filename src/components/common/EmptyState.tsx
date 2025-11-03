@@ -1,7 +1,7 @@
 import { LucideIcon } from 'lucide-react';
 import { ReactNode } from 'react';
 
-import { FmCommonEmptyState } from './fm/display/FmCommonEmptyState';
+import { FmCommonEmptyState } from './display/FmCommonEmptyState';
 
 interface EmptyStateProps {
   icon?: LucideIcon;

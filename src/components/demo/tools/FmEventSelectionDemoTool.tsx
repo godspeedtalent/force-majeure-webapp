@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileEdit, Dices, Shuffle } from 'lucide-react';
-import { Label } from '@/components/ui/shadcn/label';
-import { Button } from '@/components/ui/shadcn/button';
-import { FmEventSearchDropdown } from '@/components/ui/search/FmEventSearchDropdown';
-import { FmCreateEventButton } from '@/components/ui/buttons/FmCreateEventButton';
+import { Label } from '@/components/common/shadcn/label';
+import { Button } from '@/components/common/shadcn/button';
+import { FmEventSearchDropdown } from '@/components/common/search/FmEventSearchDropdown';
+import { FmCreateEventButton } from '@/components/common/buttons/FmCreateEventButton';
 import { TestEventDataService } from '@/services/testData/TestEventDataService';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';

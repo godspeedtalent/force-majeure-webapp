@@ -2,13 +2,13 @@ import { ShoppingCart, Ticket, ChevronDown, Gift, LogIn, Tag } from 'lucide-reac
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Button } from '@/components/ui/shadcn/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/shadcn/select';
-import { Label } from '@/components/ui/shadcn/label';
-import { Separator } from '@/components/ui/shadcn/separator';
+import { Button } from '@/components/common/shadcn/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/common/shadcn/select';
+import { Label } from '@/components/common/shadcn/label';
+import { Separator } from '@/components/common/shadcn/separator';
 import { FmTicketTierList } from './FmTicketTierList';
-import { FmPromoCodeInput } from '@/components/ui/misc/FmPromoCodeInput';
-import { FmInfoCard } from '@/components/ui/data/FmInfoCard';
+import { FmPromoCodeInput } from '@/components/common/misc/FmPromoCodeInput';
+import { FmInfoCard } from '@/components/common/data/FmInfoCard';
 import { useFees } from '../hooks/useFees';
 import { cn } from '@/shared/utils/utils';
 import { useAuth } from '@/features/auth/services/AuthContext';

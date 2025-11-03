@@ -1,13 +1,13 @@
 import { LucideIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-import { Button } from '@/components/ui/shadcn/button';
+import { Button } from '@/components/common/shadcn/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/shadcn/tooltip';
+} from '@/components/common/shadcn/tooltip';
 import { cn } from '@/shared/utils/utils';
 
 interface FmCommonButtonProps {

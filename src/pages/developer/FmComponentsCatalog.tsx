@@ -50,55 +50,55 @@ import {
   FmCommonStackLayout,
   FmCommonConfirmDialog,
   FmCommonBackButton,
-} from '@/components/common/fm';
+} from '@/components/common';
 import { FmCommonLoadingOverlay } from '@/components/common/FmCommonLoadingOverlay';
 
 // Buttons
-import { FmCommonButton } from '@/components/ui/buttons/FmCommonButton';
-import { FmCommonCreateButton } from '@/components/ui/buttons/FmCommonCreateButton';
-import { FmCommonNavigationButton } from '@/components/ui/buttons/FmCommonNavigationButton';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonCreateButton } from '@/components/common/buttons/FmCommonCreateButton';
+import { FmCommonNavigationButton } from '@/components/common/buttons/FmCommonNavigationButton';
 
 // Search
-import { FmCommonSearchDropdown } from '@/components/ui/search/FmCommonSearchDropdown';
-import { FmArtistSearchDropdown } from '@/components/ui/search/FmArtistSearchDropdown';
-import { FmEventSearchDropdown } from '@/components/ui/search/FmEventSearchDropdown';
-import { FmVenueSearchDropdown } from '@/components/ui/search/FmVenueSearchDropdown';
-import { FmCitySearchDropdown } from '@/components/ui/search/FmCitySearchDropdown';
+import { FmCommonSearchDropdown } from '@/components/common/search/FmCommonSearchDropdown';
+import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
+import { FmEventSearchDropdown } from '@/components/common/search/FmEventSearchDropdown';
+import { FmVenueSearchDropdown } from '@/components/common/search/FmVenueSearchDropdown';
+import { FmCitySearchDropdown } from '@/components/common/search/FmCitySearchDropdown';
 
 // Forms
-import { FmCommonTextField } from '@/components/ui/forms/FmCommonTextField';
-import { FmCommonSelect } from '@/components/ui/forms/FmCommonSelect';
-import { FmCommonCheckbox } from '@/components/ui/forms/FmCommonCheckbox';
-import { FmCommonToggle } from '@/components/ui/forms/FmCommonToggle';
-import { FmCommonDatePicker } from '@/components/ui/forms/FmCommonDatePicker';
-import { FmCommonTimePicker } from '@/components/ui/forms/FmCommonTimePicker';
-import { PasswordInput } from '@/components/ui/forms/PasswordInput';
+import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
+import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
+import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
+import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
+import { FmCommonDatePicker } from '@/components/common/forms/FmCommonDatePicker';
+import { FmCommonTimePicker } from '@/components/common/forms/FmCommonTimePicker';
+import { PasswordInput } from '@/components/common/forms/PasswordInput';
 
 // Data
-import { FmCommonList } from '@/components/ui/data/FmCommonList';
-import { FmCommonTab } from '@/components/ui/data/FmCommonTab';
-import { FmCommonCollapsibleSection } from '@/components/ui/data/FmCommonCollapsibleSection';
+import { FmCommonList } from '@/components/common/data/FmCommonList';
+import { FmCommonTab } from '@/components/common/data/FmCommonTab';
+import { FmCommonCollapsibleSection } from '@/components/common/data/FmCommonCollapsibleSection';
 
 // Display
-import { FmCommonUserPhoto } from '@/components/ui/display/FmCommonUserPhoto';
-import { FmAnimatedGradientAvatar } from '@/components/ui/display/FmAnimatedGradientAvatar';
+import { FmCommonUserPhoto } from '@/components/common/display/FmCommonUserPhoto';
+import { FmAnimatedGradientAvatar } from '@/components/common/display/FmAnimatedGradientAvatar';
 
 // Feedback
-import { FmCommonLoadingSpinner } from '@/components/ui/feedback/FmCommonLoadingSpinner';
-import { FmErrorDisplay } from '@/components/ui/feedback/FmErrorDisplay';
+import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmErrorDisplay } from '@/components/common/feedback/FmErrorDisplay';
 
 // Modals
-import { FmCommonModal } from '@/components/ui/modals/FmCommonModal';
+import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
 
 // Misc
-import { TopographicBackground } from '@/components/ui/misc/TopographicBackground';
-import { FmPromoCodeInput } from '@/components/ui/misc/FmPromoCodeInput';
+import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import { FmPromoCodeInput } from '@/components/common/misc/FmPromoCodeInput';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/shadcn/card';
-import { Button } from '@/components/ui/shadcn/button';
-import { Separator } from '@/components/ui/shadcn/separator';
-import type { FmCommonBadgeItem } from '@/components/common/fm';
-import type { FmCommonSideNavGroup } from '@/components/ui/navigation/FmCommonSideNav';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import { Button } from '@/components/common/shadcn/button';
+import { Separator } from '@/components/common/shadcn/separator';
+import type { FmCommonBadgeItem } from '@/components/common';
+import type { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 
 // Component category type
 type ComponentCategory =

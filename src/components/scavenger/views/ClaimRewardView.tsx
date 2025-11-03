@@ -1,7 +1,7 @@
 import { toast } from 'sonner';
 
 import { MessagePanel } from '@/components/feedback/MessagePanel';
-import { Button } from '@/components/ui/shadcn/button';
+import { Button } from '@/components/common/shadcn/button';
 
 interface ClaimRewardViewProps {
   locationName: string;

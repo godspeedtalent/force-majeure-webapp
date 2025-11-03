@@ -1,16 +1,16 @@
 import { TestResult } from '../types/testing';
 import { useTestResults } from '../hooks/useTestResults';
 import { TestCaseItem } from './TestCaseItem';
-import { FmCommonStatCard } from '@/components/common/fm/display/FmCommonStatCard';
-import { Button } from '@/components/ui/shadcn/button';
-import { Input } from '@/components/ui/shadcn/input';
-import { Badge } from '@/components/ui/shadcn/badge';
+import { FmCommonStatCard } from '@/components/common/display/FmCommonStatCard';
+import { Button } from '@/components/common/shadcn/button';
+import { Input } from '@/components/common/shadcn/input';
+import { Badge } from '@/components/common/shadcn/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/shadcn/dropdown-menu';
+} from '@/components/common/shadcn/dropdown-menu';
 import { Download, Search, CheckCircle2, XCircle, AlertCircle, FileJson, FileText } from 'lucide-react';
 
 interface TestResultsPanelProps {

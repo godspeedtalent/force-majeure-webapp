@@ -9,7 +9,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/shadcn/breadcrumb';
+} from '@/components/common/shadcn/breadcrumb';
 import { useBreadcrumbs } from '@/shared/hooks/useBreadcrumbs';
 import { cn } from '@/shared/utils/utils';
 

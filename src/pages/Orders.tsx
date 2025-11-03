@@ -1,6 +1,6 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/shadcn/card';
-import { Badge } from '@/components/ui/shadcn/badge';
-import { Separator } from '@/components/ui/shadcn/separator';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import { Badge } from '@/components/common/shadcn/badge';
+import { Separator } from '@/components/common/shadcn/separator';
 import { useOrders } from '@/features/events/hooks/useOrders';
 import { LoadingState } from '@/components/common/LoadingState';
 import { EmptyState } from '@/components/common/EmptyState';

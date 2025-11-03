@@ -11,8 +11,8 @@ import { formatTimeDisplay } from '@/shared/utils/timeUtils';
 import { useQueryClient } from '@tanstack/react-query';
 import EventCheckoutForm from './EventCheckoutForm';
 import { useFees } from '@/features/events/hooks/useFees';
-import { FmInfoChip } from '@/components/ui/data/FmInfoChip';
-import { VenueModal } from '@/components/ui/modals/VenueModal';
+import { FmInfoChip } from '@/components/common/data/FmInfoChip';
+import { VenueModal } from '@/components/common/modals/VenueModal';
 
 // Undercard artist display component
 const UndercardDisplay = ({ undercardIds }: { undercardIds: string[] }) => {

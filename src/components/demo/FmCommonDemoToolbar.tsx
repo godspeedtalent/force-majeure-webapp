@@ -1,5 +1,5 @@
-import { FmInfoCard } from '@/components/ui/data/FmInfoCard';
-import { FmCommonCollapsibleSection } from '@/components/ui/data/FmCommonCollapsibleSection';
+import { FmInfoCard } from '@/components/common/data/FmInfoCard';
+import { FmCommonCollapsibleSection } from '@/components/common/data/FmCommonCollapsibleSection';
 import { Wrench } from 'lucide-react';
 import { FmCommonDemoTool } from './types/FmCommonDemoTool';
 

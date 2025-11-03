@@ -1,6 +1,6 @@
-import { FmCreateEventButton } from '@/components/ui/buttons/FmCreateEventButton';
-import { FmCreateArtistButton } from '@/components/ui/buttons/FmCreateArtistButton';
-import { FmCreateVenueButton } from '@/components/ui/buttons/FmCreateVenueButton';
+import { FmCreateEventButton } from '@/components/common/buttons/FmCreateEventButton';
+import { FmCreateArtistButton } from '@/components/common/buttons/FmCreateArtistButton';
+import { FmCreateVenueButton } from '@/components/common/buttons/FmCreateVenueButton';
 import { useDevTools } from '@/contexts/DevToolsContext';
 
 export const CreationToolsSection = () => {

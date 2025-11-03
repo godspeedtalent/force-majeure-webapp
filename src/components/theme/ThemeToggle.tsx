@@ -1,7 +1,7 @@
 import { Moon, Sun } from 'lucide-react';
 
 import { useTheme } from '@/components/theme/ThemeProvider';
-import { Button } from '@/components/ui/shadcn/button';
+import { Button } from '@/components/common/shadcn/button';
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();

@@ -1,6 +1,6 @@
 import { ThreadInfo } from '../types/testing';
-import { FmCommonLoadingSpinner } from '@/components/ui/feedback/FmCommonLoadingSpinner';
-import { Badge } from '@/components/ui/shadcn/badge';
+import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { Badge } from '@/components/common/shadcn/badge';
 import { Clock, CheckCircle2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 

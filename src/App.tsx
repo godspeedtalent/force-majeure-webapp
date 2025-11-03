@@ -25,9 +25,9 @@ import DeveloperIndex from './pages/developer/DeveloperIndex';
 
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary';
 import { DemoProtectedRoute } from '@/components/routing/DemoProtectedRoute';
-import { Toaster as Sonner } from '@/components/ui/shadcn/sonner';
-import { Toaster } from '@/components/ui/shadcn/toaster';
-import { TooltipProvider } from '@/components/ui/shadcn/tooltip';
+import { Toaster as Sonner } from '@/components/common/shadcn/sonner';
+import { Toaster } from '@/components/common/shadcn/toaster';
+import { TooltipProvider } from '@/components/common/shadcn/tooltip';
 import Merch from './pages/Merch';
 
 import { MusicPlayerProvider } from '@/contexts/MusicPlayerContext';

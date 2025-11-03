@@ -1,4 +1,4 @@
-import { FmCommonLoadingSpinner } from '@/components/ui/feedback/FmCommonLoadingSpinner';
+import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 
 interface FmCommonLoadingOverlayProps {
   message?: string;

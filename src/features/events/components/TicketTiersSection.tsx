@@ -1,7 +1,7 @@
-import { Label } from '@/components/ui/shadcn/label';
-import { Input } from '@/components/ui/shadcn/input';
-import { Checkbox } from '@/components/ui/shadcn/checkbox';
-import { FmCommonRowManager } from '@/components/ui/forms/FmCommonRowManager';
+import { Label } from '@/components/common/shadcn/label';
+import { Input } from '@/components/common/shadcn/input';
+import { Checkbox } from '@/components/common/shadcn/checkbox';
+import { FmCommonRowManager } from '@/components/common/forms/FmCommonRowManager';
 import { EventFormState } from '../hooks/useEventData';
 import { cn } from '@/shared/utils/utils';
 
