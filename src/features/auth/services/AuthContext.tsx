@@ -10,6 +10,9 @@ import {
 import { supabase } from '@/shared/api/supabase/client';
 import { useToast } from '@/shared/hooks/use-toast';
 import { sessionPersistence } from '@/shared/utils/sessionPersistence';
+import { logger } from '@/shared/services/logger';
+
+const authLogger = logger.namespace('Auth');
 
 interface Profile {
   id: string;
@@ -187,7 +190,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           variant: 'destructive',
         });
       } else {
-        console.log('Sign up successful:', data);
+        authLogger.info('Sign up successful', { userId: data.user?.id });
         toast({
           title: 'Check your email',
           description:
@@ -197,7 +200,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       return { error };
     } catch (error: any) {
-      console.error('Sign up exception:', error);
+      authLogger.error('Sign up exception', { error });
       const errorMsg = error?.message || 'An unexpected error occurred';
       toast({
         title: 'Sign up failed',

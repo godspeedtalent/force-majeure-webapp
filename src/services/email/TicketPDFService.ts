@@ -1,4 +1,7 @@
 import { OrderReceiptEmailData } from '@/types/email';
+import { logger } from '@/shared/services/logger';
+
+const pdfLogger = logger.namespace('TicketPDF');
 
 /**
  * TicketPDFService - Generates PDF tickets for orders
@@ -55,9 +58,10 @@ export class TicketPDFService {
     // STUB: Return undefined for now
     // When implemented, this will return a base64 encoded PDF string
 
-    console.log('[TicketPDFService] PDF generation requested for order:', data.orderId);
-    console.log('[TicketPDFService] Options:', options);
-    console.log('[TicketPDFService] STUB - Not yet implemented, returning undefined');
+    pdfLogger.warn('PDF generation requested but not yet implemented', {
+      orderId: data.orderId,
+      options
+    });
 
     // TODO: Implement PDF generation
     // Example implementation outline:
@@ -95,9 +99,11 @@ export class TicketPDFService {
     // When implemented, this will return an array of base64 encoded PDFs
     // One PDF for each ticket (respecting quantity)
 
-    console.log('[TicketPDFService] Individual ticket PDFs requested for order:', data.orderId);
-    console.log('[TicketPDFService] Total tickets:', data.orderSummary.items.reduce((sum, item) => sum + item.quantity, 0));
-    console.log('[TicketPDFService] STUB - Not yet implemented, returning empty array');
+    const totalTickets = data.orderSummary.items.reduce((sum, item) => sum + item.quantity, 0);
+    pdfLogger.warn('Individual ticket PDFs requested but not yet implemented', {
+      orderId: data.orderId,
+      totalTickets
+    });
 
     // TODO: Implement individual ticket generation
     // Should create one PDF per ticket, with unique QR codes/barcodes
@@ -113,12 +119,12 @@ export class TicketPDFService {
     const validOrientations = ['portrait', 'landscape'];
 
     if (options.format && !validFormats.includes(options.format)) {
-      console.error('[TicketPDFService] Invalid format:', options.format);
+      pdfLogger.error('Invalid PDF format', { format: options.format, validFormats });
       return false;
     }
 
     if (options.orientation && !validOrientations.includes(options.orientation)) {
-      console.error('[TicketPDFService] Invalid orientation:', options.orientation);
+      pdfLogger.error('Invalid PDF orientation', { orientation: options.orientation, validOrientations });
       return false;
     }
 

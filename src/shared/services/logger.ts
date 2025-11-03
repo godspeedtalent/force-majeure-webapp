@@ -1,0 +1,162 @@
+/**
+ * Centralized Logging Service
+ *
+ * Provides a clean API for logging throughout the application with:
+ * - Automatic environment checking (logs only in development)
+ * - Structured logging with context objects
+ * - Optional namespacing for different modules
+ * - Log levels (DEBUG, INFO, WARN, ERROR)
+ * - Color coding in development mode
+ *
+ * Usage:
+ * ```typescript
+ * import { logger } from '@/shared/services/logger';
+ *
+ * logger.debug('Feature flags loaded', { flags });
+ * logger.info('User signed up', { userId });
+ * logger.warn('PDF generation not implemented', { orderId });
+ * logger.error('API call failed', { error, endpoint });
+ *
+ * // With namespace
+ * const authLogger = logger.namespace('Auth');
+ * authLogger.info('Sign up successful', { userId });
+ * ```
+ */
+
+type LogLevel = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
+
+interface LogContext {
+  [key: string]: any;
+}
+
+class Logger {
+  private isDevelopment: boolean;
+  private namespace?: string;
+
+  constructor(namespace?: string) {
+    this.isDevelopment = import.meta.env.DEV;
+    this.namespace = namespace;
+  }
+
+  /**
+   * Create a namespaced logger instance
+   */
+  namespace(name: string): Logger {
+    return new Logger(name);
+  }
+
+  /**
+   * Log a debug message (only in development)
+   */
+  debug(message: string, context?: LogContext): void {
+    if (this.isDevelopment) {
+      this.log('DEBUG', message, context, 'color: #9CA3AF');
+    }
+  }
+
+  /**
+   * Log an informational message (only in development)
+   */
+  info(message: string, context?: LogContext): void {
+    if (this.isDevelopment) {
+      this.log('INFO', message, context, 'color: #3B82F6');
+    }
+  }
+
+  /**
+   * Log a warning message (only in development)
+   */
+  warn(message: string, context?: LogContext): void {
+    if (this.isDevelopment) {
+      this.log('WARN', message, context, 'color: #F59E0B');
+    }
+  }
+
+  /**
+   * Log an error message (logs in all environments)
+   */
+  error(message: string, context?: LogContext): void {
+    // Errors are logged in all environments
+    this.log('ERROR', message, context, 'color: #EF4444', true);
+  }
+
+  /**
+   * Internal logging implementation
+   */
+  private log(
+    level: LogLevel,
+    message: string,
+    context?: LogContext,
+    style?: string,
+    forceLog = false
+  ): void {
+    // Only log if in development or forced (for errors)
+    if (!this.isDevelopment && !forceLog) {
+      return;
+    }
+
+    const timestamp = new Date().toISOString();
+    const prefix = this.namespace ? `[${this.namespace}]` : '';
+    const emoji = this.getLevelEmoji(level);
+
+    // Format the log message
+    const logMessage = `${emoji} ${level} ${prefix} ${message}`;
+
+    // Choose console method based on level
+    const consoleMethod = this.getConsoleMethod(level);
+
+    // Log with styling in development
+    if (this.isDevelopment && style) {
+      consoleMethod(`%c${logMessage}`, style);
+      if (context) {
+        console.log('Context:', context);
+      }
+    } else {
+      // Simple logging for production errors
+      consoleMethod(logMessage);
+      if (context) {
+        consoleMethod('Context:', context);
+      }
+    }
+  }
+
+  /**
+   * Get emoji for log level
+   */
+  private getLevelEmoji(level: LogLevel): string {
+    switch (level) {
+      case 'DEBUG':
+        return '🔍';
+      case 'INFO':
+        return 'ℹ️';
+      case 'WARN':
+        return '⚠️';
+      case 'ERROR':
+        return '❌';
+      default:
+        return '📝';
+    }
+  }
+
+  /**
+   * Get appropriate console method for log level
+   */
+  private getConsoleMethod(level: LogLevel): typeof console.log {
+    switch (level) {
+      case 'ERROR':
+        return console.error.bind(console);
+      case 'WARN':
+        return console.warn.bind(console);
+      case 'INFO':
+      case 'DEBUG':
+      default:
+        return console.log.bind(console);
+    }
+  }
+}
+
+// Export singleton instance
+export const logger = new Logger();
+
+// Export class for custom instances
+export { Logger };

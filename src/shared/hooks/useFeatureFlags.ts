@@ -6,6 +6,9 @@ import {
   getEnvironmentOverride,
   isDevelopment,
 } from '@/shared/utils/environment';
+import { logger } from '@/shared/services/logger';
+
+const flagLogger = logger.namespace('FeatureFlags');
 
 interface FeatureFlags {
   scavenger_hunt_active: boolean;
@@ -144,14 +147,11 @@ export const useFeatureFlags = () => {
         }
       }
 
-      if (isDevelopment()) {
-        console.log('🚩 Feature flags loaded:', {
-          environment: currentEnv,
-          dbFlags: filteredData,
-          finalFlags: flags,
-          isDev: true,
-        });
-      }
+      flagLogger.debug('Feature flags loaded', {
+        environment: currentEnv,
+        dbFlags: filteredData,
+        finalFlags: flags,
+      });
 
       return flags;
     },
