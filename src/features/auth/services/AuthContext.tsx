@@ -17,6 +17,13 @@ interface Profile {
   display_name?: string | null;
   full_name?: string | null;
   avatar_url?: string | null;
+  gender?: string | null;
+  age_range?: string | null;
+  home_city?: string | null;
+  billing_address?: string | null;
+  billing_city?: string | null;
+  billing_state?: string | null;
+  billing_zip?: string | null;
   spotify_token_expires_at?: string | null;
   spotify_connected: boolean | null;
   created_at: string;
@@ -33,7 +40,7 @@ interface AuthContextType {
     password: string,
     displayName?: string
   ) => Promise<{ error: any }>;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<{ error: any }>;
   signInWithGoogle: () => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: any }>;
@@ -161,7 +168,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       const redirectUrl = `${window.location.origin}/`;
 
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -173,12 +180,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
+        console.error('Sign up error:', error);
         toast({
           title: 'Sign up failed',
           description: error.message,
           variant: 'destructive',
         });
       } else {
+        console.log('Sign up successful:', data);
         toast({
           title: 'Check your email',
           description:
@@ -188,6 +197,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       return { error };
     } catch (error: any) {
+      console.error('Sign up exception:', error);
       const errorMsg = error?.message || 'An unexpected error occurred';
       toast({
         title: 'Sign up failed',
@@ -198,7 +208,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string, rememberMe: boolean = false) => {
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -211,6 +221,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           description: error.message,
           variant: 'destructive',
         });
+      } else {
+        // Set remember device preference
+        sessionPersistence.setRememberDevice(rememberMe);
       }
 
       return { error };

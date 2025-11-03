@@ -13,6 +13,8 @@ import {
 import { FmCommonTextField } from '@/components/ui/forms/FmCommonTextField';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/shadcn/tabs';
 import { Button } from '@/components/ui/shadcn/button';
+import { Checkbox } from '@/components/ui/shadcn/checkbox';
+import { Label } from '@/components/ui/shadcn/label';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { GoogleOAuthButton } from './GoogleOAuthButton';
 import { OAuthDivider } from '@/components/ui/misc/OAuthDivider';
@@ -34,12 +36,15 @@ export const AuthPanel = ({
 }: AuthPanelProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isOAuthLoading, setIsOAuthLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [signInForm, setSignInForm] = useState({ email: '', password: '' });
   const [signUpForm, setSignUpForm] = useState({
     email: '',
     password: '',
+    confirmPassword: '',
     displayName: '',
   });
+  const [passwordError, setPasswordError] = useState('');
 
   const { signIn, signUp, signInWithGoogle, loading } = useAuth();
 
@@ -47,7 +52,7 @@ export const AuthPanel = ({
     e.preventDefault();
     setIsLoading(true);
 
-    const { error } = await signIn(signInForm.email, signInForm.password);
+    const { error } = await signIn(signInForm.email, signInForm.password, rememberMe);
 
     if (!error && onAuthSuccess) {
       onAuthSuccess();
@@ -58,6 +63,14 @@ export const AuthPanel = ({
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate password match
+    if (signUpForm.password !== signUpForm.confirmPassword) {
+      setPasswordError('Passwords do not match');
+      return;
+    }
+
+    setPasswordError('');
     setIsLoading(true);
 
     const { error } = await signUp(signUpForm.email, signUpForm.password, signUpForm.displayName);
@@ -151,6 +164,20 @@ export const AuthPanel = ({
                 required
               />
 
+              <div className='flex items-center space-x-2'>
+                <Checkbox
+                  id='remember-me'
+                  checked={rememberMe}
+                  onCheckedChange={(checked) => setRememberMe(checked === true)}
+                />
+                <Label
+                  htmlFor='remember-me'
+                  className='text-sm font-normal text-muted-foreground cursor-pointer'
+                >
+                  Remember me for 30 days
+                </Label>
+              </div>
+
               <FmCommonButton
                 type='submit'
                 className='w-full'
@@ -219,13 +246,33 @@ export const AuthPanel = ({
                 password
                 placeholder='Create a password'
                 value={signUpForm.password}
-                onChange={e =>
+                onChange={e => {
                   setSignUpForm({
                     ...signUpForm,
                     password: e.target.value,
-                  })
-                }
+                  });
+                  // Clear error when user types
+                  if (passwordError) setPasswordError('');
+                }}
                 required
+              />
+
+              <FmCommonTextField
+                label='Confirm Password'
+                id='signup-confirm-password'
+                password
+                placeholder='Confirm your password'
+                value={signUpForm.confirmPassword}
+                onChange={e => {
+                  setSignUpForm({
+                    ...signUpForm,
+                    confirmPassword: e.target.value,
+                  });
+                  // Clear error when user types
+                  if (passwordError) setPasswordError('');
+                }}
+                required
+                error={passwordError}
               />
 
               <FmCommonButton

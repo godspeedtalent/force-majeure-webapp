@@ -47,7 +47,7 @@ export const FmCommonPageHeader = ({
                 <Icon className='w-5 h-5 text-accent' />
               </div>
             )}
-            <h1 className='text-3xl lg:text-4xl font-screamer tracking-wide text-foreground'>
+            <h1 className='text-3xl lg:text-4xl font-canela tracking-wide text-foreground'>
               {title}
             </h1>
           </div>

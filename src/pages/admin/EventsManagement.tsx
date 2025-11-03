@@ -36,24 +36,46 @@ export const EventsManagement = ({ initialEditEventId }: EventsManagementProps) 
     queryClient.invalidateQueries({ queryKey: ['events'] });
   };
 
-  const handleDelete = async (event: any) => {
-    if (!confirm(`Are you sure you want to delete "${event.title}"?`)) {
+  const handleDelete = async (eventOrEvents: any) => {
+    // Check if we're dealing with an array of events (multi-select) or single event
+    const eventsToDelete = Array.isArray(eventOrEvents) ? eventOrEvents : [eventOrEvents];
+    const eventCount = eventsToDelete.length;
+
+    // Confirm deletion
+    const confirmMessage = eventCount === 1
+      ? `Are you sure you want to delete "${eventsToDelete[0].title}"?`
+      : `Are you sure you want to delete ${eventCount} selected events?`;
+
+    if (!confirm(confirmMessage)) {
       return;
     }
 
     try {
-      const { error } = await supabase
-        .from('events')
-        .delete()
-        .eq('id', event.id);
+      // Delete all selected events
+      const deletePromises = eventsToDelete.map(event =>
+        supabase
+          .from('events')
+          .delete()
+          .eq('id', event.id)
+      );
 
-      if (error) throw error;
+      const results = await Promise.all(deletePromises);
 
-      toast.success('Event deleted successfully');
+      // Check if any deletions failed
+      const errors = results.filter(r => r.error);
+      if (errors.length > 0) {
+        throw new Error(`Failed to delete ${errors.length} event(s)`);
+      }
+
+      const successMessage = eventCount === 1
+        ? 'Event deleted successfully'
+        : `${eventCount} events deleted successfully`;
+
+      toast.success(successMessage);
       queryClient.invalidateQueries({ queryKey: ['events'] });
     } catch (error) {
-      console.error('Error deleting event:', error);
-      toast.error('Failed to delete event');
+      console.error('Error deleting event(s):', error);
+      toast.error('Failed to delete event(s)');
     }
   };
 

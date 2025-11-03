@@ -1,13 +1,12 @@
-import { Instagram, LogIn, Menu, SettingsIcon, ShoppingCart, User, UserPlus, X } from 'lucide-react';
+import { Instagram, Menu, SettingsIcon, ShoppingCart, User, X } from 'lucide-react';
 import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { Breadcrumbs } from '@/components/primitives/Breadcrumbs';
 import { ForceMajeureLogo } from './ForceMajeureLogo';
 import { UserMenuDropdown } from '@/components/Navigation/UserMenuDropdown';
 import { CheckoutCountdown } from '@/components/business/CheckoutCountdown';
 import { Button } from '@/components/ui/shadcn/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/shadcn/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/shadcn/tooltip';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserRole } from '@/shared/hooks/useUserRole';
@@ -19,7 +18,6 @@ export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
   const { data: role } = useUserRole();
   const { data: flags } = useFeatureFlags();
   const { isCheckoutActive, endCheckout, redirectUrl } = useCheckoutTimer();
@@ -29,7 +27,7 @@ export const Navigation = () => {
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='flex justify-between items-center h-16'>
           {/* Logo and Breadcrumbs */}
-          <div className='flex items-center space-x-3'>
+          <div className='flex items-center'>
             <Link to='/' className='transition-transform duration-200 hover:scale-110'>
               <ForceMajeureLogo className='h-8 w-8' />
             </Link>
@@ -89,27 +87,18 @@ export const Navigation = () => {
             
             {/* Vertical Divider */}
             <div className='h-6 w-px bg-border/50' />
-            
+
             {user ? (
               <UserMenuDropdown />
             ) : (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant='ghost' size='sm' className='text-foreground hover:text-fm-gold hover:bg-hover-overlay'>
-                    <User className='h-4 w-4' />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align='end' className='w-56 bg-background border border-border shadow-lg z-50'>
-                  <DropdownMenuItem className='cursor-pointer hover:bg-hover-overlay' onClick={() => navigate('/auth')}>
-                    <LogIn className='mr-2 h-4 w-4' />
-                    <span>Sign In</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className='cursor-pointer hover:bg-hover-overlay' onClick={() => navigate('/auth')}>
-                    <UserPlus className='mr-2 h-4 w-4' />
-                    <span>Sign Up</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Button
+                variant='ghost'
+                size='sm'
+                className='text-foreground hover:text-fm-gold hover:bg-hover-overlay'
+                onClick={() => navigate('/auth')}
+              >
+                <User className='h-4 w-4' />
+              </Button>
             )}
           </div>
 
@@ -125,23 +114,14 @@ export const Navigation = () => {
             {user ? (
               <UserMenuDropdown />
             ) : (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant='ghost' size='sm' className='text-foreground hover:text-fm-gold hover:bg-hover-overlay'>
-                    <User className='h-4 w-4' />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align='end' className='w-56 bg-background border border-border shadow-lg z-50'>
-                  <DropdownMenuItem className='cursor-pointer hover:bg-hover-overlay' onClick={() => navigate('/auth')}>
-                    <LogIn className='mr-2 h-4 w-4' />
-                    <span>Sign In</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className='cursor-pointer hover:bg-hover-overlay' onClick={() => navigate('/auth')}>
-                    <UserPlus className='mr-2 h-4 w-4' />
-                    <span>Sign Up</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Button
+                variant='ghost'
+                size='sm'
+                className='text-foreground hover:text-fm-gold hover:bg-hover-overlay'
+                onClick={() => navigate('/auth')}
+              >
+                <User className='h-4 w-4' />
+              </Button>
             )}
 
             <Button variant='ghost' size='sm' onClick={() => setIsOpen(!isOpen)} className='text-foreground hover:text-fm-gold hover:bg-hover-overlay'>

@@ -7,6 +7,7 @@ export const backgroundImage = {
   'gradient-gold': 'var(--gradient-gold)',
   'gradient-crimson': 'var(--gradient-crimson)',
   'gradient-monochrome': 'var(--gradient-monochrome)',
+  'gradient-radial': 'radial-gradient(circle, var(--tw-gradient-stops))',
   topographic: 'var(--topographic-pattern)',
 };
 

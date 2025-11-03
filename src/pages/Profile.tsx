@@ -1,319 +1,363 @@
-import {
-  Music,
-  CheckCircle,
-  XCircle,
-  ExternalLink,
-  ArrowLeft,
-} from 'lucide-react';
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Calendar, Settings, TrendingUp, ArrowLeft, Music2, MapPin, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { SplitPageLayout } from '@/components/layout/SplitPageLayout';
-import { Badge } from '@/components/ui/shadcn/badge';
+import { Layout } from '@/components/layout/Layout';
+import { FmCommonUserPhoto } from '@/components/ui/display/FmCommonUserPhoto';
 import { FmCommonButton } from '@/components/ui/buttons/FmCommonButton';
-import { FmCommonTextField } from '@/components/ui/forms/FmCommonTextField';
-import { Separator } from '@/components/ui/shadcn/separator';
+import { FmCommonInfoCard } from '@/components/common/fm/display/FmCommonInfoCard';
+import { FmCommonStatCard } from '@/components/common/fm/display/FmCommonStatCard';
+import { Card, CardContent } from '@/components/ui/shadcn/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/shadcn/tabs';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { useToast } from '@/shared/hooks/use-toast';
-import { enhancedSpotifyService } from '@/shared/utils/enhancedSpotify';
+import { supabase } from '@/shared/api/supabase/client';
+import { Badge } from '@/components/ui/shadcn/badge';
+
+interface UpcomingEvent {
+  id: string;
+  title: string;
+  date: string;
+  location: string;
+  cover_image_url: string | null;
+  ticket_count: number;
+}
 
 const Profile = () => {
-  const { user, profile, updateProfile, refreshProfile } = useAuth();
-  const [searchParams] = useSearchParams();
+  const { user, profile, loading } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const [showsCount, setShowsCount] = useState<number>(0);
+  const [loadingStats, setLoadingStats] = useState(true);
+  const [upcomingShows, setUpcomingShows] = useState<UpcomingEvent[]>([]);
+  const [loadingShows, setLoadingShows] = useState(true);
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [isConnectingSpotify, setIsConnectingSpotify] = useState(false);
-  const [displayName, setDisplayName] = useState(profile?.display_name || '');
-
+  // Fetch user stats
   useEffect(() => {
-    if (profile) {
-      setDisplayName(profile.display_name || '');
-    }
-  }, [profile]);
-
-  // Handle Spotify OAuth callback
-  useEffect(() => {
-    const code = searchParams.get('code');
-    const state = searchParams.get('state');
-    const error = searchParams.get('error');
-
-    if (error) {
-      toast({
-        title: 'Spotify connection failed',
-        description: 'Authorization was cancelled or failed.',
-        variant: 'destructive',
-      });
-      navigate('/profile', { replace: true });
-      return;
-    }
-
-    if (code && state && user?.id === state) {
-      handleSpotifyCallback(code);
-    }
-  }, [searchParams, user]);
-
-  const handleSpotifyCallback = async (code: string) => {
-    if (!user) return;
-
-    setIsConnectingSpotify(true);
-
-    try {
-      const redirectUri = `${window.location.origin}/profile`;
-      const result = await enhancedSpotifyService.exchangeCodeForTokens(
-        code,
-        redirectUri,
-        user.id
-      );
-
-      if (result.success) {
-        await refreshProfile();
-        toast({
-          title: 'Spotify connected!',
-          description: 'You can now stream full tracks from Spotify.',
-        });
-      } else {
-        toast({
-          title: 'Connection failed',
-          description: 'Failed to connect to Spotify. Please try again.',
-          variant: 'destructive',
-        });
+    const fetchStats = async () => {
+      if (!user?.id) {
+        setLoadingStats(false);
+        return;
       }
-    } catch (error) {
-      console.error('Error handling Spotify callback:', error);
-      toast({
-        title: 'Connection failed',
-        description: 'An unexpected error occurred. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsConnectingSpotify(false);
-      navigate('/profile', { replace: true });
-    }
-  };
 
-  const handleUpdateProfile = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+      try {
+        // Get unique event_ids from orders for this user
+        const { data: orders, error } = await supabase
+          .from('orders')
+          .select('event_id')
+          .eq('user_id', user.id)
+          .eq('status', 'paid');
 
-    await updateProfile({ display_name: displayName });
-    setIsLoading(false);
-  };
-
-  const handleConnectSpotify = async () => {
-    if (!user) return;
-
-    setIsConnectingSpotify(true);
-
-    try {
-      const redirectUri = `${window.location.origin}/profile`;
-      const authUrl = await enhancedSpotifyService.getAuthUrl(
-        redirectUri,
-        user.id
-      );
-
-      // Redirect to Spotify authorization
-      window.location.href = authUrl;
-    } catch (error) {
-      console.error('Error connecting to Spotify:', error);
-      toast({
-        title: 'Connection failed',
-        description: 'Failed to connect to Spotify. Please try again.',
-        variant: 'destructive',
-      });
-      setIsConnectingSpotify(false);
-    }
-  };
-
-  if (!user) {
-    return (
-      <SplitPageLayout
-        left={
-          <div className='h-full flex items-center justify-center p-8'>
-            <p className='text-muted-foreground'>
-              Please sign in to view your profile.
-            </p>
-          </div>
+        if (error) {
+          console.error('Error fetching orders:', error);
+          setShowsCount(0);
+        } else {
+          // Count unique event_ids
+          const uniqueEvents = new Set(orders?.map(order => order.event_id) || []);
+          setShowsCount(uniqueEvents.size);
         }
-        right={<div />}
-        leftDecor={true}
-      />
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+        setShowsCount(0);
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+
+    fetchStats();
+  }, [user]);
+
+  // Fetch upcoming shows
+  useEffect(() => {
+    const fetchUpcomingShows = async () => {
+      if (!user?.id) {
+        setLoadingShows(false);
+        return;
+      }
+
+      try {
+        // Get events with paid orders for this user, filtering for future events
+        const { data, error } = await supabase
+          .from('orders')
+          .select(`
+            event_id,
+            events (
+              id,
+              title,
+              date,
+              location,
+              cover_image_url
+            )
+          `)
+          .eq('user_id', user.id)
+          .eq('status', 'paid')
+          .gte('events.date', new Date().toISOString());
+
+        if (error) {
+          console.error('Error fetching upcoming shows:', error);
+          setUpcomingShows([]);
+        } else {
+          // Group by event and count tickets
+          const eventMap = new Map<string, UpcomingEvent>();
+
+          data?.forEach((order: any) => {
+            if (order.events) {
+              const event = order.events;
+              if (eventMap.has(event.id)) {
+                const existing = eventMap.get(event.id)!;
+                existing.ticket_count += 1;
+              } else {
+                eventMap.set(event.id, {
+                  id: event.id,
+                  title: event.title,
+                  date: event.date,
+                  location: event.location,
+                  cover_image_url: event.cover_image_url,
+                  ticket_count: 1,
+                });
+              }
+            }
+          });
+
+          // Convert map to array and sort by date
+          const events = Array.from(eventMap.values()).sort(
+            (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+          );
+
+          setUpcomingShows(events);
+        }
+      } catch (error) {
+        console.error('Error fetching upcoming shows:', error);
+        setUpcomingShows([]);
+      } finally {
+        setLoadingShows(false);
+      }
+    };
+
+    fetchUpcomingShows();
+  }, [user]);
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className='flex items-center justify-center min-h-[60vh]'>
+          <div className='text-muted-foreground'>Loading profile...</div>
+        </div>
+      </Layout>
     );
   }
 
-  const leftPane = (
-    <div className='h-full flex flex-col justify-center p-8'>
-      <div className='space-y-6'>
+  if (!user) {
+    return (
+      <Layout>
+        <div className='max-w-4xl mx-auto px-4 py-12'>
+          <Card className='border-border/30 bg-card/20 backdrop-blur-lg'>
+            <CardContent className='p-12 text-center'>
+              <p className='text-muted-foreground mb-6'>
+                Please sign in to view your profile.
+              </p>
+              <FmCommonButton
+                variant='gold'
+                onClick={() => navigate('/auth')}
+              >
+                Sign In
+              </FmCommonButton>
+            </CardContent>
+          </Card>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Format the account creation date
+  const createdAt = user.created_at
+    ? new Date(user.created_at).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : 'Unknown';
+
+  return (
+    <Layout>
+      <div className='max-w-6xl mx-auto px-4 py-12 space-y-8'>
         {/* Back Button */}
         <FmCommonButton
           variant='ghost'
           size='sm'
           onClick={() => navigate('/')}
-          className='self-start -ml-2 text-muted-foreground hover:text-foreground'
           icon={ArrowLeft}
+          className='text-muted-foreground hover:text-foreground'
         >
           Back to Events
         </FmCommonButton>
 
-        {/* Stacked Title like Force Majeure */}
-        <h1
-          className='text-5xl lg:text-6xl font-screamer tracking-tight leading-none'
-          style={{ fontWeight: 475 }}
-        >
-          <span className='block text-foreground'>PROFILE</span>
-          <span className='block bg-gradient-gold bg-clip-text text-transparent -mt-2'>
-            SETTINGS
-          </span>
-        </h1>
-        <p className='text-muted-foreground'>
-          Manage your account settings and streaming preferences
-        </p>
-      </div>
-    </div>
-  );
+        {/* Profile Card */}
+        <Card className='border-border/30 bg-card/20 backdrop-blur-lg relative'>
+          <CardContent className='p-0'>
+            <div className='grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-0'>
+              {/* Left Column - Avatar */}
+              <div className='relative h-full min-h-[400px] lg:min-h-[600px]'>
+                {/* Edit Profile Button - Top Left Corner */}
+                <div className='absolute top-4 left-4 z-10'>
+                  <FmCommonButton
+                    variant='outline'
+                    size='sm'
+                    onClick={() => navigate('/profile/edit')}
+                    icon={Settings}
+                    className='bg-background/80 backdrop-blur-sm'
+                  >
+                    Edit Profile
+                  </FmCommonButton>
+                </div>
 
-  const rightPane = (
-    <div className='p-8 space-y-8'>
-      {/* Profile Information Row */}
-      <div className='space-y-6'>
-        <div>
-          <h2 className='text-xl font-canela font-medium text-foreground mb-2'>
-            Profile Information
-          </h2>
-          <p className='text-sm text-muted-foreground'>
-            Update your display name and other profile details
-          </p>
-        </div>
+                <FmCommonUserPhoto
+                  src={profile?.avatar_url}
+                  name={profile?.display_name || user.email}
+                  size='square'
+                  useAnimatedGradient={!profile?.avatar_url}
+                  className='rounded-l-lg lg:rounded-l-md'
+                />
+              </div>
 
-        <form onSubmit={handleUpdateProfile} className='space-y-6'>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-            <FmCommonTextField
-              label='Email'
-              id='email'
-              type='email'
-              value={user.email || ''}
-              disabled
-              className='opacity-60'
-              description='Email cannot be changed'
-            />
+              {/* Right Column - Info and Tabs */}
+              <div className='p-8 space-y-6'>
+                {/* User Display Name */}
+                <div>
+                  <h2 className='text-3xl font-canela font-medium text-foreground'>
+                    {profile?.display_name || 'Raver'}
+                  </h2>
+                  <p className='text-sm text-muted-foreground mt-1'>
+                    Force Majeure Member
+                  </p>
+                </div>
 
-            <FmCommonTextField
-              label='Display Name'
-              id='displayName'
-              type='text'
-              placeholder='Enter your display name'
-              value={displayName}
-              onChange={e => setDisplayName(e.target.value)}
-            />
-          </div>
+                {/* Tabs */}
+                <Tabs defaultValue='upcoming' className='w-full'>
+                  <TabsList className='grid w-full grid-cols-3'>
+                    <TabsTrigger value='upcoming'>Upcoming Shows</TabsTrigger>
+                    <TabsTrigger value='stats'>Stats</TabsTrigger>
+                    <TabsTrigger value='account'>Account</TabsTrigger>
+                  </TabsList>
 
-          <FmCommonButton
-            type='submit'
-            variant='gold'
-            loading={isLoading}
-          >
-            Update Profile
-          </FmCommonButton>
-        </form>
-      </div>
+                  {/* Upcoming Shows Tab */}
+                  <TabsContent value='upcoming' className='space-y-4 mt-6'>
+                    {loadingShows ? (
+                      <div className='text-center py-8 text-muted-foreground'>
+                        Loading upcoming shows...
+                      </div>
+                    ) : upcomingShows.length === 0 ? (
+                      <div className='text-center py-12'>
+                        <Music2 className='h-12 w-12 text-muted-foreground mx-auto mb-4' />
+                        <p className='text-muted-foreground mb-4'>
+                          No upcoming shows yet
+                        </p>
+                        <FmCommonButton
+                          variant='gold'
+                          size='sm'
+                          onClick={() => navigate('/')}
+                        >
+                          Browse Events
+                        </FmCommonButton>
+                      </div>
+                    ) : (
+                      <div className='space-y-3'>
+                        {upcomingShows.map((event) => {
+                          const eventDate = new Date(event.date);
+                          const formattedDate = eventDate.toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          });
+                          const formattedTime = eventDate.toLocaleTimeString('en-US', {
+                            hour: 'numeric',
+                            minute: '2-digit',
+                          });
 
-      <Separator />
+                          return (
+                            <Card
+                              key={event.id}
+                              className='border-border/30 bg-card/10 backdrop-blur-sm hover:bg-card/20 transition-colors cursor-pointer'
+                              onClick={() => navigate(`/events/${event.id}`)}
+                            >
+                              <CardContent className='p-4'>
+                                <div className='flex gap-4'>
+                                  {/* Event Image */}
+                                  <div className='w-20 h-20 rounded-md overflow-hidden bg-muted flex-shrink-0'>
+                                    {event.cover_image_url ? (
+                                      <img
+                                        src={event.cover_image_url}
+                                        alt={event.title}
+                                        className='w-full h-full object-cover'
+                                      />
+                                    ) : (
+                                      <div className='w-full h-full bg-gradient-gold flex items-center justify-center'>
+                                        <Music2 className='h-8 w-8 text-black' />
+                                      </div>
+                                    )}
+                                  </div>
 
-      {/* Spotify Integration Row */}
-      <div className='space-y-6'>
-        <div className='flex items-center gap-3'>
-          <Music className='w-5 h-5 text-fm-gold' />
-          <div>
-            <h2 className='text-xl font-canela font-medium text-foreground'>
-              Spotify Integration
-            </h2>
-            <p className='text-sm text-muted-foreground'>
-              Connect your Spotify Premium account to stream full tracks
-            </p>
-          </div>
-        </div>
+                                  {/* Event Info */}
+                                  <div className='flex-1 min-w-0'>
+                                    <h3 className='font-canela font-medium text-foreground mb-1 truncate'>
+                                      {event.title}
+                                    </h3>
+                                    <div className='space-y-1'>
+                                      <div className='flex items-center gap-1.5 text-xs text-muted-foreground'>
+                                        <Clock className='h-3 w-3' />
+                                        <span>{formattedDate} at {formattedTime}</span>
+                                      </div>
+                                      <div className='flex items-center gap-1.5 text-xs text-muted-foreground'>
+                                        <MapPin className='h-3 w-3' />
+                                        <span className='truncate'>{event.location}</span>
+                                      </div>
+                                    </div>
+                                    <div className='mt-2'>
+                                      <Badge variant='outline' className='text-xs'>
+                                        {event.ticket_count} {event.ticket_count === 1 ? 'Ticket' : 'Tickets'}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </TabsContent>
 
-        <div className='space-y-4'>
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-2'>
-              <span className='text-sm font-medium'>Connection Status:</span>
-              {profile?.spotify_connected ? (
-                <Badge
-                  variant='default'
-                  className='bg-green-500/10 text-green-500 border-green-500/20'
-                >
-                  <CheckCircle className='w-3 h-3 mr-1' />
-                  Connected
-                </Badge>
-              ) : (
-                <Badge
-                  variant='outline'
-                  className='border-destructive/20 text-destructive'
-                >
-                  <XCircle className='w-3 h-3 mr-1' />
-                  Not Connected
-                </Badge>
-              )}
+                  {/* Stats Tab */}
+                  <TabsContent value='stats' className='space-y-4 mt-6'>
+                    <div className='grid gap-4'>
+                      <FmCommonStatCard
+                        icon={TrendingUp}
+                        label='Number of Shows'
+                        value={loadingStats ? '...' : showsCount.toString()}
+                        size='md'
+                        iconClassName='text-fm-gold'
+                      />
+                    </div>
+                  </TabsContent>
+
+                  {/* Account Information Tab */}
+                  <TabsContent value='account' className='space-y-4 mt-6'>
+                    <div className='grid gap-4'>
+                      <FmCommonInfoCard
+                        icon={Calendar}
+                        label='Member Since'
+                        value={createdAt}
+                        size='sm'
+                        iconClassName='text-fm-gold'
+                      />
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </div>
             </div>
-          </div>
-
-          {!profile?.spotify_connected ? (
-            <div className='space-y-4'>
-              <div className='p-4 bg-muted/50 rounded-lg'>
-                <h4 className='font-medium text-sm mb-2'>
-                  Benefits of connecting Spotify:
-                </h4>
-                <ul className='text-xs text-muted-foreground space-y-1'>
-                  <li>• Stream full tracks instead of 30-second previews</li>
-                  <li>• Access your personal Spotify library</li>
-                  <li>• Enhanced playback controls</li>
-                  <li>• Seamless cross-device experience</li>
-                </ul>
-              </div>
-
-              <div className='p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg'>
-                <p className='text-xs text-amber-600 dark:text-amber-400'>
-                  <strong>Note:</strong> Spotify Premium account required for
-                  full track streaming.
-                </p>
-              </div>
-
-              <FmCommonButton
-                onClick={handleConnectSpotify}
-                className='bg-green-500 hover:bg-green-600 text-white font-medium'
-                icon={ExternalLink}
-                loading={isConnectingSpotify}
-              >
-                Connect to Spotify
-              </FmCommonButton>
-            </div>
-          ) : (
-            <div className='space-y-3'>
-              <div className='p-4 bg-green-500/10 border border-green-500/20 rounded-lg'>
-                <p className='text-sm text-green-600 dark:text-green-400'>
-                  ✓ Your Spotify account is connected and ready to use!
-                </p>
-              </div>
-
-              <div className='text-xs text-muted-foreground'>
-                You can now enjoy full track streaming throughout the app.
-              </div>
-            </div>
-          )}
-        </div>
+          </CardContent>
+        </Card>
       </div>
-    </div>
-  );
-
-  return (
-    <SplitPageLayout
-      left={leftPane}
-      right={rightPane}
-      leftDecor={true}
-      leftWidthClass='w-full lg:w-1/3'
-      rightWidthClass='hidden lg:block w-2/3'
-    />
+    </Layout>
   );
 };
 

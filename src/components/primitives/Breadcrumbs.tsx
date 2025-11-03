@@ -23,6 +23,7 @@ export const Breadcrumbs = () => {
   const navigate = useNavigate();
   const [animatingAfter, setAnimatingAfter] = useState<number | null>(null);
 
+  // Don't render anything if no breadcrumbs (including the separator)
   if (breadcrumbs.length === 0) {
     return null;
   }
@@ -39,50 +40,53 @@ export const Breadcrumbs = () => {
   };
 
   return (
-    <Breadcrumb>
-      <BreadcrumbList>
-        {breadcrumbs.map((item, index) => {
-          const shouldAnimate = animatingAfter !== null && index > animatingAfter;
+    <>
+      <span className='mx-3 text-muted-foreground'>&gt;</span>
+      <Breadcrumb>
+        <BreadcrumbList>
+          {breadcrumbs.map((item, index) => {
+            const shouldAnimate = animatingAfter !== null && index > animatingAfter;
 
-          return (
-            <div
-              key={item.path}
-              className={cn(
-                "flex items-center gap-1.5 transition-all duration-300",
-                shouldAnimate && "opacity-0 -translate-y-2"
-              )}
-            >
-              {index > 0 && <BreadcrumbSeparator />}
-              <BreadcrumbItem>
-                {item.isLast ? (
-                  <BreadcrumbPage>
-                    {isLoading ? (
-                      <span className="flex items-center gap-1">
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                        {item.label}
-                      </span>
-                    ) : (
-                      item.label
-                    )}
-                  </BreadcrumbPage>
-                ) : (
-                  <BreadcrumbLink asChild>
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleBreadcrumbClick(item.path, index);
-                      }}
-                      className="hover:underline cursor-pointer"
-                    >
-                      {item.label}
-                    </button>
-                  </BreadcrumbLink>
+            return (
+              <div
+                key={item.path}
+                className={cn(
+                  "flex items-center gap-1.5 transition-all duration-300",
+                  shouldAnimate && "opacity-0 -translate-y-2"
                 )}
-              </BreadcrumbItem>
-            </div>
-          );
-        })}
-      </BreadcrumbList>
-    </Breadcrumb>
+              >
+                {index > 0 && <BreadcrumbSeparator />}
+                <BreadcrumbItem>
+                  {item.isLast ? (
+                    <BreadcrumbPage>
+                      {isLoading ? (
+                        <span className="flex items-center gap-1">
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                          {item.label}
+                        </span>
+                      ) : (
+                        item.label
+                      )}
+                    </BreadcrumbPage>
+                  ) : (
+                    <BreadcrumbLink asChild>
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleBreadcrumbClick(item.path, index);
+                        }}
+                        className="hover:underline cursor-pointer"
+                      >
+                        {item.label}
+                      </button>
+                    </BreadcrumbLink>
+                  )}
+                </BreadcrumbItem>
+              </div>
+            );
+          })}
+        </BreadcrumbList>
+      </Breadcrumb>
+    </>
   );
 };

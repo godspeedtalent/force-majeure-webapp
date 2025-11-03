@@ -109,6 +109,30 @@ const feedbackAnimations = {
   },
 };
 
+// Gradient orb animations for avatar
+const orbAnimations = {
+  float: {
+    '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
+    '33%': { transform: 'translate(10px, -15px) scale(1.05)' },
+    '66%': { transform: 'translate(-15px, 10px) scale(0.95)' },
+  },
+  'float-delay-1': {
+    '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
+    '33%': { transform: 'translate(-12px, 18px) scale(1.08)' },
+    '66%': { transform: 'translate(18px, -12px) scale(0.92)' },
+  },
+  'float-delay-2': {
+    '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
+    '33%': { transform: 'translate(15px, 12px) scale(0.96)' },
+    '66%': { transform: 'translate(-10px, -18px) scale(1.04)' },
+  },
+  'float-delay-3': {
+    '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
+    '33%': { transform: 'translate(-18px, -10px) scale(1.02)' },
+    '66%': { transform: 'translate(12px, 15px) scale(0.98)' },
+  },
+};
+
 // Collapsible animations
 const collapsibleAnimations = {
   'slide-down': {
@@ -126,6 +150,7 @@ export const keyframes = {
   ...entryAnimations,
   ...brandAnimations,
   ...feedbackAnimations,
+  ...orbAnimations,
   ...collapsibleAnimations,
 };
 
@@ -161,4 +186,10 @@ export const animations = {
   'input-pulse': createAnimation('input-pulse', '0.15s'),
   'pulse-gold-check': createAnimation('pulse-gold-check', '0.3s', 'ease-out'),
   'pulse-uncheck': createAnimation('pulse-uncheck', '0.3s', 'ease-out'),
+
+  // Orb animations
+  float: createAnimation('float', '20s', 'ease-in-out', 'infinite'),
+  'float-delay-1': createAnimation('float-delay-1', '25s', 'ease-in-out', 'infinite'),
+  'float-delay-2': createAnimation('float-delay-2', '22s', 'ease-in-out', 'infinite'),
+  'float-delay-3': createAnimation('float-delay-3', '28s', 'ease-in-out', 'infinite'),
 };

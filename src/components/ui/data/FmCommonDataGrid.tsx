@@ -542,11 +542,59 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                 const isEvenRow = index % 2 === 0;
                 const hasContextMenuOpen = contextMenuOpenRow === globalIndex;
 
+                // Determine which context menu actions to show
+                const hasMultipleSelected = selectedRows.size > 1;
+                const currentContextMenuActions = hasMultipleSelected && isSelected
+                  ? contextMenuActions.map(action => {
+                      // Filter out "Manage" action for multi-selection
+                      if (action.label === 'Manage') {
+                        return null;
+                      }
+                      // Change "Delete Event" to "Delete Selected" for multi-selection
+                      if (action.label === 'Delete Event') {
+                        return {
+                          ...action,
+                          label: 'Delete Selected',
+                          onClick: (row: any) => {
+                            // Get all selected rows
+                            const selectedRowsData = paginatedData.filter((_, idx) => {
+                              const gIdx = (currentPage - 1) * pageSize + idx;
+                              return selectedRows.has(gIdx);
+                            });
+
+                            // Call the original onClick for each selected row
+                            if (action.onClick) {
+                              // Pass all selected rows to the action
+                              action.onClick(selectedRowsData as any);
+                            }
+                          },
+                        };
+                      }
+                      return action;
+                    }).filter(Boolean) as DataGridAction<T>[]
+                  : contextMenuActions;
+
+                // Add "Unselect All" action if multiple rows are selected
+                const finalContextMenuActions = hasMultipleSelected && isSelected
+                  ? [
+                      ...currentContextMenuActions,
+                      {
+                        label: 'Unselect All',
+                        icon: <X className="h-4 w-4" />,
+                        onClick: () => {
+                          setSelectedRows(new Set());
+                          setLastSelectedIndex(null);
+                        },
+                        separator: true,
+                      } as DataGridAction<T>,
+                    ]
+                  : currentContextMenuActions;
+
                 return (
                   <FmCommonDataGridContextMenu
                     key={globalIndex}
                     row={row}
-                    actions={contextMenuActions}
+                    actions={finalContextMenuActions}
                     onOpenChange={(open) => setContextMenuOpenRow(open ? globalIndex : null)}
                   >
                     <TableRow

@@ -18,6 +18,7 @@ interface FeatureFlags {
   merch_store: boolean;
   member_profiles: boolean;
   global_search: boolean;
+  spotify_integration: boolean;
 }
 
 interface FeatureFlagRow {
@@ -55,6 +56,7 @@ export const useFeatureFlags = () => {
       merch_store: false,
       member_profiles: false,
       global_search: false,
+      spotify_integration: false,
     };
 
       filteredData.forEach(flag => {
@@ -88,6 +90,9 @@ export const useFeatureFlags = () => {
         if (flag.flag_name === 'global_search') {
           flags.global_search = flag.is_enabled;
         }
+        if (flag.flag_name === 'spotify_integration') {
+          flags.spotify_integration = flag.is_enabled;
+        }
       });
 
       // Apply local .env overrides in development only
@@ -102,6 +107,7 @@ export const useFeatureFlags = () => {
         const merchStoreOverride = getEnvironmentOverride('merch_store');
         const memberProfilesOverride = getEnvironmentOverride('member_profiles');
         const globalSearchOverride = getEnvironmentOverride('global_search');
+        const spotifyIntegrationOverride = getEnvironmentOverride('spotify_integration');
 
         if (scavengerOverride !== null) {
           flags.scavenger_hunt_active = scavengerOverride;
@@ -132,6 +138,9 @@ export const useFeatureFlags = () => {
         }
         if (globalSearchOverride !== null) {
           flags.global_search = globalSearchOverride;
+        }
+        if (spotifyIntegrationOverride !== null) {
+          flags.spotify_integration = spotifyIntegrationOverride;
         }
       }
 

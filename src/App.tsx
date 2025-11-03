@@ -39,6 +39,7 @@ import { GlobalSearch } from '@/components/search/GlobalSearch';
 
 import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
+import ProfileEdit from './pages/ProfileEdit';
 import ProxyToken from './pages/ProxyToken';
 import Scavenger from './pages/Scavenger';
 
@@ -87,8 +88,9 @@ const AppRoutes = () => {
           
           {/* Conditionally render member profiles route based on feature flag */}
           {flags?.member_profiles && <Route path='/members/home' element={<MemberHome />} />}
-          
+
           <Route path='/profile' element={<Profile />} />
+          <Route path='/profile/edit' element={<ProfileEdit />} />
           <Route path='/admin' element={<AdminConfig />} />
           <Route path='/orders' element={<Orders />} />
           

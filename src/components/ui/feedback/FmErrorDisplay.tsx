@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { AlertTriangle, Copy, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import { Button } from '@/components/ui/shadcn/button';
 import { FmInfoCard } from '@/components/ui/data/FmInfoCard';
-import { useUserRole } from '@/shared/hooks/useUserRole';
 
 interface FmErrorDisplayProps {
   error: Error;
@@ -36,11 +35,11 @@ export const FmErrorDisplay = ({
   onReset,
   onGoBack,
 }: FmErrorDisplayProps) => {
-  const { data: role } = useUserRole();
   const [isStackTraceExpanded, setIsStackTraceExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const isDeveloper = role === 'admin';
+  // Show developer view in development environment
+  const isDeveloper = import.meta.env.DEV;
 
   const handleCopyStackTrace = async () => {
     const stackTrace = errorInfo?.componentStack || error.stack || 'No stack trace available';
