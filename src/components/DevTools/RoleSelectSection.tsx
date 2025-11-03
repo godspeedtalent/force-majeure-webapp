@@ -1,4 +1,4 @@
-import { User, UserCog, Shield, UserX, Code, BarChart3, Settings, FlaskConical } from 'lucide-react';
+import { User, UserCog, Shield, UserX, Code, BarChart3, Settings, FlaskConical, Package } from 'lucide-react';
 import { FmCommonDropdown, DropdownItem } from '@/components/ui/forms/FmCommonDropdown';
 import { Button } from '@/components/ui/shadcn/button';
 import { FmCommonToggleHeader } from '@/components/ui/forms/FmCommonToggleHeader';
@@ -34,6 +34,13 @@ export const RoleSelectSection = ({ currentRole, onRoleChange }: RoleSelectSecti
           <p className="text-xs text-white/50 mb-3">
             Quick navigation to developer-only pages and tools
           </p>
+          <FmCommonNavigationButton
+            to="/developer"
+            label="Developer Tools"
+            icon={Package}
+            description="Component catalog and developer resources"
+            variant="outline"
+          />
           <FmCommonNavigationButton
             to="/demo"
             label="Demos"

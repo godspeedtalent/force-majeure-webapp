@@ -1,9 +1,9 @@
-import { Badge } from '@/components/ui/shadcn/badge';
+import { FmBadge } from './FmBadge';
 import { cn } from '@/shared/utils/utils';
 
 export interface FmCommonBadgeItem {
   label: string;
-  variant?: 'default' | 'secondary' | 'outline' | 'destructive';
+  variant?: 'primary' | 'secondary';
   className?: string;
 }
 
@@ -25,9 +25,14 @@ const gapClasses = {
 };
 
 /**
- * A reusable component for displaying groups of badges
+ * FmCommonBadgeGroup Component
+ * 
+ * A reusable component for displaying groups of FmBadge components.
  * Commonly used for artists, genres, tags, etc.
- * Supports limiting display count with "+X more" indicator
+ * Supports limiting display count with "+X more" indicator.
+ * 
+ * Uses FmBadge components which can be primary (gold with black text) or 
+ * secondary (transparent with white text/border).
  */
 export function FmCommonBadgeGroup({
   badges,
@@ -56,18 +61,19 @@ export function FmCommonBadgeGroup({
       )}
     >
       {displayBadges.map((badge, index) => (
-        <Badge
+        <FmBadge
           key={index}
-          variant={badge.variant || 'outline'}
+          label={badge.label}
+          variant={badge.variant || 'secondary'}
           className={cn(badgeClassName, badge.className)}
-        >
-          {badge.label}
-        </Badge>
+        />
       ))}
       {remainingCount > 0 && (
-        <Badge variant="outline" className={cn('text-muted-foreground', badgeClassName)}>
-          +{remainingCount} more
-        </Badge>
+        <FmBadge
+          label={`+${remainingCount} more`}
+          variant="secondary"
+          className={cn('opacity-70', badgeClassName)}
+        />
       )}
     </div>
   );

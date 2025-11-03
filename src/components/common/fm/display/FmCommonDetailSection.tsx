@@ -1,8 +1,11 @@
 /**
  * FmCommonDetailSection
  * 
- * Standardized section component for content areas
- * Provides consistent title, description, and content layout
+ * Standardized section component for content areas.
+ * Provides consistent title, description, and content layout.
+ * 
+ * Commonly used with FmCommonIconWithText components in its children
+ * for displaying structured detail lists.
  */
 
 import { LucideIcon } from 'lucide-react';
@@ -53,7 +56,7 @@ export const FmCommonDetailSection = ({
             {Icon && (
               <Icon className='w-5 h-5 text-accent' />
             )}
-            <h2 className='text-xl font-screamer tracking-wide text-foreground'>
+            <h2 className='text-xl font-canela tracking-wide text-foreground'>
               {title}
             </h2>
           </div>

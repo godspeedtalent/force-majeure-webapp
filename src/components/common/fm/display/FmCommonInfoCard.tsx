@@ -1,8 +1,9 @@
 /**
  * FmCommonInfoCard
  * 
- * Standardized info card for displaying metadata with icon
- * Used for event details, venue info, and other key-value displays
+ * Standardized info card for displaying metadata with icon.
+ * Uses FmCommonCard for base styling and FmCommonIconWithText for icon display.
+ * Used for event details, venue info, and other key-value displays.
  */
 
 import { LucideIcon } from 'lucide-react';

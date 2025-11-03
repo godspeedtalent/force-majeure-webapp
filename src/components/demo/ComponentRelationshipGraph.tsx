@@ -1,0 +1,411 @@
+import { useEffect, useRef } from 'react';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  ChartOptions,
+} from 'chart.js';
+import { Scatter } from 'react-chartjs-2';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+interface ComponentNode {
+  id: string;
+  label: string;
+  category: string;
+  x: number;
+  y: number;
+  isBase?: boolean;
+  children?: string[];
+}
+
+interface ComponentRelationship {
+  from: string;
+  to: string;
+  type: 'extends' | 'uses';
+}
+
+export function ComponentRelationshipGraph() {
+  const chartRef = useRef<ChartJS<'scatter'>>(null);
+
+  // Define all components and their relationships
+  const components: ComponentNode[] = [
+    // Display Components (top-left quadrant)
+    { id: 'badge', label: 'FmBadge', category: 'Display', x: 1, y: 9, isBase: true },
+    { id: 'badge-group', label: 'FmCommonBadgeGroup', category: 'Display', x: 1, y: 8, isBase: true },
+    { id: 'icon-text', label: 'FmCommonIconWithText', category: 'Display', x: 2, y: 8, isBase: true },
+    { id: 'price', label: 'FmCommonPriceDisplay', category: 'Display', x: 3, y: 8, isBase: true },
+    { id: 'info-card', label: 'FmCommonInfoCard', category: 'Display', x: 1, y: 7, isBase: true },
+    { id: 'stat-card', label: 'FmCommonStatCard', category: 'Display', x: 2, y: 7, isBase: true },
+    { id: 'page-header', label: 'FmCommonPageHeader', category: 'Display', x: 3, y: 7, isBase: true },
+    { id: 'detail-section', label: 'FmCommonDetailSection', category: 'Display', x: 2, y: 6, isBase: true },
+
+    // Form Components (top-right quadrant)
+    { id: 'form', label: 'FmCommonForm', category: 'Forms', x: 5, y: 8, isBase: true, children: ['form-section', 'form-field', 'form-select', 'form-actions'] },
+    { id: 'form-section', label: 'FmCommonFormSection', category: 'Forms', x: 4, y: 7, isBase: true },
+    { id: 'form-field', label: 'FmCommonFormField', category: 'Forms', x: 5, y: 7, isBase: true },
+    { id: 'form-select', label: 'FmCommonFormSelect', category: 'Forms', x: 6, y: 7, isBase: true },
+    { id: 'form-actions', label: 'FmCommonFormActions', category: 'Forms', x: 5, y: 6, isBase: true },
+
+    // Layout Components (center)
+    { id: 'grid-layout', label: 'FmCommonGridLayout', category: 'Layout', x: 3.5, y: 5, isBase: true },
+    { id: 'stack-layout', label: 'FmCommonStackLayout', category: 'Layout', x: 4.5, y: 5, isBase: true },
+
+    // Modals & Navigation (bottom-left)
+    { id: 'confirm-dialog', label: 'FmCommonConfirmDialog', category: 'Modals', x: 1, y: 4, isBase: true },
+    { id: 'back-button', label: 'FmCommonBackButton', category: 'Navigation', x: 2, y: 4, isBase: true },
+    { id: 'loading-overlay', label: 'FmCommonLoadingOverlay', category: 'Feedback', x: 3, y: 4, isBase: true },
+
+    // Base Components with Specializations (bottom-right)
+    { id: 'button-base', label: 'FmCommonButton (Base)', category: 'Interactive', x: 5, y: 3, isBase: true, children: ['button-create'] },
+    { id: 'button-create', label: 'FmCommonCreateButton', category: 'Interactive', x: 5, y: 2 },
+
+    { id: 'search-base', label: 'FmCommonSearchDropdown (Base)', category: 'Search', x: 7, y: 4, isBase: true, children: ['search-artist', 'search-event', 'search-venue', 'search-city'] },
+    { id: 'search-artist', label: 'FmArtistSearchDropdown', category: 'Search', x: 6, y: 3 },
+    { id: 'search-event', label: 'FmEventSearchDropdown', category: 'Search', x: 7, y: 3 },
+    { id: 'search-venue', label: 'FmVenueSearchDropdown', category: 'Search', x: 8, y: 3 },
+    { id: 'search-city', label: 'FmCitySearchDropdown', category: 'Search', x: 7, y: 2 },
+  ];
+
+  const relationships: ComponentRelationship[] = [
+    // Badge relationships
+    { from: 'badge-group', to: 'badge', type: 'uses' },
+    
+    // Form component uses relationships
+    { from: 'form', to: 'form-section', type: 'uses' },
+    { from: 'form', to: 'form-field', type: 'uses' },
+    { from: 'form', to: 'form-select', type: 'uses' },
+    { from: 'form', to: 'form-actions', type: 'uses' },
+    { from: 'form-section', to: 'form-field', type: 'uses' },
+    
+    // PageHeader uses other display components
+    { from: 'page-header', to: 'icon-text', type: 'uses' },
+    { from: 'page-header', to: 'stat-card', type: 'uses' },
+    
+    // DetailSection uses components
+    { from: 'detail-section', to: 'icon-text', type: 'uses' },
+    { from: 'detail-section', to: 'stack-layout', type: 'uses' },
+    
+    // Button inheritance
+    { from: 'button-base', to: 'button-create', type: 'extends' },
+    
+    // Search dropdown inheritance
+    { from: 'search-base', to: 'search-artist', type: 'extends' },
+    { from: 'search-base', to: 'search-event', type: 'extends' },
+    { from: 'search-base', to: 'search-venue', type: 'extends' },
+    { from: 'search-base', to: 'search-city', type: 'extends' },
+  ];
+
+  // Create datasets for different categories
+  const categoryColors: Record<string, string> = {
+    Display: 'rgba(212, 175, 55, 0.8)', // Gold
+    Forms: 'rgba(59, 130, 246, 0.8)', // Blue
+    Layout: 'rgba(168, 85, 247, 0.8)', // Purple
+    Modals: 'rgba(239, 68, 68, 0.8)', // Red
+    Navigation: 'rgba(34, 197, 94, 0.8)', // Green
+    Feedback: 'rgba(249, 115, 22, 0.8)', // Orange
+    Interactive: 'rgba(236, 72, 153, 0.8)', // Pink
+    Search: 'rgba(20, 184, 166, 0.8)', // Teal
+  };
+
+  const datasets = Object.keys(categoryColors).map(category => ({
+    label: category,
+    data: components
+      .filter(c => c.category === category)
+      .map(c => ({
+        x: c.x,
+        y: c.y,
+        label: c.label,
+        id: c.id,
+        isBase: c.isBase,
+      })),
+    backgroundColor: categoryColors[category],
+    borderColor: categoryColors[category].replace('0.8', '1'),
+    borderWidth: 2,
+    pointRadius: (context: any) => {
+      const point = context.raw;
+      return point?.isBase ? 10 : 6;
+    },
+    pointHoverRadius: 12,
+  }));
+
+  const chartData = {
+    datasets,
+  };
+
+  const options: ChartOptions<'scatter'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom' as const,
+        labels: {
+          color: 'rgb(203, 213, 225)',
+          padding: 15,
+          usePointStyle: true,
+          pointStyle: 'circle',
+          font: {
+            size: 12,
+            weight: 'bold' as const,
+          },
+        },
+      },
+      title: {
+        display: true,
+        text: 'FmCommon Component Relationships',
+        color: 'rgb(212, 175, 55)',
+        font: {
+          size: 18,
+          family: 'Canela, serif',
+        },
+        padding: {
+          bottom: 20,
+        },
+      },
+      tooltip: {
+        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+        titleColor: 'rgb(212, 175, 55)',
+        bodyColor: 'rgb(229, 231, 235)',
+        borderColor: 'rgb(212, 175, 55)',
+        borderWidth: 2,
+        padding: 12,
+        displayColors: false,
+        callbacks: {
+          title: function() {
+            return 'Component Details';
+          },
+          label: function(context: any) {
+            const point = context.raw;
+            const component = components.find(c => c.id === point.id);
+            const lines = [`Name: ${point.label}`, `Category: ${component?.category || 'Unknown'}`];
+            
+            if (component?.isBase) {
+              lines.push('Type: Base Component');
+            } else {
+              lines.push('Type: Specialized');
+            }
+            
+            if (component?.children && component.children.length > 0) {
+              const childLabels = component.children
+                .map(childId => components.find(c => c.id === childId)?.label)
+                .filter(Boolean);
+              lines.push(`Extends to: ${childLabels.join(', ')}`);
+            }
+            
+            return lines;
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        type: 'linear',
+        position: 'bottom',
+        min: 0,
+        max: 9,
+        grid: {
+          color: 'rgba(148, 163, 184, 0.1)',
+          lineWidth: 1,
+        },
+        ticks: {
+          display: false,
+        },
+        border: {
+          display: false,
+        },
+      },
+      y: {
+        min: 1,
+        max: 9,
+        grid: {
+          color: 'rgba(148, 163, 184, 0.1)',
+          lineWidth: 1,
+        },
+        ticks: {
+          display: false,
+        },
+        border: {
+          display: false,
+        },
+      },
+    },
+  };
+
+  // Draw connection lines after chart renders
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (!chart) return;
+
+    const ctx = chart.ctx;
+    const meta = chart.getDatasetMeta(0);
+    if (!meta) return;
+
+    // Custom plugin to draw relationship lines and labels
+    const drawLinesAndLabels = () => {
+      // Draw relationship lines first (so they appear behind nodes)
+      relationships.forEach(rel => {
+        const fromComponent = components.find(c => c.id === rel.from);
+        const toComponent = components.find(c => c.id === rel.to);
+        
+        if (!fromComponent || !toComponent) return;
+
+        // Find the pixel positions
+        const fromX = chart.scales.x.getPixelForValue(fromComponent.x);
+        const fromY = chart.scales.y.getPixelForValue(fromComponent.y);
+        const toX = chart.scales.x.getPixelForValue(toComponent.x);
+        const toY = chart.scales.y.getPixelForValue(toComponent.y);
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(fromX, fromY);
+        ctx.lineTo(toX, toY);
+        
+        if (rel.type === 'extends') {
+          ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([5, 5]);
+        } else {
+          ctx.strokeStyle = 'rgba(156, 163, 175, 0.2)';
+          ctx.lineWidth = 1;
+          ctx.setLineDash([2, 2]);
+        }
+        
+        ctx.stroke();
+        ctx.restore();
+      });
+
+      // Draw labels for each component
+      components.forEach(component => {
+        const x = chart.scales.x.getPixelForValue(component.x);
+        const y = chart.scales.y.getPixelForValue(component.y);
+
+        ctx.save();
+        
+        // Label styling
+        ctx.font = component.isBase ? 'bold 11px sans-serif' : '10px sans-serif';
+        ctx.fillStyle = 'rgb(226, 232, 240)';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        
+        // Add a semi-transparent background for better readability
+        const textMetrics = ctx.measureText(component.label);
+        const textWidth = textMetrics.width;
+        const textHeight = 14;
+        const padding = 4;
+        const offsetY = component.isBase ? 16 : 12; // Offset below the node
+        
+        // Draw background rectangle
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.8)';
+        ctx.fillRect(
+          x - textWidth / 2 - padding,
+          y + offsetY - padding / 2,
+          textWidth + padding * 2,
+          textHeight + padding
+        );
+        
+        // Draw border
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.3)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(
+          x - textWidth / 2 - padding,
+          y + offsetY - padding / 2,
+          textWidth + padding * 2,
+          textHeight + padding
+        );
+        
+        // Draw text
+        ctx.fillStyle = component.isBase ? 'rgb(212, 175, 55)' : 'rgb(226, 232, 240)';
+        ctx.fillText(component.label, x, y + offsetY + padding);
+        
+        ctx.restore();
+      });
+    };
+
+    // Register the plugin
+    const plugin = {
+      id: 'relationshipLinesAndLabels',
+      afterDatasetsDraw: drawLinesAndLabels,
+    };
+
+    chart.config.plugins?.push(plugin);
+    chart.update();
+
+    return () => {
+      const index = chart.config.plugins?.findIndex((p: any) => p.id === 'relationshipLinesAndLabels');
+      if (index !== undefined && index > -1) {
+        chart.config.plugins?.splice(index, 1);
+      }
+    };
+  }, []);
+
+  return (
+    <div className="space-y-4">
+      <div className="h-[700px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-lg p-6 border border-border shadow-2xl">
+        <Scatter ref={chartRef} data={chartData} options={options} />
+      </div>
+      
+      {/* Legend */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div className="space-y-2 p-4 bg-muted/50 rounded-lg border border-border">
+          <h4 className="font-semibold text-fm-gold">Visual Guide</h4>
+          <ul className="space-y-1 text-muted-foreground">
+            <li className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-fm-gold"></div>
+              <span>Larger dots = Base components</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-muted-foreground"></div>
+              <span>Smaller dots = Specialized components</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <div className="w-8 h-0.5 bg-fm-gold/40" style={{ borderTop: '2px dashed' }}></div>
+              <span>Inheritance (extends)</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <div className="w-8 h-0.5 bg-muted-foreground/20" style={{ borderTop: '1px dashed' }}></div>
+              <span>Composition (uses)</span>
+            </li>
+          </ul>
+        </div>
+        
+        <div className="space-y-2 p-4 bg-muted/50 rounded-lg border border-border">
+          <h4 className="font-semibold text-fm-gold">Component Categories</h4>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            {Object.entries(categoryColors).map(([category, color]) => (
+              <div key={category} className="flex items-center gap-2">
+                <div 
+                  className="w-3 h-3 rounded-full" 
+                  style={{ backgroundColor: color }}
+                ></div>
+                <span className="text-muted-foreground">{category}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4 bg-muted/50 rounded-lg border border-border">
+        <h4 className="font-semibold text-fm-gold mb-2">Key Relationships</h4>
+        <ul className="text-sm text-muted-foreground space-y-1">
+          <li>• <span className="text-foreground">Form</span> composes FormSection, FormField, FormSelect, and FormActions</li>
+          <li>• <span className="text-foreground">SearchDropdown</span> has 4 specialized implementations (Artist, Event, Venue, City)</li>
+          <li>• <span className="text-foreground">Button</span> extends to CreateButton for "add new" actions</li>
+          <li>• <span className="text-foreground">PageHeader</span> uses IconWithText and StatCard components</li>
+        </ul>
+      </div>
+    </div>
+  );
+}

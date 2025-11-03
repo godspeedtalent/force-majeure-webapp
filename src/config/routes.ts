@@ -98,6 +98,17 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
   '/demo/event-checkout-confirmation': {
     label: 'Order Confirmed',
   },
+  '/demo/email-template': {
+    label: 'Email Template Demo',
+  },
+
+  // Developer pages
+  '/developer': {
+    label: 'Developer Tools',
+  },
+  '/developer/components': {
+    label: 'FM Components Catalog',
+  },
 
   // 404
   '/404': {

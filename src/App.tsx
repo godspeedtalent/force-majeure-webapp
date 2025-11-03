@@ -14,12 +14,14 @@ import DemoIndex from './pages/demo/DemoIndex';
 import EventCheckout from './pages/demo/EventCheckout';
 import EventCheckoutConfirmation from './pages/demo/EventCheckoutConfirmation';
 import EmailTemplateDemo from './pages/demo/EmailTemplateDemo';
+import FmComponentsCatalog from './pages/developer/FmComponentsCatalog';
 import EventManagement from './pages/EventManagement';
 import TestingIndex from './pages/testing/TestingIndex';
 import CheckoutFlowTests from './pages/testing/CheckoutFlowTests';
 import MemberHome from './pages/members/MemberHome';
 import Statistics from './pages/admin/Statistics';
 import AdminControls from './pages/admin/AdminControls';
+import DeveloperIndex from './pages/developer/DeveloperIndex';
 
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary';
 import { DemoProtectedRoute } from '@/components/routing/DemoProtectedRoute';
@@ -131,6 +133,25 @@ const AppRoutes = () => {
               </DemoProtectedRoute>
             }
           />
+          
+          {/* Developer Routes - Protected by developer/admin roles */}
+          <Route
+            path='/developer'
+            element={
+              <DemoProtectedRoute>
+                <DeveloperIndex />
+              </DemoProtectedRoute>
+            }
+          />
+          <Route
+            path='/developer/components'
+            element={
+              <DemoProtectedRoute>
+                <FmComponentsCatalog />
+              </DemoProtectedRoute>
+            }
+          />
+
           <Route
             path='/testing'
             element={
