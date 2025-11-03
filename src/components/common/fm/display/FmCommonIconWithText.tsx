@@ -32,14 +32,14 @@ const gapClasses = {
 
 /**
  * FmCommonIconWithText Component
- * 
+ *
  * A reusable component for displaying an icon with text.
  * Commonly used for event details, metadata, and inline information.
- * 
+ *
  * Features:
  * - Flexible icon positioning (left/right)
  * - Multiple size options (sm/md/lg)
- * - Hover effects: background turns gold, icon/text turn gold
+ * - Hover effects: icon and text turn gold
  */
 export function FmCommonIconWithText({
   icon: Icon,
@@ -56,25 +56,25 @@ export function FmCommonIconWithText({
       className={cn(
         'flex items-center',
         'transition-all duration-200 rounded-md px-2 py-1.5 -mx-2',
-        'hover:bg-[hsl(var(--fm-gold))] group cursor-default',
+        'group cursor-default',
         gapClasses[gap],
         sizeClasses[size],
         iconPosition === 'right' && 'flex-row-reverse',
         className
       )}
     >
-      <Icon 
+      <Icon
         className={cn(
-          iconSizeClasses[size], 
+          iconSizeClasses[size],
           'text-muted-foreground transition-colors duration-200',
-          'group-hover:text-[hsl(var(--fm-gold))] group-hover:brightness-150',
+          'group-hover:text-[hsl(var(--fm-gold))]',
           iconClassName
-        )} 
+        )}
       />
-      <span 
+      <span
         className={cn(
           'text-foreground transition-colors duration-200',
-          'group-hover:text-[hsl(var(--fm-gold))] group-hover:brightness-150',
+          'group-hover:text-[hsl(var(--fm-gold))]',
           textClassName
         )}
       >

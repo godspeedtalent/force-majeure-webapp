@@ -223,7 +223,7 @@ export function EventArtistManagement({
             {headliners.filter(s => s.role === 'headliner').length === 0 && (
               <FmCommonButton
                 onClick={() => addArtist('headliner')}
-                variant="outline"
+                variant="default"
                 icon={Star}
                 className="flex-1"
               >
@@ -232,7 +232,7 @@ export function EventArtistManagement({
             )}
             <FmCommonButton
               onClick={() => addArtist('co-headliner')}
-              variant="outline"
+              variant="default"
               icon={Plus}
               className="flex-1"
             >
@@ -322,7 +322,7 @@ export function EventArtistManagement({
           {/* Add Undercard Button */}
           <FmCommonButton
             onClick={() => addArtist('undercard')}
-            variant="outline"
+            variant="default"
             icon={Plus}
             className="w-full"
           >

@@ -151,7 +151,7 @@ export const EventRow = ({ event }: EventRowProps) => {
               </FmCommonButton>
             )}
             <FmCommonButton
-              variant='outline'
+              variant='default'
               size='sm'
               onClick={handlePlayLineup}
               disabled={eventSongs.length === 0}

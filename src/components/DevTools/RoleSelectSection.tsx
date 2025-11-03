@@ -42,13 +42,6 @@ export const RoleSelectSection = ({ currentRole, onRoleChange }: RoleSelectSecti
             variant="outline"
           />
           <FmCommonNavigationButton
-            to="/demo"
-            label="Demos"
-            icon={Code}
-            description="Test application features"
-            variant="outline"
-          />
-          <FmCommonNavigationButton
             to="/testing"
             label="Testing Dashboard"
             icon={FlaskConical}

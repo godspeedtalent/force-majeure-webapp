@@ -181,7 +181,7 @@ const Profile = () => {
       <div className='max-w-6xl mx-auto px-4 py-12 space-y-8'>
         {/* Back Button */}
         <FmCommonButton
-          variant='ghost'
+          variant='secondary'
           size='sm'
           onClick={() => navigate('/')}
           icon={ArrowLeft}
@@ -199,7 +199,7 @@ const Profile = () => {
                 {/* Edit Profile Button - Top Left Corner */}
                 <div className='absolute top-4 left-4 z-10'>
                   <FmCommonButton
-                    variant='outline'
+                    variant='default'
                     size='sm'
                     onClick={() => navigate('/profile/edit')}
                     icon={Settings}

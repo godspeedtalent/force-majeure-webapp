@@ -6,7 +6,7 @@ import { Loader2 } from 'lucide-react';
 import { useRipple } from '@/hooks/useRipple';
 
 interface FmCommonButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'default' | 'outline' | 'ghost' | 'destructive' | 'gold';
+  variant?: 'default' | 'secondary' | 'destructive' | 'gold';
   size?: 'default' | 'sm' | 'lg' | 'icon';
   icon?: LucideIcon;
   iconPosition?: 'left' | 'right';
@@ -58,25 +58,23 @@ export const FmCommonButton = forwardRef<HTMLButtonElement, FmCommonButtonProps>
     // Custom variant styles with enhanced animations
     const variantStyles = {
       gold: 'bg-fm-gold hover:bg-fm-gold/90 text-black font-medium transition-all duration-200 hover:shadow-[0_0_20px_rgba(207,173,118,0.5)] hover:scale-105 active:scale-95',
-      default: 'transition-all duration-200 hover:scale-105 active:scale-95',
-      outline: 'bg-white/5 border-white/30 hover:bg-fm-gold/20 hover:border-fm-gold hover:text-fm-gold transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]',
-      ghost: 'transition-all duration-200 hover:scale-105 active:scale-95',
+      default: 'bg-white/5 border-white/30 hover:bg-fm-gold/20 hover:border-fm-gold hover:text-fm-gold transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]',
+      secondary: 'transition-all duration-200 hover:scale-105 active:scale-95',
       destructive: 'transition-all duration-200 hover:scale-105 active:scale-95',
     };
 
     return (
       <Button
         ref={ref}
-        variant={variant === 'gold' ? 'default' : variant}
+        variant={variant === 'gold' ? 'default' : variant === 'default' ? 'outline' : variant === 'secondary' ? 'ghost' : variant}
         size={size}
         disabled={isDisabled}
         onClick={handleClick}
         className={cn(
           'relative overflow-hidden',
           variant === 'gold' && variantStyles.gold,
-          variant === 'outline' && variantStyles.outline,
           variant === 'default' && variantStyles.default,
-          variant === 'ghost' && variantStyles.ghost,
+          variant === 'secondary' && variantStyles.secondary,
           variant === 'destructive' && variantStyles.destructive,
           isPressed && 'scale-95',
           className

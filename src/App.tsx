@@ -100,40 +100,6 @@ const AppRoutes = () => {
           <Route path='/checkout/success' element={<CheckoutSuccess />} />
           <Route path='/checkout/cancel' element={<CheckoutCancel />} />
 
-          {/* Demo Routes - Protected by role and feature flag */}
-          <Route
-            path='/demo'
-            element={
-              <DemoProtectedRoute>
-                <DemoIndex />
-              </DemoProtectedRoute>
-            }
-          />
-          <Route
-            path='/demo/event-checkout'
-            element={
-              <DemoProtectedRoute>
-                <EventCheckout />
-              </DemoProtectedRoute>
-            }
-          />
-          <Route
-            path='/demo/event-checkout-confirmation'
-            element={
-              <DemoProtectedRoute>
-                <EventCheckoutConfirmation />
-              </DemoProtectedRoute>
-            }
-          />
-          <Route
-            path='/demo/email-template'
-            element={
-              <DemoProtectedRoute>
-                <EmailTemplateDemo />
-              </DemoProtectedRoute>
-            }
-          />
-          
           {/* Developer Routes - Protected by developer/admin roles */}
           <Route
             path='/developer'
@@ -148,6 +114,40 @@ const AppRoutes = () => {
             element={
               <DemoProtectedRoute>
                 <FmComponentsCatalog />
+              </DemoProtectedRoute>
+            }
+          />
+
+          {/* Demo Routes - Now under /developer/demo */}
+          <Route
+            path='/developer/demo'
+            element={
+              <DemoProtectedRoute>
+                <DemoIndex />
+              </DemoProtectedRoute>
+            }
+          />
+          <Route
+            path='/developer/demo/event-checkout'
+            element={
+              <DemoProtectedRoute>
+                <EventCheckout />
+              </DemoProtectedRoute>
+            }
+          />
+          <Route
+            path='/developer/demo/event-checkout-confirmation'
+            element={
+              <DemoProtectedRoute>
+                <EventCheckoutConfirmation />
+              </DemoProtectedRoute>
+            }
+          />
+          <Route
+            path='/developer/demo/email-template'
+            element={
+              <DemoProtectedRoute>
+                <EmailTemplateDemo />
               </DemoProtectedRoute>
             }
           />

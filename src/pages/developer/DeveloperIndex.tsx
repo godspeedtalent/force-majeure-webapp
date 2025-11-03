@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/shadcn/badge';
-import { Code, Package, ArrowRight } from 'lucide-react';
+import { Code, Package, ArrowRight, FlaskConical } from 'lucide-react';
 import { DemoLayout } from '@/components/demo/DemoLayout';
 
 export default function DeveloperIndex() {
@@ -11,6 +11,14 @@ export default function DeveloperIndex() {
       path: '/developer/components',
       icon: Package,
       category: 'Documentation',
+      status: 'Active',
+    },
+    {
+      title: 'Demo Tools',
+      description: 'Test application features including event checkout flow, email templates, and interactive demos',
+      path: '/developer/demo',
+      icon: FlaskConical,
+      category: 'Testing',
       status: 'Active',
     },
   ];

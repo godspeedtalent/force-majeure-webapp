@@ -267,7 +267,7 @@ export default function EventManagement() {
               {/* Header */}
               <div className="flex items-center gap-4 mb-6">
                 <FmCommonButton
-                  variant="ghost"
+                  variant="secondary"
                   icon={ArrowLeft}
                   onClick={() => navigate(`/event/${id}`)}
                 >

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { FmBadge } from './FmBadge';
 import { cn } from '@/shared/utils/utils';
 
@@ -16,6 +17,8 @@ interface FmCommonBadgeGroupProps {
   gap?: 'sm' | 'md' | 'lg';
   /** Allow badges to wrap to multiple lines */
   wrap?: boolean;
+  /** Number of additional badges to show on each expansion (default: 5) */
+  pageSize?: number;
 }
 
 const gapClasses = {
@@ -26,13 +29,12 @@ const gapClasses = {
 
 /**
  * FmCommonBadgeGroup Component
- * 
+ *
  * A reusable component for displaying groups of FmBadge components.
  * Commonly used for artists, genres, tags, etc.
- * Supports limiting display count with "+X more" indicator.
- * 
- * Uses FmBadge components which can be primary (gold with black text) or 
- * secondary (transparent with white text/border).
+ * Supports limiting display count with expandable "+X more" indicator.
+ *
+ * Composed of: FmBadge components
  */
 export function FmCommonBadgeGroup({
   badges,
@@ -41,15 +43,25 @@ export function FmCommonBadgeGroup({
   badgeClassName,
   gap = 'md',
   wrap = true,
+  pageSize = 5,
 }: FmCommonBadgeGroupProps) {
+  const [currentDisplay, setCurrentDisplay] = useState(maxDisplay);
+
   if (!badges || badges.length === 0) {
     return null;
   }
 
-  const displayBadges = maxDisplay ? badges.slice(0, maxDisplay) : badges;
-  const remainingCount = maxDisplay && badges.length > maxDisplay 
-    ? badges.length - maxDisplay 
+  const displayCount = currentDisplay || badges.length;
+  const displayBadges = badges.slice(0, displayCount);
+  const remainingCount = badges.length > displayCount
+    ? badges.length - displayCount
     : 0;
+
+  const handleExpand = () => {
+    if (currentDisplay) {
+      setCurrentDisplay(Math.min(currentDisplay + pageSize, badges.length));
+    }
+  };
 
   return (
     <div
@@ -69,11 +81,16 @@ export function FmCommonBadgeGroup({
         />
       ))}
       {remainingCount > 0 && (
-        <FmBadge
-          label={`+${remainingCount} more`}
-          variant="secondary"
-          className={cn('opacity-70', badgeClassName)}
-        />
+        <button
+          onClick={handleExpand}
+          className="inline-flex"
+        >
+          <FmBadge
+            label={`+${remainingCount} more`}
+            variant="secondary"
+            className={cn('opacity-70 cursor-pointer', badgeClassName)}
+          />
+        </button>
       )}
     </div>
   );

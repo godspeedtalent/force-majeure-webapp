@@ -189,7 +189,7 @@ const EventDetails = () => {
     return (
       <div className='flex items-center justify-center h-screen flex-col gap-4 bg-background'>
         <p className='text-destructive text-lg'>{error || 'Event not found'}</p>
-        <FmCommonButton asChild variant='outline' icon={ArrowLeft}>
+        <FmCommonButton asChild variant='default' icon={ArrowLeft}>
           <Link to='/'>Back to Events</Link>
         </FmCommonButton>
       </div>

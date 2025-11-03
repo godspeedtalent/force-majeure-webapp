@@ -167,7 +167,7 @@ export default function EventCheckoutForm({
     });
 
     setTimeout(() => {
-      navigate(`/demo/event-checkout-confirmation?eventId=${eventId}&eventName=${encodeURIComponent(eventName)}&eventDate=${encodeURIComponent(eventDate)}&email=${encodeURIComponent(formData.email)}`);
+      navigate(`/developer/demo/event-checkout-confirmation?eventId=${eventId}&eventName=${encodeURIComponent(eventName)}&eventDate=${encodeURIComponent(eventDate)}&email=${encodeURIComponent(formData.email)}`);
     }, 1000);
   };
 

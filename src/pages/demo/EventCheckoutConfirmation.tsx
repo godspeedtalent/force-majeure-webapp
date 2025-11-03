@@ -67,7 +67,7 @@ export default function EventCheckoutConfirmation() {
 
         {/* Back to Event Button */}
         <Button
-          onClick={() => navigate(`/demo/event-checkout?eventId=${eventId}`)}
+          onClick={() => navigate(`/developer/demo/event-checkout?eventId=${eventId}`)}
           className="w-full bg-fm-gold hover:bg-fm-gold/90 text-black"
           size="lg"
         >

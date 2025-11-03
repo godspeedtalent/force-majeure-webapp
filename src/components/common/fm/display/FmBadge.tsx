@@ -24,7 +24,7 @@ export function FmBadge({
   const variantStyles = {
     primary: cn(
       'bg-[hsl(var(--fm-gold))] text-black',
-      'hover:bg-white/10 hover:shadow-[0_0_15px_rgba(207,173,118,0.6)]'
+      'hover:bg-white hover:text-black hover:shadow-[0_0_15px_rgba(207,173,118,0.6)]'
     ),
     secondary: cn(
       'bg-transparent text-white border border-white',

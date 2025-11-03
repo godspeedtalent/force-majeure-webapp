@@ -290,7 +290,7 @@ const ProfileEdit = () => {
               showDivider={true}
               actions={
                 <FmCommonButton
-                  variant='outline'
+                  variant='default'
                   size='sm'
                   onClick={() => navigate('/profile')}
                 >
@@ -329,7 +329,7 @@ const ProfileEdit = () => {
                       className='hidden'
                     />
                     <FmCommonButton
-                      variant='outline'
+                      variant='default'
                       icon={Upload}
                       onClick={() => fileInputRef.current?.click()}
                       loading={isUploadingImage}
