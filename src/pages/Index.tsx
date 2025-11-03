@@ -1,4 +1,4 @@
-import { Calendar, Instagram, User } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { useEffect, useRef, useMemo, useState } from 'react';
 
 import lfSystemCover from '@/assets/lf-system-cover.jpg';
@@ -8,7 +8,6 @@ import { LoadingState } from '@/components/common/LoadingState';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import { Layout } from '@/components/layout/Layout';
-import { FmCommonButton } from '@/components/business/FmCommonButton';
 import { TopographicBackground } from '@/components/ui/misc/TopographicBackground';
 import { EventCard } from '@/features/events/components/EventCard';
 import { EventCardSkeleton } from '@/features/events/components/EventCardSkeleton';
@@ -16,7 +15,6 @@ import { supabase } from '@/shared/api/supabase/client';
 import { useFontLoader } from '@/shared/hooks/useFontLoader';
 import { useScrollPosition } from '@/shared/hooks/useScrollPosition';
 import { SCROLL_THRESHOLDS } from '@/shared/constants/scrollThresholds';
-import { SOCIAL_LINKS } from '@/shared/constants/socialLinks';
 import { getImageUrl } from '@/shared/utils/imageUtils';
 import { logApiError } from '@/shared/utils/logger';
 interface Artist {
@@ -166,10 +164,9 @@ const Index = () => {
   }, [handleFetchError]);
 
   // Memoize scroll-based calculations
-  const { parallaxOffset, fadeOpacity, loginButtonOpacity } = useMemo(() => ({
+  const { parallaxOffset, fadeOpacity } = useMemo(() => ({
     parallaxOffset: scrollY * SCROLL_THRESHOLDS.PARALLAX_MULTIPLIER,
     fadeOpacity: Math.max(0, 1 - scrollY / SCROLL_THRESHOLDS.CONTENT_FADE),
-    loginButtonOpacity: Math.max(0, 1 - scrollY / SCROLL_THRESHOLDS.FLOATING_BUTTON_FADE),
   }), [scrollY]);
 
   return (
@@ -180,26 +177,6 @@ const Index = () => {
           <TopographicBackground opacity={0.35} />
         </div>
         <div className='fixed inset-0 bg-gradient-monochrome opacity-10 pointer-events-none' />
-
-        {/* Floating Login Button */}
-        {contentReady && (
-          <div
-            className='fixed top-6 right-6 z-50 transition-opacity duration-300'
-            style={{
-              opacity: loginButtonOpacity,
-              pointerEvents: loginButtonOpacity > 0 ? 'auto' : 'none',
-            }}
-          >
-            <FmCommonButton
-              href='/auth'
-              icon={User}
-              label='Login'
-              tooltip='Login'
-              variant='floating'
-              isExternal={false}
-            />
-          </div>
-        )}
 
         {!contentReady ? (
           <div className='flex items-center justify-center min-h-screen relative z-10'>
@@ -229,15 +206,6 @@ const Index = () => {
                     MAJEURE
                   </span>
                 </h1>
-
-                {/* Social Button */}
-                <FmCommonButton
-                  href={SOCIAL_LINKS.instagram}
-                  icon={Instagram}
-                  label='Follow us on Instagram'
-                  tooltip={SOCIAL_LINKS.instagramHandle}
-                  isExternal={true}
-                />
               </div>
 
               {/* Decorative Divider */}

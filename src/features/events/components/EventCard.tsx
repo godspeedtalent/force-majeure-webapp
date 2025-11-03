@@ -166,6 +166,16 @@ export const EventCard = ({ event }: EventCardProps) => {
     },
   ];
 
+  const handleCardClick = () => {
+    if ('startViewTransition' in document) {
+      (document as any).startViewTransition(() => {
+        navigate(`/event/${event.id}`);
+      });
+    } else {
+      navigate(`/event/${event.id}`);
+    }
+  };
+
   return (
     <>
       <FmCommonContextMenu
@@ -181,10 +191,13 @@ export const EventCard = ({ event }: EventCardProps) => {
             contextMenuOpen && 'border-fm-gold/50 shadow-lg shadow-fm-gold/10',
             'hover:border-fm-gold/50 hover:shadow-lg hover:shadow-fm-gold/10'
           )}
-          onClick={() => navigate(`/event/${event.id}`)}
+          onClick={handleCardClick}
         >
         {/* Hero Image Section - Takes up more space for 2:3 ratio */}
-        <div className="relative h-[65%] overflow-hidden bg-muted">
+        <div
+          className="relative h-[65%] overflow-hidden bg-muted"
+          style={{ viewTransitionName: `magazine-hero-${event.id}` }}
+        >
           <img
             src={event.heroImage}
             alt={displayTitle}

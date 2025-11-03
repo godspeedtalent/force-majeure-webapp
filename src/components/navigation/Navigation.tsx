@@ -10,16 +10,13 @@ import { Button } from '@/components/ui/shadcn/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/shadcn/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/shadcn/tooltip';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { useScrollPosition } from '@/shared/hooks/useScrollPosition';
 import { useUserRole } from '@/shared/hooks/useUserRole';
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
 import { useCheckoutTimer } from '@/contexts/CheckoutContext';
-import { SCROLL_THRESHOLDS } from '@/shared/constants/scrollThresholds';
 import { SOCIAL_LINKS } from '@/shared/constants/socialLinks';
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const scrollY = useScrollPosition();
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -27,13 +24,8 @@ export const Navigation = () => {
   const { data: flags } = useFeatureFlags();
   const { isCheckoutActive, endCheckout, redirectUrl } = useCheckoutTimer();
   const isAdmin = role === 'admin';
-  const isHomePage = location.pathname === '/';
 
-  // Calculate opacity based on scroll - only on home page
-  const navOpacity = isHomePage ? Math.min(1, scrollY / SCROLL_THRESHOLDS.CONTENT_FADE) : 1;
-  return <nav className='sticky top-0 z-50 w-full bg-background/50 backdrop-blur-md border-b border-border transition-opacity duration-300' style={{
-    opacity: navOpacity
-  }}>
+  return <nav className='sticky top-0 z-50 w-full bg-background/50 backdrop-blur-md border-b border-border'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='flex justify-between items-center h-16'>
           {/* Logo and Breadcrumbs */}
