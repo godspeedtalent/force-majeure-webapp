@@ -3,7 +3,7 @@ import { FmCommonCreateButton } from './FmCommonCreateButton';
 import { FmCommonFormModal } from '@/components/ui/modals/FmCommonFormModal';
 import { FmCommonTextField } from '@/components/ui/forms/FmCommonTextField';
 import { Button } from '@/components/ui/shadcn/button';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
 
 interface FmCreateArtistButtonProps {

@@ -1,7 +1,7 @@
 import { OrderReceiptEmailData } from '@/types/email';
 import { logger } from '@/shared/services/logger';
 
-const pdfLogger = logger.namespace('TicketPDF');
+const pdfLogger = logger.createNamespace('TicketPDF');
 
 /**
  * TicketPDFService - Generates PDF tickets for orders

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { FmCommonSearchDropdown, SearchDropdownOption } from './FmCommonSearchDropdown';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/shared/api/supabase/client';
 import { useRecentSelections } from '@/shared/hooks/useRecentSelections';
 
 /**

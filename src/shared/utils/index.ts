@@ -1,6 +1,6 @@
 // Shared utilities exports
 export { cn } from './utils';
-export { logApiError, logApi } from './logger';
+export { logApiError, logApi } from './apiLogger';
 export { SpotifyService } from './spotify';
 export { enhancedSpotifyService } from './enhancedSpotify';
 export { claimScavengerReward } from './scavengerApi';

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/shadcn/button';
 import { FmEventSearchDropdown } from '@/components/ui/search/FmEventSearchDropdown';
 import { FmCreateEventButton } from '@/components/ui/buttons/FmCreateEventButton';
 import { TestEventDataService } from '@/services/testData/TestEventDataService';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
 import { FmCommonDemoTool } from '../types/FmCommonDemoTool';
 

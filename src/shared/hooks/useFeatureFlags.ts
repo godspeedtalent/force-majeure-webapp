@@ -8,7 +8,7 @@ import {
 } from '@/shared/utils/environment';
 import { logger } from '@/shared/services/logger';
 
-const flagLogger = logger.namespace('FeatureFlags');
+const flagLogger = logger.createNamespace('FeatureFlags');
 
 interface FeatureFlags {
   scavenger_hunt_active: boolean;

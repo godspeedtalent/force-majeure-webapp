@@ -6,7 +6,7 @@ import { DemoLayout } from '@/components/demo/DemoLayout';
 import { FmCommonDemoToolbar } from '@/components/demo/FmCommonDemoToolbar';
 import { FmEventSelectionDemoTool } from '@/components/demo/tools/FmEventSelectionDemoTool';
 import { useCheckoutTimer } from '@/contexts/CheckoutContext';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/shared/api/supabase/client';
 import { formatTimeDisplay } from '@/shared/utils/timeUtils';
 import { useQueryClient } from '@tanstack/react-query';
 import EventCheckoutForm from './EventCheckoutForm';

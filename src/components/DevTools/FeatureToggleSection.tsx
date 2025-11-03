@@ -11,7 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/shadcn/alert-dialog';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
 import { 
   Music, 

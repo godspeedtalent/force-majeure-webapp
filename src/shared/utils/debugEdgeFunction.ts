@@ -4,7 +4,7 @@
 
 import { logger } from '@/shared/services/logger';
 
-const debugLogger = logger.namespace('EdgeFunction');
+const debugLogger = logger.createNamespace('EdgeFunction');
 
 export async function testEdgeFunctionConnectivity() {
   const baseUrl =

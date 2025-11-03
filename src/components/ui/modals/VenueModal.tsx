@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { MapPin, Globe, Users } from 'lucide-react';
 import { FmCommonModal } from '@/components/ui/modals/FmCommonModal';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/shared/api/supabase/client';
 import { FmInfoChip } from '@/components/ui/data/FmInfoChip';
 
 interface VenueModalProps {

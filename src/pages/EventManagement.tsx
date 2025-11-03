@@ -19,7 +19,7 @@ import { Label } from '@/components/ui/shadcn/label';
 import { Checkbox } from '@/components/ui/shadcn/checkbox';
 import { format, parse } from 'date-fns';
 import { useUserRole } from '@/shared/hooks/useUserRole';
-import { logApiError } from '@/shared/utils/logger';
+import { logApiError } from '@/shared/utils/apiLogger';
 
 type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'admin';
 

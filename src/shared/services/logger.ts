@@ -40,9 +40,18 @@ class Logger {
 
   /**
    * Create a namespaced logger instance
+   * Note: Renamed from 'namespace' to avoid conflict with class property
    */
-  namespace(name: string): Logger {
+  createNamespace(name: string): Logger {
     return new Logger(name);
+  }
+
+  /**
+   * Alias for createNamespace (for backwards compatibility)
+   * @deprecated Use createNamespace instead (naming conflict with property)
+   */
+  ns(name: string): Logger {
+    return this.createNamespace(name);
   }
 
   /**

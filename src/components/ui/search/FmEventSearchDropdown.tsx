@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Calendar } from 'lucide-react';
 import { FmCommonSearchDropdown, SearchDropdownOption } from './FmCommonSearchDropdown';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/shared/api/supabase/client';
 
 interface FmEventSearchDropdownProps {
   value?: string;

@@ -12,7 +12,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { sessionPersistence } from '@/shared/utils/sessionPersistence';
 import { logger } from '@/shared/services/logger';
 
-const authLogger = logger.namespace('Auth');
+const authLogger = logger.createNamespace('Auth');
 
 interface Profile {
   id: string;

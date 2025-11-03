@@ -3,7 +3,7 @@ import { Layout } from '@/components/layout/Layout';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { BarChart3 } from 'lucide-react';
 import { Card } from '@/components/ui/shadcn/card';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/shared/api/supabase/client';
 import { LoadingState } from '@/components/common/LoadingState';
 
 export default function Statistics() {

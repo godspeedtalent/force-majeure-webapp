@@ -1,5 +1,5 @@
 import { supabase } from '@/shared/api/supabase/client';
-import { logApiError, logApi } from '@/shared/utils/logger';
+import { logApiError, logApi } from '@/shared/utils/apiLogger';
 
 export interface SpotifyToken {
   access_token: string;

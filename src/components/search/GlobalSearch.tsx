@@ -4,7 +4,7 @@ import { X, Search, Calendar, Users as UsersIcon, MapPin } from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
 import { Input } from '@/components/ui/shadcn/input';
 import { cn } from '@/shared/utils/utils';
-import { logApiError } from '@/shared/utils/logger';
+import { logApiError } from '@/shared/utils/apiLogger';
 
 interface SearchResult {
   id: string;

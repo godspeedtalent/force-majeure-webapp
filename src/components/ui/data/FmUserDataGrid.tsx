@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { FmCommonDataGrid, DataGridColumn, DataGridAction } from './FmCommonDataGrid';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/shared/api/supabase/client';
 import { Badge } from '@/components/ui/shadcn/badge';
 import { Mail, Shield, Trash2, Edit, UserCog } from 'lucide-react';
 import { toast } from 'sonner';

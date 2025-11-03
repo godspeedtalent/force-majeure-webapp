@@ -16,7 +16,7 @@ import { useFontLoader } from '@/shared/hooks/useFontLoader';
 import { useScrollPosition } from '@/shared/hooks/useScrollPosition';
 import { SCROLL_THRESHOLDS } from '@/shared/constants/scrollThresholds';
 import { getImageUrl } from '@/shared/utils/imageUtils';
-import { logApiError } from '@/shared/utils/logger';
+import { logApiError } from '@/shared/utils/apiLogger';
 interface Artist {
   name: string;
   genre: string;
