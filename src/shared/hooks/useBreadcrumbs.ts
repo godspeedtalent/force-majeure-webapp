@@ -37,7 +37,7 @@ export const useBreadcrumbs = () => {
         // Find route config for this path
         const routeMatch = findRouteConfig(currentPath);
 
-        if (routeMatch) {
+  if (routeMatch) {
           const { config, params } = routeMatch;
 
           // Skip if explicitly hidden
@@ -68,6 +68,11 @@ export const useBreadcrumbs = () => {
             .split('-')
             .map(word => word.charAt(0).toUpperCase() + word.slice(1))
             .join(' ');
+
+          // Skip the leading "Event" breadcrumb on event detail/admin pages
+          if (currentPath === '/event') {
+            continue;
+          }
 
           items.push({
             label,
