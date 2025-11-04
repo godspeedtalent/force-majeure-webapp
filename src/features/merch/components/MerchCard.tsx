@@ -1,6 +1,8 @@
 import { ReactNode } from 'react';
 
-import { CommonCard } from '@/components/common/CommonCard';
+import { Button } from '@/components/common/shadcn/button';
+import type { Tables } from '@/shared/types/database';
+import { FmImageCard } from '@/components/common/display/FmImageCard';
 import { getImageUrl } from '@/shared/utils/imageUtils';
 
 interface MerchCardProps {
@@ -26,7 +28,7 @@ export const MerchCard = ({
   onClick,
 }: MerchCardProps) => {
   return (
-    <CommonCard
+    <FmImageCard
       image={getImageUrl(image_url)}
       imageAlt={name}
       title={name}
@@ -41,6 +43,6 @@ export const MerchCard = ({
       showHoverEffect={!onClick} // Only show hover effect if not clickable for expansion
     >
       {children}
-    </CommonCard>
+    </FmImageCard>
   );
 };

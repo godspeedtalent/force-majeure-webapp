@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-import { LoadingState } from '@/components/common/LoadingState';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 
 import { cn } from '@/shared/utils/utils';
 
@@ -20,7 +20,7 @@ export const MessagePanel = ({
   className,
 }: MessagePanelProps) => {
   if (isLoading) {
-    return <LoadingState centered />;
+    return <FmCommonLoadingState centered />;
   }
 
   return (

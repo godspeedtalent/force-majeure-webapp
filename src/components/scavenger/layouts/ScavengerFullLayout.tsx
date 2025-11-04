@@ -1,14 +1,11 @@
-import { ReactNode, useEffect, useRef } from 'react';
+import { ReactNode } from 'react';
 
 import { LocationCard } from '../shared';
 
-import lfSystemImage from '@/assets/lf-system-scavenger.jpg';
-import { Footer } from '@/components/navigation/Footer';
-import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
-import { ScavengerNavigation } from '@/components/navigation/ScavengerNavigation';
+import { Footer } from '@/components/Navigation/Footer';
+import { ScavengerNavigation } from '@/components/Navigation/ScavengerNavigation';
 import { Card } from '@/components/common/shadcn/card';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
-import { ImageAnchor } from '@/shared/types/imageAnchor';
 
 interface ScavengerFullLayoutProps {
   showShoppingCart?: boolean;
@@ -23,41 +20,9 @@ export function ScavengerFullLayout({
   userClaims = [],
   children,
 }: ScavengerFullLayoutProps) {
-  const parallaxRef = useRef<HTMLDivElement>(null);
-
-  // Parallax scroll effect - mobile only
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      if (parallaxRef.current && window.innerWidth < 1024) {
-        // Only on mobile/tablet
-        parallaxRef.current.style.transform = `translateY(${scrollY * 0.5}px)`;
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   return (
     <>
       <ScavengerNavigation showShoppingCart={showShoppingCart} />
-
-      {/* Mobile/Tablet: Hero image at top */}
-      <div className='lg:hidden h-[50vh] w-full bg-muted relative overflow-hidden shadow-[0_12px_48px_-4px_rgba(0,0,0,0.7)]'>
-        <div
-          ref={parallaxRef}
-          className='absolute inset-0 w-full h-[120%] -top-[10%]'
-          style={{ willChange: 'transform' }}
-        >
-          <ImageWithSkeleton
-            src={lfSystemImage}
-            alt='LF System'
-            anchor={ImageAnchor.TOP}
-            className='w-full h-full object-cover brightness-90'
-          />
-        </div>
-      </div>
 
       {/* Desktop: Split layout */}
       <div className='h-[calc(100vh-6.5rem)] flex flex-col lg:flex-row'>
@@ -121,16 +86,9 @@ export function ScavengerFullLayout({
           </div>
         </div>
 
-        {/* Desktop only: Right Column - Image */}
+        {/* Desktop only: Right Column - Decorative background */}
         <div className='hidden lg:block lg:w-1/2 bg-muted relative overflow-hidden'>
-          <ImageWithSkeleton
-            src={lfSystemImage}
-            alt='LF System'
-            anchor={ImageAnchor.TOP}
-            className='w-full h-full object-cover brightness-90'
-          />
-          <div className='absolute inset-0 bg-background/5 backdrop-blur-[0.5px]' />
-          <div className='absolute inset-0 bg-black/[0.03]' />
+          <TopographicBackground opacity={0.4} />
         </div>
       </div>
 

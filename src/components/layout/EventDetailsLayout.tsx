@@ -1,4 +1,5 @@
 import { cn } from '@/shared/utils/utils';
+import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 
 interface EventDetailsLayoutProps {
   leftColumn: React.ReactNode;
@@ -10,11 +11,12 @@ interface EventDetailsLayoutProps {
  * EventDetailsLayout - Option 3: Magazine Spread
  *
  * Features:
- * - Editorial 45/55 split layout
+ * - Editorial split layout with left column sized to show vertical image
  * - Card slides and scales into left position
  * - Content cascades in from right with staggered delays
  * - Magazine-style typography and spacing
  * - Clean, sophisticated aesthetic
+ * - Topographic background on right column
  */
 export function EventDetailsLayout({
   leftColumn,
@@ -22,18 +24,19 @@ export function EventDetailsLayout({
   className,
 }: EventDetailsLayoutProps) {
   return (
-    <div className={cn('min-h-screen bg-background', className)}>
-      <div className='grid grid-cols-1 lg:grid-cols-[45%_55%] min-h-screen'>
+    <div className={cn('min-h-[calc(100vh-4rem)] bg-background', className)}>
+      <div className='grid grid-cols-1 lg:grid-cols-[35%_65%] min-h-[calc(100vh-4rem)]'>
         {/* Left column - Hero image with magazine-style positioning */}
-        <div className='lg:sticky lg:top-0 lg:h-screen lg:overflow-hidden bg-card border-r border-border'>
+        <div className='lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)] lg:overflow-hidden bg-card border-r border-border lg:w-auto'>
           <div className='w-full h-full magazine-hero'>
             {leftColumn}
           </div>
         </div>
 
-        {/* Right column - Content with cascading animation */}
-        <div className='lg:overflow-y-auto lg:max-h-screen bg-background'>
-          <div className='w-full magazine-content'>
+        {/* Right column - Content with cascading animation and topographic background */}
+        <div className='relative lg:overflow-y-auto lg:max-h-[calc(100vh-4rem)] bg-background'>
+          <TopographicBackground className='opacity-30' />
+          <div className='relative z-10 w-full magazine-content'>
             {rightColumn}
           </div>
         </div>

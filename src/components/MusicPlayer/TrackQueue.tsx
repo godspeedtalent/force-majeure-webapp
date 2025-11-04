@@ -1,7 +1,6 @@
 import { Music, Play } from 'lucide-react';
 import React from 'react';
 
-import spotifyLogo from '@/assets/spotify-logo.png';
 import { Badge } from '@/components/common/shadcn/badge';
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext';
 import { cn } from '@/shared/utils/utils';
@@ -79,20 +78,12 @@ export const TrackQueue: React.FC = () => {
                 <p className='text-xs text-muted-foreground truncate font-canela'>
                   {song.artist_name}
                 </p>
-                {song.music_source === 'spotify' ? (
-                  <img
-                    src={spotifyLogo}
-                    alt='Spotify'
-                    className='w-3 h-3 brightness-0 invert'
-                  />
-                ) : (
-                  <Badge
-                    variant='outline'
-                    className={`text-xs px-1.5 py-0.5 ${getMusicSourceColor(song.music_source)}`}
-                  >
-                    {song.music_source}
-                  </Badge>
-                )}
+                <Badge
+                  variant='outline'
+                  className={`text-xs px-1.5 py-0.5 ${getMusicSourceColor(song.music_source)}`}
+                >
+                  {song.music_source}
+                </Badge>
               </div>
             </div>
           </div>

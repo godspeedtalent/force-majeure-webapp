@@ -1,6 +1,8 @@
 import { useQueryClient } from '@tanstack/react-query';
 
-import { LoadingState } from '@/components/common/LoadingState';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { UnauthenticatedWizard } from '@/components/scavenger/auth/UnauthenticatedWizard';
 import { ScavengerFullLayout } from '@/components/scavenger/layouts/ScavengerFullLayout';
 import { ScavengerSplitLayout } from '@/components/scavenger/layouts/ScavengerSplitLayout';
@@ -66,7 +68,7 @@ export default function Scavenger() {
   if (authLoading || locationsLoading) {
     return (
       <div className='min-h-screen flex items-center justify-center bg-background'>
-        <LoadingState />
+        <FmCommonLoadingState />
       </div>
     );
   }

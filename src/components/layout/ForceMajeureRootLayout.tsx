@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
 
-import { Footer } from '@/components/navigation/Footer';
+import { Footer } from '@/components/Navigation/Footer';
 import { ExpandableMusicPlayer } from '@/components/MusicPlayer/ExpandableMusicPlayer';
-import { Navigation } from '@/components/navigation/Navigation';
+import { Navigation } from '@/components/Navigation/Navigation';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 
 interface ForceMajeureRootLayoutProps {

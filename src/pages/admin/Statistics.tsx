@@ -4,7 +4,7 @@ import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { BarChart3 } from 'lucide-react';
 import { Card } from '@/components/common/shadcn/card';
 import { supabase } from '@/shared/api/supabase/client';
-import { LoadingState } from '@/components/common/LoadingState';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 
 export default function Statistics() {
   const [userCount, setUserCount] = useState<number | null>(null);
@@ -30,7 +30,7 @@ export default function Statistics() {
   }, []);
 
   if (isLoading) {
-    return <LoadingState />;
+    return <FmCommonLoadingState />;
   }
 
   return (

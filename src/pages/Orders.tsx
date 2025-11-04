@@ -2,8 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/common/shadcn/badge';
 import { Separator } from '@/components/common/shadcn/separator';
 import { useOrders } from '@/features/events/hooks/useOrders';
-import { LoadingState } from '@/components/common/LoadingState';
-import { EmptyState } from '@/components/common/EmptyState';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
+import { FmCommonEmptyState } from '@/components/common/display/FmCommonEmptyState';
 import { Layout } from '@/components/layout/Layout';
 import { format } from 'date-fns';
 import { Receipt, Calendar } from 'lucide-react';
@@ -29,7 +29,7 @@ export default function Orders() {
     return (
       <Layout>
         <div className="container mx-auto py-8 px-4">
-          <LoadingState />
+          <FmCommonLoadingState />
         </div>
       </Layout>
     );
@@ -49,7 +49,7 @@ export default function Orders() {
       </div>
 
       {!orders || orders.length === 0 ? (
-        <EmptyState
+        <FmCommonEmptyState
           icon={Receipt}
           title="No Orders Yet"
           description="Your ticket purchases will appear here"

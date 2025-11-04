@@ -61,7 +61,14 @@ export const FmCommonInfoCard = ({
   const config = sizeConfig[size];
 
   return (
-    <Card className={cn('border-border', className)}>
+    <Card className={cn(
+      'border-border',
+      'transition-all duration-300',
+      'hover:bg-white/5',
+      'hover:border-fm-gold/50',
+      'hover:shadow-[0_0_12px_rgba(212,175,55,0.15)]',
+      className
+    )}>
       <CardContent
         className={cn(
           'flex gap-3',

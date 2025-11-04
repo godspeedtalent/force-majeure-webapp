@@ -7,7 +7,7 @@ import { FmVenueSearchDropdown } from '@/components/common/search/FmVenueSearchD
 import { FmCommonDatePicker } from '@/components/common/forms/FmCommonDatePicker';
 import { FmCommonTimePicker } from '@/components/common/forms/FmCommonTimePicker';
 import { FmCommonRowManager } from '@/components/common/forms/FmCommonRowManager';
-import { FmCommonLoadingOverlay } from '@/components/common/FmCommonLoadingOverlay';
+import { FmCommonLoadingOverlay } from '@/components/common/feedback/FmCommonLoadingOverlay';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { Input } from '@/components/common/shadcn/input';
 import { Checkbox } from '@/components/common/shadcn/checkbox';

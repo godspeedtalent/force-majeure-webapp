@@ -2,8 +2,6 @@
  * Demo component to test all ImageAnchor positions
  * This is for testing purposes and can be used in development
  */
-import lfSystemImage from '@/assets/lf-system-scavenger.jpg';
-import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
 import { ImageAnchor } from '@/shared/types/imageAnchor';
 
 export const ImageAnchorDemo = () => {
@@ -28,13 +26,10 @@ export const ImageAnchorDemo = () => {
         {anchors.map(({ anchor, label }) => (
           <div key={anchor} className='space-y-2'>
             <h3 className='text-lg font-medium text-center'>{label}</h3>
-            <div className='h-48 w-full border-2 border-dashed border-gray-300 rounded-lg overflow-hidden'>
-              <ImageWithSkeleton
-                src={lfSystemImage}
-                alt={`Image with ${label} anchor`}
-                anchor={anchor}
-                className='w-full h-full object-cover'
-              />
+            <div className='h-48 w-full border-2 border-dashed border-gray-300 rounded-lg overflow-hidden bg-muted flex items-center justify-center'>
+              <p className='text-sm text-muted-foreground'>
+                Placeholder for {label}
+              </p>
             </div>
             <p className='text-sm text-gray-600 text-center'>anchor={anchor}</p>
           </div>

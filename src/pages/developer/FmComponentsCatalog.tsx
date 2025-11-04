@@ -51,7 +51,7 @@ import {
   FmCommonConfirmDialog,
   FmCommonBackButton,
 } from '@/components/common';
-import { FmCommonLoadingOverlay } from '@/components/common/FmCommonLoadingOverlay';
+import { FmCommonLoadingOverlay } from '@/components/common/feedback/FmCommonLoadingOverlay';
 
 // Buttons
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';

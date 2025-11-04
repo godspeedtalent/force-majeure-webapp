@@ -1,7 +1,7 @@
 import { Loader2, UserX } from 'lucide-react';
 import React, { useState } from 'react';
 
-import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
+import { ForceMajeureLogo } from '@/components/Navigation/ForceMajeureLogo';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import {
   Card,

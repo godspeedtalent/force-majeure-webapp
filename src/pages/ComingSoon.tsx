@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { FmCommonButton } from '@/components/business/FmCommonButton';
-import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
+import { ForceMajeureLogo } from '@/components/Navigation/ForceMajeureLogo';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 
 export default function ComingSoon() {

@@ -1,12 +1,9 @@
 import { Calendar } from 'lucide-react';
 import { useEffect, useRef, useMemo, useState } from 'react';
-
-import lfSystemCover from '@/assets/lf-system-cover.jpg';
-import ninajirachiCover from '@/assets/ninajirachi-cover.jpg';
-import { EmptyState } from '@/components/common/EmptyState';
-import { LoadingState } from '@/components/common/LoadingState';
+import { FmCommonEmptyState } from '@/components/common/display/FmCommonEmptyState';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
-import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
+import { ForceMajeureLogo } from '@/components/Navigation/ForceMajeureLogo';
 import { Layout } from '@/components/layout/Layout';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { EventCard } from '@/features/events/components/EventCard';
@@ -83,12 +80,6 @@ const Index = () => {
           return;
         }
 
-        // Map of database image paths to imported images
-        const imageMap: Record<string, string> = {
-          '/src/assets/ninajirachi-cover.jpg': ninajirachiCover,
-          '/src/assets/lf-system-cover.jpg': lfSystemCover,
-        };
-
         // Get undercard artists for all events
         const eventIds = data.map(event => event.id);
         const undercardArtists =
@@ -148,7 +139,7 @@ const Index = () => {
             time: event.time,
             venue: event.venue,
             heroImage:
-              (event.hero_image && imageMap[event.hero_image]) || getImageUrl(event.hero_image),
+            event.hero_image || getImageUrl(event.hero_image),
             description: event.description || null,
             ticketUrl: event.ticket_url || null,
           };
@@ -180,7 +171,7 @@ const Index = () => {
 
         {!contentReady ? (
           <div className='flex items-center justify-center min-h-screen relative z-10'>
-            <LoadingState message='Loading...' />
+            <FmCommonLoadingState message='Loading...' />
           </div>
         ) : (
           <div className='relative z-10 pt-24 pb-32 px-4'>
@@ -225,7 +216,7 @@ const Index = () => {
                   ))
                 ) : (
                   <div className='col-span-full'>
-                    <EmptyState icon={Calendar} title='No upcoming events' />
+                    <FmCommonEmptyState icon={Calendar} title='No upcoming events' />
                   </div>
                 )}
               </div>

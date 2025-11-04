@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { ProcessingLoader } from '@/components/common/ProcessingLoader';
+import { FmCommonLoadingOverlay } from '@/components/common/feedback/FmCommonLoadingOverlay';
 import { useProxyToken } from '@/shared/hooks/useProxyToken';
 
 export default function ProxyToken() {
@@ -10,5 +10,5 @@ export default function ProxyToken() {
     processToken();
   }, [processToken]);
 
-  return <ProcessingLoader message='Processing QR code...' />;
+  return <FmCommonLoadingOverlay message='Processing QR code...' />;
 }

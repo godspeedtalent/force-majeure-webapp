@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { LoadingState } from '@/components/common/LoadingState';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { useDevRole } from '@/shared/hooks/useDevRole';
 
 interface DemoProtectedRouteProps {
@@ -38,7 +38,7 @@ export const DemoProtectedRoute = ({ children }: DemoProtectedRouteProps) => {
 
   // Still loading
   if (roleLoading || canAccess === null) {
-    return <LoadingState />;
+    return <FmCommonLoadingState />;
   }
 
   // Access denied

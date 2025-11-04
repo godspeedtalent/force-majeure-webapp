@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/common/shadcn/button';
 import { FmCommonFormModal } from '@/components/common/modals/FmCommonFormModal';
 import { FmCitySearchDropdown } from '@/components/common/search/FmCitySearchDropdown';
-import { FmCommonLoadingOverlay } from '@/components/common/FmCommonLoadingOverlay';
+import { FmCommonLoadingOverlay } from '@/components/common/feedback/FmCommonLoadingOverlay';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';

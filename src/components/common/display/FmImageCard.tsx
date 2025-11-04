@@ -4,7 +4,7 @@ import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
 import { Badge } from '@/components/common/shadcn/badge';
 import { Card, CardContent } from '@/components/common/shadcn/card';
 
-interface CommonCardProps {
+interface FmImageCardProps {
   image: string;
   imageAlt: string;
   title: string;
@@ -25,7 +25,7 @@ interface CommonCardProps {
   titleAsBadge?: boolean;
 }
 
-export const CommonCard = ({
+export const FmImageCard = ({
   image,
   imageAlt,
   title,
@@ -41,7 +41,7 @@ export const CommonCard = ({
   subtitleSize = 'sm',
   belowTitle,
   titleAsBadge = false,
-}: CommonCardProps) => {
+}: FmImageCardProps) => {
   const pillBase =
     subtitleSize === 'lg' ? 'px-4 py-1.5 text-base' : 'px-3 py-1 text-sm';
 
@@ -121,3 +121,4 @@ export const CommonCard = ({
     </Card>
   );
 };
+

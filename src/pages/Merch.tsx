@@ -2,8 +2,8 @@ import { ShoppingCart, Filter } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
-import { EmptyState } from '@/components/common/EmptyState';
-import { LoadingState } from '@/components/common/LoadingState';
+import { FmCommonEmptyState } from '@/components/common/display/FmCommonEmptyState';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { ForceMajeureRootLayout } from '@/components/layout/ForceMajeureRootLayout';
 import { Badge } from '@/components/common/shadcn/badge';
 import { Button } from '@/components/common/shadcn/button';
@@ -91,7 +91,7 @@ export default function Merch() {
     return (
       <ForceMajeureRootLayout>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12'>
-          <LoadingState message='Loading merchandise...' />
+          <FmCommonLoadingState message='Loading merchandise...' />
         </div>
       </ForceMajeureRootLayout>
     );
@@ -140,7 +140,7 @@ export default function Merch() {
 
         {/* Grid */}
         {filteredItems.length === 0 ? (
-          <EmptyState
+          <FmCommonEmptyState
             icon={ShoppingCart}
             title='No items found'
             description='No items found matching your criteria.'

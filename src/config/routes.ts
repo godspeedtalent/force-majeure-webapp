@@ -20,7 +20,7 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
 
   // Events
   '/event/:id': {
-    label: 'Event',
+    label: '',
     async: true,
     resolver: async (params) => {
       try {
@@ -31,10 +31,10 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
           .single();
 
         if (error) throw error;
-        return data?.headliner?.name || data?.title || 'Event';
+        return data?.headliner?.name || data?.title || '';
       } catch (error) {
         console.error('Failed to fetch event for breadcrumb:', error);
-        return 'Event';
+        return '';
       }
     },
   },
