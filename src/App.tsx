@@ -36,7 +36,7 @@ import Merch from './pages/Merch';
 import { MusicPlayerProvider } from '@/contexts/MusicPlayerContext';
 import { AuthProvider } from '@/features/auth/services/AuthContext';
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
-import { DevToolsDrawer } from '@/components/devtools/DevToolsDrawer';
+import { DevToolsDrawer } from '@/components/DevTools/DevToolsDrawer';
 import { DevToolsProvider } from '@/contexts/DevToolsContext';
 import { CheckoutProvider } from '@/contexts/CheckoutContext';
 import { GlobalSearchProvider, useGlobalSearch } from '@/contexts/GlobalSearchContext';
