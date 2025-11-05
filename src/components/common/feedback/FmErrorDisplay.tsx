@@ -72,7 +72,7 @@ export const FmErrorDisplay = ({
     <div className='min-h-screen flex items-center justify-center bg-background p-4'>
       <div className='max-w-2xl w-full text-center space-y-6'>
         <div className='space-y-2'>
-          <h1 className='text-3xl font-canela font-bold text-foreground'>
+          <h1 className='text-3xl font-canela text-foreground'>
             Something went wrong
           </h1>
           {isDeveloper ? (

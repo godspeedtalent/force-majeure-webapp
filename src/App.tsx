@@ -22,6 +22,9 @@ import MemberHome from './pages/members/MemberHome';
 import Statistics from './pages/admin/Statistics';
 import AdminControls from './pages/admin/AdminControls';
 import DeveloperIndex from './pages/developer/DeveloperIndex';
+import DeveloperCreateEventPage from './pages/developer/database/CreateEvent';
+import DeveloperCreateArtistPage from './pages/developer/database/CreateArtist';
+import DeveloperCreateVenuePage from './pages/developer/database/CreateVenue';
 
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary';
 import { DemoProtectedRoute } from '@/components/routing/DemoProtectedRoute';
@@ -114,6 +117,31 @@ const AppRoutes = () => {
             element={
               <DemoProtectedRoute>
                 <FmComponentsCatalog />
+              </DemoProtectedRoute>
+            }
+          />
+
+          <Route
+            path='/developer/database/events/new'
+            element={
+              <DemoProtectedRoute>
+                <DeveloperCreateEventPage />
+              </DemoProtectedRoute>
+            }
+          />
+          <Route
+            path='/developer/database/artists/new'
+            element={
+              <DemoProtectedRoute>
+                <DeveloperCreateArtistPage />
+              </DemoProtectedRoute>
+            }
+          />
+          <Route
+            path='/developer/database/venues/new'
+            element={
+              <DemoProtectedRoute>
+                <DeveloperCreateVenuePage />
               </DemoProtectedRoute>
             }
           />

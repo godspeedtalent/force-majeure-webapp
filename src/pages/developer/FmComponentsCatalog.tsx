@@ -1437,7 +1437,7 @@ export default function FmComponentsCatalog() {
     >
       <div className="space-y-6">
         <div className="mb-8">
-          <h1 className="text-4xl font-canela font-bold text-fm-gold mb-2">Component Catalog</h1>
+          <h1 className="text-4xl font-canela text-fm-gold mb-2">Component Catalog</h1>
           <p className="text-muted-foreground text-lg">
             Comprehensive catalog of all Force Majeure components with live demos and documentation
           </p>

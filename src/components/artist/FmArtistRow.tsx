@@ -2,9 +2,12 @@ import { FmCommonRow } from '@/components/common/layout/FmCommonRow';
 
 export interface FmArtistRowProps {
   artist: {
+    id?: string;
     name: string;
     genre?: string;
     image?: string | null;
+    callTime?: string;
+    roleLabel?: string;
   };
   onSelect?: (artist: FmArtistRowProps['artist']) => void;
 }
@@ -16,6 +19,12 @@ export const FmArtistRow = ({ artist, onSelect }: FmArtistRowProps) => {
     .join('')
     .slice(0, 2)
     .toUpperCase();
+
+  const handleClick = () => {
+    if (onSelect) {
+      onSelect(artist);
+    }
+  };
 
   return (
     <FmCommonRow
@@ -30,8 +39,16 @@ export const FmArtistRow = ({ artist, onSelect }: FmArtistRowProps) => {
         </div>
       }
       title={artist.name}
-      subtitle={artist.genre}
-      onClick={onSelect ? () => onSelect(artist) : undefined}
+      subtitle={artist.roleLabel}
+      trailing={
+        artist.callTime ? (
+          <span className='rounded-full bg-fm-gold/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-fm-gold'>
+            {artist.callTime}
+          </span>
+        ) : undefined
+      }
+      onClick={onSelect ? handleClick : undefined}
+      className='rounded-none'
     />
   );
 };

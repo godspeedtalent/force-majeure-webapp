@@ -10,14 +10,19 @@ interface FmCreateVenueButtonProps {
   onModalOpen?: () => void;
   variant?: 'default' | 'outline';
   className?: string;
+  mode?: 'button' | 'standalone';
+  onClose?: () => void;
 }
 
 export const FmCreateVenueButton = ({
   onModalOpen,
   variant = 'outline',
   className,
+  mode = 'button',
+  onClose,
 }: FmCreateVenueButtonProps) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const isStandalone = mode === 'standalone';
+  const [isModalOpen, setIsModalOpen] = useState(isStandalone);
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -28,8 +33,18 @@ export const FmCreateVenueButton = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleClick = () => {
+    if (isStandalone) {
+      return;
+    }
     onModalOpen?.();
     setIsModalOpen(true);
+  };
+
+  const handleModalOpenChange = (open: boolean) => {
+    setIsModalOpen(open);
+    if (!open && isStandalone) {
+      onClose?.();
+    }
   };
 
   const handleSubmit = async () => {
@@ -52,6 +67,9 @@ export const FmCreateVenueButton = ({
 
       toast.success('Venue created successfully');
       setIsModalOpen(false);
+      if (isStandalone) {
+        onClose?.();
+      }
       setFormData({
         name: '',
         address: '',
@@ -112,7 +130,7 @@ export const FmCreateVenueButton = ({
     <div className="flex gap-3 justify-end">
       <Button
         variant="outline"
-        onClick={() => setIsModalOpen(false)}
+        onClick={() => handleModalOpenChange(false)}
         disabled={isSubmitting}
         className="bg-white/5 border-white/20 hover:bg-white/10"
       >
@@ -130,15 +148,17 @@ export const FmCreateVenueButton = ({
 
   return (
     <>
-      <FmCommonCreateButton
-        onClick={handleClick}
-        label="Create Venue"
-        variant={variant}
-        className={className}
-      />
+      {mode === 'button' && (
+        <FmCommonCreateButton
+          onClick={handleClick}
+          label="Create Venue"
+          variant={variant}
+          className={className}
+        />
+      )}
       <FmCommonFormModal
         open={isModalOpen}
-        onOpenChange={setIsModalOpen}
+        onOpenChange={handleModalOpenChange}
         title="Create New Venue"
         description="Add a new venue to the database"
         sections={sections}

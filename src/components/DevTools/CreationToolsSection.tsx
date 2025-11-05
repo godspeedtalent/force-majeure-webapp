@@ -1,41 +1,48 @@
-import { FmCreateEventButton } from '@/components/common/buttons/FmCreateEventButton';
-import { FmCreateArtistButton } from '@/components/common/buttons/FmCreateArtistButton';
-import { FmCreateVenueButton } from '@/components/common/buttons/FmCreateVenueButton';
+import { useNavigate } from 'react-router-dom';
+import { Calendar, Music, MapPin } from 'lucide-react';
+import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
+import { FmCommonToggleHeader } from '@/components/common/forms/FmCommonToggleHeader';
 import { useDevTools } from '@/contexts/DevToolsContext';
 
 export const CreationToolsSection = () => {
   const { isDrawerOpen, toggleDrawer } = useDevTools();
+  const navigate = useNavigate();
 
-  const handleModalOpen = () => {
-    // Auto-collapse the dev tools drawer when opening modal
+  const handleNavigate = (path: string) => {
     if (isDrawerOpen) {
       toggleDrawer();
     }
+    navigate(path);
   };
 
   return (
-    <div className="space-y-4">
-      <p className="text-xs text-white/50">
+    <FmCommonToggleHeader title="Create resource" defaultOpen={true}>
+      <p className="text-xs text-white/50 mb-4">
         Create new events, artists, and venues for the platform
       </p>
-      <div className="space-y-3">
-        <FmCreateEventButton 
-          onModalOpen={handleModalOpen}
-          variant="outline"
-          className="w-full"
+      <div className="grid grid-cols-3 gap-3">
+        <FmCommonIconButton
+          variant="create"
+          icon={Calendar}
+          tooltip="Create Event"
+          onClick={() => handleNavigate('/developer/database/events/new')}
+          size="lg"
         />
-        <FmCreateArtistButton
-          onModalOpen={handleModalOpen}
-          variant="outline"
-          className="w-full"
+        <FmCommonIconButton
+          variant="create"
+          icon={Music}
+          tooltip="Create Artist"
+          onClick={() => handleNavigate('/developer/database/artists/new')}
+          size="lg"
         />
-        <FmCreateVenueButton
-          onModalOpen={handleModalOpen}
-          variant="outline"
-          className="w-full"
+        <FmCommonIconButton
+          variant="create"
+          icon={MapPin}
+          tooltip="Create Venue"
+          onClick={() => handleNavigate('/developer/database/venues/new')}
+          size="lg"
         />
       </div>
-    </div>
+    </FmCommonToggleHeader>
   );
 };
-

@@ -33,6 +33,8 @@ interface FmCreateEventButtonProps {
   onEventCreated?: (eventId: string) => void;
   variant?: 'default' | 'outline';
   className?: string;
+  mode?: 'button' | 'standalone';
+  onClose?: () => void;
 }
 
 export const FmCreateEventButton = ({
@@ -40,8 +42,11 @@ export const FmCreateEventButton = ({
   onEventCreated,
   variant = 'outline',
   className,
+  mode = 'button',
+  onClose,
 }: FmCreateEventButtonProps) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const isStandalone = mode === 'standalone';
+  const [isModalOpen, setIsModalOpen] = useState(isStandalone);
   const [isLoading, setIsLoading] = useState(false);
   const [headlinerId, setHeadlinerId] = useState<string>('');
   const [eventDate, setEventDate] = useState<Date>();
@@ -117,8 +122,18 @@ export const FmCreateEventButton = ({
   }, []);
 
   const handleCreateEvent = () => {
+    if (isStandalone) {
+      return;
+    }
     setIsModalOpen(true);
     onModalOpen?.();
+  };
+
+  const handleModalOpenChange = (open: boolean) => {
+    setIsModalOpen(open);
+    if (!open && isStandalone) {
+      onClose?.();
+    }
   };
 
   const validateForm = (): string | null => {
@@ -259,18 +274,27 @@ export const FmCreateEventButton = ({
       
       // Reset form
       resetForm();
+      if (isStandalone) {
+        onClose?.();
+      }
     } catch (error) {
       console.error('Error creating event:', error);
       setIsLoading(false);
       toast.error('Failed to create event', {
         description: error instanceof Error ? error.message : 'An unexpected error occurred',
       });
+      if (isStandalone) {
+        setIsModalOpen(true);
+      }
     }
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
     resetForm();
+    if (isStandalone) {
+      onClose?.();
+    }
   };
 
   const totalTickets = ticketTiers.reduce((sum, tier) => sum + tier.quantity, 0);
@@ -290,19 +314,21 @@ export const FmCreateEventButton = ({
 
   return (
     <>
-      <FmCommonCreateButton
-        onClick={handleCreateEvent}
-        label="Create Event"
-        variant={variant}
-        className={className}
-      />
+      {mode === 'button' && (
+        <FmCommonCreateButton
+          onClick={handleCreateEvent}
+          label="Create Event"
+          variant={variant}
+          className={className}
+        />
+      )}
 
       {/* Loading Overlay */}
       {isLoading && <FmCommonLoadingOverlay message="Creating event..." />}
 
       <FmCommonFormModal
         open={isModalOpen}
-        onOpenChange={setIsModalOpen}
+        onOpenChange={handleModalOpenChange}
         title="Create New Event"
         description="Set up a new event with ticket tiers and details"
         className="max-w-3xl max-h-[90vh] overflow-y-auto"
@@ -554,3 +580,4 @@ export const FmCreateEventButton = ({
     </>
   );
 };
+

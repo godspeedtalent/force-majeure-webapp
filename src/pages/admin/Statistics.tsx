@@ -39,7 +39,7 @@ export default function Statistics() {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 mb-2">
             <BarChart3 className="h-6 w-6 text-fm-gold" />
-            <h1 className="text-3xl font-canela font-bold">Statistics</h1>
+            <h1 className="text-3xl font-canela">Statistics</h1>
           </div>
           <p className="text-muted-foreground mb-6">
             Application metrics and analytics
@@ -58,7 +58,7 @@ export default function Statistics() {
                 <p className="text-sm text-white/60 uppercase tracking-wide">
                   Registered Users
                 </p>
-                <p className="text-4xl font-canela font-bold text-fm-gold">
+                <p className="text-4xl font-canela text-fm-gold">
                   {userCount?.toLocaleString() || '0'}
                 </p>
                 <p className="text-xs text-white/50">

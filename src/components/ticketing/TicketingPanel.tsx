@@ -4,6 +4,7 @@ import { ChevronDown, Gift, LogIn, ShoppingCart, Tag, Ticket } from 'lucide-reac
 
 import { FmInfoCard } from '@/components/common/data/FmInfoCard';
 import { FmPromoCodeInput } from '@/components/common/misc/FmPromoCodeInput';
+import { FmGetTicketsButton } from '@/components/common/buttons/FmGetTicketsButton';
 import { Button } from '@/components/common/shadcn/button';
 import { Label } from '@/components/common/shadcn/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/common/shadcn/select';
@@ -419,15 +420,13 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false, initialSe
           </div>
         </div>
 
-        <Button
-          className='w-full bg-fm-gold hover:bg-fm-gold/90 text-black font-medium transition-all mt-4'
-          size='lg'
+        <FmGetTicketsButton
           onClick={handlePurchase}
-          disabled={!hasSelections || isLoading}
+          disabled={!hasSelections}
+          isLoading={isLoading}
         >
-          <ShoppingCart className='h-4 w-4 mr-2' />
-          {isLoading ? 'Processing...' : 'Continue to Checkout'}
-        </Button>
+          Continue to Checkout
+        </FmGetTicketsButton>
       </div>
     </div>
   );

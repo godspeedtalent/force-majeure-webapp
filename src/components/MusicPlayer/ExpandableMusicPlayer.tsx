@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp, Music } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import React, { useState } from 'react';
 
 import { PlayerControls } from './PlayerControls';
@@ -13,16 +13,7 @@ export const ExpandableMusicPlayer: React.FC = () => {
   const { currentSong } = useMusicPlayer();
 
   if (!currentSong) {
-    return (
-      <div className='sticky bottom-0 z-50 w-full bg-background/80 backdrop-blur-md border-t border-border'>
-        <div className='p-4'>
-          <div className='flex items-center gap-3 text-muted-foreground'>
-            <Music className='w-5 h-5' />
-            <span className='text-sm'>No track playing</span>
-          </div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (

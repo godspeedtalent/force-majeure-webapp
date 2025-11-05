@@ -54,7 +54,7 @@ export function FmCommonSideNav<T extends string = string>({
   className,
   showDividers = true,
 }: FmCommonSideNavProps<T>) {
-  const { open, toggleSidebar } = useSidebar();
+  const { open } = useSidebar();
   const { ripples, createRipple } = useRipple();
 
   return (
@@ -99,11 +99,8 @@ export function FmCommonSideNav<T extends string = string>({
                 <SidebarGroupLabel
                   className={cn(
                     'text-white/90 px-4 flex items-center gap-2',
-                    'cursor-pointer hover:bg-white/5 transition-all duration-200',
-                    'rounded-md text-base font-semibold mb-1',
-                    'hover:text-fm-gold hover:translate-x-0.5'
+                    'rounded-md text-base font-semibold mb-1'
                   )}
-                  onClick={toggleSidebar}
                 >
                   {group.icon && <group.icon className="h-4 w-4" />}
                   {group.label}

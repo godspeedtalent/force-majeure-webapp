@@ -5,4 +5,5 @@ export { FmCommonInfoCard } from './FmCommonInfoCard';
 export { FmCommonStatCard } from './FmCommonStatCard';
 export { FmCommonPageHeader } from './FmCommonPageHeader';
 export { FmCommonDetailSection } from './FmCommonDetailSection';
+export { FmTextLink } from './FmTextLink';
 export type { FmCommonBadgeItem } from './FmCommonBadgeGroup';

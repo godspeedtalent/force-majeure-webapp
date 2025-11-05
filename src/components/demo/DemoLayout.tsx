@@ -34,7 +34,7 @@ export const DemoLayout = ({
           <div className="mb-4">
             <div className="flex items-center gap-3 mb-2">
               <Icon className="h-6 w-6 text-fm-gold" />
-              <h1 className="text-3xl font-canela font-bold">{title}</h1>
+              <h1 className="text-3xl font-canela">{title}</h1>
             </div>
             <p className="text-muted-foreground">{description}</p>
           </div>

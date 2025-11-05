@@ -56,7 +56,7 @@ export const SideNavbarLayout = <T extends string>({
             showDividers={showDividers}
           />
 
-          <main className={`flex-1 pt-6 pb-6 px-6 relative overflow-hidden ${className}`}>
+          <main className={`flex-1 pb-6 px-6 relative overflow-hidden ${className}`}>
             <TopographicBackground opacity={backgroundOpacity} />
             <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
             <div className="max-w-full relative z-10">

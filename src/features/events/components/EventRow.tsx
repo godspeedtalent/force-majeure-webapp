@@ -1,11 +1,10 @@
-import { Calendar, Clock, MapPin, Play, ExternalLink } from 'lucide-react';
+import { Clock, MapPin, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 
 import { ExternalLinkDialog } from '@/components/business/ExternalLinkDialog';
-import { Badge } from '@/components/common/shadcn/badge';
+import { FmBadge } from '@/components/common/display/FmBadge';
+import { FmDateBox } from '@/components/common/display/FmDateBox';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { useMusicPlayer } from '@/contexts/MusicPlayerContext';
-import { useSongsByEvent } from '@/features/events/hooks/useSongsByEvent';
 import {
   formatTimeDisplay,
   parseTimeToMinutes,
@@ -36,16 +35,19 @@ interface EventRowProps {
 
 export const EventRow = ({ event }: EventRowProps) => {
   const [showTicketDialog, setShowTicketDialog] = useState(false);
-  const { playQueue } = useMusicPlayer();
-  const { songs: eventSongs } = useSongsByEvent(event.id);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-    });
+    return {
+      weekday: date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase(),
+      month: date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
+      day: date.getDate().toString(),
+      fullDate: date.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+      }),
+    };
   };
 
   const isAfterHours = (() => {
@@ -53,17 +55,13 @@ export const EventRow = ({ event }: EventRowProps) => {
     return minutes !== null && minutes >= 120; // 2:00 AM = 120 minutes
   })();
 
-  const handlePlayLineup = async () => {
-    if (eventSongs.length > 0) {
-      playQueue(eventSongs);
-    }
-  };
-
   const handleTicketsClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setShowTicketDialog(true);
   };
+
+  const dateObj = formatDate(event.date);
 
   return (
     <>
@@ -78,10 +76,10 @@ export const EventRow = ({ event }: EventRowProps) => {
         </div>
 
         {/* Event Info */}
-        <div className='flex-1 min-w-0 p-4 flex items-center justify-between'>
+        <div className='flex-1 min-w-0 p-4 flex items-center'>
           <div className='flex-1 min-w-0'>
             <div className='flex items-start justify-between mb-2'>
-              <div>
+              <div className='min-w-0 flex-1'>
                 {event.title && (
                   <h3 className='font-canela font-medium text-lg truncate mb-1'>
                     {event.title}
@@ -93,34 +91,23 @@ export const EventRow = ({ event }: EventRowProps) => {
                 {event.undercard.length > 0 && (
                   <div className='flex flex-wrap gap-1 mt-2'>
                     {event.undercard.map((artist, index) => (
-                      <Badge
+                      <FmBadge
                         key={index}
+                        label={artist.name}
                         variant='secondary'
-                        className='bg-accent/20 text-accent border-accent/30 text-xs'
-                      >
-                        {artist.name}
-                      </Badge>
+                        className='text-xs opacity-80'
+                      />
                     ))}
                   </div>
                 )}
               </div>
-              <div className='flex items-center gap-2'>
-                <Badge
-                  variant='outline'
-                  className='invert-badge whitespace-nowrap'
-                >
-                  <Calendar className='w-3 h-3 mr-1' />
-                  {formatDate(event.date)}
-                </Badge>
-                {isAfterHours && (
-                  <Badge
-                    variant='secondary'
-                    className='bg-accent/20 text-accent border-accent/30'
-                  >
-                    After Hours
-                  </Badge>
-                )}
-              </div>
+              {isAfterHours && (
+                <FmBadge
+                  label='After Hours'
+                  variant='primary'
+                  className='ml-2 flex-shrink-0'
+                />
+              )}
             </div>
 
             <div className='flex items-center gap-4 text-sm text-muted-foreground'>
@@ -138,8 +125,8 @@ export const EventRow = ({ event }: EventRowProps) => {
           </div>
 
           {/* Action Buttons */}
-          <div className='flex flex-col gap-2 ml-4'>
-            {event.ticketUrl && (
+          {event.ticketUrl && (
+            <div className='flex flex-col gap-2 ml-4'>
               <FmCommonButton
                 variant='default'
                 size='sm'
@@ -149,18 +136,18 @@ export const EventRow = ({ event }: EventRowProps) => {
               >
                 Get Tickets
               </FmCommonButton>
-            )}
-            <FmCommonButton
-              variant='default'
-              size='sm'
-              onClick={handlePlayLineup}
-              disabled={eventSongs.length === 0}
-              icon={Play}
-            >
-              Play Lineup
-            </FmCommonButton>
-          </div>
+            </div>
+          )}
         </div>
+
+        {/* Date Column - Right Side */}
+        <FmDateBox
+          weekday={dateObj.weekday}
+          month={dateObj.month}
+          day={dateObj.day}
+          size="sm"
+          className="border-l rounded-none"
+        />
       </div>
 
       {event.ticketUrl && (

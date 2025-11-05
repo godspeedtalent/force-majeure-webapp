@@ -4,6 +4,7 @@ import { Footer } from '@/components/Navigation/Footer';
 import { ExpandableMusicPlayer } from '@/components/MusicPlayer/ExpandableMusicPlayer';
 import { Navigation } from '@/components/Navigation/Navigation';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
 
 interface ForceMajeureRootLayoutProps {
   children: ReactNode;
@@ -14,6 +15,8 @@ export const ForceMajeureRootLayout = ({
   children,
   className = '',
 }: ForceMajeureRootLayoutProps) => {
+  const { data: flags } = useFeatureFlags();
+
   return (
     <div className={`min-h-screen bg-background flex flex-col ${className}`}>
       <Navigation />
@@ -29,7 +32,7 @@ export const ForceMajeureRootLayout = ({
 
       {/* Fixed music player and footer at bottom */}
       <div className='fixed bottom-0 left-0 right-0 z-40'>
-        <ExpandableMusicPlayer />
+        {flags?.music_player && <ExpandableMusicPlayer />}
         <Footer />
       </div>
     </div>

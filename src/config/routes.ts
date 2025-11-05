@@ -46,7 +46,26 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
 
   // Profile
   '/profile': {
-    label: 'Profile Settings',
+    label: 'Profile',
+    async: true,
+    resolver: async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return 'Profile';
+        
+        // Fetch user profile for display_name
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('display_name')
+          .eq('id', user.id)
+          .single();
+        
+        return profile?.display_name || user.user_metadata?.display_name || user.email?.split('@')[0] || 'Profile';
+      } catch (error) {
+        console.error('Failed to fetch user for breadcrumb:', error);
+        return 'Profile';
+      }
+    },
   },
 
   // Orders

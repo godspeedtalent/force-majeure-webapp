@@ -6,7 +6,7 @@ import { FmCommonDataGrid, DataGridColumn, DataGridAction } from '@/components/c
 import { FmEditVenueButton } from '@/components/common/buttons/FmEditVenueButton';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
-import { Users, Sliders, MapPin, Database, Calendar, Edit, Trash2, Settings, Code } from 'lucide-react';
+import { Users, Sliders, MapPin, Database, Calendar, Edit, Trash2, Settings, Code, Mic2 } from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { FeatureToggleSection } from '@/components/devtools/FeatureToggleSection';
@@ -15,7 +15,7 @@ import { DevToolsManagement } from '@/components/admin/DevToolsManagement';
 import { EventsManagement } from './EventsManagement';
 import { toast } from 'sonner';
 
-type AdminTab = 'users' | 'venues' | 'events' | 'settings' | 'devtools';
+type AdminTab = 'artists' | 'events' | 'users' | 'venues' | 'settings' | 'devtools';
 
 export default function AdminControls() {
   const location = useLocation();
@@ -29,9 +29,10 @@ export default function AdminControls() {
       label: 'Database',
       icon: Database,
       items: [
+        { id: 'artists', label: 'Artists', icon: Mic2, description: 'Manage artist profiles' },
+        { id: 'events', label: 'Events', icon: Calendar, description: 'Manage events' },
         { id: 'users', label: 'Users', icon: Users, description: 'Manage user accounts' },
         { id: 'venues', label: 'Venues', icon: MapPin, description: 'Manage venue locations' },
-        { id: 'events', label: 'Events', icon: Calendar, description: 'Manage events' },
       ],
     },
     {
@@ -45,8 +46,15 @@ export default function AdminControls() {
 
   // Handle navigation from Event List dev tool
   useEffect(() => {
-    const state = location.state as { editEventId?: string; openTab?: string } | null;
-    if (state?.openTab) {
+    const state = location.state as {
+      editEventId?: string;
+      editArtistId?: string;
+      openTab?: string;
+    } | null;
+
+    if (state?.editArtistId) {
+      setActiveTab('artists');
+    } else if (state?.openTab) {
       setActiveTab(state.openTab as AdminTab);
     }
   }, [location.state]);
@@ -63,6 +71,20 @@ export default function AdminControls() {
       
       if (error) throw error;
       return data.users || [];
+    },
+  });
+
+  // Fetch artists data
+  const { data: artists = [], isLoading: artistsLoading } = useQuery({
+    queryKey: ['admin-artists'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('artists')
+        .select('id, name, genre, image_url, bio, created_at, updated_at')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data ?? [];
     },
   });
 
@@ -87,6 +109,61 @@ export default function AdminControls() {
       }));
     },
   });
+
+  const artistColumns: DataGridColumn[] = [
+    {
+      key: 'name',
+      label: 'Name',
+      sortable: true,
+      filterable: true,
+      editable: true,
+      required: true,
+    },
+    {
+      key: 'genre',
+      label: 'Genre',
+      sortable: true,
+      filterable: true,
+      editable: true,
+    },
+    {
+      key: 'image_url',
+      label: 'Image URL',
+      filterable: true,
+      editable: true,
+      type: 'url',
+      render: (value) =>
+        value ? (
+          <img
+            src={value}
+            alt='Artist'
+            className='h-8 w-8 rounded-full object-cover shadow-sm'
+          />
+        ) : (
+          <span className='text-xs text-muted-foreground'>-</span>
+        ),
+    },
+    {
+      key: 'bio',
+      label: 'Bio',
+      filterable: true,
+      editable: true,
+      render: (value) => {
+        if (!value) {
+          return <span className='text-xs text-muted-foreground'>-</span>;
+        }
+        const text = String(value);
+        return (
+          <span
+            className='text-xs text-muted-foreground'
+            title={text}
+          >
+            {text.length > 80 ? `${text.slice(0, 77)}…` : text}
+          </span>
+        );
+      },
+    },
+  ];
 
   // Define columns for venues grid
   const venueColumns: DataGridColumn[] = [
@@ -127,6 +204,102 @@ export default function AdminControls() {
       sortable: true,
       readonly: true,
       render: (value) => new Date(value).toLocaleDateString(),
+    },
+  ];
+
+  const handleArtistUpdate = async (row: any, columnKey: string, newValue: any) => {
+    const normalizedValue = typeof newValue === 'string' ? newValue.trim() : newValue;
+    const updateData: Record<string, any> = {
+      [columnKey]: normalizedValue === '' ? null : normalizedValue,
+    };
+
+    try {
+      const { error } = await supabase
+        .from('artists')
+        .update(updateData)
+        .eq('id', row.id);
+
+      if (error) throw error;
+
+      queryClient.setQueryData(['admin-artists'], (oldData: any[] | undefined) => {
+        if (!oldData) return oldData;
+        return oldData.map(artist =>
+          artist.id === row.id
+            ? { ...artist, ...updateData, updated_at: new Date().toISOString() }
+            : artist
+        );
+      });
+
+      toast.success('Artist updated');
+    } catch (error) {
+      console.error('Error updating artist:', error);
+      toast.error('Failed to update artist');
+      throw error;
+    }
+  };
+
+  const handleArtistCreate = async (newRow: Partial<any>) => {
+    const name = typeof newRow.name === 'string' ? newRow.name.trim() : '';
+    if (!name) {
+      throw new Error('Artist name is required');
+    }
+
+    const payload = {
+      name,
+      genre:
+        typeof newRow.genre === 'string' && newRow.genre.trim() !== ''
+          ? newRow.genre.trim()
+          : null,
+      image_url:
+        typeof newRow.image_url === 'string' && newRow.image_url.trim() !== ''
+          ? newRow.image_url.trim()
+          : null,
+      bio:
+        typeof newRow.bio === 'string' && newRow.bio.trim() !== ''
+          ? newRow.bio.trim()
+          : null,
+    };
+
+    try {
+      const { error } = await supabase.from('artists').insert(payload);
+      if (error) throw error;
+
+      toast.success('Artist created');
+      await queryClient.invalidateQueries({ queryKey: ['admin-artists'] });
+    } catch (error) {
+      console.error('Error creating artist:', error);
+      toast.error('Failed to create artist');
+      throw error;
+    }
+  };
+
+  const handleDeleteArtist = async (artist: any) => {
+    if (!confirm(`Are you sure you want to delete "${artist.name}"?`)) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('artists')
+        .delete()
+        .eq('id', artist.id);
+
+      if (error) throw error;
+
+      toast.success('Artist deleted');
+      queryClient.invalidateQueries({ queryKey: ['admin-artists'] });
+    } catch (error) {
+      console.error('Error deleting artist:', error);
+      toast.error('Failed to delete artist');
+    }
+  };
+
+  const artistContextActions: DataGridAction[] = [
+    {
+      label: 'Delete Artist',
+      icon: <Trash2 className="h-4 w-4" />,
+      onClick: handleDeleteArtist,
+      variant: 'destructive',
     },
   ];
 
@@ -206,6 +379,7 @@ export default function AdminControls() {
 
   // Calculate statistics for current data
   const getCurrentData = () => {
+    if (activeTab === 'artists') return artists;
     if (activeTab === 'users') return users;
     if (activeTab === 'venues') return venues;
     if (activeTab === 'events') return []; // Events data is managed in EventsManagement component
@@ -238,6 +412,7 @@ export default function AdminControls() {
   const completeness = calculateCompleteness(currentData);
 
   const getTabTitle = () => {
+    if (activeTab === 'artists') return 'Artists';
     if (activeTab === 'users') return 'Users';
     if (activeTab === 'venues') return 'Venues';
     if (activeTab === 'events') return 'Events';
@@ -256,7 +431,7 @@ export default function AdminControls() {
               <div className="mb-4">
                 <div className="flex items-center gap-3 mb-4">
                   <Settings className="h-6 w-6 text-fm-gold" />
-                  <h1 className="text-3xl font-canela font-bold">{getTabTitle()}</h1>
+                  <h1 className="text-3xl font-canela">{getTabTitle()}</h1>
                 </div>
 
                 {activeTab !== 'settings' && activeTab !== 'devtools' && (
@@ -279,6 +454,20 @@ export default function AdminControls() {
                 lineWidth="w-32"
                 opacity={0.5}
               />
+
+              {activeTab === 'artists' && (
+                <FmCommonDataGrid
+                  data={artists}
+                  columns={artistColumns}
+                  contextMenuActions={artistContextActions}
+                  loading={artistsLoading}
+                  pageSize={15}
+                  onUpdate={handleArtistUpdate}
+                  onCreate={handleArtistCreate}
+                  resourceName="Artist"
+                  createButtonLabel="Add Artist"
+                />
+              )}
 
               {activeTab === 'users' && (
                 <FmUserDataGrid />

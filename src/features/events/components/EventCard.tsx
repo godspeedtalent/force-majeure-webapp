@@ -1,14 +1,13 @@
-import { MapPin, Clock, Play, ExternalLink, Calendar, Settings, X } from 'lucide-react';
+import { MapPin, Clock, ExternalLink, Calendar, Settings, X } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 
 import { ExternalLinkDialog } from '@/components/business/ExternalLinkDialog';
-import { Badge } from '@/components/common/shadcn/badge';
+import { FmBadge } from '@/components/common/display/FmBadge';
+import { FmDateBox } from '@/components/common/display/FmDateBox';
+import { FmUndercardList } from '@/components/common/display/FmUndercardList';
 import { Button } from '@/components/common/shadcn/button';
 import { FmCommonContextMenu, ContextMenuAction } from '@/components/common/modals/FmCommonContextMenu';
-import { useMusicPlayer, type Song } from '@/contexts/MusicPlayerContext';
-import { supabase } from '@/shared/api/supabase/client';
 import { cn } from '@/shared/utils/utils';
 import {
   formatTimeDisplay,
@@ -40,8 +39,6 @@ interface EventCardProps {
 
 export const EventCard = ({ event }: EventCardProps) => {
   const navigate = useNavigate();
-  const { playQueue } = useMusicPlayer();
-  const [playing, setPlaying] = useState(false);
   const [showTicketDialog, setShowTicketDialog] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
@@ -49,8 +46,10 @@ export const EventCard = ({ event }: EventCardProps) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return {
+      weekday: date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase(),
       month: date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
       day: date.getDate().toString(),
+      year: date.getFullYear().toString(),
     };
   };
 
@@ -67,76 +66,6 @@ export const EventCard = ({ event }: EventCardProps) => {
     const minutes = parseTimeToMinutes(event.time);
     return minutes !== null && minutes > 120; // strictly past 2:00 AM
   })();
-
-  const handlePlayLineup = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (playing) return;
-    setPlaying(true);
-    try {
-      // Get headliner and undercard artist IDs for the event
-      const { data: eventData, error: eventError } = await supabase
-        .from('events')
-        .select('headliner_id, undercard_ids')
-        .eq('id', event.id)
-        .single();
-
-      if (eventError) throw eventError;
-
-      const artistOrder: string[] = [];
-      if (eventData?.headliner_id) artistOrder.push(eventData.headliner_id);
-      if (Array.isArray(eventData?.undercard_ids))
-        artistOrder.push(...eventData.undercard_ids);
-
-      if (artistOrder.length === 0) {
-        toast('No lineup available for this event yet.');
-        return;
-      }
-
-      // Fetch preview songs for these artists
-      const { data: songsData, error: songsError } = await supabase
-        .from('songs')
-        .select(
-          `
-          *,
-          artists(name)
-        `
-        )
-        .in('artist_id', artistOrder)
-        .eq('is_preview', true);
-
-      if (songsError) throw songsError;
-
-      const songs: Song[] = (songsData || []).map((song: any) => ({
-        id: song.id,
-        song_name: song.song_name,
-        artist_id: song.artist_id,
-        artist_name: song.artists?.name || 'Unknown Artist',
-        streaming_link: song.streaming_link,
-        music_source: song.music_source,
-        duration: song.duration,
-        is_preview: song.is_preview,
-      }));
-
-      if (songs.length === 0) {
-        toast('No preview tracks found for this lineup.');
-        return;
-      }
-
-      // Order songs by artist order so headliner appears first
-      const ordered = songs.sort(
-        (a, b) =>
-          artistOrder.indexOf(a.artist_id) - artistOrder.indexOf(b.artist_id)
-      );
-
-      playQueue(ordered, 0);
-      toast.success('Playing event lineup');
-    } catch (err: any) {
-      console.error('Failed to play lineup', err);
-      toast.error('Failed to load lineup');
-    } finally {
-      setPlaying(false);
-    }
-  };
 
   const handleTicketsClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -223,78 +152,57 @@ export const EventCard = ({ event }: EventCardProps) => {
         </div>
 
         {/* Content Section */}
-        <div className="relative h-[35%] p-6 pt-4 flex flex-col">
-          {/* Date Badge - top right of card body */}
-          <div className="absolute -top-8 right-6 flex flex-col items-center justify-center w-16 h-16 bg-background border-2 border-border rounded-lg shadow-lg z-10">
-            <span className="text-xs font-medium text-muted-foreground">{dateObj.month}</span>
-            <span className="text-2xl font-bold text-fm-gold leading-none">{dateObj.day}</span>
-          </div>
-
-          {/* Undercard Artists */}
-          {event.undercard && event.undercard.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
-              {event.undercard.map((artist, index) => (
-                <Badge
-                  key={index}
-                  variant="outline"
-                  className={cn(
-                    "text-xs transition-all duration-300",
-                    "hover:bg-fm-gold hover:text-background hover:border-fm-gold hover:shadow-md hover:shadow-fm-gold/50"
-                  )}
-                >
-                  {artist.name}
-                </Badge>
-              ))}
-            </div>
-          )}
-
-          {/* Event Details */}
-          <div className="space-y-2 mb-4">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Calendar className="w-4 h-4 text-fm-gold flex-shrink-0" />
-              <span>{formatFullDate(event.date)}</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Clock className="w-4 h-4 text-fm-gold flex-shrink-0" />
-              <span>{formatTimeDisplay(event.time)}</span>
-              {isAfterHours && (
-                <Badge variant="outline" className="ml-2 border-fm-gold text-fm-gold text-[10px] py-0 px-1.5 h-5">
-                  After Hours
-                </Badge>
-              )}
-            </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <MapPin className="w-4 h-4 text-fm-gold flex-shrink-0" />
-              <span className="truncate">{event.venue}</span>
-            </div>
-          </div>
-
-          {/* Action Buttons - Push to bottom */}
-          <div className="flex gap-2 mt-auto">
-            {event.ticketUrl && (
-              <Button
-                size="sm"
-                onClick={handleTicketsClick}
-                className="flex-1 bg-fm-gold hover:bg-fm-gold/90 text-background font-medium transition-all duration-200"
-              >
-                <ExternalLink className="w-4 h-4 mr-2" />
-                Get Tickets
-              </Button>
-            )}
-            <Button
+        <div className="relative h-[35%] flex">
+          {/* Main Content - Left Side */}
+          <div className="flex-1 p-6 pt-4 flex flex-col min-w-0">
+            {/* Undercard Artists */}
+            <FmUndercardList
+              artists={event.undercard}
               size="sm"
-              variant="outline"
-              onClick={handlePlayLineup}
-              disabled={playing}
-              className={cn(
-                'flex-1 border-border hover:border-fm-gold hover:text-fm-gold transition-all duration-200',
-                !event.ticketUrl && 'flex-1'
-              )}
-            >
-              <Play className="w-4 h-4 mr-2" />
-              {playing ? 'Loading...' : 'Play Lineup'}
-            </Button>
+              className="mb-4"
+            />
+
+            {/* Event Details */}
+            <div className="space-y-2 mb-4">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Calendar className="w-4 h-4 text-fm-gold flex-shrink-0" />
+                <span className="truncate">{formatFullDate(event.date)}</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Clock className="w-4 h-4 text-fm-gold flex-shrink-0" />
+                <span>{formatTimeDisplay(event.time)}</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <MapPin className="w-4 h-4 text-fm-gold flex-shrink-0" />
+                <span className="truncate">{event.venue}</span>
+              </div>
+            </div>
+
+            {/* Action Buttons - Push to bottom */}
+            {event.ticketUrl && (
+              <div className="flex gap-2 mt-auto">
+                <Button
+                  size="sm"
+                  onClick={handleTicketsClick}
+                  className="flex-1 bg-fm-gold hover:bg-fm-gold/90 text-background font-medium transition-all duration-200"
+                >
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                  Get Tickets
+                </Button>
+              </div>
+            )}
           </div>
+
+          {/* Date Column - Right Side */}
+          <FmDateBox
+            weekday={dateObj.weekday}
+            month={dateObj.month}
+            day={dateObj.day}
+            year={parseInt(dateObj.year)}
+            size="md"
+            isAfterHours={isAfterHours}
+            className="border-l rounded-none"
+          />
         </div>
       </div>
       </FmCommonContextMenu>

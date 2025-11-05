@@ -94,7 +94,7 @@ export const FmCommonInfoCard = ({
           <p className={cn(config.label, 'text-muted-foreground font-medium')}>
             {label}
           </p>
-          <div className={cn(config.value, 'text-foreground font-semibold')}>
+          <div className={cn(config.value, 'text-foreground font-normal')}>
             {value}
           </div>
         </div>

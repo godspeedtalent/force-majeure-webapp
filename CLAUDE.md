@@ -91,6 +91,7 @@ src/
 - Avoid inline styles except for dynamic values
 - Use `cn()` utility for conditional classes
 - Dark mode support throughout
+- **Sharp corners only** - No rounded corners for cards, buttons, or components (use `rounded-none` or minimal rounding like `rounded-sm` for subtle edges only when absolutely necessary)
 
 ## Recent Major Changes
 

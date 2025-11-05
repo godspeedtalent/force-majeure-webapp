@@ -8,6 +8,7 @@ export { FmCommonStatCard } from './display/FmCommonStatCard';
 export { FmCommonPageHeader } from './display/FmCommonPageHeader';
 export { FmCommonDetailSection } from './display/FmCommonDetailSection';
 export { FmCommonEmptyState } from './display/FmCommonEmptyState';
+export { FmTextLink } from './display/FmTextLink';
 export type { FmCommonBadgeItem } from './display/FmCommonBadgeGroup';
 
 // Feedback components

@@ -34,9 +34,12 @@ export function EventDetailsLayout({
         </div>
 
         {/* Right column - Content with cascading animation and topographic background */}
-        <div className='relative lg:overflow-y-auto lg:max-h-[calc(100vh-4rem)] bg-background'>
-          <TopographicBackground className='opacity-30' />
-          <div className='relative z-10 w-full magazine-content'>
+        <div className='relative lg:overflow-y-auto lg:max-h-[calc(100vh-4rem)]'>
+          <div className='fixed inset-0 lg:left-[35%] pointer-events-none'>
+            <TopographicBackground opacity={0.35} />
+            <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
+          </div>
+          <div className='relative w-full magazine-content'>
             {rightColumn}
           </div>
         </div>

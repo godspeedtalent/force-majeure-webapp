@@ -58,7 +58,7 @@ export const TrackInfo: React.FC<TrackInfoProps> = ({
   if (showDetailsOnly) {
     return (
       <div className='text-left'>
-        <h4 className='font-canela font-bold text-base truncate text-foreground'>
+        <h4 className='font-canela text-base truncate text-foreground'>
           {currentSong.song_name}
         </h4>
         <p className='font-canela font-light text-xs text-muted-foreground truncate mt-0.5'>
@@ -85,7 +85,7 @@ export const TrackInfo: React.FC<TrackInfoProps> = ({
 
       {/* Track Details */}
       <div className='flex-1 min-w-0'>
-        <h4 className='font-canela font-bold text-sm truncate text-foreground'>
+        <h4 className='font-canela text-sm truncate text-foreground'>
           {currentSong.song_name}
         </h4>
         <div className='flex items-center gap-2 mt-0.5'>

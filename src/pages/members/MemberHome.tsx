@@ -11,7 +11,7 @@ export default function MemberHome() {
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-2">
               <User className="h-6 w-6 text-fm-gold" />
-              <h1 className="text-3xl font-canela font-bold">Member Profile</h1>
+              <h1 className="text-3xl font-canela">Member Profile</h1>
             </div>
             <p className="text-muted-foreground">
               Manage your profile and preferences

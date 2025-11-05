@@ -10,14 +10,19 @@ interface FmCreateArtistButtonProps {
   onModalOpen?: () => void;
   variant?: 'default' | 'outline';
   className?: string;
+  mode?: 'button' | 'standalone';
+  onClose?: () => void;
 }
 
 export const FmCreateArtistButton = ({
   onModalOpen,
   variant = 'outline',
   className,
+  mode = 'button',
+  onClose,
 }: FmCreateArtistButtonProps) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const isStandalone = mode === 'standalone';
+  const [isModalOpen, setIsModalOpen] = useState(isStandalone);
   const [formData, setFormData] = useState({
     name: '',
     image_url: '',
@@ -28,8 +33,18 @@ export const FmCreateArtistButton = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleClick = () => {
+    if (isStandalone) {
+      return;
+    }
     onModalOpen?.();
     setIsModalOpen(true);
+  };
+
+  const handleModalOpenChange = (open: boolean) => {
+    setIsModalOpen(open);
+    if (!open && isStandalone) {
+      onClose?.();
+    }
   };
 
   const handleSubmit = async () => {
@@ -52,6 +67,9 @@ export const FmCreateArtistButton = ({
 
       toast.success('Artist created successfully');
       setIsModalOpen(false);
+      if (isStandalone) {
+        onClose?.();
+      }
       setFormData({
         name: '',
         image_url: '',
@@ -112,7 +130,7 @@ export const FmCreateArtistButton = ({
     <div className="flex gap-3 justify-end">
       <Button
         variant="outline"
-        onClick={() => setIsModalOpen(false)}
+        onClick={() => handleModalOpenChange(false)}
         disabled={isSubmitting}
         className="bg-white/5 border-white/20 hover:bg-white/10"
       >
@@ -130,15 +148,17 @@ export const FmCreateArtistButton = ({
 
   return (
     <>
-      <FmCommonCreateButton
-        onClick={handleClick}
-        label="Create Artist"
-        variant={variant}
-        className={className}
-      />
+      {mode === 'button' && (
+        <FmCommonCreateButton
+          onClick={handleClick}
+          label="Create Artist"
+          variant={variant}
+          className={className}
+        />
+      )}
       <FmCommonFormModal
         open={isModalOpen}
-        onOpenChange={setIsModalOpen}
+        onOpenChange={handleModalOpenChange}
         title="Create New Artist"
         description="Add a new artist to the database"
         sections={sections}

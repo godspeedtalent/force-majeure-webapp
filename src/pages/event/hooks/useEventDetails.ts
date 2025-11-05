@@ -10,13 +10,15 @@ interface EventRow {
   title: string | null;
   date: string;
   time: string;
+  venue_id?: string | null;
   description: string | null;
   ticket_url?: string | null;
   hero_image?: string | null;
-  venue: {
-    name?: string | null;
+  venue?: {
+    name: string;
   } | null;
   headliner_artist: {
+    id: string;
     name: string;
     genre?: string | null;
     image_url?: string | null;
@@ -25,12 +27,14 @@ interface EventRow {
 }
 
 interface ArtistRow {
+  id: string;
   name: string;
   genre?: string | null;
   image_url?: string | null;
 }
 
 const transformArtist = (artist: ArtistRow | null): ArtistSummary => ({
+  id: artist?.id ?? undefined,
   name: artist?.name ?? 'TBA',
   genre: artist?.genre ?? 'Electronic',
   image: artist?.image_url ?? null,
@@ -60,12 +64,13 @@ const fetchEventDetails = async (eventId: string): Promise<EventDetailsRecord> =
       title,
       date,
       time,
+      venue_id,
       description,
       ticket_url,
       hero_image,
       undercard_ids,
-      headliner_artist:artists!events_headliner_id_fkey(name, genre, image_url),
-      venue:venues(name)
+      venue:venues(name),
+      headliner_artist:artists!events_headliner_id_fkey(id, name, genre, image_url)
     `
     )
     .eq('id', eventId)
@@ -79,7 +84,7 @@ const fetchEventDetails = async (eventId: string): Promise<EventDetailsRecord> =
   if (data.undercard_ids && data.undercard_ids.length > 0) {
     const { data: undercardData, error: undercardError } = await supabase
       .from('artists')
-      .select('name, genre, image_url')
+      .select('id, name, genre, image_url')
       .in('id', data.undercard_ids);
 
     if (undercardError) throw undercardError;

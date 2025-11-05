@@ -18,15 +18,18 @@ const DEV_ROLE_KEY = 'lovable_dev_role_override';
 export const DevToolsProvider = ({ children }: { children: ReactNode }) => {
   const isDevMode = isDevelopment();
   const [devRole, setDevRoleState] = useState<DevRole | null>(() => {
-    if (!isDevMode) return null;
+    if (!isDevMode) return 'fan';
     const stored = localStorage.getItem(DEV_ROLE_KEY);
     return (stored as DevRole | null) || 'admin';
   });
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const setDevRole = (role: DevRole | null) => {
-    if (!isDevMode) return;
-    
+    if (!isDevMode) {
+      setDevRoleState(role);
+      return;
+    }
+
     setDevRoleState(role);
     if (role) {
       localStorage.setItem(DEV_ROLE_KEY, role);
@@ -36,14 +39,12 @@ export const DevToolsProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const toggleDrawer = () => {
-    if (!isDevMode) return;
     setIsDrawerOpen(prev => !prev);
   };
 
   useEffect(() => {
-    if (!isDevMode && devRole) {
-      setDevRoleState(null);
-      localStorage.removeItem(DEV_ROLE_KEY);
+    if (!isDevMode && devRole && devRole !== 'fan') {
+      setDevRoleState('fan');
     }
   }, [isDevMode, devRole]);
 

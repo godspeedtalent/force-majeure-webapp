@@ -1,4 +1,5 @@
 export interface ArtistSummary {
+  id?: string;
   name: string;
   genre: string;
   image?: string | null;

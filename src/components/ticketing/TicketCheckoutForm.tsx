@@ -1,12 +1,17 @@
-import { useState } from 'react';
-import { ArrowLeft, CheckCircle2, CreditCard } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ArrowLeft, CheckCircle2, CreditCard, MapPin, Shield, LogIn } from 'lucide-react';
 
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmGetTicketsButton } from '@/components/common/buttons/FmGetTicketsButton';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { Separator } from '@/components/common/shadcn/separator';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { FmCommonFormCheckbox } from '@/components/common/forms/FmCommonFormCheckbox';
+import { FmTextLink } from '@/components/common/display/FmTextLink';
+import { useAuth } from '@/features/auth/services/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { TermsAndConditionsModal } from './TermsAndConditionsModal';
 
 export interface TicketSelectionSummary {
   tierId: string;
@@ -39,16 +44,38 @@ interface TicketCheckoutFormProps {
 }
 
 export const TicketCheckoutForm = ({ eventName, eventDate, summary, onBack, onComplete }: TicketCheckoutFormProps) => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
+    address: '',
+    city: '',
+    state: '',
+    zipCode: '',
     cardNumber: '',
     expiry: '',
     cvc: '',
+    ticketProtection: false,
+    smsNotifications: false,
     agreeToTerms: false,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Auto-fill from user profile if logged in
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        fullName: user.user_metadata?.full_name || '',
+        email: user.email || '',
+        // Add more autofill fields when user profile includes them
+      }));
+    }
+  }, [user]);
 
   const handleChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -64,6 +91,22 @@ export const TicketCheckoutForm = ({ eventName, eventDate, summary, onBack, onCo
 
     if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       nextErrors.email = 'Valid email is required';
+    }
+
+    if (!formData.address.trim()) {
+      nextErrors.address = 'Address is required';
+    }
+
+    if (!formData.city.trim()) {
+      nextErrors.city = 'City is required';
+    }
+
+    if (!formData.state.trim()) {
+      nextErrors.state = 'State is required';
+    }
+
+    if (!formData.zipCode.trim() || !/^\d{5}(-\d{4})?$/.test(formData.zipCode)) {
+      nextErrors.zipCode = 'Valid ZIP code is required';
     }
 
     if (!formData.cardNumber.trim() || formData.cardNumber.replace(/\s/g, '').length < 12) {
@@ -96,6 +139,11 @@ export const TicketCheckoutForm = ({ eventName, eventDate, summary, onBack, onCo
     setIsSubmitting(false);
   };
 
+  const ticketProtectionFee = 4.99;
+  const totalWithProtection = formData.ticketProtection 
+    ? summary.total + ticketProtectionFee 
+    : summary.total;
+
   return (
     <div className='space-y-6'>
       <div className='flex items-center justify-between'>
@@ -118,17 +166,41 @@ export const TicketCheckoutForm = ({ eventName, eventDate, summary, onBack, onCo
         </div>
       </div>
 
-  <FmCommonCard variant='default' className='space-y-6'>
-        <form onSubmit={handleSubmit} className='space-y-6'>
+      {!user && (
+        <FmCommonCard variant='default' className='bg-fm-gold/10 border-fm-gold/30'>
+          <div className='flex items-start gap-3'>
+            <LogIn className='h-5 w-5 text-fm-gold flex-shrink-0 mt-0.5' />
+            <div className='flex-1'>
+              <h4 className='text-sm font-medium text-foreground mb-1'>
+                Sign in for faster checkout
+              </h4>
+              <p className='text-xs text-muted-foreground mb-3'>
+                Save your billing information and get autofill for future purchases
+              </p>
+              <FmCommonButton
+                size='sm'
+                variant='secondary'
+                onClick={() => navigate('/auth')}
+                className='border-fm-gold text-fm-gold hover:bg-fm-gold/10'
+              >
+                Sign In
+              </FmCommonButton>
+            </div>
+          </div>
+        </FmCommonCard>
+      )}
+
+      <form onSubmit={handleSubmit} className='space-y-6'>
+        <FmCommonCard variant='default' className='space-y-6'>
           <div className='space-y-4'>
             <h4 className='text-sm font-medium text-foreground flex items-center gap-2'>
               <CreditCard className='h-4 w-4 text-fm-gold' />
-              Payment details
+              Payment Details
             </h4>
 
             <div className='grid gap-4 md:grid-cols-2'>
               <div className='md:col-span-2'>
-                <Label htmlFor='fullName'>Full name</Label>
+                <Label htmlFor='fullName'>Full name on card</Label>
                 <Input
                   id='fullName'
                   value={formData.fullName}
@@ -139,7 +211,7 @@ export const TicketCheckoutForm = ({ eventName, eventDate, summary, onBack, onCo
               </div>
 
               <div className='md:col-span-2'>
-                <Label htmlFor='email'>Email</Label>
+                <Label htmlFor='email'>Email address</Label>
                 <Input
                   id='email'
                   type='email'
@@ -163,7 +235,7 @@ export const TicketCheckoutForm = ({ eventName, eventDate, summary, onBack, onCo
               </div>
 
               <div>
-                <Label htmlFor='expiry'>Expiry</Label>
+                <Label htmlFor='expiry'>Expiry date</Label>
                 <Input
                   id='expiry'
                   value={formData.expiry}
@@ -187,78 +259,192 @@ export const TicketCheckoutForm = ({ eventName, eventDate, summary, onBack, onCo
               </div>
             </div>
           </div>
+        </FmCommonCard>
+
+        <FmCommonCard variant='default' className='space-y-6'>
+          <div className='space-y-4'>
+            <h4 className='text-sm font-medium text-foreground flex items-center gap-2'>
+              <MapPin className='h-4 w-4 text-fm-gold' />
+              Billing Address
+            </h4>
+
+            <div className='grid gap-4 md:grid-cols-2'>
+              <div className='md:col-span-2'>
+                <Label htmlFor='address'>Street address</Label>
+                <Input
+                  id='address'
+                  value={formData.address}
+                  onChange={event => handleChange('address', event.target.value)}
+                  placeholder='123 Main Street'
+                />
+                {errors.address && <p className='mt-1 text-xs text-destructive'>{errors.address}</p>}
+              </div>
+
+              <div>
+                <Label htmlFor='city'>City</Label>
+                <Input
+                  id='city'
+                  value={formData.city}
+                  onChange={event => handleChange('city', event.target.value)}
+                  placeholder='Los Angeles'
+                />
+                {errors.city && <p className='mt-1 text-xs text-destructive'>{errors.city}</p>}
+              </div>
+
+              <div>
+                <Label htmlFor='state'>State</Label>
+                <Input
+                  id='state'
+                  value={formData.state}
+                  onChange={event => handleChange('state', event.target.value)}
+                  placeholder='CA'
+                  maxLength={2}
+                />
+                {errors.state && <p className='mt-1 text-xs text-destructive'>{errors.state}</p>}
+              </div>
+
+              <div className='md:col-span-2'>
+                <Label htmlFor='zipCode'>ZIP code</Label>
+                <Input
+                  id='zipCode'
+                  value={formData.zipCode}
+                  onChange={event => handleChange('zipCode', event.target.value)}
+                  placeholder='90001'
+                  maxLength={10}
+                />
+                {errors.zipCode && <p className='mt-1 text-xs text-destructive'>{errors.zipCode}</p>}
+              </div>
+            </div>
+          </div>
+        </FmCommonCard>
+
+        <FmCommonCard variant='default' className='space-y-4'>
+          <div className='flex items-start gap-3 p-3 bg-muted/30 rounded-md border border-border'>
+            <Shield className='h-5 w-5 text-fm-gold flex-shrink-0 mt-0.5' />
+            <div className='flex-1'>
+              <div className='flex items-center justify-between mb-1'>
+                <h4 className='text-sm font-medium text-foreground'>
+                  Ticket Protection
+                </h4>
+                <span className='text-sm font-medium text-fm-gold'>
+                  +${ticketProtectionFee.toFixed(2)}
+                </span>
+              </div>
+              <p className='text-xs text-muted-foreground mb-3'>
+                Get a full refund if you can't attend due to illness, work conflicts, or other covered reasons. 
+                Covers all tickets in this order.
+              </p>
+              <FmCommonFormCheckbox
+                id='ticketProtection'
+                checked={formData.ticketProtection}
+                onCheckedChange={value => handleChange('ticketProtection', Boolean(value))}
+                label='Add Ticket Protection to my order'
+              />
+            </div>
+          </div>
+        </FmCommonCard>
+
+        <FmCommonCard variant='outline' className='space-y-4'>
+          <div className='flex items-center gap-2 text-sm font-medium text-foreground'>
+            <CheckCircle2 className='h-4 w-4 text-fm-gold' />
+            Order Summary
+          </div>
+
+          <div className='space-y-3'>
+            {summary.tickets.map(ticket => (
+              <div key={ticket.tierId} className='flex items-center justify-between text-sm'>
+                <div>
+                  <p className='font-medium text-foreground'>{ticket.name}</p>
+                  <p className='text-xs text-muted-foreground'>
+                    {ticket.quantity} × ${ticket.price.toFixed(2)}
+                  </p>
+                </div>
+                <span className='font-medium text-foreground'>
+                  ${ticket.subtotal.toFixed(2)}
+                </span>
+              </div>
+            ))}
+          </div>
 
           <Separator />
 
+          <div className='space-y-2 text-sm'>
+            <div className='flex justify-between'>
+              <span className='text-muted-foreground'>Subtotal</span>
+              <span className='text-foreground'>${summary.subtotal.toFixed(2)}</span>
+            </div>
+
+            {summary.fees.map(fee => (
+              <div key={fee.name} className='flex justify-between text-xs text-muted-foreground'>
+                <span className='capitalize'>{fee.name.replace(/_/g, ' ')}</span>
+                <span className='text-foreground'>${fee.amount.toFixed(2)}</span>
+              </div>
+            ))}
+
+            {formData.ticketProtection && (
+              <div className='flex justify-between text-xs text-muted-foreground'>
+                <span>Ticket Protection</span>
+                <span className='text-foreground'>${ticketProtectionFee.toFixed(2)}</span>
+              </div>
+            )}
+          </div>
+
+          <Separator />
+
+          <div className='flex justify-between items-center text-base font-canela'>
+            <span>Total</span>
+            <span className='text-fm-gold'>${totalWithProtection.toFixed(2)}</span>
+          </div>
+        </FmCommonCard>
+
+        <div className='space-y-4'>
           <div className='space-y-3'>
             <FmCommonFormCheckbox
-              id='agreeToTerms'
-              checked={formData.agreeToTerms}
-              onCheckedChange={value => handleChange('agreeToTerms', Boolean(value))}
-              label='I agree to the terms and conditions'
+              id='smsNotifications'
+              checked={formData.smsNotifications}
+              onCheckedChange={value => handleChange('smsNotifications', Boolean(value))}
+              label='Sign up for SMS notifications from Force Majeure to stay up to date on latest events and gain access to pre-sale'
             />
+
+            <div className='flex items-start gap-2'>
+              <FmCommonFormCheckbox
+                id='agreeToTerms'
+                checked={formData.agreeToTerms}
+                onCheckedChange={value => handleChange('agreeToTerms', Boolean(value))}
+                label=''
+              />
+              <label htmlFor='agreeToTerms' className='text-sm text-muted-foreground leading-tight'>
+                I agree to the{' '}
+                <FmTextLink
+                  onClick={(e: React.MouseEvent) => {
+                    e.preventDefault();
+                    setShowTermsModal(true);
+                  }}
+                  className='text-fm-gold hover:text-fm-gold/80'
+                >
+                  terms and conditions
+                </FmTextLink>
+              </label>
+            </div>
             {errors.agreeToTerms && (
               <p className='text-xs text-destructive'>{errors.agreeToTerms}</p>
             )}
           </div>
 
-          <FmCommonButton
+          <FmGetTicketsButton
             type='submit'
-            variant='gold'
-            size='lg'
-            className='w-full'
-            loading={isSubmitting}
+            isLoading={isSubmitting}
+            disabled={isSubmitting}
           >
             Complete Purchase
-          </FmCommonButton>
-        </form>
-      </FmCommonCard>
-
-      <FmCommonCard variant='outline' className='space-y-4'>
-        <div className='flex items-center gap-2 text-sm font-medium text-foreground'>
-          <CheckCircle2 className='h-4 w-4 text-fm-gold' />
-          Order summary
+          </FmGetTicketsButton>
         </div>
+      </form>
 
-        <div className='space-y-3'>
-          {summary.tickets.map(ticket => (
-            <div key={ticket.tierId} className='flex items-center justify-between text-sm'>
-              <div>
-                <p className='font-medium text-foreground'>{ticket.name}</p>
-                <p className='text-xs text-muted-foreground'>
-                  {ticket.quantity} × ${ticket.price.toFixed(2)}
-                </p>
-              </div>
-              <span className='font-medium text-foreground'>
-                ${ticket.subtotal.toFixed(2)}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        <Separator />
-
-        <div className='space-y-2 text-sm'>
-          <div className='flex justify-between'>
-            <span className='text-muted-foreground'>Subtotal</span>
-            <span className='text-foreground'>${summary.subtotal.toFixed(2)}</span>
-          </div>
-
-          {summary.fees.map(fee => (
-            <div key={fee.name} className='flex justify-between text-xs text-muted-foreground'>
-              <span className='capitalize'>{fee.name.replace(/_/g, ' ')}</span>
-              <span className='text-foreground'>${fee.amount.toFixed(2)}</span>
-            </div>
-          ))}
-        </div>
-
-        <Separator />
-
-        <div className='flex justify-between items-center text-base font-canela'>
-          <span>Total</span>
-          <span className='text-fm-gold'>${summary.total.toFixed(2)}</span>
-        </div>
-      </FmCommonCard>
+      <TermsAndConditionsModal 
+        isOpen={showTermsModal} 
+        onClose={() => setShowTermsModal(false)} 
+      />
     </div>
   );
 };

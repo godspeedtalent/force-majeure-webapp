@@ -1,10 +1,9 @@
 import { useMemo, useState } from 'react';
-import { CheckCircle2, Layers, Loader2, X } from 'lucide-react';
+import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmCommonStackLayout } from '@/components/common/layout';
-import { ScrollArea } from '@/components/common/shadcn/scroll-area';
 import { EventDetailsRecord } from '@/pages/event/types';
 
 import { TicketingPanel } from './TicketingPanel';
@@ -23,7 +22,6 @@ interface EventCheckoutWizardProps {
 export const EventCheckoutWizard = ({ event, displayTitle, onClose }: EventCheckoutWizardProps) => {
   const [step, setStep] = useState<WizardStep>('selection');
   const [selections, setSelections] = useState<Record<string, number>>({});
-  const [isProcessing, setIsProcessing] = useState(false);
 
   const { data: tiers = [], isLoading: tiersLoading } = useTicketTiers(event.id);
   const { calculateFees } = useTicketFees();
@@ -106,9 +104,7 @@ export const EventCheckoutWizard = ({ event, displayTitle, onClose }: EventCheck
   };
 
   const handleCheckoutComplete = async () => {
-    setIsProcessing(true);
     await new Promise(resolve => setTimeout(resolve, 1200));
-    setIsProcessing(false);
     setStep('confirmation');
   };
 
@@ -118,14 +114,15 @@ export const EventCheckoutWizard = ({ event, displayTitle, onClose }: EventCheck
     onClose();
   };
 
-  const headerSubtitle = useMemo(() => {
-    const options = {
-      selection: 'Select your tickets and review pricing',
-      checkout: 'Secure checkout powered by Stripe',
-      confirmation: 'You are all set!',
-    };
-    return options[step];
-  }, [step]);
+  const handleBack = () => {
+    if (step === 'checkout') {
+      setStep('selection');
+    } else if (step === 'confirmation') {
+      setStep('checkout');
+    } else {
+      handleClose();
+    }
+  };
 
   const confirmation = (
     <div className='space-y-6'>
@@ -213,42 +210,33 @@ export const EventCheckoutWizard = ({ event, displayTitle, onClose }: EventCheck
   };
 
   return (
-    <FmCommonCard
-      variant='outline'
-      className='space-y-6'
-    >
-      <div className='flex items-start justify-between gap-4'>
+    <div className='space-y-4 h-full flex flex-col'>
+      {/* Back button */}
+      <FmCommonButton
+        variant='secondary'
+        size='sm'
+        icon={ArrowLeft}
+        onClick={handleBack}
+        className='text-muted-foreground hover:text-foreground flex-shrink-0'
+      >
+        Back
+      </FmCommonButton>
+
+      {/* Header */}
+      <div className='flex items-start justify-between gap-4 flex-shrink-0'>
         <div className='space-y-1.5'>
           <p className='text-xs font-semibold uppercase tracking-[0.25em] text-muted-foreground'>
             Checkout
           </p>
-          <h2 className='text-2xl font-canela text-foreground'>{displayTitle}</h2>
-          <p className='text-sm text-muted-foreground'>{headerSubtitle}</p>
-        </div>
-        <FmCommonButton
-          variant='secondary'
-          size='icon'
-          icon={X}
-          onClick={handleClose}
-          className='border-border/60 text-muted-foreground hover:text-foreground'
-        >
-          <span className='sr-only'>Close checkout</span>
-        </FmCommonButton>
-      </div>
-
-      <div className='border border-border/60 rounded-xl bg-background/70 backdrop-blur-sm p-4'>
-        <div className='flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground'>
-          <Layers className='h-3.5 w-3.5 text-fm-gold' />
-          <span>{`Step ${step === 'selection' ? '1' : step === 'checkout' ? '2' : '3'} of 3`}</span>
-          {isProcessing && <Loader2 className='ml-auto h-3.5 w-3.5 animate-spin text-muted-foreground' />}
         </div>
       </div>
 
-      <ScrollArea className='max-h-[620px] pr-4'>
+      {/* Scrollable content */}
+      <div className='flex-1 overflow-y-auto min-h-0'>
         <FmCommonStackLayout spacing='lg'>
           {renderStep()}
         </FmCommonStackLayout>
-      </ScrollArea>
-    </FmCommonCard>
+      </div>
+    </div>
   );
 };
