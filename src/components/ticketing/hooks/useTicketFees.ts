@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+
 import { supabase } from '@/shared/api/supabase/client';
 
 interface Fee {
@@ -17,7 +18,7 @@ export interface FeeCalculation {
   amount: number;
 }
 
-export const useFees = () => {
+export const useTicketFees = () => {
   const { data: fees = [], isLoading } = useQuery({
     queryKey: ['ticketing-fees'],
     queryFn: async () => {
@@ -25,7 +26,7 @@ export const useFees = () => {
         .from('ticketing_fees' as any)
         .select('*')
         .eq('is_active', true)
-        .eq('environment', 'all'); // Only fetch from 'all' environment
+        .eq('environment', 'all');
 
       if (error) throw error;
       return (data || []) as unknown as Fee[];
@@ -34,8 +35,8 @@ export const useFees = () => {
 
   const calculateFees = (subtotal: number): FeeCalculation[] => {
     return fees.map(fee => {
-      const amount = fee.fee_type === 'flat' 
-        ? fee.fee_value 
+      const amount = fee.fee_type === 'flat'
+        ? fee.fee_value
         : (subtotal * fee.fee_value) / 100;
 
       return {

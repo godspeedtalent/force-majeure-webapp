@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
+
 import { supabase } from '@/shared/api/supabase/client';
-import { TicketTier } from '../types';
+import type { TicketTier } from '@/features/events/types';
 
 export const useTicketTiers = (eventId: string | undefined) => {
   return useQuery({
     queryKey: ['ticket-tiers', eventId],
     queryFn: async () => {
-      if (!eventId) return [];
+      if (!eventId) return [] as TicketTier[];
 
       const { data, error } = await supabase
         .from('ticket_tiers' as any)

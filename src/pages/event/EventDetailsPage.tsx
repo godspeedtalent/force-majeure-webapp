@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -9,8 +8,6 @@ import { EventDetailsLayout } from '@/components/layout/EventDetailsLayout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext';
 import { useSongsByEvent } from '@/features/events/hooks/useSongsByEvent';
-import { useTicketTiers } from '@/features/events/hooks/useTicketTiers';
-import { useFees } from '@/features/events/hooks/useFees';
 import { useUserRole } from '@/shared/hooks/useUserRole';
 import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
 
@@ -31,30 +28,7 @@ export const EventDetailsPage = () => {
   const { playQueue } = useMusicPlayer();
   const { songs, loading: songsLoading } = useSongsByEvent(id ?? null);
   const { data: role } = useUserRole();
-  const { data: ticketTiers, isLoading: tiersLoading } = useTicketTiers(id);
-  const { getTotalFees } = useFees();
   const { data: flags } = useFeatureFlags();
-
-  const formattedTicketTiers = useMemo(() => {
-    return (ticketTiers || []).map(tier => {
-      const basePrice = typeof (tier as any).price === 'number'
-        ? (tier as any).price
-        : typeof (tier as any).price_cents === 'number'
-          ? (tier as any).price_cents / 100
-          : 0;
-
-      return {
-        ...tier,
-        description: tier?.description ?? undefined,
-        price: basePrice,
-        total_tickets: (tier as any).total_tickets ?? 0,
-        available_inventory: (tier as any).available_inventory ?? 0,
-        tier_order: (tier as any).tier_order ?? 0,
-        is_active: (tier as any).is_active ?? true,
-        hide_until_previous_sold_out: (tier as any).hide_until_previous_sold_out ?? false,
-      };
-    });
-  }, [ticketTiers]);
 
   const handleShare = async () => {
     if (!event) return;
@@ -130,9 +104,6 @@ export const EventDetailsPage = () => {
             <EventDetailsContent
               event={event}
               onShare={handleShare}
-              ticketTiers={formattedTicketTiers}
-              isTicketTiersLoading={tiersLoading}
-              getTotalFees={getTotalFees}
               displayTitle={displayTitle}
               songsCount={songs.length}
               songsLoading={songsLoading}

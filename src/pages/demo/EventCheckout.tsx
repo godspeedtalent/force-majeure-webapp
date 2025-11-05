@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ShoppingCart, Calendar, MapPin, Clock } from 'lucide-react';
-import { TicketingPanel } from '@/features/events/components/TicketingPanel';
-import { useTicketTiers } from '@/features/events/hooks/useTicketTiers';
+import { TicketingPanel, useTicketTiers, useTicketFees } from '@/components/ticketing';
 import { DemoLayout } from '@/components/demo/DemoLayout';
 import { FmCommonDemoToolbar } from '@/components/demo/FmCommonDemoToolbar';
 import { FmEventSelectionDemoTool } from '@/components/demo/tools/FmEventSelectionDemoTool';
@@ -10,7 +9,6 @@ import { supabase } from '@/shared/api/supabase/client';
 import { formatTimeDisplay } from '@/shared/utils/timeUtils';
 import { useQueryClient } from '@tanstack/react-query';
 import EventCheckoutForm from './EventCheckoutForm';
-import { useFees } from '@/features/events/hooks/useFees';
 import { FmInfoChip } from '@/components/common/data/FmInfoChip';
 import { VenueModal } from '@/components/common/modals/VenueModal';
 
@@ -54,7 +52,7 @@ export default function EventCheckout() {
   const { data: ticketTiers, isLoading: tiersLoading } = useTicketTiers(selectedEventId);
   const { startCheckout } = useCheckoutTimer();
   const queryClient = useQueryClient();
-  const { getTotalFees } = useFees();
+  const { getTotalFees } = useTicketFees();
 
   const handleEventUpdated = () => {
     // Trigger a refresh of the event details
@@ -243,13 +241,23 @@ export default function EventCheckout() {
               {/* Ticketing Section */}
               <div className="p-6">
                 <TicketingPanel
-                  eventId={selectedEventId}
                   tiers={ticketTiers?.map(tier => ({
-                    ...tier,
+                    id: tier.id,
+                    name: tier.name,
+                    description: tier.description ?? undefined,
                     price: tier.price_cents / 100,
+                    total_tickets: tier.total_tickets ?? 0,
+                    available_inventory: tier.available_inventory ?? 0,
+                    tier_order: tier.tier_order ?? 0,
+                    is_active: tier.is_active ?? true,
+                    hide_until_previous_sold_out: tier.hide_until_previous_sold_out ?? false,
                   })) || []}
                   onPurchase={handleContinueToCheckout}
                   isLoading={tiersLoading}
+                  initialSelections={ticketSelections.reduce<Record<string, number>>((acc, item) => {
+                    acc[item.tierId] = item.quantity;
+                    return acc;
+                  }, {})}
                 />
               </div>
             </div>

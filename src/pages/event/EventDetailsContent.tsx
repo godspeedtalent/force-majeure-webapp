@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Calendar, Clock, Eye, ExternalLink, Heart, MapPin, Music, Play, Share2, Users } from 'lucide-react';
+import { Calendar, Clock, Eye, ExternalLink, Heart, MapPin, Play, Share2, Users } from 'lucide-react';
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
 
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
@@ -8,34 +8,20 @@ import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmCommonInfoCard } from '@/components/common/display/FmCommonInfoCard';
 import { FmDynamicStickyHeader } from '@/components/common/layout/FmDynamicStickyHeader';
 import { ScrollBar } from '@/components/common/shadcn/scroll-area';
-import { TicketingPanel } from '@/features/events/components/TicketingPanel';
-import EventCheckoutForm from '@/pages/demo/EventCheckoutForm';
+import { FmCommonStackLayout } from '@/components/common/layout';
+import { FmArtistRow, type FmArtistRowProps } from '@/components/artist/FmArtistRow';
+import {
+  FmArtistDetailsModal,
+  type FmArtistDetailsModalProps,
+} from '@/components/artist/FmArtistDetailsModal';
+import { EventCheckoutWizard } from '@/components/ticketing';
 import { formatTimeDisplay } from '@/shared/utils/timeUtils';
 
 import { EventDetailsRecord } from './types';
 
-type CheckoutStep = 'selection' | 'checkout';
-
-type TicketSelection = { tierId: string; quantity: number };
-
-type TicketTier = {
-  id: string;
-  name: string;
-  description?: string;
-  price: number;
-  total_tickets: number;
-  available_inventory: number;
-  tier_order: number;
-  is_active: boolean;
-  hide_until_previous_sold_out: boolean;
-};
-
 interface EventDetailsContentProps {
   event: EventDetailsRecord;
   onShare: () => void;
-  ticketTiers: TicketTier[];
-  isTicketTiersLoading: boolean;
-  getTotalFees: (subtotal: number) => number;
   displayTitle: string;
   onToggleCheckout?: (isOpen: boolean) => void;
   songsCount: number;
@@ -55,9 +41,6 @@ const ATTENDEE_PLACEHOLDERS = [
 export const EventDetailsContent = ({
   event,
   onShare,
-  ticketTiers,
-  isTicketTiersLoading,
-  getTotalFees,
   displayTitle,
   onToggleCheckout,
   songsCount,
@@ -66,10 +49,10 @@ export const EventDetailsContent = ({
   showMusicPlayer,
 }: EventDetailsContentProps) => {
   const [showCheckout, setShowCheckout] = useState(false);
-  const [checkoutStep, setCheckoutStep] = useState<CheckoutStep>('selection');
-  const [ticketSelections, setTicketSelections] = useState<TicketSelection[]>([]);
   const [ticketCount] = useState(() => Math.floor(Math.random() * 100) + 50);
   const [viewCount] = useState(() => Math.floor(Math.random() * 500) + 200);
+  const [selectedArtist, setSelectedArtist] = useState<FmArtistDetailsModalProps['artist']>(null);
+  const [isArtistModalOpen, setIsArtistModalOpen] = useState(false);
 
   const contentViewportRef = useRef<HTMLDivElement | null>(null);
   const handleContentViewportRef = useCallback((node: HTMLDivElement | null) => {
@@ -114,38 +97,29 @@ export const EventDetailsContent = ({
 
   const handleOpenCheckout = () => {
     setShowCheckout(true);
-    setCheckoutStep('selection');
-    setTicketSelections([]);
     onToggleCheckout?.(true);
   };
 
   const handleCloseCheckout = () => {
     setShowCheckout(false);
-    setCheckoutStep('selection');
     onToggleCheckout?.(false);
   };
 
-  const orderSummary = useMemo(() => {
-    const tickets = ticketSelections.map(selection => {
-      const tier = ticketTiers.find(t => t.id === selection.tierId);
-      const price = tier?.price ?? 0;
-      return {
-        name: tier?.name ?? '',
-        quantity: selection.quantity,
-        price,
-      };
+  const handleArtistSelect = (artist: FmArtistRowProps['artist']) => {
+    setSelectedArtist({
+      name: artist.name,
+      genre: artist.genre,
+      image: artist.image,
     });
+    setIsArtistModalOpen(true);
+  };
 
-    const subtotal = tickets.reduce((total, item) => total + item.price * item.quantity, 0);
-    const fees = getTotalFees(subtotal);
-
-    return {
-      subtotal,
-      fees,
-      total: subtotal + fees,
-      tickets,
-    };
-  }, [ticketSelections, ticketTiers, getTotalFees]);
+  const handleArtistModalChange = (open: boolean) => {
+    setIsArtistModalOpen(open);
+    if (!open) {
+      setSelectedArtist(null);
+    }
+  };
 
   const detailsContent = (
     <>
@@ -222,25 +196,15 @@ export const EventDetailsContent = ({
         {event.undercard.length > 0 && (
           <div>
             <h3 className='text-lg font-bold mb-4 font-canela'>Schedule</h3>
-            <div className='grid gap-2.5'>
+            <FmCommonStackLayout spacing='md'>
               {event.undercard.map((artist, index) => (
-                <FmCommonCard
+                <FmArtistRow
                   key={`${artist.name}-${index}`}
-                  variant='outline'
-                  size='sm'
-                  hoverable
-                  className='flex items-center gap-3'
-                >
-                  <div className='w-10 h-10 rounded-full bg-gradient-to-br from-muted to-muted-foreground/20 flex items-center justify-center flex-shrink-0'>
-                    <Music className='w-5 h-5 text-muted-foreground' />
-                  </div>
-                  <div className='flex-1 min-w-0'>
-                    <h4 className='font-semibold text-sm truncate'>{artist.name}</h4>
-                    <p className='text-xs text-muted-foreground'>{artist.genre}</p>
-                  </div>
-                </FmCommonCard>
+                  artist={artist}
+                  onSelect={handleArtistSelect}
+                />
               ))}
-            </div>
+            </FmCommonStackLayout>
           </div>
         )}
       </div>
@@ -275,46 +239,7 @@ export const EventDetailsContent = ({
   );
 
   const checkoutContent = (
-    <>
-      <div className='flex items-center justify-between'>
-        <FmCommonButton
-          variant='secondary'
-          size='sm'
-          icon={ArrowLeft}
-          onClick={() => {
-            if (checkoutStep === 'checkout') {
-              setCheckoutStep('selection');
-            } else {
-              handleCloseCheckout();
-            }
-          }}
-        >
-          Back
-        </FmCommonButton>
-        <h3 className='font-canela text-lg'>Checkout</h3>
-      </div>
-
-      {checkoutStep === 'selection' ? (
-        <TicketingPanel
-          eventId={event.id}
-          tiers={ticketTiers}
-          isLoading={isTicketTiersLoading}
-          onPurchase={(selections) => {
-            setTicketSelections(selections);
-            setCheckoutStep('checkout');
-          }}
-        />
-      ) : (
-        <EventCheckoutForm
-          eventId={event.id}
-          eventName={displayTitle}
-          eventDate={event.date}
-          selections={ticketSelections}
-          orderSummary={orderSummary}
-          onBack={() => setCheckoutStep('selection')}
-        />
-      )}
-    </>
+    <EventCheckoutWizard event={event} displayTitle={displayTitle} onClose={handleCloseCheckout} />
   );
 
   const headerActions = (
@@ -392,36 +317,44 @@ export const EventDetailsContent = ({
   );
 
   return (
-    <ScrollAreaPrimitive.Root className='relative h-full overflow-hidden'>
-      <ScrollAreaPrimitive.Viewport className='h-full w-full'>
-        <div className='flex min-h-full flex-col'>
-          <ScrollAreaPrimitive.Root className='relative flex-1 overflow-hidden'>
-            <ScrollAreaPrimitive.Viewport
-              ref={handleContentViewportRef}
-              className='h-full w-full'
-            >
-              <div className='flex min-h-full flex-col p-6 lg:p-8'>
-                <div className='mx-auto w-full lg:w-[65%] space-y-8'>
-                  <FmDynamicStickyHeader
-                    primaryContent={primaryHeader}
-                    stickyContent={stickyHeader}
-                    primaryClassName='rounded-3xl border border-border/40 bg-background/70 backdrop-blur p-6 shadow-[0_18px_48px_-24px_rgba(0,0,0,0.65)]'
-                    stickyClassName='rounded-2xl border border-border/60 bg-background/95 backdrop-blur px-4 py-3 shadow-[0_12px_40px_-20px_rgba(0,0,0,0.7)]'
-                    stickyOffset='calc(4rem + 1.25rem)'
-                    scrollContainerRef={contentViewportRef}
-                  />
+    <>
+      <ScrollAreaPrimitive.Root className='relative h-full overflow-hidden'>
+        <ScrollAreaPrimitive.Viewport className='h-full w-full'>
+          <div className='flex min-h-full flex-col'>
+            <ScrollAreaPrimitive.Root className='relative flex-1 overflow-hidden'>
+              <ScrollAreaPrimitive.Viewport
+                ref={handleContentViewportRef}
+                className='h-full w-full'
+              >
+                <div className='flex min-h-full flex-col p-6 lg:p-8'>
+                  <div className='mx-auto w-full lg:w-[65%] space-y-8'>
+                    <FmDynamicStickyHeader
+                      primaryContent={primaryHeader}
+                      stickyContent={stickyHeader}
+                      primaryClassName='rounded-3xl border border-border/40 bg-background/70 backdrop-blur p-6 shadow-[0_18px_48px_-24px_rgba(0,0,0,0.65)]'
+                      stickyClassName='rounded-2xl border border-border/60 bg-background/95 backdrop-blur px-4 py-3 shadow-[0_12px_40px_-20px_rgba(0,0,0,0.7)]'
+                      stickyOffset='calc(4rem + 1.25rem)'
+                      scrollContainerRef={contentViewportRef}
+                    />
 
-                  <div className='pb-10'>
-                    {showCheckout ? checkoutContent : detailsContent}
+                    <div className='pb-10'>
+                      {showCheckout ? checkoutContent : detailsContent}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </ScrollAreaPrimitive.Viewport>
-            <ScrollBar orientation='vertical' />
-          </ScrollAreaPrimitive.Root>
-        </div>
-      </ScrollAreaPrimitive.Viewport>
-      <ScrollBar orientation='vertical' />
-    </ScrollAreaPrimitive.Root>
+              </ScrollAreaPrimitive.Viewport>
+              <ScrollBar orientation='vertical' />
+            </ScrollAreaPrimitive.Root>
+          </div>
+        </ScrollAreaPrimitive.Viewport>
+        <ScrollBar orientation='vertical' />
+      </ScrollAreaPrimitive.Root>
+
+      <FmArtistDetailsModal
+        artist={selectedArtist}
+        open={isArtistModalOpen}
+        onOpenChange={handleArtistModalChange}
+      />
+    </>
   );
 };

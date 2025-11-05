@@ -1,6 +1,6 @@
-import { FmCommonList, FmCommonListColumn } from '@/components/common/data/FmCommonList';
+import { FmCommonList, type FmCommonListColumn } from '@/components/common/data/FmCommonList';
 
-interface TicketTier {
+interface TicketTierSummary {
   id: string;
   name: string;
   description?: string;
@@ -9,7 +9,7 @@ interface TicketTier {
 }
 
 interface TicketSelection {
-  tier: TicketTier;
+  tier: TicketTierSummary;
   quantity: number;
   subtotal: number;
 }
@@ -25,9 +25,9 @@ export const FmTicketTierList = ({ selections, className }: FmTicketTierListProp
       key: 'name',
       label: 'Ticket',
       render: (_, item) => (
-        <div className="flex flex-col gap-0.5">
-          <span className="font-medium text-foreground">{item.tier.name}</span>
-          <span className="text-xs text-muted-foreground">
+        <div className='flex flex-col gap-0.5'>
+          <span className='font-medium text-foreground'>{item.tier.name}</span>
+          <span className='text-xs text-muted-foreground'>
             {item.quantity}x ${item.tier.price.toFixed(2)}
           </span>
         </div>
@@ -38,7 +38,7 @@ export const FmTicketTierList = ({ selections, className }: FmTicketTierListProp
       key: 'subtotal',
       label: 'Subtotal',
       render: (_, item) => (
-        <span className="font-medium text-foreground">
+        <span className='font-medium text-foreground'>
           ${item.subtotal.toFixed(2)}
         </span>
       ),
@@ -53,7 +53,7 @@ export const FmTicketTierList = ({ selections, className }: FmTicketTierListProp
       striped
       dense
       className={className}
-      emptyMessage="No tickets selected"
+      emptyMessage='No tickets selected'
     />
   );
 };
