@@ -9,7 +9,7 @@ interface TermsAndConditionsModalProps {
 export const TermsAndConditionsModal = ({ isOpen, onClose }: TermsAndConditionsModalProps) => {
   return (
     <FmCommonModal
-      isOpen={isOpen}
+      open={isOpen}
       onClose={onClose}
       title="Terms and Conditions"
       size="lg"

@@ -28,7 +28,6 @@ interface FeatureFlag {
   flag_name: string;
   is_enabled: boolean;
   description: string | null;
-  disabled: boolean;
   environment: string;
 }
 
@@ -61,7 +60,7 @@ export const FeatureToggleSection = () => {
     try {
       const { data, error } = await supabase
         .from('feature_flags')
-        .select('flag_name, is_enabled, description, disabled, environment')
+        .select('flag_name, is_enabled, description, environment')
         .or(`environment.eq.${environment},environment.eq.all`)
         .order('flag_name', { ascending: true });
 
@@ -98,7 +97,7 @@ export const FeatureToggleSection = () => {
     try {
       // Update all flags that have changed
       const updates = flags
-        .filter(flag => !flag.disabled && localFlags[flag.flag_name] !== flag.is_enabled)
+        .filter(flag => localFlags[flag.flag_name] !== flag.is_enabled)
         .map(flag => 
           supabase
             .from('feature_flags')
@@ -122,15 +121,10 @@ export const FeatureToggleSection = () => {
   };
 
   const hasChanges = flags.some(flag => 
-    !flag.disabled && localFlags[flag.flag_name] !== flag.is_enabled
+    localFlags[flag.flag_name] !== flag.is_enabled
   );
 
   const editableFlags = flags
-    .filter(f => !f.disabled)
-    .sort((a, b) => formatFlagName(a.flag_name).localeCompare(formatFlagName(b.flag_name)));
-  
-  const disabledFlags = flags
-    .filter(f => f.disabled)
     .sort((a, b) => formatFlagName(a.flag_name).localeCompare(formatFlagName(b.flag_name)));
 
   if (isLoading) {
@@ -144,7 +138,7 @@ export const FeatureToggleSection = () => {
       </p>
       
       <div className="space-y-6">
-        {/* Editable Toggles */}
+        {/* Feature Toggles */}
         {editableFlags.length > 0 && (
           <div className="space-y-3">
             {editableFlags.map((flag) => {
@@ -160,41 +154,6 @@ export const FeatureToggleSection = () => {
                           icon={Icon}
                           checked={localFlags[flag.flag_name] ?? flag.is_enabled}
                           onCheckedChange={(checked) => handleToggle(flag.flag_name, checked)}
-                        />
-                      </div>
-                    </TooltipTrigger>
-                    {flag.description && (
-                      <TooltipContent side="left" className="max-w-xs bg-black/95 border-white/20 z-[150]">
-                        <p className="text-sm text-white">{flag.description}</p>
-                      </TooltipContent>
-                    )}
-                  </Tooltip>
-                </TooltipProvider>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Disabled Toggles Section */}
-        {disabledFlags.length > 0 && (
-          <div className="space-y-3 pt-4 border-t border-white/10">
-            <div className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-3">
-              Disabled
-            </div>
-            {disabledFlags.map((flag) => {
-              const Icon = iconMap[flag.flag_name] || Music;
-              return (
-                <TooltipProvider key={flag.flag_name}>
-                  <Tooltip delayDuration={300}>
-                    <TooltipTrigger asChild>
-                      <div className="opacity-50 pointer-events-none">
-                        <FmCommonToggle
-                          id={flag.flag_name}
-                          label={formatFlagName(flag.flag_name)}
-                          icon={Icon}
-                          checked={flag.is_enabled}
-                          onCheckedChange={() => {}}
-                          disabled
                         />
                       </div>
                     </TooltipTrigger>

@@ -62,7 +62,7 @@ export function useEventForm(options: UseEventFormOptions) {
         venue_id: formState.venueId || null,
         date: eventDateString,
         time: eventTimeString,
-        doors_time: formState.isAfterHours ? null : formState.endTime,
+        doors_time: formState.isAfterHours ? undefined : (formState.endTime || undefined),
         image_url: formState.heroImage || null,
         status: 'published' as const,
       };
@@ -77,7 +77,7 @@ export function useEventForm(options: UseEventFormOptions) {
         // Create new event
         const newEvent = await eventService.createEvent({
           ...eventData,
-          description: null,
+          description: undefined,
         });
         resultEventId = newEvent.id;
       }
