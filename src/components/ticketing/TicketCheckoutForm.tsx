@@ -12,6 +12,8 @@ import { FmTextLink } from '@/components/common/display/FmTextLink';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { TermsAndConditionsModal } from './TermsAndConditionsModal';
+import { useToast } from '@/shared/hooks/use-toast';
+import { useStripePayment, StripeCardInput, SavedCardSelector } from '@/features/payments';
 
 export interface TicketSelectionSummary {
   tierId: string;
@@ -41,12 +43,31 @@ interface TicketCheckoutFormProps {
   summary: TicketOrderSummary;
   onBack: () => void;
   onComplete: () => void;
+  showSecureCheckoutHeader?: boolean;
 }
 
-export const TicketCheckoutForm = ({ eventName, eventDate, summary, onBack, onComplete }: TicketCheckoutFormProps) => {
-  const { user } = useAuth();
+export const TicketCheckoutForm = ({ 
+  eventName, 
+  eventDate, 
+  summary, 
+  onBack, 
+  onComplete,
+  showSecureCheckoutHeader = true,
+}: TicketCheckoutFormProps) => {
+  const { user, updateProfile } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const { 
+    processPayment, 
+    loadSavedCards, 
+    removeSavedCard, 
+    savedCards, 
+    loading: stripeLoading,
+    ready: stripeReady
+  } = useStripePayment();
   const [showTermsModal, setShowTermsModal] = useState(false);
+  const [selectedSavedCard, setSelectedSavedCard] = useState<string | null>(null);
+  const [saveCardForLater, setSaveCardForLater] = useState(false);
   
   const [formData, setFormData] = useState({
     fullName: '',
@@ -61,9 +82,12 @@ export const TicketCheckoutForm = ({ eventName, eventDate, summary, onBack, onCo
     ticketProtection: false,
     smsNotifications: false,
     agreeToTerms: false,
+    saveAddress: false,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const isProcessing = isSubmitting || stripeLoading;
 
   // Auto-fill from user profile if logged in
   useEffect(() => {
@@ -74,8 +98,10 @@ export const TicketCheckoutForm = ({ eventName, eventDate, summary, onBack, onCo
         email: user.email || '',
         // Add more autofill fields when user profile includes them
       }));
+      // Load saved cards for logged-in users
+      loadSavedCards();
     }
-  }, [user]);
+  }, [user, loadSavedCards]);
 
   const handleChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -109,16 +135,10 @@ export const TicketCheckoutForm = ({ eventName, eventDate, summary, onBack, onCo
       nextErrors.zipCode = 'Valid ZIP code is required';
     }
 
-    if (!formData.cardNumber.trim() || formData.cardNumber.replace(/\s/g, '').length < 12) {
-      nextErrors.cardNumber = 'Enter a valid card number';
-    }
-
-    if (!formData.expiry.trim()) {
-      nextErrors.expiry = 'Expiration date is required';
-    }
-
-    if (!formData.cvc.trim() || formData.cvc.length < 3) {
-      nextErrors.cvc = 'Enter a valid CVC';
+    // Card validation is handled by Stripe Elements
+    // Only validate if not using a saved card
+    if (!selectedSavedCard && !stripeReady) {
+      nextErrors.cardNumber = 'Please wait for payment system to load';
     }
 
     if (!formData.agreeToTerms) {
@@ -126,6 +146,17 @@ export const TicketCheckoutForm = ({ eventName, eventDate, summary, onBack, onCo
     }
 
     setErrors(nextErrors);
+    
+    // Auto-scroll to first error
+    if (Object.keys(nextErrors).length > 0) {
+      const firstErrorField = Object.keys(nextErrors)[0];
+      const element = document.getElementById(firstErrorField);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        element.focus();
+      }
+    }
+    
     return Object.keys(nextErrors).length === 0;
   };
 
@@ -134,9 +165,52 @@ export const TicketCheckoutForm = ({ eventName, eventDate, summary, onBack, onCo
     if (!validate()) return;
 
     setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 800));
-    onComplete();
-    setIsSubmitting(false);
+    
+    try {
+      // If user wants to save address and is logged in
+      if (user && formData.saveAddress) {
+        try {
+          await updateProfile({
+            billing_address: formData.address,
+            billing_city: formData.city,
+            billing_state: formData.state,
+            billing_zip: formData.zipCode,
+          });
+        } catch (error) {
+          console.error('Failed to save address:', error);
+          toast({
+            title: 'Address not saved',
+            description: 'Your order will proceed, but we couldn\'t save your address for future orders.',
+            variant: 'default',
+          });
+        }
+      }
+      
+      // Process payment with Stripe
+      const result = await processPayment(
+        totalWithProtection * 100, // Convert to cents
+        saveCardForLater,
+        selectedSavedCard || undefined
+      );
+      
+      if (result.success) {
+        toast({
+          title: 'Payment successful!',
+          description: 'Your tickets have been purchased.',
+        });
+        onComplete();
+      } else {
+        throw new Error(result.error || 'Payment failed');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      toast({
+        title: 'Payment failed',
+        description: error instanceof Error ? error.message : 'An error occurred processing your payment',
+        variant: 'destructive',
+      });
+      setIsSubmitting(false);
+    }
   };
 
   const ticketProtectionFee = 4.99;
@@ -146,7 +220,7 @@ export const TicketCheckoutForm = ({ eventName, eventDate, summary, onBack, onCo
 
   return (
     <div className='space-y-6'>
-      <div className='flex items-center justify-between'>
+      <div className='flex items-start justify-between gap-4'>
         <FmCommonButton
           size='sm'
           variant='secondary'
@@ -157,13 +231,15 @@ export const TicketCheckoutForm = ({ eventName, eventDate, summary, onBack, onCo
           Back to tickets
         </FmCommonButton>
 
-        <div className='text-right'>
-          <p className='text-xs text-muted-foreground uppercase tracking-[0.3em]'>
-            Secure Checkout
-          </p>
-          <h3 className='text-lg font-canela text-foreground'>{eventName}</h3>
-          <p className='text-xs text-muted-foreground'>{eventDate}</p>
-        </div>
+        {showSecureCheckoutHeader && (
+          <div className='text-right'>
+            <p className='text-xs text-muted-foreground uppercase tracking-[0.3em]'>
+              Secure Checkout
+            </p>
+            <h3 className='text-lg font-canela text-foreground'>{eventName}</h3>
+            <p className='text-xs text-muted-foreground'>{eventDate}</p>
+          </div>
+        )}
       </div>
 
       {!user && (
@@ -191,7 +267,7 @@ export const TicketCheckoutForm = ({ eventName, eventDate, summary, onBack, onCo
       )}
 
       <form onSubmit={handleSubmit} className='space-y-6'>
-        <FmCommonCard variant='default' className='space-y-6'>
+        <FmCommonCard variant='outline' className='space-y-6'>
           <div className='space-y-4'>
             <h4 className='text-sm font-medium text-foreground flex items-center gap-2'>
               <CreditCard className='h-4 w-4 text-fm-gold' />
@@ -222,46 +298,42 @@ export const TicketCheckoutForm = ({ eventName, eventDate, summary, onBack, onCo
                 {errors.email && <p className='mt-1 text-xs text-destructive'>{errors.email}</p>}
               </div>
 
-              <div className='md:col-span-2'>
-                <Label htmlFor='cardNumber'>Card number</Label>
-                <Input
-                  id='cardNumber'
-                  value={formData.cardNumber}
-                  onChange={event => handleChange('cardNumber', event.target.value)}
-                  placeholder='4242 4242 4242 4242'
-                  maxLength={19}
-                />
-                {errors.cardNumber && <p className='mt-1 text-xs text-destructive'>{errors.cardNumber}</p>}
-              </div>
+              {/* Saved Cards Section */}
+              {user && savedCards.length > 0 && (
+                <div className='md:col-span-2'>
+                  <Label>Saved Payment Methods</Label>
+                  <SavedCardSelector
+                    cards={savedCards}
+                    selectedCardId={selectedSavedCard}
+                    onSelectCard={setSelectedSavedCard}
+                    onRemoveCard={removeSavedCard}
+                  />
+                </div>
+              )}
 
-              <div>
-                <Label htmlFor='expiry'>Expiry date</Label>
-                <Input
-                  id='expiry'
-                  value={formData.expiry}
-                  onChange={event => handleChange('expiry', event.target.value)}
-                  placeholder='MM/YY'
-                  maxLength={5}
-                />
-                {errors.expiry && <p className='mt-1 text-xs text-destructive'>{errors.expiry}</p>}
-              </div>
-
-              <div>
-                <Label htmlFor='cvc'>CVC</Label>
-                <Input
-                  id='cvc'
-                  value={formData.cvc}
-                  onChange={event => handleChange('cvc', event.target.value)}
-                  placeholder='123'
-                  maxLength={4}
-                />
-                {errors.cvc && <p className='mt-1 text-xs text-destructive'>{errors.cvc}</p>}
-              </div>
+              {/* New Card Input - only show if no saved card selected or user has no saved cards */}
+              {(!selectedSavedCard || savedCards.length === 0) && (
+                <div className='md:col-span-2 space-y-4'>
+                  <Label>Card Information</Label>
+                  <StripeCardInput />
+                  {errors.cardNumber && <p className='mt-1 text-xs text-destructive'>{errors.cardNumber}</p>}
+                  
+                  {/* Save card checkbox for logged-in users */}
+                  {user && (
+                    <FmCommonFormCheckbox
+                      id='saveCard'
+                      checked={saveCardForLater}
+                      onCheckedChange={setSaveCardForLater}
+                      label='Save this card for future purchases'
+                    />
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </FmCommonCard>
 
-        <FmCommonCard variant='default' className='space-y-6'>
+        <FmCommonCard variant='outline' className='space-y-6'>
           <div className='space-y-4'>
             <h4 className='text-sm font-medium text-foreground flex items-center gap-2'>
               <MapPin className='h-4 w-4 text-fm-gold' />
@@ -315,34 +387,43 @@ export const TicketCheckoutForm = ({ eventName, eventDate, summary, onBack, onCo
                 {errors.zipCode && <p className='mt-1 text-xs text-destructive'>{errors.zipCode}</p>}
               </div>
             </div>
+
+            {user && (
+              <div className='pt-2'>
+                <FmCommonFormCheckbox
+                  id='saveAddress'
+                  checked={formData.saveAddress}
+                  onCheckedChange={value => handleChange('saveAddress', Boolean(value))}
+                  label='Save for future orders'
+                />
+              </div>
+            )}
           </div>
         </FmCommonCard>
 
-        <FmCommonCard variant='default' className='space-y-4'>
-          <div className='flex items-start gap-3 p-3 bg-muted/30 rounded-md border border-border'>
-            <Shield className='h-5 w-5 text-fm-gold flex-shrink-0 mt-0.5' />
-            <div className='flex-1'>
-              <div className='flex items-center justify-between mb-1'>
-                <h4 className='text-sm font-medium text-foreground'>
-                  Ticket Protection
-                </h4>
-                <span className='text-sm font-medium text-fm-gold'>
-                  +${ticketProtectionFee.toFixed(2)}
-                </span>
-              </div>
-              <p className='text-xs text-muted-foreground mb-3'>
-                Get a full refund if you can't attend due to illness, work conflicts, or other covered reasons. 
-                Covers all tickets in this order.
-              </p>
-              <FmCommonFormCheckbox
-                id='ticketProtection'
-                checked={formData.ticketProtection}
-                onCheckedChange={value => handleChange('ticketProtection', Boolean(value))}
-                label='Add Ticket Protection to my order'
-              />
+        <div className='flex items-start gap-3 p-4 bg-muted/30 rounded-md border border-border'>
+          <Shield className='h-5 w-5 text-fm-gold flex-shrink-0 mt-0.5' />
+          <div className='flex-1'>
+            <div className='flex items-center justify-between mb-1'>
+              <h4 className='text-sm font-medium text-foreground'>
+                Ticket Protection
+              </h4>
+              <span className='text-sm font-medium text-fm-gold'>
+                +${ticketProtectionFee.toFixed(2)}
+              </span>
             </div>
+            <p className='text-xs text-muted-foreground mb-3'>
+              Get a full refund if you can't attend due to illness, work conflicts, or other covered reasons. 
+              Covers all tickets in this order.
+            </p>
+            <FmCommonFormCheckbox
+              id='ticketProtection'
+              checked={formData.ticketProtection}
+              onCheckedChange={value => handleChange('ticketProtection', Boolean(value))}
+              label='Add Ticket Protection to my order'
+            />
           </div>
-        </FmCommonCard>
+        </div>
 
         <FmCommonCard variant='outline' className='space-y-4'>
           <div className='flex items-center gap-2 text-sm font-medium text-foreground'>
@@ -433,8 +514,8 @@ export const TicketCheckoutForm = ({ eventName, eventDate, summary, onBack, onCo
 
           <FmBigButton
             type='submit'
-            isLoading={isSubmitting}
-            disabled={isSubmitting}
+            isLoading={isProcessing}
+            disabled={isProcessing || !stripeReady}
           >
             Complete Purchase
           </FmBigButton>

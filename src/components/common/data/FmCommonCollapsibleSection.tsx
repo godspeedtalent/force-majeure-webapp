@@ -1,6 +1,7 @@
 import { ReactNode, useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
+import { cn } from '@/shared/utils/utils';
 
 interface FmCommonCollapsibleSectionProps {
   title: string;
@@ -15,7 +16,7 @@ interface FmCommonCollapsibleSectionProps {
  * Features:
  * - Toggle expand/collapse state
  * - Chevron icon that rotates
- * - Smooth animations
+ * - Smooth slide down/up + fade in/out animations
  * - Optional default expanded state
  *
  * Usage:
@@ -57,7 +58,18 @@ export const FmCommonCollapsibleSection = ({
         </Button>
       </div>
 
-      {isExpanded && <div className="animate-slide-down-in">{children}</div>}
+      <div
+        className={cn(
+          'grid transition-all duration-300 ease-in-out',
+          isExpanded 
+            ? 'grid-rows-[1fr] opacity-100' 
+            : 'grid-rows-[0fr] opacity-0'
+        )}
+      >
+        <div className='overflow-hidden'>
+          {children}
+        </div>
+      </div>
     </div>
   );
 };

@@ -14,6 +14,7 @@ import { FmVenueSearchDropdown } from '@/components/common/search/FmVenueSearchD
 import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
 import { FmCommonDatePicker } from '@/components/common/forms/FmCommonDatePicker';
 import { FmCommonTimePicker } from '@/components/common/forms/FmCommonTimePicker';
+import { FmImageUpload } from '@/components/common/forms/FmImageUpload';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { Checkbox } from '@/components/common/shadcn/checkbox';
@@ -40,6 +41,8 @@ export default function EventManagement() {
   const [isAfterHours, setIsAfterHours] = useState(false);
   const [heroImage, setHeroImage] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
+  const [hasCustomTitle, setHasCustomTitle] = useState(false);
+  const [customTitle, setCustomTitle] = useState<string>('');
 
   // Fetch event data
   const { data: event, isLoading } = useQuery({
@@ -71,6 +74,14 @@ export default function EventManagement() {
       setIsAfterHours((event as any).is_after_hours || false);
       setEndTime((event as any).end_time || '02:00');
       setHeroImage(event.hero_image || '');
+      
+      // Check if event has a custom title (not generated from headliner @ venue)
+      if (event.title) {
+        setCustomTitle(event.title);
+        // Determine if it's a custom title by checking if it matches the auto-generated format
+        // We'll default to not having a custom title (checkbox unchecked)
+        setHasCustomTitle(false);
+      }
 
       // Parse date and time
       if (event.date) {
@@ -150,15 +161,23 @@ export default function EventManagement() {
 
     setIsSaving(true);
     try {
-      // Fetch headliner and venue for title generation
-      const [headlinerRes, venueRes] = await Promise.all([
-        supabase.from('artists').select('name').eq('id', headlinerId).maybeSingle(),
-        supabase.from('venues' as any).select('name').eq('id', venueId).maybeSingle(),
-      ]);
+      // Determine the event title
+      let eventTitle: string;
+      
+      if (hasCustomTitle && customTitle.trim()) {
+        // Use custom title if checkbox is checked and title is provided
+        eventTitle = customTitle.trim();
+      } else {
+        // Auto-generate title from headliner @ venue
+        const [headlinerRes, venueRes] = await Promise.all([
+          supabase.from('artists').select('name').eq('id', headlinerId).maybeSingle(),
+          supabase.from('venues' as any).select('name').eq('id', venueId).maybeSingle(),
+        ]);
 
-      const eventTitle = headlinerRes.data && venueRes.data
-        ? `${(headlinerRes.data as any).name} @ ${(venueRes.data as any).name}`
-        : (headlinerRes.data as any)?.name || 'Event';
+        eventTitle = headlinerRes.data && venueRes.data
+          ? `${(headlinerRes.data as any).name} @ ${(venueRes.data as any).name}`
+          : (headlinerRes.data as any)?.name || 'Event';
+      }
 
       const eventDateString = format(eventDate, 'yyyy-MM-dd');
       const eventTimeString = format(eventDate, 'HH:mm');
@@ -327,6 +346,33 @@ export default function EventManagement() {
                         />
                       </div>
 
+                      {/* Custom Event Title */}
+                      <div className="space-y-2 md:col-span-2">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Checkbox
+                            id="custom-title"
+                            checked={hasCustomTitle}
+                            onCheckedChange={(checked) => setHasCustomTitle(!!checked)}
+                          />
+                          <Label htmlFor="custom-title" className="cursor-pointer">
+                            Provide event title
+                          </Label>
+                        </div>
+                        {hasCustomTitle && (
+                          <Input
+                            id="event-title"
+                            value={customTitle}
+                            onChange={(e) => setCustomTitle(e.target.value)}
+                            placeholder="Enter custom event title"
+                          />
+                        )}
+                        {!hasCustomTitle && (
+                          <p className="text-sm text-muted-foreground">
+                            Event title will be auto-generated as "Headliner @ Venue"
+                          </p>
+                        )}
+                      </div>
+
                       {/* Date & Time */}
                       <div className="space-y-2">
                         <Label>
@@ -373,14 +419,16 @@ export default function EventManagement() {
                         </div>
                       </div>
 
-                      {/* Hero Image URL */}
+                      {/* Hero Image */}
                       <div className="space-y-2 md:col-span-2">
-                        <Label htmlFor="hero-image">Hero Image URL</Label>
-                        <Input
-                          id="hero-image"
-                          value={heroImage}
-                          onChange={(e) => setHeroImage(e.target.value)}
-                          placeholder="https://example.com/image.jpg"
+                        <Label htmlFor="hero-image">Hero Image</Label>
+                        <FmImageUpload
+                          eventId={id}
+                          currentImageUrl={heroImage}
+                          isPrimary={true}
+                          onUploadComplete={(publicUrl: string) => {
+                            setHeroImage(publicUrl);
+                          }}
                         />
                       </div>
                     </div>

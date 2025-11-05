@@ -260,72 +260,72 @@ export const EventDetailsContent = ({
 
   const detailsContent = (
     <>
+      {/* Unified grid - items flow to fill gaps */}
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 cascade-item'>
-        <FmCommonCollapsibleSection title='About This Event' defaultExpanded={true}>
-          <p className='text-muted-foreground leading-relaxed text-sm'>
-            {event.description || 'No description available for this event.'}
-          </p>
-        </FmCommonCollapsibleSection>
+        {/* About This Event - only shows if description exists */}
+        {event.description?.trim() && (
+          <FmCommonCollapsibleSection title='About This Event' defaultExpanded={true}>
+            <p className='text-muted-foreground leading-relaxed text-sm'>
+              {event.description}
+            </p>
+          </FmCommonCollapsibleSection>
+        )}
 
-        <div>
-          <FmCommonCard
-            variant='outline'
-            onClick={user ? handleAttendeeCardClick : undefined}
-            className='relative overflow-hidden'
-          >
-            <h3 className='text-lg mb-4 font-canela'>Guest list</h3>
+        {/* Guest List - always shows */}
+        <FmCommonCard
+          variant='outline'
+          onClick={user ? handleAttendeeCardClick : undefined}
+          className='relative overflow-hidden'
+        >
+          <h3 className='text-lg mb-4 font-canela'>Guest list</h3>
 
-            <div className='flex items-center gap-3 mb-4'>
-              <div className='flex -space-x-2'>
-                {attendeePreview.map((attendee, index) => (
-                  <div
-                    key={`${attendee.avatar}-${index}`}
-                    className='w-8 h-8 rounded-full bg-gradient-to-br from-fm-gold/20 to-fm-gold/40 border-2 border-card flex items-center justify-center transition-all duration-200 hover:scale-110 hover:border-fm-gold cursor-pointer'
-                    title={attendee.name}
-                  >
-                    <span className='text-[10px] font-semibold text-fm-gold'>
-                      {attendee.avatar}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <div className='flex items-center gap-2'>
-                <Users className='w-4 h-4 text-fm-gold' />
-                <span className='text-xs font-normal text-muted-foreground'>
-                  + {ticketCount.toLocaleString()} others
-                </span>
-              </div>
-            </div>
-
-            <div className='mt-4 border-t border-border pt-3'>
-              <div className='flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground'>
-                {user ? (
-                  <span className='font-normal text-muted-foreground'>Click to see full list</span>
-                ) : (
-                  <button
-                    type='button'
-                    onClick={event => {
-                      event.stopPropagation();
-                      handlePromptLogin();
-                    }}
-                    className='text-xs font-semibold text-fm-gold hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-fm-gold/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
-                  >
-                    Log in to see the full list
-                  </button>
-                )}
-                <div className='flex items-center gap-2'>
-                  <Eye className='w-4 h-4' />
-                  <span>{viewCount.toLocaleString()} page views</span>
+          <div className='flex items-center gap-3 mb-4'>
+            <div className='flex -space-x-2'>
+              {attendeePreview.map((attendee, index) => (
+                <div
+                  key={`${attendee.avatar}-${index}`}
+                  className='w-8 h-8 rounded-full bg-gradient-to-br from-fm-gold/20 to-fm-gold/40 border-2 border-card flex items-center justify-center transition-all duration-200 hover:scale-110 hover:border-fm-gold cursor-pointer'
+                  title={attendee.name}
+                >
+                  <span className='text-[10px] font-semibold text-fm-gold'>
+                    {attendee.avatar}
+                  </span>
                 </div>
+              ))}
+            </div>
+            <div className='flex items-center gap-2'>
+              <Users className='w-4 h-4 text-fm-gold' />
+              <span className='text-xs font-normal text-muted-foreground'>
+                + {ticketCount.toLocaleString()} others
+              </span>
+            </div>
+          </div>
+
+          <div className='mt-4 border-t border-border pt-3'>
+            <div className='flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground'>
+              {user ? (
+                <span className='font-normal text-muted-foreground'>Click to see full list</span>
+              ) : (
+                <button
+                  type='button'
+                  onClick={event => {
+                    event.stopPropagation();
+                    handlePromptLogin();
+                  }}
+                  className='text-xs font-semibold text-fm-gold hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-fm-gold/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
+                >
+                  Log in to see the full list
+                </button>
+              )}
+              <div className='flex items-center gap-2'>
+                <Eye className='w-4 h-4' />
+                <span>{viewCount.toLocaleString()} page views</span>
               </div>
             </div>
-          </FmCommonCard>
-        </div>
-      </div>
+          </div>
+        </FmCommonCard>
 
-      <DecorativeDivider marginTop='mt-8' marginBottom='mb-8' />
-
-      <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 cascade-item'>
+        {/* Event Information - always shows */}
         <FmCommonCollapsibleSection title='Event Information' defaultExpanded={true}>
           <div className='grid gap-4'>
             <FmCommonInfoCard
@@ -361,8 +361,14 @@ export const EventDetailsContent = ({
           </div>
         </FmCommonCollapsibleSection>
 
+        {/* Call Times - only shows if lineup exists, spans full width if it's the 4th item */}
         {callTimeLineup.length > 0 && (
-          <FmCommonCollapsibleSection title='Call times' defaultExpanded={true}>
+          <FmCommonCollapsibleSection 
+            title='Call times' 
+            defaultExpanded={true}
+            className={!event.description?.trim() ? 'lg:col-span-2' : ''}
+          >
+            {/* Use vertical stack layout when taking full width, row format in column */}
             <FmCommonStackLayout spacing='md'>
               {callTimeLineup.map((artist, index) => (
                 <FmArtistRow

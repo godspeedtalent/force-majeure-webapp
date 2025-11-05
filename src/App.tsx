@@ -25,6 +25,8 @@ import DeveloperIndex from './pages/developer/DeveloperIndex';
 import DeveloperCreateEventPage from './pages/developer/database/CreateEvent';
 import DeveloperCreateArtistPage from './pages/developer/database/CreateArtist';
 import DeveloperCreateVenuePage from './pages/developer/database/CreateVenue';
+import OrganizationTools from './pages/organization/OrganizationTools';
+import TicketScanning from './pages/organization/TicketScanning';
 
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary';
 import { DemoProtectedRoute } from '@/components/routing/DemoProtectedRoute';
@@ -41,6 +43,7 @@ import { DevToolsProvider } from '@/contexts/DevToolsContext';
 import { CheckoutProvider } from '@/contexts/CheckoutContext';
 import { GlobalSearchProvider, useGlobalSearch } from '@/contexts/GlobalSearchContext';
 import { GlobalSearch } from '@/components/search/GlobalSearch';
+import { StripeProvider } from '@/features/payments';
 
 import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
@@ -215,6 +218,10 @@ const AppRoutes = () => {
             }
           />
 
+          {/* Organization Routes */}
+          <Route path='/organization/tools' element={<OrganizationTools />} />
+          <Route path='/organization/scanning' element={<TicketScanning />} />
+
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path='*' element={<NotFound />} />
         </>
@@ -234,21 +241,23 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <DevToolsProvider>
           <AuthProvider>
-            <GlobalSearchProvider>
-              <MusicPlayerProvider>
-                <TooltipProvider>
-                  <Toaster />
-                  <Sonner />
-                  <BrowserRouter>
-                    <CheckoutProvider>
-                      <AppRoutes />
-                      <DevToolsDrawer />
-                      <GlobalSearchWrapper />
-                    </CheckoutProvider>
-                  </BrowserRouter>
-                </TooltipProvider>
-              </MusicPlayerProvider>
-            </GlobalSearchProvider>
+            <StripeProvider>
+              <GlobalSearchProvider>
+                <MusicPlayerProvider>
+                  <TooltipProvider>
+                    <Toaster />
+                    <Sonner />
+                    <BrowserRouter>
+                      <CheckoutProvider>
+                        <AppRoutes />
+                        <DevToolsDrawer />
+                        <GlobalSearchWrapper />
+                      </CheckoutProvider>
+                    </BrowserRouter>
+                  </TooltipProvider>
+                </MusicPlayerProvider>
+              </GlobalSearchProvider>
+            </StripeProvider>
           </AuthProvider>
         </DevToolsProvider>
       </QueryClientProvider>

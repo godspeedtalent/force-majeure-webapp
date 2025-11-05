@@ -202,6 +202,7 @@ export const EventCheckoutWizard = ({ event, displayTitle, onClose }: EventCheck
           summary={orderSummary}
           onBack={() => setStep('selection')}
           onComplete={handleCheckoutComplete}
+          showSecureCheckoutHeader={false}
         />
       );
     }
