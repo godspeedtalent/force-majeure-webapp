@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Navigation } from '@/components/Navigation/Navigation';
+import { Navigation } from '@/components/navigation/Navigation';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { FmCommonSideNav, FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { SidebarProvider } from '@/components/common/shadcn/sidebar';

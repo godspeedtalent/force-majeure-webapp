@@ -1,4 +1,4 @@
-import { User, UserCog, Shield, UserX, Code, BarChart3, Settings, FlaskConical, Package } from 'lucide-react';
+import { User, UserCog, Shield, UserX, BarChart3, Settings, FlaskConical, Package } from 'lucide-react';
 import { FmCommonDropdown, DropdownItem } from '@/components/common/forms/FmCommonDropdown';
 import { Button } from '@/components/common/shadcn/button';
 import { FmCommonToggleHeader } from '@/components/common/forms/FmCommonToggleHeader';

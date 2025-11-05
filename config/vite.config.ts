@@ -17,6 +17,9 @@ export default defineConfig(({ mode }) => ({
   plugins: [react(), mode === 'development' && componentTagger()].filter(
     Boolean
   ),
+  optimizeDeps: {
+    exclude: ['src/integrations/supabase/client.ts'],
+  },
   css: {
     postcss: path.resolve(__dirname, '../postcss.config.js'),
   },

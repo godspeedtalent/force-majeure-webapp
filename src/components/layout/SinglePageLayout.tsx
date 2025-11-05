@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Navigation } from '@/components/Navigation/Navigation';
+import { Navigation } from '@/components/navigation/Navigation';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 
 interface SinglePageLayoutProps {

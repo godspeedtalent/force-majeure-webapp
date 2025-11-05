@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 
-import { Footer } from '@/components/Navigation/Footer';
-import { ScavengerNavigation } from '@/components/Navigation/ScavengerNavigation';
+import { Footer } from '@/components/navigation/Footer';
+import { ScavengerNavigation } from '@/components/navigation/ScavengerNavigation';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 
 interface ScavengerSplitLayoutProps {

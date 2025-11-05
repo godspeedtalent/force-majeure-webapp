@@ -2,7 +2,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { Navigation } from '@/components/Navigation/Navigation';
+import { Navigation } from '@/components/navigation/Navigation';
 import { PageTransition } from '@/components/primitives/PageTransition';
 import { EventDetailsLayout } from '@/components/layout/EventDetailsLayout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';

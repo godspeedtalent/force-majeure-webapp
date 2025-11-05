@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Navigation } from '@/components/Navigation/Navigation';
+import { Navigation } from '@/components/navigation/Navigation';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { cn } from '@/shared/utils/utils';
