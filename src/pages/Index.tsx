@@ -3,7 +3,7 @@ import { useEffect, useRef, useMemo, useState } from 'react';
 import { FmCommonEmptyState } from '@/components/common/display/FmCommonEmptyState';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
-import { ForceMajeureLogo } from '@/components/Navigation/ForceMajeureLogo';
+import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import { Layout } from '@/components/layout/Layout';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { EventCard } from '@/features/events/components/EventCard';

@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { Breadcrumbs } from '@/components/primitives/Breadcrumbs';
 import { ForceMajeureLogo } from './ForceMajeureLogo';
-import { UserMenuDropdown } from '@/components/Navigation/UserMenuDropdown';
+import { UserMenuDropdown } from '@/components/navigation/UserMenuDropdown';
 import { CheckoutCountdown } from '@/components/business/CheckoutCountdown';
 import { Button } from '@/components/common/shadcn/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/common/shadcn/tooltip';

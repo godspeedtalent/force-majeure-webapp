@@ -2,8 +2,8 @@ import { ReactNode } from 'react';
 
 import { LocationCard } from '../shared';
 
-import { Footer } from '@/components/Navigation/Footer';
-import { ScavengerNavigation } from '@/components/Navigation/ScavengerNavigation';
+import { Footer } from '@/components/navigation/Footer';
+import { ScavengerNavigation } from '@/components/navigation/ScavengerNavigation';
 import { Card } from '@/components/common/shadcn/card';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 
