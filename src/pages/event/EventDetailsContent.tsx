@@ -5,7 +5,7 @@ import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
 
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { FmGetTicketsButton } from '@/components/common/buttons/FmGetTicketsButton';
+import { FmBigButton } from '@/components/common/buttons/FmBigButton';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmCommonInfoCard } from '@/components/common/display/FmCommonInfoCard';
 import { FmDateBox } from '@/components/common/display/FmDateBox';
@@ -13,7 +13,8 @@ import { FmTextLink } from '@/components/common/display/FmTextLink';
 import { FmUndercardList } from '@/components/common/display/FmUndercardList';
 import { FmDynamicStickyHeader } from '@/components/common/layout/FmDynamicStickyHeader';
 import { ScrollBar } from '@/components/common/shadcn/scroll-area';
-import { FmCommonStackLayout } from '@/components/common/layout';
+import { FmCommonStackLayout, FmStickyFooter } from '@/components/common/layout';
+import { FmCommonCollapsibleSection } from '@/components/common/data/FmCommonCollapsibleSection';
 import { FmArtistRow, type FmArtistRowProps } from '@/components/artist/FmArtistRow';
 import {
   FmArtistDetailsModal,
@@ -25,6 +26,7 @@ import {
 } from '@/components/venue/FmVenueDetailsModal';
 import { EventCheckoutWizard } from '@/components/ticketing';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common/shadcn/dialog';
+import { Badge } from '@/components/common/shadcn/badge';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserRole } from '@/shared/hooks/useUserRole';
 import { useEventViews } from '@/shared/hooks/useEventViews';
@@ -100,6 +102,20 @@ export const EventDetailsContent = ({
     [eventDate]
   );
   const formattedTime = useMemo(() => formatTimeDisplay(event.time), [event.time]);
+  const isAfterHours = useMemo(() => {
+    if (!event.time) return false;
+    const timeParts = event.time.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+    if (!timeParts) return false;
+    
+    let hours = parseInt(timeParts[1]);
+    const meridiem = timeParts[3]?.toUpperCase();
+    
+    if (meridiem === 'PM' && hours !== 12) hours += 12;
+    if (meridiem === 'AM' && hours === 12) hours = 0;
+    
+    // After hours: 10 PM or later, or before 6 AM
+    return hours >= 22 || hours < 6;
+  }, [event.time]);
   const weekdayLabel = useMemo(
     () => eventDate.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase(),
     [eventDate]
@@ -245,12 +261,11 @@ export const EventDetailsContent = ({
   const detailsContent = (
     <>
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 cascade-item'>
-        <div className='flex flex-col justify-center'>
-          <h3 className='text-lg mb-3 font-canela'>About This Event</h3>
+        <FmCommonCollapsibleSection title='About This Event' defaultExpanded={true}>
           <p className='text-muted-foreground leading-relaxed text-sm'>
             {event.description || 'No description available for this event.'}
           </p>
-        </div>
+        </FmCommonCollapsibleSection>
 
         <div>
           <FmCommonCard
@@ -258,14 +273,14 @@ export const EventDetailsContent = ({
             onClick={user ? handleAttendeeCardClick : undefined}
             className='relative overflow-hidden'
           >
-            <h3 className='text-lg mb-4 font-canela'>Who's Going?</h3>
+            <h3 className='text-lg mb-4 font-canela'>Guest list</h3>
 
             <div className='flex items-center gap-3 mb-4'>
               <div className='flex -space-x-2'>
                 {attendeePreview.map((attendee, index) => (
                   <div
                     key={`${attendee.avatar}-${index}`}
-                    className='w-8 h-8 rounded-full bg-gradient-to-br from-fm-gold/20 to-fm-gold/40 border-2 border-card flex items-center justify-center'
+                    className='w-8 h-8 rounded-full bg-gradient-to-br from-fm-gold/20 to-fm-gold/40 border-2 border-card flex items-center justify-center transition-all duration-200 hover:scale-110 hover:border-fm-gold cursor-pointer'
                     title={attendee.name}
                   >
                     <span className='text-[10px] font-semibold text-fm-gold'>
@@ -276,7 +291,7 @@ export const EventDetailsContent = ({
               </div>
               <div className='flex items-center gap-2'>
                 <Users className='w-4 h-4 text-fm-gold' />
-                <span className='font-semibold text-sm'>
+                <span className='text-xs font-normal text-muted-foreground'>
                   + {ticketCount.toLocaleString()} others
                 </span>
               </div>
@@ -285,7 +300,7 @@ export const EventDetailsContent = ({
             <div className='mt-4 border-t border-border pt-3'>
               <div className='flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground'>
                 {user ? (
-                  <span className='font-semibold text-fm-gold'>Click for full list</span>
+                  <span className='font-normal text-muted-foreground'>Click to see full list</span>
                 ) : (
                   <button
                     type='button'
@@ -311,14 +326,26 @@ export const EventDetailsContent = ({
       <DecorativeDivider marginTop='mt-8' marginBottom='mb-8' />
 
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 cascade-item'>
-        <div>
-          <h3 className='text-lg mb-4 font-canela'>Event Information</h3>
+        <FmCommonCollapsibleSection title='Event Information' defaultExpanded={true}>
           <div className='grid gap-4'>
             <FmCommonInfoCard
               icon={Calendar}
               label='Date & Time'
               size='sm'
-              value={`${longDateLabel} @ ${formattedTime}`}
+              value={
+                <div className='flex flex-col gap-1.5'>
+                  <div>{longDateLabel}</div>
+                  <div className='flex items-center gap-2 text-xs text-muted-foreground'>
+                    <Clock className='w-3 h-3' />
+                    <span>{formattedTime}</span>
+                    {isAfterHours && (
+                      <Badge className='bg-fm-gold/20 text-fm-gold border-fm-gold/40 text-[10px] px-1.5 py-0'>
+                        After Hours
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              }
             />
 
             <FmCommonInfoCard
@@ -332,11 +359,10 @@ export const EventDetailsContent = ({
               }
             />
           </div>
-        </div>
+        </FmCommonCollapsibleSection>
 
         {callTimeLineup.length > 0 && (
-          <div>
-            <h3 className='text-lg mb-4 font-canela'>Call times</h3>
+          <FmCommonCollapsibleSection title='Call times' defaultExpanded={true}>
             <FmCommonStackLayout spacing='md'>
               {callTimeLineup.map((artist, index) => (
                 <FmArtistRow
@@ -346,19 +372,11 @@ export const EventDetailsContent = ({
                 />
               ))}
             </FmCommonStackLayout>
-          </div>
+          </FmCommonCollapsibleSection>
         )}
       </div>
 
       <DecorativeDivider marginTop='mt-8' marginBottom='mb-6' />
-
-      <div className='flex flex-col gap-3 sm:flex-row sm:items-center cascade-item'>
-        <FmGetTicketsButton
-          onClick={handleOpenCheckout}
-        >
-          Get Tickets
-        </FmGetTicketsButton>
-      </div>
     </>
   );
 
@@ -442,7 +460,12 @@ export const EventDetailsContent = ({
         </div>
         <div className='min-w-0'>
           <h3 className='text-sm font-semibold text-foreground truncate'>{displayTitle}</h3>
-          <p className='text-xs text-muted-foreground/70 truncate'>{`${compactDateLabel} ${BULLET_SEPARATOR} ${formattedTime} ${BULLET_SEPARATOR} ${event.venue}`}</p>
+          <p className='text-xs text-muted-foreground/70 truncate'>
+            {compactDateLabel} {BULLET_SEPARATOR} {formattedTime} {BULLET_SEPARATOR}{' '}
+            <FmTextLink onClick={handleVenueSelect} className='inline'>
+              {event.venue}
+            </FmTextLink>
+          </p>
         </div>
       </div>
       {headerActions}
@@ -459,22 +482,34 @@ export const EventDetailsContent = ({
                 ref={handleContentViewportRef}
                 className='h-full w-full'
               >
-                <div className='flex min-h-full flex-col p-6 lg:p-8'>
-                  <div className='mx-auto w-full lg:w-[65%] space-y-8'>
-                    <FmDynamicStickyHeader
-                      primaryContent={primaryHeader}
-                      stickyContent={stickyHeader}
-                      className='pt-4'
-                      primaryClassName='group transition-all duration-300'
-                      stickyClassName='border border-border/50 bg-background/95 backdrop-blur px-4 py-3 shadow-[0_12px_40px_-20px_rgba(0,0,0,0.7)] transition-shadow duration-300'
-                      stickyOffset='calc(4rem + 1.5rem)'
-                      scrollContainerRef={contentViewportRef}
-                    />
+                <div className='flex min-h-full flex-col'>
+                  <div className='flex-1 p-6 lg:p-8'>
+                    <div className='mx-auto w-full lg:w-[65%] space-y-8'>
+                      <FmDynamicStickyHeader
+                        primaryContent={primaryHeader}
+                        stickyContent={stickyHeader}
+                        className='pt-4'
+                        primaryClassName='group transition-all duration-300'
+                        stickyClassName='border border-border/50 bg-background/95 backdrop-blur px-4 py-3 shadow-[0_12px_40px_-20px_rgba(0,0,0,0.7)] transition-shadow duration-300'
+                        stickyOffset='calc(4rem + 1.5rem)'
+                        scrollContainerRef={contentViewportRef}
+                      />
 
-                    <div className='pb-10'>
-                      {showCheckout ? checkoutContent : detailsContent}
+                      <div className='pb-10'>
+                        {showCheckout ? checkoutContent : detailsContent}
+                      </div>
                     </div>
                   </div>
+                  
+                  {!showCheckout && (
+                    <FmStickyFooter>
+                      <div className='mx-auto w-full lg:w-[65%]'>
+                        <FmBigButton onClick={handleOpenCheckout}>
+                          Get Tickets
+                        </FmBigButton>
+                      </div>
+                    </FmStickyFooter>
+                  )}
                 </div>
               </ScrollAreaPrimitive.Viewport>
               <ScrollBar orientation='vertical' />
@@ -485,45 +520,41 @@ export const EventDetailsContent = ({
       </ScrollAreaPrimitive.Root>
 
       <Dialog open={isAttendeeModalOpen} onOpenChange={setIsAttendeeModalOpen}>
-        <DialogContent className='max-w-md bg-background/95 backdrop-blur border border-border/60 max-h-[85vh] flex flex-col'>
-          <DialogHeader className='flex-shrink-0'>
+        <DialogContent className='max-w-md bg-background/95 backdrop-blur border border-border/60 max-h-[85vh] flex flex-col p-0 overflow-hidden'>
+          <DialogHeader className='flex-shrink-0 px-6 pt-6 pb-4'>
             <DialogTitle className='font-canela text-lg'>Guest list</DialogTitle>
           </DialogHeader>
           
-          {/* Public Users Section */}
-          <div className='grid max-h-[500px] grid-cols-4 gap-3 overflow-y-auto pr-1 flex-1'>
-            {attendeeList.slice(0, ATTENDEE_PLACEHOLDERS.length).map((attendee, index) => (
-              <div
-                key={`${attendee.avatar}-${index}`}
-                className='flex flex-col items-center gap-2 text-center group cursor-pointer'
-              >
-                <div className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-border bg-gradient-to-br from-fm-gold/15 to-fm-gold/35 text-xs font-semibold uppercase text-fm-gold transition-all duration-200 group-hover:scale-110 group-hover:border-fm-gold'>
-                  {attendee.avatar}
-                </div>
-                <span className='w-full truncate text-[11px] leading-tight text-muted-foreground'>
-                  {attendee.name}
-                </span>
+          <div className='flex-1 overflow-y-auto px-6 pb-6'>
+            {/* Have Tickets Section */}
+            <FmCommonCollapsibleSection title='Have Tickets' defaultExpanded={true} className='mb-4'>
+              <div className='grid grid-cols-4 gap-3'>
+                {attendeeList.slice(0, ATTENDEE_PLACEHOLDERS.length).map((attendee, index) => (
+                  <div
+                    key={`${attendee.avatar}-${index}`}
+                    className='flex flex-col items-center gap-2 text-center group cursor-pointer'
+                    onClick={() => navigate(`/profile/${attendee.avatar.toLowerCase()}`)}
+                  >
+                    <div className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-border bg-gradient-to-br from-fm-gold/15 to-fm-gold/35 text-xs font-semibold uppercase text-fm-gold transition-all duration-200 group-hover:scale-110 group-hover:border-fm-gold'>
+                      {attendee.avatar}
+                    </div>
+                    <span className='w-full truncate text-[11px] leading-tight text-muted-foreground'>
+                      {attendee.name}
+                    </span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          
-          {/* Private Users Section */}
-          {attendeeList.length > ATTENDEE_PLACEHOLDERS.length && (
-            <>
-              <DecorativeDivider 
-                marginTop='mt-4' 
-                marginBottom='mb-4' 
-                lineWidth='w-8' 
-                opacity={0.5} 
-              />
-              <div className='flex-shrink-0'>
-                <div className='flex items-center justify-between mb-3'>
-                  <h4 className='text-sm font-medium text-foreground'>Guests are private users</h4>
-                  <span className='text-xs text-muted-foreground/70'>
+            </FmCommonCollapsibleSection>
+            
+            {/* Private Users Section */}
+            {attendeeList.length > ATTENDEE_PLACEHOLDERS.length && (
+              <FmCommonCollapsibleSection title='Private Guests' defaultExpanded={false} className='mb-4'>
+                <div className='mb-3 flex items-center justify-end'>
+                  <span className='text-[10px] font-light text-muted-foreground/70'>
                     +{(attendeeList.length - ATTENDEE_PLACEHOLDERS.length - 4).toLocaleString()} more
                   </span>
                 </div>
-                <div className='grid grid-cols-4 gap-3 mb-4'>
+                <div className='grid grid-cols-4 gap-3'>
                   {attendeeList.slice(ATTENDEE_PLACEHOLDERS.length, ATTENDEE_PLACEHOLDERS.length + 4).map((attendee, index) => (
                     <div
                       key={`private-${attendee.avatar}-${index}`}
@@ -538,41 +569,35 @@ export const EventDetailsContent = ({
                     </div>
                   ))}
                 </div>
-              </div>
-            </>
-          )}
-          
-          {/* Interested Section */}
-          <DecorativeDivider 
-            marginTop='mt-2' 
-            marginBottom='mb-4' 
-            lineWidth='w-8' 
-            opacity={0.5} 
-          />
-          <div className='flex-shrink-0'>
-            <div className='flex items-center justify-between mb-3'>
-              <h4 className='text-sm font-medium text-foreground'>Interested</h4>
-              {attendeeList.length > 8 && (
-                <span className='text-xs text-muted-foreground/70'>
-                  +{Math.max(0, attendeeList.length - 8).toLocaleString()} more
-                </span>
-              )}
-            </div>
-            <div className='grid grid-cols-4 gap-3'>
-              {attendeeList.slice(0, 8).map((attendee, index) => (
-                <div
-                  key={`interested-${attendee.avatar}-${index}`}
-                  className='flex flex-col items-center gap-2 text-center'
-                >
-                  <div className='flex h-12 w-12 items-center justify-center rounded-full border border-border bg-gradient-to-br from-muted-foreground/15 to-muted-foreground/35 text-xs font-semibold uppercase text-muted-foreground'>
-                    {attendee.avatar}
-                  </div>
-                  <span className='w-full truncate text-[11px] leading-tight text-muted-foreground'>
-                    {attendee.name}
+              </FmCommonCollapsibleSection>
+            )}
+            
+            {/* Interested Section */}
+            <FmCommonCollapsibleSection title='Interested' defaultExpanded={true} className='mb-4'>
+              <div className='mb-3 flex items-center justify-end'>
+                {attendeeList.length > 8 && (
+                  <span className='text-[10px] font-light text-muted-foreground/70'>
+                    +{Math.max(0, attendeeList.length - 8).toLocaleString()} more
                   </span>
-                </div>
-              ))}
-            </div>
+                )}
+              </div>
+              <div className='grid grid-cols-4 gap-3'>
+                {attendeeList.slice(0, 8).map((attendee, index) => (
+                  <div
+                    key={`interested-${attendee.avatar}-${index}`}
+                    className='flex flex-col items-center gap-2 text-center group cursor-pointer'
+                    onClick={() => navigate(`/profile/${attendee.avatar.toLowerCase()}`)}
+                  >
+                    <div className='flex h-12 w-12 items-center justify-center rounded-full border border-border bg-gradient-to-br from-muted-foreground/15 to-muted-foreground/35 text-xs font-semibold uppercase text-muted-foreground transition-all duration-200 group-hover:scale-110 group-hover:border-fm-gold group-hover:from-fm-gold/15 group-hover:to-fm-gold/35 group-hover:text-fm-gold'>
+                      {attendee.avatar}
+                    </div>
+                    <span className='w-full truncate text-[11px] leading-tight text-muted-foreground'>
+                      {attendee.name}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </FmCommonCollapsibleSection>
           </div>
         </DialogContent>
       </Dialog>

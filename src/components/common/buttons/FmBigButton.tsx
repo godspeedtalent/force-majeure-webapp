@@ -3,7 +3,7 @@ import { Loader2 } from 'lucide-react';
 
 import { cn } from '@/shared/utils/utils';
 
-interface FmGetTicketsButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface FmBigButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** Loading state */
   isLoading?: boolean;
   /** Sold out state */
@@ -17,7 +17,7 @@ interface FmGetTicketsButtonProps extends React.ButtonHTMLAttributes<HTMLButtonE
 }
 
 /**
- * FmGetTicketsButton - Premium CTA with Professional Styling
+ * FmBigButton - Premium CTA with Professional Styling
  * 
  * A sophisticated call-to-action button designed with outline-based styling.
  * Features:
@@ -33,7 +33,7 @@ interface FmGetTicketsButtonProps extends React.ButtonHTMLAttributes<HTMLButtonE
  * - Fully accessible with keyboard support
  * - Respects reduced motion preferences
  */
-export const FmGetTicketsButton = forwardRef<HTMLButtonElement, FmGetTicketsButtonProps>(
+export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
   (
     {
       children,
@@ -202,10 +202,10 @@ export const FmGetTicketsButton = forwardRef<HTMLButtonElement, FmGetTicketsButt
         {!isSoldOut && !disableAnimations && isHovered && (
           <div
             className={cn(
-              'absolute inset-0 bg-gradient-to-br from-transparent via-white/20 to-transparent',
-              'motion-safe:animate-[metallic-sheen_3s_ease-in-out_infinite]',
+              'absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent',
+              'motion-safe:animate-[metallic-sheen_4s_ease-in-out_infinite]',
               'pointer-events-none opacity-0 group-hover:opacity-100',
-              'transition-opacity duration-500'
+              'transition-opacity duration-500 blur-sm'
             )}
             style={{
               transform: 'translateX(-100%) rotate(-45deg)',
@@ -283,4 +283,4 @@ export const FmGetTicketsButton = forwardRef<HTMLButtonElement, FmGetTicketsButt
   }
 );
 
-FmGetTicketsButton.displayName = 'FmGetTicketsButton';
+FmBigButton.displayName = 'FmBigButton';

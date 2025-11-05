@@ -72,75 +72,70 @@ export const FmVenueDetailsModal = ({
           )}
         </div>
       }
-      className='max-w-3xl'
+      className='max-w-3xl p-0 overflow-hidden'
     >
-      <div className='flex flex-col gap-8 sm:flex-row sm:items-stretch'>
-        <div className='sm:w-60 flex-shrink-0'>
-          <div className='space-y-3'>
-            <p className='text-[10px] uppercase tracking-[0.35em] text-white/50'>
-              Venue Details
-            </p>
-            <h2 className='text-3xl font-canela font-semibold text-white leading-tight'>
-              {venue?.name ?? 'Venue'}
-            </h2>
-          </div>
-          <div className='mt-4 overflow-hidden rounded-xl border border-white/15 bg-white/5 shadow-inner'>
-            {venue?.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={venue.image}
-                alt={venue.name}
-                className='aspect-[4/3] w-full object-cover'
-              />
-            ) : (
-              <div className='aspect-[4/3] w-full bg-gradient-to-br from-fm-gold/15 via-fm-gold/5 to-transparent flex items-center justify-center'>
-                <MapPin className='w-16 h-16 text-fm-gold/30' />
-              </div>
-            )}
-          </div>
+      {/* Hero Image */}
+      {venue?.image && (
+        <div className='w-full h-64 overflow-hidden relative'>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={venue.image}
+            alt={venue.name}
+            className='w-full h-full object-cover'
+          />
+          <div className='absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent' />
+        </div>
+      )}
+      
+      <div className='p-8 flex flex-col gap-6'>
+        <div className='space-y-3'>
+          <p className='text-[10px] uppercase tracking-[0.35em] text-white/50'>
+            Venue Details
+          </p>
+          <h2 className='text-3xl font-canela font-semibold text-white leading-tight'>
+            {venue?.name ?? 'Venue'}
+          </h2>
         </div>
 
-        <div className='flex-1 flex flex-col justify-center gap-6 sm:min-h-[320px]'>
-          {fullAddress && (
-            <div className='flex items-start gap-3 text-sm text-white/70'>
-              <MapPin className='w-4 h-4 text-fm-gold flex-shrink-0 mt-0.5' />
-              <span>{fullAddress}</span>
-            </div>
+        {fullAddress && (
+          <div className='flex items-start gap-3 text-sm text-white/70'>
+            <MapPin className='w-4 h-4 text-fm-gold flex-shrink-0 mt-0.5' />
+            <span>{fullAddress}</span>
+          </div>
+        )}
+
+        <div
+          className={cn(
+            'prose prose-invert max-w-none text-sm text-white/80 leading-relaxed',
+            !venue?.description && 'italic text-white/60'
           )}
+        >
+          {venue?.description ?? DEFAULT_DESCRIPTION}
+        </div>
 
-          <div
-            className={cn(
-              'prose prose-invert max-w-none text-sm text-white/80 leading-relaxed',
-              !venue?.description && 'italic text-white/60'
-            )}
-          >
-            {venue?.description ?? DEFAULT_DESCRIPTION}
-          </div>
-
-          <div className='flex flex-wrap gap-3 mt-auto'>
-            {venue?.googleMapsUrl && (
-              <FmCommonButton
-                size='sm'
-                variant='secondary'
-                onClick={() => window.open(venue.googleMapsUrl!, '_blank')}
-                className='bg-white/10 text-white hover:bg-white/20'
-              >
-                <MapPin className='w-4 h-4 mr-2' />
-                View on Maps
-              </FmCommonButton>
-            )}
-            {venue?.website && (
-              <FmCommonButton
-                size='sm'
-                variant='secondary'
-                onClick={() => window.open(venue.website!, '_blank')}
-                className='bg-white/10 text-white hover:bg-white/20'
-              >
-                <ExternalLink className='w-4 h-4 mr-2' />
-                Visit Website
-              </FmCommonButton>
-            )}
-          </div>
+        <div className='flex flex-wrap gap-3'>
+          {venue?.googleMapsUrl && (
+            <FmCommonButton
+              size='sm'
+              variant='secondary'
+              onClick={() => window.open(venue.googleMapsUrl!, '_blank')}
+              className='bg-white/10 text-white hover:bg-white/20'
+            >
+              <MapPin className='w-4 h-4 mr-2' />
+              View on Maps
+            </FmCommonButton>
+          )}
+          {venue?.website && (
+            <FmCommonButton
+              size='sm'
+              variant='secondary'
+              onClick={() => window.open(venue.website!, '_blank')}
+              className='bg-white/10 text-white hover:bg-white/20'
+            >
+              <ExternalLink className='w-4 h-4 mr-2' />
+              Visit Website
+            </FmCommonButton>
+          )}
         </div>
       </div>
     </FmCommonModal>

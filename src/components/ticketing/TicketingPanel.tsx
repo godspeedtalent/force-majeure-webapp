@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, Gift, LogIn, ShoppingCart, Tag, Ticket } from 'lucide-react';
+import { ChevronDown, Gift, LogIn, Tag, Ticket } from 'lucide-react';
 
 import { FmInfoCard } from '@/components/common/data/FmInfoCard';
 import { FmPromoCodeInput } from '@/components/common/misc/FmPromoCodeInput';
-import { FmGetTicketsButton } from '@/components/common/buttons/FmGetTicketsButton';
+import { FmBigButton } from '@/components/common/buttons/FmBigButton';
 import { Button } from '@/components/common/shadcn/button';
 import { Label } from '@/components/common/shadcn/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/common/shadcn/select';
@@ -420,13 +420,13 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false, initialSe
           </div>
         </div>
 
-        <FmGetTicketsButton
+        <FmBigButton
           onClick={handlePurchase}
           disabled={!hasSelections}
           isLoading={isLoading}
         >
           Continue to Checkout
-        </FmGetTicketsButton>
+        </FmBigButton>
       </div>
     </div>
   );

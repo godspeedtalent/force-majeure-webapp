@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, CheckCircle2, CreditCard, MapPin, Shield, LogIn } from 'lucide-react';
 
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { FmGetTicketsButton } from '@/components/common/buttons/FmGetTicketsButton';
+import { FmBigButton } from '@/components/common/buttons/FmBigButton';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { Separator } from '@/components/common/shadcn/separator';
 import { Input } from '@/components/common/shadcn/input';
@@ -431,13 +431,13 @@ export const TicketCheckoutForm = ({ eventName, eventDate, summary, onBack, onCo
             )}
           </div>
 
-          <FmGetTicketsButton
+          <FmBigButton
             type='submit'
             isLoading={isSubmitting}
             disabled={isSubmitting}
           >
             Complete Purchase
-          </FmGetTicketsButton>
+          </FmBigButton>
         </div>
       </form>
 
