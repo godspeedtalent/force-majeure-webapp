@@ -101,7 +101,7 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
     label: 'Admin Dashboard',
   },
   '/admin/controls': {
-    label: 'Database Controls',
+    label: 'Admin Controls',
   },
   '/admin/statistics': {
     label: 'Statistics',
@@ -124,6 +124,9 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
   // Developer pages
   '/developer': {
     label: 'Developer Tools',
+  },
+  '/developer/database': {
+    label: 'Database Navigator',
   },
   '/developer/components': {
     label: 'FM Components Catalog',

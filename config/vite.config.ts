@@ -28,6 +28,7 @@ export default defineConfig(({ mode }) => ({
       '@': path.resolve(__dirname, '../src'),
       '@/components': path.resolve(__dirname, '../src/components'),
       '@/features': path.resolve(__dirname, '../src/features'),
+      '@features': path.resolve(__dirname, '../src/features'),
       '@/shared': path.resolve(__dirname, '../src/shared'),
       '@/config': path.resolve(__dirname, '../config'),
     },

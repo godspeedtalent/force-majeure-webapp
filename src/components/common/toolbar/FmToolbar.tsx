@@ -13,7 +13,7 @@ import { ROLES } from '@/shared/auth/permissions';
 
 // Lazy load sections  
 import { CreationToolsSection } from '@/components/devtools/CreationToolsSection';
-import { EventListSection } from '@/components/devtools/EventListSection';
+import { GlobalResourceSearch } from '@/components/admin/GlobalResourceSearch';
 import { FeatureToggleSection } from '@/components/devtools/FeatureToggleSection';
 import { DevNotesSection } from '@/components/devtools/DevNotesSection';
 
@@ -22,6 +22,7 @@ export interface ToolbarTab {
   label: string;
   icon: LucideIcon;
   content: ReactNode;
+  footer?: ReactNode;
   title?: string;
   visible?: boolean;
   group?: string;
@@ -149,8 +150,26 @@ export const FmToolbar = ({
         content: (
           <div className='space-y-4'>
             <Separator className="bg-white/10" />
-            <CreationToolsSection />
-            <EventListSection />
+            <div className="px-4 py-2 space-y-4">
+              <div className="pb-2 border-b border-white/10">
+                <p className="text-xs text-muted-foreground mb-2">Quick Create</p>
+                <CreationToolsSection />
+              </div>
+              <GlobalResourceSearch />
+            </div>
+          </div>
+        ),
+        footer: (
+          <div className="pb-4">
+            <FmCommonButton
+              variant="default"
+              icon={Database}
+              iconPosition="left"
+              onClick={() => navigate('/developer/database')}
+              className="w-full justify-start"
+            >
+              Database Navigator
+            </FmCommonButton>
           </div>
         ),
         title: 'Database Manager',
@@ -534,7 +553,7 @@ export const FmToolbar = ({
         )}
       >
         {isOpen && (
-          <div className='pt-8 px-6 pointer-events-auto h-full'>
+          <div className='pt-8 px-6 pointer-events-auto h-full flex flex-col'>
             <Button
               variant='ghost'
               size='icon'
@@ -549,7 +568,12 @@ export const FmToolbar = ({
                 <h2 className='font-canela text-2xl text-white mb-6'>
                   {activeTabData.title || activeTabData.label}
                 </h2>
-                <div className='space-y-6'>{activeTabData.content}</div>
+                <div className='space-y-6 flex-1'>{activeTabData.content}</div>
+                {activeTabData.footer && (
+                  <div className='mt-auto pt-4 border-t border-white/10'>
+                    {activeTabData.footer}
+                  </div>
+                )}
               </>
             )}
           </div>

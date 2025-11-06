@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Music, MapPin } from 'lucide-react';
-import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
-import { FmCommonToggleHeader } from '@/components/common/forms/FmCommonToggleHeader';
+import { Button } from '@/components/common/shadcn/button';
 
 export const CreationToolsSection = () => {
   const navigate = useNavigate();
@@ -11,33 +10,34 @@ export const CreationToolsSection = () => {
   };
 
   return (
-    <FmCommonToggleHeader title="Create resource" defaultOpen={true}>
-      <p className="text-xs text-white/50 mb-4">
-        Create new events, artists, and venues for the platform
-      </p>
-      <div className="grid grid-cols-3 gap-3">
-        <FmCommonIconButton
-          variant="create"
-          icon={Calendar}
-          tooltip="Create Event"
-          onClick={() => handleNavigate('/developer/database/events/new')}
-          size="lg"
-        />
-        <FmCommonIconButton
-          variant="create"
-          icon={Music}
-          tooltip="Create Artist"
-          onClick={() => handleNavigate('/developer/database/artists/new')}
-          size="lg"
-        />
-        <FmCommonIconButton
-          variant="create"
-          icon={MapPin}
-          tooltip="Create Venue"
-          onClick={() => handleNavigate('/developer/database/venues/new')}
-          size="lg"
-        />
-      </div>
-    </FmCommonToggleHeader>
+    <div className="flex items-center gap-2">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => handleNavigate('/developer/database/events/new')}
+        className="h-7 px-2 border-white/20 hover:border-fm-gold hover:bg-transparent group"
+      >
+        <Calendar className="h-3 w-3 text-white/70 group-hover:text-fm-gold transition-colors" />
+        <span className="ml-1.5 text-xs">Event</span>
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => handleNavigate('/developer/database/artists/new')}
+        className="h-7 px-2 border-white/20 hover:border-fm-gold hover:bg-transparent group"
+      >
+        <Music className="h-3 w-3 text-white/70 group-hover:text-fm-gold transition-colors" />
+        <span className="ml-1.5 text-xs">Artist</span>
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => handleNavigate('/developer/database/venues/new')}
+        className="h-7 px-2 border-white/20 hover:border-fm-gold hover:bg-transparent group"
+      >
+        <MapPin className="h-3 w-3 text-white/70 group-hover:text-fm-gold transition-colors" />
+        <span className="ml-1.5 text-xs">Venue</span>
+      </Button>
+    </div>
   );
 };

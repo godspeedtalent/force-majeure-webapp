@@ -4,7 +4,7 @@ import { Button } from '@/components/common/shadcn/button';
 import { Loader2, ArrowRight } from 'lucide-react';
 import { cn } from '@/shared/utils/utils';
 
-interface FmCommonQueryInputProps {
+interface FmQueryInputProps {
   placeholder?: string;
   onQuery: (value: string) => Promise<void>;
   isLoading?: boolean;
@@ -12,7 +12,7 @@ interface FmCommonQueryInputProps {
   className?: string;
 }
 
-export const FmCommonQueryInput = forwardRef<HTMLInputElement, FmCommonQueryInputProps>(
+export const FmQueryInput = forwardRef<HTMLInputElement, FmQueryInputProps>(
   ({ placeholder, onQuery, isLoading = false, disabled = false, className }, ref) => {
     const [value, setValue] = useState('');
     const [isQuerying, setIsQuerying] = useState(false);
@@ -72,4 +72,4 @@ export const FmCommonQueryInput = forwardRef<HTMLInputElement, FmCommonQueryInpu
   }
 );
 
-FmCommonQueryInput.displayName = 'FmCommonQueryInput';
+FmQueryInput.displayName = 'FmQueryInput';

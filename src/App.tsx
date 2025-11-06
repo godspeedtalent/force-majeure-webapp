@@ -15,6 +15,7 @@ import EventCheckout from './pages/demo/EventCheckout';
 import EventCheckoutConfirmation from './pages/demo/EventCheckoutConfirmation';
 import EmailTemplateDemo from './pages/demo/EmailTemplateDemo';
 import FmComponentsCatalog from './pages/developer/FmComponentsCatalog';
+import DeveloperDatabase from './pages/developer/DeveloperDatabase';
 import EventManagement from './pages/EventManagement';
 import TestingIndex from './pages/testing/TestingIndex';
 import CheckoutFlowTests from './pages/testing/CheckoutFlowTests';
@@ -133,6 +134,14 @@ const AppRoutes = () => {
             element={
               <DemoProtectedRoute>
                 <FmComponentsCatalog />
+              </DemoProtectedRoute>
+            }
+          />
+          <Route
+            path='/developer/database'
+            element={
+              <DemoProtectedRoute>
+                <DeveloperDatabase />
               </DemoProtectedRoute>
             }
           />

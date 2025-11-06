@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FmCommonQueryInput } from '../forms/FmCommonQueryInput';
+import { FmQueryInput } from '../forms/FmQueryInput';
 import { supabase } from '@/shared/api/supabase/client';
 import { CheckCircle2, XCircle, X } from 'lucide-react';
 import { Button } from '../shadcn/button';
@@ -74,7 +74,7 @@ export const FmPromoCodeInput = ({ onPromoCodeApplied, className }: FmPromoCodeI
   return (
     <div className={cn('space-y-2', className)}>
       {validationState !== 'valid' ? (
-        <FmCommonQueryInput
+        <FmQueryInput
           placeholder='Enter promo code'
           onQuery={handleQuery}
         />
