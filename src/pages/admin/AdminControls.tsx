@@ -6,16 +6,17 @@ import { FmCommonDataGrid, DataGridColumn, DataGridAction } from '@/components/c
 import { FmEditVenueButton } from '@/components/common/buttons/FmEditVenueButton';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
-import { Users, Sliders, MapPin, Database, Calendar, Edit, Trash2, Settings, Code, Mic2 } from 'lucide-react';
+import { Users, Sliders, MapPin, Database, Calendar, Edit, Trash2, Settings, Code, Mic2, Building2 } from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { FeatureToggleSection } from '@/components/devtools/FeatureToggleSection';
 import { AdminFeesSection } from '@/components/admin/AdminFeesSection';
 import { DevToolsManagement } from '@/components/admin/DevToolsManagement';
 import { EventsManagement } from './EventsManagement';
+import { OrganizationsManagement } from './OrganizationsManagement';
 import { toast } from 'sonner';
 
-type AdminTab = 'artists' | 'events' | 'users' | 'venues' | 'settings' | 'devtools';
+type AdminTab = 'artists' | 'events' | 'users' | 'venues' | 'organizations' | 'settings' | 'devtools';
 
 export default function AdminControls() {
   const location = useLocation();
@@ -31,6 +32,7 @@ export default function AdminControls() {
       items: [
         { id: 'artists', label: 'Artists', icon: Mic2, description: 'Manage artist profiles' },
         { id: 'events', label: 'Events', icon: Calendar, description: 'Manage events' },
+        { id: 'organizations', label: 'Organizations', icon: Building2, description: 'Manage organizations' },
         { id: 'users', label: 'Users', icon: Users, description: 'Manage user accounts' },
         { id: 'venues', label: 'Venues', icon: MapPin, description: 'Manage venue locations' },
       ],
@@ -471,6 +473,10 @@ export default function AdminControls() {
 
               {activeTab === 'users' && (
                 <FmUserDataGrid />
+              )}
+
+              {activeTab === 'organizations' && (
+                <OrganizationsManagement />
               )}
 
               {activeTab === 'venues' && (

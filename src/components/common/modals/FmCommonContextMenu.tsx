@@ -40,9 +40,10 @@ export function FmCommonContextMenu<T = any>({
       <ContextMenuTrigger asChild>
         {children}
       </ContextMenuTrigger>
-      <ContextMenuContent className="w-48 bg-popover border-border">
+      <ContextMenuContent className="w-56 bg-gradient-to-br from-background to-background/95 backdrop-blur-xl border-2 border-white/20 shadow-lg shadow-black/50 animate-in fade-in zoom-in-95 duration-200 p-1">
         {actions.map((action, idx) => {
           const iconOnRight = action.iconPosition === 'right';
+          const isEven = idx % 2 === 0;
           return (
             <div key={idx}>
               <ContextMenuItem
@@ -52,16 +53,36 @@ export function FmCommonContextMenu<T = any>({
                 }}
                 disabled={action.disabled}
                 className={cn(
-                  'cursor-pointer transition-colors duration-200',
-                  action.variant === 'destructive' && 'text-destructive focus:text-destructive focus:bg-destructive/10',
-                  iconOnRight && 'flex justify-between items-center'
+                  'group cursor-pointer transition-all duration-300 rounded-md my-0.5 relative',
+                  // Striped background pattern
+                  isEven ? 'bg-background/40' : 'bg-background/60',
+                  'hover:bg-fm-gold/10 hover:scale-[1.02] hover:shadow-lg hover:shadow-fm-gold/20 hover:text-white',
+                  'focus:bg-fm-gold/15 focus:scale-[1.02] focus:shadow-lg focus:shadow-fm-gold/20 focus:text-white',
+                  'active:scale-[0.98]',
+                  action.variant === 'destructive' && 'text-destructive hover:bg-destructive/15 hover:shadow-destructive/20 focus:bg-destructive/20 focus:shadow-destructive/20 hover:text-destructive',
+                  iconOnRight && 'flex justify-between items-center',
+                  action.disabled && 'opacity-50 cursor-not-allowed hover:scale-100 hover:bg-transparent'
                 )}
               >
-                {!iconOnRight && action.icon && <span className="mr-2">{action.icon}</span>}
-                {action.label}
-                {iconOnRight && action.icon && <span className="ml-auto">{action.icon}</span>}
+                {!iconOnRight && action.icon && (
+                  <span className="mr-2 transition-transform duration-300 group-hover:scale-110">
+                    {action.icon}
+                  </span>
+                )}
+                <span className="font-medium">{action.label}</span>
+                {iconOnRight && action.icon && (
+                  <span className="ml-auto transition-transform duration-300 group-hover:scale-110 group-hover:translate-x-0.5">
+                    {action.icon}
+                  </span>
+                )}
+                {/* Horizontal divider after each item */}
+                {idx < actions.length - 1 && (
+                  <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                )}
               </ContextMenuItem>
-              {action.separator && idx < actions.length - 1 && <ContextMenuSeparator />}
+              {action.separator && idx < actions.length - 1 && (
+                <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent my-1" />
+              )}
             </div>
           );
         })}

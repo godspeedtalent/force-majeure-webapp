@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
+import { useFeatureFlagHelpers } from '@/shared/hooks/useFeatureFlags';
+import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 
 interface GlobalSearchContextType {
   isOpen: boolean;
@@ -12,8 +13,8 @@ const GlobalSearchContext = createContext<GlobalSearchContextType | undefined>(u
 
 export const GlobalSearchProvider = ({ children }: { children: ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { data: flags } = useFeatureFlags();
-  const isEnabled = flags?.global_search ?? false;
+  const { isFeatureEnabled } = useFeatureFlagHelpers();
+  const isEnabled = isFeatureEnabled(FEATURE_FLAGS.GLOBAL_SEARCH);
 
   const openSearch = () => setIsOpen(true);
   const closeSearch = () => setIsOpen(false);

@@ -95,6 +95,81 @@ src/
 
 ## Recent Major Changes
 
+### Feature Flag System (Nov 2025)
+
+- **Centralized feature flag management** similar to permission system
+- Type-safe `FEATURE_FLAGS` constants in `src/shared/config/featureFlags.ts`
+- Enhanced `useFeatureFlagHelpers` hook with utility methods:
+  - `isFeatureEnabled(flag)` - Check single flag
+  - `isAnyFeatureEnabled(flags[])` - Check if any flag enabled (OR logic)
+  - `areAllFeaturesEnabled(flags[])` - Check if all flags enabled (AND logic)
+  - `getEnabledFeatures()` - Get array of all enabled flags
+- `FeatureGuard` component for declarative UI gating:
+  - Supports single or multiple flags
+  - AND/OR logic with `requireAll` prop
+  - Fallback component support
+  - Invert logic with `invert` prop
+- Comprehensive migration from scattered flag checks (`flags?.flag_name`) to centralized system
+- Updated files: App.tsx, Scavenger.tsx, ProfileEdit.tsx, Navigation.tsx, GlobalSearchContext.tsx, ForceMajeureRootLayout.tsx
+- Deprecated old `FeatureFlagGuard` with migration guidance
+- **📖 Full documentation:** `/docs/FEATURE_FLAG_GUIDE.md`
+
+### Role & Permission System (Nov 2025)
+
+- **Centralized permission management** in `src/shared/auth/permissions.ts`
+- Type-safe `PERMISSIONS` and `ROLES` constants
+- Enhanced `useUserPermissions` hook with comprehensive checking methods
+- `<PermissionGuard>` component for conditional UI rendering
+- `<ProtectedRoute>` enhanced with permission/role support
+- Role management modal in user admin grid (click roles to edit)
+- RLS policies enforce permission checks at database level
+
+**Available Roles:**
+- `ROLES.ADMIN` - Full system administrator (all permissions via `*`)
+- `ROLES.DEVELOPER` - Developer access (debugging, dev tools, all permissions)
+- `ROLES.ORG_ADMIN` - Organization administrator (manage events, venues, staff)
+- `ROLES.ORG_STAFF` - Organization staff (view org, scan tickets)
+- `ROLES.USER` - Standard user (basic access)
+
+**Key Permissions:**
+- `PERMISSIONS.MANAGE_ORGANIZATION` - Full org management
+- `PERMISSIONS.VIEW_ORGANIZATION` - View org data
+- `PERMISSIONS.SCAN_TICKETS` - Ticket scanning capability
+- `PERMISSIONS.MANAGE_EVENTS` - Event management
+- `PERMISSIONS.ALL` - Wildcard permission (`*`)
+
+**Usage Patterns:**
+```typescript
+// Import constants
+import { PERMISSIONS, ROLES } from '@/shared/auth/permissions';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+
+// Check permissions
+const { hasPermission, hasRole, hasAnyPermission } = useUserPermissions();
+const canManage = hasPermission(PERMISSIONS.MANAGE_ORGANIZATION);
+const isAdmin = hasRole(ROLES.ADMIN);
+
+// Protect routes (use in App.tsx)
+<ProtectedRoute role={ROLES.ADMIN}>
+  <AdminPage />
+</ProtectedRoute>
+
+// Conditional rendering
+<PermissionGuard permission={PERMISSIONS.SCAN_TICKETS}>
+  <ScannerTools />
+</PermissionGuard>
+```
+
+**CRITICAL Security Rules:**
+1. ❌ **NEVER** hard-code role/permission strings - always use constants
+2. ✅ **ALWAYS** use `<ProtectedRoute>` for admin/privileged routes
+3. ✅ **ALWAYS** check actual user roles, not dev mode overrides
+4. ✅ Admin routes (`/admin/*`) must use `<ProtectedRoute role={ROLES.ADMIN}>`
+5. ✅ DevTools tabs must check `hasAnyRole(ROLES.DEVELOPER, ROLES.ADMIN)`
+6. ✅ Use permission checks for features, role checks for access levels
+
+**See also:** `/docs/PERMISSION_MANAGEMENT_GUIDE.md` for detailed examples
+
 ### Authentication (Nov 2025)
 - Added Google OAuth2 integration
 - "Remember Me" functionality with 30-day sessions
@@ -129,9 +204,13 @@ npm run preview      # Preview production build
 ```
 
 ### Feature Flags
-- Managed in `/src/shared/hooks/useFeatureFlags.ts`
+
+- **Centralized system** with type-safe constants in `src/shared/config/featureFlags.ts`
 - Stored in Supabase `feature_flags` table
-- DevTools drawer for toggling (admin only)
+- Use `FeatureGuard` component for conditional UI rendering
+- Use `useFeatureFlagHelpers` hook for programmatic checks
+- DevTools drawer for toggling (admin/developer only)
+- Full documentation: `docs/FEATURE_FLAG_GUIDE.md`
 
 ### Demo Pages
 - Protected by `DemoProtectedRoute` (admin role required)

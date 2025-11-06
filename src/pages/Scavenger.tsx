@@ -18,14 +18,15 @@ import {
   useScavengerNavigation,
   useUserClaims,
 } from '@/features/scavenger/hooks/useScavenger';
-import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
+import { useFeatureFlagHelpers } from '@/shared/hooks/useFeatureFlags';
+import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 
 // Layout components
 // Scavenger components
 
 export default function Scavenger() {
   const { user, profile, loading: authLoading } = useAuth();
-  const { data: featureFlags } = useFeatureFlags();
+  const { isFeatureEnabled } = useFeatureFlagHelpers();
   const queryClient = useQueryClient();
 
   // Use custom hooks
@@ -76,7 +77,7 @@ export default function Scavenger() {
   // Handle invalid token state (from error parameter)
   if (showInvalidToken || !locationId) {
     return (
-      <ScavengerSplitLayout showShoppingCart={!featureFlags?.coming_soon_mode}>
+      <ScavengerSplitLayout showShoppingCart={!isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)}>
         <InvalidTokenView />
       </ScavengerSplitLayout>
     );
@@ -101,7 +102,7 @@ export default function Scavenger() {
     if (alreadyClaimed || (hasAnyClaim && user)) {
       return (
         <ScavengerSplitLayout
-          showShoppingCart={!featureFlags?.coming_soon_mode}
+          showShoppingCart={!isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)}
         >
           <UnauthenticatedWizard
             locationName={location?.location_name}
@@ -125,7 +126,7 @@ export default function Scavenger() {
       // Not authenticated - show wizard to join
       return (
         <ScavengerSplitLayout
-          showShoppingCart={!featureFlags?.coming_soon_mode}
+          showShoppingCart={!isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)}
         >
           <UnauthenticatedWizard
             locationName={location?.location_name}
@@ -143,7 +144,7 @@ export default function Scavenger() {
 
     // Authenticated - show checkpoint claim interface
     return (
-      <ScavengerSplitLayout showShoppingCart={!featureFlags?.coming_soon_mode}>
+      <ScavengerSplitLayout showShoppingCart={!isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)}>
         <UnauthenticatedWizard
           locationName={location?.location_name}
           onLoginSuccess={async () => {
@@ -199,7 +200,7 @@ export default function Scavenger() {
     if (hasAnyClaim) {
       return (
         <ScavengerSplitLayout
-          showShoppingCart={!featureFlags?.coming_soon_mode}
+          showShoppingCart={!isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)}
         >
           <UnauthenticatedWizard
             locationName={undefined}
@@ -217,7 +218,7 @@ export default function Scavenger() {
     }
 
     return (
-      <ScavengerSplitLayout showShoppingCart={!featureFlags?.coming_soon_mode}>
+      <ScavengerSplitLayout showShoppingCart={!isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)}>
         <AuthenticatedUserView
           displayName={profile?.display_name ?? undefined}
           totalUndiscoveredCheckpoints={totalUndiscoveredCheckpoints}
@@ -230,7 +231,7 @@ export default function Scavenger() {
   // Show wizard if not authenticated (no user)
   if (!user) {
     return (
-      <ScavengerSplitLayout showShoppingCart={!featureFlags?.coming_soon_mode}>
+      <ScavengerSplitLayout showShoppingCart={!isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)}>
         <UnauthenticatedWizard
           onLoginSuccess={async () => {
             await queryClient.invalidateQueries({ queryKey: ['user-claims'] });
@@ -245,7 +246,7 @@ export default function Scavenger() {
   // User is authenticated and has a locationId - show full scavenger hunt interface
   return (
     <ScavengerFullLayout
-      showShoppingCart={!featureFlags?.coming_soon_mode}
+      showShoppingCart={!isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)}
       locations={locations}
       userClaims={userClaims}
     />

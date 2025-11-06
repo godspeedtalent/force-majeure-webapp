@@ -1,30 +1,17 @@
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { useDevTools } from '@/contexts/DevToolsContext';
 import { useUserRole } from './useUserRole';
 
 /**
- * Hook that returns the effective role, considering dev overrides
+ * Hook that returns the user's authentication state and roles
+ * (Previously included dev overrides, now just returns actual state)
  */
 export const useDevRole = () => {
   const { user } = useAuth();
-  const { data: dbRole, isLoading } = useUserRole();
-  const { devRole, isDevMode } = useDevTools();
+  const { data: roles, isLoading } = useUserRole();
 
-  // In dev mode with override, use dev role
-  if (isDevMode && devRole) {
-    // Map dev roles to actual behavior
-    if (devRole === 'unauthenticated') {
-      return { role: null, isAuthenticated: false, isLoading: false };
-    }
-    if (devRole === 'fan') {
-      return { role: null, isAuthenticated: true, isLoading: false };
-    }
-    return { role: devRole, isAuthenticated: true, isLoading: false };
-  }
-
-  // Otherwise use real auth state
+  // Return real auth state
   return {
-    role: dbRole,
+    roles,
     isAuthenticated: !!user,
     isLoading,
   };

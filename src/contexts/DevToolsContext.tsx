@@ -1,11 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { isDevelopment } from '@/shared/utils/environment';
 
-export type DevRole = 'unauthenticated' | 'fan' | 'admin' | 'developer';
-
 interface DevToolsContextType {
-  devRole: DevRole | null;
-  setDevRole: (role: DevRole | null) => void;
   isDevMode: boolean;
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
@@ -13,40 +9,13 @@ interface DevToolsContextType {
 
 const DevToolsContext = createContext<DevToolsContextType | undefined>(undefined);
 
-const DEV_ROLE_KEY = 'lovable_dev_role_override';
-
 export const DevToolsProvider = ({ children }: { children: ReactNode }) => {
   const isDevMode = isDevelopment();
-  const [devRole, setDevRoleState] = useState<DevRole | null>(() => {
-    if (!isDevMode) return 'fan';
-    const stored = localStorage.getItem(DEV_ROLE_KEY);
-    return (stored as DevRole | null) || 'admin';
-  });
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-  const setDevRole = (role: DevRole | null) => {
-    if (!isDevMode) {
-      setDevRoleState(role);
-      return;
-    }
-
-    setDevRoleState(role);
-    if (role) {
-      localStorage.setItem(DEV_ROLE_KEY, role);
-    } else {
-      localStorage.removeItem(DEV_ROLE_KEY);
-    }
-  };
 
   const toggleDrawer = () => {
     setIsDrawerOpen(prev => !prev);
   };
-
-  useEffect(() => {
-    if (!isDevMode && devRole && devRole !== 'fan') {
-      setDevRoleState('fan');
-    }
-  }, [isDevMode, devRole]);
 
   // Hotkey listener: Ctrl+Shift+D or Cmd+Shift+D
   useEffect(() => {
@@ -64,7 +33,7 @@ export const DevToolsProvider = ({ children }: { children: ReactNode }) => {
   }, [isDevMode]);
 
   return (
-    <DevToolsContext.Provider value={{ devRole, setDevRole, isDevMode, isDrawerOpen, toggleDrawer }}>
+    <DevToolsContext.Provider value={{ isDevMode, isDrawerOpen, toggleDrawer }}>
       {children}
     </DevToolsContext.Provider>
   );

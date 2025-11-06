@@ -2,6 +2,7 @@ import { ReactElement } from 'react';
 import { FmCitySearchDropdown } from '../search/FmCitySearchDropdown';
 import { FmVenueSearchDropdown } from '../search/FmVenueSearchDropdown';
 import { FmArtistSearchDropdown } from '../search/FmArtistSearchDropdown';
+import { FmUserSearchDropdown } from '../search/FmUserSearchDropdown';
 
 export interface RelationConfig {
   component: (props: RelationComponentProps) => ReactElement;
@@ -76,6 +77,20 @@ export const RELATION_MAPPING: Record<string, RelationConfig> = {
       />
     ),
     displayField: 'headliner',
+  },
+  owner_id: {
+    component: (props: RelationComponentProps) => (
+      <FmUserSearchDropdown
+        value={props.value}
+        onChange={(value) => {
+          props.onChange(value);
+          props.onComplete?.();
+        }}
+        placeholder="Select owner..."
+        disabled={props.disabled}
+      />
+    ),
+    displayField: 'owner',
   },
 };
 

@@ -1,32 +1,30 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Database, ExternalLink, Hammer, ShoppingCart } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Database, Hammer, ShoppingCart, ToggleLeft, ChevronRight, ClipboardList } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { CreationToolsSection } from './CreationToolsSection';
 import { EventListSection } from './EventListSection';
-import { RoleSelectSection } from './RoleSelectSection';
+import { FeatureToggleSection } from './FeatureToggleSection';
+import { DevNotesSection } from './DevNotesSection';
 import { BaseFloatingToolbar, type FloatingToolbarTab } from './BaseFloatingToolbar';
 
 import { useDevTools } from '@/contexts/DevToolsContext';
-import type { DevRole } from '@/contexts/DevToolsContext';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { ROLES } from '@/shared/auth/permissions';
 
-type TabId = 'database' | 'tools' | 'cart';
+type TabId = 'database' | 'tools' | 'features' | 'cart' | 'notes';
 
 export const DevToolsDrawer = () => {
-  const { devRole, setDevRole, isDrawerOpen, toggleDrawer } = useDevTools();
+  const { isDrawerOpen, toggleDrawer } = useDevTools();
   const { user } = useAuth();
+  const { hasAnyRole } = useUserPermissions();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabId | null>(null);
 
-  const handleRoleChange = (role: DevRole) => {
-    setDevRole(role);
-  };
-
-  const isDeveloper = useMemo(
-    () => devRole === 'developer' || devRole === 'admin',
-    [devRole]
-  );
+  // Check if user has actual developer or admin role
+  const isDeveloperOrAdmin = hasAnyRole(ROLES.DEVELOPER, ROLES.ADMIN);
 
   const tabs: FloatingToolbarTab[] = useMemo(
     () => [
@@ -62,29 +60,56 @@ export const DevToolsDrawer = () => {
         icon: Hammer,
         content: (
           <div className="space-y-6">
-            <RoleSelectSection currentRole={devRole} onRoleChange={handleRoleChange} />
-            <div className="border-t border-border/50 pt-6">
-              <h4 className="text-sm font-medium text-foreground mb-3">Quick Links</h4>
-              <FmCommonButton
-                variant="secondary"
-                size="sm"
-                className="w-full justify-start gap-2"
-                onClick={() => {
-                  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-                  if (supabaseUrl) {
-                    const projectId = new URL(supabaseUrl).hostname.split('.')[0];
-                    window.open(`https://supabase.com/dashboard/project/${projectId}`, '_blank');
-                  }
-                }}
-              >
-                <ExternalLink className="h-4 w-4" />
-                Open Supabase Project
-              </FmCommonButton>
+            <div>
+              <h4 className="text-sm font-medium text-foreground mb-3">Navigation</h4>
+              <div className="grid grid-cols-2 gap-2">
+                <FmCommonButton
+                  variant="default"
+                  size="sm"
+                  className="h-auto py-2 px-3 justify-between text-left whitespace-normal"
+                  onClick={() => navigate('/developer')}
+                >
+                  <span>Developer Home</span>
+                  <ChevronRight className="h-4 w-4 flex-shrink-0" />
+                </FmCommonButton>
+                <FmCommonButton
+                  variant="default"
+                  size="sm"
+                  className="h-auto py-2 px-3 justify-between text-left whitespace-normal"
+                  onClick={() => navigate('/developer/components')}
+                >
+                  <span>Component Catalog</span>
+                  <ChevronRight className="h-4 w-4 flex-shrink-0" />
+                </FmCommonButton>
+                <FmCommonButton
+                  variant="default"
+                  size="sm"
+                  className="h-auto py-2 px-3 justify-between text-left whitespace-normal"
+                  onClick={() => navigate('/admin/controls')}
+                >
+                  <span>Admin Controls</span>
+                  <ChevronRight className="h-4 w-4 flex-shrink-0" />
+                </FmCommonButton>
+                <FmCommonButton
+                  variant="default"
+                  size="sm"
+                  className="h-auto py-2 px-3 justify-start text-left whitespace-normal"
+                  onClick={() => {
+                    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+                    if (supabaseUrl) {
+                      const projectId = new URL(supabaseUrl).hostname.split('.')[0];
+                      window.open(`https://supabase.com/dashboard/project/${projectId}`, '_blank');
+                    }
+                  }}
+                >
+                  Supabase Dashboard
+                </FmCommonButton>
+              </div>
             </div>
           </div>
         ),
         title: 'Developer Tools',
-        visible: isDeveloper,
+        visible: isDeveloperOrAdmin,
         group: 'developer',
         groupOrder: 2,
         alignment: 'bottom',
@@ -101,14 +126,38 @@ export const DevToolsDrawer = () => {
           </div>
         ),
         title: 'Database Manager',
-        visible: isDeveloper,
+        visible: isDeveloperOrAdmin,
+        group: 'developer',
+        groupOrder: 2,
+        alignment: 'bottom',
+        groupLabel: 'Developer Tools',
+      },
+      {
+        id: 'features',
+        label: 'Feature Toggles',
+        icon: ToggleLeft,
+        content: <FeatureToggleSection />,
+        title: 'Feature Toggles',
+        visible: isDeveloperOrAdmin,
+        group: 'developer',
+        groupOrder: 2,
+        alignment: 'bottom',
+        groupLabel: 'Developer Tools',
+      },
+      {
+        id: 'notes',
+        label: 'TODO Notes',
+        icon: ClipboardList,
+        content: <DevNotesSection />,
+        title: 'Developer TODO Notes',
+        visible: isDeveloperOrAdmin,
         group: 'developer',
         groupOrder: 2,
         alignment: 'bottom',
         groupLabel: 'Developer Tools',
       },
     ],
-    [devRole, handleRoleChange, isDeveloper, user]
+    [isDeveloperOrAdmin, user, navigate]
   );
 
   const visibleTabs = useMemo(

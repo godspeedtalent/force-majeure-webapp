@@ -1,3 +1,14 @@
+/**
+ * @deprecated Use FeatureGuard from '@/components/common/guards/FeatureGuard' instead.
+ * 
+ * This component is deprecated and maintained only for backwards compatibility.
+ * The new FeatureGuard provides better type safety with FEATURE_FLAGS constants.
+ * 
+ * Migration example:
+ * Old: <FeatureFlagGuard flagName="scavenger_hunt_active" redirectTo="/">
+ * New: <FeatureGuard feature={FEATURE_FLAGS.SCAVENGER_HUNT_ACTIVE} fallback={<Navigate to="/" replace />}>
+ */
+
 import { Loader2 } from 'lucide-react';
 import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';

@@ -7,8 +7,9 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonPageLayout } from '@/components/common/layout';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
-import { useUserRole } from '@/shared/hooks/useUserRole';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { useToast } from '@/shared/hooks/use-toast';
+import { PERMISSIONS } from '@/shared/auth/permissions';
 
 interface ScanResult {
   success: boolean;
@@ -30,24 +31,22 @@ interface ScanResult {
  * - Real-time validation
  */
 const TicketScanning = () => {
-  const { data: role, isLoading } = useUserRole();
+  const { hasPermission, roles } = useUserPermissions();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [ticketCode, setTicketCode] = useState('');
   const [scanning, setScanning] = useState(false);
   const [lastScan, setLastScan] = useState<ScanResult | null>(null);
+  const isLoading = !roles;
 
-  // Allow organization_admin, organization_staffer, developer, and admin roles
-  const hasAccess = role === ('organization_admin' as any) || 
-                    role === ('organization_staffer' as any) ||
-                    role === ('developer' as any) || 
-                    role === ('admin' as any);
+  // Check for scanning permission
+  const hasAccess = hasPermission(PERMISSIONS.SCAN_TICKETS);
 
   useEffect(() => {
     if (!isLoading && !hasAccess) {
       navigate('/');
     }
-  }, [role, isLoading, navigate, hasAccess]);
+  }, [isLoading, navigate, hasAccess]);
 
   const handleScan = async () => {
     if (!ticketCode.trim()) {

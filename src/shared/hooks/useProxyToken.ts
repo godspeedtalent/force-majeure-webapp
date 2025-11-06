@@ -1,7 +1,8 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { supabase } from '@/shared/api/supabase/client';
-import { useUserRole } from '@/shared/hooks/useUserRole';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { ROLES } from '@/shared/auth/permissions';
 
 interface DebugLogger {
   log: (message: string, data?: any) => void;
@@ -23,9 +24,9 @@ export function useDebugLogger(
 export function useProxyToken() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { data: userRole } = useUserRole();
+  const { hasRole } = useUserPermissions();
 
-  const isAdmin = userRole === 'admin';
+  const isAdmin = hasRole(ROLES.ADMIN);
   const debugMode = searchParams.get('debug') === 'true';
   const debug = useDebugLogger(isAdmin && debugMode, 'PROXY-TOKEN');
 

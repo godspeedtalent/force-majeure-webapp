@@ -9,11 +9,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/common/shadcn/card';
-import { useUserRole } from '@/shared/hooks/useUserRole';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { ROLES } from '@/shared/auth/permissions';
 
 export default function AdminConfig() {
   const navigate = useNavigate();
-  const { data: role, isLoading } = useUserRole();
+  const { hasRole, roles } = useUserPermissions();
+  const isLoading = !roles;
 
   if (isLoading) {
     return (
@@ -23,7 +25,7 @@ export default function AdminConfig() {
     );
   }
 
-  if (role !== 'admin') {
+  if (!hasRole(ROLES.ADMIN)) {
     navigate('/');
     return null;
   }

@@ -10,16 +10,18 @@ import { Button } from '@/components/common/shadcn/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/common/shadcn/tooltip';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserRole } from '@/shared/hooks/useUserRole';
-import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
+import { useFeatureFlagHelpers } from '@/shared/hooks/useFeatureFlags';
+import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 import { useCheckoutTimer } from '@/contexts/CheckoutContext';
 import { SOCIAL_LINKS } from '@/shared/constants/socialLinks';
+import { FeatureGuard } from '@/components/common/guards/FeatureGuard';
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
   const { data: role } = useUserRole();
-  const { data: flags } = useFeatureFlags();
+  const { isFeatureEnabled } = useFeatureFlagHelpers();
   const { isCheckoutActive, endCheckout, redirectUrl } = useCheckoutTimer();
   const isAdmin = role === 'admin';
 
@@ -36,7 +38,7 @@ export const Navigation = () => {
 
           {/* Center Title or Countdown */}
           <div className='absolute left-1/2 transform -translate-x-1/2 hidden lg:block'>
-            {flags?.event_checkout_timer && isCheckoutActive ? (
+            {isFeatureEnabled(FEATURE_FLAGS.EVENT_CHECKOUT_TIMER) && isCheckoutActive ? (
               <CheckoutCountdown onExpire={endCheckout} redirectUrl={redirectUrl} />
             ) : (
               <h2 className='font-screamer text-xl'>
@@ -70,7 +72,7 @@ export const Navigation = () => {
               </Tooltip>
             </TooltipProvider>
             
-            {flags?.merch_store && (
+            <FeatureGuard feature={FEATURE_FLAGS.MERCH_STORE}>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -83,7 +85,7 @@ export const Navigation = () => {
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-            )}
+            </FeatureGuard>
             
             {/* Vertical Divider */}
             <div className='h-6 w-px bg-border/50' />

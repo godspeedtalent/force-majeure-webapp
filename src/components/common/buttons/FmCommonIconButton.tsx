@@ -58,7 +58,7 @@ export const FmCommonIconButton = forwardRef<HTMLButtonElement, FmCommonIconButt
 
     // Custom variant styles
     const variantStyles = {
-      create: 'bg-white/5 border-white hover:bg-fm-gold/20 hover:border-fm-gold hover:text-fm-gold transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]',
+      create: 'bg-transparent border border-white text-white hover:bg-white/5 hover:border-white hover:text-white transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_rgba(255,255,255,0.3)]',
       gold: 'bg-fm-gold hover:bg-fm-gold/90 text-black font-medium transition-all duration-200 hover:shadow-[0_0_20px_rgba(207,173,118,0.5)] hover:scale-105 active:scale-95',
       default: 'bg-white/5 border-white/30 hover:bg-fm-gold/20 hover:border-fm-gold hover:text-fm-gold transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]',
       secondary: 'transition-all duration-200 hover:scale-105 active:scale-95',
@@ -84,7 +84,7 @@ export const FmCommonIconButton = forwardRef<HTMLButtonElement, FmCommonIconButt
         disabled={isDisabled}
         onClick={handleClick}
         className={cn(
-          'relative overflow-hidden p-0',
+          'relative overflow-hidden p-0 group',
           sizeClasses[size],
           isCreateVariant && variantStyles.create,
           variant === 'gold' && variantStyles.gold,
@@ -104,7 +104,7 @@ export const FmCommonIconButton = forwardRef<HTMLButtonElement, FmCommonIconButt
             <div className="relative flex items-center justify-center w-full h-full">
               <Icon className={cn('transition-transform duration-200 group-hover:scale-110', iconSizeClasses[size])} />
               {isCreateVariant && (
-                <Plus className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-white text-black p-0.5" />
+                <Plus className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-white text-black p-0.5 transition-colors duration-200 group-hover:bg-fm-gold" />
               )}
             </div>
           )}

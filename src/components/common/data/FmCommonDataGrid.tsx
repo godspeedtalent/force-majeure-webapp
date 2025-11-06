@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Table,
   TableBody,
@@ -19,8 +19,17 @@ import {
   PaginationPrevious,
 } from '@/components/common/shadcn/pagination';
 import { Input } from '@/components/common/shadcn/input';
-import { Checkbox } from '@/components/common/shadcn/checkbox';
+import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
+import { Switch } from '@/components/common/shadcn/switch';
 import { Button } from '@/components/common/shadcn/button';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/common/shadcn/popover';
+import { Calendar } from '@/components/common/shadcn/calendar';
+import { format as formatDate } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,7 +57,7 @@ export interface DataGridColumn<T = any> {
   render?: (value: any, row: T) => React.ReactNode;
   width?: string;
   isRelation?: boolean; // Mark this column as a foreign key relation
-  type?: 'text' | 'number' | 'email' | 'url'; // Input type for editing
+  type?: 'text' | 'number' | 'email' | 'url' | 'date' | 'boolean' | 'created_date'; // Input type for editing
 }
 
 // Re-export ContextMenuAction as DataGridAction for backward compatibility
@@ -96,6 +105,14 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
   const [isCreatingRow, setIsCreatingRow] = useState(false);
   const [newRowData, setNewRowData] = useState<Partial<T>>({});
   const [contextMenuOpenRow, setContextMenuOpenRow] = useState<number | null>(null);
+  const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
+  
+  // Drag-select state
+  const [isDragMode, setIsDragMode] = useState(false);
+  const [dragStartRow, setDragStartRow] = useState<number | null>(null);
+  const [dragCurrentRow, setDragCurrentRow] = useState<number | null>(null);
+  const dragTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const rowRefs = useRef<Map<number, HTMLTableRowElement>>(new Map());
 
   // Reset page when data changes
   useEffect(() => {
@@ -173,6 +190,18 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
   };
 
   const handleSelectRow = (index: number, event: React.MouseEvent) => {
+    // Don't select if clicking on interactive elements
+    const target = event.target as HTMLElement;
+    if (
+      target.closest('[role="checkbox"]') || 
+      target.closest('[role="switch"]') ||
+      target.closest('button') ||
+      target.closest('input') ||
+      target.closest('[data-no-select]')
+    ) {
+      return;
+    }
+
     const globalIndex = (currentPage - 1) * pageSize + index;
 
     if (event.shiftKey && lastSelectedIndex !== null) {
@@ -197,6 +226,95 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
     }
   };
 
+  // Drag-select handlers
+  const handleMouseDown = (index: number, event: React.MouseEvent) => {
+    const globalIndex = (currentPage - 1) * pageSize + index;
+    
+    // Start timer for drag-select mode (300ms)
+    dragTimerRef.current = setTimeout(() => {
+      setIsDragMode(true);
+      setDragStartRow(globalIndex);
+      setDragCurrentRow(globalIndex);
+      setHoveredColumn(null); // Disable column hover during drag
+      document.body.style.userSelect = 'none'; // Prevent text selection
+    }, 300);
+  };
+
+  const handleMouseUp = () => {
+    // Clear timer if released before 300ms
+    if (dragTimerRef.current) {
+      clearTimeout(dragTimerRef.current);
+      dragTimerRef.current = null;
+    }
+
+    // If in drag mode, select all rows in range
+    if (isDragMode && dragStartRow !== null && dragCurrentRow !== null) {
+      const start = Math.min(dragStartRow, dragCurrentRow);
+      const end = Math.max(dragStartRow, dragCurrentRow);
+      const newSelection = new Set(selectedRows);
+      for (let i = start; i <= end; i++) {
+        newSelection.add(i);
+      }
+      setSelectedRows(newSelection);
+    }
+
+    // Reset drag state and re-enable text selection
+    document.body.style.userSelect = '';
+    setIsDragMode(false);
+    setDragStartRow(null);
+    setDragCurrentRow(null);
+  };
+
+  const handleMouseEnterRow = (index: number) => {
+    if (isDragMode) {
+      const globalIndex = (currentPage - 1) * pageSize + index;
+      setDragCurrentRow(globalIndex);
+    }
+  };
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (dragTimerRef.current) {
+        clearTimeout(dragTimerRef.current);
+      }
+    };
+  }, []);
+
+  // Calculate drag selection box position
+  const getDragBoxStyle = (): React.CSSProperties | null => {
+    if (!isDragMode || dragStartRow === null || dragCurrentRow === null) return null;
+
+    const startRowEl = rowRefs.current.get(dragStartRow);
+    const endRowEl = rowRefs.current.get(dragCurrentRow);
+
+    if (!startRowEl || !endRowEl) return null;
+
+    const startRect = startRowEl.getBoundingClientRect();
+    const endRect = endRowEl.getBoundingClientRect();
+    const tableContainer = startRowEl.closest('.overflow-x-auto');
+    const containerRect = tableContainer?.getBoundingClientRect();
+
+    if (!containerRect) return null;
+
+    const top = Math.min(startRect.top, endRect.top) - containerRect.top;
+    const bottom = Math.max(startRect.bottom, endRect.bottom) - containerRect.top;
+    const height = bottom - top;
+
+    return {
+      position: 'absolute',
+      top: `${top}px`,
+      left: 0,
+      right: 0,
+      height: `${height}px`,
+      border: '2px solid rgb(var(--fm-gold))',
+      borderRadius: '4px',
+      pointerEvents: 'none',
+      zIndex: 10,
+      backgroundColor: 'rgba(var(--fm-gold), 0.05)',
+    };
+  };
+
   const handleColumnFilter = (columnKey: string, value: string) => {
     setColumnFilters((prev) => ({
       ...prev,
@@ -219,16 +337,20 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
     setEditValue(currentValue?.toString() || '');
   };
 
-  const handleCellSave = async (row: T, columnKey: string) => {
+  const handleCellSave = async (row: T, columnKey: string, overrideValue?: any) => {
     if (!onUpdate || !editingCell) return;
 
     const column = columns.find(col => col.key === columnKey);
-    let newValue = editValue;
+    let newValue = overrideValue !== undefined ? overrideValue : editValue;
     const oldValue = row[columnKey];
 
+    // Handle boolean - use override value directly
+    if (column?.type === 'boolean') {
+      newValue = overrideValue !== undefined ? overrideValue : (editValue === 'true' || editValue === true);
+    }
     // Handle number inputs - if empty, set to 0
-    if (column?.type === 'number') {
-      if (!newValue || newValue.trim() === '') {
+    else if (column?.type === 'number') {
+      if (!newValue || newValue.toString().trim() === '') {
         newValue = '0';
       }
       // Don't update if value hasn't changed
@@ -236,9 +358,14 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
         setEditingCell(null);
         return;
       }
-    } else {
-      // For text inputs, don't update if empty or unchanged
-      if (!newValue || newValue.trim() === '' || newValue === oldValue?.toString()) {
+    } 
+    // Handle date - use ISO string
+    else if (column?.type === 'date') {
+      // newValue is already an ISO string from the date picker
+    }
+    // For text inputs, don't update if empty or unchanged
+    else {
+      if (!newValue || newValue.toString().trim() === '' || newValue === oldValue?.toString()) {
         setEditingCell(null);
         return;
       }
@@ -416,16 +543,15 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
       </div>
 
       {/* Data Table */}
-      <div className="rounded-lg border border-border/50 overflow-x-auto bg-background/30 backdrop-blur-sm">
+      <div className="rounded-lg border border-border/50 overflow-x-auto bg-background/30 backdrop-blur-sm relative">
         <Table>
           <TableHeader>
             <TableRow className="border-border/50 bg-muted/50 hover:bg-muted/50 group">
               <TableHead className="w-12">
-                <Checkbox
+                <FmCommonCheckbox
                   checked={isAllSelected}
                   onCheckedChange={handleSelectAll}
                   aria-label="Select all"
-                  className="data-[state=checked]:bg-fm-gold data-[state=checked]:border-fm-gold transition-all duration-200"
                 />
               </TableHead>
               {columns.map((column, colIndex) => (
@@ -598,17 +724,35 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                     onOpenChange={(open) => setContextMenuOpenRow(open ? globalIndex : null)}
                   >
                     <TableRow
+                      ref={(el) => {
+                        if (el) rowRefs.current.set(globalIndex, el);
+                        else rowRefs.current.delete(globalIndex);
+                      }}
                       className={cn(
                         'border-border/50 transition-all duration-200 cursor-pointer group',
                         isEvenRow && 'bg-muted/20',
                         isSelected && 'bg-fm-gold/10 border-fm-gold/30',
                         hasContextMenuOpen && 'bg-fm-gold/20 border-fm-gold/50',
-                        !hasContextMenuOpen && 'hover:bg-fm-gold/5'
+                        !hasContextMenuOpen && 'hover:bg-fm-gold/5',
+                        isDragMode && dragStartRow !== null && dragCurrentRow !== null &&
+                          globalIndex >= Math.min(dragStartRow, dragCurrentRow) &&
+                          globalIndex <= Math.max(dragStartRow, dragCurrentRow) &&
+                          'bg-fm-gold/15'
                       )}
                       onClick={(e) => handleSelectRow(index, e)}
+                      onMouseDown={(e) => handleMouseDown(index, e)}
+                      onMouseUp={handleMouseUp}
+                      onMouseEnter={() => handleMouseEnterRow(index)}
                     >
-                        <TableCell>
-                          <Checkbox
+                        <TableCell 
+                          className={cn(
+                            "transition-colors duration-200",
+                            !isDragMode && hoveredColumn === '__checkbox' && "bg-muted/30"
+                          )}
+                          onMouseEnter={() => !isDragMode && setHoveredColumn('__checkbox')}
+                          onMouseLeave={() => !isDragMode && setHoveredColumn(null)}
+                        >
+                          <FmCommonCheckbox
                             checked={isSelected}
                             onCheckedChange={() => {
                               const newSelection = new Set(selectedRows);
@@ -620,7 +764,6 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                               setSelectedRows(newSelection);
                             }}
                             aria-label={`Select row ${globalIndex + 1}`}
-                            className="data-[state=checked]:bg-fm-gold data-[state=checked]:border-fm-gold transition-all duration-200"
                           />
                         </TableCell>
                         {columns.map((column) => {
@@ -631,10 +774,16 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                           return (
                             <TableCell 
                               key={column.key} 
-                              className="font-medium"
+                              className={cn(
+                                "font-medium transition-colors duration-200",
+                                !isDragMode && hoveredColumn === column.key && "bg-muted/30",
+                                isEditing && "bg-fm-gold/10 ring-1 ring-fm-gold/30"
+                              )}
+                              onMouseEnter={() => !isDragMode && setHoveredColumn(column.key)}
+                              onMouseLeave={() => !isDragMode && setHoveredColumn(null)}
                               onClick={(e) => {
-                                // Only trigger edit if not clicking on checkbox and field is not readonly
-                                if (column.editable && !column.readonly && onUpdate && !(e.target as HTMLElement).closest('[role="checkbox"]')) {
+                                // Only trigger edit if not clicking on checkbox/switch and field is not readonly and not boolean or created_date
+                                if (column.editable && !column.readonly && onUpdate && column.type !== 'boolean' && column.type !== 'created_date' && !(e.target as HTMLElement).closest('[role="checkbox"], [role="switch"]')) {
                                   handleCellEdit(globalIndex, column.key, cellValue);
                                 }
                               }}
@@ -649,8 +798,48 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                                       onComplete: () => handleCellSave(row, column.key),
                                     })}
                                   </div>
+                                ) : column.type === 'boolean' ? (
+                                  // Render boolean toggle
+                                  <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-2" data-no-select>
+                                    <Switch
+                                      checked={editValue === 'true' || editValue === true}
+                                      onCheckedChange={(checked) => {
+                                        setEditValue(checked);
+                                        handleCellSave(row, column.key, checked);
+                                      }}
+                                      className="data-[state=checked]:bg-fm-gold"
+                                    />
+                                    <span className="text-sm">{editValue === 'true' || editValue === true ? 'Yes' : 'No'}</span>
+                                  </div>
+                                ) : column.type === 'date' ? (
+                                  // Render date picker
+                                  <Popover open modal>
+                                    <PopoverTrigger asChild>
+                                      <Button
+                                        variant="outline"
+                                        className="w-full justify-start text-left font-normal h-8"
+                                        onClick={(e) => e.stopPropagation()}
+                                      >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {editValue ? formatDate(new Date(editValue), 'PPP') : 'Pick a date'}
+                                      </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                      <Calendar
+                                        mode="single"
+                                        selected={editValue ? new Date(editValue) : undefined}
+                                        onSelect={(date) => {
+                                          if (date) {
+                                            setEditValue(date.toISOString());
+                                            handleCellSave(row, column.key, date.toISOString());
+                                          }
+                                        }}
+                                        initialFocus
+                                      />
+                                    </PopoverContent>
+                                  </Popover>
                                 ) : (
-                                  // Render text/number input
+                                  // Render text/number/email input
                                   <Input
                                     type={column.type || 'text'}
                                     value={editValue}
@@ -670,14 +859,31 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                               ) : (
                                 <div className={cn(
                                   'flex items-center gap-2',
-                                  column.editable && !column.readonly && onUpdate && 'cursor-pointer hover:bg-fm-gold/5 -mx-2 px-2 py-1 rounded'
+                                  column.editable && !column.readonly && onUpdate && column.type !== 'boolean' && column.type !== 'created_date' && 'cursor-pointer hover:bg-fm-gold/5 -mx-2 px-2 py-1 rounded'
                                 )}>
-                                  {column.render
-                                    ? column.render(cellValue, row)
-                                    : relationConfig && relationConfig.displayField && row[relationConfig.displayField]
-                                      ? row[relationConfig.displayField]?.name || row[relationConfig.displayField] || '-'
-                                      : cellValue?.toString() || '-'}
-                                  {column.editable && !column.readonly && onUpdate && (
+                                  {column.type === 'boolean' ? (
+                                    // Always show boolean as toggleable switch with label
+                                    <div className="flex items-center gap-2" data-no-select>
+                                      <Switch
+                                        checked={cellValue === true}
+                                        onCheckedChange={(checked) => {
+                                          if (column.editable && !column.readonly && onUpdate) {
+                                            handleCellSave(row, column.key, checked);
+                                          }
+                                        }}
+                                        disabled={!column.editable || column.readonly || !onUpdate}
+                                        className="data-[state=checked]:bg-fm-gold"
+                                      />
+                                      <span className="text-sm">{cellValue ? 'Yes' : 'No'}</span>
+                                    </div>
+                                  ) : column.render ? (
+                                    column.render(cellValue, row)
+                                  ) : relationConfig && relationConfig.displayField && row[relationConfig.displayField] ? (
+                                    row[relationConfig.displayField]?.name || row[relationConfig.displayField] || '-'
+                                  ) : (
+                                    cellValue?.toString() || '-'
+                                  )}
+                                  {column.editable && !column.readonly && onUpdate && column.type !== 'boolean' && column.type !== 'created_date' && (
                                     <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                                       Click to edit
                                     </span>
@@ -688,7 +894,14 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                           );
                         })}
                         {actions.length > 0 && (
-                          <TableCell className="text-right">
+                          <TableCell 
+                            className={cn(
+                              "text-right transition-colors duration-200",
+                              !isDragMode && hoveredColumn === '__actions' && "bg-muted/30"
+                            )}
+                            onMouseEnter={() => !isDragMode && setHoveredColumn('__actions')}
+                            onMouseLeave={() => !isDragMode && setHoveredColumn(null)}
+                          >
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button
@@ -752,6 +965,17 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                 </TableCell>
                 {columns.map((column) => {
                   const relationConfig = isRelationField(column.key) ? getRelationConfig(column.key) : null;
+                  
+                  // Skip created_date fields - they are auto-populated
+                  if (column.type === 'created_date') {
+                    return (
+                      <TableCell key={column.key}>
+                        <div className="text-sm text-muted-foreground italic">
+                          Auto-populated
+                        </div>
+                      </TableCell>
+                    );
+                  }
 
                   return (
                     <TableCell key={column.key}>
@@ -797,6 +1021,11 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
             )}
           </TableBody>
         </Table>
+        
+        {/* Drag Selection Overlay */}
+        {isDragMode && getDragBoxStyle() && (
+          <div style={getDragBoxStyle()!} className="animate-in fade-in duration-100" />
+        )}
       </div>
 
       {/* Pagination */}

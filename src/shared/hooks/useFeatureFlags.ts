@@ -7,22 +7,11 @@ import {
   isDevelopment,
 } from '@/shared/utils/environment';
 import { logger } from '@/shared/services/logger';
+import { FEATURE_FLAGS, type FeatureFlag, type FeatureFlagsState } from '@/shared/config/featureFlags';
 
 const flagLogger = logger.createNamespace('FeatureFlags');
 
-interface FeatureFlags {
-  scavenger_hunt_active: boolean;
-  coming_soon_mode: boolean;
-  show_leaderboard: boolean;
-  demo_pages: boolean;
-  music_player: boolean;
-  scavenger_hunt: boolean;
-  event_checkout_timer: boolean;
-  merch_store: boolean;
-  member_profiles: boolean;
-  global_search: boolean;
-  spotify_integration: boolean;
-}
+interface FeatureFlags extends FeatureFlagsState {}
 
 interface FeatureFlagRow {
   flag_name: string;
@@ -158,4 +147,64 @@ export const useFeatureFlags = () => {
     staleTime: 30 * 1000, // 30 seconds cache
     refetchOnWindowFocus: true,
   });
+};
+
+/**
+ * Enhanced hook with utility methods for checking feature flags
+ * Provides type-safe access to feature flags with helpful utility functions
+ */
+export const useFeatureFlagHelpers = () => {
+  const { data: flags, isLoading } = useFeatureFlags();
+
+  /**
+   * Check if a specific feature flag is enabled
+   * @param flag - Feature flag to check (use FEATURE_FLAGS constant)
+   * @returns true if the flag is enabled
+   */
+  const isFeatureEnabled = (flag: FeatureFlag): boolean => {
+    if (!flags) return false;
+    
+    // Map flag names to state keys
+    const flagKey = flag as keyof FeatureFlagsState;
+    return flags[flagKey] || false;
+  };
+
+  /**
+   * Check if ANY of the specified feature flags are enabled
+   * @param flagList - Feature flags to check
+   * @returns true if at least one flag is enabled
+   */
+  const isAnyFeatureEnabled = (...flagList: FeatureFlag[]): boolean => {
+    return flagList.some(flag => isFeatureEnabled(flag));
+  };
+
+  /**
+   * Check if ALL of the specified feature flags are enabled
+   * @param flagList - Feature flags to check
+   * @returns true if all flags are enabled
+   */
+  const areAllFeaturesEnabled = (...flagList: FeatureFlag[]): boolean => {
+    return flagList.every(flag => isFeatureEnabled(flag));
+  };
+
+  /**
+   * Get list of all enabled feature flags
+   * @returns Array of enabled feature flag names
+   */
+  const getEnabledFeatures = (): FeatureFlag[] => {
+    if (!flags) return [];
+    
+    return (Object.keys(FEATURE_FLAGS) as Array<keyof typeof FEATURE_FLAGS>)
+      .map(key => FEATURE_FLAGS[key])
+      .filter(flag => isFeatureEnabled(flag));
+  };
+
+  return {
+    flags,
+    isLoading,
+    isFeatureEnabled,
+    isAnyFeatureEnabled,
+    areAllFeaturesEnabled,
+    getEnabledFeatures,
+  };
 };

@@ -5,14 +5,15 @@ import { Avatar, AvatarFallback } from '@/components/common/shadcn/avatar';
 import { Button } from '@/components/common/shadcn/button';
 import { FmCommonDropdown, DropdownItem } from '@/components/common/forms/FmCommonDropdown';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { useUserRole } from '@/shared/hooks/useUserRole';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { PERMISSIONS, ROLES } from '@/shared/auth/permissions';
 
 /**
  * User menu dropdown component for authenticated users
  */
 export function UserMenuDropdown() {
   const { user, signOut } = useAuth();
-  const { data: role } = useUserRole();
+  const { hasRole, hasPermission } = useUserPermissions();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -20,15 +21,15 @@ export function UserMenuDropdown() {
     navigate('/');
   };
 
-  const isOrgAdmin = role === ('organization_admin' as any);
-  const isOrgStaffer = role === ('organization_staffer' as any);
-  const isDeveloper = role === ('developer' as any);
-  const isAdmin = role === ('admin' as any);
+  const isOrgAdmin = hasRole(ROLES.ORG_ADMIN);
+  const isOrgStaffer = hasRole(ROLES.ORG_STAFF);
+  const isDeveloper = hasRole(ROLES.DEVELOPER);
+  const isAdmin = hasRole(ROLES.ADMIN);
   
-  // Org tools access: organization_admin, developer, or admin
-  const hasOrgToolsAccess = isOrgAdmin || isDeveloper || isAdmin;
-  // Scanning access: all org members, developers, and admins
-  const hasScanningAccess = isOrgAdmin || isOrgStaffer || isDeveloper || isAdmin;
+  // Org tools access: manage_organization permission
+  const hasOrgToolsAccess = hasPermission(PERMISSIONS.MANAGE_ORGANIZATION);
+  // Scanning access: scan_tickets permission
+  const hasScanningAccess = hasPermission(PERMISSIONS.SCAN_TICKETS);
 
   const dropdownItems: DropdownItem[] = [
     {

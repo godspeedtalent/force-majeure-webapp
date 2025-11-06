@@ -124,6 +124,47 @@ export type Database = {
         };
         Relationships: [];
       };
+      dev_notes: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          author_id: string;
+          author_name: string;
+          message: string;
+          type: 'TODO' | 'INFO' | 'BUG' | 'QUESTION';
+          status: 'TODO' | 'IN_PROGRESS' | 'ARCHIVED' | 'RESOLVED' | 'CANCELLED';
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          author_id: string;
+          author_name: string;
+          message: string;
+          type: 'TODO' | 'INFO' | 'BUG' | 'QUESTION';
+          status?: 'TODO' | 'IN_PROGRESS' | 'ARCHIVED' | 'RESOLVED' | 'CANCELLED';
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          author_id?: string;
+          author_name?: string;
+          message?: string;
+          type?: 'TODO' | 'INFO' | 'BUG' | 'QUESTION';
+          status?: 'TODO' | 'IN_PROGRESS' | 'ARCHIVED' | 'RESOLVED' | 'CANCELLED';
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'dev_notes_author_id_fkey';
+            columns: ['author_id'];
+            isOneToOne: false;
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       merch: {
         Row: {
           created_at: string;

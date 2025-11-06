@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { useDevRole } from '@/shared/hooks/useDevRole';
+import { ROLES, PERMISSIONS } from '@/shared/auth/permissions';
 
 interface DemoProtectedRouteProps {
   children: ReactNode;
@@ -13,7 +14,7 @@ interface DemoProtectedRouteProps {
  * 2. User to have either 'developer' or 'admin' role
  */
 export const DemoProtectedRoute = ({ children }: DemoProtectedRouteProps) => {
-  const { role, isAuthenticated, isLoading: roleLoading } = useDevRole();
+  const { roles, isAuthenticated, isLoading: roleLoading } = useDevRole();
   const [canAccess, setCanAccess] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -29,12 +30,17 @@ export const DemoProtectedRoute = ({ children }: DemoProtectedRouteProps) => {
       }
 
       // Check if user has developer or admin role
-      const hasAccess = role === 'developer' || role === 'admin';
-      setCanAccess(hasAccess);
+      const hasDeveloperAccess = roles?.some(r => 
+        r.role_name === ROLES.DEVELOPER || 
+        r.role_name === ROLES.ADMIN ||
+        r.permission_names.includes(PERMISSIONS.ALL)
+      );
+      
+      setCanAccess(hasDeveloperAccess || false);
     };
 
     checkAccess();
-  }, [isAuthenticated, role, roleLoading]);
+  }, [isAuthenticated, roles, roleLoading]);
 
   // Still loading
   if (roleLoading || canAccess === null) {

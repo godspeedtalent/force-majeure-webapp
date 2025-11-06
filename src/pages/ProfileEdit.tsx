@@ -23,7 +23,8 @@ import { FmCommonUserPhoto } from '@/components/common/display/FmCommonUserPhoto
 import { Separator } from '@/components/common/shadcn/separator';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useToast } from '@/shared/hooks/use-toast';
-import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
+import { useFeatureFlagHelpers } from '@/shared/hooks/useFeatureFlags';
+import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 import { enhancedSpotifyService } from '@/shared/utils/enhancedSpotify';
 import { supabase } from '@/shared/api/supabase/client';
 
@@ -31,7 +32,7 @@ type ProfileSection = 'profile' | 'spotify';
 
 const ProfileEdit = () => {
   const { user, profile, updateProfile, refreshProfile } = useAuth();
-  const { data: flags } = useFeatureFlags();
+  const { isFeatureEnabled } = useFeatureFlagHelpers();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -65,7 +66,7 @@ const ProfileEdit = () => {
 
   // Handle Spotify OAuth callback
   useEffect(() => {
-    if (!flags?.spotify_integration) return;
+    if (!isFeatureEnabled(FEATURE_FLAGS.SPOTIFY_INTEGRATION)) return;
 
     const code = searchParams.get('code');
     const state = searchParams.get('state');
@@ -242,7 +243,7 @@ const ProfileEdit = () => {
       icon: Settings,
       items: [
         { id: 'profile', label: 'Profile', icon: User, description: 'Manage your profile information' },
-        ...(flags?.spotify_integration ? [{
+        ...(isFeatureEnabled(FEATURE_FLAGS.SPOTIFY_INTEGRATION) ? [{
           id: 'spotify' as ProfileSection,
           label: 'Spotify',
           icon: Music,
@@ -488,7 +489,7 @@ const ProfileEdit = () => {
         )}
 
         {/* Spotify Section */}
-        {activeSection === 'spotify' && flags?.spotify_integration && (
+        {activeSection === 'spotify' && isFeatureEnabled(FEATURE_FLAGS.SPOTIFY_INTEGRATION) && (
           <>
             <FmCommonPageHeader
               title='Spotify Integration'

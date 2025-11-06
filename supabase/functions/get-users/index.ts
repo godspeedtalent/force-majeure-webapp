@@ -31,15 +31,17 @@ serve(async (req) => {
       );
     }
 
-    // Check if user is admin
-    const { data: roles } = await supabaseClient
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', user.id)
-      .eq('role', 'admin')
-      .single();
+    // Check if user is admin - use new role system
+    const { data: userRoles } = await supabaseClient.rpc('get_user_roles', {
+      user_id_param: user.id
+    });
 
-    if (!roles) {
+    const isAdmin = userRoles?.some((r: any) => 
+      r.role_name === 'admin' || 
+      r.permission_names.includes('*')
+    );
+
+    if (!isAdmin) {
       return new Response(
         JSON.stringify({ error: 'Forbidden - Admin access required' }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -56,24 +58,38 @@ serve(async (req) => {
     // Fetch profiles and roles for all users
     const { data: profiles } = await supabaseClient
       .from('profiles')
-      .select('*');
+      .select('*, organization:organizations(id, name)');
 
-    const { data: userRoles } = await supabaseClient
-      .from('user_roles')
-      .select('*');
+    // Fetch all user roles with role details using RPC
+    const allUserIds = users.map((u) => u.id);
+    const allUserRolesPromises = allUserIds.map(async (userId) => {
+      const { data } = await supabaseClient.rpc('get_user_roles', {
+        user_id_param: userId
+      });
+      return { userId, roles: data || [] };
+    });
 
-    // Combine data
+    const allUserRolesData = await Promise.all(allUserRolesPromises);
+    const userRolesMap = new Map(allUserRolesData.map(({ userId, roles }) => [userId, roles]));
+
+    // Combine data - return role names instead of single role
     const enrichedUsers = users.map((authUser) => {
       const profile = profiles?.find((p) => p.user_id === authUser.id);
-      const roles = userRoles?.filter((r) => r.user_id === authUser.id).map((r) => r.role);
-
+      const roles = userRolesMap.get(authUser.id) || [];
+      
       return {
         id: authUser.id,
         email: authUser.email,
         display_name: profile?.display_name || '',
         full_name: profile?.full_name || '',
         created_at: authUser.created_at,
-        role: roles && roles.length > 0 ? roles[0] : 'user',
+        organization_id: profile?.organization_id || null,
+        organization: profile?.organization || null,
+        roles: roles.map((r: any) => ({
+          role_name: r.role_name,
+          display_name: r.display_name,
+          permissions: r.permission_names
+        })),
         is_public: profile?.is_public || false,
         show_on_leaderboard: profile?.show_on_leaderboard || false,
         last_sign_in: authUser.last_sign_in_at,

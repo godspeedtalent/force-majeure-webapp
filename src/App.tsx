@@ -30,6 +30,7 @@ import TicketScanning from './pages/organization/TicketScanning';
 
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary';
 import { DemoProtectedRoute } from '@/components/routing/DemoProtectedRoute';
+import { ProtectedRoute } from '@/components/routing/ProtectedRoute';
 import { Toaster as Sonner } from '@/components/common/shadcn/sonner';
 import { Toaster } from '@/components/common/shadcn/toaster';
 import { TooltipProvider } from '@/components/common/shadcn/tooltip';
@@ -37,8 +38,10 @@ import Merch from './pages/Merch';
 
 import { MusicPlayerProvider } from '@/contexts/MusicPlayerContext';
 import { AuthProvider } from '@/features/auth/services/AuthContext';
-import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
+import { useFeatureFlagHelpers } from '@/shared/hooks/useFeatureFlags';
 import { DevToolsDrawer } from '@/components/DevTools/DevToolsDrawer';
+import { ROLES } from '@/shared/auth/permissions';
+import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 import { DevToolsProvider } from '@/contexts/DevToolsContext';
 import { CheckoutProvider } from '@/contexts/CheckoutContext';
 import { GlobalSearchProvider, useGlobalSearch } from '@/contexts/GlobalSearchContext';
@@ -59,7 +62,7 @@ const GlobalSearchWrapper = () => {
 };
 
 const AppRoutes = () => {
-  const { data: flags, isLoading } = useFeatureFlags();
+  const { isFeatureEnabled, isLoading } = useFeatureFlagHelpers();
 
   if (isLoading) {
     return (
@@ -69,7 +72,7 @@ const AppRoutes = () => {
     );
   }
 
-  const comingSoonMode = flags?.coming_soon_mode ?? false;
+  const comingSoonMode = isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE);
 
   return (
     <Routes>
@@ -92,14 +95,25 @@ const AppRoutes = () => {
           <Route path='/event/:id/manage' element={<EventManagement />} />
           
           {/* Conditionally render merch route based on feature flag */}
-          {flags?.merch_store && <Route path='/merch' element={<Merch />} />}
+          {isFeatureEnabled(FEATURE_FLAGS.MERCH_STORE) && (
+            <Route path='/merch' element={<Merch />} />
+          )}
           
           {/* Conditionally render member profiles route based on feature flag */}
-          {flags?.member_profiles && <Route path='/members/home' element={<MemberHome />} />}
+          {isFeatureEnabled(FEATURE_FLAGS.MEMBER_PROFILES) && (
+            <Route path='/members/home' element={<MemberHome />} />
+          )}
 
           <Route path='/profile' element={<Profile />} />
           <Route path='/profile/edit' element={<ProfileEdit />} />
-          <Route path='/admin' element={<AdminConfig />} />
+          <Route 
+            path='/admin' 
+            element={
+              <ProtectedRoute role={ROLES.ADMIN}>
+                <AdminConfig />
+              </ProtectedRoute>
+            } 
+          />
           <Route path='/orders' element={<Orders />} />
           
           {/* Checkout Routes */}
@@ -200,21 +214,21 @@ const AppRoutes = () => {
             }
           />
 
-          {/* Admin Routes - Protected by role */}
+          {/* Admin Routes - Protected by admin role only */}
           <Route
             path='/admin/statistics'
             element={
-              <DemoProtectedRoute>
+              <ProtectedRoute role={ROLES.ADMIN}>
                 <Statistics />
-              </DemoProtectedRoute>
+              </ProtectedRoute>
             }
           />
           <Route
             path='/admin/controls'
             element={
-              <DemoProtectedRoute>
+              <ProtectedRoute role={ROLES.ADMIN}>
                 <AdminControls />
-              </DemoProtectedRoute>
+              </ProtectedRoute>
             }
           />
 

@@ -5,7 +5,8 @@ import { Building2, Users, TrendingUp, Settings } from 'lucide-react';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonPageLayout } from '@/components/common/layout';
-import { useUserRole } from '@/shared/hooks/useUserRole';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { PERMISSIONS } from '@/shared/auth/permissions';
 
 /**
  * OrganizationTools - Main dashboard for organization admins
@@ -17,19 +18,18 @@ import { useUserRole } from '@/shared/hooks/useUserRole';
  * - Organization profile
  */
 const OrganizationTools = () => {
-  const { data: role, isLoading } = useUserRole();
+  const { hasAnyPermission, roles } = useUserPermissions();
   const navigate = useNavigate();
+  const isLoading = !roles;
 
-  // Allow organization_admin, developer, and admin roles
-  const hasAccess = role === ('organization_admin' as any) || 
-                    role === ('developer' as any) || 
-                    role === ('admin' as any);
+  // Check for organization access permission
+  const hasAccess = hasAnyPermission(PERMISSIONS.MANAGE_ORGANIZATION, PERMISSIONS.VIEW_ORGANIZATION);
 
   useEffect(() => {
     if (!isLoading && !hasAccess) {
       navigate('/');
     }
-  }, [role, isLoading, navigate, hasAccess]);
+  }, [isLoading, navigate, hasAccess]);
 
   if (isLoading) {
     return (

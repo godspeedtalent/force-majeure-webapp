@@ -15,6 +15,8 @@ export interface SearchDropdownConfig<T = any> {
   selectFields: string;
   /** Format the label for display */
   formatLabel: (item: T) => string;
+  /** Format the value to be returned (defaults to item.id) */
+  formatValue?: (item: T) => string;
   /** Render the icon for the option */
   renderIcon: (item: T) => React.ReactNode;
   /** Default placeholder text */
@@ -59,6 +61,7 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
     searchField,
     selectFields,
     formatLabel,
+    formatValue,
     renderIcon,
     defaultPlaceholder,
     createNewLabel,
@@ -114,7 +117,7 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
       if (error || !data) return [];
 
       return data.map((item: any) => ({
-        id: item.id,
+        id: formatValue ? formatValue(item as T) : item.id,
         label: formatLabel(item as T),
         icon: renderIcon(item as T),
       }));
@@ -132,7 +135,7 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
       if (error || !data) return [];
 
       return data.map((item: any) => ({
-        id: item.id,
+        id: formatValue ? formatValue(item as T) : item.id,
         label: formatLabel(item as T),
         icon: renderIcon(item as T),
       }));
