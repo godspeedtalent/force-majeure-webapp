@@ -9,6 +9,7 @@ import { OrderReceiptEmailData } from '@/types/email';
 import { generateOrderReceiptEmailHTML } from '@/services/email/templates/OrderReceiptEmail';
 import { useSendTestEmail } from '@/shared/hooks/useEmailReceipt';
 import { toast } from 'sonner';
+import { formatHeader } from '@/shared/utils/styleUtils';
 
 /**
  * EmailPreview - Developer tool for previewing and testing email templates
@@ -97,16 +98,16 @@ export const EmailPreview = () => {
   return (
     <div className="space-y-6">
       {/* Controls */}
-      <Card className="p-6">
-        <div className="flex items-center gap-2 mb-4">
+      <Card className="p-[20px]">
+        <div className="flex items-center gap-[10px] mb-[20px]">
           <Mail className="h-5 w-5 text-fm-gold" />
-          <h3 className="text-lg font-canela">Email Template Preview</h3>
+          <h3 className="text-lg font-canela">{formatHeader('Email Template Preview')}</h3>
         </div>
 
         <div className="space-y-4">
           <div>
-            <Label htmlFor="test-email">Test Email Address</Label>
-            <div className="flex gap-2 mt-2">
+            <Label htmlFor="test-email" className="text-xs uppercase">Test Email Address</Label>
+            <div className="flex gap-[10px] mt-2">
               <Input
                 id="test-email"
                 type="email"
@@ -131,7 +132,7 @@ export const EmailPreview = () => {
 
           <Separator />
 
-          <div className="flex gap-2">
+          <div className="flex gap-[10px]">
             <Button onClick={() => setShowPreview(!showPreview)} variant="outline" className="flex-1">
               <Eye className="h-4 w-4 mr-2" />
               {showPreview ? 'Hide Preview' : 'Show Preview'}
@@ -146,9 +147,9 @@ export const EmailPreview = () => {
 
       {/* Preview */}
       {showPreview && (
-        <Card className="p-6">
-          <h4 className="text-md font-canela mb-4">Email Preview</h4>
-          <div className="border border-border rounded-lg overflow-hidden bg-white">
+        <Card className="p-[20px]">
+          <h4 className="text-md font-canela mb-[20px]">{formatHeader('Email Preview')}</h4>
+          <div className="border border-border rounded-none overflow-hidden bg-white">
             <iframe
               title="Email Preview"
               srcDoc={htmlContent}
@@ -167,9 +168,9 @@ export const EmailPreview = () => {
       )}
 
       {/* Sample Data Display */}
-      <Card className="p-6">
-        <h4 className="text-md font-canela mb-4">Sample Data</h4>
-        <div className="bg-muted/50 rounded-lg p-4 font-mono text-xs overflow-auto max-h-96">
+      <Card className="p-[20px]">
+        <h4 className="text-md font-canela mb-[20px]">{formatHeader('Sample Data')}</h4>
+        <div className="bg-muted/50 rounded-none p-[20px] font-mono text-xs overflow-auto max-h-96">
           <pre>{JSON.stringify(sampleData, null, 2)}</pre>
         </div>
         <p className="text-xs text-muted-foreground mt-4">
@@ -179,8 +180,8 @@ export const EmailPreview = () => {
       </Card>
 
       {/* Implementation Notes */}
-      <Card className="p-6 bg-muted/20 border-fm-gold/30">
-        <h4 className="text-md font-canela mb-4">Implementation Notes</h4>
+      <Card className="p-[20px] bg-muted/20 border-fm-gold/30">
+        <h4 className="text-md font-canela mb-[20px]">{formatHeader('Implementation Notes')}</h4>
         <div className="space-y-2 text-sm">
           <p>
             <strong>Email Service Setup:</strong> To send emails in production, you need to:

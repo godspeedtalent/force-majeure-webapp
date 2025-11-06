@@ -39,10 +39,9 @@ import Merch from './pages/Merch';
 import { MusicPlayerProvider } from '@/contexts/MusicPlayerContext';
 import { AuthProvider } from '@/features/auth/services/AuthContext';
 import { useFeatureFlagHelpers } from '@/shared/hooks/useFeatureFlags';
-import { DevToolsDrawer } from '@/components/DevTools/DevToolsDrawer';
+import { FmToolbar } from '@/components/common/toolbar/FmToolbar';
 import { ROLES } from '@/shared/auth/permissions';
 import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
-import { DevToolsProvider } from '@/contexts/DevToolsContext';
 import { CheckoutProvider } from '@/contexts/CheckoutContext';
 import { GlobalSearchProvider, useGlobalSearch } from '@/contexts/GlobalSearchContext';
 import { GlobalSearch } from '@/components/search/GlobalSearch';
@@ -253,27 +252,25 @@ const App = () => {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <DevToolsProvider>
-          <AuthProvider>
-            <StripeProvider>
-              <GlobalSearchProvider>
-                <MusicPlayerProvider>
-                  <TooltipProvider>
-                    <Toaster />
-                    <Sonner />
-                    <BrowserRouter>
-                      <CheckoutProvider>
-                        <AppRoutes />
-                        <DevToolsDrawer />
-                        <GlobalSearchWrapper />
-                      </CheckoutProvider>
-                    </BrowserRouter>
-                  </TooltipProvider>
-                </MusicPlayerProvider>
-              </GlobalSearchProvider>
-            </StripeProvider>
-          </AuthProvider>
-        </DevToolsProvider>
+        <AuthProvider>
+          <StripeProvider>
+            <GlobalSearchProvider>
+              <MusicPlayerProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
+                  <BrowserRouter>
+                    <CheckoutProvider>
+                      <AppRoutes />
+                      <FmToolbar />
+                      <GlobalSearchWrapper />
+                    </CheckoutProvider>
+                  </BrowserRouter>
+                </TooltipProvider>
+              </MusicPlayerProvider>
+            </GlobalSearchProvider>
+          </StripeProvider>
+        </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );

@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/common/shadcn/button';
 import { cn } from '@/shared/utils/utils';
 import { LucideIcon } from 'lucide-react';
-import { useDevTools } from '@/contexts/DevToolsContext';
 
 interface FmCommonNavigationButtonProps {
   to: string;
@@ -22,13 +21,8 @@ export const FmCommonNavigationButton = ({
   description,
 }: FmCommonNavigationButtonProps) => {
   const navigate = useNavigate();
-  const { isDrawerOpen, toggleDrawer } = useDevTools();
 
   const handleClick = () => {
-    // Close dev tools drawer if open
-    if (isDrawerOpen) {
-      toggleDrawer();
-    }
     navigate(to);
   };
 

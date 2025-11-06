@@ -9,7 +9,8 @@ import { CheckoutCountdown } from '@/components/business/CheckoutCountdown';
 import { Button } from '@/components/common/shadcn/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/common/shadcn/tooltip';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { useUserRole } from '@/shared/hooks/useUserRole';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { ROLES } from '@/shared/auth/permissions';
 import { useFeatureFlagHelpers } from '@/shared/hooks/useFeatureFlags';
 import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 import { useCheckoutTimer } from '@/contexts/CheckoutContext';
@@ -20,10 +21,10 @@ export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { data: role } = useUserRole();
+  const { hasRole } = useUserPermissions();
   const { isFeatureEnabled } = useFeatureFlagHelpers();
   const { isCheckoutActive, endCheckout, redirectUrl } = useCheckoutTimer();
-  const isAdmin = role === 'admin';
+  const isAdmin = hasRole(ROLES.ADMIN);
 
   return <nav className='sticky top-0 z-50 w-full bg-background/50 backdrop-blur-md border-b border-border'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>

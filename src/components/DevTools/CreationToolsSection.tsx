@@ -2,16 +2,11 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar, Music, MapPin } from 'lucide-react';
 import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
 import { FmCommonToggleHeader } from '@/components/common/forms/FmCommonToggleHeader';
-import { useDevTools } from '@/contexts/DevToolsContext';
 
 export const CreationToolsSection = () => {
-  const { isDrawerOpen, toggleDrawer } = useDevTools();
   const navigate = useNavigate();
 
   const handleNavigate = (path: string) => {
-    if (isDrawerOpen) {
-      toggleDrawer();
-    }
     navigate(path);
   };
 

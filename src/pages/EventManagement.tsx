@@ -19,7 +19,8 @@ import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { Checkbox } from '@/components/common/shadcn/checkbox';
 import { format, parse } from 'date-fns';
-import { useUserRole } from '@/shared/hooks/useUserRole';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { ROLES } from '@/shared/auth/permissions';
 import { logApiError } from '@/shared/utils/apiLogger';
 
 type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'admin';
@@ -27,8 +28,8 @@ type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'admin';
 export default function EventManagement() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { data: userRole } = useUserRole();
-  const isAdmin = userRole === 'admin';
+  const { hasRole } = useUserPermissions();
+  const isAdmin = hasRole(ROLES.ADMIN);
   const [activeTab, setActiveTab] = useState<EventTab>('overview');
   const queryClient = useQueryClient();
   const [isDeleting, setIsDeleting] = useState(false);

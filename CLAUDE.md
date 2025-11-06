@@ -50,12 +50,45 @@ src/
 - **API Logging**: Use `import { logApiError, logApi } from '@/shared/utils/apiLogger'`
 - **Types**: Import from centralized locations (e.g., `@/features/events/types`)
 
-### Design System Naming
+### Design System
+- **Complete design system documentation**: `/docs/DESIGN_SYSTEM.md`
+- **Design constants**: `/src/shared/constants/designSystem.ts`
+
+#### Colors
+- **Primary Accent**: Dusty Gold `#dfba7d` (`bg-fm-gold`, `text-fm-gold`, `border-fm-gold`)
+- **Secondary**: Dark Crimson `#520C10` (`bg-fm-crimson`, `text-fm-crimson`)
+- **Info/Tertiary**: Muted Navy `#545E75` (`bg-fm-navy`, `text-fm-navy`)
+- **Danger**: Chili Red `#D64933` (`bg-fm-danger`, `text-fm-danger`)
+- **Base**: Black `#000000` and White `#FFFFFF`
+
+#### Spacing Scale
+- XS: `5px` - Tight spacing, small gaps
+- SM: `10px` - Compact layouts, list items
+- MD: `20px` - Default element spacing
+- LG: `40px` - Section spacing, major gaps
+- XL: `60px` - Page sections, hero spacing
+
+#### Typography
+- **Font**: Canela for 99% of application (`.font-canela`)
+- **Capitalization**: Sentence case for headers ("Here's what we found." not "Here's What We Found")
+- **Periods**: Use at end of headers where appropriate
+- **Bold**: Use sparingly for emphasis only
+
+#### Design Elements
+- **Background**: Black topography pattern (`bg-topography`)
+- **Corners**: Sharp edges only (`rounded-none`) - rounded corners almost never used
+- **Depth**: 4-level system (transparent → frosted glass with increasing opacity)
+  - Level 0: Transparent with outline
+  - Level 1: `bg-black/60 backdrop-blur-sm`
+  - Level 2: `bg-black/70 backdrop-blur-md`
+  - Level 3: `bg-black/80 backdrop-blur-lg`
+- **Icon Buttons**: Use where appropriate with accessible labels
+
+#### Component Naming
 - All custom components use `Fm` prefix (Force Majeure)
 - Common components: `FmCommon*` (FmCommonButton, FmCommonTextField)
 - Specific components: `Fm*` (FmEventCard, FmTicketTier)
-- Gold accent color: `bg-fm-gold`, `text-fm-gold`, `border-fm-gold`
-- Font: Canela for headings (`.font-canela`)
+- Primary building blocks: FmButton, FmCard, FmTextInput, FmCheckbox, FmDateBox, FmDataGrid
 
 ## Code Standards
 
@@ -209,8 +242,21 @@ npm run preview      # Preview production build
 - Stored in Supabase `feature_flags` table
 - Use `FeatureGuard` component for conditional UI rendering
 - Use `useFeatureFlagHelpers` hook for programmatic checks
-- DevTools drawer for toggling (admin/developer only)
+- FmToolbar provides access to feature toggles (admin/developer only)
 - Full documentation: `docs/FEATURE_FLAG_GUIDE.md`
+
+### FmToolbar (Floating Toolbar)
+
+- **Unified toolbar** for all user tools (shopping cart, developer tools, etc.)
+- Located in `/src/components/common/toolbar/FmToolbar.tsx`
+- Tabs are role-based: user tools for logged-in users, developer tools for admin/developer roles
+- Self-contained component - no separate wrapper needed
+- Appears as floating tabs on right side of screen
+- Features:
+  - Draggable positioning
+  - Group labels with 1-second hover delay
+  - Shopping cart (all logged-in users)
+  - Developer tools (admin/developer only): Database, Feature Toggles, TODO Notes
 
 ### Demo Pages
 - Protected by `DemoProtectedRoute` (admin role required)
@@ -270,6 +316,8 @@ npm run preview      # Preview production build
 - Stripe Dashboard: [stripe URL]
 
 ## Notes for Claude
+
+### General Guidelines
 - Prefer named exports over default exports (better refactoring)
 - Always read files before editing
 - Use parallel tool calls when possible
@@ -279,3 +327,89 @@ npm run preview      # Preview production build
 - Follow existing patterns in the codebase
 - Use pre-built layouts for new pages, only creating a brand new layout if there is no reasonable base layout. Create the new layout with the idea in mind that in can be implemented in other pages.
 - Use pre-built Fm* components first before creating new components, using pre-existing ones as much as possible. Only create brand new components if absolutely necessary, and do your best to inherit base components when doing so.
+
+### Design System Usage
+**CRITICAL: Always follow the design system when creating or modifying components.**
+
+1. **Import constants**: Always import from `/src/shared/constants/designSystem.ts`
+   ```typescript
+   import { COLORS, SPACING_CLASSES, TYPOGRAPHY, DEPTH } from '@/shared/constants/designSystem';
+   ```
+
+2. **Use helper functions**: Import from `/src/shared/utils/styleUtils.ts`
+   ```typescript
+   import { 
+     getInputClasses, 
+     getLabelClasses, 
+     getListItemClasses, 
+     getDepthClasses,
+     getButtonClasses,
+     getCardClasses 
+   } from '@/shared/utils/styleUtils';
+   ```
+
+3. **Use defined colors**: Never use arbitrary hex values
+   - ✅ `className={COLOR_CLASSES.GOLD_BG}` or `bg-fm-gold`
+   - ❌ `className="bg-[#dfba7d]"` or inline styles
+
+3. **Use spacing scale**: Only use 5, 10, 20, 40, 60 pixel values
+   - ✅ `gap-[20px]`, `p-[40px]`, `m-[10px]`
+   - ❌ `gap-4`, `p-6`, arbitrary values like `15px`
+
+4. **Typography rules**:
+   - Always use Canela font: `className={TYPOGRAPHY.FONT_CANELA}` or `font-canela`
+   - Sentence case headers: "Welcome to the event." not "Welcome To The Event"
+   - Minimal bold text, only for true emphasis
+
+5. **Sharp corners**: Default to no rounding
+   - ✅ `rounded-none` (default)
+   - ❌ `rounded-lg`, `rounded-md` (avoid)
+   - Only exception: `rounded-sm` when absolutely necessary
+
+6. **Depth system**: Use for layered backgrounds
+   - Level 0: `bg-transparent border border-white/20` (outline)
+   - Level 1: `bg-black/60 backdrop-blur-sm` (base frosted)
+   - Level 2: `bg-black/70 backdrop-blur-md` (elevated)
+   - Level 3: `bg-black/80 backdrop-blur-lg` (high)
+
+7. **Component reuse**: Check existing Fm* components before creating new ones
+   - Primary components: FmButton, FmCard, FmTextInput, FmCheckbox, FmDateBox, FmDataGrid
+   - Inherit and extend rather than duplicate
+
+8. **Input field styling** (based on FmCommonTextField):
+   - Default: Single border on all sides
+   - Hover: Gold border with subtle glow, `bg-white/5`
+   - Focus: Remove top/left/right borders, keep only bottom border (3px thick, gold)
+   - Focus glow: `shadow-[0_4px_16px_rgba(223,186,125,0.3)]`
+   - Ripple effect on click
+
+9. **Label styling**: 
+   - Small size: `text-xs`
+   - ALL CAPS: `uppercase`
+   - Muted color: `text-muted-foreground`
+   - Gold when focused: `text-fm-gold`
+
+10. **List/menu items** (based on FmCommonContextMenu):
+    - Striped background: Even items `bg-background/40`, odd items `bg-background/60`
+    - Hover: `hover:bg-fm-gold/10 hover:scale-[1.02]` with gold glow
+    - Interactive scaling and smooth transitions
+
+11. **Reference documentation**: When in doubt, check `/docs/DESIGN_SYSTEM.md`
+
+### Design System Enforcement Tools
+
+**Audit Script**: Run `npm run audit:design-system` to check compliance
+- Identifies files with design system violations
+- Reports rounded corners, hardcoded colors, arbitrary spacing
+- Generates compliance scores (0-100) for each file
+- Saves detailed report to `design-system-audit-report.json`
+
+**ESLint Rules**: Automatically warns about:
+- Rounded corners (except rounded-none)
+- Hardcoded hex color values
+
+**Type Safety**: Use types from `/src/shared/types/designSystem.ts`
+- `DesignSystemColor` - Only approved colors
+- `DesignSystemSpacing` - Only scale values (5, 10, 20, 40, 60)
+- `DepthLevel` - Only valid depth levels (0-3)
+- `ButtonVariant`, `CardVariant`, etc.

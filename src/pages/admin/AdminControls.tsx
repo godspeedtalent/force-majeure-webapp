@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { FmUserDataGrid } from '@/components/common/data/FmUserDataGrid';
-import { FmCommonDataGrid, DataGridColumn, DataGridAction } from '@/components/common/data/FmCommonDataGrid';
+import { FmCommonDataGrid, DataGridAction } from '@/components/common/data/FmCommonDataGrid';
 import { FmEditVenueButton } from '@/components/common/buttons/FmEditVenueButton';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
@@ -15,6 +15,8 @@ import { DevToolsManagement } from '@/components/admin/DevToolsManagement';
 import { EventsManagement } from './EventsManagement';
 import { OrganizationsManagement } from './OrganizationsManagement';
 import { toast } from 'sonner';
+import { formatHeader } from '@/shared/utils/styleUtils';
+import { artistColumns, venueColumns } from './config/adminGridColumns';
 
 type AdminTab = 'artists' | 'events' | 'users' | 'venues' | 'organizations' | 'settings' | 'devtools';
 
@@ -111,103 +113,6 @@ export default function AdminControls() {
       }));
     },
   });
-
-  const artistColumns: DataGridColumn[] = [
-    {
-      key: 'name',
-      label: 'Name',
-      sortable: true,
-      filterable: true,
-      editable: true,
-      required: true,
-    },
-    {
-      key: 'genre',
-      label: 'Genre',
-      sortable: true,
-      filterable: true,
-      editable: true,
-    },
-    {
-      key: 'image_url',
-      label: 'Image URL',
-      filterable: true,
-      editable: true,
-      type: 'url',
-      render: (value) =>
-        value ? (
-          <img
-            src={value}
-            alt='Artist'
-            className='h-8 w-8 rounded-full object-cover shadow-sm'
-          />
-        ) : (
-          <span className='text-xs text-muted-foreground'>-</span>
-        ),
-    },
-    {
-      key: 'bio',
-      label: 'Bio',
-      filterable: true,
-      editable: true,
-      render: (value) => {
-        if (!value) {
-          return <span className='text-xs text-muted-foreground'>-</span>;
-        }
-        const text = String(value);
-        return (
-          <span
-            className='text-xs text-muted-foreground'
-            title={text}
-          >
-            {text.length > 80 ? `${text.slice(0, 77)}…` : text}
-          </span>
-        );
-      },
-    },
-  ];
-
-  // Define columns for venues grid
-  const venueColumns: DataGridColumn[] = [
-    {
-      key: 'name',
-      label: 'Name',
-      sortable: true,
-      filterable: true,
-      editable: true,
-    },
-    {
-      key: 'city_id',
-      label: 'City',
-      sortable: true,
-      filterable: true,
-      editable: true,
-      readonly: true, // City shown but edit via form only
-      isRelation: true,
-      render: (_value, row) => row.city || '-',
-    },
-    {
-      key: 'address',
-      label: 'Address',
-      sortable: true,
-      filterable: true,
-      editable: true,
-    },
-    {
-      key: 'capacity',
-      label: 'Capacity',
-      sortable: true,
-      editable: true,
-      render: (value) => value ? value.toLocaleString() : '-',
-    },
-    {
-      key: 'created_at',
-      label: 'Created',
-      sortable: true,
-      readonly: true,
-      render: (value) => new Date(value).toLocaleDateString(),
-    },
-  ];
 
   const handleArtistUpdate = async (row: any, columnKey: string, newValue: any) => {
     const normalizedValue = typeof newValue === 'string' ? newValue.trim() : newValue;
@@ -430,19 +335,19 @@ export default function AdminControls() {
       onItemChange={setActiveTab}
     >
       <div className="max-w-full">
-              <div className="mb-4">
-                <div className="flex items-center gap-3 mb-4">
+              <div className="mb-[20px]">
+                <div className="flex items-center gap-[10px] mb-[20px]">
                   <Settings className="h-6 w-6 text-fm-gold" />
-                  <h1 className="text-3xl font-canela">{getTabTitle()}</h1>
+                  <h1 className="text-3xl font-canela">{formatHeader(getTabTitle())}</h1>
                 </div>
 
                 {activeTab !== 'settings' && activeTab !== 'devtools' && (
-                  <div className="flex gap-4 mb-6">
-                    <div className="bg-muted/30 border border-border rounded-lg px-4 py-3 transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]">
+                  <div className="flex gap-[20px] mb-[20px]">
+                    <div className="bg-muted/30 border border-border rounded-none px-[20px] py-[10px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]">
                       <div className="text-2xl font-bold text-foreground">{totalRecords}</div>
                       <div className="text-xs text-muted-foreground">Total Records</div>
                     </div>
-                    <div className="bg-muted/30 border border-border rounded-lg px-4 py-3 transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]">
+                    <div className="bg-muted/30 border border-border rounded-none px-[20px] py-[10px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]">
                       <div className="text-2xl font-bold text-foreground">{completeness}%</div>
                       <div className="text-xs text-muted-foreground">Complete Data</div>
                     </div>
@@ -508,7 +413,7 @@ export default function AdminControls() {
               {activeTab === 'settings' && (
                 <div className="space-y-8">
                   <div>
-                    <h3 className="text-lg font-canela font-semibold mb-2">Feature Flags</h3>
+                    <h3 className="text-lg font-canela font-semibold mb-2">{formatHeader('Feature Flags')}</h3>
                     <p className="text-muted-foreground text-sm mb-4">
                       Control feature availability across different environments
                     </p>
@@ -523,7 +428,7 @@ export default function AdminControls() {
                   />
 
                   <div>
-                    <h3 className="text-lg font-canela font-semibold mb-2">Ticketing Fees</h3>
+                    <h3 className="text-lg font-canela font-semibold mb-2">{formatHeader('Ticketing Fees')}</h3>
                     <p className="text-muted-foreground text-sm mb-4">
                       Configure site-wide fees and taxes applied to all ticket purchases
                     </p>
@@ -535,7 +440,7 @@ export default function AdminControls() {
               {activeTab === 'devtools' && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-lg font-canela font-semibold mb-2">Dev Toolbar Sections</h3>
+                    <h3 className="text-lg font-canela font-semibold mb-2">{formatHeader('Dev Toolbar Sections')}</h3>
                     <p className="text-muted-foreground text-sm mb-4">
                       Control which sections appear in the developer toolbar for testing
                     </p>

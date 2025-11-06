@@ -128,6 +128,20 @@ export default tseslint.config(
       'jsx-a11y/anchor-is-valid': 'warn',
       'jsx-a11y/click-events-have-key-events': 'warn',
       'jsx-a11y/no-static-element-interactions': 'warn',
+
+      // Force Majeure Design System rules
+      // These help enforce design system compliance
+      'no-restricted-syntax': [
+        'warn',
+        {
+          selector: 'Literal[value=/rounded-(lg|md|xl|2xl|3xl|full)/]',
+          message: 'Avoid rounded corners. Use sharp edges (rounded-none) per design system. See /docs/DESIGN_SYSTEM.md',
+        },
+        {
+          selector: 'Literal[value=/#[0-9A-Fa-f]{6}/]',
+          message: 'Use COLORS constants from @/shared/constants/designSystem instead of hardcoded hex values.',
+        },
+      ],
     },
   },
   // Special configuration for config files

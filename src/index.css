@@ -112,10 +112,21 @@ All colors MUST be HSL.
 
     --radius: 0.125rem;
 
-    /* Force Majeure Brand Colors */
-    --fm-gold: 348 100% 22%;
-    --fm-gold-rgb: 138 0 0; /* RGB equivalent for rgba usage */
-    --fm-crimson: 348 83% 47%;
+    /* Force Majeure Brand Colors - Design System */
+    /* Primary Accent: Dusty Gold #dfba7d */
+    --fm-gold: 38 60% 68%;
+    --fm-gold-rgb: 223 186 125; /* RGB equivalent for rgba usage */
+    
+    /* Secondary: Dark Crimson #520C10 */
+    --fm-crimson: 357 75% 19%;
+    
+    /* Info/Tertiary: Muted Navy #545E75 */
+    --fm-navy: 222 16% 39%;
+    
+    /* Danger: Chili Red #D64933 */
+    --fm-danger: 9 65% 52%;
+    
+    /* Legacy colors (deprecated - use above instead) */
     --fm-charcoal: 0 0% 13%;
     --fm-silver: 0 0% 85%;
 
@@ -187,10 +198,21 @@ All colors MUST be HSL.
     --input: 0 0% 15%;
     --ring: 0 0% 100%;
 
-    /* Force Majeure Brand Colors - Dark Mode */
+    /* Force Majeure Brand Colors - Dark Mode - Design System */
+    /* Primary Accent: Dusty Gold #dfba7d */
     --fm-gold: 38 60% 68%;
-    --fm-gold-rgb: 207 173 118; /* RGB equivalent for rgba usage */
-    --fm-crimson: 348 83% 47%;
+    --fm-gold-rgb: 223 186 125; /* RGB equivalent for rgba usage */
+    
+    /* Secondary: Dark Crimson #520C10 */
+    --fm-crimson: 357 75% 19%;
+    
+    /* Info/Tertiary: Muted Navy #545E75 */
+    --fm-navy: 222 16% 39%;
+    
+    /* Danger: Chili Red #D64933 */
+    --fm-danger: 9 65% 52%;
+    
+    /* Legacy colors (deprecated - use above instead) */
     --fm-charcoal: 0 0% 13%;
     --fm-silver: 0 0% 85%;
 

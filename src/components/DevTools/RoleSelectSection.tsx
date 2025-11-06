@@ -3,7 +3,8 @@ import { FmCommonDropdown, DropdownItem } from '@/components/common/forms/FmComm
 import { Button } from '@/components/common/shadcn/button';
 import { FmCommonToggleHeader } from '@/components/common/forms/FmCommonToggleHeader';
 import { FmCommonNavigationButton } from '@/components/common/buttons/FmCommonNavigationButton';
-import type { DevRole } from '@/contexts/DevToolsContext';
+
+export type DevRole = 'unauthenticated' | 'fan' | 'developer' | 'admin';
 
 interface RoleSelectSectionProps {
   currentRole: DevRole | null;

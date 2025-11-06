@@ -13,16 +13,8 @@ import {
 } from '@/components/common/shadcn/alert-dialog';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
-import { 
-  Music, 
-  EyeOff, 
-  ShoppingBag, 
-  UserCircle,
-  Ticket,
-  Map,
-  LucideIcon
-} from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/common/shadcn/tooltip';
+import { formatFlagName, getFlagIcon, getFlagDescription } from '@/shared/utils/featureFlagUtils';
 
 interface FeatureFlag {
   flag_name: string;
@@ -30,24 +22,6 @@ interface FeatureFlag {
   description: string | null;
   environment: string;
 }
-
-// Icon mapping for feature flags
-const iconMap: Record<string, LucideIcon> = {
-  music_player: Music,
-  coming_soon_mode: EyeOff,
-  merch_store: ShoppingBag,
-  member_profiles: UserCircle,
-  ticketing: Ticket,
-  scavenger_hunt: Map,
-};
-
-// Format flag name for display
-const formatFlagName = (flagName: string): string => {
-  return flagName
-    .split('_')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-};
 
 export const FeatureToggleSection = () => {
   const [flags, setFlags] = useState<FeatureFlag[]>([]);
@@ -142,7 +116,8 @@ export const FeatureToggleSection = () => {
         {editableFlags.length > 0 && (
           <div className="space-y-3">
             {editableFlags.map((flag) => {
-              const Icon = iconMap[flag.flag_name] || Music;
+              const Icon = getFlagIcon(flag.flag_name);
+              const description = flag.description || getFlagDescription(flag.flag_name);
               return (
                 <TooltipProvider key={flag.flag_name}>
                   <Tooltip delayDuration={300}>
@@ -157,11 +132,9 @@ export const FeatureToggleSection = () => {
                         />
                       </div>
                     </TooltipTrigger>
-                    {flag.description && (
-                      <TooltipContent side="left" className="max-w-xs bg-black/95 border-white/20 z-[150]">
-                        <p className="text-sm text-white">{flag.description}</p>
-                      </TooltipContent>
-                    )}
+                    <TooltipContent side="left" className="max-w-xs bg-black/95 border-white/20 z-[150]">
+                      <p className="text-sm text-white">{description}</p>
+                    </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               );

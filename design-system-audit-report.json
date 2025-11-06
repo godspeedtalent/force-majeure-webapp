@@ -1,0 +1,2936 @@
+[
+  {
+    "file": "src/pages/developer/FmComponentsCatalog.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 20 rounded corner class(es): rounded-lg, rounded-lg, rounded-lg.... Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 7 arbitrary Tailwind spacing class(es): gap-2, p-6, gap-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "warning",
+        "message": "Found 1 potential Title Case header(s). Use sentence case."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      },
+      {
+        "type": "info",
+        "message": "Consider using styleUtils.ts helper functions for consistent styling."
+      }
+    ],
+    "score": 76
+  },
+  {
+    "file": "src/pages/EventManagement.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 5 rounded corner class(es): rounded-lg, rounded-lg, rounded-lg.... Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 6 arbitrary Tailwind spacing class(es): gap-4, p-8, gap-6. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Found 4 label(s) that may not be uppercase. Labels should be text-xs and uppercase."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 81
+  },
+  {
+    "file": "src/components/ticketing/TicketCheckoutForm.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 4 arbitrary Tailwind spacing class(es): gap-4, gap-3, gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Found 8 label(s) that may not be uppercase. Labels should be text-xs and uppercase."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 81
+  },
+  {
+    "file": "src/components/admin/RoleManagementModal.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 3 rounded corner class(es): rounded-lg, rounded-lg, rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 4 arbitrary Tailwind spacing class(es): gap-2, p-3, gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Found 2 label(s) that may not be uppercase. Labels should be text-xs and uppercase."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 81
+  },
+  {
+    "file": "src/features/events/components/TicketTiersSection.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): p-4, gap-3, gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Found 5 label(s) that may not be uppercase. Labels should be text-xs and uppercase."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 81
+  },
+  {
+    "file": "src/components/events/ticketing/TicketGroupManager.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 9 rounded corner class(es): rounded-full, rounded-full, rounded-full.... Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 6 arbitrary Tailwind spacing class(es): gap-4, p-4, gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Found 5 label(s) that may not be uppercase. Labels should be text-xs and uppercase."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 81
+  },
+  {
+    "file": "src/components/common/buttons/FmEditEventButton.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 4 arbitrary Tailwind spacing class(es): gap-2, gap-4, p-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Found 12 label(s) that may not be uppercase. Labels should be text-xs and uppercase."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 81
+  },
+  {
+    "file": "src/components/common/buttons/FmCreateEventButton.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 4 arbitrary Tailwind spacing class(es): gap-4, gap-2, p-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Found 12 label(s) that may not be uppercase. Labels should be text-xs and uppercase."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 81
+  },
+  {
+    "file": "src/pages/ProfileEdit.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 3 rounded corner class(es): rounded-lg, rounded-lg, rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 5 arbitrary Tailwind spacing class(es): p-12, p-8, gap-6. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/pages/Profile.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 3 rounded corner class(es): rounded-l, rounded-l, rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 4 arbitrary Tailwind spacing class(es): p-12, p-4, p-8. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/pages/ComingSoon.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 4 arbitrary Tailwind spacing class(es): gap-6, p-4, m-6. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/pages/CheckoutSuccess.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): p-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/pages/CheckoutCancel.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): p-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/pages/event/EventDetailsPage.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-6. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/pages/event/EventDetailsContent.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 5 rounded corner class(es): rounded-full, rounded-xl, rounded-full.... Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 7 arbitrary Tailwind spacing class(es): gap-8, gap-3, gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/pages/developer/DeveloperIndex.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 3 rounded corner class(es): rounded-lg, rounded-md, rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 6 arbitrary Tailwind spacing class(es): p-6, gap-4, gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/pages/organization/OrganizationTools.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 4 rounded corner class(es): rounded-lg, rounded-lg, rounded-lg.... Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 4 arbitrary Tailwind spacing class(es): gap-6, p-6, gap-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/pages/testing/TestingIndex.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 3 rounded corner class(es): rounded-lg, rounded-md, rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 6 arbitrary Tailwind spacing class(es): p-6, gap-4, gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/pages/demo/EventCheckoutConfirmation.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-full, rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): p-4, p-8. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/pages/demo/EventCheckout.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-lg, rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): p-6, gap-6, gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/pages/demo/DemoIndex.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 3 rounded corner class(es): rounded-lg, rounded-md, rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 6 arbitrary Tailwind spacing class(es): p-6, gap-4, gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/ticketing/EventCheckoutWizard.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-xl. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): gap-3, gap-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/search/GlobalSearch.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 8 rounded corner class(es): rounded-lg, rounded-lg, rounded-lg.... Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 5 arbitrary Tailwind spacing class(es): p-4, p-2, gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/primitives/DecorativeDivider.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/devtools/DevNotesSection.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): gap-2, p-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/devtools/BaseFloatingToolbar.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 4 rounded corner class(es): rounded-tl, rounded-bl, rounded-tl.... Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): gap-2, p-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/musicplayer/VolumeControl.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): gap-2, p-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/musicplayer/TrackQueue.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 4 arbitrary Tailwind spacing class(es): p-4, gap-3, p-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/musicplayer/TrackInfo.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 4 rounded corner class(es): rounded-md, rounded-md, rounded-md.... Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): gap-3, gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/musicplayer/PlayerControls.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 5 rounded corner class(es): rounded-md, rounded-md, rounded-full.... Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): gap-2, p-2, p-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/demo/ImageAnchorDemo.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): p-8, gap-6. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/demo/ComponentRelationshipGraph.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 7 rounded corner class(es): rounded-lg, rounded-lg, rounded-full.... Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 4 arbitrary Tailwind spacing class(es): p-6, gap-4, p-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/artist/FmArtistDetailsModal.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-xl. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): gap-8, gap-6. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/admin/DevToolsManagement.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-lg, rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 6 arbitrary Tailwind spacing class(es): gap-3, p-4, gap-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/admin/AdminFeesSection.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): gap-6, p-4, gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/features/testing/components/TestThreadMonitor.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-lg, rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 4 arbitrary Tailwind spacing class(es): gap-4, gap-2, gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/features/testing/components/TestSuiteRunner.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 8 rounded corner class(es): rounded-lg, rounded-lg, rounded-lg.... Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 5 arbitrary Tailwind spacing class(es): p-6, gap-2, p-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/features/testing/components/TestCaseItem.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 5 arbitrary Tailwind spacing class(es): p-4, gap-4, gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/features/payments/components/StripeCardInput.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): p-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/features/payments/components/SavedCardSelector.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): p-3, gap-3, gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/features/events/components/EventRowSkeleton.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-lg, rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): gap-4, p-4, gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/features/events/components/EventCardSkeleton.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-full, rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): m-4, gap-2, p-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/features/events/components/EventCard.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 4 arbitrary Tailwind spacing class(es): p-4, p-2, p-6. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/scavenger/shared/LocationCard.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 4 arbitrary Tailwind spacing class(es): p-6, gap-4, p-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/scavenger/shared/ClaimSuccessModal.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 3 rounded corner class(es): rounded-full, rounded-lg, rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): p-6, p-4, gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/scavenger/layouts/ScavengerFullLayout.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): gap-4, p-4, p-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/scavenger/auth/PromoCodePanel.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): p-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/scavenger/auth/LoginForm.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): p-6, p-8. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/events/artists/EventArtistManagement.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 6 rounded corner class(es): rounded-lg, rounded-lg, rounded-lg.... Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 4 arbitrary Tailwind spacing class(es): p-4, gap-4, gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/shadcn/tooltip.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): p-2, m-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/shadcn/toast.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 3 rounded corner class(es): rounded-md, rounded-md, rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): p-4, p-6, p-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/shadcn/sidebar.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 10 rounded corner class(es): rounded-lg, rounded-xl, rounded-md.... Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 4 arbitrary Tailwind spacing class(es): p-2, m-2, gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/shadcn/select.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-md, rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): p-2, m-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/shadcn/radio-group.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/shadcn/popover.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): p-4, p-2, m-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/shadcn/menubar.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 3 rounded corner class(es): rounded-md, rounded-md, rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): p-2, m-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/shadcn/input-otp.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-l, rounded-r. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/shadcn/hover-card.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): p-4, p-2, m-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/shadcn/dropdown-menu.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-md, rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): p-2, m-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/shadcn/drawer.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-t, rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): p-4, gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/shadcn/dialog.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-xl, rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): gap-4, p-6, p-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/shadcn/context-menu.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-md, rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): p-2, m-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/shadcn/chart.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): gap-2, gap-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/shadcn/carousel.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-full, rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): p-12, m-12. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/shadcn/card.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): p-6. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/shadcn/calendar.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 4 rounded corner class(es): rounded-md, rounded-r, rounded-l.... Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): p-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/shadcn/button.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 3 rounded corner class(es): rounded-md, rounded-md, rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/shadcn/alert.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): p-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/shadcn/alert-dialog.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): gap-4, p-6. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/search/FmCommonSearchDropdown.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 4 arbitrary Tailwind spacing class(es): gap-2, p-2, p-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/navigation/FmCommonSideNav.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-md, rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/misc/FmPromoCodeInput.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/layout/FmCommonRow.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-xl. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/layout/FmCommonCard.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-lg, rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): p-3, p-4, p-6. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/forms/FmImageUpload.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 3 rounded corner class(es): rounded-lg, rounded-full, rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): p-6, p-2, p-12. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/forms/FmCommonToggle.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/feedback/FmErrorToast.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): gap-3, p-4, p-5. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/feedback/FmErrorDisplay.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): p-4, p-3, gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/display/FmImageCard.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 4 arbitrary Tailwind spacing class(es): m-4, p-4, gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/display/FmCommonPageHeader.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): gap-4, gap-3, gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/display/FmCommonInfoCard.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 5 arbitrary Tailwind spacing class(es): p-3, p-4, p-6. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/display/FmCommonIconWithText.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): gap-2, gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/data/FmOrganizationDataGrid.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-full, rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/data/FmCommonList.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-lg. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/components/common/data/FmCommonDataGrid.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 4 rounded corner class(es): rounded-full, rounded-full, rounded-lg.... Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): gap-2, gap-4, p-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 83
+  },
+  {
+    "file": "src/hooks/useRipple.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/shared/services/logger.ts",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 4 hardcoded hex color(s). Import COLORS from designSystem.ts instead."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/pages/admin/AdminControls.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/config/tailwind/colors.ts",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 4 hardcoded hex color(s). Import COLORS from designSystem.ts instead."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/navigation/UserMenuDropdown.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/navigation/Navigation.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/primitives/DisplayToggle.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/business/FmCommonButton.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-full, rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/artist/FmArtistRow.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-full, rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/services/email/templates/OrderReceiptEmail.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 9 hardcoded hex color(s). Import COLORS from designSystem.ts instead."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/features/auth/components/GoogleOAuthButton.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 4 hardcoded hex color(s). Import COLORS from designSystem.ts instead."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/scavenger/auth/RegistrationForm.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/shadcn/toggle.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/shadcn/textarea.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/shadcn/tabs.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/shadcn/switch.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-full, rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/shadcn/slider.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-full, rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/shadcn/skeleton.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/shadcn/scroll-area.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/shadcn/progress.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/shadcn/navigation-menu.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 3 rounded corner class(es): rounded-md, rounded-md, rounded-tl. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/shadcn/input.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/shadcn/command.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-md, rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/shadcn/badge.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/shadcn/avatar.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-full, rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/search/FmVenueSearchDropdown.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/search/FmUserSearchDropdown.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-full, rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/search/FmOrganizationSearchDropdown.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-full, rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/search/FmEventSearchDropdown.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-full, rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/search/FmCitySearchDropdown.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/search/FmArtistSearchDropdown.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-full, rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/modals/VenueModal.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/modals/FmCommonContextMenu.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/display/FmCommonUserPhoto.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 2 rounded corner class(es): rounded-md, rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/display/FmBadge.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-md. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/display/FmAnimatedGradientAvatar.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 7 rounded corner class(es): rounded-md, rounded-full, rounded-full.... Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/buttons/FmCommonIconButton.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/common/buttons/FmCommonButton.tsx",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Uses 1 rounded corner class(es): rounded-full. Use sharp edges (rounded-none)."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 88
+  },
+  {
+    "file": "src/components/devtools/EventListSection.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Found 2 label(s) that may not be uppercase. Labels should be text-xs and uppercase."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 91
+  },
+  {
+    "file": "src/components/demo/EventCheckoutDemoTools.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Found 2 label(s) that may not be uppercase. Labels should be text-xs and uppercase."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 91
+  },
+  {
+    "file": "src/features/events/components/EventDetailsSection.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): gap-4, gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Found 7 label(s) that may not be uppercase. Labels should be text-xs and uppercase."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 91
+  },
+  {
+    "file": "src/components/demo/tools/FmEventSelectionDemoTool.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Found 2 label(s) that may not be uppercase. Labels should be text-xs and uppercase."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 91
+  },
+  {
+    "file": "src/components/common/forms/FmCommonEventDatePicker.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): p-3, gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Found 1 label(s) that may not be uppercase. Labels should be text-xs and uppercase."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 91
+  },
+  {
+    "file": "src/components/common/buttons/FmEditVenueButton.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): gap-2, gap-4, gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Found 5 label(s) that may not be uppercase. Labels should be text-xs and uppercase."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 91
+  },
+  {
+    "file": "src/pages/Orders.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): gap-2, gap-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/pages/Merch.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 4 arbitrary Tailwind spacing class(es): gap-4, gap-2, gap-6. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/pages/Index.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-8. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/pages/event/EventHero.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): p-6, p-10, gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/pages/demo/EventCheckoutForm.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): p-6. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/pages/admin/Statistics.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): gap-3, gap-6, p-6. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/venue/FmVenueDetailsModal.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): p-8, gap-6, gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/feedback/WizardPanel.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): p-12. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/feedback/MessagePanel.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): p-12. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/devtools/TicketingSection.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/devtools/RoleSelectSection.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/devtools/DevToolsDrawer.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/devtools/CreationToolsSection.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/musicplayer/ExpandableMusicPlayer.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): p-4, gap-3, gap-6. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/demo/DemoLayout.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/business/CheckoutTimer.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/business/CheckoutCountdown.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/features/testing/components/TestResultsPanel.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): gap-4, gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/features/events/components/EventRow.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): p-4, gap-4, gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/shadcn/table.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): p-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/shadcn/sheet.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): gap-4, p-6, p-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/shadcn/breadcrumb.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/navigation/FmCommonBackButton.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/modals/FmResourceDetailsModal.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/modals/FmCommonModal.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 3 arbitrary Tailwind spacing class(es): gap-3, gap-6, gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/layout/FmDynamicStickyHeader.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): gap-4, gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/layout/FmCommonPageLayout.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): gap-4, gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/layout/FmCommonGridLayout.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 4 arbitrary Tailwind spacing class(es): gap-2, gap-4, gap-6. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/forms/FmCommonRowManager.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): p-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/forms/FmCommonQueryInput.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/forms/FmCommonFormSection.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): gap-4, gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/forms/FmCommonFormCheckbox.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/forms/FmCommonFormActions.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/forms/FmCitySearchDropdown.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/feedback/FmTimerToast.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/feedback/FmCommonToast.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/feedback/FmCommonLoadingOverlay.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-4. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/display/FmUndercardList.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/display/FmDateBox.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): m-2, m-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/display/FmCommonStatCard.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 4 arbitrary Tailwind spacing class(es): p-4, p-6, p-8. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/display/FmCommonPriceDisplay.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/display/FmCommonDetailSection.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): gap-4, gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/display/FmCommonBadgeGroup.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): gap-2, gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/data/FmUserDataGrid.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/data/FmInfoCard.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 2 arbitrary Tailwind spacing class(es): p-6, gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/buttons/FmCreateVenueButton.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/buttons/FmCreateArtistButton.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/buttons/FmCommonNavigationButton.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-3. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/common/buttons/FmCommonCreateButton.tsx",
+    "issues": [
+      {
+        "type": "warning",
+        "message": "Uses 1 arbitrary Tailwind spacing class(es): gap-2. Use design system spacing: [5px], [10px], [20px], [40px], [60px]."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 93
+  },
+  {
+    "file": "src/components/ticketing/TicketingPanel.tsx",
+    "issues": [
+      {
+        "type": "info",
+        "message": "Found 1 label(s) that may not be uppercase. Labels should be text-xs and uppercase."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 96
+  },
+  {
+    "file": "src/components/demo/EmailPreview.tsx",
+    "issues": [
+      {
+        "type": "info",
+        "message": "Found 1 label(s) that may not be uppercase. Labels should be text-xs and uppercase."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 96
+  },
+  {
+    "file": "src/features/auth/components/AuthPanel.tsx",
+    "issues": [
+      {
+        "type": "info",
+        "message": "Found 1 label(s) that may not be uppercase. Labels should be text-xs and uppercase."
+      },
+      {
+        "type": "info",
+        "message": "Does not import from designSystem.ts. Consider using design system constants."
+      }
+    ],
+    "score": 96
+  }
+]

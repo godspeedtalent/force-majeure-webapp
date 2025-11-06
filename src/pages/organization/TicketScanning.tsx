@@ -10,6 +10,7 @@ import { Label } from '@/components/common/shadcn/label';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { useToast } from '@/shared/hooks/use-toast';
 import { PERMISSIONS } from '@/shared/auth/permissions';
+import { formatHeader } from '@/shared/utils/styleUtils';
 
 interface ScanResult {
   success: boolean;
@@ -107,25 +108,25 @@ const TicketScanning = () => {
       title='Ticket Scanning'
       subtitle='Scan and validate event tickets'
     >
-      <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-[20px]'>
         {/* Scanner Card */}
-        <FmCommonCard variant='outline' className='p-6'>
-          <div className='space-y-6'>
-            <div className='flex items-center gap-3'>
-              <div className='p-3 rounded-lg bg-fm-gold/10 border border-fm-gold/20'>
+        <FmCommonCard variant='outline' className='p-[20px]'>
+          <div className='space-y-[20px]'>
+            <div className='flex items-center gap-[10px]'>
+              <div className='p-[10px] rounded-none bg-fm-gold/10 border border-fm-gold/20'>
                 <Scan className='h-6 w-6 text-fm-gold' />
               </div>
               <div>
-                <h3 className='text-lg font-canela'>Scan Ticket</h3>
+                <h3 className='text-lg font-canela'>{formatHeader('scan ticket')}</h3>
                 <p className='text-sm text-muted-foreground'>
                   Enter ticket code or use camera to scan
                 </p>
               </div>
             </div>
 
-            <div className='space-y-4'>
+            <div className='space-y-[20px]'>
               <div>
-                <Label htmlFor='ticketCode'>Ticket Code</Label>
+                <Label htmlFor='ticketCode' className='text-xs uppercase'>TICKET CODE</Label>
                 <Input
                   id='ticketCode'
                   value={ticketCode}
@@ -169,18 +170,18 @@ const TicketScanning = () => {
         </FmCommonCard>
 
         {/* Last Scan Result Card */}
-        <FmCommonCard variant='outline' className='p-6'>
-          <div className='space-y-4'>
-            <h3 className='text-lg font-canela'>Last Scan Result</h3>
+        <FmCommonCard variant='outline' className='p-[20px]'>
+          <div className='space-y-[20px]'>
+            <h3 className='text-lg font-canela'>{formatHeader('last scan result')}</h3>
             
             {lastScan ? (
-              <div className='space-y-4'>
-                <div className={`p-4 rounded-lg border ${
+              <div className='space-y-[20px]'>
+                <div className={`p-[20px] rounded-none border ${
                   lastScan.success 
                     ? 'bg-green-500/10 border-green-500/30' 
                     : 'bg-red-500/10 border-red-500/30'
                 }`}>
-                  <div className='flex items-start gap-3'>
+                  <div className='flex items-start gap-[10px]'>
                     {lastScan.success ? (
                       <CheckCircle2 className='h-6 w-6 text-green-500 flex-shrink-0' />
                     ) : (
@@ -190,7 +191,7 @@ const TicketScanning = () => {
                       <p className={`font-medium ${
                         lastScan.success ? 'text-green-500' : 'text-red-500'
                       }`}>
-                        {lastScan.success ? 'Valid Ticket' : 'Invalid Ticket'}
+                        {lastScan.success ? 'Valid ticket' : 'Invalid ticket'}
                       </p>
                       <p className='text-sm text-muted-foreground mt-1'>
                         {lastScan.message}
@@ -200,8 +201,8 @@ const TicketScanning = () => {
                 </div>
 
                 {lastScan.ticketInfo && (
-                  <div className='space-y-2 p-4 bg-muted/30 rounded-lg'>
-                    <h4 className='text-sm font-medium text-foreground'>Ticket Details</h4>
+                  <div className='space-y-[10px] p-[20px] bg-muted/30 rounded-none'>
+                    <h4 className='text-sm font-medium text-foreground'>Ticket details.</h4>
                     <div className='space-y-1 text-sm'>
                       <div className='flex justify-between'>
                         <span className='text-muted-foreground'>Event:</span>
@@ -238,18 +239,18 @@ const TicketScanning = () => {
       </div>
 
       {/* Quick Stats */}
-      <FmCommonCard variant='outline' className='p-6'>
-        <h3 className='text-lg font-canela mb-4'>Today's Statistics</h3>
-        <div className='grid grid-cols-1 sm:grid-cols-3 gap-4'>
-          <div className='text-center p-4 bg-muted/30 rounded-lg'>
+      <FmCommonCard variant='outline' className='p-[20px]'>
+        <h3 className='text-lg font-canela mb-[20px]'>{formatHeader("today's statistics")}</h3>
+        <div className='grid grid-cols-1 sm:grid-cols-3 gap-[20px]'>
+          <div className='text-center p-[20px] bg-muted/30 rounded-none'>
             <p className='text-2xl font-canela text-fm-gold'>0</p>
-            <p className='text-sm text-muted-foreground'>Tickets Scanned</p>
+            <p className='text-sm text-muted-foreground'>Tickets scanned</p>
           </div>
-          <div className='text-center p-4 bg-muted/30 rounded-lg'>
+          <div className='text-center p-[20px] bg-muted/30 rounded-none'>
             <p className='text-2xl font-canela text-green-500'>0</p>
             <p className='text-sm text-muted-foreground'>Valid</p>
           </div>
-          <div className='text-center p-4 bg-muted/30 rounded-lg'>
+          <div className='text-center p-[20px] bg-muted/30 rounded-none'>
             <p className='text-2xl font-canela text-red-500'>0</p>
             <p className='text-sm text-muted-foreground'>Invalid</p>
           </div>

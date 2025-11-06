@@ -96,17 +96,27 @@ export const FEATURE_FLAG_METADATA: Record<FeatureFlag, {
 
 /**
  * Type for the feature flags object returned by useFeatureFlags
+ * Auto-generated from FEATURE_FLAGS constant to ensure type safety
  */
-export interface FeatureFlagsState {
-  scavenger_hunt_active: boolean;
-  coming_soon_mode: boolean;
-  show_leaderboard: boolean;
-  demo_pages: boolean;
-  music_player: boolean;
-  scavenger_hunt: boolean;
-  event_checkout_timer: boolean;
-  merch_store: boolean;
-  member_profiles: boolean;
-  global_search: boolean;
-  spotify_integration: boolean;
-}
+export type FeatureFlagsState = {
+  [K in FeatureFlag]: boolean;
+};
+
+/**
+ * Helper to create an empty feature flags state object
+ * Useful for initialization and testing
+ */
+export const createEmptyFeatureFlagsState = (): FeatureFlagsState => {
+  const flags = Object.values(FEATURE_FLAGS);
+  return flags.reduce((acc, flag) => {
+    acc[flag] = false;
+    return acc;
+  }, {} as FeatureFlagsState);
+};
+
+/**
+ * Type guard to check if a string is a valid feature flag
+ */
+export const isFeatureFlag = (value: string): value is FeatureFlag => {
+  return Object.values(FEATURE_FLAGS).includes(value as FeatureFlag);
+};

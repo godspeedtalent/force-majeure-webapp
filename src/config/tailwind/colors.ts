@@ -30,9 +30,21 @@ const componentColors = {
 };
 
 // Force Majeure brand colors
+// Based on design system: /src/shared/constants/designSystem.ts
 const brandColors = {
-  'fm-gold': 'hsl(var(--fm-gold))',
-  'fm-crimson': 'hsl(var(--fm-crimson))',
+  // Primary accent - Dusty Gold
+  'fm-gold': '#dfba7d',
+  
+  // Secondary - Dark Crimson
+  'fm-crimson': '#520C10',
+  
+  // Info/Tertiary - Muted Navy
+  'fm-navy': '#545E75',
+  
+  // Danger - Chili Red (brighter than crimson)
+  'fm-danger': '#D64933',
+  
+  // Legacy colors (can be deprecated if not in use)
   'fm-charcoal': 'hsl(var(--fm-charcoal))',
   'fm-silver': 'hsl(var(--fm-silver))',
 };

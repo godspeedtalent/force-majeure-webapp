@@ -4,4 +4,3 @@ export { useFeatureFlags } from './useFeatureFlags';
 export { useFontLoader } from './useFontLoader';
 export { useProxyToken } from './useProxyToken';
 export { useUserRole, useUserPermissions } from './useUserRole';
-export { useDevRole } from './useDevRole';

@@ -17,6 +17,7 @@ import { FmInfoCard } from '@/components/common/data/FmInfoCard';
 import { z } from 'zod';
 import { emailField, stringRequired, phoneField } from '@/shared/utils/formValidation';
 import { useNavigate } from 'react-router-dom';
+import { formatHeader } from '@/shared/utils/styleUtils';
 
 const US_STATES = [
   { value: 'AL', label: 'Alabama' }, { value: 'AK', label: 'Alaska' }, { value: 'AZ', label: 'Arizona' },
@@ -185,10 +186,10 @@ export default function EventCheckoutForm({
   // Redirect if not authenticated
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-fm-gold mx-auto mb-2"></div>
-          <p className="text-sm text-muted-foreground">Loading...</p>
+          <div className="animate-spin rounded-none h-8 w-8 border-b-2 border-fm-gold mx-auto mb-2"></div>
+          <p className="text-sm text-muted-foreground">Loading checkout...</p>
         </div>
       </div>
     );
@@ -197,12 +198,12 @@ export default function EventCheckoutForm({
   if (!user && !isGuestMode) {
     return (
       <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center gap-[20px] mb-[20px]">
           <Button variant="ghost" size="icon" onClick={onBack}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-canela">Complete Your Purchase</h1>
+            <h1 className="text-2xl font-canela">{formatHeader('complete your purchase')}</h1>
             <p className="text-sm text-muted-foreground">Sign in or continue as guest</p>
           </div>
         </div>
@@ -229,12 +230,12 @@ export default function EventCheckoutForm({
       />
 
       {/* Header */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-[20px]">
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-2xl font-canela">Complete Your Purchase</h1>
+          <h1 className="text-2xl font-canela">{formatHeader('complete your purchase')}</h1>
           <p className="text-sm text-muted-foreground">Secure checkout powered by Stripe</p>
         </div>
       </div>
@@ -244,14 +245,14 @@ export default function EventCheckoutForm({
         <div className="space-y-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Customer Information */}
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
+            <Card className="p-[20px]">
+              <div className="flex items-center gap-[10px] mb-[20px]">
                 <User className="h-5 w-5 text-fm-gold" />
-                <h2 className="text-lg font-canela">Customer Information</h2>
+                <h2 className="text-lg font-canela">{formatHeader('customer information')}</h2>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-[20px]">
                 <div>
-                  <Label htmlFor="fullName">Full Name *</Label>
+                  <Label htmlFor="fullName" className="text-xs uppercase">FULL NAME *</Label>
                   <Input
                     id="fullName"
                     value={formData.fullName}
@@ -264,7 +265,7 @@ export default function EventCheckoutForm({
                   )}
                 </div>
                 <div>
-                  <Label htmlFor="email">Email Address *</Label>
+                  <Label htmlFor="email" className="text-xs uppercase">EMAIL ADDRESS *</Label>
                   <Input
                     id="email"
                     type="email"
@@ -278,7 +279,7 @@ export default function EventCheckoutForm({
                   )}
                 </div>
                 <div>
-                  <Label htmlFor="phone">Phone Number *</Label>
+                  <Label htmlFor="phone" className="text-xs uppercase">PHONE NUMBER *</Label>
                   <PhoneInput
                     id="phone"
                     value={formData.phone}
@@ -293,14 +294,14 @@ export default function EventCheckoutForm({
             </Card>
 
             {/* Billing Information */}
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
+            <Card className="p-[20px]">
+              <div className="flex items-center gap-[10px] mb-[20px]">
                 <CreditCard className="h-5 w-5 text-fm-gold" />
-                <h2 className="text-lg font-canela">Billing Information</h2>
+                <h2 className="text-lg font-canela">{formatHeader('billing information')}</h2>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-[20px]">
                 <div>
-                  <Label htmlFor="billingAddress">Address Line 1 *</Label>
+                  <Label htmlFor="billingAddress" className="text-xs uppercase">ADDRESS LINE 1 *</Label>
                   <Input
                     id="billingAddress"
                     value={formData.billingAddress}
@@ -313,7 +314,7 @@ export default function EventCheckoutForm({
                   )}
                 </div>
                 <div>
-                  <Label htmlFor="billingAddress2">Address Line 2</Label>
+                  <Label htmlFor="billingAddress2" className="text-xs uppercase">ADDRESS LINE 2</Label>
                   <Input
                     id="billingAddress2"
                     value={formData.billingAddress2}
@@ -325,9 +326,9 @@ export default function EventCheckoutForm({
                     <p className="text-xs text-destructive mt-1">{errors.billingAddress2}</p>
                   )}
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-[20px]">
                   <div>
-                    <Label htmlFor="city">City *</Label>
+                    <Label htmlFor="city" className="text-xs uppercase">CITY *</Label>
                     <Input
                       id="city"
                       value={formData.city}
@@ -340,7 +341,7 @@ export default function EventCheckoutForm({
                     )}
                   </div>
                   <div>
-                    <Label htmlFor="state">State *</Label>
+                    <Label htmlFor="state" className="text-xs uppercase">STATE *</Label>
                     <Select
                       value={formData.state}
                       onValueChange={(value) => handleInputChange('state', value)}
@@ -362,7 +363,7 @@ export default function EventCheckoutForm({
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor="zipCode">ZIP Code *</Label>
+                  <Label htmlFor="zipCode" className="text-xs uppercase">ZIP CODE *</Label>
                   <Input
                     id="zipCode"
                     value={formData.zipCode}

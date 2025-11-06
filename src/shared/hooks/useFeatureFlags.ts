@@ -7,7 +7,12 @@ import {
   isDevelopment,
 } from '@/shared/utils/environment';
 import { logger } from '@/shared/services/logger';
-import { FEATURE_FLAGS, type FeatureFlag, type FeatureFlagsState } from '@/shared/config/featureFlags';
+import { 
+  FEATURE_FLAGS, 
+  type FeatureFlag, 
+  type FeatureFlagsState,
+  createEmptyFeatureFlagsState 
+} from '@/shared/config/featureFlags';
 
 const flagLogger = logger.createNamespace('FeatureFlags');
 
@@ -37,103 +42,23 @@ export const useFeatureFlags = () => {
         flag => flag.environment === currentEnv || flag.environment === 'all'
       ) || [];
 
-    const flags: FeatureFlags = {
-      scavenger_hunt_active: false,
-      coming_soon_mode: false,
-      show_leaderboard: false,
-      demo_pages: false,
-      music_player: false,
-      scavenger_hunt: false,
-      event_checkout_timer: false,
-      merch_store: false,
-      member_profiles: false,
-      global_search: false,
-      spotify_integration: false,
-    };
+      // Initialize with all flags set to false
+      const flags: FeatureFlags = createEmptyFeatureFlagsState();
 
       filteredData.forEach(flag => {
-        if (flag.flag_name === 'scavenger_hunt_active') {
-          flags.scavenger_hunt_active = flag.is_enabled;
-        }
-        if (flag.flag_name === 'coming_soon_mode') {
-          flags.coming_soon_mode = flag.is_enabled;
-        }
-        if (flag.flag_name === 'show_leaderboard') {
-          flags.show_leaderboard = flag.is_enabled;
-        }
-        if (flag.flag_name === 'demo_pages') {
-          flags.demo_pages = flag.is_enabled;
-        }
-        if (flag.flag_name === 'music_player') {
-          flags.music_player = flag.is_enabled;
-        }
-        if (flag.flag_name === 'scavenger_hunt') {
-          flags.scavenger_hunt = flag.is_enabled;
-        }
-        if (flag.flag_name === 'event_checkout_timer') {
-          flags.event_checkout_timer = flag.is_enabled;
-        }
-        if (flag.flag_name === 'merch_store') {
-          flags.merch_store = flag.is_enabled;
-        }
-        if (flag.flag_name === 'member_profiles') {
-          flags.member_profiles = flag.is_enabled;
-        }
-        if (flag.flag_name === 'global_search') {
-          flags.global_search = flag.is_enabled;
-        }
-        if (flag.flag_name === 'spotify_integration') {
-          flags.spotify_integration = flag.is_enabled;
+        if (flag.flag_name in flags) {
+          flags[flag.flag_name as keyof FeatureFlags] = flag.is_enabled;
         }
       });
 
       // Apply local .env overrides in development only
       if (isDevelopment()) {
-        const scavengerOverride = getEnvironmentOverride('scavenger_hunt_active');
-        const comingSoonOverride = getEnvironmentOverride('coming_soon_mode');
-        const leaderboardOverride = getEnvironmentOverride('show_leaderboard');
-        const demoPagesOverride = getEnvironmentOverride('demo_pages');
-        const musicPlayerOverride = getEnvironmentOverride('music_player');
-        const scavengerHuntOverride = getEnvironmentOverride('scavenger_hunt');
-        const checkoutTimerOverride = getEnvironmentOverride('event_checkout_timer');
-        const merchStoreOverride = getEnvironmentOverride('merch_store');
-        const memberProfilesOverride = getEnvironmentOverride('member_profiles');
-        const globalSearchOverride = getEnvironmentOverride('global_search');
-        const spotifyIntegrationOverride = getEnvironmentOverride('spotify_integration');
-
-        if (scavengerOverride !== null) {
-          flags.scavenger_hunt_active = scavengerOverride;
-        }
-        if (comingSoonOverride !== null) {
-          flags.coming_soon_mode = comingSoonOverride;
-        }
-        if (leaderboardOverride !== null) {
-          flags.show_leaderboard = leaderboardOverride;
-        }
-        if (demoPagesOverride !== null) {
-          flags.demo_pages = demoPagesOverride;
-        }
-        if (musicPlayerOverride !== null) {
-          flags.music_player = musicPlayerOverride;
-        }
-        if (scavengerHuntOverride !== null) {
-          flags.scavenger_hunt = scavengerHuntOverride;
-        }
-        if (checkoutTimerOverride !== null) {
-          flags.event_checkout_timer = checkoutTimerOverride;
-        }
-        if (merchStoreOverride !== null) {
-          flags.merch_store = merchStoreOverride;
-        }
-        if (memberProfilesOverride !== null) {
-          flags.member_profiles = memberProfilesOverride;
-        }
-        if (globalSearchOverride !== null) {
-          flags.global_search = globalSearchOverride;
-        }
-        if (spotifyIntegrationOverride !== null) {
-          flags.spotify_integration = spotifyIntegrationOverride;
-        }
+        (Object.keys(flags) as Array<keyof FeatureFlags>).forEach(flagKey => {
+          const override = getEnvironmentOverride(flagKey);
+          if (override !== null) {
+            flags[flagKey] = override;
+          }
+        });
       }
 
       flagLogger.debug('Feature flags loaded', {
