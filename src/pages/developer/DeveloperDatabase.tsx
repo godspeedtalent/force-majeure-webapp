@@ -10,22 +10,30 @@ import { supabase } from '@/shared/api/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { EventsManagement } from '../admin/EventsManagement';
 import { OrganizationsManagement } from '../admin/OrganizationsManagement';
+import { DatabaseNavigatorSearch } from '@/components/admin/DatabaseNavigatorSearch';
 import { toast } from 'sonner';
 import { formatHeader } from '@/shared/utils/styleUtils';
 import { artistColumns, venueColumns } from '../admin/config/adminGridColumns';
 
-type DatabaseTab = 'artists' | 'events' | 'organizations' | 'venues';
+type DatabaseTab = 'overview' | 'artists' | 'events' | 'organizations' | 'venues';
 
 export default function DeveloperDatabase() {
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState<DatabaseTab>('artists');
+  const [activeTab, setActiveTab] = useState<DatabaseTab>('overview');
   const [editingVenueId, setEditingVenueId] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   // Navigation groups configuration
   const navigationGroups: FmCommonSideNavGroup<DatabaseTab>[] = [
     {
-      label: 'Database Resources',
+      label: 'Overview',
+      icon: Database,
+      items: [
+        { id: 'overview', label: 'Dashboard', icon: Database, description: 'Database overview and search' },
+      ],
+    },
+    {
+      label: 'Tables',
       icon: Database,
       items: [
         { id: 'artists', label: 'Artists', icon: Mic2, description: 'Manage artist profiles' },
@@ -291,14 +299,6 @@ export default function DeveloperDatabase() {
   const totalRecords = currentData.length;
   const completeness = calculateCompleteness(currentData);
 
-  const getTabTitle = () => {
-    if (activeTab === 'artists') return 'Artists';
-    if (activeTab === 'venues') return 'Venues';
-    if (activeTab === 'events') return 'Events';
-    if (activeTab === 'organizations') return 'Organizations';
-    return 'Database Navigator';
-  };
-
   return (
     <SideNavbarLayout
       navigationGroups={navigationGroups}
@@ -309,18 +309,7 @@ export default function DeveloperDatabase() {
         <div className="mb-[20px]">
           <div className="flex items-center gap-[10px] mb-[20px]">
             <Database className="h-6 w-6 text-fm-gold" />
-            <h1 className="text-3xl font-canela">{formatHeader(getTabTitle())}</h1>
-          </div>
-
-          <div className="flex gap-[20px] mb-[20px]">
-            <div className="bg-muted/30 border border-border rounded-none px-[20px] py-[10px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]">
-              <div className="text-2xl font-bold text-foreground">{totalRecords}</div>
-              <div className="text-xs text-muted-foreground">Total Records</div>
-            </div>
-            <div className="bg-muted/30 border border-border rounded-none px-[20px] py-[10px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]">
-              <div className="text-2xl font-bold text-foreground">{completeness}%</div>
-              <div className="text-xs text-muted-foreground">Complete Data</div>
-            </div>
+            <h1 className="text-3xl font-canela">{formatHeader('Database Navigator')}</h1>
           </div>
         </div>
 
@@ -330,6 +319,38 @@ export default function DeveloperDatabase() {
           lineWidth="w-32"
           opacity={0.5}
         />
+
+        {/* Overview Tab */}
+        {activeTab === 'overview' && (
+          <div className="flex flex-col items-center justify-center min-h-[60vh]">
+            {/* Stats Groups in Columns */}
+            <div className="w-full max-w-4xl mb-12">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]">
+                  <div className="text-xs text-muted-foreground mb-1">Artists</div>
+                  <div className="text-2xl font-bold text-foreground">{artists.length}</div>
+                </div>
+                <div className="bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]">
+                  <div className="text-xs text-muted-foreground mb-1">Venues</div>
+                  <div className="text-2xl font-bold text-foreground">{venues.length}</div>
+                </div>
+                <div className="bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]">
+                  <div className="text-xs text-muted-foreground mb-1">Total Records</div>
+                  <div className="text-2xl font-bold text-foreground">{totalRecords}</div>
+                </div>
+                <div className="bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]">
+                  <div className="text-xs text-muted-foreground mb-1">Complete Data</div>
+                  <div className="text-2xl font-bold text-foreground">{completeness}%</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Centered Search */}
+            <div className="w-full max-w-2xl">
+              <DatabaseNavigatorSearch />
+            </div>
+          </div>
+        )}
 
         {activeTab === 'artists' && (
           <FmCommonDataGrid

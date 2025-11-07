@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/sh
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { supabase } from '@/shared/api/supabase/client';
 import { Badge } from '@/components/common/shadcn/badge';
+import { handleError } from '@/shared/services/errorHandler';
 
 interface UpcomingEvent {
   id: string;
@@ -55,7 +56,13 @@ const Profile = () => {
           setShowsCount(uniqueEvents.size);
         }
       } catch (error) {
-        console.error('Error fetching stats:', error);
+        await handleError(error, {
+          title: 'Failed to Load Stats',
+          description: 'Could not retrieve your event statistics',
+          endpoint: 'orders',
+          method: 'SELECT',
+          showToast: false, // Don't show toast for stats loading
+        });
         setShowsCount(0);
       } finally {
         setLoadingStats(false);
@@ -125,7 +132,13 @@ const Profile = () => {
           setUpcomingShows(events);
         }
       } catch (error) {
-        console.error('Error fetching upcoming shows:', error);
+        await handleError(error, {
+          title: 'Failed to Load Upcoming Shows',
+          description: 'Could not retrieve your upcoming events',
+          endpoint: 'orders',
+          method: 'SELECT',
+          showToast: false, // Don't show toast for shows loading
+        });
         setUpcomingShows([]);
       } finally {
         setLoadingShows(false);

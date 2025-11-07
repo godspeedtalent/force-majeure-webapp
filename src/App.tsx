@@ -45,7 +45,7 @@ import { ROLES } from '@/shared/auth/permissions';
 import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 import { CheckoutProvider } from '@/contexts/CheckoutContext';
 import { GlobalSearchProvider, useGlobalSearch } from '@/contexts/GlobalSearchContext';
-import { GlobalSearch } from '@/components/search/GlobalSearch';
+import { GlobalResourceSearch } from '@/components/admin/GlobalResourceSearch';
 import { StripeProvider } from '@/features/payments';
 
 import NotFound from './pages/NotFound';
@@ -58,7 +58,7 @@ const queryClient = new QueryClient();
 
 const GlobalSearchWrapper = () => {
   const { isOpen, closeSearch } = useGlobalSearch();
-  return <GlobalSearch isOpen={isOpen} onClose={closeSearch} />;
+  return <GlobalResourceSearch isOpen={isOpen} onClose={closeSearch} />;
 };
 
 const AppRoutes = () => {

@@ -58,13 +58,15 @@ export const FmErrorToast = ({ title, description, error, isDeveloper = false }:
   return (
     <div className="flex items-start gap-3">
       <AlertCircle className="h-5 w-5 text-fm-crimson flex-shrink-0 mt-0.5" />
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 max-w-[400px]">
         <div className="font-semibold text-fm-crimson">{title}</div>
         {displayDescription && (
-          <div className="text-sm text-muted-foreground mt-1">{displayDescription}</div>
+          <div className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap break-words">
+            {displayDescription}
+          </div>
         )}
         {isDeveloper && error && (
-          <div className="text-xs text-muted-foreground/70 mt-1 font-mono">
+          <div className="text-xs text-muted-foreground/70 mt-1 font-mono break-words">
             {error.message}
           </div>
         )}

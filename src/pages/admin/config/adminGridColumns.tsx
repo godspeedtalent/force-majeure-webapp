@@ -59,6 +59,57 @@ export const artistColumns: DataGridColumn[] = [
 ];
 
 /**
+ * Column definitions for the Users data grid in Admin Controls
+ */
+export const userColumns: DataGridColumn[] = [
+  {
+    key: 'display_name',
+    label: 'Display Name',
+    sortable: true,
+    filterable: true,
+    editable: true,
+  },
+  {
+    key: 'full_name',
+    label: 'Full Name',
+    sortable: true,
+    filterable: true,
+    editable: true,
+  },
+  {
+    key: 'email',
+    label: 'Email',
+    sortable: true,
+    filterable: true,
+    readonly: true,
+  },
+  {
+    key: 'avatar_url',
+    label: 'Avatar',
+    filterable: false,
+    editable: true,
+    type: 'url',
+    render: (value) =>
+      value ? (
+        <img
+          src={value}
+          alt='User Avatar'
+          className='h-8 w-8 rounded-full object-cover shadow-sm'
+        />
+      ) : (
+        <span className='text-xs text-muted-foreground'>-</span>
+      ),
+  },
+  {
+    key: 'created_at',
+    label: 'Joined',
+    sortable: true,
+    readonly: true,
+    render: (value) => new Date(value).toLocaleDateString(),
+  },
+];
+
+/**
  * Column definitions for the Venues data grid in Admin Controls
  */
 export const venueColumns: DataGridColumn[] = [

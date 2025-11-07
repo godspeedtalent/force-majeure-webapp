@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/common/shadcn/badge';
-import { Code, Package, ArrowRight, FlaskConical } from 'lucide-react';
+import { Code, Package, ArrowRight, FlaskConical, Database } from 'lucide-react';
 import { DemoLayout } from '@/components/demo/DemoLayout';
 
 export default function DeveloperIndex() {
@@ -11,6 +11,14 @@ export default function DeveloperIndex() {
       path: '/developer/components',
       icon: Package,
       category: 'Documentation',
+      status: 'Active',
+    },
+    {
+      title: 'Database Manager',
+      description: 'Manage database resources including artists, events, venues, and organizations with powerful search and editing tools',
+      path: '/developer/database',
+      icon: Database,
+      category: 'Database',
       status: 'Active',
     },
     {
@@ -30,7 +38,7 @@ export default function DeveloperIndex() {
       icon={Code}
     >
       {/* Page List */}
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {pages.map((page) => {
           const Icon = page.icon;
           return (
@@ -39,27 +47,25 @@ export default function DeveloperIndex() {
               to={page.path}
               className="block group"
             >
-              <div className="p-6 border border-border rounded-lg bg-card hover:bg-accent/5 hover:border-fm-gold/50 transition-all duration-200">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-fm-gold/10 rounded-md group-hover:bg-fm-gold/20 transition-colors">
-                        <Icon className="h-5 w-5 text-fm-gold" />
-                      </div>
-                      <h2 className="text-2xl font-canela font-semibold group-hover:text-fm-gold transition-colors">
-                        {page.title}
-                      </h2>
-                      <Badge variant="outline" className="ml-auto">
-                        {page.category}
-                      </Badge>
+              <div className="p-6 border border-border rounded-lg bg-card hover:bg-accent/5 hover:border-fm-gold/50 transition-all duration-200 h-full">
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-fm-gold/10 rounded-md group-hover:bg-fm-gold/20 transition-colors">
+                      <Icon className="h-5 w-5 text-fm-gold" />
                     </div>
-                    <p className="text-muted-foreground pl-14">
-                      {page.description}
-                    </p>
-                    <div className="flex items-center gap-2 text-sm text-fm-gold pl-14 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span>Open page</span>
-                      <ArrowRight className="h-4 w-4" />
-                    </div>
+                    <h2 className="text-2xl font-canela font-semibold group-hover:text-fm-gold transition-colors">
+                      {page.title}
+                    </h2>
+                  </div>
+                  <Badge variant="outline" className="w-fit">
+                    {page.category}
+                  </Badge>
+                  <p className="text-muted-foreground">
+                    {page.description}
+                  </p>
+                  <div className="flex items-center gap-2 text-sm text-fm-gold opacity-0 group-hover:opacity-100 transition-opacity mt-auto">
+                    <span>Open page</span>
+                    <ArrowRight className="h-4 w-4" />
                   </div>
                 </div>
               </div>

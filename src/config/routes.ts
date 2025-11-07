@@ -126,7 +126,7 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
     label: 'Developer Tools',
   },
   '/developer/database': {
-    label: 'Database Navigator',
+    label: 'Go to DB Navigator',
   },
   '/developer/components': {
     label: 'FM Components Catalog',

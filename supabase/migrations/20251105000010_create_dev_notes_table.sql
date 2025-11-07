@@ -32,9 +32,10 @@ CREATE POLICY "Developers can view all dev notes"
   TO authenticated
   USING (
     EXISTS (
-      SELECT 1 FROM user_roles
-      WHERE user_roles.user_id = auth.uid()
-      AND user_roles.role_name IN ('developer', 'admin')
+      SELECT 1 FROM user_roles ur
+      JOIN roles r ON r.id = ur.role_id
+      WHERE ur.user_id = auth.uid()
+      AND r.name IN ('developer', 'admin')
     )
   );
 
@@ -45,9 +46,10 @@ CREATE POLICY "Developers can create dev notes"
   TO authenticated
   WITH CHECK (
     EXISTS (
-      SELECT 1 FROM user_roles
-      WHERE user_roles.user_id = auth.uid()
-      AND user_roles.role_name IN ('developer', 'admin')
+      SELECT 1 FROM user_roles ur
+      JOIN roles r ON r.id = ur.role_id
+      WHERE ur.user_id = auth.uid()
+      AND r.name IN ('developer', 'admin')
     )
     AND author_id = auth.uid()
   );
@@ -60,9 +62,10 @@ CREATE POLICY "Developers can update their own dev notes"
   USING (
     author_id = auth.uid()
     AND EXISTS (
-      SELECT 1 FROM user_roles
-      WHERE user_roles.user_id = auth.uid()
-      AND user_roles.role_name IN ('developer', 'admin')
+      SELECT 1 FROM user_roles ur
+      JOIN roles r ON r.id = ur.role_id
+      WHERE ur.user_id = auth.uid()
+      AND r.name IN ('developer', 'admin')
     )
   )
   WITH CHECK (
@@ -77,9 +80,10 @@ CREATE POLICY "Developers can delete their own dev notes"
   USING (
     author_id = auth.uid()
     AND EXISTS (
-      SELECT 1 FROM user_roles
-      WHERE user_roles.user_id = auth.uid()
-      AND user_roles.role_name IN ('developer', 'admin')
+      SELECT 1 FROM user_roles ur
+      JOIN roles r ON r.id = ur.role_id
+      WHERE ur.user_id = auth.uid()
+      AND r.name IN ('developer', 'admin')
     )
   );
 

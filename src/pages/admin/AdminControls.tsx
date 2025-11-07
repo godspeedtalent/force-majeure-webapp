@@ -2,25 +2,28 @@ import { useState } from 'react';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
-import { Sliders, Settings, Code, Shield } from 'lucide-react';
-import { FeatureToggleSection } from '@/components/devtools/FeatureToggleSection';
+import { Sliders, Settings, Code, Shield, DollarSign, Users } from 'lucide-react';
+import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
 import { AdminFeesSection } from '@/components/admin/AdminFeesSection';
 import { DevToolsManagement } from '@/components/admin/DevToolsManagement';
+import { UserManagement } from './UserManagement';
 import { formatHeader } from '@/shared/utils/styleUtils';
 
-type AdminTab = 'settings' | 'devtools';
+type AdminTab = 'devtools' | 'fees' | 'settings' | 'users';
 
 export default function AdminControls() {
   const [activeTab, setActiveTab] = useState<AdminTab>('settings');
 
-  // Navigation groups configuration - Admin-only settings
+  // Navigation groups configuration - Alphabetically sorted
   const navigationGroups: FmCommonSideNavGroup<AdminTab>[] = [
     {
-      label: 'Admin Settings',
+      label: 'Site Controls',
       icon: Shield,
       items: [
-        { id: 'settings', label: 'Site Settings', icon: Sliders, description: 'Configure site settings' },
         { id: 'devtools', label: 'Developer Tools', icon: Code, description: 'Toggle dev environment features' },
+        { id: 'fees', label: 'Ticketing Fees', icon: DollarSign, description: 'Configure ticketing fees' },
+        { id: 'settings', label: 'Site Settings', icon: Sliders, description: 'Configure site settings' },
+        { id: 'users', label: 'User Management', icon: Users, description: 'Manage user accounts' },
       ],
     },
   ];
@@ -28,6 +31,8 @@ export default function AdminControls() {
   const getTabTitle = () => {
     if (activeTab === 'settings') return 'Site Settings';
     if (activeTab === 'devtools') return 'Developer Tools';
+    if (activeTab === 'fees') return 'Ticketing Fees';
+    if (activeTab === 'users') return 'User Management';
     return 'Admin Controls';
   };
 
@@ -61,20 +66,27 @@ export default function AdminControls() {
               </p>
               <FeatureToggleSection />
             </div>
+          </div>
+        )}
 
-            <DecorativeDivider
-              marginTop="mt-4"
-              marginBottom="mb-4"
-              lineWidth="w-24"
-              opacity={0.3}
-            />
-
+        {activeTab === 'fees' && (
+          <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-canela font-semibold mb-2">{formatHeader('Ticketing Fees')}</h3>
               <p className="text-muted-foreground text-sm mb-4">
                 Configure site-wide fees and taxes applied to all ticket purchases
               </p>
               <AdminFeesSection />
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'users' && (
+          <div className="space-y-6">
+            <div>
+              <p className="text-muted-foreground text-sm mb-4">
+                Manage user accounts and profiles
+              </p>
+              <UserManagement />
             </div>
           </div>
         )}

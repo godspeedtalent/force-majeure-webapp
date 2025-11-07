@@ -12,10 +12,10 @@ import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared/auth/permissions';
 
 // Lazy load sections  
-import { CreationToolsSection } from '@/components/devtools/CreationToolsSection';
-import { GlobalResourceSearch } from '@/components/admin/GlobalResourceSearch';
-import { FeatureToggleSection } from '@/components/devtools/FeatureToggleSection';
-import { DevNotesSection } from '@/components/devtools/DevNotesSection';
+import { CreationToolsSection } from '@/components/DevTools/CreationToolsSection';
+import { DatabaseNavigatorSearch } from '@/components/admin/DatabaseNavigatorSearch';
+import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
+import { DevNotesSection } from '@/components/DevTools/DevNotesSection';
 
 export interface ToolbarTab {
   id: string;
@@ -59,6 +59,7 @@ export const FmToolbar = ({
 
   // Check if user has actual developer or admin role
   const isDeveloperOrAdmin = hasAnyRole(ROLES.DEVELOPER, ROLES.ADMIN);
+  const isAdmin = hasAnyRole(ROLES.ADMIN);
 
   // Define all tabs based on user roles/permissions
   const tabs: ToolbarTab[] = useMemo(
@@ -100,6 +101,18 @@ export const FmToolbar = ({
           <div className="space-y-4">
             <Separator className="bg-white/10" />
             <div className="flex flex-col gap-2">
+              {/* Alphabetically sorted links */}
+              {isAdmin && (
+                <FmCommonButton
+                  variant="default"
+                  icon={Shield}
+                  iconPosition="left"
+                  onClick={() => navigate('/admin/controls')}
+                  className="w-full justify-start"
+                >
+                  Admin Controls
+                </FmCommonButton>
+              )}
               <FmCommonButton
                 variant="default"
                 icon={Home}
@@ -108,15 +121,6 @@ export const FmToolbar = ({
                 className="w-full justify-start"
               >
                 Developer Home
-              </FmCommonButton>
-              <FmCommonButton
-                variant="default"
-                icon={Shield}
-                iconPosition="left"
-                onClick={() => navigate('/admin/controls')}
-                className="w-full justify-start"
-              >
-                Admin Controls
               </FmCommonButton>
               <FmCommonButton
                 variant="default"
@@ -155,7 +159,7 @@ export const FmToolbar = ({
                 <p className="text-xs text-muted-foreground mb-2">Quick Create</p>
                 <CreationToolsSection />
               </div>
-              <GlobalResourceSearch />
+              <DatabaseNavigatorSearch />
             </div>
           </div>
         ),
@@ -168,7 +172,7 @@ export const FmToolbar = ({
               onClick={() => navigate('/developer/database')}
               className="w-full justify-start"
             >
-              Database Navigator
+              Go to DB Navigator
             </FmCommonButton>
           </div>
         ),

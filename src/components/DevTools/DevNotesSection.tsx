@@ -1,26 +1,30 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Plus, Search, ArrowUpDown, MoreVertical } from 'lucide-react';
+import { Plus, Search, ArrowUpDown, MoreVertical, CheckCircle2, Info, Bug, HelpCircle, Filter } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { toast } from 'sonner';
 import { CreateDevNoteModal } from './CreateDevNoteModal';
 import { Input } from '@/components/common/shadcn/input';
-import { Badge } from '@/components/common/shadcn/badge';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/common/shadcn/select';
+  Card,
+  CardContent,
+  CardFooter,
+} from '@/components/common/shadcn/card';
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/common/shadcn/context-menu';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/common/shadcn/popover';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { ScrollArea } from '@/components/common/shadcn/scroll-area';
+import { cn } from '@/shared/utils/utils';
+import * as React from 'react';
 
 type NoteType = 'TODO' | 'INFO' | 'BUG' | 'QUESTION';
 type NoteStatus = 'TODO' | 'IN_PROGRESS' | 'ARCHIVED' | 'RESOLVED' | 'CANCELLED';
@@ -36,19 +40,23 @@ interface DevNote {
   status: NoteStatus;
 }
 
-const TYPE_COLORS: Record<NoteType, string> = {
-  TODO: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  INFO: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
-  BUG: 'bg-red-500/20 text-red-400 border-red-500/30',
-  QUESTION: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+const TYPE_CONFIG: Record<NoteType, { icon: any; color: string; borderColor: string }> = {
+  TODO: { icon: CheckCircle2, color: 'bg-blue-500/10 text-blue-400', borderColor: 'border-t-blue-500' },
+  INFO: { icon: Info, color: 'bg-cyan-500/10 text-cyan-400', borderColor: 'border-t-cyan-500' },
+  BUG: { icon: Bug, color: 'bg-red-500/10 text-red-400', borderColor: 'border-t-red-500' },
+  QUESTION: { icon: HelpCircle, color: 'bg-purple-500/10 text-purple-400', borderColor: 'border-t-purple-500' },
 };
 
-const STATUS_COLORS: Record<NoteStatus, string> = {
-  TODO: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
-  IN_PROGRESS: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-  ARCHIVED: 'bg-slate-500/20 text-slate-400 border-slate-500/30',
-  RESOLVED: 'bg-green-500/20 text-green-400 border-green-500/30',
-  CANCELLED: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
+const getNextStatus = (currentStatus: NoteStatus): NoteStatus => {
+  if (currentStatus === 'TODO') return 'IN_PROGRESS';
+  if (currentStatus === 'IN_PROGRESS') return 'RESOLVED';
+  return currentStatus;
+};
+
+const getStatusLabel = (status: NoteStatus): string => {
+  if (status === 'TODO') return 'In Progress';
+  if (status === 'IN_PROGRESS') return 'Resolved';
+  return status.replace('_', ' ');
 };
 
 export const DevNotesSection = () => {
@@ -56,11 +64,13 @@ export const DevNotesSection = () => {
   const [notes, setNotes] = useState<DevNote[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [expandedNote, setExpandedNote] = useState<DevNote | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<NoteType | 'ALL'>('ALL');
   const [filterStatus, setFilterStatus] = useState<NoteStatus | 'ALL'>('ALL');
   const [filterAuthor, setFilterAuthor] = useState<string>('ALL');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [filterOpen, setFilterOpen] = useState(false);
 
   const loadNotes = async () => {
     setIsLoading(true);
@@ -148,13 +158,12 @@ export const DevNotesSection = () => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    const month = (date.getMonth() + 1).toString();
+    const day = date.getDate().toString();
+    const year = date.getFullYear().toString().slice(-2);
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${month}/${day}/${year} ${hours}:${minutes}`;
   };
 
   const canEditNote = (note: DevNote) => {
@@ -162,178 +171,223 @@ export const DevNotesSection = () => {
   };
 
   return (
-    <div className="space-y-4">
-      {/* Header with Create Button */}
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-white">Developer Notes</h3>
+    <div className="space-y-[20px]">
+      {/* Header */}
+      <div className="flex items-center justify-between px-[20px]">
+        <h2 className="text-2xl font-bold text-white">Dev Notes</h2>
+      </div>
+
+      {/* New Note Button Row */}
+      <div className="px-[20px]">
         <FmCommonButton
-          variant="gold"
-          size="sm"
+          variant="default"
+          size="lg"
           onClick={() => setIsModalOpen(true)}
-          className="gap-2"
+          className="w-full justify-center gap-2 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-white h-12"
         >
-          <Plus className="h-4 w-4" />
-          New Note
+          <Plus className="h-5 w-5" />
         </FmCommonButton>
       </div>
 
-      {/* Filters Section */}
-      <div className="space-y-3">
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
+      {/* Search and Filter Row */}
+      <div className="px-[20px] flex gap-[10px] items-center">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search notes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 bg-fm-dark border-fm-gold/20 text-white"
+            className="pl-9 bg-muted border-border text-white rounded-none h-10"
           />
         </div>
+        
+        {/* Filter Button */}
+        <Popover open={filterOpen} onOpenChange={setFilterOpen}>
+          <PopoverTrigger asChild>
+            <FmCommonButton
+              variant="secondary"
+              size="sm"
+              className="h-10 w-10 p-0 border-border rounded-none"
+            >
+              <Filter className="h-4 w-4" />
+            </FmCommonButton>
+          </PopoverTrigger>
+          <PopoverContent className="w-[300px] bg-card border-border rounded-none p-4" align="end">
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs text-muted-foreground mb-2 block">Type</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {['ALL', 'TODO', 'INFO', 'BUG', 'QUESTION'].map((type) => (
+                    <FmCommonButton
+                      key={type}
+                      variant={filterType === type ? 'default' : 'secondary'}
+                      size="sm"
+                      onClick={() => setFilterType(type as NoteType | 'ALL')}
+                      className={cn(
+                        'text-xs rounded-none',
+                        filterType === type && 'bg-fm-gold text-white'
+                      )}
+                    >
+                      {type}
+                    </FmCommonButton>
+                  ))}
+                </div>
+              </div>
 
-        {/* Filter Row */}
-        <div className="grid grid-cols-4 gap-2">
-          <Select value={filterType} onValueChange={(value) => setFilterType(value as NoteType | 'ALL')}>
-            <SelectTrigger className="bg-fm-dark border-fm-gold/20 text-white text-xs">
-              <SelectValue placeholder="Type" />
-            </SelectTrigger>
-            <SelectContent className="bg-fm-dark-card border-fm-gold/20">
-              <SelectItem value="ALL">All Types</SelectItem>
-              <SelectItem value="TODO">TODO</SelectItem>
-              <SelectItem value="INFO">INFO</SelectItem>
-              <SelectItem value="BUG">BUG</SelectItem>
-              <SelectItem value="QUESTION">QUESTION</SelectItem>
-            </SelectContent>
-          </Select>
+              <div>
+                <label className="text-xs text-muted-foreground mb-2 block">Status</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {['ALL', 'TODO', 'IN_PROGRESS', 'RESOLVED', 'ARCHIVED', 'CANCELLED'].map((status) => (
+                    <FmCommonButton
+                      key={status}
+                      variant={filterStatus === status ? 'default' : 'secondary'}
+                      size="sm"
+                      onClick={() => setFilterStatus(status as NoteStatus | 'ALL')}
+                      className={cn(
+                        'text-xs rounded-none',
+                        filterStatus === status && 'bg-fm-gold text-white'
+                      )}
+                    >
+                      {status === 'IN_PROGRESS' ? 'IN PROG' : status}
+                    </FmCommonButton>
+                  ))}
+                </div>
+              </div>
 
-          <Select value={filterStatus} onValueChange={(value) => setFilterStatus(value as NoteStatus | 'ALL')}>
-            <SelectTrigger className="bg-fm-dark border-fm-gold/20 text-white text-xs">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent className="bg-fm-dark-card border-fm-gold/20">
-              <SelectItem value="ALL">All Status</SelectItem>
-              <SelectItem value="TODO">TODO</SelectItem>
-              <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-              <SelectItem value="ARCHIVED">Archived</SelectItem>
-              <SelectItem value="RESOLVED">Resolved</SelectItem>
-              <SelectItem value="CANCELLED">Cancelled</SelectItem>
-            </SelectContent>
-          </Select>
+              <div>
+                <label className="text-xs text-muted-foreground mb-2 block">Author</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <FmCommonButton
+                    variant={filterAuthor === 'ALL' ? 'default' : 'secondary'}
+                    size="sm"
+                    onClick={() => setFilterAuthor('ALL')}
+                    className={cn(
+                      'text-xs rounded-none',
+                      filterAuthor === 'ALL' && 'bg-fm-gold text-white'
+                    )}
+                  >
+                    ALL
+                  </FmCommonButton>
+                  {uniqueAuthors.map((author) => (
+                    <FmCommonButton
+                      key={author}
+                      variant={filterAuthor === author ? 'default' : 'secondary'}
+                      size="sm"
+                      onClick={() => setFilterAuthor(author)}
+                      className={cn(
+                        'text-xs rounded-none truncate',
+                        filterAuthor === author && 'bg-fm-gold text-white'
+                      )}
+                    >
+                      {author}
+                    </FmCommonButton>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
 
-          <Select value={filterAuthor} onValueChange={setFilterAuthor}>
-            <SelectTrigger className="bg-fm-dark border-fm-gold/20 text-white text-xs">
-              <SelectValue placeholder="Author" />
-            </SelectTrigger>
-            <SelectContent className="bg-fm-dark-card border-fm-gold/20">
-              <SelectItem value="ALL">All Authors</SelectItem>
-              {uniqueAuthors.map((author) => (
-                <SelectItem key={author} value={author}>
-                  {author}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <FmCommonButton
-            variant="secondary"
-            size="sm"
-            onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-            className="gap-2"
-          >
-            <ArrowUpDown className="h-4 w-4" />
-            {sortOrder === 'asc' ? 'Oldest' : 'Newest'}
-          </FmCommonButton>
-        </div>
+        {/* Sort Toggle */}
+        <FmCommonButton
+          variant="secondary"
+          size="sm"
+          onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+          className="h-10 w-10 p-0 border-border rounded-none"
+          title={sortOrder === 'asc' ? 'Oldest first' : 'Newest first'}
+        >
+          <ArrowUpDown className="h-4 w-4" />
+        </FmCommonButton>
       </div>
 
       {/* Notes List */}
-      <ScrollArea className="h-[500px] pr-4">
-        {isLoading ? (
-          <div className="text-center py-8 text-white/50">Loading notes...</div>
-        ) : filteredNotes.length === 0 ? (
-          <div className="text-center py-8 text-white/50">
-            {searchQuery || filterType !== 'ALL' || filterStatus !== 'ALL' || filterAuthor !== 'ALL'
-              ? 'No notes match your filters'
-              : 'No notes yet. Create one to get started!'}
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {filteredNotes.map((note) => (
-              <ContextMenu key={note.id}>
-                <ContextMenuTrigger>
-                  <div className="bg-fm-dark-card border border-fm-gold/20 rounded-lg p-3 hover:border-fm-gold/40 transition-colors cursor-context-menu">
-                    {/* Header Row */}
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <Badge className={`text-xs px-2 py-0.5 ${TYPE_COLORS[note.type]}`}>
-                          {note.type}
-                        </Badge>
-                        <Badge className={`text-xs px-2 py-0.5 ${STATUS_COLORS[note.status]}`}>
-                          {note.status.replace('_', ' ')}
-                        </Badge>
-                      </div>
-                      <MoreVertical className="h-4 w-4 text-white/30 flex-shrink-0" />
-                    </div>
+      <div className="px-[20px]">
+        <ScrollArea className="h-[500px] pr-4">
+          {isLoading ? (
+            <div className="text-center py-8 text-muted-foreground">Loading notes...</div>
+          ) : filteredNotes.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              {searchQuery || filterType !== 'ALL' || filterStatus !== 'ALL' || filterAuthor !== 'ALL'
+                ? 'No notes match your filters'
+                : 'No notes yet. Create one to get started!'}
+            </div>
+          ) : (
+            <div className="space-y-[10px]">
+              {filteredNotes.map((note) => {
+                const TypeIcon = TYPE_CONFIG[note.type].icon;
+                const nextStatus = getNextStatus(note.status);
+                const statusLabel = getStatusLabel(note.status);
 
-                    {/* Message */}
-                    <p className="text-sm text-white mb-2 break-words">{note.message}</p>
+                return (
+                  <ContextMenu key={note.id}>
+                    <ContextMenuTrigger>
+                      <Card
+                        className={cn(
+                          'bg-muted border-border rounded-none border-t-[3px] cursor-pointer hover:border-fm-gold transition-colors',
+                          TYPE_CONFIG[note.type].borderColor
+                        )}
+                        onClick={() => setExpandedNote(note)}
+                      >
+                        <CardContent className="p-[15px] space-y-[10px]">
+                          {/* Type Icon and Dots */}
+                          <div className="flex items-start justify-between gap-2">
+                            <div className={cn(
+                              'w-8 h-8 rounded-none border border-border flex items-center justify-center',
+                              TYPE_CONFIG[note.type].color
+                            )}>
+                              <TypeIcon className="h-4 w-4" />
+                            </div>
+                            <MoreVertical className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                          </div>
 
-                    {/* Footer Row */}
-                    <div className="flex items-center justify-between text-xs text-white/50">
-                      <span className="font-medium text-fm-gold">{note.author_name}</span>
-                      <span>{formatDate(note.created_at)}</span>
-                    </div>
-                  </div>
-                </ContextMenuTrigger>
+                          {/* Message */}
+                          <p className="text-sm text-white leading-relaxed line-clamp-3">{note.message}</p>
+                        </CardContent>
 
-                <ContextMenuContent className="bg-fm-dark-card border-fm-gold/20">
-                  <ContextMenuItem
-                    onClick={() => handleUpdateStatus(note.id, 'TODO')}
-                    disabled={!canEditNote(note)}
-                    className="text-white hover:bg-fm-gold/20"
-                  >
-                    Mark as TODO
-                  </ContextMenuItem>
-                  <ContextMenuItem
-                    onClick={() => handleUpdateStatus(note.id, 'IN_PROGRESS')}
-                    disabled={!canEditNote(note)}
-                    className="text-white hover:bg-fm-gold/20"
-                  >
-                    Mark as In Progress
-                  </ContextMenuItem>
-                  <ContextMenuItem
-                    onClick={() => handleUpdateStatus(note.id, 'RESOLVED')}
-                    disabled={!canEditNote(note)}
-                    className="text-white hover:bg-fm-gold/20"
-                  >
-                    Mark as Resolved
-                  </ContextMenuItem>
-                  <ContextMenuItem
-                    onClick={() => handleUpdateStatus(note.id, 'ARCHIVED')}
-                    disabled={!canEditNote(note)}
-                    className="text-white hover:bg-fm-gold/20"
-                  >
-                    Mark as Archived
-                  </ContextMenuItem>
-                  <ContextMenuItem
-                    onClick={() => handleUpdateStatus(note.id, 'CANCELLED')}
-                    disabled={!canEditNote(note)}
-                    className="text-white hover:bg-fm-gold/20"
-                  >
-                    Mark as Cancelled
-                  </ContextMenuItem>
-                  <ContextMenuItem
-                    onClick={() => handleDeleteNote(note.id)}
-                    disabled={!canEditNote(note)}
-                    className="text-red-400 hover:bg-red-500/20"
-                  >
-                    Delete Note
-                  </ContextMenuItem>
-                </ContextMenuContent>
-              </ContextMenu>
-            ))}
-          </div>
-        )}
-      </ScrollArea>
+                        <CardFooter className="p-[15px] pt-0 flex items-center justify-between text-xs text-muted-foreground">
+                          <span className="font-medium text-fm-gold">{note.author_name}</span>
+                          <span>{formatDate(note.created_at)}</span>
+                        </CardFooter>
+                      </Card>
+                    </ContextMenuTrigger>
+
+                    <ContextMenuContent className="bg-card border-border rounded-none">
+                      <ContextMenuItem
+                        onClick={() => setExpandedNote(note)}
+                        className="text-white hover:bg-muted focus:bg-muted"
+                      >
+                        Expand
+                      </ContextMenuItem>
+                      {canEditNote(note) && (
+                        <>
+                          <ContextMenuItem
+                            onClick={() => handleUpdateStatus(note.id, nextStatus)}
+                            className="text-white hover:bg-muted focus:bg-muted"
+                          >
+                            Mark as {statusLabel}
+                          </ContextMenuItem>
+                          <ContextMenuItem
+                            onClick={() => handleDeleteNote(note.id)}
+                            className="text-red-400 hover:bg-red-500/10 focus:bg-red-500/10"
+                          >
+                            Delete
+                          </ContextMenuItem>
+                        </>
+                      )}
+                      <ContextMenuItem
+                        onClick={() => {}}
+                        className="text-muted-foreground hover:bg-muted focus:bg-muted"
+                      >
+                        Cancel
+                      </ContextMenuItem>
+                    </ContextMenuContent>
+                  </ContextMenu>
+                );
+              })}
+            </div>
+          )}
+        </ScrollArea>
+      </div>
 
       {/* Create Note Modal */}
       <CreateDevNoteModal
@@ -341,6 +395,90 @@ export const DevNotesSection = () => {
         onOpenChange={setIsModalOpen}
         onNoteCreated={loadNotes}
       />
+
+      {/* Expanded Note Modal */}
+      {expandedNote && (
+        <div
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+          onClick={() => setExpandedNote(null)}
+        >
+          <Card
+            className="bg-card border-border rounded-none max-w-2xl w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <CardContent className="p-[20px] space-y-[15px]">
+              {/* Header with Type */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={cn(
+                    'w-10 h-10 rounded-none border border-border flex items-center justify-center',
+                    TYPE_CONFIG[expandedNote.type].color
+                  )}>
+                    {React.createElement(TYPE_CONFIG[expandedNote.type].icon, { className: 'h-5 w-5' })}
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">{expandedNote.type}</div>
+                    <div className="text-xs text-muted-foreground">
+                      Status: <span className="text-white">{expandedNote.status.replace('_', ' ')}</span>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setExpandedNote(null)}
+                  className="text-muted-foreground hover:text-white"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Message */}
+              <div className="bg-muted border border-border rounded-none p-[15px]">
+                <p className="text-white leading-relaxed whitespace-pre-wrap">{expandedNote.message}</p>
+              </div>
+
+              {/* Footer */}
+              <div className="flex items-center justify-between text-sm">
+                <div>
+                  <span className="text-muted-foreground">Author: </span>
+                  <span className="text-fm-gold font-medium">{expandedNote.author_name}</span>
+                </div>
+                <div className="text-muted-foreground">
+                  {formatDate(expandedNote.created_at)}
+                </div>
+              </div>
+
+              {/* Actions */}
+              {canEditNote(expandedNote) && (
+                <div className="flex gap-2 pt-[10px] border-t border-border">
+                  <FmCommonButton
+                    variant="default"
+                    size="sm"
+                    onClick={() => {
+                      const nextStatus = getNextStatus(expandedNote.status);
+                      handleUpdateStatus(expandedNote.id, nextStatus);
+                      setExpandedNote(null);
+                    }}
+                    className="flex-1 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-white rounded-none"
+                  >
+                    Mark as {getStatusLabel(expandedNote.status)}
+                  </FmCommonButton>
+                  <FmCommonButton
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                      handleDeleteNote(expandedNote.id);
+                      setExpandedNote(null);
+                    }}
+                    className="border-red-500 text-red-400 hover:bg-red-500/10 rounded-none"
+                  >
+                    Delete
+                  </FmCommonButton>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };

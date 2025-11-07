@@ -21,7 +21,7 @@ import { Checkbox } from '@/components/common/shadcn/checkbox';
 import { format, parse } from 'date-fns';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared/auth/permissions';
-import { logApiError } from '@/shared/utils/apiLogger';
+import { handleError } from '@/shared/services/errorHandler';
 
 type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'admin';
 
@@ -144,13 +144,12 @@ export default function EventManagement() {
       toast.success('Event updated successfully');
       queryClient.invalidateQueries({ queryKey: ['event', id] });
     } catch (error) {
-      await logApiError({
+      await handleError(error, {
+        title: 'Failed to Update Event',
+        description: 'Could not save event changes',
         endpoint: 'EventManagement',
         method: 'UPDATE',
-        message: 'Error updating event',
-        details: error,
       });
-      toast.error('Failed to update event');
     }
   };
 
@@ -202,13 +201,12 @@ export default function EventManagement() {
       toast.success('Overview updated successfully');
       queryClient.invalidateQueries({ queryKey: ['event', id] });
     } catch (error) {
-      await logApiError({
-        endpoint: 'EventManagement',
+      await handleError(error, {
+        title: 'Failed to Update Overview',
+        description: 'Could not save event overview changes',
+        endpoint: 'EventManagement/overview',
         method: 'UPDATE',
-        message: 'Error updating overview',
-        details: error,
       });
-      toast.error('Failed to update overview');
     } finally {
       setIsSaving(false);
     }
@@ -246,14 +244,11 @@ export default function EventManagement() {
       // Navigate back to admin or home
       navigate('/admin');
     } catch (error) {
-      await logApiError({
-        endpoint: 'EventManagement',
+      await handleError(error, {
+        title: 'Failed to Delete Event',
+        description: 'Could not delete the event',
+        endpoint: 'EventManagement/delete',
         method: 'DELETE',
-        message: 'Error deleting event',
-        details: error,
-      });
-      toast.error('Failed to delete event', {
-        description: error instanceof Error ? error.message : 'An unexpected error occurred',
       });
     } finally {
       setIsDeleting(false);

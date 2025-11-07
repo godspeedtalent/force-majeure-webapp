@@ -15,28 +15,28 @@ export const CreationToolsSection = () => {
         variant="outline"
         size="sm"
         onClick={() => handleNavigate('/developer/database/events/new')}
-        className="h-7 px-2 border-white/20 hover:border-fm-gold hover:bg-transparent group"
+        className="h-7 px-2 border-fm-gold hover:border-white hover:bg-transparent group"
       >
-        <Calendar className="h-3 w-3 text-white/70 group-hover:text-fm-gold transition-colors" />
-        <span className="ml-1.5 text-xs">Event</span>
+        <Calendar className="h-3 w-3 text-fm-gold group-hover:text-white transition-colors" />
+        <span className="ml-1.5 text-xs text-fm-gold group-hover:text-white transition-colors">Event</span>
       </Button>
       <Button
         variant="outline"
         size="sm"
         onClick={() => handleNavigate('/developer/database/artists/new')}
-        className="h-7 px-2 border-white/20 hover:border-fm-gold hover:bg-transparent group"
+        className="h-7 px-2 border-fm-gold hover:border-white hover:bg-transparent group"
       >
-        <Music className="h-3 w-3 text-white/70 group-hover:text-fm-gold transition-colors" />
-        <span className="ml-1.5 text-xs">Artist</span>
+        <Music className="h-3 w-3 text-fm-gold group-hover:text-white transition-colors" />
+        <span className="ml-1.5 text-xs text-fm-gold group-hover:text-white transition-colors">Artist</span>
       </Button>
       <Button
         variant="outline"
         size="sm"
         onClick={() => handleNavigate('/developer/database/venues/new')}
-        className="h-7 px-2 border-white/20 hover:border-fm-gold hover:bg-transparent group"
+        className="h-7 px-2 border-fm-gold hover:border-white hover:bg-transparent group"
       >
-        <MapPin className="h-3 w-3 text-white/70 group-hover:text-fm-gold transition-colors" />
-        <span className="ml-1.5 text-xs">Venue</span>
+        <MapPin className="h-3 w-3 text-fm-gold group-hover:text-white transition-colors" />
+        <span className="ml-1.5 text-xs text-fm-gold group-hover:text-white transition-colors">Venue</span>
       </Button>
     </div>
   );

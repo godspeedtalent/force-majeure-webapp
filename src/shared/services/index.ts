@@ -5,7 +5,8 @@
  */
 
 // Re-export existing services
-// Add service exports here
+export { handleError, withErrorHandler, withErrorHandlerSync } from './errorHandler';
+export { logApiError, logApi } from '@/shared/utils/apiLogger';
 
 // Example:
 // export { apiClient } from './apiClient';
