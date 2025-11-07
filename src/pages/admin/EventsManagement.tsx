@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FmCommonDataGrid, DataGridColumn, DataGridAction } from '@/components/common/data/FmCommonDataGrid';
+import { FmDataGrid, DataGridColumn, DataGridAction } from '@/features/data-grid';
 import { FmCreateEventButton } from '@/components/common/buttons/FmCreateEventButton';
 import { FmEditEventButton } from '@/components/common/buttons/FmEditEventButton';
 import { useEvents } from '@/features/events/hooks/useEvents';
@@ -168,7 +168,7 @@ export const EventsManagement = ({ initialEditEventId }: EventsManagementProps) 
 
   return (
     <div className="space-y-6">
-      <FmCommonDataGrid
+      <FmDataGrid
         data={events || []}
         columns={columns}
         contextMenuActions={contextMenuActions}

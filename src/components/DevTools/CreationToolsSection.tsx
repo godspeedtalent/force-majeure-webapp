@@ -2,10 +2,15 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar, Music, MapPin } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
 
-export const CreationToolsSection = () => {
+interface CreationToolsSectionProps {
+  onNavigate?: () => void;
+}
+
+export const CreationToolsSection = ({ onNavigate }: CreationToolsSectionProps = {}) => {
   const navigate = useNavigate();
 
   const handleNavigate = (path: string) => {
+    onNavigate?.();
     navigate(path);
   };
 

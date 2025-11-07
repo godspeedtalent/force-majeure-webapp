@@ -1,8 +1,8 @@
 import { ReactElement } from 'react';
-import { FmCitySearchDropdown } from '../search/FmCitySearchDropdown';
-import { FmVenueSearchDropdown } from '../search/FmVenueSearchDropdown';
-import { FmArtistSearchDropdown } from '../search/FmArtistSearchDropdown';
-import { FmUserSearchDropdown } from '../search/FmUserSearchDropdown';
+import { FmCitySearchDropdown } from '@/components/common/search/FmCitySearchDropdown';
+import { FmVenueSearchDropdown } from '@/components/common/search/FmVenueSearchDropdown';
+import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
+import { FmUserSearchDropdown } from '@/components/common/search/FmUserSearchDropdown';
 
 export interface RelationConfig {
   component: (props: RelationComponentProps) => ReactElement;
@@ -18,7 +18,7 @@ export interface RelationComponentProps {
 
 /**
  * Maps foreign key column names to their corresponding search dropdown components
- * This allows FmCommonDataGrid to automatically render the appropriate dropdown
+ * This allows FmDataGrid to automatically render the appropriate dropdown
  * for relation fields instead of text inputs
  */
 export const RELATION_MAPPING: Record<string, RelationConfig> = {

@@ -1,19 +1,19 @@
 import { ReactNode } from 'react';
-import { FmCommonContextMenu, ContextMenuAction } from '../modals/FmCommonContextMenu';
+import { FmCommonContextMenu, ContextMenuAction } from '@/components/common/modals/FmCommonContextMenu';
 
-interface FmCommonDataGridContextMenuProps<T = any> {
+interface FmDataGridContextMenuProps<T = any> {
   children: ReactNode;
   row: T;
   actions: ContextMenuAction<T>[];
   onOpenChange?: (open: boolean) => void;
 }
 
-export function FmCommonDataGridContextMenu<T = any>({
+export function FmDataGridContextMenu<T = any>({
   children,
   row,
   actions,
   onOpenChange,
-}: FmCommonDataGridContextMenuProps<T>) {
+}: FmDataGridContextMenuProps<T>) {
   return (
     <FmCommonContextMenu
       actions={actions}

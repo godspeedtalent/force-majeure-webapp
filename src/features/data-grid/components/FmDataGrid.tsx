@@ -8,8 +8,8 @@ import {
   TableRow,
 } from '@/components/common/shadcn/table';
 import { useToast } from '@/shared/hooks/use-toast';
-import { FmCommonDataGridContextMenu } from './FmCommonDataGridContextMenu';
-import { ContextMenuAction } from '../modals/FmCommonContextMenu';
+import { FmDataGridContextMenu } from './FmDataGridContextMenu';
+import { ContextMenuAction } from '@/components/common/modals/FmCommonContextMenu';
 import {
   Pagination,
   PaginationContent,
@@ -38,13 +38,20 @@ import {
 } from '@/components/common/shadcn/dropdown-menu';
 import { Search, Filter, ChevronDown, ChevronUp, MoreVertical, Plus, X } from 'lucide-react';
 import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+  ContextMenuSeparator,
+} from '@/components/common/shadcn/context-menu';
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/common/shadcn/tooltip';
 import { cn } from '@/shared/utils/utils';
-import { isRelationField, getRelationConfig } from './dataGridRelations';
+import { isRelationField, getRelationConfig } from '../utils/dataGridRelations';
 
 export interface DataGridColumn<T = any> {
   key: string;
@@ -63,7 +70,7 @@ export interface DataGridColumn<T = any> {
 // Re-export ContextMenuAction as DataGridAction for backward compatibility
 export type DataGridAction<T = any> = ContextMenuAction<T>;
 
-export interface FmCommonDataGridProps<T = any> {
+export interface FmDataGridProps<T = any> {
   data: T[];
   columns: DataGridColumn<T>[];
   actions?: DataGridAction<T>[];
@@ -71,14 +78,15 @@ export interface FmCommonDataGridProps<T = any> {
   loading?: boolean;
   pageSize?: number;
   className?: string;
-  onUpdate?: (row: T, columnKey: string, newValue: any) => Promise<void>;
-  onCreate?: (newRow: Partial<T>) => Promise<void>;
-  onCreateButtonClick?: () => void;
+  onUpdate?: (item: T) => Promise<void>;
+  onCreate?: (item: Partial<T>) => Promise<void>;
+  onCreateButtonClick?: () => void; // Custom handler for create button
   resourceName?: string;
   createButtonLabel?: string;
+  onHideColumn?: (columnKey: string) => void; // Callback for hiding a column
 }
 
-export function FmCommonDataGrid<T extends Record<string, any>>({
+export function FmDataGrid<T extends Record<string, any>>({
   data,
   columns,
   actions = [],
@@ -91,7 +99,8 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
   onCreateButtonClick,
   resourceName = 'Resource',
   createButtonLabel,
-}: FmCommonDataGridProps<T>) {
+  onHideColumn,
+}: FmDataGridProps<T>) {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortColumn, setSortColumn] = useState<string | null>(null);
@@ -555,90 +564,134 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                 />
               </TableHead>
               {columns.map((column, colIndex) => (
-                <TableHead
-                  key={column.key}
-                  className={cn(
-                    'font-canela text-foreground font-semibold relative',
-                    column.width,
-                    column.sortable && 'cursor-pointer select-none hover:bg-muted',
-                    sortColumn === column.key && 'bg-fm-gold text-black hover:bg-fm-gold/90',
-                    colIndex > 0 && 'border-l border-border/30'
-                  )}
-                  onClick={() => column.sortable && handleSort(column.key)}
-                  onContextMenu={(e) => {
-                    if (column.filterable) {
-                      e.preventDefault();
-                      // Open filter dropdown
-                      const target = e.currentTarget.querySelector('[data-filter-trigger]') as HTMLElement;
-                      target?.click();
-                    }
-                  }}
-                >
-                  <div className="flex items-center gap-2">
-                    <span>{column.label}</span>
-                    {column.sortable && sortColumn === column.key && (
-                      sortDirection === 'asc' ? (
-                        <ChevronUp className="h-3 w-3" />
-                      ) : (
-                        <ChevronDown className="h-3 w-3" />
-                      )
-                    )}
-                    {column.filterable && (
-                      <TooltipProvider>
-                        <Tooltip delayDuration={300}>
-                          <TooltipTrigger asChild>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <button
-                                  data-filter-trigger
-                                  className={cn(
-                                    'h-6 w-6 p-0 hover:bg-fm-gold/20 transition-all duration-200 rounded opacity-0 group-hover:opacity-100',
-                                    columnFilters[column.key] && 'opacity-100 bg-fm-gold/20'
-                                  )}
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  <Filter className={cn(
-                                    'h-3 w-3 mx-auto',
-                                    columnFilters[column.key] ? 'text-fm-gold' : 'text-muted-foreground'
-                                  )} />
-                                </button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="start" className="w-64">
-                                <div className="p-2">
-                                  <div className="relative">
-                                    <Input
-                                      placeholder={`Filter ${column.label}...`}
-                                      value={columnFilters[column.key] || ''}
-                                      onChange={(e) => handleColumnFilter(column.key, e.target.value)}
-                                      className="h-8 pr-8"
+                <ContextMenu key={column.key}>
+                  <ContextMenuTrigger asChild>
+                    <TableHead
+                      className={cn(
+                        'font-canela text-foreground font-semibold relative',
+                        column.width,
+                        column.sortable && 'cursor-pointer select-none hover:bg-muted',
+                        sortColumn === column.key && 'bg-fm-gold text-black hover:bg-fm-gold/90',
+                        colIndex > 0 && 'border-l border-border/30'
+                      )}
+                      onClick={() => column.sortable && handleSort(column.key)}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span>{column.label}</span>
+                        {column.sortable && sortColumn === column.key && (
+                          sortDirection === 'asc' ? (
+                            <ChevronUp className="h-3 w-3" />
+                          ) : (
+                            <ChevronDown className="h-3 w-3" />
+                          )
+                        )}
+                        {column.filterable && (
+                          <TooltipProvider>
+                            <Tooltip delayDuration={300}>
+                              <TooltipTrigger asChild>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <button
+                                      data-filter-trigger
+                                      className={cn(
+                                        'h-6 w-6 p-0 hover:bg-fm-gold/20 transition-all duration-200 rounded opacity-0 group-hover:opacity-100',
+                                        columnFilters[column.key] && 'opacity-100 bg-fm-gold/20'
+                                      )}
                                       onClick={(e) => e.stopPropagation()}
-                                    />
-                                    {columnFilters[column.key] && (
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleColumnFilter(column.key, '');
-                                        }}
-                                        className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center hover:bg-muted rounded-sm transition-colors"
-                                      >
-                                        <X className="h-3 w-3 text-muted-foreground" />
-                                      </button>
-                                    )}
-                                  </div>
-                                </div>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </TooltipTrigger>
-                          {columnFilters[column.key] && (
-                            <TooltipContent side="bottom" className="max-w-xs">
-                              <p className="text-xs">Filter: {columnFilters[column.key]}</p>
-                            </TooltipContent>
-                          )}
-                        </Tooltip>
-                      </TooltipProvider>
+                                    >
+                                      <Filter className={cn(
+                                        'h-3 w-3 mx-auto',
+                                        columnFilters[column.key] ? 'text-fm-gold' : 'text-muted-foreground'
+                                      )} />
+                                    </button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="start" className="w-64">
+                                    <div className="p-2">
+                                      <div className="relative">
+                                        <Input
+                                          placeholder={`Filter ${column.label}...`}
+                                          value={columnFilters[column.key] || ''}
+                                          onChange={(e) => handleColumnFilter(column.key, e.target.value)}
+                                          className="h-8 pr-8"
+                                          onClick={(e) => e.stopPropagation()}
+                                        />
+                                        {columnFilters[column.key] && (
+                                          <button
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleColumnFilter(column.key, '');
+                                            }}
+                                            className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center hover:bg-muted rounded-sm transition-colors"
+                                          >
+                                            <X className="h-3 w-3 text-muted-foreground" />
+                                          </button>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </TooltipTrigger>
+                              {columnFilters[column.key] && (
+                                <TooltipContent side="bottom" className="max-w-xs">
+                                  <p className="text-xs">Filter: {columnFilters[column.key]}</p>
+                                </TooltipContent>
+                              )}
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                      </div>
+                    </TableHead>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent className="bg-card border-border rounded-none">
+                    {column.filterable && (
+                      <ContextMenuItem
+                        onClick={() => {
+                          // Trigger the filter dropdown
+                          const filterButton = document.querySelector(`[data-filter-trigger]`) as HTMLElement;
+                          filterButton?.click();
+                        }}
+                        className="text-white hover:bg-muted focus:bg-muted"
+                      >
+                        Filter
+                      </ContextMenuItem>
                     )}
-                  </div>
-                </TableHead>
+                    {column.sortable && (
+                      <>
+                        {sortColumn !== column.key || sortDirection === 'desc' ? (
+                          <ContextMenuItem
+                            onClick={() => {
+                              setSortColumn(column.key);
+                              setSortDirection('asc');
+                            }}
+                            className="text-white hover:bg-muted focus:bg-muted"
+                          >
+                            Sort Ascending
+                          </ContextMenuItem>
+                        ) : null}
+                        {sortColumn !== column.key || sortDirection === 'asc' ? (
+                          <ContextMenuItem
+                            onClick={() => {
+                              setSortColumn(column.key);
+                              setSortDirection('desc');
+                            }}
+                            className="text-white hover:bg-muted focus:bg-muted"
+                          >
+                            Sort Descending
+                          </ContextMenuItem>
+                        ) : null}
+                      </>
+                    )}
+                    {(column.filterable || column.sortable) && onHideColumn && <ContextMenuSeparator />}
+                    {onHideColumn && (
+                      <ContextMenuItem
+                        onClick={() => onHideColumn(column.key)}
+                        className="text-white hover:bg-muted focus:bg-muted"
+                      >
+                        Hide Column
+                      </ContextMenuItem>
+                    )}
+                  </ContextMenuContent>
+                </ContextMenu>
               ))}
               {actions.length > 0 && (
                 <TableHead className="w-24 text-right">Actions</TableHead>
@@ -717,7 +770,7 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                   : currentContextMenuActions;
 
                 return (
-                  <FmCommonDataGridContextMenu
+                  <FmDataGridContextMenu
                     key={globalIndex}
                     row={row}
                     actions={finalContextMenuActions}
@@ -729,7 +782,7 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                         else rowRefs.current.delete(globalIndex);
                       }}
                       className={cn(
-                        'border-border/50 transition-all duration-200 cursor-pointer group',
+                        'border-border/50 transition-all duration-200 group',
                         isEvenRow && 'bg-muted/20',
                         isSelected && 'bg-fm-gold/10 border-fm-gold/30',
                         hasContextMenuOpen && 'bg-fm-gold/20 border-fm-gold/50',
@@ -739,7 +792,6 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                           globalIndex <= Math.max(dragStartRow, dragCurrentRow) &&
                           'bg-fm-gold/15'
                       )}
-                      onClick={(e) => handleSelectRow(index, e)}
                       onMouseDown={(e) => handleMouseDown(index, e)}
                       onMouseUp={handleMouseUp}
                       onMouseEnter={() => handleMouseEnterRow(index)}
@@ -775,9 +827,10 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                             <TableCell 
                               key={column.key} 
                               className={cn(
-                                "font-medium transition-colors duration-200",
+                                "font-medium transition-colors duration-200 group",
                                 !isDragMode && hoveredColumn === column.key && "bg-muted/30",
-                                isEditing && "bg-fm-gold/10 ring-1 ring-fm-gold/30"
+                                isEditing && "bg-fm-gold/10 ring-1 ring-fm-gold/30",
+                                column.editable && !column.readonly && onUpdate && column.type !== 'boolean' && column.type !== 'created_date' && "cursor-pointer hover:bg-fm-gold/5"
                               )}
                               onMouseEnter={() => !isDragMode && setHoveredColumn(column.key)}
                               onMouseLeave={() => !isDragMode && setHoveredColumn(null)}
@@ -857,10 +910,7 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                                   />
                                 )
                               ) : (
-                                <div className={cn(
-                                  'flex items-center gap-2',
-                                  column.editable && !column.readonly && onUpdate && column.type !== 'boolean' && column.type !== 'created_date' && 'cursor-pointer hover:bg-fm-gold/5 -mx-2 px-2 py-1 rounded'
-                                )}>
+                                <div className="flex items-center gap-2">
                                   {column.type === 'boolean' ? (
                                     // Always show boolean as toggleable switch with label
                                     <div className="flex items-center gap-2" data-no-select>
@@ -879,9 +929,19 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                                   ) : column.render ? (
                                     column.render(cellValue, row)
                                   ) : relationConfig && relationConfig.displayField && row[relationConfig.displayField] ? (
-                                    row[relationConfig.displayField]?.name || row[relationConfig.displayField] || '-'
+                                    <span className={cn(
+                                      "transition-colors",
+                                      column.editable && !column.readonly && onUpdate && "group-hover:text-fm-gold"
+                                    )}>
+                                      {row[relationConfig.displayField]?.name || row[relationConfig.displayField] || '-'}
+                                    </span>
                                   ) : (
-                                    cellValue?.toString() || '-'
+                                    <span className={cn(
+                                      "transition-colors",
+                                      column.editable && !column.readonly && onUpdate && column.type !== 'created_date' && "group-hover:text-fm-gold"
+                                    )}>
+                                      {cellValue?.toString() || '-'}
+                                    </span>
                                   )}
                                   {column.editable && !column.readonly && onUpdate && column.type !== 'boolean' && column.type !== 'created_date' && (
                                     <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
@@ -935,7 +995,7 @@ export function FmCommonDataGrid<T extends Record<string, any>>({
                           </TableCell>
                         )}
                       </TableRow>
-                  </FmCommonDataGridContextMenu>
+                  </FmDataGridContextMenu>
                 );
               })
             )}

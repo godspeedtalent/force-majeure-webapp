@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { X, CheckCircle2, Info, Bug, HelpCircle } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -23,10 +23,10 @@ interface CreateDevNoteModalProps {
 type NoteType = 'TODO' | 'INFO' | 'BUG' | 'QUESTION';
 
 const TYPE_OPTIONS: SelectOption[] = [
-  { value: 'TODO', label: 'TODO' },
-  { value: 'INFO', label: 'INFO' },
-  { value: 'BUG', label: 'BUG' },
-  { value: 'QUESTION', label: 'QUESTION' },
+  { value: 'TODO', label: 'TODO', icon: CheckCircle2 },
+  { value: 'INFO', label: 'INFO', icon: Info },
+  { value: 'BUG', label: 'BUG', icon: Bug },
+  { value: 'QUESTION', label: 'QUESTION', icon: HelpCircle },
 ];
 
 export const CreateDevNoteModal = ({ open, onOpenChange, onNoteCreated }: CreateDevNoteModalProps) => {
@@ -34,6 +34,25 @@ export const CreateDevNoteModal = ({ open, onOpenChange, onNoteCreated }: Create
   const [message, setMessage] = useState('');
   const [type, setType] = useState<NoteType>('TODO');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+Enter or Cmd+Enter to submit
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        if (message.trim() && !isSubmitting) {
+          handleSubmit();
+        }
+      }
+      // Esc to close (handled by Dialog, but we can add custom logic if needed)
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open, message, isSubmitting]);
 
   const handleSubmit = async () => {
     if (!message.trim()) {
@@ -76,8 +95,25 @@ export const CreateDevNoteModal = ({ open, onOpenChange, onNoteCreated }: Create
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] bg-fm-dark-card border-fm-gold/20">
-        <DialogHeader>
+      <DialogContent 
+        className="sm:max-w-[600px] bg-fm-dark-card border-fm-gold/20 relative p-0 gap-0 flex flex-col max-h-[80vh]"
+        style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          margin: 0,
+        }}
+      >
+        {/* Topography Background */}
+        <div 
+          className="absolute inset-0 opacity-[0.03] pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M50 50c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10zM10 10c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10S0 25.523 0 20s4.477-10 10-10zm10 8c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm40 40c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}
+        />
+        
+        <DialogHeader className="relative z-10 p-6 pb-2 flex-shrink-0">
           <DialogTitle className="text-fm-gold flex items-center justify-between">
             Create Developer Note
             <button
@@ -89,7 +125,7 @@ export const CreateDevNoteModal = ({ open, onOpenChange, onNoteCreated }: Create
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-4 px-6 py-4 relative z-10 flex-1 overflow-y-auto min-h-0">
           <FmCommonSelect
             label="Type"
             value={type}
@@ -109,21 +145,32 @@ export const CreateDevNoteModal = ({ open, onOpenChange, onNoteCreated }: Create
           />
         </div>
 
-        <DialogFooter>
-          <FmCommonButton
-            variant="secondary"
-            onClick={() => onOpenChange(false)}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </FmCommonButton>
-          <FmCommonButton
-            variant="default"
-            onClick={handleSubmit}
-            disabled={isSubmitting || !message.trim()}
-          >
-            {isSubmitting ? 'Creating...' : 'Create Note'}
-          </FmCommonButton>
+        <DialogFooter className="relative z-10 p-6 pt-2 flex-shrink-0">
+          <div className="flex items-center justify-between w-full">
+            {/* Keyboard shortcuts footnote */}
+            <div className="flex flex-col gap-0.5 text-[10px] text-white/40">
+              <span><kbd className="px-1 py-0.5 bg-white/10 rounded text-[9px]">Ctrl</kbd> + <kbd className="px-1 py-0.5 bg-white/10 rounded text-[9px]">Enter</kbd> to save</span>
+              <span><kbd className="px-1 py-0.5 bg-white/10 rounded text-[9px]">Esc</kbd> to close</span>
+            </div>
+            
+            {/* Action buttons */}
+            <div className="flex gap-2">
+              <FmCommonButton
+                variant="secondary"
+                onClick={() => onOpenChange(false)}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </FmCommonButton>
+              <FmCommonButton
+                variant="default"
+                onClick={handleSubmit}
+                disabled={isSubmitting || !message.trim()}
+              >
+                {isSubmitting ? 'Creating...' : 'Create Note'}
+              </FmCommonButton>
+            </div>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

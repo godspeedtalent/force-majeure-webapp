@@ -59,7 +59,7 @@ export const FmCommonButton = forwardRef<HTMLButtonElement, FmCommonButtonProps>
     const variantStyles = {
       gold: 'bg-fm-gold hover:bg-fm-gold/90 text-black font-medium transition-all duration-200 hover:shadow-[0_0_20px_rgba(207,173,118,0.5)] hover:scale-105 active:scale-95',
       default: 'bg-white/5 border-white/30 hover:bg-fm-gold/20 hover:border-fm-gold hover:text-fm-gold transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]',
-      secondary: 'transition-all duration-200 hover:scale-105 active:scale-95',
+      secondary: 'hover:bg-fm-gold/10 hover:border-fm-gold hover:text-fm-gold transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]',
       destructive: 'transition-all duration-200 hover:scale-105 active:scale-95',
     };
 

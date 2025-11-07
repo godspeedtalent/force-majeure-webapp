@@ -328,6 +328,34 @@ npm run preview      # Preview production build
 - Use pre-built layouts for new pages, only creating a brand new layout if there is no reasonable base layout. Create the new layout with the idea in mind that in can be implemented in other pages.
 - Use pre-built Fm* components first before creating new components, using pre-existing ones as much as possible. Only create brand new components if absolutely necessary, and do your best to inherit base components when doing so.
 
+### Code Modularization & Component Creation
+**CRITICAL: Always search for similar patterns before implementing new features.**
+
+1. **Search before implementing**: When adding new functionality, search the codebase for similar implementations
+   - Use `semantic_search` to find related components and patterns
+   - Use `grep_search` to find specific code patterns or function names
+   - Check if existing utilities, hooks, or components can be reused or extended
+
+2. **Identify repeated code**: If you find code duplicated in multiple places:
+   - Evaluate if the duplicated logic should be extracted into a shared component
+   - Consider creating a new utility function for repeated calculations or transformations
+   - Extract shared hooks for common state management or side effects
+   - Create shared type definitions in `types/` directories
+
+3. **Component size management**: Files approaching 150+ lines should be evaluated for splitting
+   - Look for logical groupings that can become separate components
+   - Extract form sections into their own components
+   - Split data display logic from data fetching logic
+   - Break large forms into smaller, focused components
+   - Consider extracting modal content into separate components
+
+4. **Maintain hierarchy**: Keep related files organized within the established structure
+   - Feature-specific code goes in `/src/features/[feature]/`
+   - Shared components go in `/src/components/common/`
+   - Page-level components in `/src/pages/`
+   - Related sub-components should live in the same directory as their parent
+   - Use barrel exports (`index.ts`) for cleaner imports when appropriate
+
 ### Design System Usage
 **CRITICAL: Always follow the design system when creating or modifying components.**
 
@@ -389,26 +417,109 @@ npm run preview      # Preview production build
    - Muted color: `text-muted-foreground`
    - Gold when focused: `text-fm-gold`
 
-10. **List/menu items** (based on FmCommonContextMenu):
-    - Striped background: Even items `bg-background/40`, odd items `bg-background/60`
-    - Hover: `hover:bg-fm-gold/10 hover:scale-[1.02]` with gold glow
-    - Interactive scaling and smooth transitions
+10. **Context Menus** (`FmCommonContextMenu`):
+    - **Visual Design**:
+      - Striped background: Even items `bg-background/40`, odd items `bg-background/60`
+      - Hover: `hover:bg-fm-gold/10 hover:scale-[1.02]` with gold glow `shadow-fm-gold/20`
+      - Focus: `focus:bg-fm-gold/15` with enhanced glow
+      - Active: `active:scale-[0.98]` for tactile feedback
+      - Backdrop: `backdrop-blur-xl` with gradient `from-background to-background/95`
+      - Border: `border-2 border-white/20` with shadow `shadow-black/50`
+      - Dividers: Horizontal gradient lines between items `bg-gradient-to-r from-transparent via-white/10`
+    
+    - **Basic Usage**:
+    
+      ```tsx
+      import { FmCommonContextMenu, ContextMenuAction } from '@/components/common/modals/FmCommonContextMenu';
+      
+      const actions: ContextMenuAction<DataType>[] = [
+        {
+          label: 'Edit',
+          icon: <Pencil className="h-4 w-4" />,
+          onClick: (data) => handleEdit(data),
+        },
+        {
+          label: 'Delete',
+          icon: <Trash className="h-4 w-4" />,
+          onClick: (data) => handleDelete(data),
+          variant: 'destructive',
+        },
+      ];
+      
+      <FmCommonContextMenu actions={actions} data={rowData}>
+        <div>Right-click me</div>
+      </FmCommonContextMenu>
+      ```
+    
+    - **Action Properties**:
+      - `label`: Display text (required)
+      - `icon`: Icon element (optional)
+      - `iconPosition`: 'left' | 'right' (default: 'left')
+      - `onClick`: Handler function receiving the data (optional if submenu exists)
+      - `variant`: 'default' | 'destructive' (changes hover color)
+      - `disabled`: Boolean to disable the item
+      - `separator`: Add visual separator after this item
+      - `submenu`: Array of nested actions for hierarchical menus
+    
+    - **Submenu Support**:
+    
+      ```tsx
+      const actionsWithSubmenu: ContextMenuAction<NoteType>[] = [
+        {
+          label: 'Set Status',
+          icon: <CircleDot className="h-4 w-4" />,
+          submenu: [
+            {
+              label: 'TODO',
+              icon: <Circle className="h-3 w-3 text-gray-400" />,
+              onClick: (note) => updateStatus(note, 'TODO'),
+            },
+            {
+              label: 'IN PROGRESS',
+              icon: <Circle className="h-3 w-3 text-yellow-400" />,
+              onClick: (note) => updateStatus(note, 'IN_PROGRESS'),
+            },
+            {
+              label: 'RESOLVED',
+              icon: <Circle className="h-3 w-3 text-green-400" />,
+              onClick: (note) => updateStatus(note, 'RESOLVED'),
+            },
+          ],
+        },
+        { separator: true },
+        {
+          label: 'Delete',
+          icon: <Trash className="h-4 w-4" />,
+          onClick: (note) => handleDelete(note),
+          variant: 'destructive',
+        },
+      ];
+      ```
+    
+    - **Design System Compliance**:
+      - Animations: 200ms duration with `animate-in fade-in zoom-in-95`
+      - Spacing: Uses 0.5 units (`my-0.5`) between items
+      - Typography: `font-medium` for labels
+      - Transitions: `transition-all duration-300` for smooth interactions
 
-11. **Reference documentation**: When in doubt, check `/docs/DESIGN_SYSTEM.md`
+12. **Reference documentation**: When in doubt, check `/docs/DESIGN_SYSTEM.md`
 
 ### Design System Enforcement Tools
 
 **Audit Script**: Run `npm run audit:design-system` to check compliance
+
 - Identifies files with design system violations
 - Reports rounded corners, hardcoded colors, arbitrary spacing
 - Generates compliance scores (0-100) for each file
 - Saves detailed report to `design-system-audit-report.json`
 
 **ESLint Rules**: Automatically warns about:
+
 - Rounded corners (except rounded-none)
 - Hardcoded hex color values
 
 **Type Safety**: Use types from `/src/shared/types/designSystem.ts`
+
 - `DesignSystemColor` - Only approved colors
 - `DesignSystemSpacing` - Only scale values (5, 10, 20, 40, 60)
 - `DepthLevel` - Only valid depth levels (0-3)

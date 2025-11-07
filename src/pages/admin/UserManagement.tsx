@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/shared/api/supabase/client';
-import { FmCommonDataGrid, DataGridAction } from '@/components/common/data/FmCommonDataGrid';
+import { FmConfigurableDataGrid, DataGridAction } from '@/features/data-grid';
 import { userColumns } from './config/adminGridColumns';
 import { Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -26,17 +26,26 @@ export const UserManagement = () => {
       if (authError) {
         console.warn('Could not fetch auth users:', authError);
         // Return profiles without email if auth fetch fails
-        return profiles.map(p => ({ ...p, email: 'N/A' }));
+        return profiles.map(p => ({ ...p, email: 'N/A', roles: [] }));
       }
 
-      // Merge profile data with auth email
-      return profiles.map(profile => {
+      // Fetch roles for all users
+      const usersWithRoles = await Promise.all(profiles.map(async (profile) => {
         const authUser = authUsers?.find(u => u.id === profile.id);
+        
+        // Fetch user roles
+        const { data: userRoles, error: rolesError } = await (supabase as any).rpc('get_user_roles', {
+          user_id_param: profile.id
+        });
+
         return {
           ...profile,
           email: authUser?.email || 'N/A',
+          roles: rolesError ? [] : (userRoles || []),
         };
-      });
+      }));
+
+      return usersWithRoles;
     },
   });
 
@@ -104,7 +113,8 @@ export const UserManagement = () => {
   ];
 
   return (
-    <FmCommonDataGrid
+    <FmConfigurableDataGrid
+      gridId="admin-users"
       data={users}
       columns={userColumns}
       contextMenuActions={userContextActions}

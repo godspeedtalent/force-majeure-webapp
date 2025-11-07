@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/common/shadcn/badge';
-import { Code, Package, ArrowRight, FlaskConical, Database } from 'lucide-react';
+import { Code, Package, ArrowRight, FlaskConical, Database, FileText } from 'lucide-react';
 import { DemoLayout } from '@/components/demo/DemoLayout';
 
 export default function DeveloperIndex() {
@@ -19,6 +19,14 @@ export default function DeveloperIndex() {
       path: '/developer/database',
       icon: Database,
       category: 'Database',
+      status: 'Active',
+    },
+    {
+      title: 'Documentation Viewer',
+      description: 'Browse and search generated markdown documentation including architecture guides, feature documentation, and setup instructions',
+      path: '/developer/documentation',
+      icon: FileText,
+      category: 'Documentation',
       status: 'Active',
     },
     {

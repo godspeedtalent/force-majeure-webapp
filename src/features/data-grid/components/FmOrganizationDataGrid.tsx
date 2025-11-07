@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { FmCommonDataGrid, DataGridColumn, DataGridAction } from './FmCommonDataGrid';
-import { supabase } from '@/shared/api/supabase/client';
+import { FmDataGrid, DataGridColumn, DataGridAction } from './FmDataGrid';
+import { supabase } from '@/integrations/supabase/client';
 import { Building2, Trash2, Edit, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -188,7 +188,7 @@ export function FmOrganizationDataGrid() {
   };
 
   return (
-    <FmCommonDataGrid
+    <FmDataGrid
       data={organizations}
       columns={columns}
       actions={actions}

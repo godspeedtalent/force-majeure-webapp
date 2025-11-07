@@ -13,6 +13,7 @@ import { cn } from '@/shared/utils/utils';
 export interface SelectOption {
   value: string;
   label: string;
+  icon?: React.ComponentType<{ className?: string }>;
 }
 
 interface FmCommonSelectProps {
@@ -73,7 +74,10 @@ export function FmCommonSelect({
         <SelectContent>
           {options.map((option) => (
             <SelectItem key={option.value} value={option.value}>
-              {option.label}
+              <div className="flex items-center gap-2">
+                {option.icon && <option.icon className="h-4 w-4" />}
+                <span>{option.label}</span>
+              </div>
             </SelectItem>
           ))}
         </SelectContent>

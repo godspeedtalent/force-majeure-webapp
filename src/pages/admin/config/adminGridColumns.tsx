@@ -1,4 +1,4 @@
-import { DataGridColumn } from '@/components/common/data/FmCommonDataGrid';
+import { DataGridColumn } from '@/features/data-grid';
 
 /**
  * Column definitions for the Artists data grid in Admin Controls
@@ -101,6 +101,29 @@ export const userColumns: DataGridColumn[] = [
       ),
   },
   {
+    key: 'roles',
+    label: 'Roles',
+    filterable: false,
+    readonly: true,
+    render: (value) => {
+      if (!value || !Array.isArray(value) || value.length === 0) {
+        return <span className='text-xs text-muted-foreground'>No roles</span>;
+      }
+      return (
+        <div className='flex flex-wrap gap-1'>
+          {value.map((role: any, idx: number) => (
+            <span
+              key={idx}
+              className='inline-flex items-center rounded-md bg-fm-gold/10 px-2 py-1 text-xs font-medium text-fm-gold ring-1 ring-inset ring-fm-gold/20'
+            >
+              {role.display_name || role.role_name}
+            </span>
+          ))}
+        </div>
+      );
+    },
+  },
+  {
     key: 'created_at',
     label: 'Joined',
     sortable: true,
@@ -119,6 +142,23 @@ export const venueColumns: DataGridColumn[] = [
     sortable: true,
     filterable: true,
     editable: true,
+  },
+  {
+    key: 'image_url',
+    label: 'Image',
+    filterable: false,
+    editable: true,
+    type: 'url',
+    render: (value) =>
+      value ? (
+        <img
+          src={value}
+          alt='Venue'
+          className='h-8 w-8 rounded object-cover shadow-sm'
+        />
+      ) : (
+        <span className='text-xs text-muted-foreground'>-</span>
+      ),
   },
   {
     key: 'city_id',

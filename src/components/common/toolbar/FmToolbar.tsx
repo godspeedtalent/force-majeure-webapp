@@ -10,6 +10,12 @@ import { Separator } from '@/components/common/shadcn/separator';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared/auth/permissions';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from '@/components/common/shadcn/context-menu';
 
 // Lazy load sections  
 import { CreationToolsSection } from '@/components/DevTools/CreationToolsSection';
@@ -29,6 +35,8 @@ export interface ToolbarTab {
   groupOrder?: number;
   alignment?: 'top' | 'bottom';
   groupLabel?: string;
+  resizable?: boolean;
+  maxWidth?: number; // Max width in pixels, defaults to 80vw
 }
 
 interface FmToolbarProps {
@@ -41,7 +49,13 @@ export const FmToolbar = ({
   anchorOffset = 96,
 }: FmToolbarProps) => {
   const [isDragging, setIsDragging] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
+  const [drawerWidth, setDrawerWidth] = useState(() => {
+    // Load saved width from localStorage, default to 384px (20% wider than 320px)
+    const saved = localStorage.getItem('fm-toolbar-width');
+    return saved ? parseInt(saved, 10) : 384;
+  });
   const [isTabHovered, setIsTabHovered] = useState(false);
   const [showGroupLabel, setShowGroupLabel] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -52,10 +66,15 @@ export const FmToolbar = ({
   const navigate = useNavigate();
   
   const startYRef = useRef<number>(0);
+  const startXRef = useRef<number>(0);
   const initialOffsetRef = useRef<number>(0);
+  const initialWidthRef = useRef<number>(384);
   const tabsContainerRef = useRef<HTMLDivElement>(null);
   const dragStartTimeRef = useRef<number>(0);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Constraints for drawer width
+  const MIN_WIDTH = 320;
 
   // Check if user has actual developer or admin role
   const isDeveloperOrAdmin = hasAnyRole(ROLES.DEVELOPER, ROLES.ADMIN);
@@ -103,40 +122,128 @@ export const FmToolbar = ({
             <div className="flex flex-col gap-2">
               {/* Alphabetically sorted links */}
               {isAdmin && (
-                <FmCommonButton
-                  variant="default"
-                  icon={Shield}
-                  iconPosition="left"
-                  onClick={() => navigate('/admin/controls')}
-                  className="w-full justify-start"
-                >
-                  Admin Controls
-                </FmCommonButton>
+                <ContextMenu>
+                  <ContextMenuTrigger asChild>
+                    <div>
+                      <FmCommonButton
+                        variant="default"
+                        icon={Shield}
+                        iconPosition="left"
+                        onClick={() => {
+                          setIsOpen(false);
+                          setActiveTab(null);
+                          navigate('/admin/controls');
+                        }}
+                        className="w-full justify-start"
+                      >
+                        Admin Controls
+                      </FmCommonButton>
+                    </div>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent className="bg-card border-border rounded-none w-40">
+                    <ContextMenuItem
+                      onClick={() => {
+                        setIsOpen(false);
+                        setActiveTab(null);
+                        navigate('/admin/controls');
+                      }}
+                      className="text-white hover:bg-muted focus:bg-muted cursor-pointer"
+                    >
+                      Go to
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
               )}
-              <FmCommonButton
-                variant="default"
-                icon={Home}
-                iconPosition="left"
-                onClick={() => navigate('/developer')}
-                className="w-full justify-start"
-              >
-                Developer Home
-              </FmCommonButton>
-              <FmCommonButton
-                variant="default"
-                icon={ExternalLink}
-                iconPosition="left"
-                onClick={() => {
-                  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-                  if (supabaseUrl) {
-                    const projectId = new URL(supabaseUrl).hostname.split('.')[0];
-                    window.open(`https://supabase.com/dashboard/project/${projectId}`, '_blank');
-                  }
-                }}
-                className="w-full justify-start"
-              >
-                Supabase Dashboard
-              </FmCommonButton>
+              <ContextMenu>
+                <ContextMenuTrigger asChild>
+                  <div>
+                    <FmCommonButton
+                      variant="default"
+                      icon={Home}
+                      iconPosition="left"
+                      onClick={() => {
+                        setIsOpen(false);
+                        setActiveTab(null);
+                        navigate('/developer');
+                      }}
+                      className="w-full justify-start"
+                    >
+                      Developer Home
+                    </FmCommonButton>
+                  </div>
+                </ContextMenuTrigger>
+                <ContextMenuContent className="bg-card border-border rounded-none w-40">
+                  <ContextMenuItem
+                    onClick={() => {
+                      setIsOpen(false);
+                      setActiveTab(null);
+                      navigate('/developer');
+                    }}
+                    className="text-white hover:bg-muted focus:bg-muted cursor-pointer"
+                  >
+                    Go to
+                  </ContextMenuItem>
+                </ContextMenuContent>
+              </ContextMenu>
+              <ContextMenu>
+                <ContextMenuTrigger asChild>
+                  <div>
+                    <FmCommonButton
+                      variant="default"
+                      icon={ExternalLink}
+                      iconPosition="left"
+                      onClick={() => {
+                        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+                        if (supabaseUrl) {
+                          const projectId = new URL(supabaseUrl).hostname.split('.')[0];
+                          window.open(`https://supabase.com/dashboard/project/${projectId}`, '_blank');
+                        }
+                      }}
+                      className="w-full justify-start"
+                    >
+                      Supabase Dashboard
+                    </FmCommonButton>
+                  </div>
+                </ContextMenuTrigger>
+                <ContextMenuContent className="bg-card border-border rounded-none w-48">
+                  <ContextMenuItem
+                    onClick={() => {
+                      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+                      if (supabaseUrl) {
+                        const projectId = new URL(supabaseUrl).hostname.split('.')[0];
+                        window.open(`https://supabase.com/dashboard/project/${projectId}`, '_blank');
+                      }
+                    }}
+                    className="text-white hover:bg-muted focus:bg-muted cursor-pointer"
+                  >
+                    Go to
+                  </ContextMenuItem>
+                  <ContextMenuItem
+                    onClick={() => {
+                      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+                      if (supabaseUrl) {
+                        const projectId = new URL(supabaseUrl).hostname.split('.')[0];
+                        window.open(`https://supabase.com/dashboard/project/${projectId}/editor`, '_blank');
+                      }
+                    }}
+                    className="text-white hover:bg-muted focus:bg-muted cursor-pointer"
+                  >
+                    Go to Table Editor
+                  </ContextMenuItem>
+                  <ContextMenuItem
+                    onClick={() => {
+                      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+                      if (supabaseUrl) {
+                        const projectId = new URL(supabaseUrl).hostname.split('.')[0];
+                        window.open(`https://supabase.com/dashboard/project/${projectId}/sql/new`, '_blank');
+                      }
+                    }}
+                    className="text-white hover:bg-muted focus:bg-muted cursor-pointer"
+                  >
+                    Go to SQL Editor
+                  </ContextMenuItem>
+                </ContextMenuContent>
+              </ContextMenu>
             </div>
           </div>
         ),
@@ -157,7 +264,10 @@ export const FmToolbar = ({
             <div className="px-4 py-2 space-y-4">
               <div className="pb-2 border-b border-white/10">
                 <p className="text-xs text-muted-foreground mb-2">Quick Create</p>
-                <CreationToolsSection />
+                <CreationToolsSection onNavigate={() => {
+                  setIsOpen(false);
+                  setActiveTab(null);
+                }} />
               </div>
               <DatabaseNavigatorSearch />
             </div>
@@ -169,10 +279,14 @@ export const FmToolbar = ({
               variant="default"
               icon={Database}
               iconPosition="left"
-              onClick={() => navigate('/developer/database')}
+              onClick={() => {
+                setIsOpen(false);
+                setActiveTab(null);
+                navigate('/developer/database');
+              }}
               className="w-full justify-start"
             >
-              Go to DB Navigator
+              Go to Database Manager
             </FmCommonButton>
           </div>
         ),
@@ -182,6 +296,7 @@ export const FmToolbar = ({
         groupOrder: 2,
         alignment: 'bottom',
         groupLabel: 'Developer Tools',
+        resizable: true,
       },
       {
         id: 'features',
@@ -210,12 +325,14 @@ export const FmToolbar = ({
             <DevNotesSection />
           </div>
         ),
-        title: 'Developer TODO Notes',
+        title: 'Dev Notes',
         visible: isDeveloperOrAdmin,
         group: 'developer',
         groupOrder: 2,
         alignment: 'bottom',
         groupLabel: 'Developer Tools',
+        resizable: true,
+        maxWidth: Math.floor(window.innerWidth * 0.4), // 40vw
       },
     ],
     [isDeveloperOrAdmin, user, navigate]
@@ -272,6 +389,15 @@ export const FmToolbar = ({
     [visibleTabs, activeTab]
   );
 
+  // Calculate max width based on active tab or default to 80vw
+  const getMaxWidth = useCallback(() => {
+    if (activeTabData?.maxWidth !== undefined) {
+      return activeTabData.maxWidth;
+    }
+    // Default max width is 80vw
+    return Math.floor(window.innerWidth * 0.8);
+  }, [activeTabData]);
+
   const handleTabClick = (tabId: string) => {
     if (activeTab === tabId && isOpen) {
       setIsOpen(false);
@@ -281,6 +407,13 @@ export const FmToolbar = ({
     setActiveTab(tabId);
     if (!isOpen) {
       setIsOpen(true);
+    }
+
+    // If switching to a non-resizable tab, snap back to default width
+    const newTab = visibleTabs.find(tab => tab.id === tabId);
+    if (newTab && !newTab.resizable && drawerWidth > 384) {
+      setDrawerWidth(384);
+      localStorage.setItem('fm-toolbar-width', '384');
     }
   };
 
@@ -312,6 +445,30 @@ export const FmToolbar = ({
     initialOffsetRef.current = dragOffset;
     setIsDragging(true);
   };
+
+  const handleResizeStart = (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    startXRef.current = event.clientX;
+    initialWidthRef.current = drawerWidth;
+    setIsResizing(true);
+  };
+
+  const handleResizeMove = useCallback((event: MouseEvent) => {
+    const deltaX = startXRef.current - event.clientX; // Reversed: dragging left increases width
+    const maxWidth = getMaxWidth();
+    const newWidth = Math.max(
+      MIN_WIDTH,
+      Math.min(maxWidth, initialWidthRef.current + deltaX)
+    );
+    setDrawerWidth(newWidth);
+  }, [MIN_WIDTH, getMaxWidth]);
+
+  const handleResizeEnd = useCallback(() => {
+    setIsResizing(false);
+    // Save to localStorage
+    localStorage.setItem('fm-toolbar-width', drawerWidth.toString());
+  }, [drawerWidth]);
 
   const handleMouseMove = useCallback((event: MouseEvent) => {
     if (!tabsContainerRef.current) return;
@@ -352,6 +509,21 @@ export const FmToolbar = ({
     }
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
+  useEffect(() => {
+    if (isResizing) {
+      window.addEventListener('mousemove', handleResizeMove);
+      window.addEventListener('mouseup', handleResizeEnd);
+      document.body.style.cursor = 'ew-resize';
+      document.body.style.userSelect = 'none';
+      return () => {
+        window.removeEventListener('mousemove', handleResizeMove);
+        window.removeEventListener('mouseup', handleResizeEnd);
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+      };
+    }
+  }, [isResizing, handleResizeMove, handleResizeEnd]);
+
   // Cleanup hover timeout on unmount
   useEffect(() => {
     return () => {
@@ -386,13 +558,27 @@ export const FmToolbar = ({
   return (
     <div
       className={cn(
-        'fixed bottom-0 right-0 z-[100] transition-all duration-300 ease-in-out',
+        'fixed bottom-0 right-0 z-[100]',
+        !isResizing && 'transition-all duration-300 ease-in-out',
         className
       )}
       style={{
-        width: isOpen ? '320px' : '0px',
+        width: isOpen ? `${drawerWidth}px` : '0px',
       }}
     >
+      {/* Resize Handle - only show for resizable tabs */}
+      {isOpen && activeTabData?.resizable && (
+        <div
+          className={cn(
+            'absolute inset-y-0 left-0 w-1 cursor-ew-resize z-10',
+            'hover:bg-fm-gold/50 transition-colors',
+            isResizing && 'bg-fm-gold'
+          )}
+          onMouseDown={handleResizeStart}
+          title="Drag to resize"
+        />
+      )}
+
       {/* Developer Toolbar Indicator */}
       <div 
         className='absolute bottom-0 right-full h-full bg-black/80 backdrop-blur-md border-l border-white/20 transition-all duration-300'
@@ -552,9 +738,12 @@ export const FmToolbar = ({
 
       <div
         className={cn(
-          'h-screen bg-black/90 backdrop-blur-md border-l border-white/20 overflow-y-auto transition-all duration-300 ease-in-out pointer-events-auto',
-          isOpen ? 'w-80' : 'w-0'
+          'h-screen bg-black/90 backdrop-blur-md border-l border-white/20 overflow-y-auto transition-opacity duration-300 ease-in-out pointer-events-auto',
+          isOpen ? 'opacity-100' : 'opacity-0 w-0'
         )}
+        style={{
+          width: isOpen ? `${drawerWidth}px` : '0px',
+        }}
       >
         {isOpen && (
           <div className='pt-8 px-6 pointer-events-auto h-full flex flex-col'>

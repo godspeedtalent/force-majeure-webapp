@@ -1,48 +1,64 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
-import { FmCommonDataGrid, DataGridAction } from '@/components/common/data/FmCommonDataGrid';
+import { DataGridAction, FmConfigurableDataGrid } from '@/features/data-grid';
 import { FmEditVenueButton } from '@/components/common/buttons/FmEditVenueButton';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
-import { MapPin, Database, Calendar, Edit, Trash2, Mic2, Building2 } from 'lucide-react';
+import { MapPin, Database, Calendar, Edit, Trash2, Mic2, Building2, Users } from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { EventsManagement } from '../admin/EventsManagement';
 import { OrganizationsManagement } from '../admin/OrganizationsManagement';
+import { UserManagement } from '../admin/UserManagement';
 import { DatabaseNavigatorSearch } from '@/components/admin/DatabaseNavigatorSearch';
 import { toast } from 'sonner';
 import { formatHeader } from '@/shared/utils/styleUtils';
 import { artistColumns, venueColumns } from '../admin/config/adminGridColumns';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { ROLES } from '@/shared/auth/permissions';
 
-type DatabaseTab = 'overview' | 'artists' | 'events' | 'organizations' | 'venues';
+type DatabaseTab = 'overview' | 'artists' | 'events' | 'organizations' | 'users' | 'venues';
 
 export default function DeveloperDatabase() {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState<DatabaseTab>('overview');
   const [editingVenueId, setEditingVenueId] = useState<string | null>(null);
   const queryClient = useQueryClient();
+  const { hasRole } = useUserPermissions();
+  const isAdmin = hasRole(ROLES.ADMIN);
 
-  // Navigation groups configuration
-  const navigationGroups: FmCommonSideNavGroup<DatabaseTab>[] = [
-    {
-      label: 'Overview',
-      icon: Database,
-      items: [
-        { id: 'overview', label: 'Dashboard', icon: Database, description: 'Database overview and search' },
-      ],
-    },
-    {
-      label: 'Tables',
-      icon: Database,
-      items: [
-        { id: 'artists', label: 'Artists', icon: Mic2, description: 'Manage artist profiles' },
-        { id: 'events', label: 'Events', icon: Calendar, description: 'Manage events' },
+  // Navigation groups configuration - conditionally include admin-only tabs
+  const navigationGroups: FmCommonSideNavGroup<DatabaseTab>[] = useMemo(() => {
+    const tables: Array<{ id: DatabaseTab; label: string; icon: any; description: string }> = [
+      { id: 'artists', label: 'Artists', icon: Mic2, description: 'Manage artist profiles' },
+      { id: 'events', label: 'Events', icon: Calendar, description: 'Manage events' },
+      { id: 'venues', label: 'Venues', icon: MapPin, description: 'Manage venue locations' },
+    ];
+
+    // Add admin-only tabs
+    if (isAdmin) {
+      tables.push(
         { id: 'organizations', label: 'Organizations', icon: Building2, description: 'Manage organizations' },
-        { id: 'venues', label: 'Venues', icon: MapPin, description: 'Manage venue locations' },
-      ],
-    },
-  ];
+        { id: 'users', label: 'Users', icon: Users, description: 'Manage user accounts' }
+      );
+    }
+
+    return [
+      {
+        label: 'Overview',
+        icon: Database,
+        items: [
+          { id: 'overview' as const, label: 'Dashboard', icon: Database, description: 'Database overview and search' },
+        ],
+      },
+      {
+        label: 'Tables',
+        icon: Database,
+        items: tables,
+      },
+    ];
+  }, [isAdmin]);
 
   // Handle navigation from toolbar or other sources
   useEffect(() => {
@@ -54,7 +70,7 @@ export default function DeveloperDatabase() {
 
     if (state?.editArtistId) {
       setActiveTab('artists');
-    } else if (state?.openTab && ['artists', 'events', 'organizations', 'venues'].includes(state.openTab)) {
+    } else if (state?.openTab && ['artists', 'events', 'organizations', 'users', 'venues'].includes(state.openTab)) {
       setActiveTab(state.openTab as DatabaseTab);
     }
   }, [location.state]);
@@ -309,7 +325,7 @@ export default function DeveloperDatabase() {
         <div className="mb-[20px]">
           <div className="flex items-center gap-[10px] mb-[20px]">
             <Database className="h-6 w-6 text-fm-gold" />
-            <h1 className="text-3xl font-canela">{formatHeader('Database Navigator')}</h1>
+            <h1 className="text-3xl font-canela">{formatHeader('Database Manager')}</h1>
           </div>
         </div>
 
@@ -353,7 +369,8 @@ export default function DeveloperDatabase() {
         )}
 
         {activeTab === 'artists' && (
-          <FmCommonDataGrid
+          <FmConfigurableDataGrid
+            gridId="dev-artists"
             data={artists}
             columns={artistColumns}
             contextMenuActions={artistContextActions}
@@ -370,9 +387,14 @@ export default function DeveloperDatabase() {
           <OrganizationsManagement />
         )}
 
+        {activeTab === 'users' && (
+          <UserManagement />
+        )}
+
         {activeTab === 'venues' && (
           <>
-            <FmCommonDataGrid
+            <FmConfigurableDataGrid
+              gridId="dev-venues"
               data={venues}
               columns={venueColumns}
               contextMenuActions={venueContextActions}

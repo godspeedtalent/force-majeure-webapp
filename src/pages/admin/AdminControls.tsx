@@ -2,14 +2,15 @@ import { useState } from 'react';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
-import { Sliders, Settings, Code, Shield, DollarSign, Users } from 'lucide-react';
+import { Sliders, Settings, Code, Shield, DollarSign, Users, Database, Building2 } from 'lucide-react';
 import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
 import { AdminFeesSection } from '@/components/admin/AdminFeesSection';
 import { DevToolsManagement } from '@/components/admin/DevToolsManagement';
 import { UserManagement } from './UserManagement';
+import { OrganizationsManagement } from './OrganizationsManagement';
 import { formatHeader } from '@/shared/utils/styleUtils';
 
-type AdminTab = 'devtools' | 'fees' | 'settings' | 'users';
+type AdminTab = 'devtools' | 'fees' | 'settings' | 'users' | 'organizations';
 
 export default function AdminControls() {
   const [activeTab, setActiveTab] = useState<AdminTab>('settings');
@@ -23,7 +24,14 @@ export default function AdminControls() {
         { id: 'devtools', label: 'Developer Tools', icon: Code, description: 'Toggle dev environment features' },
         { id: 'fees', label: 'Ticketing Fees', icon: DollarSign, description: 'Configure ticketing fees' },
         { id: 'settings', label: 'Site Settings', icon: Sliders, description: 'Configure site settings' },
-        { id: 'users', label: 'User Management', icon: Users, description: 'Manage user accounts' },
+      ],
+    },
+    {
+      label: 'Database',
+      icon: Database,
+      items: [
+        { id: 'organizations', label: 'Organizations', icon: Building2, description: 'Manage organizations' },
+        { id: 'users', label: 'Users', icon: Users, description: 'Manage user accounts' },
       ],
     },
   ];
@@ -32,7 +40,8 @@ export default function AdminControls() {
     if (activeTab === 'settings') return 'Site Settings';
     if (activeTab === 'devtools') return 'Developer Tools';
     if (activeTab === 'fees') return 'Ticketing Fees';
-    if (activeTab === 'users') return 'User Management';
+    if (activeTab === 'users') return 'Users';
+    if (activeTab === 'organizations') return 'Organizations';
     return 'Admin Controls';
   };
 
@@ -84,9 +93,20 @@ export default function AdminControls() {
           <div className="space-y-6">
             <div>
               <p className="text-muted-foreground text-sm mb-4">
-                Manage user accounts and profiles
+                Manage user accounts, roles, and permissions
               </p>
               <UserManagement />
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'organizations' && (
+          <div className="space-y-6">
+            <div>
+              <p className="text-muted-foreground text-sm mb-4">
+                Manage organizations and their settings
+              </p>
+              <OrganizationsManagement />
             </div>
           </div>
         )}

@@ -1,4 +1,4 @@
-import { FmOrganizationDataGrid } from '@/components/common/data/FmOrganizationDataGrid';
+import { FmOrganizationDataGrid } from '@/features/data-grid';
 
 export const OrganizationsManagement = () => {
   return (
