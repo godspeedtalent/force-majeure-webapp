@@ -8,7 +8,6 @@ import {
   DialogTitle,
 } from '@/components/common/shadcn/dialog';
 import { Button } from '@/components/common/shadcn/button';
-import { Input } from '@/components/common/shadcn/input';
 import {
   Select,
   SelectContent,
@@ -16,8 +15,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/common/shadcn/select';
-import { Plus, X, Save } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { DataGridColumn } from './FmDataGrid';
+import { FmFilterRuleRow } from './filters/FmFilterRuleRow';
+import { FmFilterPresets } from './filters/FmFilterPresets';
+import { FmFilterPresetSave } from './filters/FmFilterPresetSave';
 
 export type FilterOperator =
   | 'equals'
@@ -66,25 +68,6 @@ interface FmAdvancedFilterDialogProps<T = any> {
   onClear: () => void;
 }
 
-const OPERATORS: {
-  value: FilterOperator;
-  label: string;
-  requiresValue: boolean;
-}[] = [
-  { value: 'equals', label: 'Equals', requiresValue: true },
-  { value: 'not_equals', label: 'Not Equals', requiresValue: true },
-  { value: 'contains', label: 'Contains', requiresValue: true },
-  { value: 'not_contains', label: 'Not Contains', requiresValue: true },
-  { value: 'starts_with', label: 'Starts With', requiresValue: true },
-  { value: 'ends_with', label: 'Ends With', requiresValue: true },
-  { value: 'greater_than', label: 'Greater Than', requiresValue: true },
-  { value: 'less_than', label: 'Less Than', requiresValue: true },
-  { value: 'greater_or_equal', label: 'Greater or Equal', requiresValue: true },
-  { value: 'less_or_equal', label: 'Less or Equal', requiresValue: true },
-  { value: 'is_empty', label: 'Is Empty', requiresValue: false },
-  { value: 'is_not_empty', label: 'Is Not Empty', requiresValue: false },
-];
-
 export function FmAdvancedFilterDialog<T = any>({
   open,
   onOpenChange,
@@ -100,13 +83,13 @@ export function FmAdvancedFilterDialog<T = any>({
   const [filterGroup, setFilterGroup] = useState<FilterGroup>(
     currentFilter || { logic: 'AND', rules: [] }
   );
-  const [presetName, setPresetName] = useState('');
-  const [showPresetInput, setShowPresetInput] = useState(false);
+
+  const filterableColumns = columns.filter(col => col.filterable !== false);
 
   const addRule = () => {
     const newRule: FilterRule = {
       id: Date.now().toString(),
-      column: columns[0]?.key || '',
+      column: filterableColumns[0]?.key || '',
       operator: 'contains',
       value: '',
     };
@@ -137,12 +120,8 @@ export function FmAdvancedFilterDialog<T = any>({
     onOpenChange(false);
   };
 
-  const handleSavePreset = () => {
-    if (presetName.trim()) {
-      onSavePreset(presetName.trim(), filterGroup);
-      setPresetName('');
-      setShowPresetInput(false);
-    }
+  const handleSavePreset = (name: string) => {
+    onSavePreset(name, filterGroup);
   };
 
   const handleLoadPreset = (preset: FilterPreset) => {
@@ -154,8 +133,6 @@ export function FmAdvancedFilterDialog<T = any>({
     setFilterGroup({ logic: 'AND', rules: [] });
     onClear();
   };
-
-  const filterableColumns = columns.filter(col => col.filterable !== false);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -197,167 +174,38 @@ export function FmAdvancedFilterDialog<T = any>({
                 No filters added. Click "Add Rule" to start.
               </div>
             ) : (
-              filterGroup.rules.map((rule, index) => {
-                const operator = OPERATORS.find(
-                  op => op.value === rule.operator
-                );
-                const requiresValue = operator?.requiresValue ?? true;
-
-                return (
-                  <div
-                    key={rule.id}
-                    className='flex items-start gap-2 p-3 border border-border/50 rounded-none bg-muted/20'
-                  >
-                    <span className='text-xs text-muted-foreground mt-2 w-6'>
-                      {index + 1}.
-                    </span>
-
-                    {/* Column */}
-                    <Select
-                      value={rule.column}
-                      onValueChange={value =>
-                        updateRule(rule.id, { column: value })
-                      }
-                    >
-                      <SelectTrigger className='w-40'>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {filterableColumns.map(col => (
-                          <SelectItem key={col.key} value={col.key}>
-                            {col.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-
-                    {/* Operator */}
-                    <Select
-                      value={rule.operator}
-                      onValueChange={(value: FilterOperator) =>
-                        updateRule(rule.id, { operator: value })
-                      }
-                    >
-                      <SelectTrigger className='w-48'>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {OPERATORS.map(op => (
-                          <SelectItem key={op.value} value={op.value}>
-                            {op.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-
-                    {/* Value */}
-                    {requiresValue && (
-                      <Input
-                        placeholder='Value...'
-                        value={rule.value}
-                        onChange={e =>
-                          updateRule(rule.id, { value: e.target.value })
-                        }
-                        className='flex-1'
-                      />
-                    )}
-
-                    {/* Remove */}
-                    <Button
-                      variant='ghost'
-                      size='sm'
-                      onClick={() => removeRule(rule.id)}
-                      className='h-10 w-10 p-0 hover:bg-destructive/20 hover:text-destructive'
-                    >
-                      <X className='h-4 w-4' />
-                    </Button>
-                  </div>
-                );
-              })
+              filterGroup.rules.map((rule, index) => (
+                <FmFilterRuleRow
+                  key={rule.id}
+                  rule={rule}
+                  index={index}
+                  filterableColumns={filterableColumns}
+                  onUpdate={updateRule}
+                  onRemove={removeRule}
+                />
+              ))
             )}
           </div>
 
           {/* Add Rule Button */}
-          <Button
-            variant='outline'
-            size='sm'
-            onClick={addRule}
-            className='w-full'
-          >
+          <Button variant='outline' size='sm' onClick={addRule} className='w-full'>
             <Plus className='h-4 w-4 mr-2' />
             Add Rule
           </Button>
 
           {/* Presets */}
-          {presets.length > 0 && (
-            <div className='space-y-2 pt-4 border-t'>
-              <div className='text-sm font-medium'>Saved Filters</div>
-              <div className='flex flex-wrap gap-2'>
-                {presets.map(preset => (
-                  <div
-                    key={preset.id}
-                    className='flex items-center gap-1 bg-muted/30 rounded-none'
-                  >
-                    <Button
-                      variant='ghost'
-                      size='sm'
-                      onClick={() => handleLoadPreset(preset)}
-                      className='h-8 rounded-r-none'
-                    >
-                      {preset.name}
-                    </Button>
-                    <Button
-                      variant='ghost'
-                      size='sm'
-                      onClick={() => onDeletePreset(preset.id)}
-                      className='h-8 w-8 p-0 rounded-l-none hover:bg-destructive/20 hover:text-destructive'
-                    >
-                      <X className='h-3 w-3' />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <FmFilterPresets
+            presets={presets}
+            onLoadPreset={handleLoadPreset}
+            onDeletePreset={onDeletePreset}
+          />
 
           {/* Save Preset */}
           <div className='space-y-2 pt-2'>
-            {showPresetInput ? (
-              <div className='flex gap-2'>
-                <Input
-                  placeholder='Preset name...'
-                  value={presetName}
-                  onChange={e => setPresetName(e.target.value)}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') handleSavePreset();
-                    if (e.key === 'Escape') setShowPresetInput(false);
-                  }}
-                  autoFocus
-                />
-                <Button onClick={handleSavePreset} size='sm'>
-                  <Save className='h-4 w-4 mr-2' />
-                  Save
-                </Button>
-                <Button
-                  variant='ghost'
-                  onClick={() => setShowPresetInput(false)}
-                  size='sm'
-                >
-                  Cancel
-                </Button>
-              </div>
-            ) : (
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={() => setShowPresetInput(true)}
-                className='w-full'
-                disabled={filterGroup.rules.length === 0}
-              >
-                <Save className='h-4 w-4 mr-2' />
-                Save as Preset
-              </Button>
-            )}
+            <FmFilterPresetSave
+              onSave={handleSavePreset}
+              disabled={filterGroup.rules.length === 0}
+            />
           </div>
         </div>
 
@@ -368,10 +216,7 @@ export function FmAdvancedFilterDialog<T = any>({
           <Button variant='outline' onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button
-            onClick={handleApply}
-            disabled={filterGroup.rules.length === 0}
-          >
+          <Button onClick={handleApply} disabled={filterGroup.rules.length === 0}>
             Apply Filters
           </Button>
         </DialogFooter>

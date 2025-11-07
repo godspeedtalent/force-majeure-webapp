@@ -4,96 +4,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { FmDataGrid, DataGridColumn, DataGridAction } from './FmDataGrid';
 import { useDataGridPersistence } from '../hooks/useDataGridPersistence';
 import { Button } from '@/components/common/shadcn/button';
-import { Settings2, Eye, EyeOff, GripVertical, RotateCcw } from 'lucide-react';
+import { GripVertical } from 'lucide-react';
 import { logger } from '@/shared/services/logger';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuCheckboxItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-  DropdownMenuLabel,
-} from '@/components/common/shadcn/dropdown-menu';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/common/shadcn/dialog';
+import { DragEndEvent } from '@dnd-kit/core';
+import { arrayMove } from '@dnd-kit/sortable';
+import { DialogTrigger } from '@/components/common/shadcn/dialog';
 import { toast } from 'sonner';
-import { cn } from '@/shared/utils/utils';
-
-// Sortable column item for drag-and-drop reordering
-function SortableColumnItem({
-  colConfig,
-  column,
-  isRecentlyMoved,
-}: {
-  colConfig: { key: string; visible: boolean; order: number; width?: number };
-  column: DataGridColumn;
-  isRecentlyMoved: boolean;
-}) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: colConfig.key });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={cn(
-        'flex items-center justify-between p-2 rounded border transition-all duration-200',
-        colConfig.visible ? 'bg-background' : 'bg-muted/50 opacity-60',
-        'hover:border-fm-gold hover:bg-fm-gold/5',
-        isRecentlyMoved && 'animate-border-pulse-gold',
-        isDragging && 'opacity-50 shadow-lg z-50'
-      )}
-    >
-      <div className='flex items-center gap-2'>
-        <button
-          {...attributes}
-          {...listeners}
-          className='cursor-grab active:cursor-grabbing hover:text-fm-gold transition-colors'
-        >
-          <GripVertical className='h-4 w-4 text-muted-foreground' />
-        </button>
-        <span className='font-medium'>{column.label}</span>
-        {!colConfig.visible && (
-          <span className='text-xs text-muted-foreground'>(Hidden)</span>
-        )}
-      </div>
-    </div>
-  );
-}
+import { FmColumnReorderDialog } from './config/FmColumnReorderDialog';
+import { FmColumnVisibilityDropdown } from './config/FmColumnVisibilityDropdown';
 
 interface GridConfig {
   columns: {
@@ -106,7 +24,7 @@ interface GridConfig {
 }
 
 interface FmConfigurableDataGridProps<T> {
-  gridId: string; // Unique identifier for this grid instance
+  gridId: string;
   data: T[];
   columns: DataGridColumn[];
   actions?: DataGridAction[];
@@ -121,15 +39,6 @@ interface FmConfigurableDataGridProps<T> {
   createButtonLabel?: string;
 }
 
-/**
- * Configurable Data Grid with persistent column management
- *
- * Features:
- * - Drag and drop column reordering
- * - Show/hide columns
- * - Saves configuration to database per user
- * - Auto-loads saved configuration on mount
- */
 export function FmConfigurableDataGrid<T extends Record<string, any>>({
   gridId,
   data,
@@ -151,10 +60,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
   const [isReorderDialogOpen, setIsReorderDialogOpen] = useState(false);
   const [recentlyMovedKey, setRecentlyMovedKey] = useState<string | null>(null);
 
-  // Initialize persistence hook (only using clearState for filters/sort)
-  const { clearState } = useDataGridPersistence({
-    storageKey: gridId,
-  });
+  const { clearState } = useDataGridPersistence({ storageKey: gridId });
 
   // Load configuration from database
   useEffect(() => {
@@ -176,7 +82,6 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
         .single();
 
       if (error && error.code !== 'PGRST116') {
-        // PGRST116 is "not found" which is ok
         logger.error('Error loading grid config:', error);
       }
 
@@ -246,32 +151,16 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
       .sort((a: any, b: any) => a.order - b.order);
   }, [baseColumns, initializedConfig]);
 
-  // DND Kit sensors
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
   // Handle drag end
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (!over || active.id === over.id) return;
 
-    const oldIndex = initializedConfig.columns.findIndex(
-      c => c.key === active.id
-    );
-    const newIndex = initializedConfig.columns.findIndex(
-      c => c.key === over.id
-    );
+    const oldIndex = initializedConfig.columns.findIndex(c => c.key === active.id);
+    const newIndex = initializedConfig.columns.findIndex(c => c.key === over.id);
 
-    const reorderedColumns = arrayMove(
-      initializedConfig.columns,
-      oldIndex,
-      newIndex
-    );
+    const reorderedColumns = arrayMove(initializedConfig.columns, oldIndex, newIndex);
 
     const newConfig: GridConfig = {
       ...initializedConfig,
@@ -284,7 +173,6 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
     setConfig(newConfig);
     saveConfig(newConfig);
 
-    // Trigger gold pulse animation
     setRecentlyMovedKey(active.id as string);
     setTimeout(() => setRecentlyMovedKey(null), 600);
   };
@@ -359,7 +247,6 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
 
   return (
     <div className='space-y-2'>
-      {/* Data Grid with inline toolbar actions */}
       <FmDataGrid
         data={data}
         columns={configuredColumns}
@@ -376,113 +263,36 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
         onHideColumn={hideColumn}
         toolbarActions={
           <>
-            <Dialog
+            <FmColumnReorderDialog
               open={isReorderDialogOpen}
               onOpenChange={setIsReorderDialogOpen}
-            >
-              <DialogTrigger asChild>
-                <Button variant='outline' size='sm' className='gap-2'>
-                  <GripVertical className='h-4 w-4' />
-                  Reorder
-                </Button>
-              </DialogTrigger>
-              <DialogContent className='max-w-md'>
-                <DialogHeader>
-                  <DialogTitle>Reorder Columns</DialogTitle>
-                  <DialogDescription>
-                    Drag and drop columns to reorder them
-                  </DialogDescription>
-                </DialogHeader>
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
-                >
-                  <SortableContext
-                    items={initializedConfig.columns.map((c: any) => c.key)}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    <div className='space-y-2 max-h-[400px] overflow-y-auto'>
-                      {initializedConfig.columns.map((colConfig: any) => {
-                        const column = baseColumns.find(
-                          c => c.key === colConfig.key
-                        );
-                        if (!column) return null;
+              columns={initializedConfig.columns}
+              baseColumns={baseColumns}
+              recentlyMovedKey={recentlyMovedKey}
+              onDragEnd={handleDragEnd}
+            />
+            <DialogTrigger asChild>
+              <Button
+                variant='outline'
+                size='sm'
+                className='gap-2'
+                onClick={() => setIsReorderDialogOpen(true)}
+              >
+                <GripVertical className='h-4 w-4' />
+                Reorder
+              </Button>
+            </DialogTrigger>
 
-                        const isRecentlyMoved =
-                          recentlyMovedKey === colConfig.key;
-
-                        return (
-                          <SortableColumnItem
-                            key={colConfig.key}
-                            colConfig={colConfig}
-                            column={column}
-                            isRecentlyMoved={isRecentlyMoved}
-                          />
-                        );
-                      })}
-                    </div>
-                  </SortableContext>
-                </DndContext>
-              </DialogContent>
-            </Dialog>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant='outline' size='sm' className='gap-2'>
-                  <Settings2 className='h-4 w-4' />
-                  Columns
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align='end' className='w-56'>
-                <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {baseColumns.map(col => {
-                  const isVisible =
-                    initializedConfig.columns.find(c => c.key === col.key)
-                      ?.visible ?? true;
-
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={col.key}
-                      checked={isVisible}
-                      onCheckedChange={() => toggleColumnVisibility(col.key)}
-                    >
-                      <div className='flex items-center gap-2'>
-                        {isVisible ? (
-                          <Eye className='h-4 w-4' />
-                        ) : (
-                          <EyeOff className='h-4 w-4 opacity-50' />
-                        )}
-                        {col.label}
-                      </div>
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-                <DropdownMenuSeparator />
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  onClick={resetConfiguration}
-                  className='w-full justify-start text-xs'
-                >
-                  <RotateCcw className='h-4 w-4 mr-2' />
-                  Reset to Default
-                </Button>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  onClick={() => {
-                    clearState();
-                    toast.success('Filters and sorting cleared');
-                  }}
-                  className='w-full justify-start text-xs'
-                >
-                  <RotateCcw className='h-4 w-4 mr-2' />
-                  Clear Filters & Sort
-                </Button>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <FmColumnVisibilityDropdown
+              baseColumns={baseColumns}
+              columnConfigs={initializedConfig.columns}
+              onToggleVisibility={toggleColumnVisibility}
+              onResetConfiguration={resetConfiguration}
+              onClearFiltersAndSort={() => {
+                clearState();
+                toast.success('Filters and sorting cleared');
+              }}
+            />
           </>
         }
       />
