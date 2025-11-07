@@ -92,6 +92,7 @@ import {
   type FlattenedRow,
 } from '../utils/grouping';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface DataGridColumn<T = any> {
   key: string;
   label: string;
@@ -100,7 +101,7 @@ export interface DataGridColumn<T = any> {
   editable?: boolean;
   readonly?: boolean; // Mark field as readonly (cannot be edited inline or in forms)
   required?: boolean; // Mark field as required for new row creation
-  render?: (value: any, row: T) => React.ReactNode;
+  render?: (value: any, row: T) => React.ReactNode; // eslint-disable-line @typescript-eslint/no-explicit-any
   width?: string;
   isRelation?: boolean; // Mark this column as a foreign key relation
   type?:
@@ -114,8 +115,10 @@ export interface DataGridColumn<T = any> {
 }
 
 // Re-export ContextMenuAction as DataGridAction for backward compatibility
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type DataGridAction<T = any> = ContextMenuAction<T>;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface FmDataGridProps<T = any> {
   data: T[];
   columns: DataGridColumn<T>[];

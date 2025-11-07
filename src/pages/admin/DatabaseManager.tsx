@@ -22,19 +22,19 @@ export function DatabaseManager() {
 
       {/* Additional content can go here */}
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-        <div className='p-6 border rounded-lg'>
+        <div className='p-6 border rounded-none'>
           <h3 className='font-semibold mb-2'>Quick Stats</h3>
           <p className='text-sm text-muted-foreground'>
             View analytics and statistics for your database
           </p>
         </div>
-        <div className='p-6 border rounded-lg'>
+        <div className='p-6 border rounded-none'>
           <h3 className='font-semibold mb-2'>Recent Changes</h3>
           <p className='text-sm text-muted-foreground'>
             Track recent updates and modifications
           </p>
         </div>
-        <div className='p-6 border rounded-lg'>
+        <div className='p-6 border rounded-none'>
           <h3 className='font-semibold mb-2'>Batch Operations</h3>
           <p className='text-sm text-muted-foreground'>
             Perform bulk actions on resources

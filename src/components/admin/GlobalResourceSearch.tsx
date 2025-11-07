@@ -171,7 +171,7 @@ export function GlobalResourceSearch({
           avatar_url: u.avatar_url,
         })),
         artists: artists || [],
-        venues: venues,
+        venues,
         events: (events || []).map((e: any) => ({
           ...e,
           venue_name: 'TBD', // TODO: Join with venues when available

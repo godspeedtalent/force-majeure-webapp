@@ -9,8 +9,6 @@ import {
   NOTE_TYPE_CONFIG,
   NOTE_STATUS_INDICATOR_CONFIG,
   getStatusDisplayName,
-  getNextStatus,
-  getStatusLabel,
   type NoteType,
   type NoteStatus,
 } from './config/devNotesConfig';
@@ -243,9 +241,9 @@ export const DevNotesSection = () => {
           >
             <div className='space-y-4'>
               <div>
-                <label className='text-xs text-muted-foreground mb-2 block'>
+                <div className='text-xs text-muted-foreground mb-2 block'>
                   Type
-                </label>
+                </div>
                 <FmMultiCheckboxInput
                   options={typeOptions}
                   selectedValues={filterTypes}
@@ -258,9 +256,9 @@ export const DevNotesSection = () => {
               <Separator className='bg-white/10' />
 
               <div>
-                <label className='text-xs text-muted-foreground mb-2 block'>
+                <div className='text-xs text-muted-foreground mb-2 block'>
                   Status
-                </label>
+                </div>
                 <FmMultiCheckboxInput
                   options={statusOptions}
                   selectedValues={filterStatuses}
@@ -273,9 +271,9 @@ export const DevNotesSection = () => {
               <Separator className='bg-white/10' />
 
               <div>
-                <label className='text-xs text-muted-foreground mb-2 block'>
+                <div className='text-xs text-muted-foreground mb-2 block'>
                   Author
-                </label>
+                </div>
                 <FmMultiCheckboxInput
                   options={authorOptions}
                   selectedValues={filterAuthors}
@@ -325,18 +323,7 @@ export const DevNotesSection = () => {
       <Separator className='bg-white/10 mb-4' />
 
       {/* Notes List */}
-      <div
-        className='px-[20px]'
-        onClick={e => {
-          // Clicking outside of a card should unfocus
-          if (
-            e.target === e.currentTarget ||
-            (e.target as HTMLElement).closest('.scroll-area-viewport')
-          ) {
-            setFocusedNoteId(null);
-          }
-        }}
-      >
+      <div className='px-[20px]'>
         <ScrollArea className='h-[500px] pr-4'>
           {isLoading ? (
             <div className='text-center py-8 text-muted-foreground'>
@@ -390,6 +377,7 @@ export const DevNotesSection = () => {
 
       {/* Expanded Note Modal */}
       {expandedNote && (
+        // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
         <div
           className='fixed inset-0 bg-black/80 z-50 flex items-center justify-start pl-4'
           onClick={handleCancelChanges}
@@ -462,6 +450,7 @@ export const DevNotesSection = () => {
               </div>
 
               {/* Message - Editable */}
+              {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
               <div
                 className={cn(
                   'bg-muted border rounded-none p-[15px] transition-colors',

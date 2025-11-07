@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { NoteType, NoteStatus } from '../config/devNotesConfig';
+import { logger } from '@/shared/services/logger';
 
 interface DevNote {
   id: string;
@@ -56,7 +57,7 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
       if (error) throw error;
       return data || [];
     } catch (error) {
-      console.error('Error loading notes:', error);
+      logger.error('Error loading notes:', error);
       toast.error('Failed to load notes');
       return [];
     } finally {
@@ -80,7 +81,7 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
       if (error) throw error;
       toast.success('Note created');
     } catch (error) {
-      console.error('Error creating note:', error);
+      logger.error('Error creating note:', error);
       toast.error('Failed to create note');
       throw error;
     }
@@ -102,7 +103,7 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
       if (error) throw error;
       toast.success('Status updated');
     } catch (error) {
-      console.error('Error updating status:', error);
+      logger.error('Error updating status:', error);
       toast.error('Failed to update status');
       throw error;
     }
@@ -124,7 +125,7 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
       if (error) throw error;
       toast.success('Note updated');
     } catch (error) {
-      console.error('Error updating message:', error);
+      logger.error('Error updating message:', error);
       toast.error('Failed to update note');
       throw error;
     }
@@ -143,7 +144,7 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
       if (error) throw error;
       toast.success('Note deleted');
     } catch (error) {
-      console.error('Error deleting note:', error);
+      logger.error('Error deleting note:', error);
       toast.error('Failed to delete note');
       throw error;
     }

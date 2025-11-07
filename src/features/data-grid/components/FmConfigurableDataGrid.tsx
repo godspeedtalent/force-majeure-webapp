@@ -48,8 +48,8 @@ function SortableColumnItem({
   column,
   isRecentlyMoved,
 }: {
-  colConfig: any;
-  column: any;
+  colConfig: { key: string; visible: boolean; order: number; width?: number };
+  column: DataGridColumn;
   isRecentlyMoved: boolean;
 }) {
   const {
@@ -151,8 +151,8 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
   const [isReorderDialogOpen, setIsReorderDialogOpen] = useState(false);
   const [recentlyMovedKey, setRecentlyMovedKey] = useState<string | null>(null);
 
-  // Initialize persistence hook
-  const { loadState, saveState, clearState } = useDataGridPersistence({
+  // Initialize persistence hook (only using clearState for filters/sort)
+  const { clearState } = useDataGridPersistence({
     storageKey: gridId,
   });
 
