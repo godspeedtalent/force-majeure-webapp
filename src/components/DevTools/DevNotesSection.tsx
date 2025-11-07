@@ -53,7 +53,7 @@ export const DevNotesSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [expandedNote, setExpandedNote] = useState<DevNote | null>(null);
   const [focusedNoteId, setFocusedNoteId] = useState<string | null>(null);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [filterOpen, setFilterOpen] = useState(false);
 
   // Editing state for expanded note
@@ -84,7 +84,7 @@ export const DevNotesSection = () => {
   const handleLoadNotes = useCallback(async () => {
     const data = await loadNotes(sortOrder);
     setNotes(data);
-  }, [sortOrder, loadNotes]);
+  }, [sortOrder]); // Removed loadNotes from deps - it's stable from the hook
 
   useEffect(() => {
     handleLoadNotes();
@@ -379,7 +379,7 @@ export const DevNotesSection = () => {
       {expandedNote && (
         // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
         <div
-          className='fixed inset-0 bg-black/80 z-50 flex items-center justify-start pl-4'
+          className='fixed inset-0 bg-black/80 z-[60] flex items-center justify-start pl-4'
           onClick={handleCancelChanges}
         >
           <Card
@@ -413,7 +413,7 @@ export const DevNotesSection = () => {
                         <SelectTrigger className='h-6 text-xs border-0 bg-transparent hover:bg-muted px-2 py-0 w-auto'>
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className='bg-card border-border rounded-none'>
+                        <SelectContent className='bg-card border-border rounded-none z-[70]'>
                           <SelectItem value='TODO' className='text-xs'>
                             {getStatusDisplayName('TODO')}
                           </SelectItem>
@@ -467,11 +467,11 @@ export const DevNotesSection = () => {
                     onChange={e => handleMessageChange(e.target.value)}
                     onKeyDown={handleMessageKeyDown}
                     onBlur={handleMessageBlur}
-                    className='w-full bg-transparent text-white leading-relaxed outline-none resize-none min-h-[100px]'
+                    className='w-full bg-transparent text-white text-sm leading-relaxed outline-none resize-none min-h-[100px]'
                     style={{ fontFamily: 'inherit' }}
                   />
                 ) : (
-                  <p className='text-white leading-relaxed whitespace-pre-wrap'>
+                  <p className='text-white text-sm leading-relaxed whitespace-pre-wrap'>
                     {editedMessage}
                   </p>
                 )}

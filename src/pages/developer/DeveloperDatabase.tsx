@@ -71,7 +71,7 @@ export default function DeveloperDatabase() {
       },
     ];
 
-    // Add admin-only tabs
+    // Add admin-only tabs (alphabetically)
     if (isAdmin) {
       tables.push(
         {
@@ -88,6 +88,9 @@ export default function DeveloperDatabase() {
         }
       );
     }
+
+    // Sort all tables alphabetically by label
+    tables.sort((a, b) => a.label.localeCompare(b.label));
 
     return [
       {

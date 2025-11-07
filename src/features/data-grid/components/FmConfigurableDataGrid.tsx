@@ -8,7 +8,6 @@ import { GripVertical } from 'lucide-react';
 import { logger } from '@/shared/services/logger';
 import { DragEndEvent } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
-import { DialogTrigger } from '@/components/common/shadcn/dialog';
 import { toast } from 'sonner';
 import { FmColumnReorderDialog } from './config/FmColumnReorderDialog';
 import { FmColumnVisibilityDropdown } from './config/FmColumnVisibilityDropdown';
@@ -263,25 +262,15 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
         onHideColumn={hideColumn}
         toolbarActions={
           <>
-            <FmColumnReorderDialog
-              open={isReorderDialogOpen}
-              onOpenChange={setIsReorderDialogOpen}
-              columns={initializedConfig.columns}
-              baseColumns={baseColumns}
-              recentlyMovedKey={recentlyMovedKey}
-              onDragEnd={handleDragEnd}
-            />
-            <DialogTrigger asChild>
-              <Button
-                variant='outline'
-                size='sm'
-                className='gap-2'
-                onClick={() => setIsReorderDialogOpen(true)}
-              >
-                <GripVertical className='h-4 w-4' />
-                Reorder
-              </Button>
-            </DialogTrigger>
+            <Button
+              variant='outline'
+              size='sm'
+              className='gap-2'
+              onClick={() => setIsReorderDialogOpen(true)}
+            >
+              <GripVertical className='h-4 w-4' />
+              Reorder
+            </Button>
 
             <FmColumnVisibilityDropdown
               baseColumns={baseColumns}
@@ -292,6 +281,15 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
                 clearState();
                 toast.success('Filters and sorting cleared');
               }}
+            />
+
+            <FmColumnReorderDialog
+              open={isReorderDialogOpen}
+              onOpenChange={setIsReorderDialogOpen}
+              columns={initializedConfig.columns}
+              baseColumns={baseColumns}
+              recentlyMovedKey={recentlyMovedKey}
+              onDragEnd={handleDragEnd}
             />
           </>
         }

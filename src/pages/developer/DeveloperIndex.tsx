@@ -13,21 +13,21 @@ import { DemoLayout } from '@/components/demo/DemoLayout';
 export default function DeveloperIndex() {
   const pages = [
     {
-      title: 'FM Components Catalog',
-      description:
-        'Comprehensive catalog of all Force Majeure common components with live demos, documentation, and relationship graph visualization',
-      path: '/developer/components',
-      icon: Package,
-      category: 'Documentation',
-      status: 'Active',
-    },
-    {
       title: 'Database Manager',
       description:
         'Manage database resources including artists, events, venues, and organizations with powerful search and editing tools',
       path: '/developer/database',
       icon: Database,
       category: 'Database',
+      status: 'Active',
+    },
+    {
+      title: 'Demo Tools',
+      description:
+        'Test application features including event checkout flow, email templates, and interactive demos',
+      path: '/developer/demo',
+      icon: FlaskConical,
+      category: 'Testing',
       status: 'Active',
     },
     {
@@ -40,12 +40,12 @@ export default function DeveloperIndex() {
       status: 'Active',
     },
     {
-      title: 'Demo Tools',
+      title: 'FM Components Catalog',
       description:
-        'Test application features including event checkout flow, email templates, and interactive demos',
-      path: '/developer/demo',
-      icon: FlaskConical,
-      category: 'Testing',
+        'Comprehensive catalog of all Force Majeure common components with live demos, documentation, and relationship graph visualization',
+      path: '/developer/components',
+      icon: Package,
+      category: 'Documentation',
       status: 'Active',
     },
   ];

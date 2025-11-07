@@ -75,10 +75,25 @@ export function FmDataGridCell<T extends Record<string, any>>({
       onMouseEnter={() => {}}
       onMouseLeave={() => {}}
       onClick={e => {
-        if (
-          isEditableCell &&
-          !(e.target as HTMLElement).closest('[role="checkbox"], [role="switch"]')
-        ) {
+        // Don't interfere with interactive elements (selects, buttons, inputs, etc.)
+        const target = e.target as HTMLElement;
+        const isInteractiveElement =
+          target.closest('button') ||
+          target.closest('[role="combobox"]') ||
+          target.closest('[data-radix-select-trigger]') ||
+          target.closest('[data-radix-dropdown-menu-trigger]') ||
+          target.closest('input') ||
+          target.closest('textarea') ||
+          target.closest('select') ||
+          target.closest('[role="checkbox"]') ||
+          target.closest('[role="switch"]');
+
+        if (isInteractiveElement) {
+          // Let the interactive element handle the event
+          return;
+        }
+
+        if (isEditableCell) {
           onStartEdit();
         }
       }}
@@ -112,7 +127,7 @@ export function FmDataGridCell<T extends Record<string, any>>({
             </span>
           </div>
         ) : column.type === 'date' ? (
-          <Popover open modal>
+          <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant='outline'

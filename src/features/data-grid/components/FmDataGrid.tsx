@@ -530,6 +530,25 @@ export function FmDataGrid<T extends Record<string, any>>({
 
   // Drag select handlers
   const handleMouseDown = (index: number, event: React.MouseEvent) => {
+    // Don't start drag mode if clicking on interactive elements
+    const target = event.target as HTMLElement;
+    const isInteractiveElement =
+      target.closest('button') ||
+      target.closest('[role="combobox"]') ||
+      target.closest('[data-radix-select-trigger]') ||
+      target.closest('[data-radix-dropdown-menu-trigger]') ||
+      target.closest('input') ||
+      target.closest('textarea') ||
+      target.closest('select') ||
+      target.closest('[role="checkbox"]') ||
+      target.closest('[role="switch"]') ||
+      target.closest('a');
+
+    if (isInteractiveElement) {
+      // Don't start drag selection on interactive elements
+      return;
+    }
+
     const globalIndex = (currentPage - 1) * pageSize + index;
     dragTimerRef.current = setTimeout(() => {
       setIsDragMode(true);
