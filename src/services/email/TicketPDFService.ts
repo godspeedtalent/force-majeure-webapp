@@ -60,7 +60,7 @@ export class TicketPDFService {
 
     pdfLogger.warn('PDF generation requested but not yet implemented', {
       orderId: data.orderId,
-      options
+      options,
     });
 
     // TODO: Implement PDF generation
@@ -99,10 +99,13 @@ export class TicketPDFService {
     // When implemented, this will return an array of base64 encoded PDFs
     // One PDF for each ticket (respecting quantity)
 
-    const totalTickets = data.orderSummary.items.reduce((sum, item) => sum + item.quantity, 0);
+    const totalTickets = data.orderSummary.items.reduce(
+      (sum, item) => sum + item.quantity,
+      0
+    );
     pdfLogger.warn('Individual ticket PDFs requested but not yet implemented', {
       orderId: data.orderId,
-      totalTickets
+      totalTickets,
     });
 
     // TODO: Implement individual ticket generation
@@ -119,12 +122,21 @@ export class TicketPDFService {
     const validOrientations = ['portrait', 'landscape'];
 
     if (options.format && !validFormats.includes(options.format)) {
-      pdfLogger.error('Invalid PDF format', { format: options.format, validFormats });
+      pdfLogger.error('Invalid PDF format', {
+        format: options.format,
+        validFormats,
+      });
       return false;
     }
 
-    if (options.orientation && !validOrientations.includes(options.orientation)) {
-      pdfLogger.error('Invalid PDF orientation', { orientation: options.orientation, validOrientations });
+    if (
+      options.orientation &&
+      !validOrientations.includes(options.orientation)
+    ) {
+      pdfLogger.error('Invalid PDF orientation', {
+        orientation: options.orientation,
+        validOrientations,
+      });
       return false;
     }
 

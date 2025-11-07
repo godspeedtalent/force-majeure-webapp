@@ -22,14 +22,14 @@ interface UseDevNotesFilterReturn {
   filterTypes: NoteType[];
   filterStatuses: NoteStatus[];
   filterAuthors: string[];
-  
+
   // Actions
   setSearchQuery: (query: string) => void;
   setFilterTypes: (types: NoteType[]) => void;
   setFilterStatuses: (statuses: NoteStatus[]) => void;
   setFilterAuthors: (authors: string[]) => void;
   clearAllFilters: () => void;
-  
+
   // Computed values
   filteredNotes: DevNote[];
   uniqueAuthors: string[];
@@ -41,7 +41,9 @@ interface UseDevNotesFilterReturn {
  * Hook to manage dev notes filtering logic
  * Handles search, type, status, and author filters
  */
-export function useDevNotesFilter({ notes }: UseDevNotesFilterOptions): UseDevNotesFilterReturn {
+export function useDevNotesFilter({
+  notes,
+}: UseDevNotesFilterOptions): UseDevNotesFilterReturn {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterTypes, setFilterTypes] = useState<NoteType[]>([]);
   const [filterStatuses, setFilterStatuses] = useState<NoteStatus[]>([]);
@@ -49,15 +51,18 @@ export function useDevNotesFilter({ notes }: UseDevNotesFilterOptions): UseDevNo
 
   // Get unique authors from notes
   const uniqueAuthors = useMemo(() => {
-    const authors = new Set(notes.map((note) => note.author_name));
+    const authors = new Set(notes.map(note => note.author_name));
     return Array.from(authors).sort();
   }, [notes]);
 
   // Apply all filters to notes
   const filteredNotes = useMemo(() => {
-    return notes.filter((note) => {
+    return notes.filter(note => {
       // Search filter - check message content
-      if (searchQuery && !note.message.toLowerCase().includes(searchQuery.toLowerCase())) {
+      if (
+        searchQuery &&
+        !note.message.toLowerCase().includes(searchQuery.toLowerCase())
+      ) {
         return false;
       }
 
@@ -72,7 +77,10 @@ export function useDevNotesFilter({ notes }: UseDevNotesFilterOptions): UseDevNo
       }
 
       // Author filter - only filter if selections exist
-      if (filterAuthors.length > 0 && !filterAuthors.includes(note.author_name)) {
+      if (
+        filterAuthors.length > 0 &&
+        !filterAuthors.includes(note.author_name)
+      ) {
         return false;
       }
 
@@ -106,14 +114,14 @@ export function useDevNotesFilter({ notes }: UseDevNotesFilterOptions): UseDevNo
     filterTypes,
     filterStatuses,
     filterAuthors,
-    
+
     // Actions
     setSearchQuery,
     setFilterTypes,
     setFilterStatuses,
     setFilterAuthors,
     clearAllFilters,
-    
+
     // Computed values
     filteredNotes,
     uniqueAuthors,

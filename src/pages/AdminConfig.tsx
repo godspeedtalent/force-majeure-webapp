@@ -33,9 +33,7 @@ export default function AdminConfig() {
   return (
     <ForceMajeureRootLayout>
       <div className='container mx-auto px-4 py-8 max-w-4xl'>
-        <h1 className='text-4xl font-canela mb-8'>
-          Admin Configuration
-        </h1>
+        <h1 className='text-4xl font-canela mb-8'>Admin Configuration</h1>
 
         <Card>
           <CardHeader>

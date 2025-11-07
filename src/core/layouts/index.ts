@@ -1,6 +1,6 @@
 /**
  * Core Layouts
- * 
+ *
  * Base layout components
  */
 

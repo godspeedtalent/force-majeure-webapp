@@ -13,7 +13,7 @@ interface SavedCardSelectorProps {
 
 /**
  * SavedCardSelector - Display and select from saved payment methods
- * 
+ *
  * Shows a list of saved cards with selection, removal, and new card options.
  */
 export const SavedCardSelector = ({
@@ -36,9 +36,9 @@ export const SavedCardSelector = ({
   return (
     <div className='space-y-3'>
       <p className='text-sm font-medium text-foreground'>Saved Cards</p>
-      
+
       <div className='space-y-2'>
-        {cards.map((card) => (
+        {cards.map(card => (
           <button
             key={card.id}
             type='button'
@@ -60,19 +60,23 @@ export const SavedCardSelector = ({
                 </div>
                 <div>
                   <div className='flex items-center gap-2'>
-                    <span className='text-sm font-medium capitalize'>{card.brand}</span>
-                    <span className='text-sm text-muted-foreground'>•••• {card.last4}</span>
+                    <span className='text-sm font-medium capitalize'>
+                      {card.brand}
+                    </span>
+                    <span className='text-sm text-muted-foreground'>
+                      •••• {card.last4}
+                    </span>
                   </div>
                   <span className='text-xs text-muted-foreground'>
                     Expires {card.exp_month}/{card.exp_year}
                   </span>
                 </div>
               </div>
-              
+
               {onRemoveCard && (
                 <button
                   type='button'
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation();
                     onRemoveCard(card.id);
                   }}

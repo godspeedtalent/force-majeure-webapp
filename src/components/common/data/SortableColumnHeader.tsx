@@ -12,7 +12,11 @@ interface SortableColumnHeaderProps {
 /**
  * Sortable column header for drag and drop reordering
  */
-export function SortableColumnHeader({ id, children, className }: SortableColumnHeaderProps) {
+export function SortableColumnHeader({
+  id,
+  children,
+  className,
+}: SortableColumnHeaderProps) {
   const {
     attributes,
     listeners,
@@ -37,13 +41,13 @@ export function SortableColumnHeader({ id, children, className }: SortableColumn
         className
       )}
     >
-      <div className="flex items-center gap-2">
+      <div className='flex items-center gap-2'>
         <div
           {...attributes}
           {...listeners}
-          className="cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
+          className='cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity'
         >
-          <GripVertical className="h-4 w-4 text-muted-foreground" />
+          <GripVertical className='h-4 w-4 text-muted-foreground' />
         </div>
         {children}
       </div>

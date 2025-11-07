@@ -10,11 +10,11 @@ export interface RecordEventViewParams {
 /**
  * Record a page view for an event
  */
-export async function recordEventView({ 
-  eventId, 
-  sessionId, 
-  ipAddress, 
-  userAgent 
+export async function recordEventView({
+  eventId,
+  sessionId,
+  ipAddress,
+  userAgent,
 }: RecordEventViewParams): Promise<{ success: boolean; error?: string }> {
   try {
     const { error } = await supabase.rpc('record_event_view', {
@@ -39,7 +39,9 @@ export async function recordEventView({
 /**
  * Get the total view count for an event
  */
-export async function getEventViewCount(eventId: string): Promise<{ count: number; error?: string }> {
+export async function getEventViewCount(
+  eventId: string
+): Promise<{ count: number; error?: string }> {
   try {
     const { data, error } = await supabase.rpc('get_event_view_count', {
       p_event_id: eventId,

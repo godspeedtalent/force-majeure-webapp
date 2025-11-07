@@ -77,7 +77,9 @@ export default function Scavenger() {
   // Handle invalid token state (from error parameter)
   if (showInvalidToken || !locationId) {
     return (
-      <ScavengerSplitLayout showShoppingCart={!isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)}>
+      <ScavengerSplitLayout
+        showShoppingCart={!isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)}
+      >
         <InvalidTokenView />
       </ScavengerSplitLayout>
     );
@@ -107,11 +109,15 @@ export default function Scavenger() {
           <UnauthenticatedWizard
             locationName={location?.location_name}
             onLoginSuccess={async () => {
-              await queryClient.invalidateQueries({ queryKey: ['user-claims'] });
+              await queryClient.invalidateQueries({
+                queryKey: ['user-claims'],
+              });
               await queryClient.invalidateQueries({ queryKey: ['all-claims'] });
-              await queryClient.invalidateQueries({ queryKey: ['scavenger-locations'] });
+              await queryClient.invalidateQueries({
+                queryKey: ['scavenger-locations'],
+              });
             }}
-          userFullName={profile?.full_name ?? undefined}
+            userFullName={profile?.full_name ?? undefined}
             isAuthenticated={true}
             hasAlreadyClaimed={true}
             claimCount={claimCount}
@@ -131,9 +137,13 @@ export default function Scavenger() {
           <UnauthenticatedWizard
             locationName={location?.location_name}
             onLoginSuccess={async () => {
-              await queryClient.invalidateQueries({ queryKey: ['user-claims'] });
+              await queryClient.invalidateQueries({
+                queryKey: ['user-claims'],
+              });
               await queryClient.invalidateQueries({ queryKey: ['all-claims'] });
-              await queryClient.invalidateQueries({ queryKey: ['scavenger-locations'] });
+              await queryClient.invalidateQueries({
+                queryKey: ['scavenger-locations'],
+              });
             }}
             claimCount={claimCount}
             lowClaimLocationsCount={lowClaimLocationsCount}
@@ -144,13 +154,17 @@ export default function Scavenger() {
 
     // Authenticated - show checkpoint claim interface
     return (
-      <ScavengerSplitLayout showShoppingCart={!isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)}>
+      <ScavengerSplitLayout
+        showShoppingCart={!isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)}
+      >
         <UnauthenticatedWizard
           locationName={location?.location_name}
           onLoginSuccess={async () => {
             await queryClient.invalidateQueries({ queryKey: ['user-claims'] });
             await queryClient.invalidateQueries({ queryKey: ['all-claims'] });
-            await queryClient.invalidateQueries({ queryKey: ['scavenger-locations'] });
+            await queryClient.invalidateQueries({
+              queryKey: ['scavenger-locations'],
+            });
           }}
           onClaimCheckpoint={async () => {
             if (!profile?.display_name || !user?.email) return;
@@ -205,9 +219,13 @@ export default function Scavenger() {
           <UnauthenticatedWizard
             locationName={undefined}
             onLoginSuccess={async () => {
-              await queryClient.invalidateQueries({ queryKey: ['user-claims'] });
+              await queryClient.invalidateQueries({
+                queryKey: ['user-claims'],
+              });
               await queryClient.invalidateQueries({ queryKey: ['all-claims'] });
-              await queryClient.invalidateQueries({ queryKey: ['scavenger-locations'] });
+              await queryClient.invalidateQueries({
+                queryKey: ['scavenger-locations'],
+              });
             }}
             userFullName={profile?.full_name ?? undefined}
             isAuthenticated={true}
@@ -218,7 +236,9 @@ export default function Scavenger() {
     }
 
     return (
-      <ScavengerSplitLayout showShoppingCart={!isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)}>
+      <ScavengerSplitLayout
+        showShoppingCart={!isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)}
+      >
         <AuthenticatedUserView
           displayName={profile?.display_name ?? undefined}
           totalUndiscoveredCheckpoints={totalUndiscoveredCheckpoints}
@@ -231,12 +251,16 @@ export default function Scavenger() {
   // Show wizard if not authenticated (no user)
   if (!user) {
     return (
-      <ScavengerSplitLayout showShoppingCart={!isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)}>
+      <ScavengerSplitLayout
+        showShoppingCart={!isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)}
+      >
         <UnauthenticatedWizard
           onLoginSuccess={async () => {
             await queryClient.invalidateQueries({ queryKey: ['user-claims'] });
             await queryClient.invalidateQueries({ queryKey: ['all-claims'] });
-            await queryClient.invalidateQueries({ queryKey: ['scavenger-locations'] });
+            await queryClient.invalidateQueries({
+              queryKey: ['scavenger-locations'],
+            });
           }}
         />
       </ScavengerSplitLayout>

@@ -1,5 +1,8 @@
 import * as React from 'react';
-import { FmCommonSearchDropdown, SearchDropdownOption } from './FmCommonSearchDropdown';
+import {
+  FmCommonSearchDropdown,
+  SearchDropdownOption,
+} from './FmCommonSearchDropdown';
 import { supabase } from '@/shared/api/supabase/client';
 import { useRecentSelections } from '@/shared/hooks/useRecentSelections';
 
@@ -76,10 +79,13 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
     placeholder = defaultPlaceholder,
     disabled = false,
   }: SearchDropdownProps) {
-    const [selectedItem, setSelectedItem] = React.useState<{ label: string } | null>(null);
-    const { recentItems, addRecentItem } = useRecents && recentsKey
-      ? useRecentSelections(recentsKey)
-      : { recentItems: [], addRecentItem: () => {} };
+    const [selectedItem, setSelectedItem] = React.useState<{
+      label: string;
+    } | null>(null);
+    const { recentItems, addRecentItem } =
+      useRecents && recentsKey
+        ? useRecentSelections(recentsKey)
+        : { recentItems: [], addRecentItem: () => {} };
 
     // Load selected item when value changes
     React.useEffect(() => {
@@ -100,10 +106,10 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
     }, [value]);
 
     // Search handler
-    const handleSearch = async (query: string): Promise<SearchDropdownOption[]> => {
-      let queryBuilder = supabase
-        .from(tableName as any)
-        .select(selectFields);
+    const handleSearch = async (
+      query: string
+    ): Promise<SearchDropdownOption[]> => {
+      let queryBuilder = supabase.from(tableName as any).select(selectFields);
 
       // Apply search filter
       if (typeof searchField === 'function') {
@@ -124,13 +130,18 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
     };
 
     // Recent options handler
-    const handleGetRecentOptions = async (): Promise<SearchDropdownOption[]> => {
+    const handleGetRecentOptions = async (): Promise<
+      SearchDropdownOption[]
+    > => {
       if (!useRecents || recentItems.length === 0) return [];
 
       const { data, error } = await supabase
         .from(tableName as any)
         .select(selectFields)
-        .in('id', recentItems.map(item => item.id));
+        .in(
+          'id',
+          recentItems.map(item => item.id)
+        );
 
       if (error || !data) return [];
 

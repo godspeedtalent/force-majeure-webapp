@@ -28,7 +28,10 @@ export function ScavengerFullLayout({
       <div className='h-[calc(100vh-6.5rem)] flex flex-col lg:flex-row'>
         {/* Left Column - Content */}
         <div className='flex-1 lg:w-1/2 flex items-start justify-center lg:overflow-y-auto relative z-10 lg:shadow-[8px_0_24px_-8px_rgba(0,0,0,0.3)] lg:border-r border-border'>
-          <TopographicBackground opacity={0.15} className='lg:opacity-[0.25] backdrop-blur-sm' />
+          <TopographicBackground
+            opacity={0.15}
+            className='lg:opacity-[0.25] backdrop-blur-sm'
+          />
           <div className='w-full max-w-3xl px-4 py-6 lg:px-8 lg:py-12 relative z-10'>
             {/* Header */}
             <div className='text-center mb-8'>

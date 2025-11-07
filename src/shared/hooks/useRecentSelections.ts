@@ -35,27 +35,30 @@ export function useRecentSelections(storageKey: string) {
   }, [fullKey]);
 
   // Add a new item to recent selections
-  const addRecentItem = useCallback((id: string, label: string) => {
-    setRecentItems(prev => {
-      // Remove existing entry if present
-      const filtered = prev.filter(item => item.id !== id);
-      
-      // Add new item at the beginning
-      const updated = [
-        { id, label, timestamp: Date.now() },
-        ...filtered,
-      ].slice(0, MAX_RECENT_ITEMS);
+  const addRecentItem = useCallback(
+    (id: string, label: string) => {
+      setRecentItems(prev => {
+        // Remove existing entry if present
+        const filtered = prev.filter(item => item.id !== id);
 
-      // Save to localStorage
-      try {
-        localStorage.setItem(fullKey, JSON.stringify(updated));
-      } catch (error) {
-        console.error('Error saving recent selections:', error);
-      }
+        // Add new item at the beginning
+        const updated = [
+          { id, label, timestamp: Date.now() },
+          ...filtered,
+        ].slice(0, MAX_RECENT_ITEMS);
 
-      return updated;
-    });
-  }, [fullKey]);
+        // Save to localStorage
+        try {
+          localStorage.setItem(fullKey, JSON.stringify(updated));
+        } catch (error) {
+          console.error('Error saving recent selections:', error);
+        }
+
+        return updated;
+      });
+    },
+    [fullKey]
+  );
 
   // Clear all recent items
   const clearRecentItems = useCallback(() => {

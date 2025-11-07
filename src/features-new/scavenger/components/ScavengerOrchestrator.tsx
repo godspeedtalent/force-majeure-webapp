@@ -102,7 +102,7 @@ export function ScavengerOrchestrator({
   // Find location data for current locationId
   const location =
     locationId && locations
-      ? locations.find(loc => loc.id === locationId) ?? null
+      ? (locations.find(loc => loc.id === locationId) ?? null)
       : null;
 
   // Determine if user has already claimed this location

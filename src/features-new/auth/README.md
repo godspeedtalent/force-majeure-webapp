@@ -27,35 +27,40 @@ auth/
 ## Usage
 
 ### Import Components
+
 ```typescript
 import { AuthPanel, GoogleOAuthButton, PermissionGuard } from '@features/auth';
 ```
 
 ### Import Hooks
+
 ```typescript
 import { useAuth } from '@features/auth';
 ```
 
 ### Import Pages
+
 ```typescript
 import { AuthPage } from '@features/auth';
 ```
 
 ### All-in-One Import
+
 ```typescript
-import { 
-  AuthPanel, 
-  GoogleOAuthButton, 
+import {
+  AuthPanel,
+  GoogleOAuthButton,
   PermissionGuard,
   useAuth,
   AuthProvider,
-  AuthPage 
+  AuthPage,
 } from '@features/auth';
 ```
 
 ## Migration Notes
 
 ### Migrated Files
+
 - ✅ `src/components/auth/AuthPanel.tsx` → `components/AuthPanel.tsx`
 - ✅ `src/components/auth/GoogleOAuthButton.tsx` → `components/GoogleOAuthButton.tsx`
 - ✅ `src/components/auth/PermissionGuard.tsx` → `components/PermissionGuard.tsx`
@@ -63,11 +68,13 @@ import {
 - ✅ `src/pages/Auth.tsx` → `pages/Auth.tsx`
 
 ### Original Locations (Keep Until Migration Complete)
+
 - `src/components/auth/` - Old component location
 - `src/pages/Auth.tsx` - Old page location
 - `src/features/auth/` - Old feature location
 
 ### Next Steps
+
 1. Update all imports throughout the codebase to use `@features/auth`
 2. Test thoroughly
 3. Remove old files once confirmed working
@@ -75,20 +82,24 @@ import {
 ## Exports
 
 ### Components
+
 - `AuthPanel` - Main authentication panel UI
 - `GoogleOAuthButton` - Google OAuth integration button
 - `PermissionGuard` - HOC for permission-based rendering
 
 ### Services
+
 - `useAuth` - Hook for accessing auth context
 - `AuthProvider` - Context provider for auth state
 
 ### Pages
+
 - `AuthPage` - Authentication page component
 
 ## Dependencies
 
 This feature depends on:
+
 - `@shared/api/supabase/client` - Supabase client
 - `@shared/hooks/use-toast` - Toast notifications
 - `@shared/utils/sessionPersistence` - Session management

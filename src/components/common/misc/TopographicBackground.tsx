@@ -21,7 +21,7 @@ interface TopographicBackgroundProps {
  */
 export const TopographicBackground = ({
   opacity = 0.03,
-  className
+  className,
 }: TopographicBackgroundProps) => {
   const TILE_SIZE = 1080; // Original image size
   const baseStyle = {
@@ -31,10 +31,13 @@ export const TopographicBackground = ({
   };
 
   return (
-    <div className={cn('absolute inset-0 pointer-events-none', className)} style={{ opacity }}>
+    <div
+      className={cn('absolute inset-0 pointer-events-none', className)}
+      style={{ opacity }}
+    >
       {/* Top-left quadrant - Normal */}
       <div
-        className="absolute inset-0"
+        className='absolute inset-0'
         style={{
           ...baseStyle,
           backgroundPosition: '0 0',
@@ -43,7 +46,7 @@ export const TopographicBackground = ({
 
       {/* Top-right quadrant - Flipped horizontally */}
       <div
-        className="absolute inset-0"
+        className='absolute inset-0'
         style={{
           ...baseStyle,
           backgroundPosition: '0 0',
@@ -55,7 +58,7 @@ export const TopographicBackground = ({
 
       {/* Bottom-left quadrant - Flipped vertically */}
       <div
-        className="absolute inset-0"
+        className='absolute inset-0'
         style={{
           ...baseStyle,
           backgroundPosition: '0 0',
@@ -67,7 +70,7 @@ export const TopographicBackground = ({
 
       {/* Bottom-right quadrant - Flipped both ways */}
       <div
-        className="absolute inset-0"
+        className='absolute inset-0'
         style={{
           ...baseStyle,
           backgroundPosition: '0 0',

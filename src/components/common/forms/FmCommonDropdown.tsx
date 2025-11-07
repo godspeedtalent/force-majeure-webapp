@@ -26,13 +26,17 @@ interface FmCommonDropdownProps {
 /**
  * Reusable dropdown component with consistent styling
  */
-export function FmCommonDropdown({ trigger, items, align = 'end' }: FmCommonDropdownProps) {
+export function FmCommonDropdown({
+  trigger,
+  items,
+  align = 'end',
+}: FmCommonDropdownProps) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild className="w-full">
-        <div className="relative w-full cursor-pointer">
+      <DropdownMenuTrigger asChild className='w-full'>
+        <div className='relative w-full cursor-pointer'>
           {trigger}
-          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none text-white/70 transition-colors" />
+          <ChevronDown className='absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none text-white/70 transition-colors' />
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align={align} className='w-48 z-[200]'>
@@ -41,7 +45,9 @@ export function FmCommonDropdown({ trigger, items, align = 'end' }: FmCommonDrop
             {item.separator && <DropdownMenuSeparator />}
             <DropdownMenuItem
               onClick={item.onClick}
-              className={item.variant === 'destructive' ? 'text-destructive' : ''}
+              className={
+                item.variant === 'destructive' ? 'text-destructive' : ''
+              }
             >
               {item.icon && <item.icon className='mr-2 h-4 w-4' />}
               {item.label}

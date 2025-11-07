@@ -40,14 +40,22 @@ export const FmCommonModal = ({
         {headerContent ? (
           <div className='mb-4'>{headerContent}</div>
         ) : (
-          <DialogHeader className={cn('space-y-2', headerActions && 'sm:space-y-0')}>
-            <div className={cn('flex flex-col gap-3 pr-10', headerActions && 'sm:flex-row sm:items-start sm:justify-between sm:gap-6')}>
+          <DialogHeader
+            className={cn('space-y-2', headerActions && 'sm:space-y-0')}
+          >
+            <div
+              className={cn(
+                'flex flex-col gap-3 pr-10',
+                headerActions &&
+                  'sm:flex-row sm:items-start sm:justify-between sm:gap-6'
+              )}
+            >
               <div className='space-y-2'>
-                <DialogTitle className="font-canela text-2xl text-white">
+                <DialogTitle className='font-canela text-2xl text-white'>
                   {title}
                 </DialogTitle>
                 {description && (
-                  <DialogDescription className="text-white/70">
+                  <DialogDescription className='text-white/70'>
                     {description}
                   </DialogDescription>
                 )}
@@ -60,7 +68,7 @@ export const FmCommonModal = ({
             </div>
           </DialogHeader>
         )}
-        <div className="mt-4">{children}</div>
+        <div className='mt-4'>{children}</div>
       </DialogContent>
     </Dialog>
   );

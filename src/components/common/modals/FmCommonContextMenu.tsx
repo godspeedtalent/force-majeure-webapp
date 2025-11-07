@@ -41,14 +41,12 @@ export function FmCommonContextMenu<T = any>({
 
   return (
     <ContextMenu onOpenChange={onOpenChange}>
-      <ContextMenuTrigger asChild>
-        {children}
-      </ContextMenuTrigger>
-      <ContextMenuContent className="w-56 bg-gradient-to-br from-background to-background/95 backdrop-blur-xl border-2 border-white/20 shadow-lg shadow-black/50 animate-in fade-in zoom-in-95 duration-200 p-1">
+      <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
+      <ContextMenuContent className='w-56 bg-gradient-to-br from-background to-background/95 backdrop-blur-xl border-2 border-white/20 shadow-lg shadow-black/50 animate-in fade-in zoom-in-95 duration-200 p-1'>
         {actions.map((action, idx) => {
           const iconOnRight = action.iconPosition === 'right';
           const isEven = idx % 2 === 0;
-          
+
           // If action has submenu, render as ContextMenuSub
           if (action.submenu && action.submenu.length > 0) {
             return (
@@ -62,74 +60,83 @@ export function FmCommonContextMenu<T = any>({
                       'hover:bg-fm-gold/10 hover:scale-[1.02] hover:shadow-lg hover:shadow-fm-gold/20 hover:text-white',
                       'focus:bg-fm-gold/15 focus:scale-[1.02] focus:shadow-lg focus:shadow-fm-gold/20 focus:text-white',
                       'data-[state=open]:bg-fm-gold/15 data-[state=open]:text-white',
-                      action.disabled && 'opacity-50 cursor-not-allowed hover:scale-100 hover:bg-transparent'
+                      action.disabled &&
+                        'opacity-50 cursor-not-allowed hover:scale-100 hover:bg-transparent'
                     )}
                   >
                     {action.icon && (
-                      <span className="mr-2 transition-transform duration-300 group-hover:scale-110">
+                      <span className='mr-2 transition-transform duration-300 group-hover:scale-110'>
                         {action.icon}
                       </span>
                     )}
-                    <span className="font-medium">{action.label}</span>
+                    <span className='font-medium'>{action.label}</span>
                   </ContextMenuSubTrigger>
-                  <ContextMenuSubContent className="w-48 bg-gradient-to-br from-background to-background/95 backdrop-blur-xl border-2 border-white/20 shadow-lg shadow-black/50 p-1">
+                  <ContextMenuSubContent className='w-48 bg-gradient-to-br from-background to-background/95 backdrop-blur-xl border-2 border-white/20 shadow-lg shadow-black/50 p-1'>
                     {action.submenu.map((subAction, subIdx) => {
                       const subIconOnRight = subAction.iconPosition === 'right';
                       const subIsEven = subIdx % 2 === 0;
                       return (
                         <div key={subIdx}>
                           <ContextMenuItem
-                            onClick={(e) => {
+                            onClick={e => {
                               e.stopPropagation();
                               subAction.onClick?.(data);
                             }}
                             disabled={subAction.disabled}
                             className={cn(
                               'group cursor-pointer transition-all duration-300 rounded-md my-0.5 relative',
-                              subIsEven ? 'bg-background/40' : 'bg-background/60',
+                              subIsEven
+                                ? 'bg-background/40'
+                                : 'bg-background/60',
                               'hover:bg-fm-gold/10 hover:scale-[1.02] hover:shadow-lg hover:shadow-fm-gold/20 hover:text-white',
                               'focus:bg-fm-gold/15 focus:scale-[1.02] focus:shadow-lg focus:shadow-fm-gold/20 focus:text-white',
                               'active:scale-[0.98]',
-                              subAction.variant === 'destructive' && 'text-destructive hover:bg-destructive/15 hover:shadow-destructive/20 focus:bg-destructive/20 focus:shadow-destructive/20 hover:text-destructive',
-                              subIconOnRight && 'flex justify-between items-center',
-                              subAction.disabled && 'opacity-50 cursor-not-allowed hover:scale-100 hover:bg-transparent'
+                              subAction.variant === 'destructive' &&
+                                'text-destructive hover:bg-destructive/15 hover:shadow-destructive/20 focus:bg-destructive/20 focus:shadow-destructive/20 hover:text-destructive',
+                              subIconOnRight &&
+                                'flex justify-between items-center',
+                              subAction.disabled &&
+                                'opacity-50 cursor-not-allowed hover:scale-100 hover:bg-transparent'
                             )}
                           >
                             {!subIconOnRight && subAction.icon && (
-                              <span className="mr-2 transition-transform duration-300 group-hover:scale-110">
+                              <span className='mr-2 transition-transform duration-300 group-hover:scale-110'>
                                 {subAction.icon}
                               </span>
                             )}
-                            <span className="font-medium">{subAction.label}</span>
+                            <span className='font-medium'>
+                              {subAction.label}
+                            </span>
                             {subIconOnRight && subAction.icon && (
-                              <span className="ml-auto transition-transform duration-300 group-hover:scale-110 group-hover:translate-x-0.5">
+                              <span className='ml-auto transition-transform duration-300 group-hover:scale-110 group-hover:translate-x-0.5'>
                                 {subAction.icon}
                               </span>
                             )}
                             {subIdx < action.submenu!.length - 1 && (
-                              <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                              <div className='absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent' />
                             )}
                           </ContextMenuItem>
-                          {subAction.separator && subIdx < action.submenu!.length - 1 && (
-                            <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent my-1" />
-                          )}
+                          {subAction.separator &&
+                            subIdx < action.submenu!.length - 1 && (
+                              <div className='h-px bg-gradient-to-r from-transparent via-white/20 to-transparent my-1' />
+                            )}
                         </div>
                       );
                     })}
                   </ContextMenuSubContent>
                 </ContextMenuSub>
                 {action.separator && idx < actions.length - 1 && (
-                  <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent my-1" />
+                  <div className='h-px bg-gradient-to-r from-transparent via-white/20 to-transparent my-1' />
                 )}
               </div>
             );
           }
-          
+
           // Regular menu item
           return (
             <div key={idx}>
               <ContextMenuItem
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                   action.onClick?.(data);
                 }}
@@ -141,29 +148,31 @@ export function FmCommonContextMenu<T = any>({
                   'hover:bg-fm-gold/10 hover:scale-[1.02] hover:shadow-lg hover:shadow-fm-gold/20 hover:text-white',
                   'focus:bg-fm-gold/15 focus:scale-[1.02] focus:shadow-lg focus:shadow-fm-gold/20 focus:text-white',
                   'active:scale-[0.98]',
-                  action.variant === 'destructive' && 'text-destructive hover:bg-destructive/15 hover:shadow-destructive/20 focus:bg-destructive/20 focus:shadow-destructive/20 hover:text-destructive',
+                  action.variant === 'destructive' &&
+                    'text-destructive hover:bg-destructive/15 hover:shadow-destructive/20 focus:bg-destructive/20 focus:shadow-destructive/20 hover:text-destructive',
                   iconOnRight && 'flex justify-between items-center',
-                  action.disabled && 'opacity-50 cursor-not-allowed hover:scale-100 hover:bg-transparent'
+                  action.disabled &&
+                    'opacity-50 cursor-not-allowed hover:scale-100 hover:bg-transparent'
                 )}
               >
                 {!iconOnRight && action.icon && (
-                  <span className="mr-2 transition-transform duration-300 group-hover:scale-110">
+                  <span className='mr-2 transition-transform duration-300 group-hover:scale-110'>
                     {action.icon}
                   </span>
                 )}
-                <span className="font-medium">{action.label}</span>
+                <span className='font-medium'>{action.label}</span>
                 {iconOnRight && action.icon && (
-                  <span className="ml-auto transition-transform duration-300 group-hover:scale-110 group-hover:translate-x-0.5">
+                  <span className='ml-auto transition-transform duration-300 group-hover:scale-110 group-hover:translate-x-0.5'>
                     {action.icon}
                   </span>
                 )}
                 {/* Horizontal divider after each item */}
                 {idx < actions.length - 1 && (
-                  <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                  <div className='absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent' />
                 )}
               </ContextMenuItem>
               {action.separator && idx < actions.length - 1 && (
-                <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent my-1" />
+                <div className='h-px bg-gradient-to-r from-transparent via-white/20 to-transparent my-1' />
               )}
             </div>
           );

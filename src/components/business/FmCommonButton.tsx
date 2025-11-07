@@ -45,7 +45,12 @@ export const FmCommonButton = ({
       className={cn('transition-all duration-300', baseClasses, className)}
     >
       {isExternal ? (
-        <a href={href} target='_blank' rel='noopener noreferrer' aria-label={label}>
+        <a
+          href={href}
+          target='_blank'
+          rel='noopener noreferrer'
+          aria-label={label}
+        >
           <Icon className={cn(defaultIconClasses, iconClassName)} />
         </a>
       ) : (

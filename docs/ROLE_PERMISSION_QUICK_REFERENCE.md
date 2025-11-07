@@ -72,30 +72,30 @@ const hasOrgAccess = canManageOrg || canViewOrg;
 
 ## Available Permissions
 
-| Permission | Description | Default Roles |
-|------------|-------------|---------------|
-| `*` | Full system access (wildcard) | admin, developer |
-| `debug_mode` | Access to debug tools | developer |
-| `view_events` | View event listings | user, admin, developer |
-| `purchase_tickets` | Buy tickets to events | user, admin, developer |
-| `manage_organization` | Full organization management | org_admin, admin, developer |
-| `manage_events` | Create and edit events | org_admin, admin, developer |
-| `view_analytics` | Access analytics dashboard | org_admin, admin, developer |
-| `manage_staff` | Add and remove staff members | org_admin, admin, developer |
-| `view_organization` | View organization details | org_staff, org_admin, admin, developer |
-| `check_in_guests` | Check guests into events | org_staff, org_admin, admin, developer |
-| `scan_tickets` | Scan and validate tickets | org_staff, org_admin, admin, developer |
-| `manage_own_profile` | Edit own user profile | user, admin, developer |
+| Permission            | Description                   | Default Roles                          |
+| --------------------- | ----------------------------- | -------------------------------------- |
+| `*`                   | Full system access (wildcard) | admin, developer                       |
+| `debug_mode`          | Access to debug tools         | developer                              |
+| `view_events`         | View event listings           | user, admin, developer                 |
+| `purchase_tickets`    | Buy tickets to events         | user, admin, developer                 |
+| `manage_organization` | Full organization management  | org_admin, admin, developer            |
+| `manage_events`       | Create and edit events        | org_admin, admin, developer            |
+| `view_analytics`      | Access analytics dashboard    | org_admin, admin, developer            |
+| `manage_staff`        | Add and remove staff members  | org_admin, admin, developer            |
+| `view_organization`   | View organization details     | org_staff, org_admin, admin, developer |
+| `check_in_guests`     | Check guests into events      | org_staff, org_admin, admin, developer |
+| `scan_tickets`        | Scan and validate tickets     | org_staff, org_admin, admin, developer |
+| `manage_own_profile`  | Edit own user profile         | user, admin, developer                 |
 
 ## Default Roles
 
-| Role | Display Name | Description | Key Permissions |
-|------|--------------|-------------|-----------------|
-| `user` | User | Standard user | view_events, purchase_tickets, manage_own_profile |
-| `admin` | Administrator | Full system administrator | * (all) |
-| `developer` | Developer | Developer access for testing | *, debug_mode |
+| Role        | Display Name       | Description                    | Key Permissions                                                  |
+| ----------- | ------------------ | ------------------------------ | ---------------------------------------------------------------- |
+| `user`      | User               | Standard user                  | view_events, purchase_tickets, manage_own_profile                |
+| `admin`     | Administrator      | Full system administrator      | \* (all)                                                         |
+| `developer` | Developer          | Developer access for testing   | \*, debug_mode                                                   |
 | `org_admin` | Organization Admin | Manage organization and events | manage_organization, manage_events, view_analytics, manage_staff |
-| `org_staff` | Organization Staff | Check-in and scan tickets | view_organization, check_in_guests, scan_tickets |
+| `org_staff` | Organization Staff | Check-in and scan tickets      | view_organization, check_in_guests, scan_tickets                 |
 
 ## Database Functions
 
@@ -106,6 +106,7 @@ SELECT * FROM get_user_roles('user-uuid-here');
 ```
 
 Returns:
+
 ```json
 [
   {
@@ -135,15 +136,17 @@ Returns: `true` or `false`
 ## Adding New Permissions
 
 1. Insert into `permissions` table:
+
 ```sql
 INSERT INTO public.permissions (name, display_name, description, category)
 VALUES ('new_permission', 'New Permission', 'Description here', 'category');
 ```
 
 2. Assign to roles:
+
 ```sql
 UPDATE public.roles
-SET permission_ids = array_append(permission_ids, 
+SET permission_ids = array_append(permission_ids,
   (SELECT id FROM public.permissions WHERE name = 'new_permission')
 )
 WHERE name = 'role_name';
@@ -153,13 +156,13 @@ WHERE name = 'role_name';
 
 ```sql
 INSERT INTO public.roles (name, display_name, description, is_system_role, permission_ids)
-SELECT 
+SELECT
   'new_role',
   'New Role Display Name',
   'Description of the role',
   false, -- not a system role
   ARRAY(
-    SELECT id FROM public.permissions 
+    SELECT id FROM public.permissions
     WHERE name IN ('permission1', 'permission2')
   );
 ```
@@ -168,7 +171,7 @@ SELECT
 
 ```sql
 INSERT INTO public.user_roles (user_id, role_id)
-SELECT 
+SELECT
   'user-uuid-here',
   (SELECT id FROM public.roles WHERE name = 'role_name')
 ON CONFLICT (user_id, role_id) DO NOTHING;
@@ -177,6 +180,7 @@ ON CONFLICT (user_id, role_id) DO NOTHING;
 ## Migration from Old System
 
 ### Old Code ❌
+
 ```typescript
 const { data: role } = useUserRole();
 if (role === 'admin') {
@@ -185,6 +189,7 @@ if (role === 'admin') {
 ```
 
 ### New Code ✅
+
 ```typescript
 const { hasRole } = useUserPermissions();
 if (hasRole('admin')) {
@@ -193,6 +198,7 @@ if (hasRole('admin')) {
 ```
 
 ### Permission-Based (Better) ✨
+
 ```typescript
 const { hasPermission } = useUserPermissions();
 if (hasPermission('manage_events')) {
@@ -205,12 +211,11 @@ if (hasPermission('manage_events')) {
 ```typescript
 // Check if user is admin
 const { data: userRoles } = await supabaseClient.rpc('get_user_roles', {
-  user_id_param: user.id
+  user_id_param: user.id,
 });
 
-const isAdmin = userRoles?.some((r: any) => 
-  r.role_name === 'admin' || 
-  r.permission_names.includes('*')
+const isAdmin = userRoles?.some(
+  (r: any) => r.role_name === 'admin' || r.permission_names.includes('*')
 );
 ```
 
@@ -227,6 +232,7 @@ const isAdmin = userRoles?.some((r: any) =>
    - Admin and developer roles have full access
 
 4. **Handle loading states**
+
    ```typescript
    const { hasPermission, roles } = useUserPermissions();
    if (!roles) return <Loading />;
@@ -238,14 +244,17 @@ const isAdmin = userRoles?.some((r: any) =>
 ## Troubleshooting
 
 ### Permission not working?
+
 - Check if role has the permission: `SELECT * FROM get_user_roles('user-uuid')`
 - Verify permission exists: `SELECT * FROM permissions WHERE name = 'permission_name'`
 - Check wildcard: Users with `*` permission have access to everything
 
 ### Role not appearing?
+
 - Verify role assignment: `SELECT * FROM user_roles WHERE user_id = 'user-uuid'`
 - Check role definition: `SELECT * FROM roles WHERE name = 'role_name'`
 
 ### RPC function errors?
+
 - Ensure functions are created: `\df get_user_roles` in psql
 - Check function permissions: Functions should be `SECURITY DEFINER`

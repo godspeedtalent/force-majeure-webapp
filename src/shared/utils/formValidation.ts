@@ -1,6 +1,6 @@
 /**
  * Form Validation Utilities
- * 
+ *
  * Common validation schemas and helpers for forms
  * Uses zod for type-safe validation
  */
@@ -64,7 +64,10 @@ export const urlOptional = z
 export const phoneField = z
   .string()
   .trim()
-  .regex(/^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/, 'Invalid phone number')
+  .regex(
+    /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/,
+    'Invalid phone number'
+  )
   .max(20, 'Phone number must be less than 20 characters');
 
 // Date validations
@@ -75,11 +78,11 @@ export const dateField = z.date({
 
 export const dateOptional = z.date().optional();
 
-export const futureDateField = z.date().refine((date) => date > new Date(), {
+export const futureDateField = z.date().refine(date => date > new Date(), {
   message: 'Date must be in the future',
 });
 
-export const pastDateField = z.date().refine((date) => date < new Date(), {
+export const pastDateField = z.date().refine(date => date < new Date(), {
   message: 'Date must be in the past',
 });
 
@@ -127,10 +130,10 @@ export const createFileValidation = (
 ) => {
   return z
     .instanceof(File)
-    .refine((file) => file.size <= maxSizeMB * 1024 * 1024, {
+    .refine(file => file.size <= maxSizeMB * 1024 * 1024, {
       message: `File size must be less than ${maxSizeMB}MB`,
     })
-    .refine((file) => allowedTypes.includes(file.type), {
+    .refine(file => allowedTypes.includes(file.type), {
       message: `File type must be one of: ${allowedTypes.join(', ')}`,
     });
 };
@@ -173,7 +176,7 @@ export const passwordConfirmation = (schema: z.ZodObject<any>) => {
     .extend({
       confirmPassword: z.string(),
     })
-    .refine((data) => data.password === data.confirmPassword, {
+    .refine(data => data.password === data.confirmPassword, {
       message: "Passwords don't match",
       path: ['confirmPassword'],
     });
@@ -190,13 +193,13 @@ export const prepareFormData = <T extends Record<string, any>>(
     if (value === '' || value === null || value === undefined) {
       return acc;
     }
-    
+
     if (typeof value === 'string') {
       acc[key as keyof T] = value.trim() as any;
     } else {
       acc[key as keyof T] = value;
     }
-    
+
     return acc;
   }, {} as Partial<T>);
 };

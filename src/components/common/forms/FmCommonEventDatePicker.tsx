@@ -4,9 +4,18 @@ import { Calendar as CalendarIcon } from 'lucide-react';
 import { cn } from '@/shared/utils/utils';
 import { Button } from '@/components/common/shadcn/button';
 import { Calendar } from '@/components/common/shadcn/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/shadcn/popover';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/common/shadcn/popover';
 import { Input } from '@/components/common/shadcn/input';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/common/shadcn/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/common/shadcn/tooltip';
 import { supabase } from '@/shared/api/supabase/client';
 import { useDateTimePicker } from '@/shared/hooks/useDateTimePicker';
 
@@ -41,7 +50,9 @@ export function FmCommonEventDatePicker({
     handleCancel,
   } = useDateTimePicker({ value, onChange });
 
-  const [eventsOnDates, setEventsOnDates] = React.useState<Record<string, EventOnDate[]>>({});
+  const [eventsOnDates, setEventsOnDates] = React.useState<
+    Record<string, EventOnDate[]>
+  >({});
 
   // Fetch future events
   React.useEffect(() => {
@@ -57,7 +68,7 @@ export function FmCommonEventDatePicker({
 
       if (!error && data) {
         const grouped: Record<string, EventOnDate[]> = {};
-        data.forEach((event) => {
+        data.forEach(event => {
           const dateKey = event.date;
           if (!grouped[dateKey]) {
             grouped[dateKey] = [];
@@ -98,19 +109,19 @@ export function FmCommonEventDatePicker({
       <TooltipProvider>
         <Tooltip delayDuration={100}>
           <TooltipTrigger asChild>
-            <span className="cursor-pointer">{format(date, 'd')}</span>
+            <span className='cursor-pointer'>{format(date, 'd')}</span>
           </TooltipTrigger>
-          <TooltipContent 
-            side="top" 
-            className="bg-black/95 border border-fm-gold/30 text-white max-w-xs"
+          <TooltipContent
+            side='top'
+            className='bg-black/95 border border-fm-gold/30 text-white max-w-xs'
           >
-            <div className="space-y-1">
-              <p className="font-semibold text-fm-gold text-xs">
+            <div className='space-y-1'>
+              <p className='font-semibold text-fm-gold text-xs'>
                 {events.length} scheduled event{events.length > 1 ? 's' : ''}
               </p>
-              <ul className="space-y-0.5 text-xs">
-                {events.map((event) => (
-                  <li key={event.id} className="text-white/80">
+              <ul className='space-y-0.5 text-xs'>
+                {events.map(event => (
+                  <li key={event.id} className='text-white/80'>
                     • {event.title}
                   </li>
                 ))}
@@ -126,7 +137,7 @@ export function FmCommonEventDatePicker({
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild disabled={disabled}>
         <Button
-          variant="outline"
+          variant='outline'
           className={cn(
             'w-full justify-start text-left font-normal',
             'bg-black/40 border-white/20 hover:border-fm-gold/50',
@@ -135,52 +146,53 @@ export function FmCommonEventDatePicker({
             disabled && 'opacity-50 cursor-not-allowed'
           )}
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
+          <CalendarIcon className='mr-2 h-4 w-4' />
           {value ? format(value, 'PPP p') : <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent 
-        className="w-auto p-0 bg-black/90 backdrop-blur-md border border-white/20 pointer-events-auto" 
-        align="start"
+      <PopoverContent
+        className='w-auto p-0 bg-black/90 backdrop-blur-md border border-white/20 pointer-events-auto'
+        align='start'
         sideOffset={4}
       >
         <Calendar
-          mode="single"
+          mode='single'
           selected={tempDate}
           onSelect={handleDateSelect}
           onDayClick={handleDayClick}
-          disabled={(date) => date < today}
+          disabled={date => date < today}
           modifiers={modifiers}
           modifiersClassNames={modifiersClassNames}
           components={{
             DayContent: ({ date }) => <DayContent date={date} />,
           }}
           initialFocus
-          className="pointer-events-auto"
+          className='pointer-events-auto'
           classNames={{
-            day_selected: 'bg-fm-gold text-black hover:bg-fm-gold hover:text-black focus:bg-fm-gold focus:text-black',
+            day_selected:
+              'bg-fm-gold text-black hover:bg-fm-gold hover:text-black focus:bg-fm-gold focus:text-black',
           }}
         />
-        <div className="p-3 border-t border-white/10">
-          <label className="text-sm text-white/70 mb-2 block">Time</label>
+        <div className='p-3 border-t border-white/10'>
+          <label className='text-sm text-white/70 mb-2 block'>Time</label>
           <Input
-            type="time"
+            type='time'
             value={tempTime}
-            onChange={(e) => handleTimeChange(e.target.value)}
-            className="bg-black/40 border-white/20 text-white"
+            onChange={e => handleTimeChange(e.target.value)}
+            className='bg-black/40 border-white/20 text-white'
           />
         </div>
-        <div className="flex gap-2 p-3 border-t border-white/10">
+        <div className='flex gap-2 p-3 border-t border-white/10'>
           <Button
             onClick={handleCancel}
-            variant="outline"
-            className="flex-1 border-white/20 hover:bg-white/10 text-white"
+            variant='outline'
+            className='flex-1 border-white/20 hover:bg-white/10 text-white'
           >
             Cancel
           </Button>
           <Button
             onClick={handleConfirm}
-            className="flex-1 bg-fm-gold hover:bg-fm-gold/90 text-black"
+            className='flex-1 bg-fm-gold hover:bg-fm-gold/90 text-black'
           >
             Confirm
           </Button>

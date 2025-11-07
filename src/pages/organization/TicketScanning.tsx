@@ -24,7 +24,7 @@ interface ScanResult {
 
 /**
  * TicketScanning - Ticket scanning page for organization staffers
- * 
+ *
  * Features:
  * - QR code/barcode scanning
  * - Manual ticket lookup
@@ -68,14 +68,16 @@ const TicketScanning = () => {
     const isValid = Math.random() > 0.3;
     const result: ScanResult = {
       success: isValid,
-      message: isValid 
-        ? 'Ticket validated successfully!' 
+      message: isValid
+        ? 'Ticket validated successfully!'
         : 'Invalid ticket or already used',
-      ticketInfo: isValid ? {
-        eventName: 'Force Majeure - November 2025',
-        attendeeName: 'John Doe',
-        ticketType: 'General Admission',
-      } : undefined,
+      ticketInfo: isValid
+        ? {
+            eventName: 'Force Majeure - November 2025',
+            attendeeName: 'John Doe',
+            ticketType: 'General Admission',
+          }
+        : undefined,
     };
 
     setLastScan(result);
@@ -104,7 +106,7 @@ const TicketScanning = () => {
   }
 
   return (
-    <FmCommonPageLayout 
+    <FmCommonPageLayout
       title='Ticket Scanning'
       subtitle='Scan and validate event tickets'
     >
@@ -117,7 +119,9 @@ const TicketScanning = () => {
                 <Scan className='h-6 w-6 text-fm-gold' />
               </div>
               <div>
-                <h3 className='text-lg font-canela'>{formatHeader('scan ticket')}</h3>
+                <h3 className='text-lg font-canela'>
+                  {formatHeader('scan ticket')}
+                </h3>
                 <p className='text-sm text-muted-foreground'>
                   Enter ticket code or use camera to scan
                 </p>
@@ -126,14 +130,16 @@ const TicketScanning = () => {
 
             <div className='space-y-[20px]'>
               <div>
-                <Label htmlFor='ticketCode' className='text-xs uppercase'>TICKET CODE</Label>
+                <Label htmlFor='ticketCode' className='text-xs uppercase'>
+                  TICKET CODE
+                </Label>
                 <Input
                   id='ticketCode'
                   value={ticketCode}
-                  onChange={(e) => setTicketCode(e.target.value)}
+                  onChange={e => setTicketCode(e.target.value)}
                   placeholder='Enter ticket code or barcode'
                   className='font-mono'
-                  onKeyDown={(e) => {
+                  onKeyDown={e => {
                     if (e.key === 'Enter') {
                       handleScan();
                     }
@@ -172,15 +178,19 @@ const TicketScanning = () => {
         {/* Last Scan Result Card */}
         <FmCommonCard variant='outline' className='p-[20px]'>
           <div className='space-y-[20px]'>
-            <h3 className='text-lg font-canela'>{formatHeader('last scan result')}</h3>
-            
+            <h3 className='text-lg font-canela'>
+              {formatHeader('last scan result')}
+            </h3>
+
             {lastScan ? (
               <div className='space-y-[20px]'>
-                <div className={`p-[20px] rounded-none border ${
-                  lastScan.success 
-                    ? 'bg-green-500/10 border-green-500/30' 
-                    : 'bg-red-500/10 border-red-500/30'
-                }`}>
+                <div
+                  className={`p-[20px] rounded-none border ${
+                    lastScan.success
+                      ? 'bg-green-500/10 border-green-500/30'
+                      : 'bg-red-500/10 border-red-500/30'
+                  }`}
+                >
                   <div className='flex items-start gap-[10px]'>
                     {lastScan.success ? (
                       <CheckCircle2 className='h-6 w-6 text-green-500 flex-shrink-0' />
@@ -188,9 +198,11 @@ const TicketScanning = () => {
                       <XCircle className='h-6 w-6 text-red-500 flex-shrink-0' />
                     )}
                     <div>
-                      <p className={`font-medium ${
-                        lastScan.success ? 'text-green-500' : 'text-red-500'
-                      }`}>
+                      <p
+                        className={`font-medium ${
+                          lastScan.success ? 'text-green-500' : 'text-red-500'
+                        }`}
+                      >
                         {lastScan.success ? 'Valid ticket' : 'Invalid ticket'}
                       </p>
                       <p className='text-sm text-muted-foreground mt-1'>
@@ -202,7 +214,9 @@ const TicketScanning = () => {
 
                 {lastScan.ticketInfo && (
                   <div className='space-y-[10px] p-[20px] bg-muted/30 rounded-none'>
-                    <h4 className='text-sm font-medium text-foreground'>Ticket details.</h4>
+                    <h4 className='text-sm font-medium text-foreground'>
+                      Ticket details.
+                    </h4>
                     <div className='space-y-1 text-sm'>
                       <div className='flex justify-between'>
                         <span className='text-muted-foreground'>Event:</span>
@@ -240,7 +254,9 @@ const TicketScanning = () => {
 
       {/* Quick Stats */}
       <FmCommonCard variant='outline' className='p-[20px]'>
-        <h3 className='text-lg font-canela mb-[20px]'>{formatHeader("today's statistics")}</h3>
+        <h3 className='text-lg font-canela mb-[20px]'>
+          {formatHeader("today's statistics")}
+        </h3>
         <div className='grid grid-cols-1 sm:grid-cols-3 gap-[20px]'>
           <div className='text-center p-[20px] bg-muted/30 rounded-none'>
             <p className='text-2xl font-canela text-fm-gold'>0</p>

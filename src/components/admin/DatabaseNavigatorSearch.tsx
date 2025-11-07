@@ -168,7 +168,7 @@ export function DatabaseNavigatorSearch() {
   const handleNavigate = (resourceType: string, resourceId: string) => {
     // Close search results by clearing query
     setSearchQuery('');
-    
+
     // Navigate based on resource type
     switch (resourceType) {
       case 'organization':
@@ -178,10 +178,14 @@ export function DatabaseNavigatorSearch() {
         navigate(`/admin/users/${resourceId}`);
         break;
       case 'artist':
-        navigate('/developer/database', { state: { openTab: 'artists', editArtistId: resourceId } });
+        navigate('/developer/database', {
+          state: { openTab: 'artists', editArtistId: resourceId },
+        });
         break;
       case 'venue':
-        navigate('/developer/database', { state: { openTab: 'venues', editVenueId: resourceId } });
+        navigate('/developer/database', {
+          state: { openTab: 'venues', editVenueId: resourceId },
+        });
         break;
       case 'event':
         navigate(`/event/${resourceId}`);
@@ -190,55 +194,59 @@ export function DatabaseNavigatorSearch() {
   };
 
   return (
-    <div className="w-full">
+    <div className='w-full'>
       {/* Description */}
-      <div className="mb-3">
-        <p className="text-sm text-muted-foreground">
+      <div className='mb-3'>
+        <p className='text-sm text-muted-foreground'>
           Search across all database resources
         </p>
       </div>
 
       {/* Search Input */}
-      <div className="relative mb-4">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <div className='relative mb-4'>
+        <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
         <Input
-          type="text"
-          placeholder="Search users, artists, events..."
+          type='text'
+          placeholder='Search users, artists, events...'
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-9 pr-4"
+          onChange={e => setSearchQuery(e.target.value)}
+          className='pl-9 pr-4'
         />
         {isSearching && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            <div className="h-4 w-4 border-2 border-fm-gold border-t-transparent rounded-full animate-spin" />
+          <div className='absolute right-3 top-1/2 -translate-y-1/2'>
+            <div className='h-4 w-4 border-2 border-fm-gold border-t-transparent rounded-full animate-spin' />
           </div>
         )}
       </div>
 
       {/* Results - Inline Display */}
       {searchQuery.trim().length >= 2 && hasResults && (
-        <div className="border rounded-md max-h-[400px] overflow-y-auto bg-background/50">
+        <div className='border rounded-md max-h-[400px] overflow-y-auto bg-background/50'>
           {/* Organizations */}
           {results.organizations.length > 0 && (
-            <div className="p-2 border-b">
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase mb-2 px-2">
+            <div className='p-2 border-b'>
+              <h3 className='text-xs font-semibold text-muted-foreground uppercase mb-2 px-2'>
                 Organizations
               </h3>
-              {results.organizations.map((org) => (
+              {results.organizations.map(org => (
                 <button
                   key={org.id}
                   onClick={() => handleNavigate('organization', org.id)}
-                  className="w-full flex items-center gap-3 p-2 rounded hover:bg-muted transition-colors text-left"
+                  className='w-full flex items-center gap-3 p-2 rounded hover:bg-muted transition-colors text-left'
                 >
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                  <div className='flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden'>
                     {org.logo_url ? (
-                      <img src={org.logo_url} alt={org.name} className="w-full h-full object-cover" />
+                      <img
+                        src={org.logo_url}
+                        alt={org.name}
+                        className='w-full h-full object-cover'
+                      />
                     ) : (
-                      <Building2 className="h-4 w-4 text-muted-foreground" />
+                      <Building2 className='h-4 w-4 text-muted-foreground' />
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{org.name}</p>
+                  <div className='flex-1 min-w-0'>
+                    <p className='text-sm font-medium truncate'>{org.name}</p>
                   </div>
                 </button>
               ))}
@@ -247,25 +255,29 @@ export function DatabaseNavigatorSearch() {
 
           {/* Users */}
           {results.users.length > 0 && (
-            <div className="p-2 border-b">
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase mb-2 px-2">
+            <div className='p-2 border-b'>
+              <h3 className='text-xs font-semibold text-muted-foreground uppercase mb-2 px-2'>
                 Users
               </h3>
-              {results.users.map((user) => (
+              {results.users.map(user => (
                 <button
                   key={user.id}
                   onClick={() => handleNavigate('user', user.id)}
-                  className="w-full flex items-center gap-3 p-2 rounded hover:bg-muted transition-colors text-left"
+                  className='w-full flex items-center gap-3 p-2 rounded hover:bg-muted transition-colors text-left'
                 >
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                  <div className='flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden'>
                     {user.avatar_url ? (
-                      <img src={user.avatar_url} alt={user.display_name || user.full_name || 'User'} className="w-full h-full object-cover" />
+                      <img
+                        src={user.avatar_url}
+                        alt={user.display_name || user.full_name || 'User'}
+                        className='w-full h-full object-cover'
+                      />
                     ) : (
-                      <User className="h-4 w-4 text-muted-foreground" />
+                      <User className='h-4 w-4 text-muted-foreground' />
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">
+                  <div className='flex-1 min-w-0'>
+                    <p className='text-sm font-medium truncate'>
                       {user.display_name || user.full_name || 'Unknown User'}
                     </p>
                   </div>
@@ -276,25 +288,31 @@ export function DatabaseNavigatorSearch() {
 
           {/* Artists */}
           {results.artists.length > 0 && (
-            <div className="p-2 border-b">
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase mb-2 px-2">
+            <div className='p-2 border-b'>
+              <h3 className='text-xs font-semibold text-muted-foreground uppercase mb-2 px-2'>
                 Artists
               </h3>
-              {results.artists.map((artist) => (
+              {results.artists.map(artist => (
                 <button
                   key={artist.id}
                   onClick={() => handleNavigate('artist', artist.id)}
-                  className="w-full flex items-center gap-3 p-2 rounded hover:bg-muted transition-colors text-left"
+                  className='w-full flex items-center gap-3 p-2 rounded hover:bg-muted transition-colors text-left'
                 >
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                  <div className='flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden'>
                     {artist.image_url ? (
-                      <img src={artist.image_url} alt={artist.name} className="w-full h-full object-cover" />
+                      <img
+                        src={artist.image_url}
+                        alt={artist.name}
+                        className='w-full h-full object-cover'
+                      />
                     ) : (
-                      <Music className="h-4 w-4 text-muted-foreground" />
+                      <Music className='h-4 w-4 text-muted-foreground' />
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{artist.name}</p>
+                  <div className='flex-1 min-w-0'>
+                    <p className='text-sm font-medium truncate'>
+                      {artist.name}
+                    </p>
                   </div>
                 </button>
               ))}
@@ -303,25 +321,29 @@ export function DatabaseNavigatorSearch() {
 
           {/* Venues */}
           {results.venues.length > 0 && (
-            <div className="p-2 border-b">
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase mb-2 px-2">
+            <div className='p-2 border-b'>
+              <h3 className='text-xs font-semibold text-muted-foreground uppercase mb-2 px-2'>
                 Venues
               </h3>
-              {results.venues.map((venue) => (
+              {results.venues.map(venue => (
                 <button
                   key={venue.id}
                   onClick={() => handleNavigate('venue', venue.id)}
-                  className="w-full flex items-center gap-3 p-2 rounded hover:bg-muted transition-colors text-left"
+                  className='w-full flex items-center gap-3 p-2 rounded hover:bg-muted transition-colors text-left'
                 >
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                  <div className='flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden'>
                     {venue.image_url ? (
-                      <img src={venue.image_url} alt={venue.name} className="w-full h-full object-cover" />
+                      <img
+                        src={venue.image_url}
+                        alt={venue.name}
+                        className='w-full h-full object-cover'
+                      />
                     ) : (
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
+                      <MapPin className='h-4 w-4 text-muted-foreground' />
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{venue.name}</p>
+                  <div className='flex-1 min-w-0'>
+                    <p className='text-sm font-medium truncate'>{venue.name}</p>
                   </div>
                 </button>
               ))}
@@ -330,27 +352,34 @@ export function DatabaseNavigatorSearch() {
 
           {/* Events */}
           {results.events.length > 0 && (
-            <div className="p-2">
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase mb-2 px-2">
+            <div className='p-2'>
+              <h3 className='text-xs font-semibold text-muted-foreground uppercase mb-2 px-2'>
                 Events
               </h3>
-              {results.events.map((event) => (
+              {results.events.map(event => (
                 <button
                   key={event.id}
                   onClick={() => handleNavigate('event', event.id)}
-                  className="w-full flex items-center gap-3 p-2 rounded hover:bg-muted transition-colors text-left"
+                  className='w-full flex items-center gap-3 p-2 rounded hover:bg-muted transition-colors text-left'
                 >
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                  <div className='flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden'>
                     {event.hero_image ? (
-                      <img src={event.hero_image} alt={event.title} className="w-full h-full object-cover" />
+                      <img
+                        src={event.hero_image}
+                        alt={event.title}
+                        className='w-full h-full object-cover'
+                      />
                     ) : (
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <Calendar className='h-4 w-4 text-muted-foreground' />
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{event.title}</p>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {new Date(event.date).toLocaleDateString()} • {event.venue_name}
+                  <div className='flex-1 min-w-0'>
+                    <p className='text-sm font-medium truncate'>
+                      {event.title}
+                    </p>
+                    <p className='text-xs text-muted-foreground truncate'>
+                      {new Date(event.date).toLocaleDateString()} •{' '}
+                      {event.venue_name}
                     </p>
                   </div>
                 </button>
@@ -362,8 +391,8 @@ export function DatabaseNavigatorSearch() {
 
       {/* No Results */}
       {searchQuery.trim().length >= 2 && !hasResults && !isSearching && (
-        <div className="border rounded-md p-4 bg-background/50">
-          <p className="text-sm text-muted-foreground text-center">
+        <div className='border rounded-md p-4 bg-background/50'>
+          <p className='text-sm text-muted-foreground text-center'>
             No results found for "{searchQuery}"
           </p>
         </div>

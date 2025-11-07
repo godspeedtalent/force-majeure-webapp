@@ -58,13 +58,15 @@ export function FmCommonSelect({
         value={value}
         onValueChange={onChange}
         disabled={disabled}
-        onOpenChange={(open) => setIsFocused(open)}
+        onOpenChange={open => setIsFocused(open)}
       >
         <SelectTrigger
           id={selectId}
           className={cn(
             'w-full h-9 transition-all duration-300',
-            isFocused && !disabled && 'shadow-[0_0_16px_rgba(207,173,118,0.3)] scale-[1.01]',
+            isFocused &&
+              !disabled &&
+              'shadow-[0_0_16px_rgba(207,173,118,0.3)] scale-[1.01]',
             error && 'border-red-500 focus:border-red-500',
             className
           )}
@@ -72,10 +74,10 @@ export function FmCommonSelect({
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
-          {options.map((option) => (
+          {options.map(option => (
             <SelectItem key={option.value} value={option.value}>
-              <div className="flex items-center gap-2">
-                {option.icon && <option.icon className="h-4 w-4" />}
+              <div className='flex items-center gap-2'>
+                {option.icon && <option.icon className='h-4 w-4' />}
                 <span>{option.label}</span>
               </div>
             </SelectItem>
@@ -95,7 +97,9 @@ export function FmCommonSelect({
           </Label>
         )}
         {description && (
-          <p className='text-xs text-muted-foreground/70 mt-0.5'>{description}</p>
+          <p className='text-xs text-muted-foreground/70 mt-0.5'>
+            {description}
+          </p>
         )}
       </div>
       {error && (

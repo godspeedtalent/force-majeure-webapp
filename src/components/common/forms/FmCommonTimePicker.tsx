@@ -20,9 +20,9 @@ export function FmCommonTimePicker({
   return (
     <div className={cn('relative', className)}>
       <Input
-        type="time"
+        type='time'
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={e => onChange(e.target.value)}
         disabled={disabled}
         className={cn(
           'bg-black/40 border-white/20 text-white pl-10',
@@ -30,7 +30,7 @@ export function FmCommonTimePicker({
         )}
         placeholder={placeholder}
       />
-      <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50 pointer-events-none" />
+      <Clock className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50 pointer-events-none' />
     </div>
   );
 }

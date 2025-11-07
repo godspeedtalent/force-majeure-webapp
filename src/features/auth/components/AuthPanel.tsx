@@ -11,7 +11,12 @@ import {
   CardTitle,
 } from '@/components/common/shadcn/card';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/common/shadcn/tabs';
 import { Button } from '@/components/common/shadcn/button';
 import { Checkbox } from '@/components/common/shadcn/checkbox';
 import { Label } from '@/components/common/shadcn/label';
@@ -52,7 +57,11 @@ export const AuthPanel = ({
     e.preventDefault();
     setIsLoading(true);
 
-    const { error } = await signIn(signInForm.email, signInForm.password, rememberMe);
+    const { error } = await signIn(
+      signInForm.email,
+      signInForm.password,
+      rememberMe
+    );
 
     if (!error && onAuthSuccess) {
       onAuthSuccess();
@@ -73,7 +82,11 @@ export const AuthPanel = ({
     setPasswordError('');
     setIsLoading(true);
 
-    const { error } = await signUp(signUpForm.email, signUpForm.password, signUpForm.displayName);
+    const { error } = await signUp(
+      signUpForm.email,
+      signUpForm.password,
+      signUpForm.displayName
+    );
 
     if (!error && onAuthSuccess) {
       onAuthSuccess();
@@ -168,7 +181,7 @@ export const AuthPanel = ({
                 <Checkbox
                   id='remember-me'
                   checked={rememberMe}
-                  onCheckedChange={(checked) => setRememberMe(checked === true)}
+                  onCheckedChange={checked => setRememberMe(checked === true)}
                 />
                 <Label
                   htmlFor='remember-me'
@@ -208,7 +221,7 @@ export const AuthPanel = ({
               onClick={handleGoogleSignIn}
               loading={isOAuthLoading}
               disabled={isLoading}
-              text="Sign up with Google"
+              text='Sign up with Google'
             />
 
             <OAuthDivider />

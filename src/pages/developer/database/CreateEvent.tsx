@@ -19,7 +19,8 @@ const DeveloperCreateEventPage = () => {
       condensed
     >
       <p className='text-sm text-muted-foreground mb-6'>
-        Complete the form to add a new event to the staging database. Closing the form will return you to the developer dashboard.
+        Complete the form to add a new event to the staging database. Closing
+        the form will return you to the developer dashboard.
       </p>
       <FmCreateEventButton mode='standalone' onClose={handleClose} />
     </DemoLayout>
@@ -27,4 +28,3 @@ const DeveloperCreateEventPage = () => {
 };
 
 export default DeveloperCreateEventPage;
-

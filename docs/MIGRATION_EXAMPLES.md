@@ -21,6 +21,7 @@ src/
 ```
 
 **Imports (Before):**
+
 ```typescript
 // In some feature component
 import { PermissionGuard } from '@/components/auth/PermissionGuard';
@@ -50,6 +51,7 @@ src/
 ```
 
 **Imports (After):**
+
 ```typescript
 // In some feature component
 import { PermissionGuard, useAuth, authService } from '@features/auth';
@@ -61,6 +63,7 @@ import { authService } from '@features/auth';
 ```
 
 **Benefits:**
+
 - ✅ All auth code in one place
 - ✅ Cleaner imports
 - ✅ Easy to find related code
@@ -82,6 +85,7 @@ src/
 ```
 
 **Import (Before):**
+
 ```typescript
 import { Button } from '@/components/common/Button';
 // or
@@ -99,6 +103,7 @@ src/
 ```
 
 **Import (After):**
+
 ```typescript
 import { Button } from '@shared/components/Button';
 // or using shorthand:
@@ -106,6 +111,7 @@ import { Button } from '@components/Button';
 ```
 
 **Benefits:**
+
 - ✅ No confusion about which Button to use
 - ✅ Consistent import pattern
 - ✅ Clear that it's shared code
@@ -129,7 +135,7 @@ import { eventService } from '@/services/events/eventService';
 export const EventDetails = () => {
   const { eventId } = useParams();
   const { data: event } = useEvent(eventId);
-  
+
   return (
     <div>
       <EventCard event={event} />
@@ -153,7 +159,7 @@ import { Button } from '@components/Button';
 export const EventDetails = () => {
   const { eventId } = useParams();
   const { data: event } = useEvent(eventId);
-  
+
   return (
     <div>
       <EventCard event={event} />
@@ -165,6 +171,7 @@ export const EventDetails = () => {
 ```
 
 **Benefits:**
+
 - ✅ Clear separation of concerns
 - ✅ Obvious which features are dependencies
 - ✅ Easier to refactor
@@ -180,7 +187,7 @@ export const EventDetails = () => {
 // src/features/auth/index.ts
 /**
  * Auth Feature Module
- * 
+ *
  * Exports all auth-related components, hooks, services, and types
  */
 
@@ -205,14 +212,15 @@ export { default as AuthPage } from './pages/Auth';
 ```
 
 **Usage:**
+
 ```typescript
 // Can import everything from one place
-import { 
-  PermissionGuard, 
-  LoginForm, 
-  useAuth, 
+import {
+  PermissionGuard,
+  LoginForm,
+  useAuth,
   authService,
-  type User 
+  type User,
 } from '@features/auth';
 ```
 
@@ -316,6 +324,7 @@ src/
 ```
 
 **Import Changes:**
+
 ```typescript
 // Before:
 import { authService } from '@/services/auth/authService';
@@ -381,6 +390,7 @@ export interface User {
 ## Import Pattern Comparison
 
 ### Old Pattern
+
 ```typescript
 import { Component1 } from '@/components/feature1/Component1';
 import { Component2 } from '@/components/feature2/Component2';
@@ -392,6 +402,7 @@ import { formatDate } from '@/utils/date';
 ```
 
 ### New Pattern
+
 ```typescript
 import { Component1, useHook1, service1 } from '@features/feature1';
 import { Component2, useHook2 } from '@features/feature2';
@@ -423,19 +434,19 @@ import type { Event } from '../../types/event';
 export const EventManagement = () => {
   const { user } = useAuth();
   const { events, loading } = useEvents();
-  
+
   const handleCreate = async (data: Partial<Event>) => {
     await eventService.create(data);
   };
-  
+
   return (
     <div>
       <h1>Event Management</h1>
       <Card>
         <EventForm onSubmit={handleCreate} />
       </Card>
-      <EventList 
-        events={events} 
+      <EventList
+        events={events}
         loading={loading}
         formatDate={formatDate}
       />
@@ -458,19 +469,19 @@ import type { Event } from '@features/events';
 export const EventManagement = () => {
   const { user } = useAuth();
   const { events, loading } = useEvents();
-  
+
   const handleCreate = async (data: Partial<Event>) => {
     await eventService.create(data);
   };
-  
+
   return (
     <div>
       <h1>Event Management</h1>
       <Card>
         <EventForm onSubmit={handleCreate} />
       </Card>
-      <EventList 
-        events={events} 
+      <EventList
+        events={events}
         loading={loading}
         formatDate={formatDate}
       />
@@ -480,6 +491,7 @@ export const EventManagement = () => {
 ```
 
 **Benefits:**
+
 - ✅ Shorter import paths
 - ✅ Grouped by feature
 - ✅ Clear dependencies
@@ -489,15 +501,15 @@ export const EventManagement = () => {
 
 ## Summary of Changes
 
-| Aspect | Before | After |
-|--------|--------|-------|
-| **Structure** | Flat, by type | Nested, by feature |
-| **Imports** | Relative paths, scattered | Path aliases, grouped |
-| **Organization** | All components together | Feature-based grouping |
-| **Discoverability** | Search everywhere | Look in feature folder |
-| **Dependencies** | Hidden in imports | Clear from feature imports |
-| **Testing** | Difficult to isolate | Easy feature isolation |
-| **Team Work** | File conflicts common | Features can be separate |
+| Aspect              | Before                    | After                      |
+| ------------------- | ------------------------- | -------------------------- |
+| **Structure**       | Flat, by type             | Nested, by feature         |
+| **Imports**         | Relative paths, scattered | Path aliases, grouped      |
+| **Organization**    | All components together   | Feature-based grouping     |
+| **Discoverability** | Search everywhere         | Look in feature folder     |
+| **Dependencies**    | Hidden in imports         | Clear from feature imports |
+| **Testing**         | Difficult to isolate      | Easy feature isolation     |
+| **Team Work**       | File conflicts common     | Features can be separate   |
 
 ---
 

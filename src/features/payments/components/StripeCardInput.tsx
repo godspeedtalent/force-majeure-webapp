@@ -7,7 +7,7 @@ interface StripeCardInputProps {
 
 /**
  * StripeCardInput - Styled Stripe CardElement
- * 
+ *
  * A pre-styled wrapper around Stripe's CardElement that matches
  * the application's design system.
  */

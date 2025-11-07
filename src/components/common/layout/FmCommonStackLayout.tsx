@@ -1,6 +1,6 @@
 /**
  * FmCommonStackLayout
- * 
+ *
  * Reusable stack (vertical) layout component
  * Provides consistent spacing for stacked content
  */

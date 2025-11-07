@@ -33,9 +33,7 @@ export const FormSection = React.forwardRef<HTMLDivElement, FormSectionProps>(
           />
         )}
         <div className='space-y-4'>
-          <h3 className='font-canela text-base text-foreground'>
-            {title}
-          </h3>
+          <h3 className='font-canela text-base text-foreground'>{title}</h3>
           {children}
         </div>
         {showBottomDivider && (

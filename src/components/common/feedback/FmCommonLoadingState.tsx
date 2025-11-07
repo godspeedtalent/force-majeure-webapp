@@ -1,6 +1,6 @@
 /**
  * FmCommonLoadingState
- * 
+ *
  * Standardized loading state component with spinner and optional message.
  * Can be centered in container or inline.
  */

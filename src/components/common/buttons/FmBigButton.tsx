@@ -3,7 +3,8 @@ import { Loader2 } from 'lucide-react';
 
 import { cn } from '@/shared/utils/utils';
 
-interface FmBigButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface FmBigButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** Loading state */
   isLoading?: boolean;
   /** Sold out state */
@@ -18,10 +19,10 @@ interface FmBigButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>
 
 /**
  * FmBigButton - Premium CTA with Professional Styling
- * 
+ *
  * A sophisticated call-to-action button designed with outline-based styling.
  * Features:
- * 
+ *
  * - Elegant outline design with subtle glow
  * - Animated border shimmer effect
  * - Hover state with intensified effects
@@ -50,8 +51,12 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
     ref
   ) => {
     const [isHovered, setIsHovered] = useState(false);
-    const [ripples, setRipples] = useState<Array<{ x: number; y: number; id: number }>>([]);
-    const [sparkles, setSparkles] = useState<Array<{ x: number; y: number; id: number; delay: number }>>([]);
+    const [ripples, setRipples] = useState<
+      Array<{ x: number; y: number; id: number }>
+    >([]);
+    const [sparkles, setSparkles] = useState<
+      Array<{ x: number; y: number; id: number; delay: number }>
+    >([]);
     const buttonRef = useRef<HTMLButtonElement>(null);
     const sparkleIntervalRef = useRef<NodeJS.Timeout>();
 
@@ -76,7 +81,7 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
             id: Date.now() + Math.random(),
             delay: Math.random() * 0.5,
           };
-          setSparkles((prev) => [...prev.slice(-5), newSparkle]);
+          setSparkles(prev => [...prev.slice(-5), newSparkle]);
         }, 400);
       } else {
         if (sparkleIntervalRef.current) {
@@ -102,10 +107,10 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
         const x = ((e.clientX - rect.left) / rect.width) * 100;
         const y = ((e.clientY - rect.top) / rect.height) * 100;
         const ripple = { x, y, id: Date.now() };
-        setRipples((prev) => [...prev, ripple]);
+        setRipples(prev => [...prev, ripple]);
 
         setTimeout(() => {
-          setRipples((prev) => prev.filter((r) => r.id !== ripple.id));
+          setRipples(prev => prev.filter(r => r.id !== ripple.id));
         }, 600);
       }
 
@@ -113,9 +118,15 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
     };
 
     const urgencyConfig = {
-      'limited': { label: 'Limited Tickets', pulseSpeed: 'animate-pulse' },
-      'selling-fast': { label: 'Selling Fast', pulseSpeed: 'animate-[pulse_1s_ease-in-out_infinite]' },
-      'last-chance': { label: 'Last Chance', pulseSpeed: 'animate-[pulse_0.8s_ease-in-out_infinite]' },
+      limited: { label: 'Limited Tickets', pulseSpeed: 'animate-pulse' },
+      'selling-fast': {
+        label: 'Selling Fast',
+        pulseSpeed: 'animate-[pulse_1s_ease-in-out_infinite]',
+      },
+      'last-chance': {
+        label: 'Last Chance',
+        pulseSpeed: 'animate-[pulse_0.8s_ease-in-out_infinite]',
+      },
     };
 
     const showUrgency = urgency !== 'none' && !isSoldOut && !isLoading;
@@ -130,7 +141,7 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
     return (
       <button
         ref={buttonRef}
-        type="button"
+        type='button'
         disabled={disabled || isLoading || (isSoldOut && !showWaitlist)}
         onClick={handleClick}
         onMouseEnter={() => setIsHovered(true)}
@@ -149,7 +160,10 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
             ? 'border-2 border-border bg-background text-muted-foreground'
             : 'border-2 border-[#B8956A]/50 bg-background text-[#B8956A]',
           // Hover transform
-          !disabled && !isLoading && !isSoldOut && 'hover:border-[#B8956A]/70 hover:bg-[#B8956A]/5 hover:scale-[1.02]',
+          !disabled &&
+            !isLoading &&
+            !isSoldOut &&
+            'hover:border-[#B8956A]/70 hover:bg-[#B8956A]/5 hover:scale-[1.02]',
           // Active state
           !disabled && !isLoading && !isSoldOut && 'active:scale-[0.99]',
           className
@@ -158,11 +172,12 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
           boxShadow: isSoldOut
             ? 'none'
             : isHovered
-            ? '0 0 24px rgba(184, 149, 106, 0.2), 0 0 12px rgba(184, 149, 106, 0.1), inset 0 0 20px rgba(184, 149, 106, 0.06)'
-            : '0 0 16px rgba(184, 149, 106, 0.12), inset 0 0 12px rgba(184, 149, 106, 0.04)',
-          animation: !disabled && !isLoading && !isSoldOut && isHovered
-            ? 'border-ripple-1 2s ease-out infinite, border-ripple-2 2s ease-out infinite 0.4s, border-ripple-3 2s ease-out infinite 0.8s'
-            : undefined,
+              ? '0 0 24px rgba(184, 149, 106, 0.2), 0 0 12px rgba(184, 149, 106, 0.1), inset 0 0 20px rgba(184, 149, 106, 0.06)'
+              : '0 0 16px rgba(184, 149, 106, 0.12), inset 0 0 12px rgba(184, 149, 106, 0.04)',
+          animation:
+            !disabled && !isLoading && !isSoldOut && isHovered
+              ? 'border-ripple-1 2s ease-out infinite, border-ripple-2 2s ease-out infinite 0.4s, border-ripple-3 2s ease-out infinite 0.8s'
+              : undefined,
         }}
         {...props}
       >
@@ -176,8 +191,10 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
               'transition-opacity duration-300'
             )}
             style={{
-              background: 'linear-gradient(90deg, transparent, rgba(184, 149, 106, 0.3), transparent) border-box',
-              WebkitMask: 'linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)',
+              background:
+                'linear-gradient(90deg, transparent, rgba(184, 149, 106, 0.3), transparent) border-box',
+              WebkitMask:
+                'linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)',
               WebkitMaskComposite: 'xor',
               maskComposite: 'exclude',
             }}
@@ -230,10 +247,10 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
         )}
 
         {/* Ripple effects */}
-        {ripples.map((ripple) => (
+        {ripples.map(ripple => (
           <span
             key={ripple.id}
-            className="absolute rounded-full bg-[#B8956A]/30 pointer-events-none animate-ripple"
+            className='absolute rounded-full bg-[#B8956A]/30 pointer-events-none animate-ripple'
             style={{
               left: `${ripple.x}%`,
               top: `${ripple.y}%`,
@@ -246,10 +263,10 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
 
         {/* Sparkle particles (subtle) */}
         {!disableAnimations &&
-          sparkles.map((sparkle) => (
+          sparkles.map(sparkle => (
             <span
               key={sparkle.id}
-              className="absolute w-1 h-1 bg-[#B8956A]/60 rounded-full pointer-events-none"
+              className='absolute w-1 h-1 bg-[#B8956A]/60 rounded-full pointer-events-none'
               style={{
                 left: `${sparkle.x}%`,
                 top: `${sparkle.y}%`,
@@ -261,10 +278,10 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
           ))}
 
         {/* Button content */}
-        <span className="relative z-10 flex items-center justify-center gap-2">
+        <span className='relative z-10 flex items-center justify-center gap-2'>
           {isLoading ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className='h-4 w-4 animate-spin' />
               <span>Processing...</span>
             </>
           ) : (

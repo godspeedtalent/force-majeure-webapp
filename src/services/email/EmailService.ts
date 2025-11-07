@@ -19,7 +19,9 @@ export class EmailService {
   /**
    * Send order receipt email with PDF tickets
    */
-  static async sendOrderReceipt(data: OrderReceiptEmailData): Promise<EmailSendResult> {
+  static async sendOrderReceipt(
+    data: OrderReceiptEmailData
+  ): Promise<EmailSendResult> {
     try {
       // Generate PDF ticket (stubbed for now)
       let pdfAttachment: string | undefined;
@@ -37,22 +39,25 @@ export class EmailService {
       });
 
       // Call Supabase Edge Function to send email
-      const { data: response, error } = await supabase.functions.invoke('send-email', {
-        body: {
-          to: data.purchaser.email,
-          subject: `Order Confirmation - ${data.event.title}`,
-          html: htmlContent,
-          attachments: pdfAttachment
-            ? [
-                {
-                  filename: `tickets-${data.orderId}.pdf`,
-                  content: pdfAttachment,
-                  contentType: 'application/pdf',
-                },
-              ]
-            : undefined,
-        },
-      });
+      const { data: response, error } = await supabase.functions.invoke(
+        'send-email',
+        {
+          body: {
+            to: data.purchaser.email,
+            subject: `Order Confirmation - ${data.event.title}`,
+            html: htmlContent,
+            attachments: pdfAttachment
+              ? [
+                  {
+                    filename: `tickets-${data.orderId}.pdf`,
+                    content: pdfAttachment,
+                    contentType: 'application/pdf',
+                  },
+                ]
+              : undefined,
+          },
+        }
+      );
 
       if (error) {
         console.error('Error sending email:', error);
@@ -91,7 +96,8 @@ export class EmailService {
           address: '123 Test Street',
           city: 'Test City, TC 12345',
         },
-        imageUrl: 'https://placehold.co/600x400/DAA520/FFFFFF/png?text=Test+Event',
+        imageUrl:
+          'https://placehold.co/600x400/DAA520/FFFFFF/png?text=Test+Event',
       },
       purchaser: {
         fullName: 'Test User',
@@ -164,8 +170,12 @@ export class EmailService {
           subtotal: item.subtotal_cents / 100,
         })),
         subtotal: order.subtotal_cents / 100,
-        serviceFee: order.service_fee_cents ? order.service_fee_cents / 100 : undefined,
-        processingFee: order.processing_fee_cents ? order.processing_fee_cents / 100 : undefined,
+        serviceFee: order.service_fee_cents
+          ? order.service_fee_cents / 100
+          : undefined,
+        processingFee: order.processing_fee_cents
+          ? order.processing_fee_cents / 100
+          : undefined,
         ticketProtection: order.ticket_protection_cents
           ? order.ticket_protection_cents / 100
           : undefined,

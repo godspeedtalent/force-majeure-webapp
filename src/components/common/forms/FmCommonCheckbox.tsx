@@ -78,7 +78,7 @@ export const FmCommonCheckbox = React.forwardRef<
           isAnimating && 'scale-110'
         )}
       >
-        <Check className="h-4 w-4 stroke-[3]" />
+        <Check className='h-4 w-4 stroke-[3]' />
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
   );

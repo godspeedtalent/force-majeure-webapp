@@ -6,37 +6,40 @@ export const FEATURE_FLAGS = {
   // Core features
   COMING_SOON_MODE: 'coming_soon_mode',
   DEMO_PAGES: 'demo_pages',
-  
+
   // Event features
   EVENT_CHECKOUT_TIMER: 'event_checkout_timer',
-  
+
   // Social/Community features
   SCAVENGER_HUNT: 'scavenger_hunt',
   SCAVENGER_HUNT_ACTIVE: 'scavenger_hunt_active',
   SHOW_LEADERBOARD: 'show_leaderboard',
   MEMBER_PROFILES: 'member_profiles',
-  
+
   // Media features
   MUSIC_PLAYER: 'music_player',
   SPOTIFY_INTEGRATION: 'spotify_integration',
-  
+
   // Store features
   MERCH_STORE: 'merch_store',
-  
+
   // Search features
   GLOBAL_SEARCH: 'global_search',
 } as const;
 
-export type FeatureFlag = typeof FEATURE_FLAGS[keyof typeof FEATURE_FLAGS];
+export type FeatureFlag = (typeof FEATURE_FLAGS)[keyof typeof FEATURE_FLAGS];
 
 /**
  * Feature flag metadata for documentation and UI display
  */
-export const FEATURE_FLAG_METADATA: Record<FeatureFlag, {
-  displayName: string;
-  description: string;
-  category: 'core' | 'events' | 'social' | 'media' | 'store' | 'search';
-}> = {
+export const FEATURE_FLAG_METADATA: Record<
+  FeatureFlag,
+  {
+    displayName: string;
+    description: string;
+    category: 'core' | 'events' | 'social' | 'media' | 'store' | 'search';
+  }
+> = {
   [FEATURE_FLAGS.COMING_SOON_MODE]: {
     displayName: 'Coming Soon Mode',
     description: 'Shows "Coming Soon" page instead of main content',

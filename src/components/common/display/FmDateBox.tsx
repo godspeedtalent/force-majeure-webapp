@@ -14,7 +14,7 @@ interface FmDateBoxProps {
 
 /**
  * FmDateBox - Common date display component with topographic background
- * 
+ *
  * Features:
  * - Frosted glass effect with topographic background
  * - Multiple size variants (sm, md, lg)
@@ -71,23 +71,32 @@ export function FmDateBox({
       )}
     >
       {/* Topographic Background */}
-      <div className="absolute inset-0 opacity-20">
+      <div className='absolute inset-0 opacity-20'>
         <TopographicBackground opacity={1} />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center gap-0.5">
-        <span className={cn('font-semibold text-muted-foreground/80', sizes.weekday)}>
+      <div className='relative z-10 flex flex-col items-center gap-0.5'>
+        <span
+          className={cn(
+            'font-semibold text-muted-foreground/80',
+            sizes.weekday
+          )}
+        >
           {weekday}
         </span>
         <span className={cn('font-semibold text-fm-gold', sizes.month)}>
           {month}
         </span>
-        <span className={cn('font-bold text-fm-gold leading-none my-1', sizes.day)}>
+        <span
+          className={cn('font-bold text-fm-gold leading-none my-1', sizes.day)}
+        >
           {day}
         </span>
         {year && (
-          <span className={cn('font-semibold text-muted-foreground/80', sizes.year)}>
+          <span
+            className={cn('font-semibold text-muted-foreground/80', sizes.year)}
+          >
             {year}
           </span>
         )}

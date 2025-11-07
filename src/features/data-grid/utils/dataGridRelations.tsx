@@ -26,11 +26,11 @@ export const RELATION_MAPPING: Record<string, RelationConfig> = {
     component: (props: RelationComponentProps) => (
       <FmCitySearchDropdown
         value={props.value}
-        onChange={(value) => {
+        onChange={value => {
           props.onChange(value);
           props.onComplete?.();
         }}
-        placeholder="Select city..."
+        placeholder='Select city...'
         disabled={props.disabled}
       />
     ),
@@ -40,11 +40,11 @@ export const RELATION_MAPPING: Record<string, RelationConfig> = {
     component: (props: RelationComponentProps) => (
       <FmVenueSearchDropdown
         value={props.value}
-        onChange={(value) => {
+        onChange={value => {
           props.onChange(value);
           props.onComplete?.();
         }}
-        placeholder="Select venue..."
+        placeholder='Select venue...'
         disabled={props.disabled}
       />
     ),
@@ -54,11 +54,11 @@ export const RELATION_MAPPING: Record<string, RelationConfig> = {
     component: (props: RelationComponentProps) => (
       <FmArtistSearchDropdown
         value={props.value}
-        onChange={(value) => {
+        onChange={value => {
           props.onChange(value);
           props.onComplete?.();
         }}
-        placeholder="Select artist..."
+        placeholder='Select artist...'
         disabled={props.disabled}
       />
     ),
@@ -68,11 +68,11 @@ export const RELATION_MAPPING: Record<string, RelationConfig> = {
     component: (props: RelationComponentProps) => (
       <FmArtistSearchDropdown
         value={props.value}
-        onChange={(value) => {
+        onChange={value => {
           props.onChange(value);
           props.onComplete?.();
         }}
-        placeholder="Select headliner..."
+        placeholder='Select headliner...'
         disabled={props.disabled}
       />
     ),
@@ -82,11 +82,11 @@ export const RELATION_MAPPING: Record<string, RelationConfig> = {
     component: (props: RelationComponentProps) => (
       <FmUserSearchDropdown
         value={props.value}
-        onChange={(value) => {
+        onChange={value => {
           props.onChange(value);
           props.onComplete?.();
         }}
-        placeholder="Select owner..."
+        placeholder='Select owner...'
         disabled={props.disabled}
       />
     ),

@@ -1,6 +1,6 @@
 /**
  * FmCommonFormSelect
- * 
+ *
  * Standardized form select field with validation
  * Integrates with react-hook-form and shadcn select component
  */
@@ -53,7 +53,7 @@ interface FmCommonFormSelectProps<T extends FieldValues> {
 
 /**
  * Standardized form select field with validation
- * 
+ *
  * @example
  * ```tsx
  * <FmCommonFormSelect
@@ -102,7 +102,7 @@ export function FmCommonFormSelect<T extends FieldValues>({
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              {options.map((option) => (
+              {options.map(option => (
                 <SelectItem
                   key={option.value}
                   value={option.value}

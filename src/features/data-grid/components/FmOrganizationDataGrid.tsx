@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
-import { FmDataGrid, DataGridColumn, DataGridAction } from './FmDataGrid';
+import { FmConfigurableDataGrid } from './FmConfigurableDataGrid';
+import { DataGridColumn, DataGridAction } from './FmDataGrid';
 import { supabase } from '@/integrations/supabase/client';
 import { Building2, Trash2, Edit, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { Organization } from '@/types/organization';
+import { logger } from '@/shared/services/logger';
 
 export function FmOrganizationDataGrid() {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
@@ -22,7 +24,7 @@ export function FmOrganizationDataGrid() {
 
       setOrganizations((data as any) || []);
     } catch (error: any) {
-      console.error('Error fetching organizations:', error);
+      logger.error('Error fetching organizations:', error);
       toast.error('Failed to load organizations', {
         description: error.message,
       });
@@ -43,10 +45,10 @@ export function FmOrganizationDataGrid() {
       filterable: true,
       editable: true,
       type: 'text',
-      render: (value) => (
-        <div className="flex items-center gap-2">
-          <Building2 className="h-4 w-4 text-muted-foreground" />
-          <span className="font-semibold">{value}</span>
+      render: value => (
+        <div className='flex items-center gap-2'>
+          <Building2 className='h-4 w-4 text-muted-foreground' />
+          <span className='font-semibold'>{value}</span>
         </div>
       ),
     },
@@ -57,19 +59,18 @@ export function FmOrganizationDataGrid() {
       filterable: false,
       editable: true,
       type: 'url',
-      render: (value) => (
+      render: value =>
         value ? (
           <img
             src={value}
-            alt="Organization"
-            className="h-10 w-10 rounded-full object-cover border border-border"
+            alt='Organization'
+            className='h-10 w-10 rounded-full object-cover border border-border'
           />
         ) : (
-          <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
-            <Building2 className="h-5 w-5 text-muted-foreground" />
+          <div className='h-10 w-10 rounded-full bg-muted flex items-center justify-center'>
+            <Building2 className='h-5 w-5 text-muted-foreground' />
           </div>
-        )
-      ),
+        ),
     },
     {
       key: 'owner_id',
@@ -78,10 +79,12 @@ export function FmOrganizationDataGrid() {
       filterable: false,
       editable: true,
       isRelation: true,
-      render: (value) => (
-        <div className="flex items-center gap-2">
-          <User className="h-4 w-4 text-muted-foreground" />
-          <span className="font-mono text-xs text-muted-foreground">{value}</span>
+      render: value => (
+        <div className='flex items-center gap-2'>
+          <User className='h-4 w-4 text-muted-foreground' />
+          <span className='font-mono text-xs text-muted-foreground'>
+            {value}
+          </span>
         </div>
       ),
     },
@@ -91,8 +94,8 @@ export function FmOrganizationDataGrid() {
       sortable: true,
       editable: false,
       type: 'created_date',
-      render: (value) => (
-        <span className="text-sm text-muted-foreground">
+      render: value => (
+        <span className='text-sm text-muted-foreground'>
           {format(new Date(value), 'MMM d, yyyy')}
         </span>
       ),
@@ -102,8 +105,8 @@ export function FmOrganizationDataGrid() {
   const actions: DataGridAction<Organization>[] = [
     {
       label: 'Edit Organization',
-      icon: <Edit className="h-4 w-4" />,
-      onClick: (org) => {
+      icon: <Edit className='h-4 w-4' />,
+      onClick: org => {
         toast.info('Edit Organization', {
           description: `Editing ${org.name}`,
         });
@@ -111,8 +114,8 @@ export function FmOrganizationDataGrid() {
     },
     {
       label: 'Delete Organization',
-      icon: <Trash2 className="h-4 w-4" />,
-      onClick: (org) => {
+      icon: <Trash2 className='h-4 w-4' />,
+      onClick: org => {
         toast.error('Delete Organization', {
           description: `This would delete ${org.name}`,
         });
@@ -123,7 +126,11 @@ export function FmOrganizationDataGrid() {
 
   const contextMenuActions: DataGridAction<Organization>[] = actions;
 
-  const handleUpdate = async (row: Organization, columnKey: string, newValue: any) => {
+  const handleUpdate = async (
+    row: Organization,
+    columnKey: string,
+    newValue: any
+  ) => {
     try {
       const { error } = await supabase
         .from('organizations' as any)
@@ -135,9 +142,7 @@ export function FmOrganizationDataGrid() {
       // Update the row in local state without refetching
       setOrganizations(prevOrgs =>
         prevOrgs.map(org =>
-          org.id === row.id
-            ? { ...org, [columnKey]: newValue }
-            : org
+          org.id === row.id ? { ...org, [columnKey]: newValue } : org
         )
       );
 
@@ -145,7 +150,7 @@ export function FmOrganizationDataGrid() {
         description: `${columnKey} updated successfully`,
       });
     } catch (error: any) {
-      console.error('Error updating organization:', error);
+      logger.error('Error updating organization:', error);
       toast.error('Update failed', {
         description: error.message,
       });
@@ -155,11 +160,13 @@ export function FmOrganizationDataGrid() {
 
   const handleCreate = async (newData: Partial<Organization>) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) throw new Error('Not authenticated');
 
-      const { data, error} = await supabase
+      const { data, error } = await supabase
         .from('organizations' as any)
         .insert({
           name: newData.name || 'New Organization',
@@ -179,7 +186,7 @@ export function FmOrganizationDataGrid() {
 
       return data as any;
     } catch (error: any) {
-      console.error('Error creating organization:', error);
+      logger.error('Error creating organization:', error);
       toast.error('Creation failed', {
         description: error.message,
       });
@@ -188,7 +195,8 @@ export function FmOrganizationDataGrid() {
   };
 
   return (
-    <FmDataGrid
+    <FmConfigurableDataGrid
+      gridId='organizations'
       data={organizations}
       columns={columns}
       actions={actions}
@@ -197,8 +205,8 @@ export function FmOrganizationDataGrid() {
       pageSize={15}
       onUpdate={handleUpdate}
       onCreate={handleCreate}
-      resourceName="Organization"
-      createButtonLabel="Create Organization"
+      resourceName='Organization'
+      createButtonLabel='Create Organization'
     />
   );
 }

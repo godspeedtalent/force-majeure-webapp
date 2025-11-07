@@ -1,7 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircle2, Loader2 } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/common/shadcn/card';
 import { Button } from '@/components/common/shadcn/button';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 
@@ -18,35 +24,39 @@ export default function CheckoutSuccess() {
 
   if (!sessionId) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <div className='min-h-screen flex items-center justify-center'>
+        <Loader2 className='h-8 w-8 animate-spin text-muted-foreground' />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-background relative overflow-hidden">
+    <div className='min-h-screen flex items-center justify-center p-4 bg-background relative overflow-hidden'>
       <TopographicBackground opacity={0.25} />
       <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
-      <Card className="w-full max-w-md relative z-10">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-success/10 flex items-center justify-center">
-            <CheckCircle2 className="h-8 w-8 text-success" />
+      <Card className='w-full max-w-md relative z-10'>
+        <CardHeader className='text-center'>
+          <div className='mx-auto mb-4 w-16 h-16 rounded-full bg-success/10 flex items-center justify-center'>
+            <CheckCircle2 className='h-8 w-8 text-success' />
           </div>
-          <CardTitle className="text-2xl">Payment Successful!</CardTitle>
+          <CardTitle className='text-2xl'>Payment Successful!</CardTitle>
           <CardDescription>
             Your tickets have been purchased successfully
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground text-center">
+        <CardContent className='space-y-4'>
+          <p className='text-sm text-muted-foreground text-center'>
             You'll receive a confirmation email with your tickets shortly.
           </p>
-          <div className="space-y-2">
-            <Button onClick={() => navigate('/profile')} className="w-full">
+          <div className='space-y-2'>
+            <Button onClick={() => navigate('/profile')} className='w-full'>
               View My Tickets
             </Button>
-            <Button onClick={() => navigate('/')} variant="outline" className="w-full">
+            <Button
+              onClick={() => navigate('/')}
+              variant='outline'
+              className='w-full'
+            >
               Back to Home
             </Button>
           </div>

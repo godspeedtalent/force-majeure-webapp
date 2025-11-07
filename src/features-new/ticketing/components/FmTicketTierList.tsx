@@ -1,4 +1,7 @@
-import { FmCommonList, type FmCommonListColumn } from '@/components/common/data/FmCommonList';
+import {
+  FmCommonList,
+  type FmCommonListColumn,
+} from '@/components/common/data/FmCommonList';
 
 interface TicketTierSummary {
   id: string;
@@ -19,7 +22,10 @@ interface FmTicketTierListProps {
   className?: string;
 }
 
-export const FmTicketTierList = ({ selections, className }: FmTicketTierListProps) => {
+export const FmTicketTierList = ({
+  selections,
+  className,
+}: FmTicketTierListProps) => {
   const columns: FmCommonListColumn<TicketSelection>[] = [
     {
       key: 'name',

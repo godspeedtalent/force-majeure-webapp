@@ -1,6 +1,6 @@
 /**
  * Core Router
- * 
+ *
  * Application routing configuration
  */
 

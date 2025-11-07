@@ -13,6 +13,7 @@ Use this checklist to track your progress migrating to the Feature-Based Archite
 ## 📦 Feature Migration
 
 ### Auth Feature
+
 - [ ] Migrate components from `src/components/auth/`
 - [ ] Migrate pages related to auth
 - [ ] Migrate hooks
@@ -24,6 +25,7 @@ Use this checklist to track your progress migrating to the Feature-Based Archite
 - [ ] Remove old auth files
 
 ### Events Feature
+
 - [ ] Migrate components from `src/components/events/`
 - [ ] Migrate pages related to events
 - [ ] Migrate hooks
@@ -35,6 +37,7 @@ Use this checklist to track your progress migrating to the Feature-Based Archite
 - [ ] Remove old events files
 
 ### Ticketing Feature
+
 - [ ] Migrate components from `src/components/ticketing/`
 - [ ] Migrate pages related to ticketing
 - [ ] Migrate hooks
@@ -46,6 +49,7 @@ Use this checklist to track your progress migrating to the Feature-Based Archite
 - [ ] Remove old ticketing files
 
 ### Payments Feature
+
 - [ ] Migrate components from `src/components/payments/`
 - [ ] Migrate pages related to payments
 - [ ] Migrate hooks
@@ -57,6 +61,7 @@ Use this checklist to track your progress migrating to the Feature-Based Archite
 - [ ] Remove old payments files
 
 ### Merch Feature
+
 - [ ] Migrate components from `src/components/merch/`
 - [ ] Migrate pages related to merch
 - [ ] Migrate hooks
@@ -68,6 +73,7 @@ Use this checklist to track your progress migrating to the Feature-Based Archite
 - [ ] Remove old merch files
 
 ### Scavenger Feature
+
 - [ ] Migrate components from `src/components/scavenger/`
 - [ ] Migrate pages related to scavenger
 - [ ] Migrate hooks
@@ -79,6 +85,7 @@ Use this checklist to track your progress migrating to the Feature-Based Archite
 - [ ] Remove old scavenger files
 
 ### Admin Feature
+
 - [ ] Migrate components from `src/components/admin/`
 - [ ] Migrate pages from `src/pages/admin/`
 - [ ] Migrate hooks
@@ -90,6 +97,7 @@ Use this checklist to track your progress migrating to the Feature-Based Archite
 - [ ] Remove old admin files
 
 ### Artist Feature
+
 - [ ] Migrate components from `src/components/artist/`
 - [ ] Migrate pages related to artists
 - [ ] Migrate hooks
@@ -101,6 +109,7 @@ Use this checklist to track your progress migrating to the Feature-Based Archite
 - [ ] Remove old artist files
 
 ### Venue Feature
+
 - [ ] Migrate components from `src/components/venue/`
 - [ ] Migrate pages related to venues
 - [ ] Migrate hooks
@@ -112,6 +121,7 @@ Use this checklist to track your progress migrating to the Feature-Based Archite
 - [ ] Remove old venue files
 
 ### Music Player Feature
+
 - [ ] Migrate components from `src/components/musicplayer/`
 - [ ] Migrate context from `src/contexts/MusicPlayerContext.tsx`
 - [ ] Migrate hooks
@@ -123,6 +133,7 @@ Use this checklist to track your progress migrating to the Feature-Based Archite
 - [ ] Remove old music player files
 
 ### Organization Feature
+
 - [ ] Migrate components from `src/components/organization/`
 - [ ] Migrate pages from `src/pages/organization/`
 - [ ] Migrate hooks
@@ -136,6 +147,7 @@ Use this checklist to track your progress migrating to the Feature-Based Archite
 ## 🔄 Shared Code Organization
 
 ### Components
+
 - [ ] Identify truly shared components from `src/components/common/`
 - [ ] Move to `src/shared/components/`
 - [ ] Organize by type (primitives, forms, layouts, etc.)
@@ -143,18 +155,21 @@ Use this checklist to track your progress migrating to the Feature-Based Archite
 - [ ] Update imports
 
 ### Hooks
+
 - [ ] Review existing hooks in `src/hooks/`
 - [ ] Move shared hooks to `src/shared/hooks/`
 - [ ] Update exports
 - [ ] Update imports
 
 ### Utils
+
 - [ ] Review existing utils in `src/shared/utils/`
 - [ ] Organize by category
 - [ ] Create index files
 - [ ] Update imports
 
 ### Types
+
 - [ ] Review existing types in `src/types/`
 - [ ] Move shared types to `src/shared/types/`
 - [ ] Organize by domain
@@ -162,6 +177,7 @@ Use this checklist to track your progress migrating to the Feature-Based Archite
 - [ ] Update imports
 
 ### Constants
+
 - [ ] Review existing constants
 - [ ] Move to `src/shared/constants/`
 - [ ] Organize by category
@@ -169,6 +185,7 @@ Use this checklist to track your progress migrating to the Feature-Based Archite
 - [ ] Update imports
 
 ### Services
+
 - [ ] Review existing services in `src/services/`
 - [ ] Move shared services to `src/shared/services/`
 - [ ] Create index files
@@ -177,18 +194,21 @@ Use this checklist to track your progress migrating to the Feature-Based Archite
 ## 🏗️ Core Module Setup
 
 ### Router
+
 - [ ] Move routing config from `src/config/routes.ts` to `src/core/router/`
 - [ ] Create route definitions
 - [ ] Update imports
 - [ ] Test routing
 
 ### API
+
 - [ ] Move API client setup to `src/core/api/`
 - [ ] Configure base client
 - [ ] Update imports
 - [ ] Test API calls
 
 ### Providers
+
 - [ ] Review contexts in `src/contexts/`
 - [ ] Move global providers to `src/core/providers/`
 - [ ] Create provider setup
@@ -196,6 +216,7 @@ Use this checklist to track your progress migrating to the Feature-Based Archite
 - [ ] Test context functionality
 
 ### Layouts
+
 - [ ] Identify layout components in `src/components/layout/`
 - [ ] Move to `src/core/layouts/`
 - [ ] Create layout index

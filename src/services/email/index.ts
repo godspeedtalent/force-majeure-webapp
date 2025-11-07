@@ -5,5 +5,8 @@
 
 export { EmailService } from './EmailService';
 export { TicketPDFService } from './TicketPDFService';
-export { generateOrderReceiptEmailHTML, OrderReceiptEmail } from './templates/OrderReceiptEmail';
+export {
+  generateOrderReceiptEmailHTML,
+  OrderReceiptEmail,
+} from './templates/OrderReceiptEmail';
 export type { TicketPDFOptions } from './TicketPDFService';

@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 import { useFeatureFlagHelpers } from '@/shared/hooks/useFeatureFlags';
 import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 
@@ -9,7 +15,9 @@ interface GlobalSearchContextType {
   toggleSearch: () => void;
 }
 
-const GlobalSearchContext = createContext<GlobalSearchContextType | undefined>(undefined);
+const GlobalSearchContext = createContext<GlobalSearchContextType | undefined>(
+  undefined
+);
 
 export const GlobalSearchProvider = ({ children }: { children: ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,7 +44,9 @@ export const GlobalSearchProvider = ({ children }: { children: ReactNode }) => {
   }, [isEnabled, toggleSearch]);
 
   return (
-    <GlobalSearchContext.Provider value={{ isOpen, openSearch, closeSearch, toggleSearch }}>
+    <GlobalSearchContext.Provider
+      value={{ isOpen, openSearch, closeSearch, toggleSearch }}
+    >
       {children}
     </GlobalSearchContext.Provider>
   );
@@ -45,7 +55,9 @@ export const GlobalSearchProvider = ({ children }: { children: ReactNode }) => {
 export const useGlobalSearch = () => {
   const context = useContext(GlobalSearchContext);
   if (context === undefined) {
-    throw new Error('useGlobalSearch must be used within a GlobalSearchProvider');
+    throw new Error(
+      'useGlobalSearch must be used within a GlobalSearchProvider'
+    );
   }
   return context;
 };

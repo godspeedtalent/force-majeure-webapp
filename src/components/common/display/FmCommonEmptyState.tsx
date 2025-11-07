@@ -1,6 +1,6 @@
 /**
  * FmCommonEmptyState
- * 
+ *
  * Standardized empty state component for displaying when no data is available.
  * Provides consistent messaging with optional icon, description, and call-to-action.
  */
@@ -59,7 +59,9 @@ export const FmCommonEmptyState = ({
   return (
     <div className={cn('text-center', config.container, className)}>
       {Icon && (
-        <Icon className={cn(config.icon, 'text-muted-foreground mx-auto mb-4')} />
+        <Icon
+          className={cn(config.icon, 'text-muted-foreground mx-auto mb-4')}
+        />
       )}
       <h3 className={cn(config.title, 'font-medium text-foreground mb-2')}>
         {title}

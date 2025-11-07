@@ -8,14 +8,17 @@ interface FmStickyFooterProps {
 
 /**
  * FmStickyFooter - A sticky footer component for big action buttons
- * 
+ *
  * Features:
  * - Sticks to the bottom of the viewport
  * - Adds appropriate padding to prevent button clipping
  * - Backdrop blur and gradient background
  * - Smooth shadow for elevation
  */
-export const FmStickyFooter = ({ children, className }: FmStickyFooterProps) => {
+export const FmStickyFooter = ({
+  children,
+  className,
+}: FmStickyFooterProps) => {
   return (
     <div
       className={cn(

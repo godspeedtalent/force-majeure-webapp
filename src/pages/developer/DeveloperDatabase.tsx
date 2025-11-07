@@ -5,7 +5,16 @@ import { DataGridAction, FmConfigurableDataGrid } from '@/features/data-grid';
 import { FmEditVenueButton } from '@/components/common/buttons/FmEditVenueButton';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
-import { MapPin, Database, Calendar, Edit, Trash2, Mic2, Building2, Users } from 'lucide-react';
+import {
+  MapPin,
+  Database,
+  Calendar,
+  Edit,
+  Trash2,
+  Mic2,
+  Building2,
+  Users,
+} from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { EventsManagement } from '../admin/EventsManagement';
@@ -18,7 +27,13 @@ import { artistColumns, venueColumns } from '../admin/config/adminGridColumns';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared/auth/permissions';
 
-type DatabaseTab = 'overview' | 'artists' | 'events' | 'organizations' | 'users' | 'venues';
+type DatabaseTab =
+  | 'overview'
+  | 'artists'
+  | 'events'
+  | 'organizations'
+  | 'users'
+  | 'venues';
 
 export default function DeveloperDatabase() {
   const location = useLocation();
@@ -30,17 +45,47 @@ export default function DeveloperDatabase() {
 
   // Navigation groups configuration - conditionally include admin-only tabs
   const navigationGroups: FmCommonSideNavGroup<DatabaseTab>[] = useMemo(() => {
-    const tables: Array<{ id: DatabaseTab; label: string; icon: any; description: string }> = [
-      { id: 'artists', label: 'Artists', icon: Mic2, description: 'Manage artist profiles' },
-      { id: 'events', label: 'Events', icon: Calendar, description: 'Manage events' },
-      { id: 'venues', label: 'Venues', icon: MapPin, description: 'Manage venue locations' },
+    const tables: Array<{
+      id: DatabaseTab;
+      label: string;
+      icon: any;
+      description: string;
+    }> = [
+      {
+        id: 'artists',
+        label: 'Artists',
+        icon: Mic2,
+        description: 'Manage artist profiles',
+      },
+      {
+        id: 'events',
+        label: 'Events',
+        icon: Calendar,
+        description: 'Manage events',
+      },
+      {
+        id: 'venues',
+        label: 'Venues',
+        icon: MapPin,
+        description: 'Manage venue locations',
+      },
     ];
 
     // Add admin-only tabs
     if (isAdmin) {
       tables.push(
-        { id: 'organizations', label: 'Organizations', icon: Building2, description: 'Manage organizations' },
-        { id: 'users', label: 'Users', icon: Users, description: 'Manage user accounts' }
+        {
+          id: 'organizations',
+          label: 'Organizations',
+          icon: Building2,
+          description: 'Manage organizations',
+        },
+        {
+          id: 'users',
+          label: 'Users',
+          icon: Users,
+          description: 'Manage user accounts',
+        }
       );
     }
 
@@ -49,7 +94,12 @@ export default function DeveloperDatabase() {
         label: 'Overview',
         icon: Database,
         items: [
-          { id: 'overview' as const, label: 'Dashboard', icon: Database, description: 'Database overview and search' },
+          {
+            id: 'overview' as const,
+            label: 'Dashboard',
+            icon: Database,
+            description: 'Database overview and search',
+          },
         ],
       },
       {
@@ -70,7 +120,12 @@ export default function DeveloperDatabase() {
 
     if (state?.editArtistId) {
       setActiveTab('artists');
-    } else if (state?.openTab && ['artists', 'events', 'organizations', 'users', 'venues'].includes(state.openTab)) {
+    } else if (
+      state?.openTab &&
+      ['artists', 'events', 'organizations', 'users', 'venues'].includes(
+        state.openTab
+      )
+    ) {
       setActiveTab(state.openTab as DatabaseTab);
     }
   }, [location.state]);
@@ -95,24 +150,33 @@ export default function DeveloperDatabase() {
     queryFn: async () => {
       const { data, error } = await (supabase as any)
         .from('venues')
-        .select(`
+        .select(
+          `
           *,
           cities!city_id(name, state)
-        `)
+        `
+        )
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
-      
+
       // Flatten the city data for easier access
       return data.map((venue: any) => ({
         ...venue,
-        city: venue.cities ? `${venue.cities.name}, ${venue.cities.state}` : null,
+        city: venue.cities
+          ? `${venue.cities.name}, ${venue.cities.state}`
+          : null,
       }));
     },
   });
 
-  const handleArtistUpdate = async (row: any, columnKey: string, newValue: any) => {
-    const normalizedValue = typeof newValue === 'string' ? newValue.trim() : newValue;
+  const handleArtistUpdate = async (
+    row: any,
+    columnKey: string,
+    newValue: any
+  ) => {
+    const normalizedValue =
+      typeof newValue === 'string' ? newValue.trim() : newValue;
     const updateData: Record<string, any> = {
       [columnKey]: normalizedValue === '' ? null : normalizedValue,
     };
@@ -125,14 +189,21 @@ export default function DeveloperDatabase() {
 
       if (error) throw error;
 
-      queryClient.setQueryData(['admin-artists'], (oldData: any[] | undefined) => {
-        if (!oldData) return oldData;
-        return oldData.map(artist =>
-          artist.id === row.id
-            ? { ...artist, ...updateData, updated_at: new Date().toISOString() }
-            : artist
-        );
-      });
+      queryClient.setQueryData(
+        ['admin-artists'],
+        (oldData: any[] | undefined) => {
+          if (!oldData) return oldData;
+          return oldData.map(artist =>
+            artist.id === row.id
+              ? {
+                  ...artist,
+                  ...updateData,
+                  updated_at: new Date().toISOString(),
+                }
+              : artist
+          );
+        }
+      );
 
       toast.success('Artist updated');
     } catch (error) {
@@ -201,16 +272,20 @@ export default function DeveloperDatabase() {
   const artistContextActions: DataGridAction[] = [
     {
       label: 'Delete Artist',
-      icon: <Trash2 className="h-4 w-4" />,
+      icon: <Trash2 className='h-4 w-4' />,
       onClick: handleDeleteArtist,
       variant: 'destructive',
     },
   ];
 
   // Handle venue updates
-  const handleVenueUpdate = async (row: any, columnKey: string, newValue: any) => {
+  const handleVenueUpdate = async (
+    row: any,
+    columnKey: string,
+    newValue: any
+  ) => {
     const updateData: any = {};
-    
+
     // Convert capacity to integer if updating that field
     if (columnKey === 'capacity') {
       const numValue = parseInt(newValue, 10);
@@ -232,8 +307,8 @@ export default function DeveloperDatabase() {
     // Update local data instead of refetching to maintain sort order
     queryClient.setQueryData(['admin-venues'], (oldData: any[]) => {
       if (!oldData) return oldData;
-      return oldData.map(venue => 
-        venue.id === row.id 
+      return oldData.map(venue =>
+        venue.id === row.id
           ? { ...venue, ...updateData, updated_at: new Date().toISOString() }
           : venue
       );
@@ -270,12 +345,12 @@ export default function DeveloperDatabase() {
   const venueContextActions: DataGridAction[] = [
     {
       label: 'Edit Venue',
-      icon: <Edit className="h-4 w-4" />,
-      onClick: (row) => setEditingVenueId(row.id),
+      icon: <Edit className='h-4 w-4' />,
+      onClick: row => setEditingVenueId(row.id),
     },
     {
       label: 'Delete Venue',
-      icon: <Trash2 className="h-4 w-4" />,
+      icon: <Trash2 className='h-4 w-4' />,
       onClick: handleDeleteVenue,
       variant: 'destructive',
     },
@@ -321,48 +396,66 @@ export default function DeveloperDatabase() {
       activeItem={activeTab}
       onItemChange={setActiveTab}
     >
-      <div className="max-w-full">
-        <div className="mb-[20px]">
-          <div className="flex items-center gap-[10px] mb-[20px]">
-            <Database className="h-6 w-6 text-fm-gold" />
-            <h1 className="text-3xl font-canela">{formatHeader('Database Manager')}</h1>
+      <div className='max-w-full'>
+        <div className='mb-[20px]'>
+          <div className='flex items-center gap-[10px] mb-[20px]'>
+            <Database className='h-6 w-6 text-fm-gold' />
+            <h1 className='text-3xl font-canela'>
+              {formatHeader('Database Manager')}
+            </h1>
           </div>
         </div>
 
         <DecorativeDivider
-          marginTop="mt-0"
-          marginBottom="mb-6"
-          lineWidth="w-32"
+          marginTop='mt-0'
+          marginBottom='mb-6'
+          lineWidth='w-32'
           opacity={0.5}
         />
 
         {/* Overview Tab */}
         {activeTab === 'overview' && (
-          <div className="flex flex-col items-center justify-center min-h-[60vh]">
+          <div className='flex flex-col items-center justify-center min-h-[60vh]'>
             {/* Stats Groups in Columns */}
-            <div className="w-full max-w-4xl mb-12">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]">
-                  <div className="text-xs text-muted-foreground mb-1">Artists</div>
-                  <div className="text-2xl font-bold text-foreground">{artists.length}</div>
+            <div className='w-full max-w-4xl mb-12'>
+              <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+                <div className='bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]'>
+                  <div className='text-xs text-muted-foreground mb-1'>
+                    Artists
+                  </div>
+                  <div className='text-2xl font-bold text-foreground'>
+                    {artists.length}
+                  </div>
                 </div>
-                <div className="bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]">
-                  <div className="text-xs text-muted-foreground mb-1">Venues</div>
-                  <div className="text-2xl font-bold text-foreground">{venues.length}</div>
+                <div className='bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]'>
+                  <div className='text-xs text-muted-foreground mb-1'>
+                    Venues
+                  </div>
+                  <div className='text-2xl font-bold text-foreground'>
+                    {venues.length}
+                  </div>
                 </div>
-                <div className="bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]">
-                  <div className="text-xs text-muted-foreground mb-1">Total Records</div>
-                  <div className="text-2xl font-bold text-foreground">{totalRecords}</div>
+                <div className='bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]'>
+                  <div className='text-xs text-muted-foreground mb-1'>
+                    Total Records
+                  </div>
+                  <div className='text-2xl font-bold text-foreground'>
+                    {totalRecords}
+                  </div>
                 </div>
-                <div className="bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]">
-                  <div className="text-xs text-muted-foreground mb-1">Complete Data</div>
-                  <div className="text-2xl font-bold text-foreground">{completeness}%</div>
+                <div className='bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]'>
+                  <div className='text-xs text-muted-foreground mb-1'>
+                    Complete Data
+                  </div>
+                  <div className='text-2xl font-bold text-foreground'>
+                    {completeness}%
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Centered Search */}
-            <div className="w-full max-w-2xl">
+            <div className='w-full max-w-2xl'>
               <DatabaseNavigatorSearch />
             </div>
           </div>
@@ -370,7 +463,7 @@ export default function DeveloperDatabase() {
 
         {activeTab === 'artists' && (
           <FmConfigurableDataGrid
-            gridId="dev-artists"
+            gridId='dev-artists'
             data={artists}
             columns={artistColumns}
             contextMenuActions={artistContextActions}
@@ -378,32 +471,28 @@ export default function DeveloperDatabase() {
             pageSize={15}
             onUpdate={handleArtistUpdate}
             onCreate={handleArtistCreate}
-            resourceName="Artist"
-            createButtonLabel="Add Artist"
+            resourceName='Artist'
+            createButtonLabel='Add Artist'
           />
         )}
 
-        {activeTab === 'organizations' && (
-          <OrganizationsManagement />
-        )}
+        {activeTab === 'organizations' && <OrganizationsManagement />}
 
-        {activeTab === 'users' && (
-          <UserManagement />
-        )}
+        {activeTab === 'users' && <UserManagement />}
 
         {activeTab === 'venues' && (
           <>
             <FmConfigurableDataGrid
-              gridId="dev-venues"
+              gridId='dev-venues'
               data={venues}
               columns={venueColumns}
               contextMenuActions={venueContextActions}
               loading={venuesLoading}
               pageSize={15}
               onUpdate={handleVenueUpdate}
-              resourceName="Venue"
+              resourceName='Venue'
             />
-            
+
             {editingVenueId && (
               <FmEditVenueButton
                 venueId={editingVenueId}
@@ -415,7 +504,9 @@ export default function DeveloperDatabase() {
         )}
 
         {activeTab === 'events' && (
-          <EventsManagement initialEditEventId={(location.state as any)?.editEventId} />
+          <EventsManagement
+            initialEditEventId={(location.state as any)?.editEventId}
+          />
         )}
       </div>
     </SideNavbarLayout>

@@ -2,10 +2,11 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, stripe-signature',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type, stripe-signature',
 };
 
-Deno.serve(async (req) => {
+Deno.serve(async req => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -18,23 +19,23 @@ Deno.serve(async (req) => {
 
     if (!stripeKey || !webhookSecret) {
       console.error('Stripe credentials not configured');
-      return new Response(
-        JSON.stringify({ error: 'Webhook not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: 'Webhook not configured' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const signature = req.headers.get('stripe-signature');
     if (!signature) {
       console.error('Missing stripe-signature header');
-      return new Response(
-        JSON.stringify({ error: 'Missing signature' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: 'Missing signature' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const body = await req.text();
-    
+
     const stripe = await import('https://esm.sh/stripe@14.21.0');
     const stripeClient = new stripe.default(stripeKey, {
       apiVersion: '2023-10-16',
@@ -44,19 +45,23 @@ Deno.serve(async (req) => {
     // Verify webhook signature
     let event;
     try {
-      event = stripeClient.webhooks.constructEvent(body, signature, webhookSecret);
+      event = stripeClient.webhooks.constructEvent(
+        body,
+        signature,
+        webhookSecret
+      );
     } catch (err) {
       console.error('Webhook signature verification failed:', err.message);
-      return new Response(
-        JSON.stringify({ error: 'Invalid signature' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: 'Invalid signature' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     console.log('Processing webhook event:', event.type, 'ID:', event.id);
 
     const supabase = createClient(supabaseUrl, supabaseKey, {
-      auth: { persistSession: false }
+      auth: { persistSession: false },
     });
 
     // Log webhook event
@@ -71,7 +76,7 @@ Deno.serve(async (req) => {
       case 'checkout.session.completed': {
         const session = event.data.object;
         const orderId = session.metadata?.order_id;
-        
+
         if (!orderId) {
           console.error('No order_id in session metadata');
           break;
@@ -114,7 +119,7 @@ Deno.serve(async (req) => {
 
             if (holds && holds.length > 0) {
               await supabase.rpc('convert_hold_to_sale', {
-                p_hold_id: holds[0].id
+                p_hold_id: holds[0].id,
               });
             }
 
@@ -150,7 +155,7 @@ Deno.serve(async (req) => {
       case 'checkout.session.expired': {
         const session = event.data.object;
         const orderId = session.metadata?.order_id;
-        
+
         if (!orderId) break;
 
         console.log('Checkout session expired for order:', orderId);
@@ -177,7 +182,7 @@ Deno.serve(async (req) => {
           if (holds) {
             for (const hold of holds) {
               await supabase.rpc('release_ticket_hold', {
-                p_hold_id: hold.id
+                p_hold_id: hold.id,
               });
             }
           }
@@ -189,7 +194,7 @@ Deno.serve(async (req) => {
 
       case 'payment_intent.payment_failed': {
         const paymentIntent = event.data.object;
-        
+
         // Find order by payment intent
         const { data: order } = await supabase
           .from('orders')
@@ -211,16 +216,15 @@ Deno.serve(async (req) => {
         console.log('Unhandled event type:', event.type);
     }
 
-    return new Response(
-      JSON.stringify({ received: true }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-
+    return new Response(JSON.stringify({ received: true }), {
+      status: 200,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   } catch (error) {
     console.error('Error processing webhook:', error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 });

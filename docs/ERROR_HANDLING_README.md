@@ -29,12 +29,14 @@ try {
 ## What Users See
 
 ### Regular Users
+
 - **Title**: "Failed to Create Event" (crimson text)
 - **Message**: "An error occurred. Please try again."
 - **Duration**: 4 seconds
 - **No technical details**
 
 ### Developers/Admins
+
 - **Title**: "Failed to Create Event" (crimson text)
 - **Full Description**: Including user-friendly message
 - **Response Body**: Formatted JSON with error details
@@ -47,6 +49,7 @@ try {
 ### 1. Centralized Error Handler
 
 Single function handles all error types:
+
 - Standard Error objects
 - Supabase/PostgrestError
 - HTTP Response errors
@@ -62,15 +65,16 @@ Detects if user is developer/admin and shows appropriate content:
 handleError(error, { title: 'Failed' });
 
 // Or specify explicitly
-handleError(error, { 
+handleError(error, {
   title: 'Failed',
-  userRole: 'admin' // Shows detailed error
+  userRole: 'admin', // Shows detailed error
 });
 ```
 
 ### 3. Copyable Error Details
 
 Developers can click copy button to get:
+
 ```
 Title: Failed to Create Event
 Description: Could not save the event to the database
@@ -91,6 +95,7 @@ Error: duplicate key value...
 ### 4. Automatic Backend Logging
 
 All errors are automatically logged to backend via edge function:
+
 - Error level, source, endpoint, method
 - Error message and details
 - Stack traces for debugging
@@ -104,29 +109,33 @@ For background operations, disable toast:
 handleError(error, {
   title: 'Failed to Load Stats',
   showToast: false, // No toast shown
-  logError: true,   // Still logged to backend
+  logError: true, // Still logged to backend
 });
 ```
 
 ## Files Created
 
 ### Core Service
+
 - **`src/shared/services/errorHandler.ts`** - Main error handler service
   - `handleError()` - Main error handler function
   - `withErrorHandler()` - Async wrapper
   - `withErrorHandlerSync()` - Sync wrapper
 
 ### Enhanced Components
+
 - **`src/components/common/feedback/FmErrorToast.tsx`** - Enhanced error toast
   - Better formatting for response bodies
   - Copyable content
   - Role-aware display
 
 ### Documentation
+
 - **`docs/ERROR_HANDLING_GUIDE.md`** - Complete API reference and patterns
 - **`docs/examples/ERROR_HANDLER_MIGRATION.md`** - Migration examples
 
 ### Updated Files
+
 - `src/components/search/GlobalSearch.tsx`
 - `src/pages/Profile.tsx`
 - `src/pages/EventManagement.tsx`
@@ -135,11 +144,10 @@ handleError(error, {
 ## Usage Patterns
 
 ### Basic API Call
+
 ```typescript
 try {
-  const { data, error } = await supabase
-    .from('events')
-    .select('*');
+  const { data, error } = await supabase.from('events').select('*');
   if (error) throw error;
   return data;
 } catch (error) {
@@ -152,6 +160,7 @@ try {
 ```
 
 ### With Wrapper
+
 ```typescript
 const event = await withErrorHandler(
   async () => {
@@ -163,7 +172,7 @@ const event = await withErrorHandler(
     if (error) throw error;
     return data;
   },
-  { 
+  {
     title: 'Failed to Load Event',
     endpoint: 'events',
   }
@@ -172,6 +181,7 @@ const event = await withErrorHandler(
 ```
 
 ### Network Requests
+
 ```typescript
 try {
   const response = await fetch('/api/data');
@@ -189,6 +199,7 @@ try {
 ```
 
 ### Silent Background Operations
+
 ```typescript
 try {
   await fetchUserStats();
@@ -205,11 +216,13 @@ try {
 To migrate existing error handling:
 
 1. **Add import**:
+
    ```typescript
    import { handleError } from '@/shared/services/errorHandler';
    ```
 
 2. **Replace old pattern**:
+
    ```typescript
    // OLD ❌
    } catch (error) {
@@ -217,7 +230,7 @@ To migrate existing error handling:
      await logApiError({...});
      toast.error('Failed');
    }
-   
+
    // NEW ✅
    } catch (error) {
      await handleError(error, {
@@ -236,20 +249,21 @@ See [ERROR_HANDLER_MIGRATION.md](./examples/ERROR_HANDLER_MIGRATION.md) for comp
 
 ## Benefits
 
-| Before | After |
-|--------|-------|
-| Multiple imports needed | Single import |
-| Manual error logging | Automatic logging |
-| Generic error messages | Contextual messages |
-| Same for all users | Role-aware content |
-| No debugging info | Full stack traces |
-| Can't copy errors | Click to copy |
-| Inconsistent UX | Consistent toasts |
-| More boilerplate | Less code |
+| Before                  | After               |
+| ----------------------- | ------------------- |
+| Multiple imports needed | Single import       |
+| Manual error logging    | Automatic logging   |
+| Generic error messages  | Contextual messages |
+| Same for all users      | Role-aware content  |
+| No debugging info       | Full stack traces   |
+| Can't copy errors       | Click to copy       |
+| Inconsistent UX         | Consistent toasts   |
+| More boilerplate        | Less code           |
 
 ## Best Practices
 
 ### ✅ DO
+
 - Use `handleError()` for all user-facing errors
 - Provide clear, descriptive titles
 - Include `endpoint` and `method` for API calls
@@ -257,6 +271,7 @@ See [ERROR_HANDLER_MIGRATION.md](./examples/ERROR_HANDLER_MIGRATION.md) for comp
 - Add context about what was being done
 
 ### ❌ DON'T
+
 - Don't use multiple error handling patterns
 - Don't show technical jargon in titles
 - Don't forget to `await handleError()` (it's async)
@@ -266,6 +281,7 @@ See [ERROR_HANDLER_MIGRATION.md](./examples/ERROR_HANDLER_MIGRATION.md) for comp
 ## Examples from Codebase
 
 ### GlobalSearch Component
+
 ```typescript
 // src/components/search/GlobalSearch.tsx
 try {
@@ -282,12 +298,11 @@ try {
 ```
 
 ### Profile Page
+
 ```typescript
 // src/pages/Profile.tsx
 try {
-  const { data, error } = await supabase
-    .from('orders')
-    .select('event_id');
+  const { data, error } = await supabase.from('orders').select('event_id');
   if (error) throw error;
   // Process...
 } catch (error) {
@@ -299,6 +314,7 @@ try {
 ```
 
 ### Event Management
+
 ```typescript
 // src/pages/EventManagement.tsx
 try {

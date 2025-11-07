@@ -6,6 +6,7 @@ import { Mail, Shield, Trash2, Edit, UserCog, Building2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { RoleManagementModal } from '@/components/admin/RoleManagementModal';
+import { logger } from '@/shared/services/logger';
 
 interface UserData {
   id: string;
@@ -37,8 +38,10 @@ export function FmUserDataGrid() {
     setLoading(true);
     try {
       // Get current session
-      const { data: { session } } = await supabase.auth.getSession();
-      
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       if (!session) {
         throw new Error('Not authenticated');
       }
@@ -52,10 +55,10 @@ export function FmUserDataGrid() {
 
       if (error) throw error;
 
-      console.log('Fetched users data:', data.users);
+      logger.info('Fetched users data:', data.users);
       setUsers(data.users || []);
     } catch (error: any) {
-      console.error('Error fetching users:', error);
+      logger.error('Error fetching users:', error);
       toast.error('Failed to load users', {
         description: error.message,
       });
@@ -69,8 +72,8 @@ export function FmUserDataGrid() {
   }, []);
 
   const handleOpenRoleModal = (user: UserData) => {
-    console.log('Opening role modal for user:', user);
-    console.log('User roles:', user.roles);
+    logger.info('Opening role modal for user:', user);
+    logger.info('User roles:', user.roles);
     setSelectedUser(user);
     setRoleModalOpen(true);
   };
@@ -87,10 +90,10 @@ export function FmUserDataGrid() {
       filterable: true,
       editable: true,
       type: 'email',
-      render: (value) => (
-        <div className="flex items-center gap-2">
-          <Mail className="h-4 w-4 text-muted-foreground" />
-          <span className="font-mono text-sm">{value}</span>
+      render: value => (
+        <div className='flex items-center gap-2'>
+          <Mail className='h-4 w-4 text-muted-foreground' />
+          <span className='font-mono text-sm'>{value}</span>
         </div>
       ),
     },
@@ -116,16 +119,15 @@ export function FmUserDataGrid() {
       sortable: false,
       filterable: true,
       editable: false,
-      render: (_value, row) => (
+      render: (_value, row) =>
         row.organization ? (
-          <div className="flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-muted-foreground" />
+          <div className='flex items-center gap-2'>
+            <Building2 className='h-4 w-4 text-muted-foreground' />
             <span>{row.organization.name}</span>
           </div>
         ) : (
-          <span className="text-muted-foreground text-sm">No organization</span>
-        )
-      ),
+          <span className='text-muted-foreground text-sm'>No organization</span>
+        ),
     },
     {
       key: 'roles',
@@ -134,24 +136,28 @@ export function FmUserDataGrid() {
       filterable: true,
       editable: false, // Special implementation via modal
       render: (value: any[], row) => (
-        <div 
-          className="flex flex-wrap gap-1 cursor-pointer hover:opacity-80 transition-opacity"
+        <div
+          className='flex flex-wrap gap-1 cursor-pointer hover:opacity-80 transition-opacity'
           onClick={() => handleOpenRoleModal(row)}
-          title="Click to manage roles"
+          title='Click to manage roles'
         >
           {Array.isArray(value) && value.length > 0 ? (
             value.map((role, idx) => (
               <Badge
                 key={idx}
                 variant={role.role_name === 'admin' ? 'default' : 'secondary'}
-                className={role.role_name === 'admin' ? 'bg-fm-gold text-black hover:bg-fm-gold/90' : ''}
+                className={
+                  role.role_name === 'admin'
+                    ? 'bg-fm-gold text-black hover:bg-fm-gold/90'
+                    : ''
+                }
               >
-                <Shield className="h-3 w-3 mr-1" />
+                <Shield className='h-3 w-3 mr-1' />
                 {role.display_name}
               </Badge>
             ))
           ) : (
-            <span className="text-muted-foreground">No roles</span>
+            <span className='text-muted-foreground'>No roles</span>
           )}
         </div>
       ),
@@ -162,8 +168,8 @@ export function FmUserDataGrid() {
       sortable: true,
       editable: false,
       type: 'date',
-      render: (value) => (
-        <span className="text-sm text-muted-foreground">
+      render: value => (
+        <span className='text-sm text-muted-foreground'>
           {format(new Date(value), 'MMM d, yyyy')}
         </span>
       ),
@@ -180,8 +186,8 @@ export function FmUserDataGrid() {
   const actions: DataGridAction<UserData>[] = [
     {
       label: 'Edit User',
-      icon: <Edit className="h-4 w-4" />,
-      onClick: (user) => {
+      icon: <Edit className='h-4 w-4' />,
+      onClick: user => {
         toast.info('Edit User', {
           description: `Editing ${user.email}`,
         });
@@ -189,15 +195,15 @@ export function FmUserDataGrid() {
     },
     {
       label: 'Manage Roles',
-      icon: <UserCog className="h-4 w-4" />,
-      onClick: (user) => {
+      icon: <UserCog className='h-4 w-4' />,
+      onClick: user => {
         handleOpenRoleModal(user);
       },
     },
     {
       label: 'Delete User',
-      icon: <Trash2 className="h-4 w-4" />,
-      onClick: (user) => {
+      icon: <Trash2 className='h-4 w-4' />,
+      onClick: user => {
         toast.error('Delete User', {
           description: `This would delete ${user.email}`,
         });
@@ -209,8 +215,8 @@ export function FmUserDataGrid() {
   const contextMenuActions: DataGridAction<UserData>[] = [
     {
       label: 'Copy Email',
-      icon: <Mail className="h-4 w-4" />,
-      onClick: (user) => {
+      icon: <Mail className='h-4 w-4' />,
+      onClick: user => {
         navigator.clipboard.writeText(user.email);
         toast.success('Email copied to clipboard', {
           duration: 2000,
@@ -220,7 +226,11 @@ export function FmUserDataGrid() {
     ...actions,
   ];
 
-  const handleUpdate = async (row: UserData, columnKey: string, newValue: any) => {
+  const handleUpdate = async (
+    row: UserData,
+    columnKey: string,
+    newValue: any
+  ) => {
     try {
       const { error } = await supabase
         .from('profiles')
@@ -230,11 +240,9 @@ export function FmUserDataGrid() {
       if (error) throw error;
 
       // Update the row in local state without refetching
-      setUsers(prevUsers => 
-        prevUsers.map(user => 
-          user.id === row.id 
-            ? { ...user, [columnKey]: newValue }
-            : user
+      setUsers(prevUsers =>
+        prevUsers.map(user =>
+          user.id === row.id ? { ...user, [columnKey]: newValue } : user
         )
       );
 
@@ -242,7 +250,7 @@ export function FmUserDataGrid() {
         description: `${columnKey} updated successfully`,
       });
     } catch (error: any) {
-      console.error('Error updating user:', error);
+      logger.error('Error updating user:', error);
       toast.error('Update failed', {
         description: error.message,
       });

@@ -1,6 +1,6 @@
 /**
  * FmCommonFormSection
- * 
+ *
  * Form-specific section component with consistent layout
  * Used within forms to group related fields with labels
  */
@@ -46,25 +46,19 @@ export const FmCommonFormSection = ({
       {/* Section Header */}
       <div className='space-y-1'>
         <div className='flex items-center gap-2'>
-          {Icon && (
-            <Icon className='w-4 h-4 text-muted-foreground' />
-          )}
+          {Icon && <Icon className='w-4 h-4 text-muted-foreground' />}
           <h3 className='text-base font-semibold text-foreground'>
             {title}
             {required && <span className='text-destructive ml-1'>*</span>}
           </h3>
         </div>
         {description && (
-          <p className='text-sm text-muted-foreground'>
-            {description}
-          </p>
+          <p className='text-sm text-muted-foreground'>{description}</p>
         )}
       </div>
 
       {/* Form Fields */}
-      <div className={layoutClasses[layout]}>
-        {children}
-      </div>
+      <div className={layoutClasses[layout]}>{children}</div>
     </div>
   );
 };

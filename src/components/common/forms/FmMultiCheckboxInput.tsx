@@ -33,20 +33,22 @@ export const FmMultiCheckboxInput = ({
       onSelectionChange([...selectedValues, value]);
     } else {
       // Remove value from selection
-      onSelectionChange(selectedValues.filter((v) => v !== value));
+      onSelectionChange(selectedValues.filter(v => v !== value));
     }
   };
 
   return (
     <div className={cn('space-y-1', className)}>
-      {options.map((option) => (
+      {options.map(option => (
         <FmCheckbox
           key={option.value}
           id={`checkbox-${option.value}`}
           label={option.label}
           icon={option.icon}
           checked={selectedValues.includes(option.value)}
-          onCheckedChange={(checked) => handleCheckboxChange(option.value, checked)}
+          onCheckedChange={checked =>
+            handleCheckboxChange(option.value, checked)
+          }
           disabled={disabled}
         />
       ))}

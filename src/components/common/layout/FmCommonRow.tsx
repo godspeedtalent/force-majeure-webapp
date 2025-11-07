@@ -30,7 +30,8 @@ export const FmCommonRow = ({
       disabled={disabled}
       className={cn(
         'w-full flex items-center gap-3 rounded-xl border border-border/60 bg-background/70 px-4 py-3 text-left transition-colors',
-        interactive && 'hover:border-fm-gold/80 hover:bg-fm-gold/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-fm-gold/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer',
+        interactive &&
+          'hover:border-fm-gold/80 hover:bg-fm-gold/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-fm-gold/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer',
         disabled && 'opacity-60 cursor-not-allowed',
         !interactive && !disabled && 'cursor-default',
         className
@@ -38,8 +39,14 @@ export const FmCommonRow = ({
     >
       {leading && <div className='flex-shrink-0'>{leading}</div>}
       <div className='flex-1 min-w-0 space-y-1'>
-        <div className='text-sm font-semibold text-foreground truncate'>{title}</div>
-        {subtitle && <div className='text-xs text-muted-foreground/80 truncate'>{subtitle}</div>}
+        <div className='text-sm font-semibold text-foreground truncate'>
+          {title}
+        </div>
+        {subtitle && (
+          <div className='text-xs text-muted-foreground/80 truncate'>
+            {subtitle}
+          </div>
+        )}
       </div>
       {trailing && <div className='flex-shrink-0'>{trailing}</div>}
     </button>

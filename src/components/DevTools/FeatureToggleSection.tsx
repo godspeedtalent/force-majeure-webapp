@@ -13,8 +13,17 @@ import {
 } from '@/components/common/shadcn/alert-dialog';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/common/shadcn/tooltip';
-import { formatFlagName, getFlagIcon, getFlagDescription } from '@/shared/utils/featureFlagUtils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/common/shadcn/tooltip';
+import {
+  formatFlagName,
+  getFlagIcon,
+  getFlagDescription,
+} from '@/shared/utils/featureFlagUtils';
 
 interface FeatureFlag {
   flag_name: string;
@@ -39,10 +48,10 @@ export const FeatureToggleSection = () => {
         .order('flag_name', { ascending: true });
 
       if (error) throw error;
-      
+
       const fetchedFlags = data || [];
       setFlags(fetchedFlags);
-      
+
       // Initialize local state with current database values
       const initialLocal: Record<string, boolean> = {};
       fetchedFlags.forEach(flag => {
@@ -67,12 +76,12 @@ export const FeatureToggleSection = () => {
 
   const handleApply = async () => {
     setShowConfirmDialog(false);
-    
+
     try {
       // Update all flags that have changed
       const updates = flags
         .filter(flag => localFlags[flag.flag_name] !== flag.is_enabled)
-        .map(flag => 
+        .map(flag =>
           supabase
             .from('feature_flags')
             .update({ is_enabled: localFlags[flag.flag_name] })
@@ -86,7 +95,9 @@ export const FeatureToggleSection = () => {
       }
 
       await Promise.all(updates);
-      toast.success(`Applied ${updates.length} feature flag change${updates.length > 1 ? 's' : ''}`);
+      toast.success(
+        `Applied ${updates.length} feature flag change${updates.length > 1 ? 's' : ''}`
+      );
       await fetchFlags();
     } catch (error) {
       console.error('Failed to update feature flags:', error);
@@ -94,30 +105,32 @@ export const FeatureToggleSection = () => {
     }
   };
 
-  const hasChanges = flags.some(flag => 
-    localFlags[flag.flag_name] !== flag.is_enabled
+  const hasChanges = flags.some(
+    flag => localFlags[flag.flag_name] !== flag.is_enabled
   );
 
-  const editableFlags = flags
-    .sort((a, b) => formatFlagName(a.flag_name).localeCompare(formatFlagName(b.flag_name)));
+  const editableFlags = flags.sort((a, b) =>
+    formatFlagName(a.flag_name).localeCompare(formatFlagName(b.flag_name))
+  );
 
   if (isLoading) {
-    return <div className="text-white/50 text-sm">Loading...</div>;
+    return <div className='text-white/50 text-sm'>Loading...</div>;
   }
 
   return (
     <>
-      <p className="text-xs text-white/50 mb-4">
+      <p className='text-xs text-white/50 mb-4'>
         Enable or disable features across the application per environment
       </p>
-      
-      <div className="space-y-6">
+
+      <div className='space-y-6'>
         {/* Feature Toggles */}
         {editableFlags.length > 0 && (
-          <div className="space-y-3">
-            {editableFlags.map((flag) => {
+          <div className='space-y-3'>
+            {editableFlags.map(flag => {
               const Icon = getFlagIcon(flag.flag_name);
-              const description = flag.description || getFlagDescription(flag.flag_name);
+              const description =
+                flag.description || getFlagDescription(flag.flag_name);
               return (
                 <TooltipProvider key={flag.flag_name}>
                   <Tooltip delayDuration={300}>
@@ -127,13 +140,20 @@ export const FeatureToggleSection = () => {
                           id={flag.flag_name}
                           label={formatFlagName(flag.flag_name)}
                           icon={Icon}
-                          checked={localFlags[flag.flag_name] ?? flag.is_enabled}
-                          onCheckedChange={(checked) => handleToggle(flag.flag_name, checked)}
+                          checked={
+                            localFlags[flag.flag_name] ?? flag.is_enabled
+                          }
+                          onCheckedChange={checked =>
+                            handleToggle(flag.flag_name, checked)
+                          }
                         />
                       </div>
                     </TooltipTrigger>
-                    <TooltipContent side="left" className="max-w-xs bg-black/95 border-white/20 z-[150]">
-                      <p className="text-sm text-white">{description}</p>
+                    <TooltipContent
+                      side='left'
+                      className='max-w-xs bg-black/95 border-white/20 z-[150]'
+                    >
+                      <p className='text-sm text-white'>{description}</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -143,11 +163,11 @@ export const FeatureToggleSection = () => {
         )}
 
         {/* Apply Button */}
-        <div className="pt-4 border-t border-white/10">
+        <div className='pt-4 border-t border-white/10'>
           <Button
             onClick={() => setShowConfirmDialog(true)}
             disabled={!hasChanges}
-            className="w-full bg-fm-gold hover:bg-fm-gold/90 text-black disabled:opacity-50 disabled:cursor-not-allowed"
+            className='w-full bg-fm-gold hover:bg-fm-gold/90 text-black disabled:opacity-50 disabled:cursor-not-allowed'
           >
             Apply Changes
           </Button>
@@ -156,20 +176,24 @@ export const FeatureToggleSection = () => {
 
       {/* Confirmation Dialog */}
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <AlertDialogContent className="bg-black/90 backdrop-blur-md border border-white/20 text-white z-[200]">
+        <AlertDialogContent className='bg-black/90 backdrop-blur-md border border-white/20 text-white z-[200]'>
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-canela text-white">Confirm Feature Flag Changes</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/70">
-              This will update feature flags in the database for the <span className="font-semibold text-fm-gold">{environment}</span> environment, and not just mock them to this session. Continue?
+            <AlertDialogTitle className='font-canela text-white'>
+              Confirm Feature Flag Changes
+            </AlertDialogTitle>
+            <AlertDialogDescription className='text-white/70'>
+              This will update feature flags in the database for the{' '}
+              <span className='font-semibold text-fm-gold'>{environment}</span>{' '}
+              environment, and not just mock them to this session. Continue?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-white/5 border-white/20 hover:bg-white/10 text-white">
+            <AlertDialogCancel className='bg-white/5 border-white/20 hover:bg-white/10 text-white'>
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleApply}
-              className="bg-fm-gold hover:bg-fm-gold/90 text-black"
+              className='bg-fm-gold hover:bg-fm-gold/90 text-black'
             >
               Apply Changes
             </AlertDialogAction>

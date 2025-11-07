@@ -37,7 +37,8 @@ export const useOrders = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('orders' as any)
-        .select(`
+        .select(
+          `
           *,
           event:events(title, date, time),
           items:order_items(
@@ -47,7 +48,8 @@ export const useOrders = () => {
             subtotal_cents,
             ticket_tier:ticket_tiers(name)
           )
-        `)
+        `
+        )
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -64,7 +66,8 @@ export const useOrder = (orderId: string | undefined) => {
 
       const { data, error } = await supabase
         .from('orders' as any)
-        .select(`
+        .select(
+          `
           *,
           event:events(title, date, time, venue:venues(name, address, city)),
           items:order_items(
@@ -77,7 +80,8 @@ export const useOrder = (orderId: string | undefined) => {
             total_cents,
             ticket_tier:ticket_tiers(name, description)
           )
-        `)
+        `
+        )
         .eq('id', orderId)
         .single();
 

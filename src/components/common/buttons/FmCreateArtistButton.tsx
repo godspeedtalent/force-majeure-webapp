@@ -60,7 +60,9 @@ export const FmCreateArtistButton = ({
         image_url: formData.image_url.trim() || null,
         bio: formData.bio.trim() || null,
         genre: formData.genre.trim() || null,
-        social_links: formData.social_links.trim() ? JSON.parse(formData.social_links) : {},
+        social_links: formData.social_links.trim()
+          ? JSON.parse(formData.social_links)
+          : {},
       });
 
       if (error) throw error;
@@ -88,38 +90,42 @@ export const FmCreateArtistButton = ({
   const sections = [
     {
       content: (
-        <div className="space-y-4">
+        <div className='space-y-4'>
           <FmCommonTextField
-            label="Artist Name"
+            label='Artist Name'
             required
             value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            placeholder="Enter artist name"
+            onChange={e => setFormData({ ...formData, name: e.target.value })}
+            placeholder='Enter artist name'
           />
           <FmCommonTextField
-            label="Image URL"
+            label='Image URL'
             value={formData.image_url}
-            onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-            placeholder="https://example.com/image.jpg"
+            onChange={e =>
+              setFormData({ ...formData, image_url: e.target.value })
+            }
+            placeholder='https://example.com/image.jpg'
           />
           <FmCommonTextField
-            label="Bio"
+            label='Bio'
             value={formData.bio}
-            onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-            placeholder="Artist biography"
+            onChange={e => setFormData({ ...formData, bio: e.target.value })}
+            placeholder='Artist biography'
           />
           <FmCommonTextField
-            label="Genre"
+            label='Genre'
             value={formData.genre}
-            onChange={(e) => setFormData({ ...formData, genre: e.target.value })}
-            placeholder="Electronic, House, etc."
+            onChange={e => setFormData({ ...formData, genre: e.target.value })}
+            placeholder='Electronic, House, etc.'
           />
           <FmCommonTextField
-            label="Social Links (JSON)"
+            label='Social Links (JSON)'
             value={formData.social_links}
-            onChange={(e) => setFormData({ ...formData, social_links: e.target.value })}
+            onChange={e =>
+              setFormData({ ...formData, social_links: e.target.value })
+            }
             placeholder='{"instagram": "@artist", "twitter": "@artist"}'
-            description="Enter a valid JSON object"
+            description='Enter a valid JSON object'
           />
         </div>
       ),
@@ -127,19 +133,19 @@ export const FmCreateArtistButton = ({
   ];
 
   const actions = (
-    <div className="flex gap-3 justify-end">
+    <div className='flex gap-3 justify-end'>
       <Button
-        variant="outline"
+        variant='outline'
         onClick={() => handleModalOpenChange(false)}
         disabled={isSubmitting}
-        className="bg-white/5 border-white/20 hover:bg-white/10"
+        className='bg-white/5 border-white/20 hover:bg-white/10'
       >
         Cancel
       </Button>
       <Button
         onClick={handleSubmit}
         disabled={isSubmitting}
-        className="bg-fm-gold hover:bg-fm-gold/90 text-black"
+        className='bg-fm-gold hover:bg-fm-gold/90 text-black'
       >
         {isSubmitting ? 'Creating...' : 'Create Artist'}
       </Button>
@@ -151,7 +157,7 @@ export const FmCreateArtistButton = ({
       {mode === 'button' && (
         <FmCommonCreateButton
           onClick={handleClick}
-          label="Create Artist"
+          label='Create Artist'
           variant={variant}
           className={className}
         />
@@ -159,11 +165,11 @@ export const FmCreateArtistButton = ({
       <FmCommonFormModal
         open={isModalOpen}
         onOpenChange={handleModalOpenChange}
-        title="Create New Artist"
-        description="Add a new artist to the database"
+        title='Create New Artist'
+        description='Add a new artist to the database'
         sections={sections}
         actions={actions}
-        className="z-[200]"
+        className='z-[200]'
       />
     </>
   );

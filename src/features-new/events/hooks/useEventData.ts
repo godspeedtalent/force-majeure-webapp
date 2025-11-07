@@ -29,7 +29,10 @@ export interface EventFormState {
   heroImage: string;
 }
 
-export function useEventData(eventId: string | undefined, isModalOpen: boolean) {
+export function useEventData(
+  eventId: string | undefined,
+  isModalOpen: boolean
+) {
   const [isLoading, setIsLoading] = useState(false);
   const [eventData, setEventData] = useState<Event | null>(null);
   const [formState, setFormState] = useState<EventFormState>({
@@ -54,8 +57,8 @@ export function useEventData(eventId: string | undefined, isModalOpen: boolean) 
   // Fetch venue capacity when venue changes
   useEffect(() => {
     if (formState.venueId) {
-      eventService.getVenueCapacity(formState.venueId).then((capacity) => {
-        setFormState((prev) => ({ ...prev, venueCapacity: capacity }));
+      eventService.getVenueCapacity(formState.venueId).then(capacity => {
+        setFormState(prev => ({ ...prev, venueCapacity: capacity }));
       });
     }
   }, [formState.venueId]);
@@ -72,17 +75,22 @@ export function useEventData(eventId: string | undefined, isModalOpen: boolean) 
       let parsedDate: Date | undefined;
       if (event.date) {
         try {
-          const timeStr = typeof event.time === 'number'
-            ? `${event.time}:00`
-            : event.time || '20:00';
-          parsedDate = parse(`${event.date} ${timeStr}`, 'yyyy-MM-dd HH:mm', new Date());
+          const timeStr =
+            typeof event.time === 'number'
+              ? `${event.time}:00`
+              : event.time || '20:00';
+          parsedDate = parse(
+            `${event.date} ${timeStr}`,
+            'yyyy-MM-dd HH:mm',
+            new Date()
+          );
         } catch (error) {
           console.error('Error parsing date:', error);
         }
       }
 
       // Transform ticket tiers
-      const tiers = (event.ticket_tiers || []).map((tier) => ({
+      const tiers = (event.ticket_tiers || []).map(tier => ({
         id: tier.id,
         name: tier.name,
         description: tier.description || undefined,
@@ -92,7 +100,7 @@ export function useEventData(eventId: string | undefined, isModalOpen: boolean) 
       }));
 
       // Transform undercard artists
-      const undercard = (event.undercard_artists || []).map((ua) => ({
+      const undercard = (event.undercard_artists || []).map(ua => ({
         artistId: ua.artist_id,
       }));
 

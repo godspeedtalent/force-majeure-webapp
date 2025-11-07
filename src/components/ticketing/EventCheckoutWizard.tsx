@@ -19,20 +19,27 @@ interface EventCheckoutWizardProps {
   onClose: () => void;
 }
 
-export const EventCheckoutWizard = ({ event, displayTitle, onClose }: EventCheckoutWizardProps) => {
+export const EventCheckoutWizard = ({
+  event,
+  displayTitle,
+  onClose,
+}: EventCheckoutWizardProps) => {
   const [step, setStep] = useState<WizardStep>('selection');
   const [selections, setSelections] = useState<Record<string, number>>({});
 
-  const { data: tiers = [], isLoading: tiersLoading } = useTicketTiers(event.id);
+  const { data: tiers = [], isLoading: tiersLoading } = useTicketTiers(
+    event.id
+  );
   const { calculateFees } = useTicketFees();
 
   const formattedTiers = useMemo(() => {
     return tiers.map(tier => {
-      const basePrice = typeof (tier as any).price === 'number'
-        ? (tier as any).price
-        : typeof (tier as any).price_cents === 'number'
-          ? (tier as any).price_cents / 100
-          : 0;
+      const basePrice =
+        typeof (tier as any).price === 'number'
+          ? (tier as any).price
+          : typeof (tier as any).price_cents === 'number'
+            ? (tier as any).price_cents / 100
+            : 0;
 
       return {
         id: tier.id,
@@ -43,7 +50,8 @@ export const EventCheckoutWizard = ({ event, displayTitle, onClose }: EventCheck
         available_inventory: (tier as any).available_inventory ?? 0,
         tier_order: (tier as any).tier_order ?? 0,
         is_active: (tier as any).is_active ?? true,
-        hide_until_previous_sold_out: (tier as any).hide_until_previous_sold_out ?? false,
+        hide_until_previous_sold_out:
+          (tier as any).hide_until_previous_sold_out ?? false,
       };
     });
   }, [tiers]);
@@ -78,9 +86,14 @@ export const EventCheckoutWizard = ({ event, displayTitle, onClose }: EventCheck
           subtotal: tier.price * quantity,
         };
       })
-      .filter((ticket): ticket is NonNullable<typeof ticket> => Boolean(ticket));
+      .filter((ticket): ticket is NonNullable<typeof ticket> =>
+        Boolean(ticket)
+      );
 
-    const subtotal = tickets.reduce((total, ticket) => total + ticket.subtotal, 0);
+    const subtotal = tickets.reduce(
+      (total, ticket) => total + ticket.subtotal,
+      0
+    );
     const fees = calculateFees(subtotal);
     const totalFees = fees.reduce((sum, fee) => sum + fee.amount, 0);
     const total = subtotal + totalFees;
@@ -93,11 +106,16 @@ export const EventCheckoutWizard = ({ event, displayTitle, onClose }: EventCheck
     };
   }, [selections, formattedTiers, calculateFees]);
 
-  const handleSelectionComplete = (nextSelections: { tierId: string; quantity: number }[]) => {
-    const mapped = nextSelections.reduce<Record<string, number>>((acc, item) => {
-      acc[item.tierId] = item.quantity;
-      return acc;
-    }, {});
+  const handleSelectionComplete = (
+    nextSelections: { tierId: string; quantity: number }[]
+  ) => {
+    const mapped = nextSelections.reduce<Record<string, number>>(
+      (acc, item) => {
+        acc[item.tierId] = item.quantity;
+        return acc;
+      },
+      {}
+    );
 
     setSelections(mapped);
     setStep('checkout');
@@ -129,20 +147,29 @@ export const EventCheckoutWizard = ({ event, displayTitle, onClose }: EventCheck
       <div className='flex items-center gap-3 rounded-xl bg-fm-gold/10 border border-fm-gold/40 px-4 py-3'>
         <CheckCircle2 className='h-6 w-6 text-fm-gold' />
         <div>
-          <h3 className='text-lg font-canela text-foreground'>Order Confirmed</h3>
-          <p className='text-sm text-muted-foreground'>Check your email for ticket details and receipt.</p>
+          <h3 className='text-lg font-canela text-foreground'>
+            Order Confirmed
+          </h3>
+          <p className='text-sm text-muted-foreground'>
+            Check your email for ticket details and receipt.
+          </p>
         </div>
       </div>
 
       <FmCommonCard variant='outline' className='space-y-4'>
         <div className='space-y-2'>
           <h4 className='text-sm font-medium text-foreground'>Order Summary</h4>
-          <p className='text-xs text-muted-foreground'>Thank you for your purchase! Your tickets are confirmed.</p>
+          <p className='text-xs text-muted-foreground'>
+            Thank you for your purchase! Your tickets are confirmed.
+          </p>
         </div>
 
         <div className='space-y-3'>
           {orderSummary.tickets.map(ticket => (
-            <div key={ticket.tierId} className='flex items-center justify-between text-sm'>
+            <div
+              key={ticket.tierId}
+              className='flex items-center justify-between text-sm'
+            >
               <div>
                 <p className='font-medium text-foreground'>{ticket.name}</p>
                 <p className='text-xs text-muted-foreground'>
@@ -159,11 +186,16 @@ export const EventCheckoutWizard = ({ event, displayTitle, onClose }: EventCheck
         <div className='space-y-2 text-sm'>
           <div className='flex justify-between'>
             <span className='text-muted-foreground'>Subtotal</span>
-            <span className='text-foreground'>${orderSummary.subtotal.toFixed(2)}</span>
+            <span className='text-foreground'>
+              ${orderSummary.subtotal.toFixed(2)}
+            </span>
           </div>
 
           {orderSummary.fees.map(fee => (
-            <div key={fee.name} className='flex justify-between text-xs text-muted-foreground'>
+            <div
+              key={fee.name}
+              className='flex justify-between text-xs text-muted-foreground'
+            >
               <span className='capitalize'>{fee.name.replace(/_/g, ' ')}</span>
               <span className='text-foreground'>${fee.amount.toFixed(2)}</span>
             </div>
@@ -177,7 +209,9 @@ export const EventCheckoutWizard = ({ event, displayTitle, onClose }: EventCheck
       </FmCommonCard>
 
       <div className='flex justify-end'>
-        <FmCommonButton variant='gold' onClick={handleClose}>Done</FmCommonButton>
+        <FmCommonButton variant='gold' onClick={handleClose}>
+          Done
+        </FmCommonButton>
       </div>
     </div>
   );
@@ -234,9 +268,7 @@ export const EventCheckoutWizard = ({ event, displayTitle, onClose }: EventCheck
 
       {/* Scrollable content */}
       <div className='flex-1 overflow-y-auto min-h-0'>
-        <FmCommonStackLayout spacing='lg'>
-          {renderStep()}
-        </FmCommonStackLayout>
+        <FmCommonStackLayout spacing='lg'>{renderStep()}</FmCommonStackLayout>
       </div>
     </div>
   );

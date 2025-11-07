@@ -21,7 +21,7 @@ export function useEventViews(eventId: string | undefined) {
     const fetchViewCount = async () => {
       try {
         setIsLoading(true);
-        
+
         // Fetch view count using raw query
         const { count, error: countError } = await supabase
           .from('event_views' as any)
@@ -61,7 +61,8 @@ export function useEventViews(eventId: string | undefined) {
     if (!eventId || hasRecorded) return;
 
     try {
-      const sessionId = sessionStorage.getItem('session_id') || crypto.randomUUID();
+      const sessionId =
+        sessionStorage.getItem('session_id') || crypto.randomUUID();
       sessionStorage.setItem('session_id', sessionId);
 
       const { error: insertError } = await supabase

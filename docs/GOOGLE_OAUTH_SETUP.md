@@ -34,18 +34,21 @@ Google OAuth has been integrated into the authentication flow, allowing users to
 Add the following redirect URIs:
 
 **For Development:**
+
 ```
 http://localhost:5173
 http://localhost:5173/
 ```
 
 **For Production:**
+
 ```
 https://your-domain.com
 https://your-domain.com/
 ```
 
 **For Supabase (Required):**
+
 ```
 https://<your-project-ref>.supabase.co/auth/v1/callback
 ```
@@ -55,6 +58,7 @@ Replace `<your-project-ref>` with your actual Supabase project reference.
 #### Save Credentials
 
 After creating the OAuth client, you'll receive:
+
 - **Client ID**: Looks like `123456789-abcdefg.apps.googleusercontent.com`
 - **Client Secret**: A secret string
 
@@ -94,6 +98,7 @@ Click **Save** to apply the changes.
 The application code is already configured! The implementation includes:
 
 **AuthContext** (`/src/features/auth/services/AuthContext.tsx`):
+
 ```typescript
 const signInWithGoogle = async () => {
   const { error } = await supabase.auth.signInWithOAuth({
@@ -111,11 +116,13 @@ const signInWithGoogle = async () => {
 ```
 
 **GoogleOAuthButton** (`/src/features/auth/components/GoogleOAuthButton.tsx`):
+
 - Styled button with Google logo
 - Loading and disabled states
 - Follows Google's brand guidelines
 
 **AuthPanel** (`/src/features/auth/components/AuthPanel.tsx`):
+
 - Integrated in both Sign In and Sign Up tabs
 - OAuth divider for visual separation
 - Prevents concurrent auth attempts
@@ -180,6 +187,7 @@ const signInWithGoogle = async () => {
 **Problem**: The redirect URI used doesn't match those configured in Google Console.
 
 **Solution**:
+
 1. Check the exact URL in the error message
 2. Add it to Google Console's Authorized redirect URIs
 3. Include both with and without trailing slash
@@ -189,6 +197,7 @@ const signInWithGoogle = async () => {
 **Problem**: Nothing happens when clicking the Google button.
 
 **Solution**:
+
 1. Check browser console for errors
 2. Verify Supabase Google provider is enabled
 3. Ensure Client ID and Secret are correctly configured
@@ -199,6 +208,7 @@ const signInWithGoogle = async () => {
 **Problem**: After OAuth, users are redirected but not signed in.
 
 **Solution**:
+
 1. Check Supabase logs for errors
 2. Verify the redirect URL is correct
 3. Ensure your app is handling the OAuth callback
@@ -209,6 +219,7 @@ const signInWithGoogle = async () => {
 **Problem**: Google OAuth succeeds but Supabase rejects it.
 
 **Solution**:
+
 1. Go to Supabase Dashboard > Authentication > Settings
 2. Find "Email Confirmations"
 3. Disable "Confirm email" if you trust Google's verification
@@ -263,6 +274,7 @@ The architecture supports adding more OAuth providers. To add another provider:
 4. **Add button to AuthPanel**
 
 Supported providers:
+
 - Google (implemented)
 - GitHub
 - Facebook
@@ -287,6 +299,7 @@ Supported providers:
 ## Support
 
 If you encounter issues:
+
 1. Check Supabase Dashboard logs
 2. Review browser console errors
 3. Verify all configuration steps

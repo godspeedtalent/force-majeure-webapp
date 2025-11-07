@@ -53,9 +53,8 @@ export function FmCommonBadgeGroup({
 
   const displayCount = currentDisplay || badges.length;
   const displayBadges = badges.slice(0, displayCount);
-  const remainingCount = badges.length > displayCount
-    ? badges.length - displayCount
-    : 0;
+  const remainingCount =
+    badges.length > displayCount ? badges.length - displayCount : 0;
 
   const handleExpand = () => {
     if (currentDisplay) {
@@ -81,13 +80,10 @@ export function FmCommonBadgeGroup({
         />
       ))}
       {remainingCount > 0 && (
-        <button
-          onClick={handleExpand}
-          className="inline-flex"
-        >
+        <button onClick={handleExpand} className='inline-flex'>
           <FmBadge
             label={`+${remainingCount} more`}
-            variant="secondary"
+            variant='secondary'
             className={cn('opacity-70 cursor-pointer', badgeClassName)}
           />
         </button>

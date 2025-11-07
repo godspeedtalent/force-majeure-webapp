@@ -1,6 +1,6 @@
 /**
  * FmCommonFormField
- * 
+ *
  * Standardized form field wrapper with validation
  * Integrates with react-hook-form and shadcn form components
  */
@@ -30,7 +30,16 @@ interface FmCommonFormFieldProps<T extends FieldValues> {
   /** Field description/help text */
   description?: string;
   /** Input type */
-  type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'date' | 'time' | 'datetime-local';
+  type?:
+    | 'text'
+    | 'email'
+    | 'password'
+    | 'number'
+    | 'tel'
+    | 'url'
+    | 'date'
+    | 'time'
+    | 'datetime-local';
   /** Use textarea instead of input */
   textarea?: boolean;
   /** Textarea rows */
@@ -49,7 +58,7 @@ interface FmCommonFormFieldProps<T extends FieldValues> {
 
 /**
  * Standardized form field with validation
- * 
+ *
  * @example
  * ```tsx
  * <FmCommonFormField
@@ -60,7 +69,7 @@ interface FmCommonFormFieldProps<T extends FieldValues> {
  *   description="We'll never share your email"
  *   required
  * />
- * 
+ *
  * <FmCommonFormField
  *   form={form}
  *   name="bio"
@@ -68,7 +77,7 @@ interface FmCommonFormFieldProps<T extends FieldValues> {
  *   textarea
  *   rows={4}
  * />
- * 
+ *
  * <FmCommonFormField
  *   form={form}
  *   name="birthDate"

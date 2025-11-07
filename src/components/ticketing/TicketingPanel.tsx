@@ -7,7 +7,13 @@ import { FmPromoCodeInput } from '@/components/common/misc/FmPromoCodeInput';
 import { FmBigButton } from '@/components/common/buttons/FmBigButton';
 import { Button } from '@/components/common/shadcn/button';
 import { Label } from '@/components/common/shadcn/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/common/shadcn/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/common/shadcn/select';
 import { Separator } from '@/components/common/shadcn/separator';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { cn } from '@/shared/utils/utils';
@@ -42,13 +48,22 @@ interface PromoCode {
   discount_value: number;
 }
 
-export const TicketingPanel = ({ tiers, onPurchase, isLoading = false, initialSelections }: TicketingPanelProps) => {
-  const [selections, setSelections] = useState<Record<string, number>>(() => initialSelections ?? {});
+export const TicketingPanel = ({
+  tiers,
+  onPurchase,
+  isLoading = false,
+  initialSelections,
+}: TicketingPanelProps) => {
+  const [selections, setSelections] = useState<Record<string, number>>(
+    () => initialSelections ?? {}
+  );
   const [promoCode, setPromoCode] = useState<PromoCode | null>(null);
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
-    'General Admission': true,
-    VIP: true,
-  });
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(
+    {
+      'General Admission': true,
+      VIP: true,
+    }
+  );
   const { calculateFees, getTotalFees } = useTicketFees();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -124,7 +139,10 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false, initialSe
 
   const calculateFinalTicketPrice = (basePrice: number): number => {
     const baseFees = calculateFees(basePrice);
-    const totalFeesForTicket = baseFees.reduce((sum, fee) => sum + fee.amount, 0);
+    const totalFeesForTicket = baseFees.reduce(
+      (sum, fee) => sum + fee.amount,
+      0
+    );
     return basePrice + totalFeesForTicket;
   };
 
@@ -135,7 +153,10 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false, initialSe
     };
 
     sortedTiers.forEach(tier => {
-      if (tier.name.toLowerCase().includes('table') || tier.name.toLowerCase().includes('vip')) {
+      if (
+        tier.name.toLowerCase().includes('table') ||
+        tier.name.toLowerCase().includes('vip')
+      ) {
         groups.VIP.push(tier);
       } else {
         groups['General Admission'].push(tier);
@@ -162,11 +183,14 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false, initialSe
     const breakdown = [
       { label: 'Base Price', amount: basePrice },
       ...baseFees.map(fee => ({
-        label: fee.name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+        label: fee.name
+          .replace(/_/g, ' ')
+          .replace(/\b\w/g, l => l.toUpperCase()),
         amount: fee.amount,
       })),
     ];
-    const total = basePrice + baseFees.reduce((sum, fee) => sum + fee.amount, 0);
+    const total =
+      basePrice + baseFees.reduce((sum, fee) => sum + fee.amount, 0);
     return { breakdown, total };
   };
 
@@ -203,11 +227,13 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false, initialSe
   return (
     <div className='space-y-4'>
       <div>
-                <h3 className='flex items-center gap-[10px] text-foreground font-canela text-xl mb-1'>
+        <h3 className='flex items-center gap-[10px] text-foreground font-canela text-xl mb-1'>
           <Ticket className='h-5 w-5 text-fm-gold' />
           {formatHeader('Select Your Tickets')}
         </h3>
-        <p className='text-sm text-muted-foreground'>Choose quantity for each tier</p>
+        <p className='text-sm text-muted-foreground'>
+          Choose quantity for each tier
+        </p>
         <div className='mt-2 px-[10px] py-[10px] bg-fm-gold/10 border border-fm-gold/30 rounded-none'>
           <p className='text-xs text-fm-gold'>
             All ticket prices shown include service fees and taxes
@@ -227,7 +253,9 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false, initialSe
                 onClick={() => toggleGroup(groupName)}
                 className='w-full flex items-center justify-between px-[10px] py-[10px] bg-muted/30 hover:bg-muted/50 rounded-none transition-colors'
               >
-                <span className='text-sm font-medium text-foreground'>{groupName}</span>
+                <span className='text-sm font-medium text-foreground'>
+                  {groupName}
+                </span>
                 <ChevronDown
                   className={cn(
                     'h-4 w-4 text-muted-foreground transition-transform',
@@ -239,7 +267,9 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false, initialSe
               {expandedGroups[groupName] && (
                 <div className='space-y-0 border border-border rounded-none overflow-visible relative'>
                   {groupTiers.map((tier, tierIndex) => {
-                    const globalIndex = sortedTiers.findIndex(t => t.id === tier.id);
+                    const globalIndex = sortedTiers.findIndex(
+                      t => t.id === tier.id
+                    );
                     const isVisible = isTierVisible(tier, globalIndex);
                     const soldOut = isSoldOut(tier);
                     const remaining = getRemainingTickets(tier);
@@ -256,9 +286,13 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false, initialSe
                         >
                           <div className='flex items-start justify-between gap-[20px] px-[10px] py-[10px]'>
                             <div className='flex-1 space-y-1'>
-                              <h3 className='font-medium text-xs text-foreground'>{tier.name}</h3>
+                              <h3 className='font-medium text-xs text-foreground'>
+                                {tier.name}
+                              </h3>
                               {tier.description && (
-                                <p className='text-xs italic text-muted-foreground'>{tier.description}</p>
+                                <p className='text-xs italic text-muted-foreground'>
+                                  {tier.description}
+                                </p>
                               )}
                               {soldOut && (
                                 <span className='text-[10px] bg-destructive/20 text-destructive px-1.5 py-0.5 rounded font-medium inline-block'>
@@ -269,33 +303,62 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false, initialSe
                             <div className='flex items-center gap-[10px]'>
                               <div className='relative group/price'>
                                 <span className='text-xs text-fm-gold cursor-help'>
-                                  ${calculateFinalTicketPrice(tier.price).toFixed(2)}
+                                  $
+                                  {calculateFinalTicketPrice(
+                                    tier.price
+                                  ).toFixed(2)}
                                 </span>
                                 <div className='absolute right-0 bottom-full mb-2 hidden group-hover/price:block bg-popover text-popover-foreground px-[10px] py-[10px] rounded-none border border-border shadow-lg whitespace-nowrap z-50 min-w-[200px]'>
-                                  <div className='text-xs font-medium mb-2 text-foreground'>Price Breakdown</div>
+                                  <div className='text-xs font-medium mb-2 text-foreground'>
+                                    Price Breakdown
+                                  </div>
                                   <div className='space-y-1'>
-                                    {getPriceBreakdown(tier.price).breakdown.map((item, idx) => (
-                                      <div key={idx} className='flex justify-between text-xs'>
-                                        <span className='text-muted-foreground'>{item.label}:</span>
-                                        <span className='text-foreground'>${item.amount.toFixed(2)}</span>
+                                    {getPriceBreakdown(
+                                      tier.price
+                                    ).breakdown.map((item, idx) => (
+                                      <div
+                                        key={idx}
+                                        className='flex justify-between text-xs'
+                                      >
+                                        <span className='text-muted-foreground'>
+                                          {item.label}:
+                                        </span>
+                                        <span className='text-foreground'>
+                                          ${item.amount.toFixed(2)}
+                                        </span>
                                       </div>
                                     ))}
                                     <div className='border-t border-border pt-1 mt-1'>
                                       <div className='flex justify-between text-xs font-medium'>
-                                        <span className='text-foreground'>Total:</span>
-                                        <span className='text-fm-gold'>${getPriceBreakdown(tier.price).total.toFixed(2)}</span>
+                                        <span className='text-foreground'>
+                                          Total:
+                                        </span>
+                                        <span className='text-fm-gold'>
+                                          $
+                                          {getPriceBreakdown(
+                                            tier.price
+                                          ).total.toFixed(2)}
+                                        </span>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
                               <div className='flex items-center gap-[10px]'>
-                                <Label htmlFor={`qty-${tier.id}`} className='text-xs uppercase text-muted-foreground'>
+                                <Label
+                                  htmlFor={`qty-${tier.id}`}
+                                  className='text-xs uppercase text-muted-foreground'
+                                >
                                   Qty:
                                 </Label>
                                 <Select
                                   value={selections[tier.id]?.toString() || '0'}
-                                  onValueChange={value => handleQuantityChange(tier.id, parseInt(value))}
+                                  onValueChange={value =>
+                                    handleQuantityChange(
+                                      tier.id,
+                                      parseInt(value)
+                                    )
+                                  }
                                   disabled={soldOut || remaining === 0}
                                 >
                                   <SelectTrigger
@@ -311,7 +374,11 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false, initialSe
                                   <SelectContent className='bg-popover border-border z-50 min-w-[80px]'>
                                     <SelectItem value='0'>0</SelectItem>
                                     {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
-                                      <SelectItem key={num} value={num.toString()} disabled={num > remaining}>
+                                      <SelectItem
+                                        key={num}
+                                        value={num.toString()}
+                                        disabled={num > remaining}
+                                      >
                                         {num}
                                       </SelectItem>
                                     ))}
@@ -322,12 +389,13 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false, initialSe
                           </div>
                         </div>
                         {tierIndex <
-                          groupTiers
-                            .filter(t => {
-                              const idx = sortedTiers.findIndex(st => st.id === t.id);
-                              return isTierVisible(t, idx);
-                            })
-                            .length - 1 && <Separator />}
+                          groupTiers.filter(t => {
+                            const idx = sortedTiers.findIndex(
+                              st => st.id === t.id
+                            );
+                            return isTierVisible(t, idx);
+                          }).length -
+                            1 && <Separator />}
                       </div>
                     );
                   })}
@@ -340,7 +408,12 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false, initialSe
         <Separator className='mt-4' />
 
         <div className='grid grid-cols-2 gap-[10px]'>
-          <FmInfoCard icon={Tag} title='Promo Code' description='Have a promo code?' className='p-[20px]'>
+          <FmInfoCard
+            icon={Tag}
+            title='Promo Code'
+            description='Have a promo code?'
+            className='p-[20px]'
+          >
             <FmPromoCodeInput onPromoCodeApplied={handlePromoCodeApplied} />
           </FmInfoCard>
 
@@ -361,7 +434,9 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false, initialSe
                 </Button>
               </div>
             ) : (
-              <div className='text-xs text-foreground'>No rewards available</div>
+              <div className='text-xs text-foreground'>
+                No rewards available
+              </div>
             )}
           </FmInfoCard>
         </div>
@@ -369,7 +444,9 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false, initialSe
         <Separator className='mt-4' />
 
         <div className='space-y-3 bg-muted/20 rounded-none p-[20px]'>
-          <h4 className='text-sm text-foreground mb-2'>{formatHeader('Order Summary')}</h4>
+          <h4 className='text-sm text-foreground mb-2'>
+            {formatHeader('Order Summary')}
+          </h4>
 
           {hasSelections && (
             <>
@@ -392,17 +469,25 @@ export const TicketingPanel = ({ tiers, onPurchase, isLoading = false, initialSe
 
           {fees.map((fee, index) => {
             const isSalesTax = fee.name.toLowerCase().includes('tax');
-            const tooltipText = fee.type === 'percentage'
-              ? `${fee.value}% of $${subtotalAfterPromo.toFixed(2)} = $${fee.amount.toFixed(2)}`
-              : `$${fee.value.toFixed(2)} flat fee`;
+            const tooltipText =
+              fee.type === 'percentage'
+                ? `${fee.value}% of $${subtotalAfterPromo.toFixed(2)} = $${fee.amount.toFixed(2)}`
+                : `$${fee.value.toFixed(2)} flat fee`;
 
             return (
-              <div key={index} className='flex justify-between text-xs group relative'>
+              <div
+                key={index}
+                className='flex justify-between text-xs group relative'
+              >
                 <span className='text-muted-foreground capitalize'>
                   {fee.name.replace(/_/g, ' ')}
-                  {isSalesTax && fee.type === 'percentage' && ` (${fee.value}%)`}
+                  {isSalesTax &&
+                    fee.type === 'percentage' &&
+                    ` (${fee.value}%)`}
                 </span>
-                <span className='text-foreground'>${fee.amount.toFixed(2)}</span>
+                <span className='text-foreground'>
+                  ${fee.amount.toFixed(2)}
+                </span>
 
                 <div className='absolute left-0 bottom-full mb-1 hidden group-hover:block bg-popover text-popover-foreground text-xs px-2 py-1 rounded border border-border whitespace-nowrap z-10'>
                   {tooltipText}

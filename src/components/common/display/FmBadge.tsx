@@ -8,7 +8,7 @@ export interface FmBadgeProps {
 
 /**
  * FmBadge Component
- * 
+ *
  * Styled badge component for Force Majeure brand
  * - Primary: Gold background with black text, transparent white on hover
  * - Secondary: Transparent background with white text/border, white fill on hover
@@ -19,8 +19,9 @@ export function FmBadge({
   variant = 'secondary',
   className,
 }: FmBadgeProps) {
-  const baseStyles = 'inline-flex items-center justify-center rounded-md px-3 py-1 text-xs font-medium transition-all duration-200 hover:scale-105';
-  
+  const baseStyles =
+    'inline-flex items-center justify-center rounded-md px-3 py-1 text-xs font-medium transition-all duration-200 hover:scale-105';
+
   const variantStyles = {
     primary: cn(
       'bg-[hsl(var(--fm-gold))] text-black',

@@ -27,7 +27,10 @@ export class RoleManagementService {
         .single();
 
       if (roleError) {
-        roleLogger.error('Failed to fetch role', { roleName, error: roleError });
+        roleLogger.error('Failed to fetch role', {
+          roleName,
+          error: roleError,
+        });
         throw roleError;
       }
 
@@ -36,15 +39,17 @@ export class RoleManagementService {
       }
 
       // Insert the user_role relationship
-      const { error: insertError } = await supabase
-        .from('user_roles')
-        .insert({ 
-          user_id: userId, 
-          role_id: roleData.id 
-        });
+      const { error: insertError } = await supabase.from('user_roles').insert({
+        user_id: userId,
+        role_id: roleData.id,
+      });
 
       if (insertError) {
-        roleLogger.error('Failed to add role to user', { userId, roleName, error: insertError });
+        roleLogger.error('Failed to add role to user', {
+          userId,
+          roleName,
+          error: insertError,
+        });
         throw insertError;
       }
 
@@ -80,7 +85,10 @@ export class RoleManagementService {
         .single();
 
       if (roleError) {
-        roleLogger.error('Failed to fetch role', { roleName, error: roleError });
+        roleLogger.error('Failed to fetch role', {
+          roleName,
+          error: roleError,
+        });
         throw roleError;
       }
 
@@ -96,7 +104,11 @@ export class RoleManagementService {
         .eq('role_id', roleData.id);
 
       if (deleteError) {
-        roleLogger.error('Failed to remove role from user', { userId, roleName, error: deleteError });
+        roleLogger.error('Failed to remove role from user', {
+          userId,
+          roleName,
+          error: deleteError,
+        });
         throw deleteError;
       }
 
@@ -135,7 +147,11 @@ export class RoleManagementService {
         .maybeSingle();
 
       if (error) {
-        roleLogger.error('Error checking if user has role', { userId, roleName, error });
+        roleLogger.error('Error checking if user has role', {
+          userId,
+          roleName,
+          error,
+        });
         return false;
       }
 

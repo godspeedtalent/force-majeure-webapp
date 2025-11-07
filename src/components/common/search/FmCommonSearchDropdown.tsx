@@ -1,6 +1,10 @@
 import * as React from 'react';
 import { Search, Plus } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/shadcn/popover';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/common/shadcn/popover';
 import { Input } from '@/components/common/shadcn/input';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { cn } from '@/shared/utils/utils';
@@ -35,7 +39,9 @@ export function FmCommonSearchDropdown({
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState('');
   const [options, setOptions] = React.useState<SearchDropdownOption[]>([]);
-  const [recentOptions, setRecentOptions] = React.useState<SearchDropdownOption[]>([]);
+  const [recentOptions, setRecentOptions] = React.useState<
+    SearchDropdownOption[]
+  >([]);
   const [loading, setLoading] = React.useState(false);
 
   // Load recent options when dropdown opens
@@ -47,7 +53,7 @@ export function FmCommonSearchDropdown({
 
   React.useEffect(() => {
     if (!open) return;
-    
+
     const searchDebounce = setTimeout(async () => {
       if (query.length > 0) {
         setLoading(true);
@@ -94,67 +100,71 @@ export function FmCommonSearchDropdown({
             disabled && 'opacity-50 cursor-not-allowed'
           )}
         >
-          <Search className="h-4 w-4 text-white/50" />
-          <span className="flex-1 truncate">
+          <Search className='h-4 w-4 text-white/50' />
+          <span className='flex-1 truncate'>
             {selectedLabel || placeholder}
           </span>
         </button>
       </PopoverTrigger>
-      <PopoverContent 
-        className="w-[400px] p-0 bg-black/90 backdrop-blur-md border border-white/20"
-        align="start"
+      <PopoverContent
+        className='w-[400px] p-0 bg-black/90 backdrop-blur-md border border-white/20'
+        align='start'
       >
-        <div className="p-2 border-b border-white/10">
+        <div className='p-2 border-b border-white/10'>
           <Input
             placeholder={placeholder}
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="bg-black/40 border-white/20 text-white placeholder:text-white/50"
+            onChange={e => setQuery(e.target.value)}
+            className='bg-black/40 border-white/20 text-white placeholder:text-white/50'
             autoFocus
           />
         </div>
-        <div className="max-h-[300px] overflow-y-auto">
+        <div className='max-h-[300px] overflow-y-auto'>
           {loading ? (
-            <div className="p-4 flex flex-col items-center gap-2">
-              <FmCommonLoadingSpinner size="md" />
-              <span className="text-white/50 text-sm">Searching...</span>
+            <div className='p-4 flex flex-col items-center gap-2'>
+              <FmCommonLoadingSpinner size='md' />
+              <span className='text-white/50 text-sm'>Searching...</span>
             </div>
           ) : query.length === 0 && recentOptions.length > 0 ? (
             <div>
-              <div className="px-3 py-2 text-xs text-white/50 font-semibold uppercase">Recent</div>
-              {recentOptions.map((option) => (
+              <div className='px-3 py-2 text-xs text-white/50 font-semibold uppercase'>
+                Recent
+              </div>
+              {recentOptions.map(option => (
                 <button
                   key={option.id}
                   onClick={() => handleSelect(option.id, option.label)}
-                  className="w-full flex items-center gap-3 px-3 py-2 hover:bg-white/10 transition-colors text-left"
+                  className='w-full flex items-center gap-3 px-3 py-2 hover:bg-white/10 transition-colors text-left'
                 >
                   {option.icon}
-                  <span className="text-white">{option.label}</span>
+                  <span className='text-white'>{option.label}</span>
                 </button>
               ))}
             </div>
           ) : options.length === 0 && query.length > 0 ? (
-            <div className="p-4 text-center text-white/50">No results found</div>
+            <div className='p-4 text-center text-white/50'>
+              No results found
+            </div>
           ) : (
-            options.map((option) => (
+            options.map(option => (
               <button
                 key={option.id}
                 onClick={() => handleSelect(option.id, option.label)}
-                className="w-full flex items-center gap-3 px-3 py-2 hover:bg-white/10 transition-colors text-left"
+                className='w-full flex items-center gap-3 px-3 py-2 hover:bg-white/10 transition-colors text-left'
               >
                 {option.icon}
-                <span className="text-white">{option.label}</span>
+                <span className='text-white'>{option.label}</span>
               </button>
             ))
           )}
         </div>
         {onCreateNew && query.length > 0 && (
-          <div className="border-t border-fm-gold">
+          <div className='border-t border-fm-gold'>
             <button
               onClick={handleCreateNew}
-              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-fm-gold/10 transition-colors text-fm-gold"
+              className='w-full flex items-center gap-2 px-3 py-2 hover:bg-fm-gold/10 transition-colors text-fm-gold'
             >
-              <Plus className="h-4 w-4" />
+              <Plus className='h-4 w-4' />
               <span>{createNewLabel}</span>
             </button>
           </div>

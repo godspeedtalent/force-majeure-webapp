@@ -30,8 +30,30 @@ import { TestLogger } from '@/features/testing/services/TestLogger';
 
 // Generate random user data
 const generateRandomUser = () => {
-  const firstNames = ['Alex', 'Jordan', 'Taylor', 'Morgan', 'Casey', 'Riley', 'Avery', 'Quinn', 'Sage', 'Rowan'];
-  const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez'];
+  const firstNames = [
+    'Alex',
+    'Jordan',
+    'Taylor',
+    'Morgan',
+    'Casey',
+    'Riley',
+    'Avery',
+    'Quinn',
+    'Sage',
+    'Rowan',
+  ];
+  const lastNames = [
+    'Smith',
+    'Johnson',
+    'Williams',
+    'Brown',
+    'Jones',
+    'Garcia',
+    'Miller',
+    'Davis',
+    'Rodriguez',
+    'Martinez',
+  ];
 
   const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
   const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
@@ -65,36 +87,58 @@ const simulatePurchase = async (
     logger.info(`${logPrefix} ✓ Page loaded (${Date.now() - startTime}ms)`);
 
     // STEP 2: Select tickets
-    logger.info(`${logPrefix} Selecting ${userData.ticketQuantity}x ${userData.ticketType} tickets`);
-    await new Promise(resolve => setTimeout(resolve, Math.random() * 200 + 100));
-    logger.info(`${logPrefix} ✓ Tickets selected (${Date.now() - startTime}ms)`);
+    logger.info(
+      `${logPrefix} Selecting ${userData.ticketQuantity}x ${userData.ticketType} tickets`
+    );
+    await new Promise(resolve =>
+      setTimeout(resolve, Math.random() * 200 + 100)
+    );
+    logger.info(
+      `${logPrefix} ✓ Tickets selected (${Date.now() - startTime}ms)`
+    );
 
     // STEP 3: Fill checkout form
-    logger.info(`${logPrefix} Filling form: ${userData.firstName} ${userData.lastName}, ${userData.email}`);
-    await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 500));
+    logger.info(
+      `${logPrefix} Filling form: ${userData.firstName} ${userData.lastName}, ${userData.email}`
+    );
+    await new Promise(resolve =>
+      setTimeout(resolve, Math.random() * 1000 + 500)
+    );
     logger.info(`${logPrefix} ✓ Form completed (${Date.now() - startTime}ms)`);
 
     // STEP 4: Calculate price
     const ticketPrice = userData.ticketType === 'VIP' ? 150 : 50;
     const subtotal = ticketPrice * userData.ticketQuantity;
-    const fees = subtotal * 0.10;
+    const fees = subtotal * 0.1;
     const tax = subtotal * 0.08;
     const total = subtotal + fees + tax;
 
-    logger.info(`${logPrefix} Price breakdown: $${subtotal.toFixed(2)} + $${fees.toFixed(2)} fees + $${tax.toFixed(2)} tax = $${total.toFixed(2)}`);
+    logger.info(
+      `${logPrefix} Price breakdown: $${subtotal.toFixed(2)} + $${fees.toFixed(2)} fees + $${tax.toFixed(2)} tax = $${total.toFixed(2)}`
+    );
 
     // STEP 5: Submit payment
     logger.info(`${logPrefix} Processing payment ($${total.toFixed(2)})...`);
-    await new Promise(resolve => setTimeout(resolve, Math.random() * 600 + 200));
+    await new Promise(resolve =>
+      setTimeout(resolve, Math.random() * 600 + 200)
+    );
 
     // Simulate random payment failures (5% rate)
     if (Math.random() < 0.05) {
-      const failureReasons = ['Card declined', 'Insufficient funds', 'Network timeout', 'Bank authorization failed'];
-      const reason = failureReasons[Math.floor(Math.random() * failureReasons.length)];
+      const failureReasons = [
+        'Card declined',
+        'Insufficient funds',
+        'Network timeout',
+        'Bank authorization failed',
+      ];
+      const reason =
+        failureReasons[Math.floor(Math.random() * failureReasons.length)];
       throw new Error(reason);
     }
 
-    logger.info(`${logPrefix} ✓ Payment approved (${Date.now() - startTime}ms)`);
+    logger.info(
+      `${logPrefix} ✓ Payment approved (${Date.now() - startTime}ms)`
+    );
 
     // STEP 6: Create order in database
     logger.info(`${logPrefix} Creating order in database...`);
@@ -102,12 +146,20 @@ const simulatePurchase = async (
     logger.info(`${logPrefix} ✓ Order created (${Date.now() - startTime}ms)`);
 
     // STEP 7: Generate tickets
-    logger.info(`${logPrefix} Generating ${userData.ticketQuantity} ticket${userData.ticketQuantity > 1 ? 's' : ''}...`);
-    await new Promise(resolve => setTimeout(resolve, Math.random() * 50 * userData.ticketQuantity));
-    logger.info(`${logPrefix} ✓ Tickets generated (${Date.now() - startTime}ms)`);
+    logger.info(
+      `${logPrefix} Generating ${userData.ticketQuantity} ticket${userData.ticketQuantity > 1 ? 's' : ''}...`
+    );
+    await new Promise(resolve =>
+      setTimeout(resolve, Math.random() * 50 * userData.ticketQuantity)
+    );
+    logger.info(
+      `${logPrefix} ✓ Tickets generated (${Date.now() - startTime}ms)`
+    );
 
     const duration = Date.now() - startTime;
-    logger.info(`${logPrefix} ✅ PURCHASE COMPLETE in ${duration}ms | ${userData.ticketQuantity} tickets | $${total.toFixed(2)}`);
+    logger.info(
+      `${logPrefix} ✅ PURCHASE COMPLETE in ${duration}ms | ${userData.ticketQuantity} tickets | $${total.toFixed(2)}`
+    );
 
     return {
       success: true,
@@ -119,7 +171,9 @@ const simulatePurchase = async (
     };
   } catch (error) {
     const duration = Date.now() - startTime;
-    logger.error(`${logPrefix} ❌ PURCHASE FAILED after ${duration}ms: ${(error as Error).message}`);
+    logger.error(
+      `${logPrefix} ❌ PURCHASE FAILED after ${duration}ms: ${(error as Error).message}`
+    );
     throw error;
   }
 };
@@ -147,7 +201,8 @@ const fetchRandomEvent = async () => {
 const performanceTestSuite: TestSuite = {
   id: 'performance-load-tests',
   name: 'Ticket Purchase Load Tests',
-  description: 'Simulate thousands of concurrent users attempting to purchase tickets from randomized events',
+  description:
+    'Simulate thousands of concurrent users attempting to purchase tickets from randomized events',
   category: 'Performance',
   testCases: [
     {
@@ -179,14 +234,22 @@ const performanceTestSuite: TestSuite = {
         const startTime = Date.now();
 
         logger.info('='.repeat(80));
-        logger.info(`🚀 TEST START: ${userCount} concurrent users purchasing tickets`);
+        logger.info(
+          `🚀 TEST START: ${userCount} concurrent users purchasing tickets`
+        );
         logger.info(`📍 Event: "${event.title}"`);
         logger.info(`⏰ Start time: ${new Date().toLocaleTimeString()}`);
         logger.info('='.repeat(80));
 
         const purchases = Array.from({ length: userCount }, (_, i) => {
           const userData = generateRandomUser();
-          return simulatePurchase(i + 1, event.id, event.title, userData, logger);
+          return simulatePurchase(
+            i + 1,
+            event.id,
+            event.title,
+            userData,
+            logger
+          );
         });
 
         const results = await Promise.allSettled(purchases);
@@ -197,14 +260,22 @@ const performanceTestSuite: TestSuite = {
 
         logger.info('='.repeat(80));
         logger.info(`📊 TEST RESULTS`);
-        logger.info(`✅ Successful: ${successful}/${userCount} (${((successful/userCount)*100).toFixed(1)}%)`);
-        logger.info(`❌ Failed: ${failed}/${userCount} (${((failed/userCount)*100).toFixed(1)}%)`);
-        logger.info(`⏱️  Total duration: ${(totalDuration/1000).toFixed(2)}s`);
+        logger.info(
+          `✅ Successful: ${successful}/${userCount} (${((successful / userCount) * 100).toFixed(1)}%)`
+        );
+        logger.info(
+          `❌ Failed: ${failed}/${userCount} (${((failed / userCount) * 100).toFixed(1)}%)`
+        );
+        logger.info(
+          `⏱️  Total duration: ${(totalDuration / 1000).toFixed(2)}s`
+        );
         logger.info(`📈 Average per user: ${avgDuration.toFixed(0)}ms`);
         logger.info('='.repeat(80));
 
         if (successful < userCount * 0.9) {
-          throw new Error(`❌ TEST FAILED: Only ${successful}/${userCount} purchases succeeded (${((successful/userCount)*100).toFixed(1)}%)`);
+          throw new Error(
+            `❌ TEST FAILED: Only ${successful}/${userCount} purchases succeeded (${((successful / userCount) * 100).toFixed(1)}%)`
+          );
         }
       },
     },
@@ -236,14 +307,22 @@ const performanceTestSuite: TestSuite = {
         const startTime = Date.now();
 
         logger.info('='.repeat(80));
-        logger.info(`🚀 TEST START: ${userCount} concurrent users purchasing tickets`);
+        logger.info(
+          `🚀 TEST START: ${userCount} concurrent users purchasing tickets`
+        );
         logger.info(`📍 Event: "${event.title}"`);
         logger.info(`⏰ Start time: ${new Date().toLocaleTimeString()}`);
         logger.info('='.repeat(80));
 
         const purchases = Array.from({ length: userCount }, (_, i) => {
           const userData = generateRandomUser();
-          return simulatePurchase(i + 1, event.id, event.title, userData, logger);
+          return simulatePurchase(
+            i + 1,
+            event.id,
+            event.title,
+            userData,
+            logger
+          );
         });
 
         const results = await Promise.allSettled(purchases);
@@ -253,13 +332,21 @@ const performanceTestSuite: TestSuite = {
 
         logger.info('='.repeat(80));
         logger.info(`📊 TEST RESULTS`);
-        logger.info(`✅ Successful: ${successful}/${userCount} (${((successful/userCount)*100).toFixed(1)}%)`);
-        logger.info(`❌ Failed: ${failed}/${userCount} (${((failed/userCount)*100).toFixed(1)}%)`);
-        logger.info(`⏱️  Total duration: ${(totalDuration/1000).toFixed(2)}s`);
+        logger.info(
+          `✅ Successful: ${successful}/${userCount} (${((successful / userCount) * 100).toFixed(1)}%)`
+        );
+        logger.info(
+          `❌ Failed: ${failed}/${userCount} (${((failed / userCount) * 100).toFixed(1)}%)`
+        );
+        logger.info(
+          `⏱️  Total duration: ${(totalDuration / 1000).toFixed(2)}s`
+        );
         logger.info('='.repeat(80));
 
         if (successful < userCount * 0.9) {
-          throw new Error(`❌ TEST FAILED: Only ${successful}/${userCount} purchases succeeded`);
+          throw new Error(
+            `❌ TEST FAILED: Only ${successful}/${userCount} purchases succeeded`
+          );
         }
       },
     },
@@ -291,14 +378,22 @@ const performanceTestSuite: TestSuite = {
         const startTime = Date.now();
 
         logger.info('='.repeat(80));
-        logger.info(`🚀 TEST START: ${userCount} concurrent users purchasing tickets`);
+        logger.info(
+          `🚀 TEST START: ${userCount} concurrent users purchasing tickets`
+        );
         logger.info(`📍 Event: "${event.title}"`);
         logger.info(`⏰ Start time: ${new Date().toLocaleTimeString()}`);
         logger.info('='.repeat(80));
 
         const purchases = Array.from({ length: userCount }, (_, i) => {
           const userData = generateRandomUser();
-          return simulatePurchase(i + 1, event.id, event.title, userData, logger);
+          return simulatePurchase(
+            i + 1,
+            event.id,
+            event.title,
+            userData,
+            logger
+          );
         });
 
         const results = await Promise.allSettled(purchases);
@@ -311,14 +406,22 @@ const performanceTestSuite: TestSuite = {
 
         logger.info('='.repeat(80));
         logger.info(`📊 TEST RESULTS`);
-        logger.info(`✅ Successful: ${successful}/${userCount} (${((successful/userCount)*100).toFixed(1)}%)`);
-        logger.info(`❌ Failed: ${failed}/${userCount} (${((failed/userCount)*100).toFixed(1)}%)`);
-        logger.info(`⏱️  Total duration: ${(totalDuration/1000).toFixed(2)}s`);
+        logger.info(
+          `✅ Successful: ${successful}/${userCount} (${((successful / userCount) * 100).toFixed(1)}%)`
+        );
+        logger.info(
+          `❌ Failed: ${failed}/${userCount} (${((failed / userCount) * 100).toFixed(1)}%)`
+        );
+        logger.info(
+          `⏱️  Total duration: ${(totalDuration / 1000).toFixed(2)}s`
+        );
         logger.info(`🎟️  Tickets sold: ${ticketsSold}`);
         logger.info('='.repeat(80));
 
         if (successful < userCount * 0.9) {
-          throw new Error(`❌ TEST FAILED: Only ${successful}/${userCount} purchases succeeded`);
+          throw new Error(
+            `❌ TEST FAILED: Only ${successful}/${userCount} purchases succeeded`
+          );
         }
       },
     },
@@ -357,7 +460,13 @@ const performanceTestSuite: TestSuite = {
 
         const purchases = Array.from({ length: userCount }, (_, i) => {
           const userData = generateRandomUser();
-          return simulatePurchase(i + 1, event.id, event.title, userData, logger);
+          return simulatePurchase(
+            i + 1,
+            event.id,
+            event.title,
+            userData,
+            logger
+          );
         });
 
         const results = await Promise.allSettled(purchases);
@@ -367,13 +476,21 @@ const performanceTestSuite: TestSuite = {
 
         logger.info('='.repeat(80));
         logger.info(`📊 STRESS TEST RESULTS`);
-        logger.info(`✅ Successful: ${successful}/${userCount} (${((successful/userCount)*100).toFixed(1)}%)`);
-        logger.info(`❌ Failed: ${failed}/${userCount} (${((failed/userCount)*100).toFixed(1)}%)`);
-        logger.info(`⏱️  Total duration: ${(totalDuration/1000).toFixed(2)}s`);
+        logger.info(
+          `✅ Successful: ${successful}/${userCount} (${((successful / userCount) * 100).toFixed(1)}%)`
+        );
+        logger.info(
+          `❌ Failed: ${failed}/${userCount} (${((failed / userCount) * 100).toFixed(1)}%)`
+        );
+        logger.info(
+          `⏱️  Total duration: ${(totalDuration / 1000).toFixed(2)}s`
+        );
         logger.info('='.repeat(80));
 
         if (successful < userCount * 0.85) {
-          throw new Error(`❌ STRESS TEST FAILED: Only ${successful}/${userCount} purchases succeeded`);
+          throw new Error(
+            `❌ STRESS TEST FAILED: Only ${successful}/${userCount} purchases succeeded`
+          );
         }
       },
     },
@@ -407,12 +524,20 @@ const performanceTestSuite: TestSuite = {
         logger.info(`🚀 EXTREME STRESS TEST: ${userCount} concurrent users`);
         logger.info(`📍 Event: "${event.title}"`);
         logger.info(`⏰ Start time: ${new Date().toLocaleTimeString()}`);
-        logger.warn(`⚠️  Warning: Extreme load test - expect performance degradation`);
+        logger.warn(
+          `⚠️  Warning: Extreme load test - expect performance degradation`
+        );
         logger.info('='.repeat(80));
 
         const purchases = Array.from({ length: userCount }, (_, i) => {
           const userData = generateRandomUser();
-          return simulatePurchase(i + 1, event.id, event.title, userData, logger);
+          return simulatePurchase(
+            i + 1,
+            event.id,
+            event.title,
+            userData,
+            logger
+          );
         });
 
         const results = await Promise.allSettled(purchases);
@@ -428,15 +553,21 @@ const performanceTestSuite: TestSuite = {
 
         logger.info('='.repeat(80));
         logger.info(`📊 EXTREME STRESS TEST RESULTS`);
-        logger.info(`✅ Successful: ${successful}/${userCount} (${((successful/userCount)*100).toFixed(1)}%)`);
-        logger.info(`❌ Failed: ${failed}/${userCount} (${((failed/userCount)*100).toFixed(1)}%)`);
-        logger.info(`⏱️  Duration: ${(totalDuration/1000).toFixed(2)}s`);
+        logger.info(
+          `✅ Successful: ${successful}/${userCount} (${((successful / userCount) * 100).toFixed(1)}%)`
+        );
+        logger.info(
+          `❌ Failed: ${failed}/${userCount} (${((failed / userCount) * 100).toFixed(1)}%)`
+        );
+        logger.info(`⏱️  Duration: ${(totalDuration / 1000).toFixed(2)}s`);
         logger.info(`🎟️  Tickets sold: ${ticketsPurchased}`);
         logger.info(`💰 Revenue: $${totalRevenue.toFixed(2)}`);
         logger.info('='.repeat(80));
 
         if (successful < userCount * 0.85) {
-          throw new Error(`❌ TEST FAILED: Only ${successful}/${userCount} purchases succeeded`);
+          throw new Error(
+            `❌ TEST FAILED: Only ${successful}/${userCount} purchases succeeded`
+          );
         }
       },
     },
@@ -466,29 +597,41 @@ const performanceTestSuite: TestSuite = {
         const startTime = Date.now();
 
         logger.info('='.repeat(80));
-        logger.info(`🚀 MULTI-EVENT TEST: ${userCount} users across multiple events`);
+        logger.info(
+          `🚀 MULTI-EVENT TEST: ${userCount} users across multiple events`
+        );
         logger.info(`⏰ Start time: ${new Date().toLocaleTimeString()}`);
         logger.info('='.repeat(80));
 
         const { data: events } = await supabase
           .from('events')
           .select('id, title')
-          .order('date', { ascending: true})
+          .order('date', { ascending: true })
           .limit(10);
 
-        const eventList = events && events.length > 0 ? events : [
-          { id: 'mock-1', title: 'Mock Event 1' },
-          { id: 'mock-2', title: 'Mock Event 2' },
-          { id: 'mock-3', title: 'Mock Event 3' },
-        ];
+        const eventList =
+          events && events.length > 0
+            ? events
+            : [
+                { id: 'mock-1', title: 'Mock Event 1' },
+                { id: 'mock-2', title: 'Mock Event 2' },
+                { id: 'mock-3', title: 'Mock Event 3' },
+              ];
 
         logger.info(`📍 Testing across ${eventList.length} events:`);
         eventList.forEach((e, i) => logger.info(`   ${i + 1}. "${e.title}"`));
 
         const purchases = Array.from({ length: userCount }, (_, i) => {
           const userData = generateRandomUser();
-          const randomEvent = eventList[Math.floor(Math.random() * eventList.length)];
-          return simulatePurchase(i + 1, randomEvent.id, randomEvent.title, userData, logger);
+          const randomEvent =
+            eventList[Math.floor(Math.random() * eventList.length)];
+          return simulatePurchase(
+            i + 1,
+            randomEvent.id,
+            randomEvent.title,
+            userData,
+            logger
+          );
         });
 
         const results = await Promise.allSettled(purchases);
@@ -501,14 +644,20 @@ const performanceTestSuite: TestSuite = {
 
         logger.info('='.repeat(80));
         logger.info(`📊 MULTI-EVENT TEST RESULTS`);
-        logger.info(`✅ Successful: ${successful}/${userCount} (${((successful/userCount)*100).toFixed(1)}%)`);
-        logger.info(`❌ Failed: ${failed}/${userCount} (${((failed/userCount)*100).toFixed(1)}%)`);
-        logger.info(`⏱️  Duration: ${(totalDuration/1000).toFixed(2)}s`);
+        logger.info(
+          `✅ Successful: ${successful}/${userCount} (${((successful / userCount) * 100).toFixed(1)}%)`
+        );
+        logger.info(
+          `❌ Failed: ${failed}/${userCount} (${((failed / userCount) * 100).toFixed(1)}%)`
+        );
+        logger.info(`⏱️  Duration: ${(totalDuration / 1000).toFixed(2)}s`);
         logger.info(`💰 Total revenue: $${totalRevenue.toFixed(2)}`);
         logger.info('='.repeat(80));
 
         if (successful < userCount * 0.9) {
-          throw new Error(`❌ TEST FAILED: Only ${successful}/${userCount} purchases succeeded`);
+          throw new Error(
+            `❌ TEST FAILED: Only ${successful}/${userCount} purchases succeeded`
+          );
         }
       },
     },
@@ -555,7 +704,13 @@ const performanceTestSuite: TestSuite = {
 
         const purchases = Array.from({ length: userCount }, (_, i) => {
           const userData = generateRandomUser();
-          return simulatePurchase(i + 1, event.id, event.title, userData, logger);
+          return simulatePurchase(
+            i + 1,
+            event.id,
+            event.title,
+            userData,
+            logger
+          );
         });
 
         const results = await Promise.allSettled(purchases);
@@ -575,17 +730,27 @@ const performanceTestSuite: TestSuite = {
         logger.info('🎯'.repeat(40));
         logger.info(`📊 PEAK TRAFFIC TEST RESULTS`);
         logger.info('='.repeat(80));
-        logger.info(`✅ Successful: ${successful.toLocaleString()}/${userCount.toLocaleString()} (${((successful/userCount)*100).toFixed(1)}%)`);
-        logger.info(`❌ Failed: ${failed.toLocaleString()}/${userCount.toLocaleString()} (${((failed/userCount)*100).toFixed(1)}%)`);
-        logger.info(`⏱️  Total duration: ${(totalDuration/1000).toFixed(2)} seconds`);
+        logger.info(
+          `✅ Successful: ${successful.toLocaleString()}/${userCount.toLocaleString()} (${((successful / userCount) * 100).toFixed(1)}%)`
+        );
+        logger.info(
+          `❌ Failed: ${failed.toLocaleString()}/${userCount.toLocaleString()} (${((failed / userCount) * 100).toFixed(1)}%)`
+        );
+        logger.info(
+          `⏱️  Total duration: ${(totalDuration / 1000).toFixed(2)} seconds`
+        );
         logger.info(`⚡ Throughput: ${throughput} purchases/second`);
         logger.info(`🎟️  Tickets sold: ${ticketsPurchased.toLocaleString()}`);
-        logger.info(`💰 Revenue: $${totalRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+        logger.info(
+          `💰 Revenue: $${totalRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+        );
         logger.info('='.repeat(80));
         logger.info('🎯'.repeat(40));
 
-        if (successful < userCount * 0.80) {
-          throw new Error(`❌ PEAK TRAFFIC TEST FAILED: Only ${successful.toLocaleString()}/${userCount.toLocaleString()} purchases succeeded (${((successful/userCount)*100).toFixed(1)}%)`);
+        if (successful < userCount * 0.8) {
+          throw new Error(
+            `❌ PEAK TRAFFIC TEST FAILED: Only ${successful.toLocaleString()}/${userCount.toLocaleString()} purchases succeeded (${((successful / userCount) * 100).toFixed(1)}%)`
+          );
         }
       },
     },

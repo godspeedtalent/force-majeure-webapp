@@ -1,9 +1,11 @@
 # Force Majeure - Claude Context
 
 ## Project Overview
+
 Force Majeure is a company website and web application for electronic music events, featuring ticket sales, artist profiles, event management, and light social media features. Built with React, TypeScript, Vite, Supabase, and Tailwind CSS.
 
 ## Tech Stack
+
 - **Frontend**: React 18, TypeScript, Vite
 - **Backend**: Supabase (PostgreSQL, Auth, Storage, Edge Functions)
 - **Styling**: Tailwind CSS with custom design system
@@ -15,6 +17,7 @@ Force Majeure is a company website and web application for electronic music even
 ## Key Architectural Patterns
 
 ### Component Organization
+
 ```
 src/
 ├── components/          # Shared UI components
@@ -44,6 +47,7 @@ src/
 ```
 
 ### Import Conventions
+
 - **Supabase**: Always import from `@/shared/api/supabase/client`
 - **Toast**: Use `import { toast } from 'sonner'`
 - **Logger**: Use `import { logger } from '@/shared/services/logger'`
@@ -51,10 +55,12 @@ src/
 - **Types**: Import from centralized locations (e.g., `@/features/events/types`)
 
 ### Design System
+
 - **Complete design system documentation**: `/docs/DESIGN_SYSTEM.md`
 - **Design constants**: `/src/shared/constants/designSystem.ts`
 
 #### Colors
+
 - **Primary Accent**: Dusty Gold `#dfba7d` (`bg-fm-gold`, `text-fm-gold`, `border-fm-gold`)
 - **Secondary**: Dark Crimson `#520C10` (`bg-fm-crimson`, `text-fm-crimson`)
 - **Info/Tertiary**: Muted Navy `#545E75` (`bg-fm-navy`, `text-fm-navy`)
@@ -62,6 +68,7 @@ src/
 - **Base**: Black `#000000` and White `#FFFFFF`
 
 #### Spacing Scale
+
 - XS: `5px` - Tight spacing, small gaps
 - SM: `10px` - Compact layouts, list items
 - MD: `20px` - Default element spacing
@@ -69,12 +76,14 @@ src/
 - XL: `60px` - Page sections, hero spacing
 
 #### Typography
+
 - **Font**: Canela for 99% of application (`.font-canela`)
 - **Capitalization**: Sentence case for headers ("Here's what we found." not "Here's What We Found")
 - **Periods**: Use at end of headers where appropriate
 - **Bold**: Use sparingly for emphasis only
 
 #### Design Elements
+
 - **Background**: Black topography pattern (`bg-topography`)
 - **Corners**: Sharp edges only (`rounded-none`) - rounded corners almost never used
 - **Depth**: 4-level system (transparent → frosted glass with increasing opacity)
@@ -85,6 +94,7 @@ src/
 - **Icon Buttons**: Use where appropriate with accessible labels
 
 #### Component Naming
+
 - All custom components use `Fm` prefix (Force Majeure)
 - Common components: `FmCommon*` (FmCommonButton, FmCommonTextField)
 - Specific components: `Fm*` (FmEventCard, FmTicketTier)
@@ -93,24 +103,28 @@ src/
 ## Code Standards
 
 ### TypeScript
+
 - Use strict mode
 - Prefer interfaces over types for object shapes
 - Use optional chaining and nullish coalescing
 - Centralize types in feature modules (`features/*/types/`)
 
 ### React
+
 - Use functional components with hooks
 - Named exports preferred over default exports (except pages)
 - Extract custom hooks for complex logic (prefix with `use`)
 - Keep components under 300 lines (break up if larger)
 
 ### State Management
+
 - React Query for server state
 - Context API for global client state
 - Local state with useState for component-specific state
 - Avoid prop drilling - use composition or context
 
 ### File Naming
+
 - Components: PascalCase (EventCard.tsx)
 - App-specific Components: Fm* (for common, FmCommon*)
 - Hooks: camelCase with `use` prefix (useEventData.ts)
@@ -119,6 +133,7 @@ src/
 - Constants: UPPER_SNAKE_CASE
 
 ### Styling
+
 - Tailwind utility classes (mobile-first responsive)
 - Custom Tailwind config: `/config/tailwind/`
 - Avoid inline styles except for dynamic values
@@ -158,6 +173,7 @@ src/
 - RLS policies enforce permission checks at database level
 
 **Available Roles:**
+
 - `ROLES.ADMIN` - Full system administrator (all permissions via `*`)
 - `ROLES.DEVELOPER` - Developer access (debugging, dev tools, all permissions)
 - `ROLES.ORG_ADMIN` - Organization administrator (manage events, venues, staff)
@@ -165,6 +181,7 @@ src/
 - `ROLES.USER` - Standard user (basic access)
 
 **Key Permissions:**
+
 - `PERMISSIONS.MANAGE_ORGANIZATION` - Full org management
 - `PERMISSIONS.VIEW_ORGANIZATION` - View org data
 - `PERMISSIONS.SCAN_TICKETS` - Ticket scanning capability
@@ -172,6 +189,7 @@ src/
 - `PERMISSIONS.ALL` - Wildcard permission (`*`)
 
 **Usage Patterns:**
+
 ```typescript
 // Import constants
 import { PERMISSIONS, ROLES } from '@/shared/auth/permissions';
@@ -194,6 +212,7 @@ const isAdmin = hasRole(ROLES.ADMIN);
 ```
 
 **CRITICAL Security Rules:**
+
 1. ❌ **NEVER** hard-code role/permission strings - always use constants
 2. ✅ **ALWAYS** use `<ProtectedRoute>` for admin/privileged routes
 3. ✅ **ALWAYS** check actual user roles, not dev mode overrides
@@ -204,12 +223,14 @@ const isAdmin = hasRole(ROLES.ADMIN);
 **See also:** `/docs/PERMISSION_MANAGEMENT_GUIDE.md` for detailed examples
 
 ### Authentication (Nov 2025)
+
 - Added Google OAuth2 integration
 - "Remember Me" functionality with 30-day sessions
 - Password confirmation on signup
 - Session persistence utilities
 
 ### Email System (Nov 2025)
+
 - Order receipt email templates with inline styles
 - PDF ticket generation (stubbed for future implementation)
 - Email preview demo at `/demo/email-template`
@@ -218,11 +239,13 @@ const isAdmin = hasRole(ROLES.ADMIN);
 ## Known Technical Debt
 
 ### High Priority
+
 1. **Event form duplication** - `FmEditEventButton` (640 lines) and `FmCreateEventButton` (556 lines) share 80% code
 2. **FmCommonDataGrid** (859 lines) - Needs breaking into smaller components
 3. **Data fetching patterns** - 15+ files with duplicate Supabase queries
 
 ### Medium Priority
+
 4. **Loading state management** - 22+ files with manual loading states
 5. **TicketGroupManager** (635 lines) - Should split into separate view components
 6. **Page components** - ProfileEdit, EventDetails, EventManagement could be split
@@ -230,6 +253,7 @@ const isAdmin = hasRole(ROLES.ADMIN);
 ## Development Workflow
 
 ### Running the App
+
 ```bash
 npm run dev          # Start dev server (localhost:5173)
 npm run build        # Production build
@@ -259,12 +283,14 @@ npm run preview      # Preview production build
   - Developer tools (admin/developer only): Database, Feature Toggles, TODO Notes
 
 ### Demo Pages
+
 - Protected by `DemoProtectedRoute` (admin role required)
 - Located in `/src/pages/demo/`
 - Access via `/demo` route
 - Useful for testing without affecting production data
 
 ### Testing Events
+
 - Use demo tools at `/demo/event-checkout`
 - Create/select random events for testing
 - Checkout flow with Stripe test mode
@@ -272,6 +298,7 @@ npm run preview      # Preview production build
 ## Database Schema Notes
 
 ### Key Tables
+
 - `events` - Event information
 - `ticket_tiers` - Ticket pricing and inventory
 - `orders` - Order records
@@ -282,6 +309,7 @@ npm run preview      # Preview production build
 - `feature_flags` - Feature toggles
 
 ### Naming Convention
+
 - Snake_case for column names (database convention)
 - camelCase in TypeScript interfaces (after fetching)
 - Use centralized types for consistency
@@ -289,6 +317,7 @@ npm run preview      # Preview production build
 ## Common Tasks
 
 ### Adding a New Feature
+
 1. Create feature module in `/src/features/[feature-name]/`
 2. Define types in `types/index.ts`
 3. Create components in `components/`
@@ -297,6 +326,7 @@ npm run preview      # Preview production build
 6. Update routes in `App.tsx`
 
 ### Adding a New FmCommon Component
+
 1. Create component in `/src/components/ui/[category]/`
 2. Use existing patterns (props, styling, accessibility)
 3. Export from barrel file (if exists)
@@ -304,12 +334,14 @@ npm run preview      # Preview production build
 5. Use Radix UI primitives where appropriate
 
 ### Working with Supabase
+
 - Always use typed queries with TypeScript
 - Handle errors with toast notifications
 - Use React Query for caching when appropriate
 - Test with row-level security (RLS) policies in mind
 
 ## Contact & Resources
+
 - GitHub: [repository URL]
 - Supabase Dashboard: [project URL]
 - Figma: [design URL] (if applicable)
@@ -318,6 +350,7 @@ npm run preview      # Preview production build
 ## Notes for Claude
 
 ### General Guidelines
+
 - Prefer named exports over default exports (better refactoring)
 - Always read files before editing
 - Use parallel tool calls when possible
@@ -326,9 +359,10 @@ npm run preview      # Preview production build
 - Extract shared logic into hooks or utilities
 - Follow existing patterns in the codebase
 - Use pre-built layouts for new pages, only creating a brand new layout if there is no reasonable base layout. Create the new layout with the idea in mind that in can be implemented in other pages.
-- Use pre-built Fm* components first before creating new components, using pre-existing ones as much as possible. Only create brand new components if absolutely necessary, and do your best to inherit base components when doing so.
+- Use pre-built Fm\* components first before creating new components, using pre-existing ones as much as possible. Only create brand new components if absolutely necessary, and do your best to inherit base components when doing so.
 
 ### Code Modularization & Component Creation
+
 **CRITICAL: Always search for similar patterns before implementing new features.**
 
 1. **Search before implementing**: When adding new functionality, search the codebase for similar implementations
@@ -357,22 +391,30 @@ npm run preview      # Preview production build
    - Use barrel exports (`index.ts`) for cleaner imports when appropriate
 
 ### Design System Usage
+
 **CRITICAL: Always follow the design system when creating or modifying components.**
 
 1. **Import constants**: Always import from `/src/shared/constants/designSystem.ts`
+
    ```typescript
-   import { COLORS, SPACING_CLASSES, TYPOGRAPHY, DEPTH } from '@/shared/constants/designSystem';
+   import {
+     COLORS,
+     SPACING_CLASSES,
+     TYPOGRAPHY,
+     DEPTH,
+   } from '@/shared/constants/designSystem';
    ```
 
 2. **Use helper functions**: Import from `/src/shared/utils/styleUtils.ts`
+
    ```typescript
-   import { 
-     getInputClasses, 
-     getLabelClasses, 
-     getListItemClasses, 
+   import {
+     getInputClasses,
+     getLabelClasses,
+     getListItemClasses,
      getDepthClasses,
      getButtonClasses,
-     getCardClasses 
+     getCardClasses,
    } from '@/shared/utils/styleUtils';
    ```
 
@@ -380,44 +422,44 @@ npm run preview      # Preview production build
    - ✅ `className={COLOR_CLASSES.GOLD_BG}` or `bg-fm-gold`
    - ❌ `className="bg-[#dfba7d]"` or inline styles
 
-3. **Use spacing scale**: Only use 5, 10, 20, 40, 60 pixel values
+4. **Use spacing scale**: Only use 5, 10, 20, 40, 60 pixel values
    - ✅ `gap-[20px]`, `p-[40px]`, `m-[10px]`
    - ❌ `gap-4`, `p-6`, arbitrary values like `15px`
 
-4. **Typography rules**:
+5. **Typography rules**:
    - Always use Canela font: `className={TYPOGRAPHY.FONT_CANELA}` or `font-canela`
    - Sentence case headers: "Welcome to the event." not "Welcome To The Event"
    - Minimal bold text, only for true emphasis
 
-5. **Sharp corners**: Default to no rounding
+6. **Sharp corners**: Default to no rounding
    - ✅ `rounded-none` (default)
    - ❌ `rounded-lg`, `rounded-md` (avoid)
    - Only exception: `rounded-sm` when absolutely necessary
 
-6. **Depth system**: Use for layered backgrounds
+7. **Depth system**: Use for layered backgrounds
    - Level 0: `bg-transparent border border-white/20` (outline)
    - Level 1: `bg-black/60 backdrop-blur-sm` (base frosted)
    - Level 2: `bg-black/70 backdrop-blur-md` (elevated)
    - Level 3: `bg-black/80 backdrop-blur-lg` (high)
 
-7. **Component reuse**: Check existing Fm* components before creating new ones
+8. **Component reuse**: Check existing Fm\* components before creating new ones
    - Primary components: FmButton, FmCard, FmTextInput, FmCheckbox, FmDateBox, FmDataGrid
    - Inherit and extend rather than duplicate
 
-8. **Input field styling** (based on FmCommonTextField):
+9. **Input field styling** (based on FmCommonTextField):
    - Default: Single border on all sides
    - Hover: Gold border with subtle glow, `bg-white/5`
    - Focus: Remove top/left/right borders, keep only bottom border (3px thick, gold)
    - Focus glow: `shadow-[0_4px_16px_rgba(223,186,125,0.3)]`
    - Ripple effect on click
 
-9. **Label styling**: 
-   - Small size: `text-xs`
-   - ALL CAPS: `uppercase`
-   - Muted color: `text-muted-foreground`
-   - Gold when focused: `text-fm-gold`
+10. **Label styling**:
+    - Small size: `text-xs`
+    - ALL CAPS: `uppercase`
+    - Muted color: `text-muted-foreground`
+    - Gold when focused: `text-fm-gold`
 
-10. **Context Menus** (`FmCommonContextMenu`):
+11. **Context Menus** (`FmCommonContextMenu`):
     - **Visual Design**:
       - Striped background: Even items `bg-background/40`, odd items `bg-background/60`
       - Hover: `hover:bg-fm-gold/10 hover:scale-[1.02]` with gold glow `shadow-fm-gold/20`
@@ -426,31 +468,33 @@ npm run preview      # Preview production build
       - Backdrop: `backdrop-blur-xl` with gradient `from-background to-background/95`
       - Border: `border-2 border-white/20` with shadow `shadow-black/50`
       - Dividers: Horizontal gradient lines between items `bg-gradient-to-r from-transparent via-white/10`
-    
     - **Basic Usage**:
-    
+
       ```tsx
-      import { FmCommonContextMenu, ContextMenuAction } from '@/components/common/modals/FmCommonContextMenu';
-      
+      import {
+        FmCommonContextMenu,
+        ContextMenuAction,
+      } from '@/components/common/modals/FmCommonContextMenu';
+
       const actions: ContextMenuAction<DataType>[] = [
         {
           label: 'Edit',
-          icon: <Pencil className="h-4 w-4" />,
-          onClick: (data) => handleEdit(data),
+          icon: <Pencil className='h-4 w-4' />,
+          onClick: data => handleEdit(data),
         },
         {
           label: 'Delete',
-          icon: <Trash className="h-4 w-4" />,
-          onClick: (data) => handleDelete(data),
+          icon: <Trash className='h-4 w-4' />,
+          onClick: data => handleDelete(data),
           variant: 'destructive',
         },
       ];
-      
+
       <FmCommonContextMenu actions={actions} data={rowData}>
         <div>Right-click me</div>
-      </FmCommonContextMenu>
+      </FmCommonContextMenu>;
       ```
-    
+
     - **Action Properties**:
       - `label`: Display text (required)
       - `icon`: Icon element (optional)
@@ -460,42 +504,41 @@ npm run preview      # Preview production build
       - `disabled`: Boolean to disable the item
       - `separator`: Add visual separator after this item
       - `submenu`: Array of nested actions for hierarchical menus
-    
     - **Submenu Support**:
-    
+
       ```tsx
       const actionsWithSubmenu: ContextMenuAction<NoteType>[] = [
         {
           label: 'Set Status',
-          icon: <CircleDot className="h-4 w-4" />,
+          icon: <CircleDot className='h-4 w-4' />,
           submenu: [
             {
               label: 'TODO',
-              icon: <Circle className="h-3 w-3 text-gray-400" />,
-              onClick: (note) => updateStatus(note, 'TODO'),
+              icon: <Circle className='h-3 w-3 text-gray-400' />,
+              onClick: note => updateStatus(note, 'TODO'),
             },
             {
               label: 'IN PROGRESS',
-              icon: <Circle className="h-3 w-3 text-yellow-400" />,
-              onClick: (note) => updateStatus(note, 'IN_PROGRESS'),
+              icon: <Circle className='h-3 w-3 text-yellow-400' />,
+              onClick: note => updateStatus(note, 'IN_PROGRESS'),
             },
             {
               label: 'RESOLVED',
-              icon: <Circle className="h-3 w-3 text-green-400" />,
-              onClick: (note) => updateStatus(note, 'RESOLVED'),
+              icon: <Circle className='h-3 w-3 text-green-400' />,
+              onClick: note => updateStatus(note, 'RESOLVED'),
             },
           ],
         },
         { separator: true },
         {
           label: 'Delete',
-          icon: <Trash className="h-4 w-4" />,
-          onClick: (note) => handleDelete(note),
+          icon: <Trash className='h-4 w-4' />,
+          onClick: note => handleDelete(note),
           variant: 'destructive',
         },
       ];
       ```
-    
+
     - **Design System Compliance**:
       - Animations: 200ms duration with `animate-in fade-in zoom-in-95`
       - Spacing: Uses 0.5 units (`my-0.5`) between items

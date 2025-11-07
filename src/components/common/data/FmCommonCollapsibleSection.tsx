@@ -36,22 +36,22 @@ export const FmCommonCollapsibleSection = ({
 
   return (
     <div className={className}>
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-canela text-lg text-white">{title}</h3>
+      <div className='flex items-center justify-between mb-4'>
+        <h3 className='font-canela text-lg text-white'>{title}</h3>
         <Button
-          variant="ghost"
-          size="sm"
+          variant='ghost'
+          size='sm'
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-white hover:text-fm-gold"
+          className='text-white hover:text-fm-gold'
         >
           {isExpanded ? (
             <>
-              <ChevronUp className="h-4 w-4 mr-1" />
+              <ChevronUp className='h-4 w-4 mr-1' />
               Collapse
             </>
           ) : (
             <>
-              <ChevronDown className="h-4 w-4 mr-1" />
+              <ChevronDown className='h-4 w-4 mr-1' />
               Expand
             </>
           )}
@@ -61,14 +61,12 @@ export const FmCommonCollapsibleSection = ({
       <div
         className={cn(
           'grid transition-all duration-300 ease-in-out',
-          isExpanded 
-            ? 'grid-rows-[1fr] opacity-100' 
+          isExpanded
+            ? 'grid-rows-[1fr] opacity-100'
             : 'grid-rows-[0fr] opacity-0'
         )}
       >
-        <div className='overflow-hidden'>
-          {children}
-        </div>
+        <div className='overflow-hidden'>{children}</div>
       </div>
     </div>
   );

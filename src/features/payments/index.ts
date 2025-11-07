@@ -9,7 +9,12 @@ export { StripeCardInput } from './components/StripeCardInput';
 export { SavedCardSelector } from './components/SavedCardSelector';
 
 // Types
-export type { SavedCard, PaymentResult, PaymentIntent, StripeCustomer } from './types';
+export type {
+  SavedCard,
+  PaymentResult,
+  PaymentIntent,
+  StripeCustomer,
+} from './types';
 
 // Services
 export { stripeService } from './services/stripeService';

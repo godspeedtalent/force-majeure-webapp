@@ -26,7 +26,7 @@ export const useEmailReceipt = () => {
     mutationFn: async (data: OrderReceiptEmailData) => {
       return EmailService.sendOrderReceipt(data);
     },
-    onSuccess: (result) => {
+    onSuccess: result => {
       setLastResult(result);
       if (result.success) {
         toast.success('Receipt email sent successfully');
@@ -36,7 +36,7 @@ export const useEmailReceipt = () => {
         });
       }
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Error sending receipt email:', error);
       toast.error('Failed to send receipt email', {
         description: error instanceof Error ? error.message : 'Unknown error',
@@ -62,7 +62,7 @@ export const useSendTestEmail = () => {
     mutationFn: async (toEmail: string) => {
       return EmailService.sendTestEmail(toEmail);
     },
-    onSuccess: (result) => {
+    onSuccess: result => {
       if (result.success) {
         toast.success('Test email sent successfully');
       } else {
@@ -71,7 +71,7 @@ export const useSendTestEmail = () => {
         });
       }
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Error sending test email:', error);
       toast.error('Failed to send test email', {
         description: error instanceof Error ? error.message : 'Unknown error',

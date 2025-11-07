@@ -7,21 +7,21 @@ import type { SavedCard, PaymentResult } from '../types';
 
 /**
  * useStripePayment - Main hook for Stripe payment operations
- * 
+ *
  * Provides methods for:
  * - Processing payments with new or saved cards
  * - Loading and managing saved payment methods
  * - Creating and managing Stripe customers
- * 
+ *
  * @example
  * ```tsx
  * const { processPayment, loadSavedCards, savedCards, loading } = useStripePayment();
- * 
+ *
  * // Load saved cards
  * useEffect(() => {
  *   if (user) loadSavedCards();
  * }, [user]);
- * 
+ *
  * // Process payment
  * const result = await processPayment(99.99, true, selectedCardId);
  * ```
@@ -55,7 +55,10 @@ export const useStripePayment = () => {
     }
 
     // Create new customer
-    const customer = await stripeService.getOrCreateCustomer(user.email!, user.id);
+    const customer = await stripeService.getOrCreateCustomer(
+      user.email!,
+      user.id
+    );
 
     // Save customer ID to user profile
     const { error: updateError } = await supabase
@@ -91,7 +94,7 @@ export const useStripePayment = () => {
 
   /**
    * Process a payment with Stripe
-   * 
+   *
    * @param amount - Amount in dollars (will be converted to cents)
    * @param saveCard - Whether to save the card for future use
    * @param savedCardId - ID of saved card to use (if using existing card)
@@ -123,20 +126,26 @@ export const useStripePayment = () => {
             throw new Error('Card element not found');
           }
 
-          const { error: methodError, paymentMethod } = await stripe.createPaymentMethod({
-            type: 'card',
-            card: cardElement,
-          });
+          const { error: methodError, paymentMethod } =
+            await stripe.createPaymentMethod({
+              type: 'card',
+              card: cardElement,
+            });
 
           if (methodError) {
-            throw new Error(methodError.message || 'Failed to create payment method');
+            throw new Error(
+              methodError.message || 'Failed to create payment method'
+            );
           }
 
           paymentMethodId = paymentMethod!.id;
 
           // Attach to customer if saving
           if (saveCard) {
-            await stripeService.attachPaymentMethod(paymentMethodId, customerId);
+            await stripeService.attachPaymentMethod(
+              paymentMethodId,
+              customerId
+            );
           }
         }
 
@@ -154,7 +163,9 @@ export const useStripePayment = () => {
         );
 
         if (confirmError) {
-          throw new Error(confirmError.message || 'Payment confirmation failed');
+          throw new Error(
+            confirmError.message || 'Payment confirmation failed'
+          );
         }
 
         // Reload saved cards if we saved a new one
@@ -164,7 +175,8 @@ export const useStripePayment = () => {
 
         return { success: true, paymentMethodId };
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Payment failed';
+        const message =
+          error instanceof Error ? error.message : 'Payment failed';
         return { success: false, error: message };
       } finally {
         setLoading(false);

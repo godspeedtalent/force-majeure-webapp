@@ -5,7 +5,8 @@ import { LucideIcon } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 import { useRipple } from '@/hooks/useRipple';
 
-interface FmCommonButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface FmCommonButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'default' | 'secondary' | 'destructive' | 'gold';
   size?: 'default' | 'sm' | 'lg' | 'icon';
   icon?: LucideIcon;
@@ -20,7 +21,10 @@ interface FmCommonButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEleme
  * Enhanced with click ripple effect and scale animation for dopamine-inducing UX
  * Supports multiple variants, icons, and loading states
  */
-export const FmCommonButton = forwardRef<HTMLButtonElement, FmCommonButtonProps>(
+export const FmCommonButton = forwardRef<
+  HTMLButtonElement,
+  FmCommonButtonProps
+>(
   (
     {
       variant = 'default',
@@ -41,32 +45,46 @@ export const FmCommonButton = forwardRef<HTMLButtonElement, FmCommonButtonProps>
     const { ripples, createRipple } = useRipple();
     const isDisabled = disabled || loading;
 
-    const handleClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-      if (!isDisabled) {
-        // Trigger press animation
-        setIsPressed(true);
-        setTimeout(() => setIsPressed(false), 150);
+    const handleClick = useCallback(
+      (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (!isDisabled) {
+          // Trigger press animation
+          setIsPressed(true);
+          setTimeout(() => setIsPressed(false), 150);
 
-        // Create ripple effect
-        createRipple(e);
+          // Create ripple effect
+          createRipple(e);
 
-        // Call original onClick
-        onClick?.(e);
-      }
-    }, [isDisabled, onClick, createRipple]);
+          // Call original onClick
+          onClick?.(e);
+        }
+      },
+      [isDisabled, onClick, createRipple]
+    );
 
     // Custom variant styles with enhanced animations
     const variantStyles = {
       gold: 'bg-fm-gold hover:bg-fm-gold/90 text-black font-medium transition-all duration-200 hover:shadow-[0_0_20px_rgba(207,173,118,0.5)] hover:scale-105 active:scale-95',
-      default: 'bg-white/5 border-white/30 hover:bg-fm-gold/20 hover:border-fm-gold hover:text-fm-gold transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]',
-      secondary: 'hover:bg-fm-gold/10 hover:border-fm-gold hover:text-fm-gold transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]',
-      destructive: 'transition-all duration-200 hover:scale-105 active:scale-95',
+      default:
+        'bg-white/5 border-white/30 hover:bg-fm-gold/20 hover:border-fm-gold hover:text-fm-gold transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]',
+      secondary:
+        'hover:bg-fm-gold/10 hover:border-fm-gold hover:text-fm-gold transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]',
+      destructive:
+        'transition-all duration-200 hover:scale-105 active:scale-95',
     };
 
     return (
       <Button
         ref={ref}
-        variant={variant === 'gold' ? 'default' : variant === 'default' ? 'outline' : variant === 'secondary' ? 'ghost' : variant}
+        variant={
+          variant === 'gold'
+            ? 'default'
+            : variant === 'default'
+              ? 'outline'
+              : variant === 'secondary'
+                ? 'ghost'
+                : variant
+        }
         size={size}
         disabled={isDisabled}
         onClick={handleClick}
@@ -83,25 +101,25 @@ export const FmCommonButton = forwardRef<HTMLButtonElement, FmCommonButtonProps>
         {...props}
       >
         <>
-          {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+          {loading && <Loader2 className='w-4 h-4 mr-2 animate-spin' />}
           {!loading && Icon && iconPosition === 'left' && (
-            <Icon className="w-4 h-4 mr-2 transition-transform duration-200 group-hover:scale-110" />
+            <Icon className='w-4 h-4 mr-2 transition-transform duration-200 group-hover:scale-110' />
           )}
-          <span className="relative z-10">{children}</span>
+          <span className='relative z-10'>{children}</span>
           {!loading && Icon && iconPosition === 'right' && (
-            <Icon className="w-4 h-4 ml-2 transition-transform duration-200 group-hover:scale-110" />
+            <Icon className='w-4 h-4 ml-2 transition-transform duration-200 group-hover:scale-110' />
           )}
           {/* Ripple effects */}
           {ripples.map(ripple => (
             <span
               key={ripple.id}
-              className="absolute rounded-full bg-white/30 animate-ripple"
+              className='absolute rounded-full bg-white/30 animate-ripple'
               style={{
                 left: ripple.x,
                 top: ripple.y,
                 width: 10,
                 height: 10,
-                transform: 'translate(-50%, -50%)'
+                transform: 'translate(-50%, -50%)',
               }}
             />
           ))}

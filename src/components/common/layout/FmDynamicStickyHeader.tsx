@@ -1,4 +1,11 @@
-import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { cn } from '@/shared/utils/utils';
 
@@ -39,14 +46,20 @@ const renderPreset = (preset: HeaderPreset, variant: 'primary' | 'sticky') => {
     return (
       <div className='space-y-4'>
         {preset.eyebrow && (
-          <p className='text-xs uppercase tracking-[0.35em] text-muted-foreground/80'>{preset.eyebrow}</p>
+          <p className='text-xs uppercase tracking-[0.35em] text-muted-foreground/80'>
+            {preset.eyebrow}
+          </p>
         )}
 
         <div className='flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between'>
           <div className='space-y-2'>
-            <h2 className='text-2xl font-canela font-medium text-foreground'>{preset.title}</h2>
+            <h2 className='text-2xl font-canela font-medium text-foreground'>
+              {preset.title}
+            </h2>
             {preset.subtitle && (
-              <p className='text-sm text-muted-foreground/90'>{preset.subtitle}</p>
+              <p className='text-sm text-muted-foreground/90'>
+                {preset.subtitle}
+              </p>
             )}
           </div>
 
@@ -66,15 +79,21 @@ const renderPreset = (preset: HeaderPreset, variant: 'primary' | 'sticky') => {
     <div className='flex items-center justify-between gap-3'>
       <div className='min-w-0 space-y-1'>
         {preset.eyebrow && (
-          <p className='text-[10px] uppercase tracking-[0.35em] text-muted-foreground/80'>{preset.eyebrow}</p>
+          <p className='text-[10px] uppercase tracking-[0.35em] text-muted-foreground/80'>
+            {preset.eyebrow}
+          </p>
         )}
-        <h3 className='truncate text-sm font-semibold text-foreground'>{preset.title}</h3>
+        <h3 className='truncate text-sm font-semibold text-foreground'>
+          {preset.title}
+        </h3>
         {preset.meta && (
           <div className='text-xs text-muted-foreground/80'>{preset.meta}</div>
         )}
       </div>
 
-      {preset.trailing && <div className='flex-shrink-0'>{preset.trailing}</div>}
+      {preset.trailing && (
+        <div className='flex-shrink-0'>{preset.trailing}</div>
+      )}
     </div>
   );
 };
@@ -117,7 +136,9 @@ export const FmDynamicStickyHeader = ({
 
   const [progress, setProgress] = useState(0);
   const [stickyHeight, setStickyHeight] = useState(0);
-  const [scrollElement, setScrollElement] = useState<HTMLElement | Window | null>(null);
+  const [scrollElement, setScrollElement] = useState<
+    HTMLElement | Window | null
+  >(null);
 
   const initialOffsetRef = useRef<number | null>(null);
   const distanceRef = useRef<number | null>(null);
@@ -174,7 +195,8 @@ export const FmDynamicStickyHeader = ({
       if (!main) return;
 
       const mainRect = main.getBoundingClientRect();
-      const rootTop = root instanceof Window ? 0 : root.getBoundingClientRect().top;
+      const rootTop =
+        root instanceof Window ? 0 : root.getBoundingClientRect().top;
 
       initialOffsetRef.current = mainRect.top - rootTop;
 
@@ -190,7 +212,8 @@ export const FmDynamicStickyHeader = ({
       if (!main) return;
 
       const mainRect = main.getBoundingClientRect();
-      const rootTop = root instanceof Window ? 0 : root.getBoundingClientRect().top;
+      const rootTop =
+        root instanceof Window ? 0 : root.getBoundingClientRect().top;
       const currentTop = mainRect.top - rootTop;
 
       if (initialOffsetRef.current === null) {
@@ -309,7 +332,10 @@ export const FmDynamicStickyHeader = ({
     <div className={cn('relative', className)}>
       <div
         ref={mainRef}
-        className={cn('relative transition-none will-change-[opacity,transform]', primaryClassName)}
+        className={cn(
+          'relative transition-none will-change-[opacity,transform]',
+          primaryClassName
+        )}
         style={{
           opacity: 1 - progress,
           transform: `translateY(-${progress * 32}px)`,
@@ -323,14 +349,20 @@ export const FmDynamicStickyHeader = ({
         <div
           className='sticky z-30 pointer-events-none'
           style={{
-            top: typeof stickyOffset === 'number' ? `${stickyOffset}px` : stickyOffset,
+            top:
+              typeof stickyOffset === 'number'
+                ? `${stickyOffset}px`
+                : stickyOffset,
             height: stickyHeight,
             marginTop: -stickyHeight,
           }}
         >
           <div
             ref={stickyInnerRef}
-            className={cn('pointer-events-auto transition-none will-change-[opacity,transform]', stickyClassName)}
+            className={cn(
+              'pointer-events-auto transition-none will-change-[opacity,transform]',
+              stickyClassName
+            )}
             style={{
               opacity: progress,
               transform: `translateY(${(1 - progress) * 16}px)`,

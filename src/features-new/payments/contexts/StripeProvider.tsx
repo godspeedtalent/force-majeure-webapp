@@ -23,7 +23,7 @@ interface StripeProviderProps {
 
 /**
  * StripeProvider - Wraps the application with Stripe Elements context
- * 
+ *
  * This provider must wrap any components that use Stripe functionality.
  * It loads the Stripe.js library and provides it to child components.
  */

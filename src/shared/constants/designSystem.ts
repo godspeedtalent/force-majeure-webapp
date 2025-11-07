@@ -1,15 +1,15 @@
 /**
  * Force Majeure Design System Constants
- * 
+ *
  * Central source of truth for colors, spacing, typography, and design tokens.
  * Use these constants throughout the application for consistency.
- * 
+ *
  * @see /docs/DESIGN_SYSTEM.md for complete design guidelines
  */
 
 /**
  * Color Palette
- * 
+ *
  * Primary colors used throughout the application.
  * Black and white form the base, with gold as primary accent.
  */
@@ -17,14 +17,14 @@ export const COLORS = {
   // Base Colors
   BLACK: '#000000',
   WHITE: '#FFFFFF',
-  
+
   // Accent Colors
-  DUSTY_GOLD: '#dfba7d',           // Primary accent - buttons, highlights, CTAs
-  DARK_CRIMSON: '#520C10',         // Secondary accent - subtle emphasis
-  
+  DUSTY_GOLD: '#dfba7d', // Primary accent - buttons, highlights, CTAs
+  DARK_CRIMSON: '#520C10', // Secondary accent - subtle emphasis
+
   // Semantic Colors
-  MUTED_NAVY: '#545E75',           // Info/tertiary - informational states
-  CHILI_RED: '#D64933',            // Danger - errors, warnings, destructive actions
+  MUTED_NAVY: '#545E75', // Info/tertiary - informational states
+  CHILI_RED: '#D64933', // Danger - errors, warnings, destructive actions
 } as const;
 
 /**
@@ -38,22 +38,22 @@ export const COLOR_CLASSES = {
   GOLD_BORDER: 'border-fm-gold',
   GOLD_HOVER_BG: 'hover:bg-fm-gold',
   GOLD_HOVER_TEXT: 'hover:text-fm-gold',
-  
+
   // Dark Crimson (Secondary)
   CRIMSON_BG: 'bg-fm-crimson',
   CRIMSON_TEXT: 'text-fm-crimson',
   CRIMSON_BORDER: 'border-fm-crimson',
-  
+
   // Muted Navy (Info/Tertiary)
   NAVY_BG: 'bg-fm-navy',
   NAVY_TEXT: 'text-fm-navy',
   NAVY_BORDER: 'border-fm-navy',
-  
+
   // Chili Red (Danger)
   DANGER_BG: 'bg-fm-danger',
   DANGER_TEXT: 'text-fm-danger',
   DANGER_BORDER: 'border-fm-danger',
-  
+
   // Black & White
   BLACK_BG: 'bg-black',
   WHITE_TEXT: 'text-white',
@@ -63,16 +63,16 @@ export const COLOR_CLASSES = {
 
 /**
  * Spacing Scale
- * 
+ *
  * Consistent spacing values based on 5px increments.
  * Use these for margins, padding, gaps, and positioning.
  */
 export const SPACING = {
-  XS: '5px',    // Extra small - tight spacing, small gaps
-  SM: '10px',   // Small - compact layouts, list items
-  MD: '20px',   // Medium - default spacing between elements
-  LG: '40px',   // Large - section spacing, major gaps
-  XL: '60px',   // Extra large - page sections, hero spacing
+  XS: '5px', // Extra small - tight spacing, small gaps
+  SM: '10px', // Small - compact layouts, list items
+  MD: '20px', // Medium - default spacing between elements
+  LG: '40px', // Large - section spacing, major gaps
+  XL: '60px', // Extra large - page sections, hero spacing
 } as const;
 
 /**
@@ -96,14 +96,14 @@ export const SPACING_CLASSES = {
   P_MD: 'p-[20px]',
   P_LG: 'p-[40px]',
   P_XL: 'p-[60px]',
-  
+
   // Margin
   M_XS: 'm-[5px]',
   M_SM: 'm-[10px]',
   M_MD: 'm-[20px]',
   M_LG: 'm-[40px]',
   M_XL: 'm-[60px]',
-  
+
   // Gap
   GAP_XS: 'gap-[5px]',
   GAP_SM: 'gap-[10px]',
@@ -114,22 +114,22 @@ export const SPACING_CLASSES = {
 
 /**
  * Typography Constants
- * 
+ *
  * Font families and text styling guidelines.
  */
 export const TYPOGRAPHY = {
   // Font Families
-  PRIMARY_FONT: 'Canela',          // Used for 99% of application
+  PRIMARY_FONT: 'Canela', // Used for 99% of application
   FALLBACK_FONTS: 'Georgia, serif', // Fallback serif fonts
-  
+
   // Font Weight
   WEIGHT_NORMAL: '400',
   WEIGHT_MEDIUM: '500',
-  WEIGHT_BOLD: '700',               // Use sparingly
-  
+  WEIGHT_BOLD: '700', // Use sparingly
+
   // Tailwind Classes
   FONT_CANELA: 'font-canela',
-  FONT_BOLD: 'font-bold',           // Use sparingly
+  FONT_BOLD: 'font-bold', // Use sparingly
   FONT_MEDIUM: 'font-medium',
   FONT_NORMAL: 'font-normal',
 } as const;
@@ -145,17 +145,17 @@ export const TEXT_RULES = {
   // ❌ "Here's What We Found"
   // ❌ "Event Details"
   HEADER_STYLE: 'sentence-case',
-  
+
   // Use periods at end of headers where appropriate
   USE_PERIODS: true,
-  
+
   // Bold text should be used sparingly
   BOLD_USAGE: 'minimal',
 } as const;
 
 /**
  * Depth/Layering System
- * 
+ *
  * Material Design inspired depth approach for backgrounds.
  * Each level represents a layer in the visual hierarchy.
  */
@@ -166,19 +166,19 @@ export const DEPTH = {
     example: 'FmCard outline variant',
     classes: 'bg-transparent border border-white/20',
   },
-  
+
   // Level 1: Black frosted glass (base)
   LEVEL_1: {
     description: 'Base black frosted glass',
     classes: 'bg-black/60 backdrop-blur-sm',
   },
-  
+
   // Level 2: Elevated frosted glass
   LEVEL_2: {
     description: 'Elevated frosted glass (brighter)',
     classes: 'bg-black/70 backdrop-blur-md',
   },
-  
+
   // Level 3: High elevation
   LEVEL_3: {
     description: 'High elevation (brightest frosted glass)',
@@ -188,16 +188,16 @@ export const DEPTH = {
 
 /**
  * Border Radius
- * 
+ *
  * Sharp edges are the default. Rounded corners should be used sparingly.
  */
 export const BORDER_RADIUS = {
-  NONE: '0',           // Default - sharp corners
-  MINIMAL: '2px',      // Subtle rounding (rare use)
-  
+  NONE: '0', // Default - sharp corners
+  MINIMAL: '2px', // Subtle rounding (rare use)
+
   // Tailwind Classes
-  SHARP: 'rounded-none',      // Default for most components
-  SUBTLE: 'rounded-sm',       // Use only when absolutely necessary
+  SHARP: 'rounded-none', // Default for most components
+  SUBTLE: 'rounded-sm', // Use only when absolutely necessary
 } as const;
 
 /**
@@ -207,10 +207,10 @@ export const DESIGN_ELEMENTS = {
   // Primary background pattern
   BACKGROUND: 'black-topography',
   BACKGROUND_CLASS: 'bg-topography',
-  
+
   // Button styles
-  BUTTON_STYLE: 'sharp-edges',       // No rounded corners
-  
+  BUTTON_STYLE: 'sharp-edges', // No rounded corners
+
   // Card styles
   CARD_OUTLINE: 'transparent-outline',
   CARD_FROSTED: 'black-frosted-glass',
@@ -220,9 +220,9 @@ export const DESIGN_ELEMENTS = {
  * Component Naming Convention
  */
 export const NAMING = {
-  PREFIX: 'Fm',                       // Force Majeure prefix
-  COMMON_PREFIX: 'FmCommon',          // Common/reusable components
-  
+  PREFIX: 'Fm', // Force Majeure prefix
+  COMMON_PREFIX: 'FmCommon', // Common/reusable components
+
   // Examples:
   // - FmButton (specific component)
   // - FmCommonButton (common/reusable component)
@@ -231,13 +231,13 @@ export const NAMING = {
 
 /**
  * Primary Building Block Components
- * 
+ *
  * These are the core components that should be used to build the application.
  * Located in: /src/components/common/ or similar FmComponents directory
  */
 export const PRIMARY_COMPONENTS = [
   'FmButton',
-  'FmCard',           // Two variants: outline and frosted glass
+  'FmCard', // Two variants: outline and frosted glass
   'FmTextInput',
   'FmCheckbox',
   'FmDateBox',
@@ -256,53 +256,56 @@ export const ICON_BUTTONS = {
 
 /**
  * Input & Form Styling
- * 
+ *
  * Based on FmCommonTextField and Input component patterns.
  */
 export const INPUT_STYLES = {
   // Border Behavior
   BORDER_DEFAULT: 'Single border on all sides',
   BORDER_HOVER: 'Border changes to gold with glow',
-  BORDER_FOCUS: 'Remove all borders EXCEPT bottom border, make bottom thicker (3px), gold color',
-  
+  BORDER_FOCUS:
+    'Remove all borders EXCEPT bottom border, make bottom thicker (3px), gold color',
+
   // Background States
   BG_DEFAULT: 'bg-background',
   BG_HOVER: 'bg-white/5',
   BG_FOCUS: 'bg-white/5',
-  
+
   // Focus Effects
   FOCUS_BORDER_BOTTOM: 'border-b-[3px] border-b-fm-gold',
   FOCUS_GLOW: 'shadow-[0_4px_16px_rgba(223,186,125,0.3)]',
   FOCUS_RIPPLE: 'Slight ripple out from the borders when clicked',
-  
+
   // Hover Effects
   HOVER_BORDER: 'border-fm-gold/50',
   HOVER_GLOW: 'shadow-[0_0_12px_rgba(223,186,125,0.15)]',
-  
+
   // Complete Focus Classes (remove top/left/right borders)
-  FOCUS_CLASSES: 'focus-visible:outline-none focus-visible:bg-white/5 focus-visible:border-t-0 focus-visible:border-l-0 focus-visible:border-r-0 focus-visible:border-b-[3px] focus-visible:border-b-fm-gold focus-visible:shadow-[0_4px_16px_rgba(223,186,125,0.3)]',
-  
+  FOCUS_CLASSES:
+    'focus-visible:outline-none focus-visible:bg-white/5 focus-visible:border-t-0 focus-visible:border-l-0 focus-visible:border-r-0 focus-visible:border-b-[3px] focus-visible:border-b-fm-gold focus-visible:shadow-[0_4px_16px_rgba(223,186,125,0.3)]',
+
   // Complete Hover Classes
-  HOVER_CLASSES: 'hover:bg-white/5 hover:border-fm-gold/50 hover:shadow-[0_0_12px_rgba(223,186,125,0.15)]',
-  
+  HOVER_CLASSES:
+    'hover:bg-white/5 hover:border-fm-gold/50 hover:shadow-[0_0_12px_rgba(223,186,125,0.15)]',
+
   // Transition
   TRANSITION: 'transition-all duration-300',
 } as const;
 
 /**
  * Label Styling
- * 
+ *
  * Labels should be small, muted color, and in ALL CAPS.
  */
 export const LABEL_STYLES = {
   // Size and casing
   SIZE: 'text-xs',
   CASE: 'uppercase',
-  
+
   // Colors
   COLOR_DEFAULT: 'text-muted-foreground',
   COLOR_FOCUSED: 'text-fm-gold',
-  
+
   // Complete Classes
   DEFAULT_CLASSES: 'text-xs uppercase text-muted-foreground',
   FOCUSED_CLASSES: 'text-xs uppercase text-fm-gold',
@@ -311,41 +314,44 @@ export const LABEL_STYLES = {
 
 /**
  * List/Menu Item Styling
- * 
+ *
  * Based on FmCommonContextMenu - uses striped background pattern.
  * Alternating background opacity for visual separation.
  */
 export const LIST_ITEM_STYLES = {
   // Striped Background Pattern
-  EVEN_BG: 'bg-background/40',  // Lighter stripe
-  ODD_BG: 'bg-background/60',   // Darker stripe
-  
+  EVEN_BG: 'bg-background/40', // Lighter stripe
+  ODD_BG: 'bg-background/60', // Darker stripe
+
   // Hover States
   HOVER_BG: 'hover:bg-fm-gold/10',
   HOVER_SCALE: 'hover:scale-[1.02]',
   HOVER_GLOW: 'hover:shadow-lg hover:shadow-fm-gold/20',
   HOVER_TEXT: 'hover:text-white',
-  
+
   // Focus States
   FOCUS_BG: 'focus:bg-fm-gold/15',
   FOCUS_SCALE: 'focus:scale-[1.02]',
   FOCUS_GLOW: 'focus:shadow-lg focus:shadow-fm-gold/20',
   FOCUS_TEXT: 'focus:text-white',
-  
+
   // Active State
   ACTIVE_SCALE: 'active:scale-[0.98]',
-  
+
   // Transition
   TRANSITION: 'transition-all duration-300',
-  
+
   // Complete Classes for Even Items
-  EVEN_CLASSES: 'bg-background/40 hover:bg-fm-gold/10 hover:scale-[1.02] hover:shadow-lg hover:shadow-fm-gold/20 hover:text-white focus:bg-fm-gold/15 focus:scale-[1.02] focus:shadow-lg focus:shadow-fm-gold/20 focus:text-white active:scale-[0.98] transition-all duration-300',
-  
+  EVEN_CLASSES:
+    'bg-background/40 hover:bg-fm-gold/10 hover:scale-[1.02] hover:shadow-lg hover:shadow-fm-gold/20 hover:text-white focus:bg-fm-gold/15 focus:scale-[1.02] focus:shadow-lg focus:shadow-fm-gold/20 focus:text-white active:scale-[0.98] transition-all duration-300',
+
   // Complete Classes for Odd Items
-  ODD_CLASSES: 'bg-background/60 hover:bg-fm-gold/10 hover:scale-[1.02] hover:shadow-lg hover:shadow-fm-gold/20 hover:text-white focus:bg-fm-gold/15 focus:scale-[1.02] focus:shadow-lg focus:shadow-fm-gold/20 focus:text-white active:scale-[0.98] transition-all duration-300',
-  
+  ODD_CLASSES:
+    'bg-background/60 hover:bg-fm-gold/10 hover:scale-[1.02] hover:shadow-lg hover:shadow-fm-gold/20 hover:text-white focus:bg-fm-gold/15 focus:scale-[1.02] focus:shadow-lg focus:shadow-fm-gold/20 focus:text-white active:scale-[0.98] transition-all duration-300',
+
   // Divider between items
-  DIVIDER: 'absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent',
+  DIVIDER:
+    'absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent',
 } as const;
 
 /**
@@ -354,10 +360,10 @@ export const LIST_ITEM_STYLES = {
 export const A11Y = {
   // Always provide text alternatives for icons
   ICON_LABELS: 'required',
-  
+
   // Ensure sufficient color contrast
   MIN_CONTRAST_RATIO: 4.5,
-  
+
   // Use semantic HTML
   SEMANTIC_HTML: 'required',
 } as const;
@@ -368,4 +374,4 @@ export const A11Y = {
 export type ColorKey = keyof typeof COLORS;
 export type SpacingKey = keyof typeof SPACING;
 export type DepthLevel = keyof typeof DEPTH;
-export type PrimaryComponent = typeof PRIMARY_COMPONENTS[number];
+export type PrimaryComponent = (typeof PRIMARY_COMPONENTS)[number];

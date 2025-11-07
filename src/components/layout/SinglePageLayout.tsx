@@ -30,12 +30,12 @@ export const SinglePageLayout = ({
     <div className='min-h-screen bg-background flex flex-col'>
       <Navigation />
 
-      <main className={`flex-1 pt-16 pb-20 relative overflow-hidden ${className}`}>
+      <main
+        className={`flex-1 pt-16 pb-20 relative overflow-hidden ${className}`}
+      >
         <TopographicBackground opacity={backgroundOpacity} />
         <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
-        <div className='relative z-10 h-full'>
-          {children}
-        </div>
+        <div className='relative z-10 h-full'>{children}</div>
       </main>
     </div>
   );

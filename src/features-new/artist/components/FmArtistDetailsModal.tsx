@@ -64,7 +64,9 @@ export const FmArtistDetailsModal = ({
       title={artist?.name ?? 'Artist'}
       headerContent={
         <div className='flex justify-end pr-12'>
-          <DialogTitle className='sr-only'>{artist?.name ?? 'Artist'}</DialogTitle>
+          <DialogTitle className='sr-only'>
+            {artist?.name ?? 'Artist'}
+          </DialogTitle>
           {showManage && (
             <FmCommonButton
               size='sm'

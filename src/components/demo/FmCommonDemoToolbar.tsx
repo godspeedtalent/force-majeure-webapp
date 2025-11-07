@@ -32,13 +32,14 @@ export const FmCommonDemoToolbar = ({
   defaultExpanded = true,
 }: FmCommonDemoToolbarProps) => {
   return (
-    <FmInfoCard icon={Wrench} className="mb-6">
-      <FmCommonCollapsibleSection title="Demo Tools" defaultExpanded={defaultExpanded}>
-        <div className="space-y-6">
-          {tools.map((tool) => (
-            <div key={tool.id}>
-              {tool.render()}
-            </div>
+    <FmInfoCard icon={Wrench} className='mb-6'>
+      <FmCommonCollapsibleSection
+        title='Demo Tools'
+        defaultExpanded={defaultExpanded}
+      >
+        <div className='space-y-6'>
+          {tools.map(tool => (
+            <div key={tool.id}>{tool.render()}</div>
           ))}
         </div>
       </FmCommonCollapsibleSection>

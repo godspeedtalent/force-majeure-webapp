@@ -1,4 +1,4 @@
-import { ContextMenuAction } from '../../modals/FmCommonContextMenu';
+import { ContextMenuAction } from '@/components/common/modals/FmCommonContextMenu';
 
 /**
  * Represents a column configuration for the data grid
@@ -14,7 +14,14 @@ export interface DataGridColumn<T = any> {
   render?: (value: any, row: T) => React.ReactNode;
   width?: string;
   isRelation?: boolean; // Mark this column as a foreign key relation
-  type?: 'text' | 'number' | 'email' | 'url' | 'date' | 'boolean' | 'created_date'; // Input type for editing
+  type?:
+    | 'text'
+    | 'number'
+    | 'email'
+    | 'url'
+    | 'date'
+    | 'boolean'
+    | 'created_date'; // Input type for editing
 }
 
 /**
@@ -33,7 +40,7 @@ export interface FmDataGridProps<T = any> {
   loading?: boolean;
   pageSize?: number;
   className?: string;
-  onUpdate?: (item: T) => Promise<void>;
+  onUpdate?: (row: T, columnKey: string, newValue: any) => Promise<void>;
   onCreate?: (item: Partial<T>) => Promise<void>;
   onCreateButtonClick?: () => void; // Custom handler for create button
   resourceName?: string;

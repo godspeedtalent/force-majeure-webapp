@@ -1,4 +1,12 @@
-import { Calendar, Settings, TrendingUp, ArrowLeft, Music2, MapPin, Clock } from 'lucide-react';
+import {
+  Calendar,
+  Settings,
+  TrendingUp,
+  ArrowLeft,
+  Music2,
+  MapPin,
+  Clock,
+} from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,7 +16,12 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonInfoCard } from '@/components/common/display/FmCommonInfoCard';
 import { FmCommonStatCard } from '@/components/common/display/FmCommonStatCard';
 import { Card, CardContent } from '@/components/common/shadcn/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/common/shadcn/tabs';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { supabase } from '@/shared/api/supabase/client';
 import { Badge } from '@/components/common/shadcn/badge';
@@ -52,7 +65,9 @@ const Profile = () => {
           setShowsCount(0);
         } else {
           // Count unique event_ids
-          const uniqueEvents = new Set(orders?.map(order => order.event_id) || []);
+          const uniqueEvents = new Set(
+            orders?.map(order => order.event_id) || []
+          );
           setShowsCount(uniqueEvents.size);
         }
       } catch (error) {
@@ -84,7 +99,8 @@ const Profile = () => {
         // Get events with paid orders for this user, filtering for future events
         const { data, error } = await supabase
           .from('orders')
-          .select(`
+          .select(
+            `
             event_id,
             events (
               id,
@@ -93,7 +109,8 @@ const Profile = () => {
               location,
               cover_image_url
             )
-          `)
+          `
+          )
           .eq('user_id', user.id)
           .eq('status', 'paid')
           .gte('events.date', new Date().toISOString());
@@ -167,10 +184,7 @@ const Profile = () => {
               <p className='text-muted-foreground mb-6'>
                 Please sign in to view your profile.
               </p>
-              <FmCommonButton
-                variant='gold'
-                onClick={() => navigate('/auth')}
-              >
+              <FmCommonButton variant='gold' onClick={() => navigate('/auth')}>
                 Sign In
               </FmCommonButton>
             </CardContent>
@@ -273,18 +287,24 @@ const Profile = () => {
                       </div>
                     ) : (
                       <div className='space-y-3'>
-                        {upcomingShows.map((event) => {
+                        {upcomingShows.map(event => {
                           const eventDate = new Date(event.date);
-                          const formattedDate = eventDate.toLocaleDateString('en-US', {
-                            weekday: 'short',
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          });
-                          const formattedTime = eventDate.toLocaleTimeString('en-US', {
-                            hour: 'numeric',
-                            minute: '2-digit',
-                          });
+                          const formattedDate = eventDate.toLocaleDateString(
+                            'en-US',
+                            {
+                              weekday: 'short',
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                            }
+                          );
+                          const formattedTime = eventDate.toLocaleTimeString(
+                            'en-US',
+                            {
+                              hour: 'numeric',
+                              minute: '2-digit',
+                            }
+                          );
 
                           return (
                             <Card
@@ -317,16 +337,26 @@ const Profile = () => {
                                     <div className='space-y-1'>
                                       <div className='flex items-center gap-1.5 text-xs text-muted-foreground'>
                                         <Clock className='h-3 w-3' />
-                                        <span>{formattedDate} at {formattedTime}</span>
+                                        <span>
+                                          {formattedDate} at {formattedTime}
+                                        </span>
                                       </div>
                                       <div className='flex items-center gap-1.5 text-xs text-muted-foreground'>
                                         <MapPin className='h-3 w-3' />
-                                        <span className='truncate'>{event.location}</span>
+                                        <span className='truncate'>
+                                          {event.location}
+                                        </span>
                                       </div>
                                     </div>
                                     <div className='mt-2'>
-                                      <Badge variant='outline' className='text-xs'>
-                                        {event.ticket_count} {event.ticket_count === 1 ? 'Ticket' : 'Tickets'}
+                                      <Badge
+                                        variant='outline'
+                                        className='text-xs'
+                                      >
+                                        {event.ticket_count}{' '}
+                                        {event.ticket_count === 1
+                                          ? 'Ticket'
+                                          : 'Tickets'}
                                       </Badge>
                                     </div>
                                   </div>

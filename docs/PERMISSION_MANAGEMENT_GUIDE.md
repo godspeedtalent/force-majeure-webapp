@@ -14,15 +14,15 @@ All permissions and roles are defined in one place:
 import { PERMISSIONS, ROLES } from '@/shared/auth/permissions';
 
 // Use these constants instead of strings:
-PERMISSIONS.MANAGE_ORGANIZATION
-PERMISSIONS.SCAN_TICKETS
-PERMISSIONS.MANAGE_EVENTS
+PERMISSIONS.MANAGE_ORGANIZATION;
+PERMISSIONS.SCAN_TICKETS;
+PERMISSIONS.MANAGE_EVENTS;
 // etc...
 
-ROLES.ADMIN
-ROLES.DEVELOPER
-ROLES.ORG_ADMIN
-ROLES.ORG_STAFF
+ROLES.ADMIN;
+ROLES.DEVELOPER;
+ROLES.ORG_ADMIN;
+ROLES.ORG_STAFF;
 // etc...
 ```
 
@@ -35,19 +35,22 @@ import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { PERMISSIONS, ROLES } from '@/shared/auth/permissions';
 
 const MyComponent = () => {
-  const { 
-    hasPermission,      // Check single permission
-    hasAnyPermission,   // Check if user has ANY of the permissions
-    hasAllPermissions,  // Check if user has ALL of the permissions
-    hasRole,            // Check single role
-    hasAnyRole,         // Check if user has ANY of the roles
-    getRoles,           // Get all user roles
-    getPermissions      // Get all user permissions
+  const {
+    hasPermission, // Check single permission
+    hasAnyPermission, // Check if user has ANY of the permissions
+    hasAllPermissions, // Check if user has ALL of the permissions
+    hasRole, // Check single role
+    hasAnyRole, // Check if user has ANY of the roles
+    getRoles, // Get all user roles
+    getPermissions, // Get all user permissions
   } = useUserPermissions();
 
   const canManage = hasPermission(PERMISSIONS.MANAGE_ORGANIZATION);
   const isAdmin = hasRole(ROLES.ADMIN);
-  const hasOrgAccess = hasAnyPermission(PERMISSIONS.MANAGE_ORGANIZATION, PERMISSIONS.VIEW_ORGANIZATION);
+  const hasOrgAccess = hasAnyPermission(
+    PERMISSIONS.MANAGE_ORGANIZATION,
+    PERMISSIONS.VIEW_ORGANIZATION
+  );
 };
 ```
 
@@ -85,7 +88,7 @@ import { PERMISSIONS, ROLES } from '@/shared/auth/permissions';
 <Route
   path="/advanced-tools"
   element={
-    <ProtectedRoute 
+    <ProtectedRoute
       permission={[PERMISSIONS.MANAGE_EVENTS, PERMISSIONS.SCAN_TICKETS]}
       requireAll
     >
@@ -98,7 +101,7 @@ import { PERMISSIONS, ROLES } from '@/shared/auth/permissions';
 <Route
   path="/sensitive"
   element={
-    <ProtectedRoute 
+    <ProtectedRoute
       permission={PERMISSIONS.MANAGE_USERS}
       redirectTo="/unauthorized"
     >
@@ -120,7 +123,7 @@ const Dashboard = () => {
   return (
     <div>
       <h1>Dashboard</h1>
-      
+
       {/* Show only if user can manage organization */}
       <PermissionGuard permission={PERMISSIONS.MANAGE_ORGANIZATION}>
         <AdminPanel />
@@ -132,7 +135,7 @@ const Dashboard = () => {
       </PermissionGuard>
 
       {/* Show fallback content if no access */}
-      <PermissionGuard 
+      <PermissionGuard
         permission={PERMISSIONS.SCAN_TICKETS}
         fallback={<p>You need scanning permissions to view this.</p>}
       >
@@ -140,7 +143,7 @@ const Dashboard = () => {
       </PermissionGuard>
 
       {/* Require ALL permissions */}
-      <PermissionGuard 
+      <PermissionGuard
         permission={[PERMISSIONS.MANAGE_EVENTS, PERMISSIONS.MANAGE_VENUES]}
         requireAll
       >
@@ -177,7 +180,7 @@ const MyComponent = () => {
 
   return (
     <div>
-      <Button 
+      <Button
         onClick={handleAction}
         disabled={!hasPermission(PERMISSIONS.MANAGE_EVENTS)}
       >

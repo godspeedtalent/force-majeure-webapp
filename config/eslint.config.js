@@ -135,11 +135,13 @@ export default tseslint.config(
         'warn',
         {
           selector: 'Literal[value=/rounded-(lg|md|xl|2xl|3xl|full)/]',
-          message: 'Avoid rounded corners. Use sharp edges (rounded-none) per design system. See /docs/DESIGN_SYSTEM.md',
+          message:
+            'Avoid rounded corners. Use sharp edges (rounded-none) per design system. See /docs/DESIGN_SYSTEM.md',
         },
         {
           selector: 'Literal[value=/#[0-9A-Fa-f]{6}/]',
-          message: 'Use COLORS constants from @/shared/constants/designSystem instead of hardcoded hex values.',
+          message:
+            'Use COLORS constants from @/shared/constants/designSystem instead of hardcoded hex values.',
         },
       ],
     },

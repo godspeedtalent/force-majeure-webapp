@@ -57,7 +57,10 @@ export class TestEventDataService extends TestDataService {
       // Fetch available artists and venues
       const [artistsRes, venuesRes] = await Promise.all([
         supabase.from('artists').select('id, name').limit(100),
-        supabase.from('venues' as any).select('id, name, capacity').limit(50),
+        supabase
+          .from('venues' as any)
+          .select('id, name, capacity')
+          .limit(50),
       ]);
 
       if (artistsRes.error) throw artistsRes.error;
@@ -72,7 +75,10 @@ export class TestEventDataService extends TestDataService {
 
       // Select random venue and artists
       const venue = this.randomElement(venues);
-      const selectedArtists = this.randomElements(artists, 1 + this.config.supportArtistCount);
+      const selectedArtists = this.randomElements(
+        artists,
+        1 + this.config.supportArtistCount
+      );
       const headliner = selectedArtists[0];
       const supports = selectedArtists.slice(1);
 
@@ -106,8 +112,14 @@ export class TestEventDataService extends TestDataService {
       if (!event) throw new Error('Failed to create event');
 
       // Generate ticket tiers
-      const ticketGroups = this.generateTicketGroups((venue as any).capacity || 500);
-      await this.createTicketTiers((event as any).id, ticketGroups, (venue as any).capacity || 500);
+      const ticketGroups = this.generateTicketGroups(
+        (venue as any).capacity || 500
+      );
+      await this.createTicketTiers(
+        (event as any).id,
+        ticketGroups,
+        (venue as any).capacity || 500
+      );
 
       return (event as any).id;
     } catch (error) {
@@ -124,7 +136,9 @@ export class TestEventDataService extends TestDataService {
 
     // Calculate tickets per group
     const ticketsPerGroup = Math.floor(venueCapacity * 0.8); // Use 80% of capacity
-    const baseTicketsPerTier = Math.floor(ticketsPerGroup / this.config.baseTierPrices.length);
+    const baseTicketsPerTier = Math.floor(
+      ticketsPerGroup / this.config.baseTierPrices.length
+    );
 
     // Default group with base tiers
     const defaultGroup: TicketGroup = {
@@ -185,7 +199,8 @@ export class TestEventDataService extends TestDataService {
           }
         }
 
-        const availableInventory = tier.quantity - soldInventory - reservedInventory;
+        const availableInventory =
+          tier.quantity - soldInventory - reservedInventory;
 
         allTiers.push({
           event_id: eventId,
@@ -207,7 +222,9 @@ export class TestEventDataService extends TestDataService {
       }
     }
 
-    const { error } = await supabase.from('ticket_tiers' as any).insert(allTiers);
+    const { error } = await supabase
+      .from('ticket_tiers' as any)
+      .insert(allTiers);
     if (error) throw error;
   }
 
@@ -248,7 +265,10 @@ export class TestEventDataService extends TestDataService {
       const eventIds = testEvents.map(e => e.id);
 
       // Delete ticket tiers first (foreign key constraint)
-      await supabase.from('ticket_tiers' as any).delete().in('event_id', eventIds);
+      await supabase
+        .from('ticket_tiers' as any)
+        .delete()
+        .in('event_id', eventIds);
 
       // Delete events
       const { error: deleteError } = await supabase

@@ -28,7 +28,11 @@ interface VenueData {
  * - Address, capacity, website info
  * - Consistent styling with Force Majeure design system
  */
-export const VenueModal = ({ venueId, open, onOpenChange }: VenueModalProps) => {
+export const VenueModal = ({
+  venueId,
+  open,
+  onOpenChange,
+}: VenueModalProps) => {
   const [venue, setVenue] = useState<VenueData | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -60,9 +64,9 @@ export const VenueModal = ({ venueId, open, onOpenChange }: VenueModalProps) => 
 
   if (loading) {
     return (
-      <FmCommonModal open={open} onOpenChange={onOpenChange} title="Loading...">
-        <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-fm-gold"></div>
+      <FmCommonModal open={open} onOpenChange={onOpenChange} title='Loading...'>
+        <div className='flex items-center justify-center py-8'>
+          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-fm-gold'></div>
         </div>
       </FmCommonModal>
     );
@@ -77,14 +81,14 @@ export const VenueModal = ({ venueId, open, onOpenChange }: VenueModalProps) => 
       open={open}
       onOpenChange={onOpenChange}
       title={venue.name}
-      className="max-w-3xl"
+      className='max-w-3xl'
     >
-      <div className="space-y-6">
+      <div className='space-y-6'>
         {/* Hero Image Placeholder - Can be enhanced later if venues get hero images */}
         {/* For now, we'll show venue info without a hero image */}
 
         {/* Venue Details */}
-        <div className="space-y-4">
+        <div className='space-y-4'>
           {venue.address && (
             <FmInfoChip
               icon={MapPin}
@@ -93,21 +97,26 @@ export const VenueModal = ({ venueId, open, onOpenChange }: VenueModalProps) => 
           )}
 
           {venue.capacity && (
-            <FmInfoChip icon={Users} label={`Capacity: ${venue.capacity.toLocaleString()}`} />
+            <FmInfoChip
+              icon={Users}
+              label={`Capacity: ${venue.capacity.toLocaleString()}`}
+            />
           )}
 
           {venue.website && (
             <FmInfoChip
               icon={Globe}
-              label="Visit Website"
-              onClick={() => window.open(venue.website!, '_blank', 'noopener,noreferrer')}
+              label='Visit Website'
+              onClick={() =>
+                window.open(venue.website!, '_blank', 'noopener,noreferrer')
+              }
             />
           )}
         </div>
 
         {/* Additional Info Section */}
-        <div className="pt-4 border-t border-white/10">
-          <p className="text-sm text-white/70">
+        <div className='pt-4 border-t border-white/10'>
+          <p className='text-sm text-white/70'>
             {venue.city ? `Located in ${venue.city}` : 'Venue information'}
           </p>
         </div>

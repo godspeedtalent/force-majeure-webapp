@@ -1,5 +1,11 @@
 import { useReducer, useCallback, useRef } from 'react';
-import { TestSuite, TestResult, TestRunOptions, ThreadInfo, TestExecutionStatus } from '../types/testing';
+import {
+  TestSuite,
+  TestResult,
+  TestRunOptions,
+  ThreadInfo,
+  TestExecutionStatus,
+} from '../types/testing';
 import { TestRunner } from '../services/TestRunner';
 
 interface TestRunnerState {
@@ -11,7 +17,10 @@ interface TestRunnerState {
 
 type TestRunnerAction =
   | { type: 'START' }
-  | { type: 'PROGRESS'; payload: { activeThreads: ThreadInfo[]; results: TestResult[] } }
+  | {
+      type: 'PROGRESS';
+      payload: { activeThreads: ThreadInfo[]; results: TestResult[] };
+    }
   | { type: 'COMPLETE'; payload: { results: TestResult[] } }
   | { type: 'PAUSE' }
   | { type: 'RESUME' }
@@ -26,7 +35,10 @@ const initialState: TestRunnerState = {
   error: null,
 };
 
-function testRunnerReducer(state: TestRunnerState, action: TestRunnerAction): TestRunnerState {
+function testRunnerReducer(
+  state: TestRunnerState,
+  action: TestRunnerAction
+): TestRunnerState {
   switch (action.type) {
     case 'START':
       return {

@@ -46,9 +46,13 @@ const ProfileEdit = () => {
   const [fullName, setFullName] = useState(profile?.full_name || '');
   const [displayName, setDisplayName] = useState(profile?.display_name || '');
   const [gender, setGender] = useState(profile?.gender || 'unspecified');
-  const [billingAddress, setBillingAddress] = useState(profile?.billing_address || '');
+  const [billingAddress, setBillingAddress] = useState(
+    profile?.billing_address || ''
+  );
   const [billingCity, setBillingCity] = useState(profile?.billing_city || '');
-  const [billingState, setBillingState] = useState(profile?.billing_state || '');
+  const [billingState, setBillingState] = useState(
+    profile?.billing_state || ''
+  );
   const [billingZip, setBillingZip] = useState(profile?.billing_zip || '');
   const [activeSection, setActiveSection] = useState<ProfileSection>('profile');
 
@@ -133,7 +137,7 @@ const ProfileEdit = () => {
     await updateProfile({
       full_name: fullName || null,
       display_name: displayName || null,
-      gender: gender === 'unspecified' ? null : (gender || null),
+      gender: gender === 'unspecified' ? null : gender || null,
       billing_address: billingAddress || null,
       billing_city: billingCity || null,
       billing_state: billingState || null,
@@ -142,7 +146,9 @@ const ProfileEdit = () => {
     setIsLoading(false);
   };
 
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file || !user) return;
 
@@ -184,9 +190,9 @@ const ProfileEdit = () => {
       if (uploadError) throw uploadError;
 
       // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('profile-images')
-        .getPublicUrl(filePath);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from('profile-images').getPublicUrl(filePath);
 
       // Update profile with new avatar URL
       await updateProfile({ avatar_url: publicUrl });
@@ -199,7 +205,8 @@ const ProfileEdit = () => {
       console.error('Error uploading image:', error);
       toast({
         title: 'Upload failed',
-        description: error.message || 'Failed to upload image. Please try again.',
+        description:
+          error.message || 'Failed to upload image. Please try again.',
         variant: 'destructive',
       });
     } finally {
@@ -242,13 +249,22 @@ const ProfileEdit = () => {
       label: 'Settings',
       icon: Settings,
       items: [
-        { id: 'profile', label: 'Profile', icon: User, description: 'Manage your profile information' },
-        ...(isFeatureEnabled(FEATURE_FLAGS.SPOTIFY_INTEGRATION) ? [{
-          id: 'spotify' as ProfileSection,
-          label: 'Spotify',
-          icon: Music,
-          description: 'Connect your Spotify account'
-        }] : []),
+        {
+          id: 'profile',
+          label: 'Profile',
+          icon: User,
+          description: 'Manage your profile information',
+        },
+        ...(isFeatureEnabled(FEATURE_FLAGS.SPOTIFY_INTEGRATION)
+          ? [
+              {
+                id: 'spotify' as ProfileSection,
+                label: 'Spotify',
+                icon: Music,
+                description: 'Connect your Spotify account',
+              },
+            ]
+          : []),
       ],
     },
   ];
@@ -261,10 +277,7 @@ const ProfileEdit = () => {
             <p className='text-muted-foreground mb-6'>
               Please sign in to edit your profile.
             </p>
-            <FmCommonButton
-              variant='gold'
-              onClick={() => navigate('/auth')}
-            >
+            <FmCommonButton variant='gold' onClick={() => navigate('/auth')}>
               Sign In
             </FmCommonButton>
           </CardContent>
@@ -489,88 +502,95 @@ const ProfileEdit = () => {
         )}
 
         {/* Spotify Section */}
-        {activeSection === 'spotify' && isFeatureEnabled(FEATURE_FLAGS.SPOTIFY_INTEGRATION) && (
-          <>
-            <FmCommonPageHeader
-              title='Spotify Integration'
-              description='Connect your Spotify Premium account to stream full tracks'
-              showDivider={true}
-            />
+        {activeSection === 'spotify' &&
+          isFeatureEnabled(FEATURE_FLAGS.SPOTIFY_INTEGRATION) && (
+            <>
+              <FmCommonPageHeader
+                title='Spotify Integration'
+                description='Connect your Spotify Premium account to stream full tracks'
+                showDivider={true}
+              />
 
-            <Card className='border-border/30 bg-card/20 backdrop-blur-lg'>
-              <CardContent className='p-8 space-y-6'>
-                <div className='space-y-4'>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex items-center gap-2'>
-                      <span className='text-sm font-medium'>Connection Status:</span>
-                      {profile?.spotify_connected ? (
-                        <Badge
-                          variant='default'
-                          className='bg-green-500/10 text-green-500 border-green-500/20'
-                        >
-                          <CheckCircle className='w-3 h-3 mr-1' />
-                          Connected
-                        </Badge>
-                      ) : (
-                        <Badge
-                          variant='outline'
-                          className='border-destructive/20 text-destructive'
-                        >
-                          <XCircle className='w-3 h-3 mr-1' />
-                          Not Connected
-                        </Badge>
-                      )}
+              <Card className='border-border/30 bg-card/20 backdrop-blur-lg'>
+                <CardContent className='p-8 space-y-6'>
+                  <div className='space-y-4'>
+                    <div className='flex items-center justify-between'>
+                      <div className='flex items-center gap-2'>
+                        <span className='text-sm font-medium'>
+                          Connection Status:
+                        </span>
+                        {profile?.spotify_connected ? (
+                          <Badge
+                            variant='default'
+                            className='bg-green-500/10 text-green-500 border-green-500/20'
+                          >
+                            <CheckCircle className='w-3 h-3 mr-1' />
+                            Connected
+                          </Badge>
+                        ) : (
+                          <Badge
+                            variant='outline'
+                            className='border-destructive/20 text-destructive'
+                          >
+                            <XCircle className='w-3 h-3 mr-1' />
+                            Not Connected
+                          </Badge>
+                        )}
+                      </div>
                     </div>
+
+                    {!profile?.spotify_connected ? (
+                      <div className='space-y-4'>
+                        <div className='p-4 bg-muted/50 rounded-lg'>
+                          <h4 className='font-medium text-sm mb-2'>
+                            Benefits of connecting Spotify:
+                          </h4>
+                          <ul className='text-xs text-muted-foreground space-y-1'>
+                            <li>
+                              • Stream full tracks instead of 30-second previews
+                            </li>
+                            <li>• Access your personal Spotify library</li>
+                            <li>• Enhanced playback controls</li>
+                            <li>• Seamless cross-device experience</li>
+                          </ul>
+                        </div>
+
+                        <div className='p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg'>
+                          <p className='text-xs text-amber-600 dark:text-amber-400'>
+                            <strong>Note:</strong> Spotify Premium account
+                            required for full track streaming.
+                          </p>
+                        </div>
+
+                        <FmCommonButton
+                          onClick={handleConnectSpotify}
+                          className='bg-green-500 hover:bg-green-600 text-white font-medium'
+                          icon={ExternalLink}
+                          loading={isConnectingSpotify}
+                        >
+                          Connect to Spotify
+                        </FmCommonButton>
+                      </div>
+                    ) : (
+                      <div className='space-y-3'>
+                        <div className='p-4 bg-green-500/10 border border-green-500/20 rounded-lg'>
+                          <p className='text-sm text-green-600 dark:text-green-400'>
+                            ✓ Your Spotify account is connected and ready to
+                            use!
+                          </p>
+                        </div>
+
+                        <div className='text-xs text-muted-foreground'>
+                          You can now enjoy full track streaming throughout the
+                          app.
+                        </div>
+                      </div>
+                    )}
                   </div>
-
-                  {!profile?.spotify_connected ? (
-                    <div className='space-y-4'>
-                      <div className='p-4 bg-muted/50 rounded-lg'>
-                        <h4 className='font-medium text-sm mb-2'>
-                          Benefits of connecting Spotify:
-                        </h4>
-                        <ul className='text-xs text-muted-foreground space-y-1'>
-                          <li>• Stream full tracks instead of 30-second previews</li>
-                          <li>• Access your personal Spotify library</li>
-                          <li>• Enhanced playback controls</li>
-                          <li>• Seamless cross-device experience</li>
-                        </ul>
-                      </div>
-
-                      <div className='p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg'>
-                        <p className='text-xs text-amber-600 dark:text-amber-400'>
-                          <strong>Note:</strong> Spotify Premium account required for
-                          full track streaming.
-                        </p>
-                      </div>
-
-                      <FmCommonButton
-                        onClick={handleConnectSpotify}
-                        className='bg-green-500 hover:bg-green-600 text-white font-medium'
-                        icon={ExternalLink}
-                        loading={isConnectingSpotify}
-                      >
-                        Connect to Spotify
-                      </FmCommonButton>
-                    </div>
-                  ) : (
-                    <div className='space-y-3'>
-                      <div className='p-4 bg-green-500/10 border border-green-500/20 rounded-lg'>
-                        <p className='text-sm text-green-600 dark:text-green-400'>
-                          ✓ Your Spotify account is connected and ready to use!
-                        </p>
-                      </div>
-
-                      <div className='text-xs text-muted-foreground'>
-                        You can now enjoy full track streaming throughout the app.
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </>
-        )}
+                </CardContent>
+              </Card>
+            </>
+          )}
       </div>
     </SideNavbarLayout>
   );

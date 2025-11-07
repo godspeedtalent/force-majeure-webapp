@@ -13,11 +13,19 @@ interface EventHeroProps {
   onManage?: () => void;
 }
 
-export const EventHero = ({ event, canManage, onBack, onManage }: EventHeroProps) => {
+export const EventHero = ({
+  event,
+  canManage,
+  onBack,
+  onManage,
+}: EventHeroProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
-    <div className='relative h-full' style={{ viewTransitionName: `magazine-hero-${event.id}` }}>
+    <div
+      className='relative h-full'
+      style={{ viewTransitionName: `magazine-hero-${event.id}` }}
+    >
       <img
         src={event.heroImage}
         alt={event.title || event.headliner.name}
@@ -32,7 +40,7 @@ export const EventHero = ({ event, canManage, onBack, onManage }: EventHeroProps
         <div className='absolute inset-0 animate-pulse bg-gradient-to-br from-muted via-muted-foreground/10 to-muted' />
       )}
 
-  <div className='absolute inset-0 bg-gradient-to-b from-black/45 via-black/15 to-transparent' />
+      <div className='absolute inset-0 bg-gradient-to-b from-black/45 via-black/15 to-transparent' />
 
       <div className='absolute inset-0 p-6 lg:p-10 flex flex-col justify-between'>
         <div className='flex gap-2'>

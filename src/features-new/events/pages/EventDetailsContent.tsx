@@ -1,6 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Calendar, Clock, Eye, Heart, MapPin, Share2, Users } from 'lucide-react';
+import {
+  Calendar,
+  Clock,
+  Eye,
+  Heart,
+  MapPin,
+  Share2,
+  Users,
+} from 'lucide-react';
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
 
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
@@ -13,9 +21,15 @@ import { FmTextLink } from '@/components/common/display/FmTextLink';
 import { FmUndercardList } from '@/components/common/display/FmUndercardList';
 import { FmDynamicStickyHeader } from '@/components/common/layout/FmDynamicStickyHeader';
 import { ScrollBar } from '@/components/common/shadcn/scroll-area';
-import { FmCommonStackLayout, FmStickyFooter } from '@/components/common/layout';
+import {
+  FmCommonStackLayout,
+  FmStickyFooter,
+} from '@/components/common/layout';
 import { FmCommonCollapsibleSection } from '@/components/common/data/FmCommonCollapsibleSection';
-import { FmArtistRow, type FmArtistRowProps } from '@/components/artist/FmArtistRow';
+import {
+  FmArtistRow,
+  type FmArtistRowProps,
+} from '@/components/artist/FmArtistRow';
 import {
   FmArtistDetailsModal,
   type FmArtistDetailsModalProps,
@@ -25,7 +39,12 @@ import {
   type FmVenueDetailsModalProps,
 } from '@/components/venue/FmVenueDetailsModal';
 import { EventCheckoutWizard } from '@/components/ticketing';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common/shadcn/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/common/shadcn/dialog';
 import { Badge } from '@/components/common/shadcn/badge';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserRole } from '@/shared/hooks/useUserRole';
@@ -65,9 +84,11 @@ export const EventDetailsContent = ({
   const [showCheckout, setShowCheckout] = useState(false);
   const [ticketCount] = useState(() => Math.floor(Math.random() * 100) + 50);
   const { viewCount, recordView } = useEventViews(event.id);
-  const [selectedArtist, setSelectedArtist] = useState<FmArtistDetailsModalProps['artist']>(null);
+  const [selectedArtist, setSelectedArtist] =
+    useState<FmArtistDetailsModalProps['artist']>(null);
   const [isArtistModalOpen, setIsArtistModalOpen] = useState(false);
-  const [selectedVenue, setSelectedVenue] = useState<FmVenueDetailsModalProps['venue']>(null);
+  const [selectedVenue, setSelectedVenue] =
+    useState<FmVenueDetailsModalProps['venue']>(null);
   const [isVenueModalOpen, setIsVenueModalOpen] = useState(false);
   const [isAttendeeModalOpen, setIsAttendeeModalOpen] = useState(false);
 
@@ -77,9 +98,12 @@ export const EventDetailsContent = ({
   }, [recordView]);
 
   const contentViewportRef = useRef<HTMLDivElement | null>(null);
-  const handleContentViewportRef = useCallback((node: HTMLDivElement | null) => {
-    contentViewportRef.current = node;
-  }, []);
+  const handleContentViewportRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      contentViewportRef.current = node;
+    },
+    []
+  );
 
   const eventDate = useMemo(() => new Date(event.date), [event.date]);
   const longDateLabel = useMemo(
@@ -101,27 +125,32 @@ export const EventDetailsContent = ({
       }),
     [eventDate]
   );
-  const formattedTime = useMemo(() => formatTimeDisplay(event.time), [event.time]);
+  const formattedTime = useMemo(
+    () => formatTimeDisplay(event.time),
+    [event.time]
+  );
   const isAfterHours = useMemo(() => {
     if (!event.time) return false;
     const timeParts = event.time.match(/(\d+):(\d+)\s*(AM|PM)?/i);
     if (!timeParts) return false;
-    
+
     let hours = parseInt(timeParts[1]);
     const meridiem = timeParts[3]?.toUpperCase();
-    
+
     if (meridiem === 'PM' && hours !== 12) hours += 12;
     if (meridiem === 'AM' && hours === 12) hours = 0;
-    
+
     // After hours: 10 PM or later, or before 6 AM
     return hours >= 22 || hours < 6;
   }, [event.time]);
   const weekdayLabel = useMemo(
-    () => eventDate.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase(),
+    () =>
+      eventDate.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase(),
     [eventDate]
   );
   const monthLabel = useMemo(
-    () => eventDate.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
+    () =>
+      eventDate.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
     [eventDate]
   );
   const dayNumber = useMemo(() => eventDate.getDate().toString(), [eventDate]);
@@ -138,7 +167,9 @@ export const EventDetailsContent = ({
     return lineup.map((artist, index) => {
       const callDate =
         hasValidBase && index >= 0
-          ? new Date(baseDate.getTime() + index * CALL_TIME_INTERVAL_MINUTES * 60_000)
+          ? new Date(
+              baseDate.getTime() + index * CALL_TIME_INTERVAL_MINUTES * 60_000
+            )
           : null;
 
       const callTimeLabel =
@@ -165,15 +196,19 @@ export const EventDetailsContent = ({
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
     const computeInitials = (value: number) => {
-      const first = letters[Math.floor(value / letters.length) % letters.length] ?? 'A';
+      const first =
+        letters[Math.floor(value / letters.length) % letters.length] ?? 'A';
       const second = letters[value % letters.length] ?? 'A';
       return `${first}${second}`;
     };
 
-    const generated = Array.from({ length: extrasNeeded }, (_unused, index) => ({
-      name: `Guest ${index + 1}`,
-      avatar: computeInitials(index),
-    }));
+    const generated = Array.from(
+      { length: extrasNeeded },
+      (_unused, index) => ({
+        name: `Guest ${index + 1}`,
+        avatar: computeInitials(index),
+      })
+    );
 
     return baseAttendees.concat(generated);
   }, [ticketCount]);
@@ -264,7 +299,10 @@ export const EventDetailsContent = ({
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 cascade-item'>
         {/* About This Event - only shows if description exists */}
         {event.description?.trim() && (
-          <FmCommonCollapsibleSection title='About This Event' defaultExpanded={true}>
+          <FmCommonCollapsibleSection
+            title='About This Event'
+            defaultExpanded={true}
+          >
             <p className='text-muted-foreground leading-relaxed text-sm'>
               {event.description}
             </p>
@@ -304,7 +342,9 @@ export const EventDetailsContent = ({
           <div className='mt-4 border-t border-border pt-3'>
             <div className='flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground'>
               {user ? (
-                <span className='font-normal text-muted-foreground'>Click to see full list</span>
+                <span className='font-normal text-muted-foreground'>
+                  Click to see full list
+                </span>
               ) : (
                 <button
                   type='button'
@@ -326,7 +366,10 @@ export const EventDetailsContent = ({
         </FmCommonCard>
 
         {/* Event Information - always shows */}
-        <FmCommonCollapsibleSection title='Event Information' defaultExpanded={true}>
+        <FmCommonCollapsibleSection
+          title='Event Information'
+          defaultExpanded={true}
+        >
           <div className='grid gap-4'>
             <FmCommonInfoCard
               icon={Calendar}
@@ -363,8 +406,8 @@ export const EventDetailsContent = ({
 
         {/* Call Times - only shows if lineup exists, spans full width if it's the 4th item */}
         {callTimeLineup.length > 0 && (
-          <FmCommonCollapsibleSection 
-            title='Call times' 
+          <FmCommonCollapsibleSection
+            title='Call times'
             defaultExpanded={true}
             className={!event.description?.trim() ? 'lg:col-span-2' : ''}
           >
@@ -387,7 +430,11 @@ export const EventDetailsContent = ({
   );
 
   const checkoutContent = (
-    <EventCheckoutWizard event={event} displayTitle={displayTitle} onClose={handleCloseCheckout} />
+    <EventCheckoutWizard
+      event={event}
+      displayTitle={displayTitle}
+      onClose={handleCloseCheckout}
+    />
   );
 
   const headerActions = (
@@ -421,7 +468,7 @@ export const EventDetailsContent = ({
             month={monthLabel}
             day={dayNumber}
             year={yearNumber}
-            size="lg"
+            size='lg'
           />
           <div className='space-y-3'>
             <h1 className='text-3xl lg:text-4xl font-canela font-medium text-foreground leading-tight'>
@@ -429,7 +476,7 @@ export const EventDetailsContent = ({
             </h1>
             <FmUndercardList
               artists={event.undercard}
-              onArtistClick={(artist) =>
+              onArtistClick={artist =>
                 handleArtistSelect({
                   id: artist.id ?? undefined,
                   name: artist.name,
@@ -465,9 +512,12 @@ export const EventDetailsContent = ({
           <span>{dayNumber}</span>
         </div>
         <div className='min-w-0'>
-          <h3 className='text-sm font-semibold text-foreground truncate'>{displayTitle}</h3>
+          <h3 className='text-sm font-semibold text-foreground truncate'>
+            {displayTitle}
+          </h3>
           <p className='text-xs text-muted-foreground/70 truncate'>
-            {compactDateLabel} {BULLET_SEPARATOR} {formattedTime} {BULLET_SEPARATOR}{' '}
+            {compactDateLabel} {BULLET_SEPARATOR} {formattedTime}{' '}
+            {BULLET_SEPARATOR}{' '}
             <FmTextLink onClick={handleVenueSelect} className='inline'>
               {event.venue}
             </FmTextLink>
@@ -506,7 +556,7 @@ export const EventDetailsContent = ({
                       </div>
                     </div>
                   </div>
-                  
+
                   {!showCheckout && (
                     <FmStickyFooter>
                       <div className='mx-auto w-full lg:w-[65%]'>
@@ -528,62 +578,92 @@ export const EventDetailsContent = ({
       <Dialog open={isAttendeeModalOpen} onOpenChange={setIsAttendeeModalOpen}>
         <DialogContent className='max-w-md bg-background/95 backdrop-blur border border-border/60 max-h-[85vh] flex flex-col p-0 overflow-hidden'>
           <DialogHeader className='flex-shrink-0 px-6 pt-6 pb-4'>
-            <DialogTitle className='font-canela text-lg'>Guest list</DialogTitle>
+            <DialogTitle className='font-canela text-lg'>
+              Guest list
+            </DialogTitle>
           </DialogHeader>
-          
+
           <div className='flex-1 overflow-y-auto px-6 pb-6'>
             {/* Have Tickets Section */}
-            <FmCommonCollapsibleSection title='Have Tickets' defaultExpanded={true} className='mb-4'>
+            <FmCommonCollapsibleSection
+              title='Have Tickets'
+              defaultExpanded={true}
+              className='mb-4'
+            >
               <div className='grid grid-cols-4 gap-3'>
-                {attendeeList.slice(0, ATTENDEE_PLACEHOLDERS.length).map((attendee, index) => (
-                  <div
-                    key={`${attendee.avatar}-${index}`}
-                    className='flex flex-col items-center gap-2 text-center group cursor-pointer'
-                    onClick={() => navigate(`/profile/${attendee.avatar.toLowerCase()}`)}
-                  >
-                    <div className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-border bg-gradient-to-br from-fm-gold/15 to-fm-gold/35 text-xs font-semibold uppercase text-fm-gold transition-all duration-200 group-hover:scale-110 group-hover:border-fm-gold'>
-                      {attendee.avatar}
-                    </div>
-                    <span className='w-full truncate text-[11px] leading-tight text-muted-foreground'>
-                      {attendee.name}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </FmCommonCollapsibleSection>
-            
-            {/* Private Users Section */}
-            {attendeeList.length > ATTENDEE_PLACEHOLDERS.length && (
-              <FmCommonCollapsibleSection title='Private Guests' defaultExpanded={false} className='mb-4'>
-                <div className='mb-3 flex items-center justify-end'>
-                  <span className='text-[10px] font-light text-muted-foreground/70'>
-                    +{(attendeeList.length - ATTENDEE_PLACEHOLDERS.length - 4).toLocaleString()} more
-                  </span>
-                </div>
-                <div className='grid grid-cols-4 gap-3'>
-                  {attendeeList.slice(ATTENDEE_PLACEHOLDERS.length, ATTENDEE_PLACEHOLDERS.length + 4).map((attendee, index) => (
+                {attendeeList
+                  .slice(0, ATTENDEE_PLACEHOLDERS.length)
+                  .map((attendee, index) => (
                     <div
-                      key={`private-${attendee.avatar}-${index}`}
-                      className='flex flex-col items-center gap-2 text-center'
+                      key={`${attendee.avatar}-${index}`}
+                      className='flex flex-col items-center gap-2 text-center group cursor-pointer'
+                      onClick={() =>
+                        navigate(`/profile/${attendee.avatar.toLowerCase()}`)
+                      }
                     >
-                      <div className='flex h-12 w-12 items-center justify-center rounded-full border border-border bg-gradient-to-br from-fm-gold/15 to-fm-gold/35 text-xs font-semibold uppercase text-fm-gold blur-sm'>
+                      <div className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-border bg-gradient-to-br from-fm-gold/15 to-fm-gold/35 text-xs font-semibold uppercase text-fm-gold transition-all duration-200 group-hover:scale-110 group-hover:border-fm-gold'>
                         {attendee.avatar}
                       </div>
-                      <span className='w-full truncate text-[11px] leading-tight text-muted-foreground blur-sm'>
+                      <span className='w-full truncate text-[11px] leading-tight text-muted-foreground'>
                         {attendee.name}
                       </span>
                     </div>
                   ))}
+              </div>
+            </FmCommonCollapsibleSection>
+
+            {/* Private Users Section */}
+            {attendeeList.length > ATTENDEE_PLACEHOLDERS.length && (
+              <FmCommonCollapsibleSection
+                title='Private Guests'
+                defaultExpanded={false}
+                className='mb-4'
+              >
+                <div className='mb-3 flex items-center justify-end'>
+                  <span className='text-[10px] font-light text-muted-foreground/70'>
+                    +
+                    {(
+                      attendeeList.length -
+                      ATTENDEE_PLACEHOLDERS.length -
+                      4
+                    ).toLocaleString()}{' '}
+                    more
+                  </span>
+                </div>
+                <div className='grid grid-cols-4 gap-3'>
+                  {attendeeList
+                    .slice(
+                      ATTENDEE_PLACEHOLDERS.length,
+                      ATTENDEE_PLACEHOLDERS.length + 4
+                    )
+                    .map((attendee, index) => (
+                      <div
+                        key={`private-${attendee.avatar}-${index}`}
+                        className='flex flex-col items-center gap-2 text-center'
+                      >
+                        <div className='flex h-12 w-12 items-center justify-center rounded-full border border-border bg-gradient-to-br from-fm-gold/15 to-fm-gold/35 text-xs font-semibold uppercase text-fm-gold blur-sm'>
+                          {attendee.avatar}
+                        </div>
+                        <span className='w-full truncate text-[11px] leading-tight text-muted-foreground blur-sm'>
+                          {attendee.name}
+                        </span>
+                      </div>
+                    ))}
                 </div>
               </FmCommonCollapsibleSection>
             )}
-            
+
             {/* Interested Section */}
-            <FmCommonCollapsibleSection title='Interested' defaultExpanded={true} className='mb-4'>
+            <FmCommonCollapsibleSection
+              title='Interested'
+              defaultExpanded={true}
+              className='mb-4'
+            >
               <div className='mb-3 flex items-center justify-end'>
                 {attendeeList.length > 8 && (
                   <span className='text-[10px] font-light text-muted-foreground/70'>
-                    +{Math.max(0, attendeeList.length - 8).toLocaleString()} more
+                    +{Math.max(0, attendeeList.length - 8).toLocaleString()}{' '}
+                    more
                   </span>
                 )}
               </div>
@@ -592,7 +672,9 @@ export const EventDetailsContent = ({
                   <div
                     key={`interested-${attendee.avatar}-${index}`}
                     className='flex flex-col items-center gap-2 text-center group cursor-pointer'
-                    onClick={() => navigate(`/profile/${attendee.avatar.toLowerCase()}`)}
+                    onClick={() =>
+                      navigate(`/profile/${attendee.avatar.toLowerCase()}`)
+                    }
                   >
                     <div className='flex h-12 w-12 items-center justify-center rounded-full border border-border bg-gradient-to-br from-muted-foreground/15 to-muted-foreground/35 text-xs font-semibold uppercase text-muted-foreground transition-all duration-200 group-hover:scale-110 group-hover:border-fm-gold group-hover:from-fm-gold/15 group-hover:to-fm-gold/35 group-hover:text-fm-gold'>
                       {attendee.avatar}

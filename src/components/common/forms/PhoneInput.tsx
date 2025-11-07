@@ -1,7 +1,8 @@
 import { forwardRef } from 'react';
 import { Input } from '@/components/common/shadcn/input';
 
-interface PhoneInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+interface PhoneInputProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   value: string;
   onChange: (value: string) => void;
 }
@@ -11,7 +12,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
     const formatPhoneNumber = (input: string): string => {
       // Remove all non-numeric characters
       const cleaned = input.replace(/\D/g, '');
-      
+
       // Format as (XXX) XXX-XXXX
       if (cleaned.length <= 3) {
         return cleaned;
@@ -30,10 +31,10 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
     return (
       <Input
         ref={ref}
-        type="tel"
+        type='tel'
         value={value}
         onChange={handleChange}
-        placeholder="(555) 123-4567"
+        placeholder='(555) 123-4567'
         maxLength={14}
         {...props}
       />

@@ -42,7 +42,10 @@ export const EventCheckoutDemoTools = ({
     } catch (error) {
       console.error('Error creating random event:', error);
       toast.error('Failed to create random event', {
-        description: error instanceof Error ? error.message : 'An unexpected error occurred',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'An unexpected error occurred',
       });
     } finally {
       setIsCreatingRandomEvent(false);
@@ -50,42 +53,42 @@ export const EventCheckoutDemoTools = ({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-3">
-        <Label htmlFor="event-select" className="text-white">
+    <div className='space-y-6'>
+      <div className='space-y-3'>
+        <Label htmlFor='event-select' className='text-white'>
           Select Event
         </Label>
         <FmEventSearchDropdown
           value={selectedEventId}
           onChange={onEventChange}
-          placeholder="Search for an event..."
+          placeholder='Search for an event...'
         />
       </div>
 
-      <div className="space-y-3">
-        <Label className="text-white">Quick Actions</Label>
-        <div className="flex gap-2">
+      <div className='space-y-3'>
+        <Label className='text-white'>Quick Actions</Label>
+        <div className='flex gap-2'>
           <Button
-            variant="outline"
-            className="flex-1"
+            variant='outline'
+            className='flex-1'
             onClick={handleCreateRandomEvent}
             disabled={isCreatingRandomEvent}
           >
-            <Dices className="h-4 w-4 mr-2" />
+            <Dices className='h-4 w-4 mr-2' />
             {isCreatingRandomEvent ? 'Creating...' : 'Random Event'}
           </Button>
           <FmCreateEventButton
             onEventCreated={handleEventCreated}
-            variant="outline"
-            className="flex-1"
+            variant='outline'
+            className='flex-1'
           />
           {selectedEventId && (
             <Button
-              variant="outline"
-              className="flex-1"
+              variant='outline'
+              className='flex-1'
               onClick={() => navigate(`/event/${selectedEventId}/manage`)}
             >
-              <FileEdit className="h-4 w-4 mr-2" />
+              <FileEdit className='h-4 w-4 mr-2' />
               Manage Event
             </Button>
           )}
@@ -94,4 +97,3 @@ export const EventCheckoutDemoTools = ({
     </div>
   );
 };
-

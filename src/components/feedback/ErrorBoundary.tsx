@@ -40,16 +40,22 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   private handleReset = () => {
     // Reset error state before reload to prevent infinite loop
-    this.setState({ hasError: false, error: null, errorInfo: undefined }, () => {
-      window.location.reload();
-    });
+    this.setState(
+      { hasError: false, error: null, errorInfo: undefined },
+      () => {
+        window.location.reload();
+      }
+    );
   };
 
   private handleGoBack = () => {
     // Reset error state before navigation to prevent infinite loop
-    this.setState({ hasError: false, error: null, errorInfo: undefined }, () => {
-      window.history.back();
-    });
+    this.setState(
+      { hasError: false, error: null, errorInfo: undefined },
+      () => {
+        window.history.back();
+      }
+    );
   };
 
   render() {

@@ -26,18 +26,23 @@ export const FmCommonTab = ({
     horizontal: 'h-12 px-4',
   };
 
-  const activeClasses = isActive 
-    ? 'bg-fm-gold/80 backdrop-blur-md text-black border-fm-gold hover:bg-white/90' 
+  const activeClasses = isActive
+    ? 'bg-fm-gold/80 backdrop-blur-md text-black border-fm-gold hover:bg-white/90'
     : 'text-white hover:bg-white/10';
 
   return (
     <button
       onClick={onClick}
-      className={cn(baseClasses, variantClasses[variant], activeClasses, className)}
+      className={cn(
+        baseClasses,
+        variantClasses[variant],
+        activeClasses,
+        className
+      )}
       aria-label={label}
       title={label}
     >
-      <Icon className="h-5 w-5" />
+      <Icon className='h-5 w-5' />
     </button>
   );
 };

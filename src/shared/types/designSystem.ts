@@ -1,9 +1,9 @@
 /**
  * Force Majeure Design System Type Definitions
- * 
+ *
  * Strict TypeScript types to enforce design system compliance at compile time.
  * These types ensure developers use approved colors, spacing, and patterns.
- * 
+ *
  * @see /docs/DESIGN_SYSTEM.md
  * @see /src/shared/constants/designSystem.ts
  */
@@ -14,13 +14,13 @@ import { COLORS, SPACING } from '@/shared/constants/designSystem';
  * Only allow design system colors
  * Prevents hardcoded hex values or arbitrary colors
  */
-export type DesignSystemColor = typeof COLORS[keyof typeof COLORS];
+export type DesignSystemColor = (typeof COLORS)[keyof typeof COLORS];
 
 /**
  * Only allow design system spacing values
  * Enforces the 5px-based scale: 5, 10, 20, 40, 60
  */
-export type DesignSystemSpacing = typeof SPACING[keyof typeof SPACING];
+export type DesignSystemSpacing = (typeof SPACING)[keyof typeof SPACING];
 
 /**
  * Only allow design system depth levels
@@ -34,7 +34,12 @@ export type DepthLevel = 0 | 1 | 2 | 3;
 /**
  * Button variant types
  */
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'outline' | 'info';
+export type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'danger'
+  | 'outline'
+  | 'info';
 
 /**
  * Card variant types
@@ -53,7 +58,7 @@ export type SpacingSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export interface DesignSystemProps {
   /** Custom className for additional styling */
   className?: string;
-  
+
   /** Children elements */
   children?: React.ReactNode;
 }
@@ -61,22 +66,23 @@ export interface DesignSystemProps {
 /**
  * Input field props following design system patterns
  */
-export interface DesignSystemInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'className'> {
+export interface DesignSystemInputProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'className'> {
   /** Label text (will be displayed in uppercase) */
   label: string;
-  
+
   /** Whether the field is required */
   required?: boolean;
-  
+
   /** Error message to display */
   error?: string;
-  
+
   /** Description text */
   description?: string;
-  
+
   /** Custom className */
   className?: string;
-  
+
   /** Container className */
   containerClassName?: string;
 }
@@ -84,13 +90,14 @@ export interface DesignSystemInputProps extends Omit<React.InputHTMLAttributes<H
 /**
  * Button props following design system patterns
  */
-export interface DesignSystemButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
+export interface DesignSystemButtonProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
   /** Button variant */
   variant?: ButtonVariant;
-  
+
   /** Custom className */
   className?: string;
-  
+
   /** Children elements */
   children: React.ReactNode;
 }
@@ -109,7 +116,7 @@ export interface DesignSystemCardProps extends DesignSystemProps {
 export interface DesignSystemListItemProps extends DesignSystemProps {
   /** Index of the item (used for striped pattern) */
   index: number;
-  
+
   /** Click handler */
   onClick?: () => void;
 }
@@ -117,13 +124,14 @@ export interface DesignSystemListItemProps extends DesignSystemProps {
 /**
  * Label props following design system patterns
  */
-export interface DesignSystemLabelProps extends Omit<React.LabelHTMLAttributes<HTMLLabelElement>, 'className'> {
+export interface DesignSystemLabelProps
+  extends Omit<React.LabelHTMLAttributes<HTMLLabelElement>, 'className'> {
   /** Whether the associated input is focused */
   focused?: boolean;
-  
+
   /** Custom className */
   className?: string;
-  
+
   /** Children elements */
   children: React.ReactNode;
 }
@@ -131,13 +139,14 @@ export interface DesignSystemLabelProps extends Omit<React.LabelHTMLAttributes<H
 /**
  * Icon button props following design system patterns
  */
-export interface DesignSystemIconButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
+export interface DesignSystemIconButtonProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
   /** Accessible label (required for icon buttons) */
   'aria-label': string;
-  
+
   /** Custom className */
   className?: string;
-  
+
   /** Icon element */
   children: React.ReactNode;
 }
@@ -152,7 +161,9 @@ export function isDesignSystemColor(color: string): color is DesignSystemColor {
 /**
  * Type guard to check if a spacing value is from the design system
  */
-export function isDesignSystemSpacing(spacing: string): spacing is DesignSystemSpacing {
+export function isDesignSystemSpacing(
+  spacing: string
+): spacing is DesignSystemSpacing {
   return Object.values(SPACING).includes(spacing as any);
 }
 

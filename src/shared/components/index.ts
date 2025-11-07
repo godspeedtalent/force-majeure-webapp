@@ -1,6 +1,6 @@
 /**
  * Shared Components
- * 
+ *
  * UI components that are reusable across multiple features
  */
 

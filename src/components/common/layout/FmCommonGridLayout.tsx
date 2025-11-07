@@ -1,6 +1,6 @@
 /**
  * FmCommonGridLayout
- * 
+ *
  * Reusable grid layout component with responsive breakpoints
  * Standardizes grid layouts across the application
  */
@@ -57,9 +57,5 @@ export const FmCommonGridLayout = ({
     className
   );
 
-  return (
-    <div className={gridClasses}>
-      {children}
-    </div>
-  );
+  return <div className={gridClasses}>{children}</div>;
 };

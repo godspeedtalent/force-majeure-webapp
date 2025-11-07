@@ -1,5 +1,23 @@
-import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Database, Compass, ShoppingCart, ToggleLeft, ClipboardList, LucideIcon, X, Home, Shield, ExternalLink } from 'lucide-react';
+import {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import {
+  Database,
+  Compass,
+  ShoppingCart,
+  ToggleLeft,
+  ClipboardList,
+  LucideIcon,
+  X,
+  Home,
+  Shield,
+  ExternalLink,
+} from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { cn } from '@/shared/utils/utils';
@@ -17,7 +35,7 @@ import {
   ContextMenuTrigger,
 } from '@/components/common/shadcn/context-menu';
 
-// Lazy load sections  
+// Lazy load sections
 import { CreationToolsSection } from '@/components/DevTools/CreationToolsSection';
 import { DatabaseNavigatorSearch } from '@/components/admin/DatabaseNavigatorSearch';
 import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
@@ -44,10 +62,7 @@ interface FmToolbarProps {
   anchorOffset?: number;
 }
 
-export const FmToolbar = ({
-  className,
-  anchorOffset = 96,
-}: FmToolbarProps) => {
+export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
@@ -60,11 +75,11 @@ export const FmToolbar = ({
   const [showGroupLabel, setShowGroupLabel] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string | null>(null);
-  
+
   const { user } = useAuth();
   const { hasAnyRole } = useUserPermissions();
   const navigate = useNavigate();
-  
+
   const startYRef = useRef<number>(0);
   const startXRef = useRef<number>(0);
   const initialOffsetRef = useRef<number>(0);
@@ -88,16 +103,18 @@ export const FmToolbar = ({
         label: 'Shopping Cart',
         icon: ShoppingCart,
         content: (
-          <div className="space-y-4">
-            <Separator className="bg-white/10" />
-            <div className="text-center py-12">
-              <ShoppingCart className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-foreground mb-2">Your cart is empty</h3>
-              <p className="text-sm text-muted-foreground">
+          <div className='space-y-4'>
+            <Separator className='bg-white/10' />
+            <div className='text-center py-12'>
+              <ShoppingCart className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
+              <h3 className='text-lg font-medium text-foreground mb-2'>
+                Your cart is empty
+              </h3>
+              <p className='text-sm text-muted-foreground'>
                 Why not{' '}
                 <Link
-                  to="/merch"
-                  className="text-fm-gold hover:text-fm-gold/80 underline transition-colors"
+                  to='/merch'
+                  className='text-fm-gold hover:text-fm-gold/80 underline transition-colors'
                 >
                   check out our merch
                 </Link>
@@ -117,37 +134,37 @@ export const FmToolbar = ({
         label: 'Dev Navigation',
         icon: Compass,
         content: (
-          <div className="space-y-4">
-            <Separator className="bg-white/10" />
-            <div className="flex flex-col gap-2">
+          <div className='space-y-4'>
+            <Separator className='bg-white/10' />
+            <div className='flex flex-col gap-2'>
               {/* Alphabetically sorted links */}
               {isAdmin && (
                 <ContextMenu>
                   <ContextMenuTrigger asChild>
                     <div>
                       <FmCommonButton
-                        variant="default"
+                        variant='default'
                         icon={Shield}
-                        iconPosition="left"
+                        iconPosition='left'
                         onClick={() => {
                           setIsOpen(false);
                           setActiveTab(null);
                           navigate('/admin/controls');
                         }}
-                        className="w-full justify-start"
+                        className='w-full justify-start'
                       >
                         Admin Controls
                       </FmCommonButton>
                     </div>
                   </ContextMenuTrigger>
-                  <ContextMenuContent className="bg-card border-border rounded-none w-40">
+                  <ContextMenuContent className='bg-card border-border rounded-none w-40'>
                     <ContextMenuItem
                       onClick={() => {
                         setIsOpen(false);
                         setActiveTab(null);
                         navigate('/admin/controls');
                       }}
-                      className="text-white hover:bg-muted focus:bg-muted cursor-pointer"
+                      className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
                     >
                       Go to
                     </ContextMenuItem>
@@ -158,28 +175,28 @@ export const FmToolbar = ({
                 <ContextMenuTrigger asChild>
                   <div>
                     <FmCommonButton
-                      variant="default"
+                      variant='default'
                       icon={Home}
-                      iconPosition="left"
+                      iconPosition='left'
                       onClick={() => {
                         setIsOpen(false);
                         setActiveTab(null);
                         navigate('/developer');
                       }}
-                      className="w-full justify-start"
+                      className='w-full justify-start'
                     >
                       Developer Home
                     </FmCommonButton>
                   </div>
                 </ContextMenuTrigger>
-                <ContextMenuContent className="bg-card border-border rounded-none w-40">
+                <ContextMenuContent className='bg-card border-border rounded-none w-40'>
                   <ContextMenuItem
                     onClick={() => {
                       setIsOpen(false);
                       setActiveTab(null);
                       navigate('/developer');
                     }}
-                    className="text-white hover:bg-muted focus:bg-muted cursor-pointer"
+                    className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
                   >
                     Go to
                   </ContextMenuItem>
@@ -189,32 +206,42 @@ export const FmToolbar = ({
                 <ContextMenuTrigger asChild>
                   <div>
                     <FmCommonButton
-                      variant="default"
+                      variant='default'
                       icon={ExternalLink}
-                      iconPosition="left"
+                      iconPosition='left'
                       onClick={() => {
                         const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
                         if (supabaseUrl) {
-                          const projectId = new URL(supabaseUrl).hostname.split('.')[0];
-                          window.open(`https://supabase.com/dashboard/project/${projectId}`, '_blank');
+                          const projectId = new URL(supabaseUrl).hostname.split(
+                            '.'
+                          )[0];
+                          window.open(
+                            `https://supabase.com/dashboard/project/${projectId}`,
+                            '_blank'
+                          );
                         }
                       }}
-                      className="w-full justify-start"
+                      className='w-full justify-start'
                     >
                       Supabase Dashboard
                     </FmCommonButton>
                   </div>
                 </ContextMenuTrigger>
-                <ContextMenuContent className="bg-card border-border rounded-none w-48">
+                <ContextMenuContent className='bg-card border-border rounded-none w-48'>
                   <ContextMenuItem
                     onClick={() => {
                       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
                       if (supabaseUrl) {
-                        const projectId = new URL(supabaseUrl).hostname.split('.')[0];
-                        window.open(`https://supabase.com/dashboard/project/${projectId}`, '_blank');
+                        const projectId = new URL(supabaseUrl).hostname.split(
+                          '.'
+                        )[0];
+                        window.open(
+                          `https://supabase.com/dashboard/project/${projectId}`,
+                          '_blank'
+                        );
                       }
                     }}
-                    className="text-white hover:bg-muted focus:bg-muted cursor-pointer"
+                    className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
                   >
                     Go to
                   </ContextMenuItem>
@@ -222,11 +249,16 @@ export const FmToolbar = ({
                     onClick={() => {
                       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
                       if (supabaseUrl) {
-                        const projectId = new URL(supabaseUrl).hostname.split('.')[0];
-                        window.open(`https://supabase.com/dashboard/project/${projectId}/editor`, '_blank');
+                        const projectId = new URL(supabaseUrl).hostname.split(
+                          '.'
+                        )[0];
+                        window.open(
+                          `https://supabase.com/dashboard/project/${projectId}/editor`,
+                          '_blank'
+                        );
                       }
                     }}
-                    className="text-white hover:bg-muted focus:bg-muted cursor-pointer"
+                    className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
                   >
                     Go to Table Editor
                   </ContextMenuItem>
@@ -234,11 +266,16 @@ export const FmToolbar = ({
                     onClick={() => {
                       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
                       if (supabaseUrl) {
-                        const projectId = new URL(supabaseUrl).hostname.split('.')[0];
-                        window.open(`https://supabase.com/dashboard/project/${projectId}/sql/new`, '_blank');
+                        const projectId = new URL(supabaseUrl).hostname.split(
+                          '.'
+                        )[0];
+                        window.open(
+                          `https://supabase.com/dashboard/project/${projectId}/sql/new`,
+                          '_blank'
+                        );
                       }
                     }}
-                    className="text-white hover:bg-muted focus:bg-muted cursor-pointer"
+                    className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
                   >
                     Go to SQL Editor
                   </ContextMenuItem>
@@ -260,31 +297,35 @@ export const FmToolbar = ({
         icon: Database,
         content: (
           <div className='space-y-4'>
-            <Separator className="bg-white/10" />
-            <div className="px-4 py-2 space-y-4">
-              <div className="pb-2 border-b border-white/10">
-                <p className="text-xs text-muted-foreground mb-2">Quick Create</p>
-                <CreationToolsSection onNavigate={() => {
-                  setIsOpen(false);
-                  setActiveTab(null);
-                }} />
+            <Separator className='bg-white/10' />
+            <div className='px-4 py-2 space-y-4'>
+              <div className='pb-2 border-b border-white/10'>
+                <p className='text-xs text-muted-foreground mb-2'>
+                  Quick Create
+                </p>
+                <CreationToolsSection
+                  onNavigate={() => {
+                    setIsOpen(false);
+                    setActiveTab(null);
+                  }}
+                />
               </div>
               <DatabaseNavigatorSearch />
             </div>
           </div>
         ),
         footer: (
-          <div className="pb-4">
+          <div className='pb-4'>
             <FmCommonButton
-              variant="default"
+              variant='default'
               icon={Database}
-              iconPosition="left"
+              iconPosition='left'
               onClick={() => {
                 setIsOpen(false);
                 setActiveTab(null);
                 navigate('/developer/database');
               }}
-              className="w-full justify-start"
+              className='w-full justify-start'
             >
               Go to Database Manager
             </FmCommonButton>
@@ -304,7 +345,7 @@ export const FmToolbar = ({
         icon: ToggleLeft,
         content: (
           <div className='space-y-4'>
-            <Separator className="bg-white/10" />
+            <Separator className='bg-white/10' />
             <FeatureToggleSection />
           </div>
         ),
@@ -321,7 +362,7 @@ export const FmToolbar = ({
         icon: ClipboardList,
         content: (
           <div className='space-y-4'>
-            <Separator className="bg-white/10" />
+            <Separator className='bg-white/10' />
             <DevNotesSection />
           </div>
         ),
@@ -338,18 +379,15 @@ export const FmToolbar = ({
     [isDeveloperOrAdmin, user, navigate]
   );
 
-  const visibleTabs = useMemo(
-    () => {
-      const filtered = tabs.filter(tab => tab.visible !== false);
-      // Sort by groupOrder first, then by order in array
-      return filtered.sort((a, b) => {
-        const orderA = a.groupOrder ?? 999;
-        const orderB = b.groupOrder ?? 999;
-        return orderA - orderB;
-      });
-    },
-    [tabs]
-  );
+  const visibleTabs = useMemo(() => {
+    const filtered = tabs.filter(tab => tab.visible !== false);
+    // Sort by groupOrder first, then by order in array
+    return filtered.sort((a, b) => {
+      const orderA = a.groupOrder ?? 999;
+      const orderB = b.groupOrder ?? 999;
+      return orderA - orderB;
+    });
+  }, [tabs]);
 
   // Group tabs by their alignment and group property for rendering
   const { topGroups, bottomGroups } = useMemo(() => {
@@ -454,15 +492,18 @@ export const FmToolbar = ({
     setIsResizing(true);
   };
 
-  const handleResizeMove = useCallback((event: MouseEvent) => {
-    const deltaX = startXRef.current - event.clientX; // Reversed: dragging left increases width
-    const maxWidth = getMaxWidth();
-    const newWidth = Math.max(
-      MIN_WIDTH,
-      Math.min(maxWidth, initialWidthRef.current + deltaX)
-    );
-    setDrawerWidth(newWidth);
-  }, [MIN_WIDTH, getMaxWidth]);
+  const handleResizeMove = useCallback(
+    (event: MouseEvent) => {
+      const deltaX = startXRef.current - event.clientX; // Reversed: dragging left increases width
+      const maxWidth = getMaxWidth();
+      const newWidth = Math.max(
+        MIN_WIDTH,
+        Math.min(maxWidth, initialWidthRef.current + deltaX)
+      );
+      setDrawerWidth(newWidth);
+    },
+    [MIN_WIDTH, getMaxWidth]
+  );
 
   const handleResizeEnd = useCallback(() => {
     setIsResizing(false);
@@ -470,22 +511,25 @@ export const FmToolbar = ({
     localStorage.setItem('fm-toolbar-width', drawerWidth.toString());
   }, [drawerWidth]);
 
-  const handleMouseMove = useCallback((event: MouseEvent) => {
-    if (!tabsContainerRef.current) return;
+  const handleMouseMove = useCallback(
+    (event: MouseEvent) => {
+      if (!tabsContainerRef.current) return;
 
-    const deltaY = event.clientY - startYRef.current;
-    const containerHeight = tabsContainerRef.current.offsetHeight;
-    const viewportHeight = window.innerHeight - anchorOffset;
+      const deltaY = event.clientY - startYRef.current;
+      const containerHeight = tabsContainerRef.current.offsetHeight;
+      const viewportHeight = window.innerHeight - anchorOffset;
 
-    const maxOffset = 0;
-    const minOffset = Math.min(0, -(containerHeight - viewportHeight));
+      const maxOffset = 0;
+      const minOffset = Math.min(0, -(containerHeight - viewportHeight));
 
-    const nextOffset = Math.max(
-      minOffset,
-      Math.min(maxOffset, initialOffsetRef.current + deltaY)
-    );
-    setDragOffset(nextOffset);
-  }, [anchorOffset]);
+      const nextOffset = Math.max(
+        minOffset,
+        Math.min(maxOffset, initialOffsetRef.current + deltaY)
+      );
+      setDragOffset(nextOffset);
+    },
+    [anchorOffset]
+  );
 
   const handleMouseUp = useCallback(() => {
     const dragDuration = Date.now() - dragStartTimeRef.current;
@@ -541,10 +585,13 @@ export const FmToolbar = ({
     }
 
     // Only auto-select first tab if drawer is open and no valid tab is selected
-    if (isOpen && (!activeTab || !visibleTabs.some(tab => tab.id === activeTab))) {
+    if (
+      isOpen &&
+      (!activeTab || !visibleTabs.some(tab => tab.id === activeTab))
+    ) {
       setActiveTab(visibleTabs[0].id);
     }
-    
+
     // Clear active tab when drawer closes
     if (!isOpen && activeTab) {
       setActiveTab(null);
@@ -575,12 +622,12 @@ export const FmToolbar = ({
             isResizing && 'bg-fm-gold'
           )}
           onMouseDown={handleResizeStart}
-          title="Drag to resize"
+          title='Drag to resize'
         />
       )}
 
       {/* Developer Toolbar Indicator */}
-      <div 
+      <div
         className='absolute bottom-0 right-full h-full bg-black/80 backdrop-blur-md border-l border-white/20 transition-all duration-300'
         style={{
           width: isTabHovered ? (isOpen ? '0px' : '6px') : '2px',
@@ -600,7 +647,8 @@ export const FmToolbar = ({
           onMouseLeave={() => setIsTabHovered(false)}
         >
           {topGroups.map((group, groupIndex) => {
-            const shouldShowLabel = topGroups.length >= 2 && group.tabs.length > 1;
+            const shouldShowLabel =
+              topGroups.length >= 2 && group.tabs.length > 1;
             const groupLabel = group.tabs[0]?.groupLabel;
 
             return (
@@ -618,18 +666,32 @@ export const FmToolbar = ({
                   <div
                     className={cn(
                       'absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[52px] flex items-center transition-opacity duration-300',
-                      showGroupLabel === group.group ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                      showGroupLabel === group.group
+                        ? 'opacity-100'
+                        : 'opacity-0 pointer-events-none'
                     )}
                   >
                     {/* Brace effect - much thinner */}
-                    <div className="flex flex-col items-center justify-center mr-1.5" style={{ height: '100%' }}>
-                      <div className="w-1.5 h-1.5 border-l border-t border-white/20 rounded-tl-sm" style={{ borderWidth: '0.5px' }} />
-                      <div className="flex-1 bg-white/20" style={{ width: '0.5px', minHeight: '20px' }} />
-                      <div className="w-1.5 h-1.5 border-l border-b border-white/20 rounded-bl-sm" style={{ borderWidth: '0.5px' }} />
+                    <div
+                      className='flex flex-col items-center justify-center mr-1.5'
+                      style={{ height: '100%' }}
+                    >
+                      <div
+                        className='w-1.5 h-1.5 border-l border-t border-white/20 rounded-tl-sm'
+                        style={{ borderWidth: '0.5px' }}
+                      />
+                      <div
+                        className='flex-1 bg-white/20'
+                        style={{ width: '0.5px', minHeight: '20px' }}
+                      />
+                      <div
+                        className='w-1.5 h-1.5 border-l border-b border-white/20 rounded-bl-sm'
+                        style={{ borderWidth: '0.5px' }}
+                      />
                     </div>
                     {/* Label */}
                     <span
-                      className="text-[9px] text-white/50 whitespace-nowrap font-light tracking-wide"
+                      className='text-[9px] text-white/50 whitespace-nowrap font-light tracking-wide'
                       style={{
                         writingMode: 'vertical-rl',
                         transform: 'rotate(180deg)',
@@ -639,7 +701,7 @@ export const FmToolbar = ({
                     </span>
                   </div>
                 )}
-                
+
                 {group.tabs.map(tab => (
                   <FmCommonTab
                     key={tab.id}
@@ -676,7 +738,8 @@ export const FmToolbar = ({
           onMouseLeave={() => setIsTabHovered(false)}
         >
           {bottomGroups.map((group, groupIndex) => {
-            const shouldShowLabel = bottomGroups.length >= 2 && group.tabs.length > 1;
+            const shouldShowLabel =
+              bottomGroups.length >= 2 && group.tabs.length > 1;
             const groupLabel = group.tabs[0]?.groupLabel;
 
             return (
@@ -694,18 +757,32 @@ export const FmToolbar = ({
                   <div
                     className={cn(
                       'absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[52px] flex items-center transition-opacity duration-300',
-                      showGroupLabel === group.group ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                      showGroupLabel === group.group
+                        ? 'opacity-100'
+                        : 'opacity-0 pointer-events-none'
                     )}
                   >
                     {/* Brace effect - much thinner */}
-                    <div className="flex flex-col items-center justify-center mr-1.5" style={{ height: '100%' }}>
-                      <div className="w-1.5 h-1.5 border-l border-t border-white/20 rounded-tl-sm" style={{ borderWidth: '0.5px' }} />
-                      <div className="flex-1 bg-white/20" style={{ width: '0.5px', minHeight: '20px' }} />
-                      <div className="w-1.5 h-1.5 border-l border-b border-white/20 rounded-bl-sm" style={{ borderWidth: '0.5px' }} />
+                    <div
+                      className='flex flex-col items-center justify-center mr-1.5'
+                      style={{ height: '100%' }}
+                    >
+                      <div
+                        className='w-1.5 h-1.5 border-l border-t border-white/20 rounded-tl-sm'
+                        style={{ borderWidth: '0.5px' }}
+                      />
+                      <div
+                        className='flex-1 bg-white/20'
+                        style={{ width: '0.5px', minHeight: '20px' }}
+                      />
+                      <div
+                        className='w-1.5 h-1.5 border-l border-b border-white/20 rounded-bl-sm'
+                        style={{ borderWidth: '0.5px' }}
+                      />
                     </div>
                     {/* Label */}
                     <span
-                      className="text-[9px] text-white/50 whitespace-nowrap font-light tracking-wide"
+                      className='text-[9px] text-white/50 whitespace-nowrap font-light tracking-wide'
                       style={{
                         writingMode: 'vertical-rl',
                         transform: 'rotate(180deg)',
@@ -715,7 +792,7 @@ export const FmToolbar = ({
                     </span>
                   </div>
                 )}
-                
+
                 {group.tabs.map(tab => (
                   <FmCommonTab
                     key={tab.id}
@@ -775,4 +852,3 @@ export const FmToolbar = ({
     </div>
   );
 };
-

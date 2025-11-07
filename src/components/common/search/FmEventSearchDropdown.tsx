@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { Calendar } from 'lucide-react';
-import { FmCommonSearchDropdown, SearchDropdownOption } from './FmCommonSearchDropdown';
+import {
+  FmCommonSearchDropdown,
+  SearchDropdownOption,
+} from './FmCommonSearchDropdown';
 import { supabase } from '@/shared/api/supabase/client';
 
 interface FmEventSearchDropdownProps {
@@ -18,7 +21,9 @@ export function FmEventSearchDropdown({
   placeholder = 'Search for an event...',
   disabled = false,
 }: FmEventSearchDropdownProps) {
-  const [selectedEvent, setSelectedEvent] = React.useState<{ title: string } | null>(null);
+  const [selectedEvent, setSelectedEvent] = React.useState<{
+    title: string;
+  } | null>(null);
 
   React.useEffect(() => {
     if (value) {
@@ -37,10 +42,13 @@ export function FmEventSearchDropdown({
     }
   }, [value]);
 
-  const handleSearch = async (query: string): Promise<SearchDropdownOption[]> => {
+  const handleSearch = async (
+    query: string
+  ): Promise<SearchDropdownOption[]> => {
     const { data, error } = await supabase
       .from('events')
-      .select(`
+      .select(
+        `
         id,
         title,
         date,
@@ -54,7 +62,8 @@ export function FmEventSearchDropdown({
           name
         ),
         undercard_ids
-      `)
+      `
+      )
       .gte('date', new Date().toISOString().split('T')[0])
       .order('date', { ascending: true })
       .limit(50);
@@ -76,7 +85,7 @@ export function FmEventSearchDropdown({
         .from('artists')
         .select('id, name')
         .in('id', Array.from(allUndercardIds));
-      
+
       if (undercards) {
         undercards.forEach((artist: any) => {
           undercardMap.set(artist.id, artist.name);
@@ -87,8 +96,10 @@ export function FmEventSearchDropdown({
     // Map undercard IDs to names for each event
     const eventsWithUndercards = data.map((event: any) => ({
       ...event,
-      undercards: event.undercard_ids 
-        ? event.undercard_ids.map((id: string) => ({ name: undercardMap.get(id) })).filter((uc: any) => uc.name)
+      undercards: event.undercard_ids
+        ? event.undercard_ids
+            .map((id: string) => ({ name: undercardMap.get(id) }))
+            .filter((uc: any) => uc.name)
         : [],
     }));
 
@@ -96,12 +107,14 @@ export function FmEventSearchDropdown({
     const filtered = eventsWithUndercards.filter((event: any) => {
       const searchLower = query.toLowerCase();
       const titleMatch = event.title?.toLowerCase().includes(searchLower);
-      const headlinerMatch = event.headliner?.name?.toLowerCase().includes(searchLower);
+      const headlinerMatch = event.headliner?.name
+        ?.toLowerCase()
+        .includes(searchLower);
       const venueMatch = event.venue?.name?.toLowerCase().includes(searchLower);
-      const undercardMatch = event.undercards?.some((uc: any) => 
+      const undercardMatch = event.undercards?.some((uc: any) =>
         uc.name?.toLowerCase().includes(searchLower)
       );
-      
+
       return titleMatch || headlinerMatch || venueMatch || undercardMatch;
     });
 
@@ -112,10 +125,14 @@ export function FmEventSearchDropdown({
         id: event.id,
         label: `${event.title} - ${new Date(event.date).toLocaleDateString()}`,
         icon: headlinerImage ? (
-          <img src={headlinerImage} alt={event.title} className="h-8 w-8 rounded-full object-cover" />
+          <img
+            src={headlinerImage}
+            alt={event.title}
+            className='h-8 w-8 rounded-full object-cover'
+          />
         ) : (
-          <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center">
-            <Calendar className="h-4 w-4 text-white/50" />
+          <div className='h-8 w-8 rounded-full bg-white/10 flex items-center justify-center'>
+            <Calendar className='h-4 w-4 text-white/50' />
           </div>
         ),
       };
@@ -128,7 +145,7 @@ export function FmEventSearchDropdown({
       onSearch={handleSearch}
       onCreateNew={onCreateNew}
       placeholder={placeholder}
-      createNewLabel="+ Create New Event"
+      createNewLabel='+ Create New Event'
       selectedLabel={selectedEvent?.title}
       disabled={disabled}
     />

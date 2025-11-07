@@ -19,7 +19,8 @@ const DeveloperCreateArtistPage = () => {
       condensed
     >
       <p className='text-sm text-muted-foreground mb-6'>
-        Use this form to create placeholder or production artist records. Closing the form will return you to the developer dashboard.
+        Use this form to create placeholder or production artist records.
+        Closing the form will return you to the developer dashboard.
       </p>
       <FmCreateArtistButton mode='standalone' onClose={handleClose} />
     </DemoLayout>
@@ -27,4 +28,3 @@ const DeveloperCreateArtistPage = () => {
 };
 
 export default DeveloperCreateArtistPage;
-

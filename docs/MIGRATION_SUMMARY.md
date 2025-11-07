@@ -5,6 +5,7 @@
 ### 1. Directory Structure Created
 
 **New Feature Modules** (`src/features-new/`):
+
 - auth
 - events
 - merch
@@ -18,6 +19,7 @@
 - organization
 
 Each feature has:
+
 - `components/` - Feature-specific UI components
 - `hooks/` - Feature-specific React hooks
 - `services/` - API calls and business logic
@@ -26,12 +28,14 @@ Each feature has:
 - `index.ts` - Public API barrel export
 
 **Core Module** (`src/core/`):
+
 - `router/` - Routing configuration
 - `api/` - Base API client
 - `providers/` - Global context providers
 - `layouts/` - Base layout components
 
 **Shared Module** (`src/shared/`):
+
 - `components/` - Reusable UI components
 - `hooks/` - Shared custom hooks
 - `utils/` - Helper functions
@@ -42,6 +46,7 @@ Each feature has:
 ### 2. TypeScript Configuration Updated
 
 Added path aliases to `tsconfig.json`:
+
 ```json
 {
   "@features/*": ["./src/features/*"],
@@ -61,6 +66,7 @@ All feature modules and subdirectories now have `index.ts` files for clean expor
 ### 4. Documentation
 
 Created comprehensive documentation:
+
 - `docs/ARCHITECTURE.md` - Complete architecture guide
 - `src/features-new/README.md` - Features directory documentation
 
@@ -73,6 +79,7 @@ Created `scripts/migrate-to-features.sh` - Automated migration helper
 ### Immediate Actions
 
 1. **Choose a Feature to Migrate First** (Recommended: auth)
+
    ```bash
    ./scripts/migrate-to-features.sh auth
    ```
@@ -133,26 +140,31 @@ Created `scripts/migrate-to-features.sh` - Automated migration helper
 ## 🎯 Migration Priorities
 
 ### Phase 1 (Week 1)
+
 - [ ] Migrate `auth` feature completely
 - [ ] Update all auth-related imports
 - [ ] Test thoroughly
 
 ### Phase 2 (Week 2)
+
 - [ ] Migrate `events` feature
 - [ ] Migrate `ticketing` feature
 - [ ] Update imports
 
 ### Phase 3 (Week 3)
+
 - [ ] Migrate `payments` feature
 - [ ] Migrate `merch` feature
 - [ ] Update imports
 
 ### Phase 4 (Week 4)
+
 - [ ] Migrate remaining features
 - [ ] Organize shared code
 - [ ] Set up core module
 
 ### Phase 5 (Week 5)
+
 - [ ] Final cleanup
 - [ ] Remove old structure
 - [ ] Update all documentation
@@ -178,6 +190,7 @@ npm run dev
 ### Updating Imports
 
 Before:
+
 ```typescript
 import { PermissionGuard } from '@/components/auth/PermissionGuard';
 import { useAuth } from '@/hooks/useAuth';
@@ -185,6 +198,7 @@ import { AuthService } from '@/services/auth/AuthService';
 ```
 
 After:
+
 ```typescript
 import { PermissionGuard, useAuth, AuthService } from '@features/auth';
 ```
@@ -223,6 +237,7 @@ export { NotificationBell } from './NotificationBell';
 4. Static assets? → `public/` or `src/assets/`
 
 **Component Decision Tree:**
+
 - Is it a primitive/basic UI element? → `src/shared/components/primitives/`
 - Is it a layout component? → `src/core/layouts/`
 - Is it feature-specific? → `src/features-new/[feature]/components/`

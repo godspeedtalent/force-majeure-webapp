@@ -1,14 +1,14 @@
 /**
  * Centralized Error Handling Service
- * 
+ *
  * Provides a consistent way to handle errors throughout the application.
  * For developers/admins, shows detailed error information with copyable content.
  * For regular users, shows user-friendly error messages.
- * 
+ *
  * Usage:
  * ```ts
  * import { handleError } from '@/shared/services/errorHandler';
- * 
+ *
  * try {
  *   await someApiCall();
  * } catch (error) {
@@ -26,25 +26,25 @@ import { logApiError } from '@/shared/utils/apiLogger';
 interface ErrorHandlerOptions {
   /** Title to display in the error toast */
   title: string;
-  
+
   /** User-friendly description of what failed */
   description?: string;
-  
+
   /** Context about what was being done when the error occurred */
   context?: string;
-  
+
   /** The endpoint or API being called (for logging) */
   endpoint?: string;
-  
+
   /** HTTP method used (for logging) */
   method?: string;
-  
+
   /** Whether to show the toast (default: true) */
   showToast?: boolean;
-  
+
   /** Whether to log the error to backend (default: true) */
   logError?: boolean;
-  
+
   /** User role (if not provided, will be auto-detected) */
   userRole?: string;
 }
@@ -56,7 +56,7 @@ function isDeveloperOrAdmin(userRole?: string): boolean {
   if (userRole) {
     return userRole === 'developer' || userRole === 'admin';
   }
-  
+
   // Try to get from localStorage if not provided
   try {
     const storedRole = localStorage.getItem('userRole');
@@ -82,11 +82,11 @@ function extractErrorDetails(error: unknown): {
       stack: error.stack,
     };
   }
-  
+
   // Supabase error format
   if (error && typeof error === 'object') {
     const err = error as any;
-    
+
     // PostgrestError format
     if (err.message && err.details) {
       return {
@@ -95,7 +95,7 @@ function extractErrorDetails(error: unknown): {
         status: err.code,
       };
     }
-    
+
     // HTTP Response error
     if (err.status && err.statusText) {
       return {
@@ -104,7 +104,7 @@ function extractErrorDetails(error: unknown): {
         details: err.body || err.data,
       };
     }
-    
+
     // Generic error object
     if (err.error || err.message) {
       return {
@@ -114,14 +114,14 @@ function extractErrorDetails(error: unknown): {
       };
     }
   }
-  
+
   // String error
   if (typeof error === 'string') {
     return {
       message: error,
     };
   }
-  
+
   // Unknown error type
   return {
     message: 'An unexpected error occurred',
@@ -132,31 +132,33 @@ function extractErrorDetails(error: unknown): {
 /**
  * Build response body for developer display
  */
-function buildResponseBody(errorDetails: ReturnType<typeof extractErrorDetails>): string {
+function buildResponseBody(
+  errorDetails: ReturnType<typeof extractErrorDetails>
+): string {
   const parts: string[] = [];
-  
+
   if (errorDetails.message) {
     parts.push(`Message: ${errorDetails.message}`);
   }
-  
+
   if (errorDetails.status) {
     parts.push(`Status: ${errorDetails.status}`);
   }
-  
+
   if (errorDetails.details) {
     parts.push(`Details: ${JSON.stringify(errorDetails.details, null, 2)}`);
   }
-  
+
   if (errorDetails.stack) {
     parts.push(`\nStack Trace:\n${errorDetails.stack}`);
   }
-  
+
   return parts.join('\n');
 }
 
 /**
  * Main error handler function
- * 
+ *
  * @param error - The error that occurred
  * @param options - Configuration options
  */
@@ -174,16 +176,16 @@ export async function handleError(
     logError = true,
     userRole,
   } = options;
-  
+
   const isDev = isDeveloperOrAdmin(userRole);
   const errorDetails = extractErrorDetails(error);
-  
+
   // Log to console for debugging
   console.error(`[ErrorHandler] ${title}:`, error);
   if (context) {
     console.error(`[ErrorHandler] Context: ${context}`);
   }
-  
+
   // Log to backend if enabled
   if (logError) {
     try {
@@ -206,21 +208,21 @@ export async function handleError(
       console.error('[ErrorHandler] Failed to log error:', logErr);
     }
   }
-  
+
   // Show toast notification if enabled
   if (showToast) {
     const errorObject = new Error(errorDetails.message);
     if (errorDetails.stack) {
       errorObject.stack = errorDetails.stack;
     }
-    
+
     // Build enhanced description for developers
     let devDescription = description || errorDetails.message;
     if (isDev && errorDetails.details) {
       const responseBody = buildResponseBody(errorDetails);
       devDescription = `${description || errorDetails.message}\n\nResponse:\n${responseBody}`;
     }
-    
+
     showErrorToast({
       title,
       description: devDescription,
@@ -232,7 +234,7 @@ export async function handleError(
 
 /**
  * Async wrapper that catches and handles errors
- * 
+ *
  * Usage:
  * ```ts
  * const result = await withErrorHandler(

@@ -68,7 +68,9 @@ export const EventDetailsPage = () => {
         <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
         <div className='flex flex-col items-center gap-6 relative z-10'>
           <div className='animate-spin rounded-full h-16 w-16 border-b-4 border-fm-gold' />
-          <p className='text-foreground text-lg font-medium'>Loading event details...</p>
+          <p className='text-foreground text-lg font-medium'>
+            Loading event details...
+          </p>
         </div>
       </div>
     );
@@ -81,8 +83,12 @@ export const EventDetailsPage = () => {
         <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
         <div className='text-center relative z-10'>
           <h1 className='text-6xl font-canela mb-4 text-fm-gold'>Error</h1>
-          <p className='text-xl text-foreground mb-4'>{error?.message || 'Event not found'}</p>
-          <p className='text-sm text-muted-foreground mb-8'>The event you're looking for doesn't exist or has been removed</p>
+          <p className='text-xl text-foreground mb-4'>
+            {error?.message || 'Event not found'}
+          </p>
+          <p className='text-sm text-muted-foreground mb-8'>
+            The event you're looking for doesn't exist or has been removed
+          </p>
           <FmCommonButton asChild variant='default'>
             <Link to='/'>
               <ArrowLeft className='mr-2 h-4 w-4' />
@@ -107,7 +113,9 @@ export const EventDetailsPage = () => {
               event={event}
               canManage={canManage}
               onBack={() => navigate('/')}
-              onManage={canManage ? () => navigate(`/admin/events/${id}`) : undefined}
+              onManage={
+                canManage ? () => navigate(`/admin/events/${id}`) : undefined
+              }
             />
           }
           rightColumn={

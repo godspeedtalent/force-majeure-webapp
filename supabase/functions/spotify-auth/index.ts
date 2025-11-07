@@ -31,33 +31,42 @@ Deno.serve(async req => {
 
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
     const { action, code, redirectUri, userId } = await req.json();
-    
+
     // Check authentication for sensitive actions
     if (action === 'exchange_code' || action === 'refresh_token') {
       const authHeader = req.headers.get('Authorization');
       if (!authHeader) {
         return new Response(
           JSON.stringify({ error: 'Authentication required' }),
-          { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
         );
       }
-      
+
       const token = authHeader.replace('Bearer ', '');
-      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-      
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser(token);
+
       if (authError || !user) {
         return new Response(
           JSON.stringify({ error: 'Invalid authentication' }),
-          { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
         );
       }
-      
+
       // Verify the userId matches the authenticated user
       if (user.id !== userId) {
-        return new Response(
-          JSON.stringify({ error: 'User ID mismatch' }),
-          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return new Response(JSON.stringify({ error: 'User ID mismatch' }), {
+          status: 403,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
       }
     }
 

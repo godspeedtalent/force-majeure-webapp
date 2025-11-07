@@ -11,7 +11,9 @@ const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing Supabase credentials. Make sure VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY are set in .env');
+  console.error(
+    'Missing Supabase credentials. Make sure VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY are set in .env'
+  );
   process.exit(1);
 }
 
@@ -39,15 +41,15 @@ async function uploadAssets() {
         .from('assets')
         .upload(file, fileBuffer, {
           contentType: `image/${extname(file).slice(1)}`,
-          upsert: true
+          upsert: true,
         });
 
       if (error) {
         console.error(`Error uploading ${file}:`, error.message);
       } else {
-        const { data: { publicUrl } } = supabase.storage
-          .from('assets')
-          .getPublicUrl(file);
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from('assets').getPublicUrl(file);
         console.log(`✓ Uploaded: ${file}`);
         console.log(`  URL: ${publicUrl}`);
       }

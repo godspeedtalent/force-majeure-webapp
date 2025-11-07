@@ -8,7 +8,10 @@ interface CheckoutTimerProps {
   duration?: number; // in seconds
 }
 
-export const CheckoutTimer = ({ onExpire, duration = 600 }: CheckoutTimerProps) => {
+export const CheckoutTimer = ({
+  onExpire,
+  duration = 600,
+}: CheckoutTimerProps) => {
   const { isCheckoutActive } = useCheckoutTimer();
   const [timeLeft, setTimeLeft] = useState(duration);
 
@@ -16,7 +19,7 @@ export const CheckoutTimer = ({ onExpire, duration = 600 }: CheckoutTimerProps) 
     if (!isCheckoutActive) return;
 
     const interval = setInterval(() => {
-      setTimeLeft((prev) => {
+      setTimeLeft(prev => {
         if (prev <= 1) {
           clearInterval(interval);
           onExpire();
@@ -55,11 +58,13 @@ export const CheckoutTimer = ({ onExpire, duration = 600 }: CheckoutTimerProps) 
     // Update persistent toast
     if (timeLeft > 0) {
       toast.info(
-        <div className="flex items-center gap-2">
-          <Clock className="h-4 w-4" />
+        <div className='flex items-center gap-2'>
+          <Clock className='h-4 w-4' />
           <div>
-            <div className="font-medium">Tickets Reserved</div>
-            <div className="text-xs text-muted-foreground">{timeString} remaining</div>
+            <div className='font-medium'>Tickets Reserved</div>
+            <div className='text-xs text-muted-foreground'>
+              {timeString} remaining
+            </div>
           </div>
         </div>,
         {

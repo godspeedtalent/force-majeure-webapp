@@ -59,15 +59,12 @@ export function FmCommonSideNav<T extends string = string>({
 
   return (
     <Sidebar
-      className={cn(
-        'border-r border-white/20 bg-black/40',
-        className
-      )}
-      collapsible="icon"
+      className={cn('border-r border-white/20 bg-black/40', className)}
+      collapsible='icon'
     >
-      <SidebarContent className="pt-4">
+      <SidebarContent className='pt-4'>
         {/* Toggle Button */}
-        <div className="px-2 mb-4">
+        <div className='px-2 mb-4'>
           <SidebarTrigger
             className={cn(
               'hover:bg-fm-gold/20 transition-all duration-300',
@@ -81,17 +78,17 @@ export function FmCommonSideNav<T extends string = string>({
         {groups.map((group, groupIndex) => (
           <div key={groupIndex}>
             {/* Divider between groups */}
-            {showDividers && groupIndex > 0 && (
-              open ? (
-                <div className="px-4 my-3">
-                  <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+            {showDividers &&
+              groupIndex > 0 &&
+              (open ? (
+                <div className='px-4 my-3'>
+                  <div className='h-px bg-gradient-to-r from-transparent via-white/20 to-transparent' />
                 </div>
               ) : (
-                <div className="px-2 my-3">
-                  <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                <div className='px-2 my-3'>
+                  <div className='h-px bg-gradient-to-r from-transparent via-white/20 to-transparent' />
                 </div>
-              )
-            )}
+              ))}
 
             <SidebarGroup>
               {/* Group Label */}
@@ -102,7 +99,7 @@ export function FmCommonSideNav<T extends string = string>({
                     'rounded-md text-base font-semibold mb-1'
                   )}
                 >
-                  {group.icon && <group.icon className="h-4 w-4" />}
+                  {group.icon && <group.icon className='h-4 w-4' />}
                   {group.label}
                 </SidebarGroupLabel>
               )}
@@ -110,13 +107,13 @@ export function FmCommonSideNav<T extends string = string>({
               {/* Group Items */}
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {group.items.map((item) => {
+                  {group.items.map(item => {
                     const isActive = activeItem === item.id;
 
                     return (
                       <SidebarMenuItem key={item.id as string}>
                         <SidebarMenuButton
-                          onClick={(e) => {
+                          onClick={e => {
                             createRipple(e as any);
                             onItemChange(item.id);
                           }}
@@ -125,7 +122,8 @@ export function FmCommonSideNav<T extends string = string>({
                             'relative overflow-hidden',
                             open ? 'justify-start pl-4' : 'justify-center',
                             // Hover effects
-                            !isActive && 'hover:bg-white/5 hover:translate-x-0.5',
+                            !isActive &&
+                              'hover:bg-white/5 hover:translate-x-0.5',
                             // Active state
                             isActive && [
                               'bg-fm-gold/20 text-fm-gold',
@@ -158,20 +156,20 @@ export function FmCommonSideNav<T extends string = string>({
 
                           {/* Active indicator bar (subtle pulse) */}
                           {isActive && (
-                            <div className="absolute inset-0 bg-gradient-to-r from-fm-gold/10 to-transparent animate-pulse" />
+                            <div className='absolute inset-0 bg-gradient-to-r from-fm-gold/10 to-transparent animate-pulse' />
                           )}
 
                           {/* Ripple effects */}
                           {ripples.map(ripple => (
                             <span
                               key={ripple.id}
-                              className="absolute rounded-full bg-fm-gold/40 animate-ripple"
+                              className='absolute rounded-full bg-fm-gold/40 animate-ripple'
                               style={{
                                 left: ripple.x,
                                 top: ripple.y,
                                 width: 10,
                                 height: 10,
-                                transform: 'translate(-50%, -50%)'
+                                transform: 'translate(-50%, -50%)',
                               }}
                             />
                           ))}

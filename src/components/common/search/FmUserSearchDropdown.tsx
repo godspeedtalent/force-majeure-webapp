@@ -12,18 +12,19 @@ export const FmUserSearchDropdown = createSearchDropdown<UserProfile>({
   tableName: 'profiles',
   searchField: 'display_name',
   selectFields: 'id, user_id, display_name, avatar_url',
-  formatLabel: (profile) => profile.display_name || profile.user_id || 'Unknown User',
-  formatValue: (profile) => profile.user_id, // Return user_id instead of profile id
-  renderIcon: (profile) =>
+  formatLabel: profile =>
+    profile.display_name || profile.user_id || 'Unknown User',
+  formatValue: profile => profile.user_id, // Return user_id instead of profile id
+  renderIcon: profile =>
     profile.avatar_url ? (
       <img
         src={profile.avatar_url}
         alt={profile.display_name || 'User'}
-        className="h-8 w-8 rounded-full object-cover"
+        className='h-8 w-8 rounded-full object-cover'
       />
     ) : (
-      <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center">
-        <User className="h-4 w-4 text-white/50" />
+      <div className='h-8 w-8 rounded-full bg-white/10 flex items-center justify-center'>
+        <User className='h-4 w-4 text-white/50' />
       </div>
     ),
   defaultPlaceholder: 'Search for a user...',
@@ -31,4 +32,3 @@ export const FmUserSearchDropdown = createSearchDropdown<UserProfile>({
   useRecents: true,
   recentsKey: 'users',
 });
-

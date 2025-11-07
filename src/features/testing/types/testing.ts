@@ -1,6 +1,17 @@
-export type TestStatus = 'idle' | 'queued' | 'running' | 'passed' | 'failed' | 'skipped';
+export type TestStatus =
+  | 'idle'
+  | 'queued'
+  | 'running'
+  | 'passed'
+  | 'failed'
+  | 'skipped';
 
-export type TestExecutionStatus = 'idle' | 'running' | 'paused' | 'completed' | 'stopped';
+export type TestExecutionStatus =
+  | 'idle'
+  | 'running'
+  | 'paused'
+  | 'completed'
+  | 'stopped';
 
 export interface TestCase {
   id: string;
@@ -73,7 +84,14 @@ export interface TestRunProgress {
 }
 
 export interface TestEvent {
-  type: 'start' | 'progress' | 'complete' | 'error' | 'pause' | 'resume' | 'stop';
+  type:
+    | 'start'
+    | 'progress'
+    | 'complete'
+    | 'error'
+    | 'pause'
+    | 'resume'
+    | 'stop';
   timestamp: number;
   data?: any;
 }

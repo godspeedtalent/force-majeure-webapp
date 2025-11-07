@@ -1,6 +1,6 @@
 /**
  * Core API
- * 
+ *
  * Base API client and configuration
  */
 

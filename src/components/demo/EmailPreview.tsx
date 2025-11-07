@@ -39,7 +39,8 @@ export const EmailPreview = () => {
         address: '1234 Industrial Blvd',
         city: 'Brooklyn, NY 11201',
       },
-      imageUrl: 'https://placehold.co/600x400/DAA520/000000/png?text=Nina+Kraviz',
+      imageUrl:
+        'https://placehold.co/600x400/DAA520/000000/png?text=Nina+Kraviz',
     },
     purchaser: {
       fullName: 'Alex Johnson',
@@ -96,49 +97,61 @@ export const EmailPreview = () => {
   const htmlContent = generateOrderReceiptEmailHTML(sampleData);
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* Controls */}
-      <Card className="p-[20px]">
-        <div className="flex items-center gap-[10px] mb-[20px]">
-          <Mail className="h-5 w-5 text-fm-gold" />
-          <h3 className="text-lg font-canela">{formatHeader('Email Template Preview')}</h3>
+      <Card className='p-[20px]'>
+        <div className='flex items-center gap-[10px] mb-[20px]'>
+          <Mail className='h-5 w-5 text-fm-gold' />
+          <h3 className='text-lg font-canela'>
+            {formatHeader('Email Template Preview')}
+          </h3>
         </div>
 
-        <div className="space-y-4">
+        <div className='space-y-4'>
           <div>
-            <Label htmlFor="test-email" className="text-xs uppercase">Test Email Address</Label>
-            <div className="flex gap-[10px] mt-2">
+            <Label htmlFor='test-email' className='text-xs uppercase'>
+              Test Email Address
+            </Label>
+            <div className='flex gap-[10px] mt-2'>
               <Input
-                id="test-email"
-                type="email"
-                placeholder="your.email@example.com"
+                id='test-email'
+                type='email'
+                placeholder='your.email@example.com'
                 value={testEmail}
-                onChange={(e) => setTestEmail(e.target.value)}
-                className="flex-1"
+                onChange={e => setTestEmail(e.target.value)}
+                className='flex-1'
               />
               <Button
                 onClick={handleSendTest}
                 disabled={isSending || !testEmail}
-                className="bg-fm-gold hover:bg-fm-gold/90 text-black"
+                className='bg-fm-gold hover:bg-fm-gold/90 text-black'
               >
-                <Send className="h-4 w-4 mr-2" />
+                <Send className='h-4 w-4 mr-2' />
                 {isSending ? 'Sending...' : 'Send Test'}
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
+            <p className='text-xs text-muted-foreground mt-2'>
               Send a test email to see how it looks in your inbox
             </p>
           </div>
 
           <Separator />
 
-          <div className="flex gap-[10px]">
-            <Button onClick={() => setShowPreview(!showPreview)} variant="outline" className="flex-1">
-              <Eye className="h-4 w-4 mr-2" />
+          <div className='flex gap-[10px]'>
+            <Button
+              onClick={() => setShowPreview(!showPreview)}
+              variant='outline'
+              className='flex-1'
+            >
+              <Eye className='h-4 w-4 mr-2' />
               {showPreview ? 'Hide Preview' : 'Show Preview'}
             </Button>
-            <Button onClick={handleCopyHTML} variant="outline" className="flex-1">
-              <Copy className="h-4 w-4 mr-2" />
+            <Button
+              onClick={handleCopyHTML}
+              variant='outline'
+              className='flex-1'
+            >
+              <Copy className='h-4 w-4 mr-2' />
               Copy HTML
             </Button>
           </div>
@@ -147,11 +160,13 @@ export const EmailPreview = () => {
 
       {/* Preview */}
       {showPreview && (
-        <Card className="p-[20px]">
-          <h4 className="text-md font-canela mb-[20px]">{formatHeader('Email Preview')}</h4>
-          <div className="border border-border rounded-none overflow-hidden bg-white">
+        <Card className='p-[20px]'>
+          <h4 className='text-md font-canela mb-[20px]'>
+            {formatHeader('Email Preview')}
+          </h4>
+          <div className='border border-border rounded-none overflow-hidden bg-white'>
             <iframe
-              title="Email Preview"
+              title='Email Preview'
               srcDoc={htmlContent}
               style={{
                 width: '100%',
@@ -160,47 +175,69 @@ export const EmailPreview = () => {
               }}
             />
           </div>
-          <p className="text-xs text-muted-foreground mt-4">
-            Note: Preview may differ slightly from actual email clients. Always test in real email
-            clients before sending to users.
+          <p className='text-xs text-muted-foreground mt-4'>
+            Note: Preview may differ slightly from actual email clients. Always
+            test in real email clients before sending to users.
           </p>
         </Card>
       )}
 
       {/* Sample Data Display */}
-      <Card className="p-[20px]">
-        <h4 className="text-md font-canela mb-[20px]">{formatHeader('Sample Data')}</h4>
-        <div className="bg-muted/50 rounded-none p-[20px] font-mono text-xs overflow-auto max-h-96">
+      <Card className='p-[20px]'>
+        <h4 className='text-md font-canela mb-[20px]'>
+          {formatHeader('Sample Data')}
+        </h4>
+        <div className='bg-muted/50 rounded-none p-[20px] font-mono text-xs overflow-auto max-h-96'>
           <pre>{JSON.stringify(sampleData, null, 2)}</pre>
         </div>
-        <p className="text-xs text-muted-foreground mt-4">
-          This is the data structure used to generate the email. Modify it in the code to test
-          different scenarios.
+        <p className='text-xs text-muted-foreground mt-4'>
+          This is the data structure used to generate the email. Modify it in
+          the code to test different scenarios.
         </p>
       </Card>
 
       {/* Implementation Notes */}
-      <Card className="p-[20px] bg-muted/20 border-fm-gold/30">
-        <h4 className="text-md font-canela mb-[20px]">{formatHeader('Implementation Notes')}</h4>
-        <div className="space-y-2 text-sm">
+      <Card className='p-[20px] bg-muted/20 border-fm-gold/30'>
+        <h4 className='text-md font-canela mb-[20px]'>
+          {formatHeader('Implementation Notes')}
+        </h4>
+        <div className='space-y-2 text-sm'>
           <p>
-            <strong>Email Service Setup:</strong> To send emails in production, you need to:
+            <strong>Email Service Setup:</strong> To send emails in production,
+            you need to:
           </p>
-          <ol className="list-decimal list-inside space-y-1 ml-4 text-muted-foreground">
-            <li>Create a Supabase Edge Function named <code className="text-xs bg-muted px-1 py-0.5 rounded">send-email</code></li>
-            <li>Configure an email provider (SendGrid, Resend, AWS SES, etc.)</li>
+          <ol className='list-decimal list-inside space-y-1 ml-4 text-muted-foreground'>
+            <li>
+              Create a Supabase Edge Function named{' '}
+              <code className='text-xs bg-muted px-1 py-0.5 rounded'>
+                send-email
+              </code>
+            </li>
+            <li>
+              Configure an email provider (SendGrid, Resend, AWS SES, etc.)
+            </li>
             <li>Add provider credentials to Supabase secrets</li>
             <li>Deploy the edge function</li>
           </ol>
 
-          <Separator className="my-4" />
+          <Separator className='my-4' />
 
           <p>
-            <strong>PDF Tickets:</strong> PDF generation is currently stubbed. To implement:
+            <strong>PDF Tickets:</strong> PDF generation is currently stubbed.
+            To implement:
           </p>
-          <ol className="list-decimal list-inside space-y-1 ml-4 text-muted-foreground">
-            <li>Choose a PDF generation approach (client-side, server-side, or third-party)</li>
-            <li>Implement the <code className="text-xs bg-muted px-1 py-0.5 rounded">TicketPDFService</code> methods</li>
+          <ol className='list-decimal list-inside space-y-1 ml-4 text-muted-foreground'>
+            <li>
+              Choose a PDF generation approach (client-side, server-side, or
+              third-party)
+            </li>
+            <li>
+              Implement the{' '}
+              <code className='text-xs bg-muted px-1 py-0.5 rounded'>
+                TicketPDFService
+              </code>{' '}
+              methods
+            </li>
             <li>Add QR code generation for ticket validation</li>
             <li>Design and implement the PDF ticket template</li>
           </ol>

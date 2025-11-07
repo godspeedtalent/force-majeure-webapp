@@ -43,17 +43,25 @@ export const FmInfoCard = ({
 }: FmInfoCardProps) => {
   return (
     <Card className={cn('p-6 bg-muted/20 border-fm-gold/30', className)}>
-      <div className="flex items-start gap-3">
-        <Icon className={cn('h-5 w-5 text-fm-gold mt-0.5 flex-shrink-0', iconClassName)} />
-        <div className="flex-1">
-          {title && <h3 className="font-medium text-sm mb-1">{title}</h3>}
-          {description && (
-            typeof description === 'string' ? (
-              <p className="text-xs text-muted-foreground mb-3">{description}</p>
-            ) : (
-              <div className="text-xs text-muted-foreground mb-3">{description}</div>
-            )
+      <div className='flex items-start gap-3'>
+        <Icon
+          className={cn(
+            'h-5 w-5 text-fm-gold mt-0.5 flex-shrink-0',
+            iconClassName
           )}
+        />
+        <div className='flex-1'>
+          {title && <h3 className='font-medium text-sm mb-1'>{title}</h3>}
+          {description &&
+            (typeof description === 'string' ? (
+              <p className='text-xs text-muted-foreground mb-3'>
+                {description}
+              </p>
+            ) : (
+              <div className='text-xs text-muted-foreground mb-3'>
+                {description}
+              </div>
+            ))}
           {children}
         </div>
       </div>

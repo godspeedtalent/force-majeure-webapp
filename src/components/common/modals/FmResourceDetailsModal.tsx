@@ -42,7 +42,9 @@ export const FmResourceDetailsModal = ({
       className={cn('max-w-3xl', className)}
     >
       {eyebrow && (
-        <p className='text-[10px] uppercase tracking-[0.35em] text-white/60 mb-3'>{eyebrow}</p>
+        <p className='text-[10px] uppercase tracking-[0.35em] text-white/60 mb-3'>
+          {eyebrow}
+        </p>
       )}
 
       {imageUrl && (
@@ -60,7 +62,9 @@ export const FmResourceDetailsModal = ({
         <dl className='mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2'>
           {metadata.map((item, index) => (
             <div key={`${item.label}-${index}`} className='space-y-1'>
-              <dt className='text-xs uppercase tracking-[0.3em] text-white/50'>{item.label}</dt>
+              <dt className='text-xs uppercase tracking-[0.3em] text-white/50'>
+                {item.label}
+              </dt>
               <dd className='text-sm text-white/90'>{item.value}</dd>
             </div>
           ))}
@@ -68,7 +72,9 @@ export const FmResourceDetailsModal = ({
       )}
 
       {children && (
-        <div className='prose prose-invert max-w-none text-sm text-white/80'>{children}</div>
+        <div className='prose prose-invert max-w-none text-sm text-white/80'>
+          {children}
+        </div>
       )}
 
       {footer && <div className='mt-6'>{footer}</div>}

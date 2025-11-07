@@ -15,15 +15,18 @@ const RATE_WINDOW = 60000; // 1 minute
 
 function checkRateLimit(ip: string): boolean {
   const now = Date.now();
-  const record = rateLimitMap.get(ip) || { count: 0, resetTime: now + RATE_WINDOW };
-  
+  const record = rateLimitMap.get(ip) || {
+    count: 0,
+    resetTime: now + RATE_WINDOW,
+  };
+
   if (now > record.resetTime) {
     record.count = 1;
     record.resetTime = now + RATE_WINDOW;
   } else {
     record.count++;
   }
-  
+
   rateLimitMap.set(ip, record);
   return record.count <= RATE_LIMIT;
 }
@@ -36,9 +39,10 @@ serve(async req => {
 
   try {
     // Rate limiting
-    const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 
-               req.headers.get('x-real-ip') || 
-               'unknown';
+    const ip =
+      req.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+      req.headers.get('x-real-ip') ||
+      'unknown';
     if (!checkRateLimit(ip)) {
       const shouldRedirect = req.url.includes('token=');
       if (shouldRedirect) {
@@ -51,10 +55,10 @@ serve(async req => {
         });
       }
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           valid: false,
           reason: 'rate_limit',
-          message: 'Too many requests. Please try again in 1 minute.' 
+          message: 'Too many requests. Please try again in 1 minute.',
         }),
         {
           status: 429,
@@ -62,7 +66,7 @@ serve(async req => {
         }
       );
     }
-    
+
     const url = new URL(req.url);
 
     // Get token/locationId from either query params or POST body
@@ -173,7 +177,9 @@ serve(async req => {
     // Check if location exists in scavenger_locations table
     const { data: location, error } = await supabase
       .from('scavenger_locations')
-      .select('id, location_name, location_description, is_active, checkin_count')
+      .select(
+        'id, location_name, location_description, is_active, checkin_count'
+      )
       .eq('id', locationId)
       .single();
 
@@ -292,7 +298,8 @@ serve(async req => {
 
     const url = new URL(req.url);
     const shouldRedirect = url.searchParams.has('token');
-    const locationId = url.searchParams.get('token') || url.searchParams.get('locationId');
+    const locationId =
+      url.searchParams.get('token') || url.searchParams.get('locationId');
 
     if (shouldRedirect) {
       return new Response(null, {
@@ -318,4 +325,3 @@ serve(async req => {
     );
   }
 });
-

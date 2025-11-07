@@ -28,9 +28,7 @@ export function EventDetailsLayout({
       <div className='grid grid-cols-1 lg:grid-cols-[35%_65%] min-h-[calc(100vh-4rem)]'>
         {/* Left column - Hero image with magazine-style positioning */}
         <div className='lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)] lg:overflow-hidden bg-card border-r border-border lg:w-auto'>
-          <div className='w-full h-full magazine-hero'>
-            {leftColumn}
-          </div>
+          <div className='w-full h-full magazine-hero'>{leftColumn}</div>
         </div>
 
         {/* Right column - Content with cascading animation and topographic background */}
@@ -39,9 +37,7 @@ export function EventDetailsLayout({
             <TopographicBackground opacity={0.35} />
             <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
           </div>
-          <div className='relative w-full magazine-content'>
-            {rightColumn}
-          </div>
+          <div className='relative w-full magazine-content'>{rightColumn}</div>
         </div>
       </div>
     </div>

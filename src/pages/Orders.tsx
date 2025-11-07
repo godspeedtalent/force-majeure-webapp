@@ -1,4 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/common/shadcn/card';
 import { Badge } from '@/components/common/shadcn/badge';
 import { Separator } from '@/components/common/shadcn/separator';
 import { useOrders } from '@/features/events/hooks/useOrders';
@@ -28,7 +34,7 @@ export default function Orders() {
   if (isLoading) {
     return (
       <Layout>
-        <div className="container mx-auto py-8 px-4">
+        <div className='container mx-auto py-8 px-4'>
           <FmCommonLoadingState />
         </div>
       </Layout>
@@ -37,96 +43,103 @@ export default function Orders() {
 
   return (
     <Layout>
-      <div className="container mx-auto py-8 px-4 max-w-4xl">
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-2">
-          <Receipt className="h-6 w-6 text-fm-gold" />
-          <h1 className="text-3xl font-canela">My Orders</h1>
+      <div className='container mx-auto py-8 px-4 max-w-4xl'>
+        <div className='mb-8'>
+          <div className='flex items-center gap-2 mb-2'>
+            <Receipt className='h-6 w-6 text-fm-gold' />
+            <h1 className='text-3xl font-canela'>My Orders</h1>
+          </div>
+          <p className='text-muted-foreground'>
+            View your ticket purchases and order history
+          </p>
         </div>
-        <p className="text-muted-foreground">
-          View your ticket purchases and order history
-        </p>
-      </div>
 
-      {!orders || orders.length === 0 ? (
-        <FmCommonEmptyState
-          icon={Receipt}
-          title="No Orders Yet"
-          description="Your ticket purchases will appear here"
-        />
-      ) : (
-        <div className="space-y-4">
-          {orders.map((order) => (
-            <Card key={order.id}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="font-canela">
-                      {order.event?.title || 'Event'}
-                    </CardTitle>
-                    <CardDescription className="flex items-center gap-4 mt-2">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        {order.event?.date && format(new Date(order.event.date), 'MMM d, yyyy')}
-                      </span>
-                      {order.event?.time && (
-                        <span>at {order.event.time}</span>
-                      )}
-                    </CardDescription>
+        {!orders || orders.length === 0 ? (
+          <FmCommonEmptyState
+            icon={Receipt}
+            title='No Orders Yet'
+            description='Your ticket purchases will appear here'
+          />
+        ) : (
+          <div className='space-y-4'>
+            {orders.map(order => (
+              <Card key={order.id}>
+                <CardHeader>
+                  <div className='flex items-start justify-between'>
+                    <div className='flex-1'>
+                      <CardTitle className='font-canela'>
+                        {order.event?.title || 'Event'}
+                      </CardTitle>
+                      <CardDescription className='flex items-center gap-4 mt-2'>
+                        <span className='flex items-center gap-1'>
+                          <Calendar className='h-4 w-4' />
+                          {order.event?.date &&
+                            format(new Date(order.event.date), 'MMM d, yyyy')}
+                        </span>
+                        {order.event?.time && (
+                          <span>at {order.event.time}</span>
+                        )}
+                      </CardDescription>
+                    </div>
+                    <Badge className={getStatusColor(order.status)}>
+                      {order.status.toUpperCase()}
+                    </Badge>
                   </div>
-                  <Badge className={getStatusColor(order.status)}>
-                    {order.status.toUpperCase()}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Separator />
-                
-                {/* Order Items */}
-                <div className="space-y-2">
-                  <h4 className="text-sm font-medium text-muted-foreground">Tickets</h4>
-                  {order.items?.map((item) => (
-                    <div key={item.id} className="flex justify-between text-sm">
-                      <span>
-                        {item.quantity}x {item.ticket_tier?.name || 'Ticket'}
-                      </span>
-                      <span className="text-fm-gold">
-                        ${(item.subtotal_cents / 100).toFixed(2)}
+                </CardHeader>
+                <CardContent className='space-y-4'>
+                  <Separator />
+
+                  {/* Order Items */}
+                  <div className='space-y-2'>
+                    <h4 className='text-sm font-medium text-muted-foreground'>
+                      Tickets
+                    </h4>
+                    {order.items?.map(item => (
+                      <div
+                        key={item.id}
+                        className='flex justify-between text-sm'
+                      >
+                        <span>
+                          {item.quantity}x {item.ticket_tier?.name || 'Ticket'}
+                        </span>
+                        <span className='text-fm-gold'>
+                          ${(item.subtotal_cents / 100).toFixed(2)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <Separator />
+
+                  {/* Order Totals */}
+                  <div className='space-y-1 text-sm'>
+                    <div className='flex justify-between text-muted-foreground'>
+                      <span>Subtotal</span>
+                      <span>${(order.subtotal_cents / 100).toFixed(2)}</span>
+                    </div>
+                    <div className='flex justify-between text-muted-foreground'>
+                      <span>Fees</span>
+                      <span>${(order.fees_cents / 100).toFixed(2)}</span>
+                    </div>
+                    <Separator className='my-2' />
+                    <div className='flex justify-between font-canela text-base'>
+                      <span>Total</span>
+                      <span className='text-fm-gold'>
+                        ${(order.total_cents / 100).toFixed(2)}
                       </span>
                     </div>
-                  ))}
-                </div>
-
-                <Separator />
-
-                {/* Order Totals */}
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>Subtotal</span>
-                    <span>${(order.subtotal_cents / 100).toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>Fees</span>
-                    <span>${(order.fees_cents / 100).toFixed(2)}</span>
-                  </div>
-                  <Separator className="my-2" />
-                  <div className="flex justify-between font-canela text-base">
-                    <span>Total</span>
-                    <span className="text-fm-gold">
-                      ${(order.total_cents / 100).toFixed(2)}
-                    </span>
-                  </div>
-                </div>
 
-                <div className="text-xs text-muted-foreground pt-2">
-                  Order placed {format(new Date(order.created_at), 'MMM d, yyyy h:mm a')}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-    </div>
+                  <div className='text-xs text-muted-foreground pt-2'>
+                    Order placed{' '}
+                    {format(new Date(order.created_at), 'MMM d, yyyy h:mm a')}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
     </Layout>
   );
 }

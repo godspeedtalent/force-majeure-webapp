@@ -70,7 +70,9 @@ export function useProxyToken() {
           error: error?.message || data?.reason,
           token: token.substring(0, 8) + '...',
         });
-        navigate(`/scavenger?error=invalid_token&token=${encodeURIComponent(token)}`);
+        navigate(
+          `/scavenger?error=invalid_token&token=${encodeURIComponent(token)}`
+        );
         return;
       }
 

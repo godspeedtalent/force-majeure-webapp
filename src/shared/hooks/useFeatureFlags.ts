@@ -7,11 +7,11 @@ import {
   isDevelopment,
 } from '@/shared/utils/environment';
 import { logger } from '@/shared/services/logger';
-import { 
-  FEATURE_FLAGS, 
-  type FeatureFlag, 
+import {
+  FEATURE_FLAGS,
+  type FeatureFlag,
   type FeatureFlagsState,
-  createEmptyFeatureFlagsState 
+  createEmptyFeatureFlagsState,
 } from '@/shared/config/featureFlags';
 
 const flagLogger = logger.createNamespace('FeatureFlags');
@@ -38,9 +38,10 @@ export const useFeatureFlags = () => {
       if (error) throw error;
 
       // Filter flags by environment
-      const filteredData = (data as unknown as FeatureFlagRow[])?.filter(
-        flag => flag.environment === currentEnv || flag.environment === 'all'
-      ) || [];
+      const filteredData =
+        (data as unknown as FeatureFlagRow[])?.filter(
+          flag => flag.environment === currentEnv || flag.environment === 'all'
+        ) || [];
 
       // Initialize with all flags set to false
       const flags: FeatureFlags = createEmptyFeatureFlagsState();
@@ -88,7 +89,7 @@ export const useFeatureFlagHelpers = () => {
    */
   const isFeatureEnabled = (flag: FeatureFlag): boolean => {
     if (!flags) return false;
-    
+
     // Map flag names to state keys
     const flagKey = flag as keyof FeatureFlagsState;
     return flags[flagKey] || false;
@@ -118,7 +119,7 @@ export const useFeatureFlagHelpers = () => {
    */
   const getEnabledFeatures = (): FeatureFlag[] => {
     if (!flags) return [];
-    
+
     return (Object.keys(FEATURE_FLAGS) as Array<keyof typeof FEATURE_FLAGS>)
       .map(key => FEATURE_FLAGS[key])
       .filter(flag => isFeatureEnabled(flag));

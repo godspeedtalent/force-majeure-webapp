@@ -5,7 +5,10 @@ import { LoginForm } from './LoginForm';
 import { RegistrationForm } from './RegistrationForm';
 import { WelcomeStep } from './WelcomeStep';
 
-import { WizardPanel, useWizardNavigation } from '@/components/feedback/WizardPanel';
+import {
+  WizardPanel,
+  useWizardNavigation,
+} from '@/components/feedback/WizardPanel';
 
 // Simplified interface - clean and minimal
 interface UnauthenticatedWizardProps {

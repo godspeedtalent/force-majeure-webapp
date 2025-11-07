@@ -5,6 +5,7 @@ This document shows real examples of migrating from old error handling patterns 
 ## Example 1: Basic API Call
 
 ### Before ❌
+
 ```typescript
 import { logApiError } from '@/shared/utils/apiLogger';
 import { toast } from 'sonner';
@@ -14,7 +15,7 @@ try {
     .from('events')
     .select('*')
     .eq('id', eventId);
-    
+
   if (error) throw error;
   return data;
 } catch (error) {
@@ -30,6 +31,7 @@ try {
 ```
 
 ### After ✅
+
 ```typescript
 import { handleError } from '@/shared/services/errorHandler';
 
@@ -38,7 +40,7 @@ try {
     .from('events')
     .select('*')
     .eq('id', eventId);
-    
+
   if (error) throw error;
   return data;
 } catch (error) {
@@ -54,13 +56,14 @@ try {
 ## Example 2: Silent Background Operation
 
 ### Before ❌
+
 ```typescript
 try {
   const { data, error } = await supabase
     .from('orders')
     .select('*')
     .eq('user_id', userId);
-    
+
   if (error) {
     console.error('Error loading stats:', error);
     return [];
@@ -73,6 +76,7 @@ try {
 ```
 
 ### After ✅
+
 ```typescript
 import { handleError } from '@/shared/services/errorHandler';
 
@@ -81,7 +85,7 @@ try {
     .from('orders')
     .select('*')
     .eq('user_id', userId);
-    
+
   if (error) throw error;
   return data;
 } catch (error) {
@@ -99,6 +103,7 @@ try {
 ## Example 3: Multiple Error Types
 
 ### Before ❌
+
 ```typescript
 try {
   await updateEvent(eventData);
@@ -118,6 +123,7 @@ try {
 ```
 
 ### After ✅
+
 ```typescript
 import { handleError } from '@/shared/services/errorHandler';
 
@@ -137,6 +143,7 @@ try {
 ## Example 4: With Success Toast
 
 ### Before ❌
+
 ```typescript
 import { toast } from 'sonner';
 
@@ -145,9 +152,9 @@ try {
     .from('profiles')
     .update({ display_name: newName })
     .eq('id', userId);
-    
+
   if (error) throw error;
-  
+
   toast.success('Profile updated');
 } catch (error) {
   console.error('Update failed:', error);
@@ -156,6 +163,7 @@ try {
 ```
 
 ### After ✅
+
 ```typescript
 import { handleError } from '@/shared/services/errorHandler';
 import { toast } from 'sonner';
@@ -165,9 +173,9 @@ try {
     .from('profiles')
     .update({ display_name: newName })
     .eq('id', userId);
-    
+
   if (error) throw error;
-  
+
   toast.success('Profile updated');
 } catch (error) {
   await handleError(error, {
@@ -182,6 +190,7 @@ try {
 ## Example 5: Network Request
 
 ### Before ❌
+
 ```typescript
 try {
   const response = await fetch('/api/data');
@@ -197,6 +206,7 @@ try {
 ```
 
 ### After ✅
+
 ```typescript
 import { handleError } from '@/shared/services/errorHandler';
 
@@ -220,6 +230,7 @@ try {
 ## Example 6: Using withErrorHandler Wrapper
 
 ### Before ❌
+
 ```typescript
 const loadEvent = async (id: string) => {
   try {
@@ -228,7 +239,7 @@ const loadEvent = async (id: string) => {
       .select('*')
       .eq('id', id)
       .single();
-      
+
     if (error) throw error;
     return data;
   } catch (error) {
@@ -240,6 +251,7 @@ const loadEvent = async (id: string) => {
 ```
 
 ### After ✅
+
 ```typescript
 import { withErrorHandler } from '@/shared/services/errorHandler';
 
@@ -251,7 +263,7 @@ const loadEvent = async (id: string) => {
         .select('*')
         .eq('id', id)
         .single();
-        
+
       if (error) throw error;
       return data;
     },
@@ -268,6 +280,7 @@ const loadEvent = async (id: string) => {
 ## Example 7: Real-World: Search Component
 
 ### Before ❌
+
 ```typescript
 // GlobalSearch.tsx
 import { logApiError } from '@/shared/utils/apiLogger';
@@ -280,11 +293,11 @@ const performSearch = useCallback(async (query: string) => {
       supabase.from('artists').select('*').ilike('name', `%${query}%`),
       supabase.from('venues').select('*').ilike('name', `%${query}%`),
     ]);
-    
-    setResults({ 
+
+    setResults({
       events: eventsRes.data || [],
       artists: artistsRes.data || [],
-      venues: venuesRes.data || []
+      venues: venuesRes.data || [],
     });
   } catch (error) {
     await logApiError({
@@ -300,6 +313,7 @@ const performSearch = useCallback(async (query: string) => {
 ```
 
 ### After ✅
+
 ```typescript
 // GlobalSearch.tsx
 import { handleError } from '@/shared/services/errorHandler';
@@ -312,11 +326,11 @@ const performSearch = useCallback(async (query: string) => {
       supabase.from('artists').select('*').ilike('name', `%${query}%`),
       supabase.from('venues').select('*').ilike('name', `%${query}%`),
     ]);
-    
-    setResults({ 
+
+    setResults({
       events: eventsRes.data || [],
       artists: artistsRes.data || [],
-      venues: venuesRes.data || []
+      venues: venuesRes.data || [],
     });
   } catch (error) {
     await handleError(error, {
@@ -334,6 +348,7 @@ const performSearch = useCallback(async (query: string) => {
 ## Example 8: Real-World: Profile Update
 
 ### Before ❌
+
 ```typescript
 // ProfileEdit.tsx
 const handleSave = async () => {
@@ -342,13 +357,13 @@ const handleSave = async () => {
       .from('profiles')
       .update({ display_name, bio, avatar_url })
       .eq('id', user.id);
-      
+
     if (error) {
       console.error('Update error:', error);
       toast.error('Failed to update profile');
       return;
     }
-    
+
     toast.success('Profile updated');
   } catch (error) {
     console.error('Unexpected error:', error);
@@ -358,6 +373,7 @@ const handleSave = async () => {
 ```
 
 ### After ✅
+
 ```typescript
 // ProfileEdit.tsx
 import { handleError } from '@/shared/services/errorHandler';
@@ -368,9 +384,9 @@ const handleSave = async () => {
       .from('profiles')
       .update({ display_name, bio, avatar_url })
       .eq('id', user.id);
-      
+
     if (error) throw error;
-    
+
     toast.success('Profile updated');
   } catch (error) {
     await handleError(error, {
@@ -399,15 +415,15 @@ When updating a file:
 
 ## Benefits Summary
 
-| Old Pattern | New Pattern |
-|-------------|-------------|
-| Multiple imports | Single import |
-| Manual logging | Automatic logging |
-| Generic error messages | Contextual error messages |
-| Same for all users | Different for devs/users |
-| No copy functionality | Copyable error details |
-| Inconsistent formatting | Consistent UX |
-| More code | Less code |
+| Old Pattern             | New Pattern               |
+| ----------------------- | ------------------------- |
+| Multiple imports        | Single import             |
+| Manual logging          | Automatic logging         |
+| Generic error messages  | Contextual error messages |
+| Same for all users      | Different for devs/users  |
+| No copy functionality   | Copyable error details    |
+| Inconsistent formatting | Consistent UX             |
+| More code               | Less code                 |
 
 ## Need Help?
 

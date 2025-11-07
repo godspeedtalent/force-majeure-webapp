@@ -1,6 +1,6 @@
 /**
  * FmCommonFormActions
- * 
+ *
  * Standardized form action buttons (submit, cancel, reset)
  * Provides consistent layout and states for form actions
  */
@@ -42,7 +42,7 @@ const alignClasses = {
 
 /**
  * Standardized form action buttons
- * 
+ *
  * @example
  * ```tsx
  * <FmCommonFormActions
@@ -53,7 +53,7 @@ const alignClasses = {
  *   isSubmitting={form.formState.isSubmitting}
  *   align="right"
  * />
- * 
+ *
  * <FmCommonFormActions
  *   submitText="Create Event"
  *   showReset
@@ -75,7 +75,9 @@ export const FmCommonFormActions = ({
   className,
 }: FmCommonFormActionsProps) => {
   return (
-    <div className={cn('flex items-center gap-3', alignClasses[align], className)}>
+    <div
+      className={cn('flex items-center gap-3', alignClasses[align], className)}
+    >
       {showReset && onReset && (
         <Button
           type='button'

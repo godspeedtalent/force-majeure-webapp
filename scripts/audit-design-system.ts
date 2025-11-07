@@ -2,7 +2,7 @@
 
 /**
  * Force Majeure Design System Audit Script
- * 
+ *
  * Scans the codebase to identify components that don't follow design system guidelines.
  * Reports issues such as:
  * - Rounded corners instead of sharp edges
@@ -10,7 +10,7 @@
  * - Inline spacing values instead of SPACING constants
  * - Title case headers instead of sentence case
  * - Arbitrary Tailwind spacing (p-4, m-6) instead of defined values
- * 
+ *
  * Usage:
  *   npx tsx scripts/audit-design-system.ts
  *   npm run audit:design-system
@@ -83,12 +83,14 @@ function auditFile(filePath: string, content: string): AuditResult {
   if (hexMatches && hexMatches.length > 0) {
     // Exclude comments and imports
     const actualHexUsage = lines.filter(line => {
-      return hexMatches.some(hex => line.includes(hex)) && 
-             !line.trim().startsWith('//') && 
-             !line.trim().startsWith('*') &&
-             !line.includes('from ');
+      return (
+        hexMatches.some(hex => line.includes(hex)) &&
+        !line.trim().startsWith('//') &&
+        !line.trim().startsWith('*') &&
+        !line.includes('from ')
+      );
     });
-    
+
     if (actualHexUsage.length > 0) {
       issues.push({
         type: 'error',
@@ -108,7 +110,9 @@ function auditFile(filePath: string, content: string): AuditResult {
   }
 
   // 4. Check for arbitrary Tailwind spacing (p-1 through p-12, m-1 through m-12, etc.)
-  const arbitraryTailwindSpacing = content.match(/(?:p|m|gap|space)-(?:1[0-2]|[2-9])\b/g);
+  const arbitraryTailwindSpacing = content.match(
+    /(?:p|m|gap|space)-(?:1[0-2]|[2-9])\b/g
+  );
   if (arbitraryTailwindSpacing && arbitraryTailwindSpacing.length > 0) {
     const uniqueClasses = [...new Set(arbitraryTailwindSpacing)];
     issues.push({
@@ -134,9 +138,11 @@ function auditFile(filePath: string, content: string): AuditResult {
     // Filter out labels that are already uppercase or contain variables
     const nonUppercaseLabels = labelMatches.filter(match => {
       const text = match.match(/>([^<]+)</)?.[1] || '';
-      return text.length > 0 && text !== text.toUpperCase() && !text.includes('{');
+      return (
+        text.length > 0 && text !== text.toUpperCase() && !text.includes('{')
+      );
     });
-    
+
     if (nonUppercaseLabels.length > 0) {
       issues.push({
         type: 'info',
@@ -146,29 +152,39 @@ function auditFile(filePath: string, content: string): AuditResult {
   }
 
   // 7. Check if file imports from designSystem
-  const importsDesignSystem = content.includes('from \'@/shared/constants/designSystem\'') ||
-                               content.includes('from "@/shared/constants/designSystem"');
-  
+  const importsDesignSystem =
+    content.includes("from '@/shared/constants/designSystem'") ||
+    content.includes('from "@/shared/constants/designSystem"');
+
   if (!importsDesignSystem && issues.length > 0) {
     issues.push({
       type: 'info',
-      message: 'Does not import from designSystem.ts. Consider using design system constants.',
+      message:
+        'Does not import from designSystem.ts. Consider using design system constants.',
     });
   }
 
   // 8. Check if file imports styleUtils
-  const importsStyleUtils = content.includes('from \'@/shared/utils/styleUtils\'') ||
-                             content.includes('from "@/shared/utils/styleUtils"');
-  
-  if (!importsStyleUtils && issues.filter(i => i.type === 'error' || i.type === 'warning').length > 2) {
+  const importsStyleUtils =
+    content.includes("from '@/shared/utils/styleUtils'") ||
+    content.includes('from "@/shared/utils/styleUtils"');
+
+  if (
+    !importsStyleUtils &&
+    issues.filter(i => i.type === 'error' || i.type === 'warning').length > 2
+  ) {
     issues.push({
       type: 'info',
-      message: 'Consider using styleUtils.ts helper functions for consistent styling.',
+      message:
+        'Consider using styleUtils.ts helper functions for consistent styling.',
     });
   }
 
   // Calculate compliance score (0-100)
-  const totalWeight = issues.reduce((sum, issue) => sum + WEIGHTS[issue.type], 0);
+  const totalWeight = issues.reduce(
+    (sum, issue) => sum + WEIGHTS[issue.type],
+    0
+  );
   const score = Math.max(0, 100 - totalWeight);
 
   return {
@@ -212,7 +228,9 @@ async function auditDesignSystem() {
 
   if (results.length === 0) {
     console.log('✅ All files comply with design system guidelines!\n');
-    console.log('═══════════════════════════════════════════════════════════\n');
+    console.log(
+      '═══════════════════════════════════════════════════════════\n'
+    );
     return;
   }
 
@@ -227,13 +245,20 @@ async function auditDesignSystem() {
     const infoCount = result.issues.filter(i => i.type === 'info').length;
 
     console.log(`${index + 1}. 📄 ${result.file}`);
-    console.log(`   Score: ${result.score}/100 | ❌ ${errorCount} | ⚠️  ${warningCount} | ℹ️  ${infoCount}`);
-    
+    console.log(
+      `   Score: ${result.score}/100 | ❌ ${errorCount} | ⚠️  ${warningCount} | ℹ️  ${infoCount}`
+    );
+
     result.issues.forEach(issue => {
-      const icon = issue.type === 'error' ? '❌' : issue.type === 'warning' ? '⚠️ ' : 'ℹ️ ';
+      const icon =
+        issue.type === 'error'
+          ? '❌'
+          : issue.type === 'warning'
+            ? '⚠️ '
+            : 'ℹ️ ';
       console.log(`   ${icon} ${issue.message}`);
     });
-    
+
     console.log('');
   });
 
@@ -245,10 +270,20 @@ async function auditDesignSystem() {
 
   // Summary statistics
   const totalIssues = results.reduce((sum, r) => sum + r.issues.length, 0);
-  const totalErrors = results.reduce((sum, r) => sum + r.issues.filter(i => i.type === 'error').length, 0);
-  const totalWarnings = results.reduce((sum, r) => sum + r.issues.filter(i => i.type === 'warning').length, 0);
-  const totalInfo = results.reduce((sum, r) => sum + r.issues.filter(i => i.type === 'info').length, 0);
-  const avgScore = results.reduce((sum, r) => sum + r.score, 0) / results.length;
+  const totalErrors = results.reduce(
+    (sum, r) => sum + r.issues.filter(i => i.type === 'error').length,
+    0
+  );
+  const totalWarnings = results.reduce(
+    (sum, r) => sum + r.issues.filter(i => i.type === 'warning').length,
+    0
+  );
+  const totalInfo = results.reduce(
+    (sum, r) => sum + r.issues.filter(i => i.type === 'info').length,
+    0
+  );
+  const avgScore =
+    results.reduce((sum, r) => sum + r.score, 0) / results.length;
 
   console.log('📊 Summary Statistics:\n');
   console.log(`   Total Issues: ${totalIssues}`);
@@ -266,7 +301,10 @@ async function auditDesignSystem() {
   console.log('═══════════════════════════════════════════════════════════\n');
 
   // Save detailed report to file
-  const reportPath = path.join(process.cwd(), 'design-system-audit-report.json');
+  const reportPath = path.join(
+    process.cwd(),
+    'design-system-audit-report.json'
+  );
   fs.writeFileSync(reportPath, JSON.stringify(results, null, 2));
   console.log(`📋 Detailed report saved to: ${reportPath}\n`);
 }

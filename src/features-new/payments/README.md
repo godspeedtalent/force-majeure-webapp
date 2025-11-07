@@ -60,7 +60,11 @@ supabase secrets set STRIPE_SECRET_KEY=sk_test_your_key_here
 ### Basic Payment Form
 
 ```tsx
-import { StripeProvider, StripeCardInput, useStripePayment } from '@/features/payments';
+import {
+  StripeProvider,
+  StripeCardInput,
+  useStripePayment,
+} from '@/features/payments';
 
 function CheckoutForm() {
   const { processPayment, loading, ready } = useStripePayment();
@@ -68,7 +72,7 @@ function CheckoutForm() {
   const handleSubmit = async () => {
     const result = await processPayment(
       1999, // Amount in cents ($19.99)
-      true,  // Save card
+      true, // Save card
       undefined // Or savedCardId to use existing card
     );
 
@@ -82,7 +86,7 @@ function CheckoutForm() {
   return (
     <form onSubmit={handleSubmit}>
       <StripeCardInput />
-      <button type="submit" disabled={!ready || loading}>
+      <button type='submit' disabled={!ready || loading}>
         Pay Now
       </button>
     </form>
@@ -98,13 +102,9 @@ function CheckoutForm() {
 import { SavedCardSelector, useStripePayment } from '@/features/payments';
 
 function CheckoutWithSavedCards() {
-  const { 
-    processPayment, 
-    loadSavedCards, 
-    removeSavedCard, 
-    savedCards 
-  } = useStripePayment();
-  
+  const { processPayment, loadSavedCards, removeSavedCard, savedCards } =
+    useStripePayment();
+
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
 
   useEffect(() => {
@@ -121,7 +121,7 @@ function CheckoutWithSavedCards() {
           onRemoveCard={removeSavedCard}
         />
       )}
-      
+
       {!selectedCard && <StripeCardInput />}
     </div>
   );
@@ -145,6 +145,7 @@ Themed Stripe CardElement for entering new card details.
 **Props:** None
 
 **Features:**
+
 - Auto-formatted card input
 - Real-time validation
 - Matches FM design system
@@ -155,6 +156,7 @@ Themed Stripe CardElement for entering new card details.
 Display and manage saved payment methods.
 
 **Props:**
+
 - `cards: SavedCard[]` - Array of saved cards
 - `selectedCardId: string | null` - Currently selected card
 - `onSelectCard: (id: string) => void` - Selection handler
@@ -169,6 +171,7 @@ Display and manage saved payment methods.
 Main hook for payment operations.
 
 **Returns:**
+
 - `processPayment(amount, saveCard?, savedCardId?)` - Process a payment
 - `loadSavedCards()` - Load user's saved cards
 - `removeSavedCard(cardId)` - Remove a saved card
@@ -177,6 +180,7 @@ Main hook for payment operations.
 - `ready: boolean` - Stripe initialized and ready
 
 **Example:**
+
 ```tsx
 const { processPayment, savedCards, ready } = useStripePayment();
 
@@ -194,6 +198,7 @@ await processPayment(1999, false, savedCards[0].id);
 Internal service for API calls to Edge Functions.
 
 **Methods:**
+
 - `getOrCreateCustomer(email, userId)` - Get/create Stripe customer
 - `createPaymentIntent(amount, customerId, paymentMethodId?)` - Create payment
 - `listPaymentMethods(customerId)` - Get saved cards
@@ -207,6 +212,7 @@ Internal service for API calls to Edge Functions.
 Get or create a Stripe customer for a user.
 
 **Request:**
+
 ```json
 {
   "email": "user@example.com",
@@ -215,6 +221,7 @@ Get or create a Stripe customer for a user.
 ```
 
 **Response:**
+
 ```json
 {
   "customerId": "cus_xxx"
@@ -226,6 +233,7 @@ Get or create a Stripe customer for a user.
 Create a Stripe PaymentIntent.
 
 **Request:**
+
 ```json
 {
   "amount": 1999,
@@ -236,6 +244,7 @@ Create a Stripe PaymentIntent.
 ```
 
 **Response:**
+
 ```json
 {
   "clientSecret": "pi_xxx_secret_xxx",
@@ -248,6 +257,7 @@ Create a Stripe PaymentIntent.
 List saved payment methods.
 
 **Request:**
+
 ```json
 {
   "customerId": "cus_xxx"
@@ -255,6 +265,7 @@ List saved payment methods.
 ```
 
 **Response:**
+
 ```json
 {
   "savedCards": [
@@ -274,6 +285,7 @@ List saved payment methods.
 Save a payment method to customer.
 
 **Request:**
+
 ```json
 {
   "paymentMethodId": "pm_xxx",
@@ -286,6 +298,7 @@ Save a payment method to customer.
 Remove a saved payment method.
 
 **Request:**
+
 ```json
 {
   "paymentMethodId": "pm_xxx"
@@ -346,11 +359,13 @@ Ensure `VITE_STRIPE_PUBLISHABLE_KEY` is set and app is wrapped with `StripeProvi
 ### Edge Function errors
 
 Check Supabase logs:
+
 ```bash
 supabase functions logs get-stripe-customer
 ```
 
 Verify secrets are set:
+
 ```bash
 supabase secrets list
 ```

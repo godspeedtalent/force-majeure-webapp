@@ -32,9 +32,9 @@ export class TestLogger {
       message,
       details,
     };
-    
+
     this.logs.push(log);
-    
+
     // Send to server for persistence (best effort)
     if (level === 'error' || level === 'warn') {
       logApi({

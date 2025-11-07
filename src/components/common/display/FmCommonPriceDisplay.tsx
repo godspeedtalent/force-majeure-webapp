@@ -50,7 +50,9 @@ export function FmCommonPriceDisplay({
 
   if (amountCents === 0 && showFreeText) {
     return (
-      <span className={cn('font-medium text-fm-gold', sizeClasses[size], className)}>
+      <span
+        className={cn('font-medium text-fm-gold', sizeClasses[size], className)}
+      >
         Free
       </span>
     );
@@ -59,7 +61,12 @@ export function FmCommonPriceDisplay({
   return (
     <div className={cn('flex items-center gap-2', className)}>
       {hasDiscount && (
-        <span className={cn('text-muted-foreground line-through', sizeClasses[size])}>
+        <span
+          className={cn(
+            'text-muted-foreground line-through',
+            sizeClasses[size]
+          )}
+        >
           {formatPrice(originalAmountCents, currency)}
         </span>
       )}
@@ -67,7 +74,7 @@ export function FmCommonPriceDisplay({
         {formatPrice(amountCents, currency)}
       </span>
       {hasDiscount && showDiscount && (
-        <span className="text-xs font-medium text-fm-gold bg-fm-gold/10 px-2 py-0.5 rounded">
+        <span className='text-xs font-medium text-fm-gold bg-fm-gold/10 px-2 py-0.5 rounded'>
           {discountPercent}% off
         </span>
       )}

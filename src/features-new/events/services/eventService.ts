@@ -124,7 +124,10 @@ export const eventService = {
    * Delete an event
    */
   async deleteEvent(eventId: string) {
-    const { error } = await supabase.from('events' as any).delete().eq('id', eventId);
+    const { error } = await supabase
+      .from('events' as any)
+      .delete()
+      .eq('id', eventId);
 
     if (error) throw error;
   },
@@ -165,14 +168,17 @@ export const eventService = {
    */
   async updateTicketTiers(eventId: string, tiers: Partial<TicketTier>[]) {
     // Delete existing tiers
-    await supabase.from('ticket_tiers' as any).delete().eq('event_id', eventId);
+    await supabase
+      .from('ticket_tiers' as any)
+      .delete()
+      .eq('event_id', eventId);
 
     // Insert new tiers
     if (tiers.length > 0) {
       const { data, error } = await supabase
         .from('ticket_tiers' as any)
         .insert(
-          tiers.map((tier) => ({
+          tiers.map(tier => ({
             ...tier,
             event_id: eventId,
           }))
@@ -196,7 +202,9 @@ export const eventService = {
       set_order: index + 1,
     }));
 
-    const { error } = await supabase.from('event_artists' as any).insert(undercardData);
+    const { error } = await supabase
+      .from('event_artists' as any)
+      .insert(undercardData);
 
     if (error) throw error;
   },

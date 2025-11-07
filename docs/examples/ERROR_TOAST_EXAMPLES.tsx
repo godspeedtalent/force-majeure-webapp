@@ -1,6 +1,6 @@
 /**
  * FmErrorToast Usage Examples
- * 
+ *
  * Enhanced error toast component with developer/admin features
  */
 
@@ -11,7 +11,7 @@ import { useUserRole } from '@/shared/hooks/useUserRole';
 export function BasicErrorExample() {
   const { data: userRole } = useUserRole();
   const isDeveloper = userRole === 'developer' || userRole === 'admin';
-  
+
   const handleError = () => {
     try {
       // Some operation that might fail
@@ -25,7 +25,7 @@ export function BasicErrorExample() {
       });
     }
   };
-  
+
   return <button onClick={handleError}>Trigger Error</button>;
 }
 
@@ -33,7 +33,7 @@ export function BasicErrorExample() {
 export function NetworkErrorExample() {
   const { data: userRole } = useUserRole();
   const isDeveloper = userRole === 'developer' || userRole === 'admin';
-  
+
   const handleNetworkError = async () => {
     try {
       const response = await fetch('/api/data');
@@ -49,7 +49,7 @@ export function NetworkErrorExample() {
       });
     }
   };
-  
+
   return <button onClick={handleNetworkError}>Fetch Data</button>;
 }
 
@@ -57,12 +57,14 @@ export function NetworkErrorExample() {
 export function ValidationErrorExample() {
   const { data: userRole } = useUserRole();
   const isDeveloper = userRole === 'developer' || userRole === 'admin';
-  
+
   const handleValidation = (fileSize: number) => {
     const maxSize = 5 * 1024 * 1024; // 5MB
-    
+
     if (fileSize > maxSize) {
-      const error = new Error(`File size ${fileSize} exceeds limit of ${maxSize} bytes`);
+      const error = new Error(
+        `File size ${fileSize} exceeds limit of ${maxSize} bytes`
+      );
       showErrorToast({
         title: 'File Too Large',
         description: 'File size exceeds 5MB limit.',
@@ -71,25 +73,28 @@ export function ValidationErrorExample() {
       });
     }
   };
-  
-  return <input type="file" onChange={(e) => {
-    const file = e.target.files?.[0];
-    if (file) handleValidation(file.size);
-  }} />;
+
+  return (
+    <input
+      type='file'
+      onChange={e => {
+        const file = e.target.files?.[0];
+        if (file) handleValidation(file.size);
+      }}
+    />
+  );
 }
 
 // Example 4: Database error
 export function DatabaseErrorExample() {
   const { data: userRole } = useUserRole();
   const isDeveloper = userRole === 'developer' || userRole === 'admin';
-  
+
   const handleDatabaseError = async () => {
     try {
       // Supabase query
-      const { error } = await supabase
-        .from('events')
-        .insert({ title: 'Test' });
-        
+      const { error } = await supabase.from('events').insert({ title: 'Test' });
+
       if (error) throw error;
     } catch (error) {
       showErrorToast({
@@ -100,33 +105,33 @@ export function DatabaseErrorExample() {
       });
     }
   };
-  
+
   return <button onClick={handleDatabaseError}>Save Event</button>;
 }
 
 /**
  * What the user sees:
- * 
+ *
  * REGULAR USERS:
  * - Title: "Upload Failed" (in crimson)
  * - Description: "An error occurred. Please try again."
  * - No technical details
  * - No copy button
  * - 4 second duration
- * 
+ *
  * DEVELOPERS/ADMINS:
  * - Title: "Upload Failed" (in crimson)
  * - Description: "Image failed to upload."
  * - Error message: "Connection timeout" (in monospace)
  * - Copy button (copies full error + stack trace)
  * - 8 second duration (more time to copy)
- * 
+ *
  * Copied content (developers only):
  * ```
  * Title: Upload Failed
  * Description: Image failed to upload.
  * Error: Connection timeout
- * 
+ *
  * Stack Trace:
  * Error: Connection timeout
  *     at handleFile (FmImageUpload.tsx:85:13)

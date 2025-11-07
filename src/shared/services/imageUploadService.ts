@@ -31,7 +31,7 @@ export interface EventImage {
 
 /**
  * Image Upload Service
- * 
+ *
  * Handles uploading images to Supabase Storage and managing metadata.
  * Supports event images with automatic resizing and optimization.
  */
@@ -47,9 +47,17 @@ export const imageUploadService = {
     isPrimary = false,
   }: UploadImageOptions): Promise<UploadImageResult> {
     // Validate file type
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+    const validTypes = [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/webp',
+      'image/gif',
+    ];
     if (!validTypes.includes(file.type)) {
-      throw new Error('Invalid file type. Only JPEG, PNG, WebP, and GIF images are allowed.');
+      throw new Error(
+        'Invalid file type. Only JPEG, PNG, WebP, and GIF images are allowed.'
+      );
     }
 
     // Validate file size (5MB limit)
@@ -65,7 +73,8 @@ export const imageUploadService = {
     const fileName = `${timestamp}-${randomSuffix}.${fileExt}`;
 
     // Construct storage path
-    const storagePath = path || (eventId ? `events/${eventId}/${fileName}` : `misc/${fileName}`);
+    const storagePath =
+      path || (eventId ? `events/${eventId}/${fileName}` : `misc/${fileName}`);
 
     // Upload to Supabase Storage
     const { error: uploadError } = await supabase.storage
@@ -232,9 +241,7 @@ export const imageUploadService = {
    * Get public URL for a storage path
    */
   getPublicUrl(storagePath: string, bucket = 'event-images'): string {
-    const { data } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(storagePath);
+    const { data } = supabase.storage.from(bucket).getPublicUrl(storagePath);
 
     return data.publicUrl;
   },
@@ -243,8 +250,10 @@ export const imageUploadService = {
 /**
  * Helper function to get image dimensions
  */
-function getImageDimensions(file: File): Promise<{ width: number; height: number } | null> {
-  return new Promise((resolve) => {
+function getImageDimensions(
+  file: File
+): Promise<{ width: number; height: number } | null> {
+  return new Promise(resolve => {
     const img = new Image();
     const url = URL.createObjectURL(file);
 

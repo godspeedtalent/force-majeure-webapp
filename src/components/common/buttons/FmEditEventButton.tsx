@@ -52,7 +52,9 @@ export const FmEditEventButton = ({
   const [isAfterHours, setIsAfterHours] = useState(false);
   const [venueId, setVenueId] = useState<string>('');
   const [venueCapacity, setVenueCapacity] = useState<number>(0);
-  const [undercardArtists, setUndercardArtists] = useState<UndercardArtist[]>([]);
+  const [undercardArtists, setUndercardArtists] = useState<UndercardArtist[]>(
+    []
+  );
   const [ticketTiers, setTicketTiers] = useState<TicketTier[]>([]);
   const [heroImage, setHeroImage] = useState<string>('');
 
@@ -77,7 +79,7 @@ export const FmEditEventButton = ({
             setVenueCapacity(100);
             return;
           }
-          
+
           if (data && data.capacity) {
             setVenueCapacity(data.capacity);
           }
@@ -110,7 +112,7 @@ export const FmEditEventButton = ({
       setIsAfterHours((event as any).is_after_hours || false);
       setEndTime((event as any).end_time || '02:00');
       setHeroImage((event as any).hero_image || '');
-      
+
       // Parse date and time
       if ((event as any).date) {
         const dateStr = (event as any).date;
@@ -135,19 +137,23 @@ export const FmEditEventButton = ({
       if (tiersError) throw tiersError;
 
       // Map tiers to local format
-      setTicketTiers((tiers || []).map((tier: any) => ({
-        id: tier.id,
-        name: tier.name,
-        description: tier.description || '',
-        priceInCents: tier.price_cents,
-        quantity: tier.total_tickets,
-        hideUntilPreviousSoldOut: tier.hide_until_previous_sold_out,
-      })));
-
+      setTicketTiers(
+        (tiers || []).map((tier: any) => ({
+          id: tier.id,
+          name: tier.name,
+          description: tier.description || '',
+          priceInCents: tier.price_cents,
+          quantity: tier.total_tickets,
+          hideUntilPreviousSoldOut: tier.hide_until_previous_sold_out,
+        }))
+      );
     } catch (error) {
       console.error('Error loading event data:', error);
       toast.error('Failed to load event data', {
-        description: error instanceof Error ? error.message : 'An unexpected error occurred',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'An unexpected error occurred',
       });
     } finally {
       setIsLoadingData(false);
@@ -167,7 +173,7 @@ export const FmEditEventButton = ({
     if (ticketTiers.length === 0) {
       return 'Please add at least one ticket tier';
     }
-    
+
     // Validate ticket tiers
     for (let i = 0; i < ticketTiers.length; i++) {
       const tier = ticketTiers[i];
@@ -182,7 +188,10 @@ export const FmEditEventButton = ({
       }
     }
 
-    const totalTickets = ticketTiers.reduce((sum, tier) => sum + tier.quantity, 0);
+    const totalTickets = ticketTiers.reduce(
+      (sum, tier) => sum + tier.quantity,
+      0
+    );
     if (totalTickets > venueCapacity) {
       return `Total tickets (${totalTickets}) exceeds venue capacity (${venueCapacity})`;
     }
@@ -228,14 +237,17 @@ export const FmEditEventButton = ({
       }
 
       // Construct event title
-      const eventTitle = (headliner as any) && (venue as any)
-        ? `${(headliner as any).name} @ ${(venue as any).name}`
-        : (headliner as any)
-        ? (headliner as any).name
-        : 'Event';
+      const eventTitle =
+        (headliner as any) && (venue as any)
+          ? `${(headliner as any).name} @ ${(venue as any).name}`
+          : (headliner as any)
+            ? (headliner as any).name
+            : 'Event';
 
       // Format the date and time for the database
-      const eventDateString = eventDate ? format(eventDate, 'yyyy-MM-dd') : null;
+      const eventDateString = eventDate
+        ? format(eventDate, 'yyyy-MM-dd')
+        : null;
       const eventTimeString = eventDate ? format(eventDate, 'HH:mm') : null;
 
       // Update the event
@@ -261,7 +273,7 @@ export const FmEditEventButton = ({
       }
 
       // Update ticket tiers - Delete ALL existing tiers first
-      
+
       // First, fetch all existing tiers to ensure we're deleting them
       const { data: existingTiers } = await supabase
         .from('ticket_tiers' as any)
@@ -308,7 +320,7 @@ export const FmEditEventButton = ({
           throw tiersError;
         }
       }
-      
+
       // Hide loading and show success toast
       setIsLoading(false);
       toast.success('Event Updated', {
@@ -319,12 +331,14 @@ export const FmEditEventButton = ({
       setTimeout(() => {
         onEventUpdated?.();
       }, 500);
-      
     } catch (error) {
       console.error('Error updating event:', error);
       setIsLoading(false);
       toast.error('Failed to update event', {
-        description: error instanceof Error ? error.message : 'An unexpected error occurred',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'An unexpected error occurred',
       });
     }
   };
@@ -333,7 +347,10 @@ export const FmEditEventButton = ({
     setIsModalOpen(false);
   };
 
-  const totalTickets = ticketTiers.reduce((sum, tier) => sum + tier.quantity, 0);
+  const totalTickets = ticketTiers.reduce(
+    (sum, tier) => sum + tier.quantity,
+    0
+  );
   const ticketsOverCapacity = totalTickets > venueCapacity;
   const ticketsUnderCapacity = totalTickets < venueCapacity;
 
@@ -355,33 +372,35 @@ export const FmEditEventButton = ({
       ) : (
         <Button
           onClick={() => setIsModalOpen(true)}
-          variant="outline"
-          size="sm"
-          className="gap-2"
+          variant='outline'
+          size='sm'
+          className='gap-2'
         >
-          <Edit className="h-4 w-4" />
+          <Edit className='h-4 w-4' />
           Edit Event
         </Button>
       )}
 
       {/* Loading Overlay */}
-      {isLoading && <FmCommonLoadingOverlay message="Updating event..." />}
+      {isLoading && <FmCommonLoadingOverlay message='Updating event...' />}
 
       <FmCommonFormModal
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
-        title="Edit Event"
-        description="Update event details and ticket tiers"
-        className="max-w-3xl max-h-[90vh] overflow-y-auto"
+        title='Edit Event'
+        description='Update event details and ticket tiers'
+        className='max-w-3xl max-h-[90vh] overflow-y-auto'
         sections={
           isLoadingData
             ? [
                 {
                   content: (
-                    <div className="flex items-center justify-center py-12">
-                      <div className="flex flex-col items-center gap-4">
-                        <FmCommonLoadingSpinner size="lg" />
-                        <p className="text-white/70 text-sm">Loading event data...</p>
+                    <div className='flex items-center justify-center py-12'>
+                      <div className='flex flex-col items-center gap-4'>
+                        <FmCommonLoadingSpinner size='lg' />
+                        <p className='text-white/70 text-sm'>
+                          Loading event data...
+                        </p>
                       </div>
                     </div>
                   ),
@@ -391,79 +410,89 @@ export const FmEditEventButton = ({
                 {
                   title: 'Event Details',
                   content: (
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label className="text-white">Headliner</Label>
+                    <div className='space-y-4'>
+                      <div className='space-y-2'>
+                        <Label className='text-white'>Headliner</Label>
                         <FmArtistSearchDropdown
                           value={headlinerId}
                           onChange={setHeadlinerId}
-                          placeholder="Search for headliner artist..."
+                          placeholder='Search for headliner artist...'
                         />
                       </div>
 
-                      <div className="space-y-2">
-                        <Label className="text-white">Date</Label>
+                      <div className='space-y-2'>
+                        <Label className='text-white'>Date</Label>
                         <FmCommonDatePicker
                           value={eventDate}
                           onChange={setEventDate}
-                          placeholder="Select event date"
+                          placeholder='Select event date'
                         />
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label className="text-white">Start Time</Label>
+                      <div className='grid grid-cols-2 gap-4'>
+                        <div className='space-y-2'>
+                          <Label className='text-white'>Start Time</Label>
                           <FmCommonTimePicker
-                            value={eventDate ? format(eventDate, 'HH:mm') : '20:00'}
-                            onChange={(time) => {
+                            value={
+                              eventDate ? format(eventDate, 'HH:mm') : '20:00'
+                            }
+                            onChange={time => {
                               if (eventDate) {
                                 const [hours, minutes] = time.split(':');
                                 const newDate = new Date(eventDate);
-                                newDate.setHours(parseInt(hours), parseInt(minutes));
+                                newDate.setHours(
+                                  parseInt(hours),
+                                  parseInt(minutes)
+                                );
                                 setEventDate(newDate);
                               }
                             }}
-                            placeholder="Select start time"
+                            placeholder='Select start time'
                           />
                         </div>
-                        <div className="space-y-2">
-                          <Label className="text-white">End Time</Label>
+                        <div className='space-y-2'>
+                          <Label className='text-white'>End Time</Label>
                           <FmCommonTimePicker
                             value={endTime}
                             onChange={setEndTime}
                             disabled={isAfterHours}
-                            placeholder="Select end time"
+                            placeholder='Select end time'
                           />
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className='flex items-center gap-2'>
                         <Checkbox
-                          id="after-hours"
+                          id='after-hours'
                           checked={isAfterHours}
-                          onCheckedChange={(checked) => setIsAfterHours(checked === true)}
+                          onCheckedChange={checked =>
+                            setIsAfterHours(checked === true)
+                          }
                         />
-                        <Label htmlFor="after-hours" className="text-white/70 cursor-pointer">
+                        <Label
+                          htmlFor='after-hours'
+                          className='text-white/70 cursor-pointer'
+                        >
                           After Hours Event
                         </Label>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label className="text-white">Venue</Label>
+                      <div className='space-y-2'>
+                        <Label className='text-white'>Venue</Label>
                         <FmVenueSearchDropdown
                           value={venueId}
                           onChange={setVenueId}
-                          placeholder="Search for venue..."
+                          placeholder='Search for venue...'
                         />
                       </div>
 
-                      <div className="space-y-2">
-                        <Label className="text-white">Hero Image URL</Label>
+                      <div className='space-y-2'>
+                        <Label className='text-white'>Hero Image URL</Label>
                         <Input
                           value={heroImage}
-                          onChange={(e) => setHeroImage(e.target.value)}
-                          placeholder="https://example.com/image.jpg"
-                          className="bg-black/40 border-white/20 text-white"
+                          onChange={e => setHeroImage(e.target.value)}
+                          placeholder='https://example.com/image.jpg'
+                          className='bg-black/40 border-white/20 text-white'
                         />
                       </div>
                     </div>
@@ -474,20 +503,29 @@ export const FmEditEventButton = ({
                   content: (
                     <FmCommonRowManager
                       items={undercardArtists}
-                      onAdd={() => setUndercardArtists([...undercardArtists, { artistId: '' }])}
-                      onRemove={(index) => setUndercardArtists(undercardArtists.filter((_, i) => i !== index))}
-                      addLabel="Add Undercard Artist"
+                      onAdd={() =>
+                        setUndercardArtists([
+                          ...undercardArtists,
+                          { artistId: '' },
+                        ])
+                      }
+                      onRemove={index =>
+                        setUndercardArtists(
+                          undercardArtists.filter((_, i) => i !== index)
+                        )
+                      }
+                      addLabel='Add Undercard Artist'
                       minItems={0}
                       maxItems={5}
                       renderRow={(item, index) => (
                         <FmArtistSearchDropdown
                           value={item.artistId}
-                          onChange={(id) => {
+                          onChange={id => {
                             const updated = [...undercardArtists];
                             updated[index].artistId = id;
                             setUndercardArtists(updated);
                           }}
-                          placeholder="Search for undercard artist..."
+                          placeholder='Search for undercard artist...'
                         />
                       )}
                     />
@@ -496,96 +534,138 @@ export const FmEditEventButton = ({
                 {
                   title: 'Ticket Tiers',
                   content: (
-                    <div className="space-y-3">
+                    <div className='space-y-3'>
                       <FmCommonRowManager
                         items={ticketTiers}
                         onAdd={() =>
                           setTicketTiers([
                             ...ticketTiers,
-                            { name: '', description: '', priceInCents: 0, quantity: 0, hideUntilPreviousSoldOut: false },
+                            {
+                              name: '',
+                              description: '',
+                              priceInCents: 0,
+                              quantity: 0,
+                              hideUntilPreviousSoldOut: false,
+                            },
                           ])
                         }
-                        onRemove={(index) => setTicketTiers(ticketTiers.filter((_, i) => i !== index))}
-                        addLabel="Add Ticket Tier"
+                        onRemove={index =>
+                          setTicketTiers(
+                            ticketTiers.filter((_, i) => i !== index)
+                          )
+                        }
+                        addLabel='Add Ticket Tier'
                         minItems={1}
                         maxItems={5}
                         renderRow={(tier, index) => (
-                          <div className="space-y-3 p-4 rounded-md bg-white/5 border border-white/10">
-                            <div className="grid grid-cols-3 gap-3">
-                              <div className="space-y-1">
-                                <Label className="text-white/70 text-xs">Name</Label>
+                          <div className='space-y-3 p-4 rounded-md bg-white/5 border border-white/10'>
+                            <div className='grid grid-cols-3 gap-3'>
+                              <div className='space-y-1'>
+                                <Label className='text-white/70 text-xs'>
+                                  Name
+                                </Label>
                                 <Input
                                   value={tier.name}
-                                  onChange={(e) => {
+                                  onChange={e => {
                                     const updated = [...ticketTiers];
                                     updated[index].name = e.target.value;
                                     setTicketTiers(updated);
                                   }}
-                                  placeholder="e.g., General Admission"
-                                  className="bg-black/40 border-white/20 text-white"
+                                  placeholder='e.g., General Admission'
+                                  className='bg-black/40 border-white/20 text-white'
                                 />
                               </div>
-                              <div className="space-y-1">
-                                <Label className="text-white/70 text-xs">Price ($)</Label>
+                              <div className='space-y-1'>
+                                <Label className='text-white/70 text-xs'>
+                                  Price ($)
+                                </Label>
                                 <Input
-                                  type="number"
-                                  min="0"
-                                  step="1"
-                                  value={tier.priceInCents === 0 ? '' : (tier.priceInCents / 100).toString()}
-                                  onChange={(e) => {
+                                  type='number'
+                                  min='0'
+                                  step='1'
+                                  value={
+                                    tier.priceInCents === 0
+                                      ? ''
+                                      : (tier.priceInCents / 100).toString()
+                                  }
+                                  onChange={e => {
                                     const updated = [...ticketTiers];
-                                    const value = e.target.value === '' ? 0 : parseFloat(e.target.value);
-                                    updated[index].priceInCents = Math.max(0, Math.round(value * 100));
+                                    const value =
+                                      e.target.value === ''
+                                        ? 0
+                                        : parseFloat(e.target.value);
+                                    updated[index].priceInCents = Math.max(
+                                      0,
+                                      Math.round(value * 100)
+                                    );
                                     setTicketTiers(updated);
                                   }}
-                                  onFocus={(e) => e.target.select()}
-                                  placeholder="0"
-                                  className="bg-black/40 border-white/20 text-white"
+                                  onFocus={e => e.target.select()}
+                                  placeholder='0'
+                                  className='bg-black/40 border-white/20 text-white'
                                 />
                               </div>
-                              <div className="space-y-1">
-                                <Label className="text-white/70 text-xs">Quantity</Label>
+                              <div className='space-y-1'>
+                                <Label className='text-white/70 text-xs'>
+                                  Quantity
+                                </Label>
                                 <Input
-                                  type="number"
-                                  min="1"
-                                  step="1"
-                                  value={tier.quantity === 0 ? '' : tier.quantity.toString()}
-                                  onChange={(e) => {
+                                  type='number'
+                                  min='1'
+                                  step='1'
+                                  value={
+                                    tier.quantity === 0
+                                      ? ''
+                                      : tier.quantity.toString()
+                                  }
+                                  onChange={e => {
                                     const updated = [...ticketTiers];
-                                    const value = e.target.value === '' ? 0 : parseInt(e.target.value);
-                                    updated[index].quantity = Math.max(1, value);
+                                    const value =
+                                      e.target.value === ''
+                                        ? 0
+                                        : parseInt(e.target.value);
+                                    updated[index].quantity = Math.max(
+                                      1,
+                                      value
+                                    );
                                     setTicketTiers(updated);
                                   }}
-                                  onFocus={(e) => e.target.select()}
-                                  placeholder="0"
-                                  className="bg-black/40 border-white/20 text-white"
+                                  onFocus={e => e.target.select()}
+                                  placeholder='0'
+                                  className='bg-black/40 border-white/20 text-white'
                                 />
                               </div>
                             </div>
-                            <div className="space-y-1">
-                              <Label className="text-white/70 text-xs">Description (Optional)</Label>
+                            <div className='space-y-1'>
+                              <Label className='text-white/70 text-xs'>
+                                Description (Optional)
+                              </Label>
                               <Input
                                 value={tier.description || ''}
-                                onChange={(e) => {
+                                onChange={e => {
                                   const updated = [...ticketTiers];
                                   updated[index].description = e.target.value;
                                   setTicketTiers(updated);
                                 }}
-                                placeholder="e.g., Includes coat check and one drink"
-                                className="bg-black/40 border-white/20 text-white"
+                                placeholder='e.g., Includes coat check and one drink'
+                                className='bg-black/40 border-white/20 text-white'
                               />
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className='flex items-center gap-2'>
                               <Checkbox
                                 id={`tier-${index}-hide`}
                                 checked={tier.hideUntilPreviousSoldOut}
-                                onCheckedChange={(checked) => {
+                                onCheckedChange={checked => {
                                   const updated = [...ticketTiers];
-                                  updated[index].hideUntilPreviousSoldOut = checked === true;
+                                  updated[index].hideUntilPreviousSoldOut =
+                                    checked === true;
                                   setTicketTiers(updated);
                                 }}
                               />
-                              <Label htmlFor={`tier-${index}-hide`} className="text-white/70 text-sm cursor-pointer">
+                              <Label
+                                htmlFor={`tier-${index}-hide`}
+                                className='text-white/70 text-sm cursor-pointer'
+                              >
                                 Hide until previous tier sold out
                               </Label>
                             </div>
@@ -593,19 +673,25 @@ export const FmEditEventButton = ({
                         )}
                       />
                       {venueCapacity > 0 && (
-                        <div className="flex items-center justify-between text-sm pt-2">
-                          <span className={cn(
-                            'text-white/70',
-                            ticketsOverCapacity && 'text-fm-crimson',
-                          )}>
+                        <div className='flex items-center justify-between text-sm pt-2'>
+                          <span
+                            className={cn(
+                              'text-white/70',
+                              ticketsOverCapacity && 'text-fm-crimson'
+                            )}
+                          >
                             {getTicketStatusMessage()}
                           </span>
-                          <span className={cn(
-                            'font-semibold',
-                            ticketsUnderCapacity && 'text-white/50',
-                            ticketsOverCapacity && 'text-fm-crimson',
-                            !ticketsUnderCapacity && !ticketsOverCapacity && 'text-fm-gold'
-                          )}>
+                          <span
+                            className={cn(
+                              'font-semibold',
+                              ticketsUnderCapacity && 'text-white/50',
+                              ticketsOverCapacity && 'text-fm-crimson',
+                              !ticketsUnderCapacity &&
+                                !ticketsOverCapacity &&
+                                'text-fm-gold'
+                            )}
+                          >
                             {totalTickets} / {venueCapacity}
                           </span>
                         </div>
@@ -617,17 +703,17 @@ export const FmEditEventButton = ({
         }
         actions={
           !isLoadingData && (
-            <div className="flex gap-3">
+            <div className='flex gap-3'>
               <Button
                 onClick={handleCancel}
-                variant="outline"
-                className="flex-1 border-white/20 hover:bg-white/10"
+                variant='outline'
+                className='flex-1 border-white/20 hover:bg-white/10'
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleSubmit}
-                className="flex-1 bg-fm-gold hover:bg-fm-gold/90 text-black"
+                className='flex-1 bg-fm-gold hover:bg-fm-gold/90 text-black'
               >
                 Update Event
               </Button>

@@ -7,8 +7,19 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Check, ChevronsUpDown, Loader2, MapPin } from 'lucide-react';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/common/shadcn/command';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/common/shadcn/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/common/shadcn/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/common/shadcn/popover';
 import { Button } from '@/components/common/shadcn/button';
 import { cn } from '@/shared/utils/utils';
 import { Label } from '@/components/common/shadcn/label';
@@ -157,7 +168,7 @@ export const FmCitySearchDropdown = ({
                 <CommandEmpty>Start typing to search cities...</CommandEmpty>
               ) : (
                 <CommandGroup>
-                  {cities.map((city) => (
+                  {cities.map(city => (
                     <CommandItem
                       key={city.id}
                       value={city.displayName}
@@ -166,7 +177,9 @@ export const FmCitySearchDropdown = ({
                       <Check
                         className={cn(
                           'mr-2 h-4 w-4',
-                          value === city.displayName ? 'opacity-100' : 'opacity-0'
+                          value === city.displayName
+                            ? 'opacity-100'
+                            : 'opacity-0'
                         )}
                       />
                       <MapPin className='mr-2 h-3.5 w-3.5 text-muted-foreground' />

@@ -1,7 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, FileText, Users, Ticket, DollarSign, ShoppingBag, Calendar, Save, BarChart3, Shield, Trash2 } from 'lucide-react';
+import {
+  ArrowLeft,
+  FileText,
+  Users,
+  Ticket,
+  DollarSign,
+  ShoppingBag,
+  Calendar,
+  Save,
+  BarChart3,
+  Shield,
+  Trash2,
+} from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
@@ -53,11 +65,13 @@ export default function EventManagement() {
 
       const { data, error } = await supabase
         .from('events')
-        .select(`
+        .select(
+          `
           *,
           venues(id, name),
           artists!events_headliner_id_fkey(id, name)
-        `)
+        `
+        )
         .eq('id', id)
         .single();
 
@@ -75,7 +89,7 @@ export default function EventManagement() {
       setIsAfterHours((event as any).is_after_hours || false);
       setEndTime((event as any).end_time || '02:00');
       setHeroImage(event.hero_image || '');
-      
+
       // Check if event has a custom title (not generated from headliner @ venue)
       if (event.title) {
         setCustomTitle(event.title);
@@ -102,38 +116,72 @@ export default function EventManagement() {
       label: 'Event Details',
       icon: Calendar,
       items: [
-        { id: 'overview', label: 'Overview', icon: FileText, description: 'Basic event information' },
-        { id: 'artists', label: 'Artists', icon: Users, description: 'Manage lineup and scheduling' },
+        {
+          id: 'overview',
+          label: 'Overview',
+          icon: FileText,
+          description: 'Basic event information',
+        },
+        {
+          id: 'artists',
+          label: 'Artists',
+          icon: Users,
+          description: 'Manage lineup and scheduling',
+        },
       ],
     },
     {
       label: 'Ticketing',
       icon: Ticket,
       items: [
-        { id: 'tiers', label: 'Tier Management', icon: Ticket, description: 'Manage ticket tiers and pricing' },
-        { id: 'orders', label: 'Orders', icon: ShoppingBag, description: 'View and manage orders' },
+        {
+          id: 'tiers',
+          label: 'Tier Management',
+          icon: Ticket,
+          description: 'Manage ticket tiers and pricing',
+        },
+        {
+          id: 'orders',
+          label: 'Orders',
+          icon: ShoppingBag,
+          description: 'View and manage orders',
+        },
       ],
     },
     {
       label: 'Analytics',
       icon: BarChart3,
       items: [
-        { id: 'sales', label: 'Sales Summary', icon: DollarSign, description: 'Revenue and sales analytics' },
+        {
+          id: 'sales',
+          label: 'Sales Summary',
+          icon: DollarSign,
+          description: 'Revenue and sales analytics',
+        },
       ],
     },
-    ...(isAdmin ? [{
-      label: 'Admin',
-      icon: Shield,
-      items: [
-        { id: 'admin' as EventTab, label: 'Admin Controls', icon: Shield, description: 'Advanced event controls' },
-      ],
-    }] : []),
+    ...(isAdmin
+      ? [
+          {
+            label: 'Admin',
+            icon: Shield,
+            items: [
+              {
+                id: 'admin' as EventTab,
+                label: 'Admin Controls',
+                icon: Shield,
+                description: 'Advanced event controls',
+              },
+            ],
+          },
+        ]
+      : []),
   ];
 
   const handleEventUpdate = async (updates: any) => {
     try {
       if (!id) throw new Error('Event ID is required');
-      
+
       const { error } = await supabase
         .from('events')
         .update(updates)
@@ -163,20 +211,29 @@ export default function EventManagement() {
     try {
       // Determine the event title
       let eventTitle: string;
-      
+
       if (hasCustomTitle && customTitle.trim()) {
         // Use custom title if checkbox is checked and title is provided
         eventTitle = customTitle.trim();
       } else {
         // Auto-generate title from headliner @ venue
         const [headlinerRes, venueRes] = await Promise.all([
-          supabase.from('artists').select('name').eq('id', headlinerId).maybeSingle(),
-          supabase.from('venues' as any).select('name').eq('id', venueId).maybeSingle(),
+          supabase
+            .from('artists')
+            .select('name')
+            .eq('id', headlinerId)
+            .maybeSingle(),
+          supabase
+            .from('venues' as any)
+            .select('name')
+            .eq('id', venueId)
+            .maybeSingle(),
         ]);
 
-        eventTitle = headlinerRes.data && venueRes.data
-          ? `${(headlinerRes.data as any).name} @ ${(venueRes.data as any).name}`
-          : (headlinerRes.data as any)?.name || 'Event';
+        eventTitle =
+          headlinerRes.data && venueRes.data
+            ? `${(headlinerRes.data as any).name} @ ${(venueRes.data as any).name}`
+            : (headlinerRes.data as any)?.name || 'Event';
       }
 
       const eventDateString = format(eventDate, 'yyyy-MM-dd');
@@ -257,16 +314,16 @@ export default function EventManagement() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground">Loading event...</p>
+      <div className='flex items-center justify-center min-h-screen'>
+        <p className='text-muted-foreground'>Loading event...</p>
       </div>
     );
   }
 
   if (!event) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground">Event not found</p>
+      <div className='flex items-center justify-center min-h-screen'>
+        <p className='text-muted-foreground'>Event not found</p>
       </div>
     );
   }
@@ -278,247 +335,259 @@ export default function EventManagement() {
       onItemChange={setActiveTab}
       showDividers
     >
-      <div className="max-w-full">
-              {/* Header */}
-              <div className="flex items-center gap-4 mb-6">
-                <FmCommonButton
-                  variant="secondary"
-                  icon={ArrowLeft}
-                  onClick={() => navigate(`/event/${id}`)}
-                >
-                  Back to Event
-                </FmCommonButton>
-                <div>
-                  <h1 className="text-3xl font-bold text-foreground">{event.title}</h1>
-                  <p className="text-muted-foreground">Event Management</p>
+      <div className='max-w-full'>
+        {/* Header */}
+        <div className='flex items-center gap-4 mb-6'>
+          <FmCommonButton
+            variant='secondary'
+            icon={ArrowLeft}
+            onClick={() => navigate(`/event/${id}`)}
+          >
+            Back to Event
+          </FmCommonButton>
+          <div>
+            <h1 className='text-3xl font-bold text-foreground'>
+              {event.title}
+            </h1>
+            <p className='text-muted-foreground'>Event Management</p>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className='space-y-6'>
+          {activeTab === 'overview' && (
+            <Card className='p-8'>
+              <div className='space-y-6'>
+                <div className='flex items-center justify-between'>
+                  <div>
+                    <h2 className='text-2xl font-bold text-foreground mb-2'>
+                      Event Overview
+                    </h2>
+                    <p className='text-muted-foreground'>
+                      Basic event information and details
+                    </p>
+                  </div>
+                  <FmCommonButton
+                    onClick={handleSaveOverview}
+                    loading={isSaving}
+                    icon={Save}
+                  >
+                    Save Changes
+                  </FmCommonButton>
+                </div>
+
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                  {/* Headliner */}
+                  <div className='space-y-2'>
+                    <Label htmlFor='headliner'>
+                      Headliner <span className='text-destructive'>*</span>
+                    </Label>
+                    <FmArtistSearchDropdown
+                      value={headlinerId}
+                      onChange={setHeadlinerId}
+                      placeholder='Select headliner'
+                    />
+                  </div>
+
+                  {/* Venue */}
+                  <div className='space-y-2'>
+                    <Label htmlFor='venue'>
+                      Venue <span className='text-destructive'>*</span>
+                    </Label>
+                    <FmVenueSearchDropdown
+                      value={venueId}
+                      onChange={setVenueId}
+                      placeholder='Select venue'
+                    />
+                  </div>
+
+                  {/* Custom Event Title */}
+                  <div className='space-y-2 md:col-span-2'>
+                    <div className='flex items-center gap-2 mb-2'>
+                      <Checkbox
+                        id='custom-title'
+                        checked={hasCustomTitle}
+                        onCheckedChange={checked =>
+                          setHasCustomTitle(!!checked)
+                        }
+                      />
+                      <Label htmlFor='custom-title' className='cursor-pointer'>
+                        Provide event title
+                      </Label>
+                    </div>
+                    {hasCustomTitle && (
+                      <Input
+                        id='event-title'
+                        value={customTitle}
+                        onChange={e => setCustomTitle(e.target.value)}
+                        placeholder='Enter custom event title'
+                      />
+                    )}
+                    {!hasCustomTitle && (
+                      <p className='text-sm text-muted-foreground'>
+                        Event title will be auto-generated as "Headliner @
+                        Venue"
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Date & Time */}
+                  <div className='space-y-2'>
+                    <Label>
+                      Event Date & Time{' '}
+                      <span className='text-destructive'>*</span>
+                    </Label>
+                    <div className='flex gap-2'>
+                      <FmCommonDatePicker
+                        value={eventDate}
+                        onChange={setEventDate}
+                      />
+                      <FmCommonTimePicker
+                        value={eventDate ? format(eventDate, 'HH:mm') : '20:00'}
+                        onChange={(time: string) => {
+                          if (eventDate) {
+                            const [hours, minutes] = time.split(':');
+                            const newDate = new Date(eventDate);
+                            newDate.setHours(
+                              parseInt(hours),
+                              parseInt(minutes)
+                            );
+                            setEventDate(newDate);
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* End Time */}
+                  <div className='space-y-2'>
+                    <Label>End Time</Label>
+                    <div className='flex items-center gap-4'>
+                      <FmCommonTimePicker
+                        value={endTime}
+                        onChange={setEndTime}
+                        disabled={isAfterHours}
+                      />
+                      <div className='flex items-center gap-2'>
+                        <Checkbox
+                          id='after-hours'
+                          checked={isAfterHours}
+                          onCheckedChange={checked =>
+                            setIsAfterHours(!!checked)
+                          }
+                        />
+                        <Label htmlFor='after-hours' className='cursor-pointer'>
+                          After hours
+                        </Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Hero Image */}
+                  <div className='space-y-2 md:col-span-2'>
+                    <Label htmlFor='hero-image'>Hero Image</Label>
+                    <FmImageUpload
+                      eventId={id}
+                      currentImageUrl={heroImage}
+                      isPrimary={true}
+                      onUploadComplete={(publicUrl: string) => {
+                        setHeroImage(publicUrl);
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
+            </Card>
+          )}
 
-              {/* Main Content */}
-              <div className="space-y-6">
-              {activeTab === 'overview' && (
-                <Card className="p-8">
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h2 className="text-2xl font-bold text-foreground mb-2">
-                          Event Overview
-                        </h2>
-                        <p className="text-muted-foreground">
-                          Basic event information and details
-                        </p>
-                      </div>
-                      <FmCommonButton
-                        onClick={handleSaveOverview}
-                        loading={isSaving}
-                        icon={Save}
-                      >
-                        Save Changes
-                      </FmCommonButton>
-                    </div>
+          {activeTab === 'artists' && (
+            <EventArtistManagement
+              headlinerId={event.headliner_id || ''}
+              undercardIds={event.undercard_ids || []}
+              onChange={data => handleEventUpdate(data)}
+            />
+          )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Headliner */}
-                      <div className="space-y-2">
-                        <Label htmlFor="headliner">
-                          Headliner <span className="text-destructive">*</span>
-                        </Label>
-                        <FmArtistSearchDropdown
-                          value={headlinerId}
-                          onChange={setHeadlinerId}
-                          placeholder="Select headliner"
-                        />
-                      </div>
-
-                      {/* Venue */}
-                      <div className="space-y-2">
-                        <Label htmlFor="venue">
-                          Venue <span className="text-destructive">*</span>
-                        </Label>
-                        <FmVenueSearchDropdown
-                          value={venueId}
-                          onChange={setVenueId}
-                          placeholder="Select venue"
-                        />
-                      </div>
-
-                      {/* Custom Event Title */}
-                      <div className="space-y-2 md:col-span-2">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Checkbox
-                            id="custom-title"
-                            checked={hasCustomTitle}
-                            onCheckedChange={(checked) => setHasCustomTitle(!!checked)}
-                          />
-                          <Label htmlFor="custom-title" className="cursor-pointer">
-                            Provide event title
-                          </Label>
-                        </div>
-                        {hasCustomTitle && (
-                          <Input
-                            id="event-title"
-                            value={customTitle}
-                            onChange={(e) => setCustomTitle(e.target.value)}
-                            placeholder="Enter custom event title"
-                          />
-                        )}
-                        {!hasCustomTitle && (
-                          <p className="text-sm text-muted-foreground">
-                            Event title will be auto-generated as "Headliner @ Venue"
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Date & Time */}
-                      <div className="space-y-2">
-                        <Label>
-                          Event Date & Time <span className="text-destructive">*</span>
-                        </Label>
-                        <div className="flex gap-2">
-                          <FmCommonDatePicker
-                            value={eventDate}
-                            onChange={setEventDate}
-                          />
-                          <FmCommonTimePicker
-                            value={eventDate ? format(eventDate, 'HH:mm') : '20:00'}
-                            onChange={(time: string) => {
-                              if (eventDate) {
-                                const [hours, minutes] = time.split(':');
-                                const newDate = new Date(eventDate);
-                                newDate.setHours(parseInt(hours), parseInt(minutes));
-                                setEventDate(newDate);
-                              }
-                            }}
-                          />
-                        </div>
-                      </div>
-
-                      {/* End Time */}
-                      <div className="space-y-2">
-                        <Label>End Time</Label>
-                        <div className="flex items-center gap-4">
-                          <FmCommonTimePicker
-                            value={endTime}
-                            onChange={setEndTime}
-                            disabled={isAfterHours}
-                          />
-                          <div className="flex items-center gap-2">
-                            <Checkbox
-                              id="after-hours"
-                              checked={isAfterHours}
-                              onCheckedChange={(checked) => setIsAfterHours(!!checked)}
-                            />
-                            <Label htmlFor="after-hours" className="cursor-pointer">
-                              After hours
-                            </Label>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Hero Image */}
-                      <div className="space-y-2 md:col-span-2">
-                        <Label htmlFor="hero-image">Hero Image</Label>
-                        <FmImageUpload
-                          eventId={id}
-                          currentImageUrl={heroImage}
-                          isPrimary={true}
-                          onUploadComplete={(publicUrl: string) => {
-                            setHeroImage(publicUrl);
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              )}
-
-              {activeTab === 'artists' && (
-                <EventArtistManagement
-                  headlinerId={event.headliner_id || ''}
-                  undercardIds={event.undercard_ids || []}
-                  onChange={(data) => handleEventUpdate(data)}
-                />
-              )}
-
-              {activeTab === 'tiers' && (
-                <div className="rounded-lg border border-border bg-card p-8 text-center">
-                  <Ticket className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    Ticket Tier Management
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Ticket tier management interface coming soon
-                  </p>
-                </div>
-              )}
-
-              {activeTab === 'orders' && (
-                <div className="rounded-lg border border-border bg-card p-8 text-center">
-                  <ShoppingBag className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    Order Management
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Order management coming soon
-                  </p>
-                </div>
-              )}
-
-              {activeTab === 'sales' && (
-                <div className="rounded-lg border border-border bg-card p-8 text-center">
-                  <DollarSign className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    Sales Summary
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Sales analytics coming soon
-                  </p>
-                </div>
-              )}
-
-              {activeTab === 'admin' && isAdmin && (
-                <Card className="p-8">
-                  <div className="space-y-6">
-                    <div>
-                      <h2 className="text-2xl font-bold text-foreground mb-2">
-                        Admin Controls
-                      </h2>
-                      <p className="text-muted-foreground">
-                        Advanced event management controls
-                      </p>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="rounded-lg border border-destructive/50 bg-destructive/5 p-6">
-                        <div className="flex items-start gap-4">
-                          <div className="p-3 rounded-lg bg-destructive/10">
-                            <Trash2 className="h-6 w-6 text-destructive" />
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="text-lg font-semibold text-foreground mb-2">
-                              Delete Event
-                            </h3>
-                            <p className="text-sm text-muted-foreground mb-4">
-                              Permanently delete this event and all associated data including ticket tiers and orders.
-                              This action cannot be undone.
-                            </p>
-                            <FmCommonButton
-                              variant="destructive"
-                              icon={Trash2}
-                              onClick={handleDeleteEvent}
-                              loading={isDeleting}
-                            >
-                              {isDeleting ? 'Deleting...' : 'Delete Event'}
-                            </FmCommonButton>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              )}
+          {activeTab === 'tiers' && (
+            <div className='rounded-lg border border-border bg-card p-8 text-center'>
+              <Ticket className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
+              <h3 className='text-lg font-semibold text-foreground mb-2'>
+                Ticket Tier Management
+              </h3>
+              <p className='text-muted-foreground'>
+                Ticket tier management interface coming soon
+              </p>
             </div>
-          </div>
+          )}
+
+          {activeTab === 'orders' && (
+            <div className='rounded-lg border border-border bg-card p-8 text-center'>
+              <ShoppingBag className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
+              <h3 className='text-lg font-semibold text-foreground mb-2'>
+                Order Management
+              </h3>
+              <p className='text-muted-foreground'>
+                Order management coming soon
+              </p>
+            </div>
+          )}
+
+          {activeTab === 'sales' && (
+            <div className='rounded-lg border border-border bg-card p-8 text-center'>
+              <DollarSign className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
+              <h3 className='text-lg font-semibold text-foreground mb-2'>
+                Sales Summary
+              </h3>
+              <p className='text-muted-foreground'>
+                Sales analytics coming soon
+              </p>
+            </div>
+          )}
+
+          {activeTab === 'admin' && isAdmin && (
+            <Card className='p-8'>
+              <div className='space-y-6'>
+                <div>
+                  <h2 className='text-2xl font-bold text-foreground mb-2'>
+                    Admin Controls
+                  </h2>
+                  <p className='text-muted-foreground'>
+                    Advanced event management controls
+                  </p>
+                </div>
+
+                <div className='space-y-4'>
+                  <div className='rounded-lg border border-destructive/50 bg-destructive/5 p-6'>
+                    <div className='flex items-start gap-4'>
+                      <div className='p-3 rounded-lg bg-destructive/10'>
+                        <Trash2 className='h-6 w-6 text-destructive' />
+                      </div>
+                      <div className='flex-1'>
+                        <h3 className='text-lg font-semibold text-foreground mb-2'>
+                          Delete Event
+                        </h3>
+                        <p className='text-sm text-muted-foreground mb-4'>
+                          Permanently delete this event and all associated data
+                          including ticket tiers and orders. This action cannot
+                          be undone.
+                        </p>
+                        <FmCommonButton
+                          variant='destructive'
+                          icon={Trash2}
+                          onClick={handleDeleteEvent}
+                          loading={isDeleting}
+                        >
+                          {isDeleting ? 'Deleting...' : 'Delete Event'}
+                        </FmCommonButton>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          )}
+        </div>
+      </div>
     </SideNavbarLayout>
   );
 }

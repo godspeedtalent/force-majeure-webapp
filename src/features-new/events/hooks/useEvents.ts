@@ -17,11 +17,13 @@ export const useEvents = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('events')
-        .select(`
+        .select(
+          `
           *,
           venue:venues(name),
           headliner:artists(name)
-        `)
+        `
+        )
         .order('date', { ascending: true });
 
       if (error) throw error;

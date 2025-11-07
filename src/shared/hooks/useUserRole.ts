@@ -2,7 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { supabase } from '@/shared/api/supabase/client';
-import { PERMISSIONS, type Permission, type Role } from '@/shared/auth/permissions';
+import {
+  PERMISSIONS,
+  type Permission,
+  type Role,
+} from '@/shared/auth/permissions';
 
 export interface UserRole {
   role_name: string;
@@ -20,7 +24,7 @@ export const useUserRole = () => {
 
       // Use the new helper function
       const { data, error } = await supabase.rpc('get_user_roles', {
-        user_id_param: user.id
+        user_id_param: user.id,
       });
 
       if (error) {
@@ -41,16 +45,17 @@ export const useUserRole = () => {
  */
 export const useUserPermissions = () => {
   const { data: roles } = useUserRole();
-  
+
   /**
    * Check if user has a specific permission
    * @param permission - Permission to check (use PERMISSIONS constant)
    */
   const hasPermission = (permission: Permission): boolean => {
     if (!roles) return false;
-    return roles.some(role => 
-      role.permission_names.includes(PERMISSIONS.ALL) || 
-      role.permission_names.includes(permission)
+    return roles.some(
+      role =>
+        role.permission_names.includes(PERMISSIONS.ALL) ||
+        role.permission_names.includes(permission)
     );
   };
 
@@ -107,19 +112,21 @@ export const useUserPermissions = () => {
     if (!roles) return [];
     const allPermissions = new Set<Permission>();
     roles.forEach(role => {
-      role.permission_names.forEach(perm => allPermissions.add(perm as Permission));
+      role.permission_names.forEach(perm =>
+        allPermissions.add(perm as Permission)
+      );
     });
     return Array.from(allPermissions);
   };
 
-  return { 
-    hasPermission, 
+  return {
+    hasPermission,
     hasAnyPermission,
     hasAllPermissions,
-    hasRole, 
+    hasRole,
     hasAnyRole,
     getRoles,
     getPermissions,
-    roles 
+    roles,
   };
 };

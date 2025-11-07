@@ -45,7 +45,10 @@ import { FmToolbar } from '@/components/common/toolbar/FmToolbar';
 import { ROLES } from '@/shared/auth/permissions';
 import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 import { CheckoutProvider } from '@/contexts/CheckoutContext';
-import { GlobalSearchProvider, useGlobalSearch } from '@/contexts/GlobalSearchContext';
+import {
+  GlobalSearchProvider,
+  useGlobalSearch,
+} from '@/contexts/GlobalSearchContext';
 import { GlobalResourceSearch } from '@/components/admin/GlobalResourceSearch';
 import { StripeProvider } from '@/features/payments';
 
@@ -94,12 +97,12 @@ const AppRoutes = () => {
           <Route path='/' element={<Index />} />
           <Route path='/event/:id' element={<EventDetails />} />
           <Route path='/event/:id/manage' element={<EventManagement />} />
-          
+
           {/* Conditionally render merch route based on feature flag */}
           {isFeatureEnabled(FEATURE_FLAGS.MERCH_STORE) && (
             <Route path='/merch' element={<Merch />} />
           )}
-          
+
           {/* Conditionally render member profiles route based on feature flag */}
           {isFeatureEnabled(FEATURE_FLAGS.MEMBER_PROFILES) && (
             <Route path='/members/home' element={<MemberHome />} />
@@ -107,16 +110,16 @@ const AppRoutes = () => {
 
           <Route path='/profile' element={<Profile />} />
           <Route path='/profile/edit' element={<ProfileEdit />} />
-          <Route 
-            path='/admin' 
+          <Route
+            path='/admin'
             element={
               <ProtectedRoute role={ROLES.ADMIN}>
                 <AdminConfig />
               </ProtectedRoute>
-            } 
+            }
           />
           <Route path='/orders' element={<Orders />} />
-          
+
           {/* Checkout Routes */}
           <Route path='/checkout/success' element={<CheckoutSuccess />} />
           <Route path='/checkout/cancel' element={<CheckoutCancel />} />

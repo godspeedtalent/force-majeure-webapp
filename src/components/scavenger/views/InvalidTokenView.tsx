@@ -14,10 +14,10 @@ export function InvalidTokenView() {
         className='mb-4'
         action={
           <>
-          <DecorativeDivider/>
+            <DecorativeDivider />
             <p className='text-muted-foreground font-canela'>
-              If you keep having issues, take a photo of the poster with your hand
-              holding up 3 fingers next to it.
+              If you keep having issues, take a photo of the poster with your
+              hand holding up 3 fingers next to it.
             </p>
             <p className='text-foreground font-canela'>
               Send that photo in a DM to{' '}
@@ -31,19 +31,19 @@ export function InvalidTokenView() {
               </a>{' '}
               on Instagram.
             </p>
-            <DecorativeDivider/>
+            <DecorativeDivider />
             <p className='text-white font-canela'>
               Wanna jump straight to buying tickets?
             </p>
-              <Button
-                size='lg'
-                className='w-full max-w-xs mx-auto bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]'
-                onClick={() => window.open(LF_SYSTEM_TICKET_URL, '_blank')}
-              >
-                <ExternalLink className='mr-2 h-4 w-4' />
-                Buy Tickets
-              </Button>
-            </>
+            <Button
+              size='lg'
+              className='w-full max-w-xs mx-auto bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]'
+              onClick={() => window.open(LF_SYSTEM_TICKET_URL, '_blank')}
+            >
+              <ExternalLink className='mr-2 h-4 w-4' />
+              Buy Tickets
+            </Button>
+          </>
         }
       />
     </>

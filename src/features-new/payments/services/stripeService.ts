@@ -9,12 +9,19 @@ export const stripeService = {
   /**
    * Get or create a Stripe customer for the current user
    */
-  async getOrCreateCustomer(email: string, userId: string): Promise<StripeCustomer> {
-    const { data, error } = await supabase.functions.invoke('get-stripe-customer', {
-      body: { email, userId },
-    });
+  async getOrCreateCustomer(
+    email: string,
+    userId: string
+  ): Promise<StripeCustomer> {
+    const { data, error } = await supabase.functions.invoke(
+      'get-stripe-customer',
+      {
+        body: { email, userId },
+      }
+    );
 
-    if (error) throw new Error(error.message || 'Failed to get Stripe customer');
+    if (error)
+      throw new Error(error.message || 'Failed to get Stripe customer');
     return data;
   },
 
@@ -26,16 +33,20 @@ export const stripeService = {
     customerId: string,
     paymentMethodId?: string
   ): Promise<PaymentIntent> {
-    const { data, error } = await supabase.functions.invoke('create-payment-intent', {
-      body: {
-        amount: Math.round(amount * 100), // Convert to cents
-        currency: 'usd',
-        customerId,
-        paymentMethodId,
-      },
-    });
+    const { data, error } = await supabase.functions.invoke(
+      'create-payment-intent',
+      {
+        body: {
+          amount: Math.round(amount * 100), // Convert to cents
+          currency: 'usd',
+          customerId,
+          paymentMethodId,
+        },
+      }
+    );
 
-    if (error) throw new Error(error.message || 'Failed to create payment intent');
+    if (error)
+      throw new Error(error.message || 'Failed to create payment intent');
     return data;
   },
 
@@ -43,11 +54,15 @@ export const stripeService = {
    * List all saved payment methods for a customer
    */
   async listPaymentMethods(customerId: string): Promise<SavedCard[]> {
-    const { data, error } = await supabase.functions.invoke('list-payment-methods', {
-      body: { customerId },
-    });
+    const { data, error } = await supabase.functions.invoke(
+      'list-payment-methods',
+      {
+        body: { customerId },
+      }
+    );
 
-    if (error) throw new Error(error.message || 'Failed to list payment methods');
+    if (error)
+      throw new Error(error.message || 'Failed to list payment methods');
 
     return data.paymentMethods.map((pm: any) => ({
       id: pm.id,
@@ -61,12 +76,16 @@ export const stripeService = {
   /**
    * Attach a payment method to a customer
    */
-  async attachPaymentMethod(paymentMethodId: string, customerId: string): Promise<void> {
+  async attachPaymentMethod(
+    paymentMethodId: string,
+    customerId: string
+  ): Promise<void> {
     const { error } = await supabase.functions.invoke('attach-payment-method', {
       body: { paymentMethodId, customerId },
     });
 
-    if (error) throw new Error(error.message || 'Failed to attach payment method');
+    if (error)
+      throw new Error(error.message || 'Failed to attach payment method');
   },
 
   /**
@@ -77,6 +96,7 @@ export const stripeService = {
       body: { paymentMethodId },
     });
 
-    if (error) throw new Error(error.message || 'Failed to detach payment method');
+    if (error)
+      throw new Error(error.message || 'Failed to detach payment method');
   },
 };

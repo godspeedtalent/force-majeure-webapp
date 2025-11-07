@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from 'react';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -9,7 +15,9 @@ interface CheckoutContextType {
   redirectUrl?: string;
 }
 
-const CheckoutContext = createContext<CheckoutContextType | undefined>(undefined);
+const CheckoutContext = createContext<CheckoutContextType | undefined>(
+  undefined
+);
 
 export const CheckoutProvider = ({ children }: { children: ReactNode }) => {
   const [isCheckoutActive, setIsCheckoutActive] = useState(false);
@@ -33,7 +41,11 @@ export const CheckoutProvider = ({ children }: { children: ReactNode }) => {
 
   // Watch for navigation changes and end checkout if user navigates away
   useEffect(() => {
-    if (isCheckoutActive && checkoutPath && location.pathname !== checkoutPath) {
+    if (
+      isCheckoutActive &&
+      checkoutPath &&
+      location.pathname !== checkoutPath
+    ) {
       endCheckout();
     }
   }, [location.pathname, isCheckoutActive, checkoutPath]);

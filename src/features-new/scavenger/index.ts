@@ -1,6 +1,6 @@
 /**
  * Scavenger Hunt Feature Module
- * 
+ *
  * Exports all scavenger hunt-related components, hooks, services, and types
  */
 

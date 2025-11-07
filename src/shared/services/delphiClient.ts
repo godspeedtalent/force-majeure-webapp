@@ -1,14 +1,15 @@
 /**
  * Delphi API Client
- * 
+ *
  * Lightweight client for interacting with the Delphi application API.
  * Currently supports service authentication using secret/private keys.
- * 
+ *
  * @see https://docs.delphi.app (documentation stub)
  */
 
 // Environment configuration
-const DELPHI_API_BASE_URL = process.env.DELPHI_API_BASE_URL || 'https://api.delphi.app';
+const DELPHI_API_BASE_URL =
+  process.env.DELPHI_API_BASE_URL || 'https://api.delphi.app';
 const DELPHI_API_KEY = process.env.DELPHI_API_KEY || '';
 const DELPHI_SECRET_KEY = process.env.DELPHI_SECRET_KEY || '';
 
@@ -112,7 +113,9 @@ export const delphiVenues = {
   /**
    * Create or update a venue (upsert)
    */
-  async upsert(venue: Partial<DelphiVenue>): Promise<DelphiResponse<DelphiVenue>> {
+  async upsert(
+    venue: Partial<DelphiVenue>
+  ): Promise<DelphiResponse<DelphiVenue>> {
     return delphiRequest<DelphiVenue>({
       method: 'POST',
       endpoint: '/venues/upsert',
@@ -170,7 +173,9 @@ export const delphiArtists = {
   /**
    * Create or update an artist (upsert)
    */
-  async upsert(artist: Partial<DelphiArtist>): Promise<DelphiResponse<DelphiArtist>> {
+  async upsert(
+    artist: Partial<DelphiArtist>
+  ): Promise<DelphiResponse<DelphiArtist>> {
     return delphiRequest<DelphiArtist>({
       method: 'POST',
       endpoint: '/artists/upsert',
@@ -231,7 +236,9 @@ export const delphiEvents = {
   /**
    * Create or update an event (upsert)
    */
-  async upsert(event: Partial<DelphiEvent>): Promise<DelphiResponse<DelphiEvent>> {
+  async upsert(
+    event: Partial<DelphiEvent>
+  ): Promise<DelphiResponse<DelphiEvent>> {
     return delphiRequest<DelphiEvent>({
       method: 'POST',
       endpoint: '/events/upsert',
@@ -288,7 +295,9 @@ export const delphiProjections = {
   /**
    * Create or update a projection (upsert)
    */
-  async upsert(projection: Partial<DelphiProjection>): Promise<DelphiResponse<DelphiProjection>> {
+  async upsert(
+    projection: Partial<DelphiProjection>
+  ): Promise<DelphiResponse<DelphiProjection>> {
     return delphiRequest<DelphiProjection>({
       method: 'POST',
       endpoint: '/projections/upsert',

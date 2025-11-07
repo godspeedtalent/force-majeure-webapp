@@ -1,6 +1,6 @@
 /**
  * Merch Feature Module
- * 
+ *
  * Exports all merchandise-related components, hooks, services, and types
  */
 

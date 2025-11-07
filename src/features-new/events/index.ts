@@ -1,6 +1,6 @@
 /**
  * Events Feature Module
- * 
+ *
  * Exports all event-related components, hooks, services, and types
  */
 

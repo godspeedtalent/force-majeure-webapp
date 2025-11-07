@@ -25,7 +25,7 @@ export const DemoProtectedRoute = ({ children }: DemoProtectedRouteProps) => {
 
   // Check if user is authenticated
   if (!user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to='/' replace />;
   }
 
   // Check if user has developer or admin role
@@ -33,7 +33,7 @@ export const DemoProtectedRoute = ({ children }: DemoProtectedRouteProps) => {
 
   // Access denied
   if (!hasDeveloperAccess) {
-    return <Navigate to="/" replace />;
+    return <Navigate to='/' replace />;
   }
 
   // Access granted

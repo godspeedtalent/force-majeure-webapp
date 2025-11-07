@@ -33,7 +33,9 @@ const feeLabels: Record<string, string> = {
 
 export const AdminFeesSection = () => {
   const [fees, setFees] = useState<Fee[]>([]);
-  const [localFees, setLocalFees] = useState<Record<string, { type: 'flat' | 'percentage'; value: string }>>({});
+  const [localFees, setLocalFees] = useState<
+    Record<string, { type: 'flat' | 'percentage'; value: string }>
+  >({});
   const [isLoading, setIsLoading] = useState(true);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const environment = 'dev';
@@ -47,11 +49,14 @@ export const AdminFeesSection = () => {
         .order('fee_name', { ascending: true });
 
       if (error) throw error;
-      
+
       const fetchedFees = (data || []) as Fee[];
       setFees(fetchedFees);
-      
-      const initialLocal: Record<string, { type: 'flat' | 'percentage'; value: string }> = {};
+
+      const initialLocal: Record<
+        string,
+        { type: 'flat' | 'percentage'; value: string }
+      > = {};
       fetchedFees.forEach(fee => {
         initialLocal[fee.fee_name] = {
           type: fee.fee_type as 'flat' | 'percentage',
@@ -93,12 +98,12 @@ export const AdminFeesSection = () => {
 
   const handleSave = async () => {
     setShowConfirmDialog(false);
-    
+
     try {
       const updates = Object.entries(localFees).map(([feeName, feeData]) => {
         const numValue = parseFloat(feeData.value) || 0;
         const fee = fees.find(f => f.fee_name === feeName);
-        
+
         return supabase
           .from('ticketing_fees')
           .update({
@@ -121,30 +126,35 @@ export const AdminFeesSection = () => {
   const hasChanges = fees.some(fee => {
     const local = localFees[fee.fee_name];
     if (!local) return false;
-    return local.type !== fee.fee_type || parseFloat(local.value) !== fee.fee_value;
+    return (
+      local.type !== fee.fee_type || parseFloat(local.value) !== fee.fee_value
+    );
   });
 
   if (isLoading) {
-    return <div className="text-muted-foreground text-sm">Loading...</div>;
+    return <div className='text-muted-foreground text-sm'>Loading...</div>;
   }
 
   return (
-    <div className="space-y-6 max-w-2xl">
-      <div className="grid gap-6">
-        {fees.map((fee) => {
+    <div className='space-y-6 max-w-2xl'>
+      <div className='grid gap-6'>
+        {fees.map(fee => {
           const local = localFees[fee.fee_name];
           if (!local) return null;
 
           return (
-            <div key={fee.id} className="space-y-3 p-4 bg-muted/20 rounded-lg border border-border">
-              <div className="flex items-center justify-between">
-                <span className="text-foreground font-medium">
+            <div
+              key={fee.id}
+              className='space-y-3 p-4 bg-muted/20 rounded-lg border border-border'
+            >
+              <div className='flex items-center justify-between'>
+                <span className='text-foreground font-medium'>
                   {feeLabels[fee.fee_name] || fee.fee_name}
                 </span>
-                <div className="flex gap-2">
+                <div className='flex gap-2'>
                   <Button
-                    size="sm"
-                    variant="outline"
+                    size='sm'
+                    variant='outline'
                     onClick={() => handleTypeToggle(fee.fee_name)}
                     className={cn(
                       'h-8 px-3 text-xs',
@@ -153,12 +163,12 @@ export const AdminFeesSection = () => {
                         : 'bg-background border-border text-muted-foreground hover:bg-muted'
                     )}
                   >
-                    <DollarSign className="h-3 w-3 mr-1" />
+                    <DollarSign className='h-3 w-3 mr-1' />
                     Flat
                   </Button>
                   <Button
-                    size="sm"
-                    variant="outline"
+                    size='sm'
+                    variant='outline'
                     onClick={() => handleTypeToggle(fee.fee_name)}
                     className={cn(
                       'h-8 px-3 text-xs',
@@ -167,17 +177,16 @@ export const AdminFeesSection = () => {
                         : 'bg-background border-border text-muted-foreground hover:bg-muted'
                     )}
                   >
-                    <Percent className="h-3 w-3 mr-1" />
-                    %
+                    <Percent className='h-3 w-3 mr-1' />%
                   </Button>
                 </div>
               </div>
               <FmCommonTextField
                 label={local.type === 'flat' ? 'Amount ($)' : 'Percentage (%)'}
-                type="number"
+                type='number'
                 value={local.value}
-                onChange={(e) => handleValueChange(fee.fee_name, e.target.value)}
-                placeholder="0"
+                onChange={e => handleValueChange(fee.fee_name, e.target.value)}
+                placeholder='0'
                 prepend={local.type === 'flat' ? '$' : '%'}
               />
             </div>
@@ -185,29 +194,34 @@ export const AdminFeesSection = () => {
         })}
       </div>
 
-      <div className="pt-4">
+      <div className='pt-4'>
         <Button
           onClick={() => setShowConfirmDialog(true)}
           disabled={!hasChanges}
-          className="bg-fm-gold hover:bg-fm-gold/90 text-black disabled:opacity-50 disabled:cursor-not-allowed"
+          className='bg-fm-gold hover:bg-fm-gold/90 text-black disabled:opacity-50 disabled:cursor-not-allowed'
         >
           Save Fee Settings
         </Button>
       </div>
 
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <AlertDialogContent className="bg-background border-border">
+        <AlertDialogContent className='bg-background border-border'>
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-canela">Confirm Fee Changes</AlertDialogTitle>
+            <AlertDialogTitle className='font-canela'>
+              Confirm Fee Changes
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              This will update ticketing fees in the database for the <span className="font-semibold text-fm-gold">{environment}</span> environment. These changes will affect all future ticket purchases. Continue?
+              This will update ticketing fees in the database for the{' '}
+              <span className='font-semibold text-fm-gold'>{environment}</span>{' '}
+              environment. These changes will affect all future ticket
+              purchases. Continue?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleSave}
-              className="bg-fm-gold hover:bg-fm-gold/90 text-black"
+              className='bg-fm-gold hover:bg-fm-gold/90 text-black'
             >
               Save Changes
             </AlertDialogAction>

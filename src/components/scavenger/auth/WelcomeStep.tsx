@@ -4,7 +4,10 @@ import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { MessagePanel } from '@/components/feedback/MessagePanel';
 import { Button } from '@/components/common/shadcn/button';
 import { PromoCodePanel } from './PromoCodePanel';
-import { LF_SYSTEM_TICKET_URL, PROMO_CODE } from '@/shared/constants/ticketLinks';
+import {
+  LF_SYSTEM_TICKET_URL,
+  PROMO_CODE,
+} from '@/shared/constants/ticketLinks';
 
 // Simple component interfaces - no state management
 interface ClaimSuccessPanelProps {
@@ -38,19 +41,23 @@ export function ClaimSuccessPanel({ userFullName }: ClaimSuccessPanelProps) {
         <>
           <p className='text-m text-white mb-6'>
             You&apos;ve been added to the <br />
-            <span className='text-fm-gold font-semibold'>LF SYSTEM @ Kingdom | Sat 10.18</span> <br />
+            <span className='text-fm-gold font-semibold'>
+              LF SYSTEM @ Kingdom | Sat 10.18
+            </span>{' '}
+            <br />
             guestlist. See you there.
           </p>
           <DecorativeDivider />
           <p className='text-sm text-muted-foreground mb-6'>
             Check into the host stand as usual and give them your full name.
           </p>
-          <p className='text-sm text-white mb-6'>  Your name will be listed as{' '}
+          <p className='text-sm text-white mb-6'>
+            {' '}
+            Your name will be listed as{' '}
             <span className='text-fm-gold font-medium'>{userFullName}</span>.
           </p>
           <p className='text-sm text-muted-foreground mb-6'>
-           in
-            the guestlist. If this is incorrect, please reach out to{' '}
+            in the guestlist. If this is incorrect, please reach out to{' '}
             <span className='text-fm-gold'>@force.majeure.events</span> on
             Instagram to correct it.
           </p>

@@ -35,9 +35,10 @@ export const useTicketFees = () => {
 
   const calculateFees = (subtotal: number): FeeCalculation[] => {
     return fees.map(fee => {
-      const amount = fee.fee_type === 'flat'
-        ? fee.fee_value
-        : (subtotal * fee.fee_value) / 100;
+      const amount =
+        fee.fee_type === 'flat'
+          ? fee.fee_value
+          : (subtotal * fee.fee_value) / 100;
 
       return {
         name: fee.fee_name,

@@ -4,7 +4,10 @@ import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { AnimatedCounter } from '@/components/primitives/AnimatedCounter';
 import { MessagePanel } from '@/components/feedback/MessagePanel';
 import { Button } from '@/components/common/shadcn/button';
-import { LF_SYSTEM_TICKET_URL, PROMO_CODE } from '@/shared/constants/ticketLinks';
+import {
+  LF_SYSTEM_TICKET_URL,
+  PROMO_CODE,
+} from '@/shared/constants/ticketLinks';
 
 interface PromoCodePanelProps {
   userDisplayName?: string;
@@ -43,8 +46,10 @@ export function PromoCodePanel({
                 className='inline text-fm-gold font-bold text-xl align-baseline mx-2'
               />{' '}
               locations that have guest passes available, check the reel at{' '}
-              <span className='text-fm-gold font-semibold'>@force.majeure.events</span> on
-              Instagram for hints.
+              <span className='text-fm-gold font-semibold'>
+                @force.majeure.events
+              </span>{' '}
+              on Instagram for hints.
             </p>
           )}
           <DecorativeDivider />

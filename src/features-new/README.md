@@ -5,6 +5,7 @@ This directory contains all feature modules for the Force Majeure Web App using 
 ## Structure
 
 Each feature is a self-contained module with its own:
+
 - **components/** - UI components specific to this feature
 - **hooks/** - Custom React hooks for this feature
 - **services/** - API calls and business logic

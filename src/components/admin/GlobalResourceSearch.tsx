@@ -1,6 +1,14 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Building2, Music, MapPin, Calendar, User, X } from 'lucide-react';
+import {
+  Search,
+  Building2,
+  Music,
+  MapPin,
+  Calendar,
+  User,
+  X,
+} from 'lucide-react';
 import { Input } from '@/components/common/shadcn/input';
 import { supabase } from '@/integrations/supabase/client';
 import { useDebounce } from '@/shared/hooks';
@@ -52,7 +60,13 @@ interface SearchResults {
  * Global resource search component
  * Searches across all major tables with debounced queries
  */
-export function GlobalResourceSearch({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export function GlobalResourceSearch({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+}) {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -194,7 +208,7 @@ export function GlobalResourceSearch({ isOpen, onClose }: { isOpen: boolean; onC
       event: `/events/${id}`,
     };
     navigate(routes[type]);
-    
+
     // Clear search after navigation
     setSearchQuery('');
     setResults({
@@ -207,11 +221,14 @@ export function GlobalResourceSearch({ isOpen, onClose }: { isOpen: boolean; onC
   };
 
   // Handle click outside
-  const handleOverlayClick = useCallback((e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  }, [onClose]);
+  const handleOverlayClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (e.target === e.currentTarget) {
+        onClose();
+      }
+    },
+    [onClose]
+  );
 
   // Handle escape key
   useEffect(() => {
@@ -230,76 +247,82 @@ export function GlobalResourceSearch({ isOpen, onClose }: { isOpen: boolean; onC
 
   return (
     <div
-      className="fixed inset-0 z-[200] flex items-start justify-center pt-[15vh] px-4"
+      className='fixed inset-0 z-[200] flex items-start justify-center pt-[15vh] px-4'
       style={{
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
         backdropFilter: 'blur(8px)',
       }}
       onClick={handleOverlayClick}
     >
-      <div className="w-full max-w-2xl">
+      <div className='w-full max-w-2xl'>
         {/* Search Box */}
-        <div className="relative bg-background/95 backdrop-blur-xl border border-border rounded-lg shadow-2xl">
+        <div className='relative bg-background/95 backdrop-blur-xl border border-border rounded-lg shadow-2xl'>
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-lg hover:bg-muted transition-colors z-10"
-            aria-label="Close search"
+            className='absolute top-4 right-4 p-2 rounded-lg hover:bg-muted transition-colors z-10'
+            aria-label='Close search'
           >
-            <X className="h-5 w-5 text-muted-foreground" />
+            <X className='h-5 w-5 text-muted-foreground' />
           </button>
 
           {/* Search Input */}
-          <div className="relative p-6 border-b border-border">
-            <Search className="absolute left-9 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <div className='relative p-6 border-b border-border'>
+            <Search className='absolute left-9 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground' />
             <Input
               ref={inputRef}
-              type="text"
-              placeholder="Search events, artists, venues, users..."
+              type='text'
+              placeholder='Search events, artists, venues, users...'
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className={cn(
-                "text-lg border-0 focus-visible:ring-0 shadow-none bg-transparent pl-9 pr-4",
-                searchQuery && "border-b-2 border-b-gold-500"
+                'text-lg border-0 focus-visible:ring-0 shadow-none bg-transparent pl-9 pr-4',
+                searchQuery && 'border-b-2 border-b-gold-500'
               )}
             />
             {isSearching && (
-              <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                <div className="h-5 w-5 border-2 border-fm-gold border-t-transparent rounded-full animate-spin" />
+              <div className='absolute right-4 top-1/2 -translate-y-1/2'>
+                <div className='h-5 w-5 border-2 border-fm-gold border-t-transparent rounded-full animate-spin' />
               </div>
             )}
           </div>
 
           {/* Results */}
           {searchQuery.trim().length >= 2 && (
-            <div className="max-h-[60vh] overflow-y-auto p-2">
+            <div className='max-h-[60vh] overflow-y-auto p-2'>
               {isSearching ? (
-                <div className="py-8 text-center text-muted-foreground">
+                <div className='py-8 text-center text-muted-foreground'>
                   Searching...
                 </div>
               ) : hasResults ? (
-                <div className="space-y-0">
+                <div className='space-y-0'>
                   {/* Organizations */}
                   {results.organizations.length > 0 && (
                     <div>
-                      <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10">
+                      <div className='px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10'>
                         Organizations
                       </div>
-                      {results.organizations.map((org) => (
+                      {results.organizations.map(org => (
                         <button
                           key={org.id}
                           onClick={() => handleNavigate('organization', org.id)}
-                          className="w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors text-left"
+                          className='w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors text-left'
                         >
-                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                          <div className='flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden'>
                             {org.logo_url ? (
-                              <img src={org.logo_url} alt={org.name} className="w-full h-full object-cover" />
+                              <img
+                                src={org.logo_url}
+                                alt={org.name}
+                                className='w-full h-full object-cover'
+                              />
                             ) : (
-                              <Building2 className="h-4 w-4 text-muted-foreground" />
+                              <Building2 className='h-4 w-4 text-muted-foreground' />
                             )}
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">{org.name}</p>
+                          <div className='flex-1 min-w-0'>
+                            <p className='text-sm font-medium truncate'>
+                              {org.name}
+                            </p>
                           </div>
                         </button>
                       ))}
@@ -309,25 +332,31 @@ export function GlobalResourceSearch({ isOpen, onClose }: { isOpen: boolean; onC
                   {/* Users */}
                   {results.users.length > 0 && (
                     <div>
-                      <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10">
+                      <div className='px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10'>
                         Users
                       </div>
-                      {results.users.map((user) => (
+                      {results.users.map(user => (
                         <button
                           key={user.id}
                           onClick={() => handleNavigate('user', user.id)}
-                          className="w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors text-left"
+                          className='w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors text-left'
                         >
-                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                          <div className='flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden'>
                             {user.avatar_url ? (
-                              <img src={user.avatar_url} alt={user.display_name || user.full_name} className="w-full h-full object-cover" />
+                              <img
+                                src={user.avatar_url}
+                                alt={user.display_name || user.full_name}
+                                className='w-full h-full object-cover'
+                              />
                             ) : (
-                              <User className="h-4 w-4 text-muted-foreground" />
+                              <User className='h-4 w-4 text-muted-foreground' />
                             )}
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">
-                              {user.display_name || user.full_name || 'Unknown User'}
+                          <div className='flex-1 min-w-0'>
+                            <p className='text-sm font-medium truncate'>
+                              {user.display_name ||
+                                user.full_name ||
+                                'Unknown User'}
                             </p>
                           </div>
                         </button>
@@ -338,24 +367,30 @@ export function GlobalResourceSearch({ isOpen, onClose }: { isOpen: boolean; onC
                   {/* Artists */}
                   {results.artists.length > 0 && (
                     <div>
-                      <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10">
+                      <div className='px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10'>
                         Artists
                       </div>
-                      {results.artists.map((artist) => (
+                      {results.artists.map(artist => (
                         <button
                           key={artist.id}
                           onClick={() => handleNavigate('artist', artist.id)}
-                          className="w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors text-left"
+                          className='w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors text-left'
                         >
-                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                          <div className='flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden'>
                             {artist.image_url ? (
-                              <img src={artist.image_url} alt={artist.name} className="w-full h-full object-cover" />
+                              <img
+                                src={artist.image_url}
+                                alt={artist.name}
+                                className='w-full h-full object-cover'
+                              />
                             ) : (
-                              <Music className="h-4 w-4 text-muted-foreground" />
+                              <Music className='h-4 w-4 text-muted-foreground' />
                             )}
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">{artist.name}</p>
+                          <div className='flex-1 min-w-0'>
+                            <p className='text-sm font-medium truncate'>
+                              {artist.name}
+                            </p>
                           </div>
                         </button>
                       ))}
@@ -365,24 +400,30 @@ export function GlobalResourceSearch({ isOpen, onClose }: { isOpen: boolean; onC
                   {/* Venues */}
                   {results.venues.length > 0 && (
                     <div>
-                      <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10">
+                      <div className='px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10'>
                         Venues
                       </div>
-                      {results.venues.map((venue) => (
+                      {results.venues.map(venue => (
                         <button
                           key={venue.id}
                           onClick={() => handleNavigate('venue', venue.id)}
-                          className="w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors text-left"
+                          className='w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors text-left'
                         >
-                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                          <div className='flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden'>
                             {venue.image_url ? (
-                              <img src={venue.image_url} alt={venue.name} className="w-full h-full object-cover" />
+                              <img
+                                src={venue.image_url}
+                                alt={venue.name}
+                                className='w-full h-full object-cover'
+                              />
                             ) : (
-                              <MapPin className="h-4 w-4 text-muted-foreground" />
+                              <MapPin className='h-4 w-4 text-muted-foreground' />
                             )}
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">{venue.name}</p>
+                          <div className='flex-1 min-w-0'>
+                            <p className='text-sm font-medium truncate'>
+                              {venue.name}
+                            </p>
                           </div>
                         </button>
                       ))}
@@ -392,26 +433,33 @@ export function GlobalResourceSearch({ isOpen, onClose }: { isOpen: boolean; onC
                   {/* Events */}
                   {results.events.length > 0 && (
                     <div>
-                      <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10">
+                      <div className='px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10'>
                         Events
                       </div>
-                      {results.events.map((event) => (
+                      {results.events.map(event => (
                         <button
                           key={event.id}
                           onClick={() => handleNavigate('event', event.id)}
-                          className="w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors text-left"
+                          className='w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors text-left'
                         >
-                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                          <div className='flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden'>
                             {event.hero_image ? (
-                              <img src={event.hero_image} alt={event.title} className="w-full h-full object-cover" />
+                              <img
+                                src={event.hero_image}
+                                alt={event.title}
+                                className='w-full h-full object-cover'
+                              />
                             ) : (
-                              <Calendar className="h-4 w-4 text-muted-foreground" />
+                              <Calendar className='h-4 w-4 text-muted-foreground' />
                             )}
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">{event.title}</p>
-                            <p className="text-xs text-muted-foreground truncate">
-                              {new Date(event.date).toLocaleDateString()} • {event.venue_name}
+                          <div className='flex-1 min-w-0'>
+                            <p className='text-sm font-medium truncate'>
+                              {event.title}
+                            </p>
+                            <p className='text-xs text-muted-foreground truncate'>
+                              {new Date(event.date).toLocaleDateString()} •{' '}
+                              {event.venue_name}
                             </p>
                           </div>
                         </button>
@@ -420,7 +468,7 @@ export function GlobalResourceSearch({ isOpen, onClose }: { isOpen: boolean; onC
                   )}
                 </div>
               ) : (
-                <div className="py-8 text-center text-muted-foreground">
+                <div className='py-8 text-center text-muted-foreground'>
                   No results found for "{searchQuery}"
                 </div>
               )}

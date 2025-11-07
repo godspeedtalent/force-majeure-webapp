@@ -13,6 +13,7 @@ The `dev_notes` table migration needs to be applied manually since Docker isn't 
 ## Alternative: Run via CLI
 
 If you have access to the database password, you can run:
+
 ```powershell
 npx supabase db push --include-all
 ```

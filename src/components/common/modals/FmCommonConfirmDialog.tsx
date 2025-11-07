@@ -1,6 +1,6 @@
 /**
  * FmCommonConfirmDialog
- * 
+ *
  * Standardized confirmation dialog for destructive or important actions
  * Provides consistent UX for confirmations across the app
  */
@@ -43,7 +43,8 @@ const variantConfig = {
     confirmButton: 'bg-primary text-primary-foreground hover:bg-primary/90',
   },
   destructive: {
-    confirmButton: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+    confirmButton:
+      'bg-destructive text-destructive-foreground hover:bg-destructive/90',
   },
   warning: {
     confirmButton: 'bg-yellow-600 text-white hover:bg-yellow-700',

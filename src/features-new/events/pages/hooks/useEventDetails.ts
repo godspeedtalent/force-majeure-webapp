@@ -40,7 +40,10 @@ const transformArtist = (artist: ArtistRow | null): ArtistSummary => ({
   image: artist?.image_url ?? null,
 });
 
-const transformEvent = (row: EventRow, undercard: ArtistRow[]): EventDetailsRecord => ({
+const transformEvent = (
+  row: EventRow,
+  undercard: ArtistRow[]
+): EventDetailsRecord => ({
   id: row.id,
   title: row.title,
   headliner: row.headliner_artist
@@ -55,7 +58,9 @@ const transformEvent = (row: EventRow, undercard: ArtistRow[]): EventDetailsReco
   ticketUrl: row.ticket_url ?? null,
 });
 
-const fetchEventDetails = async (eventId: string): Promise<EventDetailsRecord> => {
+const fetchEventDetails = async (
+  eventId: string
+): Promise<EventDetailsRecord> => {
   const { data, error } = await supabase
     .from('events')
     .select(

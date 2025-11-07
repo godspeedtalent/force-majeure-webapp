@@ -10,7 +10,7 @@ import { PERMISSIONS } from '@/shared/auth/permissions';
 
 /**
  * OrganizationTools - Main dashboard for organization admins
- * 
+ *
  * Features:
  * - Sales reports
  * - Venue management
@@ -23,7 +23,10 @@ const OrganizationTools = () => {
   const isLoading = !roles;
 
   // Check for organization access permission
-  const hasAccess = hasAnyPermission(PERMISSIONS.MANAGE_ORGANIZATION, PERMISSIONS.VIEW_ORGANIZATION);
+  const hasAccess = hasAnyPermission(
+    PERMISSIONS.MANAGE_ORGANIZATION,
+    PERMISSIONS.VIEW_ORGANIZATION
+  );
 
   useEffect(() => {
     if (!isLoading && !hasAccess) {
@@ -46,7 +49,7 @@ const OrganizationTools = () => {
   }
 
   return (
-    <FmCommonPageLayout 
+    <FmCommonPageLayout
       title='Organization Tools'
       subtitle='Manage your organization, staff, and view analytics'
     >
@@ -62,8 +65,8 @@ const OrganizationTools = () => {
               <p className='text-sm text-muted-foreground mb-4'>
                 View event sales, revenue analytics, and ticket performance
               </p>
-              <FmCommonButton 
-                variant='secondary' 
+              <FmCommonButton
+                variant='secondary'
                 size='sm'
                 onClick={() => navigate('/organization/sales')}
               >
@@ -84,8 +87,8 @@ const OrganizationTools = () => {
               <p className='text-sm text-muted-foreground mb-4'>
                 Update venue details, capacity, and location information
               </p>
-              <FmCommonButton 
-                variant='secondary' 
+              <FmCommonButton
+                variant='secondary'
                 size='sm'
                 onClick={() => navigate('/organization/venue')}
               >
@@ -106,8 +109,8 @@ const OrganizationTools = () => {
               <p className='text-sm text-muted-foreground mb-4'>
                 Add, remove, and manage your organization's staff members
               </p>
-              <FmCommonButton 
-                variant='secondary' 
+              <FmCommonButton
+                variant='secondary'
                 size='sm'
                 onClick={() => navigate('/organization/staff')}
               >
@@ -128,8 +131,8 @@ const OrganizationTools = () => {
               <p className='text-sm text-muted-foreground mb-4'>
                 Edit your organization's public profile and settings
               </p>
-              <FmCommonButton 
-                variant='secondary' 
+              <FmCommonButton
+                variant='secondary'
                 size='sm'
                 onClick={() => navigate('/organization/profile')}
               >

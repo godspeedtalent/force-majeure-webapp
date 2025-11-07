@@ -54,7 +54,9 @@ export const FmCreateEventButton = ({
   const [isAfterHours, setIsAfterHours] = useState(false);
   const [venueId, setVenueId] = useState<string>('');
   const [venueCapacity, setVenueCapacity] = useState<number>(0);
-  const [undercardArtists, setUndercardArtists] = useState<UndercardArtist[]>([]);
+  const [undercardArtists, setUndercardArtists] = useState<UndercardArtist[]>(
+    []
+  );
   const [ticketTiers, setTicketTiers] = useState<TicketTier[]>([]);
   const [heroImage, setHeroImage] = useState<string>('');
 
@@ -75,32 +77,32 @@ export const FmCreateEventButton = ({
             setVenueCapacity(100);
             return;
           }
-          
+
           if (data && data.capacity) {
             setVenueCapacity(data.capacity);
             // Initialize default tiers
             const capacity = data.capacity;
             const tierCapacity = Math.floor(capacity / 3);
             const remainder = capacity % 3;
-            
+
             setTicketTiers([
-              { 
-                name: 'GA1', 
-                priceInCents: 0, 
-                quantity: tierCapacity + (remainder > 0 ? 1 : 0), 
-                hideUntilPreviousSoldOut: false 
+              {
+                name: 'GA1',
+                priceInCents: 0,
+                quantity: tierCapacity + (remainder > 0 ? 1 : 0),
+                hideUntilPreviousSoldOut: false,
               },
-              { 
-                name: 'GA2', 
-                priceInCents: 0, 
-                quantity: tierCapacity + (remainder > 1 ? 1 : 0), 
-                hideUntilPreviousSoldOut: false 
+              {
+                name: 'GA2',
+                priceInCents: 0,
+                quantity: tierCapacity + (remainder > 1 ? 1 : 0),
+                hideUntilPreviousSoldOut: false,
               },
-              { 
-                name: 'GA3', 
-                priceInCents: 0, 
-                quantity: tierCapacity, 
-                hideUntilPreviousSoldOut: false 
+              {
+                name: 'GA3',
+                priceInCents: 0,
+                quantity: tierCapacity,
+                hideUntilPreviousSoldOut: false,
               },
             ]);
           }
@@ -149,7 +151,7 @@ export const FmCreateEventButton = ({
     if (ticketTiers.length === 0) {
       return 'Please add at least one ticket tier';
     }
-    
+
     // Validate ticket tiers
     for (let i = 0; i < ticketTiers.length; i++) {
       const tier = ticketTiers[i];
@@ -164,7 +166,10 @@ export const FmCreateEventButton = ({
       }
     }
 
-    const totalTickets = ticketTiers.reduce((sum, tier) => sum + tier.quantity, 0);
+    const totalTickets = ticketTiers.reduce(
+      (sum, tier) => sum + tier.quantity,
+      0
+    );
     if (totalTickets > venueCapacity) {
       return `Total tickets (${totalTickets}) exceeds venue capacity (${venueCapacity})`;
     }
@@ -210,14 +215,17 @@ export const FmCreateEventButton = ({
       }
 
       // Construct event title
-      const eventTitle = (headliner as any) && (venue as any)
-        ? `${(headliner as any).name} @ ${(venue as any).name}`
-        : (headliner as any)
-        ? (headliner as any).name
-        : 'New Event';
+      const eventTitle =
+        (headliner as any) && (venue as any)
+          ? `${(headliner as any).name} @ ${(venue as any).name}`
+          : (headliner as any)
+            ? (headliner as any).name
+            : 'New Event';
 
       // Format the date and time for the database
-      const eventDateString = eventDate ? format(eventDate, 'yyyy-MM-dd') : null;
+      const eventDateString = eventDate
+        ? format(eventDate, 'yyyy-MM-dd')
+        : null;
       const eventTimeString = eventDate ? format(eventDate, 'HH:mm') : null;
 
       // Insert the event
@@ -265,13 +273,13 @@ export const FmCreateEventButton = ({
       }
 
       onEventCreated?.((newEvent as any).id);
-      
+
       // Hide loading and show success toast with auto-dismiss
       setIsLoading(false);
       toast.success('Event Created', {
         description: `${eventTitle} has been successfully created!`,
       });
-      
+
       // Reset form
       resetForm();
       if (isStandalone) {
@@ -281,7 +289,10 @@ export const FmCreateEventButton = ({
       console.error('Error creating event:', error);
       setIsLoading(false);
       toast.error('Failed to create event', {
-        description: error instanceof Error ? error.message : 'An unexpected error occurred',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'An unexpected error occurred',
       });
       if (isStandalone) {
         setIsModalOpen(true);
@@ -297,7 +308,10 @@ export const FmCreateEventButton = ({
     }
   };
 
-  const totalTickets = ticketTiers.reduce((sum, tier) => sum + tier.quantity, 0);
+  const totalTickets = ticketTiers.reduce(
+    (sum, tier) => sum + tier.quantity,
+    0
+  );
   const ticketsOverCapacity = totalTickets > venueCapacity;
   const ticketsUnderCapacity = totalTickets < venueCapacity;
 
@@ -317,50 +331,50 @@ export const FmCreateEventButton = ({
       {mode === 'button' && (
         <FmCommonCreateButton
           onClick={handleCreateEvent}
-          label="Create Event"
+          label='Create Event'
           variant={variant}
           className={className}
         />
       )}
 
       {/* Loading Overlay */}
-      {isLoading && <FmCommonLoadingOverlay message="Creating event..." />}
+      {isLoading && <FmCommonLoadingOverlay message='Creating event...' />}
 
       <FmCommonFormModal
         open={isModalOpen}
         onOpenChange={handleModalOpenChange}
-        title="Create New Event"
-        description="Set up a new event with ticket tiers and details"
-        className="max-w-3xl max-h-[90vh] overflow-y-auto"
+        title='Create New Event'
+        description='Set up a new event with ticket tiers and details'
+        className='max-w-3xl max-h-[90vh] overflow-y-auto'
         sections={[
           {
             title: 'Event Details',
             content: (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-white">Headliner</Label>
+              <div className='space-y-4'>
+                <div className='space-y-2'>
+                  <Label className='text-white'>Headliner</Label>
                   <FmArtistSearchDropdown
                     value={headlinerId}
                     onChange={setHeadlinerId}
-                    placeholder="Search for headliner artist..."
+                    placeholder='Search for headliner artist...'
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="text-white">Date</Label>
+                <div className='space-y-2'>
+                  <Label className='text-white'>Date</Label>
                   <FmCommonDatePicker
                     value={eventDate}
                     onChange={setEventDate}
-                    placeholder="Select event date"
+                    placeholder='Select event date'
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-white">Start Time</Label>
+                <div className='grid grid-cols-2 gap-4'>
+                  <div className='space-y-2'>
+                    <Label className='text-white'>Start Time</Label>
                     <FmCommonTimePicker
                       value={eventDate ? format(eventDate, 'HH:mm') : '20:00'}
-                      onChange={(time) => {
+                      onChange={time => {
                         if (eventDate) {
                           const [hours, minutes] = time.split(':');
                           const newDate = new Date(eventDate);
@@ -368,47 +382,52 @@ export const FmCreateEventButton = ({
                           setEventDate(newDate);
                         }
                       }}
-                      placeholder="Select start time"
+                      placeholder='Select start time'
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-white">End Time</Label>
+                  <div className='space-y-2'>
+                    <Label className='text-white'>End Time</Label>
                     <FmCommonTimePicker
                       value={endTime}
                       onChange={setEndTime}
                       disabled={isAfterHours}
-                      placeholder="Select end time"
+                      placeholder='Select end time'
                     />
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className='flex items-center gap-2'>
                   <Checkbox
-                    id="after-hours"
+                    id='after-hours'
                     checked={isAfterHours}
-                    onCheckedChange={(checked) => setIsAfterHours(checked === true)}
+                    onCheckedChange={checked =>
+                      setIsAfterHours(checked === true)
+                    }
                   />
-                  <Label htmlFor="after-hours" className="text-white/70 cursor-pointer">
+                  <Label
+                    htmlFor='after-hours'
+                    className='text-white/70 cursor-pointer'
+                  >
                     After Hours Event
                   </Label>
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="text-white">Venue</Label>
+                <div className='space-y-2'>
+                  <Label className='text-white'>Venue</Label>
                   <FmVenueSearchDropdown
                     value={venueId}
                     onChange={setVenueId}
-                    placeholder="Search for venue..."
+                    placeholder='Search for venue...'
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="text-white">Hero Image URL</Label>
+                <div className='space-y-2'>
+                  <Label className='text-white'>Hero Image URL</Label>
                   <Input
                     value={heroImage}
-                    onChange={(e) => setHeroImage(e.target.value)}
-                    placeholder="https://example.com/image.jpg"
-                    className="bg-black/40 border-white/20 text-white"
+                    onChange={e => setHeroImage(e.target.value)}
+                    placeholder='https://example.com/image.jpg'
+                    className='bg-black/40 border-white/20 text-white'
                   />
                 </div>
               </div>
@@ -419,20 +438,26 @@ export const FmCreateEventButton = ({
             content: (
               <FmCommonRowManager
                 items={undercardArtists}
-                onAdd={() => setUndercardArtists([...undercardArtists, { artistId: '' }])}
-                onRemove={(index) => setUndercardArtists(undercardArtists.filter((_, i) => i !== index))}
-                addLabel="Add Undercard Artist"
+                onAdd={() =>
+                  setUndercardArtists([...undercardArtists, { artistId: '' }])
+                }
+                onRemove={index =>
+                  setUndercardArtists(
+                    undercardArtists.filter((_, i) => i !== index)
+                  )
+                }
+                addLabel='Add Undercard Artist'
                 minItems={0}
                 maxItems={5}
                 renderRow={(item, index) => (
                   <FmArtistSearchDropdown
                     value={item.artistId}
-                    onChange={(id) => {
+                    onChange={id => {
                       const updated = [...undercardArtists];
                       updated[index].artistId = id;
                       setUndercardArtists(updated);
                     }}
-                    placeholder="Search for undercard artist..."
+                    placeholder='Search for undercard artist...'
                   />
                 )}
               />
@@ -441,96 +466,131 @@ export const FmCreateEventButton = ({
           {
             title: 'Ticket Tiers',
             content: (
-              <div className="space-y-3">
+              <div className='space-y-3'>
                 <FmCommonRowManager
                   items={ticketTiers}
                   onAdd={() =>
                     setTicketTiers([
                       ...ticketTiers,
-                      { name: '', description: '', priceInCents: 0, quantity: 0, hideUntilPreviousSoldOut: false },
+                      {
+                        name: '',
+                        description: '',
+                        priceInCents: 0,
+                        quantity: 0,
+                        hideUntilPreviousSoldOut: false,
+                      },
                     ])
                   }
-                  onRemove={(index) => setTicketTiers(ticketTiers.filter((_, i) => i !== index))}
-                  addLabel="Add Ticket Tier"
+                  onRemove={index =>
+                    setTicketTiers(ticketTiers.filter((_, i) => i !== index))
+                  }
+                  addLabel='Add Ticket Tier'
                   minItems={1}
                   maxItems={5}
                   renderRow={(tier, index) => (
-                    <div className="space-y-3 p-4 rounded-md bg-white/5 border border-white/10">
-                      <div className="grid grid-cols-3 gap-3">
-                        <div className="space-y-1">
-                          <Label className="text-white/70 text-xs">Name</Label>
+                    <div className='space-y-3 p-4 rounded-md bg-white/5 border border-white/10'>
+                      <div className='grid grid-cols-3 gap-3'>
+                        <div className='space-y-1'>
+                          <Label className='text-white/70 text-xs'>Name</Label>
                           <Input
                             value={tier.name}
-                            onChange={(e) => {
+                            onChange={e => {
                               const updated = [...ticketTiers];
                               updated[index].name = e.target.value;
                               setTicketTiers(updated);
                             }}
-                            placeholder="e.g., General Admission"
-                            className="bg-black/40 border-white/20 text-white"
+                            placeholder='e.g., General Admission'
+                            className='bg-black/40 border-white/20 text-white'
                           />
                         </div>
-                        <div className="space-y-1">
-                          <Label className="text-white/70 text-xs">Price ($)</Label>
+                        <div className='space-y-1'>
+                          <Label className='text-white/70 text-xs'>
+                            Price ($)
+                          </Label>
                           <Input
-                            type="number"
-                            min="0"
-                            step="1"
-                            value={tier.priceInCents === 0 ? '' : (tier.priceInCents / 100).toString()}
-                            onChange={(e) => {
+                            type='number'
+                            min='0'
+                            step='1'
+                            value={
+                              tier.priceInCents === 0
+                                ? ''
+                                : (tier.priceInCents / 100).toString()
+                            }
+                            onChange={e => {
                               const updated = [...ticketTiers];
-                              const value = e.target.value === '' ? 0 : parseFloat(e.target.value);
-                              updated[index].priceInCents = Math.max(0, Math.round(value * 100));
+                              const value =
+                                e.target.value === ''
+                                  ? 0
+                                  : parseFloat(e.target.value);
+                              updated[index].priceInCents = Math.max(
+                                0,
+                                Math.round(value * 100)
+                              );
                               setTicketTiers(updated);
                             }}
-                            onFocus={(e) => e.target.select()}
-                            placeholder="0"
-                            className="bg-black/40 border-white/20 text-white"
+                            onFocus={e => e.target.select()}
+                            placeholder='0'
+                            className='bg-black/40 border-white/20 text-white'
                           />
                         </div>
-                        <div className="space-y-1">
-                          <Label className="text-white/70 text-xs">Quantity</Label>
+                        <div className='space-y-1'>
+                          <Label className='text-white/70 text-xs'>
+                            Quantity
+                          </Label>
                           <Input
-                            type="number"
-                            min="1"
-                            step="1"
-                            value={tier.quantity === 0 ? '' : tier.quantity.toString()}
-                            onChange={(e) => {
+                            type='number'
+                            min='1'
+                            step='1'
+                            value={
+                              tier.quantity === 0
+                                ? ''
+                                : tier.quantity.toString()
+                            }
+                            onChange={e => {
                               const updated = [...ticketTiers];
-                              const value = e.target.value === '' ? 0 : parseInt(e.target.value);
+                              const value =
+                                e.target.value === ''
+                                  ? 0
+                                  : parseInt(e.target.value);
                               updated[index].quantity = Math.max(1, value);
                               setTicketTiers(updated);
                             }}
-                            onFocus={(e) => e.target.select()}
-                            placeholder="0"
-                            className="bg-black/40 border-white/20 text-white"
+                            onFocus={e => e.target.select()}
+                            placeholder='0'
+                            className='bg-black/40 border-white/20 text-white'
                           />
                         </div>
                       </div>
-                      <div className="space-y-1">
-                        <Label className="text-white/70 text-xs">Description (Optional)</Label>
+                      <div className='space-y-1'>
+                        <Label className='text-white/70 text-xs'>
+                          Description (Optional)
+                        </Label>
                         <Input
                           value={tier.description || ''}
-                          onChange={(e) => {
+                          onChange={e => {
                             const updated = [...ticketTiers];
                             updated[index].description = e.target.value;
                             setTicketTiers(updated);
                           }}
-                          placeholder="e.g., Includes coat check and one drink"
-                          className="bg-black/40 border-white/20 text-white"
+                          placeholder='e.g., Includes coat check and one drink'
+                          className='bg-black/40 border-white/20 text-white'
                         />
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className='flex items-center gap-2'>
                         <Checkbox
                           id={`tier-${index}-hide`}
                           checked={tier.hideUntilPreviousSoldOut}
-                          onCheckedChange={(checked) => {
+                          onCheckedChange={checked => {
                             const updated = [...ticketTiers];
-                            updated[index].hideUntilPreviousSoldOut = checked === true;
+                            updated[index].hideUntilPreviousSoldOut =
+                              checked === true;
                             setTicketTiers(updated);
                           }}
                         />
-                        <Label htmlFor={`tier-${index}-hide`} className="text-white/70 text-sm cursor-pointer">
+                        <Label
+                          htmlFor={`tier-${index}-hide`}
+                          className='text-white/70 text-sm cursor-pointer'
+                        >
                           Hide until previous tier sold out
                         </Label>
                       </div>
@@ -538,19 +598,25 @@ export const FmCreateEventButton = ({
                   )}
                 />
                 {venueCapacity > 0 && (
-                  <div className="flex items-center justify-between text-sm pt-2">
-                    <span className={cn(
-                      'text-white/70',
-                      ticketsOverCapacity && 'text-fm-crimson',
-                    )}>
+                  <div className='flex items-center justify-between text-sm pt-2'>
+                    <span
+                      className={cn(
+                        'text-white/70',
+                        ticketsOverCapacity && 'text-fm-crimson'
+                      )}
+                    >
                       {getTicketStatusMessage()}
                     </span>
-                    <span className={cn(
-                      'font-semibold',
-                      ticketsUnderCapacity && 'text-white/50',
-                      ticketsOverCapacity && 'text-fm-crimson',
-                      !ticketsUnderCapacity && !ticketsOverCapacity && 'text-fm-gold'
-                    )}>
+                    <span
+                      className={cn(
+                        'font-semibold',
+                        ticketsUnderCapacity && 'text-white/50',
+                        ticketsOverCapacity && 'text-fm-crimson',
+                        !ticketsUnderCapacity &&
+                          !ticketsOverCapacity &&
+                          'text-fm-gold'
+                      )}
+                    >
                       {totalTickets} / {venueCapacity}
                     </span>
                   </div>
@@ -560,17 +626,17 @@ export const FmCreateEventButton = ({
           },
         ]}
         actions={
-          <div className="flex gap-3">
+          <div className='flex gap-3'>
             <Button
               onClick={handleCancel}
-              variant="outline"
-              className="flex-1 border-white/20 hover:bg-white/10"
+              variant='outline'
+              className='flex-1 border-white/20 hover:bg-white/10'
             >
               Cancel
             </Button>
             <Button
               onClick={handleSubmit}
-              className="flex-1 bg-fm-gold hover:bg-fm-gold/90 text-black"
+              className='flex-1 bg-fm-gold hover:bg-fm-gold/90 text-black'
             >
               Create Event
             </Button>
@@ -580,4 +646,3 @@ export const FmCreateEventButton = ({
     </>
   );
 };
-

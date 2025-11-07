@@ -47,7 +47,7 @@ export function FmCommonBackButton({
       variant={variant}
       className={cn('gap-2', className)}
     >
-      <Icon className="h-4 w-4" />
+      <Icon className='h-4 w-4' />
       {text}
     </Button>
   );

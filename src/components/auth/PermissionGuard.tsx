@@ -16,43 +16,49 @@ interface PermissionGuardProps {
 
 /**
  * Guard component that shows children only if user has required permissions/roles
- * 
+ *
  * @example
  * // Show content only if user can manage organizations
  * <PermissionGuard permission={PERMISSIONS.MANAGE_ORGANIZATION}>
  *   <OrganizationTools />
  * </PermissionGuard>
- * 
+ *
  * @example
  * // Show content only if user has admin or developer role
  * <PermissionGuard role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
  *   <DevControls />
  * </PermissionGuard>
- * 
+ *
  * @example
  * // Show content only if user has ALL specified permissions
- * <PermissionGuard 
- *   permission={[PERMISSIONS.MANAGE_EVENTS, PERMISSIONS.SCAN_TICKETS]} 
+ * <PermissionGuard
+ *   permission={[PERMISSIONS.MANAGE_EVENTS, PERMISSIONS.SCAN_TICKETS]}
  *   requireAll
  * >
  *   <AdvancedEventTools />
  * </PermissionGuard>
  */
-export const PermissionGuard = ({ 
-  children, 
-  permission, 
+export const PermissionGuard = ({
+  children,
+  permission,
   role,
   requireAll = false,
-  fallback = null 
+  fallback = null,
 }: PermissionGuardProps) => {
-  const { hasPermission, hasRole, hasAllPermissions, hasAnyPermission, hasAnyRole } = useUserPermissions();
+  const {
+    hasPermission,
+    hasRole,
+    hasAllPermissions,
+    hasAnyPermission,
+    hasAnyRole,
+  } = useUserPermissions();
 
   let hasAccess = true;
 
   // Check permissions
   if (permission) {
     const permissions = Array.isArray(permission) ? permission : [permission];
-    hasAccess = requireAll 
+    hasAccess = requireAll
       ? hasAllPermissions(...permissions)
       : hasAnyPermission(...permissions);
   }

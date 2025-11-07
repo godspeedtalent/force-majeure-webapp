@@ -16,23 +16,26 @@ interface UndercardSectionProps {
   setFormState: React.Dispatch<React.SetStateAction<EventFormState>>;
 }
 
-export const UndercardSection = ({ formState, setFormState }: UndercardSectionProps) => {
+export const UndercardSection = ({
+  formState,
+  setFormState,
+}: UndercardSectionProps) => {
   const handleAdd = () => {
-    setFormState((prev) => ({
+    setFormState(prev => ({
       ...prev,
       undercardArtists: [...prev.undercardArtists, { artistId: '' }],
     }));
   };
 
   const handleRemove = (index: number) => {
-    setFormState((prev) => ({
+    setFormState(prev => ({
       ...prev,
       undercardArtists: prev.undercardArtists.filter((_, i) => i !== index),
     }));
   };
 
   const handleArtistChange = (index: number, artistId: string) => {
-    setFormState((prev) => {
+    setFormState(prev => {
       const updated = [...prev.undercardArtists];
       updated[index].artistId = artistId;
       return { ...prev, undercardArtists: updated };
@@ -44,14 +47,14 @@ export const UndercardSection = ({ formState, setFormState }: UndercardSectionPr
       items={formState.undercardArtists}
       onAdd={handleAdd}
       onRemove={handleRemove}
-      addLabel="Add Undercard Artist"
+      addLabel='Add Undercard Artist'
       minItems={0}
       maxItems={5}
       renderRow={(item, index) => (
         <FmArtistSearchDropdown
           value={item.artistId}
-          onChange={(id) => handleArtistChange(index, id)}
-          placeholder="Search for undercard artist..."
+          onChange={id => handleArtistChange(index, id)}
+          placeholder='Search for undercard artist...'
         />
       )}
     />

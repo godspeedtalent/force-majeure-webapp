@@ -44,8 +44,8 @@ export function useEventForm(options: UseEventFormOptions) {
         headliner && venue
           ? `${headliner.name} @ ${venue.name}`
           : headliner
-          ? headliner.name
-          : 'Event';
+            ? headliner.name
+            : 'Event';
 
       // Format date and time
       const eventDateString = formState.eventDate
@@ -62,7 +62,9 @@ export function useEventForm(options: UseEventFormOptions) {
         venue_id: formState.venueId || null,
         date: eventDateString,
         time: eventTimeString,
-        doors_time: formState.isAfterHours ? undefined : (formState.endTime || undefined),
+        doors_time: formState.isAfterHours
+          ? undefined
+          : formState.endTime || undefined,
         image_url: formState.heroImage || null,
         status: 'published' as const,
       };
@@ -84,7 +86,7 @@ export function useEventForm(options: UseEventFormOptions) {
 
       // Update undercard artists
       const artistIds = formState.undercardArtists
-        .map((a) => a.artistId)
+        .map(a => a.artistId)
         .filter(Boolean);
       await eventService.updateUndercardArtists(resultEventId, artistIds);
 
@@ -113,8 +115,11 @@ export function useEventForm(options: UseEventFormOptions) {
     },
     {
       successMessage:
-        mode === 'edit' ? 'Event updated successfully' : 'Event created successfully',
-      errorMessage: mode === 'edit' ? 'Failed to update event' : 'Failed to create event',
+        mode === 'edit'
+          ? 'Event updated successfully'
+          : 'Event created successfully',
+      errorMessage:
+        mode === 'edit' ? 'Failed to update event' : 'Failed to create event',
       onSuccess: () => {
         // Delay callback to ensure DB consistency
         setTimeout(() => {

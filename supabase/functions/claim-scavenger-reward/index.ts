@@ -99,15 +99,18 @@ serve(async req => {
 
     // Parse and validate input
     const requestBody = await req.json();
-    
+
     let validatedInput;
     try {
       validatedInput = ClaimSchema.parse(requestBody);
     } catch (validationError) {
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           error: 'Invalid input data',
-          details: validationError instanceof z.ZodError ? validationError.errors : 'Validation failed'
+          details:
+            validationError instanceof z.ZodError
+              ? validationError.errors
+              : 'Validation failed',
         }),
         {
           status: 400,

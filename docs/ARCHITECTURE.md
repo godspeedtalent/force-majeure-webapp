@@ -99,6 +99,7 @@ import { formatDate } from '@utils/date';
 ## Migration Guide
 
 ### Phase 1: Setup (✅ Completed)
+
 - [x] Created new directory structure
 - [x] Configured TypeScript path aliases
 - [x] Created index files for all modules
@@ -106,6 +107,7 @@ import { formatDate } from '@utils/date';
 ### Phase 2: Gradual Migration (In Progress)
 
 **Migration Strategy:**
+
 1. Start with one complete feature (recommended: `auth`)
 2. Move files to the new structure
 3. Update imports to use new path aliases
@@ -117,6 +119,7 @@ import { formatDate } from '@utils/date';
 #### Migrating a Feature (Example: Auth)
 
 1. **Identify all auth-related files:**
+
    ```
    src/features/auth/         (existing)
    src/components/auth/       (needs migration)
@@ -124,28 +127,31 @@ import { formatDate } from '@utils/date';
    ```
 
 2. **Move components:**
+
    ```bash
    # Move feature components
    mv src/components/auth/* src/features-new/auth/components/
-   
+
    # Move pages
    mv src/pages/Auth.tsx src/features-new/auth/pages/
    ```
 
 3. **Update exports in index files:**
+
    ```typescript
    // src/features-new/auth/components/index.ts
    export { PermissionGuard } from './PermissionGuard';
-   
+
    // src/features-new/auth/pages/index.ts
    export { default as AuthPage } from './Auth';
    ```
 
 4. **Update imports throughout the app:**
+
    ```typescript
    // Before
    import { PermissionGuard } from '@/components/auth/PermissionGuard';
-   
+
    // After
    import { PermissionGuard } from '@features/auth';
    ```
@@ -158,18 +164,21 @@ import { formatDate } from '@utils/date';
 #### What Goes Where?
 
 **Feature-Specific Code** (`src/features/[feature]/`)
+
 - Components used ONLY by this feature
 - Business logic specific to this feature
 - Types defined and used only within this feature
 - Pages that belong to this feature
 
 **Shared Code** (`src/shared/`)
+
 - Components used by 2+ features (Button, Card, Modal, etc.)
 - Utility functions used across features
 - Global types (User, ApiResponse, etc.)
 - Common hooks (useAuth, useFetch, etc.)
 
 **Core Code** (`src/core/`)
+
 - App-wide routing configuration
 - Global providers (ThemeProvider, AuthProvider)
 - API client setup
@@ -178,6 +187,7 @@ import { formatDate } from '@utils/date';
 ### Phase 3: Cleanup (Future)
 
 Once migration is complete:
+
 1. Remove old `src/components/` directory
 2. Remove old `src/pages/` directory structure
 3. Update documentation
@@ -186,11 +196,13 @@ Once migration is complete:
 ## Best Practices
 
 ### 1. Feature Independence
+
 - Features should be as independent as possible
 - Avoid direct dependencies between features
 - Share code through the `shared/` directory
 
 ### 2. Barrel Exports
+
 - Always use `index.ts` files to export public APIs
 - Keep internal implementation details private
 
@@ -203,15 +215,18 @@ import { validateEmail } from '@features/auth';
 ```
 
 ### 3. Consistent Structure
+
 - Every feature follows the same structure
 - Makes navigation predictable
 - Easier onboarding for new developers
 
 ### 4. Co-location
+
 - Keep related files close together
 - Component + styles + tests + types in same directory
 
 ### 5. Clear Boundaries
+
 ```typescript
 // Feature can import from shared
 import { Button } from '@shared/components';
@@ -291,6 +306,7 @@ import { api } from '@core/api';
 ## Questions?
 
 If you have questions about where something should go:
+
 1. Is it used by multiple features? → `shared/`
 2. Is it app-wide infrastructure? → `core/`
 3. Is it specific to one domain? → `features/[domain]/`

@@ -65,7 +65,10 @@ export const FmEditVenueButton = ({
     } catch (error) {
       console.error('Error loading venue data:', error);
       toast.error('Failed to load venue data', {
-        description: error instanceof Error ? error.message : 'An unexpected error occurred',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'An unexpected error occurred',
       });
     } finally {
       setIsLoadingData(false);
@@ -109,7 +112,7 @@ export const FmEditVenueButton = ({
       if (error) throw error;
 
       onVenueUpdated?.();
-      
+
       setIsLoading(false);
       toast.success('Venue Updated', {
         description: `${name} has been successfully updated!`,
@@ -118,7 +121,10 @@ export const FmEditVenueButton = ({
       console.error('Error updating venue:', error);
       setIsLoading(false);
       toast.error('Failed to update venue', {
-        description: error instanceof Error ? error.message : 'An unexpected error occurred',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'An unexpected error occurred',
       });
     }
   };
@@ -134,32 +140,34 @@ export const FmEditVenueButton = ({
       ) : (
         <Button
           onClick={() => setIsModalOpen(true)}
-          variant="outline"
-          size="sm"
-          className="gap-2"
+          variant='outline'
+          size='sm'
+          className='gap-2'
         >
-          <Edit className="h-4 w-4" />
+          <Edit className='h-4 w-4' />
           Edit Venue
         </Button>
       )}
 
-      {isLoading && <FmCommonLoadingOverlay message="Updating venue..." />}
+      {isLoading && <FmCommonLoadingOverlay message='Updating venue...' />}
 
       <FmCommonFormModal
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
-        title="Edit Venue"
-        description="Update venue information"
-        className="max-w-2xl"
+        title='Edit Venue'
+        description='Update venue information'
+        className='max-w-2xl'
         sections={
           isLoadingData
             ? [
                 {
                   content: (
-                    <div className="flex items-center justify-center py-12">
-                      <div className="flex flex-col items-center gap-4">
-                        <FmCommonLoadingSpinner size="lg" />
-                        <p className="text-white/70 text-sm">Loading venue data...</p>
+                    <div className='flex items-center justify-center py-12'>
+                      <div className='flex flex-col items-center gap-4'>
+                        <FmCommonLoadingSpinner size='lg' />
+                        <p className='text-white/70 text-sm'>
+                          Loading venue data...
+                        </p>
                       </div>
                     </div>
                   ),
@@ -169,56 +177,62 @@ export const FmEditVenueButton = ({
                 {
                   title: 'Venue Details',
                   content: (
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label className="text-white">Venue Name *</Label>
+                    <div className='space-y-4'>
+                      <div className='space-y-2'>
+                        <Label className='text-white'>Venue Name *</Label>
                         <Input
                           value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          placeholder="Enter venue name"
-                          className="bg-black/40 border-white/20 text-white"
+                          onChange={e => setName(e.target.value)}
+                          placeholder='Enter venue name'
+                          className='bg-black/40 border-white/20 text-white'
                         />
                       </div>
 
-                      <div className="space-y-2">
-                        <Label className="text-white">City</Label>
+                      <div className='space-y-2'>
+                        <Label className='text-white'>City</Label>
                         <FmCitySearchDropdown
                           value={cityId}
                           onChange={setCityId}
-                          placeholder="Search for city..."
+                          placeholder='Search for city...'
                         />
                       </div>
 
-                      <div className="space-y-2">
-                        <Label className="text-white">Address</Label>
+                      <div className='space-y-2'>
+                        <Label className='text-white'>Address</Label>
                         <Input
                           value={address}
-                          onChange={(e) => setAddress(e.target.value)}
-                          placeholder="Enter venue address"
-                          className="bg-black/40 border-white/20 text-white"
+                          onChange={e => setAddress(e.target.value)}
+                          placeholder='Enter venue address'
+                          className='bg-black/40 border-white/20 text-white'
                         />
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label className="text-white">Capacity</Label>
+                      <div className='grid grid-cols-2 gap-4'>
+                        <div className='space-y-2'>
+                          <Label className='text-white'>Capacity</Label>
                           <Input
-                            type="number"
-                            min="1"
+                            type='number'
+                            min='1'
                             value={capacity}
-                            onChange={(e) => setCapacity(e.target.value === '' ? '' : Number(e.target.value))}
-                            placeholder="e.g., 500"
-                            className="bg-black/40 border-white/20 text-white"
+                            onChange={e =>
+                              setCapacity(
+                                e.target.value === ''
+                                  ? ''
+                                  : Number(e.target.value)
+                              )
+                            }
+                            placeholder='e.g., 500'
+                            className='bg-black/40 border-white/20 text-white'
                           />
                         </div>
-                        <div className="space-y-2">
-                          <Label className="text-white">Website</Label>
+                        <div className='space-y-2'>
+                          <Label className='text-white'>Website</Label>
                           <Input
-                            type="url"
+                            type='url'
                             value={website}
-                            onChange={(e) => setWebsite(e.target.value)}
-                            placeholder="https://..."
-                            className="bg-black/40 border-white/20 text-white"
+                            onChange={e => setWebsite(e.target.value)}
+                            placeholder='https://...'
+                            className='bg-black/40 border-white/20 text-white'
                           />
                         </div>
                       </div>
@@ -229,17 +243,17 @@ export const FmEditVenueButton = ({
         }
         actions={
           !isLoadingData && (
-            <div className="flex gap-3">
+            <div className='flex gap-3'>
               <Button
                 onClick={handleCancel}
-                variant="outline"
-                className="flex-1 border-white/20 hover:bg-white/10"
+                variant='outline'
+                className='flex-1 border-white/20 hover:bg-white/10'
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleSubmit}
-                className="flex-1 bg-fm-gold hover:bg-fm-gold/90 text-black"
+                className='flex-1 bg-fm-gold hover:bg-fm-gold/90 text-black'
               >
                 Update Venue
               </Button>

@@ -6,7 +6,10 @@ interface FmCommonLoadingSpinnerProps {
   className?: string;
 }
 
-export function FmCommonLoadingSpinner({ size = 'md', className }: FmCommonLoadingSpinnerProps) {
+export function FmCommonLoadingSpinner({
+  size = 'md',
+  className,
+}: FmCommonLoadingSpinnerProps) {
   const sizeClasses = {
     sm: 'h-4 w-4',
     md: 'h-6 w-6',
@@ -14,8 +17,8 @@ export function FmCommonLoadingSpinner({ size = 'md', className }: FmCommonLoadi
   };
 
   return (
-    <Loader2 
-      className={cn('animate-spin text-fm-gold', sizeClasses[size], className)} 
+    <Loader2
+      className={cn('animate-spin text-fm-gold', sizeClasses[size], className)}
     />
   );
 }

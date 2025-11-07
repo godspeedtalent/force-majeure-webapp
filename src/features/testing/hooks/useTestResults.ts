@@ -29,7 +29,10 @@ export function useTestResults(results: TestResult[]) {
     const failed = results.filter(r => r.status === 'failed').length;
     const skipped = results.filter(r => r.status === 'skipped').length;
 
-    const totalExecutionTime = results.reduce((sum, r) => sum + r.executionTime, 0);
+    const totalExecutionTime = results.reduce(
+      (sum, r) => sum + r.executionTime,
+      0
+    );
     const averageExecutionTime = total > 0 ? totalExecutionTime / total : 0;
     const successRate = total > 0 ? (passed / total) * 100 : 0;
 
@@ -47,8 +50,9 @@ export function useTestResults(results: TestResult[]) {
   const exportResults = (format: 'json' | 'csv' = 'json') => {
     if (format === 'json') {
       const dataStr = JSON.stringify(results, null, 2);
-      const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-      
+      const dataUri =
+        'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+
       const exportFileDefaultName = `test-results-${Date.now()}.json`;
       const linkElement = document.createElement('a');
       linkElement.setAttribute('href', dataUri);
@@ -56,7 +60,12 @@ export function useTestResults(results: TestResult[]) {
       linkElement.click();
     } else {
       // CSV export
-      const headers = ['Test Name', 'Status', 'Execution Time (ms)', 'Error Message'];
+      const headers = [
+        'Test Name',
+        'Status',
+        'Execution Time (ms)',
+        'Error Message',
+      ];
       const rows = results.map(r => [
         r.testName,
         r.status,
@@ -69,9 +78,10 @@ export function useTestResults(results: TestResult[]) {
         ...rows.map(row => row.map(cell => `"${cell}"`).join(',')),
       ].join('\n');
 
-      const dataUri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
+      const dataUri =
+        'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
       const exportFileDefaultName = `test-results-${Date.now()}.csv`;
-      
+
       const linkElement = document.createElement('a');
       linkElement.setAttribute('href', dataUri);
       linkElement.setAttribute('download', exportFileDefaultName);

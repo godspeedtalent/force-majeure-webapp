@@ -39,7 +39,9 @@ export const EventRow = ({ event }: EventRowProps) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return {
-      weekday: date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase(),
+      weekday: date
+        .toLocaleDateString('en-US', { weekday: 'short' })
+        .toUpperCase(),
       month: date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
       day: date.getDate().toString(),
       fullDate: date.toLocaleDateString('en-US', {
@@ -145,8 +147,8 @@ export const EventRow = ({ event }: EventRowProps) => {
           weekday={dateObj.weekday}
           month={dateObj.month}
           day={dateObj.day}
-          size="sm"
-          className="border-l rounded-none"
+          size='sm'
+          className='border-l rounded-none'
         />
       </div>
 

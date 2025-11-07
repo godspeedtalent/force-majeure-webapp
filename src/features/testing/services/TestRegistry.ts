@@ -5,7 +5,9 @@ class TestRegistryService {
 
   register(suite: TestSuite) {
     if (this.suites.has(suite.id)) {
-      console.warn(`Test suite with id "${suite.id}" is already registered. Overwriting.`);
+      console.warn(
+        `Test suite with id "${suite.id}" is already registered. Overwriting.`
+      );
     }
     this.suites.set(suite.id, suite);
   }
@@ -49,7 +51,9 @@ class TestRegistryService {
         errors.push(`Test case at index ${index} must have a name`);
       }
       if (typeof testCase.execute !== 'function') {
-        errors.push(`Test case "${testCase.name}" must have an execute function`);
+        errors.push(
+          `Test case "${testCase.name}" must have an execute function`
+        );
       }
     });
 

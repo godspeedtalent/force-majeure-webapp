@@ -1,6 +1,6 @@
 /**
  * FmCommonInfoCard
- * 
+ *
  * Standardized info card for displaying metadata with icon.
  * Uses FmCommonCard for base styling and FmCommonIconWithText for icon display.
  * Used for event details, venue info, and other key-value displays.
@@ -61,14 +61,16 @@ export const FmCommonInfoCard = ({
   const config = sizeConfig[size];
 
   return (
-    <Card className={cn(
-      'border-border',
-      'transition-all duration-300',
-      'hover:bg-white/5',
-      'hover:border-fm-gold/50',
-      'hover:shadow-[0_0_12px_rgba(212,175,55,0.15)]',
-      className
-    )}>
+    <Card
+      className={cn(
+        'border-border',
+        'transition-all duration-300',
+        'hover:bg-white/5',
+        'hover:border-fm-gold/50',
+        'hover:shadow-[0_0_12px_rgba(212,175,55,0.15)]',
+        className
+      )}
+    >
       <CardContent
         className={cn(
           'flex gap-3',
@@ -82,13 +84,7 @@ export const FmCommonInfoCard = ({
             layout === 'vertical' && 'w-full'
           )}
         >
-          <Icon
-            className={cn(
-              config.icon,
-              'text-accent',
-              iconClassName
-            )}
-          />
+          <Icon className={cn(config.icon, 'text-accent', iconClassName)} />
         </div>
         <div className='flex-1 min-w-0'>
           <p className={cn(config.label, 'text-muted-foreground font-medium')}>

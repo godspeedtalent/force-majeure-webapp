@@ -45,14 +45,15 @@ export const Breadcrumbs = () => {
       <Breadcrumb>
         <BreadcrumbList>
           {breadcrumbs.map((item, index) => {
-            const shouldAnimate = animatingAfter !== null && index > animatingAfter;
+            const shouldAnimate =
+              animatingAfter !== null && index > animatingAfter;
 
             return (
               <div
                 key={item.path}
                 className={cn(
-                  "flex items-center gap-1.5 transition-all duration-300",
-                  shouldAnimate && "opacity-0 -translate-y-2"
+                  'flex items-center gap-1.5 transition-all duration-300',
+                  shouldAnimate && 'opacity-0 -translate-y-2'
                 )}
               >
                 {index > 0 && <BreadcrumbSeparator />}
@@ -60,8 +61,8 @@ export const Breadcrumbs = () => {
                   {item.isLast ? (
                     <BreadcrumbPage>
                       {isLoading ? (
-                        <span className="flex items-center gap-1">
-                          <Loader2 className="h-3 w-3 animate-spin" />
+                        <span className='flex items-center gap-1'>
+                          <Loader2 className='h-3 w-3 animate-spin' />
                           {item.label}
                         </span>
                       ) : (
@@ -71,11 +72,11 @@ export const Breadcrumbs = () => {
                   ) : (
                     <BreadcrumbLink asChild>
                       <button
-                        onClick={(e) => {
+                        onClick={e => {
                           e.preventDefault();
                           handleBreadcrumbClick(item.path, index);
                         }}
-                        className="hover:underline cursor-pointer"
+                        className='hover:underline cursor-pointer'
                       >
                         {item.label}
                       </button>

@@ -29,9 +29,14 @@ export const FmUndercardList = ({
   const sizeClasses = size === 'sm' ? 'text-xs gap-x-2' : 'text-sm gap-x-3';
 
   return (
-    <div className={`flex flex-wrap items-center gap-y-1 text-muted-foreground/75 ${sizeClasses} ${className}`}>
+    <div
+      className={`flex flex-wrap items-center gap-y-1 text-muted-foreground/75 ${sizeClasses} ${className}`}
+    >
       {artists.map((artist, index) => (
-        <span key={`${artist.id ?? artist.name}-${index}`} className='flex items-center gap-2'>
+        <span
+          key={`${artist.id ?? artist.name}-${index}`}
+          className='flex items-center gap-2'
+        >
           {onArtistClick ? (
             <FmTextLink
               onClick={() => onArtistClick(artist)}

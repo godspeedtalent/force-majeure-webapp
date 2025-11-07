@@ -13,7 +13,10 @@ interface FmQueryInputProps {
 }
 
 export const FmQueryInput = forwardRef<HTMLInputElement, FmQueryInputProps>(
-  ({ placeholder, onQuery, isLoading = false, disabled = false, className }, ref) => {
+  (
+    { placeholder, onQuery, isLoading = false, disabled = false, className },
+    ref
+  ) => {
     const [value, setValue] = useState('');
     const [isQuerying, setIsQuerying] = useState(false);
 
@@ -45,7 +48,7 @@ export const FmQueryInput = forwardRef<HTMLInputElement, FmQueryInputProps>(
             type='text'
             placeholder={placeholder}
             value={value}
-            onChange={(e) => setValue(e.target.value.toUpperCase())}
+            onChange={e => setValue(e.target.value.toUpperCase())}
             onKeyDown={handleKeyDown}
             disabled={disabled || isProcessing}
             className={cn(

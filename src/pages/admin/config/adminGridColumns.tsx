@@ -25,7 +25,7 @@ export const artistColumns: DataGridColumn[] = [
     filterable: true,
     editable: true,
     type: 'url',
-    render: (value) =>
+    render: value =>
       value ? (
         <img
           src={value}
@@ -41,16 +41,13 @@ export const artistColumns: DataGridColumn[] = [
     label: 'Bio',
     filterable: true,
     editable: true,
-    render: (value) => {
+    render: value => {
       if (!value) {
         return <span className='text-xs text-muted-foreground'>-</span>;
       }
       const text = String(value);
       return (
-        <span
-          className='text-xs text-muted-foreground'
-          title={text}
-        >
+        <span className='text-xs text-muted-foreground' title={text}>
           {text.length > 80 ? `${text.slice(0, 77)}…` : text}
         </span>
       );
@@ -89,7 +86,7 @@ export const userColumns: DataGridColumn[] = [
     filterable: false,
     editable: true,
     type: 'url',
-    render: (value) =>
+    render: value =>
       value ? (
         <img
           src={value}
@@ -105,7 +102,7 @@ export const userColumns: DataGridColumn[] = [
     label: 'Roles',
     filterable: false,
     readonly: true,
-    render: (value) => {
+    render: value => {
       if (!value || !Array.isArray(value) || value.length === 0) {
         return <span className='text-xs text-muted-foreground'>No roles</span>;
       }
@@ -128,7 +125,7 @@ export const userColumns: DataGridColumn[] = [
     label: 'Joined',
     sortable: true,
     readonly: true,
-    render: (value) => new Date(value).toLocaleDateString(),
+    render: value => new Date(value).toLocaleDateString(),
   },
 ];
 
@@ -149,7 +146,7 @@ export const venueColumns: DataGridColumn[] = [
     filterable: false,
     editable: true,
     type: 'url',
-    render: (value) =>
+    render: value =>
       value ? (
         <img
           src={value}
@@ -182,13 +179,13 @@ export const venueColumns: DataGridColumn[] = [
     label: 'Capacity',
     sortable: true,
     editable: true,
-    render: (value) => value ? value.toLocaleString() : '-',
+    render: value => (value ? value.toLocaleString() : '-'),
   },
   {
     key: 'created_at',
     label: 'Created',
     sortable: true,
     readonly: true,
-    render: (value) => new Date(value).toLocaleDateString(),
+    render: value => new Date(value).toLocaleDateString(),
   },
 ];

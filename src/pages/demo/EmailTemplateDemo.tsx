@@ -15,8 +15,8 @@ import { EmailPreview } from '@/components/demo/EmailPreview';
 export default function EmailTemplateDemo() {
   return (
     <DemoLayout
-      title="Email Template Demo"
-      description="Preview and test order receipt email templates"
+      title='Email Template Demo'
+      description='Preview and test order receipt email templates'
       icon={Mail}
       condensed={false}
     >

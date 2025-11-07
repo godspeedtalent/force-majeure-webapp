@@ -17,8 +17,13 @@ interface FmPromoCodeInputProps {
   className?: string;
 }
 
-export const FmPromoCodeInput = ({ onPromoCodeApplied, className }: FmPromoCodeInputProps) => {
-  const [validationState, setValidationState] = useState<'idle' | 'valid' | 'invalid'>('idle');
+export const FmPromoCodeInput = ({
+  onPromoCodeApplied,
+  className,
+}: FmPromoCodeInputProps) => {
+  const [validationState, setValidationState] = useState<
+    'idle' | 'valid' | 'invalid'
+  >('idle');
   const [appliedPromo, setAppliedPromo] = useState<PromoCode | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -56,7 +61,7 @@ export const FmPromoCodeInput = ({ onPromoCodeApplied, className }: FmPromoCodeI
 
   const getDiscountText = () => {
     if (!appliedPromo) return '';
-    
+
     if (appliedPromo.discount_type === 'percentage') {
       return `${appliedPromo.discount_value}% off`;
     } else {
@@ -74,15 +79,14 @@ export const FmPromoCodeInput = ({ onPromoCodeApplied, className }: FmPromoCodeI
   return (
     <div className={cn('space-y-2', className)}>
       {validationState !== 'valid' ? (
-        <FmQueryInput
-          placeholder='Enter promo code'
-          onQuery={handleQuery}
-        />
+        <FmQueryInput placeholder='Enter promo code' onQuery={handleQuery} />
       ) : (
         <div className='flex items-center gap-2'>
           <div className='flex-1 flex items-center gap-1.5 text-xs text-green-600 bg-green-600/10 px-3 py-2 rounded-md'>
             <CheckCircle2 className='h-3 w-3' />
-            <span>{appliedPromo?.code} applied: {getDiscountText()}</span>
+            <span>
+              {appliedPromo?.code} applied: {getDiscountText()}
+            </span>
           </div>
           <Button
             size='sm'
@@ -94,7 +98,7 @@ export const FmPromoCodeInput = ({ onPromoCodeApplied, className }: FmPromoCodeI
           </Button>
         </div>
       )}
-      
+
       {validationState === 'invalid' && (
         <div className='flex items-center gap-1.5 text-xs text-destructive'>
           <XCircle className='h-3 w-3' />

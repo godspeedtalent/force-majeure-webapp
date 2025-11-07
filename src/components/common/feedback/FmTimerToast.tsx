@@ -27,7 +27,7 @@ export const FmTimerToast = ({
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
-      setTimeLeft((prev) => {
+      setTimeLeft(prev => {
         if (prev <= 1) {
           if (intervalRef.current) clearInterval(intervalRef.current);
           onExpire();
@@ -56,26 +56,32 @@ export const FmTimerToast = ({
     let iconColor = 'text-fm-gold';
 
     if (progress > 80) {
-      barColor = progress > 95 ? 'bg-[hsl(348,60%,50%)]' : 'bg-gradient-to-r from-white to-[hsl(348,60%,50%)]';
+      barColor =
+        progress > 95
+          ? 'bg-[hsl(348,60%,50%)]'
+          : 'bg-gradient-to-r from-white to-[hsl(348,60%,50%)]';
       iconColor = progress > 95 ? 'text-[hsl(348,60%,50%)]' : 'text-white';
     } else if (progress > 0) {
-      barColor = progress < 20 ? 'bg-fm-gold' : 'bg-gradient-to-r from-fm-gold to-white';
+      barColor =
+        progress < 20 ? 'bg-fm-gold' : 'bg-gradient-to-r from-fm-gold to-white';
       iconColor = progress < 20 ? 'text-fm-gold' : 'text-white';
     }
 
     const content = (
-      <div className="relative w-full">
-        <div className="flex items-center gap-3 pb-3">
-          <Clock className={`h-4 w-4 flex-shrink-0 transition-colors duration-1000 ${iconColor}`} />
-          <div className="flex-1">
-            <div className="font-canela font-semibold">{title}</div>
-            <div className="text-xs text-muted-foreground">
+      <div className='relative w-full'>
+        <div className='flex items-center gap-3 pb-3'>
+          <Clock
+            className={`h-4 w-4 flex-shrink-0 transition-colors duration-1000 ${iconColor}`}
+          />
+          <div className='flex-1'>
+            <div className='font-canela font-semibold'>{title}</div>
+            <div className='text-xs text-muted-foreground'>
               {message || `${timeString} remaining`}
             </div>
           </div>
           {onAction && (
             <button
-              onClick={async (e) => {
+              onClick={async e => {
                 e.stopPropagation();
                 setIsExecuting(true);
                 try {
@@ -88,11 +94,11 @@ export const FmTimerToast = ({
                 }
               }}
               disabled={isExecuting}
-              className="text-xs text-fm-gold hover:text-white transition-colors disabled:opacity-50 flex items-center gap-1"
+              className='text-xs text-fm-gold hover:text-white transition-colors disabled:opacity-50 flex items-center gap-1'
             >
               {isExecuting ? (
                 <>
-                  <Loader2 className="h-3 w-3 animate-spin" />
+                  <Loader2 className='h-3 w-3 animate-spin' />
                   <span>Loading...</span>
                 </>
               ) : (
@@ -102,7 +108,7 @@ export const FmTimerToast = ({
           )}
         </div>
         {/* Progress bar */}
-        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-border/30">
+        <div className='absolute bottom-0 left-0 right-0 h-[2px] bg-border/30'>
           <div
             className={`h-full transition-all duration-1000 ease-linear ${barColor}`}
             style={{ width: `${progress}%` }}
@@ -115,7 +121,8 @@ export const FmTimerToast = ({
       id,
       duration: Infinity,
       position: 'bottom-left',
-      className: 'bg-black/80 backdrop-blur-md border border-white/20 text-white shadow-xl',
+      className:
+        'bg-black/80 backdrop-blur-md border border-white/20 text-white shadow-xl',
       style: {
         paddingBottom: '0.75rem',
       },

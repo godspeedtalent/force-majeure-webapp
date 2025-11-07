@@ -8,7 +8,11 @@
 
 import { User } from 'lucide-react';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/shadcn/avatar';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@/components/common/shadcn/avatar';
 import { cn } from '@/shared/utils/utils';
 import { FmAnimatedGradientAvatar } from './FmAnimatedGradientAvatar';
 
@@ -97,7 +101,8 @@ export const FmCommonUserPhoto = ({
         className={cn(
           'relative',
           config.container,
-          showBorder && 'ring-2 ring-border ring-offset-2 ring-offset-background rounded-md',
+          showBorder &&
+            'ring-2 ring-border ring-offset-2 ring-offset-background rounded-md',
           className
         )}
       >
@@ -113,16 +118,26 @@ export const FmCommonUserPhoto = ({
         className={cn(
           'relative overflow-hidden rounded-md bg-muted',
           config.container,
-          showBorder && 'ring-2 ring-border ring-offset-2 ring-offset-background',
+          showBorder &&
+            'ring-2 ring-border ring-offset-2 ring-offset-background',
           className
         )}
       >
         {src ? (
-          <img src={src} alt={name || 'User avatar'} className='w-full h-full object-cover' />
+          <img
+            src={src}
+            alt={name || 'User avatar'}
+            className='w-full h-full object-cover'
+          />
         ) : (
           <div className='w-full h-full flex items-center justify-center bg-gradient-gold'>
             {initials ? (
-              <span className={cn('text-black font-canela font-medium', config.text)}>
+              <span
+                className={cn(
+                  'text-black font-canela font-medium',
+                  config.text
+                )}
+              >
                 {initials}
               </span>
             ) : (

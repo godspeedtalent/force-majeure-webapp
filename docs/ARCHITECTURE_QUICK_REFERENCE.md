@@ -93,8 +93,8 @@ import { useAuth } from '../../hooks/useAuth';
 ```
 features/auth/
 ├── components/              Components ONLY used in auth
-│   ├── LoginForm.tsx       
-│   ├── SignupForm.tsx      
+│   ├── LoginForm.tsx
+│   ├── SignupForm.tsx
 │   └── index.ts             ← export { LoginForm, SignupForm }
 │
 ├── hooks/                   Hooks ONLY used in auth
@@ -125,11 +125,11 @@ features/auth/
 
 ```typescript
 // Features can import from:
-import { Button } from '@shared/components';     // ✓ shared
-import { api } from '@core/api';                 // ✓ core
+import { Button } from '@shared/components'; // ✓ shared
+import { api } from '@core/api'; // ✓ core
 
 // Shared can import from:
-import { api } from '@core/api';                 // ✓ core
+import { api } from '@core/api'; // ✓ core
 // (but NOT from features)
 
 // Core can import from:
@@ -140,47 +140,51 @@ import { api } from '@core/api';                 // ✓ core
 
 ```typescript
 // Features CANNOT import from other features:
-import { EventCard } from '@features/events';    // ✗ in auth feature
+import { EventCard } from '@features/events'; // ✗ in auth feature
 
 // Shared CANNOT import from features:
-import { useAuth } from '@features/auth';        // ✗ creates circular deps
+import { useAuth } from '@features/auth'; // ✗ creates circular deps
 
 // Core CANNOT import from features or shared:
-import { Button } from '@shared/components';     // ✗ wrong direction
+import { Button } from '@shared/components'; // ✗ wrong direction
 ```
 
 ## 🎨 Component Categories
 
 ### Primitive Components → `@shared/components/primitives/`
+
 - Button, Input, Card, Badge, etc.
 - Basic building blocks
 - No business logic
 
 ### Layout Components → `@core/layouts/`
+
 - MainLayout, AuthLayout, AdminLayout
 - Page structure
 - App-wide layouts only
 
 ### Feature Components → `@features/[name]/components/`
+
 - LoginForm, EventCard, TicketList
 - Feature-specific
 - Contains business logic
 
 ### Composite Components → `@shared/components/`
+
 - SearchBar, DataTable, FileUploader
 - Reusable across features
 - Complex but generic
 
 ## 📝 Naming Conventions
 
-| Type | Convention | Example |
-|------|-----------|---------|
-| Components | PascalCase | `UserProfile.tsx` |
-| Hooks | camelCase + use | `useAuth.ts` |
-| Services | camelCase + Service | `authService.ts` |
-| Utils | camelCase | `formatDate.ts` |
-| Types | PascalCase | `User.ts` |
-| Constants | UPPER_SNAKE | `API_ENDPOINTS.ts` |
+| Type       | Convention          | Example            |
+| ---------- | ------------------- | ------------------ |
+| Components | PascalCase          | `UserProfile.tsx`  |
+| Hooks      | camelCase + use     | `useAuth.ts`       |
+| Services   | camelCase + Service | `authService.ts`   |
+| Utils      | camelCase           | `formatDate.ts`    |
+| Types      | PascalCase          | `User.ts`          |
+| Constants  | UPPER_SNAKE         | `API_ENDPOINTS.ts` |
 
 ## 🔄 Migration Workflow
 
@@ -206,10 +210,10 @@ import { Button } from '@shared/components';     // ✗ wrong direction
 
 ```typescript
 // features/auth/index.ts
-export * from './components';  // Re-export everything
+export * from './components'; // Re-export everything
 export * from './hooks';
 export * from './services';
-export type * from './types';  // Export types separately
+export type * from './types'; // Export types separately
 
 // Usage elsewhere:
 import { LoginForm, useAuth, authService } from '@features/auth';
@@ -220,7 +224,9 @@ import { LoginForm, useAuth, authService } from '@features/auth';
 ```typescript
 // 1. Create component
 // features/auth/components/LoginForm.tsx
-export const LoginForm = () => { /* ... */ };
+export const LoginForm = () => {
+  /* ... */
+};
 
 // 2. Export from components/index.ts
 export { LoginForm } from './LoginForm';

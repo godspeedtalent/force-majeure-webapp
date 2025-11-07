@@ -34,16 +34,16 @@ const componentColors = {
 const brandColors = {
   // Primary accent - Dusty Gold
   'fm-gold': '#dfba7d',
-  
+
   // Secondary - Dark Crimson
   'fm-crimson': '#520C10',
-  
+
   // Info/Tertiary - Muted Navy
   'fm-navy': '#545E75',
-  
+
   // Danger - Chili Red (brighter than crimson)
   'fm-danger': '#D64933',
-  
+
   // Legacy colors (can be deprecated if not in use)
   'fm-charcoal': 'hsl(var(--fm-charcoal))',
   'fm-silver': 'hsl(var(--fm-silver))',

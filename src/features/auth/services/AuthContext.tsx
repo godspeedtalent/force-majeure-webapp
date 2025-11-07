@@ -43,7 +43,11 @@ interface AuthContextType {
     password: string,
     displayName?: string
   ) => Promise<{ error: any }>;
-  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<{ error: any }>;
+  signIn: (
+    email: string,
+    password: string,
+    rememberMe?: boolean
+  ) => Promise<{ error: any }>;
   signInWithGoogle: () => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: any }>;
@@ -131,7 +135,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     });
 
     // THEN check for existing session
-    supabase.auth.getSession()
+    supabase.auth
+      .getSession()
       .then(({ data: { session } }) => {
         // Perform the same remember device check for existing sessions
         if (
@@ -211,7 +216,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const signIn = async (email: string, password: string, rememberMe: boolean = false) => {
+  const signIn = async (
+    email: string,
+    password: string,
+    rememberMe: boolean = false
+  ) => {
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,

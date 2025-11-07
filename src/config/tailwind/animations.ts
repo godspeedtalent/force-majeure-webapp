@@ -107,6 +107,20 @@ const feedbackAnimations = {
       transform: 'scale(1)',
     },
   },
+  'border-pulse-gold': {
+    '0%': {
+      borderColor: 'hsl(var(--border))',
+      borderWidth: '1px',
+    },
+    '50%': {
+      borderColor: 'hsl(var(--fm-gold))',
+      borderWidth: '2px',
+    },
+    '100%': {
+      borderColor: 'hsl(var(--border))',
+      borderWidth: '1px',
+    },
+  },
 };
 
 // Gradient orb animations for avatar
@@ -186,10 +200,30 @@ export const animations = {
   'input-pulse': createAnimation('input-pulse', '0.15s'),
   'pulse-gold-check': createAnimation('pulse-gold-check', '0.3s', 'ease-out'),
   'pulse-uncheck': createAnimation('pulse-uncheck', '0.3s', 'ease-out'),
+  'border-pulse-gold': createAnimation(
+    'border-pulse-gold',
+    '0.6s',
+    'ease-in-out'
+  ),
 
   // Orb animations
   float: createAnimation('float', '20s', 'ease-in-out', 'infinite'),
-  'float-delay-1': createAnimation('float-delay-1', '25s', 'ease-in-out', 'infinite'),
-  'float-delay-2': createAnimation('float-delay-2', '22s', 'ease-in-out', 'infinite'),
-  'float-delay-3': createAnimation('float-delay-3', '28s', 'ease-in-out', 'infinite'),
+  'float-delay-1': createAnimation(
+    'float-delay-1',
+    '25s',
+    'ease-in-out',
+    'infinite'
+  ),
+  'float-delay-2': createAnimation(
+    'float-delay-2',
+    '22s',
+    'ease-in-out',
+    'infinite'
+  ),
+  'float-delay-3': createAnimation(
+    'float-delay-3',
+    '28s',
+    'ease-in-out',
+    'infinite'
+  ),
 };

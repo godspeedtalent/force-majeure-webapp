@@ -32,7 +32,11 @@ export const FmArtistRow = ({ artist, onSelect }: FmArtistRowProps) => {
         <div className='relative h-10 w-10 overflow-hidden rounded-full border border-border/50 bg-background/80 text-xs font-semibold text-fm-gold flex items-center justify-center uppercase'>
           {artist.image ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={artist.image} alt={artist.name} className='h-full w-full object-cover' />
+            <img
+              src={artist.image}
+              alt={artist.name}
+              className='h-full w-full object-cover'
+            />
           ) : (
             <span>{initials}</span>
           )}

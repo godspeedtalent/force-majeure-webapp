@@ -2,7 +2,16 @@ import { useState } from 'react';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
-import { Sliders, Settings, Code, Shield, DollarSign, Users, Database, Building2 } from 'lucide-react';
+import {
+  Sliders,
+  Settings,
+  Code,
+  Shield,
+  DollarSign,
+  Users,
+  Database,
+  Building2,
+} from 'lucide-react';
 import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
 import { AdminFeesSection } from '@/components/admin/AdminFeesSection';
 import { DevToolsManagement } from '@/components/admin/DevToolsManagement';
@@ -21,17 +30,42 @@ export default function AdminControls() {
       label: 'Site Controls',
       icon: Shield,
       items: [
-        { id: 'devtools', label: 'Developer Tools', icon: Code, description: 'Toggle dev environment features' },
-        { id: 'fees', label: 'Ticketing Fees', icon: DollarSign, description: 'Configure ticketing fees' },
-        { id: 'settings', label: 'Site Settings', icon: Sliders, description: 'Configure site settings' },
+        {
+          id: 'devtools',
+          label: 'Developer Tools',
+          icon: Code,
+          description: 'Toggle dev environment features',
+        },
+        {
+          id: 'fees',
+          label: 'Ticketing Fees',
+          icon: DollarSign,
+          description: 'Configure ticketing fees',
+        },
+        {
+          id: 'settings',
+          label: 'Site Settings',
+          icon: Sliders,
+          description: 'Configure site settings',
+        },
       ],
     },
     {
       label: 'Database',
       icon: Database,
       items: [
-        { id: 'organizations', label: 'Organizations', icon: Building2, description: 'Manage organizations' },
-        { id: 'users', label: 'Users', icon: Users, description: 'Manage user accounts' },
+        {
+          id: 'organizations',
+          label: 'Organizations',
+          icon: Building2,
+          description: 'Manage organizations',
+        },
+        {
+          id: 'users',
+          label: 'Users',
+          icon: Users,
+          description: 'Manage user accounts',
+        },
       ],
     },
   ];
@@ -51,26 +85,30 @@ export default function AdminControls() {
       activeItem={activeTab}
       onItemChange={setActiveTab}
     >
-      <div className="max-w-full">
-        <div className="mb-[20px]">
-          <div className="flex items-center gap-[10px] mb-[20px]">
-            <Settings className="h-6 w-6 text-fm-gold" />
-            <h1 className="text-3xl font-canela">{formatHeader(getTabTitle())}</h1>
+      <div className='max-w-full'>
+        <div className='mb-[20px]'>
+          <div className='flex items-center gap-[10px] mb-[20px]'>
+            <Settings className='h-6 w-6 text-fm-gold' />
+            <h1 className='text-3xl font-canela'>
+              {formatHeader(getTabTitle())}
+            </h1>
           </div>
         </div>
 
         <DecorativeDivider
-          marginTop="mt-0"
-          marginBottom="mb-6"
-          lineWidth="w-32"
+          marginTop='mt-0'
+          marginBottom='mb-6'
+          lineWidth='w-32'
           opacity={0.5}
         />
 
         {activeTab === 'settings' && (
-          <div className="space-y-8">
+          <div className='space-y-8'>
             <div>
-              <h3 className="text-lg font-canela font-semibold mb-2">{formatHeader('Feature Flags')}</h3>
-              <p className="text-muted-foreground text-sm mb-4">
+              <h3 className='text-lg font-canela font-semibold mb-2'>
+                {formatHeader('Feature Flags')}
+              </h3>
+              <p className='text-muted-foreground text-sm mb-4'>
                 Control feature availability across different environments
               </p>
               <FeatureToggleSection />
@@ -79,10 +117,11 @@ export default function AdminControls() {
         )}
 
         {activeTab === 'fees' && (
-          <div className="space-y-6">
+          <div className='space-y-6'>
             <div>
-              <p className="text-muted-foreground text-sm mb-4">
-                Configure site-wide fees and taxes applied to all ticket purchases
+              <p className='text-muted-foreground text-sm mb-4'>
+                Configure site-wide fees and taxes applied to all ticket
+                purchases
               </p>
               <AdminFeesSection />
             </div>
@@ -90,9 +129,9 @@ export default function AdminControls() {
         )}
 
         {activeTab === 'users' && (
-          <div className="space-y-6">
+          <div className='space-y-6'>
             <div>
-              <p className="text-muted-foreground text-sm mb-4">
+              <p className='text-muted-foreground text-sm mb-4'>
                 Manage user accounts, roles, and permissions
               </p>
               <UserManagement />
@@ -101,9 +140,9 @@ export default function AdminControls() {
         )}
 
         {activeTab === 'organizations' && (
-          <div className="space-y-6">
+          <div className='space-y-6'>
             <div>
-              <p className="text-muted-foreground text-sm mb-4">
+              <p className='text-muted-foreground text-sm mb-4'>
                 Manage organizations and their settings
               </p>
               <OrganizationsManagement />
@@ -112,11 +151,14 @@ export default function AdminControls() {
         )}
 
         {activeTab === 'devtools' && (
-          <div className="space-y-6">
+          <div className='space-y-6'>
             <div>
-              <h3 className="text-lg font-canela font-semibold mb-2">{formatHeader('Dev Toolbar Sections')}</h3>
-              <p className="text-muted-foreground text-sm mb-4">
-                Control which sections appear in the developer toolbar for testing
+              <h3 className='text-lg font-canela font-semibold mb-2'>
+                {formatHeader('Dev Toolbar Sections')}
+              </h3>
+              <p className='text-muted-foreground text-sm mb-4'>
+                Control which sections appear in the developer toolbar for
+                testing
               </p>
               <DevToolsManagement />
             </div>

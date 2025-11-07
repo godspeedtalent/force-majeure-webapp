@@ -42,22 +42,22 @@ export const FmCommonFormModal = ({
         )}
       >
         <DialogHeader>
-          <DialogTitle className="font-canela text-2xl text-white">
+          <DialogTitle className='font-canela text-2xl text-white'>
             {title}
           </DialogTitle>
           {description && (
-            <DialogDescription className="text-white/70">
+            <DialogDescription className='text-white/70'>
               {description}
             </DialogDescription>
           )}
         </DialogHeader>
-        <div className="mt-4 space-y-6 pointer-events-auto">
+        <div className='mt-4 space-y-6 pointer-events-auto'>
           {sections.map((section, index) => (
             <React.Fragment key={index}>
-              {index > 0 && <Separator className="bg-white/10" />}
-              <div className="space-y-3 pointer-events-auto">
+              {index > 0 && <Separator className='bg-white/10' />}
+              <div className='space-y-3 pointer-events-auto'>
                 {section.title && (
-                  <h3 className="text-sm font-semibold text-white/90 uppercase tracking-wide">
+                  <h3 className='text-sm font-semibold text-white/90 uppercase tracking-wide'>
                     {section.title}
                   </h3>
                 )}
@@ -67,8 +67,8 @@ export const FmCommonFormModal = ({
           ))}
           {actions && (
             <>
-              <Separator className="bg-white/10" />
-              <div className="pointer-events-auto">{actions}</div>
+              <Separator className='bg-white/10' />
+              <div className='pointer-events-auto'>{actions}</div>
             </>
           )}
         </div>

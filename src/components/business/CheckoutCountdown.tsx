@@ -11,8 +11,13 @@ interface CheckoutCountdownProps {
   redirectUrl?: string;
 }
 
-export const CheckoutCountdown = ({ onExpire, redirectUrl }: CheckoutCountdownProps) => {
-  const [secondsRemaining, setSecondsRemaining] = useState(HOLD_DURATION_SECONDS);
+export const CheckoutCountdown = ({
+  onExpire,
+  redirectUrl,
+}: CheckoutCountdownProps) => {
+  const [secondsRemaining, setSecondsRemaining] = useState(
+    HOLD_DURATION_SECONDS
+  );
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | null = null;
@@ -35,7 +40,7 @@ export const CheckoutCountdown = ({ onExpire, redirectUrl }: CheckoutCountdownPr
     };
 
     const interval = setInterval(() => {
-      setSecondsRemaining((prev) => {
+      setSecondsRemaining(prev => {
         if (prev <= 1) {
           clearInterval(interval);
           handleExpiration();
@@ -57,17 +62,20 @@ export const CheckoutCountdown = ({ onExpire, redirectUrl }: CheckoutCountdownPr
     if (secondsRemaining <= DANGER_THRESHOLD) {
       return 'hsl(348, 83%, 47%)'; // Full crimson
     }
-    
+
     if (secondsRemaining <= CRITICAL_THRESHOLD) {
       // Interpolate from white to crimson
-      const progress = 1 - (secondsRemaining - DANGER_THRESHOLD) / (CRITICAL_THRESHOLD - DANGER_THRESHOLD);
+      const progress =
+        1 -
+        (secondsRemaining - DANGER_THRESHOLD) /
+          (CRITICAL_THRESHOLD - DANGER_THRESHOLD);
       const white = { h: 0, s: 0, l: 100 };
       const crimson = { h: 348, s: 83, l: 47 };
-      
+
       const h = white.h + (crimson.h - white.h) * progress;
       const s = white.s + (crimson.s - white.s) * progress;
       const l = white.l + (crimson.l - white.l) * progress;
-      
+
       return `hsl(${h}, ${s}%, ${l}%)`;
     }
 
@@ -81,10 +89,10 @@ export const CheckoutCountdown = ({ onExpire, redirectUrl }: CheckoutCountdownPr
   };
 
   return (
-    <div className="flex items-center gap-2 font-canela">
-      <Clock className="h-4 w-4" style={{ color: getTextColor() }} />
+    <div className='flex items-center gap-2 font-canela'>
+      <Clock className='h-4 w-4' style={{ color: getTextColor() }} />
       <span
-        className="text-sm font-medium transition-colors duration-1000"
+        className='text-sm font-medium transition-colors duration-1000'
         style={{ color: getTextColor() }}
       >
         {formatTime(secondsRemaining)}

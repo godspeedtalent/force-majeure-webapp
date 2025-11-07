@@ -1,6 +1,6 @@
 /**
  * FmCommonPageLayout
- * 
+ *
  * Standard page layout with title, subtitle, and content area
  * Provides consistent spacing and styling for full pages
  */
@@ -43,18 +43,12 @@ export const FmCommonPageLayout = ({
               </p>
             )}
           </div>
-          {actions && (
-            <div className='flex items-center gap-2'>
-              {actions}
-            </div>
-          )}
+          {actions && <div className='flex items-center gap-2'>{actions}</div>}
         </div>
       </div>
 
       {/* Page Content */}
-      <div className='space-y-6'>
-        {children}
-      </div>
+      <div className='space-y-6'>{children}</div>
     </div>
   );
 };

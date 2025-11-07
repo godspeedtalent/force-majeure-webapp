@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from 'react';
 import {
   Table,
   TableBody,
@@ -8,6 +14,7 @@ import {
   TableRow,
 } from '@/components/common/shadcn/table';
 import { useToast } from '@/shared/hooks/use-toast';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmDataGridContextMenu } from './FmDataGridContextMenu';
 import { ContextMenuAction } from '@/components/common/modals/FmCommonContextMenu';
 import {
@@ -36,7 +43,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/common/shadcn/dropdown-menu';
-import { Search, Filter, ChevronDown, ChevronUp, MoreVertical, Plus, X } from 'lucide-react';
+import {
+  Search,
+  Filter,
+  ChevronDown,
+  ChevronUp,
+  MoreVertical,
+  Plus,
+  X,
+  Trash2,
+  Download,
+} from 'lucide-react';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -50,8 +67,30 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/common/shadcn/tooltip';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/common/shadcn/dialog';
 import { cn } from '@/shared/utils/utils';
 import { isRelationField, getRelationConfig } from '../utils/dataGridRelations';
+import { useDataGridKeyboardNav } from '../hooks/useDataGridKeyboardNav';
+import { useDataGridVirtualization } from '../hooks/useDataGridVirtualization';
+import { FmDataGridExportDialog, ExportFormat } from './FmDataGridExportDialog';
+import { exportData } from '../utils/dataExport';
+import { FmDataGridGroupDialog } from './FmDataGridGroupDialog';
+import { FmBulkEditDialog } from './FmBulkEditDialog';
+import {
+  groupData,
+  flattenGroupedData,
+  toggleGroupExpanded,
+  type GroupConfig,
+  type GroupedRow,
+  type FlattenedRow,
+} from '../utils/grouping';
 
 export interface DataGridColumn<T = any> {
   key: string;
@@ -64,7 +103,14 @@ export interface DataGridColumn<T = any> {
   render?: (value: any, row: T) => React.ReactNode;
   width?: string;
   isRelation?: boolean; // Mark this column as a foreign key relation
-  type?: 'text' | 'number' | 'email' | 'url' | 'date' | 'boolean' | 'created_date'; // Input type for editing
+  type?:
+    | 'text'
+    | 'number'
+    | 'email'
+    | 'url'
+    | 'date'
+    | 'boolean'
+    | 'created_date'; // Input type for editing
 }
 
 // Re-export ContextMenuAction as DataGridAction for backward compatibility
@@ -81,9 +127,15 @@ export interface FmDataGridProps<T = any> {
   onUpdate?: (item: T) => Promise<void>;
   onCreate?: (item: Partial<T>) => Promise<void>;
   onCreateButtonClick?: () => void; // Custom handler for create button
+  onBatchDelete?: (items: T[]) => Promise<void>; // Batch delete handler
   resourceName?: string;
   createButtonLabel?: string;
   onHideColumn?: (columnKey: string) => void; // Callback for hiding a column
+  toolbarActions?: React.ReactNode; // Additional toolbar actions (buttons, dropdowns, etc.)
+  enableVirtualization?: boolean; // Enable virtual scrolling (default: true for >100 rows)
+  estimateRowSize?: number; // Estimated row height for virtualization (default: 48px)
+  enableExport?: boolean; // Enable data export functionality (default: true)
+  exportFilename?: string; // Custom filename for exports (default: resourceName)
 }
 
 export function FmDataGrid<T extends Record<string, any>>({
@@ -97,9 +149,15 @@ export function FmDataGrid<T extends Record<string, any>>({
   onUpdate,
   onCreate,
   onCreateButtonClick,
+  onBatchDelete,
   resourceName = 'Resource',
   createButtonLabel,
   onHideColumn,
+  toolbarActions,
+  enableVirtualization = true,
+  estimateRowSize = 48,
+  enableExport = true,
+  exportFilename,
 }: FmDataGridProps<T>) {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
@@ -107,15 +165,36 @@ export function FmDataGrid<T extends Record<string, any>>({
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
-  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
-  const [columnFilters, setColumnFilters] = useState<Record<string, string>>({});
-  const [editingCell, setEditingCell] = useState<{ rowIndex: number; columnKey: string } | null>(null);
+  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
+    null
+  );
+  const [columnFilters, setColumnFilters] = useState<Record<string, string>>(
+    {}
+  );
+  const [editingCell, setEditingCell] = useState<{
+    rowIndex: number;
+    columnKey: string;
+  } | null>(null);
   const [editValue, setEditValue] = useState<string>('');
   const [isCreatingRow, setIsCreatingRow] = useState(false);
   const [newRowData, setNewRowData] = useState<Partial<T>>({});
-  const [contextMenuOpenRow, setContextMenuOpenRow] = useState<number | null>(null);
+  const [contextMenuOpenRow, setContextMenuOpenRow] = useState<number | null>(
+    null
+  );
+  const [showBatchDeleteDialog, setShowBatchDeleteDialog] = useState(false);
+  const [isBatchDeleting, setIsBatchDeleting] = useState(false);
   const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
-  
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
+  const [resizingColumn, setResizingColumn] = useState<string | null>(null);
+  const resizeStartX = useRef<number>(0);
+  const resizeStartWidth = useRef<number>(0);
+  const [showExportDialog, setShowExportDialog] = useState(false);
+  const [showGroupDialog, setShowGroupDialog] = useState(false);
+  const [groupConfig, setGroupConfig] = useState<GroupConfig | null>(null);
+  const [groupedRows, setGroupedRows] = useState<GroupedRow<T>[]>([]);
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+  const [showBulkEditDialog, setShowBulkEditDialog] = useState(false);
+
   // Drag-select state
   const [isDragMode, setIsDragMode] = useState(false);
   const [dragStartRow, setDragStartRow] = useState<number | null>(null);
@@ -135,8 +214,8 @@ export function FmDataGrid<T extends Record<string, any>>({
     // Apply universal search
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter((row) =>
-        columns.some((col) => {
+      filtered = filtered.filter(row =>
+        columns.some(col => {
           const value = row[col.key];
           return value?.toString().toLowerCase().includes(query);
         })
@@ -147,7 +226,7 @@ export function FmDataGrid<T extends Record<string, any>>({
     Object.entries(columnFilters).forEach(([key, value]) => {
       if (value) {
         const query = value.toLowerCase();
-        filtered = filtered.filter((row) => {
+        filtered = filtered.filter(row => {
           const cellValue = row[key];
           return cellValue?.toString().toLowerCase().includes(query);
         });
@@ -166,7 +245,7 @@ export function FmDataGrid<T extends Record<string, any>>({
       const bValue = b[sortColumn];
 
       if (aValue === bValue) return 0;
-      
+
       const comparison = aValue < bValue ? -1 : 1;
       return sortDirection === 'asc' ? comparison : -comparison;
     });
@@ -180,6 +259,36 @@ export function FmDataGrid<T extends Record<string, any>>({
 
   const totalPages = Math.ceil(sortedData.length / pageSize);
 
+  // Keyboard navigation
+  const { handleTableKeyDown, getFocusableCellProps } = useDataGridKeyboardNav({
+    rows: paginatedData,
+    columns,
+    isEditing: !!editingCell,
+    editingCell,
+    onStartEditing: (rowIndex, columnKey) => {
+      const row = paginatedData[rowIndex];
+      if (row) {
+        const currentValue = row[columnKey];
+        handleCellEdit(rowIndex, columnKey, currentValue);
+      }
+    },
+    onStopEditing: () => {
+      setEditingCell(null);
+    },
+  });
+
+  // Virtual scrolling for large datasets
+  const {
+    parentRef,
+    virtualRows,
+    totalSize,
+    isEnabled: isVirtualized,
+  } = useDataGridVirtualization({
+    rowCount: paginatedData.length,
+    estimateSize: estimateRowSize,
+    enabled: enableVirtualization,
+  });
+
   const handleSort = (columnKey: string) => {
     if (sortColumn === columnKey) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -191,7 +300,9 @@ export function FmDataGrid<T extends Record<string, any>>({
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      const allIndices = new Set(paginatedData.map((_, idx) => (currentPage - 1) * pageSize + idx));
+      const allIndices = new Set(
+        paginatedData.map((_, idx) => (currentPage - 1) * pageSize + idx)
+      );
       setSelectedRows(allIndices);
     } else {
       setSelectedRows(new Set());
@@ -202,7 +313,7 @@ export function FmDataGrid<T extends Record<string, any>>({
     // Don't select if clicking on interactive elements
     const target = event.target as HTMLElement;
     if (
-      target.closest('[role="checkbox"]') || 
+      target.closest('[role="checkbox"]') ||
       target.closest('[role="switch"]') ||
       target.closest('button') ||
       target.closest('input') ||
@@ -238,7 +349,7 @@ export function FmDataGrid<T extends Record<string, any>>({
   // Drag-select handlers
   const handleMouseDown = (index: number, event: React.MouseEvent) => {
     const globalIndex = (currentPage - 1) * pageSize + index;
-    
+
     // Start timer for drag-select mode (300ms)
     dragTimerRef.current = setTimeout(() => {
       setIsDragMode(true);
@@ -292,7 +403,8 @@ export function FmDataGrid<T extends Record<string, any>>({
 
   // Calculate drag selection box position
   const getDragBoxStyle = (): React.CSSProperties | null => {
-    if (!isDragMode || dragStartRow === null || dragCurrentRow === null) return null;
+    if (!isDragMode || dragStartRow === null || dragCurrentRow === null)
+      return null;
 
     const startRowEl = rowRefs.current.get(dragStartRow);
     const endRowEl = rowRefs.current.get(dragCurrentRow);
@@ -307,7 +419,8 @@ export function FmDataGrid<T extends Record<string, any>>({
     if (!containerRect) return null;
 
     const top = Math.min(startRect.top, endRect.top) - containerRect.top;
-    const bottom = Math.max(startRect.bottom, endRect.bottom) - containerRect.top;
+    const bottom =
+      Math.max(startRect.bottom, endRect.bottom) - containerRect.top;
     const height = bottom - top;
 
     return {
@@ -325,12 +438,57 @@ export function FmDataGrid<T extends Record<string, any>>({
   };
 
   const handleColumnFilter = (columnKey: string, value: string) => {
-    setColumnFilters((prev) => ({
+    setColumnFilters(prev => ({
       ...prev,
       [columnKey]: value,
     }));
     setCurrentPage(1);
   };
+
+  // Column resize handlers
+  const handleResizeStart = (columnKey: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setResizingColumn(columnKey);
+    resizeStartX.current = e.clientX;
+    resizeStartWidth.current = columnWidths[columnKey] || 150; // Default 150px
+  };
+
+  const handleResizeMove = useCallback(
+    (e: MouseEvent) => {
+      if (!resizingColumn) return;
+
+      const diff = e.clientX - resizeStartX.current;
+      const newWidth = Math.max(80, resizeStartWidth.current + diff); // Min 80px
+
+      setColumnWidths(prev => ({
+        ...prev,
+        [resizingColumn]: newWidth,
+      }));
+    },
+    [resizingColumn]
+  );
+
+  const handleResizeEnd = useCallback(() => {
+    setResizingColumn(null);
+  }, []);
+
+  // Add/remove resize event listeners
+  useEffect(() => {
+    if (resizingColumn) {
+      document.addEventListener('mousemove', handleResizeMove);
+      document.addEventListener('mouseup', handleResizeEnd);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+
+      return () => {
+        document.removeEventListener('mousemove', handleResizeMove);
+        document.removeEventListener('mouseup', handleResizeEnd);
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+      };
+    }
+  }, [resizingColumn, handleResizeMove, handleResizeEnd]);
 
   const clearFilters = () => {
     setSearchQuery('');
@@ -338,15 +496,26 @@ export function FmDataGrid<T extends Record<string, any>>({
     setCurrentPage(1);
   };
 
-  const isAllSelected = paginatedData.length > 0 && 
-    paginatedData.every((_, idx) => selectedRows.has((currentPage - 1) * pageSize + idx));
+  const isAllSelected =
+    paginatedData.length > 0 &&
+    paginatedData.every((_, idx) =>
+      selectedRows.has((currentPage - 1) * pageSize + idx)
+    );
 
-  const handleCellEdit = (rowIndex: number, columnKey: string, currentValue: any) => {
+  const handleCellEdit = (
+    rowIndex: number,
+    columnKey: string,
+    currentValue: any
+  ) => {
     setEditingCell({ rowIndex, columnKey });
     setEditValue(currentValue?.toString() || '');
   };
 
-  const handleCellSave = async (row: T, columnKey: string, overrideValue?: any) => {
+  const handleCellSave = async (
+    row: T,
+    columnKey: string,
+    overrideValue?: any
+  ) => {
     if (!onUpdate || !editingCell) return;
 
     const column = columns.find(col => col.key === columnKey);
@@ -355,7 +524,10 @@ export function FmDataGrid<T extends Record<string, any>>({
 
     // Handle boolean - use override value directly
     if (column?.type === 'boolean') {
-      newValue = overrideValue !== undefined ? overrideValue : (editValue === 'true' || editValue === true);
+      newValue =
+        overrideValue !== undefined
+          ? overrideValue
+          : editValue === 'true' || editValue === true;
     }
     // Handle number inputs - if empty, set to 0
     else if (column?.type === 'number') {
@@ -367,14 +539,18 @@ export function FmDataGrid<T extends Record<string, any>>({
         setEditingCell(null);
         return;
       }
-    } 
+    }
     // Handle date - use ISO string
     else if (column?.type === 'date') {
       // newValue is already an ISO string from the date picker
     }
     // For text inputs, don't update if empty or unchanged
     else {
-      if (!newValue || newValue.toString().trim() === '' || newValue === oldValue?.toString()) {
+      if (
+        !newValue ||
+        newValue.toString().trim() === '' ||
+        newValue === oldValue?.toString()
+      ) {
         setEditingCell(null);
         return;
       }
@@ -387,8 +563,8 @@ export function FmDataGrid<T extends Record<string, any>>({
     const loadingToast = toast({
       title: `Updating ${displayName}...`,
       description: (
-        <div className="flex items-center gap-2">
-          <div className="h-4 w-4 border-2 border-fm-gold border-t-transparent rounded-full animate-spin" />
+        <div className='flex items-center gap-2'>
+          <div className='h-4 w-4 border-2 border-fm-gold border-t-transparent rounded-full animate-spin' />
           <span>Please wait...</span>
         </div>
       ),
@@ -397,14 +573,14 @@ export function FmDataGrid<T extends Record<string, any>>({
 
     try {
       await onUpdate(row, columnKey, newValue);
-      
+
       // Dismiss loading and show success
       loadingToast.dismiss();
       toast({
         title: `${displayName} updated.`,
         duration: 2000,
       });
-      
+
       setEditingCell(null);
     } catch (error) {
       // Dismiss loading and show error
@@ -449,7 +625,9 @@ export function FmDataGrid<T extends Record<string, any>>({
 
     // Validate required fields
     const requiredColumns = columns.filter(col => col.required);
-    const missingFields = requiredColumns.filter(col => !processedData[col.key as keyof T]);
+    const missingFields = requiredColumns.filter(
+      col => !processedData[col.key as keyof T]
+    );
 
     if (missingFields.length > 0) {
       toast({
@@ -464,8 +642,8 @@ export function FmDataGrid<T extends Record<string, any>>({
     const loadingToast = toast({
       title: `Creating ${resourceName}...`,
       description: (
-        <div className="flex items-center gap-2">
-          <div className="h-4 w-4 border-2 border-fm-gold border-t-transparent rounded-full animate-spin" />
+        <div className='flex items-center gap-2'>
+          <div className='h-4 w-4 border-2 border-fm-gold border-t-transparent rounded-full animate-spin' />
           <span>Please wait...</span>
         </div>
       ),
@@ -501,66 +679,272 @@ export function FmDataGrid<T extends Record<string, any>>({
     }));
   };
 
+  const handleBatchDelete = async () => {
+    if (!onBatchDelete) return;
+
+    setIsBatchDeleting(true);
+
+    // Get selected row data
+    const selectedRowsData = sortedData.filter((_: T, idx: number) =>
+      selectedRows.has(idx)
+    );
+
+    const loadingToast = toast({
+      title: `Deleting ${selectedRowsData.length} ${resourceName}${selectedRowsData.length !== 1 ? 's' : ''}...`,
+      description: (
+        <div className='flex items-center gap-2'>
+          <div className='h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent' />
+          <span>Please wait...</span>
+        </div>
+      ),
+      duration: 60000,
+    });
+
+    try {
+      await onBatchDelete(selectedRowsData);
+      loadingToast.dismiss();
+      toast({
+        title: 'Success',
+        description: `Deleted ${selectedRowsData.length} ${resourceName}${selectedRowsData.length !== 1 ? 's' : ''}`,
+        variant: 'default',
+        duration: 3000,
+      });
+      setSelectedRows(new Set());
+      setShowBatchDeleteDialog(false);
+    } catch (error) {
+      loadingToast.dismiss();
+      toast({
+        title: 'Delete failed',
+        description: error instanceof Error ? error.message : 'Unknown error',
+        variant: 'destructive',
+        duration: 3000,
+      });
+    } finally {
+      setIsBatchDeleting(false);
+    }
+  };
+
+  const handleExport = (selectedColumns: string[], format: ExportFormat) => {
+    const filename =
+      exportFilename || resourceName.toLowerCase().replace(/\s+/g, '-');
+
+    // Use the currently filtered and sorted data
+    exportData(sortedData, columns, selectedColumns, format, filename);
+
+    toast({
+      title: 'Export successful',
+      description: `Exported ${sortedData.length} rows to ${format.toUpperCase()}`,
+      duration: 3000,
+    });
+  };
+
+  // Grouping handlers
+  const handleApplyGrouping = (config: GroupConfig) => {
+    setGroupConfig(config);
+    const grouped = groupData(sortedData, config, columns);
+    setGroupedRows(grouped);
+    // Expand all groups by default
+    const allGroupKeys = grouped.map(g => g.groupValue);
+    setExpandedGroups(new Set(allGroupKeys));
+    setCurrentPage(1); // Reset to first page
+  };
+
+  const handleClearGrouping = () => {
+    setGroupConfig(null);
+    setGroupedRows([]);
+    setExpandedGroups(new Set());
+  };
+
+  const handleToggleGroup = (groupValue: string) => {
+    const updated = toggleGroupExpanded(groupedRows, groupValue);
+    setGroupedRows(updated);
+    setExpandedGroups(prev => {
+      const next = new Set(prev);
+      if (next.has(groupValue)) {
+        next.delete(groupValue);
+      } else {
+        next.add(groupValue);
+      }
+      return next;
+    });
+  };
+
+  // Get display data (either grouped or regular)
+  const displayData = useMemo<FlattenedRow<T>[]>(() => {
+    if (groupConfig && groupedRows.length > 0) {
+      return flattenGroupedData(groupedRows);
+    }
+    return paginatedData.map(row => ({ isGroup: false as const, row }));
+  }, [groupConfig, groupedRows, paginatedData]);
+
+  // Get selected rows data for bulk edit
+  const selectedRowsData = useMemo(() => {
+    return sortedData.filter((_, idx) => selectedRows.has(idx));
+  }, [sortedData, selectedRows]);
+
+  // Bulk edit handler
+  const handleBulkEdit = async (updates: Partial<T>) => {
+    if (!onUpdate) return;
+
+    const loadingToast = toast({
+      title: 'Updating rows...',
+      description: `Applying changes to ${selectedRowsData.length} row${selectedRowsData.length !== 1 ? 's' : ''}`,
+      duration: Infinity,
+    });
+
+    try {
+      // Apply updates to each selected row
+      await Promise.all(
+        selectedRowsData.map(row => onUpdate({ ...row, ...updates }))
+      );
+
+      loadingToast.dismiss();
+      toast({
+        title: 'Bulk edit successful',
+        description: `Updated ${selectedRowsData.length} row${selectedRowsData.length !== 1 ? 's' : ''}`,
+        variant: 'default',
+        duration: 3000,
+      });
+
+      setSelectedRows(new Set());
+    } catch (error) {
+      loadingToast.dismiss();
+      toast({
+        title: 'Bulk edit failed',
+        description: error instanceof Error ? error.message : 'Unknown error',
+        variant: 'destructive',
+        duration: 3000,
+      });
+      throw error;
+    }
+  };
+
   return (
     <div className={cn('space-y-4', className)}>
       {/* Search and Filter Bar */}
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <div className='flex items-center gap-4'>
+        <div className='relative flex-1 max-w-md'>
+          <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
           <Input
-            placeholder="Search across all columns..."
+            placeholder='Search across all columns...'
             value={searchQuery}
-            onChange={(e) => {
+            onChange={e => {
               setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
-            className="pl-10 bg-background/50 border-border/50 focus:border-fm-gold transition-all duration-300"
+            className='pl-10 bg-background/50 border-border/50 focus:border-fm-gold transition-all duration-300'
           />
         </div>
 
         {(searchQuery || Object.values(columnFilters).some(v => v)) && (
           <Button
-            variant="outline"
-            size="sm"
+            variant='outline'
+            size='sm'
             onClick={clearFilters}
-            className="animate-in fade-in duration-300"
+            className='animate-in fade-in duration-300'
           >
             Clear Filters
           </Button>
         )}
 
-        <div className="ml-auto flex items-center gap-4">
-          <div className="text-sm text-muted-foreground">
+        <div className='ml-auto flex items-center gap-2'>
+          <div className='text-sm text-muted-foreground'>
             {selectedRows.size > 0 && (
-              <span className="animate-in fade-in slide-in-from-right duration-300">
-                {selectedRows.size} row{selectedRows.size !== 1 ? 's' : ''} selected
+              <span className='animate-in fade-in slide-in-from-right duration-300'>
+                {selectedRows.size} row{selectedRows.size !== 1 ? 's' : ''}{' '}
+                selected
               </span>
             )}
           </div>
 
-          {(onCreate || onCreateButtonClick) && (
+          {/* Batch delete button */}
+          {selectedRows.size > 0 && onBatchDelete && (
             <Button
-              onClick={onCreateButtonClick || handleStartCreatingRow}
-              size="sm"
-              className="bg-fm-gold hover:bg-fm-gold/90 text-black gap-2"
+              onClick={() => setShowBatchDeleteDialog(true)}
+              variant='destructive'
+              size='sm'
+              disabled={isBatchDeleting}
+              className='animate-in fade-in slide-in-from-right duration-300'
             >
-              <Plus className="h-4 w-4" />
-              {createButtonLabel || `Create ${resourceName}`}
+              <Trash2 className='h-4 w-4 mr-1.5' />
+              Delete {selectedRows.size}
             </Button>
+          )}
+
+          {/* Bulk edit button */}
+          {selectedRows.size > 0 && onUpdate && (
+            <Button
+              onClick={() => setShowBulkEditDialog(true)}
+              variant='outline'
+              size='sm'
+              className='animate-in fade-in slide-in-from-right duration-300'
+            >
+              <Plus className='h-4 w-4 mr-1.5' />
+              Edit {selectedRows.size}
+            </Button>
+          )}
+
+          {/* Export button */}
+          {enableExport && sortedData.length > 0 && (
+            <Button
+              onClick={() => setShowExportDialog(true)}
+              variant='outline'
+              size='sm'
+            >
+              <Download className='h-4 w-4 mr-1.5' />
+              Export
+            </Button>
+          )}
+
+          {/* Group By button */}
+          {sortedData.length > 0 && (
+            <Button
+              onClick={() => setShowGroupDialog(true)}
+              variant={groupConfig ? 'default' : 'outline'}
+              size='sm'
+            >
+              <Filter className='h-4 w-4 mr-1.5' />
+              {groupConfig ? 'Grouped' : 'Group By'}
+            </Button>
+          )}
+
+          {/* Additional toolbar actions from parent */}
+          {toolbarActions}
+
+          {(onCreate || onCreateButtonClick) && (
+            <FmCommonButton
+              onClick={onCreateButtonClick || handleStartCreatingRow}
+              variant='default'
+              size='sm'
+              icon={Plus}
+              iconPosition='left'
+            >
+              {createButtonLabel || `Add ${resourceName}`}
+            </FmCommonButton>
           )}
         </div>
       </div>
 
       {/* Data Table */}
-      <div className="rounded-lg border border-border/50 overflow-x-auto bg-background/30 backdrop-blur-sm relative">
+      <div
+        ref={parentRef}
+        className={cn(
+          'rounded-none border border-border/50 bg-background/30 backdrop-blur-sm relative',
+          isVirtualized ? 'overflow-auto' : 'overflow-x-auto'
+        )}
+        style={isVirtualized ? { maxHeight: '600px' } : undefined}
+        onKeyDown={handleTableKeyDown}
+        role='grid'
+        aria-label={`${resourceName} data grid`}
+      >
         <Table>
           <TableHeader>
-            <TableRow className="border-border/50 bg-muted/50 hover:bg-muted/50 group">
-              <TableHead className="w-12">
+            <TableRow className='border-border/50 bg-muted/50 hover:bg-muted/50 group'>
+              <TableHead className='w-12'>
                 <FmCommonCheckbox
                   checked={isAllSelected}
                   onCheckedChange={handleSelectAll}
-                  aria-label="Select all"
+                  aria-label='Select all'
                 />
               </TableHead>
               {columns.map((column, colIndex) => (
@@ -570,21 +954,34 @@ export function FmDataGrid<T extends Record<string, any>>({
                       className={cn(
                         'font-canela text-foreground font-semibold relative',
                         column.width,
-                        column.sortable && 'cursor-pointer select-none hover:bg-muted',
-                        sortColumn === column.key && 'bg-fm-gold text-black hover:bg-fm-gold/90',
+                        column.sortable &&
+                          'cursor-pointer select-none hover:bg-muted',
+                        sortColumn === column.key &&
+                          'bg-fm-gold text-black hover:bg-fm-gold/90',
                         colIndex > 0 && 'border-l border-border/30'
                       )}
+                      style={{
+                        width: columnWidths[column.key]
+                          ? `${columnWidths[column.key]}px`
+                          : column.width,
+                        minWidth: columnWidths[column.key]
+                          ? `${columnWidths[column.key]}px`
+                          : undefined,
+                        maxWidth: columnWidths[column.key]
+                          ? `${columnWidths[column.key]}px`
+                          : undefined,
+                      }}
                       onClick={() => column.sortable && handleSort(column.key)}
                     >
-                      <div className="flex items-center gap-2">
+                      <div className='flex items-center gap-2'>
                         <span>{column.label}</span>
-                        {column.sortable && sortColumn === column.key && (
-                          sortDirection === 'asc' ? (
-                            <ChevronUp className="h-3 w-3" />
+                        {column.sortable &&
+                          sortColumn === column.key &&
+                          (sortDirection === 'asc' ? (
+                            <ChevronUp className='h-3 w-3' />
                           ) : (
-                            <ChevronDown className="h-3 w-3" />
-                          )
-                        )}
+                            <ChevronDown className='h-3 w-3' />
+                          ))}
                         {column.filterable && (
                           <TooltipProvider>
                             <Tooltip delayDuration={300}>
@@ -595,35 +992,53 @@ export function FmDataGrid<T extends Record<string, any>>({
                                       data-filter-trigger
                                       className={cn(
                                         'h-6 w-6 p-0 hover:bg-fm-gold/20 transition-all duration-200 rounded opacity-0 group-hover:opacity-100',
-                                        columnFilters[column.key] && 'opacity-100 bg-fm-gold/20'
+                                        columnFilters[column.key] &&
+                                          'opacity-100 bg-fm-gold/20'
                                       )}
-                                      onClick={(e) => e.stopPropagation()}
+                                      onClick={e => e.stopPropagation()}
                                     >
-                                      <Filter className={cn(
-                                        'h-3 w-3 mx-auto',
-                                        columnFilters[column.key] ? 'text-fm-gold' : 'text-muted-foreground'
-                                      )} />
+                                      <Filter
+                                        className={cn(
+                                          'h-3 w-3 mx-auto',
+                                          columnFilters[column.key]
+                                            ? 'text-fm-gold'
+                                            : 'text-muted-foreground'
+                                        )}
+                                      />
                                     </button>
                                   </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="start" className="w-64">
-                                    <div className="p-2">
-                                      <div className="relative">
+                                  <DropdownMenuContent
+                                    align='start'
+                                    className='w-64'
+                                  >
+                                    <div className='p-2'>
+                                      <div className='relative'>
                                         <Input
                                           placeholder={`Filter ${column.label}...`}
-                                          value={columnFilters[column.key] || ''}
-                                          onChange={(e) => handleColumnFilter(column.key, e.target.value)}
-                                          className="h-8 pr-8"
-                                          onClick={(e) => e.stopPropagation()}
+                                          value={
+                                            columnFilters[column.key] || ''
+                                          }
+                                          onChange={e =>
+                                            handleColumnFilter(
+                                              column.key,
+                                              e.target.value
+                                            )
+                                          }
+                                          className='h-8 pr-8'
+                                          onClick={e => e.stopPropagation()}
                                         />
                                         {columnFilters[column.key] && (
                                           <button
-                                            onClick={(e) => {
+                                            onClick={e => {
                                               e.stopPropagation();
-                                              handleColumnFilter(column.key, '');
+                                              handleColumnFilter(
+                                                column.key,
+                                                ''
+                                              );
                                             }}
-                                            className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center hover:bg-muted rounded-sm transition-colors"
+                                            className='absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center hover:bg-muted rounded-sm transition-colors'
                                           >
-                                            <X className="h-3 w-3 text-muted-foreground" />
+                                            <X className='h-3 w-3 text-muted-foreground' />
                                           </button>
                                         )}
                                       </div>
@@ -632,60 +1047,78 @@ export function FmDataGrid<T extends Record<string, any>>({
                                 </DropdownMenu>
                               </TooltipTrigger>
                               {columnFilters[column.key] && (
-                                <TooltipContent side="bottom" className="max-w-xs">
-                                  <p className="text-xs">Filter: {columnFilters[column.key]}</p>
+                                <TooltipContent
+                                  side='bottom'
+                                  className='max-w-xs'
+                                >
+                                  <p className='text-xs'>
+                                    Filter: {columnFilters[column.key]}
+                                  </p>
                                 </TooltipContent>
                               )}
                             </Tooltip>
                           </TooltipProvider>
                         )}
                       </div>
+
+                      {/* Resize handle */}
+                      <div
+                        className='absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-fm-gold/50 transition-colors group-hover:opacity-100 opacity-0'
+                        onMouseDown={e => handleResizeStart(column.key, e)}
+                        onClick={e => e.stopPropagation()}
+                      />
                     </TableHead>
                   </ContextMenuTrigger>
-                  <ContextMenuContent className="bg-card border-border rounded-none">
+                  <ContextMenuContent className='bg-card border-border rounded-none'>
                     {column.filterable && (
                       <ContextMenuItem
                         onClick={() => {
                           // Trigger the filter dropdown
-                          const filterButton = document.querySelector(`[data-filter-trigger]`) as HTMLElement;
+                          const filterButton = document.querySelector(
+                            `[data-filter-trigger]`
+                          ) as HTMLElement;
                           filterButton?.click();
                         }}
-                        className="text-white hover:bg-muted focus:bg-muted"
+                        className='text-white hover:bg-muted focus:bg-muted'
                       >
                         Filter
                       </ContextMenuItem>
                     )}
                     {column.sortable && (
                       <>
-                        {sortColumn !== column.key || sortDirection === 'desc' ? (
+                        {sortColumn !== column.key ||
+                        sortDirection === 'desc' ? (
                           <ContextMenuItem
                             onClick={() => {
                               setSortColumn(column.key);
                               setSortDirection('asc');
                             }}
-                            className="text-white hover:bg-muted focus:bg-muted"
+                            className='text-white hover:bg-muted focus:bg-muted'
                           >
                             Sort Ascending
                           </ContextMenuItem>
                         ) : null}
-                        {sortColumn !== column.key || sortDirection === 'asc' ? (
+                        {sortColumn !== column.key ||
+                        sortDirection === 'asc' ? (
                           <ContextMenuItem
                             onClick={() => {
                               setSortColumn(column.key);
                               setSortDirection('desc');
                             }}
-                            className="text-white hover:bg-muted focus:bg-muted"
+                            className='text-white hover:bg-muted focus:bg-muted'
                           >
                             Sort Descending
                           </ContextMenuItem>
                         ) : null}
                       </>
                     )}
-                    {(column.filterable || column.sortable) && onHideColumn && <ContextMenuSeparator />}
+                    {(column.filterable || column.sortable) && onHideColumn && (
+                      <ContextMenuSeparator />
+                    )}
                     {onHideColumn && (
                       <ContextMenuItem
                         onClick={() => onHideColumn(column.key)}
-                        className="text-white hover:bg-muted focus:bg-muted"
+                        className='text-white hover:bg-muted focus:bg-muted'
                       >
                         Hide Column
                       </ContextMenuItem>
@@ -694,28 +1127,109 @@ export function FmDataGrid<T extends Record<string, any>>({
                 </ContextMenu>
               ))}
               {actions.length > 0 && (
-                <TableHead className="w-24 text-right">Actions</TableHead>
+                <TableHead className='w-24 text-right'>Actions</TableHead>
               )}
             </TableRow>
           </TableHeader>
           <TableBody>
+            {/* Virtual scrolling spacer for top */}
+            {isVirtualized &&
+              virtualRows.length > 0 &&
+              virtualRows[0].index > 0 && (
+                <TableRow style={{ height: `${virtualRows[0].start}px` }}>
+                  <TableCell
+                    colSpan={columns.length + 1 + (actions.length > 0 ? 1 : 0)}
+                  />
+                </TableRow>
+              )}
+
             {loading ? (
               <TableRow>
-                <TableCell colSpan={columns.length + 1 + (actions.length > 0 ? 1 : 0)} className="h-32 text-center">
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="h-4 w-4 border-2 border-fm-gold border-t-transparent rounded-full animate-spin" />
-                    <span className="text-muted-foreground">Loading...</span>
+                <TableCell
+                  colSpan={columns.length + 1 + (actions.length > 0 ? 1 : 0)}
+                  className='h-32 text-center'
+                >
+                  <div className='flex items-center justify-center gap-2'>
+                    <div className='h-4 w-4 border-2 border-fm-gold border-t-transparent rounded-full animate-spin' />
+                    <span className='text-muted-foreground'>Loading...</span>
                   </div>
                 </TableCell>
               </TableRow>
-            ) : paginatedData.length === 0 ? (
+            ) : displayData.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length + 1 + (actions.length > 0 ? 1 : 0)} className="h-32 text-center">
-                  <span className="text-muted-foreground">No data found</span>
+                <TableCell
+                  colSpan={columns.length + 1 + (actions.length > 0 ? 1 : 0)}
+                  className='h-32 text-center'
+                >
+                  <span className='text-muted-foreground'>No data found</span>
                 </TableCell>
               </TableRow>
             ) : (
-              paginatedData.map((row, index) => {
+              virtualRows.map(virtualRow => {
+                const index = virtualRow.index;
+                const displayRow = displayData[index];
+
+                if (!displayRow) return null;
+
+                // Handle group rows
+                if (displayRow.isGroup) {
+                  const groupData = displayRow.groupData;
+                  const isExpanded = expandedGroups.has(groupData.groupValue);
+
+                  return (
+                    <TableRow
+                      key={`group-${groupData.groupValue}`}
+                      className='bg-muted/40 hover:bg-muted/60 cursor-pointer border-b-2 border-border font-medium'
+                      onClick={() => handleToggleGroup(groupData.groupValue)}
+                    >
+                      <TableCell
+                        colSpan={
+                          columns.length + 1 + (actions.length > 0 ? 1 : 0)
+                        }
+                      >
+                        <div className='flex items-center gap-3 py-1'>
+                          {isExpanded ? (
+                            <ChevronDown className='h-5 w-5 text-fm-gold' />
+                          ) : (
+                            <ChevronUp className='h-5 w-5 text-muted-foreground' />
+                          )}
+                          <span className='text-base'>
+                            {groupData.groupValue || '(Empty)'}
+                          </span>
+                          <span className='text-sm text-muted-foreground'>
+                            ({groupData.count} row
+                            {groupData.count !== 1 ? 's' : ''})
+                          </span>
+                          {groupData.aggregations &&
+                            Object.keys(groupData.aggregations).length > 0 && (
+                              <div className='ml-4 flex gap-4 text-sm text-muted-foreground'>
+                                {Object.entries(groupData.aggregations).map(
+                                  ([key, value]) => {
+                                    const [colKey, aggType] = key.split('_');
+                                    const column = columns.find(
+                                      c => c.key === colKey
+                                    );
+                                    return (
+                                      <span key={key}>
+                                        {aggType}:{' '}
+                                        <span className='text-foreground font-medium'>
+                                          {value}
+                                        </span>
+                                        {column && ` (${column.label})`}
+                                      </span>
+                                    );
+                                  }
+                                )}
+                              </div>
+                            )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                }
+
+                // Handle regular data rows
+                const row = displayRow.row;
                 const globalIndex = (currentPage - 1) * pageSize + index;
                 const isSelected = selectedRows.has(globalIndex);
                 const isEvenRow = index % 2 === 0;
@@ -723,61 +1237,70 @@ export function FmDataGrid<T extends Record<string, any>>({
 
                 // Determine which context menu actions to show
                 const hasMultipleSelected = selectedRows.size > 1;
-                const currentContextMenuActions = hasMultipleSelected && isSelected
-                  ? contextMenuActions.map(action => {
-                      // Filter out "Manage" action for multi-selection
-                      if (action.label === 'Manage') {
-                        return null;
-                      }
-                      // Change "Delete Event" to "Delete Selected" for multi-selection
-                      if (action.label === 'Delete Event') {
-                        return {
-                          ...action,
-                          label: 'Delete Selected',
-                          onClick: (row: any) => {
-                            // Get all selected rows
-                            const selectedRowsData = paginatedData.filter((_, idx) => {
-                              const gIdx = (currentPage - 1) * pageSize + idx;
-                              return selectedRows.has(gIdx);
-                            });
+                const currentContextMenuActions =
+                  hasMultipleSelected && isSelected
+                    ? (contextMenuActions
+                        .map(action => {
+                          // Filter out "Manage" action for multi-selection
+                          if (action.label === 'Manage') {
+                            return null;
+                          }
+                          // Change "Delete Event" to "Delete Selected" for multi-selection
+                          if (action.label === 'Delete Event') {
+                            return {
+                              ...action,
+                              label: 'Delete Selected',
+                              onClick: (row: any) => {
+                                // Get all selected rows
+                                const selectedRowsData = paginatedData.filter(
+                                  (_, idx) => {
+                                    const gIdx =
+                                      (currentPage - 1) * pageSize + idx;
+                                    return selectedRows.has(gIdx);
+                                  }
+                                );
 
-                            // Call the original onClick for each selected row
-                            if (action.onClick) {
-                              // Pass all selected rows to the action
-                              action.onClick(selectedRowsData as any);
-                            }
-                          },
-                        };
-                      }
-                      return action;
-                    }).filter(Boolean) as DataGridAction<T>[]
-                  : contextMenuActions;
+                                // Call the original onClick for each selected row
+                                if (action.onClick) {
+                                  // Pass all selected rows to the action
+                                  action.onClick(selectedRowsData as any);
+                                }
+                              },
+                            };
+                          }
+                          return action;
+                        })
+                        .filter(Boolean) as DataGridAction<T>[])
+                    : contextMenuActions;
 
                 // Add "Unselect All" action if multiple rows are selected
-                const finalContextMenuActions = hasMultipleSelected && isSelected
-                  ? [
-                      ...currentContextMenuActions,
-                      {
-                        label: 'Unselect All',
-                        icon: <X className="h-4 w-4" />,
-                        onClick: () => {
-                          setSelectedRows(new Set());
-                          setLastSelectedIndex(null);
-                        },
-                        separator: true,
-                      } as DataGridAction<T>,
-                    ]
-                  : currentContextMenuActions;
+                const finalContextMenuActions =
+                  hasMultipleSelected && isSelected
+                    ? [
+                        ...currentContextMenuActions,
+                        {
+                          label: 'Unselect All',
+                          icon: <X className='h-4 w-4' />,
+                          onClick: () => {
+                            setSelectedRows(new Set());
+                            setLastSelectedIndex(null);
+                          },
+                          separator: true,
+                        } as DataGridAction<T>,
+                      ]
+                    : currentContextMenuActions;
 
                 return (
                   <FmDataGridContextMenu
                     key={globalIndex}
                     row={row}
                     actions={finalContextMenuActions}
-                    onOpenChange={(open) => setContextMenuOpenRow(open ? globalIndex : null)}
+                    onOpenChange={open =>
+                      setContextMenuOpenRow(open ? globalIndex : null)
+                    }
                   >
                     <TableRow
-                      ref={(el) => {
+                      ref={el => {
                         if (el) rowRefs.current.set(globalIndex, el);
                         else rowRefs.current.delete(globalIndex);
                       }}
@@ -787,250 +1310,385 @@ export function FmDataGrid<T extends Record<string, any>>({
                         isSelected && 'bg-fm-gold/10 border-fm-gold/30',
                         hasContextMenuOpen && 'bg-fm-gold/20 border-fm-gold/50',
                         !hasContextMenuOpen && 'hover:bg-fm-gold/5',
-                        isDragMode && dragStartRow !== null && dragCurrentRow !== null &&
-                          globalIndex >= Math.min(dragStartRow, dragCurrentRow) &&
-                          globalIndex <= Math.max(dragStartRow, dragCurrentRow) &&
+                        isDragMode &&
+                          dragStartRow !== null &&
+                          dragCurrentRow !== null &&
+                          globalIndex >=
+                            Math.min(dragStartRow, dragCurrentRow) &&
+                          globalIndex <=
+                            Math.max(dragStartRow, dragCurrentRow) &&
                           'bg-fm-gold/15'
                       )}
-                      onMouseDown={(e) => handleMouseDown(index, e)}
+                      onMouseDown={e => handleMouseDown(index, e)}
                       onMouseUp={handleMouseUp}
                       onMouseEnter={() => handleMouseEnterRow(index)}
                     >
-                        <TableCell 
-                          className={cn(
-                            "transition-colors duration-200",
-                            !isDragMode && hoveredColumn === '__checkbox' && "bg-muted/30"
-                          )}
-                          onMouseEnter={() => !isDragMode && setHoveredColumn('__checkbox')}
-                          onMouseLeave={() => !isDragMode && setHoveredColumn(null)}
-                        >
-                          <FmCommonCheckbox
-                            checked={isSelected}
-                            onCheckedChange={() => {
-                              const newSelection = new Set(selectedRows);
-                              if (newSelection.has(globalIndex)) {
-                                newSelection.delete(globalIndex);
-                              } else {
-                                newSelection.add(globalIndex);
-                              }
-                              setSelectedRows(newSelection);
-                            }}
-                            aria-label={`Select row ${globalIndex + 1}`}
-                          />
-                        </TableCell>
-                        {columns.map((column) => {
-                          const isEditing = editingCell?.rowIndex === globalIndex && editingCell?.columnKey === column.key;
-                          const cellValue = row[column.key];
-                          const relationConfig = isRelationField(column.key) ? getRelationConfig(column.key) : null;
+                      <TableCell
+                        className={cn(
+                          'transition-colors duration-200',
+                          !isDragMode &&
+                            hoveredColumn === '__checkbox' &&
+                            'bg-muted/30'
+                        )}
+                        onMouseEnter={() =>
+                          !isDragMode && setHoveredColumn('__checkbox')
+                        }
+                        onMouseLeave={() =>
+                          !isDragMode && setHoveredColumn(null)
+                        }
+                      >
+                        <FmCommonCheckbox
+                          checked={isSelected}
+                          onCheckedChange={() => {
+                            const newSelection = new Set(selectedRows);
+                            if (newSelection.has(globalIndex)) {
+                              newSelection.delete(globalIndex);
+                            } else {
+                              newSelection.add(globalIndex);
+                            }
+                            setSelectedRows(newSelection);
+                          }}
+                          aria-label={`Select row ${globalIndex + 1}`}
+                        />
+                      </TableCell>
+                      {columns.map(column => {
+                        const isEditing =
+                          editingCell?.rowIndex === globalIndex &&
+                          editingCell?.columnKey === column.key;
+                        const cellValue = row[column.key];
+                        const relationConfig = isRelationField(column.key)
+                          ? getRelationConfig(column.key)
+                          : null;
+                        const isEditableCell =
+                          column.editable &&
+                          !column.readonly &&
+                          onUpdate &&
+                          column.type !== 'boolean' &&
+                          column.type !== 'created_date';
 
-                          return (
-                            <TableCell 
-                              key={column.key} 
-                              className={cn(
-                                "font-medium transition-colors duration-200 group",
-                                !isDragMode && hoveredColumn === column.key && "bg-muted/30",
-                                isEditing && "bg-fm-gold/10 ring-1 ring-fm-gold/30",
-                                column.editable && !column.readonly && onUpdate && column.type !== 'boolean' && column.type !== 'created_date' && "cursor-pointer hover:bg-fm-gold/5"
-                              )}
-                              onMouseEnter={() => !isDragMode && setHoveredColumn(column.key)}
-                              onMouseLeave={() => !isDragMode && setHoveredColumn(null)}
-                              onClick={(e) => {
-                                // Only trigger edit if not clicking on checkbox/switch and field is not readonly and not boolean or created_date
-                                if (column.editable && !column.readonly && onUpdate && column.type !== 'boolean' && column.type !== 'created_date' && !(e.target as HTMLElement).closest('[role="checkbox"], [role="switch"]')) {
-                                  handleCellEdit(globalIndex, column.key, cellValue);
-                                }
-                              }}
-                            >
-                              {isEditing ? (
-                                relationConfig ? (
-                                  // Render relation dropdown
-                                  <div onClick={(e) => e.stopPropagation()}>
-                                    {relationConfig.component({
-                                      value: editValue,
-                                      onChange: setEditValue,
-                                      onComplete: () => handleCellSave(row, column.key),
-                                    })}
-                                  </div>
-                                ) : column.type === 'boolean' ? (
-                                  // Render boolean toggle
-                                  <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-2" data-no-select>
-                                    <Switch
-                                      checked={editValue === 'true' || editValue === true}
-                                      onCheckedChange={(checked) => {
-                                        setEditValue(checked);
-                                        handleCellSave(row, column.key, checked);
-                                      }}
-                                      className="data-[state=checked]:bg-fm-gold"
-                                    />
-                                    <span className="text-sm">{editValue === 'true' || editValue === true ? 'Yes' : 'No'}</span>
-                                  </div>
-                                ) : column.type === 'date' ? (
-                                  // Render date picker
-                                  <Popover open modal>
-                                    <PopoverTrigger asChild>
-                                      <Button
-                                        variant="outline"
-                                        className="w-full justify-start text-left font-normal h-8"
-                                        onClick={(e) => e.stopPropagation()}
-                                      >
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {editValue ? formatDate(new Date(editValue), 'PPP') : 'Pick a date'}
-                                      </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0" align="start">
-                                      <Calendar
-                                        mode="single"
-                                        selected={editValue ? new Date(editValue) : undefined}
-                                        onSelect={(date) => {
-                                          if (date) {
-                                            setEditValue(date.toISOString());
-                                            handleCellSave(row, column.key, date.toISOString());
-                                          }
-                                        }}
-                                        initialFocus
-                                      />
-                                    </PopoverContent>
-                                  </Popover>
-                                ) : (
-                                  // Render text/number/email input
-                                  <Input
-                                    type={column.type || 'text'}
-                                    value={editValue}
-                                    onChange={(e) => setEditValue(e.target.value)}
-                                    onBlur={() => handleCellSave(row, column.key)}
-                                    onKeyDown={(e) => {
-                                      if (e.key === 'Enter') {
-                                        handleCellSave(row, column.key);
-                                      } else if (e.key === 'Escape') {
-                                        handleCellCancel();
-                                      }
-                                    }}
-                                    autoFocus
-                                    className="h-8 bg-background/50 border-fm-gold/50"
-                                  />
-                                )
-                              ) : (
-                                <div className="flex items-center gap-2">
-                                  {column.type === 'boolean' ? (
-                                    // Always show boolean as toggleable switch with label
-                                    <div className="flex items-center gap-2" data-no-select>
-                                      <Switch
-                                        checked={cellValue === true}
-                                        onCheckedChange={(checked) => {
-                                          if (column.editable && !column.readonly && onUpdate) {
-                                            handleCellSave(row, column.key, checked);
-                                          }
-                                        }}
-                                        disabled={!column.editable || column.readonly || !onUpdate}
-                                        className="data-[state=checked]:bg-fm-gold"
-                                      />
-                                      <span className="text-sm">{cellValue ? 'Yes' : 'No'}</span>
-                                    </div>
-                                  ) : column.render ? (
-                                    column.render(cellValue, row)
-                                  ) : relationConfig && relationConfig.displayField && row[relationConfig.displayField] ? (
-                                    <span className={cn(
-                                      "transition-colors",
-                                      column.editable && !column.readonly && onUpdate && "group-hover:text-fm-gold"
-                                    )}>
-                                      {row[relationConfig.displayField]?.name || row[relationConfig.displayField] || '-'}
-                                    </span>
-                                  ) : (
-                                    <span className={cn(
-                                      "transition-colors",
-                                      column.editable && !column.readonly && onUpdate && column.type !== 'created_date' && "group-hover:text-fm-gold"
-                                    )}>
-                                      {cellValue?.toString() || '-'}
-                                    </span>
-                                  )}
-                                  {column.editable && !column.readonly && onUpdate && column.type !== 'boolean' && column.type !== 'created_date' && (
-                                    <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                                      Click to edit
-                                    </span>
-                                  )}
-                                </div>
-                              )}
-                            </TableCell>
-                          );
-                        })}
-                        {actions.length > 0 && (
-                          <TableCell 
+                        const cellContent = (
+                          <TableCell
+                            key={column.key}
                             className={cn(
-                              "text-right transition-colors duration-200",
-                              !isDragMode && hoveredColumn === '__actions' && "bg-muted/30"
+                              'font-medium transition-colors duration-200',
+                              !isDragMode &&
+                                hoveredColumn === column.key &&
+                                'bg-muted/30',
+                              isEditing &&
+                                'bg-fm-gold/10 ring-1 ring-fm-gold/30',
+                              isEditableCell && 'cursor-pointer'
                             )}
-                            onMouseEnter={() => !isDragMode && setHoveredColumn('__actions')}
-                            onMouseLeave={() => !isDragMode && setHoveredColumn(null)}
+                            {...(column.editable && !column.readonly && onUpdate
+                              ? getFocusableCellProps(index, column.key)
+                              : {})}
+                            onMouseEnter={() =>
+                              !isDragMode && setHoveredColumn(column.key)
+                            }
+                            onMouseLeave={() =>
+                              !isDragMode && setHoveredColumn(null)
+                            }
+                            onClick={e => {
+                              // Only trigger edit if not clicking on checkbox/switch and field is not readonly and not boolean or created_date
+                              if (
+                                isEditableCell &&
+                                !(e.target as HTMLElement).closest(
+                                  '[role="checkbox"], [role="switch"]'
+                                )
+                              ) {
+                                handleCellEdit(
+                                  globalIndex,
+                                  column.key,
+                                  cellValue
+                                );
+                              }
+                            }}
                           >
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-8 w-8 p-0 hover:bg-fm-gold/20 transition-all duration-200"
-                                  onClick={(e) => e.stopPropagation()}
+                            {isEditing ? (
+                              relationConfig ? (
+                                // Render relation dropdown
+                                <div onClick={e => e.stopPropagation()}>
+                                  {relationConfig.component({
+                                    value: editValue,
+                                    onChange: setEditValue,
+                                    onComplete: () =>
+                                      handleCellSave(row, column.key),
+                                  })}
+                                </div>
+                              ) : column.type === 'boolean' ? (
+                                // Render boolean toggle
+                                <div
+                                  onClick={e => e.stopPropagation()}
+                                  className='flex items-center gap-2'
+                                  data-no-select
                                 >
-                                  <MoreVertical className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                {actions.map((action, idx) => (
-                                  <DropdownMenuItem
-                                    key={idx}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      action.onClick(row);
+                                  <Switch
+                                    checked={
+                                      editValue === 'true' || editValue === true
+                                    }
+                                    onCheckedChange={checked => {
+                                      setEditValue(checked);
+                                      handleCellSave(row, column.key, checked);
                                     }}
+                                    className='data-[state=checked]:bg-fm-gold'
+                                  />
+                                  <span className='text-sm'>
+                                    {editValue === 'true' || editValue === true
+                                      ? 'Yes'
+                                      : 'No'}
+                                  </span>
+                                </div>
+                              ) : column.type === 'date' ? (
+                                // Render date picker
+                                <Popover open modal>
+                                  <PopoverTrigger asChild>
+                                    <Button
+                                      variant='outline'
+                                      className='w-full justify-start text-left font-normal h-8'
+                                      onClick={e => e.stopPropagation()}
+                                    >
+                                      <CalendarIcon className='mr-2 h-4 w-4' />
+                                      {editValue
+                                        ? formatDate(new Date(editValue), 'PPP')
+                                        : 'Pick a date'}
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent
+                                    className='w-auto p-0'
+                                    align='start'
+                                  >
+                                    <Calendar
+                                      mode='single'
+                                      selected={
+                                        editValue
+                                          ? new Date(editValue)
+                                          : undefined
+                                      }
+                                      onSelect={date => {
+                                        if (date) {
+                                          setEditValue(date.toISOString());
+                                          handleCellSave(
+                                            row,
+                                            column.key,
+                                            date.toISOString()
+                                          );
+                                        }
+                                      }}
+                                      initialFocus
+                                    />
+                                  </PopoverContent>
+                                </Popover>
+                              ) : (
+                                // Render text/number/email input
+                                <Input
+                                  type={column.type || 'text'}
+                                  value={editValue}
+                                  onChange={e => setEditValue(e.target.value)}
+                                  onBlur={() => handleCellSave(row, column.key)}
+                                  onKeyDown={e => {
+                                    if (e.key === 'Enter') {
+                                      handleCellSave(row, column.key);
+                                    } else if (e.key === 'Escape') {
+                                      handleCellCancel();
+                                    }
+                                  }}
+                                  autoFocus
+                                  className='h-8 bg-background/50 border-fm-gold/50'
+                                />
+                              )
+                            ) : (
+                              <div className='flex items-center gap-2'>
+                                {column.type === 'boolean' ? (
+                                  // Always show boolean as toggleable switch with label
+                                  <div
+                                    className='flex items-center gap-2'
+                                    data-no-select
+                                  >
+                                    <Switch
+                                      checked={cellValue === true}
+                                      onCheckedChange={checked => {
+                                        if (
+                                          column.editable &&
+                                          !column.readonly &&
+                                          onUpdate
+                                        ) {
+                                          handleCellSave(
+                                            row,
+                                            column.key,
+                                            checked
+                                          );
+                                        }
+                                      }}
+                                      disabled={
+                                        !column.editable ||
+                                        column.readonly ||
+                                        !onUpdate
+                                      }
+                                      className='data-[state=checked]:bg-fm-gold'
+                                    />
+                                    <span className='text-sm'>
+                                      {cellValue ? 'Yes' : 'No'}
+                                    </span>
+                                  </div>
+                                ) : column.render ? (
+                                  column.render(cellValue, row)
+                                ) : relationConfig &&
+                                  relationConfig.displayField &&
+                                  row[relationConfig.displayField] ? (
+                                  <span
                                     className={cn(
-                                      'cursor-pointer transition-colors duration-200',
-                                      action.variant === 'destructive' && 'text-destructive focus:text-destructive'
+                                      'transition-colors',
+                                      column.editable &&
+                                        !column.readonly &&
+                                        onUpdate &&
+                                        hoveredColumn === column.key &&
+                                        'text-fm-gold'
                                     )}
                                   >
-                                    {action.icon && <span className="mr-2">{action.icon}</span>}
-                                    {action.label}
-                                  </DropdownMenuItem>
-                                ))}
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                                    {row[relationConfig.displayField]?.name ||
+                                      row[relationConfig.displayField] ||
+                                      '-'}
+                                  </span>
+                                ) : (
+                                  <span
+                                    className={cn(
+                                      'transition-colors',
+                                      column.editable &&
+                                        !column.readonly &&
+                                        onUpdate &&
+                                        column.type !== 'created_date' &&
+                                        hoveredColumn === column.key &&
+                                        'text-fm-gold'
+                                    )}
+                                  >
+                                    {cellValue?.toString() || '-'}
+                                  </span>
+                                )}
+                              </div>
+                            )}
                           </TableCell>
-                        )}
-                      </TableRow>
+                        );
+
+                        // Wrap with tooltip if editable
+                        return isEditableCell ? (
+                          <TooltipProvider
+                            key={column.key}
+                            delayDuration={2000}
+                          >
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                {cellContent}
+                              </TooltipTrigger>
+                              <TooltipContent side='top' className='text-xs'>
+                                Click to edit
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        ) : (
+                          cellContent
+                        );
+                      })}
+                      {actions.length > 0 && (
+                        <TableCell
+                          className={cn(
+                            'text-right transition-colors duration-200',
+                            !isDragMode &&
+                              hoveredColumn === '__actions' &&
+                              'bg-muted/30'
+                          )}
+                          onMouseEnter={() =>
+                            !isDragMode && setHoveredColumn('__actions')
+                          }
+                          onMouseLeave={() =>
+                            !isDragMode && setHoveredColumn(null)
+                          }
+                        >
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant='ghost'
+                                size='sm'
+                                className='h-8 w-8 p-0 hover:bg-fm-gold/20 transition-all duration-200'
+                                onClick={e => e.stopPropagation()}
+                              >
+                                <MoreVertical className='h-4 w-4' />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align='end'>
+                              {actions.map((action, idx) => (
+                                <DropdownMenuItem
+                                  key={idx}
+                                  onClick={e => {
+                                    e.stopPropagation();
+                                    action.onClick(row);
+                                  }}
+                                  className={cn(
+                                    'cursor-pointer transition-colors duration-200',
+                                    action.variant === 'destructive' &&
+                                      'text-destructive focus:text-destructive'
+                                  )}
+                                >
+                                  {action.icon && (
+                                    <span className='mr-2'>{action.icon}</span>
+                                  )}
+                                  {action.label}
+                                </DropdownMenuItem>
+                              ))}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      )}
+                    </TableRow>
                   </FmDataGridContextMenu>
                 );
               })
             )}
 
+            {/* Virtual scrolling spacer for bottom */}
+            {isVirtualized && virtualRows.length > 0 && (
+              <TableRow
+                style={{
+                  height: `${totalSize - (virtualRows[virtualRows.length - 1]?.end || 0)}px`,
+                }}
+              >
+                <TableCell
+                  colSpan={columns.length + 1 + (actions.length > 0 ? 1 : 0)}
+                />
+              </TableRow>
+            )}
+
             {/* New row creation */}
             {isCreatingRow && onCreate && (
-              <TableRow className="border-border/50 bg-fm-gold/5">
+              <TableRow className='border-border/50 bg-fm-gold/5'>
                 <TableCell>
-                  <div className="flex gap-2">
+                  <div className='flex gap-2'>
                     <Button
-                      size="sm"
-                      variant="ghost"
+                      size='sm'
+                      variant='ghost'
                       onClick={handleSaveNewRow}
-                      className="h-7 px-2 text-xs bg-fm-gold/20 hover:bg-fm-gold/30 text-fm-gold"
+                      className='h-7 px-2 text-xs bg-fm-gold/20 hover:bg-fm-gold/30 text-fm-gold'
                     >
                       Save
                     </Button>
                     <Button
-                      size="sm"
-                      variant="ghost"
+                      size='sm'
+                      variant='ghost'
                       onClick={handleCancelCreatingRow}
-                      className="h-7 px-2 text-xs"
+                      className='h-7 px-2 text-xs'
                     >
                       Cancel
                     </Button>
                   </div>
                 </TableCell>
-                {columns.map((column) => {
-                  const relationConfig = isRelationField(column.key) ? getRelationConfig(column.key) : null;
-                  
+                {columns.map(column => {
+                  const relationConfig = isRelationField(column.key)
+                    ? getRelationConfig(column.key)
+                    : null;
+
                   // Skip created_date fields - they are auto-populated
                   if (column.type === 'created_date') {
                     return (
                       <TableCell key={column.key}>
-                        <div className="text-sm text-muted-foreground italic">
+                        <div className='text-sm text-muted-foreground italic'>
                           Auto-populated
                         </div>
                       </TableCell>
@@ -1039,17 +1697,28 @@ export function FmDataGrid<T extends Record<string, any>>({
 
                   return (
                     <TableCell key={column.key}>
-                      <div className="flex items-center gap-2">
+                      <div className='flex items-center gap-2'>
                         {relationConfig ? (
                           relationConfig.component({
-                            value: newRowData[column.key as keyof T] as string || '',
-                            onChange: (value) => handleNewRowFieldChange(column.key, value),
+                            value:
+                              (newRowData[column.key as keyof T] as string) ||
+                              '',
+                            onChange: value =>
+                              handleNewRowFieldChange(column.key, value),
                           })
                         ) : (
                           <Input
                             type={column.type || 'text'}
-                            value={newRowData[column.key as keyof T] as string || ''}
-                            onChange={(e) => handleNewRowFieldChange(column.key, e.target.value)}
+                            value={
+                              (newRowData[column.key as keyof T] as string) ||
+                              ''
+                            }
+                            onChange={e =>
+                              handleNewRowFieldChange(
+                                column.key,
+                                e.target.value
+                              )
+                            }
                             placeholder={column.label}
                             className={cn(
                               'h-8 bg-background/50',
@@ -1058,7 +1727,7 @@ export function FmDataGrid<T extends Record<string, any>>({
                           />
                         )}
                         {column.required && (
-                          <span className="text-fm-gold text-xs">*</span>
+                          <span className='text-fm-gold text-xs'>*</span>
                         )}
                       </div>
                     </TableCell>
@@ -1070,36 +1739,48 @@ export function FmDataGrid<T extends Record<string, any>>({
 
             {/* Bottom add row button */}
             {onCreate && !isCreatingRow && (
-              <TableRow className="border-border/50 hover:bg-fm-gold/5 transition-colors cursor-pointer" onClick={handleStartCreatingRow}>
-                <TableCell colSpan={columns.length + 1 + (actions.length > 0 ? 1 : 0)} className="text-center py-3">
-                  <button className="flex items-center justify-center gap-2 mx-auto text-muted-foreground hover:text-fm-gold transition-colors">
-                    <Plus className="h-4 w-4" />
-                    <span className="text-sm">Add new {resourceName.toLowerCase()}</span>
+              <TableRow
+                className='border-border/50 hover:bg-fm-gold/5 transition-colors cursor-pointer'
+                onClick={handleStartCreatingRow}
+              >
+                <TableCell
+                  colSpan={columns.length + 1 + (actions.length > 0 ? 1 : 0)}
+                  className='text-center py-3'
+                >
+                  <button className='flex items-center justify-center gap-2 mx-auto text-muted-foreground hover:text-fm-gold transition-colors'>
+                    <Plus className='h-4 w-4' />
+                    <span className='text-sm'>
+                      Add new {resourceName.toLowerCase()}
+                    </span>
                   </button>
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
-        
+
         {/* Drag Selection Overlay */}
         {isDragMode && getDragBoxStyle() && (
-          <div style={getDragBoxStyle()!} className="animate-in fade-in duration-100" />
+          <div
+            style={getDragBoxStyle()!}
+            className='animate-in fade-in duration-100'
+          />
         )}
       </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">
+        <div className='flex items-center justify-between'>
+          <div className='text-sm text-muted-foreground'>
             Showing {(currentPage - 1) * pageSize + 1} to{' '}
-            {Math.min(currentPage * pageSize, sortedData.length)} of {sortedData.length} results
+            {Math.min(currentPage * pageSize, sortedData.length)} of{' '}
+            {sortedData.length} results
           </div>
           <Pagination>
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   className={cn(
                     'cursor-pointer transition-all duration-200',
                     currentPage === 1 && 'pointer-events-none opacity-50'
@@ -1123,7 +1804,7 @@ export function FmDataGrid<T extends Record<string, any>>({
                     <PaginationLink
                       onClick={() => setCurrentPage(pageNumber)}
                       isActive={currentPage === pageNumber}
-                      className="cursor-pointer transition-all duration-200"
+                      className='cursor-pointer transition-all duration-200'
                     >
                       {pageNumber}
                     </PaginationLink>
@@ -1132,10 +1813,13 @@ export function FmDataGrid<T extends Record<string, any>>({
               })}
               <PaginationItem>
                 <PaginationNext
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  onClick={() =>
+                    setCurrentPage(p => Math.min(totalPages, p + 1))
+                  }
                   className={cn(
                     'cursor-pointer transition-all duration-200',
-                    currentPage === totalPages && 'pointer-events-none opacity-50'
+                    currentPage === totalPages &&
+                      'pointer-events-none opacity-50'
                   )}
                 />
               </PaginationItem>
@@ -1143,6 +1827,104 @@ export function FmDataGrid<T extends Record<string, any>>({
           </Pagination>
         </div>
       )}
+
+      {/* Batch Delete Confirmation Dialog */}
+      <Dialog
+        open={showBatchDeleteDialog}
+        onOpenChange={setShowBatchDeleteDialog}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Batch Delete</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete {selectedRows.size} {resourceName}
+              {selectedRows.size !== 1 ? 's' : ''}? This action cannot be
+              undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className='py-4'>
+            <div className='text-sm text-muted-foreground mb-2'>
+              Items to be deleted:
+            </div>
+            <div className='max-h-48 overflow-y-auto space-y-1 rounded-none bg-muted/30 p-3'>
+              {sortedData
+                .filter((_: T, idx: number) => selectedRows.has(idx))
+                .slice(0, 10)
+                .map((row: T, idx: number) => (
+                  <div key={idx} className='text-sm'>
+                    •{' '}
+                    {row['name' as keyof T] ||
+                      row['title' as keyof T] ||
+                      row['id' as keyof T] ||
+                      `${resourceName} ${idx + 1}`}
+                  </div>
+                ))}
+              {selectedRows.size > 10 && (
+                <div className='text-sm text-muted-foreground italic'>
+                  ... and {selectedRows.size - 10} more
+                </div>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant='outline'
+              onClick={() => setShowBatchDeleteDialog(false)}
+              disabled={isBatchDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant='destructive'
+              onClick={handleBatchDelete}
+              disabled={isBatchDeleting}
+            >
+              {isBatchDeleting ? (
+                <>
+                  <div className='h-4 w-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent' />
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className='h-4 w-4 mr-2' />
+                  Delete {selectedRows.size}
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Export Dialog */}
+      <FmDataGridExportDialog
+        open={showExportDialog}
+        onOpenChange={setShowExportDialog}
+        columns={columns}
+        data={sortedData}
+        filename={
+          exportFilename || resourceName.toLowerCase().replace(/\s+/g, '-')
+        }
+        onExport={handleExport}
+      />
+
+      {/* Group By Dialog */}
+      <FmDataGridGroupDialog
+        open={showGroupDialog}
+        onOpenChange={setShowGroupDialog}
+        columns={columns}
+        currentGroupConfig={groupConfig}
+        onApply={handleApplyGrouping}
+        onClear={handleClearGrouping}
+      />
+
+      {/* Bulk Edit Dialog */}
+      <FmBulkEditDialog
+        open={showBulkEditDialog}
+        onOpenChange={setShowBulkEditDialog}
+        columns={columns}
+        selectedRows={selectedRowsData}
+        onApply={handleBulkEdit}
+      />
     </div>
   );
 }

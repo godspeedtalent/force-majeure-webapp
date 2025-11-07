@@ -1,4 +1,10 @@
-import { TestCase, TestResult, TestRunOptions, ThreadInfo, TestExecutionStatus } from '../types/testing';
+import {
+  TestCase,
+  TestResult,
+  TestRunOptions,
+  ThreadInfo,
+  TestExecutionStatus,
+} from '../types/testing';
 import { TestLogger } from './TestLogger';
 
 export class TestRunner {
@@ -32,7 +38,7 @@ export class TestRunner {
 
     while (this.queue.length > 0 || executing.length > 0) {
       const currentStatus = this.getStatus();
-      
+
       // Check if stopped
       if (currentStatus === 'stopped') {
         break;
@@ -52,7 +58,11 @@ export class TestRunner {
       }
 
       // Start new tests up to max concurrency
-      while (this.queue.length > 0 && executing.length < this.maxConcurrency && this.getStatus() === 'running') {
+      while (
+        this.queue.length > 0 &&
+        executing.length < this.maxConcurrency &&
+        this.getStatus() === 'running'
+      ) {
         const testCase = this.queue.shift()!;
         const promise = this.executeTest(testCase, onProgress).then(() => {
           const index = executing.indexOf(promise);
@@ -108,13 +118,18 @@ export class TestRunner {
 
     while (retryCount <= (testCase.retries || this.retries)) {
       try {
-        logger.info(`Starting test: ${testCase.name} (attempt ${retryCount + 1})`);
+        logger.info(
+          `Starting test: ${testCase.name} (attempt ${retryCount + 1})`
+        );
 
         // Execute with timeout
         await Promise.race([
           testCase.execute(),
           new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Test timeout')), testCase.timeout || this.timeout)
+            setTimeout(
+              () => reject(new Error('Test timeout')),
+              testCase.timeout || this.timeout
+            )
           ),
         ]);
 
@@ -135,7 +150,9 @@ export class TestRunner {
         break;
       } catch (error) {
         lastError = error as Error;
-        logger.error(`Test failed: ${testCase.name}`, { error: lastError.message });
+        logger.error(`Test failed: ${testCase.name}`, {
+          error: lastError.message,
+        });
         retryCount++;
 
         if (retryCount > (testCase.retries || this.retries)) {

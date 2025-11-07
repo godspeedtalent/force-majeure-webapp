@@ -133,7 +133,12 @@ export type Database = {
           author_name: string;
           message: string;
           type: 'TODO' | 'INFO' | 'BUG' | 'QUESTION';
-          status: 'TODO' | 'IN_PROGRESS' | 'ARCHIVED' | 'RESOLVED' | 'CANCELLED';
+          status:
+            | 'TODO'
+            | 'IN_PROGRESS'
+            | 'ARCHIVED'
+            | 'RESOLVED'
+            | 'CANCELLED';
         };
         Insert: {
           id?: string;
@@ -143,7 +148,12 @@ export type Database = {
           author_name: string;
           message: string;
           type: 'TODO' | 'INFO' | 'BUG' | 'QUESTION';
-          status?: 'TODO' | 'IN_PROGRESS' | 'ARCHIVED' | 'RESOLVED' | 'CANCELLED';
+          status?:
+            | 'TODO'
+            | 'IN_PROGRESS'
+            | 'ARCHIVED'
+            | 'RESOLVED'
+            | 'CANCELLED';
         };
         Update: {
           id?: string;
@@ -153,7 +163,12 @@ export type Database = {
           author_name?: string;
           message?: string;
           type?: 'TODO' | 'INFO' | 'BUG' | 'QUESTION';
-          status?: 'TODO' | 'IN_PROGRESS' | 'ARCHIVED' | 'RESOLVED' | 'CANCELLED';
+          status?:
+            | 'TODO'
+            | 'IN_PROGRESS'
+            | 'ARCHIVED'
+            | 'RESOLVED'
+            | 'CANCELLED';
         };
         Relationships: [
           {

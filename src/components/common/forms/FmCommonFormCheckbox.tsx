@@ -18,17 +18,20 @@ export const FmCommonFormCheckbox = ({
 }: FmCommonFormCheckboxProps) => {
   return (
     <div>
-      <div className="flex items-start gap-3">
+      <div className='flex items-start gap-3'>
         <FmCommonCheckbox
           id={id}
           checked={checked}
           onCheckedChange={onCheckedChange}
         />
-        <Label htmlFor={id} className="text-sm font-normal cursor-pointer leading-relaxed">
+        <Label
+          htmlFor={id}
+          className='text-sm font-normal cursor-pointer leading-relaxed'
+        >
           {label}
         </Label>
       </div>
-      {error && <p className="text-xs text-destructive mt-1 ml-7">{error}</p>}
+      {error && <p className='text-xs text-destructive mt-1 ml-7'>{error}</p>}
     </div>
   );
 };

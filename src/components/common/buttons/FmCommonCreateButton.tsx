@@ -21,11 +21,12 @@ export const FmCommonCreateButton = ({
       variant={variant}
       className={cn(
         'justify-start gap-2',
-        variant === 'outline' && 'bg-white/5 border-white/30 hover:bg-fm-gold/20 hover:border-fm-gold hover:text-fm-gold transition-all',
+        variant === 'outline' &&
+          'bg-white/5 border-white/30 hover:bg-fm-gold/20 hover:border-fm-gold hover:text-fm-gold transition-all',
         className
       )}
     >
-      <Plus className="h-4 w-4" />
+      <Plus className='h-4 w-4' />
       {label}
     </Button>
   );

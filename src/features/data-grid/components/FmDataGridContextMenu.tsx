@@ -1,5 +1,8 @@
 import { ReactNode } from 'react';
-import { FmCommonContextMenu, ContextMenuAction } from '@/components/common/modals/FmCommonContextMenu';
+import {
+  FmCommonContextMenu,
+  ContextMenuAction,
+} from '@/components/common/modals/FmCommonContextMenu';
 
 interface FmDataGridContextMenuProps<T = any> {
   children: ReactNode;

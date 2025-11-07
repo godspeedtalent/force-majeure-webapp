@@ -18,7 +18,9 @@ interface OrderReceiptEmailProps {
   data: OrderReceiptEmailData;
 }
 
-export const generateOrderReceiptEmailHTML = (data: OrderReceiptEmailData): string => {
+export const generateOrderReceiptEmailHTML = (
+  data: OrderReceiptEmailData
+): string => {
   const { orderId, orderDate, event, purchaser, orderSummary } = data;
 
   // Color palette
@@ -95,13 +97,17 @@ export const generateOrderReceiptEmailHTML = (data: OrderReceiptEmailData): stri
           </tr>
 
           <!-- Event Hero Image -->
-          ${event.imageUrl ? `
+          ${
+            event.imageUrl
+              ? `
           <tr>
             <td style="padding: 0 40px;">
               <img src="${event.imageUrl}" alt="${event.title}" style="width: 100%; height: auto; border-radius: 8px; display: block;" />
             </td>
           </tr>
-          ` : ''}
+          `
+              : ''
+          }
 
           <!-- Event Information -->
           <tr>
@@ -180,13 +186,17 @@ export const generateOrderReceiptEmailHTML = (data: OrderReceiptEmailData): stri
                     <strong>Email:</strong> ${purchaser.email}
                   </td>
                 </tr>
-                ${purchaser.phone ? `
+                ${
+                  purchaser.phone
+                    ? `
                 <tr>
                   <td style="font-size: 14px; color: ${colors.darkGray};">
                     <strong>Phone:</strong> ${purchaser.phone}
                   </td>
                 </tr>
-                ` : ''}
+                `
+                    : ''
+                }
               </table>
             </td>
           </tr>
@@ -200,7 +210,9 @@ export const generateOrderReceiptEmailHTML = (data: OrderReceiptEmailData): stri
 
               <!-- Order Items -->
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 15px;">
-                ${orderSummary.items.map(item => `
+                ${orderSummary.items
+                  .map(
+                    item => `
                 <tr>
                   <td style="padding: 12px 0; border-bottom: 1px solid ${colors.borderGray};">
                     <div style="font-size: 14px; font-weight: 500; color: ${colors.darkGray}; margin-bottom: 4px;">
@@ -214,7 +226,9 @@ export const generateOrderReceiptEmailHTML = (data: OrderReceiptEmailData): stri
                     $${item.subtotal.toFixed(2)}
                   </td>
                 </tr>
-                `).join('')}
+                `
+                  )
+                  .join('')}
               </table>
 
               <!-- Summary Breakdown -->
@@ -228,7 +242,9 @@ export const generateOrderReceiptEmailHTML = (data: OrderReceiptEmailData): stri
                   </td>
                 </tr>
 
-                ${orderSummary.ticketProtection ? `
+                ${
+                  orderSummary.ticketProtection
+                    ? `
                 <tr>
                   <td style="padding: 6px 0; font-size: 14px; color: ${colors.mutedText};">
                     Ticket Protection
@@ -237,9 +253,13 @@ export const generateOrderReceiptEmailHTML = (data: OrderReceiptEmailData): stri
                     $${orderSummary.ticketProtection.toFixed(2)}
                   </td>
                 </tr>
-                ` : ''}
+                `
+                    : ''
+                }
 
-                ${orderSummary.serviceFee ? `
+                ${
+                  orderSummary.serviceFee
+                    ? `
                 <tr>
                   <td style="padding: 6px 0; font-size: 14px; color: ${colors.mutedText};">
                     Service Fee
@@ -248,9 +268,13 @@ export const generateOrderReceiptEmailHTML = (data: OrderReceiptEmailData): stri
                     $${orderSummary.serviceFee.toFixed(2)}
                   </td>
                 </tr>
-                ` : ''}
+                `
+                    : ''
+                }
 
-                ${orderSummary.processingFee ? `
+                ${
+                  orderSummary.processingFee
+                    ? `
                 <tr>
                   <td style="padding: 6px 0; font-size: 14px; color: ${colors.mutedText};">
                     Processing Fee
@@ -259,7 +283,9 @@ export const generateOrderReceiptEmailHTML = (data: OrderReceiptEmailData): stri
                     $${orderSummary.processingFee.toFixed(2)}
                   </td>
                 </tr>
-                ` : ''}
+                `
+                    : ''
+                }
 
                 <tr>
                   <td style="padding: 6px 0; font-size: 14px; color: ${colors.mutedText};">

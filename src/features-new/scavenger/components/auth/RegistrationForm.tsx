@@ -271,7 +271,9 @@ export function RegistrationForm({
                 password
                 placeholder='Confirm your password'
                 value={formData.confirmPassword}
-                onChange={e => updateFormData('confirmPassword', e.target.value)}
+                onChange={e =>
+                  updateFormData('confirmPassword', e.target.value)
+                }
                 required
                 className='h-9'
               />

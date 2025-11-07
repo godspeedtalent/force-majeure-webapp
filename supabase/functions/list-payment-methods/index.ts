@@ -8,10 +8,11 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type',
 };
 
-serve(async (req) => {
+serve(async req => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -29,7 +30,7 @@ serve(async (req) => {
     });
 
     // Format the response to match our SavedCard interface
-    const savedCards = paymentMethods.data.map((pm) => ({
+    const savedCards = paymentMethods.data.map(pm => ({
       id: pm.id,
       last4: pm.card?.last4 || '',
       brand: pm.card?.brand || '',
@@ -38,20 +39,14 @@ serve(async (req) => {
       isDefault: false, // You can implement default logic via customer metadata
     }));
 
-    return new Response(
-      JSON.stringify({ savedCards }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      }
-    );
+    return new Response(JSON.stringify({ savedCards }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 200,
+    });
   } catch (error) {
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
-      }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 400,
+    });
   }
 });

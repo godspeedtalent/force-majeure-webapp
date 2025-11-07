@@ -2,7 +2,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type',
 };
 
 interface CheckoutRequest {
@@ -14,7 +15,7 @@ interface CheckoutRequest {
   fingerprint: string;
 }
 
-Deno.serve(async (req) => {
+Deno.serve(async req => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -28,7 +29,10 @@ Deno.serve(async (req) => {
       console.error('STRIPE_SECRET_KEY not configured');
       return new Response(
         JSON.stringify({ error: 'Payment system not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
       );
     }
 
@@ -36,27 +40,38 @@ Deno.serve(async (req) => {
     if (!authHeader) {
       return new Response(
         JSON.stringify({ error: 'Missing authorization header' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
       );
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey, {
       auth: { persistSession: false },
-      global: { headers: { Authorization: authHeader } }
+      global: { headers: { Authorization: authHeader } },
     });
 
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
     if (userError || !user) {
       console.error('Auth error:', userError);
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const { eventId, items, fingerprint }: CheckoutRequest = await req.json();
 
-    console.log('Creating checkout session for user:', user.id, 'event:', eventId);
+    console.log(
+      'Creating checkout session for user:',
+      user.id,
+      'event:',
+      eventId
+    );
 
     // Validate ticket tiers and calculate totals
     let subtotalCents = 0;
@@ -76,26 +91,38 @@ Deno.serve(async (req) => {
       if (tierError || !tier) {
         console.error('Ticket tier not found or inactive:', item.ticketTierId);
         return new Response(
-          JSON.stringify({ error: `Invalid ticket tier: ${item.ticketTierId}` }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          JSON.stringify({
+            error: `Invalid ticket tier: ${item.ticketTierId}`,
+          }),
+          {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
         );
       }
 
       // Create ticket hold
-      const { data: holdData, error: holdError } = await supabase
-        .rpc('create_ticket_hold', {
+      const { data: holdData, error: holdError } = await supabase.rpc(
+        'create_ticket_hold',
+        {
           p_ticket_tier_id: item.ticketTierId,
           p_quantity: item.quantity,
           p_user_id: user.id,
           p_fingerprint: fingerprint,
-          p_hold_duration_seconds: 600 // 10 minutes
-        });
+          p_hold_duration_seconds: 600, // 10 minutes
+        }
+      );
 
       if (holdError) {
         console.error('Failed to create hold:', holdError);
         return new Response(
-          JSON.stringify({ error: 'Failed to reserve tickets. They may be sold out.' }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          JSON.stringify({
+            error: 'Failed to reserve tickets. They may be sold out.',
+          }),
+          {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
         );
       }
 
@@ -103,7 +130,9 @@ Deno.serve(async (req) => {
 
       // Calculate pricing
       const unitPrice = tier.price_cents;
-      const unitFee = tier.fee_flat_cents + Math.floor((unitPrice * tier.fee_pct_bps) / 10000);
+      const unitFee =
+        tier.fee_flat_cents +
+        Math.floor((unitPrice * tier.fee_pct_bps) / 10000);
       const itemSubtotal = unitPrice * item.quantity;
       const itemFees = unitFee * item.quantity;
 
@@ -146,10 +175,10 @@ Deno.serve(async (req) => {
       for (const holdId of holds) {
         await supabase.rpc('release_ticket_hold', { p_hold_id: holdId });
       }
-      return new Response(
-        JSON.stringify({ error: 'Failed to create order' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: 'Failed to create order' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     // Create order items
@@ -163,8 +192,10 @@ Deno.serve(async (req) => {
 
       if (tier) {
         const unitPrice = tier.price_cents;
-        const unitFee = tier.fee_flat_cents + Math.floor((unitPrice * tier.fee_pct_bps) / 10000);
-        
+        const unitFee =
+          tier.fee_flat_cents +
+          Math.floor((unitPrice * tier.fee_pct_bps) / 10000);
+
         await supabase.from('order_items').insert({
           order_id: order.id,
           ticket_tier_id: item.ticketTierId,
@@ -197,7 +228,7 @@ Deno.serve(async (req) => {
         user_id: user.id,
         event_id: eventId,
       },
-      expires_at: Math.floor(Date.now() / 1000) + (600), // 10 minutes
+      expires_at: Math.floor(Date.now() / 1000) + 600, // 10 minutes
     });
 
     // Update order with session ID
@@ -215,14 +246,16 @@ Deno.serve(async (req) => {
         orderId: order.id,
         expiresAt: session.expires_at,
       }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
     );
-
   } catch (error) {
     console.error('Error creating checkout session:', error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 });

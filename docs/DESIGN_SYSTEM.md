@@ -3,6 +3,7 @@
 Complete design system reference for building consistent, on-brand components and pages.
 
 ## Table of Contents
+
 - [Color Palette](#color-palette)
 - [Typography](#typography)
 - [Spacing Scale](#spacing-scale)
@@ -16,29 +17,31 @@ Complete design system reference for building consistent, on-brand components an
 ## Color Palette
 
 ### Base Colors
+
 - **Black** (`#000000`) - Primary background color
 - **White** (`#FFFFFF`) - Default text and contrast elements
 
 ### Accent Colors
+
 - **Dusty Gold** (`#dfba7d`) - Primary accent
   - Use for: Primary buttons, CTAs, highlights, active states
   - Tailwind: `bg-fm-gold`, `text-fm-gold`, `border-fm-gold`
-  
 - **Dark Crimson** (`#520C10`) - Secondary accent
   - Use for: Secondary emphasis, subtle accents
   - Tailwind: `bg-fm-crimson`, `text-fm-crimson`, `border-fm-crimson`
 
 ### Semantic Colors
+
 - **Muted Navy** (`#545E75`) - Info/Tertiary
   - Use for: Informational states, tertiary actions
   - Tailwind: `bg-fm-navy`, `text-fm-navy`, `border-fm-navy`
-  
 - **Chili Red** (`#D64933`) - Danger
   - Use for: Errors, warnings, destructive actions
   - Note: Brighter than Dark Crimson for better visibility
   - Tailwind: `bg-fm-danger`, `text-fm-danger`, `border-fm-danger`
 
 ### Usage in Code
+
 ```typescript
 import { COLORS, COLOR_CLASSES } from '@/shared/constants/designSystem';
 
@@ -54,6 +57,7 @@ const buttonClasses = `${COLOR_CLASSES.GOLD_BG} ${COLOR_CLASSES.WHITE_TEXT}`;
 ## Typography
 
 ### Primary Font
+
 **Canela** is used for 99% of the application.
 
 ```typescript
@@ -64,6 +68,7 @@ className={TYPOGRAPHY.FONT_CANELA}
 ```
 
 ### Text Rules
+
 1. **Capitalization**: Use standard sentence case for headers
    - ✅ "Here's what we found."
    - ✅ "Event details."
@@ -79,6 +84,7 @@ className={TYPOGRAPHY.FONT_CANELA}
    - ✅ **Important** information only
 
 ### Example
+
 ```tsx
 // Good
 <h1 className="font-canela text-2xl">Welcome to the event.</h1>
@@ -95,15 +101,16 @@ className={TYPOGRAPHY.FONT_CANELA}
 
 Consistent spacing based on 5px increments:
 
-| Size | Value | Use Case |
-|------|-------|----------|
-| **XS** | `5px` | Tight spacing, small gaps |
+| Size   | Value  | Use Case                    |
+| ------ | ------ | --------------------------- |
+| **XS** | `5px`  | Tight spacing, small gaps   |
 | **SM** | `10px` | Compact layouts, list items |
-| **MD** | `20px` | Default element spacing |
+| **MD** | `20px` | Default element spacing     |
 | **LG** | `40px` | Section spacing, major gaps |
 | **XL** | `60px` | Page sections, hero spacing |
 
 ### Usage in Code
+
 ```typescript
 import { SPACING, SPACING_CLASSES } from '@/shared/constants/designSystem';
 
@@ -116,10 +123,15 @@ className={SPACING_CLASSES.GAP_LG} // gap: 40px
 ```
 
 ### Example Layout
+
 ```tsx
-<div className="flex flex-col gap-[20px]"> {/* MD spacing */}
-  <section className="p-[40px]">          {/* LG padding */}
-    <h1 className="mb-[10px]">Title</h1>   {/* SM margin */}
+<div className='flex flex-col gap-[20px]'>
+  {' '}
+  {/* MD spacing */}
+  <section className='p-[40px]'>
+    {' '}
+    {/* LG padding */}
+    <h1 className='mb-[10px]'>Title</h1> {/* SM margin */}
     <p>Content here</p>
   </section>
 </div>
@@ -132,31 +144,40 @@ className={SPACING_CLASSES.GAP_LG} // gap: 40px
 Material Design-inspired depth system for backgrounds. Each level represents elevation in the visual hierarchy.
 
 ### Level 0: Transparent (Bottommost)
+
 - Transparent background with outline
 - Example: `FmCard` outline variant
+
 ```tsx
-className="bg-transparent border border-white/20"
+className = 'bg-transparent border border-white/20';
 ```
 
 ### Level 1: Base Frosted Glass
+
 - Black frosted glass base layer
+
 ```tsx
-className="bg-black/60 backdrop-blur-sm"
+className = 'bg-black/60 backdrop-blur-sm';
 ```
 
 ### Level 2: Elevated
+
 - Brighter frosted glass for elevated elements
+
 ```tsx
-className="bg-black/70 backdrop-blur-md"
+className = 'bg-black/70 backdrop-blur-md';
 ```
 
 ### Level 3: High Elevation
+
 - Brightest frosted glass for top-level overlays
+
 ```tsx
-className="bg-black/80 backdrop-blur-lg"
+className = 'bg-black/80 backdrop-blur-lg';
 ```
 
 ### Usage Example
+
 ```tsx
 import { DEPTH } from '@/shared/constants/designSystem';
 
@@ -176,28 +197,34 @@ import { DEPTH } from '@/shared/constants/designSystem';
 ## Design Elements
 
 ### Background
+
 - **Black Topography Pattern**: Primary background throughout the application
+
 ```tsx
-className="bg-topography"
+className = 'bg-topography';
 ```
 
 ## Design Elements
 
 ### Background
+
 - **Black Topography Pattern**: Primary background throughout the application
+
 ```tsx
-className="bg-topography"
+className = 'bg-topography';
 ```
 
 ### Corners & Borders
+
 - **Sharp Edges**: Default for all components
 - **Rounded Corners**: Almost never used
+
 ```tsx
 // Default (preferred)
-className="rounded-none"
+className = 'rounded-none';
 
 // Subtle rounding (rare, only when necessary)
-className="rounded-sm"
+className = 'rounded-sm';
 ```
 
 ### Input Fields & Forms
@@ -205,6 +232,7 @@ className="rounded-sm"
 **Based on FmCommonTextField styling patterns:**
 
 #### Border Behavior
+
 - **Default**: Single border on all sides
 - **Hover**: Border changes to gold with subtle glow
 - **Focus**: Remove all borders EXCEPT bottom border
@@ -227,11 +255,13 @@ className="
 ```
 
 #### Background States
+
 - **Default**: `bg-background`
 - **Hover**: `bg-white/5` (slight brightness increase)
 - **Focus**: `bg-white/5` (same as hover, maintains consistency)
 
 #### Usage with Constants
+
 ```tsx
 import { INPUT_STYLES } from '@/shared/constants/designSystem';
 
@@ -241,7 +271,7 @@ import { INPUT_STYLES } from '@/shared/constants/designSystem';
     ${INPUT_STYLES.HOVER_CLASSES}
     ${INPUT_STYLES.FOCUS_CLASSES}
   `}
-/>
+/>;
 ```
 
 ### Labels
@@ -272,11 +302,14 @@ import { LABEL_STYLES } from '@/shared/constants/designSystem';
 **Based on FmCommonContextMenu - uses striped background pattern:**
 
 #### Striped Background
+
 Alternating items have different background opacity for visual separation:
+
 - **Even items** (0, 2, 4...): `bg-background/40` (lighter)
 - **Odd items** (1, 3, 5...): `bg-background/60` (darker)
 
 #### Interactive States
+
 - **Hover**: Gold tint, slight scale up, gold glow
 - **Focus**: Stronger gold tint, slight scale up, gold glow
 - **Active**: Scale down slightly (press effect)
@@ -291,41 +324,43 @@ import { LIST_ITEM_STYLES } from '@/shared/constants/designSystem';
     return (
       <div
         key={idx}
-        className={isEven ? LIST_ITEM_STYLES.EVEN_CLASSES : LIST_ITEM_STYLES.ODD_CLASSES}
+        className={
+          isEven ? LIST_ITEM_STYLES.EVEN_CLASSES : LIST_ITEM_STYLES.ODD_CLASSES
+        }
       >
         {item.label}
       </div>
     );
   })}
-</div>
+</div>;
 ```
 
 #### Complete Striped List Example
+
 ```tsx
-<div className="space-y-1">
-  <div className="bg-background/40 hover:bg-fm-gold/10 hover:scale-[1.02] transition-all duration-300 p-3 cursor-pointer">
+<div className='space-y-1'>
+  <div className='bg-background/40 hover:bg-fm-gold/10 hover:scale-[1.02] transition-all duration-300 p-3 cursor-pointer'>
     Option 1
   </div>
-  <div className="bg-background/60 hover:bg-fm-gold/10 hover:scale-[1.02] transition-all duration-300 p-3 cursor-pointer">
+  <div className='bg-background/60 hover:bg-fm-gold/10 hover:scale-[1.02] transition-all duration-300 p-3 cursor-pointer'>
     Option 2
   </div>
-  <div className="bg-background/40 hover:bg-fm-gold/10 hover:scale-[1.02] transition-all duration-300 p-3 cursor-pointer">
+  <div className='bg-background/40 hover:bg-fm-gold/10 hover:scale-[1.02] transition-all duration-300 p-3 cursor-pointer'>
     Option 3
   </div>
 </div>
 ```
 
 ### Icon Buttons
+
 Use icon buttons where appropriate for clear actions:
+
 - Edit, delete, close, expand, etc.
 - Must have accessible labels
 - Sharp edges, minimal padding
 
 ```tsx
-<button 
-  className="p-[5px] rounded-none"
-  aria-label="Edit event"
->
+<button className='p-[5px] rounded-none' aria-label='Edit event'>
   <EditIcon />
 </button>
 ```
@@ -335,9 +370,11 @@ Use icon buttons where appropriate for clear actions:
 ## Component Library
 
 ### Primary Building Blocks
+
 All reusable components should be in `/src/components/common/` or similar `FmComponents` directory.
 
 #### Core Components
+
 1. **FmButton** - Primary button component
 2. **FmCard** - Two variants:
    - Outline style (transparent with border)
@@ -348,13 +385,15 @@ All reusable components should be in `/src/components/common/` or similar `FmCom
 6. **FmDataGrid** - Data table/grid component
 
 ### Naming Convention
+
 - **Fm** prefix: Force Majeure
-- **FmCommon*** prefix: Common/reusable components
+- **FmCommon\*** prefix: Common/reusable components
   - Example: `FmCommonButton`, `FmCommonTextField`
-- **Fm*** prefix: Domain-specific components
+- **Fm\*** prefix: Domain-specific components
   - Example: `FmEventCard`, `FmTicketTier`
 
 ### Creating New Components
+
 1. **Check existing components first** - Reuse before creating new
 2. **Inherit from base components** when possible
 3. Use naming convention: `Fm*` or `FmCommon*`
@@ -364,14 +403,16 @@ All reusable components should be in `/src/components/common/` or similar `FmCom
 
 ```tsx
 // Example: Creating a new component
-import { COLORS, SPACING_CLASSES, TYPOGRAPHY } from '@/shared/constants/designSystem';
+import {
+  COLORS,
+  SPACING_CLASSES,
+  TYPOGRAPHY,
+} from '@/shared/constants/designSystem';
 
 export const FmNewComponent = () => {
   return (
     <div className={`${SPACING_CLASSES.P_MD} rounded-none`}>
-      <h2 className={TYPOGRAPHY.FONT_CANELA}>
-        Component title.
-      </h2>
+      <h2 className={TYPOGRAPHY.FONT_CANELA}>Component title.</h2>
     </div>
   );
 };
@@ -384,7 +425,7 @@ export const FmNewComponent = () => {
 ### When Building New Pages
 
 1. **Use pre-built layouts** - Only create new layouts if absolutely necessary
-2. **Use existing Fm* components** - Compose from building blocks
+2. **Use existing Fm\* components** - Compose from building blocks
 3. **Follow color palette** - Use constants, not hard-coded colors
 4. **Apply spacing scale** - Use defined spacing values
 5. **Maintain sharp edges** - No rounded corners by default
@@ -392,8 +433,13 @@ export const FmNewComponent = () => {
 7. **Follow text rules** - Sentence case, periods where appropriate
 
 ### Example Page Structure
+
 ```tsx
-import { SPACING_CLASSES, TYPOGRAPHY, DEPTH } from '@/shared/constants/designSystem';
+import {
+  SPACING_CLASSES,
+  TYPOGRAPHY,
+  DEPTH,
+} from '@/shared/constants/designSystem';
 import { FmCard } from '@/components/common/FmCard';
 import { FmButton } from '@/components/common/FmButton';
 
@@ -403,13 +449,11 @@ export const MyNewPage = () => {
       <h1 className={`${TYPOGRAPHY.FONT_CANELA} text-4xl text-white mb-[20px]`}>
         Welcome to the page.
       </h1>
-      
-      <FmCard variant="frosted" className={SPACING_CLASSES.P_MD}>
-        <p className={TYPOGRAPHY.FONT_CANELA}>
-          Content goes here.
-        </p>
-        
-        <FmButton variant="primary" className="mt-[20px]">
+
+      <FmCard variant='frosted' className={SPACING_CLASSES.P_MD}>
+        <p className={TYPOGRAPHY.FONT_CANELA}>Content goes here.</p>
+
+        <FmButton variant='primary' className='mt-[20px]'>
           Take action
         </FmButton>
       </FmCard>
@@ -421,6 +465,7 @@ export const MyNewPage = () => {
 ### Common Patterns
 
 #### Cards with Depth
+
 ```tsx
 // Outline card (level 0)
 <FmCard variant="outline">
@@ -434,6 +479,7 @@ export const MyNewPage = () => {
 ```
 
 #### Buttons
+
 ```tsx
 // Primary action (gold)
 <FmButton variant="primary">
@@ -452,6 +498,7 @@ export const MyNewPage = () => {
 ```
 
 #### Spacing
+
 ```tsx
 // Vertical stack with medium gaps
 <div className="flex flex-col gap-[20px]">
@@ -472,6 +519,7 @@ export const MyNewPage = () => {
 ## Quick Reference
 
 ### Import Statement
+
 ```typescript
 import {
   COLORS,
@@ -486,12 +534,14 @@ import {
 ```
 
 ### Color Quick Reference
+
 - Primary: Dusty Gold `#dfba7d`
 - Secondary: Dark Crimson `#520C10`
 - Info: Muted Navy `#545E75`
 - Danger: Chili Red `#D64933`
 
 ### Spacing Quick Reference
+
 - XS: 5px
 - SM: 10px
 - MD: 20px
@@ -499,11 +549,13 @@ import {
 - XL: 60px
 
 ### Typography Quick Reference
+
 - Font: Canela (99% of app)
 - Case: Sentence case
 - Bold: Use sparingly
 
 ### Design Quick Reference
+
 - Corners: Sharp (rounded-none)
 - Background: Black topography
 - Depth: 4 levels (transparent → frosted glass)
@@ -539,6 +591,6 @@ When creating new components or pages:
 7. **Sentence case headers** with periods where appropriate
 8. **Minimal bold text** - only for true emphasis
 9. **Reference this doc** when styling questions arise
-10. **Maintain consistency** with existing Fm* components
+10. **Maintain consistency** with existing Fm\* components
 
 For color values, spacing, or typography questions, refer to the constants file rather than guessing or using arbitrary values.

@@ -32,11 +32,13 @@ try {
 ### What Users See
 
 **Regular Users:**
+
 - Title: "Failed to Create Event" (in crimson)
 - Description: "An error occurred. Please try again."
 - Duration: 4 seconds
 
 **Developers/Admins:**
+
 - Title: "Failed to Create Event" (in crimson)
 - Description: Full error details including response body
 - Error message in monospace font
@@ -55,25 +57,25 @@ Main error handler function.
 interface ErrorHandlerOptions {
   // Required: Title shown in toast
   title: string;
-  
+
   // User-friendly description of what failed
   description?: string;
-  
+
   // Context about what was being done
   context?: string;
-  
+
   // API endpoint being called (for logging)
   endpoint?: string;
-  
+
   // HTTP method (for logging)
   method?: string;
-  
+
   // Whether to show toast notification (default: true)
   showToast?: boolean;
-  
+
   // Whether to log to backend (default: true)
   logError?: boolean;
-  
+
   // User role (auto-detected if not provided)
   userRole?: string;
 }
@@ -87,7 +89,7 @@ try {
     .from('events')
     .select('*')
     .eq('id', eventId);
-    
+
   if (error) throw error;
   return data;
 } catch (error) {
@@ -117,7 +119,7 @@ const event = await withErrorHandler(
       .select('*')
       .eq('id', eventId)
       .single();
-      
+
     if (error) throw error;
     return data;
   },
@@ -144,13 +146,10 @@ Synchronous wrapper for non-async functions.
 ```typescript
 import { withErrorHandlerSync } from '@/shared/services/errorHandler';
 
-const parsed = withErrorHandlerSync(
-  () => JSON.parse(jsonString),
-  {
-    title: 'Failed to Parse JSON',
-    showToast: false, // Don't show toast for parsing errors
-  }
-);
+const parsed = withErrorHandlerSync(() => JSON.parse(jsonString), {
+  title: 'Failed to Parse JSON',
+  showToast: false, // Don't show toast for parsing errors
+});
 ```
 
 ## Common Patterns
@@ -166,7 +165,7 @@ const saveProfile = async (data: ProfileData) => {
       .from('profiles')
       .update(data)
       .eq('id', userId);
-      
+
     if (error) throw error;
     toast.success('Profile saved successfully');
   } catch (error) {
@@ -190,7 +189,7 @@ try {
   await handleError(error, {
     title: 'Failed to Load Stats',
     showToast: false, // Don't show toast
-    logError: true,   // But still log it
+    logError: true, // But still log it
   });
 }
 ```
@@ -201,10 +200,10 @@ The error handler automatically extracts Supabase error details:
 
 ```typescript
 try {
-  const { data, error } = await supabase
-    .from('events')
-    .insert({ /* missing required field */ });
-    
+  const { data, error } = await supabase.from('events').insert({
+    /* missing required field */
+  });
+
   if (error) throw error;
 } catch (error) {
   await handleError(error, {
@@ -243,13 +242,13 @@ const performComplexOperation = async () => {
   try {
     // Step 1
     await updateEvent(eventData);
-    
+
     // Step 2
     await updateArtists(artistData);
-    
+
     // Step 3
     await createTicketTiers(tiers);
-    
+
     toast.success('All changes saved successfully');
   } catch (error) {
     // One error handler for the whole operation
@@ -397,7 +396,7 @@ try {
     .from('orders')
     .select('event_id')
     .eq('user_id', user.id);
-    
+
   if (error) throw error;
   // Process stats...
 } catch (error) {
@@ -420,7 +419,7 @@ try {
     .from('events')
     .update(eventData)
     .eq('id', id);
-    
+
   if (error) throw error;
   toast.success('Event updated successfully');
 } catch (error) {
@@ -441,15 +440,15 @@ try {
 // Test that errors are handled properly
 it('handles errors correctly', async () => {
   const mockError = new Error('Test error');
-  
+
   // Mock handleError
   const handleErrorSpy = vi.spyOn(errorHandler, 'handleError');
-  
+
   // Trigger error
   await expect(async () => {
     await someFunction();
   }).rejects.toThrow();
-  
+
   // Verify error handler was called
   expect(handleErrorSpy).toHaveBeenCalledWith(
     mockError,

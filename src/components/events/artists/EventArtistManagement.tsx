@@ -1,5 +1,13 @@
 import { useState } from 'react';
-import { Music, Star, Users2, Clock, Trash2, GripVertical, Plus } from 'lucide-react';
+import {
+  Music,
+  Star,
+  Users2,
+  Clock,
+  Trash2,
+  GripVertical,
+  Plus,
+} from 'lucide-react';
 import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
@@ -20,7 +28,11 @@ export interface ArtistSlot {
 interface EventArtistManagementProps {
   headlinerId?: string;
   undercardIds?: string[];
-  onChange: (data: { headlinerId: string; undercardIds: string[]; artistSlots: ArtistSlot[] }) => void;
+  onChange: (data: {
+    headlinerId: string;
+    undercardIds: string[];
+    artistSlots: ArtistSlot[];
+  }) => void;
   className?: string;
 }
 
@@ -62,12 +74,16 @@ export function EventArtistManagement({
   const [showScheduling, setShowScheduling] = useState(false);
 
   // Get artists by role
-  const headliners = artistSlots.filter(slot => slot.role === 'headliner' || slot.role === 'co-headliner');
+  const headliners = artistSlots.filter(
+    slot => slot.role === 'headliner' || slot.role === 'co-headliner'
+  );
   const undercards = artistSlots.filter(slot => slot.role === 'undercard');
 
   const updateParent = (slots: ArtistSlot[]) => {
     const mainHeadliner = slots.find(s => s.role === 'headliner');
-    const allUndercards = slots.filter(s => s.role === 'undercard' || s.role === 'co-headliner');
+    const allUndercards = slots.filter(
+      s => s.role === 'undercard' || s.role === 'co-headliner'
+    );
 
     onChange({
       headlinerId: mainHeadliner?.artistId || '',
@@ -133,11 +149,11 @@ export function EventArtistManagement({
   return (
     <div className={cn('space-y-6', className)}>
       {/* Headliners Section */}
-      <FormSection title="Headliners">
-        <div className="space-y-3">
+      <FormSection title='Headliners'>
+        <div className='space-y-3'>
           {headliners.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground border-2 border-dashed border-white/10 rounded-lg">
-              <Music className="h-12 w-12 mx-auto mb-2 opacity-30" />
+            <div className='text-center py-8 text-muted-foreground border-2 border-dashed border-white/10 rounded-lg'>
+              <Music className='h-12 w-12 mx-auto mb-2 opacity-30' />
               <p>No headliners added yet</p>
             </div>
           )}
@@ -147,39 +163,43 @@ export function EventArtistManagement({
               key={slot.id}
               className={cn(
                 'group relative p-4 rounded-lg border transition-all duration-300',
-                slot.role === 'headliner' ? 'bg-fm-gold/10 border-fm-gold/30' : 'bg-white/5 border-white/20',
+                slot.role === 'headliner'
+                  ? 'bg-fm-gold/10 border-fm-gold/30'
+                  : 'bg-white/5 border-white/20',
                 'hover:bg-white/10 hover:shadow-[0_0_12px_rgba(212,175,55,0.2)]'
               )}
             >
               {/* Reorder Handle */}
-              <div className="absolute left-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className='absolute left-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity'>
                 <button
                   onClick={() => moveArtist(slot.id, 'up')}
                   disabled={index === 0}
-                  className="p-1 hover:bg-white/10 rounded disabled:opacity-30"
+                  className='p-1 hover:bg-white/10 rounded disabled:opacity-30'
                 >
-                  <GripVertical className="h-4 w-4" />
+                  <GripVertical className='h-4 w-4' />
                 </button>
               </div>
 
-              <div className="flex items-start gap-4 pl-6">
-                <div className="flex-1 space-y-3">
+              <div className='flex items-start gap-4 pl-6'>
+                <div className='flex-1 space-y-3'>
                   {/* Artist Selection */}
-                  <div className="flex items-center gap-3">
+                  <div className='flex items-center gap-3'>
                     {slot.role === 'headliner' && (
-                      <Star className="h-5 w-5 text-fm-gold flex-shrink-0" />
+                      <Star className='h-5 w-5 text-fm-gold flex-shrink-0' />
                     )}
-                    <div className="flex-1">
+                    <div className='flex-1'>
                       <FmArtistSearchDropdown
                         value={slot.artistId}
-                        onChange={(artistId) => updateArtist(slot.id, { artistId })}
+                        onChange={artistId =>
+                          updateArtist(slot.id, { artistId })
+                        }
                         placeholder={`Select ${slot.role === 'headliner' ? 'headliner' : 'co-headliner'}`}
                       />
                     </div>
                     {slot.role === 'co-headliner' && (
                       <button
                         onClick={() => demoteToUndercard(slot.id)}
-                        className="text-xs px-2 py-1 rounded bg-white/10 hover:bg-white/20 transition-colors"
+                        className='text-xs px-2 py-1 rounded bg-white/10 hover:bg-white/20 transition-colors'
                       >
                         Demote
                       </button>
@@ -188,20 +208,26 @@ export function EventArtistManagement({
 
                   {/* Scheduling (if enabled) */}
                   {showScheduling && (
-                    <div className="grid grid-cols-2 gap-3 pl-8">
+                    <div className='grid grid-cols-2 gap-3 pl-8'>
                       <FmCommonTextField
-                        label="Set Time"
-                        type="time"
+                        label='Set Time'
+                        type='time'
                         value={slot.setTime || ''}
-                        onChange={(e) => updateArtist(slot.id, { setTime: e.target.value })}
-                        placeholder="22:00"
+                        onChange={e =>
+                          updateArtist(slot.id, { setTime: e.target.value })
+                        }
+                        placeholder='22:00'
                       />
                       <FmCommonTextField
-                        label="Duration (min)"
-                        type="number"
+                        label='Duration (min)'
+                        type='number'
                         value={slot.setDuration?.toString() || ''}
-                        onChange={(e) => updateArtist(slot.id, { setDuration: parseInt(e.target.value) || 0 })}
-                        placeholder="90"
+                        onChange={e =>
+                          updateArtist(slot.id, {
+                            setDuration: parseInt(e.target.value) || 0,
+                          })
+                        }
+                        placeholder='90'
                       />
                     </div>
                   )}
@@ -210,31 +236,31 @@ export function EventArtistManagement({
                 {/* Remove Button */}
                 <button
                   onClick={() => removeArtist(slot.id)}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-red-500/20 rounded text-red-400 hover:text-red-300"
+                  className='opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-red-500/20 rounded text-red-400 hover:text-red-300'
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className='h-4 w-4' />
                 </button>
               </div>
             </div>
           ))}
 
           {/* Add Headliner Buttons */}
-          <div className="flex gap-3">
+          <div className='flex gap-3'>
             {headliners.filter(s => s.role === 'headliner').length === 0 && (
               <FmCommonButton
                 onClick={() => addArtist('headliner')}
-                variant="default"
+                variant='default'
                 icon={Star}
-                className="flex-1"
+                className='flex-1'
               >
                 Add Headliner
               </FmCommonButton>
             )}
             <FmCommonButton
               onClick={() => addArtist('co-headliner')}
-              variant="default"
+              variant='default'
               icon={Plus}
-              className="flex-1"
+              className='flex-1'
             >
               Add Co-Headliner
             </FmCommonButton>
@@ -243,11 +269,11 @@ export function EventArtistManagement({
       </FormSection>
 
       {/* Undercard Section */}
-      <FormSection title="Undercard Artists">
-        <div className="space-y-3">
+      <FormSection title='Undercard Artists'>
+        <div className='space-y-3'>
           {undercards.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground border-2 border-dashed border-white/10 rounded-lg">
-              <Users2 className="h-12 w-12 mx-auto mb-2 opacity-30" />
+            <div className='text-center py-8 text-muted-foreground border-2 border-dashed border-white/10 rounded-lg'>
+              <Users2 className='h-12 w-12 mx-auto mb-2 opacity-30' />
               <p>No undercard artists added yet</p>
             </div>
           )}
@@ -255,33 +281,35 @@ export function EventArtistManagement({
           {undercards.map((slot, index) => (
             <div
               key={slot.id}
-              className="group relative p-4 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 hover:shadow-[0_0_12px_rgba(212,175,55,0.2)] transition-all duration-300"
+              className='group relative p-4 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 hover:shadow-[0_0_12px_rgba(212,175,55,0.2)] transition-all duration-300'
             >
               {/* Reorder Handle */}
-              <div className="absolute left-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className='absolute left-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity'>
                 <button
                   onClick={() => moveArtist(slot.id, 'up')}
                   disabled={index === 0}
-                  className="p-1 hover:bg-white/10 rounded disabled:opacity-30"
+                  className='p-1 hover:bg-white/10 rounded disabled:opacity-30'
                 >
-                  <GripVertical className="h-4 w-4" />
+                  <GripVertical className='h-4 w-4' />
                 </button>
               </div>
 
-              <div className="flex items-start gap-4 pl-6">
-                <div className="flex-1 space-y-3">
+              <div className='flex items-start gap-4 pl-6'>
+                <div className='flex-1 space-y-3'>
                   {/* Artist Selection */}
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1">
+                  <div className='flex items-center gap-3'>
+                    <div className='flex-1'>
                       <FmArtistSearchDropdown
                         value={slot.artistId}
-                        onChange={(artistId) => updateArtist(slot.id, { artistId })}
-                        placeholder="Select undercard artist"
+                        onChange={artistId =>
+                          updateArtist(slot.id, { artistId })
+                        }
+                        placeholder='Select undercard artist'
                       />
                     </div>
                     <button
                       onClick={() => promoteToCoHeadliner(slot.id)}
-                      className="text-xs px-2 py-1 rounded bg-fm-gold/20 hover:bg-fm-gold/30 text-fm-gold transition-colors"
+                      className='text-xs px-2 py-1 rounded bg-fm-gold/20 hover:bg-fm-gold/30 text-fm-gold transition-colors'
                     >
                       Promote
                     </button>
@@ -289,20 +317,26 @@ export function EventArtistManagement({
 
                   {/* Scheduling (if enabled) */}
                   {showScheduling && (
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className='grid grid-cols-2 gap-3'>
                       <FmCommonTextField
-                        label="Set Time"
-                        type="time"
+                        label='Set Time'
+                        type='time'
                         value={slot.setTime || ''}
-                        onChange={(e) => updateArtist(slot.id, { setTime: e.target.value })}
-                        placeholder="20:00"
+                        onChange={e =>
+                          updateArtist(slot.id, { setTime: e.target.value })
+                        }
+                        placeholder='20:00'
                       />
                       <FmCommonTextField
-                        label="Duration (min)"
-                        type="number"
+                        label='Duration (min)'
+                        type='number'
                         value={slot.setDuration?.toString() || ''}
-                        onChange={(e) => updateArtist(slot.id, { setDuration: parseInt(e.target.value) || 0 })}
-                        placeholder="45"
+                        onChange={e =>
+                          updateArtist(slot.id, {
+                            setDuration: parseInt(e.target.value) || 0,
+                          })
+                        }
+                        placeholder='45'
                       />
                     </div>
                   )}
@@ -311,9 +345,9 @@ export function EventArtistManagement({
                 {/* Remove Button */}
                 <button
                   onClick={() => removeArtist(slot.id)}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-red-500/20 rounded text-red-400 hover:text-red-300"
+                  className='opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-red-500/20 rounded text-red-400 hover:text-red-300'
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className='h-4 w-4' />
                 </button>
               </div>
             </div>
@@ -322,9 +356,9 @@ export function EventArtistManagement({
           {/* Add Undercard Button */}
           <FmCommonButton
             onClick={() => addArtist('undercard')}
-            variant="default"
+            variant='default'
             icon={Plus}
-            className="w-full"
+            className='w-full'
           >
             Add Undercard Artist
           </FmCommonButton>
@@ -332,15 +366,17 @@ export function EventArtistManagement({
       </FormSection>
 
       {/* Scheduling Toggle */}
-      <div className="flex items-center gap-3 p-4 rounded-lg bg-white/5 border border-white/20">
-        <Clock className="h-5 w-5 text-fm-gold" />
-        <div className="flex-1">
-          <h3 className="font-semibold">Set Scheduling</h3>
-          <p className="text-sm text-muted-foreground">Enable to configure set times and durations</p>
+      <div className='flex items-center gap-3 p-4 rounded-lg bg-white/5 border border-white/20'>
+        <Clock className='h-5 w-5 text-fm-gold' />
+        <div className='flex-1'>
+          <h3 className='font-semibold'>Set Scheduling</h3>
+          <p className='text-sm text-muted-foreground'>
+            Enable to configure set times and durations
+          </p>
         </div>
         <FmCommonToggle
-          id="show-scheduling"
-          label="Set Scheduling"
+          id='show-scheduling'
+          label='Set Scheduling'
           checked={showScheduling}
           onCheckedChange={setShowScheduling}
         />
@@ -348,20 +384,20 @@ export function EventArtistManagement({
 
       {/* Summary Card */}
       {artistSlots.length > 0 && (
-        <div className="p-4 rounded-lg bg-fm-gold/10 border border-fm-gold/30">
-          <h3 className="font-semibold text-fm-gold mb-2">Lineup Summary</h3>
-          <div className="grid grid-cols-3 gap-4 text-sm">
+        <div className='p-4 rounded-lg bg-fm-gold/10 border border-fm-gold/30'>
+          <h3 className='font-semibold text-fm-gold mb-2'>Lineup Summary</h3>
+          <div className='grid grid-cols-3 gap-4 text-sm'>
             <div>
-              <div className="text-2xl font-bold">{headliners.length}</div>
-              <div className="text-muted-foreground">Headliners</div>
+              <div className='text-2xl font-bold'>{headliners.length}</div>
+              <div className='text-muted-foreground'>Headliners</div>
             </div>
             <div>
-              <div className="text-2xl font-bold">{undercards.length}</div>
-              <div className="text-muted-foreground">Undercard</div>
+              <div className='text-2xl font-bold'>{undercards.length}</div>
+              <div className='text-muted-foreground'>Undercard</div>
             </div>
             <div>
-              <div className="text-2xl font-bold">{artistSlots.length}</div>
-              <div className="text-muted-foreground">Total Artists</div>
+              <div className='text-2xl font-bold'>{artistSlots.length}</div>
+              <div className='text-muted-foreground'>Total Artists</div>
             </div>
           </div>
         </div>

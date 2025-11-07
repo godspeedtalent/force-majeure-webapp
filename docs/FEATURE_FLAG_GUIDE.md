@@ -32,25 +32,25 @@ export const FEATURE_FLAGS = {
   // Core Features
   COMING_SOON_MODE: 'coming_soon_mode',
   DEMO_PAGES: 'demo_pages',
-  
+
   // Event Features
   EVENT_CHECKOUT_TIMER: 'event_checkout_timer',
-  
+
   // Scavenger Hunt
   SCAVENGER_HUNT: 'scavenger_hunt',
   SCAVENGER_HUNT_ACTIVE: 'scavenger_hunt_active',
   SHOW_LEADERBOARD: 'show_leaderboard',
-  
+
   // User Features
   MEMBER_PROFILES: 'member_profiles',
-  
+
   // Music & Media
   MUSIC_PLAYER: 'music_player',
   SPOTIFY_INTEGRATION: 'spotify_integration',
-  
+
   // Commerce
   MERCH_STORE: 'merch_store',
-  
+
   // Navigation
   GLOBAL_SEARCH: 'global_search',
 } as const;
@@ -58,7 +58,8 @@ export const FEATURE_FLAGS = {
 export const FEATURE_FLAG_METADATA = {
   [FEATURE_FLAGS.COMING_SOON_MODE]: {
     displayName: 'Coming Soon Mode',
-    description: 'Restricts access to main app features and shows coming soon page',
+    description:
+      'Restricts access to main app features and shows coming soon page',
     category: 'Core',
   },
   // ... more metadata
@@ -88,7 +89,7 @@ import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 </FeatureGuard>
 
 // With fallback content
-<FeatureGuard 
+<FeatureGuard
   feature={FEATURE_FLAGS.MUSIC_PLAYER}
   fallback={<ComingSoonMessage />}
 >
@@ -101,7 +102,7 @@ import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 </FeatureGuard>
 
 // Multiple features - ALL enabled (AND logic)
-<FeatureGuard 
+<FeatureGuard
   feature={[FEATURE_FLAGS.SPOTIFY_INTEGRATION, FEATURE_FLAGS.MUSIC_PLAYER]}
   requireAll={true}
 >
@@ -123,12 +124,12 @@ import { useFeatureFlagHelpers } from '@/shared/hooks/useFeatureFlags';
 import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 
 function MyComponent() {
-  const { 
-    isFeatureEnabled, 
-    isAnyFeatureEnabled, 
+  const {
+    isFeatureEnabled,
+    isAnyFeatureEnabled,
     areAllFeaturesEnabled,
     getEnabledFeatures,
-    isLoading 
+    isLoading,
   } = useFeatureFlagHelpers();
 
   // Simple check
@@ -137,12 +138,19 @@ function MyComponent() {
   }
 
   // Check any of multiple features
-  if (isAnyFeatureEnabled([FEATURE_FLAGS.MERCH_STORE, FEATURE_FLAGS.MUSIC_PLAYER])) {
+  if (
+    isAnyFeatureEnabled([FEATURE_FLAGS.MERCH_STORE, FEATURE_FLAGS.MUSIC_PLAYER])
+  ) {
     // Show media section
   }
 
   // Check all features required
-  if (areAllFeaturesEnabled([FEATURE_FLAGS.SPOTIFY_INTEGRATION, FEATURE_FLAGS.MUSIC_PLAYER])) {
+  if (
+    areAllFeaturesEnabled([
+      FEATURE_FLAGS.SPOTIFY_INTEGRATION,
+      FEATURE_FLAGS.MUSIC_PLAYER,
+    ])
+  ) {
     // Show full Spotify player
   }
 
@@ -172,7 +180,7 @@ import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 </FeatureGuard>
 
 // With redirect fallback
-<FeatureGuard 
+<FeatureGuard
   feature={FEATURE_FLAGS.MEMBER_PROFILES}
   fallback={<Navigate to="/" replace />}
 >
@@ -195,14 +203,12 @@ function Navigation() {
     { label: 'Home', path: '/' },
     { label: 'Events', path: '/events' },
     // Conditional items
-    ...(isFeatureEnabled(FEATURE_FLAGS.MERCH_STORE) 
-      ? [{ label: 'Merch', path: '/merch' }] 
-      : []
-    ),
+    ...(isFeatureEnabled(FEATURE_FLAGS.MERCH_STORE)
+      ? [{ label: 'Merch', path: '/merch' }]
+      : []),
     ...(isFeatureEnabled(FEATURE_FLAGS.MEMBER_PROFILES)
       ? [{ label: 'Members', path: '/members' }]
-      : []
-    ),
+      : []),
   ];
 
   return <nav>{/* render navItems */}</nav>;
@@ -216,14 +222,14 @@ import { FeatureGuard } from '@/components/common/guards/FeatureGuard';
 import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 
 <nav>
-  <NavLink to="/">Home</NavLink>
+  <NavLink to='/'>Home</NavLink>
   <FeatureGuard feature={FEATURE_FLAGS.MERCH_STORE}>
-    <NavLink to="/merch">Merch</NavLink>
+    <NavLink to='/merch'>Merch</NavLink>
   </FeatureGuard>
   <FeatureGuard feature={FEATURE_FLAGS.MEMBER_PROFILES}>
-    <NavLink to="/members">Members</NavLink>
+    <NavLink to='/members'>Members</NavLink>
   </FeatureGuard>
-</nav>
+</nav>;
 ```
 
 ## Migration Examples
@@ -236,9 +242,9 @@ import { useFeatureFlags } from '@/shared/hooks/useFeatureFlags';
 
 function MyComponent() {
   const { data: flags, isLoading } = useFeatureFlags();
-  
+
   if (isLoading) return <Loader />;
-  
+
   return (
     <div>
       {flags?.merch_store && <MerchLink />}
@@ -262,12 +268,12 @@ function MyComponent() {
       <FeatureGuard feature={FEATURE_FLAGS.MERCH_STORE}>
         <MerchLink />
       </FeatureGuard>
-      
+
       <FeatureGuard feature={FEATURE_FLAGS.MUSIC_PLAYER}>
         <MusicPlayer />
       </FeatureGuard>
-      
-      <FeatureGuard 
+
+      <FeatureGuard
         feature={FEATURE_FLAGS.COMING_SOON_MODE}
         fallback={<MainApp />}
       >
@@ -289,12 +295,12 @@ import { FeatureGuard } from '@/components/common/guards/FeatureGuard';
 import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 
 // Spotify player requires both flags enabled
-<FeatureGuard 
+<FeatureGuard
   feature={[FEATURE_FLAGS.MUSIC_PLAYER, FEATURE_FLAGS.SPOTIFY_INTEGRATION]}
   requireAll={true}
 >
   <SpotifyPlayer />
-</FeatureGuard>
+</FeatureGuard>;
 ```
 
 ### Conditional Feature Activation
@@ -310,12 +316,12 @@ function AdminFeature() {
   const { isFeatureEnabled } = useFeatureFlagHelpers();
   const { hasRole } = useUserPermissions();
   const { ROLES } = '@/shared/auth/permissions';
-  
+
   // Feature only available to admins when flag is enabled
   if (!isFeatureEnabled(FEATURE_FLAGS.DEMO_PAGES) || !hasRole(ROLES.ADMIN)) {
     return null;
   }
-  
+
   return <AdminDemoPanel />;
 }
 ```
@@ -334,13 +340,13 @@ const SpotifyPlayer = lazy(() => import('@/components/SpotifyPlayer'));
 
 function MediaSection() {
   const { isFeatureEnabled, isLoading } = useFeatureFlagHelpers();
-  
+
   if (isLoading) return <LoadingSpinner />;
-  
+
   if (!isFeatureEnabled(FEATURE_FLAGS.SPOTIFY_INTEGRATION)) {
     return <BasicPlayer />;
   }
-  
+
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <SpotifyPlayer />
@@ -354,26 +360,36 @@ function MediaSection() {
 ### 1. Always Use Constants
 
 ❌ **Don't:**
+
 ```tsx
 const enabled = flags?.merch_store;
-if (flags?.coming_soon_mode) { }
+if (flags?.coming_soon_mode) {
+}
 ```
 
 ✅ **Do:**
+
 ```tsx
 const enabled = isFeatureEnabled(FEATURE_FLAGS.MERCH_STORE);
-if (isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)) { }
+if (isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)) {
+}
 ```
 
 ### 2. Use FeatureGuard for UI
 
 ❌ **Don't:**
+
 ```tsx
-{flags?.merch_store && <MerchButton />}
-{flags?.music_player ? <Player /> : null}
+{
+  flags?.merch_store && <MerchButton />;
+}
+{
+  flags?.music_player ? <Player /> : null;
+}
 ```
 
 ✅ **Do:**
+
 ```tsx
 <FeatureGuard feature={FEATURE_FLAGS.MERCH_STORE}>
   <MerchButton />
@@ -415,7 +431,7 @@ import { PERMISSIONS } from '@/shared/auth/permissions';
   <PermissionGuard permission={PERMISSIONS.VIEW_ADMIN_PANEL}>
     <AdminDemo />
   </PermissionGuard>
-</FeatureGuard>
+</FeatureGuard>;
 ```
 
 ### 5. Document Feature Purpose
@@ -441,13 +457,13 @@ Feature flags are stored in the `feature_flags` table in Supabase:
 SELECT * FROM feature_flags;
 
 -- Enable a feature
-UPDATE feature_flags 
-SET enabled = true 
+UPDATE feature_flags
+SET enabled = true
 WHERE flag_name = 'merch_store';
 
 -- Disable a feature
-UPDATE feature_flags 
-SET enabled = false 
+UPDATE feature_flags
+SET enabled = false
 WHERE flag_name = 'coming_soon_mode';
 ```
 
@@ -474,7 +490,7 @@ test('renders when feature enabled', () => {
       <div>Merch Content</div>
     </FeatureGuard>
   );
-  
+
   expect(getByText('Merch Content')).toBeInTheDocument();
 });
 ```
@@ -503,10 +519,10 @@ If you get type errors with FEATURE_FLAGS:
 ```typescript
 interface FeatureGuardProps {
   children: React.ReactNode;
-  feature: string | string[];        // Single flag or array of flags
-  requireAll?: boolean;              // For arrays: AND logic (default: false = OR)
-  fallback?: React.ReactNode;        // Shown when feature disabled
-  invert?: boolean;                  // Reverse logic (show when disabled)
+  feature: string | string[]; // Single flag or array of flags
+  requireAll?: boolean; // For arrays: AND logic (default: false = OR)
+  fallback?: React.ReactNode; // Shown when feature disabled
+  invert?: boolean; // Reverse logic (show when disabled)
 }
 ```
 

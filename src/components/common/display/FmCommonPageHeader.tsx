@@ -1,6 +1,6 @@
 /**
  * FmCommonPageHeader
- * 
+ *
  * Standardized page header component
  * Provides consistent layout for page title, description, actions, and optional stats
  */
@@ -59,18 +59,12 @@ export const FmCommonPageHeader = ({
         </div>
 
         {/* Actions */}
-        {actions && (
-          <div className='flex items-center gap-2'>
-            {actions}
-          </div>
-        )}
+        {actions && <div className='flex items-center gap-2'>{actions}</div>}
       </div>
 
       {/* Stats Section */}
       {stats && (
-        <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
-          {stats}
-        </div>
+        <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>{stats}</div>
       )}
 
       {/* Divider */}

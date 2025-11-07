@@ -5,7 +5,7 @@ import { cn } from '@/shared/utils/utils';
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<'input'>>(
   ({ className, type, ...props }, ref) => {
     return (
-      <div className="relative w-full">
+      <div className='relative w-full'>
         <input
           type={type}
           className={cn(
@@ -25,8 +25,8 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<'input'>>(
           {...props}
         />
         {/* White gradient pulse at bottom on focus */}
-        <div className="absolute bottom-0 left-0 right-0 h-[2px] opacity-0 focus-within:opacity-100 transition-opacity duration-200 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent animate-pulse" />
+        <div className='absolute bottom-0 left-0 right-0 h-[2px] opacity-0 focus-within:opacity-100 transition-opacity duration-200 pointer-events-none'>
+          <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent animate-pulse' />
         </div>
       </div>
     );

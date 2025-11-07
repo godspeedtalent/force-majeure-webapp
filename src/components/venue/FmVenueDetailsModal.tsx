@@ -59,7 +59,9 @@ export const FmVenueDetailsModal = ({
       title={venue?.name ?? 'Venue'}
       headerContent={
         <div className='flex justify-end pr-12'>
-          <DialogTitle className='sr-only'>{venue?.name ?? 'Venue'}</DialogTitle>
+          <DialogTitle className='sr-only'>
+            {venue?.name ?? 'Venue'}
+          </DialogTitle>
           {showManage && (
             <FmCommonButton
               size='sm'
@@ -86,7 +88,7 @@ export const FmVenueDetailsModal = ({
           <div className='absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent' />
         </div>
       )}
-      
+
       <div className='p-8 flex flex-col gap-6'>
         <div className='space-y-3'>
           <p className='text-[10px] uppercase tracking-[0.35em] text-white/50'>

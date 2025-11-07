@@ -16,51 +16,56 @@ interface FeatureGuardProps {
 
 /**
  * Guard component that shows children only if required feature flags are enabled
- * 
+ *
  * @example
  * // Show content only if merch store is enabled
  * <FeatureGuard feature={FEATURE_FLAGS.MERCH_STORE}>
  *   <MerchStore />
  * </FeatureGuard>
- * 
+ *
  * @example
  * // Show content if ANY of the features are enabled
  * <FeatureGuard feature={[FEATURE_FLAGS.MUSIC_PLAYER, FEATURE_FLAGS.SPOTIFY_INTEGRATION]}>
  *   <MusicSection />
  * </FeatureGuard>
- * 
+ *
  * @example
  * // Show content only if ALL features are enabled
- * <FeatureGuard 
- *   feature={[FEATURE_FLAGS.SCAVENGER_HUNT, FEATURE_FLAGS.SCAVENGER_HUNT_ACTIVE]} 
+ * <FeatureGuard
+ *   feature={[FEATURE_FLAGS.SCAVENGER_HUNT, FEATURE_FLAGS.SCAVENGER_HUNT_ACTIVE]}
  *   requireAll
  * >
  *   <ActiveScavengerHunt />
  * </FeatureGuard>
- * 
+ *
  * @example
  * // Show fallback when feature is disabled
- * <FeatureGuard 
+ * <FeatureGuard
  *   feature={FEATURE_FLAGS.MEMBER_PROFILES}
  *   fallback={<p>Member profiles coming soon!</p>}
  * >
  *   <MemberProfilesList />
  * </FeatureGuard>
- * 
+ *
  * @example
  * // Show content when feature is DISABLED (inverted logic)
  * <FeatureGuard feature={FEATURE_FLAGS.COMING_SOON_MODE} invert>
  *   <MainContent />
  * </FeatureGuard>
  */
-export const FeatureGuard = ({ 
-  children, 
+export const FeatureGuard = ({
+  children,
   feature,
   requireAll = false,
   fallback = null,
   invert = false,
 }: FeatureGuardProps) => {
-  const { isFeatureEnabled, isAnyFeatureEnabled, areAllFeaturesEnabled, isLoading } = useFeatureFlagHelpers();
+  const {
+    isFeatureEnabled,
+    isAnyFeatureEnabled,
+    areAllFeaturesEnabled,
+    isLoading,
+  } = useFeatureFlagHelpers();
 
   // While loading, don't show anything (or show fallback if provided)
   if (isLoading) {
@@ -76,7 +81,7 @@ export const FeatureGuard = ({
 
   // Check features
   if (Array.isArray(feature)) {
-    isEnabled = requireAll 
+    isEnabled = requireAll
       ? areAllFeaturesEnabled(...feature)
       : isAnyFeatureEnabled(...feature);
   } else {

@@ -19,10 +19,10 @@ interface FmImageUploadProps {
 
 /**
  * FmImageUpload Component
- * 
+ *
  * A drag-and-drop image upload component for event images.
  * Uploads to Supabase Storage and manages metadata.
- * 
+ *
  * Features:
  * - Drag and drop support
  * - File type validation (JPEG, PNG, WebP, GIF)
@@ -45,17 +45,26 @@ export const FmImageUpload = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const { data: userRole } = useUserRole();
-  
+
   // Check if user is developer or admin for detailed error messages
-  const isDeveloper = userRole === ('developer' as any) || userRole === ('admin' as any);
+  const isDeveloper =
+    userRole === ('developer' as any) || userRole === ('admin' as any);
 
   const handleFile = async (file: File) => {
     if (!file) return;
 
     // Validate file type
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+    const validTypes = [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/webp',
+      'image/gif',
+    ];
     if (!validTypes.includes(file.type)) {
-      const error = new Error('Invalid file type. Please upload a JPEG, PNG, WebP, or GIF image.');
+      const error = new Error(
+        'Invalid file type. Please upload a JPEG, PNG, WebP, or GIF image.'
+      );
       showErrorToast({
         title: 'Invalid File Type',
         description: error.message,
@@ -148,40 +157,40 @@ export const FmImageUpload = ({
   };
 
   return (
-    <FmCommonCard variant="outline" className={cn('p-6', className)}>
+    <FmCommonCard variant='outline' className={cn('p-6', className)}>
       <input
         ref={fileInputRef}
-        type="file"
-        accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+        type='file'
+        accept='image/jpeg,image/jpg,image/png,image/webp,image/gif'
         onChange={handleChange}
-        className="hidden"
+        className='hidden'
       />
 
       {imageUrl ? (
         /* Preview uploaded image */
-        <div className="space-y-4">
-          <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted">
+        <div className='space-y-4'>
+          <div className='relative aspect-video w-full overflow-hidden rounded-lg bg-muted'>
             <img
               src={imageUrl}
-              alt="Event"
-              className="h-full w-full object-cover"
+              alt='Event'
+              className='h-full w-full object-cover'
             />
             <button
-              type="button"
+              type='button'
               onClick={handleRemove}
-              className="absolute top-2 right-2 rounded-full bg-black/60 p-2 text-white transition-colors hover:bg-black/80"
+              className='absolute top-2 right-2 rounded-full bg-black/60 p-2 text-white transition-colors hover:bg-black/80'
               disabled={uploading}
             >
-              <X className="h-4 w-4" />
+              <X className='h-4 w-4' />
             </button>
           </div>
           <FmCommonButton
-            variant="secondary"
+            variant='secondary'
             onClick={handleButtonClick}
             disabled={uploading}
-            className="w-full"
+            className='w-full'
           >
-            <Upload className="mr-2 h-4 w-4" />
+            <Upload className='mr-2 h-4 w-4' />
             Replace Image
           </FmCommonButton>
         </div>
@@ -202,23 +211,23 @@ export const FmImageUpload = ({
         >
           {uploading ? (
             <>
-              <Loader2 className="mb-4 h-12 w-12 animate-spin text-fm-gold" />
-              <p className="text-sm text-muted-foreground">Uploading...</p>
+              <Loader2 className='mb-4 h-12 w-12 animate-spin text-fm-gold' />
+              <p className='text-sm text-muted-foreground'>Uploading...</p>
             </>
           ) : (
             <>
-              <ImageIcon className="mb-4 h-12 w-12 text-muted-foreground" />
-              <p className="mb-2 text-sm font-medium">
+              <ImageIcon className='mb-4 h-12 w-12 text-muted-foreground' />
+              <p className='mb-2 text-sm font-medium'>
                 Drop your image here, or{' '}
                 <button
-                  type="button"
+                  type='button'
                   onClick={handleButtonClick}
-                  className="text-fm-gold hover:underline"
+                  className='text-fm-gold hover:underline'
                 >
                   browse
                 </button>
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className='text-xs text-muted-foreground'>
                 JPEG, PNG, WebP, or GIF (max 5MB)
               </p>
             </>

@@ -85,7 +85,7 @@ const Index = () => {
         const undercardArtists =
           eventIds.length > 0
             ? await Promise.all(
-                eventIds.map(async (eventId) => {
+                eventIds.map(async eventId => {
                   const event = data.find(e => e.id === eventId);
                   if (
                     !event ||
@@ -102,7 +102,10 @@ const Index = () => {
                     .select('id, name, genre, image_url')
                     .in('id', event.undercard_ids);
                   if (artistsError) {
-                    await handleFetchError(`fetching undercard for event ${eventId}`, artistsError);
+                    await handleFetchError(
+                      `fetching undercard for event ${eventId}`,
+                      artistsError
+                    );
                   }
                   return {
                     eventId,
@@ -138,8 +141,7 @@ const Index = () => {
             date: event.date,
             time: event.time,
             venue: event.venue,
-            heroImage:
-            event.hero_image || getImageUrl(event.hero_image),
+            heroImage: event.hero_image || getImageUrl(event.hero_image),
             description: event.description || null,
             ticketUrl: event.ticket_url || null,
           };
@@ -155,10 +157,13 @@ const Index = () => {
   }, [handleFetchError]);
 
   // Memoize scroll-based calculations
-  const { parallaxOffset, fadeOpacity } = useMemo(() => ({
-    parallaxOffset: scrollY * SCROLL_THRESHOLDS.PARALLAX_MULTIPLIER,
-    fadeOpacity: Math.max(0, 1 - scrollY / SCROLL_THRESHOLDS.CONTENT_FADE),
-  }), [scrollY]);
+  const { parallaxOffset, fadeOpacity } = useMemo(
+    () => ({
+      parallaxOffset: scrollY * SCROLL_THRESHOLDS.PARALLAX_MULTIPLIER,
+      fadeOpacity: Math.max(0, 1 - scrollY / SCROLL_THRESHOLDS.CONTENT_FADE),
+    }),
+    [scrollY]
+  );
 
   return (
     <Layout>
@@ -187,7 +192,7 @@ const Index = () => {
               {/* Logo and Title Section */}
               <div className='flex flex-col items-center text-center'>
                 <ForceMajeureLogo size='xl' className='mb-8 h-40 w-40' />
-                
+
                 <h1
                   className='text-3xl lg:text-5xl font-screamer tracking-[0.1em] leading-none mb-10'
                   style={{ fontWeight: 475 }}
@@ -216,7 +221,10 @@ const Index = () => {
                   ))
                 ) : (
                   <div className='col-span-full'>
-                    <FmCommonEmptyState icon={Calendar} title='No upcoming events' />
+                    <FmCommonEmptyState
+                      icon={Calendar}
+                      title='No upcoming events'
+                    />
                   </div>
                 )}
               </div>

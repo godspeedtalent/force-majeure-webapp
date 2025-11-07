@@ -31,7 +31,9 @@ export async function testEdgeFunctionConnectivity() {
 
   // Test 2: Check specific validate-location function
   const validateLocationUrl = `${baseUrl}/functions/v1/validate-location`;
-  debugLogger.debug('Testing validate-location function', { validateLocationUrl });
+  debugLogger.debug('Testing validate-location function', {
+    validateLocationUrl,
+  });
 
   try {
     const response = await fetch(validateLocationUrl, {
@@ -59,8 +61,8 @@ export async function testEdgeFunctionConnectivity() {
           'The edge function does not exist',
           'CORS policy is blocking the request',
           'Network connectivity issue',
-          'Supabase project URL is incorrect'
-        ]
+          'Supabase project URL is incorrect',
+        ],
       });
     }
   }

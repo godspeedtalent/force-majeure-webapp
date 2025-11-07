@@ -19,7 +19,8 @@ const DeveloperCreateVenuePage = () => {
       condensed
     >
       <p className='text-sm text-muted-foreground mb-6'>
-        Provide venue metadata so events can reference accurate locations. Closing the form will return you to the developer dashboard.
+        Provide venue metadata so events can reference accurate locations.
+        Closing the form will return you to the developer dashboard.
       </p>
       <FmCreateVenueButton mode='standalone' onClose={handleClose} />
     </DemoLayout>
@@ -27,4 +28,3 @@ const DeveloperCreateVenuePage = () => {
 };
 
 export default DeveloperCreateVenuePage;
-

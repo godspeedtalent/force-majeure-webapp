@@ -32,7 +32,7 @@ export function FmCommonList<T extends Record<string, any>>({
 }: FmCommonListProps<T>) {
   if (items.length === 0) {
     return (
-      <div className="text-center py-6 text-muted-foreground text-sm">
+      <div className='text-center py-6 text-muted-foreground text-sm'>
         {emptyMessage}
       </div>
     );
@@ -53,9 +53,10 @@ export function FmCommonList<T extends Record<string, any>>({
     <div className={cn('space-y-0 overflow-hidden rounded-lg', className)}>
       {items.map((item, index) => {
         const isStriped = striped && index % 2 === 1;
-        const computedRowClassName = typeof rowClassName === 'function' 
-          ? rowClassName(item, index) 
-          : rowClassName;
+        const computedRowClassName =
+          typeof rowClassName === 'function'
+            ? rowClassName(item, index)
+            : rowClassName;
 
         return (
           <div
@@ -74,7 +75,7 @@ export function FmCommonList<T extends Record<string, any>>({
           >
             {columns.map((column, colIndex) => {
               const value = item[column.key as keyof T];
-              const content = column.render 
+              const content = column.render
                 ? column.render(value, item, index)
                 : value?.toString() || '-';
 

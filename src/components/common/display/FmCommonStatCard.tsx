@@ -81,14 +81,14 @@ export const FmCommonStatCard = ({
             {Icon && (
               <Icon className='w-4 h-4 text-muted-foreground transition-colors duration-300 group-hover:text-fm-gold' />
             )}
-            <p className={cn(config.label, 'text-muted-foreground font-medium')}>
+            <p
+              className={cn(config.label, 'text-muted-foreground font-medium')}
+            >
               {label}
             </p>
           </div>
           {badge && (
-            <Badge variant={badge.variant || 'secondary'}>
-              {badge.label}
-            </Badge>
+            <Badge variant={badge.variant || 'secondary'}>{badge.label}</Badge>
           )}
         </div>
       </CardHeader>

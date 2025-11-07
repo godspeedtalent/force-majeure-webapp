@@ -37,7 +37,7 @@ export const useBreadcrumbs = () => {
         // Find route config for this path
         const routeMatch = findRouteConfig(currentPath);
 
-  if (routeMatch) {
+        if (routeMatch) {
           const { config, params } = routeMatch;
 
           // Skip if explicitly hidden

@@ -45,6 +45,7 @@ Custom email templates for Supabase authentication emails.
 ## Template Features
 
 ✅ **Brand-aligned design** using Force Majeure colors:
+
 - Deep Crimson (#6B0F1A) for CTAs
 - Black background with white text
 - Clean, minimalist aesthetic
@@ -58,6 +59,7 @@ Custom email templates for Supabase authentication emails.
 ## Customization
 
 You can customize:
+
 - Subject line
 - Welcome message text
 - Footer text
@@ -67,6 +69,7 @@ You can customize:
 ## Available Variables
 
 Use these Supabase variables in your templates:
+
 - `{{ .ConfirmationURL }}` - Email confirmation link
 - `{{ .Token }}` - Confirmation token
 - `{{ .TokenHash }}` - Token hash
@@ -76,6 +79,7 @@ Use these Supabase variables in your templates:
 ## Other Templates
 
 You can create similar templates for:
+
 - **Magic Link** - Passwordless login emails
 - **Reset Password** - Password reset emails
 - **Change Email Address** - Email change confirmation

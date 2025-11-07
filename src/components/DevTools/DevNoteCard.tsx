@@ -13,7 +13,12 @@ import {
 import { cn } from '@/shared/utils/utils';
 
 type NoteType = 'TODO' | 'INFO' | 'BUG' | 'QUESTION';
-type NoteStatus = 'TODO' | 'IN_PROGRESS' | 'RESOLVED' | 'ARCHIVED' | 'CANCELLED';
+type NoteStatus =
+  | 'TODO'
+  | 'IN_PROGRESS'
+  | 'RESOLVED'
+  | 'ARCHIVED'
+  | 'CANCELLED';
 
 interface DevNote {
   id: string;
@@ -71,15 +76,17 @@ export const DevNoteCard = ({
             className={cn(
               'bg-muted border-l-[4px] border-t-[1px] cursor-pointer transition-all duration-200 relative text-xs',
               'hover:bg-[#1a1612]',
-              isFocused ? 'border-fm-gold' : 'border-border hover:border-fm-gold/50',
+              isFocused
+                ? 'border-fm-gold'
+                : 'border-border hover:border-fm-gold/50',
               typeConfig.borderColor
             )}
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               onFocus();
             }}
             onDoubleClick={onDoubleClick}
-            onContextMenu={(e) => {
+            onContextMenu={e => {
               e.stopPropagation();
             }}
           >
@@ -90,7 +97,7 @@ export const DevNoteCard = ({
                 typeConfig.color
               )}
             >
-              <TypeIcon className="h-3 w-3 m-0" />
+              <TypeIcon className='h-3 w-3 m-0' />
             </div>
 
             {/* Status Indicator - small dot next to type icon */}
@@ -102,74 +109,78 @@ export const DevNoteCard = ({
               title={statusConfig.label}
             />
 
-            <CardContent className="p-[8px] pl-[32px] space-y-[8px]">
+            <CardContent className='p-[8px] pl-[32px] space-y-[8px]'>
               {/* Three Dots */}
-              <div className="flex items-start justify-end -mt-1">
+              <div className='flex items-start justify-end -mt-1'>
                 <button
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation();
                   }}
-                  className="hover:text-fm-gold transition-colors"
+                  className='hover:text-fm-gold transition-colors'
                 >
-                  <MoreVertical className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                  <MoreVertical className='h-3 w-3 text-muted-foreground flex-shrink-0' />
                 </button>
               </div>
 
               {/* Message */}
-              <p className="text-xs text-white leading-snug line-clamp-3 px-2">{note.message}</p>
+              <p className='text-xs text-white leading-snug line-clamp-3 px-2'>
+                {note.message}
+              </p>
             </CardContent>
 
-            <Separator className="bg-border/50" />
+            <Separator className='bg-border/50' />
 
-            <CardFooter className="p-[8px] pl-[32px] pt-[6px] flex items-center justify-between text-[10px] text-muted-foreground">
-              <span className="font-medium text-fm-gold">{note.author_name}</span>
+            <CardFooter className='p-[8px] pl-[32px] pt-[6px] flex items-center justify-between text-[10px] text-muted-foreground'>
+              <span className='font-medium text-fm-gold'>
+                {note.author_name}
+              </span>
               <span>{formatDate(note.created_at)}</span>
             </CardFooter>
           </Card>
         </div>
       </ContextMenuTrigger>
 
-      <ContextMenuContent className="bg-card border-border rounded-none w-48">
+      <ContextMenuContent className='bg-card border-border rounded-none w-48'>
         <ContextMenuItem
           onClick={onInspect}
-          className="text-white hover:bg-muted focus:bg-muted cursor-pointer"
+          className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
         >
           Inspect
         </ContextMenuItem>
         {canEdit && (
           <>
             <ContextMenuSub>
-              <ContextMenuSubTrigger className="text-white hover:bg-muted focus:bg-muted cursor-pointer">
+              <ContextMenuSubTrigger className='text-white hover:bg-muted focus:bg-muted cursor-pointer'>
                 Set Status
               </ContextMenuSubTrigger>
-              <ContextMenuSubContent className="bg-card border-border rounded-none w-40">
+              <ContextMenuSubContent className='bg-card border-border rounded-none w-40'>
                 <ContextMenuItem
                   onClick={() => onStatusChange('TODO')}
-                  className="text-white hover:bg-muted focus:bg-muted cursor-pointer"
+                  className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
                 >
                   {getStatusDisplayName('TODO')}
                 </ContextMenuItem>
                 <ContextMenuItem
                   onClick={() => onStatusChange('IN_PROGRESS')}
-                  className="text-white hover:bg-muted focus:bg-muted cursor-pointer"
+                  className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
                 >
                   {getStatusDisplayName('IN_PROGRESS')}
                 </ContextMenuItem>
                 <ContextMenuItem
                   onClick={() => onStatusChange('RESOLVED')}
-                  className="text-white hover:bg-muted focus:bg-muted cursor-pointer"
+                  className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
                 >
                   {getStatusDisplayName('RESOLVED')}
                 </ContextMenuItem>
                 <ContextMenuItem
                   onClick={() => onStatusChange('ARCHIVED')}
-                  className="text-white hover:bg-muted focus:bg-muted cursor-pointer"
+                  className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
                 >
                   {getStatusDisplayName('ARCHIVED')}
                 </ContextMenuItem>
                 <ContextMenuItem
                   onClick={() => onStatusChange('CANCELLED')}
-                  className="text-white hover:bg-muted focus:bg-muted cursor-pointer"
+                  className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
                 >
                   {getStatusDisplayName('CANCELLED')}
                 </ContextMenuItem>
@@ -177,7 +188,7 @@ export const DevNoteCard = ({
             </ContextMenuSub>
             <ContextMenuItem
               onClick={onDelete}
-              className="text-red-400 hover:bg-muted focus:bg-muted cursor-pointer"
+              className='text-red-400 hover:bg-muted focus:bg-muted cursor-pointer'
             >
               Delete
             </ContextMenuItem>

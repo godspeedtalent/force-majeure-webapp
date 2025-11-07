@@ -5,6 +5,7 @@ This directory contains the email service implementation for sending order recei
 ## Overview
 
 The email system consists of:
+
 - **Type Definitions** (`/src/types/email.ts`) - TypeScript interfaces for email data
 - **Email Templates** (`templates/OrderReceiptEmail.tsx`) - HTML email templates
 - **Email Service** (`EmailService.ts`) - Service for sending emails via Supabase
@@ -90,6 +91,7 @@ const emailData = EmailService.convertOrderToEmailData(order, purchaserInfo);
 ### 3. Previewing and Testing
 
 Visit `/demo/email-template` (admin only) to:
+
 - Preview the email template live
 - Send test emails to your inbox
 - Copy HTML for external testing
@@ -110,12 +112,13 @@ supabase functions new send-email
 Choose an email provider and add to edge function:
 
 **Option A: Resend (Recommended)**
+
 ```typescript
 import { Resend } from 'resend';
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
-serve(async (req) => {
+serve(async req => {
   const { to, subject, html, attachments } = await req.json();
 
   const { data, error } = await resend.emails.send({
@@ -131,12 +134,13 @@ serve(async (req) => {
 ```
 
 **Option B: SendGrid**
+
 ```typescript
 import sgMail from '@sendgrid/mail';
 
 sgMail.setApiKey(Deno.env.get('SENDGRID_API_KEY')!);
 
-serve(async (req) => {
+serve(async req => {
   const { to, subject, html, attachments } = await req.json();
 
   const msg = {
@@ -148,7 +152,9 @@ serve(async (req) => {
   };
 
   const [response] = await sgMail.send(msg);
-  return new Response(JSON.stringify({ messageId: response.headers['x-message-id'] }));
+  return new Response(
+    JSON.stringify({ messageId: response.headers['x-message-id'] })
+  );
 });
 ```
 
@@ -177,16 +183,19 @@ The `TicketPDFService` is currently stubbed. To implement:
 **Libraries:** jsPDF, pdfmake
 
 **Pros:**
+
 - No server costs
 - Immediate generation
 - Full control
 
 **Cons:**
+
 - Increases bundle size
 - Limited styling options
 - Client-side computation
 
 **Example:**
+
 ```typescript
 import jsPDF from 'jspdf';
 import QRCode from 'qrcode';
@@ -211,23 +220,26 @@ static async generateTicketPDF(data: OrderReceiptEmailData): Promise<string> {
 **Libraries:** Puppeteer, wkhtmltopdf, pdfkit
 
 **Pros:**
+
 - Better styling (can use full HTML/CSS)
 - No bundle size impact
 - More powerful rendering
 
 **Cons:**
+
 - Requires server resources
 - Potential cold starts
 - Additional complexity
 
 **Example:**
+
 ```typescript
 // Create edge function: supabase functions new generate-ticket-pdf
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { launch } from 'https://deno.land/x/puppeteer@16.2.0/mod.ts';
 
-serve(async (req) => {
+serve(async req => {
   const { orderData } = await req.json();
 
   const browser = await launch();
@@ -257,11 +269,13 @@ serve(async (req) => {
 **Services:** PDFShift, DocRaptor, HTML2PDF.app
 
 **Pros:**
+
 - Reliable
 - Maintained by experts
 - High quality output
 
 **Cons:**
+
 - Additional cost
 - External dependency
 - API rate limits
@@ -287,6 +301,7 @@ const colors = {
 ### Layout
 
 The template uses table-based layout for maximum email client compatibility:
+
 - 600px max width
 - Responsive padding
 - Inline styles only
@@ -349,18 +364,21 @@ src/
 ## Troubleshooting
 
 ### Email not sending
+
 1. Check Supabase Edge Function logs
 2. Verify email provider credentials
 3. Check rate limits
 4. Ensure `send-email` function is deployed
 
 ### Email looks broken
+
 1. Test in multiple email clients (Gmail, Outlook, Apple Mail)
 2. Use inline styles only (no external CSS)
 3. Use table-based layout
 4. Validate HTML at [HTML Email Check](https://www.htmlemailcheck.com/)
 
 ### PDF not attaching
+
 1. Ensure `TicketPDFService` is implemented
 2. Check base64 encoding
 3. Verify attachment size limits

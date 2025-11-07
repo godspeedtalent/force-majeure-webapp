@@ -22,7 +22,7 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
   '/event/:id': {
     label: '',
     async: true,
-    resolver: async (params) => {
+    resolver: async params => {
       try {
         const { data, error } = await supabase
           .from('events')
@@ -50,17 +50,24 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
     async: true,
     resolver: async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (!user) return 'Profile';
-        
+
         // Fetch user profile for display_name
         const { data: profile } = await supabase
           .from('profiles')
           .select('display_name')
           .eq('id', user.id)
           .single();
-        
-        return profile?.display_name || user.user_metadata?.display_name || user.email?.split('@')[0] || 'Profile';
+
+        return (
+          profile?.display_name ||
+          user.user_metadata?.display_name ||
+          user.email?.split('@')[0] ||
+          'Profile'
+        );
       } catch (error) {
         console.error('Failed to fetch user for breadcrumb:', error);
         return 'Profile';
@@ -177,7 +184,9 @@ export const matchRoute = (
 /**
  * Find the route config for a given pathname
  */
-export const findRouteConfig = (pathname: string): {
+export const findRouteConfig = (
+  pathname: string
+): {
   config: RouteConfig;
   params: Record<string, string>;
 } | null => {

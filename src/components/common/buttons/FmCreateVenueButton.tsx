@@ -88,38 +88,44 @@ export const FmCreateVenueButton = ({
   const sections = [
     {
       content: (
-        <div className="space-y-4">
+        <div className='space-y-4'>
           <FmCommonTextField
-            label="Venue Name"
+            label='Venue Name'
             required
             value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            placeholder="Enter venue name"
+            onChange={e => setFormData({ ...formData, name: e.target.value })}
+            placeholder='Enter venue name'
           />
           <FmCommonTextField
-            label="Address"
+            label='Address'
             value={formData.address}
-            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-            placeholder="123 Main St"
+            onChange={e =>
+              setFormData({ ...formData, address: e.target.value })
+            }
+            placeholder='123 Main St'
           />
           <FmCommonTextField
-            label="City"
+            label='City'
             value={formData.city}
-            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-            placeholder="Los Angeles"
+            onChange={e => setFormData({ ...formData, city: e.target.value })}
+            placeholder='Los Angeles'
           />
           <FmCommonTextField
-            label="Capacity"
-            type="number"
+            label='Capacity'
+            type='number'
             value={formData.capacity}
-            onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
-            placeholder="500"
+            onChange={e =>
+              setFormData({ ...formData, capacity: e.target.value })
+            }
+            placeholder='500'
           />
           <FmCommonTextField
-            label="Website"
+            label='Website'
             value={formData.website}
-            onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-            placeholder="https://example.com"
+            onChange={e =>
+              setFormData({ ...formData, website: e.target.value })
+            }
+            placeholder='https://example.com'
           />
         </div>
       ),
@@ -127,19 +133,19 @@ export const FmCreateVenueButton = ({
   ];
 
   const actions = (
-    <div className="flex gap-3 justify-end">
+    <div className='flex gap-3 justify-end'>
       <Button
-        variant="outline"
+        variant='outline'
         onClick={() => handleModalOpenChange(false)}
         disabled={isSubmitting}
-        className="bg-white/5 border-white/20 hover:bg-white/10"
+        className='bg-white/5 border-white/20 hover:bg-white/10'
       >
         Cancel
       </Button>
       <Button
         onClick={handleSubmit}
         disabled={isSubmitting}
-        className="bg-fm-gold hover:bg-fm-gold/90 text-black"
+        className='bg-fm-gold hover:bg-fm-gold/90 text-black'
       >
         {isSubmitting ? 'Creating...' : 'Create Venue'}
       </Button>
@@ -151,7 +157,7 @@ export const FmCreateVenueButton = ({
       {mode === 'button' && (
         <FmCommonCreateButton
           onClick={handleClick}
-          label="Create Venue"
+          label='Create Venue'
           variant={variant}
           className={className}
         />
@@ -159,11 +165,11 @@ export const FmCreateVenueButton = ({
       <FmCommonFormModal
         open={isModalOpen}
         onOpenChange={handleModalOpenChange}
-        title="Create New Venue"
-        description="Add a new venue to the database"
+        title='Create New Venue'
+        description='Add a new venue to the database'
         sections={sections}
         actions={actions}
-        className="z-[200]"
+        className='z-[200]'
       />
     </>
   );

@@ -20,7 +20,7 @@ interface ProtectedRouteProps {
 /**
  * Route-level protection based on permissions/roles
  * Redirects unauthorized users to a specified route
- * 
+ *
  * @example
  * // Protect route by permission
  * <Route
@@ -31,7 +31,7 @@ interface ProtectedRouteProps {
  *     </ProtectedRoute>
  *   }
  * />
- * 
+ *
  * @example
  * // Protect route by role
  * <Route
@@ -42,13 +42,13 @@ interface ProtectedRouteProps {
  *     </ProtectedRoute>
  *   }
  * />
- * 
+ *
  * @example
  * // Require multiple permissions
  * <Route
  *   path="/advanced-tools"
  *   element={
- *     <ProtectedRoute 
+ *     <ProtectedRoute
  *       permission={[PERMISSIONS.MANAGE_EVENTS, PERMISSIONS.SCAN_TICKETS]}
  *       requireAll
  *     >
@@ -57,15 +57,16 @@ interface ProtectedRouteProps {
  *   }
  * />
  */
-export const ProtectedRoute = ({ 
-  children, 
+export const ProtectedRoute = ({
+  children,
   permission,
   role,
   requireAll = false,
-  redirectTo
+  redirectTo,
 }: ProtectedRouteProps) => {
   const { user, loading: authLoading } = useAuth();
-  const { hasAllPermissions, hasAnyPermission, hasAnyRole, roles } = useUserPermissions();
+  const { hasAllPermissions, hasAnyPermission, hasAnyRole, roles } =
+    useUserPermissions();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -76,7 +77,10 @@ export const ProtectedRoute = ({
 
     // Not authenticated - redirect to auth page
     if (!user) {
-      navigate(redirectTo || '/auth', { replace: true, state: { from: location } });
+      navigate(redirectTo || '/auth', {
+        replace: true,
+        state: { from: location },
+      });
       return;
     }
 
@@ -89,7 +93,7 @@ export const ProtectedRoute = ({
     let hasAccess = true;
     if (permission) {
       const permissions = Array.isArray(permission) ? permission : [permission];
-      hasAccess = requireAll 
+      hasAccess = requireAll
         ? hasAllPermissions(...permissions)
         : hasAnyPermission(...permissions);
     }
@@ -104,14 +108,28 @@ export const ProtectedRoute = ({
     if (!hasAccess) {
       navigate(redirectTo || '/', { replace: true });
     }
-  }, [isLoading, user, navigate, redirectTo, permission, role, requireAll, hasAllPermissions, hasAnyPermission, hasAnyRole, location]);
+  }, [
+    isLoading,
+    user,
+    navigate,
+    redirectTo,
+    permission,
+    role,
+    requireAll,
+    hasAllPermissions,
+    hasAnyPermission,
+    hasAnyRole,
+    location,
+  ]);
 
   if (isLoading) {
     return <FmCommonLoadingState />;
   }
 
   if (!user) {
-    return <Navigate to={redirectTo || '/auth'} state={{ from: location }} replace />;
+    return (
+      <Navigate to={redirectTo || '/auth'} state={{ from: location }} replace />
+    );
   }
 
   // If no permission/role requirements, just need to be authenticated
@@ -123,7 +141,7 @@ export const ProtectedRoute = ({
   let hasAccess = true;
   if (permission) {
     const permissions = Array.isArray(permission) ? permission : [permission];
-    hasAccess = requireAll 
+    hasAccess = requireAll
       ? hasAllPermissions(...permissions)
       : hasAnyPermission(...permissions);
   }
