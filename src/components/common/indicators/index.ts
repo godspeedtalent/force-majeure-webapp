@@ -1,0 +1,1 @@
+export { AdminLockIndicator } from './AdminLockIndicator';

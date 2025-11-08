@@ -51,7 +51,24 @@ export type {
   DataGridConfig,
 } from './types';
 
+// Cell components
+export {
+  ImageCell,
+  DateCell,
+  RelationCell,
+  RoleCell,
+  BadgeListCell,
+} from './components/cells';
+export type {
+  ImageCellProps,
+  DateCellProps,
+  RelationCellProps,
+  RoleCellProps,
+  BadgeListCellProps,
+} from './components/cells';
+
 // Utils
+export { DataGridColumns } from './utils';
 export {
   isRelationField,
   getRelationConfig,

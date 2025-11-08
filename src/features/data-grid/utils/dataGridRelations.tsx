@@ -3,10 +3,13 @@ import { FmCitySearchDropdown } from '@/components/common/search/FmCitySearchDro
 import { FmVenueSearchDropdown } from '@/components/common/search/FmVenueSearchDropdown';
 import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
 import { FmUserSearchDropdown } from '@/components/common/search/FmUserSearchDropdown';
+import { FmOrganizationSearchDropdown } from '@/components/common/search/FmOrganizationSearchDropdown';
 
 export interface RelationConfig {
   component: (props: RelationComponentProps) => ReactElement;
   displayField?: string; // Field to display in the cell when not editing
+  detailRoute?: (id: string) => string; // Route to the entity's detail page
+  entityName?: string; // Human-readable entity name (e.g., "Artist", "Venue")
 }
 
 export interface RelationComponentProps {
@@ -35,6 +38,7 @@ export const RELATION_MAPPING: Record<string, RelationConfig> = {
       />
     ),
     displayField: 'city', // Will look for row.city to display
+    // Cities don't have detail pages yet
   },
   venue_id: {
     component: (props: RelationComponentProps) => (
@@ -49,6 +53,8 @@ export const RELATION_MAPPING: Record<string, RelationConfig> = {
       />
     ),
     displayField: 'venue',
+    detailRoute: (id: string) => `/admin/venues/${id}`,
+    entityName: 'Venue',
   },
   artist_id: {
     component: (props: RelationComponentProps) => (
@@ -63,6 +69,8 @@ export const RELATION_MAPPING: Record<string, RelationConfig> = {
       />
     ),
     displayField: 'artist',
+    detailRoute: (id: string) => `/admin/artists/${id}`,
+    entityName: 'Artist',
   },
   headliner_id: {
     component: (props: RelationComponentProps) => (
@@ -77,6 +85,8 @@ export const RELATION_MAPPING: Record<string, RelationConfig> = {
       />
     ),
     displayField: 'headliner',
+    detailRoute: (id: string) => `/admin/artists/${id}`,
+    entityName: 'Headliner',
   },
   owner_id: {
     component: (props: RelationComponentProps) => (
@@ -91,6 +101,24 @@ export const RELATION_MAPPING: Record<string, RelationConfig> = {
       />
     ),
     displayField: 'owner',
+    detailRoute: (id: string) => `/admin/users/${id}`,
+    entityName: 'User',
+  },
+  organization_id: {
+    component: (props: RelationComponentProps) => (
+      <FmOrganizationSearchDropdown
+        value={props.value}
+        onChange={value => {
+          props.onChange(value);
+          props.onComplete?.();
+        }}
+        placeholder='Select organization...'
+        disabled={props.disabled}
+      />
+    ),
+    displayField: 'organization',
+    detailRoute: (id: string) => `/admin/organizations/${id}`,
+    entityName: 'Organization',
   },
 };
 

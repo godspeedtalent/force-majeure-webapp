@@ -20,6 +20,8 @@ export interface SearchDropdownConfig<T = any> {
   formatLabel: (item: T) => string;
   /** Format the value to be returned (defaults to item.id) */
   formatValue?: (item: T) => string;
+  /** Field to use for value lookups (defaults to 'id') */
+  valueField?: string;
   /** Render the icon for the option */
   renderIcon: (item: T) => React.ReactNode;
   /** Default placeholder text */
@@ -30,6 +32,10 @@ export interface SearchDropdownConfig<T = any> {
   useRecents?: boolean;
   /** Recent selections key */
   recentsKey?: string;
+  /** Optional icon representing the entity type */
+  typeIcon?: React.ReactNode;
+  /** Tooltip text for the type icon */
+  typeTooltip?: string;
 }
 
 interface SearchDropdownProps {
@@ -65,11 +71,14 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
     selectFields,
     formatLabel,
     formatValue,
+    valueField = 'id',
     renderIcon,
     defaultPlaceholder,
     createNewLabel,
     useRecents = false,
     recentsKey,
+    typeIcon,
+    typeTooltip,
   } = config;
 
   return function SearchDropdown({
@@ -93,7 +102,7 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
         supabase
           .from(tableName as any)
           .select(selectFields)
-          .eq('id', value)
+          .eq(valueField, value)
           .single()
           .then(({ data }) => {
             if (data) {
@@ -139,7 +148,7 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
         .from(tableName as any)
         .select(selectFields)
         .in(
-          'id',
+          valueField,
           recentItems.map(item => item.id)
         );
 
@@ -170,6 +179,8 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
         createNewLabel={createNewLabel}
         selectedLabel={selectedItem?.label}
         disabled={disabled}
+        typeIcon={typeIcon}
+        typeTooltip={typeTooltip}
       />
     );
   };

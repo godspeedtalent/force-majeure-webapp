@@ -87,6 +87,29 @@ export const TopographicBackground = ({
           WebkitMaskComposite: 'source-in',
         }}
       />
+
+      {/* Tile borders - Dim white grid lines */}
+      <div
+        className='absolute inset-0'
+        style={{
+          backgroundImage: `
+            repeating-linear-gradient(
+              0deg,
+              transparent 0,
+              transparent ${TILE_SIZE - 1}px,
+              rgba(255, 255, 255, 0.08) ${TILE_SIZE - 1}px,
+              rgba(255, 255, 255, 0.08) ${TILE_SIZE}px
+            ),
+            repeating-linear-gradient(
+              90deg,
+              transparent 0,
+              transparent ${TILE_SIZE - 1}px,
+              rgba(255, 255, 255, 0.08) ${TILE_SIZE - 1}px,
+              rgba(255, 255, 255, 0.08) ${TILE_SIZE}px
+            )
+          `,
+        }}
+      />
     </div>
   );
 };

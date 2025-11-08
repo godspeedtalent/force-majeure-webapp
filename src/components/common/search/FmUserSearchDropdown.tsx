@@ -15,6 +15,7 @@ export const FmUserSearchDropdown = createSearchDropdown<UserProfile>({
   formatLabel: profile =>
     profile.display_name || profile.user_id || 'Unknown User',
   formatValue: profile => profile.user_id, // Return user_id instead of profile id
+  valueField: 'user_id', // Use user_id for lookups instead of id
   renderIcon: profile =>
     profile.avatar_url ? (
       <img

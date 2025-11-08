@@ -9,12 +9,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/common/shadcn/popover';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/common/shadcn/tooltip';
 import { format as formatDate } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/shared/utils/utils';
@@ -66,10 +60,13 @@ export function FmDataGridCell<T extends Record<string, any>>({
   const cellContent = (
     <TableCell
       className={cn(
-        'font-medium transition-colors duration-200',
-        !isDragMode && hoveredColumn === column.key && 'bg-muted/30',
+        'font-medium transition-all duration-200 border-l border-r border-border/60',
+        // Highlight entire column on hover
+        !isDragMode && hoveredColumn === column.key && 'bg-fm-gold/10 shadow-[inset_0_0_0_1px_rgba(223,186,125,0.2)]',
         isEditing && 'bg-fm-gold/10 ring-1 ring-fm-gold/30',
-        isEditableCell && 'cursor-pointer'
+        isEditableCell && 'cursor-pointer hover:bg-muted/20',
+        // Allow column-specific className overrides (e.g., p-0 for images)
+        column.cellClassName
       )}
       {...(column.editable && !column.readonly && onUpdate ? focusableProps : {})}
       onMouseEnter={() => {}}
@@ -187,18 +184,21 @@ export function FmDataGridCell<T extends Record<string, any>>({
               <span className='text-sm'>{value ? 'Yes' : 'No'}</span>
             </div>
           ) : column.render ? (
-            column.render(value, row)
+            <div
+              className={cn(
+                'transition-colors',
+                hoveredColumn === column.key && 'text-fm-gold [&_*]:text-fm-gold'
+              )}
+            >
+              {column.render(value, row)}
+            </div>
           ) : relationConfig &&
             relationConfig.displayField &&
             row[relationConfig.displayField] ? (
             <span
               className={cn(
                 'transition-colors',
-                column.editable &&
-                  !column.readonly &&
-                  onUpdate &&
-                  hoveredColumn === column.key &&
-                  'text-fm-gold'
+                hoveredColumn === column.key && 'text-fm-gold'
               )}
             >
               {row[relationConfig.displayField]?.name ||
@@ -209,12 +209,7 @@ export function FmDataGridCell<T extends Record<string, any>>({
             <span
               className={cn(
                 'transition-colors',
-                column.editable &&
-                  !column.readonly &&
-                  onUpdate &&
-                  column.type !== 'created_date' &&
-                  hoveredColumn === column.key &&
-                  'text-fm-gold'
+                hoveredColumn === column.key && 'text-fm-gold'
               )}
             >
               {value?.toString() || '-'}
@@ -225,17 +220,6 @@ export function FmDataGridCell<T extends Record<string, any>>({
     </TableCell>
   );
 
-  // Wrap with tooltip if editable
-  return isEditableCell ? (
-    <TooltipProvider key={column.key} delayDuration={2000}>
-      <Tooltip>
-        <TooltipTrigger asChild>{cellContent}</TooltipTrigger>
-        <TooltipContent side='top' className='text-xs'>
-          Click to edit
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  ) : (
-    cellContent
-  );
+  // Return cell content directly (no tooltip)
+  return cellContent;
 }

@@ -24,6 +24,10 @@ const layoutAnimations = {
 // Entry animations
 const entryAnimations = {
   'fade-in': createFadeAnimation('Y'),
+  'fade-out': {
+    '0%': { opacity: '1' },
+    '100%': { opacity: '0' },
+  },
   'scale-in': {
     '0%': { transform: 'scale(0.95)', opacity: '0' },
     '100%': { transform: 'scale(1)', opacity: '1' },
@@ -187,6 +191,7 @@ export const animations = {
 
   // Entry animations
   'fade-in': createAnimation('fade-in', '0.5s'),
+  'fade-out': createAnimation('fade-out', '0.3s', 'ease-out'),
   'scale-in': createAnimation('scale-in', '0.3s'),
   'slide-up-fade': createAnimation('slide-up-fade', '0.6s'),
   'slide-down-in': createAnimation('slide-down-in', '0.6s', 'ease-in'),

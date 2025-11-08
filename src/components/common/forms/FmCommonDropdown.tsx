@@ -15,6 +15,7 @@ export interface DropdownItem {
   icon?: React.ComponentType<{ className?: string }>;
   variant?: 'default' | 'destructive';
   separator?: boolean;
+  badge?: React.ReactNode;
 }
 
 interface FmCommonDropdownProps {
@@ -50,7 +51,10 @@ export function FmCommonDropdown({
               }
             >
               {item.icon && <item.icon className='mr-2 h-4 w-4' />}
-              {item.label}
+              <span className='flex items-center flex-1'>
+                {item.label}
+                {item.badge && <span className='ml-auto'>{item.badge}</span>}
+              </span>
             </DropdownMenuItem>
           </React.Fragment>
         ))}

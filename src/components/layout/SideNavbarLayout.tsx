@@ -51,7 +51,7 @@ export const SideNavbarLayout = <T extends string>({
     <>
       <Navigation />
       <SidebarProvider defaultOpen={defaultOpen}>
-        <div className='flex min-h-screen w-full pt-16'>
+        <div className='flex min-h-screen w-full'>
           <FmCommonSideNav
             groups={navigationGroups}
             activeItem={activeItem}
@@ -64,7 +64,7 @@ export const SideNavbarLayout = <T extends string>({
           >
             <TopographicBackground opacity={backgroundOpacity} />
             <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
-            <div className='max-w-full relative z-10'>{children}</div>
+            <div className='max-w-full relative z-10 m-10'>{children}</div>
           </main>
         </div>
       </SidebarProvider>

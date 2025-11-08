@@ -34,6 +34,7 @@ import { format, parse } from 'date-fns';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared/auth/permissions';
 import { handleError } from '@/shared/services/errorHandler';
+import { AdminLockIndicator } from '@/components/common/indicators';
 
 type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'admin';
 
@@ -170,7 +171,8 @@ export default function EventManagement() {
                 id: 'admin' as EventTab,
                 label: 'Admin Controls',
                 icon: Shield,
-                description: 'Advanced event controls',
+                description: 'Advanced event controls (Admin only)',
+                badge: <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />,
               },
             ],
           },
@@ -509,7 +511,7 @@ export default function EventManagement() {
           )}
 
           {activeTab === 'tiers' && (
-            <div className='rounded-lg border border-border bg-card p-8 text-center'>
+            <div className='rounded-none border border-border bg-card p-8 text-center'>
               <Ticket className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
               <h3 className='text-lg font-semibold text-foreground mb-2'>
                 Ticket Tier Management
@@ -521,7 +523,7 @@ export default function EventManagement() {
           )}
 
           {activeTab === 'orders' && (
-            <div className='rounded-lg border border-border bg-card p-8 text-center'>
+            <div className='rounded-none border border-border bg-card p-8 text-center'>
               <ShoppingBag className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
               <h3 className='text-lg font-semibold text-foreground mb-2'>
                 Order Management
@@ -533,7 +535,7 @@ export default function EventManagement() {
           )}
 
           {activeTab === 'sales' && (
-            <div className='rounded-lg border border-border bg-card p-8 text-center'>
+            <div className='rounded-none border border-border bg-card p-8 text-center'>
               <DollarSign className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
               <h3 className='text-lg font-semibold text-foreground mb-2'>
                 Sales Summary
@@ -557,9 +559,9 @@ export default function EventManagement() {
                 </div>
 
                 <div className='space-y-4'>
-                  <div className='rounded-lg border border-destructive/50 bg-destructive/5 p-6'>
+                  <div className='rounded-none border border-destructive/50 bg-destructive/5 p-6'>
                     <div className='flex items-start gap-4'>
-                      <div className='p-3 rounded-lg bg-destructive/10'>
+                      <div className='p-3 rounded-none bg-destructive/10'>
                         <Trash2 className='h-6 w-6 text-destructive' />
                       </div>
                       <div className='flex-1'>

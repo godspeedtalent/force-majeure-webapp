@@ -419,7 +419,29 @@ export type Database = {
       };
     };
     Views: {
-      [_ in never]: never;
+      users_complete: {
+        Row: {
+          id: string;
+          email: string;
+          auth_created_at: string;
+          last_sign_in_at: string | null;
+          email_confirmed_at: string | null;
+          user_id: string;
+          display_name: string | null;
+          full_name: string | null;
+          avatar_url: string | null;
+          spotify_connected: boolean | null;
+          spotify_token_expires_at: string | null;
+          organization_id: string | null;
+          profile_created_at: string;
+          profile_updated_at: string;
+          organization_name: string | null;
+          roles: Json | null;
+        };
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
     };
     Functions: {
       decrypt_token: {
@@ -429,6 +451,29 @@ export type Database = {
       encrypt_token: {
         Args: { token_value: string; user_salt: string };
         Returns: string;
+      };
+      get_all_users_with_email: {
+        Args: Record<string, never>;
+        Returns: {
+          id: string;
+          user_id: string;
+          display_name: string | null;
+          full_name: string | null;
+          gender: string | null;
+          age_range: string | null;
+          home_city: string | null;
+          avatar_url: string | null;
+          billing_address: string | null;
+          billing_city: string | null;
+          billing_state: string | null;
+          billing_zip: string | null;
+          stripe_customer_id: string | null;
+          organization_id: string | null;
+          created_at: string;
+          updated_at: string;
+          email: string;
+          roles: string[];
+        }[];
       };
       get_location_preview: {
         Args: { p_location_id: string };

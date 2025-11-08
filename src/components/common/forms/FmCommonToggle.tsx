@@ -40,7 +40,7 @@ export const FmCommonToggle = ({
   return (
     <div
       className={cn(
-        'flex items-center justify-between group transition-all duration-300 rounded-lg px-3 py-2',
+        'flex items-center justify-between group transition-all duration-300 rounded-none px-3 py-2',
         !disabled &&
           'hover:bg-white/5 hover:shadow-[0_0_16px_rgba(207,173,118,0.3)] cursor-pointer',
         disabled && 'opacity-50 cursor-not-allowed',

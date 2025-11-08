@@ -236,10 +236,11 @@ export const DevNotesSection = () => {
             </FmCommonButton>
           </PopoverTrigger>
           <PopoverContent
-            className='w-[320px] bg-card border-border rounded-none p-4'
+            className='w-[320px] bg-card border-border rounded-none p-0'
             align='end'
           >
-            <div className='space-y-4'>
+            <ScrollArea className='max-h-[60vh] p-4'>
+              <div className='space-y-4'>
               <div>
                 <div className='text-xs text-muted-foreground mb-2 block'>
                   Type
@@ -280,7 +281,8 @@ export const DevNotesSection = () => {
                   onSelectionChange={setFilterAuthors}
                 />
               </div>
-            </div>
+              </div>
+            </ScrollArea>
           </PopoverContent>
         </Popover>
 

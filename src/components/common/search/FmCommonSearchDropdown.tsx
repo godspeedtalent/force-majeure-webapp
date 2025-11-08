@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus, X } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
@@ -7,6 +7,12 @@ import {
 } from '@/components/common/shadcn/popover';
 import { Input } from '@/components/common/shadcn/input';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/common/shadcn/tooltip';
 import { cn } from '@/shared/utils/utils';
 
 export interface SearchDropdownOption {
@@ -24,6 +30,10 @@ interface FmCommonSearchDropdownProps {
   createNewLabel?: string;
   selectedLabel?: string;
   disabled?: boolean;
+  /** Optional icon representing the entity type */
+  typeIcon?: React.ReactNode;
+  /** Tooltip text for the type icon */
+  typeTooltip?: string;
 }
 
 export function FmCommonSearchDropdown({
@@ -35,6 +45,8 @@ export function FmCommonSearchDropdown({
   createNewLabel = 'Create New',
   selectedLabel,
   disabled = false,
+  typeIcon,
+  typeTooltip,
 }: FmCommonSearchDropdownProps) {
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState('');
@@ -43,6 +55,8 @@ export function FmCommonSearchDropdown({
     SearchDropdownOption[]
   >([]);
   const [loading, setLoading] = React.useState(false);
+  const [isFocused, setIsFocused] = React.useState(false);
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   // Load recent options when dropdown opens
   React.useEffect(() => {
@@ -88,19 +102,44 @@ export function FmCommonSearchDropdown({
     }
   };
 
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setQuery('');
+    inputRef.current?.blur();
+    setIsFocused(false);
+  };
+
+  const showClearButton = query.length > 0 || isFocused;
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild disabled={disabled}>
         <button
           className={cn(
-            'w-full flex items-center gap-2 px-3 py-2 rounded-md',
+            'w-full flex items-center gap-2 px-3 py-2 rounded-none',
             'bg-black/40 border border-white/20',
             'text-white text-left',
             'hover:border-fm-gold/50 transition-colors',
             disabled && 'opacity-50 cursor-not-allowed'
           )}
         >
-          <Search className='h-4 w-4 text-white/50' />
+          <Search className='h-3 w-3 text-white/50 flex-shrink-0' />
+          {typeIcon && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className='flex items-center justify-center w-5 h-5 bg-white/10 flex-shrink-0'>
+                    {typeIcon}
+                  </div>
+                </TooltipTrigger>
+                {typeTooltip && (
+                  <TooltipContent>
+                    <p>{typeTooltip}</p>
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
+          )}
           <span className='flex-1 truncate'>
             {selectedLabel || placeholder}
           </span>
@@ -110,14 +149,27 @@ export function FmCommonSearchDropdown({
         className='w-[400px] p-0 bg-black/90 backdrop-blur-md border border-white/20'
         align='start'
       >
-        <div className='p-2 border-b border-white/10'>
+        <div className='p-2 border-b border-white/10 relative'>
           <Input
+            ref={inputRef}
             placeholder={placeholder}
             value={query}
             onChange={e => setQuery(e.target.value)}
-            className='bg-black/40 border-white/20 text-white placeholder:text-white/50'
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            className='bg-black/40 border-white/20 text-white placeholder:text-white/50 pr-8'
             autoFocus
           />
+          {showClearButton && (
+            <button
+              onClick={handleClear}
+              onMouseDown={e => e.preventDefault()} // Prevent blur on click
+              className='absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-fm-gold transition-colors'
+              aria-label='Clear search'
+            >
+              <X className='h-4 w-4' />
+            </button>
+          )}
         </div>
         <div className='max-h-[300px] overflow-y-auto'>
           {loading ? (

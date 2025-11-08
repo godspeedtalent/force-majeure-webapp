@@ -93,7 +93,7 @@ const TicketScanning = () => {
 
   if (isLoading) {
     return (
-      <FmCommonPageLayout title='Ticket Scanning'>
+      <FmCommonPageLayout title='Scan Tickets'>
         <div className='flex items-center justify-center min-h-[400px]'>
           <p className='text-muted-foreground'>Loading...</p>
         </div>
@@ -107,7 +107,7 @@ const TicketScanning = () => {
 
   return (
     <FmCommonPageLayout
-      title='Ticket Scanning'
+      title='Scan Tickets'
       subtitle='Scan and validate event tickets'
     >
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-[20px]'>

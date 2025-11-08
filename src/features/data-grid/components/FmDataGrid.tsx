@@ -34,6 +34,7 @@ import { ContextMenuAction } from '@/components/common/modals/FmCommonContextMen
 export interface DataGridColumn<T = any> {
   key: string;
   label: string;
+  icon?: React.ReactNode; // Icon to display when column is too narrow
   sortable?: boolean;
   filterable?: boolean;
   editable?: boolean;
@@ -42,6 +43,7 @@ export interface DataGridColumn<T = any> {
   render?: (value: any, row: T) => React.ReactNode;
   width?: string;
   isRelation?: boolean;
+  cellClassName?: string; // Custom className for TableCell (e.g., p-0 for images)
   type?:
     | 'text'
     | 'number'
@@ -71,6 +73,7 @@ export interface FmDataGridProps<T = any> {
   resourceName?: string;
   createButtonLabel?: string;
   onHideColumn?: (columnKey: string) => void;
+  onColumnReorder?: (fromIndex: number, toIndex: number) => void;
   toolbarActions?: React.ReactNode;
   enableVirtualization?: boolean;
   estimateRowSize?: number;
@@ -93,6 +96,7 @@ export function FmDataGrid<T extends Record<string, any>>({
   resourceName = 'Resource',
   createButtonLabel,
   onHideColumn,
+  onColumnReorder,
   toolbarActions,
   enableVirtualization = true,
   estimateRowSize = 48,
@@ -530,6 +534,11 @@ export function FmDataGrid<T extends Record<string, any>>({
 
   // Drag select handlers
   const handleMouseDown = (index: number, event: React.MouseEvent) => {
+    // Don't start drag mode if we're resizing columns
+    if (resizingColumn) {
+      return;
+    }
+
     // Don't start drag mode if clicking on interactive elements
     const target = event.target as HTMLElement;
     const isInteractiveElement =
@@ -551,11 +560,14 @@ export function FmDataGrid<T extends Record<string, any>>({
 
     const globalIndex = (currentPage - 1) * pageSize + index;
     dragTimerRef.current = setTimeout(() => {
-      setIsDragMode(true);
-      setDragStartRow(globalIndex);
-      setDragCurrentRow(globalIndex);
-      setHoveredColumn(null);
-      document.body.style.userSelect = 'none';
+      // Double-check we're not resizing before activating drag mode
+      if (!resizingColumn) {
+        setIsDragMode(true);
+        setDragStartRow(globalIndex);
+        setDragCurrentRow(globalIndex);
+        setHoveredColumn(null);
+        document.body.style.userSelect = 'none';
+      }
     }, 300);
   };
 
@@ -683,6 +695,7 @@ export function FmDataGrid<T extends Record<string, any>>({
             columnFilters={columnFilters}
             onColumnFilter={handleColumnFilter}
             onHideColumn={onHideColumn}
+            onColumnReorder={onColumnReorder}
             columnWidths={columnWidths}
             onResizeStart={handleResizeStart}
           />

@@ -3,13 +3,13 @@ import { Button } from '@/components/common/shadcn/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuCheckboxItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from '@/components/common/shadcn/dropdown-menu';
 import { Settings2, Eye, EyeOff, RotateCcw } from 'lucide-react';
 import { DataGridColumn } from '../FmDataGrid';
+import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
 
 interface ColumnConfig {
   key: string;
@@ -41,30 +41,27 @@ export function FmColumnVisibilityDropdown({
           Columns
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align='end' className='w-56'>
+      <DropdownMenuContent align='end' className='w-64'>
         <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {baseColumns.map(col => {
-          const isVisible =
-            columnConfigs.find(c => c.key === col.key)?.visible ?? true;
+        <div className='max-h-[400px] overflow-y-auto px-2 py-1 space-y-1'>
+          {baseColumns.map(col => {
+            const isVisible =
+              columnConfigs.find(c => c.key === col.key)?.visible ?? true;
 
-          return (
-            <DropdownMenuCheckboxItem
-              key={col.key}
-              checked={isVisible}
-              onCheckedChange={() => onToggleVisibility(col.key)}
-            >
-              <div className='flex items-center gap-2'>
-                {isVisible ? (
-                  <Eye className='h-4 w-4' />
-                ) : (
-                  <EyeOff className='h-4 w-4 opacity-50' />
-                )}
-                {col.label}
-              </div>
-            </DropdownMenuCheckboxItem>
-          );
-        })}
+            return (
+              <FmCommonToggle
+                key={col.key}
+                id={`column-toggle-${col.key}`}
+                label={col.label}
+                icon={isVisible ? Eye : EyeOff}
+                checked={isVisible}
+                onCheckedChange={() => onToggleVisibility(col.key)}
+                className='w-full'
+              />
+            );
+          })}
+        </div>
         <DropdownMenuSeparator />
         <Button
           variant='ghost'

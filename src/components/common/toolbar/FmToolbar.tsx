@@ -17,6 +17,8 @@ import {
   Home,
   Shield,
   ExternalLink,
+  Building2,
+  Scan,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -76,7 +78,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string | null>(null);
 
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { hasAnyRole } = useUserPermissions();
   const navigate = useNavigate();
 
@@ -94,6 +96,13 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
   // Check if user has actual developer or admin role
   const isDeveloperOrAdmin = hasAnyRole(ROLES.DEVELOPER, ROLES.ADMIN);
   const isAdmin = hasAnyRole(ROLES.ADMIN);
+
+  // Check if user has organization access
+  // Admins/Developers always have access, org staff need organization_id
+  const hasOrganizationAccess =
+    hasAnyRole(ROLES.ADMIN, ROLES.DEVELOPER) ||
+    (profile?.organization_id &&
+      hasAnyRole(ROLES.ORG_ADMIN, ROLES.ORG_STAFF));
 
   // Define all tabs based on user roles/permissions
   const tabs: ToolbarTab[] = useMemo(
@@ -128,6 +137,68 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         group: 'user',
         groupOrder: 1,
         alignment: 'top',
+      },
+      {
+        id: 'org-dashboard',
+        label: 'Org Dashboard',
+        icon: Building2,
+        content: (
+          <div className='space-y-4'>
+            <Separator className='bg-white/10' />
+            <div className='flex flex-col gap-2'>
+              <FmCommonButton
+                variant='default'
+                icon={Building2}
+                iconPosition='left'
+                onClick={() => {
+                  setIsOpen(false);
+                  setActiveTab(null);
+                  navigate('/organization/tools');
+                }}
+                className='w-full justify-start'
+              >
+                Go to Org Dashboard
+              </FmCommonButton>
+            </div>
+          </div>
+        ),
+        title: 'Org Dashboard',
+        visible: Boolean(hasOrganizationAccess),
+        group: 'organization',
+        groupOrder: 2,
+        alignment: 'top',
+        groupLabel: 'Organization',
+      },
+      {
+        id: 'scan-tickets',
+        label: 'Scan Tickets',
+        icon: Scan,
+        content: (
+          <div className='space-y-4'>
+            <Separator className='bg-white/10' />
+            <div className='flex flex-col gap-2'>
+              <FmCommonButton
+                variant='default'
+                icon={Scan}
+                iconPosition='left'
+                onClick={() => {
+                  setIsOpen(false);
+                  setActiveTab(null);
+                  navigate('/organization/scanning');
+                }}
+                className='w-full justify-start'
+              >
+                Go to Ticket Scanner
+              </FmCommonButton>
+            </div>
+          </div>
+        ),
+        title: 'Scan Tickets',
+        visible: Boolean(hasOrganizationAccess),
+        group: 'organization',
+        groupOrder: 2,
+        alignment: 'top',
+        groupLabel: 'Organization',
       },
       {
         id: 'tools',
@@ -376,7 +447,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         maxWidth: Math.floor(window.innerWidth * 0.4), // 40vw
       },
     ],
-    [isDeveloperOrAdmin, user, navigate]
+    [isDeveloperOrAdmin, isAdmin, user, profile, hasOrganizationAccess, navigate]
   );
 
   const visibleTabs = useMemo(() => {
@@ -647,76 +718,78 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
           onMouseLeave={() => setIsTabHovered(false)}
         >
           {topGroups.map((group, groupIndex) => {
-            const shouldShowLabel =
-              topGroups.length >= 2 && group.tabs.length > 1;
+            const shouldShowLabel = topGroups.length >= 2;
             const groupLabel = group.tabs[0]?.groupLabel;
 
             return (
-              <div
-                key={group.group}
-                className={cn(
-                  'relative flex flex-col gap-2',
-                  groupIndex > 0 && 'mt-6'
+              <>
+                {/* Horizontal divider between groups */}
+                {groupIndex > 0 && (
+                  <div className='my-3 h-[1px] bg-white/10 w-full' />
                 )}
-                onMouseEnter={() => handleGroupMouseEnter(group.group)}
-                onMouseLeave={handleGroupMouseLeave}
-              >
-                {/* Group label with brace effect */}
-                {shouldShowLabel && groupLabel && (
-                  <div
-                    className={cn(
-                      'absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[52px] flex items-center transition-opacity duration-300',
-                      showGroupLabel === group.group
-                        ? 'opacity-100'
-                        : 'opacity-0 pointer-events-none'
-                    )}
-                  >
-                    {/* Brace effect - much thinner */}
+                <div
+                  key={group.group}
+                  className='relative flex flex-col gap-2'
+                  onMouseEnter={() => handleGroupMouseEnter(group.group)}
+                  onMouseLeave={handleGroupMouseLeave}
+                >
+                  {/* Group label with brace effect */}
+                  {shouldShowLabel && groupLabel && (
                     <div
-                      className='flex flex-col items-center justify-center mr-1.5'
-                      style={{ height: '100%' }}
+                      className={cn(
+                        'absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[52px] flex items-center transition-opacity duration-300',
+                        showGroupLabel === group.group
+                          ? 'opacity-100'
+                          : 'opacity-0 pointer-events-none'
+                      )}
                     >
+                      {/* Label */}
+                      <span
+                        className='text-[9px] text-white/50 whitespace-nowrap font-light tracking-wide uppercase'
+                        style={{
+                          writingMode: 'vertical-rl',
+                          transform: 'rotate(180deg)',
+                        }}
+                      >
+                        {groupLabel}
+                      </span>
+                      {/* Brace effect - below text */}
                       <div
-                        className='w-1.5 h-1.5 border-l border-t border-white/20 rounded-tl-sm'
-                        style={{ borderWidth: '0.5px' }}
-                      />
-                      <div
-                        className='flex-1 bg-white/20'
-                        style={{ width: '0.5px', minHeight: '20px' }}
-                      />
-                      <div
-                        className='w-1.5 h-1.5 border-l border-b border-white/20 rounded-bl-sm'
-                        style={{ borderWidth: '0.5px' }}
-                      />
+                        className='flex flex-col items-center justify-center ml-1.5'
+                        style={{ height: '100%' }}
+                      >
+                        <div
+                          className='w-1.5 h-1.5 border-r border-t border-white/20 rounded-tr-sm'
+                          style={{ borderWidth: '0.5px' }}
+                        />
+                        <div
+                          className='flex-1 bg-white/20'
+                          style={{ width: '0.5px', minHeight: '20px' }}
+                        />
+                        <div
+                          className='w-1.5 h-1.5 border-r border-b border-white/20 rounded-br-sm'
+                          style={{ borderWidth: '0.5px' }}
+                        />
+                      </div>
                     </div>
-                    {/* Label */}
-                    <span
-                      className='text-[9px] text-white/50 whitespace-nowrap font-light tracking-wide'
-                      style={{
-                        writingMode: 'vertical-rl',
-                        transform: 'rotate(180deg)',
-                      }}
-                    >
-                      {groupLabel}
-                    </span>
-                  </div>
-                )}
+                  )}
 
-                {group.tabs.map(tab => (
-                  <FmCommonTab
-                    key={tab.id}
-                    icon={tab.icon}
-                    label={tab.label}
-                    isActive={activeTab === tab.id}
-                    onClick={() => {
-                      if (!isDragging) {
-                        handleTabClick(tab.id);
-                      }
-                    }}
-                    variant='vertical'
-                  />
-                ))}
-              </div>
+                  {group.tabs.map(tab => (
+                    <FmCommonTab
+                      key={tab.id}
+                      icon={tab.icon}
+                      label={tab.label}
+                      isActive={activeTab === tab.id}
+                      onClick={() => {
+                        if (!isDragging) {
+                          handleTabClick(tab.id);
+                        }
+                      }}
+                      variant='vertical'
+                    />
+                  ))}
+                </div>
+              </>
             );
           })}
         </div>
@@ -738,76 +811,78 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
           onMouseLeave={() => setIsTabHovered(false)}
         >
           {bottomGroups.map((group, groupIndex) => {
-            const shouldShowLabel =
-              bottomGroups.length >= 2 && group.tabs.length > 1;
+            const shouldShowLabel = bottomGroups.length >= 2;
             const groupLabel = group.tabs[0]?.groupLabel;
 
             return (
-              <div
-                key={group.group}
-                className={cn(
-                  'relative flex flex-col gap-2',
-                  groupIndex > 0 && 'mt-6'
+              <>
+                {/* Horizontal divider between groups */}
+                {groupIndex > 0 && (
+                  <div className='my-3 h-[1px] bg-white/10 w-full' />
                 )}
-                onMouseEnter={() => handleGroupMouseEnter(group.group)}
-                onMouseLeave={handleGroupMouseLeave}
-              >
-                {/* Group label with brace effect */}
-                {shouldShowLabel && groupLabel && (
-                  <div
-                    className={cn(
-                      'absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[52px] flex items-center transition-opacity duration-300',
-                      showGroupLabel === group.group
-                        ? 'opacity-100'
-                        : 'opacity-0 pointer-events-none'
-                    )}
-                  >
-                    {/* Brace effect - much thinner */}
+                <div
+                  key={group.group}
+                  className='relative flex flex-col gap-2'
+                  onMouseEnter={() => handleGroupMouseEnter(group.group)}
+                  onMouseLeave={handleGroupMouseLeave}
+                >
+                  {/* Group label with brace effect */}
+                  {shouldShowLabel && groupLabel && (
                     <div
-                      className='flex flex-col items-center justify-center mr-1.5'
-                      style={{ height: '100%' }}
+                      className={cn(
+                        'absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[52px] flex items-center transition-opacity duration-300',
+                        showGroupLabel === group.group
+                          ? 'opacity-100'
+                          : 'opacity-0 pointer-events-none'
+                      )}
                     >
+                      {/* Label */}
+                      <span
+                        className='text-[9px] text-white/50 whitespace-nowrap font-light tracking-wide uppercase'
+                        style={{
+                          writingMode: 'vertical-rl',
+                          transform: 'rotate(180deg)',
+                        }}
+                      >
+                        {groupLabel}
+                      </span>
+                      {/* Brace effect - below text */}
                       <div
-                        className='w-1.5 h-1.5 border-l border-t border-white/20 rounded-tl-sm'
-                        style={{ borderWidth: '0.5px' }}
-                      />
-                      <div
-                        className='flex-1 bg-white/20'
-                        style={{ width: '0.5px', minHeight: '20px' }}
-                      />
-                      <div
-                        className='w-1.5 h-1.5 border-l border-b border-white/20 rounded-bl-sm'
-                        style={{ borderWidth: '0.5px' }}
-                      />
+                        className='flex flex-col items-center justify-center ml-1.5'
+                        style={{ height: '100%' }}
+                      >
+                        <div
+                          className='w-1.5 h-1.5 border-r border-t border-white/20 rounded-tr-sm'
+                          style={{ borderWidth: '0.5px' }}
+                        />
+                        <div
+                          className='flex-1 bg-white/20'
+                          style={{ width: '0.5px', minHeight: '20px' }}
+                        />
+                        <div
+                          className='w-1.5 h-1.5 border-r border-b border-white/20 rounded-br-sm'
+                          style={{ borderWidth: '0.5px' }}
+                        />
+                      </div>
                     </div>
-                    {/* Label */}
-                    <span
-                      className='text-[9px] text-white/50 whitespace-nowrap font-light tracking-wide'
-                      style={{
-                        writingMode: 'vertical-rl',
-                        transform: 'rotate(180deg)',
-                      }}
-                    >
-                      {groupLabel}
-                    </span>
-                  </div>
-                )}
+                  )}
 
-                {group.tabs.map(tab => (
-                  <FmCommonTab
-                    key={tab.id}
-                    icon={tab.icon}
-                    label={tab.label}
-                    isActive={activeTab === tab.id}
-                    onClick={() => {
-                      if (!isDragging) {
-                        handleTabClick(tab.id);
-                      }
-                    }}
-                    variant='vertical'
-                  />
-                ))}
-              </div>
+                  {group.tabs.map(tab => (
+                    <FmCommonTab
+                      key={tab.id}
+                      icon={tab.icon}
+                      label={tab.label}
+                      isActive={activeTab === tab.id}
+                      onClick={() => {
+                        if (!isDragging) {
+                          handleTabClick(tab.id);
+                        }
+                      }}
+                      variant='vertical'
+                    />
+                  ))}
+                </div>
+              </>
             );
           })}
         </div>

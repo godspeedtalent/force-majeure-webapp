@@ -104,9 +104,6 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
   },
 
   // Admin Routes
-  '/admin': {
-    label: 'Admin Dashboard',
-  },
   '/admin/controls': {
     label: 'Admin Controls',
   },

@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
-import AdminConfig from './pages/AdminConfig';
 import Auth from './pages/Auth';
 import CheckoutCancel from './pages/CheckoutCancel';
 import CheckoutSuccess from './pages/CheckoutSuccess';
@@ -23,6 +22,10 @@ import CheckoutFlowTests from './pages/testing/CheckoutFlowTests';
 import MemberHome from './pages/members/MemberHome';
 import Statistics from './pages/admin/Statistics';
 import AdminControls from './pages/admin/AdminControls';
+import OrganizationDetails from './pages/admin/OrganizationDetails';
+import ArtistDetails from './pages/admin/ArtistDetails';
+import UserDetails from './pages/admin/UserDetails';
+import VenueDetails from './pages/admin/VenueDetails';
 import DeveloperIndex from './pages/developer/DeveloperIndex';
 import DeveloperCreateEventPage from './pages/developer/database/CreateEvent';
 import DeveloperCreateArtistPage from './pages/developer/database/CreateArtist';
@@ -110,14 +113,6 @@ const AppRoutes = () => {
 
           <Route path='/profile' element={<Profile />} />
           <Route path='/profile/edit' element={<ProfileEdit />} />
-          <Route
-            path='/admin'
-            element={
-              <ProtectedRoute role={ROLES.ADMIN}>
-                <AdminConfig />
-              </ProtectedRoute>
-            }
-          />
           <Route path='/orders' element={<Orders />} />
 
           {/* Checkout Routes */}
@@ -248,6 +243,38 @@ const AppRoutes = () => {
             element={
               <ProtectedRoute role={ROLES.ADMIN}>
                 <AdminControls />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/admin/organizations/:id'
+            element={
+              <ProtectedRoute role={ROLES.ADMIN}>
+                <OrganizationDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/admin/artists/:id'
+            element={
+              <ProtectedRoute role={ROLES.ADMIN}>
+                <ArtistDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/admin/users/:id'
+            element={
+              <ProtectedRoute role={ROLES.ADMIN}>
+                <UserDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/admin/venues/:id'
+            element={
+              <ProtectedRoute role={ROLES.ADMIN}>
+                <VenueDetails />
               </ProtectedRoute>
             }
           />

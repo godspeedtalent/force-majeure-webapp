@@ -10,7 +10,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ExternalLinkDialog } from '@/components/business/ExternalLinkDialog';
-import { FmBadge } from '@/components/common/display/FmBadge';
 import { FmDateBox } from '@/components/common/display/FmDateBox';
 import { FmUndercardList } from '@/components/common/display/FmUndercardList';
 import { Button } from '@/components/common/shadcn/button';
@@ -126,7 +125,7 @@ export const EventCard = ({ event }: EventCardProps) => {
       >
         <div
           className={cn(
-            'group relative overflow-hidden rounded-lg border border-border bg-card',
+            'group relative overflow-hidden rounded-none border border-border bg-card',
             'transition-all duration-300 cursor-pointer aspect-[2/3]',
             // Apply hover state when actually hovering OR when context menu is open
             contextMenuOpen && 'border-fm-gold/50 shadow-lg shadow-fm-gold/10',

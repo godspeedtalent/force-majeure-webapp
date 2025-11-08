@@ -54,6 +54,88 @@ src/
 - **API Logging**: Use `import { logApiError, logApi } from '@/shared/utils/apiLogger'`
 - **Types**: Import from centralized locations (e.g., `@/features/events/types`)
 
+### Layout System
+
+**CRITICAL: All pages MUST use a layout component that provides the topography background and navigation bar.**
+
+#### Base Layout (`Layout.tsx`)
+
+The default layout includes:
+- Navigation bar at the top
+- Topography background pattern
+- Footer
+- Music player
+- Proper spacing and structure
+
+```tsx
+import { Layout } from '@/components/layout/Layout';
+
+export default function MyPage() {
+  return (
+    <Layout>
+      <div className='container mx-auto py-8'>
+        {/* Your page content */}
+      </div>
+    </Layout>
+  );
+}
+```
+
+#### Available Layouts
+
+- **`Layout`**: Base layout with navigation, topography, footer, and music player. Use this for most pages.
+- **`SideNavbarLayout`**: Layout with side navigation for multi-section pages (e.g., event management).
+- **`SplitPageLayout`**: Two-column layout for forms or split content.
+- **`SinglePageLayout`**: Simplified layout for focused single-page content.
+- **`ForceMajeureRootLayout`**: Root-level layout wrapper (rarely used directly).
+
+#### Layout Guidelines
+
+1. **Always use a layout**: Never create a page without wrapping it in a layout component.
+2. **Inherit from base**: If creating a custom layout, ensure it includes the topography background and navigation.
+3. **Consistent structure**: All layouts should provide:
+   - Navigation bar (from `Navigation` component)
+   - Topography background (`TopographicBackground` component with appropriate opacity)
+   - Proper spacing (padding, container, etc.)
+4. **Loading and error states**: Wrap loading/error states in the same layout for consistency.
+
+#### Example: Details Page with Layout
+
+```tsx
+import { Layout } from '@/components/layout/Layout';
+
+export default function EntityDetails() {
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className='flex items-center justify-center min-h-[400px]'>
+          <FmCommonLoadingSpinner size='lg' />
+        </div>
+      </Layout>
+    );
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <div className='text-center py-12'>
+          <p className='text-muted-foreground'>Entity not found</p>
+          <Button onClick={() => navigate(-1)}>Go Back</Button>
+        </div>
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout>
+      <div className='container mx-auto py-8'>
+        {/* Page content */}
+      </div>
+    </Layout>
+  );
+}
+```
+
 ### Design System
 
 - **Complete design system documentation**: `/docs/DESIGN_SYSTEM.md`

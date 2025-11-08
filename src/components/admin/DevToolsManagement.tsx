@@ -2,14 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/common/shadcn/card';
 import { Label } from '@/components/common/shadcn/label';
 import { Switch } from '@/components/common/shadcn/switch';
-import {
-  Code,
-  PlusCircle,
-  Ticket,
-  ToggleLeft,
-  Calendar,
-  Info,
-} from 'lucide-react';
+import { Code, Database, ToggleLeft, Info } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface DevToolSection {
@@ -21,34 +14,17 @@ interface DevToolSection {
 
 const DEV_TOOL_SECTIONS: DevToolSection[] = [
   {
-    id: 'creation',
-    label: 'Creation Tools',
-    description: 'Quick create buttons for artists, venues, and cities',
-    icon: <PlusCircle className='h-4 w-4' />,
-  },
-  {
-    id: 'tools',
-    label: 'Role Selector',
-    description: 'Switch between user roles for testing permissions',
-    icon: <ToggleLeft className='h-4 w-4' />,
-  },
-  {
-    id: 'ticketing',
-    label: 'Ticketing Tools',
-    description: 'Debug ticket tiers and purchase flows',
-    icon: <Ticket className='h-4 w-4' />,
+    id: 'database',
+    label: 'Database Tools',
+    description:
+      'Access to Database tab in developer toolbar and database manager page',
+    icon: <Database className='h-4 w-4' />,
   },
   {
     id: 'features',
     label: 'Feature Flags',
     description: 'Toggle feature flags for testing',
     icon: <ToggleLeft className='h-4 w-4' />,
-  },
-  {
-    id: 'events',
-    label: 'Event List',
-    description: 'Quick navigation to event management',
-    icon: <Calendar className='h-4 w-4' />,
   },
 ];
 

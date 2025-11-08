@@ -1,49 +1,116 @@
-import { DataGridColumn } from '@/features/data-grid';
+import { DataGridColumn, DataGridColumns } from '@/features/data-grid';
+import { BadgeListCell } from '@/features/data-grid/components/cells';
+import { supabase } from '@/shared/api/supabase/client';
+import { toast } from 'sonner';
+import { logger } from '@/shared/services/logger';
+import {
+  User,
+  Music,
+  Mail,
+  Image as ImageIcon,
+  FileText,
+  MapPin,
+  Home,
+  Users as UsersIcon,
+  Calendar,
+  Shield,
+} from 'lucide-react';
+
+/**
+ * Update artist image URL in the database
+ */
+async function updateArtistImage(row: any, newImageUrl: string) {
+  try {
+    const { error } = await supabase
+      .from('artists')
+      .update({ image_url: newImageUrl })
+      .eq('id', row.id);
+
+    if (error) throw error;
+    toast.success('Artist image updated');
+  } catch (error) {
+    logger.error('Failed to update artist image', { error, artistId: row.id });
+    toast.error('Failed to update artist image');
+    throw error;
+  }
+}
+
+/**
+ * Update user avatar URL in the database
+ */
+async function updateUserAvatar(row: any, newImageUrl: string) {
+  try {
+    const { error } = await supabase
+      .from('profiles')
+      .update({ avatar_url: newImageUrl })
+      .eq('id', row.id);
+
+    if (error) throw error;
+    toast.success('User avatar updated');
+  } catch (error) {
+    logger.error('Failed to update user avatar', { error, userId: row.id });
+    toast.error('Failed to update user avatar');
+    throw error;
+  }
+}
+
+/**
+ * Update venue image URL in the database
+ * TODO: Uncomment when venues table is added to database schema
+ */
+async function updateVenueImage(row: any, newImageUrl: string) {
+  // Venues table not yet in schema - this is a placeholder
+  logger.warn('Venue image update not implemented - venues table missing', {
+    venueId: row.id,
+  });
+  toast.error('Venue image updates not yet supported');
+  throw new Error('Venues table not in database schema');
+}
 
 /**
  * Column definitions for the Artists data grid in Admin Controls
  */
 export const artistColumns: DataGridColumn[] = [
   {
-    key: 'name',
-    label: 'Name',
-    sortable: true,
-    filterable: true,
-    editable: true,
-    required: true,
+    ...DataGridColumns.text({
+      key: 'name',
+      label: 'Name',
+      sortable: true,
+      filterable: true,
+      editable: true,
+    }),
+    icon: <Music className='h-4 w-4' />,
   },
   {
-    key: 'genre',
-    label: 'Genre',
-    sortable: true,
-    filterable: true,
-    editable: true,
+    ...DataGridColumns.text({
+      key: 'genre',
+      label: 'Genre',
+      sortable: true,
+      filterable: true,
+      editable: true,
+    }),
+    icon: <Music className='h-4 w-4' />,
   },
-  {
+  DataGridColumns.image({
     key: 'image_url',
-    label: 'Image URL',
-    filterable: true,
+    label: 'Image',
+    shape: 'circle',
+    entityType: 'artist',
     editable: true,
-    type: 'url',
-    render: value =>
-      value ? (
-        <img
-          src={value}
-          alt='Artist'
-          className='h-8 w-8 rounded-full object-cover shadow-sm'
-        />
-      ) : (
-        <span className='text-xs text-muted-foreground'>-</span>
-      ),
-  },
+    bucket: 'entity-images',
+    storagePath: 'artists',
+    onImageUpdate: (row, newImageUrl) => updateArtistImage(row, newImageUrl),
+    icon: <ImageIcon className='h-4 w-4' />,
+  }),
   {
     key: 'bio',
     label: 'Bio',
+    icon: <FileText className='h-4 w-4' />,
     filterable: true,
     editable: true,
     render: value => {
       if (!value) {
-        return <span className='text-xs text-muted-foreground'>-</span>;
+        return <span className='text-xs text-muted-foreground'>—</span>;
       }
       const text = String(value);
       return (
@@ -60,72 +127,72 @@ export const artistColumns: DataGridColumn[] = [
  */
 export const userColumns: DataGridColumn[] = [
   {
-    key: 'display_name',
-    label: 'Display Name',
-    sortable: true,
-    filterable: true,
-    editable: true,
+    ...DataGridColumns.text({
+      key: 'display_name',
+      label: 'Display Name',
+      sortable: true,
+      filterable: true,
+      editable: true,
+    }),
+    icon: <User className='h-4 w-4' />,
   },
   {
-    key: 'full_name',
-    label: 'Full Name',
-    sortable: true,
-    filterable: true,
-    editable: true,
+    ...DataGridColumns.text({
+      key: 'full_name',
+      label: 'Full Name',
+      sortable: true,
+      filterable: true,
+      editable: true,
+    }),
+    icon: <User className='h-4 w-4' />,
   },
   {
-    key: 'email',
-    label: 'Email',
-    sortable: true,
-    filterable: true,
-    readonly: true,
+    ...DataGridColumns.text({
+      key: 'email',
+      label: 'Email',
+      sortable: true,
+      filterable: true,
+      editable: true,
+    }),
+    icon: <Mail className='h-4 w-4' />,
   },
-  {
+  DataGridColumns.image({
     key: 'avatar_url',
     label: 'Avatar',
-    filterable: false,
+    shape: 'circle',
+    entityType: 'user',
     editable: true,
-    type: 'url',
-    render: value =>
-      value ? (
-        <img
-          src={value}
-          alt='User Avatar'
-          className='h-8 w-8 rounded-full object-cover shadow-sm'
-        />
-      ) : (
-        <span className='text-xs text-muted-foreground'>-</span>
-      ),
-  },
+    bucket: 'entity-images',
+    storagePath: 'users',
+    onImageUpdate: (row, newImageUrl) => updateUserAvatar(row, newImageUrl),
+    icon: <ImageIcon className='h-4 w-4' />,
+  }),
   {
     key: 'roles',
     label: 'Roles',
+    icon: <Shield className='h-4 w-4' />,
     filterable: false,
     readonly: true,
-    render: value => {
+    render: (value: any) => {
       if (!value || !Array.isArray(value) || value.length === 0) {
-        return <span className='text-xs text-muted-foreground'>No roles</span>;
+        return <BadgeListCell items={[]} emptyText='No roles' />;
       }
-      return (
-        <div className='flex flex-wrap gap-1'>
-          {value.map((role: any, idx: number) => (
-            <span
-              key={idx}
-              className='inline-flex items-center rounded-md bg-fm-gold/10 px-2 py-1 text-xs font-medium text-fm-gold ring-1 ring-inset ring-fm-gold/20'
-            >
-              {role.display_name || role.role_name}
-            </span>
-          ))}
-        </div>
+
+      const roleLabels = value.map((role: any) =>
+        role.display_name || role.role_name
       );
+
+      return <BadgeListCell items={roleLabels} variant='gold' />;
     },
   },
   {
-    key: 'created_at',
-    label: 'Joined',
-    sortable: true,
-    readonly: true,
-    render: value => new Date(value).toLocaleDateString(),
+    ...DataGridColumns.date({
+      key: 'created_at',
+      label: 'Joined',
+      format: 'short',
+      sortable: true,
+    }),
+    icon: <Calendar className='h-4 w-4' />,
   },
 ];
 
@@ -134,58 +201,60 @@ export const userColumns: DataGridColumn[] = [
  */
 export const venueColumns: DataGridColumn[] = [
   {
-    key: 'name',
-    label: 'Name',
-    sortable: true,
-    filterable: true,
-    editable: true,
+    ...DataGridColumns.text({
+      key: 'name',
+      label: 'Name',
+      sortable: true,
+      filterable: true,
+      editable: true,
+    }),
+    icon: <MapPin className='h-4 w-4' />,
   },
-  {
+  DataGridColumns.image({
     key: 'image_url',
     label: 'Image',
-    filterable: false,
+    shape: 'square',
+    entityType: 'venue',
     editable: true,
-    type: 'url',
-    render: value =>
-      value ? (
-        <img
-          src={value}
-          alt='Venue'
-          className='h-8 w-8 rounded object-cover shadow-sm'
-        />
-      ) : (
-        <span className='text-xs text-muted-foreground'>-</span>
-      ),
+    bucket: 'entity-images',
+    storagePath: 'venues',
+    onImageUpdate: (row, newImageUrl) => updateVenueImage(row, newImageUrl),
+    icon: <ImageIcon className='h-4 w-4' />,
+  }),
+  {
+    ...DataGridColumns.relation({
+      key: 'city_id',
+      label: 'City',
+      sortable: true,
+      getLabel: (row: any) => row.city || '—',
+    }),
+    icon: <MapPin className='h-4 w-4' />,
   },
   {
-    key: 'city_id',
-    label: 'City',
-    sortable: true,
-    filterable: true,
-    editable: true,
-    readonly: true, // City shown but edit via form only
-    isRelation: true,
-    render: (_value, row) => row.city || '-',
-  },
-  {
-    key: 'address',
-    label: 'Address',
-    sortable: true,
-    filterable: true,
-    editable: true,
+    ...DataGridColumns.text({
+      key: 'address',
+      label: 'Address',
+      sortable: true,
+      filterable: true,
+      editable: true,
+    }),
+    icon: <Home className='h-4 w-4' />,
   },
   {
     key: 'capacity',
     label: 'Capacity',
+    icon: <UsersIcon className='h-4 w-4' />,
     sortable: true,
     editable: true,
-    render: value => (value ? value.toLocaleString() : '-'),
+    render: (value: any) => (value ? value.toLocaleString() : '—'),
   },
   {
-    key: 'created_at',
-    label: 'Created',
-    sortable: true,
-    readonly: true,
-    render: value => new Date(value).toLocaleDateString(),
+    ...DataGridColumns.date({
+      key: 'created_at',
+      label: 'Created',
+      format: 'short',
+      sortable: true,
+    }),
+    icon: <Calendar className='h-4 w-4' />,
   },
 ];

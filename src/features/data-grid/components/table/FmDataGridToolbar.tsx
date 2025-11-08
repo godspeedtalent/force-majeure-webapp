@@ -1,9 +1,7 @@
 import React from 'react';
 import { Search, Filter, Download, Trash2, Plus } from 'lucide-react';
 import { Input } from '@/components/common/shadcn/input';
-import { Button } from '@/components/common/shadcn/button';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { cn } from '@/shared/utils/utils';
 
 export interface FmDataGridToolbarProps {
   // Search
@@ -62,7 +60,7 @@ export function FmDataGridToolbar({
   return (
     <div className='flex items-center gap-4'>
       {/* Search Bar */}
-      <div className='relative flex-1 max-w-md'>
+      <div className='relative flex-1'>
         <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
         <Input
           placeholder='Search across all columns...'
@@ -74,14 +72,14 @@ export function FmDataGridToolbar({
 
       {/* Clear Filters Button */}
       {hasActiveFilters && (
-        <Button
-          variant='outline'
+        <FmCommonButton
+          variant='default'
           size='sm'
           onClick={onClearFilters}
           className='animate-in fade-in duration-300'
         >
           Clear Filters
-        </Button>
+        </FmCommonButton>
       )}
 
       <div className='ml-auto flex items-center gap-2'>
@@ -96,49 +94,48 @@ export function FmDataGridToolbar({
 
         {/* Batch Delete Button */}
         {selectedCount > 0 && onBatchDelete && (
-          <Button
+          <FmCommonButton
             onClick={onBatchDelete}
             variant='destructive'
             size='sm'
             disabled={isBatchDeleting}
+            icon={Trash2}
             className='animate-in fade-in slide-in-from-right duration-300'
           >
-            <Trash2 className='h-4 w-4 mr-1.5' />
             Delete {selectedCount}
-          </Button>
+          </FmCommonButton>
         )}
 
         {/* Bulk Edit Button */}
         {selectedCount > 0 && onBulkEdit && (
-          <Button
+          <FmCommonButton
             onClick={onBulkEdit}
-            variant='outline'
+            variant='default'
             size='sm'
+            icon={Plus}
             className='animate-in fade-in slide-in-from-right duration-300'
           >
-            <Plus className='h-4 w-4 mr-1.5' />
             Edit {selectedCount}
-          </Button>
+          </FmCommonButton>
         )}
 
         {/* Export Button */}
         {enableExport && totalDataCount > 0 && onExport && (
-          <Button onClick={onExport} variant='outline' size='sm'>
-            <Download className='h-4 w-4 mr-1.5' />
+          <FmCommonButton onClick={onExport} variant='default' size='sm' icon={Download}>
             Export
-          </Button>
+          </FmCommonButton>
         )}
 
         {/* Group By Button */}
         {totalDataCount > 0 && onGroupBy && (
-          <Button
+          <FmCommonButton
             onClick={onGroupBy}
-            variant={hasGrouping ? 'default' : 'outline'}
+            variant='default'
             size='sm'
+            icon={Filter}
           >
-            <Filter className='h-4 w-4 mr-1.5' />
             {hasGrouping ? 'Grouped' : 'Group By'}
-          </Button>
+          </FmCommonButton>
         )}
 
         {/* Additional Toolbar Actions */}

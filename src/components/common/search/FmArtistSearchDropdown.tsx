@@ -28,4 +28,6 @@ export const FmArtistSearchDropdown = createSearchDropdown<Artist>({
   createNewLabel: '+ Create New Artist',
   useRecents: true,
   recentsKey: 'artists',
+  typeIcon: <User className='h-3 w-3 text-white/70' />,
+  typeTooltip: 'Artist',
 });

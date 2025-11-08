@@ -100,12 +100,17 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
     try {
       const { error } = await (supabase as any)
         .from('datagrid_configs')
-        .upsert({
-          user_id: user.id,
-          grid_id: gridId,
-          config: newConfig,
-          updated_at: new Date().toISOString(),
-        });
+        .upsert(
+          {
+            user_id: user.id,
+            grid_id: gridId,
+            config: newConfig,
+            updated_at: new Date().toISOString(),
+          },
+          {
+            onConflict: 'user_id,grid_id',
+          }
+        );
 
       if (error) {
         logger.error('Error saving grid config:', error);
@@ -203,6 +208,50 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
     );
   };
 
+  const handleColumnReorder = (fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex) return;
+
+    // Get visible columns sorted by their current order
+    const visibleColumns = initializedConfig.columns
+      .filter(c => c.visible)
+      .sort((a, b) => a.order - b.order);
+
+    // Reorder using visual indices
+    const reorderedColumns = arrayMove(visibleColumns, fromIndex, toIndex);
+
+    // Create a map of key -> new order for visible columns
+    const orderMap = new Map(
+      reorderedColumns.map((col, index) => [col.key, index])
+    );
+
+    // Update all columns with new order
+    const updatedColumns = initializedConfig.columns.map(col => {
+      if (col.visible && orderMap.has(col.key)) {
+        return { ...col, order: orderMap.get(col.key)! };
+      }
+      // Keep hidden columns at the end with their relative order preserved
+      if (!col.visible) {
+        return { ...col, order: reorderedColumns.length + col.order };
+      }
+      return col;
+    });
+
+    const newConfig: GridConfig = {
+      ...initializedConfig,
+      columns: updatedColumns,
+    };
+
+    setConfig(newConfig);
+    saveConfig(newConfig);
+
+    // Visual feedback
+    const movedColumn = reorderedColumns[toIndex];
+    setRecentlyMovedKey(movedColumn.key);
+    setTimeout(() => setRecentlyMovedKey(null), 600);
+
+    toast.success('Column order updated');
+  };
+
   const resetConfiguration = async () => {
     const defaultConfig: GridConfig = {
       columns: baseColumns.map((col, index) => ({
@@ -260,6 +309,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
         resourceName={resourceName}
         createButtonLabel={createButtonLabel}
         onHideColumn={hideColumn}
+        onColumnReorder={handleColumnReorder}
         toolbarActions={
           <>
             <Button

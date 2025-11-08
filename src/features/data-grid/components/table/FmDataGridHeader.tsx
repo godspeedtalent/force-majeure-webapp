@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { TableHead, TableHeader, TableRow } from '@/components/common/shadcn/table';
 import { Input } from '@/components/common/shadcn/input';
 import {
@@ -19,7 +19,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/common/shadcn/tooltip';
-import { ChevronDown, ChevronUp, Filter, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, Filter, X, GripVertical } from 'lucide-react';
 import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
 import { cn } from '@/shared/utils/utils';
 import { DataGridColumn } from '../FmDataGrid';
@@ -35,6 +35,7 @@ export interface FmDataGridHeaderProps<T> {
   columnFilters: Record<string, string>;
   onColumnFilter: (columnKey: string, value: string) => void;
   onHideColumn?: (columnKey: string) => void;
+  onColumnReorder?: (fromIndex: number, toIndex: number) => void;
   columnWidths: Record<string, number>;
   onResizeStart: (columnKey: string, e: React.MouseEvent) => void;
 }
@@ -50,9 +51,86 @@ export function FmDataGridHeader<T>({
   columnFilters,
   onColumnFilter,
   onHideColumn,
+  onColumnReorder,
   columnWidths,
   onResizeStart,
 }: FmDataGridHeaderProps<T>) {
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [isResizing, setIsResizing] = useState(false);
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    // Don't allow dragging if we're resizing
+    if (isResizing) {
+      e.preventDefault();
+      return;
+    }
+
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', e.currentTarget.innerHTML);
+    // Add a semi-transparent drag image
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.opacity = '0.5';
+    }
+  };
+
+  const handleDragEnd = (e: React.DragEvent) => {
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.opacity = '1';
+    }
+
+    if (draggedIndex !== null && dragOverIndex !== null && draggedIndex !== dragOverIndex) {
+      onColumnReorder?.(draggedIndex, dragOverIndex);
+    }
+
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+
+    if (index !== dragOverIndex) {
+      setDragOverIndex(index);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    // Only reset dragOverIndex if we're actually leaving the entire header row,
+    // not just moving between columns within the row
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = e.clientX;
+    const y = e.clientY;
+    
+    // Check if mouse is still within the header row bounds
+    if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+      setDragOverIndex(null);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleResizeMouseDown = (columnKey: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent drag from starting
+    setIsResizing(true);
+    onResizeStart(columnKey, e);
+  };
+
+  // Reset resizing state when mouse is released
+  useEffect(() => {
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => window.removeEventListener('mouseup', handleMouseUp);
+  }, []);
+
   return (
     <TableHeader>
       <TableRow className='border-border/50 bg-muted/50 hover:bg-muted/50 group'>
@@ -70,13 +148,22 @@ export function FmDataGridHeader<T>({
           <ContextMenu key={column.key}>
             <ContextMenuTrigger asChild>
               <TableHead
+                draggable={!!onColumnReorder}
+                onDragStart={e => onColumnReorder && handleDragStart(e, colIndex)}
+                onDragEnd={handleDragEnd}
+                onDragOver={e => onColumnReorder && handleDragOver(e, colIndex)}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
                 className={cn(
-                  'font-canela text-foreground font-semibold relative',
+                  'font-canela text-foreground font-semibold relative group/header',
                   column.width,
                   column.sortable && 'cursor-pointer select-none hover:bg-muted',
                   sortColumn === column.key &&
                     'bg-fm-gold text-black hover:bg-fm-gold/90',
-                  colIndex > 0 && 'border-l border-border/30'
+                  'border-l border-r border-border/60',
+                  draggedIndex === colIndex && 'opacity-50',
+                  dragOverIndex === colIndex && 'border-l-2 border-l-fm-gold',
+                  onColumnReorder && 'cursor-grab active:cursor-grabbing'
                 )}
                 style={{
                   width: columnWidths[column.key]
@@ -92,7 +179,28 @@ export function FmDataGridHeader<T>({
                 onClick={() => column.sortable && onSort(column.key)}
               >
                 <div className='flex items-center gap-2'>
-                  <span>{column.label}</span>
+                  {onColumnReorder && (
+                    <GripVertical className='h-3 w-3 text-muted-foreground opacity-0 group-hover/header:opacity-100 transition-opacity flex-shrink-0' />
+                  )}
+                  
+                  {/* Show icon only when column is narrow (width < 100px) and icon exists */}
+                  {column.icon && columnWidths[column.key] && columnWidths[column.key] < 100 ? (
+                    <TooltipProvider>
+                      <Tooltip delayDuration={300}>
+                        <TooltipTrigger asChild>
+                          <div className='flex items-center'>
+                            {column.icon}
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side='bottom'>
+                          <p className='text-xs'>{column.label}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  ) : (
+                    <span>{column.label}</span>
+                  )}
+                  
                   {column.sortable &&
                     sortColumn === column.key &&
                     (sortDirection === 'asc' ? (
@@ -101,10 +209,10 @@ export function FmDataGridHeader<T>({
                       <ChevronDown className='h-3 w-3' />
                     ))}
                   {column.filterable && (
-                    <TooltipProvider>
-                      <Tooltip delayDuration={300}>
-                        <TooltipTrigger asChild>
-                          <DropdownMenu>
+                    <DropdownMenu>
+                      <TooltipProvider>
+                        <Tooltip delayDuration={300}>
+                          <TooltipTrigger asChild>
                             <DropdownMenuTrigger asChild>
                               <button
                                 data-filter-trigger
@@ -124,51 +232,52 @@ export function FmDataGridHeader<T>({
                                 />
                               </button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align='start' className='w-64'>
-                              <div className='p-2'>
-                                <div className='relative'>
-                                  <Input
-                                    placeholder={`Filter ${column.label}...`}
-                                    value={columnFilters[column.key] || ''}
-                                    onChange={e =>
-                                      onColumnFilter(column.key, e.target.value)
-                                    }
-                                    className='h-8 pr-8'
-                                    onClick={e => e.stopPropagation()}
-                                  />
-                                  {columnFilters[column.key] && (
-                                    <button
-                                      onClick={e => {
-                                        e.stopPropagation();
-                                        onColumnFilter(column.key, '');
-                                      }}
-                                      className='absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center hover:bg-muted rounded-sm transition-colors'
-                                    >
-                                      <X className='h-3 w-3 text-muted-foreground' />
-                                    </button>
-                                  )}
-                                </div>
-                              </div>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TooltipTrigger>
-                        {columnFilters[column.key] && (
-                          <TooltipContent side='bottom' className='max-w-xs'>
-                            <p className='text-xs'>
-                              Filter: {columnFilters[column.key]}
-                            </p>
-                          </TooltipContent>
-                        )}
-                      </Tooltip>
-                    </TooltipProvider>
+                          </TooltipTrigger>
+                          {columnFilters[column.key] && (
+                            <TooltipContent side='bottom' className='max-w-xs'>
+                              <p className='text-xs'>
+                                Filter: {columnFilters[column.key]}
+                              </p>
+                            </TooltipContent>
+                          )}
+                        </Tooltip>
+                      </TooltipProvider>
+                      <DropdownMenuContent align='start' className='w-64'>
+                        <div className='p-2'>
+                          <div className='relative'>
+                            <Input
+                              placeholder={`Filter ${column.label}...`}
+                              value={columnFilters[column.key] || ''}
+                              onChange={e =>
+                                onColumnFilter(column.key, e.target.value)
+                              }
+                              className='h-8 pr-8'
+                              onClick={e => e.stopPropagation()}
+                            />
+                            {columnFilters[column.key] && (
+                              <button
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  onColumnFilter(column.key, '');
+                                }}
+                                className='absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center hover:bg-muted rounded-sm transition-colors'
+                              >
+                                <X className='h-3 w-3 text-muted-foreground' />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   )}
                 </div>
 
-                {/* Resize handle */}
+                {/* Resize handle - wider hit area for better UX */}
                 <div
-                  className='absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-fm-gold/50 transition-colors group-hover:opacity-100 opacity-0'
-                  onMouseDown={e => onResizeStart(column.key, e)}
+                  className='absolute right-0 top-0 bottom-0 w-2 cursor-col-resize hover:bg-fm-gold/50 transition-colors group-hover/header:opacity-100 opacity-0 z-10'
+                  onMouseDown={e => handleResizeMouseDown(column.key, e)}
                   onClick={e => e.stopPropagation()}
+                  draggable={false}
                 />
               </TableHead>
             </ContextMenuTrigger>

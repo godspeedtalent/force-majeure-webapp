@@ -6,19 +6,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/common/shadcn/dialog';
-import { Badge } from '@/components/common/shadcn/badge';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
 import { Label } from '@/components/common/shadcn/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/common/shadcn/select';
-import { Shield, Plus, X, AlertCircle } from 'lucide-react';
+import { Shield, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import { ROLES } from '@/shared/auth/permissions';
 import { RoleManagementService } from '@/shared/services/roleManagementService';
 
 interface RoleInfo {
@@ -60,9 +52,8 @@ export function RoleManagementModal({
   onRolesUpdated,
 }: RoleManagementModalProps) {
   const [availableRoles, setAvailableRoles] = useState<AvailableRole[]>([]);
-  const [selectedRole, setSelectedRole] = useState<string>('');
   const [loading, setLoading] = useState(false);
-  const [removingRole, setRemovingRole] = useState<string | null>(null);
+  const [togglingRole, setTogglingRole] = useState<string | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -71,6 +62,7 @@ export function RoleManagementModal({
   }, [open]);
 
   const fetchAvailableRoles = async () => {
+    setLoading(true);
     try {
       const roles = await RoleManagementService.getAllRoles();
 
@@ -78,7 +70,7 @@ export function RoleManagementModal({
       setAvailableRoles(
         roles.map(role => ({
           role_name: role.name,
-          display_name: role.name, // Using name as display_name since getAllRoles returns { id, name }
+          display_name: role.name,
           description: null,
         }))
       );
@@ -87,66 +79,41 @@ export function RoleManagementModal({
       toast.error('Failed to load available roles', {
         description: error.message,
       });
-    }
-  };
-
-  const handleAddRole = async () => {
-    if (!selectedRole) return;
-
-    setLoading(true);
-    try {
-      console.log('Current roles:', currentRoles);
-      console.log('Attempting to add role:', selectedRole);
-
-      // Check if user already has this role
-      if (currentRoles?.some(r => r.role_name === selectedRole)) {
-        toast.warning('User already has this role');
-        setLoading(false);
-        return;
-      }
-
-      await RoleManagementService.addRole(userId, selectedRole);
-
-      toast.success('Role added successfully', {
-        description: `Added ${availableRoles.find(r => r.role_name === selectedRole)?.display_name} to ${userEmail}`,
-      });
-
-      setSelectedRole('');
-      onRolesUpdated();
-    } catch (error: any) {
-      console.error('Error adding role:', error);
-      toast.error('Failed to add role', {
-        description: error.message,
-      });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRemoveRole = async (roleName: string) => {
-    setRemovingRole(roleName);
+  const handleToggleRole = async (roleName: string, shouldAdd: boolean) => {
+    setTogglingRole(roleName);
     try {
-      await RoleManagementService.removeRole(userId, roleName);
-
-      toast.success('Role removed successfully', {
-        description: `Removed ${currentRoles?.find(r => r.role_name === roleName)?.display_name} from ${userEmail}`,
-      });
+      if (shouldAdd) {
+        await RoleManagementService.addRole(userId, roleName);
+        toast.success('Role added', {
+          description: `Added ${roleName} to ${userEmail}`,
+        });
+      } else {
+        await RoleManagementService.removeRole(userId, roleName);
+        toast.success('Role removed', {
+          description: `Removed ${roleName} from ${userEmail}`,
+        });
+      }
 
       onRolesUpdated();
     } catch (error: any) {
-      console.error('Error removing role:', error);
-      toast.error('Failed to remove role', {
+      console.error('Error toggling role:', error);
+      toast.error(`Failed to ${shouldAdd ? 'add' : 'remove'} role`, {
         description: error.message,
       });
     } finally {
-      setRemovingRole(null);
+      setTogglingRole(null);
     }
   };
 
-  // Get roles that can be added (not already assigned)
-  const addableRoles = availableRoles.filter(
-    role => !(currentRoles || []).some(r => r.role_name === role.role_name)
-  );
+  // Check if user has a specific role
+  const hasRole = (roleName: string) => {
+    return (currentRoles || []).some(r => r.role_name === roleName);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -165,102 +132,40 @@ export function RoleManagementModal({
         </DialogHeader>
 
         <div className='space-y-6 py-4'>
-          {/* Current Roles */}
+          {/* Available Roles */}
           <div className='space-y-3'>
-            <Label className='text-base font-medium'>Current Roles</Label>
-            {(currentRoles || []).length > 0 ? (
+            <Label className='text-base font-medium'>Roles</Label>
+            {loading ? (
+              <div className='flex items-center gap-2 p-4 border border-dashed bg-muted/50 text-muted-foreground'>
+                <AlertCircle className='h-4 w-4' />
+                <span className='text-sm'>Loading roles...</span>
+              </div>
+            ) : availableRoles.length > 0 ? (
               <div className='space-y-2'>
-                {(currentRoles || []).map(role => (
-                  <div
-                    key={role.role_name}
-                    className='flex items-center justify-between p-3 rounded-lg border bg-card'
-                  >
-                    <div className='flex items-center gap-3'>
-                      <Badge
-                        variant={
-                          role.role_name === ROLES.ADMIN
-                            ? 'default'
-                            : 'secondary'
-                        }
-                        className={
-                          role.role_name === ROLES.ADMIN
-                            ? 'bg-fm-gold text-black hover:bg-fm-gold/90'
-                            : ''
-                        }
-                      >
-                        <Shield className='h-3 w-3 mr-1' />
-                        {role.display_name}
-                      </Badge>
-                      <span className='text-sm text-muted-foreground'>
-                        {role.permissions.length} permission
-                        {role.permissions.length !== 1 ? 's' : ''}
-                      </span>
-                    </div>
-                    <FmCommonButton
-                      size='sm'
-                      variant='secondary'
-                      onClick={() => handleRemoveRole(role.role_name)}
-                      loading={removingRole === role.role_name}
-                      disabled={removingRole !== null}
-                      className='h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10'
-                    >
-                      <X className='h-4 w-4' />
-                    </FmCommonButton>
-                  </div>
-                ))}
+                {availableRoles.map(role => {
+                  const userHasRole = hasRole(role.role_name);
+                  const isToggling = togglingRole === role.role_name;
+
+                  return (
+                    <FmCommonToggle
+                      key={role.role_name}
+                      id={`role-${role.role_name}`}
+                      label={role.display_name}
+                      icon={Shield}
+                      checked={userHasRole}
+                      onCheckedChange={(checked) => handleToggleRole(role.role_name, checked)}
+                      disabled={isToggling}
+                    />
+                  );
+                })}
               </div>
             ) : (
-              <div className='flex items-center gap-2 p-4 rounded-lg border border-dashed bg-muted/50 text-muted-foreground'>
+              <div className='flex items-center gap-2 p-4 border border-dashed bg-muted/50 text-muted-foreground'>
                 <AlertCircle className='h-4 w-4' />
-                <span className='text-sm'>User has no roles assigned</span>
+                <span className='text-sm'>No roles available</span>
               </div>
             )}
           </div>
-
-          {/* Add Role */}
-          {addableRoles.length > 0 && (
-            <div className='space-y-3'>
-              <Label className='text-base font-medium'>Add Role</Label>
-              <div className='flex gap-2'>
-                <Select value={selectedRole} onValueChange={setSelectedRole}>
-                  <SelectTrigger className='flex-1'>
-                    <SelectValue placeholder='Select a role to add...' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {addableRoles.map(role => (
-                      <SelectItem key={role.role_name} value={role.role_name}>
-                        <div className='flex flex-col items-start'>
-                          <span className='font-medium'>
-                            {role.display_name}
-                          </span>
-                          {role.description && (
-                            <span className='text-xs text-muted-foreground'>
-                              {role.description}
-                            </span>
-                          )}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FmCommonButton
-                  onClick={handleAddRole}
-                  loading={loading}
-                  disabled={!selectedRole || loading}
-                >
-                  <Plus className='h-4 w-4 mr-2' />
-                  Add
-                </FmCommonButton>
-              </div>
-            </div>
-          )}
-
-          {addableRoles.length === 0 && (currentRoles || []).length > 0 && (
-            <div className='flex items-center gap-2 p-4 rounded-lg border bg-muted/50 text-muted-foreground'>
-              <AlertCircle className='h-4 w-4' />
-              <span className='text-sm'>User has all available roles</span>
-            </div>
-          )}
         </div>
 
         {/* Footer */}

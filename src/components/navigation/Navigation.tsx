@@ -1,7 +1,6 @@
 import {
   Instagram,
   Menu,
-  SettingsIcon,
   ShoppingCart,
   User,
   X,
@@ -21,8 +20,6 @@ import {
   TooltipTrigger,
 } from '@/components/common/shadcn/tooltip';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { useUserPermissions } from '@/shared/hooks/useUserRole';
-import { ROLES } from '@/shared/auth/permissions';
 import { useFeatureFlagHelpers } from '@/shared/hooks/useFeatureFlags';
 import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 import { useCheckoutTimer } from '@/contexts/CheckoutContext';
@@ -33,10 +30,8 @@ export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { hasRole } = useUserPermissions();
   const { isFeatureEnabled } = useFeatureFlagHelpers();
   const { isCheckoutActive, endCheckout, redirectUrl } = useCheckoutTimer();
-  const isAdmin = hasRole(ROLES.ADMIN);
 
   return (
     <nav className='sticky top-0 z-50 w-full bg-background/50 backdrop-blur-md border-b border-border'>
@@ -71,19 +66,6 @@ export const Navigation = () => {
 
           {/* Desktop Actions */}
           <div className='hidden md:flex items-center space-x-4'>
-            {isAdmin && (
-              <Button
-                variant='ghost'
-                size='sm'
-                className='text-foreground hover:text-fm-gold hover:bg-hover-overlay'
-                asChild
-              >
-                <Link to='/admin'>
-                  <SettingsIcon className='h-4 w-4' />
-                </Link>
-              </Button>
-            )}
-
             {/* Social and Shopping Icons */}
             <TooltipProvider>
               <Tooltip>
@@ -142,18 +124,6 @@ export const Navigation = () => {
 
           {/* Mobile menu button */}
           <div className='md:hidden flex items-center space-x-2'>
-            {isAdmin && (
-              <Button
-                variant='ghost'
-                size='sm'
-                className='text-foreground hover:text-fm-gold hover:bg-hover-overlay'
-                asChild
-              >
-                <Link to='/admin'>
-                  <SettingsIcon className='h-4 w-4' />
-                </Link>
-              </Button>
-            )}
             {user ? (
               <UserMenuDropdown />
             ) : (

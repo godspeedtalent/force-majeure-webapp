@@ -46,7 +46,13 @@ export function useDevNotesFilter({
 }: UseDevNotesFilterOptions): UseDevNotesFilterReturn {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterTypes, setFilterTypes] = useState<NoteType[]>([]);
-  const [filterStatuses, setFilterStatuses] = useState<NoteStatus[]>([]);
+  // Default: filter out RESOLVED notes
+  const [filterStatuses, setFilterStatuses] = useState<NoteStatus[]>([
+    'TODO',
+    'IN_PROGRESS',
+    'ARCHIVED',
+    'CANCELLED',
+  ]);
   const [filterAuthors, setFilterAuthors] = useState<string[]>([]);
 
   // Get unique authors from notes

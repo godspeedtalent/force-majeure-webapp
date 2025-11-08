@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { DataGridAction, FmConfigurableDataGrid } from '@/features/data-grid';
 import { FmEditVenueButton } from '@/components/common/buttons/FmEditVenueButton';
@@ -26,6 +26,7 @@ import { formatHeader } from '@/shared/utils/styleUtils';
 import { artistColumns, venueColumns } from '../admin/config/adminGridColumns';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared/auth/permissions';
+import { AdminLockIndicator } from '@/components/common/indicators';
 
 type DatabaseTab =
   | 'overview'
@@ -37,11 +38,17 @@ type DatabaseTab =
 
 export default function DeveloperDatabase() {
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState<DatabaseTab>('overview');
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [editingVenueId, setEditingVenueId] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const { hasRole } = useUserPermissions();
   const isAdmin = hasRole(ROLES.ADMIN);
+
+  // Get active tab from URL query string, fallback to 'overview'
+  const tabFromUrl = searchParams.get('table') as DatabaseTab | null;
+  const validTabs: DatabaseTab[] = ['overview', 'artists', 'events', 'organizations', 'users', 'venues'];
+  const activeTab: DatabaseTab = tabFromUrl && validTabs.includes(tabFromUrl) ? tabFromUrl : 'overview';
 
   // Navigation groups configuration - conditionally include admin-only tabs
   const navigationGroups: FmCommonSideNavGroup<DatabaseTab>[] = useMemo(() => {
@@ -50,24 +57,25 @@ export default function DeveloperDatabase() {
       label: string;
       icon: any;
       description: string;
+      badge?: React.ReactNode;
     }> = [
       {
         id: 'artists',
         label: 'Artists',
         icon: Mic2,
-        description: 'Manage artist profiles',
+        description: 'Artist Management',
       },
       {
         id: 'events',
         label: 'Events',
         icon: Calendar,
-        description: 'Manage events',
+        description: 'Event Management',
       },
       {
         id: 'venues',
         label: 'Venues',
         icon: MapPin,
-        description: 'Manage venue locations',
+        description: 'Venue Management',
       },
     ];
 
@@ -78,13 +86,15 @@ export default function DeveloperDatabase() {
           id: 'organizations',
           label: 'Organizations',
           icon: Building2,
-          description: 'Manage organizations',
+          description: 'Organization Management',
+          badge: <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />,
         },
         {
           id: 'users',
           label: 'Users',
           icon: Users,
-          description: 'Manage user accounts',
+          description: 'User Management',
+          badge: <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />,
         }
       );
     }
@@ -113,7 +123,7 @@ export default function DeveloperDatabase() {
     ];
   }, [isAdmin]);
 
-  // Handle navigation from toolbar or other sources
+  // Update URL when tab changes via location state
   useEffect(() => {
     const state = location.state as {
       editEventId?: string;
@@ -122,16 +132,19 @@ export default function DeveloperDatabase() {
     } | null;
 
     if (state?.editArtistId) {
-      setActiveTab('artists');
+      navigate(`?table=artists`, { replace: true });
     } else if (
       state?.openTab &&
-      ['artists', 'events', 'organizations', 'users', 'venues'].includes(
-        state.openTab
-      )
+      validTabs.includes(state.openTab as DatabaseTab)
     ) {
-      setActiveTab(state.openTab as DatabaseTab);
+      navigate(`?table=${state.openTab}`, { replace: true });
     }
-  }, [location.state]);
+  }, [location.state, navigate]);
+
+  // Handler to change tabs and update URL
+  const handleTabChange = (tab: DatabaseTab) => {
+    navigate(`?table=${tab}`);
+  };
 
   // Fetch artists data
   const { data: artists = [], isLoading: artistsLoading } = useQuery({
@@ -397,7 +410,7 @@ export default function DeveloperDatabase() {
     <SideNavbarLayout
       navigationGroups={navigationGroups}
       activeItem={activeTab}
-      onItemChange={setActiveTab}
+      onItemChange={handleTabChange}
     >
       <div className='max-w-full'>
         <div className='mb-[20px]'>

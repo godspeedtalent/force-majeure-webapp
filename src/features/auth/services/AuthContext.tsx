@@ -11,6 +11,7 @@ import { supabase } from '@/shared/api/supabase/client';
 import { useToast } from '@/shared/hooks/use-toast';
 import { sessionPersistence } from '@/shared/utils/sessionPersistence';
 import { logger } from '@/shared/services/logger';
+import { rolesStore } from '@/shared/stores/rolesStore';
 
 const authLogger = logger.createNamespace('Auth');
 
@@ -27,6 +28,7 @@ interface Profile {
   billing_city?: string | null;
   billing_state?: string | null;
   billing_zip?: string | null;
+  organization_id?: string | null;
   spotify_token_expires_at?: string | null;
   spotify_connected: boolean | null;
   created_at: string;
@@ -101,6 +103,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   useEffect(() => {
+    // Load roles store on mount (once, globally)
+    rolesStore.loadRoles().catch(error => {
+      authLogger.error('Failed to load roles:', error);
+    });
+
     // Set up auth state listener FIRST
     const {
       data: { subscription },

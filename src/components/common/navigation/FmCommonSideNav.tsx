@@ -1,4 +1,5 @@
 import { LucideIcon } from 'lucide-react';
+import * as React from 'react';
 import {
   Sidebar,
   SidebarContent,
@@ -12,13 +13,13 @@ import {
   useSidebar,
 } from '@/components/common/shadcn/sidebar';
 import { cn } from '@/shared/utils/utils';
-import { useRipple } from '@/hooks/useRipple';
 
 export interface FmCommonSideNavItem<T = string> {
   id: T;
   label: string;
   icon: LucideIcon;
   description?: string;
+  badge?: React.ReactNode;
 }
 
 export interface FmCommonSideNavGroup<T = string> {
@@ -55,7 +56,25 @@ export function FmCommonSideNav<T extends string = string>({
   showDividers = true,
 }: FmCommonSideNavProps<T>) {
   const { open } = useSidebar();
-  const { ripples, createRipple } = useRipple();
+  const [clickedItem, setClickedItem] = React.useState<T | null>(null);
+  const [previousItem, setPreviousItem] = React.useState<T | null>(null);
+
+  // Track item changes for fade-out effect
+  React.useEffect(() => {
+    if (activeItem !== previousItem) {
+      setPreviousItem(activeItem);
+    }
+  }, [activeItem, previousItem]);
+
+  const handleItemClick = (itemId: T) => {
+    setClickedItem(itemId);
+    onItemChange(itemId);
+    
+    // Clear ripple after animation
+    setTimeout(() => {
+      setClickedItem(null);
+    }, 600);
+  };
 
   return (
     <Sidebar
@@ -109,14 +128,13 @@ export function FmCommonSideNav<T extends string = string>({
                 <SidebarMenu>
                   {group.items.map(item => {
                     const isActive = activeItem === item.id;
+                    const isPrevious = previousItem === item.id && !isActive;
+                    const showRipple = clickedItem === item.id;
 
                     return (
                       <SidebarMenuItem key={item.id as string}>
                         <SidebarMenuButton
-                          onClick={e => {
-                            createRipple(e as any);
-                            onItemChange(item.id);
-                          }}
+                          onClick={() => handleItemClick(item.id)}
                           className={cn(
                             'cursor-pointer transition-all duration-200',
                             'relative overflow-hidden',
@@ -130,7 +148,9 @@ export function FmCommonSideNav<T extends string = string>({
                               'hover:bg-fm-gold/30',
                               'shadow-[0_0_12px_rgba(212,175,55,0.2)]',
                               'border-l-2 border-fm-gold',
-                            ]
+                            ],
+                            // Previous item fade out
+                            isPrevious && 'bg-fm-gold/20 animate-fade-out'
                           )}
                           tooltip={item.description || item.label}
                         >
@@ -146,11 +166,12 @@ export function FmCommonSideNav<T extends string = string>({
                           {open && (
                             <span
                               className={cn(
-                                'ml-3 transition-all duration-200',
+                                'ml-3 transition-all duration-200 flex items-center gap-1.5 flex-1',
                                 isActive && 'font-semibold'
                               )}
                             >
                               {item.label}
+                              {item.badge && <span className='ml-auto'>{item.badge}</span>}
                             </span>
                           )}
 
@@ -159,20 +180,15 @@ export function FmCommonSideNav<T extends string = string>({
                             <div className='absolute inset-0 bg-gradient-to-r from-fm-gold/10 to-transparent animate-pulse' />
                           )}
 
-                          {/* Ripple effects */}
-                          {ripples.map(ripple => (
+                          {/* Ripple effect - only for clicked item */}
+                          {showRipple && (
                             <span
-                              key={ripple.id}
-                              className='absolute rounded-full bg-fm-gold/40 animate-ripple'
+                              className='absolute inset-0 bg-fm-gold/40 animate-ripple rounded-none'
                               style={{
-                                left: ripple.x,
-                                top: ripple.y,
-                                width: 10,
-                                height: 10,
-                                transform: 'translate(-50%, -50%)',
+                                transformOrigin: 'center',
                               }}
                             />
-                          ))}
+                          )}
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     );

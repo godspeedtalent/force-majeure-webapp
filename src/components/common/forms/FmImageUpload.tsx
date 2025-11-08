@@ -169,7 +169,7 @@ export const FmImageUpload = ({
       {imageUrl ? (
         /* Preview uploaded image */
         <div className='space-y-4'>
-          <div className='relative aspect-video w-full overflow-hidden rounded-lg bg-muted'>
+          <div className='relative aspect-video w-full overflow-hidden rounded-none bg-muted'>
             <img
               src={imageUrl}
               alt='Event'
@@ -202,7 +202,7 @@ export const FmImageUpload = ({
           onDragOver={handleDrag}
           onDrop={handleDrop}
           className={cn(
-            'flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-12 transition-colors',
+            'flex flex-col items-center justify-center rounded-none border-2 border-dashed p-12 transition-colors',
             dragActive
               ? 'border-fm-gold bg-fm-gold/10'
               : 'border-border bg-card hover:border-fm-gold/50 hover:bg-muted/50',

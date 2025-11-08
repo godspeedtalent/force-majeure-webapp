@@ -1,1 +1,0 @@
-export { useEventDetails } from './useEventDetails';

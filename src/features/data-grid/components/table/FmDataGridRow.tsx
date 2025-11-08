@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TableCell, TableRow } from '@/components/common/shadcn/table';
 import { Button } from '@/components/common/shadcn/button';
 import {
@@ -7,13 +8,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/common/shadcn/dropdown-menu';
-import { ChevronDown, ChevronUp, MoreVertical, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, MoreVertical, X, Eye } from 'lucide-react';
 import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
 import { FmDataGridContextMenu } from '../FmDataGridContextMenu';
 import { FmDataGridCell } from './FmDataGridCell';
 import { cn } from '@/shared/utils/utils';
 import { DataGridColumn, DataGridAction } from '../FmDataGrid';
 import type { GroupedRow } from '../../utils/grouping';
+import { isRelationField, getRelationConfig } from '../../utils/dataGridRelations';
 
 export interface FmDataGridRowProps<T> {
   row: T;
@@ -88,6 +90,8 @@ export function FmDataGridRow<T extends Record<string, any>>({
   onUnselectAll,
   getFocusableCellProps,
 }: FmDataGridRowProps<T>) {
+  const navigate = useNavigate();
+
   // Determine context menu actions based on selection
   const currentContextMenuActions =
     isMultipleSelected && isSelected
@@ -102,11 +106,44 @@ export function FmDataGridRow<T extends Record<string, any>>({
           .filter(Boolean) as DataGridAction<T>[]
       : contextMenuActions;
 
+  // Build relation detail actions dynamically
+  const relationDetailActions: DataGridAction<T>[] = [];
+  columns.forEach(column => {
+    if (isRelationField(column.key)) {
+      const relationConfig = getRelationConfig(column.key);
+      const relationId = row[column.key];
+
+      if (
+        relationConfig?.detailRoute &&
+        relationConfig?.entityName &&
+        relationId
+      ) {
+        relationDetailActions.push({
+          label: `View ${relationConfig.entityName} details`,
+          icon: <Eye className='h-4 w-4' />,
+          onClick: () => navigate(relationConfig.detailRoute!(relationId)),
+        });
+      }
+    }
+  });
+
+  // Add separator before relation actions if they exist
+  let actionsWithRelations = currentContextMenuActions;
+  if (relationDetailActions.length > 0) {
+    actionsWithRelations = [
+      ...currentContextMenuActions,
+      ...(currentContextMenuActions.length > 0
+        ? [{ separator: true } as DataGridAction<T>]
+        : []),
+      ...relationDetailActions,
+    ];
+  }
+
   // Add "Unselect All" if multiple selected
   const finalContextMenuActions =
     isMultipleSelected && isSelected
       ? [
-          ...currentContextMenuActions,
+          ...actionsWithRelations,
           {
             label: 'Unselect All',
             icon: <X className='h-4 w-4' />,
@@ -114,7 +151,7 @@ export function FmDataGridRow<T extends Record<string, any>>({
             separator: true,
           } as DataGridAction<T>,
         ]
-      : currentContextMenuActions;
+      : actionsWithRelations;
 
   return (
     <FmDataGridContextMenu
@@ -139,8 +176,8 @@ export function FmDataGridRow<T extends Record<string, any>>({
         {/* Checkbox Cell */}
         <TableCell
           className={cn(
-            'transition-colors duration-200',
-            !isDragMode && hoveredColumn === '__checkbox' && 'bg-muted/30'
+            'transition-colors duration-200 border-l border-r border-border/60',
+            !isDragMode && hoveredColumn === '__checkbox' && 'bg-muted/40'
           )}
           onMouseEnter={() => !isDragMode && onSetHoveredColumn('__checkbox')}
           onMouseLeave={() => !isDragMode && onSetHoveredColumn(null)}
@@ -187,8 +224,8 @@ export function FmDataGridRow<T extends Record<string, any>>({
         {actions.length > 0 && (
           <TableCell
             className={cn(
-              'text-right transition-colors duration-200',
-              !isDragMode && hoveredColumn === '__actions' && 'bg-muted/30'
+              'text-right transition-colors duration-200 border-l border-r border-border/60',
+              !isDragMode && hoveredColumn === '__actions' && 'bg-muted/40'
             )}
             onMouseEnter={() => !isDragMode && onSetHoveredColumn('__actions')}
             onMouseLeave={() => !isDragMode && onSetHoveredColumn(null)}

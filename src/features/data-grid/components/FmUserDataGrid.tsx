@@ -118,7 +118,7 @@ export function FmUserDataGrid() {
       label: 'Organization',
       sortable: false,
       filterable: true,
-      editable: false,
+      editable: true,
       render: (_value, row) =>
         row.organization ? (
           <div className='flex items-center gap-2'>

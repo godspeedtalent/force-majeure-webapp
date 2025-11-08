@@ -46,7 +46,7 @@ export const FmCommonCard = ({
   const variantStyles = {
     default: cn(
       // Base frosted glass effect
-      'rounded-lg',
+      'rounded-none',
       'bg-gradient-to-br from-slate-900/90 via-slate-800/80 to-slate-900/90',
       'backdrop-blur-sm',
       'border border-border/50',
@@ -60,7 +60,7 @@ export const FmCommonCard = ({
     ),
     outline: cn(
       // Clean outline style
-      'rounded-lg',
+      'rounded-none',
       'bg-card',
       'border border-input',
       'shadow-sm',

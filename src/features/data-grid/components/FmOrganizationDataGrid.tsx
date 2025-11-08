@@ -15,14 +15,37 @@ export function FmOrganizationDataGrid() {
   const fetchOrganizations = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      // Fetch organizations
+      const { data: orgsData, error: orgsError } = await supabase
         .from('organizations' as any)
         .select('*')
         .order('name');
 
-      if (error) throw error;
+      if (orgsError) throw orgsError;
 
-      setOrganizations((data as any) || []);
+      // Fetch owner profiles separately
+      if (orgsData && orgsData.length > 0) {
+        const ownerIds = [...new Set(orgsData.map((org: any) => org.owner_id))];
+
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('user_id, display_name, full_name, avatar_url')
+          .in('user_id', ownerIds);
+
+        // Map profiles to organizations
+        const profileMap = new Map(
+          profilesData?.map(p => [p.user_id, p]) || []
+        );
+
+        const orgsWithOwners = orgsData.map((org: any) => ({
+          ...org,
+          owner: profileMap.get(org.owner_id),
+        }));
+
+        setOrganizations(orgsWithOwners as any);
+      } else {
+        setOrganizations([]);
+      }
     } catch (error: any) {
       logger.error('Error fetching organizations:', error);
       toast.error('Failed to load organizations', {
@@ -79,14 +102,25 @@ export function FmOrganizationDataGrid() {
       filterable: false,
       editable: true,
       isRelation: true,
-      render: value => (
-        <div className='flex items-center gap-2'>
-          <User className='h-4 w-4 text-muted-foreground' />
-          <span className='font-mono text-xs text-muted-foreground'>
-            {value}
-          </span>
-        </div>
-      ),
+      render: (value, row) => {
+        const owner = (row as any).owner;
+        const ownerName = owner?.display_name || owner?.full_name || 'Unknown User';
+
+        return (
+          <div className='flex items-center gap-2'>
+            {owner?.avatar_url ? (
+              <img
+                src={owner.avatar_url}
+                alt={ownerName}
+                className='h-6 w-6 rounded-full object-cover'
+              />
+            ) : (
+              <User className='h-4 w-4 text-muted-foreground' />
+            )}
+            <span className='text-sm'>{ownerName}</span>
+          </div>
+        );
+      },
     },
     {
       key: 'created_at',
@@ -139,12 +173,39 @@ export function FmOrganizationDataGrid() {
 
       if (error) throw error;
 
-      // Update the row in local state without refetching
-      setOrganizations(prevOrgs =>
-        prevOrgs.map(org =>
-          org.id === row.id ? { ...org, [columnKey]: newValue } : org
-        )
-      );
+      // If owner_id was updated, refetch with owner data
+      if (columnKey === 'owner_id') {
+        const { data: updatedOrg } = await supabase
+          .from('organizations' as any)
+          .select('*')
+          .eq('id', row.id)
+          .single();
+
+        if (updatedOrg) {
+          // Fetch the owner profile separately
+          const { data: ownerProfile } = await supabase
+            .from('profiles')
+            .select('user_id, display_name, full_name, avatar_url')
+            .eq('user_id', updatedOrg.owner_id)
+            .single();
+
+          const orgWithOwner = {
+            ...updatedOrg,
+            owner: ownerProfile,
+          };
+
+          setOrganizations(prevOrgs =>
+            prevOrgs.map(org => (org.id === row.id ? orgWithOwner as any : org))
+          );
+        }
+      } else {
+        // Update the row in local state without refetching
+        setOrganizations(prevOrgs =>
+          prevOrgs.map(org =>
+            org.id === row.id ? { ...org, [columnKey]: newValue } : org
+          )
+        );
+      }
 
       toast.success('Organization updated', {
         description: `${columnKey} updated successfully`,
@@ -173,18 +234,30 @@ export function FmOrganizationDataGrid() {
           profile_picture: newData.profile_picture || null,
           owner_id: user.id,
         })
-        .select()
+        .select('*')
         .single();
 
       if (error) throw error;
 
-      setOrganizations(prev => [...prev, data as any]);
+      // Fetch the owner profile separately
+      const { data: ownerProfile } = await supabase
+        .from('profiles')
+        .select('user_id, display_name, full_name, avatar_url')
+        .eq('user_id', user.id)
+        .single();
+
+      const orgWithOwner = {
+        ...data,
+        owner: ownerProfile,
+      };
+
+      setOrganizations(prev => [...prev, orgWithOwner as any]);
 
       toast.success('Organization created', {
-        description: `${(data as any).name} has been created`,
+        description: `${data.name} has been created`,
       });
 
-      return data as any;
+      return orgWithOwner as any;
     } catch (error: any) {
       logger.error('Error creating organization:', error);
       toast.error('Creation failed', {

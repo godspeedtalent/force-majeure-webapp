@@ -41,7 +41,7 @@ serve(async req => {
     });
 
     const isAdmin = userRoles?.some(
-      (r: any) => r.role_name === 'admin' || r.permission_names.includes('*')
+      (r: any) => r.role_name === 'admin' || (Array.isArray(r.permissions) && r.permissions.includes('*'))
     );
 
     if (!isAdmin) {
@@ -54,57 +54,40 @@ serve(async req => {
       );
     }
 
-    // Fetch all users from auth.users using admin API
-    const {
-      data: { users },
-      error: usersError,
-    } = await supabaseClient.auth.admin.listUsers();
+    // Fetch all users using the users_complete view
+    // This view joins auth.users, profiles, organizations, and roles in one query
+    const { data: users, error: usersError } = await supabaseClient
+      .from('users_complete')
+      .select('*');
 
     if (usersError) {
       throw usersError;
     }
 
-    // Fetch profiles and roles for all users
-    const { data: profiles } = await supabaseClient
-      .from('profiles')
-      .select('*, organization:organizations(id, name)');
-
-    // Fetch all user roles with role details using RPC
-    const allUserIds = users.map(u => u.id);
-    const allUserRolesPromises = allUserIds.map(async userId => {
-      const { data } = await supabaseClient.rpc('get_user_roles', {
-        user_id_param: userId,
-      });
-      return { userId, roles: data || [] };
-    });
-
-    const allUserRolesData = await Promise.all(allUserRolesPromises);
-    const userRolesMap = new Map(
-      allUserRolesData.map(({ userId, roles }) => [userId, roles])
-    );
-
-    // Combine data - return role names instead of single role
-    const enrichedUsers = users.map(authUser => {
-      const profile = profiles?.find(p => p.user_id === authUser.id);
-      const roles = userRolesMap.get(authUser.id) || [];
+    // Transform the data to match the expected format
+    const enrichedUsers = users.map((user: any) => {
+      // Parse roles JSON to array
+      const rolesArray = user.roles || [];
 
       return {
-        id: authUser.id,
-        email: authUser.email,
-        display_name: profile?.display_name || '',
-        full_name: profile?.full_name || '',
-        created_at: authUser.created_at,
-        organization_id: profile?.organization_id || null,
-        organization: profile?.organization || null,
-        roles: roles.map((r: any) => ({
-          role_name: r.role_name,
-          display_name: r.display_name,
-          permissions: r.permission_names,
-        })),
-        is_public: profile?.is_public || false,
-        show_on_leaderboard: profile?.show_on_leaderboard || false,
-        last_sign_in: authUser.last_sign_in_at,
-        confirmed_at: authUser.confirmed_at,
+        id: user.id,
+        email: user.email,
+        display_name: user.display_name,
+        full_name: user.full_name,
+        avatar_url: user.avatar_url,
+        created_at: user.auth_created_at,
+        organization_id: user.organization_id,
+        organization: user.organization_name
+          ? {
+              id: user.organization_id,
+              name: user.organization_name,
+            }
+          : null,
+        roles: rolesArray,
+        is_public: false, // Not in view, default to false
+        show_on_leaderboard: false, // Not in view, default to false
+        last_sign_in: user.last_sign_in_at,
+        confirmed_at: user.email_confirmed_at,
       };
     });
 

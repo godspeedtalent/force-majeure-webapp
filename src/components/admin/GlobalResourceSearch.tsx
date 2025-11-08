@@ -26,6 +26,7 @@ interface UserProfile {
   display_name?: string;
   full_name?: string;
   avatar_url?: string;
+  email?: string;
 }
 
 interface Artist {
@@ -123,12 +124,43 @@ export function GlobalResourceSearch({
     const searchPattern = `%${query}%`;
 
     try {
-      // Search Users (profiles table)
+      // Search Users (profiles table) - search by display_name, full_name, or email
       const { data: users } = await supabase
         .from('profiles')
-        .select('id, display_name, avatar_url')
-        .ilike('display_name', searchPattern)
-        .limit(5);
+        .select('id, user_id, display_name, full_name, avatar_url')
+        .or(`display_name.ilike.${searchPattern},full_name.ilike.${searchPattern}`)
+        .limit(10);
+
+      // Get emails for matched users from auth.users
+      let usersWithEmail = users || [];
+      if (users && users.length > 0) {
+        const userIds = users.map(u => u.user_id);
+
+        // Also search auth.users by email
+        const { data: authUsers } = await supabase.auth.admin.listUsers();
+        const emailMatches = authUsers?.users.filter(au =>
+          au.email?.toLowerCase().includes(query.toLowerCase())
+        ) || [];
+
+        // Merge results
+        const allUserIds = new Set([
+          ...userIds,
+          ...emailMatches.map(u => u.id)
+        ]);
+
+        usersWithEmail = Array.from(allUserIds).slice(0, 10).map(userId => {
+          const profile = users.find(u => u.user_id === userId);
+          const authUser = authUsers?.users.find(au => au.id === userId);
+
+          return {
+            id: userId,
+            display_name: profile?.display_name,
+            full_name: profile?.full_name,
+            avatar_url: profile?.avatar_url,
+            email: authUser?.email,
+          };
+        }).filter(u => u.email); // Only include users with email
+      }
 
       // Get today's date for upcoming events filter
       const today = new Date().toISOString();
@@ -165,11 +197,7 @@ export function GlobalResourceSearch({
 
       setResults({
         organizations: [], // TODO: Add when organizations table is available
-        users: (users || []).map((u: any) => ({
-          id: u.id,
-          display_name: u.display_name,
-          avatar_url: u.avatar_url,
-        })),
+        users: usersWithEmail,
         artists: artists || [],
         venues,
         events: (events || []).map((e: any) => ({
@@ -354,10 +382,13 @@ export function GlobalResourceSearch({
                           </div>
                           <div className='flex-1 min-w-0'>
                             <p className='text-sm font-medium truncate'>
-                              {user.display_name ||
-                                user.full_name ||
-                                'Unknown User'}
+                              {user.display_name || user.full_name || 'Unknown User'}
                             </p>
+                            {user.email && (
+                              <p className='text-xs text-muted-foreground truncate'>
+                                {user.email}
+                              </p>
+                            )}
                           </div>
                         </button>
                       ))}

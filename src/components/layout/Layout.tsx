@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 
 import { Footer } from '@/components/navigation/Footer';
-import { ExpandableMusicPlayer } from '@/components/MusicPlayer/ExpandableMusicPlayer';
+import { ExpandableMusicPlayer } from '@/components/music-player/ExpandableMusicPlayer';
 import { Navigation } from '@/components/navigation/Navigation';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 

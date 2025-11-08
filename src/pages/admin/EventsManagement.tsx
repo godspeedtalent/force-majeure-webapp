@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FmConfigurableDataGrid } from '@/features/data-grid/components/FmConfigurableDataGrid';
-import { DataGridColumn, DataGridAction } from '@/features/data-grid';
+import {
+  DataGridColumn,
+  DataGridAction,
+  DataGridColumns,
+} from '@/features/data-grid';
 import { FmCreateEventButton } from '@/components/common/buttons/FmCreateEventButton';
 import { FmEditEventButton } from '@/components/common/buttons/FmEditEventButton';
 import { useEvents } from '@/features/events/hooks/useEvents';
 import { useQueryClient } from '@tanstack/react-query';
-import { Edit, Trash2, ChevronRight } from 'lucide-react';
+import { Edit, Trash2 } from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
 
 interface EventsManagementProps {
   initialEditEventId?: string;
@@ -101,55 +104,52 @@ export const EventsManagement = ({
   };
 
   const columns: DataGridColumn[] = [
-    {
+    DataGridColumns.text({
       key: 'title',
       label: 'Title',
       sortable: true,
       filterable: true,
-    },
+    }),
     {
-      key: 'date',
-      label: 'Date',
-      sortable: true,
+      ...DataGridColumns.date({
+        key: 'date',
+        label: 'Date',
+        format: 'short',
+        sortable: true,
+      }),
       filterable: true,
-      render: value => (value ? format(new Date(value), 'MMM dd, yyyy') : '-'),
     },
-    {
+    DataGridColumns.text({
       key: 'time',
       label: 'Time',
       sortable: true,
-      render: value => value || '-',
-    },
+    }),
     {
-      key: 'venue_id',
-      label: 'Venue',
-      isRelation: true,
+      ...DataGridColumns.relation({
+        key: 'venue_id',
+        label: 'Venue',
+        sortable: true,
+      }),
       editable: true,
-      sortable: true,
       filterable: true,
     },
     {
-      key: 'headliner_id',
-      label: 'Headliner',
-      isRelation: true,
+      ...DataGridColumns.relation({
+        key: 'headliner_id',
+        label: 'Headliner',
+        sortable: true,
+      }),
       editable: true,
-      sortable: true,
       filterable: true,
     },
   ];
 
   const contextMenuActions: DataGridAction[] = [
     {
-      label: 'Manage',
-      icon: <ChevronRight className='h-4 w-4' />,
-      iconPosition: 'right',
+      label: 'Manage Event',
+      icon: <Edit className='h-4 w-4' />,
       separator: true,
       onClick: row => navigate(`/event/${row.id}/manage`),
-    },
-    {
-      label: 'Edit Event',
-      icon: <Edit className='h-4 w-4' />,
-      onClick: row => setEditingEventId(row.id),
     },
     {
       label: 'Delete Event',
