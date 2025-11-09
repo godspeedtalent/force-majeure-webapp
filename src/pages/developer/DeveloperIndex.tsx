@@ -7,6 +7,7 @@ import {
   FlaskConical,
   Database,
   FileText,
+  ClipboardCheck,
 } from 'lucide-react';
 import { DemoLayout } from '@/components/demo/DemoLayout';
 
@@ -48,6 +49,15 @@ export default function DeveloperIndex() {
       category: 'Documentation',
       status: 'Active',
     },
+    {
+      title: 'Ticket Flow Tests',
+      description:
+        'Comprehensive smoke testing suite for the complete ticketing flow including queue management, selection, payment, timeouts, and delivery',
+      path: '/developer/ticket-flow',
+      icon: ClipboardCheck,
+      category: 'Testing',
+      status: 'Active',
+    },
   ];
 
   return (
@@ -57,7 +67,7 @@ export default function DeveloperIndex() {
       icon={Code}
     >
       {/* Page List */}
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
         {pages.map(page => {
           const Icon = page.icon;
           return (

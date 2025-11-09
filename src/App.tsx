@@ -7,6 +7,7 @@ import CheckoutCancel from './pages/CheckoutCancel';
 import CheckoutSuccess from './pages/CheckoutSuccess';
 import ComingSoon from './pages/ComingSoon';
 import EventDetails from './pages/EventDetails';
+import EventTicketing from './pages/event/EventTicketingPage';
 import Index from './pages/Index';
 import Orders from './pages/Orders';
 import DemoIndex from './pages/demo/DemoIndex';
@@ -16,6 +17,7 @@ import EmailTemplateDemo from './pages/demo/EmailTemplateDemo';
 import FmComponentsCatalog from './pages/developer/FmComponentsCatalog';
 import DeveloperDatabase from './pages/developer/DeveloperDatabase';
 import DeveloperDocumentation from './pages/developer/DeveloperDocumentation';
+import TicketFlowTests from './pages/developer/TicketFlowTests';
 import EventManagement from './pages/EventManagement';
 import TestingIndex from './pages/testing/TestingIndex';
 import CheckoutFlowTests from './pages/testing/CheckoutFlowTests';
@@ -48,6 +50,7 @@ import { FmToolbar } from '@/components/common/toolbar/FmToolbar';
 import { ROLES } from '@/shared/auth/permissions';
 import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 import { CheckoutProvider } from '@/contexts/CheckoutContext';
+import { ShoppingCartProvider } from '@/shared/hooks/useShoppingCart';
 import {
   GlobalSearchProvider,
   useGlobalSearch,
@@ -99,6 +102,7 @@ const AppRoutes = () => {
           {/* Normal App Routes */}
           <Route path='/' element={<Index />} />
           <Route path='/event/:id' element={<EventDetails />} />
+          <Route path='/event/:id/tickets' element={<EventTicketing />} />
           <Route path='/event/:id/manage' element={<EventManagement />} />
 
           {/* Conditionally render merch route based on feature flag */}
@@ -149,6 +153,14 @@ const AppRoutes = () => {
             element={
               <DemoProtectedRoute>
                 <DeveloperDocumentation />
+              </DemoProtectedRoute>
+            }
+          />
+          <Route
+            path='/developer/ticket-flow'
+            element={
+              <DemoProtectedRoute>
+                <TicketFlowTests />
               </DemoProtectedRoute>
             }
           />
@@ -302,21 +314,23 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <StripeProvider>
-            <GlobalSearchProvider>
-              <MusicPlayerProvider>
-                <TooltipProvider>
-                  <Toaster />
-                  <Sonner />
-                  <BrowserRouter>
-                    <CheckoutProvider>
-                      <AppRoutes />
-                      <FmToolbar />
-                      <GlobalSearchWrapper />
-                    </CheckoutProvider>
-                  </BrowserRouter>
-                </TooltipProvider>
-              </MusicPlayerProvider>
-            </GlobalSearchProvider>
+            <ShoppingCartProvider>
+              <GlobalSearchProvider>
+                <MusicPlayerProvider>
+                  <TooltipProvider>
+                    <Toaster />
+                    <Sonner />
+                    <BrowserRouter>
+                      <CheckoutProvider>
+                        <AppRoutes />
+                        <FmToolbar />
+                        <GlobalSearchWrapper />
+                      </CheckoutProvider>
+                    </BrowserRouter>
+                  </TooltipProvider>
+                </MusicPlayerProvider>
+              </GlobalSearchProvider>
+            </ShoppingCartProvider>
           </StripeProvider>
         </AuthProvider>
       </QueryClientProvider>

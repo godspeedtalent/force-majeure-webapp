@@ -38,7 +38,6 @@ import {
   FmVenueDetailsModal,
   type FmVenueDetailsModalProps,
 } from '@/components/venue/FmVenueDetailsModal';
-import { EventCheckoutWizard } from '@/components/ticketing';
 import {
   Dialog,
   DialogContent,
@@ -57,7 +56,6 @@ interface EventDetailsContentProps {
   event: EventDetailsRecord;
   onShare: () => void;
   displayTitle: string;
-  onToggleCheckout?: (isOpen: boolean) => void;
 }
 
 const ATTENDEE_PLACEHOLDERS = [
@@ -75,13 +73,11 @@ export const EventDetailsContent = ({
   event,
   onShare,
   displayTitle,
-  onToggleCheckout,
 }: EventDetailsContentProps) => {
   const { user } = useAuth();
   const { data: role } = useUserRole();
   const navigate = useNavigate();
   const location = useLocation();
-  const [showCheckout, setShowCheckout] = useState(false);
   const [ticketCount] = useState(() => Math.floor(Math.random() * 100) + 50);
   const { viewCount, recordView } = useEventViews(event.id);
   const [selectedArtist, setSelectedArtist] =
@@ -218,13 +214,8 @@ export const EventDetailsContent = ({
   );
 
   const handleOpenCheckout = () => {
-    setShowCheckout(true);
-    onToggleCheckout?.(true);
-  };
-
-  const handleCloseCheckout = () => {
-    setShowCheckout(false);
-    onToggleCheckout?.(false);
+    // Navigate to dedicated ticketing page
+    navigate(`/event/${event.id}/tickets`);
   };
 
   const handleArtistSelect = (artist: FmArtistRowProps['artist']) => {
@@ -429,14 +420,6 @@ export const EventDetailsContent = ({
     </>
   );
 
-  const checkoutContent = (
-    <EventCheckoutWizard
-      event={event}
-      displayTitle={displayTitle}
-      onClose={handleCloseCheckout}
-    />
-  );
-
   const headerActions = (
     <div className='flex items-center gap-2'>
       <FmCommonButton
@@ -551,21 +534,17 @@ export const EventDetailsContent = ({
                         scrollContainerRef={contentViewportRef}
                       />
 
-                      <div className='pb-10'>
-                        {showCheckout ? checkoutContent : detailsContent}
-                      </div>
+                      <div className='pb-10'>{detailsContent}</div>
                     </div>
                   </div>
 
-                  {!showCheckout && (
-                    <FmStickyFooter>
-                      <div className='mx-auto w-full lg:w-[65%]'>
-                        <FmBigButton onClick={handleOpenCheckout}>
-                          Get Tickets
-                        </FmBigButton>
-                      </div>
-                    </FmStickyFooter>
-                  )}
+                  <FmStickyFooter>
+                    <div className='mx-auto w-full lg:w-[65%]'>
+                      <FmBigButton onClick={handleOpenCheckout}>
+                        Get Tickets
+                      </FmBigButton>
+                    </div>
+                  </FmStickyFooter>
                 </div>
               </ScrollAreaPrimitive.Viewport>
               <ScrollBar orientation='vertical' />

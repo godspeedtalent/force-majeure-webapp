@@ -12,6 +12,7 @@ import {
   RotateCcw,
   Settings,
   Keyboard,
+  XCircle,
 } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -32,6 +33,7 @@ export function TestSuiteRunner({
     status,
     activeThreads,
     results,
+    error,
     runSuite,
     pauseTests,
     resumeTests,
@@ -242,6 +244,27 @@ export function TestSuiteRunner({
             </Button>
           </div>
         </div>
+
+        {/* Suite-level Error Display */}
+        {error && (
+          <div className='p-4 bg-red-500/10 border border-red-500/30 rounded-lg'>
+            <div className='flex items-start gap-3'>
+              <XCircle className='h-5 w-5 text-red-500 mt-0.5 flex-shrink-0' />
+              <div className='flex-1 min-w-0'>
+                <h4 className='font-semibold text-red-500 mb-2'>
+                  Test Suite Error
+                </h4>
+                <p className='text-sm text-red-300 whitespace-pre-wrap break-words'>
+                  {error}
+                </p>
+                <p className='text-xs text-red-400 mt-3'>
+                  💡 Check the browser console (F12) for full error details and
+                  stack trace.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Keyboard Help Panel */}
         {showKeyboardHelp && (

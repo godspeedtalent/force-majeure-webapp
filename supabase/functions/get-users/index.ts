@@ -77,6 +77,7 @@ serve(async req => {
         avatar_url: user.avatar_url,
         created_at: user.auth_created_at,
         organization_id: user.organization_id,
+        organization_name: user.organization_name,
         organization: user.organization_name
           ? {
               id: user.organization_id,

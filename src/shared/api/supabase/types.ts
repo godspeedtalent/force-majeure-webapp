@@ -388,6 +388,44 @@ export type Database = {
           },
         ];
       };
+      ticketing_sessions: {
+        Row: {
+          created_at: string;
+          entered_at: string | null;
+          event_id: string;
+          id: string;
+          status: string;
+          updated_at: string;
+          user_session_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          entered_at?: string | null;
+          event_id: string;
+          id?: string;
+          status: string;
+          updated_at?: string;
+          user_session_id: string;
+        };
+        Update: {
+          created_at?: string;
+          entered_at?: string | null;
+          event_id?: string;
+          id?: string;
+          status?: string;
+          updated_at?: string;
+          user_session_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'ticketing_sessions_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'events';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       user_roles: {
         Row: {
           created_at: string;

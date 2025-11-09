@@ -38,6 +38,9 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
       }
     },
   },
+  '/event/:id/tickets': {
+    label: 'Tickets',
+  },
 
   // Merch
   '/merch': {
@@ -137,6 +140,9 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
   },
   '/developer/documentation': {
     label: 'Documentation Viewer',
+  },
+  '/developer/ticket-flow': {
+    label: 'Ticket Flow Tests',
   },
 
   // 404

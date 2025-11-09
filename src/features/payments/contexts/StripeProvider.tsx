@@ -39,9 +39,7 @@ export const StripeProvider = ({ children }: StripeProviderProps) => {
     return <>{children}</>;
   }
 
-  if (!stripe) {
-    return <>{children}</>;
-  }
-
+  // Always render with Elements wrapper, even if stripe promise is null initially
+  // The Elements component will handle the loading state internally
   return <Elements stripe={stripe}>{children}</Elements>;
 };

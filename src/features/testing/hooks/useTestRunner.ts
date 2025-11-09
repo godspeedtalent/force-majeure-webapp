@@ -101,11 +101,18 @@ export function useTestRunner(options?: TestRunOptions) {
 
         // Run beforeAll hook if it exists
         if (suite.beforeAll) {
+          console.log('[TestRunner] Running beforeAll hook');
           await suite.beforeAll();
+          console.log('[TestRunner] beforeAll hook completed');
         }
 
         // Create runner and execute tests
         runnerRef.current = new TestRunner(options);
+        console.log('[TestRunner] Starting test execution', {
+          testCount: suite.testCases.length,
+          options,
+        });
+
         const results = await runnerRef.current.runTests(
           suite.testCases,
           (activeThreads, results) => {
@@ -113,13 +120,23 @@ export function useTestRunner(options?: TestRunOptions) {
           }
         );
 
+        console.log('[TestRunner] Test execution completed', {
+          totalResults: results.length,
+          passed: results.filter(r => r.status === 'passed').length,
+          failed: results.filter(r => r.status === 'failed').length,
+        });
+
         // Run afterAll hook if it exists
         if (suite.afterAll) {
+          console.log('[TestRunner] Running afterAll hook');
           await suite.afterAll();
+          console.log('[TestRunner] afterAll hook completed');
         }
 
         dispatch({ type: 'COMPLETE', payload: { results } });
       } catch (error) {
+        console.error('[TestRunner] Suite execution failed:', error);
+        console.error('[TestRunner] Error stack:', (error as Error).stack);
         dispatch({ type: 'ERROR', payload: (error as Error).message });
       }
     },

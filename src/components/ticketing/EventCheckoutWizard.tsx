@@ -246,17 +246,6 @@ export const EventCheckoutWizard = ({
 
   return (
     <div className='space-y-4 h-full flex flex-col'>
-      {/* Back button */}
-      <FmCommonButton
-        variant='secondary'
-        size='sm'
-        icon={ArrowLeft}
-        onClick={handleBack}
-        className='text-muted-foreground hover:text-foreground flex-shrink-0'
-      >
-        Back
-      </FmCommonButton>
-
       {/* Header */}
       <div className='flex items-start justify-between gap-4 flex-shrink-0'>
         <div className='space-y-1.5'>

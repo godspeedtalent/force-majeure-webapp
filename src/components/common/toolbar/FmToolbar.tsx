@@ -30,6 +30,7 @@ import { Separator } from '@/components/common/shadcn/separator';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared/auth/permissions';
+import { useShoppingCart } from '@/shared/hooks/useShoppingCart';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -80,6 +81,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
 
   const { user, profile } = useAuth();
   const { hasAnyRole } = useUserPermissions();
+  const { getTotalItems } = useShoppingCart();
   const navigate = useNavigate();
 
   const startYRef = useRef<number>(0);
@@ -96,6 +98,9 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
   // Check if user has actual developer or admin role
   const isDeveloperOrAdmin = hasAnyRole(ROLES.DEVELOPER, ROLES.ADMIN);
   const isAdmin = hasAnyRole(ROLES.ADMIN);
+
+  // Check if user has items in cart
+  const hasCartItems = getTotalItems() > 0;
 
   // Check if user has organization access
   // Admins/Developers always have access, org staff need organization_id
@@ -133,7 +138,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
           </div>
         ),
         title: 'Shopping Cart',
-        visible: Boolean(user),
+        visible: Boolean(user) && hasCartItems, // Only show if logged in AND has items in cart
         group: 'user',
         groupOrder: 1,
         alignment: 'top',

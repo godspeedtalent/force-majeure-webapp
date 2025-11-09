@@ -14,6 +14,7 @@ import {
   Users as UsersIcon,
   Calendar,
   Shield,
+  Building2,
 } from 'lucide-react';
 
 /**
@@ -167,6 +168,16 @@ export const userColumns: DataGridColumn[] = [
     onImageUpdate: (row, newImageUrl) => updateUserAvatar(row, newImageUrl),
     icon: <ImageIcon className='h-4 w-4' />,
   }),
+  {
+    ...DataGridColumns.relation({
+      key: 'organization_id',
+      label: 'Organization',
+      sortable: true,
+      getLabel: (row: any) => row.organization_name || '—',
+      getHref: (row: any) => row.organization_id ? `/organization/${row.organization_id}` : '#',
+    }),
+    icon: <Building2 className='h-4 w-4' />,
+  },
   {
     key: 'roles',
     label: 'Roles',

@@ -431,6 +431,62 @@ npm run preview      # Preview production build
 
 ## Notes for Claude
 
+### Development Principles
+
+**CRITICAL: When implementing any feature, always prioritize these core principles:**
+
+1. **Clean Architecture** - Separation of concerns, single responsibility principle
+   - Keep business logic separate from UI components
+   - Use services for API calls and data transformations
+   - Hooks for reusable stateful logic
+   - Components for presentation only
+
+2. **Component Reuse** - Use existing FmCommon components wherever possible
+   - Check `/src/components/common/` before creating new components
+   - Extend existing components rather than duplicating
+   - Use composition over inheritance
+   - Maintain consistent API patterns across similar components
+
+3. **File Size Management** - Keep components under 300 lines, extract when larger
+   - Break large components into smaller, focused pieces
+   - Extract complex logic into custom hooks
+   - Move repeated utilities to `/src/shared/utils/`
+   - Split large forms into smaller sections
+
+4. **Organized Hierarchy** - Follow established file structure patterns
+   - Feature-specific code: `/src/features/[feature]/`
+   - Shared components: `/src/components/common/`
+   - Business components: `/src/components/business/` or `/src/components/ticketing/`
+   - Page components: `/src/pages/`
+   - Use nested folders to group related components
+
+5. **Industry Standards** - TypeScript strict mode, proper error handling, accessibility
+   - Always use TypeScript with strict mode enabled
+   - Handle errors gracefully with try-catch and user feedback (toasts)
+   - Ensure keyboard navigation and screen reader support
+   - Follow React best practices (hooks rules, key props, etc.)
+
+6. **Design Patterns** - Use appropriate patterns for the problem at hand
+   - Hooks for logic sharing and state management
+   - Context for global state (auth, checkout, shopping cart)
+   - Services for API integration and business logic
+   - HOCs sparingly (prefer hooks and composition)
+   - Custom hooks for complex stateful logic
+
+7. **Maintainability** - Self-documenting code, proper typing, configuration over hardcoding
+   - Use descriptive variable and function names
+   - Add JSDoc comments for complex functions
+   - Centralize configuration in database or constants files
+   - Avoid magic numbers - use named constants
+   - Keep functions focused on single tasks
+
+8. **Modularity** - Build composable, reusable pieces that work independently
+   - Components should be self-contained
+   - Props should be well-defined with TypeScript interfaces
+   - Minimize dependencies between modules
+   - Use dependency injection where appropriate
+   - Make components configurable through props
+
 ### General Guidelines
 
 - Prefer named exports over default exports (better refactoring)
