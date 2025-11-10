@@ -16,6 +16,8 @@ import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/shared/utils/utils';
 import { logger } from '@/shared/services/logger';
+import { useEnvironmentName } from '@/shared/hooks/useEnvironment';
+import { environmentService } from '@/shared/services/environmentService';
 
 interface Fee {
   id: string;
@@ -23,7 +25,7 @@ interface Fee {
   fee_type: 'flat' | 'percentage';
   fee_value: number;
   is_active: boolean;
-  environment: string;
+  environment_id: string;
 }
 
 const feeLabels: Record<string, string> = {
@@ -39,14 +41,26 @@ export const AdminFeesSection = () => {
   >({});
   const [isLoading, setIsLoading] = useState(true);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const environment = 'dev';
+  const currentEnvName = useEnvironmentName(); // Get environment name from hook
 
   const fetchFees = async () => {
     try {
+      // Get 'all' environment dynamically
+      const { data: allEnvData, error: allEnvError } = await supabase
+        .from('environments')
+        .select('id')
+        .eq('name', 'all')
+        .single();
+
+      if (allEnvError) {
+        logger.error('Failed to fetch "all" environment:', allEnvError);
+        throw allEnvError;
+      }
+
       const { data, error } = await supabase
         .from('ticketing_fees')
         .select('*')
-        .eq('environment', 'all') // Only fetch from 'all' environment
+        .eq('environment_id', allEnvData.id) // Only fetch from 'all' environment
         .order('fee_name', { ascending: true });
 
       if (error) throw error;
@@ -105,6 +119,11 @@ export const AdminFeesSection = () => {
         const numValue = parseFloat(feeData.value) || 0;
         const fee = fees.find(f => f.fee_name === feeName);
 
+        if (!fee) {
+          logger.warn(`Fee not found: ${feeName}`);
+          return Promise.resolve();
+        }
+
         return supabase
           .from('ticketing_fees')
           .update({
@@ -112,7 +131,7 @@ export const AdminFeesSection = () => {
             fee_value: numValue,
           })
           .eq('fee_name', feeName)
-          .eq('environment', fee?.environment || environment);
+          .eq('environment_id', fee.environment_id);
       });
 
       await Promise.all(updates);
@@ -138,6 +157,23 @@ export const AdminFeesSection = () => {
 
   return (
     <div className='space-y-6 max-w-2xl'>
+      <div className='pb-3 border-b border-border'>
+        <p className='text-xs text-muted-foreground mb-2'>
+          Configure ticketing fees applied to all ticket purchases
+        </p>
+        <div className='flex items-center gap-2'>
+          <span className='text-xs text-muted-foreground'>
+            Current Environment:
+          </span>
+          <span className='text-xs font-medium text-fm-gold uppercase'>
+            {currentEnvName}
+          </span>
+          <span className='text-xs text-muted-foreground'>
+            (Editing: <span className='text-white/70'>all environments</span>)
+          </span>
+        </div>
+      </div>
+
       <div className='grid gap-6'>
         {fees.map(fee => {
           const local = localFees[fee.fee_name];

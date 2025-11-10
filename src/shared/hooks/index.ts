@@ -5,3 +5,11 @@ export { useFontLoader } from './useFontLoader';
 export { useProxyToken } from './useProxyToken';
 export { useUserRole, useUserPermissions } from './useUserRole';
 export { useDebounce } from './useDebounce';
+export {
+  useCurrentEnvironment,
+  useAvailableEnvironments,
+  useEnvironmentName,
+  useIsProduction,
+  useIsDevelopment,
+  useIsQA,
+} from './useEnvironment';

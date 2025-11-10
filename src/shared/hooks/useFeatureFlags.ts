@@ -2,11 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 
 import { supabase } from '@/shared/api/supabase/client';
 import {
-  getFeatureFlagEnvironment,
   getEnvironmentOverride,
   isDevelopment,
 } from '@/shared/utils/environment';
 import { logger } from '@/shared/services/logger';
+import { environmentService } from '@/shared/services/environmentService';
 import {
   FEATURE_FLAGS,
   type FeatureFlag,
@@ -21,32 +21,60 @@ interface FeatureFlags extends FeatureFlagsState {}
 interface FeatureFlagRow {
   flag_name: string;
   is_enabled: boolean;
-  environment?: string;
+  environment: {
+    name: string;
+  };
 }
 
 export const useFeatureFlags = () => {
   return useQuery({
     queryKey: ['feature-flags'],
     queryFn: async (): Promise<FeatureFlags> => {
-      const currentEnv = getFeatureFlagEnvironment();
+      // Get current environment dynamically from service
+      const currentEnv = await environmentService.getCurrentEnvironment();
 
-      // Fetch all flags (types will be updated after migration)
+      if (!currentEnv) {
+        flagLogger.warn('Could not determine environment, using defaults');
+        return createEmptyFeatureFlagsState();
+      }
+
+      // Fetch flags for current environment OR 'all' environment
+      // Using subquery to get all environment IDs that match
+      const { data: allEnvData, error: allEnvError } = await supabase
+        .from('environments')
+        .select('id')
+        .eq('name', 'all')
+        .single();
+
+      if (allEnvError) {
+        flagLogger.error('Failed to fetch "all" environment:', allEnvError);
+      }
+
+      const environmentIds = [currentEnv.id];
+      if (allEnvData) {
+        environmentIds.push(allEnvData.id);
+      }
+
       const { data, error } = await supabase
         .from('feature_flags')
-        .select('flag_name, is_enabled, environment');
+        .select(
+          `
+          flag_name,
+          is_enabled,
+          environment:environments(name)
+        `
+        )
+        .in('environment_id', environmentIds);
 
-      if (error) throw error;
-
-      // Filter flags by environment
-      const filteredData =
-        (data as unknown as FeatureFlagRow[])?.filter(
-          flag => flag.environment === currentEnv || flag.environment === 'all'
-        ) || [];
+      if (error) {
+        flagLogger.error('Failed to fetch feature flags:', error);
+        throw error;
+      }
 
       // Initialize with all flags set to false
       const flags: FeatureFlags = createEmptyFeatureFlagsState();
 
-      filteredData.forEach(flag => {
+      (data as unknown as FeatureFlagRow[])?.forEach(flag => {
         if (flag.flag_name in flags) {
           flags[flag.flag_name as keyof FeatureFlags] = flag.is_enabled;
         }
@@ -63,9 +91,11 @@ export const useFeatureFlags = () => {
       }
 
       flagLogger.debug('Feature flags loaded', {
-        environment: currentEnv,
-        dbFlags: filteredData,
-        finalFlags: flags,
+        environment: currentEnv.name,
+        flagCount: data?.length || 0,
+        enabledFlags: Object.entries(flags)
+          .filter(([_, enabled]) => enabled)
+          .map(([name]) => name),
       });
 
       return flags;

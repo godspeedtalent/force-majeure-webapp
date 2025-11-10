@@ -14,7 +14,12 @@
     "type-check": "tsc --noEmit",
     "preview": "vite preview --config config/vite.config.ts",
     "upload-assets": "node scripts/upload-assets.js",
-    "audit:design-system": "npx tsx scripts/audit-design-system.ts"
+    "audit:design-system": "npx tsx scripts/audit-design-system.ts",
+    "export:schema": "npx tsx scripts/export-schema.ts",
+    "export:data": "npx tsx scripts/export-data.ts",
+    "export:sql": "./scripts/export-direct-sql.sh",
+    "compare:schema": "npx tsx scripts/compare-schema.ts",
+    "export:all": "npm run export:schema && npm run export:data && npm run compare:schema"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

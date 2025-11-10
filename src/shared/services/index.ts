@@ -11,6 +11,16 @@ export {
   withErrorHandlerSync,
 } from './errorHandler';
 export { logApiError, logApi } from '@/shared/utils/apiLogger';
+export {
+  environmentService,
+  getCurrentEnvironmentName,
+  getCurrentEnvironment,
+  getAvailableEnvironments,
+  isProduction,
+  isDevelopment,
+  isQA,
+  type Environment,
+} from './environmentService';
 
 // Example:
 // export { apiClient } from './apiClient';

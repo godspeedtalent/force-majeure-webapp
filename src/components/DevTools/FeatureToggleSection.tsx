@@ -24,12 +24,15 @@ import {
   getFlagIcon,
   getFlagDescription,
 } from '@/shared/utils/featureFlagUtils';
+import { useEnvironmentName } from '@/shared/hooks/useEnvironment';
+import { environmentService } from '@/shared/services/environmentService';
+import { logger } from '@/shared/services/logger';
 
 interface FeatureFlag {
   flag_name: string;
   is_enabled: boolean;
   description: string | null;
-  environment: string;
+  environment_id: string;
 }
 
 export const FeatureToggleSection = () => {
@@ -37,14 +40,38 @@ export const FeatureToggleSection = () => {
   const [localFlags, setLocalFlags] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const environment = 'dev'; // Currently always dev
+  const currentEnvName = useEnvironmentName(); // Get environment name from hook
 
   const fetchFlags = async () => {
     try {
+      // Get current environment dynamically
+      const currentEnv = await environmentService.getCurrentEnvironment();
+
+      if (!currentEnv) {
+        toast.error('Could not determine current environment');
+        return;
+      }
+
+      // Fetch 'all' environment ID
+      const { data: allEnvData, error: allEnvError } = await supabase
+        .from('environments')
+        .select('id')
+        .eq('name', 'all')
+        .single();
+
+      if (allEnvError) {
+        logger.error('Failed to fetch "all" environment:', allEnvError);
+      }
+
+      const environmentIds = [currentEnv.id];
+      if (allEnvData) {
+        environmentIds.push(allEnvData.id);
+      }
+
       const { data, error } = await supabase
         .from('feature_flags')
-        .select('flag_name, is_enabled, description, environment')
-        .or(`environment.eq.${environment},environment.eq.all`)
+        .select('flag_name, is_enabled, description, environment_id')
+        .in('environment_id', environmentIds)
         .order('flag_name', { ascending: true });
 
       if (error) throw error;
@@ -86,7 +113,7 @@ export const FeatureToggleSection = () => {
             .from('feature_flags')
             .update({ is_enabled: localFlags[flag.flag_name] })
             .eq('flag_name', flag.flag_name)
-            .eq('environment', flag.environment)
+            .eq('environment_id', flag.environment_id)
         );
 
       if (updates.length === 0) {
@@ -119,9 +146,17 @@ export const FeatureToggleSection = () => {
 
   return (
     <>
-      <p className='text-xs text-white/50 mb-4'>
-        Enable or disable features across the application per environment
-      </p>
+      <div className='mb-4 pb-3 border-b border-white/10'>
+        <p className='text-xs text-white/50 mb-2'>
+          Enable or disable features across the application per environment
+        </p>
+        <div className='flex items-center gap-2'>
+          <span className='text-xs text-white/50'>Current Environment:</span>
+          <span className='text-xs font-medium text-fm-gold uppercase'>
+            {currentEnvName}
+          </span>
+        </div>
+      </div>
 
       <div className='space-y-6'>
         {/* Feature Toggles */}
