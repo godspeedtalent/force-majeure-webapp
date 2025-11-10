@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { logger } from '@/shared/services/logger';
 import { rolesStore, type Role } from '@/shared/stores/rolesStore';
 
 /**
@@ -21,7 +22,7 @@ export function useRoles() {
     // Load roles if not already loaded
     if (!rolesStore.isLoaded() && !rolesStore.isLoading()) {
       rolesStore.loadRoles().catch(error => {
-        console.error('Failed to load roles:', error);
+        logger.error('Failed to load roles:', error);
       });
     }
 

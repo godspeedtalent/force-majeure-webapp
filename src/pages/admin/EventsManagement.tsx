@@ -13,6 +13,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Edit, Trash2 } from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
+import { logger } from '@/shared/services/logger';
 
 interface EventsManagementProps {
   initialEditEventId?: string;
@@ -81,7 +82,7 @@ export const EventsManagement = ({
       toast.success(successMessage);
       queryClient.invalidateQueries({ queryKey: ['events'] });
     } catch (error) {
-      console.error('Error deleting event(s):', error);
+      logger.error('Error deleting event(s):', error);
       toast.error('Failed to delete event(s)');
     }
   };
@@ -98,7 +99,7 @@ export const EventsManagement = ({
       // Invalidate queries to refetch updated data
       queryClient.invalidateQueries({ queryKey: ['events'] });
     } catch (error) {
-      console.error('Error updating event:', error);
+      logger.error('Error updating event:', error);
       throw error;
     }
   };

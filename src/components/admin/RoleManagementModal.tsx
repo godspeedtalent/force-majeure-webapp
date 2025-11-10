@@ -11,6 +11,7 @@ import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
 import { Label } from '@/components/common/shadcn/label';
 import { Shield, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { logger } from '@/shared/services/logger';
 import { RoleManagementService } from '@/shared/services/roleManagementService';
 
 interface RoleInfo {
@@ -75,7 +76,7 @@ export function RoleManagementModal({
         }))
       );
     } catch (error: any) {
-      console.error('Error fetching available roles:', error);
+      logger.error('Error fetching available roles:', error);
       toast.error('Failed to load available roles', {
         description: error.message,
       });
@@ -101,7 +102,7 @@ export function RoleManagementModal({
 
       onRolesUpdated();
     } catch (error: any) {
-      console.error('Error toggling role:', error);
+      logger.error('Error toggling role:', error);
       toast.error(`Failed to ${shouldAdd ? 'add' : 'remove'} role`, {
         description: error.message,
       });

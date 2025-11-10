@@ -33,7 +33,7 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
         if (error) throw error;
         return data?.headliner?.name || data?.title || '';
       } catch (error) {
-        console.error('Failed to fetch event for breadcrumb:', error);
+        logger.error('Failed to fetch event for breadcrumb:', error);
         return '';
       }
     },
@@ -72,7 +72,7 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
           'Profile'
         );
       } catch (error) {
-        console.error('Failed to fetch user for breadcrumb:', error);
+        logger.error('Failed to fetch user for breadcrumb:', error);
         return 'Profile';
       }
     },

@@ -1,4 +1,5 @@
 import { User } from '@supabase/supabase-js';
+import { logger } from '@/shared/services/logger';
 import { useState } from 'react';
 
 import { useAuth } from '@/features/auth/services/AuthContext';
@@ -163,7 +164,7 @@ export function ScavengerOrchestrator({
           description: "You've been added to the LF SYSTEM guestlist.",
         });
       } catch (error: any) {
-        console.error('Claim error:', error);
+        logger.error('Claim error:', error);
         toast({
           title: 'Error',
           description:

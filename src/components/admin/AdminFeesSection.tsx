@@ -15,6 +15,7 @@ import {
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/shared/utils/utils';
+import { logger } from '@/shared/services/logger';
 
 interface Fee {
   id: string;
@@ -65,7 +66,7 @@ export const AdminFeesSection = () => {
       });
       setLocalFees(initialLocal);
     } catch (error) {
-      console.error('Failed to fetch fees:', error);
+      logger.error('Failed to fetch fees:', error);
       toast.error('Failed to load ticketing fees');
     } finally {
       setIsLoading(false);
@@ -118,7 +119,7 @@ export const AdminFeesSection = () => {
       toast.success('Ticketing fees updated successfully');
       await fetchFees();
     } catch (error) {
-      console.error('Failed to update fees:', error);
+      logger.error('Failed to update fees:', error);
       toast.error('Failed to update ticketing fees');
     }
   };
@@ -145,7 +146,7 @@ export const AdminFeesSection = () => {
           return (
             <div
               key={fee.id}
-              className='space-y-3 p-4 bg-muted/20 rounded-lg border border-border'
+              className='space-y-3 p-4 bg-muted/20 rounded-none border border-border'
             >
               <div className='flex items-center justify-between'>
                 <span className='text-foreground font-medium'>

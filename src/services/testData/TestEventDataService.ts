@@ -123,7 +123,7 @@ export class TestEventDataService extends TestDataService {
 
       return (event as any).id;
     } catch (error) {
-      console.error('Error creating test event:', error);
+      logger.error('Error creating test event:', error);
       throw error;
     }
   }
@@ -280,7 +280,7 @@ export class TestEventDataService extends TestDataService {
 
       return testEvents.length;
     } catch (error) {
-      console.error('Error deleting test events:', error);
+      logger.error('Error deleting test events:', error);
       throw error;
     }
   }

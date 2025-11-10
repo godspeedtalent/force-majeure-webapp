@@ -1,4 +1,5 @@
 import React from 'react';
+import { logger } from '@/shared/services/logger';
 import { FmErrorDisplay } from '@/components/common/feedback/FmErrorDisplay';
 
 interface Props {
@@ -32,7 +33,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
     this.setState({ errorInfo });
 
     // Log error details to console in development
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    logger.error('ErrorBoundary caught an error:', error, errorInfo);
 
     // In production, you could send this to an error tracking service:
     // trackError({ error, errorInfo, componentStack: errorInfo.componentStack });

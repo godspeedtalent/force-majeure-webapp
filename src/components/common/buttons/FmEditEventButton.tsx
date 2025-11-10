@@ -125,7 +125,7 @@ export const FmEditEventButton = ({
         }
       }
     } catch (error) {
-      console.error('Error loading event data:', error);
+      logger.error('Error loading event data:', error);
       toast.error('Failed to load event data', {
         description: error instanceof Error ? error.message : 'Unknown error',
       });

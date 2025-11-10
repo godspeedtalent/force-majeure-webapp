@@ -5,7 +5,7 @@ import { ReactNode, useEffect, useState } from 'react';
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 
 if (!STRIPE_PUBLISHABLE_KEY) {
-  console.warn('VITE_STRIPE_PUBLISHABLE_KEY is not set. Stripe will not work.');
+  logger.warn('VITE_STRIPE_PUBLISHABLE_KEY is not set. Stripe will not work.');
 }
 
 let stripePromise: Promise<Stripe | null> | null = null;
@@ -35,7 +35,7 @@ export const StripeProvider = ({ children }: StripeProviderProps) => {
   }, []);
 
   if (!STRIPE_PUBLISHABLE_KEY) {
-    console.warn('Stripe provider is disabled - no publishable key found');
+    logger.warn('Stripe provider is disabled - no publishable key found');
     return <>{children}</>;
   }
 

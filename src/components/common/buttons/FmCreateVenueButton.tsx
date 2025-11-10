@@ -78,7 +78,7 @@ export const FmCreateVenueButton = ({
         website: '',
       });
     } catch (error) {
-      console.error('Error creating venue:', error);
+      logger.error('Error creating venue:', error);
       toast.error('Failed to create venue');
     } finally {
       setIsSubmitting(false);

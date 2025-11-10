@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { logger } from '@/shared/services/logger';
 
 import { claimScavengerReward } from '@/shared/utils/scavengerApi';
 import type { ClaimResult } from '@/shared/utils/scavengerApi';
@@ -38,7 +39,7 @@ export const useScavengerClaim = () => {
       setResult(claimResult);
       return claimResult;
     } catch (error) {
-      console.error('Claim error:', error);
+      logger.error('Claim error:', error);
       const errorResult: ClaimResult = {
         success: false,
         error: 'Failed to claim reward',

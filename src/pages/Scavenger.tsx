@@ -192,7 +192,7 @@ export default function Scavenger() {
               navigate(currentUrl);
             } catch (error) {
               // Error is handled by the mutation
-              console.error('Claim failed:', error);
+              logger.error('Claim failed:', error);
             }
           }}
           userFullName={profile?.full_name ?? undefined}

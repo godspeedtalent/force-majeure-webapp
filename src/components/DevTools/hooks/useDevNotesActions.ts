@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
 import { NoteType, NoteStatus } from '../config/devNotesConfig';
 import { logger } from '@/shared/services/logger';

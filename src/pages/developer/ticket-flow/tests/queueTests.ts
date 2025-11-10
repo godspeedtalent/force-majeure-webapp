@@ -82,7 +82,7 @@ export const queueTestSuite: TestSuite = {
           eventId = event.id;
           logger.info('Creating test event', { eventId: event.id, event });
 
-          await insertMockEvent(event);
+          await insertMockEvent(event, logger);
           logger.info('Test event created successfully', { eventId: event.id });
 
           // Generate session ID
@@ -155,7 +155,7 @@ export const queueTestSuite: TestSuite = {
         logger.info('Starting test: Queue Promotion Flow');
 
         const event = createMockEvent();
-        await insertMockEvent(event);
+        await insertMockEvent(event, logger);
 
         const session1 = generateTestSessionId();
         const session2 = generateTestSessionId();
@@ -259,7 +259,7 @@ export const queueTestSuite: TestSuite = {
         logger.info('Starting test: Max Capacity Enforcement');
 
         const event = createMockEvent();
-        await insertMockEvent(event);
+        await insertMockEvent(event, logger);
 
         const MAX_CONCURRENT = 50;
         const sessions: string[] = [];
@@ -330,7 +330,7 @@ export const queueTestSuite: TestSuite = {
         logger.info('Starting test: Real-time Queue Position Updates');
 
         const event = createMockEvent();
-        await insertMockEvent(event);
+        await insertMockEvent(event, logger);
 
         // Create sessions
         const activeSession = generateTestSessionId();
@@ -431,7 +431,7 @@ export const queueTestSuite: TestSuite = {
         logger.info('Starting test: Session Timeout Cleanup');
 
         const event = createMockEvent();
-        await insertMockEvent(event);
+        await insertMockEvent(event, logger);
 
         const oldSession = generateTestSessionId();
         const recentSession = generateTestSessionId();
@@ -510,7 +510,7 @@ export const queueTestSuite: TestSuite = {
         logger.info('Starting test: Concurrent Entry Stress Test');
 
         const event = createMockEvent();
-        await insertMockEvent(event);
+        await insertMockEvent(event, logger);
 
         const NUM_USERS = 100;
         const MAX_CONCURRENT = 50;

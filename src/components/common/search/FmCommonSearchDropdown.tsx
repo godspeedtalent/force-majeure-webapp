@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { logger } from '@/shared/services/logger';
 import { Search, Plus, X } from 'lucide-react';
 import {
   Popover,
@@ -75,7 +76,7 @@ export function FmCommonSearchDropdown({
           const results = await onSearch(query);
           setOptions(results.slice(0, 10));
         } catch (error) {
-          console.error('Search error:', error);
+          logger.error('Search error:', error);
           setOptions([]);
         } finally {
           setLoading(false);

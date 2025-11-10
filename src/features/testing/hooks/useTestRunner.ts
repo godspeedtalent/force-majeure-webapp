@@ -135,8 +135,8 @@ export function useTestRunner(options?: TestRunOptions) {
 
         dispatch({ type: 'COMPLETE', payload: { results } });
       } catch (error) {
-        console.error('[TestRunner] Suite execution failed:', error);
-        console.error('[TestRunner] Error stack:', (error as Error).stack);
+        logger.error('[TestRunner] Suite execution failed:', error);
+        logger.error('[TestRunner] Error stack:', (error as Error).stack);
         dispatch({ type: 'ERROR', payload: (error as Error).message });
       }
     },

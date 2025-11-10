@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { logger } from '@/shared/services/logger';
 import { useNavigate } from 'react-router-dom';
 import { FileEdit, Dices } from 'lucide-react';
 import { Label } from '@/components/common/shadcn/label';
@@ -40,7 +41,7 @@ export const EventCheckoutDemoTools = ({
       onEventChange(eventId);
       onEventUpdated?.();
     } catch (error) {
-      console.error('Error creating random event:', error);
+      logger.error('Error creating random event:', error);
       toast.error('Failed to create random event', {
         description:
           error instanceof Error

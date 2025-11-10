@@ -30,7 +30,7 @@ export function useRecentSelections(storageKey: string) {
         setRecentItems(sorted);
       }
     } catch (error) {
-      console.error('Error loading recent selections:', error);
+      logger.error('Error loading recent selections:', error);
     }
   }, [fullKey]);
 
@@ -51,7 +51,7 @@ export function useRecentSelections(storageKey: string) {
         try {
           localStorage.setItem(fullKey, JSON.stringify(updated));
         } catch (error) {
-          console.error('Error saving recent selections:', error);
+          logger.error('Error saving recent selections:', error);
         }
 
         return updated;
@@ -66,7 +66,7 @@ export function useRecentSelections(storageKey: string) {
     try {
       localStorage.removeItem(fullKey);
     } catch (error) {
-      console.error('Error clearing recent selections:', error);
+      logger.error('Error clearing recent selections:', error);
     }
   }, [fullKey]);
 

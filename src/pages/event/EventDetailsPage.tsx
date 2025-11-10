@@ -34,7 +34,7 @@ export const EventDetailsPage = () => {
       try {
         await navigator.share(payload);
       } catch (err) {
-        console.error('Error sharing:', err);
+        logger.error('Error sharing:', err);
       }
     } else {
       await navigator.clipboard.writeText(payload.url);

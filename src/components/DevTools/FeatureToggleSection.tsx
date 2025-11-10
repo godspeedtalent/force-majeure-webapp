@@ -59,7 +59,7 @@ export const FeatureToggleSection = () => {
       });
       setLocalFlags(initialLocal);
     } catch (error) {
-      console.error('Failed to fetch feature flags:', error);
+      logger.error('Failed to fetch feature flags:', error);
       toast.error('Failed to load feature flags');
     } finally {
       setIsLoading(false);
@@ -100,7 +100,7 @@ export const FeatureToggleSection = () => {
       );
       await fetchFlags();
     } catch (error) {
-      console.error('Failed to update feature flags:', error);
+      logger.error('Failed to update feature flags:', error);
       toast.error('Failed to update feature flags');
     }
   };

@@ -72,7 +72,7 @@ export default function Merch() {
       if (error) throw error;
       setItems(data || []);
     } catch (error) {
-      console.error('Error fetching merch:', error);
+      logger.error('Error fetching merch:', error);
       toast.error('Failed to load merchandise');
     } finally {
       setLoading(false);

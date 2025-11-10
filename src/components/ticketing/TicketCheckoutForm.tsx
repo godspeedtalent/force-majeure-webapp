@@ -196,7 +196,7 @@ export const TicketCheckoutForm = ({
             billing_zip: formData.zipCode,
           });
         } catch (error) {
-          console.error('Failed to save address:', error);
+          logger.error('Failed to save address:', error);
           toast({
             title: 'Address not saved',
             description:
@@ -223,7 +223,7 @@ export const TicketCheckoutForm = ({
         throw new Error(result.error || 'Payment failed');
       }
     } catch (error) {
-      console.error('Payment error:', error);
+      logger.error('Payment error:', error);
       toast({
         title: 'Payment failed',
         description:

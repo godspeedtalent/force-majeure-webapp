@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { logger } from '@/shared/services/logger';
 import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -67,7 +68,7 @@ export const EventCheckoutWizard = ({
       });
       return `${datePart} · ${event.time}`;
     } catch (err) {
-      console.warn('Unable to format event date', err);
+      logger.warn('Unable to format event date', err);
       return `${event.date} · ${event.time}`;
     }
   }, [event.date, event.time]);

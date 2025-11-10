@@ -1,11 +1,8 @@
 import { ReactNode } from 'react';
 
 import { Footer } from '@/components/navigation/Footer';
-import { ExpandableMusicPlayer } from '@/components/music-player/ExpandableMusicPlayer';
 import { Navigation } from '@/components/navigation/Navigation';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
-import { FeatureGuard } from '@/components/common/guards/FeatureGuard';
-import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 
 interface ForceMajeureRootLayoutProps {
   children: ReactNode;
@@ -29,11 +26,8 @@ export const ForceMajeureRootLayout = ({
         <div className='relative pb-20'>{children}</div>
       </div>
 
-      {/* Fixed music player and footer at bottom */}
+      {/* Fixed footer at bottom */}
       <div className='fixed bottom-0 left-0 right-0 z-40'>
-        <FeatureGuard feature={FEATURE_FLAGS.MUSIC_PLAYER}>
-          <ExpandableMusicPlayer />
-        </FeatureGuard>
         <Footer />
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { logger } from '@/shared/services/logger';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from '@/components/common/feedback/FmCommonToast';
 
@@ -36,7 +37,7 @@ export const useCheckout = () => {
       // Redirect to Stripe checkout
       window.location.href = data.url;
     } catch (error) {
-      console.error('Checkout error:', error);
+      logger.error('Checkout error:', error);
       toast.error('Checkout Failed', {
         description:
           error instanceof Error

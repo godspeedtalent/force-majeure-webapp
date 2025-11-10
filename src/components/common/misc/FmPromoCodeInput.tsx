@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { logger } from '@/shared/services/logger';
 import { FmQueryInput } from '../forms/FmQueryInput';
 import { supabase } from '@/shared/api/supabase/client';
 import { CheckCircle2, XCircle, X } from 'lucide-react';
@@ -51,7 +52,7 @@ export const FmPromoCodeInput = ({
         onPromoCodeApplied?.(null);
       }
     } catch (error) {
-      console.error('Error validating promo code:', error);
+      logger.error('Error validating promo code:', error);
       setValidationState('invalid');
       setAppliedPromo(null);
       setErrorMessage('Error validating code');

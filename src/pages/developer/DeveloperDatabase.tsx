@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { logger } from '@/shared/services/logger';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { DataGridAction, FmConfigurableDataGrid } from '@/features/data-grid';
@@ -223,7 +224,7 @@ export default function DeveloperDatabase() {
 
       toast.success('Artist updated');
     } catch (error) {
-      console.error('Error updating artist:', error);
+      logger.error('Error updating artist:', error);
       toast.error('Failed to update artist');
       throw error;
     }
@@ -258,7 +259,7 @@ export default function DeveloperDatabase() {
       toast.success('Artist created');
       await queryClient.invalidateQueries({ queryKey: ['admin-artists'] });
     } catch (error) {
-      console.error('Error creating artist:', error);
+      logger.error('Error creating artist:', error);
       toast.error('Failed to create artist');
       throw error;
     }
@@ -280,7 +281,7 @@ export default function DeveloperDatabase() {
       toast.success('Artist deleted');
       queryClient.invalidateQueries({ queryKey: ['admin-artists'] });
     } catch (error) {
-      console.error('Error deleting artist:', error);
+      logger.error('Error deleting artist:', error);
       toast.error('Failed to delete artist');
     }
   };
@@ -352,7 +353,7 @@ export default function DeveloperDatabase() {
       toast.success('Venue deleted successfully');
       queryClient.invalidateQueries({ queryKey: ['admin-venues'] });
     } catch (error) {
-      console.error('Error deleting venue:', error);
+      logger.error('Error deleting venue:', error);
       toast.error('Failed to delete venue');
     }
   };

@@ -37,7 +37,7 @@ export const useEmailReceipt = () => {
       }
     },
     onError: error => {
-      console.error('Error sending receipt email:', error);
+      logger.error('Error sending receipt email:', error);
       toast.error('Failed to send receipt email', {
         description: error instanceof Error ? error.message : 'Unknown error',
       });
@@ -72,7 +72,7 @@ export const useSendTestEmail = () => {
       }
     },
     onError: error => {
-      console.error('Error sending test email:', error);
+      logger.error('Error sending test email:', error);
       toast.error('Failed to send test email', {
         description: error instanceof Error ? error.message : 'Unknown error',
       });

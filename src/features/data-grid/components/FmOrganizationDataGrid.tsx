@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FmConfigurableDataGrid } from './FmConfigurableDataGrid';
 import { DataGridColumn, DataGridAction } from './FmDataGrid';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/shared/api/supabase/client';
 import { Building2, Trash2, Edit, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';

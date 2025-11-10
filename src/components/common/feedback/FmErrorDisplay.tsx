@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { logger } from '@/shared/services/logger';
 import {
   AlertTriangle,
   Copy,
@@ -55,7 +56,7 @@ export const FmErrorDisplay = ({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy stack trace:', err);
+      logger.error('Failed to copy stack trace:', err);
     }
   };
 

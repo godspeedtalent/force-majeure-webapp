@@ -31,7 +31,7 @@ export function useEventViews(eventId: string | undefined) {
         if (!isMounted) return;
 
         if (countError) {
-          console.error('Error fetching view count:', countError);
+          logger.error('Error fetching view count:', countError);
           setError(countError.message);
           setViewCount(0);
         } else {
@@ -40,7 +40,7 @@ export function useEventViews(eventId: string | undefined) {
         }
       } catch (err) {
         if (!isMounted) return;
-        console.error('Error fetching view count:', err);
+        logger.error('Error fetching view count:', err);
         setError(String(err));
         setViewCount(0);
       } finally {
@@ -74,14 +74,14 @@ export function useEventViews(eventId: string | undefined) {
         });
 
       if (insertError) {
-        console.error('Error recording view:', insertError);
+        logger.error('Error recording view:', insertError);
       } else {
         setHasRecorded(true);
         // Increment the local count
         setViewCount(prev => prev + 1);
       }
     } catch (err) {
-      console.error('Error recording view:', err);
+      logger.error('Error recording view:', err);
     }
   };
 

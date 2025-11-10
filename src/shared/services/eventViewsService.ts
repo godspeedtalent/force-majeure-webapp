@@ -25,13 +25,13 @@ export async function recordEventView({
     });
 
     if (error) {
-      console.error('Error recording event view:', error);
+      logger.error('Error recording event view:', error);
       return { success: false, error: error.message };
     }
 
     return { success: true };
   } catch (error) {
-    console.error('Error recording event view:', error);
+    logger.error('Error recording event view:', error);
     return { success: false, error: String(error) };
   }
 }
@@ -48,13 +48,13 @@ export async function getEventViewCount(
     });
 
     if (error) {
-      console.error('Error fetching event view count:', error);
+      logger.error('Error fetching event view count:', error);
       return { count: 0, error: error.message };
     }
 
     return { count: Number(data) || 0 };
   } catch (error) {
-    console.error('Error fetching event view count:', error);
+    logger.error('Error fetching event view count:', error);
     return { count: 0, error: String(error) };
   }
 }

@@ -74,7 +74,7 @@ export const DevToolsManagement = () => {
 
   return (
     <div className='space-y-6'>
-      <div className='flex items-start gap-3 p-4 rounded-lg border border-border bg-muted/20'>
+      <div className='flex items-start gap-3 p-4 rounded-none border border-border bg-muted/20'>
         <Info className='h-5 w-5 text-fm-gold mt-0.5' />
         <div className='space-y-1'>
           <p className='text-sm font-medium text-foreground'>

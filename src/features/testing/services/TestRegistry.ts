@@ -5,7 +5,7 @@ class TestRegistryService {
 
   register(suite: TestSuite) {
     if (this.suites.has(suite.id)) {
-      console.warn(
+      logger.warn(
         `Test suite with id "${suite.id}" is already registered. Overwriting.`
       );
     }

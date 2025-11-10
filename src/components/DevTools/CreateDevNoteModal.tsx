@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { logger } from '@/shared/services/logger';
 import { X, CheckCircle2, Info, Bug, HelpCircle } from 'lucide-react';
 import {
   Dialog,
@@ -13,7 +14,7 @@ import {
 } from '@/components/common/forms/FmCommonSelect';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/shared/api/supabase/client';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { toast } from 'sonner';
 
@@ -93,7 +94,7 @@ export const CreateDevNoteModal = ({
       onOpenChange(false);
       onNoteCreated();
     } catch (error) {
-      console.error('Error creating note:', error);
+      logger.error('Error creating note:', error);
       toast.error('Failed to create note');
     } finally {
       setIsSubmitting(false);

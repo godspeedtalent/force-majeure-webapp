@@ -10,7 +10,7 @@ import {
   X,
 } from 'lucide-react';
 import { Input } from '@/components/common/shadcn/input';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/shared/api/supabase/client';
 import { useDebounce } from '@/shared/hooks';
 import { handleError } from '@/shared/services/errorHandler';
 import { cn } from '@/shared/utils/utils';
@@ -192,7 +192,7 @@ export function GlobalResourceSearch({
         venues = (venueData || []) as unknown as Venue[];
       } catch (venueError) {
         // Venues table might not exist, silently continue
-        console.warn('Venues search failed:', venueError);
+        logger.warn('Venues search failed:', venueError);
       }
 
       setResults({
@@ -275,20 +275,16 @@ export function GlobalResourceSearch({
 
   return (
     <div
-      className='fixed inset-0 z-[200] flex items-start justify-center pt-[15vh] px-4'
-      style={{
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        backdropFilter: 'blur(8px)',
-      }}
+      className='fixed inset-0 z-[200] flex items-start justify-center pt-[15vh] px-4 bg-black/80 backdrop-blur-lg'
       onClick={handleOverlayClick}
     >
       <div className='w-full max-w-2xl'>
         {/* Search Box */}
-        <div className='relative bg-background/95 backdrop-blur-xl border border-border rounded-lg shadow-2xl'>
+        <div className='relative bg-background/95 backdrop-blur-xl border border-border rounded-none shadow-2xl'>
           {/* Close Button */}
           <button
             onClick={onClose}
-            className='absolute top-4 right-4 p-2 rounded-lg hover:bg-muted transition-colors z-10'
+            className='absolute top-4 right-4 p-2 rounded-none hover:bg-muted transition-colors z-10'
             aria-label='Close search'
           >
             <X className='h-5 w-5 text-muted-foreground' />

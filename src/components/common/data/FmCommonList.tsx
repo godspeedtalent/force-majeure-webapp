@@ -50,7 +50,7 @@ export function FmCommonList<T extends Record<string, any>>({
   };
 
   return (
-    <div className={cn('space-y-0 overflow-hidden rounded-lg', className)}>
+    <div className={cn('space-y-0 overflow-hidden rounded-none', className)}>
       {items.map((item, index) => {
         const isStriped = striped && index % 2 === 1;
         const computedRowClassName =

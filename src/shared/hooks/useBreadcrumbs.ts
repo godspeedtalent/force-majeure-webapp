@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { logger } from '@/shared/services/logger';
 import { useLocation } from 'react-router-dom';
 import { findRouteConfig } from '@/config/routes';
 
@@ -52,7 +53,7 @@ export const useBreadcrumbs = () => {
             try {
               label = await config.resolver(params);
             } catch (error) {
-              console.error('Failed to resolve breadcrumb label:', error);
+              logger.error('Failed to resolve breadcrumb label:', error);
               label = config.label; // Fallback to default label
             }
           }

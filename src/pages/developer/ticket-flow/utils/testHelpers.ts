@@ -5,6 +5,7 @@
 import { supabase } from '@/shared/api/supabase/client';
 import { logger } from '@/shared/services/logger';
 import { TEST_PREFIXES } from './mockData';
+import type { TestLogger } from '@/features/testing/services/TestLogger';
 
 /**
  * Wait for a condition to be true with timeout
@@ -140,14 +141,96 @@ export const cleanupEventTestData = async (eventId: string): Promise<void> => {
 };
 
 /**
- * Insert mock event into database
+ * Get or create test venue
  */
-export const insertMockEvent = async (event: any): Promise<void> => {
+export const getOrCreateTestVenue = async (testLogger?: TestLogger): Promise<string> => {
+  const log = testLogger || logger;
+  const venueId = 'test-venue-default';
+
+  // Check if test venue exists
+  const { data: existing } = await supabase
+    .from('venues')
+    .select('id')
+    .eq('id', venueId)
+    .single();
+
+  if (existing) {
+    log.info('Using existing test venue', { venueId });
+    return venueId;
+  }
+
+  // Create test venue
+  const { error } = await supabase.from('venues').insert([{
+    id: venueId,
+    name: 'Test Venue',
+    address: '123 Test St',
+    city: 'Test City',
+    state: 'TS',
+    zip_code: '12345',
+    capacity: 500,
+  }]);
+
+  if (error && error.code !== '23505') { // Ignore duplicate key error
+    log.error('Failed to create test venue', { error });
+    throw new Error(`Failed to create test venue: ${error.message}`);
+  }
+
+  log.info('Test venue created', { venueId });
+  return venueId;
+};
+
+/**
+ * Get or create test artist
+ */
+export const getOrCreateTestArtist = async (testLogger?: TestLogger): Promise<string> => {
+  const log = testLogger || logger;
+  const artistId = 'test-artist-default';
+
+  // Check if test artist exists
+  const { data: existing } = await supabase
+    .from('artists')
+    .select('id')
+    .eq('id', artistId)
+    .single();
+
+  if (existing) {
+    log.info('Using existing test artist', { artistId });
+    return artistId;
+  }
+
+  // Create test artist
+  const { error } = await supabase.from('artists').insert([{
+    id: artistId,
+    name: 'Test Artist',
+    bio: 'Test artist for automated testing',
+    genre: 'Electronic',
+  }]);
+
+  if (error && error.code !== '23505') { // Ignore duplicate key error
+    log.error('Failed to create test artist', { error });
+    throw new Error(`Failed to create test artist: ${error.message}`);
+  }
+
+  log.info('Test artist created', { artistId });
+  return artistId;
+};
+
+/**
+ * Insert mock event into database
+ * Ensures required venue and artist exist first
+ */
+export const insertMockEvent = async (event: any, testLogger?: TestLogger): Promise<void> => {
+  const log = testLogger || logger;
+
   try {
-    const { data, error } = await supabase.from('events').insert([event]).select();
+    // Ensure test venue and artist exist
+    await getOrCreateTestVenue(testLogger);
+    await getOrCreateTestArtist(testLogger);
+
+    const { data, error} = await supabase.from('events').insert([event]).select();
 
     if (error) {
-      logger.error('Failed to insert mock event', {
+      log.error('Failed to insert mock event', {
         error: error.message,
         details: error.details,
         hint: error.hint,
@@ -159,10 +242,10 @@ export const insertMockEvent = async (event: any): Promise<void> => {
       );
     }
 
-    logger.info('Mock event inserted successfully', { eventId: event.id });
+    log.info('Mock event inserted successfully', { eventId: event.id });
   } catch (err) {
     const error = err as any;
-    logger.error('Exception inserting mock event', {
+    log.error('Exception inserting mock event', {
       message: error.message,
       stack: error.stack,
       event,

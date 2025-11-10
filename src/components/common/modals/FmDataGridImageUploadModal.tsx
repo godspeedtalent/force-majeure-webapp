@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { logger } from '@/shared/services/logger';
 import { Upload, X, Loader2, ImageIcon } from 'lucide-react';
 import {
   Dialog,
@@ -157,7 +158,7 @@ export function FmDataGridImageUploadModal({
       onImageUploaded(urlData.publicUrl);
       onOpenChange(false);
     } catch (error: any) {
-      console.error('Upload error:', error);
+      logger.error('Upload error:', error);
       toast.error('Upload failed', {
         description: error.message || 'Failed to upload image.',
       });

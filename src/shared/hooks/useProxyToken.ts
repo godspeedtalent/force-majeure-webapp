@@ -1,4 +1,5 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { logger } from '@/shared/services/logger';
 
 import { supabase } from '@/shared/api/supabase/client';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
@@ -89,7 +90,7 @@ export function useProxyToken() {
         `/scavenger?locationId=${encodeURIComponent(locationId)}${debugMode ? '&debug=true' : ''}`
       );
     } catch (err) {
-      console.error('Error processing token:', err);
+      logger.error('Error processing token:', err);
       debug.log('Error occurred during validation', {
         error: err instanceof Error ? err.message : String(err),
         processingTime: `${Date.now() - startTime}ms`,

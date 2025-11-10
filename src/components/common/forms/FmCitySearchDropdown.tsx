@@ -61,7 +61,7 @@ const searchCities = async (query: string): Promise<City[]> => {
     );
 
     if (!response.ok) {
-      console.warn('City search API error:', response.statusText);
+      logger.warn('City search API error:', response.statusText);
       return [];
     }
 
@@ -75,7 +75,7 @@ const searchCities = async (query: string): Promise<City[]> => {
       displayName: `${city.name}, ${city.region ? city.region + ', ' : ''}${city.country}`,
     }));
   } catch (error) {
-    console.error('Error fetching cities:', error);
+    logger.error('Error fetching cities:', error);
     return [];
   }
 };

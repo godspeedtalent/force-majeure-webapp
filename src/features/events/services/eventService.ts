@@ -143,7 +143,7 @@ export const eventService = {
       .single();
 
     if (error) {
-      console.error('Error fetching venue capacity:', error);
+      logger.error('Error fetching venue capacity:', error);
       return 100; // Default fallback
     }
 

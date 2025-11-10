@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { logger } from '@/shared/services/logger';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
 
@@ -74,7 +75,7 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
         .single()
         .then(({ data, error }: any) => {
           if (error) {
-            console.error('Error fetching venue capacity:', error);
+            logger.error('Error fetching venue capacity:', error);
             toast.error('Failed to fetch venue capacity', {
               description: 'Using default capacity of 100',
             });

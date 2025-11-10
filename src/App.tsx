@@ -43,7 +43,6 @@ import { Toaster } from '@/components/common/shadcn/toaster';
 import { TooltipProvider } from '@/components/common/shadcn/tooltip';
 import Merch from './pages/Merch';
 
-import { MusicPlayerProvider } from '@/contexts/MusicPlayerContext';
 import { AuthProvider } from '@/features/auth/services/AuthContext';
 import { useFeatureFlagHelpers } from '@/shared/hooks/useFeatureFlags';
 import { FmToolbar } from '@/components/common/toolbar/FmToolbar';
@@ -316,19 +315,17 @@ const App = () => {
           <StripeProvider>
             <ShoppingCartProvider>
               <GlobalSearchProvider>
-                <MusicPlayerProvider>
-                  <TooltipProvider>
-                    <Toaster />
-                    <Sonner />
-                    <BrowserRouter>
-                      <CheckoutProvider>
-                        <AppRoutes />
-                        <FmToolbar />
-                        <GlobalSearchWrapper />
-                      </CheckoutProvider>
-                    </BrowserRouter>
-                  </TooltipProvider>
-                </MusicPlayerProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
+                  <BrowserRouter>
+                    <CheckoutProvider>
+                      <AppRoutes />
+                      <FmToolbar />
+                      <GlobalSearchWrapper />
+                    </CheckoutProvider>
+                  </BrowserRouter>
+                </TooltipProvider>
               </GlobalSearchProvider>
             </ShoppingCartProvider>
           </StripeProvider>

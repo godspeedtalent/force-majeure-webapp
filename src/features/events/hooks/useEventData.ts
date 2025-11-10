@@ -85,7 +85,7 @@ export function useEventData(
             new Date()
           );
         } catch (error) {
-          console.error('Error parsing date:', error);
+          logger.error('Error parsing date:', error);
         }
       }
 
@@ -116,7 +116,7 @@ export function useEventData(
         heroImage: event.image_url || '',
       });
     } catch (error) {
-      console.error('Error loading event data:', error);
+      logger.error('Error loading event data:', error);
     } finally {
       setIsLoading(false);
     }

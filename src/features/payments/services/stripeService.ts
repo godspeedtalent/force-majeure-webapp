@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/shared/api/supabase/client';
 import type { SavedCard, StripeCustomer, PaymentIntent } from '../types';
 
 /**

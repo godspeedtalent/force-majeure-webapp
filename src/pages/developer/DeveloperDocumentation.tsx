@@ -115,7 +115,7 @@ export default function DeveloperDocumentation() {
           setIsLoading(false);
         })
         .catch(error => {
-          console.error('Error loading document:', error);
+          logger.error('Error loading document:', error);
           setDocumentContent(
             '# Error Loading Document\n\nUnable to load the requested documentation file.'
           );

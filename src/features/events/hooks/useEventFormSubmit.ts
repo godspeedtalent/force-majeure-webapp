@@ -46,7 +46,7 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
         .single();
 
       if (headlinerError) {
-        console.error('Error fetching headliner:', headlinerError);
+        logger.error('Error fetching headliner:', headlinerError);
       }
 
       // Fetch venue name for event title
@@ -57,7 +57,7 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
         .single();
 
       if (venueError) {
-        console.error('Error fetching venue:', venueError);
+        logger.error('Error fetching venue:', venueError);
       }
 
       // Construct event title
@@ -131,7 +131,7 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
       setIsLoading(false);
       onSuccess?.(resultEventId);
     } catch (error) {
-      console.error(`Error ${mode === 'create' ? 'creating' : 'updating'} event:`, error);
+      logger.error(`Error ${mode === 'create' ? 'creating' : 'updating'} event:`, error);
       setIsLoading(false);
       const err = error instanceof Error ? error : new Error('An unexpected error occurred');
       onError?.(err);

@@ -181,9 +181,9 @@ export async function handleError(
   const errorDetails = extractErrorDetails(error);
 
   // Log to console for debugging
-  console.error(`[ErrorHandler] ${title}:`, error);
+  logger.error(`[ErrorHandler] ${title}:`, error);
   if (context) {
-    console.error(`[ErrorHandler] Context: ${context}`);
+    logger.error(`[ErrorHandler] Context: ${context}`);
   }
 
   // Log to backend if enabled
@@ -205,7 +205,7 @@ export async function handleError(
       });
     } catch (logErr) {
       // Silently fail if logging fails
-      console.error('[ErrorHandler] Failed to log error:', logErr);
+      logger.error('[ErrorHandler] Failed to log error:', logErr);
     }
   }
 

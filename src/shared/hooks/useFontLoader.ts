@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { logger } from '@/shared/services/logger';
 
 export const useFontLoader = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -30,7 +31,7 @@ export const useFontLoader = () => {
           }, 1500);
         }
       } catch (error) {
-        console.warn('Font loading check failed:', error);
+        logger.warn('Font loading check failed:', error);
         // Fallback: assume fonts are loaded after a delay
         setTimeout(() => {
           setFontsLoaded(true);

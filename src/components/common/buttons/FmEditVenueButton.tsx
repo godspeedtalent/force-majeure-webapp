@@ -63,7 +63,7 @@ export const FmEditVenueButton = ({
       setCapacity((venue as any).capacity || '');
       setWebsite((venue as any).website || '');
     } catch (error) {
-      console.error('Error loading venue data:', error);
+      logger.error('Error loading venue data:', error);
       toast.error('Failed to load venue data', {
         description:
           error instanceof Error
@@ -118,7 +118,7 @@ export const FmEditVenueButton = ({
         description: `${name} has been successfully updated!`,
       });
     } catch (error) {
-      console.error('Error updating venue:', error);
+      logger.error('Error updating venue:', error);
       setIsLoading(false);
       toast.error('Failed to update venue', {
         description:

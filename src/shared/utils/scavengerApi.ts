@@ -46,7 +46,7 @@ export const claimScavengerReward = async (
     if (error) throw error;
     return data as ClaimResult;
   } catch (error: any) {
-    console.error('Error claiming reward:', error);
+    logger.error('Error claiming reward:', error);
     return {
       success: false,
       error: error.message || 'Failed to claim reward',

@@ -5,12 +5,15 @@
 export interface MockEvent {
   id: string;
   title: string;
+  description?: string;
   date: string;
   time: string;
-  venue: string;
-  venue_id?: string;
-  headliner_id?: string;
+  venue_id: string;
+  headliner_id: string;
   image_url?: string;
+  status: 'draft' | 'published' | 'cancelled';
+  test_data: boolean;
+  organization_id?: string;
 }
 
 export interface MockTicketTier {
@@ -44,6 +47,8 @@ export interface MockOrder {
 
 /**
  * Generate random test event data
+ * Note: venue_id and headliner_id must be provided or defaults will be used
+ * The defaults may not exist in the database, so tests should create them first
  */
 export const createMockEvent = (overrides?: Partial<MockEvent>): MockEvent => {
   const id = `test-event-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
@@ -53,9 +58,13 @@ export const createMockEvent = (overrides?: Partial<MockEvent>): MockEvent => {
   return {
     id,
     title: `Test Event ${id.substring(11, 18)}`,
+    description: `Test event description for ${id}`,
     date: tomorrow.toISOString().split('T')[0],
     time: '20:00:00',
-    venue: 'Test Venue',
+    venue_id: 'test-venue-default',
+    headliner_id: 'test-artist-default',
+    status: 'published',
+    test_data: true,
     ...overrides,
   };
 };

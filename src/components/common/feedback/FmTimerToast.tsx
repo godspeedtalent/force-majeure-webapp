@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { logger } from '@/shared/services/logger';
 import { Clock, Loader2 } from 'lucide-react';
 import { toast as sonnerToast } from 'sonner';
 
@@ -88,7 +89,7 @@ export const FmTimerToast = ({
                   await onAction();
                   sonnerToast.dismiss(id);
                 } catch (error) {
-                  console.error('Action failed:', error);
+                  logger.error('Action failed:', error);
                 } finally {
                   setIsExecuting(false);
                 }

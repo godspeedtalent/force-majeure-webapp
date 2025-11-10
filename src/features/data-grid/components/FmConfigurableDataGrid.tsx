@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/shared/api/supabase/client';
 import { FmDataGrid, DataGridColumn, DataGridAction } from './FmDataGrid';
 import { useDataGridPersistence } from '../hooks/useDataGridPersistence';
 import { Button } from '@/components/common/shadcn/button';
@@ -119,7 +119,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
         toast.success('Column configuration saved');
       }
     } catch (error) {
-      console.error('Error saving grid config:', error);
+      logger.error('Error saving grid config:', error);
       toast.error('Failed to save column configuration');
     }
   };
@@ -279,7 +279,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
           toast.success('Configuration reset to default');
         }
       } catch (error) {
-        console.error('Error resetting grid config:', error);
+        logger.error('Error resetting grid config:', error);
         toast.error('Failed to reset configuration');
       }
     }

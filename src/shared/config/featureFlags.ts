@@ -16,10 +16,6 @@ export const FEATURE_FLAGS = {
   SHOW_LEADERBOARD: 'show_leaderboard',
   MEMBER_PROFILES: 'member_profiles',
 
-  // Media features
-  MUSIC_PLAYER: 'music_player',
-  SPOTIFY_INTEGRATION: 'spotify_integration',
-
   // Store features
   MERCH_STORE: 'merch_store',
 
@@ -37,7 +33,7 @@ export const FEATURE_FLAG_METADATA: Record<
   {
     displayName: string;
     description: string;
-    category: 'core' | 'events' | 'social' | 'media' | 'store' | 'search';
+    category: 'core' | 'events' | 'social' | 'store' | 'search';
   }
 > = {
   [FEATURE_FLAGS.COMING_SOON_MODE]: {
@@ -74,16 +70,6 @@ export const FEATURE_FLAG_METADATA: Record<
     displayName: 'Member Profiles',
     description: 'Enables member profile pages',
     category: 'social',
-  },
-  [FEATURE_FLAGS.MUSIC_PLAYER]: {
-    displayName: 'Music Player',
-    description: 'Enables embedded music player',
-    category: 'media',
-  },
-  [FEATURE_FLAGS.SPOTIFY_INTEGRATION]: {
-    displayName: 'Spotify Integration',
-    description: 'Enables Spotify music integration',
-    category: 'media',
   },
   [FEATURE_FLAGS.MERCH_STORE]: {
     displayName: 'Merch Store',

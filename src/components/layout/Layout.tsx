@@ -1,7 +1,6 @@
 import { ReactNode } from 'react';
 
 import { Footer } from '@/components/navigation/Footer';
-import { ExpandableMusicPlayer } from '@/components/music-player/ExpandableMusicPlayer';
 import { Navigation } from '@/components/navigation/Navigation';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 
@@ -21,11 +20,6 @@ export const Layout = ({ children }: LayoutProps) => {
       </main>
 
       <Footer />
-
-      {/* Fixed music player at bottom */}
-      <div className='fixed bottom-0 left-0 right-0 z-40'>
-        <ExpandableMusicPlayer />
-      </div>
     </div>
   );
 };

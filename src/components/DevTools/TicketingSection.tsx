@@ -67,7 +67,7 @@ export const TicketingSection = () => {
       });
       setLocalFees(initialLocal);
     } catch (error) {
-      console.error('Failed to fetch fees:', error);
+      logger.error('Failed to fetch fees:', error);
       toast.error('Failed to load ticketing fees');
     } finally {
       setIsLoading(false);
@@ -120,7 +120,7 @@ export const TicketingSection = () => {
       toast.success('Ticketing fees updated successfully');
       await fetchFees();
     } catch (error) {
-      console.error('Failed to update fees:', error);
+      logger.error('Failed to update fees:', error);
       toast.error('Failed to update ticketing fees');
     }
   };

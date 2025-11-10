@@ -119,7 +119,7 @@ export const imageUploadService = {
         .single();
 
       if (dbError) {
-        console.error('Failed to save image metadata:', dbError);
+        logger.error('Failed to save image metadata:', dbError);
         // Don't throw - image was uploaded successfully
       } else {
         imageId = (imageData as any).id;
@@ -172,7 +172,7 @@ export const imageUploadService = {
       .eq('id', imageId);
 
     if (dbError) {
-      console.error('Failed to delete image metadata:', dbError);
+      logger.error('Failed to delete image metadata:', dbError);
     }
   },
 

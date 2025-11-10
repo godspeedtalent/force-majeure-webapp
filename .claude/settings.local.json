@@ -9,7 +9,17 @@
       "Bash(rm:*)",
       "Bash(git log:*)",
       "Bash(npm run build:client:*)",
-      "Bash(timeout 30 npx tsc:*)"
+      "Bash(timeout 30 npx tsc:*)",
+      "Bash(curl -s \"https://orgxcrnnecblhuxjfruy.supabase.co/rest/v1/events?columns=%22id%22%2C%22title%22%2C%22date%22%2C%22time%22%2C%22venue%22&select=*\" -H \"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9yZ3hjcm5uZWNibGh1eGpmcnV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY4ODI5NzYsImV4cCI6MjA1MjQ1ODk3Nn0.VGnmIhDTYGwfaSUIV-g4t5H72x0rHQgTh21BbmOcYPE\")",
+      "Bash(find:*)",
+      "Bash(done)",
+      "Bash(fi)",
+      "Bash(cat:*)",
+      "Bash(psql:*)",
+      "Bash(wc:*)",
+      "Bash(timeout 120 npm run build:*)",
+      "Bash(if ! grep -q \"from ''''@/shared/services/logger''''\" \"src/pages/admin/UserManagement.tsx\")",
+      "Bash(then sed -i \"/^import.*from/a import { logger } from ''''@/shared/services/logger'''';\" \"src/pages/admin/UserManagement.tsx\")"
     ],
     "deny": [],
     "ask": []

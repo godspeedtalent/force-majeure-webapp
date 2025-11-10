@@ -86,13 +86,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         .single();
 
       if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching profile:', error);
+        logger.error('Error fetching profile:', error);
         return;
       }
 
       setProfile(data);
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      logger.error('Error fetching profile:', error);
     }
   };
 
@@ -168,7 +168,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setLoading(false);
       })
       .catch(error => {
-        console.error('Error getting session:', error);
+        logger.error('Error getting session:', error);
         setLoading(false);
       });
 
@@ -195,7 +195,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
-        console.error('Sign up error:', error);
+        logger.error('Sign up error:', error);
         toast({
           title: 'Sign up failed',
           description: error.message,

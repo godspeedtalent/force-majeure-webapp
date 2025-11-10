@@ -5,13 +5,29 @@ import { FmConfigurableDataGrid, DataGridAction } from '@/features/data-grid';
 import { userColumns } from './config/adminGridColumns';
 import { Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { RoleManagerModal } from './components/RoleManagerModal';
-import { rolesStore } from '@/shared/stores/rolesStore';
+import { RoleManagementModal } from '@/components/admin/RoleManagementModal';
+import { logger } from '@/shared/services/logger';
+
+interface UserRole {
+  role_name: string;
+  display_name: string;
+  permissions: string[];
+}
+
+interface AdminUser {
+  id: string;
+  email: string;
+  display_name?: string | null;
+  full_name?: string | null;
+  roles?: UserRole[];
+  created_at?: string;
+  updated_at?: string;
+}
 
 export const UserManagement = () => {
   const queryClient = useQueryClient();
   const [roleModalOpen, setRoleModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
 
   // Fetch users with their auth email
   const { data: users = [], isLoading } = useQuery({
@@ -47,13 +63,13 @@ export const UserManagement = () => {
   });
 
   const handleUserUpdate = async (
-    row: any,
+    row: AdminUser,
     columnKey: string,
-    newValue: any
+    newValue: string | number | boolean | null
   ) => {
     const normalizedValue =
       typeof newValue === 'string' ? newValue.trim() : newValue;
-    const updateData: Record<string, any> = {
+    const updateData: Record<string, string | number | boolean | null> = {
       [columnKey]: normalizedValue === '' ? null : normalizedValue,
     };
 
@@ -74,9 +90,9 @@ export const UserManagement = () => {
         if (error) throw error;
       }
 
-      queryClient.setQueryData(
+      queryClient.setQueryData<AdminUser[]>(
         ['admin-users'],
-        (oldData: any[] | undefined) => {
+        (oldData) => {
           if (!oldData) return oldData;
           return oldData.map(user =>
             user.id === row.id
@@ -88,59 +104,23 @@ export const UserManagement = () => {
 
       toast.success('User updated');
     } catch (error) {
-      console.error('Error updating user:', error);
+      logger.error('Error updating user:', error);
       toast.error('Failed to update user');
       throw error;
     }
   };
 
-  const handleOpenRoleModal = (user: any) => {
+  const handleOpenRoleModal = (user: AdminUser) => {
     setSelectedUser(user);
     setRoleModalOpen(true);
   };
 
-  const handleSaveRoles = async (roleNames: string[]) => {
-    if (!selectedUser) return;
-
-    try {
-      // Get role IDs from role names
-      const roleIds = roleNames
-        .map(name => rolesStore.getRoleByName(name)?.id)
-        .filter((id): id is string => id !== undefined);
-
-      // First, delete all existing roles for this user
-      const { error: deleteError } = await supabase
-        .from('user_roles')
-        .delete()
-        .eq('user_id', selectedUser.id);
-
-      if (deleteError) throw deleteError;
-
-      // Then insert the new roles
-      if (roleIds.length > 0) {
-        const { error: insertError } = await supabase
-          .from('user_roles')
-          .insert(
-            roleIds.map(roleId => ({
-              user_id: selectedUser.id,
-              role_id: roleId,
-            }))
-          );
-
-        if (insertError) throw insertError;
-      }
-
-      // Refresh users to get updated roles
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
-      toast.success('User roles updated');
-    } catch (error) {
-      console.error('Error updating user roles:', error);
-      toast.error('Failed to update user roles');
-      throw error;
-    }
+  const handleRolesUpdated = () => {
+    // Refresh users to get updated roles
+    queryClient.invalidateQueries({ queryKey: ['admin-users'] });
   };
 
-  const handleDeleteUser = async (user: any) => {
+  const handleDeleteUser = async (user: AdminUser) => {
     if (
       !confirm(
         `Are you sure you want to delete user "${user.display_name || user.full_name || 'this user'}"? This will also delete their auth account.`
@@ -155,7 +135,7 @@ export const UserManagement = () => {
         user.id
       );
       if (authError) {
-        console.error('Auth deletion error:', authError);
+        logger.error('Auth deletion error:', authError);
         toast.error('Failed to delete user auth account');
         return;
       }
@@ -164,7 +144,7 @@ export const UserManagement = () => {
       toast.success('User deleted');
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
     } catch (error) {
-      console.error('Error deleting user:', error);
+      logger.error('Error deleting user:', error);
       toast.error('Failed to delete user');
     }
   };
@@ -183,7 +163,7 @@ export const UserManagement = () => {
     if (col.key === 'roles' && col.render) {
       return {
         ...col,
-        render: (value: any, row: any) =>
+        render: (value: UserRole[], row: AdminUser) =>
           col.render!(value, row, { onRoleClick: handleOpenRoleModal }),
       };
     }
@@ -204,13 +184,13 @@ export const UserManagement = () => {
       />
 
       {selectedUser && (
-        <RoleManagerModal
+        <RoleManagementModal
           open={roleModalOpen}
           onOpenChange={setRoleModalOpen}
+          userId={selectedUser.id}
           userEmail={selectedUser.email}
-          userName={selectedUser.display_name || selectedUser.full_name}
-          currentRoles={selectedUser.roles || []}
-          onSave={handleSaveRoles}
+          currentRoles={selectedUser.roles}
+          onRolesUpdated={handleRolesUpdated}
         />
       )}
     </>

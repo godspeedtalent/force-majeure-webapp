@@ -1,4 +1,5 @@
 import { AlertCircle, Copy, Check } from 'lucide-react';
+import { logger } from '@/shared/services/logger';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/shared/utils/utils';
@@ -53,7 +54,7 @@ export const FmErrorToast = ({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy to clipboard:', err);
+      logger.error('Failed to copy to clipboard:', err);
     }
   };
 

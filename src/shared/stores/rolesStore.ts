@@ -94,7 +94,7 @@ class RolesStore {
         .order('name');
 
       if (error) {
-        console.error('Error loading roles:', error);
+        logger.error('Error loading roles:', error);
         throw error;
       }
 
@@ -105,7 +105,7 @@ class RolesStore {
 
       console.log(`Loaded ${this.roles.length} roles into store`);
     } catch (error) {
-      console.error('Failed to load roles:', error);
+      logger.error('Failed to load roles:', error);
       throw error;
     } finally {
       this.loading = false;

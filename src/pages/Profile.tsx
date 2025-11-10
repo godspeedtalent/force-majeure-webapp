@@ -61,7 +61,7 @@ const Profile = () => {
           .eq('status', 'paid');
 
         if (error) {
-          console.error('Error fetching orders:', error);
+          logger.error('Error fetching orders:', error);
           setShowsCount(0);
         } else {
           // Count unique event_ids
@@ -116,7 +116,7 @@ const Profile = () => {
           .gte('events.date', new Date().toISOString());
 
         if (error) {
-          console.error('Error fetching upcoming shows:', error);
+          logger.error('Error fetching upcoming shows:', error);
           setUpcomingShows([]);
         } else {
           // Group by event and count tickets

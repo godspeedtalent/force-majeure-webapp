@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { logger } from '@/shared/services/logger';
 
 export interface CartItem {
   id: string;
@@ -45,7 +46,7 @@ export function ShoppingCartProvider({ children }: { children: ReactNode }) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     } catch (error) {
-      console.error('Failed to save cart to localStorage:', error);
+      logger.error('Failed to save cart to localStorage:', error);
     }
   }, [items]);
 

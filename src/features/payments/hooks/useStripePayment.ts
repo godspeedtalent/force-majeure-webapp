@@ -1,7 +1,7 @@
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import { useState, useCallback } from 'react';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/shared/api/supabase/client';
 import { stripeService } from '../services/stripeService';
 import type { SavedCard, PaymentResult } from '../types';
 
@@ -67,7 +67,7 @@ export const useStripePayment = () => {
       .eq('user_id', user.id);
 
     if (updateError) {
-      console.error('Failed to save stripe customer ID:', updateError);
+      logger.error('Failed to save stripe customer ID:', updateError);
     }
 
     return customer.customerId;
@@ -85,7 +85,7 @@ export const useStripePayment = () => {
       const cards = await stripeService.listPaymentMethods(customerId);
       setSavedCards(cards);
     } catch (error) {
-      console.error('Failed to load saved cards:', error);
+      logger.error('Failed to load saved cards:', error);
       setSavedCards([]);
     } finally {
       setLoading(false);
@@ -195,7 +195,7 @@ export const useStripePayment = () => {
         await stripeService.detachPaymentMethod(paymentMethodId);
         await loadSavedCards();
       } catch (error) {
-        console.error('Failed to remove card:', error);
+        logger.error('Failed to remove card:', error);
         throw error;
       } finally {
         setLoading(false);

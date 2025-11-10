@@ -64,7 +64,6 @@ The default layout includes:
 - Navigation bar at the top
 - Topography background pattern
 - Footer
-- Music player
 - Proper spacing and structure
 
 ```tsx
@@ -83,7 +82,7 @@ export default function MyPage() {
 
 #### Available Layouts
 
-- **`Layout`**: Base layout with navigation, topography, footer, and music player. Use this for most pages.
+- **`Layout`**: Base layout with navigation, topography, and footer. Use this for most pages.
 - **`SideNavbarLayout`**: Layout with side navigation for multi-section pages (e.g., event management).
 - **`SplitPageLayout`**: Two-column layout for forms or split content.
 - **`SinglePageLayout`**: Simplified layout for focused single-page content.

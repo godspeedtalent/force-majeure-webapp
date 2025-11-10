@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { logger } from '@/shared/services/logger';
 import { MapPin, Globe, Users } from 'lucide-react';
 import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
 import { supabase } from '@/shared/api/supabase/client';
@@ -56,7 +57,7 @@ export const VenueModal = ({
       if (error) throw error;
       setVenue(data);
     } catch (error) {
-      console.error('Error fetching venue:', error);
+      logger.error('Error fetching venue:', error);
     } finally {
       setLoading(false);
     }
