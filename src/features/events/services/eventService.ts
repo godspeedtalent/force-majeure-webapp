@@ -79,13 +79,13 @@ export const eventService = {
       query = query.eq('venue_id', filters.venue_id);
     }
     if (filters?.date_from) {
-      query = query.gte('date', filters.date_from);
+      query = query.gte('start_time', filters.date_from);
     }
     if (filters?.date_to) {
-      query = query.lte('date', filters.date_to);
+      query = query.lte('start_time', filters.date_to);
     }
 
-    const { data, error } = await query.order('date', { ascending: true });
+    const { data, error } = await query.order('start_time', { ascending: true });
 
     if (error) throw error;
     return data as unknown as Event[];

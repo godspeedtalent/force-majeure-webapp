@@ -62,14 +62,14 @@ export function FmCommonEventDatePicker({
 
       const { data, error } = await supabase
         .from('events')
-        .select('id, title, date')
-        .gte('date', today.toISOString().split('T')[0])
-        .order('date', { ascending: true });
+        .select('id, title, start_time')
+        .gte('start_time', today.toISOString().split('T')[0])
+        .order('start_time', { ascending: true });
 
       if (!error && data) {
         const grouped: Record<string, EventOnDate[]> = {};
         data.forEach(event => {
-          const dateKey = event.date;
+          const dateKey = event.start_time;
           if (!grouped[dateKey]) {
             grouped[dateKey] = [];
           }

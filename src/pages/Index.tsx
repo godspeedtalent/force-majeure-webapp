@@ -72,7 +72,7 @@ const Index = () => {
             headliner_artist:artists!events_headliner_id_fkey(id, name, genre, image_url)
           `
           )
-          .order('date', {
+          .order('start_time', {
             ascending: true,
           });
         if (error) {

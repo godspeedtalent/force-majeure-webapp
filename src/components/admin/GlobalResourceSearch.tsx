@@ -168,10 +168,10 @@ export function GlobalResourceSearch({
       // Search Events
       const { data: events } = await supabase
         .from('events')
-        .select('id, title, date, hero_image')
-        .gte('date', today)
+        .select('id, title, start_time, hero_image')
+        .gte('start_time', today)
         .ilike('title', searchPattern)
-        .order('date', { ascending: true })
+        .order('start_time', { ascending: true })
         .limit(5);
 
       // Search Artists

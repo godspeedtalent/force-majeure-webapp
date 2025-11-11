@@ -182,15 +182,15 @@ const simulatePurchase = async (
 const fetchRandomEvent = async () => {
   const { data: events, error } = await supabase
     .from('events')
-    .select('id, title, date')
-    .order('date', { ascending: true })
+    .select('id, title, start_time')
+    .order('start_time', { ascending: true })
     .limit(10);
 
   if (error || !events || events.length === 0) {
     return {
       id: `mock-event-${Math.floor(Math.random() * 100)}`,
       title: 'Mock Event',
-      date: new Date().toISOString(),
+      start_time: new Date().toISOString(),
     };
   }
 
@@ -606,7 +606,7 @@ const performanceTestSuite: TestSuite = {
         const { data: events } = await supabase
           .from('events')
           .select('id, title')
-          .order('date', { ascending: true })
+          .order('start_time', { ascending: true })
           .limit(10);
 
         const eventList =

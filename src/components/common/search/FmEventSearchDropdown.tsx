@@ -64,8 +64,8 @@ export function FmEventSearchDropdown({
         undercard_ids
       `
       )
-      .gte('date', new Date().toISOString().split('T')[0])
-      .order('date', { ascending: true })
+      .gte('start_time', new Date().toISOString().split('T')[0])
+      .order('start_time', { ascending: true })
       .limit(50);
 
     if (error || !data) return [];
