@@ -55,9 +55,9 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
         .order('created_at', { ascending: sortOrder === 'asc' });
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as DevNote[];
     } catch (error) {
-      logger.error('Error loading notes:', error);
+      logger.error('Failed to fetch dev notes:', error instanceof Error ? { error: error.message } : {});
       toast.error('Failed to load notes');
       return [];
     } finally {
@@ -81,7 +81,7 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
       if (error) throw error;
       toast.success('Note created');
     } catch (error) {
-      logger.error('Error creating note:', error);
+      logger.error('Failed to update dev note:', error instanceof Error ? { error: error.message } : {});
       toast.error('Failed to create note');
       throw error;
     }
@@ -103,7 +103,7 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
       if (error) throw error;
       toast.success('Status updated');
     } catch (error) {
-      logger.error('Error updating status:', error);
+      logger.error('Failed to delete dev note:', error instanceof Error ? { error: error.message } : {});
       toast.error('Failed to update status');
       throw error;
     }
@@ -125,7 +125,7 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
       if (error) throw error;
       toast.success('Note updated');
     } catch (error) {
-      logger.error('Error updating message:', error);
+      logger.error('Failed to complete dev note:', error instanceof Error ? { error: error.message } : {});
       toast.error('Failed to update note');
       throw error;
     }
@@ -144,7 +144,7 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
       if (error) throw error;
       toast.success('Note deleted');
     } catch (error) {
-      logger.error('Error deleting note:', error);
+      logger.error('Failed to update note type:', error instanceof Error ? { error: error.message } : {});
       toast.error('Failed to delete note');
       throw error;
     }

@@ -17,7 +17,6 @@ import { toast } from 'sonner';
 import { cn } from '@/shared/utils/utils';
 import { logger } from '@/shared/services/logger';
 import { useEnvironmentName } from '@/shared/hooks/useEnvironment';
-import { environmentService } from '@/shared/services/environmentService';
 
 interface Fee {
   id: string;
@@ -249,7 +248,7 @@ export const AdminFeesSection = () => {
             </AlertDialogTitle>
             <AlertDialogDescription>
               This will update ticketing fees in the database for the{' '}
-              <span className='font-semibold text-fm-gold'>{environment}</span>{' '}
+              <span className='font-semibold text-fm-gold'>{currentEnvName}</span>{' '}
               environment. These changes will affect all future ticket
               purchases. Continue?
             </AlertDialogDescription>

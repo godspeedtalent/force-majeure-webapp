@@ -3,6 +3,7 @@ import { DollarSign, Percent } from 'lucide-react';
 import { FmCommonToggleHeader } from '@/components/common/forms/FmCommonToggleHeader';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { Button } from '@/components/common/shadcn/button';
+import { logger } from '@/shared/services/logger';
 import {
   AlertDialog,
   AlertDialogAction,

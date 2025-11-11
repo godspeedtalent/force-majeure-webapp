@@ -218,7 +218,7 @@ export const FeatureToggleSection = () => {
             </AlertDialogTitle>
             <AlertDialogDescription className='text-white/70'>
               This will update feature flags in the database for the{' '}
-              <span className='font-semibold text-fm-gold'>{environment}</span>{' '}
+              <span className='font-semibold text-fm-gold'>{currentEnvName}</span>{' '}
               environment, and not just mock them to this session. Continue?
             </AlertDialogDescription>
           </AlertDialogHeader>

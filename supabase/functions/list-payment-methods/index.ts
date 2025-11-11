@@ -30,7 +30,7 @@ serve(async req => {
     });
 
     // Format the response to match our SavedCard interface
-    const savedCards = paymentMethods.data.map(pm => ({
+    const savedCards = paymentMethods.data.map((pm: any) => ({
       id: pm.id,
       last4: pm.card?.last4 || '',
       brand: pm.card?.brand || '',
@@ -44,7 +44,7 @@ serve(async req => {
       status: 200,
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 400,
     });

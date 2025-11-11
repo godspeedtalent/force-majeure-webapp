@@ -94,7 +94,7 @@ export const CreateDevNoteModal = ({
       onOpenChange(false);
       onNoteCreated();
     } catch (error) {
-      logger.error('Error creating note:', error);
+      logger.error('Failed to create dev note:', error instanceof Error ? { error: error.message } : {});
       toast.error('Failed to create note');
     } finally {
       setIsSubmitting(false);
