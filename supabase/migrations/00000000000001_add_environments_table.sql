@@ -49,9 +49,9 @@ CREATE POLICY "Admins can manage environments"
   ON public.environments FOR ALL
   USING (
     EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.user_id = auth.uid()
-      AND profiles.role = 'admin'
+      SELECT 1 FROM public.user_roles
+      WHERE user_roles.user_id = auth.uid()
+      AND user_roles.role = 'admin'
     )
   );
 
@@ -73,6 +73,15 @@ AND ff.environment_id IS NULL;
 -- Make environment_id required after migration
 ALTER TABLE public.feature_flags 
   ALTER COLUMN environment_id SET NOT NULL;
+
+-- Add unique constraint for the new environment_id column
+ALTER TABLE public.feature_flags
+  ADD CONSTRAINT feature_flags_flag_name_environment_id_key 
+  UNIQUE (flag_name, environment_id);
+
+-- Drop the old unique constraint on (flag_name, environment)
+ALTER TABLE public.feature_flags
+  DROP CONSTRAINT IF EXISTS feature_flags_flag_name_environment_key;
 
 -- Add index for performance
 CREATE INDEX IF NOT EXISTS idx_feature_flags_environment_id 
@@ -99,6 +108,15 @@ AND tf.environment_id IS NULL;
 -- Make environment_id required after migration
 ALTER TABLE public.ticketing_fees
   ALTER COLUMN environment_id SET NOT NULL;
+
+-- Add unique constraint for the new environment_id column
+ALTER TABLE public.ticketing_fees
+  ADD CONSTRAINT ticketing_fees_fee_name_environment_id_key 
+  UNIQUE (fee_name, environment_id);
+
+-- Drop the old unique constraint on (fee_name, environment)
+ALTER TABLE public.ticketing_fees
+  DROP CONSTRAINT IF EXISTS ticketing_fees_fee_name_environment_key;
 
 -- Add index for performance
 CREATE INDEX IF NOT EXISTS idx_ticketing_fees_environment_id
@@ -173,26 +191,24 @@ ON CONFLICT (flag_name, environment_id) DO NOTHING;
 DELETE FROM public.ticketing_fees;
 
 -- Re-seed ticketing fees with environment references
-INSERT INTO public.ticketing_fees (fee_name, fee_type, fee_value, is_active, environment_id, description)
+INSERT INTO public.ticketing_fees (fee_name, fee_type, fee_value, is_active, environment_id)
 SELECT 
   'Service Fee',
   'percentage',
   10.0,
   true,
-  e.id,
-  'Standard service fee applied to all ticket purchases'
+  e.id
 FROM public.environments e
 WHERE e.name = 'all'
 ON CONFLICT (fee_name, environment_id) DO NOTHING;
 
-INSERT INTO public.ticketing_fees (fee_name, fee_type, fee_value, is_active, environment_id, description)
+INSERT INTO public.ticketing_fees (fee_name, fee_type, fee_value, is_active, environment_id)
 SELECT 
   'Processing Fee',
   'flat',
   2.50,
   true,
-  e.id,
-  'Flat processing fee per transaction'
+  e.id
 FROM public.environments e
 WHERE e.name = 'all'
 ON CONFLICT (fee_name, environment_id) DO NOTHING;

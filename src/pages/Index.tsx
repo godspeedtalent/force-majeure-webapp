@@ -168,10 +168,6 @@ const Index = () => {
   return (
     <Layout>
       <div className='min-h-screen relative'>
-        {/* Topography Background */}
-        <div className='fixed inset-0 pointer-events-none'>
-          <TopographicBackground opacity={0.35} />
-        </div>
         <div className='fixed inset-0 bg-gradient-monochrome opacity-10 pointer-events-none' />
 
         {!contentReady ? (
