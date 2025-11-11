@@ -1,4 +1,5 @@
 import { supabase } from '@/shared/api/supabase/client';
+import { logger } from '@/shared/services/logger';
 
 export interface Role {
   id: string;

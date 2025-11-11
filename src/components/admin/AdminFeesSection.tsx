@@ -24,7 +24,9 @@ interface Fee {
   fee_type: 'flat' | 'percentage';
   fee_value: number;
   is_active: boolean;
-  environment_id: string;
+  environment: string;
+  created_at: string;
+  updated_at: string;
 }
 
 const feeLabels: Record<string, string> = {
@@ -79,7 +81,7 @@ export const AdminFeesSection = () => {
       });
       setLocalFees(initialLocal);
     } catch (error) {
-      logger.error('Failed to fetch fees:', error);
+      logger.error('Failed to fetch fees:', { error: error instanceof Error ? error.message : 'Unknown' });
       toast.error('Failed to load ticketing fees');
     } finally {
       setIsLoading(false);
@@ -123,21 +125,21 @@ export const AdminFeesSection = () => {
           return Promise.resolve();
         }
 
-        return supabase
+        return (supabase as any)
           .from('ticketing_fees')
           .update({
             fee_type: feeData.type,
             fee_value: numValue,
           })
           .eq('fee_name', feeName)
-          .eq('environment_id', fee.environment_id);
+          .eq('environment', fee.environment);
       });
 
       await Promise.all(updates);
       toast.success('Ticketing fees updated successfully');
       await fetchFees();
     } catch (error) {
-      logger.error('Failed to update fees:', error);
+      logger.error('Failed to update fees:', { error: error instanceof Error ? error.message : 'Unknown' });
       toast.error('Failed to update ticketing fees');
     }
   };

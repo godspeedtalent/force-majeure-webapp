@@ -7,6 +7,7 @@ import { FmCommonLoadingOverlay } from '@/components/common/feedback/FmCommonLoa
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
+import { logger } from '@/shared/services/logger';
 import { useEventFormState } from '@/features/events/hooks/useEventFormState';
 import { useEventFormSubmit } from '@/features/events/hooks/useEventFormSubmit';
 import { EventDetailsFormSection } from '@/features/events/components/EventDetailsFormSection';
@@ -73,8 +74,8 @@ export const FmEditEventButton = ({
     setIsLoadingData(true);
     try {
       // Fetch event with related data
-      const { data: event, error: eventError } = await supabase
-        .from('events' as any)
+      const { data: event, error: eventError } = await (supabase as any)
+        .from('events')
         .select(
           `
           *,
@@ -88,26 +89,35 @@ export const FmEditEventButton = ({
 
       if (event) {
         // Populate form with existing data
-        actions.setHeadlinerId(event.headliner_id || '');
-        actions.setVenueId(event.venue_id || '');
-        actions.setHeroImage(event.hero_image || '');
-        actions.setIsAfterHours(event.is_after_hours || false);
-        actions.setEndTime(event.end_time || '02:00');
+        const headlinerId = (event as any).headliner_id || '';
+        const venueId = (event as any).venue_id || '';
+        const heroImage = (event as any).hero_image || '';
+        const isAfterHours = (event as any).is_after_hours || false;
+        const endTime = (event as any).end_time || '02:00';
+        
+        actions.setHeadlinerId(headlinerId);
+        actions.setVenueId(venueId);
+        actions.setHeroImage(heroImage);
+        actions.setIsAfterHours(isAfterHours);
+        actions.setEndTime(endTime);
 
         // Parse date and time
-        if (event.date) {
-          const eventDate = parse(
-            `${event.date} ${event.time || '20:00'}`,
+        const eventDate = (event as any).date;
+        const eventTime = (event as any).time;
+        if (eventDate) {
+          const parsedDate = parse(
+            `${eventDate} ${eventTime || '20:00'}`,
             'yyyy-MM-dd HH:mm',
             new Date()
           );
-          actions.setEventDate(eventDate);
+          actions.setEventDate(parsedDate);
         }
 
         // Load undercard artists
-        if (event.undercard_ids && Array.isArray(event.undercard_ids)) {
+        const undercardIds = (event as any).undercard_ids;
+        if (undercardIds && Array.isArray(undercardIds)) {
           actions.setUndercardArtists(
-            event.undercard_ids.map((artistId: string) => ({ artistId }))
+            undercardIds.map((artistId: string) => ({ artistId }))
           );
         }
 
@@ -125,7 +135,7 @@ export const FmEditEventButton = ({
         }
       }
     } catch (error) {
-      logger.error('Error loading event data:', error);
+      logger.error('Error loading event data:', { error: error instanceof Error ? error.message : 'Unknown' });
       toast.error('Failed to load event data', {
         description: error instanceof Error ? error.message : 'Unknown error',
       });

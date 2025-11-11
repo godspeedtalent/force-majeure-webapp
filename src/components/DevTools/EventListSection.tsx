@@ -16,7 +16,7 @@ interface EventListItem {
   id: string;
   title: string;
   date: string;
-  time: string;
+  time: string | number;
   venue?: { name: string };
   headliner?: { name: string };
 }

@@ -80,7 +80,7 @@ export const FmCreateArtistButton = ({
         social_links: '',
       });
     } catch (error) {
-      logger.error('Error creating artist:', error);
+      logger.error('Error creating artist:', { error: error instanceof Error ? error.message : 'Unknown' });
       toast.error('Failed to create artist');
     } finally {
       setIsSubmitting(false);

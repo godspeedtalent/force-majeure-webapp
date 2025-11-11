@@ -68,7 +68,7 @@ export const FeatureToggleSection = () => {
         environmentIds.push(allEnvData.id);
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('feature_flags')
         .select('flag_name, is_enabled, description, environment_id')
         .in('environment_id', environmentIds)
@@ -76,17 +76,17 @@ export const FeatureToggleSection = () => {
 
       if (error) throw error;
 
-      const fetchedFlags = data || [];
+      const fetchedFlags = (data || []) as FeatureFlag[];
       setFlags(fetchedFlags);
 
       // Initialize local state with current database values
       const initialLocal: Record<string, boolean> = {};
-      fetchedFlags.forEach(flag => {
+      fetchedFlags.forEach((flag: FeatureFlag) => {
         initialLocal[flag.flag_name] = flag.is_enabled;
       });
       setLocalFlags(initialLocal);
     } catch (error) {
-      logger.error('Failed to fetch feature flags:', error);
+      logger.error('Failed to fetch feature flags:', { error: error instanceof Error ? error.message : 'Unknown' });
       toast.error('Failed to load feature flags');
     } finally {
       setIsLoading(false);
@@ -127,7 +127,7 @@ export const FeatureToggleSection = () => {
       );
       await fetchFlags();
     } catch (error) {
-      logger.error('Failed to update feature flags:', error);
+      logger.error('Failed to update feature flags:', { error: error instanceof Error ? error.message : 'Unknown' });
       toast.error('Failed to update feature flags');
     }
   };
