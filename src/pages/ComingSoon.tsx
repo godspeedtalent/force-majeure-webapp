@@ -5,6 +5,7 @@ import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { FmCommonButton } from '@/components/business/FmCommonButton';
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import { ParallaxLayerManager } from '@/components/layout/ParallaxLayerManager';
 
 export default function ComingSoon() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -30,18 +31,34 @@ export default function ComingSoon() {
   }, []);
 
   return (
-    <div className='min-h-screen bg-background flex items-center justify-center relative overflow-hidden'>
-      {/* Background patterns */}
-      <TopographicBackground opacity={0.1} />
-      <div className='absolute inset-0 bg-gradient-monochrome opacity-5' />
+    <ParallaxLayerManager
+      className='min-h-screen bg-background flex items-center justify-center relative overflow-hidden'
+      layers={[
+        {
+          id: 'topography',
+          content: <TopographicBackground opacity={0.1} parallax={false} />,
+          speed: 0.3,
+          zIndex: 1,
+        },
+        {
+          id: 'gradient',
+          content: <div className='absolute inset-0 bg-gradient-monochrome' />,
+          speed: 0.5,
+          zIndex: 2,
+          opacity: 0.05,
+        },
+      ]}
+    >
 
       {/* Content */}
       <div
         className={`relative z-10 text-center px-6 max-w-2xl mx-auto transition-opacity duration-500 ${fontsLoaded ? 'opacity-100' : 'opacity-0'}`}
       >
         {/* Logo */}
-        <div className={`mb-12 ${fontsLoaded ? 'animate-fade-in' : ''}`}>
-          <ForceMajeureLogo className='w-full max-w-md mx-auto' />
+        <div className={`mb-12 flex justify-center ${fontsLoaded ? 'animate-fade-in' : ''}`}>
+          <div className='w-full max-w-md'>
+            <ForceMajeureLogo size='responsive' />
+          </div>
         </div>
 
         {/* Main message */}
@@ -106,6 +123,6 @@ export default function ComingSoon() {
           <div className='animate-pulse text-muted-foreground'>Loading...</div>
         </div>
       )}
-    </div>
+    </ParallaxLayerManager>
   );
 }

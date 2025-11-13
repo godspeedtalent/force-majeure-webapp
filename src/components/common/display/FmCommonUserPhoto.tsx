@@ -13,6 +13,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@/components/common/shadcn/avatar';
+import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
 import { cn } from '@/shared/utils/utils';
 import { FmAnimatedGradientAvatar } from './FmAnimatedGradientAvatar';
 
@@ -124,10 +125,11 @@ export const FmCommonUserPhoto = ({
         )}
       >
         {src ? (
-          <img
+          <ImageWithSkeleton
             src={src}
             alt={name || 'User avatar'}
             className='w-full h-full object-cover'
+            skeletonClassName='rounded-md' // Match container rounding
           />
         ) : (
           <div className='w-full h-full flex items-center justify-center bg-gradient-gold'>

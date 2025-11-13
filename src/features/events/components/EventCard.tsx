@@ -17,6 +17,7 @@ import {
   FmCommonContextMenu,
   ContextMenuAction,
 } from '@/components/common/modals/FmCommonContextMenu';
+import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
 import { cn } from '@/shared/utils/utils';
 import {
   formatTimeDisplay,
@@ -49,7 +50,6 @@ interface EventCardProps {
 export const EventCard = ({ event }: EventCardProps) => {
   const navigate = useNavigate();
   const [showTicketDialog, setShowTicketDialog] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
 
   const formatDate = (dateString: string) => {
@@ -138,17 +138,16 @@ export const EventCard = ({ event }: EventCardProps) => {
             className='relative h-[65%] overflow-hidden bg-muted'
             style={{ viewTransitionName: `magazine-hero-${event.id}` }}
           >
-            <img
+            <ImageWithSkeleton
               src={event.heroImage}
               alt={displayTitle}
               className={cn(
                 'h-full w-full object-cover transition-all duration-500',
                 'group-hover:scale-105',
                 // Keep scaled when context menu is open
-                contextMenuOpen && 'scale-105',
-                imageLoaded ? 'opacity-100' : 'opacity-0'
+                contextMenuOpen && 'scale-105'
               )}
-              onLoad={() => setImageLoaded(true)}
+              skeletonClassName='rounded-none' // Sharp corners per design system
             />
 
             {/* Gradient Overlay */}
