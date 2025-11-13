@@ -95,9 +95,9 @@ const ArtistSignup = () => {
   return (
     <ArtistRegistrationLayout>
 
-      <div className='relative overflow-hidden z-10' style={{ height: 'calc(100vh - 80px)' }}>
+      <div className='relative overflow-hidden z-10 flex flex-col lg:block' style={{ height: 'calc(100vh - 80px)' }}>
         <div
-          className='absolute inset-0 w-full h-full'
+          className='relative lg:absolute inset-0 w-full h-[50vh] lg:h-full'
           onMouseEnter={() => setIsHoveringCarousel(true)}
           onMouseLeave={() => setIsHoveringCarousel(false)}
         >
@@ -177,58 +177,58 @@ const ArtistSignup = () => {
           </Carousel>
         </div>
 
-        <div className='absolute left-0 top-0 h-full w-[40%] z-20'>
-          <div className='absolute inset-0 bg-black/70 backdrop-blur-md' />
-          
-          <div className='relative z-10 h-full flex items-center py-[8vh] px-[4vw]'>
-            <div className='w-full h-full flex flex-col justify-between max-w-xl mx-auto'>
-              <div className='flex-shrink-0 space-y-[1vh]'>
-                <h1 className='font-canela text-[clamp(1.75rem,3.5vw,3rem)] leading-[1.1] tracking-tight'>
+        <div className='relative lg:absolute left-0 top-0 w-full lg:w-[40%] h-[50vh] lg:h-full z-20 flex-shrink-0'>
+          <div className='absolute inset-0 bg-black/85 lg:bg-black/70 backdrop-blur-md' />
+
+          <div className='relative z-10 h-full flex items-center py-6 px-6 lg:py-[8vh] lg:px-[4vw]'>
+            <div className='w-full h-full flex flex-col justify-between lg:justify-between gap-4 lg:gap-0 max-w-xl mx-auto'>
+              <div className='flex-shrink-0 space-y-2 lg:space-y-[1vh]'>
+                <h1 className='font-canela text-2xl sm:text-3xl lg:text-[clamp(1.75rem,3.5vw,3rem)] leading-[1.1] tracking-tight'>
                   Play with us.
                 </h1>
-                <p className='font-canela text-[clamp(0.8rem,1.1vw,1rem)] text-muted-foreground leading-relaxed'>
+                <p className='font-canela text-xs sm:text-sm lg:text-[clamp(0.8rem,1.1vw,1rem)] text-muted-foreground leading-snug lg:leading-relaxed'>
                   A platform where electronic music artists connect with dedicated audiences and take center stage.
                 </p>
               </div>
 
-              <div className='flex-1 flex flex-col justify-center min-h-0'>
+              <div className='flex-1 lg:flex lg:flex-col lg:justify-center min-h-0 overflow-hidden'>
                 <FmCardCarousel autoPlayInterval={4000}>
-                  <div className='bg-black/60 backdrop-blur-sm border border-white/20 rounded-none p-[clamp(0.75rem,1.3vw,1.125rem)]'>
-                    <div className='flex items-start gap-[clamp(0.625rem,1vw,0.875rem)]'>
-                      <Music2 className='w-[clamp(1.125rem,1.8vw,1.5rem)] h-[clamp(1.125rem,1.8vw,1.5rem)] text-fm-gold flex-shrink-0 mt-1' />
+                  <div className='bg-black/60 backdrop-blur-sm border border-white/20 rounded-none p-3 lg:p-[clamp(0.75rem,1.3vw,1.125rem)]'>
+                    <div className='flex items-start gap-2.5 lg:gap-[clamp(0.625rem,1vw,0.875rem)]'>
+                      <Music2 className='w-4 h-4 lg:w-[clamp(1.125rem,1.8vw,1.5rem)] lg:h-[clamp(1.125rem,1.8vw,1.5rem)] text-fm-gold flex-shrink-0 mt-0.5' />
                       <div>
-                        <h3 className='font-canela text-[clamp(0.9375rem,1.3vw,1.125rem)] mb-[0.3vh]'>
+                        <h3 className='font-canela text-sm lg:text-[clamp(0.9375rem,1.3vw,1.125rem)] mb-0.5 lg:mb-[0.3vh]'>
                           Premium events.
                         </h3>
-                        <p className='font-canela text-[clamp(0.75rem,1vw,0.875rem)] text-muted-foreground leading-relaxed'>
+                        <p className='font-canela text-xs lg:text-[clamp(0.75rem,1vw,0.875rem)] text-muted-foreground leading-snug lg:leading-relaxed'>
                           Perform alongside internationally acclaimed headliners at meticulously curated shows.
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <div className='bg-black/60 backdrop-blur-sm border border-white/20 rounded-none p-[clamp(0.75rem,1.3vw,1.125rem)]'>
-                    <div className='flex items-start gap-[clamp(0.625rem,1vw,0.875rem)]'>
-                      <Users className='w-[clamp(1.125rem,1.8vw,1.5rem)] h-[clamp(1.125rem,1.8vw,1.5rem)] text-fm-gold flex-shrink-0 mt-1' />
+                  <div className='bg-black/60 backdrop-blur-sm border border-white/20 rounded-none p-3 lg:p-[clamp(0.75rem,1.3vw,1.125rem)]'>
+                    <div className='flex items-start gap-2.5 lg:gap-[clamp(0.625rem,1vw,0.875rem)]'>
+                      <Users className='w-4 h-4 lg:w-[clamp(1.125rem,1.8vw,1.5rem)] lg:h-[clamp(1.125rem,1.8vw,1.5rem)] text-fm-gold flex-shrink-0 mt-0.5' />
                       <div>
-                        <h3 className='font-canela text-[clamp(0.9375rem,1.3vw,1.125rem)] mb-[0.3vh]'>
+                        <h3 className='font-canela text-sm lg:text-[clamp(0.9375rem,1.3vw,1.125rem)] mb-0.5 lg:mb-[0.3vh]'>
                           Engaged audiences.
                         </h3>
-                        <p className='font-canela text-[clamp(0.75rem,1vw,0.875rem)] text-muted-foreground leading-relaxed'>
+                        <p className='font-canela text-xs lg:text-[clamp(0.75rem,1vw,0.875rem)] text-muted-foreground leading-snug lg:leading-relaxed'>
                           Connect with passionate electronic music enthusiasts ready to discover new talent.
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <div className='bg-black/60 backdrop-blur-sm border border-white/20 rounded-none p-[clamp(0.75rem,1.3vw,1.125rem)]'>
-                    <div className='flex items-start gap-[clamp(0.625rem,1vw,0.875rem)]'>
-                      <Sparkles className='w-[clamp(1.125rem,1.8vw,1.5rem)] h-[clamp(1.125rem,1.8vw,1.5rem)] text-fm-gold flex-shrink-0 mt-1' />
+                  <div className='bg-black/60 backdrop-blur-sm border border-white/20 rounded-none p-3 lg:p-[clamp(0.75rem,1.3vw,1.125rem)]'>
+                    <div className='flex items-start gap-2.5 lg:gap-[clamp(0.625rem,1vw,0.875rem)]'>
+                      <Sparkles className='w-4 h-4 lg:w-[clamp(1.125rem,1.8vw,1.5rem)] lg:h-[clamp(1.125rem,1.8vw,1.5rem)] text-fm-gold flex-shrink-0 mt-0.5' />
                       <div>
-                        <h3 className='font-canela text-[clamp(0.9375rem,1.3vw,1.125rem)] mb-[0.3vh]'>
+                        <h3 className='font-canela text-sm lg:text-[clamp(0.9375rem,1.3vw,1.125rem)] mb-0.5 lg:mb-[0.3vh]'>
                           Growing scene.
                         </h3>
-                        <p className='font-canela text-[clamp(0.75rem,1vw,0.875rem)] text-muted-foreground leading-relaxed'>
+                        <p className='font-canela text-xs lg:text-[clamp(0.75rem,1vw,0.875rem)] text-muted-foreground leading-snug lg:leading-relaxed'>
                           Be part of a thriving community that celebrates electronic music and supports emerging artists.
                         </p>
                       </div>
@@ -237,11 +237,11 @@ const ArtistSignup = () => {
                 </FmCardCarousel>
               </div>
 
-              <div className='flex-shrink-0 pt-[2vh]'>
+              <div className='flex-shrink-0 pt-3 lg:pt-[2vh]'>
                 <FmCommonButton
                   onClick={handleNavigateToRegister}
                   variant='default'
-                  className='w-full text-[clamp(0.8125rem,1vw,0.9375rem)] py-[clamp(0.5rem,1vh,0.75rem)] font-canela'
+                  className='w-full text-xs sm:text-sm lg:text-[clamp(0.8125rem,1vw,0.9375rem)] py-2.5 lg:py-[clamp(0.5rem,1vh,0.75rem)] font-canela'
                 >
                   Register with us now
                 </FmCommonButton>
