@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { ArrowLeft, Music2, Users, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Layout } from '@/components/layout/Layout';
+import { ArrowLeft, ChevronLeft, Instagram as InstagramIcon, ExternalLink } from 'lucide-react';
+import { ArtistRegistrationLayout } from '@/components/layout/ArtistRegistrationLayout';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
-import { FmCommonFormSection } from '@/components/common/forms/FmCommonFormSection';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonBadgeGroup } from '@/components/common/display/FmCommonBadgeGroup';
+import { FmGenreMultiSelect } from '@/features/artists/components/FmGenreMultiSelect';
 import { supabase } from '@/shared/api/supabase/client';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { logApiError } from '@/shared/utils/apiLogger';
@@ -17,64 +18,83 @@ import {
   CarouselItem,
   CarouselApi,
 } from '@/components/common/shadcn/carousel';
-import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import type { Genre } from '@/features/artists/types';
 
 interface ArtistRegistrationFormData {
-  artistName: string;
-  genre: string;
+  // Basic Details
+  stageName: string;
   bio: string;
+  genres: Genre[];
+
+  // Social
+  profileImageUrl: string;
+  pressImage1Url: string;
+  pressImage2Url: string;
+  pressImage3Url: string;
+  instagramHandle: string;
   soundcloudUrl: string;
   spotifyUrl: string;
-  instagramHandle: string;
-  email: string;
-  phone: string;
-  city: string;
-  state: string;
-  previousVenues: string;
-  setLength: string;
-  equipment: string;
-  availability: string;
-}
+  tiktokHandle: string;
 
-// Placeholder images for artist events - replace with actual event photos
-const ARTIST_SHOWCASE_IMAGES = [
-  { id: 1, placeholder: true, icon: Music2 },
-  { id: 2, placeholder: true, icon: Users },
-  { id: 3, placeholder: true, icon: Sparkles },
-  { id: 4, placeholder: true, icon: Music2 },
-  { id: 5, placeholder: true, icon: Users },
-];
+  // Music
+  spotifyTrackUrl: string;
+  soundcloudSetUrl: string;
+
+  // Terms
+  agreeToTerms: boolean;
+  makeProfilePublic: boolean;
+  linkPersonalProfile: boolean;
+  followOnInstagram: boolean;
+  notificationsOptIn: boolean;
+}
 
 const ArtistRegister = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showForm, setShowForm] = useState(false);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<ArtistRegistrationFormData>({
-    artistName: '',
-    genre: '',
+    // Basic Details
+    stageName: '',
     bio: '',
+    genres: [],
+
+    // Social
+    profileImageUrl: '',
+    pressImage1Url: '',
+    pressImage2Url: '',
+    pressImage3Url: '',
+    instagramHandle: '',
     soundcloudUrl: '',
     spotifyUrl: '',
-    instagramHandle: '',
-    email: user?.email || '',
-    phone: '',
-    city: '',
-    state: '',
-    previousVenues: '',
-    setLength: '',
-    equipment: '',
-    availability: '',
+    tiktokHandle: '',
+
+    // Music
+    spotifyTrackUrl: '',
+    soundcloudSetUrl: '',
+
+    // Terms
+    agreeToTerms: false,
+    makeProfilePublic: true,
+    linkPersonalProfile: false,
+    followOnInstagram: false,
+    notificationsOptIn: false,
   });
 
-  // Carousel effect to track current slide
+  // Sync carousel with current step
+  useEffect(() => {
+    if (carouselApi) {
+      carouselApi.scrollTo(currentStep);
+    }
+  }, [currentStep, carouselApi]);
+
+  // Track carousel changes
   useEffect(() => {
     if (!carouselApi) return;
 
     const onSelect = () => {
-      setCurrentSlide(carouselApi.selectedScrollSnap());
+      setCurrentStep(carouselApi.selectedScrollSnap());
     };
 
     carouselApi.on('select', onSelect);
@@ -85,86 +105,113 @@ const ArtistRegister = () => {
     };
   }, [carouselApi]);
 
-  // Auto-play carousel
-  useEffect(() => {
-    if (!carouselApi) return;
-
-    const interval = setInterval(() => {
-      carouselApi.scrollNext();
-    }, 5000); // Change slide every 5 seconds
-
-    return () => clearInterval(interval);
-  }, [carouselApi]);
-
-  const handleInputChange = (field: keyof ArtistRegistrationFormData, value: string) => {
+  const handleInputChange = (field: keyof ArtistRegistrationFormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const validateForm = (): boolean => {
-    const requiredFields: (keyof ArtistRegistrationFormData)[] = [
-      'artistName',
-      'genre',
-      'bio',
-      'email',
-      'phone',
-      'city',
-      'state',
-    ];
+  const validateStep = (step: number): boolean => {
+    switch (step) {
+      case 0: // Basic Details
+        if (!formData.stageName.trim()) {
+          toast.error('Please enter your stage name');
+          return false;
+        }
+        if (!formData.bio.trim()) {
+          toast.error('Please tell us about yourself');
+          return false;
+        }
+        if (formData.genres.length === 0) {
+          toast.error('Please select at least one genre');
+          return false;
+        }
+        return true;
 
-    for (const field of requiredFields) {
-      if (!formData[field].trim()) {
-        toast.error(`Please fill in the ${field.replace(/([A-Z])/g, ' $1').toLowerCase()} field.`);
-        return false;
-      }
+      case 1: // Social
+        if (!formData.profileImageUrl.trim()) {
+          toast.error('Please provide your profile image URL');
+          return false;
+        }
+        if (!formData.instagramHandle.trim()) {
+          toast.error('Instagram handle is required');
+          return false;
+        }
+        if (!formData.soundcloudUrl.trim() && !formData.spotifyUrl.trim()) {
+          toast.error('Please provide either a SoundCloud or Spotify URL');
+          return false;
+        }
+        return true;
+
+      case 2: // Music
+        if (!formData.soundcloudSetUrl.trim()) {
+          toast.error('A SoundCloud sample set is required');
+          return false;
+        }
+        // Validate URL format
+        try {
+          new URL(formData.soundcloudSetUrl);
+        } catch {
+          toast.error('Please provide a valid SoundCloud URL');
+          return false;
+        }
+        return true;
+
+      case 3: // Terms
+        if (!formData.agreeToTerms) {
+          toast.error('You must agree to the terms and conditions');
+          return false;
+        }
+        return true;
+
+      default:
+        return true;
     }
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      toast.error('Please enter a valid email address.');
-      return false;
-    }
-
-    // Phone validation (basic)
-    const phoneRegex = /^\+?[\d\s\-()]+$/;
-    if (!phoneRegex.test(formData.phone)) {
-      toast.error('Please enter a valid phone number.');
-      return false;
-    }
-
-    return true;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleNext = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep(prev => Math.min(prev + 1, 3));
+    }
+  };
 
-    if (!validateForm()) {
-      return;
+  const handlePrevious = () => {
+    setCurrentStep(prev => Math.max(prev - 1, 0));
+  };
+
+  const handleSubmit = async () => {
+    // Validate all steps
+    for (let i = 0; i < 4; i++) {
+      if (!validateStep(i)) {
+        setCurrentStep(i);
+        return;
+      }
     }
 
     setIsSubmitting(true);
 
     try {
-      // Insert artist registration into the database
       const { data, error } = await supabase
         .from('artist_registrations' as any)
         .insert([
           {
             user_id: user?.id || null,
-            artist_name: formData.artistName,
-            genre: formData.genre,
+            artist_name: formData.stageName,
             bio: formData.bio,
+            genres: formData.genres.map(g => g.id),
+            profile_image_url: formData.profileImageUrl,
+            press_images: [
+              formData.pressImage1Url,
+              formData.pressImage2Url,
+              formData.pressImage3Url,
+            ].filter(url => url.trim() !== ''),
+            instagram_handle: formData.instagramHandle,
             soundcloud_url: formData.soundcloudUrl || null,
             spotify_url: formData.spotifyUrl || null,
-            instagram_handle: formData.instagramHandle || null,
-            email: formData.email,
-            phone: formData.phone,
-            city: formData.city,
-            state: formData.state,
-            previous_venues: formData.previousVenues || null,
-            set_length: formData.setLength || null,
-            equipment: formData.equipment || null,
-            availability: formData.availability || null,
+            tiktok_handle: formData.tiktokHandle || null,
+            spotify_track_url: formData.spotifyTrackUrl || null,
+            soundcloud_set_url: formData.soundcloudSetUrl,
+            make_profile_public: formData.makeProfilePublic,
+            link_personal_profile: formData.linkPersonalProfile,
+            notifications_opt_in: formData.notificationsOptIn,
             status: 'pending',
             submitted_at: new Date().toISOString(),
           },
@@ -183,10 +230,8 @@ const ArtistRegister = () => {
       }
 
       logger.info('Artist registration submitted successfully', { data });
-      toast.success('Registration submitted successfully! We\'ll be in touch soon.');
+      toast.success("Registration submitted successfully! We'll be in touch soon.");
 
-      // Close form and navigate back
-      setShowForm(false);
       setTimeout(() => {
         navigate('/artists/signup');
       }, 1000);
@@ -203,350 +248,480 @@ const ArtistRegister = () => {
     }
   };
 
+  // Genre badges for preview
+  const genreBadges = useMemo(
+    () =>
+      formData.genres.map(genre => ({
+        label: genre.name,
+        className: 'border-fm-gold/60 bg-fm-gold/10 text-fm-gold',
+      })),
+    [formData.genres]
+  );
+
+  const stepTitles = [
+    'Basic Details',
+    'Social & Images',
+    'Music',
+    'Terms & Conditions',
+  ];
+
+  const DEFAULT_BIO =
+    'Your bio will appear here. Tell your story, describe your sound, and share what makes you unique.';
+
   return (
-    <Layout>
-      {/* Magazine-Style Full Page Spread - No Scrolling */}
-      <div className='fixed inset-0 flex overflow-hidden' style={{ height: '100vh' }}>
-        {/* Left Side - Content (40% width) */}
-        <div className='w-[40%] relative flex flex-col justify-between p-[60px] z-10'>
-          {/* Topography background for left side */}
-          <div className='absolute inset-0 opacity-10'>
-            <TopographicBackground opacity={0.3} parallax={false} />
-          </div>
+    <ArtistRegistrationLayout>
+      {/* Full viewport split layout */}
+      <div className='fixed inset-0 top-[80px] flex overflow-hidden'>
+        {/* Left Column - Form Carousel (50% width) */}
+        <div className='w-1/2 relative flex flex-col border-r border-white/10 z-10'>
+          {/* Frosted Glass Background */}
+          <div className='absolute inset-0 bg-black/70 backdrop-blur-md' />
 
-          {/* Back Button */}
-          <button
-            onClick={() => navigate('/artists/signup')}
-            className='absolute top-[40px] left-[40px] text-white/70 hover:text-fm-gold transition-colors duration-300 flex items-center gap-[10px] font-canela text-sm uppercase tracking-wider z-20'
-          >
-            <ArrowLeft className='h-4 w-4' />
-            Back
-          </button>
-
-          {/* Main Content */}
-          <div className='relative z-10 flex-1 flex flex-col justify-center'>
-            <div className='space-y-[40px]'>
-              {/* Logo/Branding Area */}
-              <div className='space-y-[10px]'>
-                <h1 className='font-canela text-6xl md:text-7xl leading-none tracking-tight'>
-                  Join the movement.
-                </h1>
-                <p className='font-canela text-xl text-muted-foreground max-w-md'>
-                  A platform for electronic music artists who are ready to take the stage and connect with dedicated audiences.
-                </p>
-              </div>
-
-              {/* Call to Action */}
-              <div className='space-y-[20px]'>
-                <FmCommonButton
-                  onClick={() => setShowForm(true)}
-                  variant='gold'
-                  className='w-full text-lg py-[20px] font-canela uppercase tracking-wider'
-                >
-                  Apply Now
-                </FmCommonButton>
-
-                {/* Feature Pills */}
-                <div className='flex flex-wrap gap-[10px]'>
-                  <div className='px-[20px] py-[10px] bg-black/60 backdrop-blur-sm border border-white/20 rounded-none'>
-                    <span className='font-canela text-sm text-muted-foreground uppercase tracking-wider'>
-                      Professional Venues
-                    </span>
-                  </div>
-                  <div className='px-[20px] py-[10px] bg-black/60 backdrop-blur-sm border border-white/20 rounded-none'>
-                    <span className='font-canela text-sm text-muted-foreground uppercase tracking-wider'>
-                      Engaged Crowds
-                    </span>
-                  </div>
-                  <div className='px-[20px] py-[10px] bg-black/60 backdrop-blur-sm border border-white/20 rounded-none'>
-                    <span className='font-canela text-sm text-muted-foreground uppercase tracking-wider'>
-                      Growing Scene
-                    </span>
-                  </div>
-                </div>
-              </div>
+          {/* Header */}
+          <div className='relative z-10 flex items-center justify-between p-[20px] border-b border-white/10'>
+            <button
+              onClick={() => navigate('/artists/signup')}
+              className='text-white/70 hover:text-fm-gold transition-colors duration-300 flex items-center gap-[10px] font-canela text-sm'
+            >
+              <ArrowLeft className='h-4 w-4' />
+              Back
+            </button>
+            <div className='flex flex-col items-end'>
+              <span className='font-canela text-sm text-muted-foreground'>
+                Step {currentStep + 1} of 4
+              </span>
+              <span className='font-canela text-xs text-muted-foreground/70'>
+                {stepTitles[currentStep]}
+              </span>
             </div>
           </div>
 
-          {/* Bottom Carousel Navigation */}
-          <div className='relative z-10 flex items-center justify-between'>
-            <div className='flex items-center gap-[20px]'>
-              <button
-                onClick={() => carouselApi?.scrollPrev()}
-                className='h-12 w-12 flex items-center justify-center bg-black/60 backdrop-blur-sm border border-white/20 rounded-none hover:border-fm-gold hover:bg-fm-gold/10 transition-all duration-300'
-                aria-label='Previous image'
-              >
-                <ChevronLeft className='h-6 w-6' />
-              </button>
-              <button
-                onClick={() => carouselApi?.scrollNext()}
-                className='h-12 w-12 flex items-center justify-center bg-black/60 backdrop-blur-sm border border-white/20 rounded-none hover:border-fm-gold hover:bg-fm-gold/10 transition-all duration-300'
-                aria-label='Next image'
-              >
-                <ChevronRight className='h-6 w-6' />
-              </button>
-            </div>
+          {/* Form Carousel */}
+          <div className='relative z-10 flex-1 overflow-hidden'>
+            <Carousel
+              setApi={setCarouselApi}
+              opts={{
+                align: 'start',
+                watchDrag: false,
+              }}
+              className='h-full'
+            >
+              <CarouselContent className='h-full'>
+                {/* Step 1: Basic Details */}
+                <CarouselItem className='h-full'>
+                  <div className='h-full flex flex-col justify-between p-[20px] overflow-y-auto'>
+                    <div className='space-y-[20px]'>
+                      <div>
+                        <h2 className='font-canela text-3xl mb-[10px]'>
+                          Tell us about your sound.
+                        </h2>
+                        <p className='font-canela text-sm text-muted-foreground'>
+                          Share your stage name, bio, and musical style.
+                        </p>
+                      </div>
 
-            {/* Slide Indicators */}
-            <div className='flex gap-[10px]'>
-              {ARTIST_SHOWCASE_IMAGES.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => carouselApi?.scrollTo(index)}
-                  className={cn(
-                    'h-2 transition-all duration-300 rounded-none',
-                    currentSlide === index
-                      ? 'w-[40px] bg-fm-gold'
-                      : 'w-[20px] bg-white/30 hover:bg-white/50'
-                  )}
-                  aria-label={`Go to slide ${index + 1}`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
+                      <div className='space-y-[20px]'>
+                        <FmCommonTextField
+                          label='Stage Name'
+                          required
+                          value={formData.stageName}
+                          onChange={e => handleInputChange('stageName', e.target.value)}
+                          placeholder='Your artist or DJ name'
+                        />
 
-        {/* Right Side - Full Page Carousel (60% width) */}
-        <div className='w-[60%] relative'>
-          <Carousel
-            setApi={setCarouselApi}
-            opts={{
-              loop: true,
-              align: 'center',
-            }}
-            className='h-full w-full'
-          >
-            <CarouselContent className='h-full'>
-              {ARTIST_SHOWCASE_IMAGES.map((image) => {
-                const IconComponent = image.icon;
-                return (
-                  <CarouselItem key={image.id} className='h-full p-0'>
-                    <div className='relative h-full w-full'>
-                      {/* Placeholder for actual images */}
-                      <div className='absolute inset-0 bg-gradient-to-br from-black via-fm-navy/30 to-black flex items-center justify-center'>
-                        <div className='text-center space-y-[20px]'>
-                          <IconComponent className='h-32 w-32 text-fm-gold/20 mx-auto' />
-                          <p className='font-canela text-muted-foreground text-sm uppercase tracking-wider'>
-                            Artist Showcase Image
-                          </p>
+                        <FmCommonTextField
+                          label='Bio'
+                          required
+                          value={formData.bio}
+                          onChange={e => handleInputChange('bio', e.target.value)}
+                          placeholder='Tell us about your musical journey, style, and influences...'
+                          multiline
+                          rows={6}
+                        />
+
+                        <FmGenreMultiSelect
+                          label='Genres'
+                          required
+                          selectedGenres={formData.genres}
+                          onChange={genres => handleInputChange('genres', genres)}
+                          maxGenres={5}
+                        />
+                      </div>
+                    </div>
+
+                    <div className='flex justify-end pt-[20px] flex-shrink-0'>
+                      <FmCommonButton onClick={handleNext} variant='default'>
+                        Next
+                      </FmCommonButton>
+                    </div>
+                  </div>
+                </CarouselItem>
+
+                {/* Step 2: Social & Images */}
+                <CarouselItem className='h-full'>
+                  <div className='h-full flex flex-col justify-between p-[20px] overflow-y-auto'>
+                    <div className='space-y-[20px]'>
+                      <div>
+                        <h2 className='font-canela text-3xl mb-[10px]'>Your online presence.</h2>
+                        <p className='font-canela text-sm text-muted-foreground'>
+                          Add your profile images and social media links.
+                        </p>
+                      </div>
+
+                      <div className='space-y-[20px]'>
+                        {/* Profile Images */}
+                        <div className='space-y-[10px]'>
+                          <h3 className='font-canela text-lg'>Profile Images</h3>
+                          <FmCommonTextField
+                            label='Main Profile Picture'
+                            required
+                            value={formData.profileImageUrl}
+                            onChange={e => handleInputChange('profileImageUrl', e.target.value)}
+                            placeholder='https://example.com/profile.jpg'
+                          />
+                          <FmCommonTextField
+                            label='Press Photo 1 (Optional)'
+                            value={formData.pressImage1Url}
+                            onChange={e => handleInputChange('pressImage1Url', e.target.value)}
+                            placeholder='https://example.com/press1.jpg'
+                          />
+                          <FmCommonTextField
+                            label='Press Photo 2 (Optional)'
+                            value={formData.pressImage2Url}
+                            onChange={e => handleInputChange('pressImage2Url', e.target.value)}
+                            placeholder='https://example.com/press2.jpg'
+                          />
+                          <FmCommonTextField
+                            label='Press Photo 3 (Optional)'
+                            value={formData.pressImage3Url}
+                            onChange={e => handleInputChange('pressImage3Url', e.target.value)}
+                            placeholder='https://example.com/press3.jpg'
+                          />
+                        </div>
+
+                        {/* Social Links */}
+                        <div className='space-y-[10px]'>
+                          <h3 className='font-canela text-lg'>Social Media</h3>
+                          <FmCommonTextField
+                            label='Instagram Handle'
+                            required
+                            value={formData.instagramHandle}
+                            onChange={e => handleInputChange('instagramHandle', e.target.value)}
+                            placeholder='@yourusername'
+                          />
+
+                          <div className='bg-black/40 backdrop-blur-sm border border-white/20 rounded-none p-[15px]'>
+                            <p className='font-canela text-xs text-muted-foreground mb-[10px]'>
+                              At least one is required:
+                            </p>
+                            <div className='space-y-[10px]'>
+                              <FmCommonTextField
+                                label='SoundCloud URL'
+                                value={formData.soundcloudUrl}
+                                onChange={e => handleInputChange('soundcloudUrl', e.target.value)}
+                                placeholder='https://soundcloud.com/your-profile'
+                              />
+                              <FmCommonTextField
+                                label='Spotify Artist URL'
+                                value={formData.spotifyUrl}
+                                onChange={e => handleInputChange('spotifyUrl', e.target.value)}
+                                placeholder='https://open.spotify.com/artist/...'
+                              />
+                            </div>
+                          </div>
+
+                          <FmCommonTextField
+                            label='TikTok Handle (Optional)'
+                            value={formData.tiktokHandle}
+                            onChange={e => handleInputChange('tiktokHandle', e.target.value)}
+                            placeholder='@yourusername'
+                          />
                         </div>
                       </div>
-                      {/* When you have actual images, replace the div above with: */}
-                      {/* <img
-                        src={image.url}
-                        alt={image.alt}
-                        className='w-full h-full object-cover'
-                      /> */}
-
-                      {/* Subtle overlay gradient for depth */}
-                      <div className='absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent' />
                     </div>
-                  </CarouselItem>
-                );
-              })}
-            </CarouselContent>
-          </Carousel>
-        </div>
-      </div>
 
-      {/* Registration Form Modal/Slide-In Panel */}
-      {showForm && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md animate-in fade-in duration-300'>
-          {/* Close overlay on click */}
-          <div
-            className='absolute inset-0'
-            onClick={() => setShowForm(false)}
-          />
+                    <div className='flex justify-between pt-[20px] flex-shrink-0'>
+                      <FmCommonButton onClick={handlePrevious} variant='secondary'>
+                        <ChevronLeft className='h-4 w-4 mr-[10px]' />
+                        Previous
+                      </FmCommonButton>
+                      <FmCommonButton onClick={handleNext} variant='default'>
+                        Next
+                      </FmCommonButton>
+                    </div>
+                  </div>
+                </CarouselItem>
 
-          {/* Form Container */}
-          <div className='relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-black/80 backdrop-blur-xl border-2 border-white/20 rounded-none shadow-2xl animate-in slide-in-from-bottom duration-500'>
-            {/* Form Header */}
-            <div className='sticky top-0 z-10 bg-black/90 backdrop-blur-xl border-b border-white/20 p-[40px]'>
-              <div className='flex items-center justify-between'>
-                <div>
-                  <h2 className='font-canela text-4xl mb-[10px]'>
-                    Artist registration.
-                  </h2>
-                  <p className='font-canela text-muted-foreground'>
-                    Tell us about yourself and your sound.
-                  </p>
-                </div>
-                <button
-                  onClick={() => setShowForm(false)}
-                  className='h-12 w-12 flex items-center justify-center bg-white/5 hover:bg-white/10 border border-white/20 rounded-none transition-all duration-300'
-                  aria-label='Close form'
-                >
-                  <ArrowLeft className='h-6 w-6' />
-                </button>
-              </div>
-            </div>
+                {/* Step 3: Music */}
+                <CarouselItem className='h-full'>
+                  <div className='h-full flex flex-col justify-between p-[20px] overflow-y-auto'>
+                    <div className='space-y-[20px]'>
+                      <div>
+                        <h2 className='font-canela text-3xl mb-[10px]'>Show us your music.</h2>
+                        <p className='font-canela text-sm text-muted-foreground'>
+                          Share samples of your work so we can hear your sound.
+                        </p>
+                      </div>
 
-            {/* Form Content */}
-            <form onSubmit={handleSubmit} className='p-[40px] space-y-[40px]'>
-              {/* Basic Information */}
-              <FmCommonFormSection
-                title='Basic information.'
-                description='Your artist details and contact information.'
-              >
-                <FmCommonTextField
-                  label='Artist Name'
-                  required
-                  value={formData.artistName}
-                  onChange={(e) => handleInputChange('artistName', e.target.value)}
-                  placeholder='Your stage name or artist name'
-                />
+                      <div className='space-y-[20px]'>
+                        <FmCommonTextField
+                          label='SoundCloud Sample Set'
+                          required
+                          value={formData.soundcloudSetUrl}
+                          onChange={e => handleInputChange('soundcloudSetUrl', e.target.value)}
+                          placeholder='https://soundcloud.com/you/sets/your-sample-set'
+                        />
+                        <p className='font-canela text-xs text-muted-foreground -mt-[10px]'>
+                          A full set or mix showcasing your style is required.
+                        </p>
 
-                <FmCommonTextField
-                  label='Genre'
-                  required
-                  value={formData.genre}
-                  onChange={(e) => handleInputChange('genre', e.target.value)}
-                  placeholder='e.g., Techno, House, Drum & Bass'
-                />
+                        <FmCommonTextField
+                          label='Spotify Track (Optional)'
+                          value={formData.spotifyTrackUrl}
+                          onChange={e => handleInputChange('spotifyTrackUrl', e.target.value)}
+                          placeholder='https://open.spotify.com/track/...'
+                        />
+                        <p className='font-canela text-xs text-muted-foreground -mt-[10px]'>
+                          Share a representative track if you have music on Spotify.
+                        </p>
+                      </div>
+                    </div>
 
-                <FmCommonTextField
-                  label='Bio'
-                  required
-                  value={formData.bio}
-                  onChange={(e) => handleInputChange('bio', e.target.value)}
-                  placeholder='Tell us about your musical journey and style'
-                  multiline
-                  rows={4}
-                />
-              </FmCommonFormSection>
+                    <div className='flex justify-between pt-[20px] flex-shrink-0'>
+                      <FmCommonButton onClick={handlePrevious} variant='secondary'>
+                        <ChevronLeft className='h-4 w-4 mr-[10px]' />
+                        Previous
+                      </FmCommonButton>
+                      <FmCommonButton onClick={handleNext} variant='default'>
+                        Next
+                      </FmCommonButton>
+                    </div>
+                  </div>
+                </CarouselItem>
 
-              {/* Social & Music Links */}
-              <FmCommonFormSection
-                title='Online presence.'
-                description='Share your music and social profiles.'
-              >
-                <FmCommonTextField
-                  label='SoundCloud URL'
-                  value={formData.soundcloudUrl}
-                  onChange={(e) => handleInputChange('soundcloudUrl', e.target.value)}
-                  placeholder='https://soundcloud.com/your-profile'
-                />
+                {/* Step 4: Terms & Conditions */}
+                <CarouselItem className='h-full'>
+                  <div className='h-full flex flex-col justify-between p-[20px] overflow-y-auto'>
+                    <div className='space-y-[20px]'>
+                      <div>
+                        <h2 className='font-canela text-3xl mb-[10px]'>
+                          Almost there!
+                        </h2>
+                        <p className='font-canela text-sm text-muted-foreground'>
+                          Review the terms and customize your profile settings.
+                        </p>
+                      </div>
 
-                <FmCommonTextField
-                  label='Spotify URL'
-                  value={formData.spotifyUrl}
-                  onChange={(e) => handleInputChange('spotifyUrl', e.target.value)}
-                  placeholder='https://open.spotify.com/artist/...'
-                />
+                      <div className='space-y-[20px]'>
+                        {/* Terms and Conditions */}
+                        <div className='bg-black/40 backdrop-blur-sm border border-white/20 rounded-none p-[20px]'>
+                          <h3 className='font-canela text-base mb-[10px]'>Terms and Conditions</h3>
+                          <div className='max-h-[150px] overflow-y-auto mb-[15px] p-[15px] bg-black/20 border border-white/10 rounded-none'>
+                            <p className='font-canela text-xs text-muted-foreground leading-relaxed'>
+                              By submitting this registration, you agree to the Force Majeure artist terms and conditions.
+                              You confirm that all information provided is accurate and that you have the rights to the music
+                              and images submitted. Force Majeure reserves the right to approve or decline artist applications
+                              at our discretion. Selected artists will be contacted within 2-3 weeks of submission.
+                            </p>
+                          </div>
+                          <label className='flex items-start gap-[10px] cursor-pointer group'>
+                            <input
+                              type='checkbox'
+                              checked={formData.agreeToTerms}
+                              onChange={e => handleInputChange('agreeToTerms', e.target.checked)}
+                              className='mt-1 h-4 w-4 rounded-none border-white/20 bg-transparent checked:bg-fm-gold checked:border-fm-gold focus:ring-fm-gold focus:ring-offset-0'
+                            />
+                            <span className='font-canela text-sm group-hover:text-fm-gold transition-colors'>
+                              I agree to the terms and conditions <span className='text-fm-danger'>*</span>
+                            </span>
+                          </label>
+                        </div>
 
-                <FmCommonTextField
-                  label='Instagram Handle'
-                  value={formData.instagramHandle}
-                  onChange={(e) => handleInputChange('instagramHandle', e.target.value)}
-                  placeholder='@yourusername'
-                />
-              </FmCommonFormSection>
+                        {/* Profile Settings */}
+                        <div className='space-y-[15px]'>
+                          <h3 className='font-canela text-base'>Profile Settings</h3>
 
-              {/* Contact Information */}
-              <FmCommonFormSection
-                title='Contact information.'
-                description='How we can reach you.'
-              >
-                <FmCommonTextField
-                  label='Email'
-                  required
-                  type='email'
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  placeholder='your@email.com'
-                />
+                          <label className='flex items-start gap-[10px] cursor-pointer group'>
+                            <input
+                              type='checkbox'
+                              checked={formData.makeProfilePublic}
+                              onChange={e => handleInputChange('makeProfilePublic', e.target.checked)}
+                              className='mt-1 h-4 w-4 rounded-none border-white/20 bg-transparent checked:bg-fm-gold checked:border-fm-gold focus:ring-fm-gold focus:ring-offset-0'
+                            />
+                            <div className='flex-1'>
+                              <span className='font-canela text-sm group-hover:text-fm-gold transition-colors block'>
+                                Make my artist profile public
+                              </span>
+                              <span className='font-canela text-xs text-muted-foreground'>
+                                Your profile will be visible to event attendees and music fans
+                              </span>
+                            </div>
+                          </label>
 
-                <FmCommonTextField
-                  label='Phone'
-                  required
-                  type='tel'
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
-                  placeholder='+1 (555) 123-4567'
-                />
+                          <label className='flex items-start gap-[10px] cursor-pointer group'>
+                            <input
+                              type='checkbox'
+                              checked={formData.linkPersonalProfile}
+                              onChange={e => handleInputChange('linkPersonalProfile', e.target.checked)}
+                              className='mt-1 h-4 w-4 rounded-none border-white/20 bg-transparent checked:bg-fm-gold checked:border-fm-gold focus:ring-fm-gold focus:ring-offset-0'
+                            />
+                            <div className='flex-1'>
+                              <span className='font-canela text-sm group-hover:text-fm-gold transition-colors block'>
+                                Link my personal account
+                              </span>
+                              <span className='font-canela text-xs text-muted-foreground'>
+                                Connect your social user account with your artist profile
+                              </span>
+                            </div>
+                          </label>
 
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-[20px]'>
-                  <FmCommonTextField
-                    label='City'
-                    required
-                    value={formData.city}
-                    onChange={(e) => handleInputChange('city', e.target.value)}
-                    placeholder='Your city'
-                  />
+                          <label className='flex items-start gap-[10px] cursor-pointer group'>
+                            <input
+                              type='checkbox'
+                              checked={formData.notificationsOptIn}
+                              onChange={e => handleInputChange('notificationsOptIn', e.target.checked)}
+                              className='mt-1 h-4 w-4 rounded-none border-white/20 bg-transparent checked:bg-fm-gold checked:border-fm-gold focus:ring-fm-gold focus:ring-offset-0'
+                            />
+                            <div className='flex-1'>
+                              <span className='font-canela text-sm group-hover:text-fm-gold transition-colors block'>
+                                Send me booking notifications
+                              </span>
+                              <span className='font-canela text-xs text-muted-foreground'>
+                                Get notified about booking opportunities and event updates
+                              </span>
+                            </div>
+                          </label>
+                        </div>
 
-                  <FmCommonTextField
-                    label='State'
-                    required
-                    value={formData.state}
-                    onChange={(e) => handleInputChange('state', e.target.value)}
-                    placeholder='State/Province'
-                  />
-                </div>
-              </FmCommonFormSection>
+                        {/* Support Force Majeure */}
+                        <div className='bg-fm-gold/10 border border-fm-gold/30 rounded-none p-[20px]'>
+                          <h3 className='font-canela text-base mb-[10px] text-fm-gold'>
+                            Support Force Majeure
+                          </h3>
+                          <p className='font-canela text-sm text-muted-foreground mb-[15px]'>
+                            Your support helps us create better events and support more artists. Follow us on Instagram to
+                            stay connected with the community.
+                          </p>
+                          <a
+                            href='https://instagram.com/forcemajeureevents'
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='inline-flex items-center gap-[10px] px-[20px] py-[12px] bg-fm-gold/20 hover:bg-fm-gold/30 border border-fm-gold/50 rounded-none transition-all duration-300 font-canela text-sm'
+                          >
+                            <InstagramIcon className='h-4 w-4' />
+                            Follow us on Instagram
+                            <ExternalLink className='h-3 w-3' />
+                          </a>
+                        </div>
+                      </div>
+                    </div>
 
-              {/* Performance Details */}
-              <FmCommonFormSection
-                title='Performance details.'
-                description='Tell us about your live setup and experience.'
-              >
-                <FmCommonTextField
-                  label='Previous Venues'
-                  value={formData.previousVenues}
-                  onChange={(e) => handleInputChange('previousVenues', e.target.value)}
-                  placeholder="List venues or events where you've performed"
-                  multiline
-                  rows={3}
-                />
+                    <div className='flex justify-between pt-[20px] border-t border-white/10 flex-shrink-0'>
+                      <FmCommonButton onClick={handlePrevious} variant='secondary'>
+                        <ChevronLeft className='h-4 w-4 mr-[10px]' />
+                        Previous
+                      </FmCommonButton>
+                      <FmCommonButton
+                        onClick={handleSubmit}
+                        variant='gold'
+                        loading={isSubmitting}
+                      >
+                        Submit Registration
+                      </FmCommonButton>
+                    </div>
+                  </div>
+                </CarouselItem>
+              </CarouselContent>
+            </Carousel>
+          </div>
 
-                <FmCommonTextField
-                  label='Typical Set Length'
-                  value={formData.setLength}
-                  onChange={(e) => handleInputChange('setLength', e.target.value)}
-                  placeholder='e.g., 60 minutes, 90 minutes'
-                />
-
-                <FmCommonTextField
-                  label='Equipment'
-                  value={formData.equipment}
-                  onChange={(e) => handleInputChange('equipment', e.target.value)}
-                  placeholder='What equipment do you use? (CDJs, controllers, etc.)'
-                  multiline
-                  rows={2}
-                />
-
-                <FmCommonTextField
-                  label='Availability'
-                  value={formData.availability}
-                  onChange={(e) => handleInputChange('availability', e.target.value)}
-                  placeholder='When are you typically available to perform?'
-                  multiline
-                  rows={2}
-                />
-              </FmCommonFormSection>
-
-              {/* Form Actions */}
-              <div className='flex items-center justify-end gap-[20px] pt-[20px] border-t border-white/10'>
-                <FmCommonButton
-                  type='button'
-                  variant='secondary'
-                  onClick={() => setShowForm(false)}
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </FmCommonButton>
-                <FmCommonButton
-                  type='submit'
-                  variant='gold'
-                  loading={isSubmitting}
-                >
-                  Submit Registration
-                </FmCommonButton>
-              </div>
-            </form>
+          {/* Progress Indicators */}
+          <div className='relative z-10 flex justify-center gap-[10px] p-[15px] border-t border-white/10'>
+            {[0, 1, 2, 3].map(step => (
+              <button
+                key={step}
+                onClick={() => setCurrentStep(step)}
+                className={cn(
+                  'h-2 transition-all duration-300 rounded-none',
+                  currentStep === step
+                    ? 'w-[40px] bg-fm-gold'
+                    : 'w-[20px] bg-white/30 hover:bg-white/50'
+                )}
+                aria-label={`Go to step ${step + 1}: ${stepTitles[step]}`}
+              />
+            ))}
           </div>
         </div>
-      )}
-    </Layout>
+
+        {/* Right Column - Live Preview (50% width) - Modal Style */}
+        <div className='w-1/2 relative flex flex-col overflow-hidden z-10'>
+          {/* Preview Header - Thin row at top */}
+          <div className='flex-shrink-0 flex items-center justify-between px-[40px] py-[15px] border-b border-white/10 bg-black/30 backdrop-blur-sm'>
+            <div>
+              <h3 className='font-canela text-lg text-white'>Profile Preview</h3>
+            </div>
+            <p className='font-canela text-xs text-muted-foreground'>
+              This is how your profile will look to others
+            </p>
+          </div>
+
+          {/* Preview Content */}
+          <div className='flex-1 flex items-center justify-center overflow-y-auto p-[40px]'>
+            <div className='w-full max-w-2xl'>
+              {/* Artist Preview - Modal Style */}
+              <div className='flex flex-col gap-6 sm:flex-row sm:items-stretch'>
+                {/* Left: Image Column */}
+                <div className='sm:w-48 flex-shrink-0'>
+                  <div className='space-y-2'>
+                    <p className='text-[10px] uppercase tracking-[0.35em] text-white/50 font-canela'>
+                      Artist Spotlight
+                    </p>
+                    <h2 className='text-2xl font-canela font-semibold text-white leading-tight'>
+                      {formData.stageName || 'Your Name'}
+                    </h2>
+                  </div>
+                  <div className='mt-3 overflow-hidden rounded-xl border border-white/15 bg-white/5 shadow-inner'>
+                    {formData.profileImageUrl ? (
+                      <img
+                        src={formData.profileImageUrl}
+                        alt={formData.stageName}
+                        className='aspect-[3/4] w-full object-cover'
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className='aspect-[3/4] w-full bg-gradient-to-br from-fm-gold/15 via-fm-gold/5 to-transparent' />
+                    )}
+                  </div>
+                </div>
+
+                {/* Right: Content Column */}
+                <div className='flex-1 flex flex-col justify-center gap-4 sm:min-h-[280px]'>
+                  <div
+                    className={cn(
+                      'prose prose-invert max-w-none text-sm text-white/80 leading-relaxed font-canela',
+                      !formData.bio && 'italic text-white/60'
+                    )}
+                  >
+                    {formData.bio || DEFAULT_BIO}
+                  </div>
+
+                  {genreBadges.length > 0 && (
+                    <FmCommonBadgeGroup
+                      badges={genreBadges}
+                      className='mt-auto'
+                      badgeClassName='border-fm-gold/60 bg-fm-gold/10 text-fm-gold'
+                      gap='md'
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ArtistRegistrationLayout>
   );
 };
 

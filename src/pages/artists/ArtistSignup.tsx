@@ -1,9 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Music2, Users, Sparkles, LucideIcon } from 'lucide-react';
-import { Navigation } from '@/components/navigation/Navigation';
-import { Footer } from '@/components/navigation/Footer';
-import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import { ArtistRegistrationLayout } from '@/components/layout/ArtistRegistrationLayout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCardCarousel } from '@/components/common/data/FmCardCarousel';
 import {
@@ -19,36 +17,42 @@ interface ShowcaseImage {
   icon: LucideIcon;
   url?: string;
   alt?: string;
+  objectPosition?: string; // e.g., 'center', 'top', 'bottom', '50% 25%'
+  credit?: string; // Photo credit
 }
 
 const PAST_SHOW_IMAGES: ShowcaseImage[] = [
-  { 
-    id: 1, 
+  {
+    id: 1,
     placeholder: false,
     icon: Music2,
     url: '/images/artist-showcase/DSC01097.jpg',
-    alt: 'Force Majeure event showcase'
+    alt: 'Force Majeure event showcase',
+    objectPosition: 'center',
+    credit: 'Photo by Force Majeure'
   },
-  { 
-    id: 2, 
+  {
+    id: 2,
     placeholder: false,
     icon: Users,
     url: '/images/artist-showcase/_KAK4846.jpg',
-    alt: 'Force Majeure event showcase'
+    alt: 'Force Majeure event showcase',
+    objectPosition: 'center',
+    credit: 'Photo by Force Majeure'
   },
-  { 
-    id: 3, 
-    placeholder: true, 
+  {
+    id: 3,
+    placeholder: true,
     icon: Sparkles,
   },
-  { 
-    id: 4, 
-    placeholder: true, 
+  {
+    id: 4,
+    placeholder: true,
     icon: Music2,
   },
-  { 
-    id: 5, 
-    placeholder: true, 
+  {
+    id: 5,
+    placeholder: true,
     icon: Users,
   },
 ];
@@ -56,12 +60,14 @@ const PAST_SHOW_IMAGES: ShowcaseImage[] = [
 const ArtistSignup = () => {
   const navigate = useNavigate();
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
+  const [isHoveringCarousel, setIsHoveringCarousel] = useState(false);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
   useEffect(() => {
     if (!carouselApi) return;
 
     const onSelect = () => {
-      // Update carousel state if needed
+      setCurrentSlideIndex(carouselApi.selectedScrollSnap());
     };
 
     carouselApi.on('select', onSelect);
@@ -87,16 +93,14 @@ const ArtistSignup = () => {
   };
 
   return (
-    <div className='min-h-screen bg-background flex flex-col relative overflow-hidden'>
-      <div className='fixed inset-0 z-0'>
-        <TopographicBackground opacity={0.35} />
-        <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
-      </div>
-
-      <Navigation />
+    <ArtistRegistrationLayout>
 
       <div className='relative overflow-hidden z-10' style={{ height: 'calc(100vh - 80px)' }}>
-        <div className='absolute inset-0 w-full h-full'>
+        <div
+          className='absolute inset-0 w-full h-full'
+          onMouseEnter={() => setIsHoveringCarousel(true)}
+          onMouseLeave={() => setIsHoveringCarousel(false)}
+        >
           <Carousel
             setApi={setCarouselApi}
             opts={{
@@ -126,22 +130,44 @@ const ArtistSignup = () => {
                           alt={image.alt}
                           className='w-full h-full object-cover'
                           style={{
-                            filter: 'saturate(0.1) contrast(1.1)',
-                            mixBlendMode: 'normal'
+                            objectPosition: image.objectPosition || 'center'
                           }}
                         />
                       )}
 
                       <div className='absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent' />
-                      
+
                       {!image.placeholder && (
-                        <div 
-                          className='absolute inset-0 pointer-events-none'
-                          style={{
-                            mixBlendMode: 'color',
-                            background: 'linear-gradient(135deg, rgba(223, 186, 125, 0.15) 0%, rgba(82, 12, 16, 0.15) 100%)'
-                          }}
-                        />
+                        <>
+                          {/* SVG filter for selective desaturation - preserves gold and crimson */}
+                          <svg className='absolute inset-0 w-0 h-0'>
+                            <defs>
+                              <filter id='selective-desaturate'>
+                                {/* Preserve gold (#dfba7d - RGB: 223, 186, 125) */}
+                                <feComponentTransfer>
+                                  <feFuncR type='discrete' tableValues='0.3 0.3 0.3 0.3 0.3 0.5 0.7 0.87 1 1' />
+                                  <feFuncG type='discrete' tableValues='0.3 0.3 0.3 0.3 0.4 0.5 0.6 0.73 0.85 1' />
+                                  <feFuncB type='discrete' tableValues='0.2 0.2 0.2 0.2 0.3 0.35 0.4 0.49 0.6 0.8' />
+                                </feComponentTransfer>
+                              </filter>
+                            </defs>
+                          </svg>
+                          <div
+                            className='absolute inset-0 pointer-events-none'
+                            style={{
+                              filter: 'url(#selective-desaturate) contrast(1.1)',
+                            }}
+                          />
+                        </>
+                      )}
+
+                      {/* Photo credit on hover */}
+                      {!image.placeholder && image.credit && isHoveringCarousel && (
+                        <div className='absolute bottom-[20px] right-[20px] bg-black/70 backdrop-blur-md px-[15px] py-[8px] border border-white/10 animate-in fade-in slide-in-from-bottom-2 duration-300'>
+                          <p className='font-canela text-xs text-muted-foreground'>
+                            {image.credit}
+                          </p>
+                        </div>
                       )}
                     </div>
                   </CarouselItem>
@@ -215,9 +241,9 @@ const ArtistSignup = () => {
                 <FmCommonButton
                   onClick={handleNavigateToRegister}
                   variant='default'
-                  className='w-full text-[clamp(0.8125rem,1vw,0.9375rem)] py-[clamp(0.5rem,1vh,0.75rem)] font-canela uppercase tracking-wider'
+                  className='w-full text-[clamp(0.8125rem,1vw,0.9375rem)] py-[clamp(0.5rem,1vh,0.75rem)] font-canela'
                 >
-                  Register with us now.
+                  Register with us now
                 </FmCommonButton>
               </div>
             </div>
@@ -225,8 +251,7 @@ const ArtistSignup = () => {
         </div>
       </div>
 
-      <Footer />
-    </div>
+    </ArtistRegistrationLayout>
   );
 };
 
