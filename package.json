@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --config config/vite.config.ts",
+    "dev:full": "(supabase start || echo 'Supabase already running or failed to start') && npm run dev",
+    "dev:migrate": "supabase db reset && npm run dev",
     "build": "vite build --config config/vite.config.ts",
     "build:dev": "vite build --mode development --config config/vite.config.ts",
     "lint": "eslint . --config config/eslint.config.js --ext .ts,.tsx,.js,.jsx",

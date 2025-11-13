@@ -11,7 +11,6 @@ import { supabase } from '@/shared/api/supabase/client';
 import { useToast } from '@/shared/hooks/use-toast';
 import { sessionPersistence } from '@/shared/utils/sessionPersistence';
 import { logger } from '@/shared/services/logger';
-import { rolesStore } from '@/shared/stores/rolesStore';
 
 const authLogger = logger.createNamespace('Auth');
 
@@ -92,7 +91,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       setProfile(data);
     } catch (error) {
-      logger.error('Error fetching profile:', error);
+      logger.error('Error fetching profile:', { error });
     }
   };
 
@@ -103,11 +102,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   useEffect(() => {
-    // Load roles store on mount (once, globally)
-    rolesStore.loadRoles().catch(error => {
-      authLogger.error('Failed to load roles:', error);
-    });
-
     // Set up auth state listener FIRST
     const {
       data: { subscription },

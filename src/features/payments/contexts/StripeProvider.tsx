@@ -1,6 +1,7 @@
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { ReactNode, useEffect, useState } from 'react';
+import { logger } from '@/shared/services/logger';
 
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 

@@ -368,19 +368,62 @@ FROM (VALUES
 ON CONFLICT (name) DO NOTHING;
 
 -- ============================================================================
--- FEATURE FLAGS: Initialize all flags to false
+-- ENVIRONMENTS: Required reference data
 -- ============================================================================
-INSERT INTO feature_flags (flag_name, is_enabled, description) VALUES
-  ('coming_soon_mode', false, 'Shows "Coming Soon" page instead of main content'),
-  ('demo_pages', false, 'Enables access to demo/testing pages'),
-  ('event_checkout_timer', false, 'Shows countdown timer during event checkout'),
-  ('scavenger_hunt', false, 'Enables scavenger hunt feature'),
-  ('scavenger_hunt_active', false, 'Activates current scavenger hunt campaign'),
-  ('show_leaderboard', false, 'Displays scavenger hunt leaderboard'),
-  ('member_profiles', false, 'Enables member profile pages'),
-  ('merch_store', false, 'Enables merchandise store'),
-  ('global_search', false, 'Enables global search functionality')
-ON CONFLICT (flag_name) DO NOTHING;
+INSERT INTO environments (name, display_name, description) VALUES
+  ('dev', 'Development', 'Local development and testing environment'),
+  ('qa', 'QA/Staging', 'Quality assurance and pre-production testing'),
+  ('prod', 'Production', 'Live production environment'),
+  ('all', 'All Environments', 'Configuration applies to all environments')
+ON CONFLICT (name) DO NOTHING;
+
+-- ============================================================================
+-- FEATURE FLAGS: Initialize all flags with environment references
+-- ============================================================================
+INSERT INTO feature_flags (flag_name, is_enabled, environment_id, description)
+SELECT 'coming_soon_mode', false, e.id, 'Shows "Coming Soon" page instead of main content'
+FROM environments e WHERE e.name = 'all'
+ON CONFLICT (flag_name, environment_id) DO NOTHING;
+
+INSERT INTO feature_flags (flag_name, is_enabled, environment_id, description)
+SELECT 'demo_pages', CASE WHEN e.name IN ('dev', 'qa') THEN true ELSE false END, e.id, 'Enables access to demo/testing pages'
+FROM environments e WHERE e.name IN ('dev', 'qa', 'prod')
+ON CONFLICT (flag_name, environment_id) DO NOTHING;
+
+INSERT INTO feature_flags (flag_name, is_enabled, environment_id, description)
+SELECT 'event_checkout_timer', false, e.id, 'Shows countdown timer during event checkout'
+FROM environments e WHERE e.name = 'all'
+ON CONFLICT (flag_name, environment_id) DO NOTHING;
+
+INSERT INTO feature_flags (flag_name, is_enabled, environment_id, description)
+SELECT 'scavenger_hunt', false, e.id, 'Enables scavenger hunt feature'
+FROM environments e WHERE e.name = 'all'
+ON CONFLICT (flag_name, environment_id) DO NOTHING;
+
+INSERT INTO feature_flags (flag_name, is_enabled, environment_id, description)
+SELECT 'scavenger_hunt_active', false, e.id, 'Activates current scavenger hunt campaign'
+FROM environments e WHERE e.name = 'all'
+ON CONFLICT (flag_name, environment_id) DO NOTHING;
+
+INSERT INTO feature_flags (flag_name, is_enabled, environment_id, description)
+SELECT 'show_leaderboard', false, e.id, 'Displays scavenger hunt leaderboard'
+FROM environments e WHERE e.name = 'all'
+ON CONFLICT (flag_name, environment_id) DO NOTHING;
+
+INSERT INTO feature_flags (flag_name, is_enabled, environment_id, description)
+SELECT 'member_profiles', false, e.id, 'Enables member profile pages'
+FROM environments e WHERE e.name = 'all'
+ON CONFLICT (flag_name, environment_id) DO NOTHING;
+
+INSERT INTO feature_flags (flag_name, is_enabled, environment_id, description)
+SELECT 'merch_store', false, e.id, 'Enables merchandise store'
+FROM environments e WHERE e.name = 'all'
+ON CONFLICT (flag_name, environment_id) DO NOTHING;
+
+INSERT INTO feature_flags (flag_name, is_enabled, environment_id, description)
+SELECT 'global_search', true, e.id, 'Enables global search functionality'
+FROM environments e WHERE e.name = 'all'
+ON CONFLICT (flag_name, environment_id) DO NOTHING;
 
 COMMIT;
 
