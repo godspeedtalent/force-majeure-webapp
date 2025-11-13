@@ -1,7 +1,9 @@
-import { Calendar } from 'lucide-react';
+import { Calendar, Music2 } from 'lucide-react';
 import { useEffect, useRef, useMemo, useState } from 'react';
-import { FmCommonEmptyState } from '@/components/common/display/FmCommonEmptyState';
+import { useNavigate } from 'react-router-dom';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
+import { FmInfoCard } from '@/components/common/data/FmInfoCard';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import { Layout } from '@/components/layout/Layout';
@@ -34,6 +36,7 @@ interface EventData {
 }
 
 const Index = () => {
+  const navigate = useNavigate();
   const [upcomingEvents, setUpcomingEvents] = useState<EventData[]>([]);
   const [loading, setLoading] = useState(true);
   const fontsLoaded = useFontLoader();
@@ -216,11 +219,21 @@ const Index = () => {
                     <EventCard key={event.id} event={event} />
                   ))
                 ) : (
-                  <div className='col-span-full'>
-                    <FmCommonEmptyState
-                      icon={Calendar}
-                      title='No upcoming events'
-                    />
+                  <div className='col-span-full flex justify-center'>
+                    <FmInfoCard
+                      icon={Music2}
+                      title='Our 2026 lineup is coming soon.'
+                      className='max-w-2xl text-center'
+                    >
+                      <p className='text-muted-foreground mb-[20px]'>
+                        Are you an artist wanting to open for headlining talent?
+                        <br />
+                        Register with us below!
+                      </p>
+                      <FmCommonButton onClick={() => navigate('/artists/signup')}>
+                        Artist Registration
+                      </FmCommonButton>
+                    </FmInfoCard>
                   </div>
                 )}
               </div>

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
 import {
   Card,
   CardContent,
@@ -18,7 +19,6 @@ import {
   TabsTrigger,
 } from '@/components/common/shadcn/tabs';
 import { Button } from '@/components/common/shadcn/button';
-import { Checkbox } from '@/components/common/shadcn/checkbox';
 import { Label } from '@/components/common/shadcn/label';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { GoogleOAuthButton } from './GoogleOAuthButton';
@@ -48,6 +48,7 @@ export const AuthPanel = ({
     password: '',
     confirmPassword: '',
     displayName: '',
+    isPublic: true,
   });
   const [passwordError, setPasswordError] = useState('');
 
@@ -85,7 +86,8 @@ export const AuthPanel = ({
     const { error } = await signUp(
       signUpForm.email,
       signUpForm.password,
-      signUpForm.displayName
+      signUpForm.displayName,
+      signUpForm.isPublic
     );
 
     if (!error && onAuthSuccess) {
@@ -110,7 +112,7 @@ export const AuthPanel = ({
 
   if (loading) {
     return (
-      <Card className='w-full max-w-md border-border/30 bg-card/20 backdrop-blur-lg shadow-2xl'>
+      <Card className='w-full max-w-md border border-white/20 bg-black/70 backdrop-blur-md shadow-2xl rounded-none'>
         <CardContent className='flex items-center justify-center py-12'>
           <Loader2 className='w-8 h-8 animate-spin text-fm-gold' />
         </CardContent>
@@ -119,7 +121,7 @@ export const AuthPanel = ({
   }
 
   return (
-    <Card className='w-full max-w-md border-border/30 bg-card/20 backdrop-blur-lg shadow-2xl animate-fade-in'>
+    <Card className='w-full max-w-md border border-white/20 bg-black/70 backdrop-blur-md shadow-2xl rounded-none animate-fade-in'>
       <CardHeader className='text-center pb-6'>
         <div className='flex justify-center mb-4'>
           <ForceMajeureLogo className='w-16 h-16' />
@@ -134,9 +136,19 @@ export const AuthPanel = ({
 
       <CardContent>
         <Tabs defaultValue='signin' className='w-full'>
-          <TabsList className='grid w-full grid-cols-2'>
-            <TabsTrigger value='signin'>Sign In</TabsTrigger>
-            <TabsTrigger value='signup'>Sign Up</TabsTrigger>
+          <TabsList className='grid w-full grid-cols-2 bg-black/40 border border-white/10 rounded-none p-1'>
+            <TabsTrigger
+              value='signin'
+              className='rounded-none data-[state=active]:bg-fm-gold data-[state=active]:text-black data-[state=active]:shadow-none font-canela'
+            >
+              Sign In
+            </TabsTrigger>
+            <TabsTrigger
+              value='signup'
+              className='rounded-none data-[state=active]:bg-fm-gold data-[state=active]:text-black data-[state=active]:shadow-none font-canela'
+            >
+              Sign Up
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value='signin' className='space-y-6'>
@@ -178,10 +190,10 @@ export const AuthPanel = ({
               />
 
               <div className='flex items-center space-x-2'>
-                <Checkbox
+                <FmCommonCheckbox
                   id='remember-me'
                   checked={rememberMe}
-                  onCheckedChange={checked => setRememberMe(checked === true)}
+                  onCheckedChange={setRememberMe}
                 />
                 <Label
                   htmlFor='remember-me'
@@ -194,7 +206,6 @@ export const AuthPanel = ({
               <FmCommonButton
                 type='submit'
                 className='w-full'
-                variant='gold'
                 loading={isLoading}
                 disabled={isOAuthLoading}
               >
@@ -288,10 +299,25 @@ export const AuthPanel = ({
                 error={passwordError}
               />
 
+              <div className='flex items-center space-x-2'>
+                <FmCommonCheckbox
+                  id='public-profile'
+                  checked={signUpForm.isPublic}
+                  onCheckedChange={checked =>
+                    setSignUpForm({ ...signUpForm, isPublic: checked })
+                  }
+                />
+                <Label
+                  htmlFor='public-profile'
+                  className='text-sm font-normal text-muted-foreground cursor-pointer'
+                >
+                  Make my profile public
+                </Label>
+              </div>
+
               <FmCommonButton
                 type='submit'
                 className='w-full'
-                variant='gold'
                 loading={isLoading}
                 disabled={isOAuthLoading}
               >

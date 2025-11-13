@@ -42,7 +42,8 @@ interface AuthContextType {
   signUp: (
     email: string,
     password: string,
-    displayName?: string
+    displayName?: string,
+    isPublic?: boolean
   ) => Promise<{ error: any }>;
   signIn: (
     email: string,
@@ -172,7 +173,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const signUp = async (
     email: string,
     password: string,
-    displayName?: string
+    displayName?: string,
+    isPublic?: boolean
   ) => {
     try {
       const redirectUrl = `${window.location.origin}/`;
@@ -184,6 +186,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           emailRedirectTo: redirectUrl,
           data: {
             display_name: displayName,
+            is_public: isPublic ?? true,
           },
         },
       });

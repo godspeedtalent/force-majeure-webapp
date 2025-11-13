@@ -6,9 +6,13 @@ import {
   ChevronDown,
   ChevronUp,
   Check,
+  MessageCircle,
 } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
 import { FmInfoCard } from '@/components/common/data/FmInfoCard';
+import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { ROLES } from '@/shared/auth/permissions';
 
 interface FmErrorDisplayProps {
   error: Error;
@@ -45,8 +49,15 @@ export const FmErrorDisplay = ({
   const [isStackTraceExpanded, setIsStackTraceExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  // Show developer view in development environment
-  const isDeveloper = import.meta.env.DEV;
+  // Try to check user roles, but fallback gracefully if outside AuthProvider
+  let isDeveloper = false;
+  try {
+    const { hasAnyRole } = useUserPermissions();
+    isDeveloper = hasAnyRole(ROLES.ADMIN, ROLES.DEVELOPER);
+  } catch (error) {
+    // If we're outside AuthProvider context, default to non-developer view
+    isDeveloper = false;
+  }
 
   const handleCopyStackTrace = async () => {
     const stackTrace =
@@ -77,11 +88,15 @@ export const FmErrorDisplay = ({
   };
 
   return (
-    <div className='min-h-screen flex items-center justify-center bg-background p-4'>
-      <div className='max-w-2xl w-full text-center space-y-6'>
+    <div className='min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden'>
+      {/* Topography Background */}
+      <TopographicBackground opacity={0.35} />
+      <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
+
+      <div className='max-w-2xl w-full text-center space-y-6 relative z-10'>
         <div className='space-y-2'>
           <h1 className='text-3xl font-canela text-foreground'>
-            Something went wrong
+            Something went wrong.
           </h1>
           {isDeveloper ? (
             <p className='text-muted-foreground'>
@@ -96,8 +111,8 @@ export const FmErrorDisplay = ({
           )}
         </div>
 
-        {/* Error Message */}
-        {error && (
+        {/* Error Message - Different for developers vs users */}
+        {isDeveloper ? (
           <FmInfoCard
             icon={AlertTriangle}
             title='Error Details'
@@ -107,7 +122,7 @@ export const FmErrorDisplay = ({
               {error.message}
             </p>
 
-            {isDeveloper && (errorInfo?.componentStack || error.stack) && (
+            {(errorInfo?.componentStack || error.stack) && (
               <div className='mt-4'>
                 <Button
                   variant='ghost'
@@ -153,6 +168,26 @@ export const FmErrorDisplay = ({
               </div>
             )}
           </FmInfoCard>
+        ) : (
+          <FmInfoCard
+            icon={MessageCircle}
+            title='Need help?'
+            className='text-left'
+          >
+            <p className='text-sm text-muted-foreground'>
+              We've let our developers know. If you need immediate help, please
+              contact us at{' '}
+              <a
+                href='https://www.instagram.com/force.majeure.events'
+                target='_blank'
+                rel='noopener noreferrer'
+                className='text-fm-gold hover:text-fm-gold/80 transition-colors underline'
+              >
+                @force.majeure.events
+              </a>{' '}
+              on Instagram.
+            </p>
+          </FmInfoCard>
         )}
 
         {/* Action Buttons */}
@@ -168,12 +203,6 @@ export const FmErrorDisplay = ({
             Go Back
           </Button>
         </div>
-
-        {!isDeveloper && (
-          <p className='text-xs text-muted-foreground'>
-            If this problem persists, please contact support.
-          </p>
-        )}
       </div>
     </div>
   );

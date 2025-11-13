@@ -62,6 +62,8 @@ import Profile from './pages/Profile';
 import ProfileEdit from './pages/ProfileEdit';
 import ProxyToken from './pages/ProxyToken';
 import Scavenger from './pages/Scavenger';
+import ArtistSignup from './pages/artists/ArtistSignup';
+import ArtistRegister from './pages/artists/ArtistRegister';
 
 const queryClient = new QueryClient();
 
@@ -293,6 +295,18 @@ const AppRoutes = () => {
           {/* Organization Routes */}
           <Route path='/organization/tools' element={<OrganizationTools />} />
           <Route path='/organization/scanning' element={<TicketScanning />} />
+
+          {/* Artist Routes */}
+          <Route path='/artists' element={<Navigate to='/' replace />} />
+          <Route path='/artists/signup' element={<ArtistSignup />} />
+          <Route
+            path='/artists/register'
+            element={
+              <ProtectedRoute>
+                <ArtistRegister />
+              </ProtectedRoute>
+            }
+          />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path='*' element={<NotFound />} />
