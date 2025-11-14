@@ -39,14 +39,19 @@ export const TopographicBackground = ({
   const TILE_SIZE = 1080; // Original image size
   const [scrollY, setScrollY] = useState(0);
 
-  // Random rotation (0, 90, 180, or 270 degrees) - stable per page load
-  const rotation = useMemo(() => {
+  // Random rotation (0, 90, 180, or 270 degrees) and flipping - stable per page load
+  const { rotation, flipHorizontal, flipVertical } = useMemo(() => {
     // Use pathname hash for consistency across the same page
     const pathHash = window.location.pathname
       .split('')
       .reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const rotations = [0, 90, 180, 270];
-    return rotations[pathHash % 4];
+
+    return {
+      rotation: rotations[pathHash % 4],
+      flipHorizontal: pathHash % 2 === 0, // 1 in 2 chance
+      flipVertical: Math.floor(pathHash / 2) % 2 === 0, // 1 in 2 chance (different seed)
+    };
   }, []);
 
   // Parallax scroll effect
@@ -80,9 +85,10 @@ export const TopographicBackground = ({
           height: `${gridRows * superTileSize}px`,
           left: `-${(gridCols * superTileSize - window.innerWidth) / 2}px`,
           top: `-${(gridRows * superTileSize - window.innerHeight) / 2}px`,
-          transform: `translateY(${scrollY}px) rotate(${rotation}deg)`,
+          transform: `translateY(${scrollY}px) rotate(${rotation}deg) scaleX(${flipHorizontal ? -1 : 1}) scaleY(${flipVertical ? -1 : 1})`,
           transformOrigin: 'center center',
-          transition: parallax ? 'none' : 'transform 0.3s ease-out',
+          transition: 'transform 0.3s ease-out',
+          willChange: 'transform',
         }}
       >
         {/* Generate super-tiles, each containing a 3x3 mirrored pattern */}

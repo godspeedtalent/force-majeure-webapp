@@ -19,7 +19,11 @@
       "Bash(wc:*)",
       "Bash(timeout 120 npm run build:*)",
       "Bash(if ! grep -q \"from ''''@/shared/services/logger''''\" \"src/pages/admin/UserManagement.tsx\")",
-      "Bash(then sed -i \"/^import.*from/a import { logger } from ''''@/shared/services/logger'''';\" \"src/pages/admin/UserManagement.tsx\")"
+      "Bash(then sed -i \"/^import.*from/a import { logger } from ''''@/shared/services/logger'''';\" \"src/pages/admin/UserManagement.tsx\")",
+      "Bash(docker ps:*)",
+      "Bash(timeout 5 docker ps:*)",
+      "Bash(npm install:*)",
+      "Bash(npx jscpd:*)"
     ],
     "deny": [],
     "ask": []

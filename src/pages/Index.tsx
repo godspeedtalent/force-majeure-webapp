@@ -186,6 +186,8 @@ const Index = () => {
               style={{
                 transform: `translateY(${parallaxOffset}px)`,
                 opacity: fadeOpacity,
+                transition: 'transform 0.3s ease-out, opacity 0.3s ease-out',
+                willChange: 'transform, opacity',
               }}
             >
               {/* Logo and Title Section */}
@@ -193,7 +195,7 @@ const Index = () => {
                 <ForceMajeureLogo size='xl' className='mb-8 h-40 w-40' />
 
                 <h1
-                  className='text-3xl lg:text-5xl font-screamer tracking-[0.1em] leading-none mb-10'
+                  className='text-3xl lg:text-5xl font-screamer leading-none mb-10'
                   style={{ fontWeight: 475 }}
                 >
                   <span className='text-foreground'>FORCE </span>
@@ -220,14 +222,14 @@ const Index = () => {
                   ))
                 ) : (
                   <div className='col-span-full flex justify-center'>
-                    <FmInfoCard
-                      icon={Music2}
-                      title='Our 2026 lineup is coming soon.'
-                      className='max-w-2xl text-center'
-                    >
-                      <p className='text-muted-foreground mb-[20px]'>
+                    <FmInfoCard className='max-w-2xl text-center'>
+                      <h2 className='text-lg lg:text-xl text-fm-gold mb-[20px]'>
+                        Our 2026 lineup is coming soon.
+                      </h2>
+                      <p className='text-sm text-muted-foreground mb-[10px]'>
                         Are you an artist wanting to open for headlining talent?
-                        <br />
+                      </p>
+                      <p className='text-sm text-muted-foreground mb-[20px]'>
                         Register with us below!
                       </p>
                       <FmCommonButton onClick={() => navigate('/artists/signup')}>

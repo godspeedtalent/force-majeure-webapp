@@ -3,6 +3,8 @@ import {
   Settings,
   Upload,
   Image as ImageIcon,
+  Mail,
+  AlertCircle,
 } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -20,16 +22,18 @@ import { Separator } from '@/components/common/shadcn/separator';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useToast } from '@/shared/hooks/use-toast';
 import { supabase } from '@/shared/api/supabase/client';
+import { logger } from '@/shared/services/logger';
 
 type ProfileSection = 'profile';
 
 const ProfileEdit = () => {
-  const { user, profile, updateProfile, refreshProfile } = useAuth();
+  const { user, profile, updateProfile, refreshProfile, resendVerificationEmail } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isSendingVerification, setIsSendingVerification] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form state
@@ -72,6 +76,12 @@ const ProfileEdit = () => {
       billing_zip: billingZip || null,
     });
     setIsLoading(false);
+  };
+
+  const handleResendVerification = async () => {
+    setIsSendingVerification(true);
+    await resendVerificationEmail();
+    setIsSendingVerification(false);
   };
 
   const handleImageUpload = async (
@@ -206,6 +216,37 @@ const ProfileEdit = () => {
               }
             />
 
+            {/* Email Verification Warning */}
+            {user && !user.email_confirmed_at && (
+              <Card className='border-fm-gold/50 bg-fm-gold/10 backdrop-blur-lg'>
+                <CardContent className='p-6'>
+                  <div className='flex items-start gap-4'>
+                    <AlertCircle className='h-6 w-6 text-fm-gold flex-shrink-0 mt-0.5' />
+                    <div className='flex-1'>
+                      <h3 className='text-lg font-medium text-fm-gold mb-2'>
+                        Verify your email address.
+                      </h3>
+                      <p className='text-sm text-muted-foreground mb-4'>
+                        You must verify your email address before you can edit your profile.
+                        Check your inbox for the verification link we sent to{' '}
+                        <span className='font-medium text-foreground'>{user.email}</span>.
+                      </p>
+                      <FmCommonButton
+                        variant='outline'
+                        size='sm'
+                        icon={Mail}
+                        onClick={handleResendVerification}
+                        loading={isSendingVerification}
+                        disabled={isSendingVerification}
+                      >
+                        Resend verification email
+                      </FmCommonButton>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Profile Picture Card */}
             <Card className='border-border/30 bg-card/20 backdrop-blur-lg'>
               <CardContent className='p-8 space-y-6'>
@@ -240,7 +281,7 @@ const ProfileEdit = () => {
                       icon={Upload}
                       onClick={() => fileInputRef.current?.click()}
                       loading={isUploadingImage}
-                      disabled={isUploadingImage}
+                      disabled={!user.email_confirmed_at || isUploadingImage}
                     >
                       {isUploadingImage ? 'Uploading...' : 'Upload Photo'}
                     </FmCommonButton>
@@ -284,6 +325,7 @@ const ProfileEdit = () => {
                       value={displayName}
                       onChange={e => setDisplayName(e.target.value)}
                       description='This is how others will see you'
+                      disabled={!user.email_confirmed_at}
                     />
 
                     <FmCommonTextField
@@ -294,6 +336,7 @@ const ProfileEdit = () => {
                       value={fullName}
                       onChange={e => setFullName(e.target.value)}
                       description='Optional'
+                      disabled={!user.email_confirmed_at}
                     />
 
                     <FmCommonSelect
@@ -310,6 +353,7 @@ const ProfileEdit = () => {
                       ]}
                       placeholder='Select your gender'
                       description='Optional'
+                      disabled={!user.email_confirmed_at}
                     />
                   </div>
 
@@ -317,6 +361,7 @@ const ProfileEdit = () => {
                     type='submit'
                     variant='gold'
                     loading={isLoading}
+                    disabled={!user.email_confirmed_at || isLoading}
                   >
                     Update Profile
                   </FmCommonButton>
@@ -347,6 +392,7 @@ const ProfileEdit = () => {
                         value={billingAddress}
                         onChange={e => setBillingAddress(e.target.value)}
                         description='Optional'
+                        disabled={!user.email_confirmed_at}
                       />
                     </div>
 
@@ -358,6 +404,7 @@ const ProfileEdit = () => {
                       value={billingCity}
                       onChange={e => setBillingCity(e.target.value)}
                       description='Optional'
+                      disabled={!user.email_confirmed_at}
                     />
 
                     <FmCommonTextField
@@ -368,6 +415,7 @@ const ProfileEdit = () => {
                       value={billingState}
                       onChange={e => setBillingState(e.target.value)}
                       description='Optional'
+                      disabled={!user.email_confirmed_at}
                     />
 
                     <FmCommonTextField
@@ -378,6 +426,7 @@ const ProfileEdit = () => {
                       value={billingZip}
                       onChange={e => setBillingZip(e.target.value)}
                       description='Optional'
+                      disabled={!user.email_confirmed_at}
                     />
                   </div>
 
@@ -385,6 +434,7 @@ const ProfileEdit = () => {
                     type='submit'
                     variant='gold'
                     loading={isLoading}
+                    disabled={!user.email_confirmed_at || isLoading}
                   >
                     Update Profile
                   </FmCommonButton>
