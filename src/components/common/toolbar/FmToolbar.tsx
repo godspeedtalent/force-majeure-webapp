@@ -682,6 +682,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
     <div
       className={cn(
         'fixed bottom-0 right-0 z-[100]',
+        'hidden md:block',
         !isResizing && 'transition-all duration-300 ease-in-out',
         className
       )}

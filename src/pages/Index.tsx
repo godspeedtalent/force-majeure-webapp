@@ -10,9 +10,12 @@ import { Layout } from '@/components/layout/Layout';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { EventCard } from '@/features/events/components/EventCard';
 import { EventCardSkeleton } from '@/features/events/components/EventCardSkeleton';
+import { MobileSectionIndicator, MobileScrollCue } from '@/components/mobile';
 import { supabase } from '@/shared/api/supabase/client';
 import { useFontLoader } from '@/shared/hooks/useFontLoader';
 import { useScrollPosition } from '@/shared/hooks/useScrollPosition';
+import { useIsMobile } from '@/shared/hooks/use-mobile';
+import { useScrollSnap } from '@/shared/hooks/useScrollSnap';
 import { SCROLL_THRESHOLDS } from '@/shared/constants/scrollThresholds';
 import { getImageUrl } from '@/shared/utils/imageUtils';
 import { logApiError } from '@/shared/utils/apiLogger';
@@ -41,8 +44,29 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const fontsLoaded = useFontLoader();
   const scrollY = useScrollPosition();
+  const isMobile = useIsMobile();
   const [contentReady, setContentReady] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
+  const eventsRef = useRef<HTMLDivElement>(null);
+
+  // Mobile scroll snap functionality
+  const { activeSection, scrollToSection, registerSection, unregisterSection } = useScrollSnap({
+    enabled: true,
+  });
+
+  // Register sections for mobile scroll snap
+  useEffect(() => {
+    if (heroRef.current) {
+      registerSection({ id: 'hero', ref: heroRef, label: 'Welcome' });
+    }
+    if (eventsRef.current) {
+      registerSection({ id: 'events', ref: eventsRef, label: 'Events' });
+    }
+    return () => {
+      unregisterSection('hero');
+      unregisterSection('events');
+    };
+  }, [registerSection, unregisterSection]);
 
   // Content is ready when both fonts are loaded and data loading is complete
   useEffect(() => {
@@ -159,17 +183,19 @@ const Index = () => {
     fetchEvents();
   }, [handleFetchError]);
 
-  // Memoize scroll-based calculations
+  // Memoize scroll-based calculations (reduce parallax on mobile for performance)
   const { parallaxOffset, fadeOpacity } = useMemo(
     () => ({
-      parallaxOffset: scrollY * SCROLL_THRESHOLDS.PARALLAX_MULTIPLIER,
+      parallaxOffset: scrollY * (isMobile
+        ? SCROLL_THRESHOLDS.MOBILE_PARALLAX_MULTIPLIER
+        : SCROLL_THRESHOLDS.PARALLAX_MULTIPLIER),
       fadeOpacity: Math.max(0, 1 - scrollY / SCROLL_THRESHOLDS.CONTENT_FADE),
     }),
-    [scrollY]
+    [scrollY, isMobile]
   );
 
   return (
-    <Layout>
+    <Layout enableScrollSnap={true}>
       <div className='min-h-screen relative'>
         <div className='fixed inset-0 bg-gradient-monochrome opacity-10 pointer-events-none' />
 
@@ -178,40 +204,53 @@ const Index = () => {
             <FmCommonLoadingState message='Loading...' />
           </div>
         ) : (
-          <div className='relative z-10 pt-24 pb-32 px-4'>
+          <div className='relative z-10'>
             {/* Hero Section with Parallax */}
-            <div
+            <section
               ref={heroRef}
-              className='max-w-7xl mx-auto mb-16'
-              style={{
-                transform: `translateY(${parallaxOffset}px)`,
-                opacity: fadeOpacity,
-                transition: 'transform 0.3s ease-out, opacity 0.3s ease-out',
-                willChange: 'transform, opacity',
-              }}
+              className='min-h-screen flex items-center justify-center snap-start snap-always pt-24 pb-32 px-4'
+              data-section-id='hero'
             >
-              {/* Logo and Title Section */}
-              <div className='flex flex-col items-center text-center'>
-                <ForceMajeureLogo size='xl' className='mb-8 h-40 w-40' />
+              <div
+                className='max-w-7xl mx-auto'
+                style={{
+                  transform: `translateY(${parallaxOffset}px)`,
+                  opacity: fadeOpacity,
+                  transition: 'transform 0.3s ease-out, opacity 0.3s ease-out',
+                  willChange: 'transform, opacity',
+                }}
+              >
+                {/* Logo and Title Section */}
+                <div className='flex flex-col items-center text-center'>
+                  <ForceMajeureLogo size='xl' className='mb-8 h-40 w-40' />
 
-                <h1
-                  className='text-3xl lg:text-5xl font-screamer leading-none mb-10'
-                  style={{ fontWeight: 475 }}
-                >
-                  <span className='text-foreground'>FORCE </span>
-                  <span className='bg-gradient-gold bg-clip-text text-transparent'>
-                    MAJEURE
-                  </span>
-                </h1>
+                  <h1
+                    className='text-3xl lg:text-5xl font-screamer leading-none mb-10'
+                    style={{ fontWeight: 475 }}
+                  >
+                    <span className='text-foreground'>FORCE </span>
+                    <span className='bg-gradient-gold bg-clip-text text-transparent'>
+                      MAJEURE
+                    </span>
+                  </h1>
+                </div>
+
+                {/* Decorative Divider */}
+                <DecorativeDivider />
               </div>
 
-              {/* Decorative Divider */}
-              <DecorativeDivider />
-            </div>
+              {/* Mobile scroll cue */}
+              <MobileScrollCue />
+            </section>
 
-            {/* Events Grid */}
-            <div className='max-w-7xl mx-auto animate-fade-in'>
-              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center'>
+            {/* Events Grid Section */}
+            <section
+              ref={eventsRef}
+              className='min-h-screen snap-start snap-always py-24 px-4'
+              data-section-id='events'
+            >
+              <div className='max-w-7xl mx-auto animate-fade-in'>
+                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center'>
                 {loading ? (
                   Array.from({ length: 6 }).map((_, idx) => (
                     <EventCardSkeleton key={`skeleton-${idx}`} />
@@ -238,8 +277,19 @@ const Index = () => {
                     </FmInfoCard>
                   </div>
                 )}
+                </div>
               </div>
-            </div>
+            </section>
+
+            {/* Mobile Section Indicator */}
+            <MobileSectionIndicator
+              sections={[
+                { id: 'hero', label: 'Welcome' },
+                { id: 'events', label: 'Events' },
+              ]}
+              activeSection={activeSection}
+              onSectionClick={scrollToSection}
+            />
           </div>
         )}
       </div>

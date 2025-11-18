@@ -158,12 +158,48 @@ export const Navigation = () => {
         <div className='md:hidden animate-slide-up'>
           <div className='px-2 pt-2 pb-3 space-y-1 bg-background border-b border-border'>
             <Link
-              to='/merch'
-              className='block px-3 py-2 text-base font-canela font-medium text-foreground hover:text-fm-gold hover:bg-hover-overlay rounded-md transition-colors'
+              to='/'
+              className='block px-3 py-2 text-base font-canela font-medium text-foreground hover:text-fm-gold hover:bg-hover-overlay rounded-none transition-colors'
               onClick={() => setIsOpen(false)}
             >
-              Merchandise
+              Events
             </Link>
+            <FeatureGuard feature={FEATURE_FLAGS.MERCH_STORE}>
+              <Link
+                to='/merch'
+                className='block px-3 py-2 text-base font-canela font-medium text-foreground hover:text-fm-gold hover:bg-hover-overlay rounded-none transition-colors'
+                onClick={() => setIsOpen(false)}
+              >
+                Merchandise
+              </Link>
+            </FeatureGuard>
+            {user && (
+              <>
+                <Link
+                  to='/profile'
+                  className='block px-3 py-2 text-base font-canela font-medium text-foreground hover:text-fm-gold hover:bg-hover-overlay rounded-none transition-colors'
+                  onClick={() => setIsOpen(false)}
+                >
+                  Profile
+                </Link>
+                <Link
+                  to='/orders'
+                  className='block px-3 py-2 text-base font-canela font-medium text-foreground hover:text-fm-gold hover:bg-hover-overlay rounded-none transition-colors'
+                  onClick={() => setIsOpen(false)}
+                >
+                  My Tickets
+                </Link>
+              </>
+            )}
+            <a
+              href={SOCIAL_LINKS.instagram}
+              target='_blank'
+              rel='noopener noreferrer'
+              className='block px-3 py-2 text-base font-canela font-medium text-foreground hover:text-fm-gold hover:bg-hover-overlay rounded-none transition-colors'
+              onClick={() => setIsOpen(false)}
+            >
+              Instagram
+            </a>
           </div>
         </div>
       )}

@@ -163,6 +163,28 @@ const collapsibleAnimations = {
   },
 };
 
+// Mobile scroll snap animations
+const snapAnimations = {
+  'snap-in': {
+    '0%': { opacity: '0.8', transform: 'scale(0.98)' },
+    '100%': { opacity: '1', transform: 'scale(1)' },
+  },
+  'section-pulse': {
+    '0%': { opacity: '0.6' },
+    '50%': { opacity: '1' },
+    '100%': { opacity: '0.6' },
+  },
+  'indicator-pulse': {
+    '0%': { transform: 'scale(1)', backgroundColor: 'hsl(var(--fm-gold))' },
+    '50%': { transform: 'scale(1.2)', backgroundColor: 'hsl(var(--fm-gold))' },
+    '100%': { transform: 'scale(1)', backgroundColor: 'hsl(var(--fm-gold))' },
+  },
+  'scroll-cue-bounce': {
+    '0%, 100%': { transform: 'translateY(0)' },
+    '50%': { transform: 'translateY(10px)' },
+  },
+};
+
 export const keyframes = {
   ...layoutAnimations,
   ...entryAnimations,
@@ -170,6 +192,7 @@ export const keyframes = {
   ...feedbackAnimations,
   ...orbAnimations,
   ...collapsibleAnimations,
+  ...snapAnimations,
 };
 
 // Animation configurations with consistent timing
@@ -231,4 +254,10 @@ export const animations = {
     'ease-in-out',
     'infinite'
   ),
+
+  // Mobile scroll snap animations
+  'snap-in': createAnimation('snap-in', '0.3s', 'ease-out'),
+  'section-pulse': createAnimation('section-pulse', '1.5s', 'ease-in-out', 'infinite'),
+  'indicator-pulse': createAnimation('indicator-pulse', '0.3s', 'ease-out'),
+  'scroll-cue-bounce': createAnimation('scroll-cue-bounce', '2s', 'ease-in-out', 'infinite'),
 };
