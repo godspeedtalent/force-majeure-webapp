@@ -4,7 +4,7 @@ import { Card } from '@/components/common/shadcn/card';
 import { cn } from '@/shared/utils/utils';
 
 interface FmInfoCardProps {
-  icon: LucideIcon;
+  icon?: LucideIcon;
   title?: string;
   description?: string | ReactNode;
   children?: ReactNode;
@@ -42,14 +42,16 @@ export const FmInfoCard = ({
   iconClassName,
 }: FmInfoCardProps) => {
   return (
-    <Card className={cn('p-6 bg-muted/20 border-fm-gold/30', className)}>
+    <Card className={cn('p-6 bg-muted/20 border-fm-gold/30 hover:bg-white/5 transition-colors duration-300', className)}>
       <div className='flex items-start gap-3'>
-        <Icon
-          className={cn(
-            'h-5 w-5 text-fm-gold mt-0.5 flex-shrink-0',
-            iconClassName
-          )}
-        />
+        {Icon && (
+          <Icon
+            className={cn(
+              'h-5 w-5 text-fm-gold mt-0.5 flex-shrink-0',
+              iconClassName
+            )}
+          />
+        )}
         <div className='flex-1'>
           {title && <h3 className='font-medium text-sm mb-1'>{title}</h3>}
           {description &&

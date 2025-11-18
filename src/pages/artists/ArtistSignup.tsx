@@ -4,6 +4,9 @@ import { Music2, Users, Sparkles, LucideIcon } from 'lucide-react';
 import { ArtistRegistrationLayout } from '@/components/layout/ArtistRegistrationLayout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCardCarousel } from '@/components/common/data/FmCardCarousel';
+import { FmAnimatedGradientAvatar } from '@/components/common/display/FmAnimatedGradientAvatar';
+import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
+import { ImageAnchor } from '@/shared/types/imageAnchor';
 import {
   Carousel,
   CarouselContent,
@@ -39,21 +42,6 @@ const PAST_SHOW_IMAGES: ShowcaseImage[] = [
     alt: 'Force Majeure event showcase',
     objectPosition: 'center',
     credit: 'Photo by Force Majeure'
-  },
-  {
-    id: 3,
-    placeholder: true,
-    icon: Sparkles,
-  },
-  {
-    id: 4,
-    placeholder: true,
-    icon: Music2,
-  },
-  {
-    id: 5,
-    placeholder: true,
-    icon: Users,
   },
 ];
 
@@ -125,13 +113,12 @@ const ArtistSignup = () => {
                           </div>
                         </div>
                       ) : (
-                        <img
-                          src={image.url}
-                          alt={image.alt}
+                        <ImageWithSkeleton
+                          src={image.url!}
+                          alt={image.alt || 'Force Majeure showcase'}
                           className='w-full h-full object-cover'
-                          style={{
-                            objectPosition: image.objectPosition || 'center'
-                          }}
+                          skeletonClassName='bg-black/40 backdrop-blur-sm'
+                          anchor={ImageAnchor.CENTER}
                         />
                       )}
 
@@ -180,9 +167,9 @@ const ArtistSignup = () => {
         <div className='relative lg:absolute left-0 top-0 w-full lg:w-[40%] h-[50vh] lg:h-full z-20 flex-shrink-0'>
           <div className='absolute inset-0 bg-black/85 lg:bg-black/70 backdrop-blur-md' />
 
-          <div className='relative z-10 h-full flex items-center py-6 px-6 lg:py-[8vh] lg:px-[4vw]'>
-            <div className='w-full h-full flex flex-col justify-between lg:justify-between gap-4 lg:gap-0 max-w-xl mx-auto'>
-              <div className='flex-shrink-0 space-y-2 lg:space-y-[1vh]'>
+          <div className='relative z-10 h-full flex items-center justify-center py-6 px-6 lg:py-[8vh] lg:px-[4vw]'>
+            <div className='w-full flex flex-col justify-center gap-6 lg:gap-[3vh] max-w-xl mx-auto'>
+              <div className='space-y-2 lg:space-y-[1vh]'>
                 <h1 className='font-canela text-2xl sm:text-3xl lg:text-[clamp(1.75rem,3.5vw,3rem)] leading-[1.1] tracking-tight'>
                   Play with us.
                 </h1>
@@ -191,15 +178,18 @@ const ArtistSignup = () => {
                 </p>
               </div>
 
-              <div className='flex-1 lg:flex lg:flex-col lg:justify-center min-h-0 overflow-hidden'>
+              <div className='flex flex-col justify-center gap-4 lg:gap-[2vh]'>
                 <FmCardCarousel autoPlayInterval={4000}>
-                  <div className='bg-black/60 backdrop-blur-sm border border-white/20 rounded-none p-3 lg:p-[clamp(0.75rem,1.3vw,1.125rem)]'>
-                    <div className='flex items-start gap-2.5 lg:gap-[clamp(0.625rem,1vw,0.875rem)]'>
-                      <Music2 className='w-4 h-4 lg:w-[clamp(1.125rem,1.8vw,1.5rem)] lg:h-[clamp(1.125rem,1.8vw,1.5rem)] text-fm-gold flex-shrink-0 mt-0.5' />
-                      <div>
-                        <h3 className='font-canela text-sm lg:text-[clamp(0.9375rem,1.3vw,1.125rem)] mb-0.5 lg:mb-[0.3vh]'>
+                  <div className='bg-black/60 backdrop-blur-sm border border-fm-gold rounded-none overflow-hidden'>
+                    <div className='flex items-stretch'>
+                      <div className='w-[50px] flex-shrink-0 border-r border-white/50'>
+                        <FmAnimatedGradientAvatar className='w-full h-full rounded-none' />
+                      </div>
+                      <div className='flex-1 p-3 lg:p-[clamp(0.75rem,1.3vw,1.125rem)]'>
+                        <h3 className='font-canela text-sm lg:text-[clamp(0.9375rem,1.3vw,1.125rem)] mb-[8px]'>
                           Premium events.
                         </h3>
+                        <div className='w-full h-[1px] bg-white/30 mb-[8px]' />
                         <p className='font-canela text-xs lg:text-[clamp(0.75rem,1vw,0.875rem)] text-muted-foreground leading-snug lg:leading-relaxed'>
                           Perform alongside internationally acclaimed headliners at meticulously curated shows.
                         </p>
@@ -207,13 +197,16 @@ const ArtistSignup = () => {
                     </div>
                   </div>
 
-                  <div className='bg-black/60 backdrop-blur-sm border border-white/20 rounded-none p-3 lg:p-[clamp(0.75rem,1.3vw,1.125rem)]'>
-                    <div className='flex items-start gap-2.5 lg:gap-[clamp(0.625rem,1vw,0.875rem)]'>
-                      <Users className='w-4 h-4 lg:w-[clamp(1.125rem,1.8vw,1.5rem)] lg:h-[clamp(1.125rem,1.8vw,1.5rem)] text-fm-gold flex-shrink-0 mt-0.5' />
-                      <div>
-                        <h3 className='font-canela text-sm lg:text-[clamp(0.9375rem,1.3vw,1.125rem)] mb-0.5 lg:mb-[0.3vh]'>
+                  <div className='bg-black/60 backdrop-blur-sm border border-fm-gold rounded-none overflow-hidden'>
+                    <div className='flex items-stretch'>
+                      <div className='w-[50px] flex-shrink-0 border-r border-white/50'>
+                        <FmAnimatedGradientAvatar className='w-full h-full rounded-none' />
+                      </div>
+                      <div className='flex-1 p-3 lg:p-[clamp(0.75rem,1.3vw,1.125rem)]'>
+                        <h3 className='font-canela text-sm lg:text-[clamp(0.9375rem,1.3vw,1.125rem)] mb-[8px]'>
                           Engaged audiences.
                         </h3>
+                        <div className='w-full h-[1px] bg-white/30 mb-[8px]' />
                         <p className='font-canela text-xs lg:text-[clamp(0.75rem,1vw,0.875rem)] text-muted-foreground leading-snug lg:leading-relaxed'>
                           Connect with passionate electronic music enthusiasts ready to discover new talent.
                         </p>
@@ -221,13 +214,16 @@ const ArtistSignup = () => {
                     </div>
                   </div>
 
-                  <div className='bg-black/60 backdrop-blur-sm border border-white/20 rounded-none p-3 lg:p-[clamp(0.75rem,1.3vw,1.125rem)]'>
-                    <div className='flex items-start gap-2.5 lg:gap-[clamp(0.625rem,1vw,0.875rem)]'>
-                      <Sparkles className='w-4 h-4 lg:w-[clamp(1.125rem,1.8vw,1.5rem)] lg:h-[clamp(1.125rem,1.8vw,1.5rem)] text-fm-gold flex-shrink-0 mt-0.5' />
-                      <div>
-                        <h3 className='font-canela text-sm lg:text-[clamp(0.9375rem,1.3vw,1.125rem)] mb-0.5 lg:mb-[0.3vh]'>
+                  <div className='bg-black/60 backdrop-blur-sm border border-fm-gold rounded-none overflow-hidden'>
+                    <div className='flex items-stretch'>
+                      <div className='w-[50px] flex-shrink-0 border-r border-white/50'>
+                        <FmAnimatedGradientAvatar className='w-full h-full rounded-none' />
+                      </div>
+                      <div className='flex-1 p-3 lg:p-[clamp(0.75rem,1.3vw,1.125rem)]'>
+                        <h3 className='font-canela text-sm lg:text-[clamp(0.9375rem,1.3vw,1.125rem)] mb-[8px]'>
                           Growing scene.
                         </h3>
+                        <div className='w-full h-[1px] bg-white/30 mb-[8px]' />
                         <p className='font-canela text-xs lg:text-[clamp(0.75rem,1vw,0.875rem)] text-muted-foreground leading-snug lg:leading-relaxed'>
                           Be part of a thriving community that celebrates electronic music and supports emerging artists.
                         </p>
@@ -237,7 +233,7 @@ const ArtistSignup = () => {
                 </FmCardCarousel>
               </div>
 
-              <div className='flex-shrink-0 pt-3 lg:pt-[2vh]'>
+              <div>
                 <FmCommonButton
                   onClick={handleNavigateToRegister}
                   variant='default'

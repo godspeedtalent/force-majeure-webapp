@@ -88,6 +88,7 @@ export const ParallaxLayerManager = ({
               zIndex: layer.zIndex || 0,
               opacity: layer.opacity,
               transform: `translateY(${translateY}px)`,
+              transition: 'transform 0.3s ease-out',
               willChange: 'transform',
             }}
           >

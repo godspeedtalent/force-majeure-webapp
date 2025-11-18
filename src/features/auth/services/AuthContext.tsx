@@ -43,7 +43,9 @@ interface AuthContextType {
     email: string,
     password: string,
     displayName?: string,
-    isPublic?: boolean
+    isPublic?: boolean,
+    firstName?: string,
+    lastName?: string
   ) => Promise<{ error: any }>;
   signIn: (
     email: string,
@@ -54,6 +56,7 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: any }>;
   refreshProfile: () => Promise<void>;
+  resendVerificationEmail: () => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -174,7 +177,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     email: string,
     password: string,
     displayName?: string,
-    isPublic?: boolean
+    isPublic?: boolean,
+    firstName?: string,
+    lastName?: string
   ) => {
     try {
       const redirectUrl = `${window.location.origin}/`;
@@ -187,6 +192,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           data: {
             display_name: displayName,
             is_public: isPublic ?? true,
+            first_name: firstName,
+            last_name: lastName,
           },
         },
       });
@@ -200,11 +207,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         });
       } else {
         authLogger.info('Sign up successful', { userId: data.user?.id });
-        toast({
-          title: 'Check your email',
-          description:
-            "We've sent you a confirmation link to complete your registration.",
-        });
+
+        // Check if user was auto-confirmed (email confirmations disabled)
+        if (data.user?.email_confirmed_at) {
+          toast({
+            title: 'Account created',
+            description: 'Your account has been created successfully. Welcome!',
+          });
+        } else {
+          // User needs to verify email
+          toast({
+            title: 'Check your email',
+            description:
+              "We've sent you a confirmation link to complete your registration.",
+          });
+        }
       }
 
       return { error };
@@ -346,6 +363,45 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const resendVerificationEmail = async () => {
+    if (!user?.email) {
+      return { error: { message: 'No email address found' } };
+    }
+
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: user.email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+        },
+      });
+
+      if (error) {
+        toast({
+          title: 'Failed to send email',
+          description: error.message,
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Verification email sent',
+          description: 'Check your inbox for the verification link.',
+        });
+      }
+
+      return { error };
+    } catch (error: any) {
+      const errorMsg = error?.message || 'An unexpected error occurred';
+      toast({
+        title: 'Failed to send email',
+        description: errorMsg,
+        variant: 'destructive',
+      });
+      return { error };
+    }
+  };
+
   const value = {
     user,
     session,
@@ -357,6 +413,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     signOut,
     updateProfile,
     refreshProfile,
+    resendVerificationEmail,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

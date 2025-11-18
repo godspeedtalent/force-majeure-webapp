@@ -47,6 +47,8 @@ export const AuthPanel = ({
     email: '',
     password: '',
     confirmPassword: '',
+    firstName: '',
+    lastName: '',
     displayName: '',
     isPublic: true,
   });
@@ -87,7 +89,9 @@ export const AuthPanel = ({
       signUpForm.email,
       signUpForm.password,
       signUpForm.displayName,
-      signUpForm.isPublic
+      signUpForm.isPublic,
+      signUpForm.firstName,
+      signUpForm.lastName
     );
 
     if (!error && onAuthSuccess) {
@@ -238,6 +242,38 @@ export const AuthPanel = ({
             <OAuthDivider />
 
             <form onSubmit={handleSignUp} className='space-y-8'>
+              <div className='grid grid-cols-2 gap-4'>
+                <FmCommonTextField
+                  label='First Name'
+                  id='signup-firstname'
+                  type='text'
+                  placeholder='First name'
+                  value={signUpForm.firstName}
+                  onChange={e =>
+                    setSignUpForm({
+                      ...signUpForm,
+                      firstName: e.target.value,
+                    })
+                  }
+                  required
+                />
+
+                <FmCommonTextField
+                  label='Last Name'
+                  id='signup-lastname'
+                  type='text'
+                  placeholder='Last name'
+                  value={signUpForm.lastName}
+                  onChange={e =>
+                    setSignUpForm({
+                      ...signUpForm,
+                      lastName: e.target.value,
+                    })
+                  }
+                  required
+                />
+              </div>
+
               <FmCommonTextField
                 label='Display Name (Optional)'
                 id='signup-name'
