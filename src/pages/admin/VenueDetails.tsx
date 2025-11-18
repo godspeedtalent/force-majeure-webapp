@@ -118,7 +118,7 @@ export default function VenueDetails() {
                   <img
                     src={venue.image_url}
                     alt={venue.name}
-                    className='w-full max-h-64 object-cover rounded-lg border-2 border-fm-gold/30'
+                    className='w-full max-h-64 object-cover rounded-none border-2 border-fm-gold/30'
                   />
                 </div>
               )}

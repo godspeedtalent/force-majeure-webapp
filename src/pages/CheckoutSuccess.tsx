@@ -36,7 +36,7 @@ export default function CheckoutSuccess() {
       <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
       <Card className='w-full max-w-md relative z-10'>
         <CardHeader className='text-center'>
-          <div className='mx-auto mb-4 w-16 h-16 rounded-full bg-success/10 flex items-center justify-center'>
+          <div className='mx-auto mb-4 w-16 h-16 rounded-none bg-success/10 flex items-center justify-center'>
             <CheckCircle2 className='h-8 w-8 text-success' />
           </div>
           <CardTitle className='text-2xl'>Payment Successful!</CardTitle>

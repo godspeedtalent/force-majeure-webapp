@@ -126,7 +126,7 @@ export default function OrganizationDetails() {
                   <img
                     src={organization.profile_picture}
                     alt={organization.name}
-                    className='w-32 h-32 object-cover rounded-lg border-2 border-fm-gold/30'
+                    className='w-32 h-32 object-cover rounded-none border-2 border-fm-gold/30'
                   />
                 </div>
               )}

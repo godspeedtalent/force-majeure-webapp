@@ -1,7 +1,8 @@
 import { supabase } from '@/shared/api/supabase/client';
 import { OrderReceiptEmailData, EmailSendResult } from '@/types/email';
 import { generateOrderReceiptEmailHTML } from './templates/OrderReceiptEmail';
-import { TicketPDFService } from './TicketPDFService';
+import { logger } from '@/shared/services/logger';
+// import { TicketPDFService } from './TicketPDFService'; // TODO: Re-enable when PDF generation is implemented
 
 /**
  * EmailService - Handles sending emails via Supabase Edge Functions
@@ -29,7 +30,8 @@ export class EmailService {
         pdfAttachment = data.pdfTicketAttachment;
       } else {
         // TODO: Generate PDF when TicketPDFService is implemented
-        pdfAttachment = await TicketPDFService.generateTicketPDF(data);
+        // pdfAttachment = await TicketPDFService.generateTicketPDF(data);
+        logger.debug('PDF ticket generation not yet implemented, skipping attachment');
       }
 
       // Generate HTML email

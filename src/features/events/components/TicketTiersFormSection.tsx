@@ -105,7 +105,7 @@ export function TicketTiersFormSection({ state, actions }: TicketTiersFormSectio
                   step='1'
                   value={tier.quantity === 0 ? '' : tier.quantity.toString()}
                   onChange={e => {
-                    const value = e.target.value === '' ? 0 : parseInt(e.target.value);
+                    const value = e.target.value === '' ? 0 : parseInt(e.target.value, 10);
                     handleUpdateField(index, 'quantity', Math.max(1, value));
                   }}
                   onFocus={e => e.target.select()}

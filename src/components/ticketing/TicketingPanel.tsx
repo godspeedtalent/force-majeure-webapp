@@ -317,7 +317,7 @@ export const TicketingPanel = ({
                                       tier.price
                                     ).breakdown.map((item, idx) => (
                                       <div
-                                        key={idx}
+                                        key={item.label}
                                         className='flex justify-between text-xs'
                                       >
                                         <span className='text-muted-foreground'>
@@ -476,7 +476,7 @@ export const TicketingPanel = ({
 
             return (
               <div
-                key={index}
+                key={fee.name}
                 className='flex justify-between text-xs group relative'
               >
                 <span className='text-muted-foreground capitalize'>

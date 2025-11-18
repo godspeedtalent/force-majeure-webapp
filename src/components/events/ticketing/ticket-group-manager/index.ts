@@ -1,5 +1,5 @@
 // Main component
-export { TicketGroupManager } from '../TicketGroupManagerRefactored';
+export { TicketGroupManager } from '../TicketGroupManager';
 
 // Types
 export type { TicketGroup, TicketTier, TicketGroupManagerProps } from './types';

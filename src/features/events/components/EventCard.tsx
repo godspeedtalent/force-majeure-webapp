@@ -208,7 +208,7 @@ export const EventCard = ({ event }: EventCardProps) => {
               weekday={dateObj.weekday}
               month={dateObj.month}
               day={dateObj.day}
-              year={parseInt(dateObj.year)}
+              year={parseInt(dateObj.year, 10)}
               size='md'
               isAfterHours={isAfterHours}
               className='border-l rounded-none'

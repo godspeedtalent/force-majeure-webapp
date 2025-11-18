@@ -105,7 +105,7 @@ export default function EventManagement() {
         const timeStr = event.time || '20:00';
         const [hours, minutes] = timeStr.split(':');
         const parsedDate = parse(dateStr, 'yyyy-MM-dd', new Date());
-        parsedDate.setHours(parseInt(hours), parseInt(minutes));
+        parsedDate.setHours(parseInt(hours, 10), parseInt(minutes, 10));
         setEventDate(parsedDate);
       }
     }

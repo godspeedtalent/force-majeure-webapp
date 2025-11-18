@@ -92,9 +92,9 @@ export const EventRow = ({ event }: EventRowProps) => {
                 </p>
                 {event.undercard.length > 0 && (
                   <div className='flex flex-wrap gap-1 mt-2'>
-                    {event.undercard.map((artist, index) => (
+                    {event.undercard.map((artist) => (
                       <FmBadge
-                        key={index}
+                        key={artist.id || artist.name}
                         label={artist.name}
                         variant='secondary'
                         className='text-xs opacity-80'

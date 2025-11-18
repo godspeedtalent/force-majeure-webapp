@@ -113,7 +113,7 @@ export default function ArtistDetails() {
                   <img
                     src={artist.image_url}
                     alt={artist.name}
-                    className='w-48 h-48 object-cover rounded-lg border-2 border-fm-gold/30'
+                    className='w-48 h-48 object-cover rounded-none border-2 border-fm-gold/30'
                   />
                 </div>
               )}

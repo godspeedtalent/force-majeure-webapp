@@ -10,6 +10,7 @@ import {
   Users,
 } from 'lucide-react';
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
+import { TIME_CONSTANTS } from '@/shared/constants/timeConstants';
 
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -130,14 +131,14 @@ export const EventDetailsContent = ({
     const timeParts = event.time.match(/(\d+):(\d+)\s*(AM|PM)?/i);
     if (!timeParts) return false;
 
-    let hours = parseInt(timeParts[1]);
+    let hours = parseInt(timeParts[1], 10);
     const meridiem = timeParts[3]?.toUpperCase();
 
-    if (meridiem === 'PM' && hours !== 12) hours += 12;
-    if (meridiem === 'AM' && hours === 12) hours = 0;
+    if (meridiem === 'PM' && hours !== TIME_CONSTANTS.NOON_HOUR) hours += TIME_CONSTANTS.NOON_HOUR;
+    if (meridiem === 'AM' && hours === TIME_CONSTANTS.NOON_HOUR) hours = TIME_CONSTANTS.MIDNIGHT_HOUR;
 
     // After hours: 10 PM or later, or before 6 AM
-    return hours >= 22 || hours < 6;
+    return hours >= TIME_CONSTANTS.AFTER_HOURS_START || hours < TIME_CONSTANTS.EARLY_MORNING_END;
   }, [event.time]);
   const weekdayLabel = useMemo(
     () =>
@@ -490,7 +491,7 @@ export const EventDetailsContent = ({
   const stickyHeader = (
     <div className='flex items-center justify-between gap-3'>
       <div className='flex items-center gap-3 min-w-0'>
-        <div className='flex flex-col items-center justify-center rounded-xl border border-border/60 bg-background/70 px-3 py-2 text-[10px] font-semibold tracking-[0.35em] text-muted-foreground/80'>
+        <div className='flex flex-col items-center justify-center rounded-none border border-border/60 bg-background/70 px-3 py-2 text-[10px] font-semibold tracking-[0.35em] text-muted-foreground/80'>
           <span>{weekdayLabel}</span>
           <span>{dayNumber}</span>
         </div>

@@ -1,5 +1,6 @@
 import { supabase } from '@/shared/api/supabase/client';
 import { Event, TicketTier, Venue } from '../types';
+import { logger } from '@/shared/services/logger';
 
 /**
  * Event Service
@@ -40,7 +41,7 @@ export const eventService = {
    * Fetch a single event by ID with related data
    */
   async getEventById(eventId: string, includeRelations = true) {
-    const query = supabase.from('events' as any).select(
+    const query = supabase.from('events').select(
       includeRelations
         ? `
           *,
@@ -70,7 +71,7 @@ export const eventService = {
     date_from?: string;
     date_to?: string;
   }) {
-    let query = supabase.from('events' as any).select('*');
+    let query = supabase.from('events').select('*');
 
     if (filters?.status) {
       query = query.eq('status', filters.status);
@@ -96,7 +97,7 @@ export const eventService = {
    */
   async createEvent(eventData: CreateEventData) {
     const { data, error } = await supabase
-      .from('events' as any)
+      .from('events')
       .insert([eventData])
       .select()
       .single();
@@ -110,7 +111,7 @@ export const eventService = {
    */
   async updateEvent(eventId: string, eventData: Partial<CreateEventData>) {
     const { data, error } = await supabase
-      .from('events' as any)
+      .from('events')
       .update(eventData)
       .eq('id', eventId)
       .select()
@@ -125,7 +126,7 @@ export const eventService = {
    */
   async deleteEvent(eventId: string) {
     const { error } = await supabase
-      .from('events' as any)
+      .from('events')
       .delete()
       .eq('id', eventId);
 
@@ -137,7 +138,7 @@ export const eventService = {
    */
   async getVenueCapacity(venueId: string): Promise<number> {
     const { data, error } = await supabase
-      .from('venues' as any)
+      .from('venues')
       .select('capacity')
       .eq('id', venueId)
       .single();
@@ -155,7 +156,7 @@ export const eventService = {
    */
   async createTicketTiers(tiers: CreateTicketTierData[]) {
     const { data, error } = await supabase
-      .from('ticket_tiers' as any)
+      .from('ticket_tiers')
       .insert(tiers)
       .select();
 
@@ -169,14 +170,14 @@ export const eventService = {
   async updateTicketTiers(eventId: string, tiers: Partial<TicketTier>[]) {
     // Delete existing tiers
     await supabase
-      .from('ticket_tiers' as any)
+      .from('ticket_tiers')
       .delete()
       .eq('event_id', eventId);
 
     // Insert new tiers
     if (tiers.length > 0) {
       const { data, error } = await supabase
-        .from('ticket_tiers' as any)
+        .from('ticket_tiers')
         .insert(
           tiers.map(tier => ({
             ...tier,
@@ -203,7 +204,7 @@ export const eventService = {
     }));
 
     const { error } = await supabase
-      .from('event_artists' as any)
+      .from('event_artists')
       .insert(undercardData);
 
     if (error) throw error;
@@ -214,7 +215,7 @@ export const eventService = {
    */
   async removeUndercardArtists(eventId: string) {
     const { error } = await supabase
-      .from('event_artists' as any)
+      .from('event_artists')
       .delete()
       .eq('event_id', eventId);
 

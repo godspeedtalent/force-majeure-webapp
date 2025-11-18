@@ -49,7 +49,7 @@ export function EventDetailsFormSection({ state, actions }: EventDetailsFormSect
               if (state.eventDate) {
                 const [hours, minutes] = time.split(':');
                 const newDate = new Date(state.eventDate);
-                newDate.setHours(parseInt(hours), parseInt(minutes));
+                newDate.setHours(parseInt(hours, 10), parseInt(minutes, 10));
                 actions.setEventDate(newDate);
               }
             }}
