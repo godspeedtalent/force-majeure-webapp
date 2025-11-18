@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
+import { MobileHorizontalTabs } from '@/components/mobile';
 import { ComponentRelationshipGraph } from '@/components/demo/ComponentRelationshipGraph';
 import {
   Calendar,
@@ -1808,6 +1809,21 @@ export default function FmComponentsCatalog() {
     }
   };
 
+  // Mobile horizontal tabs
+  const mobileTabs = [
+    { id: 'overview', label: 'Overview', icon: Info },
+    { id: 'relationships', label: 'Relations', icon: Network },
+    { id: 'buttons', label: 'Buttons', icon: MousePointerClick },
+    { id: 'forms', label: 'Forms', icon: FormInput },
+    { id: 'search', label: 'Search', icon: Search },
+    { id: 'data', label: 'Data', icon: Table },
+    { id: 'display', label: 'Display', icon: Eye },
+    { id: 'feedback', label: 'Feedback', icon: MessageSquare },
+    { id: 'modals', label: 'Modals', icon: AlertCircle },
+    { id: 'navigation', label: 'Nav', icon: Navigation },
+    { id: 'misc', label: 'Misc', icon: Sparkles },
+  ];
+
   return (
     <SideNavbarLayout
       navigationGroups={navigationGroups}
@@ -1817,6 +1833,13 @@ export default function FmComponentsCatalog() {
       defaultOpen
       backgroundOpacity={0.25}
     >
+      {/* Mobile horizontal tabs */}
+      <MobileHorizontalTabs
+        tabs={mobileTabs}
+        activeTab={activeCategory}
+        onTabChange={tab => setActiveCategory(tab as ComponentCategory)}
+      />
+
       <div className='space-y-6'>
         <div className='mb-8'>
           <h1 className='text-4xl font-canela text-fm-gold mb-2'>

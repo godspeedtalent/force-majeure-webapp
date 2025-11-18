@@ -18,6 +18,7 @@ import { supabase } from '@/shared/api/supabase/client';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
 import { EventArtistManagement } from '@/components/events/artists/EventArtistManagement';
 
 import { toast } from 'sonner';
@@ -180,6 +181,16 @@ export default function EventManagement() {
       : []),
   ];
 
+  // Mobile bottom tabs configuration
+  const mobileTabs: MobileBottomTab[] = [
+    { id: 'overview', label: 'Overview', icon: FileText },
+    { id: 'artists', label: 'Artists', icon: Users },
+    { id: 'tiers', label: 'Tiers', icon: Ticket },
+    { id: 'orders', label: 'Orders', icon: ShoppingBag },
+    { id: 'sales', label: 'Sales', icon: DollarSign },
+    ...(isAdmin ? [{ id: 'admin' as EventTab, label: 'Admin', icon: Shield }] : []),
+  ];
+
   const handleEventUpdate = async (updates: any) => {
     try {
       if (!id) throw new Error('Event ID is required');
@@ -336,6 +347,13 @@ export default function EventManagement() {
       activeItem={activeTab}
       onItemChange={setActiveTab}
       showDividers
+      mobileTabBar={
+        <MobileBottomTabBar
+          tabs={mobileTabs}
+          activeTab={activeTab}
+          onTabChange={tab => setActiveTab(tab as EventTab)}
+        />
+      }
     >
       <div className='max-w-full'>
         {/* Header */}

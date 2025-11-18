@@ -6,6 +6,7 @@ import { DataGridAction, FmConfigurableDataGrid } from '@/features/data-grid';
 import { FmEditVenueButton } from '@/components/common/buttons/FmEditVenueButton';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
+import { MobileHorizontalTabs, MobileHorizontalTab } from '@/components/mobile';
 import {
   MapPin,
   Database,
@@ -122,6 +123,22 @@ export default function DeveloperDatabase() {
         items: tables,
       },
     ];
+  }, [isAdmin]);
+
+  // Mobile horizontal tabs configuration
+  const mobileTabs: MobileHorizontalTab[] = useMemo(() => {
+    const baseTabs = [
+      { id: 'artists', label: 'Artists', icon: Mic2 },
+      { id: 'events', label: 'Events', icon: Calendar },
+      { id: 'venues', label: 'Venues', icon: MapPin },
+    ];
+    if (isAdmin) {
+      baseTabs.push(
+        { id: 'organizations', label: 'Orgs', icon: Building2 },
+        { id: 'users', label: 'Users', icon: Users }
+      );
+    }
+    return baseTabs;
   }, [isAdmin]);
 
   // Update URL when tab changes via location state
@@ -413,6 +430,13 @@ export default function DeveloperDatabase() {
       activeItem={activeTab}
       onItemChange={handleTabChange}
     >
+      {/* Mobile horizontal tabs */}
+      <MobileHorizontalTabs
+        tabs={mobileTabs}
+        activeTab={activeTab}
+        onTabChange={tab => handleTabChange(tab as DatabaseTab)}
+      />
+
       <div className='max-w-full'>
         <div className='mb-[20px]'>
           <div className='flex items-center gap-[10px] mb-[20px]'>

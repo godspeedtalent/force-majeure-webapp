@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
+import { MobileHorizontalTabs } from '@/components/mobile';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { Badge } from '@/components/common/shadcn/badge';
 import { TestSuiteRunner } from '@/features/testing/components/TestSuiteRunner';
@@ -117,6 +118,16 @@ export default function TicketFlowTests() {
     }
   };
 
+  // Mobile horizontal tabs
+  const mobileTabs = [
+    { id: 'queue', label: 'Queue', icon: Users },
+    { id: 'selection', label: 'Selection', icon: ShoppingCart },
+    { id: 'payment', label: 'Payment', icon: CreditCard },
+    { id: 'timeout', label: 'Timeout', icon: Clock },
+    { id: 'confirmation', label: 'Confirm', icon: CheckCircle },
+    { id: 'delivery', label: 'Delivery', icon: Send },
+  ];
+
   return (
     <SideNavbarLayout
       navigationGroups={navGroups}
@@ -126,6 +137,13 @@ export default function TicketFlowTests() {
       showDividers={false}
       defaultOpen={true}
     >
+      {/* Mobile horizontal tabs */}
+      <MobileHorizontalTabs
+        tabs={mobileTabs}
+        activeTab={activeScenario}
+        onTabChange={tab => handleScenarioChange(tab as TicketFlowScenario)}
+      />
+
       <div className='space-y-[20px]'>
         <div className='mb-[40px]'>
           <div className='flex items-center gap-[10px] mb-[10px]'>

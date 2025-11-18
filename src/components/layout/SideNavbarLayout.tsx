@@ -1,4 +1,6 @@
 import { ReactNode } from 'react';
+import { cn } from '@/shared/utils/utils';
+import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { Navigation } from '@/components/navigation/Navigation';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import {
@@ -23,6 +25,8 @@ interface SideNavbarLayoutProps<T extends string> {
   backgroundOpacity?: number;
   /** Optional additional classes for the main content container */
   className?: string;
+  /** Optional mobile bottom tab bar component */
+  mobileTabBar?: ReactNode;
 }
 
 /**
@@ -46,21 +50,31 @@ export const SideNavbarLayout = <T extends string>({
   defaultOpen = true,
   backgroundOpacity = 0.35,
   className = '',
+  mobileTabBar,
 }: SideNavbarLayoutProps<T>) => {
+  const isMobile = useIsMobile();
+
   return (
     <>
       <Navigation />
       <SidebarProvider defaultOpen={defaultOpen}>
         <div className='flex min-h-screen w-full'>
-          <FmCommonSideNav
-            groups={navigationGroups}
-            activeItem={activeItem}
-            onItemChange={onItemChange}
-            showDividers={showDividers}
-          />
+          {/* Desktop sidebar - hidden on mobile when mobile tab bar is provided */}
+          <div className={cn(mobileTabBar && isMobile ? 'hidden' : 'block')}>
+            <FmCommonSideNav
+              groups={navigationGroups}
+              activeItem={activeItem}
+              onItemChange={onItemChange}
+              showDividers={showDividers}
+            />
+          </div>
 
           <main
-            className={`flex-1 pb-6 px-6 relative overflow-hidden ${className}`}
+            className={cn(
+              'flex-1 pb-6 px-6 relative overflow-hidden',
+              mobileTabBar && isMobile && 'pb-[80px]', // Add bottom padding on mobile to prevent tab bar overlap
+              className
+            )}
           >
             <TopographicBackground opacity={backgroundOpacity} />
             <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
@@ -68,6 +82,9 @@ export const SideNavbarLayout = <T extends string>({
           </main>
         </div>
       </SidebarProvider>
+
+      {/* Mobile bottom tab bar */}
+      {mobileTabBar}
     </>
   );
 };

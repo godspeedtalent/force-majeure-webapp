@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
+import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
 import {
   Sliders,
   Settings,
@@ -70,6 +71,15 @@ export default function AdminControls() {
     },
   ];
 
+  // Mobile bottom tabs configuration
+  const mobileTabs: MobileBottomTab[] = [
+    { id: 'devtools', label: 'Dev Tools', icon: Code },
+    { id: 'fees', label: 'Fees', icon: DollarSign },
+    { id: 'settings', label: 'Settings', icon: Sliders },
+    { id: 'organizations', label: 'Orgs', icon: Building2 },
+    { id: 'users', label: 'Users', icon: Users },
+  ];
+
   const getTabTitle = () => {
     if (activeTab === 'settings') return 'Site Settings';
     if (activeTab === 'devtools') return 'Developer Tools';
@@ -84,6 +94,13 @@ export default function AdminControls() {
       navigationGroups={navigationGroups}
       activeItem={activeTab}
       onItemChange={setActiveTab}
+      mobileTabBar={
+        <MobileBottomTabBar
+          tabs={mobileTabs}
+          activeTab={activeTab}
+          onTabChange={tab => setActiveTab(tab as AdminTab)}
+        />
+      }
     >
       <div className='max-w-full'>
         <div className='mb-[20px]'>
