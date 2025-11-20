@@ -14,6 +14,7 @@ import { supabase } from '@/shared/api/supabase/client';
 import { useDebounce } from '@/shared/hooks';
 import { handleError } from '@/shared/services/errorHandler';
 import { cn } from '@/shared/utils/utils';
+import { logger } from '@/shared/services/logger';
 
 interface Organization {
   id: string;
@@ -23,9 +24,10 @@ interface Organization {
 
 interface UserProfile {
   id: string;
-  display_name?: string;
-  full_name?: string;
-  avatar_url?: string;
+  user_id: string;
+  display_name: string | null;
+  full_name: string | null;
+  avatar_url: string | null;
   email?: string;
 }
 
@@ -192,7 +194,7 @@ export function GlobalResourceSearch({
         venues = (venueData || []) as unknown as Venue[];
       } catch (venueError) {
         // Venues table might not exist, silently continue
-        logger.warn('Venues search failed:', venueError);
+        logger.warn('Venues search failed:', { error: venueError });
       }
 
       setResults({

@@ -47,7 +47,7 @@ export const AdminFeesSection = () => {
   const fetchFees = async () => {
     try {
       // Get 'all' environment dynamically
-      const { data: allEnvData, error: allEnvError } = await supabase
+      const { data: allEnvData, error: allEnvError } = await (supabase as any)
         .from('environments')
         .select('id')
         .eq('name', 'all')
