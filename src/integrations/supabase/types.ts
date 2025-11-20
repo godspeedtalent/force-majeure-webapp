@@ -53,6 +53,84 @@ export type Database = {
           },
         ]
       }
+      artist_registrations: {
+        Row: {
+          artist_name: string
+          availability: string | null
+          bio: string
+          city: string
+          created_at: string
+          email: string
+          equipment: string | null
+          genre: string
+          id: string
+          instagram_handle: string | null
+          phone: string
+          previous_venues: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          reviewer_notes: string | null
+          set_length: string | null
+          soundcloud_url: string | null
+          spotify_url: string | null
+          state: string
+          status: string
+          submitted_at: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          artist_name: string
+          availability?: string | null
+          bio: string
+          city: string
+          created_at?: string
+          email: string
+          equipment?: string | null
+          genre: string
+          id?: string
+          instagram_handle?: string | null
+          phone: string
+          previous_venues?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_notes?: string | null
+          set_length?: string | null
+          soundcloud_url?: string | null
+          spotify_url?: string | null
+          state: string
+          status?: string
+          submitted_at?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          artist_name?: string
+          availability?: string | null
+          bio?: string
+          city?: string
+          created_at?: string
+          email?: string
+          equipment?: string | null
+          genre?: string
+          id?: string
+          instagram_handle?: string | null
+          phone?: string
+          previous_venues?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_notes?: string | null
+          set_length?: string | null
+          soundcloud_url?: string | null
+          spotify_url?: string | null
+          state?: string
+          status?: string
+          submitted_at?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       artists: {
         Row: {
           bio: string | null
@@ -458,8 +536,6 @@ export type Database = {
         Row: {
           created_at: string | null
           description: string | null
-          disabled: boolean
-          environment: string
           environment_id: string
           flag_name: string
           id: string
@@ -469,8 +545,6 @@ export type Database = {
         Insert: {
           created_at?: string | null
           description?: string | null
-          disabled?: boolean
-          environment?: string
           environment_id: string
           flag_name: string
           id?: string
@@ -480,8 +554,6 @@ export type Database = {
         Update: {
           created_at?: string | null
           description?: string | null
-          disabled?: boolean
-          environment?: string
           environment_id?: string
           flag_name?: string
           id?: string
@@ -1036,7 +1108,6 @@ export type Database = {
       ticketing_fees: {
         Row: {
           created_at: string
-          environment: string
           environment_id: string
           fee_name: string
           fee_type: string
@@ -1047,7 +1118,6 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          environment?: string
           environment_id: string
           fee_name: string
           fee_type: string
@@ -1058,7 +1128,6 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          environment?: string
           environment_id?: string
           fee_name?: string
           fee_type?: string
@@ -1431,7 +1500,7 @@ export type Database = {
         Args: { role_name_param: string; user_id_param: string }
         Returns: boolean
       }
-      is_dev_admin: { Args: never; Returns: boolean }
+      is_dev_admin: { Args: { user_id_param: string }; Returns: boolean }
       record_event_view: {
         Args: {
           p_event_id: string

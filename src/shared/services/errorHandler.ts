@@ -51,19 +51,13 @@ interface ErrorHandlerOptions {
 
 /**
  * Check if user is a developer or admin
+ * 
+ * ✅ SECURITY FIX: Only accepts explicitly passed role from server-side verification
+ * Never checks localStorage to prevent client-side privilege escalation
  */
 function isDeveloperOrAdmin(userRole?: string): boolean {
-  if (userRole) {
-    return userRole === 'developer' || userRole === 'admin';
-  }
-
-  // Try to get from localStorage if not provided
-  try {
-    const storedRole = localStorage.getItem('userRole');
-    return storedRole === 'developer' || storedRole === 'admin';
-  } catch {
-    return false;
-  }
+  // Only trust roles explicitly passed from server-verified sources
+  return userRole === 'developer' || userRole === 'admin';
 }
 
 /**

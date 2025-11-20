@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import Stripe from 'https://esm.sh/stripe@14.5.0?target=deno';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
   apiVersion: '2023-10-16',
@@ -18,13 +19,58 @@ serve(async req => {
   }
 
   try {
-    const { email, userId } = await req.json();
-
-    if (!email || !userId) {
-      throw new Error('Email and userId are required');
+    // ✅ SECURITY: Verify authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: corsHeaders }
+      );
     }
 
-    // Check if customer already exists with this email
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      global: { headers: { Authorization: authHeader } },
+      auth: { persistSession: false },
+    });
+
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: corsHeaders }
+      );
+    }
+
+    const { email, userId } = await req.json();
+
+    // ✅ SECURITY: Input validation
+    if (!email || !userId) {
+      return new Response(
+        JSON.stringify({ error: 'Email and userId are required' }),
+        { status: 400, headers: corsHeaders }
+      );
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email) || email.length > 255) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid email' }),
+        { status: 400, headers: corsHeaders }
+      );
+    }
+
+    // ✅ SECURITY: Verify user can only access their own data
+    if (userId !== user.id) {
+      return new Response(
+        JSON.stringify({ error: 'Forbidden' }),
+        { status: 403, headers: corsHeaders }
+      );
+    }
+
+    // Check if customer already exists
     const existingCustomers = await stripe.customers.list({
       email,
       limit: 1,
