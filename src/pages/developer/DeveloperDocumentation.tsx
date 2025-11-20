@@ -43,11 +43,6 @@ const DOCUMENTATION_FILES: DocumentFile[] = [
     category: 'Development',
   },
   {
-    name: 'Google OAuth Setup',
-    path: '/docs/GOOGLE_OAUTH_SETUP.md',
-    category: 'Authentication',
-  },
-  {
     name: 'Image Upload Setup',
     path: '/docs/IMAGE_UPLOAD_SETUP.md',
     category: 'Features',

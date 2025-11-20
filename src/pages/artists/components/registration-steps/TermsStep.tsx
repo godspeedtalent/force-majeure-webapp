@@ -67,23 +67,6 @@ export function TermsStep({
               <label className='flex items-start gap-[10px] cursor-pointer group'>
                 <input
                   type='checkbox'
-                  checked={formData.makeProfilePublic}
-                  onChange={e => onInputChange('makeProfilePublic', e.target.checked)}
-                  className='mt-1 h-4 w-4 rounded-none border-white/20 bg-transparent checked:bg-fm-gold checked:border-fm-gold focus:ring-fm-gold focus:ring-offset-0'
-                />
-                <div className='flex-1'>
-                  <span className='font-canela text-sm group-hover:text-fm-gold transition-colors block'>
-                    Make my artist profile public
-                  </span>
-                  <span className='font-canela text-xs text-muted-foreground'>
-                    Your profile will be visible to event attendees and music fans
-                  </span>
-                </div>
-              </label>
-
-              <label className='flex items-start gap-[10px] cursor-pointer group'>
-                <input
-                  type='checkbox'
                   checked={formData.linkPersonalProfile}
                   onChange={e =>
                     onInputChange('linkPersonalProfile', e.target.checked)

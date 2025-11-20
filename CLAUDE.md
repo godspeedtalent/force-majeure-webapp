@@ -29,7 +29,7 @@ src/
 │   │   └── modals/     # Modal components
 │   └── layout/         # Layout components
 ├── features/           # Feature-based modules
-│   ├── auth/          # Authentication (Google OAuth + email/password)
+│   ├── auth/          # Authentication (email/password)
 │   ├── events/        # Event management
 │   │   ├── components/
 │   │   ├── hooks/
@@ -252,10 +252,11 @@ export default function EntityDetails() {
 - `<ProtectedRoute>` enhanced with permission/role support
 - Role management modal in user admin grid (click roles to edit)
 - RLS policies enforce permission checks at database level
+- **Admin role automatically bypasses all permission/role checks** - no need to assign individual permissions
 
 **Available Roles:**
 
-- `ROLES.ADMIN` - Full system administrator (all permissions via `*`)
+- `ROLES.ADMIN` - **Full system administrator (automatically grants ALL permissions and roles without database assignment)**
 - `ROLES.DEVELOPER` - Developer access (debugging, dev tools, all permissions)
 - `ROLES.ORG_ADMIN` - Organization administrator (manage events, venues, staff)
 - `ROLES.ORG_STAFF` - Organization staff (view org, scan tickets)
@@ -276,17 +277,17 @@ export default function EntityDetails() {
 import { PERMISSIONS, ROLES } from '@/shared/auth/permissions';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 
-// Check permissions
-const { hasPermission, hasRole, hasAnyPermission } = useUserPermissions();
-const canManage = hasPermission(PERMISSIONS.MANAGE_ORGANIZATION);
-const isAdmin = hasRole(ROLES.ADMIN);
+// Check permissions (admins automatically pass all checks)
+const { isAdmin, hasPermission, hasRole, hasAnyPermission } = useUserPermissions();
+const canManage = hasPermission(PERMISSIONS.MANAGE_ORGANIZATION); // true for admins
+const isAdminUser = isAdmin(); // Check if user has admin role
 
-// Protect routes (use in App.tsx)
-<ProtectedRoute role={ROLES.ADMIN}>
-  <AdminPage />
+// Protect routes (admins automatically have access)
+<ProtectedRoute permission={PERMISSIONS.MANAGE_ORGANIZATION}>
+  <OrgTools />
 </ProtectedRoute>
 
-// Conditional rendering
+// Conditional rendering (admins automatically see content)
 <PermissionGuard permission={PERMISSIONS.SCAN_TICKETS}>
   <ScannerTools />
 </PermissionGuard>
@@ -296,16 +297,16 @@ const isAdmin = hasRole(ROLES.ADMIN);
 
 1. ❌ **NEVER** hard-code role/permission strings - always use constants
 2. ✅ **ALWAYS** use `<ProtectedRoute>` for admin/privileged routes
-3. ✅ **ALWAYS** check actual user roles, not dev mode overrides
-4. ✅ Admin routes (`/admin/*`) must use `<ProtectedRoute role={ROLES.ADMIN}>`
-5. ✅ DevTools tabs must check `hasAnyRole(ROLES.DEVELOPER, ROLES.ADMIN)`
+3. ✅ **ADMIN ROLE OVERRIDE**: Users with `ROLES.ADMIN` automatically pass ALL permission and role checks
+4. ✅ **SIMPLIFIED ADMIN MANAGEMENT**: Only assign the `admin` role in the database - no need to assign individual permissions
+5. ✅ Admin routes (`/admin/*`) can use `<ProtectedRoute permission={PERMISSIONS.MANAGE_*}>` or specific role checks
 6. ✅ Use permission checks for features, role checks for access levels
 
 **See also:** `/docs/PERMISSION_MANAGEMENT_GUIDE.md` for detailed examples
 
 ### Authentication (Nov 2025)
 
-- Added Google OAuth2 integration
+- Email/password authentication
 - "Remember Me" functionality with 30-day sessions
 - Password confirmation on signup
 - Session persistence utilities

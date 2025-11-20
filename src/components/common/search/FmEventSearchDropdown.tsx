@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Calendar } from 'lucide-react';
 import {
   FmCommonSearchDropdown,
@@ -21,6 +22,7 @@ export function FmEventSearchDropdown({
   placeholder = 'Search for an event...',
   disabled = false,
 }: FmEventSearchDropdownProps) {
+  const navigate = useNavigate();
   const [selectedEvent, setSelectedEvent] = React.useState<{
     title: string;
   } | null>(null);
@@ -139,11 +141,19 @@ export function FmEventSearchDropdown({
     });
   };
 
+  const handleCreateNew = () => {
+    if (onCreateNew) {
+      onCreateNew();
+    } else {
+      navigate('/events/create');
+    }
+  };
+
   return (
     <FmCommonSearchDropdown
       onChange={onChange}
       onSearch={handleSearch}
-      onCreateNew={onCreateNew}
+      onCreateNew={handleCreateNew}
       placeholder={placeholder}
       createNewLabel='+ Create New Event'
       selectedLabel={selectedEvent?.title}

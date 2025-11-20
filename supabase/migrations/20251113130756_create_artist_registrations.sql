@@ -53,25 +53,13 @@ CREATE POLICY "Users can create artist registrations"
 CREATE POLICY "Admins can view all artist registrations"
   ON public.artist_registrations
   FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.user_roles
-      WHERE user_roles.user_id = auth.uid()
-      AND user_roles.role = 'admin'
-    )
-  );
+  USING (has_role(auth.uid(), 'admin'));
 
 -- Policy: Admins can update registrations (for review/approval)
 CREATE POLICY "Admins can update artist registrations"
   ON public.artist_registrations
   FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.user_roles
-      WHERE user_roles.user_id = auth.uid()
-      AND user_roles.role = 'admin'
-    )
-  );
+  USING (has_role(auth.uid(), 'admin'));
 
 -- Create function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION public.update_artist_registrations_updated_at()

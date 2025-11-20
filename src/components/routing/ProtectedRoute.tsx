@@ -21,8 +21,11 @@ interface ProtectedRouteProps {
  * Route-level protection based on permissions/roles
  * Redirects unauthorized users to a specified route
  *
+ * NOTE: Users with the 'admin' role automatically pass ALL permission and role checks
+ * without needing to be assigned individual permissions or roles.
+ *
  * @example
- * // Protect route by permission
+ * // Protect route by permission (admins bypass this check)
  * <Route
  *   path="/organization/tools"
  *   element={
@@ -33,18 +36,18 @@ interface ProtectedRouteProps {
  * />
  *
  * @example
- * // Protect route by role
+ * // Protect route by role (admins bypass this check)
  * <Route
- *   path="/admin/controls"
+ *   path="/dev/controls"
  *   element={
- *     <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
- *       <AdminControls />
+ *     <ProtectedRoute role={ROLES.DEVELOPER}>
+ *       <DevControls />
  *     </ProtectedRoute>
  *   }
  * />
  *
  * @example
- * // Require multiple permissions
+ * // Require multiple permissions (admins bypass this check)
  * <Route
  *   path="/advanced-tools"
  *   element={

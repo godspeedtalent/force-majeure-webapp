@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   FmCommonSearchDropdown,
   SearchDropdownOption,
@@ -28,6 +29,8 @@ export interface SearchDropdownConfig<T = any> {
   defaultPlaceholder: string;
   /** Label for the create new button */
   createNewLabel: string;
+  /** Route to navigate to when creating a new item */
+  createRoute?: string;
   /** Whether to use recent selections */
   useRecents?: boolean;
   /** Recent selections key */
@@ -75,6 +78,7 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
     renderIcon,
     defaultPlaceholder,
     createNewLabel,
+    createRoute,
     useRecents = false,
     recentsKey,
     typeIcon,
@@ -88,6 +92,7 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
     placeholder = defaultPlaceholder,
     disabled = false,
   }: SearchDropdownProps) {
+    const navigate = useNavigate();
     const [selectedItem, setSelectedItem] = React.useState<{
       label: string;
     } | null>(null);
@@ -169,12 +174,21 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
       }
     };
 
+    // Create new handler
+    const handleCreateNew = () => {
+      if (onCreateNew) {
+        onCreateNew();
+      } else if (createRoute) {
+        navigate(createRoute);
+      }
+    };
+
     return (
       <FmCommonSearchDropdown
         onChange={handleChange}
         onSearch={handleSearch}
         onGetRecentOptions={handleGetRecentOptions}
-        onCreateNew={onCreateNew}
+        onCreateNew={createRoute || onCreateNew ? handleCreateNew : undefined}
         placeholder={placeholder}
         createNewLabel={createNewLabel}
         selectedLabel={selectedItem?.label}

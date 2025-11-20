@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TableCell, TableRow } from '@/components/common/shadcn/table';
 import { Button } from '@/components/common/shadcn/button';
@@ -57,6 +57,9 @@ export interface FmDataGridRowProps<T> {
 
   // Keyboard nav
   getFocusableCellProps: (rowIndex: number, columnKey: string) => any;
+
+  // Column widths for frozen column positioning
+  columnWidths?: Record<string, number>;
 }
 
 export function FmDataGridRow<T extends Record<string, any>>({
@@ -89,8 +92,25 @@ export function FmDataGridRow<T extends Record<string, any>>({
   isMultipleSelected,
   onUnselectAll,
   getFocusableCellProps,
+  columnWidths = {},
 }: FmDataGridRowProps<T>) {
   const navigate = useNavigate();
+
+  // Calculate cumulative left positions for frozen columns
+  const frozenColumnPositions = useMemo(() => {
+    const positions: Record<string, number> = {};
+    let cumulativeLeft = 48; // Start after checkbox column (w-12 = 48px)
+
+    columns.forEach(column => {
+      if (column.frozen) {
+        positions[column.key] = cumulativeLeft;
+        const width = columnWidths[column.key] || 150; // Default width
+        cumulativeLeft += width;
+      }
+    });
+
+    return positions;
+  }, [columns, columnWidths]);
 
   // Determine context menu actions based on selection
   const currentContextMenuActions =
@@ -216,6 +236,7 @@ export function FmDataGridRow<T extends Record<string, any>>({
                   ? getFocusableCellProps(rowIndex, column.key)
                   : {}
               }
+              frozenLeft={column.frozen ? frozenColumnPositions[column.key] : undefined}
             />
           );
         })}
@@ -247,7 +268,7 @@ export function FmDataGridRow<T extends Record<string, any>>({
                     key={idx}
                     onClick={e => {
                       e.stopPropagation();
-                      action.onClick(row);
+                      action.onClick?.(row);
                     }}
                     className={cn(
                       'cursor-pointer transition-colors duration-200',

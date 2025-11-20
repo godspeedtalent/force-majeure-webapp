@@ -44,6 +44,7 @@ export interface DataGridColumn<T = any> {
   width?: string;
   isRelation?: boolean;
   cellClassName?: string; // Custom className for TableCell (e.g., p-0 for images)
+  frozen?: boolean; // Pin column to left side (sticky)
   type?:
     | 'text'
     | 'number'
@@ -74,6 +75,7 @@ export interface FmDataGridProps<T = any> {
   createButtonLabel?: string;
   onHideColumn?: (columnKey: string) => void;
   onColumnReorder?: (fromIndex: number, toIndex: number) => void;
+  onToggleFreeze?: (columnKey: string) => void;
   toolbarActions?: React.ReactNode;
   enableVirtualization?: boolean;
   estimateRowSize?: number;
@@ -97,6 +99,7 @@ export function FmDataGrid<T extends Record<string, any>>({
   createButtonLabel,
   onHideColumn,
   onColumnReorder,
+  onToggleFreeze,
   toolbarActions,
   enableVirtualization = true,
   estimateRowSize = 48,
@@ -676,14 +679,14 @@ export function FmDataGrid<T extends Record<string, any>>({
         ref={parentRef}
         className={cn(
           'rounded-none border border-border/50 bg-background/30 backdrop-blur-sm relative',
-          isVirtualized ? 'overflow-auto' : 'overflow-x-auto'
+          isVirtualized ? 'overflow-auto' : 'overflow-x-auto overflow-y-visible'
         )}
         style={isVirtualized ? { maxHeight: '600px' } : undefined}
         onKeyDown={handleTableKeyDown}
         role='grid'
         aria-label={`${resourceName} data grid`}
       >
-        <Table>
+        <Table className='relative'>
           <FmDataGridHeader
             columns={columns}
             hasActions={actions.length > 0}
@@ -698,6 +701,7 @@ export function FmDataGrid<T extends Record<string, any>>({
             onColumnReorder={onColumnReorder}
             columnWidths={columnWidths}
             onResizeStart={handleResizeStart}
+            onToggleFreeze={onToggleFreeze}
           />
           <TableBody>
             {/* Virtual scrolling top spacer */}
@@ -805,6 +809,7 @@ export function FmDataGrid<T extends Record<string, any>>({
                       setLastSelectedIndex(null);
                     }}
                     getFocusableCellProps={getFocusableCellProps}
+                    columnWidths={columnWidths}
                   />
                 );
               })
@@ -822,7 +827,7 @@ export function FmDataGrid<T extends Record<string, any>>({
             )}
 
             {/* New row creation / Add button */}
-            {onCreate && (
+            {(onCreate || onCreateButtonClick) && (
               <FmDataGridNewRow
                 columns={columns}
                 hasActions={actions.length > 0}
@@ -836,10 +841,14 @@ export function FmDataGrid<T extends Record<string, any>>({
                   setIsCreatingRow(false);
                   setNewRowData({});
                 }}
-                onStartCreating={() => {
-                  setIsCreatingRow(true);
-                  setNewRowData({});
-                }}
+                onStartCreating={
+                  onCreateButtonClick
+                    ? onCreateButtonClick
+                    : () => {
+                        setIsCreatingRow(true);
+                        setNewRowData({});
+                      }
+                }
                 resourceName={resourceName}
               />
             )}

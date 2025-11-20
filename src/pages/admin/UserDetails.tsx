@@ -28,7 +28,6 @@ interface UserDetails {
     display_name: string;
     permissions: string[];
   }>;
-  is_public: boolean;
   show_on_leaderboard: boolean;
 }
 
@@ -161,15 +160,9 @@ export default function UserDetails() {
                 <p className='font-mono'>{user.email}</p>
               </div>
 
-              <div className='flex items-center gap-4'>
-                <div>
-                  <label className='text-sm text-muted-foreground'>Public Profile</label>
-                  <p>{user.is_public ? 'Yes' : 'No'}</p>
-                </div>
-                <div>
-                  <label className='text-sm text-muted-foreground'>Show on Leaderboard</label>
-                  <p>{user.show_on_leaderboard ? 'Yes' : 'No'}</p>
-                </div>
+              <div>
+                <label className='text-sm text-muted-foreground'>Show on Leaderboard</label>
+                <p>{user.show_on_leaderboard ? 'Yes' : 'No'}</p>
               </div>
             </CardContent>
           </Card>
@@ -267,13 +260,6 @@ export default function UserDetails() {
                 onClick={() => navigate(`/admin/users`)}
               >
                 Back to Users List
-              </Button>
-              <Button
-                variant='outline'
-                className='w-full border-white/20 hover:bg-white/10'
-                onClick={() => navigate(`/profile/${user.id}`)}
-              >
-                View Public Profile
               </Button>
             </CardContent>
           </Card>

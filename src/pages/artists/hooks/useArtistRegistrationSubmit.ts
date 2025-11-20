@@ -36,7 +36,6 @@ export function useArtistRegistrationSubmit() {
             tiktok_handle: formData.tiktokHandle || null,
             spotify_track_url: formData.spotifyTrackUrl || null,
             soundcloud_set_url: formData.soundcloudSetUrl,
-            make_profile_public: formData.makeProfilePublic,
             link_personal_profile: formData.linkPersonalProfile,
             notifications_opt_in: formData.notificationsOptIn,
             status: 'pending',

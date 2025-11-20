@@ -22,7 +22,6 @@ export interface ArtistRegistrationFormData {
 
   // Terms
   agreeToTerms: boolean;
-  makeProfilePublic: boolean;
   linkPersonalProfile: boolean;
   followOnInstagram: boolean;
   notificationsOptIn: boolean;
@@ -50,7 +49,6 @@ export const DEFAULT_FORM_DATA: ArtistRegistrationFormData = {
 
   // Terms
   agreeToTerms: false,
-  makeProfilePublic: true,
   linkPersonalProfile: false,
   followOnInstagram: false,
   notificationsOptIn: false,

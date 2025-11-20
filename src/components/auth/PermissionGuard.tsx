@@ -17,20 +17,23 @@ interface PermissionGuardProps {
 /**
  * Guard component that shows children only if user has required permissions/roles
  *
+ * NOTE: Users with the 'admin' role automatically pass ALL permission and role checks
+ * without needing to be assigned individual permissions or roles.
+ *
  * @example
- * // Show content only if user can manage organizations
+ * // Show content only if user can manage organizations (or is admin)
  * <PermissionGuard permission={PERMISSIONS.MANAGE_ORGANIZATION}>
  *   <OrganizationTools />
  * </PermissionGuard>
  *
  * @example
- * // Show content only if user has admin or developer role
- * <PermissionGuard role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
+ * // Show content only if user has developer role (or is admin)
+ * <PermissionGuard role={ROLES.DEVELOPER}>
  *   <DevControls />
  * </PermissionGuard>
  *
  * @example
- * // Show content only if user has ALL specified permissions
+ * // Show content only if user has ALL specified permissions (or is admin)
  * <PermissionGuard
  *   permission={[PERMISSIONS.MANAGE_EVENTS, PERMISSIONS.SCAN_TICKETS]}
  *   requireAll

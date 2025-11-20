@@ -425,6 +425,55 @@ SELECT 'global_search', true, e.id, 'Enables global search functionality'
 FROM environments e WHERE e.name = 'all'
 ON CONFLICT (flag_name, environment_id) DO NOTHING;
 
+-- ============================================================================
+-- ROLES & PERMISSIONS: Default System Roles
+-- ============================================================================
+-- Create default roles with their permissions
+-- Permissions are stored as JSONB arrays in the format: ["permission_name"]
+-- Use "*" as a wildcard to grant all permissions
+
+INSERT INTO roles (name, display_name, description, permissions, is_system_role) VALUES
+  (
+    'admin',
+    'Administrator',
+    'Full system administrator with all permissions',
+    '["*"]'::jsonb,
+    true
+  ),
+  (
+    'developer',
+    'Developer',
+    'Developer access with debugging and development tools',
+    '["access_dev_tools", "access_demo_pages", "*"]'::jsonb,
+    true
+  ),
+  (
+    'org_admin',
+    'Organization Admin',
+    'Organization administrator with event and staff management',
+    '["manage_organization", "view_organization", "scan_tickets", "manage_events", "manage_venues", "manage_artists"]'::jsonb,
+    true
+  ),
+  (
+    'org_staff',
+    'Organization Staff',
+    'Organization staff with limited access',
+    '["view_organization", "scan_tickets"]'::jsonb,
+    true
+  ),
+  (
+    'user',
+    'User',
+    'Standard user with basic access',
+    '[]'::jsonb,
+    true
+  )
+ON CONFLICT (name) DO UPDATE SET
+  display_name = EXCLUDED.display_name,
+  description = EXCLUDED.description,
+  permissions = EXCLUDED.permissions,
+  is_system_role = EXCLUDED.is_system_role;
+
 COMMIT;
 
 -- ============================================================================
@@ -433,4 +482,5 @@ COMMIT;
 -- Successfully seeded:
 -- - 200+ electronic music genres with hierarchical relationships
 -- - 9 feature flags (all disabled by default)
+-- - 5 default system roles (admin, developer, org_admin, org_staff, user)
 -- ============================================================================

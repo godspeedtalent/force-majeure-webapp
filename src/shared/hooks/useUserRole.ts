@@ -48,11 +48,24 @@ export const useUserPermissions = () => {
   const { data: roles } = useUserRole();
 
   /**
+   * Check if user is an admin
+   * Admins automatically have all permissions without needing to check individual permissions
+   * @returns true if user has the admin role
+   */
+  const isAdmin = (): boolean => {
+    if (!roles) return false;
+    return roles.some(role => role.role_name === 'admin');
+  };
+
+  /**
    * Check if user has a specific permission
    * @param permission - Permission to check (use PERMISSIONS constant)
+   * @returns true if user is admin OR has the specific permission
    */
   const hasPermission = (permission: Permission): boolean => {
     if (!roles) return false;
+    // Admin role automatically grants all permissions
+    if (isAdmin()) return true;
     return roles.some(
       role =>
         role.permission_names.includes(PERMISSIONS.ALL) ||
@@ -81,6 +94,7 @@ export const useUserPermissions = () => {
   /**
    * Check if user has a specific role
    * @param roleName - Role to check (use ROLES constant)
+   * @returns true if user has the specified role
    */
   const hasRole = (roleName: Role): boolean => {
     if (!roles) return false;
@@ -90,9 +104,11 @@ export const useUserPermissions = () => {
   /**
    * Check if user has ANY of the specified roles
    * @param roleNames - Roles to check
-   * @returns true if user has at least one of the roles
+   * @returns true if user is admin OR has at least one of the specified roles
    */
   const hasAnyRole = (...roleNames: Role[]): boolean => {
+    // Admin role grants access to everything
+    if (isAdmin()) return true;
     return roleNames.some(roleName => hasRole(roleName));
   };
 
@@ -121,6 +137,7 @@ export const useUserPermissions = () => {
   };
 
   return {
+    isAdmin,
     hasPermission,
     hasAnyPermission,
     hasAllPermissions,

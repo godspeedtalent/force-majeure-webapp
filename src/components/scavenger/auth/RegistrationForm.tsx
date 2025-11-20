@@ -25,7 +25,6 @@ interface FormData {
   showOnLeaderboard: boolean;
   agreeToContact: boolean;
   sameAsFullName: boolean;
-  isPublic: boolean;
 }
 
 interface PasswordStrength {
@@ -52,7 +51,6 @@ export function RegistrationForm({
     showOnLeaderboard: true,
     agreeToContact: false,
     sameAsFullName: false,
-    isPublic: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -143,7 +141,6 @@ export function RegistrationForm({
             phone_number: formData.phoneNumber,
             instagram_handle: formData.instagramHandle,
             show_on_leaderboard: formData.showOnLeaderboard,
-            is_public: formData.isPublic,
           },
           emailRedirectTo: redirectUrl,
         },
@@ -241,15 +238,6 @@ export function RegistrationForm({
               prepend='@'
             />
 
-            <FmCommonToggle
-              id='isPublic'
-              label='Make my profile public'
-              checked={formData.isPublic}
-              onCheckedChange={checked =>
-                updateFormData('isPublic', checked as boolean)
-              }
-              className='text-xs'
-            />
           </FormSection>
 
           <FormSection title='Password'>

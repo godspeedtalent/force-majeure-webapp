@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { TableHead, TableHeader, TableRow } from '@/components/common/shadcn/table';
 import { Input } from '@/components/common/shadcn/input';
 import {
@@ -19,7 +19,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/common/shadcn/tooltip';
-import { ChevronDown, ChevronUp, Filter, X, GripVertical } from 'lucide-react';
+import { ChevronDown, ChevronUp, Filter, X, GripVertical, Pin, PinOff } from 'lucide-react';
 import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
 import { cn } from '@/shared/utils/utils';
 import { DataGridColumn } from '../FmDataGrid';
@@ -38,6 +38,7 @@ export interface FmDataGridHeaderProps<T> {
   onColumnReorder?: (fromIndex: number, toIndex: number) => void;
   columnWidths: Record<string, number>;
   onResizeStart: (columnKey: string, e: React.MouseEvent) => void;
+  onToggleFreeze?: (columnKey: string) => void;
 }
 
 export function FmDataGridHeader<T>({
@@ -54,10 +55,27 @@ export function FmDataGridHeader<T>({
   onColumnReorder,
   columnWidths,
   onResizeStart,
+  onToggleFreeze,
 }: FmDataGridHeaderProps<T>) {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [isResizing, setIsResizing] = useState(false);
+
+  // Calculate cumulative left positions for frozen columns
+  const frozenColumnPositions = useMemo(() => {
+    const positions: Record<string, number> = {};
+    let cumulativeLeft = 48; // Start after checkbox column (w-12 = 48px)
+
+    columns.forEach(column => {
+      if (column.frozen) {
+        positions[column.key] = cumulativeLeft;
+        const width = columnWidths[column.key] || 150; // Default width
+        cumulativeLeft += width;
+      }
+    });
+
+    return positions;
+  }, [columns, columnWidths]);
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
     // Don't allow dragging if we're resizing
@@ -163,7 +181,8 @@ export function FmDataGridHeader<T>({
                   'border-l border-r border-border/60',
                   draggedIndex === colIndex && 'opacity-50',
                   dragOverIndex === colIndex && 'border-l-2 border-l-fm-gold',
-                  onColumnReorder && 'cursor-grab active:cursor-grabbing'
+                  onColumnReorder && 'cursor-grab active:cursor-grabbing',
+                  column.frozen && 'sticky bg-background/95 backdrop-blur-sm shadow-[2px_0_4px_rgba(0,0,0,0.1)]'
                 )}
                 style={{
                   width: columnWidths[column.key]
@@ -175,6 +194,11 @@ export function FmDataGridHeader<T>({
                   maxWidth: columnWidths[column.key]
                     ? `${columnWidths[column.key]}px`
                     : undefined,
+                  ...(column.frozen && {
+                    position: 'sticky',
+                    left: `${frozenColumnPositions[column.key]}px`,
+                    zIndex: 20,
+                  }),
                 }}
                 onClick={() => column.sortable && onSort(column.key)}
               >
@@ -317,16 +341,37 @@ export function FmDataGridHeader<T>({
                   )}
                 </>
               )}
-              {(column.filterable || column.sortable) && onHideColumn && (
-                <ContextMenuSeparator />
+              {onToggleFreeze && (
+                <>
+                  {(column.filterable || column.sortable) && <ContextMenuSeparator />}
+                  <ContextMenuItem
+                    onClick={() => onToggleFreeze(column.key)}
+                    className='text-white hover:bg-muted focus:bg-muted'
+                  >
+                    {column.frozen ? (
+                      <>
+                        <PinOff className='h-4 w-4 mr-2' />
+                        Unfreeze Column
+                      </>
+                    ) : (
+                      <>
+                        <Pin className='h-4 w-4 mr-2' />
+                        Freeze Column
+                      </>
+                    )}
+                  </ContextMenuItem>
+                </>
               )}
               {onHideColumn && (
-                <ContextMenuItem
-                  onClick={() => onHideColumn(column.key)}
-                  className='text-white hover:bg-muted focus:bg-muted'
-                >
-                  Hide Column
-                </ContextMenuItem>
+                <>
+                  <ContextMenuSeparator />
+                  <ContextMenuItem
+                    onClick={() => onHideColumn(column.key)}
+                    className='text-white hover:bg-muted focus:bg-muted'
+                  >
+                    Hide Column
+                  </ContextMenuItem>
+                </>
               )}
             </ContextMenuContent>
           </ContextMenu>

@@ -211,13 +211,12 @@ export function FmCommonSearchDropdown({
             ))
           )}
         </div>
-        {onCreateNew && query.length > 0 && (
+        {onCreateNew && (
           <div className='border-t border-fm-gold'>
             <button
               onClick={handleCreateNew}
-              className='w-full flex items-center gap-2 px-3 py-2 hover:bg-fm-gold/10 transition-colors text-fm-gold'
+              className='w-full flex items-center gap-2 px-3 py-2 hover:bg-fm-gold/10 transition-colors text-fm-gold font-medium'
             >
-              <Plus className='h-4 w-4' />
               <span>{createNewLabel}</span>
             </button>
           </div>

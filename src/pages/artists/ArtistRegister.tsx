@@ -43,7 +43,6 @@ interface ArtistRegistrationFormData {
 
   // Terms
   agreeToTerms: boolean;
-  makeProfilePublic: boolean;
   linkPersonalProfile: boolean;
   followOnInstagram: boolean;
   notificationsOptIn: boolean;
@@ -77,7 +76,6 @@ const ArtistRegister = () => {
 
     // Terms
     agreeToTerms: false,
-    makeProfilePublic: true,
     linkPersonalProfile: false,
     followOnInstagram: false,
     notificationsOptIn: false,
@@ -210,7 +208,6 @@ const ArtistRegister = () => {
             tiktok_handle: formData.tiktokHandle || null,
             spotify_track_url: formData.spotifyTrackUrl || null,
             soundcloud_set_url: formData.soundcloudSetUrl,
-            make_profile_public: formData.makeProfilePublic,
             link_personal_profile: formData.linkPersonalProfile,
             notifications_opt_in: formData.notificationsOptIn,
             status: 'pending',
@@ -654,23 +651,6 @@ const ArtistRegister = () => {
                         {/* Profile Settings */}
                         <div className='space-y-[15px]'>
                           <h3 className='font-canela text-base'>Profile Settings</h3>
-
-                          <label className='flex items-start gap-[10px] cursor-pointer group'>
-                            <input
-                              type='checkbox'
-                              checked={formData.makeProfilePublic}
-                              onChange={e => handleInputChange('makeProfilePublic', e.target.checked)}
-                              className='mt-1 h-4 w-4 rounded-none border-white/20 bg-transparent checked:bg-fm-gold checked:border-fm-gold focus:ring-fm-gold focus:ring-offset-0'
-                            />
-                            <div className='flex-1'>
-                              <span className='font-canela text-sm group-hover:text-fm-gold transition-colors block'>
-                                Make my artist profile public
-                              </span>
-                              <span className='font-canela text-xs text-muted-foreground'>
-                                Your profile will be visible to event attendees and music fans
-                              </span>
-                            </div>
-                          </label>
 
                           <label className='flex items-start gap-[10px] cursor-pointer group'>
                             <input

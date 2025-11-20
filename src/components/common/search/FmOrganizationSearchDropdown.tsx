@@ -26,6 +26,9 @@ export const FmOrganizationSearchDropdown = createSearchDropdown<Organization>({
     ),
   defaultPlaceholder: 'Search for an organization...',
   createNewLabel: '+ Create New Organization',
+  createRoute: '/organizations/create',
   useRecents: true,
   recentsKey: 'organizations',
+  typeIcon: <Building2 className='h-3 w-3 text-white/70' />,
+  typeTooltip: 'Organization',
 });

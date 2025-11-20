@@ -18,6 +18,10 @@ import FmComponentsCatalog from './pages/developer/FmComponentsCatalog';
 import DeveloperDatabase from './pages/developer/DeveloperDatabase';
 import DeveloperDocumentation from './pages/developer/DeveloperDocumentation';
 import TicketFlowTests from './pages/developer/TicketFlowTests';
+import DeveloperCreateEventPage from './pages/developer/database/CreateEvent';
+import DeveloperCreateArtistPage from './pages/developer/database/CreateArtist';
+import DeveloperCreateVenuePage from './pages/developer/database/CreateVenue';
+import DeveloperCreateOrganizationPage from './pages/developer/database/CreateOrganization';
 import EventManagement from './pages/EventManagement';
 import TestingIndex from './pages/testing/TestingIndex';
 import CheckoutFlowTests from './pages/testing/CheckoutFlowTests';
@@ -29,9 +33,6 @@ import ArtistDetails from './pages/admin/ArtistDetails';
 import UserDetails from './pages/admin/UserDetails';
 import VenueDetails from './pages/admin/VenueDetails';
 import DeveloperIndex from './pages/developer/DeveloperIndex';
-import DeveloperCreateEventPage from './pages/developer/database/CreateEvent';
-import DeveloperCreateArtistPage from './pages/developer/database/CreateArtist';
-import DeveloperCreateVenuePage from './pages/developer/database/CreateVenue';
 import OrganizationTools from './pages/organization/OrganizationTools';
 import TicketScanning from './pages/organization/TicketScanning';
 
@@ -166,28 +167,37 @@ const AppRoutes = () => {
             }
           />
 
+          {/* Create Routes - Protected by admin/developer roles */}
           <Route
-            path='/developer/database/events/new'
+            path='/events/create'
             element={
-              <DemoProtectedRoute>
+              <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
                 <DeveloperCreateEventPage />
-              </DemoProtectedRoute>
+              </ProtectedRoute>
             }
           />
           <Route
-            path='/developer/database/artists/new'
+            path='/artists/create'
             element={
-              <DemoProtectedRoute>
+              <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
                 <DeveloperCreateArtistPage />
-              </DemoProtectedRoute>
+              </ProtectedRoute>
             }
           />
           <Route
-            path='/developer/database/venues/new'
+            path='/venues/create'
             element={
-              <DemoProtectedRoute>
+              <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
                 <DeveloperCreateVenuePage />
-              </DemoProtectedRoute>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/organizations/create'
+            element={
+              <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
+                <DeveloperCreateOrganizationPage />
+              </ProtectedRoute>
             }
           />
 

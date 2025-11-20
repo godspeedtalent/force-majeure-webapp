@@ -6,8 +6,6 @@ import {
   DataGridAction,
   DataGridColumns,
 } from '@/features/data-grid';
-import { FmCreateEventButton } from '@/components/common/buttons/FmCreateEventButton';
-import { FmEditEventButton } from '@/components/common/buttons/FmEditEventButton';
 import { useEvents } from '@/features/events/hooks/useEvents';
 import { useQueryClient } from '@tanstack/react-query';
 import { Edit, Trash2 } from 'lucide-react';
@@ -25,23 +23,6 @@ export const EventsManagement = ({
   const { data: events, isLoading } = useEvents();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const [editingEventId, setEditingEventId] = useState<string | null>(null);
-
-  // Open edit modal if initial event ID is provided
-  useEffect(() => {
-    if (initialEditEventId) {
-      setEditingEventId(initialEditEventId);
-    }
-  }, [initialEditEventId]);
-
-  const handleEventUpdated = () => {
-    queryClient.invalidateQueries({ queryKey: ['events'] });
-    setEditingEventId(null);
-  };
-
-  const handleEventCreated = () => {
-    queryClient.invalidateQueries({ queryKey: ['events'] });
-  };
 
   const handleDelete = async (eventOrEvents: any) => {
     // Check if we're dealing with an array of events (multi-select) or single event
@@ -160,19 +141,21 @@ export const EventsManagement = ({
     },
   ];
 
-  const [isCreatingEvent, setIsCreatingEvent] = useState(false);
-
   const handleCreateClick = () => {
-    setIsCreatingEvent(true);
-  };
-
-  const handleEventCreatedWrapper = () => {
-    handleEventCreated();
-    setIsCreatingEvent(false);
+    navigate('/events/create');
   };
 
   return (
     <div className='space-y-6'>
+      <div>
+        <h1 className='text-3xl font-canela font-bold text-foreground mb-2'>
+          Events Management
+        </h1>
+        <p className='text-muted-foreground'>
+          Manage events, ticket tiers, and lineups.
+        </p>
+      </div>
+
       <FmConfigurableDataGrid
         gridId='events'
         data={events || []}
@@ -184,24 +167,6 @@ export const EventsManagement = ({
         onCreateButtonClick={handleCreateClick}
         onUpdate={handleUpdate}
       />
-
-      {/* Create Event Modal */}
-      {isCreatingEvent && (
-        <FmCreateEventButton
-          onEventCreated={handleEventCreatedWrapper}
-          onModalOpen={() => setIsCreatingEvent(true)}
-        />
-      )}
-
-      {/* Edit Event Modal - Opens automatically when editingEventId is set */}
-      {editingEventId && (
-        <FmEditEventButton
-          key={editingEventId} // Force remount on different event
-          eventId={editingEventId}
-          onEventUpdated={handleEventUpdated}
-          autoOpen={true}
-        />
-      )}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Scan, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 
+import { Layout } from '@/components/layout/Layout';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonPageLayout } from '@/components/common/layout';
@@ -93,11 +94,13 @@ const TicketScanning = () => {
 
   if (isLoading) {
     return (
-      <FmCommonPageLayout title='Scan Tickets'>
-        <div className='flex items-center justify-center min-h-[400px]'>
-          <p className='text-muted-foreground'>Loading...</p>
-        </div>
-      </FmCommonPageLayout>
+      <Layout>
+        <FmCommonPageLayout title='Scan Tickets'>
+          <div className='flex items-center justify-center min-h-[400px]'>
+            <p className='text-muted-foreground'>Loading...</p>
+          </div>
+        </FmCommonPageLayout>
+      </Layout>
     );
   }
 
@@ -106,10 +109,11 @@ const TicketScanning = () => {
   }
 
   return (
-    <FmCommonPageLayout
-      title='Scan Tickets'
-      subtitle='Scan and validate event tickets'
-    >
+    <Layout>
+      <FmCommonPageLayout
+        title='Scan Tickets'
+        subtitle='Scan and validate event tickets'
+      >
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-[20px]'>
         {/* Scanner Card */}
         <FmCommonCard variant='outline' className='p-[20px]'>
@@ -273,6 +277,7 @@ const TicketScanning = () => {
         </div>
       </FmCommonCard>
     </FmCommonPageLayout>
+    </Layout>
   );
 };
 

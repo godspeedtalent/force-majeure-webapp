@@ -4,6 +4,17 @@
 
 The Force Majeure app now has a centralized, type-safe permission and role management system. This guide shows you how to use it effectively.
 
+## ⚡ Admin Role Override
+
+**IMPORTANT**: Users with the `admin` role automatically bypass ALL permission and role checks. You only need to assign the `admin` role in the database - there's no need to assign individual permissions or other roles to admins.
+
+```typescript
+// Admins automatically pass ALL of these checks:
+hasPermission(PERMISSIONS.MANAGE_ORGANIZATION); // ✅ true for admins
+hasAnyRole(ROLES.DEVELOPER, ROLES.ORG_ADMIN); // ✅ true for admins
+hasAllPermissions(PERMISSIONS.MANAGE_EVENTS, PERMISSIONS.SCAN_TICKETS); // ✅ true for admins
+```
+
 ## Core Concepts
 
 ### 1. Central Registry (`src/shared/auth/permissions.ts`)
@@ -19,7 +30,7 @@ PERMISSIONS.SCAN_TICKETS;
 PERMISSIONS.MANAGE_EVENTS;
 // etc...
 
-ROLES.ADMIN;
+ROLES.ADMIN; // 👑 Automatically grants all permissions
 ROLES.DEVELOPER;
 ROLES.ORG_ADMIN;
 ROLES.ORG_STAFF;
@@ -36,17 +47,18 @@ import { PERMISSIONS, ROLES } from '@/shared/auth/permissions';
 
 const MyComponent = () => {
   const {
-    hasPermission, // Check single permission
-    hasAnyPermission, // Check if user has ANY of the permissions
-    hasAllPermissions, // Check if user has ALL of the permissions
+    isAdmin, // ⭐ Check if user is admin (bypasses all other checks)
+    hasPermission, // Check single permission (admins auto-pass)
+    hasAnyPermission, // Check if user has ANY of the permissions (admins auto-pass)
+    hasAllPermissions, // Check if user has ALL of the permissions (admins auto-pass)
     hasRole, // Check single role
-    hasAnyRole, // Check if user has ANY of the roles
+    hasAnyRole, // Check if user has ANY of the roles (admins auto-pass)
     getRoles, // Get all user roles
     getPermissions, // Get all user permissions
   } = useUserPermissions();
 
   const canManage = hasPermission(PERMISSIONS.MANAGE_ORGANIZATION);
-  const isAdmin = hasRole(ROLES.ADMIN);
+  const userIsAdmin = isAdmin(); // Direct admin check
   const hasOrgAccess = hasAnyPermission(
     PERMISSIONS.MANAGE_ORGANIZATION,
     PERMISSIONS.VIEW_ORGANIZATION
@@ -58,13 +70,13 @@ const MyComponent = () => {
 
 ### Pattern 1: Route Protection
 
-Use `<ProtectedRoute>` to protect entire routes based on permissions or roles:
+Use `<ProtectedRoute>` to protect entire routes based on permissions or roles. **Admins automatically have access to all protected routes.**
 
 ```typescript
 import { ProtectedRoute } from '@/components/routing/ProtectedRoute';
 import { PERMISSIONS, ROLES } from '@/shared/auth/permissions';
 
-// Protect by permission
+// Protect by permission (admins automatically have access)
 <Route
   path="/organization/tools"
   element={
@@ -74,17 +86,17 @@ import { PERMISSIONS, ROLES } from '@/shared/auth/permissions';
   }
 />
 
-// Protect by role (allow multiple roles)
+// Protect by role (admins automatically have access)
 <Route
-  path="/admin/controls"
+  path="/dev/controls"
   element={
-    <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
-      <AdminControls />
+    <ProtectedRoute role={ROLES.DEVELOPER}>
+      <DevControls />
     </ProtectedRoute>
   }
 />
 
-// Require ALL permissions (instead of ANY)
+// Require ALL permissions (admins automatically have access)
 <Route
   path="/advanced-tools"
   element={

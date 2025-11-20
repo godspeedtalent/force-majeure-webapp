@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileEdit, Dices, Shuffle } from 'lucide-react';
+import { FileEdit, Dices, Shuffle, Plus } from 'lucide-react';
 import { Label } from '@/components/common/shadcn/label';
 import { Button } from '@/components/common/shadcn/button';
 import { FmEventSearchDropdown } from '@/components/common/search/FmEventSearchDropdown';
-import { FmCreateEventButton } from '@/components/common/buttons/FmCreateEventButton';
+import { logger } from '@/shared/services/logger';
 import { TestEventDataService } from '@/services/testData/TestEventDataService';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
@@ -25,9 +25,6 @@ export const FmEventSelectionDemoTool = ({
   const [isCreatingRandomEvent, setIsCreatingRandomEvent] = useState(false);
   const [isSelectingRandom, setIsSelectingRandom] = useState(false);
 
-  const handleEventCreated = (eventId: string) => {
-    onEventChange(eventId);
-  };
 
   const handleCreateRandomEvent = async () => {
     setIsCreatingRandomEvent(true);
@@ -121,11 +118,14 @@ export const FmEventSelectionDemoTool = ({
               <Dices className='h-4 w-4 mr-2' />
               {isCreatingRandomEvent ? 'Creating...' : 'Create Random Event'}
             </Button>
-            <FmCreateEventButton
-              onEventCreated={handleEventCreated}
+            <Button
               variant='outline'
-              className='flex-1 justify-center'
-            />
+              className='flex-1'
+              onClick={() => navigate('/events/create')}
+            >
+              <Plus className='h-4 w-4 mr-2' />
+              Create Event
+            </Button>
             {selectedEventId && (
               <Button
                 variant='outline'

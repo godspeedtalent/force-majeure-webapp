@@ -26,6 +26,7 @@ export const FmArtistSearchDropdown = createSearchDropdown<Artist>({
     ),
   defaultPlaceholder: 'Search for an artist...',
   createNewLabel: '+ Create New Artist',
+  createRoute: '/artists/create',
   useRecents: true,
   recentsKey: 'artists',
   typeIcon: <User className='h-3 w-3 text-white/70' />,

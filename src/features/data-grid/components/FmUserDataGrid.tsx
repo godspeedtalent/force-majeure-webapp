@@ -24,7 +24,6 @@ interface UserData {
     display_name: string;
     permissions: string[];
   }>;
-  is_public: boolean;
   show_on_leaderboard: boolean;
 }
 
@@ -173,13 +172,6 @@ export function FmUserDataGrid() {
           {format(new Date(value), 'MMM d, yyyy')}
         </span>
       ),
-    },
-    {
-      key: 'is_public',
-      label: 'Public Profile',
-      sortable: true,
-      editable: true,
-      type: 'boolean',
     },
   ];
 

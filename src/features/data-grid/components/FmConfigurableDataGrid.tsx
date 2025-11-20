@@ -3,14 +3,15 @@ import { useAuth } from '@/features/auth/services/AuthContext';
 import { supabase } from '@/shared/api/supabase/client';
 import { FmDataGrid, DataGridColumn, DataGridAction } from './FmDataGrid';
 import { useDataGridPersistence } from '../hooks/useDataGridPersistence';
+import { useTableSchema } from '../hooks/useTableSchema';
 import { Button } from '@/components/common/shadcn/button';
-import { GripVertical } from 'lucide-react';
+import { GripVertical, Settings2 } from 'lucide-react';
 import { logger } from '@/shared/services/logger';
 import { DragEndEvent } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import { toast } from 'sonner';
 import { FmColumnReorderDialog } from './config/FmColumnReorderDialog';
-import { FmColumnVisibilityDropdown } from './config/FmColumnVisibilityDropdown';
+import { FmColumnConfigModal } from './config/FmColumnConfigModal';
 
 interface GridConfig {
   columns: {
@@ -18,6 +19,8 @@ interface GridConfig {
     visible: boolean;
     order: number;
     width?: number;
+    frozen?: boolean;
+    customLabel?: string;
   }[];
   pageSize?: number;
 }
@@ -25,7 +28,10 @@ interface GridConfig {
 interface FmConfigurableDataGridProps<T> {
   gridId: string;
   data: T[];
-  columns: DataGridColumn[];
+  columns?: DataGridColumn[]; // Now optional if tableName is provided
+  tableName?: string; // NEW: Enable dynamic mode
+  excludeColumns?: string[]; // NEW: Exclude columns in dynamic mode
+  includeColumns?: string[]; // NEW: Include only specific columns
   actions?: DataGridAction[];
   contextMenuActions?: DataGridAction[];
   loading?: boolean;
@@ -41,7 +47,10 @@ interface FmConfigurableDataGridProps<T> {
 export function FmConfigurableDataGrid<T extends Record<string, any>>({
   gridId,
   data,
-  columns: baseColumns,
+  columns: manualColumns,
+  tableName,
+  excludeColumns,
+  includeColumns,
   actions = [],
   contextMenuActions = [],
   loading = false,
@@ -57,7 +66,44 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
   const [config, setConfig] = useState<GridConfig | null>(null);
   const [isLoadingConfig, setIsLoadingConfig] = useState(true);
   const [isReorderDialogOpen, setIsReorderDialogOpen] = useState(false);
+  const [isColumnConfigOpen, setIsColumnConfigOpen] = useState(false);
   const [recentlyMovedKey, setRecentlyMovedKey] = useState<string | null>(null);
+
+  // NEW: Dynamic mode - fetch schema if tableName is provided
+  const {
+    columns: schemaColumns,
+    isLoading: isLoadingSchema,
+    error: schemaError,
+  } = useTableSchema({
+    tableName: tableName || '',
+    excludeColumns,
+    includeColumns,
+    enabled: Boolean(tableName),
+  });
+
+  // Determine which columns to use: manual or schema-generated
+  const baseColumns = useMemo(() => {
+    // If manual columns provided, use those (static mode)
+    if (manualColumns && manualColumns.length > 0) {
+      return manualColumns;
+    }
+
+    // If tableName provided, use schema-generated columns (dynamic mode)
+    if (tableName && schemaColumns.length > 0) {
+      return schemaColumns;
+    }
+
+    // Fallback: empty array (will show loading or error)
+    return [];
+  }, [manualColumns, tableName, schemaColumns]);
+
+  // Show error if schema fetch failed in dynamic mode
+  useEffect(() => {
+    if (tableName && schemaError) {
+      logger.error(`Failed to load schema for table ${tableName}:`, schemaError);
+      toast.error(`Failed to load table schema: ${(schemaError as Error).message}`);
+    }
+  }, [tableName, schemaError]);
 
   const { clearState } = useDataGridPersistence({ storageKey: gridId });
 
@@ -147,8 +193,10 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
         const colConfig = configMap.get(col.key);
         return {
           ...col,
+          label: colConfig?.customLabel || col.label, // Apply custom label
           visible: colConfig?.visible ?? true,
           order: colConfig?.order ?? 0,
+          frozen: colConfig?.frozen ?? false, // Apply frozen state
         };
       })
       .filter((col: any) => col.visible)
@@ -191,6 +239,18 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
 
     setConfig(newConfig);
     saveConfig(newConfig);
+  };
+
+  // Save column configuration from modal
+  const handleSaveColumnConfig = (configs: GridConfig['columns']) => {
+    const newConfig: GridConfig = {
+      ...initializedConfig,
+      columns: configs,
+    };
+
+    setConfig(newConfig);
+    saveConfig(newConfig);
+    toast.success('Column configuration saved');
   };
 
   const hideColumn = (columnKey: string) => {
@@ -252,6 +312,24 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
     toast.success('Column order updated');
   };
 
+  const handleToggleFreeze = (columnKey: string) => {
+    const newConfig: GridConfig = {
+      ...initializedConfig,
+      columns: initializedConfig.columns.map(col =>
+        col.key === columnKey ? { ...col, frozen: !col.frozen } : col
+      ),
+    };
+
+    setConfig(newConfig);
+    saveConfig(newConfig);
+
+    const column = baseColumns.find(c => c.key === columnKey);
+    const isFrozen = !initializedConfig.columns.find(c => c.key === columnKey)?.frozen;
+    toast.success(
+      `Column "${column?.label}" ${isFrozen ? 'frozen' : 'unfrozen'}`
+    );
+  };
+
   const resetConfiguration = async () => {
     const defaultConfig: GridConfig = {
       columns: baseColumns.map((col, index) => ({
@@ -285,10 +363,26 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
     }
   };
 
-  if (isLoadingConfig) {
+  // Show loading state if config or schema is loading
+  if (isLoadingConfig || (tableName && isLoadingSchema)) {
     return (
       <div className='flex items-center justify-center p-8'>
         <div className='h-8 w-8 border-2 border-fm-gold border-t-transparent rounded-full animate-spin' />
+        <span className='ml-3 text-muted-foreground'>
+          {isLoadingSchema ? 'Loading schema...' : 'Loading configuration...'}
+        </span>
+      </div>
+    );
+  }
+
+  // Show error state if dynamic mode failed and no manual columns
+  if (tableName && schemaError && !manualColumns) {
+    return (
+      <div className='flex items-center justify-center p-8'>
+        <div className='text-center'>
+          <p className='text-destructive mb-2'>Failed to load table schema</p>
+          <p className='text-sm text-muted-foreground'>{(schemaError as Error).message}</p>
+        </div>
       </div>
     );
   }
@@ -310,6 +404,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
         createButtonLabel={createButtonLabel}
         onHideColumn={hideColumn}
         onColumnReorder={handleColumnReorder}
+        onToggleFreeze={handleToggleFreeze}
         toolbarActions={
           <>
             <Button
@@ -322,15 +417,23 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
               Reorder
             </Button>
 
-            <FmColumnVisibilityDropdown
+            <Button
+              variant='outline'
+              size='sm'
+              className='gap-2'
+              onClick={() => setIsColumnConfigOpen(true)}
+            >
+              <Settings2 className='h-4 w-4' />
+              Columns
+            </Button>
+
+            <FmColumnConfigModal
+              open={isColumnConfigOpen}
+              onOpenChange={setIsColumnConfigOpen}
               baseColumns={baseColumns}
               columnConfigs={initializedConfig.columns}
-              onToggleVisibility={toggleColumnVisibility}
+              onSaveConfiguration={handleSaveColumnConfig}
               onResetConfiguration={resetConfiguration}
-              onClearFiltersAndSort={() => {
-                clearState();
-                toast.success('Filters and sorting cleared');
-              }}
             />
 
             <FmColumnReorderDialog

@@ -29,6 +29,7 @@ export interface FmDataGridCellProps<T> {
   hoveredColumn: string | null;
   isDragMode: boolean;
   focusableProps?: any;
+  frozenLeft?: number; // Left position if column is frozen
 }
 
 export function FmDataGridCell<T extends Record<string, any>>({
@@ -45,6 +46,7 @@ export function FmDataGridCell<T extends Record<string, any>>({
   hoveredColumn,
   isDragMode,
   focusableProps = {},
+  frozenLeft,
 }: FmDataGridCellProps<T>) {
   const relationConfig = isRelationField(column.key)
     ? getRelationConfig(column.key)
@@ -65,9 +67,20 @@ export function FmDataGridCell<T extends Record<string, any>>({
         !isDragMode && hoveredColumn === column.key && 'bg-fm-gold/10 shadow-[inset_0_0_0_1px_rgba(223,186,125,0.2)]',
         isEditing && 'bg-fm-gold/10 ring-1 ring-fm-gold/30',
         isEditableCell && 'cursor-pointer hover:bg-muted/20',
+        // Frozen column styling
+        column.frozen && 'sticky bg-background/95 backdrop-blur-sm shadow-[2px_0_4px_rgba(0,0,0,0.1)]',
         // Allow column-specific className overrides (e.g., p-0 for images)
         column.cellClassName
       )}
+      style={
+        column.frozen && frozenLeft !== undefined
+          ? {
+              position: 'sticky',
+              left: `${frozenLeft}px`,
+              zIndex: 10,
+            }
+          : undefined
+      }
       {...(column.editable && !column.readonly && onUpdate ? focusableProps : {})}
       onMouseEnter={() => {}}
       onMouseLeave={() => {}}

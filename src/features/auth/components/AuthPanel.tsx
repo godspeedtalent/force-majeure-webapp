@@ -21,8 +21,6 @@ import {
 import { Button } from '@/components/common/shadcn/button';
 import { Label } from '@/components/common/shadcn/label';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { GoogleOAuthButton } from './GoogleOAuthButton';
-import { OAuthDivider } from '@/components/common/misc/OAuthDivider';
 
 interface AuthPanelProps {
   showGuestOption?: boolean;
@@ -40,7 +38,6 @@ export const AuthPanel = ({
   description = 'Sign in to access full Spotify streaming and personalized features',
 }: AuthPanelProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [isOAuthLoading, setIsOAuthLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [signInForm, setSignInForm] = useState({ email: '', password: '' });
   const [signUpForm, setSignUpForm] = useState({
@@ -50,11 +47,10 @@ export const AuthPanel = ({
     firstName: '',
     lastName: '',
     displayName: '',
-    isPublic: true,
   });
   const [passwordError, setPasswordError] = useState('');
 
-  const { signIn, signUp, signInWithGoogle, loading } = useAuth();
+  const { signIn, signUp, loading } = useAuth();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,7 +85,6 @@ export const AuthPanel = ({
       signUpForm.email,
       signUpForm.password,
       signUpForm.displayName,
-      signUpForm.isPublic,
       signUpForm.firstName,
       signUpForm.lastName
     );
@@ -99,19 +94,6 @@ export const AuthPanel = ({
     }
 
     setIsLoading(false);
-  };
-
-  const handleGoogleSignIn = async () => {
-    setIsOAuthLoading(true);
-
-    const { error } = await signInWithGoogle();
-
-    // Note: OAuth redirects the user, so onAuthSuccess won't be called here
-    // It will be handled on redirect return via AuthContext's onAuthStateChange
-
-    if (error) {
-      setIsOAuthLoading(false);
-    }
   };
 
   if (loading) {
@@ -156,15 +138,6 @@ export const AuthPanel = ({
           </TabsList>
 
           <TabsContent value='signin' className='space-y-6'>
-            {/* Google OAuth */}
-            <GoogleOAuthButton
-              onClick={handleGoogleSignIn}
-              loading={isOAuthLoading}
-              disabled={isLoading}
-            />
-
-            <OAuthDivider />
-
             <form onSubmit={handleSignIn} className='space-y-6'>
               <FmCommonTextField
                 label='Email'
@@ -211,7 +184,6 @@ export const AuthPanel = ({
                 type='submit'
                 className='w-full'
                 loading={isLoading}
-                disabled={isOAuthLoading}
               >
                 Sign In
               </FmCommonButton>
@@ -231,16 +203,6 @@ export const AuthPanel = ({
           </TabsContent>
 
           <TabsContent value='signup' className='space-y-6'>
-            {/* Google OAuth */}
-            <GoogleOAuthButton
-              onClick={handleGoogleSignIn}
-              loading={isOAuthLoading}
-              disabled={isLoading}
-              text='Sign up with Google'
-            />
-
-            <OAuthDivider />
-
             <form onSubmit={handleSignUp} className='space-y-8'>
               <div className='grid grid-cols-2 gap-4'>
                 <FmCommonTextField
@@ -335,27 +297,10 @@ export const AuthPanel = ({
                 error={passwordError}
               />
 
-              <div className='flex items-center space-x-2'>
-                <FmCommonCheckbox
-                  id='public-profile'
-                  checked={signUpForm.isPublic}
-                  onCheckedChange={checked =>
-                    setSignUpForm({ ...signUpForm, isPublic: checked })
-                  }
-                />
-                <Label
-                  htmlFor='public-profile'
-                  className='text-sm font-normal text-muted-foreground cursor-pointer'
-                >
-                  Make my profile public
-                </Label>
-              </div>
-
               <FmCommonButton
                 type='submit'
                 className='w-full'
                 loading={isLoading}
-                disabled={isOAuthLoading}
               >
                 Create Account
               </FmCommonButton>

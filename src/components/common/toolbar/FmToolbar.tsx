@@ -39,7 +39,6 @@ import {
 } from '@/components/common/shadcn/context-menu';
 
 // Lazy load sections
-import { CreationToolsSection } from '@/components/DevTools/CreationToolsSection';
 import { DatabaseNavigatorSearch } from '@/components/admin/DatabaseNavigatorSearch';
 import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
 import { DevNotesSection } from '@/components/DevTools/DevNotesSection';
@@ -375,17 +374,6 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
           <div className='space-y-4'>
             <Separator className='bg-white/10' />
             <div className='px-4 py-2 space-y-4'>
-              <div className='pb-2 border-b border-white/10'>
-                <p className='text-xs text-muted-foreground mb-2'>
-                  Quick Create
-                </p>
-                <CreationToolsSection
-                  onNavigate={() => {
-                    setIsOpen(false);
-                    setActiveTab(null);
-                  }}
-                />
-              </div>
               <DatabaseNavigatorSearch />
             </div>
           </div>

@@ -40,6 +40,33 @@ npm run test:coverage
 npm run test:watch
 ```
 
+## Testing Before Commits/PRs
+
+**IMPORTANT:** Always run the unit test suite before committing changes or creating pull requests to ensure no regressions have been introduced.
+
+### Pre-commit Testing Checklist
+
+1. **Run tests**: `npm test -- --run`
+   - All tests should pass
+   - No new console errors or warnings
+   - Coverage thresholds should be met
+
+2. **Build the project**: `npm run build`
+   - Build should complete without errors
+   - No TypeScript compilation errors
+   - No missing dependencies
+
+3. **Check for type errors**: TypeScript should compile cleanly during build
+
+### Continuous Integration
+
+The test suite runs automatically on:
+- Every pull request
+- Every push to main branch
+- Pre-commit hooks (if configured)
+
+**Failing tests will block merges** - ensure your changes pass all tests locally before pushing.
+
 ## Test Structure
 
 ### File Organization

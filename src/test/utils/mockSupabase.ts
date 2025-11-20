@@ -105,10 +105,6 @@ export function createMockSupabaseClient() {
         data: { user: null, session: null },
         error: null,
       }),
-      signInWithOAuth: vi.fn().mockResolvedValue({
-        data: { url: 'https://oauth-url.com', provider: 'google' },
-        error: null,
-      }),
       signOut: vi.fn().mockResolvedValue({ error: null }),
       resetPasswordForEmail: vi.fn().mockResolvedValue({ error: null }),
       updateUser: vi.fn().mockResolvedValue({

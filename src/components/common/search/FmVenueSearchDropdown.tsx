@@ -19,6 +19,7 @@ export const FmVenueSearchDropdown = createSearchDropdown<Venue>({
   ),
   defaultPlaceholder: 'Search for a venue...',
   createNewLabel: '+ Create New Venue',
+  createRoute: '/venues/create',
   useRecents: false,
   typeIcon: <MapPin className='h-3 w-3 text-white/70' />,
   typeTooltip: 'Venue',

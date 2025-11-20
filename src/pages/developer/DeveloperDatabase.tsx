@@ -3,7 +3,6 @@ import { logger } from '@/shared/services/logger';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { DataGridAction, FmConfigurableDataGrid } from '@/features/data-grid';
-import { FmEditVenueButton } from '@/components/common/buttons/FmEditVenueButton';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { MobileHorizontalTabs, MobileHorizontalTab } from '@/components/mobile';
@@ -42,7 +41,6 @@ export default function DeveloperDatabase() {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [editingVenueId, setEditingVenueId] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const { hasRole } = useUserPermissions();
   const isAdmin = hasRole(ROLES.ADMIN);
@@ -349,10 +347,6 @@ export default function DeveloperDatabase() {
     });
   };
 
-  const handleVenueUpdated = () => {
-    queryClient.invalidateQueries({ queryKey: ['admin-venues'] });
-    setEditingVenueId(null);
-  };
 
   const handleDeleteVenue = async (venue: any) => {
     if (!confirm(`Are you sure you want to delete "${venue.name}"?`)) {
@@ -377,11 +371,6 @@ export default function DeveloperDatabase() {
 
   // Context menu actions for venues
   const venueContextActions: DataGridAction[] = [
-    {
-      label: 'Edit Venue',
-      icon: <Edit className='h-4 w-4' />,
-      onClick: row => setEditingVenueId(row.id),
-    },
     {
       label: 'Delete Venue',
       icon: <Trash2 className='h-4 w-4' />,
@@ -438,22 +427,6 @@ export default function DeveloperDatabase() {
       />
 
       <div className='max-w-full'>
-        <div className='mb-[20px]'>
-          <div className='flex items-center gap-[10px] mb-[20px]'>
-            <Database className='h-6 w-6 text-fm-gold' />
-            <h1 className='text-3xl font-canela'>
-              {formatHeader('Database Manager')}
-            </h1>
-          </div>
-        </div>
-
-        <DecorativeDivider
-          marginTop='mt-0'
-          marginBottom='mb-6'
-          lineWidth='w-32'
-          opacity={0.5}
-        />
-
         {/* Overview Tab */}
         {activeTab === 'overview' && (
           <div className='flex flex-col items-center justify-center min-h-[60vh]'>
@@ -503,18 +476,30 @@ export default function DeveloperDatabase() {
         )}
 
         {activeTab === 'artists' && (
-          <FmConfigurableDataGrid
-            gridId='dev-artists'
-            data={artists}
-            columns={artistColumns}
-            contextMenuActions={artistContextActions}
-            loading={artistsLoading}
-            pageSize={15}
-            onUpdate={handleArtistUpdate}
-            onCreate={handleArtistCreate}
-            resourceName='Artist'
-            createButtonLabel='Add Artist'
-          />
+          <div className='space-y-6'>
+            <div>
+              <h1 className='text-3xl font-canela font-bold text-foreground mb-2'>
+                Artists Management
+              </h1>
+              <p className='text-muted-foreground'>
+                Manage artist profiles, genres, and metadata.
+              </p>
+            </div>
+
+            <FmConfigurableDataGrid
+              gridId='dev-artists'
+              data={artists}
+              columns={artistColumns}
+              contextMenuActions={artistContextActions}
+              loading={artistsLoading}
+              pageSize={15}
+              onUpdate={handleArtistUpdate}
+              onCreate={handleArtistCreate}
+              resourceName='Artist'
+              createButtonLabel='Add Artist'
+              onCreateButtonClick={() => navigate('/artists/create')}
+            />
+          </div>
         )}
 
         {activeTab === 'organizations' && <OrganizationsManagement />}
@@ -522,7 +507,16 @@ export default function DeveloperDatabase() {
         {activeTab === 'users' && <UserManagement />}
 
         {activeTab === 'venues' && (
-          <>
+          <div className='space-y-6'>
+            <div>
+              <h1 className='text-3xl font-canela font-bold text-foreground mb-2'>
+                Venues Management
+              </h1>
+              <p className='text-muted-foreground'>
+                Manage venue locations, capacities, and details.
+              </p>
+            </div>
+
             <FmConfigurableDataGrid
               gridId='dev-venues'
               data={venues}
@@ -532,16 +526,10 @@ export default function DeveloperDatabase() {
               pageSize={15}
               onUpdate={handleVenueUpdate}
               resourceName='Venue'
+              createButtonLabel='Add Venue'
+              onCreateButtonClick={() => navigate('/venues/create')}
             />
-
-            {editingVenueId && (
-              <FmEditVenueButton
-                venueId={editingVenueId}
-                onVenueUpdated={handleVenueUpdated}
-                autoOpen={true}
-              />
-            )}
-          </>
+          </div>
         )}
 
         {activeTab === 'events' && (

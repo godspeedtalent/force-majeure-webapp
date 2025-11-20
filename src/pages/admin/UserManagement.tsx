@@ -171,7 +171,16 @@ export const UserManagement = () => {
   });
 
   return (
-    <>
+    <div className='space-y-6'>
+      <div>
+        <h1 className='text-3xl font-canela font-bold text-foreground mb-2'>
+          Users Management
+        </h1>
+        <p className='text-muted-foreground'>
+          Manage user accounts, roles, and permissions.
+        </p>
+      </div>
+
       <FmConfigurableDataGrid
         gridId='admin-users'
         data={users}
@@ -193,6 +202,6 @@ export const UserManagement = () => {
           onRolesUpdated={handleRolesUpdated}
         />
       )}
-    </>
+    </div>
   );
 };

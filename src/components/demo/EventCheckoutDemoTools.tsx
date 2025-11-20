@@ -5,7 +5,7 @@ import { FileEdit, Dices } from 'lucide-react';
 import { Label } from '@/components/common/shadcn/label';
 import { Button } from '@/components/common/shadcn/button';
 import { FmEventSearchDropdown } from '@/components/common/search/FmEventSearchDropdown';
-import { FmCreateEventButton } from '@/components/common/buttons/FmCreateEventButton';
+import { Plus } from 'lucide-react';
 import { TestEventDataService } from '@/services/testData/TestEventDataService';
 import { toast } from 'sonner';
 
@@ -23,9 +23,6 @@ export const EventCheckoutDemoTools = ({
   const navigate = useNavigate();
   const [isCreatingRandomEvent, setIsCreatingRandomEvent] = useState(false);
 
-  const handleEventCreated = (eventId: string) => {
-    onEventChange(eventId);
-  };
 
   const handleCreateRandomEvent = async () => {
     setIsCreatingRandomEvent(true);
@@ -78,11 +75,14 @@ export const EventCheckoutDemoTools = ({
             <Dices className='h-4 w-4 mr-2' />
             {isCreatingRandomEvent ? 'Creating...' : 'Random Event'}
           </Button>
-          <FmCreateEventButton
-            onEventCreated={handleEventCreated}
+          <Button
             variant='outline'
             className='flex-1'
-          />
+            onClick={() => navigate('/events/create')}
+          >
+            <Plus className='h-4 w-4 mr-2' />
+            Create Event
+          </Button>
           {selectedEventId && (
             <Button
               variant='outline'

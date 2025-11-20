@@ -43,7 +43,6 @@ interface AuthContextType {
     email: string,
     password: string,
     displayName?: string,
-    isPublic?: boolean,
     firstName?: string,
     lastName?: string
   ) => Promise<{ error: any }>;
@@ -52,7 +51,6 @@ interface AuthContextType {
     password: string,
     rememberMe?: boolean
   ) => Promise<{ error: any }>;
-  signInWithGoogle: () => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: any }>;
   refreshProfile: () => Promise<void>;
@@ -177,7 +175,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     email: string,
     password: string,
     displayName?: string,
-    isPublic?: boolean,
     firstName?: string,
     lastName?: string
   ) => {
@@ -191,7 +188,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           emailRedirectTo: redirectUrl,
           data: {
             display_name: displayName,
-            is_public: isPublic ?? true,
             first_name: firstName,
             last_name: lastName,
           },
@@ -264,39 +260,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const errorMsg = error?.message || 'An unexpected error occurred';
       toast({
         title: 'Sign in failed',
-        description: errorMsg,
-        variant: 'destructive',
-      });
-      return { error };
-    }
-  };
-
-  const signInWithGoogle = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/`,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
-        },
-      });
-
-      if (error) {
-        toast({
-          title: 'Google sign in failed',
-          description: error.message,
-          variant: 'destructive',
-        });
-      }
-
-      return { error };
-    } catch (error: any) {
-      const errorMsg = error?.message || 'An unexpected error occurred';
-      toast({
-        title: 'Google sign in failed',
         description: errorMsg,
         variant: 'destructive',
       });
@@ -409,7 +372,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     loading,
     signUp,
     signIn,
-    signInWithGoogle,
     signOut,
     updateProfile,
     refreshProfile,
