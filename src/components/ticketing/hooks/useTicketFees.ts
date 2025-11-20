@@ -35,7 +35,7 @@ export const useTicketFees = () => {
       }
 
       // Fetch 'all' environment ID
-      const { data: allEnvData, error: allEnvError } = await supabase
+      const { data: allEnvData, error: allEnvError } = await (supabase as any)
         .from('environments')
         .select('id')
         .eq('name', 'all')
@@ -67,7 +67,7 @@ export const useTicketFees = () => {
         feeCount: data?.length || 0,
       });
 
-      return (data || []) as Fee[];
+      return data as unknown as Fee[];
     },
   });
 

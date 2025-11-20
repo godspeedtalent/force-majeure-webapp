@@ -7,6 +7,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Check, ChevronsUpDown, Loader2, MapPin } from 'lucide-react';
+import { logger } from '@/shared/services/logger';
 import {
   Command,
   CommandEmpty,
@@ -61,7 +62,7 @@ const searchCities = async (query: string): Promise<City[]> => {
     );
 
     if (!response.ok) {
-      logger.warn('City search API error:', response.statusText);
+      logger.warn('City search API error', { status: response.statusText });
       return [];
     }
 
@@ -75,7 +76,7 @@ const searchCities = async (query: string): Promise<City[]> => {
       displayName: `${city.name}, ${city.region ? city.region + ', ' : ''}${city.country}`,
     }));
   } catch (error) {
-    logger.error('Error fetching cities:', error);
+    logger.error('Error fetching cities', { error });
     return [];
   }
 };
