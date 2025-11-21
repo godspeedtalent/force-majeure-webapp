@@ -132,7 +132,7 @@ export function RegistrationForm({
         ? `${currentUrl}?locationId=${locationId}`
         : currentUrl;
 
-      const { error } = await supabase.auth.signUp({
+      const { data: signUpData, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -150,7 +150,7 @@ export function RegistrationForm({
       if (error) throw error;
 
       // If user email is not confirmed, sign them out to prevent auto-login
-      if (data.user && !data.user.email_confirmed_at) {
+      if (signUpData.user && !signUpData.user.email_confirmed_at) {
         await supabase.auth.signOut();
       }
 
