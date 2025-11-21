@@ -3,15 +3,16 @@ import { useLocation, Link } from 'react-router-dom';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { Button } from '@/components/common/shadcn/button';
 import { Home } from 'lucide-react';
+import { logger } from '@/shared/services/logger';
 
 const NotFound = () => {
   const location = useLocation();
 
   useEffect(() => {
-    logger.error(
-      '404 Error: User attempted to access non-existent route:',
-      location.pathname
-    );
+    logger.error('404 Error: User attempted to access non-existent route', {
+      route: location.pathname,
+      source: 'NotFound.tsx',
+    });
   }, [location.pathname]);
 
   return (

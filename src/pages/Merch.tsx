@@ -1,6 +1,7 @@
 import { ShoppingCart, Filter } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { logger } from '@/shared/services/logger';
 
 import { FmCommonEmptyState } from '@/components/common/display/FmCommonEmptyState';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
@@ -15,7 +16,6 @@ import {
   SelectValue,
 } from '@/components/common/shadcn/select';
 import { MerchCard } from '@/features/merch/components/MerchCard';
-import { supabase } from '@/shared/api/supabase/client';
 
 interface MerchItem {
   id: string;
@@ -64,15 +64,20 @@ export default function Merch() {
 
   const fetchMerchItems = async () => {
     try {
-      const { data, error } = await supabase
-        .from('merch')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setItems(data || []);
+      // Note: 'merch' table doesn't exist yet - this is a placeholder
+      // TODO: Create merch table in database
+      logger.error('Merch table not yet implemented', {
+        source: 'Merch.tsx',
+        details: 'fetchMerchItems',
+      });
+      setItems([]);
+      toast.error('Merchandise coming soon');
     } catch (error) {
-      logger.error('Error fetching merch:', error);
+      logger.error('Error fetching merch:', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        source: 'Merch.tsx',
+        details: 'fetchMerchItems',
+      });
       toast.error('Failed to load merchandise');
     } finally {
       setLoading(false);

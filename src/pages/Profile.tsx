@@ -26,6 +26,7 @@ import { useAuth } from '@/features/auth/services/AuthContext';
 import { supabase } from '@/shared/api/supabase/client';
 import { Badge } from '@/components/common/shadcn/badge';
 import { handleError } from '@/shared/services/errorHandler';
+import { logger } from '@/shared/services/logger';
 
 interface UpcomingEvent {
   id: string;
@@ -61,7 +62,11 @@ const Profile = () => {
           .eq('status', 'paid');
 
         if (error) {
-          logger.error('Error fetching orders:', error);
+          logger.error('Error fetching orders', {
+            error: error.message,
+            source: 'Profile.tsx',
+            details: 'fetchStats',
+          });
           setShowsCount(0);
         } else {
           // Count unique event_ids
@@ -116,7 +121,11 @@ const Profile = () => {
           .gte('events.date', new Date().toISOString());
 
         if (error) {
-          logger.error('Error fetching upcoming shows:', error);
+          logger.error('Error fetching upcoming shows', {
+            error: error.message,
+            source: 'Profile.tsx',
+            details: 'fetchUpcomingShows',
+          });
           setUpcomingShows([]);
         } else {
           // Group by event and count tickets
@@ -377,7 +386,7 @@ const Profile = () => {
                         label='Number of Shows'
                         value={loadingStats ? '...' : showsCount.toString()}
                         size='md'
-                        iconClassName='text-fm-gold'
+                        className='text-fm-gold'
                       />
                     </div>
                   </TabsContent>

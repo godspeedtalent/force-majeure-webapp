@@ -100,7 +100,11 @@ const Index = () => {
           .select(
             `
             *,
-            headliner_artist:artists!events_headliner_id_fkey(id, name, genre, image_url)
+            headliner_artist:artists!events_headliner_id_fkey(id, name, genre, image_url),
+            event_artists!inner(
+              artist:artists(id, name, genre, image_url)
+            ),
+            venues(name)
           `
           )
           .order('start_time', {
@@ -111,48 +115,17 @@ const Index = () => {
           return;
         }
 
-        // Get undercard artists for all events
-        const eventIds = data.map(event => event.id);
-        const undercardArtists =
-          eventIds.length > 0
-            ? await Promise.all(
-                eventIds.map(async eventId => {
-                  const event = data.find(e => e.id === eventId);
-                  if (
-                    !event ||
-                    !event.undercard_ids ||
-                    event.undercard_ids.length === 0
-                  ) {
-                    return {
-                      eventId,
-                      artists: [],
-                    };
-                  }
-                  const { data: artists, error: artistsError } = await supabase
-                    .from('artists')
-                    .select('id, name, genre, image_url')
-                    .in('id', event.undercard_ids);
-                  if (artistsError) {
-                    await handleFetchError(
-                      `fetching undercard for event ${eventId}`,
-                      artistsError
-                    );
-                  }
-                  return {
-                    eventId,
-                    artists: artists || [],
-                  };
-                })
-              )
-            : [];
-
         // Transform the data to match the EventCard expected format
         const transformedEvents: EventData[] = data.map(event => {
-          const undercard =
-            undercardArtists.find(u => u.eventId === event.id)?.artists || [];
+          const undercard = event.event_artists?.map((ea: any) => ({
+            name: ea.artist.name,
+            genre: ea.artist.genre || 'Electronic',
+            image: ea.artist.image_url || null,
+          })) || [];
+
           return {
             id: event.id,
-            title: event.title,
+            title: event.name,
             headliner: event.headliner_artist
               ? {
                   name: event.headliner_artist.name,
@@ -164,17 +137,13 @@ const Index = () => {
                   genre: 'Electronic',
                   image: null,
                 },
-            undercard: undercard.map(artist => ({
-              name: artist.name,
-              genre: artist.genre || 'Electronic',
-              image: artist.image_url || null,
-            })),
-            date: event.date,
-            time: event.time,
-            venue: event.venue,
-            heroImage: event.hero_image || getImageUrl(event.hero_image),
+            undercard,
+            date: event.start_time ? new Date(event.start_time).toISOString().split('T')[0] : '',
+            time: event.start_time ? new Date(event.start_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '',
+            venue: event.venues?.name || 'TBA',
+            heroImage: getImageUrl(null),
             description: event.description || null,
-            ticketUrl: event.ticket_url || null,
+            ticketUrl: null,
           };
         });
         setUpcomingEvents(transformedEvents);
@@ -185,7 +154,7 @@ const Index = () => {
       }
     };
     fetchEvents();
-  }, [handleFetchError]);
+  }, []);
 
   // Memoize scroll-based calculations (reduce parallax on mobile for performance)
   const { parallaxOffset, fadeOpacity } = useMemo(

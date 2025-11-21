@@ -81,10 +81,10 @@ export function useClaimReward() {
         throw new Error('You have already claimed a reward from this location');
       }
 
-      // Get location details to verify it's still active
+      // Get location details
       const { data: location, error: locationError } = await supabase
         .from('scavenger_locations')
-        .select('id, location_name, is_active')
+        .select('id, name')
         .eq('id', params.locationId)
         .single();
 
@@ -92,23 +92,16 @@ export function useClaimReward() {
         throw new Error('Location not found');
       }
 
-      if (!location.is_active) {
-        throw new Error('This location is no longer active');
-      }
-
-      // Create the claim with required fields
+      // Create the claim
       const { data: claim, error: claimError } = await supabase
         .from('scavenger_claims')
         .insert([
           {
             user_id: session.user.id,
             location_id: params.locationId,
-            show_on_leaderboard: params.showOnLeaderboard,
-            claimed_at: new Date().toISOString(),
-            claim_position: 1, // Single position per location now
           },
         ] as any)
-        .select('id, claim_position')
+        .select('id')
         .single();
 
       if (claimError) {
@@ -118,8 +111,8 @@ export function useClaimReward() {
       return {
         success: true,
         claimId: claim.id,
-        claimPosition: claim.claim_position,
-        locationName: location.location_name,
+        claimPosition: 1,
+        locationName: location.name,
       };
     },
   });
