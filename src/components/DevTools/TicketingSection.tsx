@@ -24,7 +24,9 @@ interface Fee {
   fee_type: 'flat' | 'percentage';
   fee_value: number;
   is_active: boolean;
-  environment: string;
+  environment_id: string;
+  created_at: string;
+  updated_at: string;
 }
 
 const feeLabels: Record<string, string> = {
@@ -52,15 +54,14 @@ export const TicketingSection = () => {
 
       if (error) throw error;
 
-      const fetchedFees = (data || []) as Fee[];
-      setFees(fetchedFees);
+      setFees((data || []) as Fee[]);
 
       // Initialize local state
       const initialLocal: Record<
         string,
         { type: 'flat' | 'percentage'; value: string }
       > = {};
-      fetchedFees.forEach(fee => {
+      (data || []).forEach((fee: any) => {
         initialLocal[fee.fee_name] = {
           type: fee.fee_type as 'flat' | 'percentage',
           value: fee.fee_value.toString(),
@@ -105,7 +106,6 @@ export const TicketingSection = () => {
     try {
       const updates = Object.entries(localFees).map(([feeName, feeData]) => {
         const numValue = parseFloat(feeData.value) || 0;
-        const fee = fees.find(f => f.fee_name === feeName);
 
         return supabase
           .from('ticketing_fees')
@@ -114,7 +114,7 @@ export const TicketingSection = () => {
             fee_value: numValue,
           })
           .eq('fee_name', feeName)
-          .eq('environment', fee?.environment || environment);
+          .eq('environment', 'all');
       });
 
       await Promise.all(updates);

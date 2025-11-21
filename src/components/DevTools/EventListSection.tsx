@@ -14,9 +14,8 @@ import { useEvents } from '@/features/events/hooks/useEvents';
 
 interface EventListItem {
   id: string;
-  title: string;
-  date: string;
-  time: string | number;
+  name: string;
+  start_time: string;
   venue?: { name: string };
   headliner?: { name: string };
 }
@@ -36,8 +35,8 @@ export const EventListSection = () => {
     // Filter out past events if toggle is off
     if (!includePastEvents) {
       filtered = filtered.filter(event => {
-        if (!event.date) return true;
-        return !isPast(parseISO(event.date));
+        if (!event.start_time) return true;
+        return !isPast(parseISO(event.start_time));
       });
     }
 
@@ -45,13 +44,13 @@ export const EventListSection = () => {
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(event => {
-        const title = event.title?.toLowerCase() || '';
+        const name = event.name?.toLowerCase() || '';
         const venueName = (event as any).venue?.name?.toLowerCase() || '';
         const headlinerName =
           (event as any).headliner?.name?.toLowerCase() || '';
 
         return (
-          title.includes(query) ||
+          name.includes(query) ||
           venueName.includes(query) ||
           headlinerName.includes(query)
         );
@@ -67,12 +66,12 @@ export const EventListSection = () => {
       label: 'Headliner',
       render: (_, item) => (
         <div className='font-medium text-white'>
-          {(item as any).headliner?.name || item.title || '-'}
+          {(item as any).headliner?.name || item.name || '-'}
         </div>
       ),
     },
     {
-      key: 'date',
+      key: 'start_time',
       label: 'Date',
       render: value => {
         if (!value) return <span className='text-muted-foreground'>-</span>;
