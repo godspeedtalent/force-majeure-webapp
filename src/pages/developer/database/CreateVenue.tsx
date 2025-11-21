@@ -12,6 +12,7 @@ const DeveloperCreateVenuePage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
+    website: '',
     address_line_1: '',
     address_line_2: '',
     city: '',
@@ -32,6 +33,7 @@ const DeveloperCreateVenuePage = () => {
     try {
       const { error } = await supabase.from('venues').insert({
         name: formData.name.trim(),
+        website: formData.website.trim() || null,
         address_line_1: formData.address_line_1.trim() || null,
         address_line_2: formData.address_line_2.trim() || null,
         city: formData.city.trim() || null,
@@ -46,6 +48,7 @@ const DeveloperCreateVenuePage = () => {
       toast.success('Venue created successfully');
       setFormData({
         name: '',
+        website: '',
         address_line_1: '',
         address_line_2: '',
         city: '',
@@ -68,6 +71,7 @@ const DeveloperCreateVenuePage = () => {
   const handleCancel = () => {
     setFormData({
       name: '',
+      website: '',
       address_line_1: '',
       address_line_2: '',
       city: '',
@@ -99,48 +103,63 @@ const DeveloperCreateVenuePage = () => {
       />
 
       <FmCommonTextField
-        label='Address Line 1'
-        value={formData.address_line_1}
-        onChange={e =>
-          setFormData({ ...formData, address_line_1: e.target.value })
-        }
-        placeholder='123 Main St'
-        description='Street address'
+        label='Website'
+        value={formData.website}
+        onChange={e => setFormData({ ...formData, website: e.target.value })}
+        placeholder='https://example.com'
+        description='Venue or company website'
       />
 
-      <FmCommonTextField
-        label='Address Line 2'
-        value={formData.address_line_2}
-        onChange={e =>
-          setFormData({ ...formData, address_line_2: e.target.value })
-        }
-        placeholder='Suite 100'
-        description='Apartment, suite, unit, building, floor, etc. (optional)'
-      />
+      {/* Address Section - Grouped */}
+      <div className='space-y-[10px] p-[20px] border border-white/10 bg-black/20 backdrop-blur-sm'>
+        <h3 className='text-sm font-canela uppercase tracking-wider text-fm-gold mb-[10px]'>
+          Address
+        </h3>
 
-      <div className='grid grid-cols-2 gap-[20px]'>
         <FmCommonTextField
-          label='City'
-          value={formData.city}
-          onChange={e => setFormData({ ...formData, city: e.target.value })}
-          placeholder='Los Angeles'
+          label='Address Line 1'
+          value={formData.address_line_1}
+          onChange={e =>
+            setFormData({ ...formData, address_line_1: e.target.value })
+          }
+          placeholder='123 Main St'
+          description='Street address'
         />
+
         <FmCommonTextField
-          label='State'
-          value={formData.state}
-          onChange={e => setFormData({ ...formData, state: e.target.value.toUpperCase() })}
-          placeholder='CA'
-          description='Two-letter state code'
+          label='Address Line 2'
+          value={formData.address_line_2}
+          onChange={e =>
+            setFormData({ ...formData, address_line_2: e.target.value })
+          }
+          placeholder='Suite 100'
+          description='Apartment, suite, unit, building, floor, etc. (optional)'
+        />
+
+        <div className='grid grid-cols-2 gap-[10px]'>
+          <FmCommonTextField
+            label='City'
+            value={formData.city}
+            onChange={e => setFormData({ ...formData, city: e.target.value })}
+            placeholder='Los Angeles'
+          />
+          <FmCommonTextField
+            label='State'
+            value={formData.state}
+            onChange={e => setFormData({ ...formData, state: e.target.value.toUpperCase() })}
+            placeholder='CA'
+            description='Two-letter state code'
+          />
+        </div>
+
+        <FmCommonTextField
+          label='ZIP Code'
+          value={formData.zip_code}
+          onChange={e => setFormData({ ...formData, zip_code: e.target.value })}
+          placeholder='90001'
+          description='5-digit ZIP code or ZIP+4 format'
         />
       </div>
-
-      <FmCommonTextField
-        label='ZIP Code'
-        value={formData.zip_code}
-        onChange={e => setFormData({ ...formData, zip_code: e.target.value })}
-        placeholder='90001'
-        description='5-digit ZIP code or ZIP+4 format'
-      />
 
       <FmCommonTextField
         label='Capacity'

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { logger } from '@/shared/services/logger';
 import { supabase } from '@/shared/api/supabase/client';
-import { toast } from '@/components/common/feedback/FmCommonToast';
+import { toast } from 'sonner';
 
 export interface TicketSelection {
   tier_id: string;

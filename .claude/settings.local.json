@@ -35,7 +35,8 @@
       "Bash(docker rm:*)",
       "Bash(timeout 60 npx tsc:*)",
       "Bash(src/integrations/supabase/types.ts)",
-      "Bash(timeout 120 npx tsc:*)"
+      "Bash(timeout 120 npx tsc:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []

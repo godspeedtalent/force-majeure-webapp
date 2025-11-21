@@ -25,7 +25,7 @@
 
 type LogLevel = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
 
-interface LogContext {
+export interface LogContext {
   [key: string]: any;
 }
 

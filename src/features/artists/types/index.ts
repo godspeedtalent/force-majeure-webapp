@@ -100,26 +100,7 @@ export interface Artist {
   updatedAt: string;
   // Legacy field - will be deprecated
   genre: string | null;
-<<<<<<< HEAD
-  // Spotify integration fields
-  spotifyId: string | null;
-  spotifyData: SpotifyArtistData | null;
-}
-
-/**
- * Spotify artist metadata cached in database
- */
-export interface SpotifyArtistData {
-  popularity: number;
-  followers: number;
-  externalUrls: {
-    spotify: string;
-  };
-  uri: string;
-  genres: string[];
-=======
   website: string | null;
->>>>>>> 9dbe30b583ab4968f8e8afe7c49af6f16dc3fabe
 }
 
 /**
@@ -224,20 +205,23 @@ export function genreFromRow(row: GenreRow): Genre {
  * Convert database row to Artist type
  */
 export function artistFromRow(row: ArtistRow): Artist {
+  // Timestamps should always exist in the database (set by default)
+  // If they're null, something is wrong with the data
+  if (!row.created_at || !row.updated_at) {
+    throw new Error(
+      `Artist ${row.id} has missing timestamps: created_at=${row.created_at}, updated_at=${row.updated_at}`
+    );
+  }
+
   return {
     id: row.id,
     name: row.name,
     bio: row.bio,
     imageUrl: row.image_url,
-    createdAt: row.created_at ?? new Date().toISOString(),
-    updatedAt: row.updated_at ?? new Date().toISOString(),
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
     genre: row.genre,
-<<<<<<< HEAD
-    spotifyId: row.spotify_id ?? null,
-    spotifyData: row.spotify_data ? (row.spotify_data as unknown as SpotifyArtistData) : null,
-=======
     website: row.website,
->>>>>>> 9dbe30b583ab4968f8e8afe7c49af6f16dc3fabe
   };
 }
 

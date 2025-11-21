@@ -49,15 +49,11 @@ export const FmErrorDisplay = ({
   const [isStackTraceExpanded, setIsStackTraceExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  // Try to check user roles, but fallback gracefully if outside AuthProvider
-  let isDeveloper = false;
-  try {
-    const { hasAnyRole } = useUserPermissions();
-    isDeveloper = hasAnyRole(ROLES.ADMIN, ROLES.DEVELOPER);
-  } catch (error) {
-    // If we're outside AuthProvider context, default to non-developer view
-    isDeveloper = false;
-  }
+  // In development mode, always show detailed errors
+  // In production, we'd need to check user roles, but that requires AuthProvider
+  // which may not be available in error boundary context
+  // For now, just use dev mode as the indicator
+  const isDeveloper = import.meta.env.DEV;
 
   const handleCopyStackTrace = async () => {
     const stackTrace =

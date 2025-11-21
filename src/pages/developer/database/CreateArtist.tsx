@@ -98,42 +98,43 @@ const DeveloperCreateArtistPage = () => {
   return (
     <>
       <FmCommonCreateForm
-        title='Create Artist'
-        description='Add a new artist profile, including imagery and genre metadata.'
-        icon={Mic2}
-        helperText='Use this form to create placeholder or production artist records.'
-        isSubmitting={isSubmitting}
-        onSubmit={handleSubmit}
-        onCancel={handleCancel}
-        submitText='Create Artist'
-      >
-        {/* Spotify Import Button */}
-        <div className='flex justify-center py-[20px]'>
-          <FmCommonButton
-            type='button'
-            variant='default'
-            icon={<SpotifyIcon className='h-4 w-4 text-[#1DB954]' />}
-            iconPosition='left'
-            onClick={() => setShowSpotifyImport(true)}
-            disabled={isSubmitting}
-          >
-            Import Artist from Spotify
-          </FmCommonButton>
-        </div>
+      title='Create Artist'
+      description='Add a new artist profile, including imagery and genre metadata.'
+      icon={Mic2}
+      helperText='Use this form to create placeholder or production artist records.'
+      isSubmitting={isSubmitting}
+      onSubmit={handleSubmit}
+      onCancel={handleCancel}
+      submitText='Create Artist'
+    >
+      {/* Spotify Import Button */}
+      <div className='flex justify-center py-[20px]'>
+        <FmCommonButton
+          type='button'
+          variant='default'
+          icon={SpotifyIcon}
+          iconPosition='left'
+          onClick={() => setShowSpotifyImport(true)}
+          disabled={isSubmitting}
+          className='text-[#1DB954]'
+        >
+          Import Artist from Spotify
+        </FmCommonButton>
+      </div>
 
-        {/* Divider */}
-        <div className='relative py-[20px]'>
-          <div className='absolute inset-0 flex items-center'>
-            <div className='w-full border-t border-white/20' />
-          </div>
-          <div className='relative flex justify-center'>
-            <span className='bg-background px-[20px] text-xs uppercase tracking-wider text-muted-foreground font-canela'>
-              Or create manually
-            </span>
-          </div>
+      {/* Divider */}
+      <div className='relative py-[20px]'>
+        <div className='absolute inset-0 flex items-center'>
+          <div className='w-full border-t border-white/20' />
         </div>
+        <div className='relative flex justify-center'>
+          <span className='bg-background px-[20px] text-xs uppercase tracking-wider text-muted-foreground font-canela'>
+            Or create manually
+          </span>
+        </div>
+      </div>
 
-        <FmCommonTextField
+      <FmCommonTextField
           label='Artist Name'
           required
           value={formData.name}
@@ -172,7 +173,7 @@ const DeveloperCreateArtistPage = () => {
           keyPlaceholder='Platform (instagram, twitter, etc.)'
           valuePlaceholder='Handle or URL'
         />
-      </FmCommonCreateForm>
+    </FmCommonCreateForm>
 
       {/* Spotify Import Modal */}
       <FmSpotifyArtistImportModal

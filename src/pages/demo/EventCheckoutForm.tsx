@@ -30,7 +30,7 @@ import {
   DialogTitle,
 } from '@/components/common/shadcn/dialog';
 import { PhoneInput } from '@/components/common/forms/PhoneInput';
-import { toast } from '@/components/common/feedback/FmCommonToast';
+import { toast } from 'sonner';
 import { FmInfoCard } from '@/components/common/data/FmInfoCard';
 import { z } from 'zod';
 import {

@@ -88,13 +88,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         .single();
 
       if (error && error.code !== 'PGRST116') {
-        logger.error('Error fetching profile:', error);
+        logger.error('Error fetching profile:', {
+          error: error.message,
+          code: error.code,
+          source: 'AuthContext.fetchProfile',
+        });
         return;
       }
 
       setProfile(data ? { ...data, spotify_connected: false } : null);
     } catch (error) {
-      logger.error('Error fetching profile:', { error });
+      logger.error('Error fetching profile:', {
+        error: error instanceof Error ? error.message : String(error),
+        source: 'AuthContext.fetchProfile.catch',
+      });
     }
   };
 
@@ -140,7 +147,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setLoading(false);
       })
       .catch(error => {
-        logger.error('Error getting session:', error);
+        logger.error('Error getting session:', {
+          error: error instanceof Error ? error.message : String(error),
+          source: 'AuthContext.onAuthStateChange',
+        });
         setLoading(false);
       });
 
@@ -171,7 +181,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
-        logger.error('Sign up error:', error);
+        logger.error('Sign up error:', {
+          error: error.message,
+          email,
+          source: 'AuthContext.signUp',
+        });
         toast({
           title: 'Sign up failed',
           description: error.message,

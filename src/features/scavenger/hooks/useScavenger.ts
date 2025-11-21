@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { supabase } from '@/shared/api/supabase/client';
-import { toast } from '@/shared/hooks/use-toast';
+import { toast } from 'sonner';
 
 // Hook for URL parameter handling and redirection logic
 export function useScavengerNavigation() {
@@ -22,10 +22,8 @@ export function useScavengerNavigation() {
       setShowInvalidToken(true);
 
       // Show toast with the invalid token (for debugging)
-      toast({
-        title: 'Invalid Token',
+      toast.error('Invalid Token', {
         description: token || '(no token provided)',
-        variant: 'destructive',
       });
 
       // Clear error param from URL after setting state
@@ -34,10 +32,8 @@ export function useScavengerNavigation() {
       const token = searchParams.get('token');
 
       // Show toast for other errors
-      toast({
-        title: `Error: ${errorParam}`,
+      toast.error(`Error: ${errorParam}`, {
         description: token || '(no token provided)',
-        variant: 'destructive',
       });
 
       navigate('/scavenger', { replace: true });

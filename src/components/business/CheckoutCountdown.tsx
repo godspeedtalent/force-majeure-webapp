@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Clock } from 'lucide-react';
-import { toast } from '@/components/common/feedback/FmCommonToast';
+import { toast } from 'sonner';
 
 const HOLD_DURATION_SECONDS = 540; // 9 minutes
 const CRITICAL_THRESHOLD = 120; // 2 minutes
