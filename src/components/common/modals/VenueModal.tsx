@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { logger } from '@/shared/services/logger';
-import { MapPin, Globe, Users } from 'lucide-react';
+import { MapPin, Users } from 'lucide-react';
 import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
 import { supabase } from '@/shared/api/supabase/client';
 import { FmInfoChip } from '@/components/common/data/FmInfoChip';
