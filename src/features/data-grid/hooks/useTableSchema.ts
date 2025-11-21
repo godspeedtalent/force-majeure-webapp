@@ -131,27 +131,9 @@ async function fetchColumnCustomizations(
  * Refresh table metadata cache from database schema
  * Note: This function is disabled as the database function doesn't exist
  */
-async function refreshTableMetadata(tableName: string): Promise<TableMetadata> {
+async function refreshTableMetadata(_tableName: string): Promise<TableMetadata> {
   // Disabled: Database function doesn't exist
   throw new Error('Table metadata refresh is not available - database function not implemented');
-  
-  /* Original implementation - requires database function:
-  const { data, error } = await (supabase as any).rpc('refresh_table_metadata', {
-    p_table_name: tableName,
-  });
-
-  if (error) {
-    logger.error('Failed to refresh table metadata', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-      source: 'refreshTableMetadata',
-      details: { tableName, error }
-    });
-    throw new Error(`Failed to refresh table metadata: ${error.message}`);
-  }
-
-  // Fetch the updated metadata from cache
-  return await fetchTableMetadata(tableName);
-  */
 }
 
 /**
@@ -301,7 +283,7 @@ export function useRefreshAllTables() {
       return data as { tables_refreshed: number; timestamp: string };
       */
     },
-    onSuccess: (data) => {
+    onSuccess: (_data) => {
       queryClient.invalidateQueries({ queryKey: ['table-metadata'] });
       queryClient.invalidateQueries({ queryKey: ['column-customizations'] });
       toast.success(`Refreshed tables successfully`);

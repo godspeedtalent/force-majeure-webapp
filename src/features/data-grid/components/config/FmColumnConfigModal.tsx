@@ -17,9 +17,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/common/shadcn/dialog';
-import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
-import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { FmCommonInput } from '@/components/common/inputs/FmCommonInput';
+import { Button } from '@/components/common/shadcn/button';
+import { Input } from '@/components/common/shadcn/input';
 import { DataGridColumn } from '../FmDataGrid';
 import {
   Eye,

@@ -739,7 +739,7 @@ export function FmDataGrid<T extends Record<string, any>>({
 
                 // Group row
                 if (displayRow.type === 'group') {
-                  const groupRow = displayRow as Extract<FlattenedRow<T>, { type: 'group' }>;
+                  const groupRow = displayRow as any;
                   return (
                     <FmDataGridGroupRow
                       key={`group-${groupRow.groupData.groupValue}`}
