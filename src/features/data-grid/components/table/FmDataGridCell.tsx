@@ -125,7 +125,7 @@ export function FmDataGridCell<T extends Record<string, any>>({
             data-no-select
           >
             <Switch
-              checked={Boolean(editValue === 'true' || editValue === true)}
+              checked={Boolean(String(editValue) === 'true' || editValue === true)}
               onCheckedChange={checked => {
                 onEditValueChange(checked.toString());
                 onSaveEdit(checked);
@@ -133,7 +133,7 @@ export function FmDataGridCell<T extends Record<string, any>>({
               className='data-[state=checked]:bg-fm-gold'
             />
             <span className='text-sm'>
-              {Boolean(editValue === 'true' || editValue === true) ? 'Yes' : 'No'}
+              {Boolean(String(editValue) === 'true' || editValue === true) ? 'Yes' : 'No'}
             </span>
           </div>
         ) : column.type === 'date' ? (
