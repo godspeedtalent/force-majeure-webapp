@@ -1,4 +1,3 @@
-import React from 'react';
 import { TableCell, TableRow } from '@/components/common/shadcn/table';
 import { Button } from '@/components/common/shadcn/button';
 import { Input } from '@/components/common/shadcn/input';

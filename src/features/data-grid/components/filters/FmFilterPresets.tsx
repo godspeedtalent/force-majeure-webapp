@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button } from '@/components/common/shadcn/button';
 import { X } from 'lucide-react';
 import { FilterPreset } from '../FmAdvancedFilterDialog';

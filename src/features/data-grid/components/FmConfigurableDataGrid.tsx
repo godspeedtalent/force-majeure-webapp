@@ -169,7 +169,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
   };
 
   // Initialize config from base columns if not loaded
-  const initializedConfig = useMemo(() => {
+  const initializedConfig: GridConfig = useMemo(() => {
     if (config) return config;
 
     return {
@@ -177,6 +177,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
         key: col.key,
         visible: true,
         order: index,
+        frozen: false,
       })),
       pageSize,
     };
