@@ -13,9 +13,8 @@ export const TermsAndConditionsModal = ({
   return (
     <FmCommonModal
       open={isOpen}
-      onClose={onClose}
+      onOpenChange={(open) => { if (!open) onClose(); }}
       title='Terms and Conditions'
-      size='lg'
     >
       <ScrollArea className='h-[60vh] pr-4'>
         <div className='space-y-6 text-sm text-foreground'>

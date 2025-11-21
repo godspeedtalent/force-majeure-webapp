@@ -5,7 +5,7 @@
  * Used in both the artist profile page (/artists/{artist-id}) and the registration preview.
  */
 
-import { Music2, Instagram, ExternalLink, Globe } from 'lucide-react';
+import { Music2, ExternalLink, Globe } from 'lucide-react';
 import { cn } from '@/shared/utils/utils';
 
 interface ArtistProfileProps {
@@ -155,7 +155,7 @@ export const ArtistProfile = ({
           <h3 className='font-canela text-xl'>Connect</h3>
           <div className='flex flex-wrap gap-[10px]'>
             <a
-              href={artist.website}
+            href={artist.website ?? undefined}
               target='_blank'
               rel='noopener noreferrer'
               className='flex items-center gap-[10px] px-[15px] py-[10px] bg-black/60 backdrop-blur-sm border border-white/20 rounded-none hover:border-fm-gold hover:bg-fm-gold/10 transition-all duration-300'

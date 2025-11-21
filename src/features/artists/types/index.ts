@@ -25,8 +25,8 @@ export interface Genre {
   id: string;
   name: string;
   parentId: string | null;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: string | null;
+  updatedAt: string | null;
 }
 
 /**
@@ -225,8 +225,8 @@ export function artistGenreFromRow(row: ArtistGenreRow): ArtistGenre {
     id: row.id,
     artistId: row.artist_id,
     genreId: row.genre_id,
-    isPrimary: row.is_primary,
-    createdAt: row.created_at,
+    isPrimary: row.is_primary ?? false,
+    createdAt: row.created_at ?? new Date().toISOString(),
   };
 }
 

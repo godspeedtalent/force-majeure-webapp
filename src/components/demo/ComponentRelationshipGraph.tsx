@@ -15,8 +15,6 @@ import zoomPlugin from 'chartjs-plugin-zoom';
 import {
   COMPONENT_NODES,
   COMPONENT_RELATIONSHIPS,
-  type ComponentNode,
-  type ComponentRelationship,
 } from './data/componentGraphData';
 
 ChartJS.register(
@@ -186,7 +184,7 @@ export function ComponentRelationshipGraph() {
         pan: {
           enabled: true,
           mode: 'xy',
-          modifierKey: null,
+          modifierKey: undefined,
         },
         zoom: {
           wheel: {
