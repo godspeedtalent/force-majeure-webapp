@@ -133,16 +133,6 @@ export const EventCheckoutWizard = ({
     onClose();
   };
 
-  const handleBack = () => {
-    if (step === 'checkout') {
-      setStep('selection');
-    } else if (step === 'confirmation') {
-      setStep('checkout');
-    } else {
-      handleClose();
-    }
-  };
-
   const confirmation = (
     <div className='space-y-6'>
       <div className='flex items-center gap-3 rounded-xl bg-fm-gold/10 border border-fm-gold/40 px-4 py-3'>

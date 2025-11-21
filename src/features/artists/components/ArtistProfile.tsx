@@ -88,7 +88,7 @@ export const ArtistProfile = ({
           )}
         >
           <img
-            src={artist.imageUrl}
+            src={artist.imageUrl || ''}
             alt={artist.name}
             className='w-full h-full object-cover'
           />

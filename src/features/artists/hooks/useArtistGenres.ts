@@ -6,7 +6,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import type { ArtistGenreWithDetails, GenreSelection } from '../types';
+import type { GenreSelection } from '../types';
 import * as artistService from '../services/artistService';
 
 // ========================================
@@ -101,7 +101,7 @@ export function useAddGenreToArtist() {
       genreId: string;
       isPrimary?: boolean;
     }) => artistService.addGenreToArtist(artistId, genreId, isPrimary),
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: artistGenreKeys.byArtist(variables.artistId),
       });
@@ -125,7 +125,7 @@ export function useRemoveGenreFromArtist() {
   return useMutation({
     mutationFn: ({ artistId, genreId }: { artistId: string; genreId: string }) =>
       artistService.removeGenreFromArtist(artistId, genreId),
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: artistGenreKeys.byArtist(variables.artistId),
       });
@@ -149,7 +149,7 @@ export function useSetPrimaryGenre() {
   return useMutation({
     mutationFn: ({ artistId, genreId }: { artistId: string; genreId: string }) =>
       artistService.setPrimaryGenre(artistId, genreId),
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: artistGenreKeys.byArtist(variables.artistId),
       });
@@ -178,7 +178,7 @@ export function useUpdateArtistGenres() {
       artistId: string;
       genreSelections: GenreSelection[];
     }) => artistService.updateArtistGenres(artistId, genreSelections),
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: artistGenreKeys.byArtist(variables.artistId),
       });

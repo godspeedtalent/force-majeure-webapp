@@ -33,7 +33,6 @@ export function FmDataGridExportDialog<T = any>({
   onOpenChange,
   columns,
   data,
-  filename = 'export',
   onExport,
 }: FmDataGridExportDialogProps<T>) {
   const [selectedColumns, setSelectedColumns] = useState<string[]>(
@@ -63,8 +62,6 @@ export function FmDataGridExportDialog<T = any>({
   };
 
   const isAllSelected = selectedColumns.length === columns.length;
-  const isSomeSelected =
-    selectedColumns.length > 0 && selectedColumns.length < columns.length;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
