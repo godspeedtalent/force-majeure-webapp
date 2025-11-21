@@ -739,14 +739,15 @@ export function FmDataGrid<T extends Record<string, any>>({
 
                 // Group row
                 if (displayRow.type === 'group') {
+                  const groupRow = displayRow as Extract<FlattenedRow<T>, { type: 'group' }>;
                   return (
                     <FmDataGridGroupRow
-                      key={`group-${displayRow.groupData.groupValue}`}
-                      groupData={displayRow.groupData}
+                      key={`group-${groupRow.groupData.groupValue}`}
+                      groupData={groupRow.groupData}
                       columns={columns}
                       hasActions={actions.length > 0}
-                      isExpanded={expandedGroups.has(displayRow.groupData.groupValue)}
-                      onToggle={() => handleToggleGroup(displayRow.groupData.groupValue)}
+                      isExpanded={expandedGroups.has(groupRow.groupData.groupValue)}
+                      onToggle={() => handleToggleGroup(groupRow.groupData.groupValue)}
                     />
                   );
                 }

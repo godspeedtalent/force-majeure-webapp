@@ -129,27 +129,29 @@ async function fetchColumnCustomizations(
 
 /**
  * Refresh table metadata cache from database schema
+ * Note: This function is disabled as the database function doesn't exist
  */
 async function refreshTableMetadata(tableName: string): Promise<TableMetadata> {
-  const { data, error } = await supabase.rpc('refresh_table_metadata', {
+  // Disabled: Database function doesn't exist
+  throw new Error('Table metadata refresh is not available - database function not implemented');
+  
+  /* Original implementation - requires database function:
+  const { data, error } = await (supabase as any).rpc('refresh_table_metadata', {
     p_table_name: tableName,
   });
 
   if (error) {
-    logger.error(`Failed to refresh table metadata for ${tableName}:`, error);
+    logger.error('Failed to refresh table metadata', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      source: 'refreshTableMetadata',
+      details: { tableName, error }
+    });
     throw new Error(`Failed to refresh table metadata: ${error.message}`);
   }
 
-  // Parse the returned JSONB
-  const result = data as {
-    table_name: string;
-    columns: ColumnMetadata[];
-    relations: ForeignKeyMetadata[];
-    updated_at: string;
-  };
-
   // Fetch the updated metadata from cache
   return await fetchTableMetadata(tableName);
+  */
 }
 
 /**
@@ -213,7 +215,7 @@ export function useTableSchema(options: UseTableSchemaOptions) {
       const factoryOptions: ColumnFactoryOptions = {
         tableName,
         columns: metadata.columns,
-        foreignKeys: metadata.relations,
+        foreignKeys: metadata.relations as any, // Type mismatch - local vs imported interface
         customizations: customizations || [],
         excludeColumns,
         includeColumns,
@@ -241,7 +243,11 @@ export function useTableSchema(options: UseTableSchemaOptions) {
 
       return finalColumns;
     } catch (error) {
-      logger.error(`Failed to generate columns for ${tableName}:`, error);
+      logger.error('Failed to generate columns', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        source: 'useTableSchema',
+        details: { tableName, error }
+      });
       return [];
     }
   }, [metadata, customizations, tableName, excludeColumns, includeColumns, manualOverrides]);
@@ -275,26 +281,30 @@ export function useTableSchema(options: UseTableSchemaOptions) {
 
 /**
  * Hook for refreshing all table metadata
+ * Note: This hook is disabled as the database function doesn't exist
  */
 export function useRefreshAllTables() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.rpc('refresh_all_table_metadata');
+      // Disabled: Database function doesn't exist
+      throw new Error('Table metadata refresh is not available - database function not implemented');
+      
+      /* Original implementation - requires database function:
+      const { data, error } = await (supabase as any).rpc('refresh_all_table_metadata');
 
       if (error) {
         throw new Error(`Failed to refresh all tables: ${error.message}`);
       }
 
       return data as { tables_refreshed: number; timestamp: string };
+      */
     },
     onSuccess: (data) => {
-      // Invalidate all table metadata queries
       queryClient.invalidateQueries({ queryKey: ['table-metadata'] });
       queryClient.invalidateQueries({ queryKey: ['column-customizations'] });
-
-      toast.success(`Refreshed ${data.tables_refreshed} tables successfully`);
+      toast.success(`Refreshed tables successfully`);
     },
     onError: (error: Error) => {
       toast.error(`Failed to refresh tables: ${error.message}`);
@@ -304,12 +314,17 @@ export function useRefreshAllTables() {
 
 /**
  * Hook for getting list of all tables
+ * Note: This hook is disabled as the database function doesn't exist
  */
 export function useTableList() {
   return useQuery({
     queryKey: ['table-list'],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_table_list');
+      // Disabled: Database function doesn't exist
+      throw new Error('Table list is not available - database function not implemented');
+      
+      /* Original implementation - requires database function:
+      const { data, error } = await (supabase as any).rpc('get_table_list');
 
       if (error) {
         throw new Error(`Failed to fetch table list: ${error.message}`);
@@ -320,7 +335,9 @@ export function useTableList() {
         row_count: number;
         table_size: string;
       }>;
+      */
     },
+    enabled: false, // Disabled since function doesn't exist
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
 }
