@@ -1,11 +1,9 @@
-import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/shared/api/supabase/client';
 import { FmConfigurableDataGrid, DataGridAction } from '@/features/data-grid';
 import { userColumns } from './config/adminGridColumns';
 import { Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { RoleManagementModal } from '@/components/admin/RoleManagementModal';
 import { logger } from '@/shared/services/logger';
 
 interface UserRole {
@@ -26,7 +24,6 @@ interface AdminUser {
 
 export const UserManagement = () => {
   const queryClient = useQueryClient();
-  const [roleModalOpen, setRoleModalOpen] = useState(false);
 
   // Fetch users with their auth email
   const { data: users = [], isLoading } = useQuery({
@@ -109,10 +106,6 @@ export const UserManagement = () => {
     }
   };
 
-  const handleRolesUpdated = () => {
-    // Refresh users to get updated roles
-    queryClient.invalidateQueries({ queryKey: ['admin-users'] });
-  };
 
   const handleDeleteUser = async (user: AdminUser) => {
     if (
