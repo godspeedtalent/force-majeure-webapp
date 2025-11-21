@@ -8,6 +8,7 @@ import { EventDetailsLayout } from '@/components/layout/EventDetailsLayout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { useUserRole } from '@/shared/hooks/useUserRole';
+import { logger } from '@/shared/services/logger';
 
 import { EventHero } from './EventHero';
 import { EventDetailsContent } from './EventDetailsContent';
@@ -101,7 +102,7 @@ export const EventDetailsPage = () => {
   }
 
   const displayTitle = event.title || event.headliner.name;
-  const canManage = Boolean(role && role === 'admin');
+  const canManage = Boolean(role && role.includes('admin'));
 
   return (
     <>
