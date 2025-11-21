@@ -131,22 +131,18 @@ async function fetchColumnCustomizations(
  * Refresh table metadata cache from database schema
  */
 async function refreshTableMetadata(tableName: string): Promise<TableMetadata> {
-  const { data, error } = await supabase.rpc('refresh_table_metadata', {
+  const { error } = await (supabase as any).rpc('refresh_table_metadata', {
     p_table_name: tableName,
   });
 
   if (error) {
-    logger.error(`Failed to refresh table metadata for ${tableName}:`, error);
+    logger.error('Failed to refresh table metadata', {
+      error: error.message,
+      source: 'refreshTableMetadata',
+      details: { tableName }
+    });
     throw new Error(`Failed to refresh table metadata: ${error.message}`);
   }
-
-  // Parse the returned JSONB
-  const result = data as {
-    table_name: string;
-    columns: ColumnMetadata[];
-    relations: ForeignKeyMetadata[];
-    updated_at: string;
-  };
 
   // Fetch the updated metadata from cache
   return await fetchTableMetadata(tableName);
@@ -213,7 +209,7 @@ export function useTableSchema(options: UseTableSchemaOptions) {
       const factoryOptions: ColumnFactoryOptions = {
         tableName,
         columns: metadata.columns,
-        foreignKeys: metadata.relations,
+        foreignKeys: metadata.relations as any,
         customizations: customizations || [],
         excludeColumns,
         includeColumns,
@@ -241,7 +237,11 @@ export function useTableSchema(options: UseTableSchemaOptions) {
 
       return finalColumns;
     } catch (error) {
-      logger.error(`Failed to generate columns for ${tableName}:`, error);
+      logger.error('Failed to generate columns', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        source: 'useTableSchema',
+        details: { tableName }
+      });
       return [];
     }
   }, [metadata, customizations, tableName, excludeColumns, includeColumns, manualOverrides]);
@@ -281,7 +281,7 @@ export function useRefreshAllTables() {
 
   return useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.rpc('refresh_all_table_metadata');
+      const { data, error } = await (supabase as any).rpc('refresh_all_table_metadata');
 
       if (error) {
         throw new Error(`Failed to refresh all tables: ${error.message}`);
@@ -289,12 +289,12 @@ export function useRefreshAllTables() {
 
       return data as { tables_refreshed: number; timestamp: string };
     },
-    onSuccess: (data) => {
+    onSuccess: (_data) => {
       // Invalidate all table metadata queries
       queryClient.invalidateQueries({ queryKey: ['table-metadata'] });
       queryClient.invalidateQueries({ queryKey: ['column-customizations'] });
 
-      toast.success(`Refreshed ${data.tables_refreshed} tables successfully`);
+      toast.success(`Refreshed tables successfully`);
     },
     onError: (error: Error) => {
       toast.error(`Failed to refresh tables: ${error.message}`);
@@ -309,7 +309,7 @@ export function useTableList() {
   return useQuery({
     queryKey: ['table-list'],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_table_list');
+      const { data, error } = await (supabase as any).rpc('get_table_list');
 
       if (error) {
         throw new Error(`Failed to fetch table list: ${error.message}`);
