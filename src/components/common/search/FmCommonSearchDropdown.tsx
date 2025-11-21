@@ -76,7 +76,7 @@ export function FmCommonSearchDropdown({
           const results = await onSearch(query);
           setOptions(results.slice(0, 10));
         } catch (error) {
-          logger.error('Search error:', error);
+          logger.error('Search error:', { error: error instanceof Error ? error.message : 'Unknown' });
           setOptions([]);
         } finally {
           setLoading(false);

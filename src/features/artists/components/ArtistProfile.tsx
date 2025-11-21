@@ -5,16 +5,15 @@
  * Used in both the artist profile page (/artists/{artist-id}) and the registration preview.
  */
 
-import { Music2, Instagram, ExternalLink } from 'lucide-react';
+import { Music2, Instagram, ExternalLink, Globe } from 'lucide-react';
 import { cn } from '@/shared/utils/utils';
-import type { ArtistWithGenres } from '../types';
 
 interface ArtistProfileProps {
   artist: {
     name: string;
     bio: string | null;
     imageUrl: string | null;
-    socialLinks?: Record<string, string> | null;
+    website?: string | null;
     primaryGenre?: string | null;
     genres?: string[];
   };
@@ -150,63 +149,24 @@ export const ArtistProfile = ({
         </div>
       )}
 
-      {/* Social Links */}
-      {artist.socialLinks && Object.keys(artist.socialLinks).length > 0 && (
+      {/* Website Link */}
+      {artist.website && (
         <div className='space-y-[10px]'>
           <h3 className='font-canela text-xl'>Connect</h3>
           <div className='flex flex-wrap gap-[10px]'>
-            {artist.socialLinks.instagram && (
-              <a
-                href={`https://instagram.com/${artist.socialLinks.instagram.replace('@', '')}`}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='flex items-center gap-[10px] px-[15px] py-[10px] bg-black/60 backdrop-blur-sm border border-white/20 rounded-none hover:border-fm-gold hover:bg-fm-gold/10 transition-all duration-300'
-              >
-                <Instagram className='h-4 w-4' />
-                <span className='font-canela text-sm'>Instagram</span>
-                <ExternalLink className='h-3 w-3 text-muted-foreground' />
-              </a>
-            )}
-            {artist.socialLinks.soundcloud && (
-              <a
-                href={artist.socialLinks.soundcloud}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='flex items-center gap-[10px] px-[15px] py-[10px] bg-black/60 backdrop-blur-sm border border-white/20 rounded-none hover:border-fm-gold hover:bg-fm-gold/10 transition-all duration-300'
-              >
-                <Music2 className='h-4 w-4' />
-                <span className='font-canela text-sm'>SoundCloud</span>
-                <ExternalLink className='h-3 w-3 text-muted-foreground' />
-              </a>
-            )}
-            {artist.socialLinks.spotify && (
-              <a
-                href={artist.socialLinks.spotify}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='flex items-center gap-[10px] px-[15px] py-[10px] bg-black/60 backdrop-blur-sm border border-white/20 rounded-none hover:border-fm-gold hover:bg-fm-gold/10 transition-all duration-300'
-              >
-                <Music2 className='h-4 w-4' />
-                <span className='font-canela text-sm'>Spotify</span>
-                <ExternalLink className='h-3 w-3 text-muted-foreground' />
-              </a>
-            )}
+            <a
+              href={artist.website}
+              target='_blank'
+              rel='noopener noreferrer'
+              className='flex items-center gap-[10px] px-[15px] py-[10px] bg-black/60 backdrop-blur-sm border border-white/20 rounded-none hover:border-fm-gold hover:bg-fm-gold/10 transition-all duration-300'
+            >
+              <Globe className='h-4 w-4' />
+              <span className='font-canela text-sm'>Website</span>
+              <ExternalLink className='h-3 w-3 text-muted-foreground' />
+            </a>
           </div>
         </div>
       )}
-
-      {/* Preview mode placeholder for empty social links */}
-      {isPreview &&
-        (!artist.socialLinks || Object.keys(artist.socialLinks).length === 0) && (
-          <div className='space-y-[10px]'>
-            <h3 className='font-canola text-xl'>Connect</h3>
-            <div className='bg-black/60 backdrop-blur-sm border border-white/20 rounded-none p-[20px]'>
-              <p className='font-canela text-sm text-muted-foreground italic'>
-                Your social media links will appear here
-              </p>
-            </div>
-          </div>
-        )}
     </div>
   );
 };
