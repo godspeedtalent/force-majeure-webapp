@@ -44,7 +44,7 @@ export function FmQueueWaitingView({
           <FmDateBox
             weekday={weekday}
             month={month}
-            day={day}
+            day={String(day)}
             year={year}
             size='md'
           />
