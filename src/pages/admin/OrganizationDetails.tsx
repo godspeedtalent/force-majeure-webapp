@@ -57,12 +57,12 @@ export default function OrganizationDetails() {
       if (error) throw error;
       if (!data) throw new Error('Organization not found');
       
-      // Validate data has required fields before casting
-      if (!data.id || !data.name) {
-        throw new Error('Invalid organization data structure');
+      // Validate data structure then cast
+      if (typeof data === 'object' && data !== null && 'id' in data && 'name' in data) {
+        return data as unknown as Organization;
       }
       
-      return data as unknown as Organization;
+      throw new Error('Invalid organization data structure');
     },
     enabled: !!id,
   });

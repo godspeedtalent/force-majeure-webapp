@@ -110,48 +110,6 @@ export const UserManagement = () => {
     }
   };
 
-  const handleOpenRoleModal = (_user: AdminUser) => {
-    // Role management modal has been removed
-    toast.info('Role management coming soon');
-  };
-
-  const handleRolesUpdated = () => {
-    // Refresh users to get updated roles
-    queryClient.invalidateQueries({ queryKey: ['admin-users'] });
-  };
-
-  const handleDeleteUser = async (user: AdminUser) => {
-    if (
-      !confirm(
-        `Are you sure you want to delete user "${user.display_name || user.full_name || 'this user'}"? This will also delete their auth account.`
-      )
-    ) {
-      return;
-    }
-
-    try {
-      // Delete from auth
-      const { error: authError } = await supabase.auth.admin.deleteUser(
-        user.id
-      );
-      if (authError) {
-        logger.error('Auth deletion error:', authError);
-        toast.error('Failed to delete user auth account');
-        return;
-      }
-
-      // Profile will be deleted via CASCADE
-      toast.success('User deleted');
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
-    } catch (error) {
-      logger.error('Error deleting user', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        source: 'UserManagement',
-      });
-      toast.error('Failed to delete user');
-    }
-  };
-
   const userContextActions: DataGridAction[] = [
     {
       label: 'Delete User',
@@ -160,9 +118,6 @@ export const UserManagement = () => {
       variant: 'destructive',
     },
   ];
-
-  // Pass onRoleClick to column render context
-  const userColumnsWithHandlers = userColumns;
 
   return (
     <div className='space-y-6'>

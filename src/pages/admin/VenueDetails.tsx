@@ -45,12 +45,12 @@ export default function VenueDetails() {
       if (error) throw error;
       if (!data) throw new Error('Venue not found');
       
-      // Validate data has required fields before casting
-      if (!data.id || !data.name) {
-        throw new Error('Invalid venue data structure');
+      // Validate data structure then cast
+      if (typeof data === 'object' && data !== null && 'id' in data && 'name' in data) {
+        return data as unknown as Venue;
       }
       
-      return data as unknown as Venue;
+      throw new Error('Invalid venue data structure');
     },
     enabled: !!id,
   });
