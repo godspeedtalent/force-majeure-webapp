@@ -12,11 +12,17 @@ import { toast } from 'sonner';
 import {
   generateColumnsFromSchema,
   ColumnFactoryOptions,
-  GeneratedColumn,
   stripMetadata,
   ColumnCustomization,
 } from '../services/columnFactory';
-import { ColumnMetadata, ForeignKeyMetadata } from '../services/schemaTypeMapper';
+import { ColumnMetadata } from '../services/schemaTypeMapper';
+
+// Local interface for foreign key metadata
+interface ForeignKeyMetadata {
+  column_name: string;
+  foreign_table: string;
+  foreign_column: string;
+}
 import { DataGridColumn } from '../types';
 
 /**
@@ -58,14 +64,18 @@ export interface UseTableSchemaOptions {
  * Fetch table metadata from cache
  */
 async function fetchTableMetadata(tableName: string): Promise<TableMetadata> {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('table_metadata')
     .select('*')
     .eq('table_name', tableName)
     .single();
 
   if (error) {
-    logger.error(`Failed to fetch table metadata for ${tableName}:`, error);
+    logger.error('Failed to fetch table metadata', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      source: 'fetchTableMetadata',
+      details: { tableName, error }
+    });
     throw new Error(`Failed to fetch table metadata: ${error.message}`);
   }
 
@@ -74,12 +84,12 @@ async function fetchTableMetadata(tableName: string): Promise<TableMetadata> {
   }
 
   return {
-    table_name: data.table_name,
-    display_name: data.display_name,
-    description: data.description,
+    table_name: data.table_name as string,
+    display_name: data.display_name as string,
+    description: data.description as string | undefined,
     columns: data.columns as ColumnMetadata[],
     relations: data.relations as ForeignKeyMetadata[],
-    updated_at: data.updated_at,
+    updated_at: data.updated_at as string,
   };
 }
 

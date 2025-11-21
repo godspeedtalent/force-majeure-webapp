@@ -74,3 +74,39 @@ export interface DataGridConfig {
   columns: DataGridColumnConfig[];
   pageSize?: number;
 }
+
+/**
+ * Flattened row type for grouped data grids
+ */
+export type FlattenedRow<T> = 
+  | { type: 'group'; groupData: { groupValue: string; items: T[]; count: number }; depth: number }
+  | { type: 'data'; row: T; depth: number };
+
+/**
+ * Grouped row structure
+ */
+export interface GroupedRow<T> {
+  groupValue: string;
+  items: T[];
+  count: number;
+}
+
+/**
+ * Column configuration with extended properties
+ */
+export interface ColumnConfig {
+  key: string;
+  visible: boolean;
+  order: number;
+  width?: number;
+  frozen?: boolean;
+  customLabel?: string;
+}
+
+/**
+ * Grid configuration with column configs
+ */
+export interface GridConfig {
+  columns: ColumnConfig[];
+  pageSize?: number;
+}
