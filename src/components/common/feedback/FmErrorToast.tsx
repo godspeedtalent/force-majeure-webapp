@@ -62,7 +62,7 @@ export const FmErrorToast = ({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      logger.error('Failed to copy to clipboard:', err);
+      logger.error('Failed to copy to clipboard:', { context: err });
     }
   };
 

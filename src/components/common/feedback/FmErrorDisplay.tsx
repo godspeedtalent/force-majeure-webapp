@@ -67,7 +67,7 @@ export const FmErrorDisplay = ({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      logger.error('Failed to copy stack trace:', err);
+      logger.error('Failed to copy stack trace:', { context: err });
     }
   };
 
