@@ -295,7 +295,8 @@ export function FmDataGrid<T extends Record<string, any>>({
 
     // Type handling
     if (column?.type === 'boolean') {
-      newValue = overrideValue !== undefined ? overrideValue : (editValue === 'true' || editValue === true);
+      const isTrueValue = (typeof editValue === 'boolean' && editValue) || (typeof editValue === 'string' && editValue === 'true');
+      newValue = overrideValue !== undefined ? overrideValue : isTrueValue;
     } else if (column?.type === 'number') {
       if (!newValue || newValue.toString().trim() === '') newValue = '0';
       if (parseFloat(newValue) === parseFloat(oldValue?.toString() || '0')) {
