@@ -74,7 +74,7 @@ export class EmailService {
         messageId: response?.messageId,
       };
     } catch (error) {
-      logger.error('Unexpected error sending email:', error);
+      logger.error('Unexpected error sending email:', { error });
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',

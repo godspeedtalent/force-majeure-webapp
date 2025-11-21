@@ -14,7 +14,6 @@ import DemoIndex from './pages/demo/DemoIndex';
 import EventCheckout from './pages/demo/EventCheckout';
 import EventCheckoutConfirmation from './pages/demo/EventCheckoutConfirmation';
 import EmailTemplateDemo from './pages/demo/EmailTemplateDemo';
-import FmComponentsCatalog from './pages/developer/FmComponentsCatalog';
 import DeveloperDatabase from './pages/developer/DeveloperDatabase';
 import DeveloperDocumentation from './pages/developer/DeveloperDocumentation';
 import TicketFlowTests from './pages/developer/TicketFlowTests';
