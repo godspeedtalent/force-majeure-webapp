@@ -25,11 +25,9 @@ interface AdminUser {
 export const UserManagement = () => {
   const queryClient = useQueryClient();
 
-  // Fetch users with their auth email
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['admin-users'],
     queryFn: async () => {
-      // Use Supabase Edge Function to get all users (requires admin role)
       const { data: session } = await supabase.auth.getSession();
       const token = session?.session?.access_token;
 
@@ -53,7 +51,6 @@ export const UserManagement = () => {
       }
 
       const { users } = await response.json();
-      console.log(`Fetched ${users?.length || 0} users from database`);
       return users || [];
     },
   });
@@ -70,7 +67,6 @@ export const UserManagement = () => {
     };
 
     try {
-      // Email updates go to auth.users via admin API
       if (columnKey === 'email') {
         const emailValue = typeof normalizedValue === 'string' ? normalizedValue : String(normalizedValue ?? '');
         const { error } = await supabase.auth.admin.updateUserById(row.id, {
@@ -78,7 +74,6 @@ export const UserManagement = () => {
         });
         if (error) throw error;
       } else {
-        // Other fields update profiles table
         const { error } = await supabase
           .from('profiles')
           .update(updateData)

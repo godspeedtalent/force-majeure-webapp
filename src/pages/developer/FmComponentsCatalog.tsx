@@ -561,6 +561,12 @@ export default function FmComponentsCatalog() {
 
       case 'buttons':
         return (
+          <div>
+            <p className='text-muted-foreground mb-4'>Component demos temporarily disabled due to API changes. See component source files for current usage.</p>
+          </div>
+        );
+      case 'buttons-disabled':
+        return (
           <div className='space-y-4'>
             <h2 className='text-2xl font-canela font-semibold text-fm-gold'>
               FmCommon Button Components
