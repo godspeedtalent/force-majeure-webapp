@@ -5,7 +5,6 @@ import { FmConfigurableDataGrid, DataGridAction } from '@/features/data-grid';
 import { userColumns } from './config/adminGridColumns';
 import { Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { RoleManagementModal } from '@/components/admin/RoleManagementModal';
 import { logger } from '@/shared/services/logger';
 
 interface UserRole {
@@ -26,8 +25,6 @@ interface AdminUser {
 
 export const UserManagement = () => {
   const queryClient = useQueryClient();
-  const [roleModalOpen, setRoleModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
 
   // Fetch users with their auth email
   const { data: users = [], isLoading } = useQuery({
@@ -166,16 +163,7 @@ export const UserManagement = () => {
   ];
 
   // Pass onRoleClick to column render context
-  const userColumnsWithHandlers = userColumns.map(col => {
-    if (col.key === 'roles' && col.render) {
-      return {
-        ...col,
-        render: (value: UserRole[], row: AdminUser) =>
-          col.render!(value, row),
-      };
-    }
-    return col;
-  });
+  const userColumnsWithHandlers = userColumns;
 
   return (
     <div className='space-y-6'>
@@ -191,24 +179,13 @@ export const UserManagement = () => {
       <FmConfigurableDataGrid
         gridId='admin-users'
         data={users}
-        columns={userColumnsWithHandlers}
+        columns={userColumns}
         contextMenuActions={userContextActions}
         loading={isLoading}
         pageSize={15}
         onUpdate={handleUserUpdate}
         resourceName='User'
       />
-
-      {selectedUser && (
-        <RoleManagementModal
-          open={roleModalOpen}
-          onOpenChange={setRoleModalOpen}
-          userId={selectedUser.id}
-          userEmail={selectedUser.email}
-          currentRoles={selectedUser.roles}
-          onRolesUpdated={handleRolesUpdated}
-        />
-      )}
     </div>
   );
 };
