@@ -185,7 +185,9 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
 
   // Apply configuration to columns
   const configuredColumns = useMemo(() => {
-    const configMap = new Map(initializedConfig.columns.map(c => [c.key, c]));
+    const configMap = new Map<string, ColumnConfig>(
+      initializedConfig.columns.map(c => [c.key, c as ColumnConfig])
+    );
 
     return baseColumns
       .map(col => {
@@ -301,12 +303,13 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
   };
 
   const handleToggleFreeze = (columnKey: string) => {
-    const currentCol = initializedConfig.columns.find(c => c.key === columnKey);
+    const currentCol = initializedConfig.columns.find(c => c.key === columnKey) as ColumnConfig | undefined;
     const newConfig: GridConfig = {
       ...initializedConfig,
-      columns: initializedConfig.columns.map(col =>
-        col.key === columnKey ? { ...col, frozen: !col.frozen } : col
-      ),
+      columns: initializedConfig.columns.map(col => {
+        const colConfig = col as ColumnConfig;
+        return col.key === columnKey ? { ...colConfig, frozen: !colConfig.frozen } : colConfig;
+      }),
     };
 
     setConfig(newConfig);

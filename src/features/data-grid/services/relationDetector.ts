@@ -283,7 +283,7 @@ export function categorizeForeignKey(
   columnName: string
 ): keyof typeof COMMON_FK_PATTERNS | 'OTHER' {
   for (const [category, patterns] of Object.entries(COMMON_FK_PATTERNS)) {
-    if (patterns.includes(columnName)) {
+    if ((patterns as readonly string[]).includes(columnName)) {
       return category as keyof typeof COMMON_FK_PATTERNS;
     }
   }

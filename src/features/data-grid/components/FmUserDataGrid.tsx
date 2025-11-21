@@ -220,9 +220,11 @@ export function FmUserDataGrid() {
 
   const handleUpdate = async (
     row: UserData,
-    columnKey: string,
-    newValue: any
+    columnKey?: string,
+    newValue?: any
   ) => {
+    if (!columnKey) return;
+    
     try {
       const { error } = await supabase
         .from('profiles')
