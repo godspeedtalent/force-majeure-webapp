@@ -70,7 +70,7 @@ export const FmErrorOverlay = ({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      logger.error('Failed to copy error details:', err);
+      logger.error('Failed to copy error details:', { context: err });
     }
   };
 

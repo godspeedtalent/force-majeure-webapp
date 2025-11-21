@@ -156,9 +156,10 @@ export function GlobalResourceSearch({
 
           return {
             id: userId,
-            display_name: profile?.display_name,
-            full_name: profile?.full_name,
-            avatar_url: profile?.avatar_url,
+            user_id: userId,
+            display_name: profile?.display_name ?? null,
+            full_name: profile?.full_name ?? null,
+            avatar_url: profile?.avatar_url ?? null,
             email: authUser?.email,
           };
         }).filter(u => u.email); // Only include users with email
@@ -170,9 +171,9 @@ export function GlobalResourceSearch({
       // Search Events
       const { data: events } = await supabase
         .from('events')
-        .select('id, title, start_time, hero_image')
+        .select('id, name, start_time')
         .gte('start_time', today)
-        .ilike('title', searchPattern)
+        .ilike('name', searchPattern)
         .order('start_time', { ascending: true })
         .limit(5);
 

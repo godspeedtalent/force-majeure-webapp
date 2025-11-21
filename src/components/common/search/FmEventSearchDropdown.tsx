@@ -31,12 +31,12 @@ export function FmEventSearchDropdown({
     if (value) {
       supabase
         .from('events')
-        .select('title')
+        .select('name')
         .eq('id', value)
         .maybeSingle()
         .then(({ data }) => {
           if (data) {
-            setSelectedEvent({ title: data.title });
+            setSelectedEvent({ title: data.name });
           }
         });
     } else {
@@ -52,8 +52,8 @@ export function FmEventSearchDropdown({
       .select(
         `
         id,
-        title,
-        date,
+        name,
+        start_time,
         headliner:headliner_id (
           id,
           name,
@@ -62,8 +62,7 @@ export function FmEventSearchDropdown({
         venue:venue_id (
           id,
           name
-        ),
-        undercard_ids
+        )
       `
       )
       .gte('start_time', new Date().toISOString().split('T')[0])
@@ -122,14 +121,15 @@ export function FmEventSearchDropdown({
 
     return filtered.slice(0, 10).map((event: any) => {
       const headlinerImage = event.headliner?.image_url;
+      const eventName = event.name || 'Untitled Event';
 
       return {
         id: event.id,
-        label: `${event.title} - ${new Date(event.date).toLocaleDateString()}`,
+        label: `${eventName} - ${new Date(event.start_time).toLocaleDateString()}`,
         icon: headlinerImage ? (
           <img
             src={headlinerImage}
-            alt={event.title}
+            alt={eventName}
             className='h-8 w-8 rounded-full object-cover'
           />
         ) : (

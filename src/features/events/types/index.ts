@@ -70,11 +70,10 @@ export interface Artist {
 
 export interface Event {
   id: string;
-  title: string;
+  name: string;
   description?: string | null;
-  date: string;
-  time: string | number;
-  doors_time?: string | number | null;
+  start_time: string;
+  end_time?: string | null;
   venue_id: string;
   headliner_id: string;
   image_url?: string | null;
@@ -89,11 +88,10 @@ export interface Event {
 
 // Form data types (used in create/edit forms)
 export interface EventFormData {
-  title: string;
+  name: string;
   description?: string;
-  date: string;
-  time: string;
-  doors_time?: string;
+  start_time: string;
+  end_time?: string;
   venue_id: string;
   headliner_id: string;
   image_url?: string;
