@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { supabase } from '@/shared/api/supabase/client';
 import { FmDataGrid, DataGridColumn, DataGridAction } from './FmDataGrid';
-import { useDataGridPersistence } from '../hooks/useDataGridPersistence';
 import { useTableSchema } from '../hooks/useTableSchema';
 import { Button } from '@/components/common/shadcn/button';
 import { GripVertical, Settings2 } from 'lucide-react';
@@ -13,15 +12,17 @@ import { toast } from 'sonner';
 import { FmColumnReorderDialog } from './config/FmColumnReorderDialog';
 import { FmColumnConfigModal } from './config/FmColumnConfigModal';
 
+interface ColumnConfig {
+  key: string;
+  visible: boolean;
+  order: number;
+  width?: number;
+  frozen?: boolean;
+  customLabel?: string;
+}
+
 interface GridConfig {
-  columns: {
-    key: string;
-    visible: boolean;
-    order: number;
-    width?: number;
-    frozen?: boolean;
-    customLabel?: string;
-  }[];
+  columns: ColumnConfig[];
   pageSize?: number;
 }
 
@@ -183,17 +184,17 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
 
   // Apply configuration to columns
   const configuredColumns = useMemo(() => {
-    const configMap = new Map(initializedConfig.columns.map(c => [c.key, c]));
+    const configMap = new Map<string, ColumnConfig>(initializedConfig.columns.map(c => [c.key, c]));
 
     return baseColumns
       .map(col => {
         const colConfig = configMap.get(col.key);
         return {
           ...col,
-          label: (colConfig?.customLabel as string | undefined) || col.label,
+          label: colConfig?.customLabel || col.label,
           visible: colConfig?.visible ?? true,
           order: colConfig?.order ?? 0,
-          frozen: (colConfig?.frozen as boolean | undefined) ?? false,
+          frozen: colConfig?.frozen ?? false,
         };
       })
       .filter((col: any) => col.visible)
@@ -226,17 +227,6 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
     setTimeout(() => setRecentlyMovedKey(null), 600);
   };
 
-  const toggleColumnVisibility = (columnKey: string) => {
-    const newConfig: GridConfig = {
-      ...initializedConfig,
-      columns: initializedConfig.columns.map(col =>
-        col.key === columnKey ? { ...col, visible: !col.visible } : col
-      ),
-    };
-
-    setConfig(newConfig);
-    saveConfig(newConfig);
-  };
 
   // Save column configuration from modal
   const handleSaveColumnConfig = (configs: GridConfig['columns']) => {
@@ -310,10 +300,11 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
   };
 
   const handleToggleFreeze = (columnKey: string) => {
+    const colConfig = initializedConfig.columns.find(c => c.key === columnKey);
     const newConfig: GridConfig = {
       ...initializedConfig,
       columns: initializedConfig.columns.map(col =>
-        col.key === columnKey ? { ...col, frozen: !(col.frozen as boolean | undefined) } : col
+        col.key === columnKey ? { ...col, frozen: !col.frozen } : col
       ),
     };
 
@@ -321,7 +312,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
     saveConfig(newConfig);
 
     const column = baseColumns.find(c => c.key === columnKey);
-    const isFrozen = !(initializedConfig.columns.find(c => c.key === columnKey)?.frozen as boolean | undefined);
+    const isFrozen = !colConfig?.frozen;
     toast.success(
       `Column "${column?.label}" ${isFrozen ? 'frozen' : 'unfrozen'}`
     );

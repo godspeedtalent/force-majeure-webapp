@@ -102,7 +102,7 @@ export function FmOrganizationDataGrid() {
       filterable: false,
       editable: true,
       isRelation: true,
-      render: (value, row) => {
+      render: (_value, row) => {
         const owner = (row as any).owner;
         const ownerName = owner?.display_name || owner?.full_name || 'Unknown User';
 
@@ -162,9 +162,10 @@ export function FmOrganizationDataGrid() {
 
   const handleUpdate = async (
     row: Organization,
-    columnKey: string,
-    newValue: any
+    columnKey?: string,
+    newValue?: any
   ) => {
+    if (!columnKey || newValue === undefined) return;
     try {
       const { error } = await supabase
         .from('organizations' as any)
@@ -186,11 +187,11 @@ export function FmOrganizationDataGrid() {
           const { data: ownerProfile } = await supabase
             .from('profiles')
             .select('user_id, display_name, full_name, avatar_url')
-            .eq('user_id', updatedOrg.owner_id)
+            .eq('user_id', (updatedOrg as any).owner_id)
             .single();
 
           const orgWithOwner = {
-            ...updatedOrg,
+            ...(updatedOrg as any),
             owner: ownerProfile,
           };
 
@@ -247,14 +248,14 @@ export function FmOrganizationDataGrid() {
         .single();
 
       const orgWithOwner = {
-        ...data,
+        ...(data as any),
         owner: ownerProfile,
       };
 
       setOrganizations(prev => [...prev, orgWithOwner as any]);
 
       toast.success('Organization created', {
-        description: `${data.name} has been created`,
+        description: `${(data as any).name} has been created`,
       });
 
       return orgWithOwner as any;
