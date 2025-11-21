@@ -42,7 +42,8 @@ export default function ArtistDetails() {
         .single();
 
       if (error) throw error;
-      return data as Artist;
+      if (!data) throw new Error('Artist not found');
+      return data;
     },
     enabled: !!id,
   });

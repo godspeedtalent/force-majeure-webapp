@@ -43,7 +43,8 @@ export default function VenueDetails() {
         .single();
 
       if (error) throw error;
-      return data as Venue;
+      if (!data) throw new Error('Venue not found');
+      return data;
     },
     enabled: !!id,
   });

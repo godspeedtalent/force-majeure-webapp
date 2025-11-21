@@ -27,7 +27,6 @@ import {
   MessageSquare,
   Sparkles,
   Search,
-  Box,
   LayoutGrid,
 } from 'lucide-react';
 import { z } from 'zod';

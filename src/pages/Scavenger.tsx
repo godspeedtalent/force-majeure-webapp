@@ -1,7 +1,7 @@
 import { logger } from '@/shared/services/logger';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { UnauthenticatedWizard } from '@/components/scavenger/auth/UnauthenticatedWizard';
 import { ScavengerFullLayout } from '@/components/scavenger/layouts/ScavengerFullLayout';
@@ -135,7 +135,7 @@ export default function Scavenger() {
           showShoppingCart={!isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)}
         >
           <UnauthenticatedWizard
-            locationName={location?.location_name}
+            locationName={location?.name}
             onLoginSuccess={async () => {
               await queryClient.invalidateQueries({
                 queryKey: ['user-claims'],
