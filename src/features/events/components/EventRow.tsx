@@ -11,6 +11,7 @@ import {
 } from '@/shared/utils/timeUtils';
 
 interface Artist {
+  id?: string;
   name: string;
   genre?: string;
   image?: string | null;

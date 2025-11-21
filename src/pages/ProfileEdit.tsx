@@ -2,7 +2,6 @@ import {
   User,
   Settings,
   Upload,
-  Image as ImageIcon,
   Mail,
   AlertCircle,
 } from 'lucide-react';
@@ -11,14 +10,12 @@ import { useNavigate } from 'react-router-dom';
 
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
-import { Badge } from '@/components/common/shadcn/badge';
 import { Card, CardContent } from '@/components/common/shadcn/card';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
 import { FmCommonPageHeader } from '@/components/common/display/FmCommonPageHeader';
 import { FmCommonUserPhoto } from '@/components/common/display/FmCommonUserPhoto';
-import { Separator } from '@/components/common/shadcn/separator';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useToast } from '@/shared/hooks/use-toast';
 import { supabase } from '@/shared/api/supabase/client';
@@ -27,7 +24,7 @@ import { logger } from '@/shared/services/logger';
 type ProfileSection = 'profile';
 
 const ProfileEdit = () => {
-  const { user, profile, updateProfile, refreshProfile, resendVerificationEmail } = useAuth();
+  const { user, profile, updateProfile, resendVerificationEmail } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -140,7 +137,11 @@ const ProfileEdit = () => {
         description: 'Your profile picture has been updated successfully.',
       });
     } catch (error: any) {
-      logger.error('Error uploading image:', error);
+      logger.error('Error uploading image', {
+        error: error.message || 'Unknown error',
+        source: 'ProfileEdit.tsx',
+        details: 'handleImageUpload',
+      });
       toast({
         title: 'Upload failed',
         description:
@@ -232,7 +233,7 @@ const ProfileEdit = () => {
                         <span className='font-medium text-foreground'>{user.email}</span>.
                       </p>
                       <FmCommonButton
-                        variant='outline'
+                        variant='secondary'
                         size='sm'
                         icon={Mail}
                         onClick={handleResendVerification}
