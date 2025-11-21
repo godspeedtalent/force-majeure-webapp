@@ -1,3 +1,4 @@
+import { logger } from '@/shared/services/logger';
 import { TestSuite } from '../types/testing';
 
 class TestRegistryService {

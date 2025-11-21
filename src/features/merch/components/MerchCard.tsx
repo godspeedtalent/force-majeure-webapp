@@ -1,7 +1,5 @@
 import { ReactNode } from 'react';
 
-import { Button } from '@/components/common/shadcn/button';
-import type { Tables } from '@/shared/types/database';
 import { FmImageCard } from '@/components/common/display/FmImageCard';
 import { getImageUrl } from '@/shared/utils/imageUtils';
 
