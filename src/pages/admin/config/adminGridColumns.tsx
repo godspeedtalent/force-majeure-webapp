@@ -3,19 +3,8 @@ import { BadgeListCell } from '@/features/data-grid/components/cells';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
 import { logger } from '@/shared/services/logger';
-import {
-  User,
-  Music,
-  Mail,
-  Image as ImageIcon,
-  FileText,
-  MapPin,
-  Home,
-  Users as UsersIcon,
-  Calendar,
-  Shield,
-  Building2,
-} from 'lucide-react';
+import { supabase } from '@/shared/api/supabase/client';
+import { toast } from 'sonner';
 
 /**
  * Update artist image URL in the database

@@ -76,8 +76,9 @@ export const UserManagement = () => {
     try {
       // Email updates go to auth.users via admin API
       if (columnKey === 'email') {
+        const emailValue = typeof normalizedValue === 'string' ? normalizedValue : String(normalizedValue ?? '');
         const { error } = await supabase.auth.admin.updateUserById(row.id, {
-          email: normalizedValue ?? undefined,
+          email: emailValue,
         });
         if (error) throw error;
       } else {
@@ -113,9 +114,9 @@ export const UserManagement = () => {
     }
   };
 
-  const handleOpenRoleModal = (user: AdminUser) => {
-    setSelectedUser(user);
-    setRoleModalOpen(true);
+  const handleOpenRoleModal = (_user: AdminUser) => {
+    // Role management modal has been removed
+    toast.info('Role management coming soon');
   };
 
   const handleRolesUpdated = () => {
