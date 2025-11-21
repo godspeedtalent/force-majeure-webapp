@@ -96,11 +96,11 @@ export interface Artist {
   name: string;
   bio: string | null;
   imageUrl: string | null;
-  socialLinks: Record<string, string> | null;
   createdAt: string;
   updatedAt: string;
   // Legacy field - will be deprecated
   genre: string | null;
+  website: string | null;
 }
 
 /**
@@ -210,10 +210,10 @@ export function artistFromRow(row: ArtistRow): Artist {
     name: row.name,
     bio: row.bio,
     imageUrl: row.image_url,
-    socialLinks: row.social_links as Record<string, string> | null,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
+    createdAt: row.created_at ?? new Date().toISOString(),
+    updatedAt: row.updated_at ?? new Date().toISOString(),
     genre: row.genre,
+    website: row.website,
   };
 }
 

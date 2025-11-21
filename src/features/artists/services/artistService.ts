@@ -24,14 +24,14 @@ import type {
  */
 export async function getArtistGenres(artistId: string): Promise<ArtistGenreWithDetails[]> {
   try {
-    logApi('getArtistGenres', 'Fetching artist genres', { artistId });
+    logApi({ message: 'Fetching artist genres', details: { artistId } });
 
     const { data, error } = await supabase.rpc('get_artist_genres', {
       artist_id_param: artistId,
     });
 
     if (error) {
-      logApiError('getArtistGenres', 'Failed to fetch artist genres', error);
+      logApiError({ message: 'Failed to fetch artist genres', details: error });
       throw error;
     }
 
@@ -69,7 +69,7 @@ export async function getArtistGenres(artistId: string): Promise<ArtistGenreWith
  */
 export async function getArtistWithGenres(artistId: string): Promise<ArtistWithGenres | null> {
   try {
-    logApi('getArtistWithGenres', 'Fetching artist with genres', { artistId });
+    logApi({ message: 'Fetching artist with genres', details: { artistId } });
 
     const { data: artistData, error: artistError } = await supabase
       .from('artists')
@@ -81,7 +81,7 @@ export async function getArtistWithGenres(artistId: string): Promise<ArtistWithG
       if (artistError.code === 'PGRST116') {
         return null;
       }
-      logApiError('getArtistWithGenres', 'Failed to fetch artist', artistError);
+      logApiError({ message: 'Failed to fetch artist', details: artistError });
       throw artistError;
     }
 
@@ -93,10 +93,10 @@ export async function getArtistWithGenres(artistId: string): Promise<ArtistWithG
       name: artistData.name,
       bio: artistData.bio,
       imageUrl: artistData.image_url,
-      socialLinks: artistData.social_links as Record<string, string> | null,
-      createdAt: artistData.created_at,
-      updatedAt: artistData.updated_at,
+      createdAt: artistData.created_at ?? new Date().toISOString(),
+      updatedAt: artistData.updated_at ?? new Date().toISOString(),
       genre: artistData.genre,
+      website: artistData.website,
       genres,
       primaryGenre,
     };
@@ -115,10 +115,9 @@ export async function addGenreToArtist(
   isPrimary: boolean = false
 ): Promise<ArtistGenre> {
   try {
-    logApi('addGenreToArtist', 'Adding genre to artist', {
-      artistId,
-      genreId,
-      isPrimary,
+    logApi({
+      message: 'Adding genre to artist',
+      details: { artistId, genreId, isPrimary },
     });
 
     // If this is being set as primary, unset any existing primary genres
@@ -141,7 +140,7 @@ export async function addGenreToArtist(
       .single();
 
     if (error) {
-      logApiError('addGenreToArtist', 'Failed to add genre to artist', error);
+      logApiError({ message: 'Failed to add genre to artist', details: error });
       throw error;
     }
 
@@ -149,8 +148,8 @@ export async function addGenreToArtist(
       id: data.id,
       artistId: data.artist_id,
       genreId: data.genre_id,
-      isPrimary: data.is_primary,
-      createdAt: data.created_at,
+      isPrimary: data.is_primary ?? false,
+      createdAt: data.created_at ?? new Date().toISOString(),
     };
   } catch (error) {
     logger.error('Failed to add genre to artist', { error, artistId, genreId });
@@ -166,9 +165,9 @@ export async function removeGenreFromArtist(
   genreId: string
 ): Promise<void> {
   try {
-    logApi('removeGenreFromArtist', 'Removing genre from artist', {
-      artistId,
-      genreId,
+    logApi({
+      message: 'Removing genre from artist',
+      details: { artistId, genreId },
     });
 
     const { error } = await supabase
@@ -178,11 +177,11 @@ export async function removeGenreFromArtist(
       .eq('genre_id', genreId);
 
     if (error) {
-      logApiError('removeGenreFromArtist', 'Failed to remove genre from artist', error);
+      logApiError({ message: 'Failed to remove genre from artist', details: error });
       throw error;
     }
 
-    logApi('removeGenreFromArtist', 'Genre removed from artist successfully');
+    logApi({ message: 'Genre removed from artist successfully' });
   } catch (error) {
     logger.error('Failed to remove genre from artist', { error, artistId, genreId });
     throw error;
@@ -194,9 +193,9 @@ export async function removeGenreFromArtist(
  */
 export async function setPrimaryGenre(artistId: string, genreId: string): Promise<void> {
   try {
-    logApi('setPrimaryGenre', 'Setting primary genre for artist', {
-      artistId,
-      genreId,
+    logApi({
+      message: 'Setting primary genre for artist',
+      details: { artistId, genreId },
     });
 
     // First, unset all primary flags for this artist
@@ -213,11 +212,11 @@ export async function setPrimaryGenre(artistId: string, genreId: string): Promis
       .eq('genre_id', genreId);
 
     if (error) {
-      logApiError('setPrimaryGenre', 'Failed to set primary genre', error);
+      logApiError({ message: 'Failed to set primary genre', details: error });
       throw error;
     }
 
-    logApi('setPrimaryGenre', 'Primary genre set successfully');
+    logApi({ message: 'Primary genre set successfully' });
   } catch (error) {
     logger.error('Failed to set primary genre', { error, artistId, genreId });
     throw error;
@@ -232,9 +231,9 @@ export async function updateArtistGenres(
   genreSelections: GenreSelection[]
 ): Promise<void> {
   try {
-    logApi('updateArtistGenres', 'Updating artist genres', {
-      artistId,
-      genreCount: genreSelections.length,
+    logApi({
+      message: 'Updating artist genres',
+      details: { artistId, genreCount: genreSelections.length },
     });
 
     // Delete all existing genre relationships
@@ -251,12 +250,12 @@ export async function updateArtistGenres(
       const { error } = await supabase.from('artist_genres').insert(inserts);
 
       if (error) {
-        logApiError('updateArtistGenres', 'Failed to update artist genres', error);
+        logApiError({ message: 'Failed to update artist genres', details: error });
         throw error;
       }
     }
 
-    logApi('updateArtistGenres', 'Artist genres updated successfully');
+    logApi({ message: 'Artist genres updated successfully' });
   } catch (error) {
     logger.error('Failed to update artist genres', { error, artistId });
     throw error;
@@ -276,10 +275,9 @@ export async function getArtistsByGenre(
   limit: number = 50
 ): Promise<ArtistWithGenres[]> {
   try {
-    logApi('getArtistsByGenre', 'Fetching artists by genre', {
-      genreId,
-      includeSubgenres,
-      limit,
+    logApi({
+      message: 'Fetching artists by genre',
+      details: { genreId, includeSubgenres, limit },
     });
 
     const { data, error } = await supabase.rpc('get_artists_by_genre', {
@@ -288,7 +286,7 @@ export async function getArtistsByGenre(
     });
 
     if (error) {
-      logApiError('getArtistsByGenre', 'Failed to fetch artists by genre', error);
+      logApiError({ message: 'Failed to fetch artists by genre', details: error });
       throw error;
     }
 
@@ -315,7 +313,7 @@ export async function searchArtists(
   limit: number = 20
 ): Promise<Artist[]> {
   try {
-    logApi('searchArtists', 'Searching artists', { query, genreFilter, limit });
+    logApi({ message: 'Searching artists', details: { query, genreFilter, limit } });
 
     let dbQuery = supabase
       .from('artists')
@@ -327,19 +325,19 @@ export async function searchArtists(
     const { data, error } = await dbQuery;
 
     if (error) {
-      logApiError('searchArtists', 'Failed to search artists', error);
+      logApiError({ message: 'Failed to search artists', details: error });
       throw error;
     }
 
-    let artists = data.map(row => ({
+    let artists: Artist[] = data.map(row => ({
       id: row.id,
       name: row.name,
       bio: row.bio,
       imageUrl: row.image_url,
-      socialLinks: row.social_links as Record<string, string> | null,
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
+      createdAt: row.created_at ?? new Date().toISOString(),
+      updatedAt: row.updated_at ?? new Date().toISOString(),
       genre: row.genre,
+      website: row.website,
     }));
 
     // Filter by genre if specified

@@ -372,7 +372,7 @@ export function GlobalResourceSearch({
                             {user.avatar_url ? (
                               <img
                                 src={user.avatar_url}
-                                alt={user.display_name || user.full_name}
+                                alt={user.display_name || user.full_name || 'User'}
                                 className='w-full h-full object-cover'
                               />
                             ) : (
