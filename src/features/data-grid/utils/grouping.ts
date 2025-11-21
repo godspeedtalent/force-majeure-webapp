@@ -32,7 +32,7 @@ export interface FlattenedRow<T = any> {
 export function groupData<T extends Record<string, any>>(
   data: T[],
   config: GroupConfig,
-  columns: DataGridColumn<T>[]
+  _columns: DataGridColumn<T>[]
 ): GroupedRow<T>[] {
   const { columnKey, aggregations = [] } = config;
 

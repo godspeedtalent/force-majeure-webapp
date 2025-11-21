@@ -232,7 +232,7 @@ export function generateLabel(columnName: string): string {
 /**
  * Check if column type supports sorting
  */
-export function isSortableType(type: DataGridColumn['type']): boolean {
+export function isSortableType(_type: DataGridColumn['type']): boolean {
   // All types are sortable except maybe complex types in the future
   return true;
 }
@@ -240,7 +240,7 @@ export function isSortableType(type: DataGridColumn['type']): boolean {
 /**
  * Check if column type supports filtering
  */
-export function isFilterableType(type: DataGridColumn['type']): boolean {
+export function isFilterableType(_type: DataGridColumn['type']): boolean {
   // All types are filterable
   return true;
 }
@@ -249,7 +249,7 @@ export function isFilterableType(type: DataGridColumn['type']): boolean {
  * Check if column type supports inline editing
  */
 export function isEditableType(
-  type: DataGridColumn['type'],
+  _type: DataGridColumn['type'],
   readonly: boolean
 ): boolean {
   if (readonly) {
@@ -305,8 +305,10 @@ export function getDefaultWidth(
 /**
  * Validate that a type string is a valid DataGrid type
  */
-export function isValidDataGridType(type: string): type is DataGridColumn['type'] {
-  const validTypes: DataGridColumn['type'][] = [
+export function isValidDataGridType(type?: string): boolean {
+  if (!type) return false;
+  
+  const validTypes = [
     'text',
     'number',
     'email',
@@ -315,7 +317,7 @@ export function isValidDataGridType(type: string): type is DataGridColumn['type'
     'boolean',
     'created_date',
   ];
-  return validTypes.includes(type as DataGridColumn['type']);
+  return validTypes.includes(type);
 }
 
 /**

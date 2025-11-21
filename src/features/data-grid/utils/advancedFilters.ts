@@ -1,7 +1,6 @@
 import type {
   FilterGroup,
   FilterRule,
-  FilterOperator,
 } from '../components/FmAdvancedFilterDialog';
 
 /**
