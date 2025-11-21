@@ -82,6 +82,8 @@ export class TestEventDataService extends TestDataService {
       );
       const headliner = selectedArtists[0];
       const supports = selectedArtists.slice(1);
+      // Unused for now but keep for future reference
+      void supports;
 
       // Generate event date (random future date)
       const eventDate = this.randomFutureDate(7, 90);
@@ -96,14 +98,12 @@ export class TestEventDataService extends TestDataService {
       const { data: event, error: eventError } = await supabase
         .from('events')
         .insert({
-          title: eventTitle,
+          name: eventTitle,
           headliner_id: headliner.id,
           venue_id: venue.id,
-          date: eventDateString,
-          time: eventTimeString,
-          end_time: endTimeString,
+          start_time: `${eventDateString}T${eventTimeString}:00`,
+          end_time: `${eventDateString}T${endTimeString}:00`,
           is_after_hours: false,
-          undercard_ids: supports.map(a => a.id),
           test_data: true,
         })
         .select('id')
@@ -124,7 +124,7 @@ export class TestEventDataService extends TestDataService {
 
       return event.id;
     } catch (error) {
-      logger.error('Error creating test event:', error);
+      logger.error('Error creating test event:', { error });
       throw error;
     }
   }
@@ -281,7 +281,7 @@ export class TestEventDataService extends TestDataService {
 
       return testEvents.length;
     } catch (error) {
-      logger.error('Error deleting test events:', error);
+      logger.error('Error deleting test events:', { error });
       throw error;
     }
   }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/shared/api/supabase/client';
+import { logger } from '@/shared/services/logger';
 
 /**
  * Hook to fetch and track event view count
@@ -31,7 +32,7 @@ export function useEventViews(eventId: string | undefined) {
         if (!isMounted) return;
 
         if (countError) {
-          logger.error('Error fetching view count:', countError);
+          logger.error('Error fetching view count:', { error: countError });
           setError(countError.message);
           setViewCount(0);
         } else {
@@ -40,7 +41,7 @@ export function useEventViews(eventId: string | undefined) {
         }
       } catch (err) {
         if (!isMounted) return;
-        logger.error('Error fetching view count:', err);
+        logger.error('Error fetching view count:', { error: err });
         setError(String(err));
         setViewCount(0);
       } finally {
@@ -74,7 +75,7 @@ export function useEventViews(eventId: string | undefined) {
         });
 
       if (insertError) {
-        logger.error('Error recording view:', insertError);
+        logger.error('Error recording view:', { error: insertError });
       } else {
         setHasRecorded(true);
         // Increment the local count
