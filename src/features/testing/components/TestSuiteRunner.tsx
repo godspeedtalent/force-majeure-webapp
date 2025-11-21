@@ -10,7 +10,6 @@ import {
   Pause,
   Square,
   RotateCcw,
-  Settings,
   Keyboard,
   XCircle,
 } from 'lucide-react';

@@ -1,4 +1,5 @@
 import { useReducer, useCallback, useRef } from 'react';
+import { logger } from '@/shared/services/logger';
 import {
   TestSuite,
   TestResult,
@@ -135,8 +136,11 @@ export function useTestRunner(options?: TestRunOptions) {
 
         dispatch({ type: 'COMPLETE', payload: { results } });
       } catch (error) {
-        logger.error('[TestRunner] Suite execution failed:', error);
-        logger.error('[TestRunner] Error stack:', (error as Error).stack);
+        logger.error('[TestRunner] Suite execution failed:', {
+          error: error instanceof Error ? error.message : 'Unknown error',
+          stack: error instanceof Error ? error.stack : undefined,
+          source: 'useTestRunner.runSuite'
+        });
         dispatch({ type: 'ERROR', payload: (error as Error).message });
       }
     },

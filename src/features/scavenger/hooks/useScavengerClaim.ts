@@ -39,7 +39,10 @@ export const useScavengerClaim = () => {
       setResult(claimResult);
       return claimResult;
     } catch (error) {
-      logger.error('Claim error:', error);
+      logger.error('Claim error:', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        source: 'useScavengerClaim.claim'
+      });
       const errorResult: ClaimResult = {
         success: false,
         error: 'Failed to claim reward',

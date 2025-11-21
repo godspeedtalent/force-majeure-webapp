@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
+import { logger } from '@/shared/services/logger';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
 import { EventFormState } from './useEventFormState';
@@ -46,7 +47,10 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
         .single();
 
       if (headlinerError) {
-        logger.error('Error fetching headliner:', headlinerError);
+        logger.error('Error fetching headliner:', {
+          error: headlinerError.message,
+          source: 'useEventFormSubmit.submitEvent'
+        });
       }
 
       // Fetch venue name for event title
@@ -57,7 +61,10 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
         .single();
 
       if (venueError) {
-        logger.error('Error fetching venue:', venueError);
+        logger.error('Error fetching venue:', {
+          error: venueError.message,
+          source: 'useEventFormSubmit.submitEvent'
+        });
       }
 
       // Construct event title
@@ -110,7 +117,7 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
         // Update existing event
         if (!eventId) throw new Error('Event ID is required for update');
 
-        const { data: updatedEvent, error: eventError } = await supabase
+        const { error: eventError } = await supabase
           .from('events' as any)
           .update(eventData)
           .eq('id', eventId)
@@ -131,7 +138,11 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
       setIsLoading(false);
       onSuccess?.(resultEventId);
     } catch (error) {
-      logger.error(`Error ${mode === 'create' ? 'creating' : 'updating'} event:`, error);
+      logger.error(`Error ${mode === 'create' ? 'creating' : 'updating'} event:`, {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        source: 'useEventFormSubmit.submitEvent',
+        mode
+      });
       setIsLoading(false);
       const err = error instanceof Error ? error : new Error('An unexpected error occurred');
       onError?.(err);
