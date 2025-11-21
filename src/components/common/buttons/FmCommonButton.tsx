@@ -9,7 +9,7 @@ interface FmCommonButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'default' | 'secondary' | 'destructive' | 'gold';
   size?: 'default' | 'sm' | 'lg' | 'icon';
-  icon?: LucideIcon;
+  icon?: LucideIcon | React.ReactNode;
   iconPosition?: 'left' | 'right';
   loading?: boolean;
   children: React.ReactNode;
@@ -103,11 +103,23 @@ export const FmCommonButton = forwardRef<
         <>
           {loading && <Loader2 className='w-4 h-4 mr-2 animate-spin' />}
           {!loading && Icon && iconPosition === 'left' && (
-            <Icon className='w-4 h-4 mr-2 transition-transform duration-200 group-hover:scale-110' />
+            typeof Icon === 'function' ? (
+              <Icon className='w-4 h-4 mr-2 transition-transform duration-200 group-hover:scale-110' />
+            ) : (
+              <span className='w-4 h-4 mr-2 flex items-center justify-center transition-transform duration-200 group-hover:scale-110'>
+                {Icon}
+              </span>
+            )
           )}
           <span className='relative z-10'>{children}</span>
           {!loading && Icon && iconPosition === 'right' && (
-            <Icon className='w-4 h-4 ml-2 transition-transform duration-200 group-hover:scale-110' />
+            typeof Icon === 'function' ? (
+              <Icon className='w-4 h-4 ml-2 transition-transform duration-200 group-hover:scale-110' />
+            ) : (
+              <span className='w-4 h-4 ml-2 flex items-center justify-center transition-transform duration-200 group-hover:scale-110'>
+                {Icon}
+              </span>
+            )
           )}
           {/* Ripple effects */}
           {ripples.map(ripple => (

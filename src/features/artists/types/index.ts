@@ -101,6 +101,22 @@ export interface Artist {
   updatedAt: string;
   // Legacy field - will be deprecated
   genre: string | null;
+  // Spotify integration fields
+  spotifyId: string | null;
+  spotifyData: SpotifyArtistData | null;
+}
+
+/**
+ * Spotify artist metadata cached in database
+ */
+export interface SpotifyArtistData {
+  popularity: number;
+  followers: number;
+  externalUrls: {
+    spotify: string;
+  };
+  uri: string;
+  genres: string[];
 }
 
 /**
@@ -214,6 +230,8 @@ export function artistFromRow(row: ArtistRow): Artist {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     genre: row.genre,
+    spotifyId: row.spotify_id ?? null,
+    spotifyData: row.spotify_data ? (row.spotify_data as unknown as SpotifyArtistData) : null,
   };
 }
 

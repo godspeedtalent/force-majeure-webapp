@@ -32,7 +32,10 @@
       "Bash(netsh interface ipv4 show excludedportrange:*)",
       "Bash(docker system prune:*)",
       "Bash(netsh int ipv4 add excludedportrange:*)",
-      "Bash(docker rm:*)"
+      "Bash(docker rm:*)",
+      "Bash(timeout 60 npx tsc:*)",
+      "Bash(src/integrations/supabase/types.ts)",
+      "Bash(timeout 120 npx tsc:*)"
     ],
     "deny": [],
     "ask": []

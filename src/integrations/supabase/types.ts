@@ -7,10 +7,30 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "13.0.4"
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
@@ -139,6 +159,8 @@ export type Database = {
           id: string
           image_url: string | null
           name: string
+          spotify_data: Json | null
+          spotify_id: string | null
           test_data: boolean
           updated_at: string | null
           website: string | null
@@ -150,6 +172,8 @@ export type Database = {
           id?: string
           image_url?: string | null
           name: string
+          spotify_data?: Json | null
+          spotify_id?: string | null
           test_data?: boolean
           updated_at?: string | null
           website?: string | null
@@ -161,6 +185,8 @@ export type Database = {
           id?: string
           image_url?: string | null
           name?: string
+          spotify_data?: Json | null
+          spotify_id?: string | null
           test_data?: boolean
           updated_at?: string | null
           website?: string | null
@@ -188,6 +214,60 @@ export type Database = {
           name?: string
           state?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      column_customizations: {
+        Row: {
+          column_key: string
+          created_at: string | null
+          created_by: string | null
+          custom_label: string | null
+          custom_type: string | null
+          custom_width: string | null
+          display_order: number | null
+          id: string
+          is_editable: boolean | null
+          is_filterable: boolean | null
+          is_sortable: boolean | null
+          is_visible_by_default: boolean | null
+          render_config: Json | null
+          table_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          column_key: string
+          created_at?: string | null
+          created_by?: string | null
+          custom_label?: string | null
+          custom_type?: string | null
+          custom_width?: string | null
+          display_order?: number | null
+          id?: string
+          is_editable?: boolean | null
+          is_filterable?: boolean | null
+          is_sortable?: boolean | null
+          is_visible_by_default?: boolean | null
+          render_config?: Json | null
+          table_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          column_key?: string
+          created_at?: string | null
+          created_by?: string | null
+          custom_label?: string | null
+          custom_type?: string | null
+          custom_width?: string | null
+          display_order?: number | null
+          id?: string
+          is_editable?: boolean | null
+          is_filterable?: boolean | null
+          is_sortable?: boolean | null
+          is_visible_by_default?: boolean | null
+          render_config?: Json | null
+          table_name?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -658,6 +738,12 @@ export type Database = {
       }
       orders: {
         Row: {
+          billing_address_line_1: string | null
+          billing_address_line_2: string | null
+          billing_city: string | null
+          billing_country: string | null
+          billing_state: string | null
+          billing_zip_code: string | null
           created_at: string
           currency: string
           event_id: string
@@ -672,6 +758,12 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          billing_address_line_1?: string | null
+          billing_address_line_2?: string | null
+          billing_city?: string | null
+          billing_country?: string | null
+          billing_state?: string | null
+          billing_zip_code?: string | null
           created_at?: string
           currency?: string
           event_id: string
@@ -686,6 +778,12 @@ export type Database = {
           user_id: string
         }
         Update: {
+          billing_address_line_1?: string | null
+          billing_address_line_2?: string | null
+          billing_city?: string | null
+          billing_country?: string | null
+          billing_state?: string | null
+          billing_zip_code?: string | null
           created_at?: string
           currency?: string
           event_id?: string
@@ -711,28 +809,46 @@ export type Database = {
       }
       organizations: {
         Row: {
+          address_line_1: string | null
+          address_line_2: string | null
+          city: string | null
+          country: string | null
           created_at: string | null
           id: string
           name: string
           owner_id: string
           profile_picture: string | null
+          state: string | null
           updated_at: string | null
+          zip_code: string | null
         }
         Insert: {
+          address_line_1?: string | null
+          address_line_2?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string | null
           id?: string
           name: string
           owner_id: string
           profile_picture?: string | null
+          state?: string | null
           updated_at?: string | null
+          zip_code?: string | null
         }
         Update: {
+          address_line_1?: string | null
+          address_line_2?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string | null
           id?: string
           name?: string
           owner_id?: string
           profile_picture?: string | null
+          state?: string | null
           updated_at?: string | null
+          zip_code?: string | null
         }
         Relationships: []
       }
@@ -740,10 +856,12 @@ export type Database = {
         Row: {
           age_range: string | null
           avatar_url: string | null
-          billing_address: string | null
+          billing_address_line_1: string | null
+          billing_address_line_2: string | null
           billing_city: string | null
+          billing_country: string | null
           billing_state: string | null
-          billing_zip: string | null
+          billing_zip_code: string | null
           created_at: string
           display_name: string | null
           email: string | null
@@ -761,10 +879,12 @@ export type Database = {
         Insert: {
           age_range?: string | null
           avatar_url?: string | null
-          billing_address?: string | null
+          billing_address_line_1?: string | null
+          billing_address_line_2?: string | null
           billing_city?: string | null
+          billing_country?: string | null
           billing_state?: string | null
-          billing_zip?: string | null
+          billing_zip_code?: string | null
           created_at?: string
           display_name?: string | null
           email?: string | null
@@ -782,10 +902,12 @@ export type Database = {
         Update: {
           age_range?: string | null
           avatar_url?: string | null
-          billing_address?: string | null
+          billing_address_line_1?: string | null
+          billing_address_line_2?: string | null
           billing_city?: string | null
+          billing_country?: string | null
           billing_state?: string | null
-          billing_zip?: string | null
+          billing_zip_code?: string | null
           created_at?: string
           display_name?: string | null
           email?: string | null
@@ -1001,6 +1123,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      table_metadata: {
+        Row: {
+          columns: Json
+          constraints: Json
+          description: string | null
+          display_name: string
+          relations: Json
+          table_name: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          columns?: Json
+          constraints?: Json
+          description?: string | null
+          display_name: string
+          relations?: Json
+          table_name: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          columns?: Json
+          constraints?: Json
+          description?: string | null
+          display_name?: string
+          relations?: Json
+          table_name?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
       }
       ticket_holds: {
         Row: {
@@ -1271,21 +1426,18 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
-          role: Database["public"]["Enums"]["app_role"]
           role_id: string
           user_id: string
         }
         Insert: {
           created_at?: string | null
           id?: string
-          role: Database["public"]["Enums"]["app_role"]
           role_id: string
           user_id: string
         }
         Update: {
           created_at?: string | null
           id?: string
-          role?: Database["public"]["Enums"]["app_role"]
           role_id?: string
           user_id?: string
         }
@@ -1302,6 +1454,8 @@ export type Database = {
       venues: {
         Row: {
           address: string | null
+          address_line_1: string | null
+          address_line_2: string | null
           capacity: number | null
           city: string | null
           city_id: string | null
@@ -1312,9 +1466,12 @@ export type Database = {
           state: string | null
           test_data: boolean
           updated_at: string | null
+          zip_code: string | null
         }
         Insert: {
           address?: string | null
+          address_line_1?: string | null
+          address_line_2?: string | null
           capacity?: number | null
           city?: string | null
           city_id?: string | null
@@ -1325,9 +1482,12 @@ export type Database = {
           state?: string | null
           test_data?: boolean
           updated_at?: string | null
+          zip_code?: string | null
         }
         Update: {
           address?: string | null
+          address_line_1?: string | null
+          address_line_2?: string | null
           capacity?: number | null
           city?: string | null
           city_id?: string | null
@@ -1338,6 +1498,7 @@ export type Database = {
           state?: string | null
           test_data?: boolean
           updated_at?: string | null
+          zip_code?: string | null
         }
         Relationships: [
           {
@@ -1475,6 +1636,17 @@ export type Database = {
         }[]
       }
       get_event_view_count: { Args: { p_event_id: string }; Returns: number }
+      get_foreign_keys: {
+        Args: { p_table_name: string }
+        Returns: {
+          column_name: string
+          constraint_name: string
+          foreign_column_name: string
+          foreign_table_name: string
+          on_delete_action: string
+          on_update_action: string
+        }[]
+      }
       get_genre_hierarchy: {
         Args: { genre_id_param: string }
         Returns: {
@@ -1484,11 +1656,33 @@ export type Database = {
         }[]
       }
       get_genre_path: { Args: { genre_id_param: string }; Returns: string }
+      get_table_list: {
+        Args: never
+        Returns: {
+          row_count: number
+          table_name: string
+          table_size: string
+        }[]
+      }
+      get_table_schema: {
+        Args: { p_table_name: string }
+        Returns: {
+          character_maximum_length: number
+          column_default: string
+          column_name: string
+          data_type: string
+          is_nullable: string
+          is_primary_key: boolean
+          is_unique: boolean
+          numeric_precision: number
+          ordinal_position: number
+        }[]
+      }
       get_user_roles: {
         Args: { user_id_param: string }
         Returns: {
           display_name: string
-          permissions: Json
+          permission_names: string[]
           role_name: string
         }[]
       }
@@ -1510,6 +1704,8 @@ export type Database = {
         }
         Returns: string
       }
+      refresh_all_table_metadata: { Args: never; Returns: Json }
+      refresh_table_metadata: { Args: { p_table_name: string }; Returns: Json }
       release_ticket_hold: { Args: { p_hold_id: string }; Returns: boolean }
     }
     Enums: {
@@ -1639,9 +1835,13 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       app_role: ["user", "admin", "developer", "org_admin", "org_staff"],
     },
   },
 } as const
+

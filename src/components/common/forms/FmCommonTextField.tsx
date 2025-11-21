@@ -9,7 +9,7 @@ import { cn } from '@/shared/utils/utils';
 
 interface FmCommonTextFieldProps
   extends React.ComponentPropsWithoutRef<typeof Input> {
-  label: string;
+  label?: string;
   required?: boolean;
   description?: string;
   error?: string;
@@ -49,7 +49,7 @@ export const FmCommonTextField = React.forwardRef<
   ) => {
     const [showPassword, setShowPassword] = React.useState(false);
     const [isFocused, setIsFocused] = React.useState(false);
-    const inputId = id || label.toLowerCase().replace(/\s+/g, '-');
+    const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : `input-${Math.random().toString(36).substr(2, 9)}`);
     const inputType = password ? (showPassword ? 'text' : 'password') : type;
 
     const baseInputClasses = cn(
@@ -150,22 +150,26 @@ export const FmCommonTextField = React.forwardRef<
     return (
       <div className={cn('space-y-1', containerClassName)}>
         {renderInput()}
-        <div>
-          <Label
-            htmlFor={inputId}
-            className={cn(
-              'text-xs transition-colors duration-200',
-              isFocused ? 'text-fm-gold' : 'text-muted-foreground'
+        {(label || description) && (
+          <div>
+            {label && (
+              <Label
+                htmlFor={inputId}
+                className={cn(
+                  'text-xs transition-colors duration-200',
+                  isFocused ? 'text-fm-gold' : 'text-muted-foreground'
+                )}
+              >
+                {label} {required && <span className='text-fm-gold'>*</span>}
+              </Label>
             )}
-          >
-            {label} {required && <span className='text-fm-gold'>*</span>}
-          </Label>
-          {description && (
-            <p className='text-xs text-muted-foreground/70 mt-0.5'>
-              {description}
-            </p>
-          )}
-        </div>
+            {description && (
+              <p className='text-xs text-muted-foreground/70 mt-0.5'>
+                {description}
+              </p>
+            )}
+          </div>
+        )}
         {error && (
           <p className='text-xs text-red-500 mt-1 animate-in fade-in slide-in-from-top-1 duration-300'>
             {error}

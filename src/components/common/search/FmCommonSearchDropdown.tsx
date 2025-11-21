@@ -116,10 +116,11 @@ export function FmCommonSearchDropdown({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild disabled={disabled}>
         <button
+          type='button'
           className={cn(
             'w-full flex items-center gap-2 px-3 py-2 rounded-none',
             'bg-black/40 border border-white/20',
-            'text-white text-left',
+            'text-white text-left font-light',
             'hover:border-fm-gold/50 transition-colors',
             disabled && 'opacity-50 cursor-not-allowed'
           )}
@@ -141,7 +142,7 @@ export function FmCommonSearchDropdown({
               </Tooltip>
             </TooltipProvider>
           )}
-          <span className='flex-1 truncate'>
+          <span className='flex-1 truncate font-light'>
             {selectedLabel || placeholder}
           </span>
         </button>
@@ -190,7 +191,7 @@ export function FmCommonSearchDropdown({
                   className='w-full flex items-center gap-3 px-3 py-2 hover:bg-white/10 transition-colors text-left'
                 >
                   {option.icon}
-                  <span className='text-white'>{option.label}</span>
+                  <span className='text-white font-light'>{option.label}</span>
                 </button>
               ))}
             </div>
@@ -206,7 +207,7 @@ export function FmCommonSearchDropdown({
                 className='w-full flex items-center gap-3 px-3 py-2 hover:bg-white/10 transition-colors text-left'
               >
                 {option.icon}
-                <span className='text-white'>{option.label}</span>
+                <span className='text-white font-light'>{option.label}</span>
               </button>
             ))
           )}

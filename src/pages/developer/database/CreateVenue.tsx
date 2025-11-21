@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/common/shadcn/button';
-import { DemoLayout } from '@/components/demo/DemoLayout';
+import { FmCommonCreateForm } from '@/components/common/forms/FmCommonCreateForm';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmFlexibleImageUpload } from '@/components/common/forms/FmFlexibleImageUpload';
 import { supabase } from '@/shared/api/supabase/client';
@@ -81,102 +80,86 @@ const DeveloperCreateVenuePage = () => {
   };
 
   return (
-    <DemoLayout
+    <FmCommonCreateForm
       title='Create Venue'
       description='Register a new venue with capacity and location details.'
       icon={MapPin}
-      condensed
+      helperText='Provide venue metadata so events can reference accurate locations.'
+      isSubmitting={isSubmitting}
+      onSubmit={handleSubmit}
+      onCancel={handleCancel}
+      submitText='Create Venue'
     >
-      <div className='space-y-6'>
-        <p className='text-sm text-muted-foreground'>
-          Provide venue metadata so events can reference accurate locations.
-        </p>
+      <FmCommonTextField
+        label='Venue Name'
+        required
+        value={formData.name}
+        onChange={e => setFormData({ ...formData, name: e.target.value })}
+        placeholder='Enter venue name'
+      />
 
-        <div className='space-y-4'>
-          <FmCommonTextField
-            label='Venue Name'
-            required
-            value={formData.name}
-            onChange={e => setFormData({ ...formData, name: e.target.value })}
-            placeholder='Enter venue name'
-          />
-          <FmCommonTextField
-            label='Address Line 1'
-            value={formData.address_line_1}
-            onChange={e =>
-              setFormData({ ...formData, address_line_1: e.target.value })
-            }
-            placeholder='123 Main St'
-            description='Street address'
-          />
-          <FmCommonTextField
-            label='Address Line 2'
-            value={formData.address_line_2}
-            onChange={e =>
-              setFormData({ ...formData, address_line_2: e.target.value })
-            }
-            placeholder='Suite 100'
-            description='Apartment, suite, unit, building, floor, etc. (optional)'
-          />
-          <div className='grid grid-cols-2 gap-4'>
-            <FmCommonTextField
-              label='City'
-              value={formData.city}
-              onChange={e => setFormData({ ...formData, city: e.target.value })}
-              placeholder='Los Angeles'
-            />
-            <FmCommonTextField
-              label='State'
-              value={formData.state}
-              onChange={e => setFormData({ ...formData, state: e.target.value.toUpperCase() })}
-              placeholder='CA'
-              description='Two-letter state code'
-            />
-          </div>
-          <FmCommonTextField
-            label='ZIP Code'
-            value={formData.zip_code}
-            onChange={e => setFormData({ ...formData, zip_code: e.target.value })}
-            placeholder='90001'
-            description='5-digit ZIP code or ZIP+4 format'
-          />
-          <FmCommonTextField
-            label='Capacity'
-            type='number'
-            value={formData.capacity}
-            onChange={e =>
-              setFormData({ ...formData, capacity: e.target.value })
-            }
-            placeholder='500'
-          />
-          <FmFlexibleImageUpload
-            label='Venue Image'
-            value={formData.image_url}
-            onChange={url => setFormData({ ...formData, image_url: url })}
-            bucket='venue-images'
-            pathPrefix='venues'
-          />
-        </div>
+      <FmCommonTextField
+        label='Address Line 1'
+        value={formData.address_line_1}
+        onChange={e =>
+          setFormData({ ...formData, address_line_1: e.target.value })
+        }
+        placeholder='123 Main St'
+        description='Street address'
+      />
 
-        {/* Form Actions */}
-        <div className='flex gap-3 justify-end pt-4 border-t border-white/20'>
-          <Button
-            variant='outline'
-            onClick={handleCancel}
-            disabled={isSubmitting}
-            className='bg-white/5 border-white/20 hover:bg-white/10'
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Creating...' : 'Create Venue'}
-          </Button>
-        </div>
+      <FmCommonTextField
+        label='Address Line 2'
+        value={formData.address_line_2}
+        onChange={e =>
+          setFormData({ ...formData, address_line_2: e.target.value })
+        }
+        placeholder='Suite 100'
+        description='Apartment, suite, unit, building, floor, etc. (optional)'
+      />
+
+      <div className='grid grid-cols-2 gap-[20px]'>
+        <FmCommonTextField
+          label='City'
+          value={formData.city}
+          onChange={e => setFormData({ ...formData, city: e.target.value })}
+          placeholder='Los Angeles'
+        />
+        <FmCommonTextField
+          label='State'
+          value={formData.state}
+          onChange={e => setFormData({ ...formData, state: e.target.value.toUpperCase() })}
+          placeholder='CA'
+          description='Two-letter state code'
+        />
       </div>
-    </DemoLayout>
+
+      <FmCommonTextField
+        label='ZIP Code'
+        value={formData.zip_code}
+        onChange={e => setFormData({ ...formData, zip_code: e.target.value })}
+        placeholder='90001'
+        description='5-digit ZIP code or ZIP+4 format'
+      />
+
+      <FmCommonTextField
+        label='Capacity'
+        type='number'
+        value={formData.capacity}
+        onChange={e =>
+          setFormData({ ...formData, capacity: e.target.value })
+        }
+        placeholder='500'
+      />
+
+      <FmFlexibleImageUpload
+        label='Venue Image'
+        value={formData.image_url}
+        onChange={url => setFormData({ ...formData, image_url: url })}
+        bucket='venue-images'
+        pathPrefix='venues'
+      />
+    </FmCommonCreateForm>
   );
 };
 
