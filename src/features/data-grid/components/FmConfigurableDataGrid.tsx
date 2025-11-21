@@ -301,10 +301,11 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
 
   const handleToggleFreeze = (columnKey: string) => {
     const colConfig = initializedConfig.columns.find(c => c.key === columnKey);
+    const isFrozen = colConfig?.frozen ?? false;
     const newConfig: GridConfig = {
       ...initializedConfig,
       columns: initializedConfig.columns.map(col =>
-        col.key === columnKey ? { ...col, frozen: !col.frozen } : col
+        col.key === columnKey ? { ...col, frozen: !isFrozen } : col
       ),
     };
 
@@ -312,9 +313,8 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
     saveConfig(newConfig);
 
     const column = baseColumns.find(c => c.key === columnKey);
-    const isFrozen = !colConfig?.frozen;
     toast.success(
-      `Column "${column?.label}" ${isFrozen ? 'frozen' : 'unfrozen'}`
+      `Column "${column?.label}" ${!isFrozen ? 'frozen' : 'unfrozen'}`
     );
   };
 

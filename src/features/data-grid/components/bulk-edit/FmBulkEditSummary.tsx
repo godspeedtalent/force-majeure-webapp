@@ -1,4 +1,3 @@
-import React from 'react';
 import { DataGridColumn } from '../FmDataGrid';
 
 export interface FmBulkEditSummaryProps {
