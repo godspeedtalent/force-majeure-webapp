@@ -4,7 +4,7 @@ import { supabase } from '@/shared/api/supabase/client';
 import { ArrowLeft, Building2, User, Mail, Calendar, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/shadcn/card';
-import { Badge } from '@/components/common/shadcn/badge';
+
 import { Separator } from '@/components/common/shadcn/separator';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { Layout } from '@/components/layout/Layout';
@@ -55,6 +55,7 @@ export default function OrganizationDetails() {
         .single();
 
       if (error) throw error;
+      if (!data) throw new Error('Organization not found');
       return data as Organization;
     },
     enabled: !!id,

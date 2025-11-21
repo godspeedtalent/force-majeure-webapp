@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { logger } from '@/shared/services/logger';
 import { DemoLayout } from '@/components/demo/DemoLayout';
 import { FileText, Search, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/common/shadcn/input';
@@ -110,7 +111,11 @@ export default function DeveloperDocumentation() {
           setIsLoading(false);
         })
         .catch(error => {
-          logger.error('Error loading document:', error);
+          logger.error('Error loading document', {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            source: 'DeveloperDocumentation',
+            details: selectedDoc.path,
+          });
           setDocumentContent(
             '# Error Loading Document\n\nUnable to load the requested documentation file.'
           );

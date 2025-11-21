@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { Music2, Users, Sparkles, LucideIcon } from 'lucide-react';
+import { Music2, Users, LucideIcon } from 'lucide-react';
 import { ArtistRegistrationLayout } from '@/components/layout/ArtistRegistrationLayout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCardCarousel } from '@/components/common/data/FmCardCarousel';
@@ -49,22 +49,7 @@ const ArtistSignup = () => {
   const navigate = useNavigate();
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [isHoveringCarousel, setIsHoveringCarousel] = useState(false);
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
-  useEffect(() => {
-    if (!carouselApi) return;
-
-    const onSelect = () => {
-      setCurrentSlideIndex(carouselApi.selectedScrollSnap());
-    };
-
-    carouselApi.on('select', onSelect);
-    onSelect();
-
-    return () => {
-      carouselApi.off('select', onSelect);
-    };
-  }, [carouselApi]);
 
   useEffect(() => {
     if (!carouselApi) return;

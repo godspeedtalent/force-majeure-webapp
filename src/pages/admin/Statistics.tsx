@@ -21,7 +21,10 @@ export default function Statistics() {
         if (error) throw error;
         setUserCount(count || 0);
       } catch (error) {
-        logger.error('Error fetching user count:', error);
+        logger.error('Error fetching user count', {
+          error: error instanceof Error ? error.message : 'Unknown error',
+          source: 'Statistics',
+        });
       } finally {
         setIsLoading(false);
       }

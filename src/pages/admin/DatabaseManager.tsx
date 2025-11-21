@@ -17,7 +17,7 @@ export function DatabaseManager() {
 
       {/* Global Search Bar */}
       <div className='mb-8 flex justify-center'>
-        <GlobalResourceSearch />
+        <GlobalResourceSearch isOpen={true} onClose={() => {}} />
       </div>
 
       {/* Additional content can go here */}
