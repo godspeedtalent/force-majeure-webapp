@@ -17,7 +17,6 @@ interface VenueData {
   address: string | null;
   city: string | null;
   capacity: number | null;
-  website: string | null;
 }
 
 /**
@@ -57,7 +56,7 @@ export const VenueModal = ({
       if (error) throw error;
       setVenue(data);
     } catch (error) {
-      logger.error('Error fetching venue:', error);
+      logger.error('Error fetching venue:', { error: error instanceof Error ? error.message : 'Unknown' });
     } finally {
       setLoading(false);
     }
@@ -101,16 +100,6 @@ export const VenueModal = ({
             <FmInfoChip
               icon={Users}
               label={`Capacity: ${venue.capacity.toLocaleString()}`}
-            />
-          )}
-
-          {venue.website && (
-            <FmInfoChip
-              icon={Globe}
-              label='Visit Website'
-              onClick={() =>
-                window.open(venue.website!, '_blank', 'noopener,noreferrer')
-              }
             />
           )}
         </div>

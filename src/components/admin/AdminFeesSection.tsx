@@ -24,7 +24,7 @@ interface Fee {
   fee_type: 'flat' | 'percentage';
   fee_value: number;
   is_active: boolean;
-  environment: string;
+  environment_id: string;
   created_at: string;
   updated_at: string;
 }
@@ -66,14 +66,13 @@ export const AdminFeesSection = () => {
 
       if (error) throw error;
 
-      const fetchedFees = (data || []) as Fee[];
-      setFees(fetchedFees);
+      setFees((data || []) as Fee[]);
 
       const initialLocal: Record<
         string,
         { type: 'flat' | 'percentage'; value: string }
       > = {};
-      fetchedFees.forEach(fee => {
+      (data || []).forEach((fee: any) => {
         initialLocal[fee.fee_name] = {
           type: fee.fee_type as 'flat' | 'percentage',
           value: fee.fee_value.toString(),
@@ -132,7 +131,7 @@ export const AdminFeesSection = () => {
             fee_value: numValue,
           })
           .eq('fee_name', feeName)
-          .eq('environment', fee.environment);
+          .eq('environment_id', fee.environment_id);
       });
 
       await Promise.all(updates);

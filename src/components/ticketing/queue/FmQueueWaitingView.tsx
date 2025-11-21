@@ -30,7 +30,7 @@ export function FmQueueWaitingView({
   checkoutTimeoutMinutes,
 }: FmQueueWaitingViewProps) {
   // Parse event date for display
-  const eventDate = new Date(event.date);
+  const eventDate = event.start_time ? new Date(event.start_time) : new Date();
   const weekday = eventDate.toLocaleDateString('en-US', { weekday: 'short' });
   const month = eventDate.toLocaleDateString('en-US', { month: 'short' });
   const day = eventDate.getDate();
@@ -50,7 +50,7 @@ export function FmQueueWaitingView({
           />
           <div className='flex-1'>
             <h1 className='text-2xl font-canela text-white mb-[5px]'>
-              {event.title}
+              {event.name}
             </h1>
             {event.venue && (
               <p className='text-sm text-muted-foreground font-canela'>
