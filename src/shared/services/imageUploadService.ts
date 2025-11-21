@@ -124,14 +124,6 @@ export const imageUploadService = {
         // Don't throw - image was uploaded successfully
       } else {
         imageId = imageData.id;
-
-        // If this is the primary image, update the event's hero_image
-        if (isPrimary) {
-          await supabase
-            .from('events')
-            .update({ hero_image: urlData.publicUrl })
-            .eq('id', eventId);
-        }
       }
     }
 
@@ -230,12 +222,6 @@ export const imageUploadService = {
     const { data: urlData } = supabase.storage
       .from('event-images')
       .getPublicUrl(imageData.storage_path);
-
-    // Update event's hero_image
-    await supabase
-      .from('events')
-      .update({ hero_image: urlData.publicUrl })
-      .eq('id', eventId);
   },
 
   /**

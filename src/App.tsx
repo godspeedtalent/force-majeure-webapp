@@ -134,14 +134,6 @@ const AppRoutes = () => {
             }
           />
           <Route
-            path='/developer/components'
-            element={
-              <DemoProtectedRoute>
-                <FmComponentsCatalog />
-              </DemoProtectedRoute>
-            }
-          />
-          <Route
             path='/developer/database'
             element={
               <DemoProtectedRoute>
