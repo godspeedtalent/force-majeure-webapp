@@ -218,10 +218,8 @@ export const imageUploadService = {
       throw new Error('Image not found.');
     }
 
-    // Get public URL
-    const { data: urlData } = supabase.storage
-      .from('event-images')
-      .getPublicUrl(imageData.storage_path);
+    // Get public URL (ensure it's accessible without storing the value)
+    supabase.storage.from('event-images').getPublicUrl(imageData.storage_path);
   },
 
   /**

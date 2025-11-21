@@ -46,7 +46,7 @@ export function ShoppingCartProvider({ children }: { children: ReactNode }) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     } catch (error) {
-      logger.error('Failed to save cart to localStorage:', error);
+      logger.error('Failed to save cart to localStorage:', { error });
     }
   }, [items]);
 

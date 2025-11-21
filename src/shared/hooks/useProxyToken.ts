@@ -90,7 +90,7 @@ export function useProxyToken() {
         `/scavenger?locationId=${encodeURIComponent(locationId)}${debugMode ? '&debug=true' : ''}`
       );
     } catch (err) {
-      logger.error('Error processing token:', err);
+      logger.error('Error processing token:', { error: err });
       debug.log('Error occurred during validation', {
         error: err instanceof Error ? err.message : String(err),
         processingTime: `${Date.now() - startTime}ms`,

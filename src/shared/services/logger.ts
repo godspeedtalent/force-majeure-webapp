@@ -109,7 +109,7 @@ class Logger {
     const emoji = this.getLevelEmoji(level);
 
     // Format the log message
-    const logMessage = `${emoji} ${level} ${prefix} ${message}`;
+    const logMessage = `${timestamp} ${emoji} ${level} ${prefix} ${message}`;
 
     // Choose console method based on level
     const consoleMethod = this.getConsoleMethod(level);

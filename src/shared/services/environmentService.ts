@@ -97,7 +97,7 @@ class EnvironmentService {
       envLogger.debug('Current environment loaded:', this.currentEnvironment);
       return this.currentEnvironment;
     } catch (error) {
-      envLogger.error('Failed to fetch current environment:', error);
+      envLogger.error('Failed to fetch current environment:', { error });
       return null;
     }
   }
@@ -129,7 +129,7 @@ class EnvironmentService {
       );
       return this.availableEnvironments;
     } catch (error) {
-      envLogger.error('Failed to fetch available environments:', error);
+      envLogger.error('Failed to fetch available environments:', { error });
       return [];
     }
   }
@@ -152,7 +152,7 @@ class EnvironmentService {
       if (error) throw error;
       return data as Environment;
     } catch (error) {
-      envLogger.error(`Failed to fetch environment ${name}:`, error);
+      envLogger.error(`Failed to fetch environment ${name}:`, { error });
       return null;
     }
   }
