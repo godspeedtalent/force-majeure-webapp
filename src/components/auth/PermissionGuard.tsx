@@ -49,8 +49,6 @@ export const PermissionGuard = ({
   fallback = null,
 }: PermissionGuardProps) => {
   const {
-    hasPermission,
-    hasRole,
     hasAllPermissions,
     hasAnyPermission,
     hasAnyRole,

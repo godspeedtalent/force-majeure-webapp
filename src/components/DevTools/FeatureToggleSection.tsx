@@ -53,7 +53,7 @@ export const FeatureToggleSection = () => {
       }
 
       // Fetch 'all' environment ID
-      const { data: allEnvData, error: allEnvError } = await supabase
+      const { data: allEnvData, error: allEnvError } = await (supabase as any)
         .from('environments')
         .select('id')
         .eq('name', 'all')

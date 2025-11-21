@@ -5,6 +5,7 @@ import { Input } from '@/components/common/shadcn/input';
 import { supabase } from '@/shared/api/supabase/client';
 import { useDebounce } from '@/shared/hooks';
 import { handleError } from '@/shared/services/errorHandler';
+import { logger } from '@/shared/services/logger';
 
 interface Organization {
   id: string;
@@ -14,9 +15,10 @@ interface Organization {
 
 interface UserProfile {
   id: string;
-  display_name?: string | null;
-  full_name?: string | null;
-  avatar_url?: string | null;
+  user_id: string;
+  display_name: string | null;
+  full_name: string | null;
+  avatar_url: string | null;
   email?: string;
 }
 
@@ -117,9 +119,10 @@ export function DatabaseNavigatorSearch() {
 
           return {
             id: userId,
-            display_name: profile?.display_name,
-            full_name: profile?.full_name,
-            avatar_url: profile?.avatar_url,
+            user_id: userId,
+            display_name: profile?.display_name || null,
+            full_name: profile?.full_name || null,
+            avatar_url: profile?.avatar_url || null,
             email: authUser?.email,
           };
         }).filter(u => u.email); // Only include users with email
@@ -131,9 +134,9 @@ export function DatabaseNavigatorSearch() {
       // Search Events
       const { data: events } = await supabase
         .from('events')
-        .select('id, title, start_time, hero_image')
+        .select('id, name, start_time')
         .gte('start_time', today)
-        .ilike('title', searchPattern)
+        .ilike('name', searchPattern)
         .order('start_time', { ascending: true })
         .limit(5);
 
@@ -154,7 +157,7 @@ export function DatabaseNavigatorSearch() {
           .limit(5);
         organizations = (orgData || []) as Organization[];
       } catch (error) {
-        logger.warn('Organizations table search failed:', error);
+        logger.warn('Organizations table search failed', { error });
       }
 
       // Search Venues - with error handling for missing table/columns
@@ -167,7 +170,7 @@ export function DatabaseNavigatorSearch() {
           .limit(5);
         venues = (venueData || []) as Venue[];
       } catch (error) {
-        logger.warn('Venues table search failed:', error);
+        logger.warn('Venues table search failed', { error });
       }
 
       setResults({
@@ -175,7 +178,11 @@ export function DatabaseNavigatorSearch() {
         users: usersWithEmail,
         artists: artists || [],
         venues,
-        events: events || [],
+        events: (events || []).map(e => ({
+          id: e.id,
+          title: e.name || '',
+          date: e.start_time || '',
+        })),
       });
     } catch (error) {
       handleError(error, {

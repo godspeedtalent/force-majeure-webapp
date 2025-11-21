@@ -18,6 +18,7 @@ import { FmCommonFormCheckbox } from '@/components/common/forms/FmCommonFormChec
 import { FmTextLink } from '@/components/common/display/FmTextLink';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { logger } from '@/shared/services/logger';
 import { TermsAndConditionsModal } from './TermsAndConditionsModal';
 import { useToast } from '@/shared/hooks/use-toast';
 import {
@@ -196,7 +197,7 @@ export const TicketCheckoutForm = ({
             billing_zip: formData.zipCode,
           });
         } catch (error) {
-          logger.error('Failed to save address:', error);
+          logger.error('Failed to save address', { error });
           toast({
             title: 'Address not saved',
             description:
@@ -223,7 +224,7 @@ export const TicketCheckoutForm = ({
         throw new Error(result.error || 'Payment failed');
       }
     } catch (error) {
-      logger.error('Payment error:', error);
+      logger.error('Payment error', { error });
       toast({
         title: 'Payment failed',
         description:
