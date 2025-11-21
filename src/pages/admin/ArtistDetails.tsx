@@ -43,7 +43,13 @@ export default function ArtistDetails() {
 
       if (error) throw error;
       if (!data) throw new Error('Artist not found');
-      return data as Artist;
+      
+      // Validate data has required fields before casting
+      if (!data.id || !data.name) {
+        throw new Error('Invalid artist data structure');
+      }
+      
+      return data as unknown as Artist;
     },
     enabled: !!id,
   });
