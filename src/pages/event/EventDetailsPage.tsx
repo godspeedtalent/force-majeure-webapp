@@ -35,7 +35,7 @@ export const EventDetailsPage = () => {
       try {
         await navigator.share(payload);
       } catch (err) {
-        logger.error('Error sharing:', err);
+        logger.error('Error sharing:', { error: err });
       }
     } else {
       await navigator.clipboard.writeText(payload.url);
@@ -102,7 +102,7 @@ export const EventDetailsPage = () => {
   }
 
   const displayTitle = event.title || event.headliner.name;
-  const canManage = Boolean(role && role.includes('admin'));
+  const canManage = Boolean(role && role.some(r => r.role_name === 'admin'));
 
   return (
     <>
