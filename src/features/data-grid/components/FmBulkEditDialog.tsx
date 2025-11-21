@@ -81,7 +81,7 @@ export function FmBulkEditDialog<T = any>({
       setEditEnabled({});
       onOpenChange(false);
     } catch (error) {
-      logger.error('Bulk edit failed:', error);
+      logger.error('Bulk edit failed:', { error: error instanceof Error ? error.message : 'Unknown' });
     } finally {
       setIsApplying(false);
     }

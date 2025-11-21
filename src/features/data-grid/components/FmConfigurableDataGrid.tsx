@@ -105,9 +105,6 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
     }
   }, [tableName, schemaError]);
 
-  const { clearState } = useDataGridPersistence({ storageKey: gridId });
-
-  // Load configuration from database
   useEffect(() => {
     loadConfig();
   }, [user?.id, gridId]);
@@ -134,7 +131,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
         setConfig(configData.config as GridConfig);
       }
     } catch (error) {
-      logger.error('Error loading grid config:', error);
+      logger.error('Error loading grid config:', { error: error instanceof Error ? error.message : 'Unknown' });
     } finally {
       setIsLoadingConfig(false);
     }
@@ -165,7 +162,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
         toast.success('Column configuration saved');
       }
     } catch (error) {
-      logger.error('Error saving grid config:', error);
+      logger.error('Error saving grid config:', { error: error instanceof Error ? error.message : 'Unknown' });
       toast.error('Failed to save column configuration');
     }
   };
@@ -193,10 +190,10 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
         const colConfig = configMap.get(col.key);
         return {
           ...col,
-          label: colConfig?.customLabel || col.label, // Apply custom label
+          label: (colConfig?.customLabel as string | undefined) || col.label,
           visible: colConfig?.visible ?? true,
           order: colConfig?.order ?? 0,
-          frozen: colConfig?.frozen ?? false, // Apply frozen state
+          frozen: (colConfig?.frozen as boolean | undefined) ?? false,
         };
       })
       .filter((col: any) => col.visible)
@@ -316,7 +313,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
     const newConfig: GridConfig = {
       ...initializedConfig,
       columns: initializedConfig.columns.map(col =>
-        col.key === columnKey ? { ...col, frozen: !col.frozen } : col
+        col.key === columnKey ? { ...col, frozen: !(col.frozen as boolean | undefined) } : col
       ),
     };
 
@@ -324,7 +321,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
     saveConfig(newConfig);
 
     const column = baseColumns.find(c => c.key === columnKey);
-    const isFrozen = !initializedConfig.columns.find(c => c.key === columnKey)?.frozen;
+    const isFrozen = !(initializedConfig.columns.find(c => c.key === columnKey)?.frozen as boolean | undefined);
     toast.success(
       `Column "${column?.label}" ${isFrozen ? 'frozen' : 'unfrozen'}`
     );
@@ -357,7 +354,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
           toast.success('Configuration reset to default');
         }
       } catch (error) {
-        logger.error('Error resetting grid config:', error);
+        logger.error('Error resetting grid config:', { error: error instanceof Error ? error.message : 'Unknown' });
         toast.error('Failed to reset configuration');
       }
     }
@@ -397,7 +394,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
         loading={loading}
         pageSize={initializedConfig.pageSize ?? pageSize}
         className={className}
-        onUpdate={onUpdate}
+        onUpdate={onUpdate ? (item: T, columnKey?: string, newValue?: any) => onUpdate(item, columnKey || '', newValue) : undefined}
         onCreate={onCreate}
         onCreateButtonClick={onCreateButtonClick}
         resourceName={resourceName}

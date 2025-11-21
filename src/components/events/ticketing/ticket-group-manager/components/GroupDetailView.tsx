@@ -1,7 +1,7 @@
 import { Plus, GripVertical, Copy, Trash2, Ticket } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
 import { Input } from '@/components/common/shadcn/input';
-import { Card, CardContent, CardHeader } from '@/components/common/shadcn/card';
+import { Card, CardHeader } from '@/components/common/shadcn/card';
 import { Badge } from '@/components/common/shadcn/badge';
 import {
   Select,
@@ -37,7 +37,6 @@ interface GroupDetailViewProps {
 
 export function GroupDetailView({
   group,
-  groupIndex,
   isOnlyGroup,
   onUpdateGroup,
   onDuplicateGroup,

@@ -313,11 +313,11 @@ export const TicketingPanel = ({
                                     Price Breakdown
                                   </div>
                                   <div className='space-y-1'>
-                                    {getPriceBreakdown(
-                                      tier.price
-                                    ).breakdown.map((item, idx) => (
-                                      <div
-                                        key={item.label}
+                                  {getPriceBreakdown(
+                                    tier.price
+                                  ).breakdown.map((item) => (
+                                    <div
+                                      key={item.label}
                                         className='flex justify-between text-xs'
                                       >
                                         <span className='text-muted-foreground'>
@@ -467,7 +467,7 @@ export const TicketingPanel = ({
             </div>
           )}
 
-          {fees.map((fee, index) => {
+          {fees.map((fee) => {
             const isSalesTax = fee.name.toLowerCase().includes('tax');
             const tooltipText =
               fee.type === 'percentage'
