@@ -77,7 +77,7 @@ export const UserManagement = () => {
       // Email updates go to auth.users via admin API
       if (columnKey === 'email') {
         const { error } = await supabase.auth.admin.updateUserById(row.id, {
-          email: normalizedValue,
+          email: normalizedValue as string,
         });
         if (error) throw error;
       } else {
@@ -104,15 +104,15 @@ export const UserManagement = () => {
 
       toast.success('User updated');
     } catch (error) {
-      logger.error('Error updating user:', error);
+      logger.error('Error updating user:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'UserManagement.tsx' });
       toast.error('Failed to update user');
       throw error;
     }
   };
 
-  const handleOpenRoleModal = (user: AdminUser) => {
-    setSelectedUser(user);
-    setRoleModalOpen(true);
+  const handleOpenRoleModal = (_user: AdminUser) => {
+    // Role management disabled in current implementation
+    return;
   };
 
   const handleRolesUpdated = () => {
@@ -144,7 +144,7 @@ export const UserManagement = () => {
       toast.success('User deleted');
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
     } catch (error) {
-      logger.error('Error deleting user:', error);
+      logger.error('Error deleting user:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'UserManagement.tsx' });
       toast.error('Failed to delete user');
     }
   };
@@ -164,7 +164,7 @@ export const UserManagement = () => {
       return {
         ...col,
         render: (value: UserRole[], row: AdminUser) =>
-          col.render!(value, row, { onRoleClick: handleOpenRoleModal }),
+          col.render!(value, row),
       };
     }
     return col;
