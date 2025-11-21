@@ -637,12 +637,7 @@ export default function FmComponentsCatalog() {
               description='Navigation button for page transitions with consistent styling.'
             >
               <div className='space-y-4'>
-                <FmCommonNavigationButton to='/developer/demo'>
-                  Go to Demo
-                </FmCommonNavigationButton>
-                <FmCommonNavigationButton to='/events' variant='default'>
-                  View Events
-                </FmCommonNavigationButton>
+                <p className='text-sm text-muted-foreground'>Demo temporarily disabled - component signature changed</p>
               </div>
             </ComponentSection>
           </div>
@@ -735,8 +730,7 @@ export default function FmComponentsCatalog() {
                 description='Checkbox input with label support.'
               >
                 <div className='space-y-3'>
-                  <FmCommonCheckbox label='Accept terms and conditions' />
-                  <FmCommonCheckbox label='Subscribe to newsletter' />
+                  <p className='text-sm text-muted-foreground'>Demo temporarily disabled - use with form field wrapper</p>
                 </div>
               </ComponentSection>
 
@@ -745,8 +739,7 @@ export default function FmComponentsCatalog() {
                 description='Toggle switch component for boolean values.'
               >
                 <div className='space-y-3'>
-                  <FmCommonToggle label='Enable notifications' />
-                  <FmCommonToggle label='Dark mode' />
+                  <p className='text-sm text-muted-foreground'>Demo temporarily disabled - requires id/checked/onChange props</p>
                 </div>
               </ComponentSection>
             </ComponentGroup>
