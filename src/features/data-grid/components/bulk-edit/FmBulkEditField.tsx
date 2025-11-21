@@ -1,4 +1,3 @@
-import React from 'react';
 import { Label } from '@/components/common/shadcn/label';
 import { Input } from '@/components/common/shadcn/input';
 import { Switch } from '@/components/common/shadcn/switch';
