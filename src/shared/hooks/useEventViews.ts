@@ -82,7 +82,7 @@ export function useEventViews(eventId: string | undefined) {
         setViewCount(prev => prev + 1);
       }
     } catch (err) {
-      logger.error('Error recording view:', err);
+      logger.error('Error recording view:', { error: err });
     }
   };
 

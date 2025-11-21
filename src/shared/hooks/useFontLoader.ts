@@ -31,7 +31,7 @@ export const useFontLoader = () => {
           }, 1500);
         }
       } catch (error) {
-        logger.warn('Font loading check failed:', error);
+        logger.warn('Font loading check failed:', { error });
         // Fallback: assume fonts are loaded after a delay
         setTimeout(() => {
           setFontsLoaded(true);
