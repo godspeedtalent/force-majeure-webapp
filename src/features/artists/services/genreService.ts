@@ -396,7 +396,7 @@ export async function getGenreTree(): Promise<GenreTree> {
  */
 export async function searchGenres(query: string, limit: number = 20): Promise<Genre[]> {
   try {
-    logApi('searchGenres', 'Searching genres', { query, limit });
+    logApi({ message: 'Searching genres', source: 'searchGenres', details: { query, limit } });
 
     const { data, error } = await supabase
       .from('genres')
@@ -432,7 +432,7 @@ export async function searchGenres(query: string, limit: number = 20): Promise<G
  */
 export async function createGenre(name: string, parentId: string | null = null): Promise<Genre> {
   try {
-    logApi('createGenre', 'Creating genre', { name, parentId });
+    logApi({ message: 'Creating genre', source: 'createGenre', details: { name, parentId } });
 
     const { data, error } = await supabase
       .from('genres')
@@ -444,7 +444,7 @@ export async function createGenre(name: string, parentId: string | null = null):
       .single();
 
     if (error) {
-      logApiError('createGenre', 'Failed to create genre', error);
+      logApiError({ message: 'Failed to create genre', source: 'createGenre', details: error });
       throw error;
     }
 
@@ -452,8 +452,8 @@ export async function createGenre(name: string, parentId: string | null = null):
       id: data.id,
       name: data.name,
       parentId: data.parent_id,
-      createdAt: data.created_at,
-      updatedAt: data.updated_at,
+      createdAt: data.created_at ?? null,
+      updatedAt: data.updated_at ?? null,
     };
   } catch (error) {
     logger.error('Failed to create genre', { error, name, parentId });

@@ -205,14 +205,12 @@ export function useHierarchicalGenreOptions() {
   const { data: tree, isLoading, error } = useGenreTree();
 
   const buildOptions = (
-    nodes: typeof tree extends GenreTree ? GenreTree['topLevel'] : never,
+    nodes: GenreHierarchyNode[],
     level: number = 0
   ): Array<{ value: string; label: string; level: number }> => {
-    if (!nodes) return [];
-
     const options: Array<{ value: string; label: string; level: number }> = [];
 
-    nodes.forEach(node => {
+    nodes.forEach((node: GenreHierarchyNode) => {
       const indent = '  '.repeat(level);
       options.push({
         value: node.id,
@@ -220,7 +218,7 @@ export function useHierarchicalGenreOptions() {
         level,
       });
 
-      if (node.children.length > 0) {
+      if (node.children && node.children.length > 0) {
         options.push(...buildOptions(node.children, level + 1));
       }
     });
