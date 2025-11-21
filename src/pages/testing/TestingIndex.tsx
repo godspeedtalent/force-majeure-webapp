@@ -1,10 +1,6 @@
 import { Badge } from '@/components/common/shadcn/badge';
 import {
   FlaskConical,
-  Zap,
-  Database,
-  Shield,
-  Users,
   ShoppingCart,
   ArrowRight,
 } from 'lucide-react';

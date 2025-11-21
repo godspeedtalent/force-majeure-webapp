@@ -1,5 +1,6 @@
 import { supabase } from '@/shared/api/supabase/client';
 import { logger } from '@/shared/services/logger';
+import type { Tables } from '@/integrations/supabase/types';
 
 export interface Role {
   id: string;
@@ -95,18 +96,32 @@ class RolesStore {
         .order('name');
 
       if (error) {
-        logger.error('Error loading roles:', error);
+        logger.error('Error loading roles:', { error });
         throw error;
       }
 
-      this.roles = data || [];
+      const dbRoles = (data || []) as Tables<'roles'>[];
+
+      this.roles = dbRoles.map(role => ({
+        id: role.id,
+        name: role.name,
+        display_name: role.display_name,
+        description: role.description,
+        permissions: Array.isArray(role.permissions)
+          ? (role.permissions as string[])
+          : [],
+        is_system_role: !!role.is_system_role,
+        created_at: role.created_at ?? '',
+        updated_at: role.updated_at ?? '',
+      }));
+
       this.rolesMap = new Map(this.roles.map(role => [role.name, role]));
       this.loaded = true;
       this.notify();
 
       console.log(`Loaded ${this.roles.length} roles into store`);
     } catch (error) {
-      logger.error('Failed to load roles:', error);
+      logger.error('Failed to load roles:', { error });
       throw error;
     } finally {
       this.loading = false;

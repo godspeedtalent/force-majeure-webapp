@@ -38,7 +38,7 @@ export const EventCheckoutDemoTools = ({
       onEventChange(eventId);
       onEventUpdated?.();
     } catch (error) {
-      logger.error('Error creating random event:', error);
+      logger.error('Error creating random event:', { error: error instanceof Error ? error.message : 'Unknown' });
       toast.error('Failed to create random event', {
         description:
           error instanceof Error

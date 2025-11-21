@@ -1,7 +1,6 @@
+import { logger } from '@/shared/services/logger';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { UnauthenticatedWizard } from '@/components/scavenger/auth/UnauthenticatedWizard';
 import { ScavengerFullLayout } from '@/components/scavenger/layouts/ScavengerFullLayout';
@@ -107,7 +106,7 @@ export default function Scavenger() {
           showShoppingCart={!isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)}
         >
           <UnauthenticatedWizard
-            locationName={location?.location_name}
+            locationName={location?.name}
             onLoginSuccess={async () => {
               await queryClient.invalidateQueries({
                 queryKey: ['user-claims'],
@@ -135,7 +134,7 @@ export default function Scavenger() {
           showShoppingCart={!isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)}
         >
           <UnauthenticatedWizard
-            locationName={location?.location_name}
+            locationName={location?.name}
             onLoginSuccess={async () => {
               await queryClient.invalidateQueries({
                 queryKey: ['user-claims'],
@@ -158,7 +157,7 @@ export default function Scavenger() {
         showShoppingCart={!isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)}
       >
         <UnauthenticatedWizard
-          locationName={location?.location_name}
+          locationName={location?.name}
           onLoginSuccess={async () => {
             await queryClient.invalidateQueries({ queryKey: ['user-claims'] });
             await queryClient.invalidateQueries({ queryKey: ['all-claims'] });
@@ -192,7 +191,11 @@ export default function Scavenger() {
               navigate(currentUrl);
             } catch (error) {
               // Error is handled by the mutation
-              logger.error('Claim failed:', error);
+              logger.error('Claim failed', {
+                error: error instanceof Error ? error.message : 'Unknown error',
+                source: 'Scavenger.tsx',
+                details: 'onClaimCheckpoint',
+              });
             }
           }}
           userFullName={profile?.full_name ?? undefined}

@@ -1,5 +1,5 @@
 import { supabase } from '@/shared/api/supabase/client';
-import { Event, TicketTier, Venue } from '../types';
+import { Event, TicketTier } from '../types';
 import { logger } from '@/shared/services/logger';
 
 /**
@@ -10,14 +10,17 @@ import { logger } from '@/shared/services/logger';
  */
 
 export interface CreateEventData {
-  title: string;
+  name: string;
+  title?: string;
   description?: string;
-  date: string;
-  time: string;
+  date?: string;
+  time?: string;
+  start_time?: string;
+  end_time?: string;
   doors_time?: string;
-  venue_id: string;
-  headliner_id: string;
-  image_url?: string;
+  venue_id: string | null;
+  headliner_id: string | null;
+  image_url?: string | null;
   status: 'draft' | 'published';
 }
 
@@ -96,9 +99,15 @@ export const eventService = {
    * Create a new event
    */
   async createEvent(eventData: CreateEventData) {
+    // Ensure required name field is present
+    const insertData = {
+      ...eventData,
+      name: eventData.name || eventData.title || 'Untitled Event'
+    };
+    
     const { data, error } = await supabase
       .from('events')
-      .insert([eventData])
+      .insert([insertData])
       .select()
       .single();
 
@@ -176,14 +185,18 @@ export const eventService = {
 
     // Insert new tiers
     if (tiers.length > 0) {
+      const tiersWithNames = tiers.map((tier, index) => ({
+        ...tier,
+        name: tier.name || 'Unnamed Tier',
+        price_cents: tier.price_cents ?? 0,
+        total_tickets: tier.total_tickets ?? 0,
+        tier_order: tier.tier_order ?? index,
+        event_id: eventId,
+      }));
+      
       const { data, error } = await supabase
         .from('ticket_tiers')
-        .insert(
-          tiers.map(tier => ({
-            ...tier,
-            event_id: eventId,
-          }))
-        )
+        .insert(tiersWithNames)
         .select();
 
       if (error) throw error;

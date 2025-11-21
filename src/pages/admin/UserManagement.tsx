@@ -1,11 +1,9 @@
-import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/shared/api/supabase/client';
 import { FmConfigurableDataGrid, DataGridAction } from '@/features/data-grid';
 import { userColumns } from './config/adminGridColumns';
 import { Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { RoleManagementModal } from '@/components/admin/RoleManagementModal';
 import { logger } from '@/shared/services/logger';
 
 interface UserRole {
@@ -26,8 +24,6 @@ interface AdminUser {
 
 export const UserManagement = () => {
   const queryClient = useQueryClient();
-  const [roleModalOpen, setRoleModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
 
   // Fetch users with their auth email
   const { data: users = [], isLoading } = useQuery({
@@ -77,7 +73,7 @@ export const UserManagement = () => {
       // Email updates go to auth.users via admin API
       if (columnKey === 'email') {
         const { error } = await supabase.auth.admin.updateUserById(row.id, {
-          email: normalizedValue,
+          email: normalizedValue as string,
         });
         if (error) throw error;
       } else {
@@ -104,21 +100,12 @@ export const UserManagement = () => {
 
       toast.success('User updated');
     } catch (error) {
-      logger.error('Error updating user:', error);
+      logger.error('Error updating user:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'UserManagement.tsx' });
       toast.error('Failed to update user');
       throw error;
     }
   };
 
-  const handleOpenRoleModal = (user: AdminUser) => {
-    setSelectedUser(user);
-    setRoleModalOpen(true);
-  };
-
-  const handleRolesUpdated = () => {
-    // Refresh users to get updated roles
-    queryClient.invalidateQueries({ queryKey: ['admin-users'] });
-  };
 
   const handleDeleteUser = async (user: AdminUser) => {
     if (
@@ -144,7 +131,7 @@ export const UserManagement = () => {
       toast.success('User deleted');
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
     } catch (error) {
-      logger.error('Error deleting user:', error);
+      logger.error('Error deleting user:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'UserManagement.tsx' });
       toast.error('Failed to delete user');
     }
   };
@@ -164,7 +151,7 @@ export const UserManagement = () => {
       return {
         ...col,
         render: (value: UserRole[], row: AdminUser) =>
-          col.render!(value, row, { onRoleClick: handleOpenRoleModal }),
+          col.render!(value, row),
       };
     }
     return col;
@@ -191,17 +178,6 @@ export const UserManagement = () => {
         onUpdate={handleUserUpdate}
         resourceName='User'
       />
-
-      {selectedUser && (
-        <RoleManagementModal
-          open={roleModalOpen}
-          onOpenChange={setRoleModalOpen}
-          userId={selectedUser.id}
-          userEmail={selectedUser.email}
-          currentRoles={selectedUser.roles}
-          onRolesUpdated={handleRolesUpdated}
-        />
-      )}
     </div>
   );
 };

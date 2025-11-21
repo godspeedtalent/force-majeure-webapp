@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FmConfigurableDataGrid } from '@/features/data-grid/components/FmConfigurableDataGrid';
 import {
@@ -13,13 +12,7 @@ import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
 import { logger } from '@/shared/services/logger';
 
-interface EventsManagementProps {
-  initialEditEventId?: string;
-}
-
-export const EventsManagement = ({
-  initialEditEventId,
-}: EventsManagementProps) => {
+export const EventsManagement = () => {
   const { data: events, isLoading } = useEvents();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -63,7 +56,7 @@ export const EventsManagement = ({
       toast.success(successMessage);
       queryClient.invalidateQueries({ queryKey: ['events'] });
     } catch (error) {
-      logger.error('Error deleting event(s):', error);
+      logger.error('Error deleting event(s):', { error: error instanceof Error ? error.message : 'Unknown error', source: 'EventsManagement.tsx' });
       toast.error('Failed to delete event(s)');
     }
   };
@@ -80,7 +73,7 @@ export const EventsManagement = ({
       // Invalidate queries to refetch updated data
       queryClient.invalidateQueries({ queryKey: ['events'] });
     } catch (error) {
-      logger.error('Error updating event:', error);
+      logger.error('Error updating event:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'EventsManagement.tsx' });
       throw error;
     }
   };

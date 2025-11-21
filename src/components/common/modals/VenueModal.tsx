@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { logger } from '@/shared/services/logger';
-import { MapPin, Globe, Users } from 'lucide-react';
+import { MapPin, Users } from 'lucide-react';
 import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
 import { supabase } from '@/shared/api/supabase/client';
 import { FmInfoChip } from '@/components/common/data/FmInfoChip';
@@ -17,7 +17,6 @@ interface VenueData {
   address: string | null;
   city: string | null;
   capacity: number | null;
-  website: string | null;
 }
 
 /**
@@ -57,7 +56,7 @@ export const VenueModal = ({
       if (error) throw error;
       setVenue(data);
     } catch (error) {
-      logger.error('Error fetching venue:', error);
+      logger.error('Error fetching venue:', { error: error instanceof Error ? error.message : 'Unknown' });
     } finally {
       setLoading(false);
     }
@@ -101,16 +100,6 @@ export const VenueModal = ({
             <FmInfoChip
               icon={Users}
               label={`Capacity: ${venue.capacity.toLocaleString()}`}
-            />
-          )}
-
-          {venue.website && (
-            <FmInfoChip
-              icon={Globe}
-              label='Visit Website'
-              onClick={() =>
-                window.open(venue.website!, '_blank', 'noopener,noreferrer')
-              }
             />
           )}
         </div>

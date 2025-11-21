@@ -33,7 +33,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
     this.setState({ errorInfo });
 
     // Log error details to console in development
-    logger.error('ErrorBoundary caught an error:', error, errorInfo);
+    logger.error('ErrorBoundary caught an error:', { error, errorInfo: errorInfo.componentStack });
 
     // In production, you could send this to an error tracking service:
     // trackError({ error, errorInfo, componentStack: errorInfo.componentStack });

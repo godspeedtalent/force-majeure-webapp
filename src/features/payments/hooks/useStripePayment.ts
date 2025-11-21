@@ -1,5 +1,6 @@
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import { useState, useCallback } from 'react';
+import { logger } from '@/shared/services/logger';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { supabase } from '@/shared/api/supabase/client';
 import { stripeService } from '../services/stripeService';
@@ -67,7 +68,10 @@ export const useStripePayment = () => {
       .eq('user_id', user.id);
 
     if (updateError) {
-      logger.error('Failed to save stripe customer ID:', updateError);
+      logger.error('Failed to save stripe customer ID:', {
+        error: updateError.message,
+        source: 'useStripePayment.getOrCreateCustomer'
+      });
     }
 
     return customer.customerId;
@@ -85,7 +89,10 @@ export const useStripePayment = () => {
       const cards = await stripeService.listPaymentMethods(customerId);
       setSavedCards(cards);
     } catch (error) {
-      logger.error('Failed to load saved cards:', error);
+      logger.error('Failed to load saved cards:', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        source: 'useStripePayment.loadSavedCards'
+      });
       setSavedCards([]);
     } finally {
       setLoading(false);
@@ -194,9 +201,12 @@ export const useStripePayment = () => {
         setLoading(true);
         await stripeService.detachPaymentMethod(paymentMethodId);
         await loadSavedCards();
-      } catch (error) {
-        logger.error('Failed to remove card:', error);
-        throw error;
+    } catch (error) {
+      logger.error('Failed to remove card:', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        source: 'useStripePayment.removeSavedCard'
+      });
+      throw error;
       } finally {
         setLoading(false);
       }

@@ -220,7 +220,7 @@ export async function handleError(
   const errorDetails = extractErrorDetails(error);
 
   // Log to console for debugging
-  logger.error(`[ErrorHandler] ${title}:`, error);
+  logger.error(`[ErrorHandler] ${title}:`, { error });
   if (context) {
     logger.error(`[ErrorHandler] Context: ${context}`);
   }
@@ -244,7 +244,7 @@ export async function handleError(
       });
     } catch (logErr) {
       // Silently fail if logging fails
-      logger.error('[ErrorHandler] Failed to log error:', logErr);
+      logger.error('[ErrorHandler] Failed to log error:', { error: logErr });
     }
   }
 

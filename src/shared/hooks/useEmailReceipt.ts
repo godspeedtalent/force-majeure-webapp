@@ -19,6 +19,8 @@ import { toast } from 'sonner';
  * };
  * ```
  */
+import { logger } from '@/shared/services/logger';
+
 export const useEmailReceipt = () => {
   const [lastResult, setLastResult] = useState<EmailSendResult | null>(null);
 
@@ -37,7 +39,7 @@ export const useEmailReceipt = () => {
       }
     },
     onError: error => {
-      logger.error('Error sending receipt email:', error);
+      logger.error('Error sending receipt email:', { error });
       toast.error('Failed to send receipt email', {
         description: error instanceof Error ? error.message : 'Unknown error',
       });

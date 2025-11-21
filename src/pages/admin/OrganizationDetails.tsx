@@ -1,10 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/shared/api/supabase/client';
-import { ArrowLeft, Building2, User, Mail, Calendar, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Building2, Calendar } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/shadcn/card';
-import { Badge } from '@/components/common/shadcn/badge';
+
 import { Separator } from '@/components/common/shadcn/separator';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { Layout } from '@/components/layout/Layout';
@@ -14,47 +14,29 @@ import { toast } from 'sonner';
 interface Organization {
   id: string;
   name: string;
-  description?: string;
-  owner_id?: string;
+  owner_id: string;
   profile_picture?: string;
-  website?: string;
-  location?: string;
   created_at: string;
   updated_at: string;
-  owner?: {
-    user_id: string;
-    display_name: string;
-    full_name: string;
-    email: string;
-    avatar_url?: string;
-  };
 }
 
 export default function OrganizationDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const { data: organization, isLoading, error } = useQuery<Organization>({
+  const { data: organization, isLoading, error } = useQuery({
     queryKey: ['organization', id],
-    queryFn: async () => {
+    queryFn: async (): Promise<Organization> => {
       if (!id) throw new Error('Organization ID is required');
 
       const { data, error } = await supabase
-        .from('organizations' as any)
-        .select(`
-          *,
-          owner:profiles!organizations_owner_id_fkey(
-            user_id,
-            display_name,
-            full_name,
-            email,
-            avatar_url
-          )
-        `)
+        .from('organizations')
+        .select('*')
         .eq('id', id)
         .single();
 
       if (error) throw error;
+      if (!data) throw new Error('Organization not found');
       return data as Organization;
     },
     enabled: !!id,
@@ -135,82 +117,8 @@ export default function OrganizationDetails() {
                 <label className='text-sm text-muted-foreground'>Name</label>
                 <p className='text-lg font-medium'>{organization.name}</p>
               </div>
-
-              {organization.description && (
-                <div>
-                  <label className='text-sm text-muted-foreground'>Description</label>
-                  <p>{organization.description}</p>
-                </div>
-              )}
-
-              {organization.location && (
-                <div>
-                  <label className='text-sm text-muted-foreground'>Location</label>
-                  <p>{organization.location}</p>
-                </div>
-              )}
-
-              {organization.website && (
-                <div>
-                  <label className='text-sm text-muted-foreground'>Website</label>
-                  <a
-                    href={organization.website}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='flex items-center gap-2 text-fm-gold hover:underline'
-                  >
-                    {organization.website}
-                    <ExternalLink className='h-4 w-4' />
-                  </a>
-                </div>
-              )}
             </CardContent>
           </Card>
-
-          {/* Owner Information */}
-          {organization.owner && (
-            <Card>
-              <CardHeader>
-                <CardTitle className='flex items-center gap-2'>
-                  <User className='h-5 w-5' />
-                  Owner
-                </CardTitle>
-              </CardHeader>
-              <CardContent className='space-y-3'>
-                <div className='flex items-center gap-3'>
-                  {organization.owner.avatar_url && (
-                    <img
-                      src={organization.owner.avatar_url}
-                      alt={organization.owner.display_name}
-                      className='w-12 h-12 rounded-full'
-                    />
-                  )}
-                  <div>
-                    <p className='font-medium'>{organization.owner.display_name}</p>
-                    {organization.owner.full_name && (
-                      <p className='text-sm text-muted-foreground'>
-                        {organization.owner.full_name}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <div className='flex items-center gap-2 text-sm text-muted-foreground'>
-                  <Mail className='h-4 w-4' />
-                  {organization.owner.email}
-                </div>
-
-                <Button
-                  variant='outline'
-                  size='sm'
-                  onClick={() => navigate(`/admin/users/${organization.owner?.user_id}`)}
-                  className='w-full border-white/20 hover:bg-white/10'
-                >
-                  View User Details
-                </Button>
-              </CardContent>
-            </Card>
-          )}
         </div>
 
         {/* Right Column - Metadata */}

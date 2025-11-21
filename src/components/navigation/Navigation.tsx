@@ -124,18 +124,7 @@ export const Navigation = () => {
 
           {/* Mobile menu button */}
           <div className='md:hidden flex items-center space-x-2'>
-            {user ? (
-              <UserMenuDropdown />
-            ) : (
-              <Button
-                variant='ghost'
-                size='sm'
-                className='text-foreground hover:text-fm-gold hover:bg-hover-overlay'
-                onClick={() => navigate('/auth')}
-              >
-                <User className='h-4 w-4' />
-              </Button>
-            )}
+            {user && <UserMenuDropdown />}
 
             <Button
               variant='ghost'
@@ -153,10 +142,12 @@ export const Navigation = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation */}
+      {/* Mobile Navigation Dropdown - Slides over content */}
       {isOpen && (
-        <div className='md:hidden animate-slide-up'>
-          <div className='px-2 pt-2 pb-3 space-y-1 bg-background border-b border-border'>
+        <div 
+          className='md:hidden absolute top-full left-0 right-0 z-40 animate-in slide-in-from-top-4 duration-300'
+        >
+          <div className='px-2 pt-2 pb-3 space-y-1 bg-background/95 backdrop-blur-md border-b border-border shadow-lg'>
             <Link
               to='/'
               className='block px-3 py-2 text-base font-canela font-medium text-foreground hover:text-fm-gold hover:bg-hover-overlay rounded-none transition-colors'
@@ -173,7 +164,7 @@ export const Navigation = () => {
                 Merchandise
               </Link>
             </FeatureGuard>
-            {user && (
+            {user ? (
               <>
                 <Link
                   to='/profile'
@@ -190,6 +181,17 @@ export const Navigation = () => {
                   My Tickets
                 </Link>
               </>
+            ) : (
+              <button
+                onClick={() => {
+                  navigate('/auth');
+                  setIsOpen(false);
+                }}
+                className='block w-full text-left px-3 py-2 text-base font-canela font-medium text-foreground hover:text-fm-gold hover:bg-hover-overlay rounded-none transition-colors'
+              >
+                <User className='h-4 w-4 inline mr-2' />
+                Login / Sign Up
+              </button>
             )}
             <a
               href={SOCIAL_LINKS.instagram}

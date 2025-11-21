@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { TableCell } from '@/components/common/shadcn/table';
 import { Input } from '@/components/common/shadcn/input';
 import { Switch } from '@/components/common/shadcn/switch';
@@ -125,7 +125,7 @@ export function FmDataGridCell<T extends Record<string, any>>({
             data-no-select
           >
             <Switch
-              checked={editValue === 'true' || editValue === true}
+              checked={(typeof editValue === 'boolean' && editValue) || (typeof editValue === 'string' && editValue === 'true')}
               onCheckedChange={checked => {
                 onEditValueChange(checked.toString());
                 onSaveEdit(checked);
@@ -133,7 +133,7 @@ export function FmDataGridCell<T extends Record<string, any>>({
               className='data-[state=checked]:bg-fm-gold'
             />
             <span className='text-sm'>
-              {editValue === 'true' || editValue === true ? 'Yes' : 'No'}
+              {(typeof editValue === 'boolean' && editValue) || (typeof editValue === 'string' && editValue === 'true') ? 'Yes' : 'No'}
             </span>
           </div>
         ) : column.type === 'date' ? (

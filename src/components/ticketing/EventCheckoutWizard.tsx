@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { logger } from '@/shared/services/logger';
-import { ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
@@ -68,7 +68,7 @@ export const EventCheckoutWizard = ({
       });
       return `${datePart} · ${event.time}`;
     } catch (err) {
-      logger.warn('Unable to format event date', err);
+      logger.warn('Unable to format event date', { error: err instanceof Error ? err.message : 'Unknown' });
       return `${event.date} · ${event.time}`;
     }
   }, [event.date, event.time]);
@@ -131,16 +131,6 @@ export const EventCheckoutWizard = ({
     setStep('selection');
     setSelections({});
     onClose();
-  };
-
-  const handleBack = () => {
-    if (step === 'checkout') {
-      setStep('selection');
-    } else if (step === 'confirmation') {
-      setStep('checkout');
-    } else {
-      handleClose();
-    }
   };
 
   const confirmation = (

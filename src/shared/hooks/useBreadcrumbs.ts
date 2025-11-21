@@ -53,7 +53,7 @@ export const useBreadcrumbs = () => {
             try {
               label = await config.resolver(params);
             } catch (error) {
-              logger.error('Failed to resolve breadcrumb label:', error);
+              logger.error('Failed to resolve breadcrumb label:', { error });
               label = config.label; // Fallback to default label
             }
           }

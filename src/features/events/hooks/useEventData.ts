@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { parse } from 'date-fns';
+import { logger } from '@/shared/services/logger';
 import { eventService } from '../services/eventService';
 import { Event } from '../types';
 
@@ -85,7 +86,11 @@ export function useEventData(
             new Date()
           );
         } catch (error) {
-          logger.error('Error parsing date:', error);
+          logger.error('Error parsing date:', {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            source: 'useEventData.loadEventData',
+            eventId
+          });
         }
       }
 
@@ -116,7 +121,11 @@ export function useEventData(
         heroImage: event.image_url || '',
       });
     } catch (error) {
-      logger.error('Error loading event data:', error);
+      logger.error('Error loading event data:', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        source: 'useEventData.loadEventData',
+        eventId
+      });
     } finally {
       setIsLoading(false);
     }

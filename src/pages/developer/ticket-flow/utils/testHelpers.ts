@@ -227,7 +227,7 @@ export const insertMockEvent = async (event: any, testLogger?: TestLogger): Prom
     await getOrCreateTestVenue(testLogger);
     await getOrCreateTestArtist(testLogger);
 
-    const { data, error} = await supabase.from('events').insert([event]).select();
+    const { error } = await supabase.from('events').insert([event]).select();
 
     if (error) {
       log.error('Failed to insert mock event', {
@@ -277,7 +277,7 @@ export const insertMockSession = async (session: {
   entered_at?: string;
 }): Promise<void> => {
   try {
-    const { data, error } = await supabase.from('ticketing_sessions').insert([session]).select();
+    const { error } = await supabase.from('ticketing_sessions').insert([session]).select();
 
     if (error) {
       logger.error('Failed to insert mock session', {

@@ -1,5 +1,8 @@
 # Force Majeure - Claude Context
 
+> **📖 Master Reference**: See `/docs/AI_INSTRUCTIONS.md` for shared TypeScript standards across all AI assistants.
+> When updating coding standards, ensure both files stay synchronized.
+
 ## Project Overview
 
 Force Majeure is a company website and web application for electronic music events, featuring ticket sales, artist profiles, event management, and light social media features. Built with React, TypeScript, Vite, Supabase, and Tailwind CSS.
@@ -183,8 +186,75 @@ export default function EntityDetails() {
 
 ## Code Standards
 
+> **📖 Master Reference**: See `/docs/AI_INSTRUCTIONS.md` for shared TypeScript standards across all AI assistants.
+
 ### TypeScript
 
+**Strictness Level:**
+- **Strict mode enabled** (`strict: true`, `strictNullChecks: true`)
+- **Unused code detection** (`noUnusedLocals`, `noUnusedParameters`)
+- All type mismatches must be resolved - no `as any` shortcuts
+- Distinguish between `null` and `undefined` explicitly
+
+**Type Definitions:**
+- **Single source of truth**: Types in `/features/*/types/` must match database schema
+- **No property access on undefined types**: If accessing `event.title`, `title` must exist in `Event` interface
+- **Type predicates**: Must have exact parameter-to-return type matching
+  ```typescript
+  // ✅ Correct
+  function isString(value: string | undefined): value is string {
+    return typeof value === 'string';
+  }
+  
+  // ❌ Wrong - type mismatch
+  function isString(value?: string): value is string {
+    return typeof value === 'string';
+  }
+  ```
+
+**Import Requirements:**
+- **Logger**: Always import `import { logger } from '@/shared/services/logger'`
+- **Toast**: Always import `import { toast } from 'sonner'`
+- **Supabase**: Always import from `@/shared/api/supabase/client`
+- No reliance on global definitions or implicit imports
+
+**Logger Usage:**
+- Use structured context objects:
+  ```typescript
+  // ✅ Correct
+  logger.error('Error loading data', { 
+    error: error instanceof Error ? error.message : 'Unknown',
+    source: 'componentName',
+    details: additionalData 
+  });
+  
+  // ❌ Wrong
+  logger.error('Error loading data', error);
+  ```
+
+**Handling Unused Parameters:**
+- Prefix unused parameters with underscore: `_value`, `_event`
+- Alternatively, omit parameter name if truly unnecessary
+- This satisfies `noUnusedParameters` while maintaining function signature compatibility
+
+**Null vs Undefined:**
+- **Database fields**: Use `null` (matches Supabase/PostgreSQL convention)
+- **Optional React props**: Use `undefined` (TypeScript/React convention)
+- **Optional function parameters**: Use `undefined` (TypeScript convention)
+- Convert between them explicitly when needed:
+  ```typescript
+  const venue_id = venueId || null; // undefined → null for DB
+  const venueId = venue_id ?? undefined; // null → undefined for React
+  ```
+
+**Type Alignment Strategy:**
+When code and types don't match:
+1. **Check database schema** - Does the column exist?
+2. **Update type definition** - Add missing properties to interface
+3. **Update code** - Use correct property names from type
+4. **Never use `as any`** - Fix the root cause instead
+
+**General Guidelines:**
 - Use strict mode
 - Prefer interfaces over types for object shapes
 - Use optional chaining and nullish coalescing

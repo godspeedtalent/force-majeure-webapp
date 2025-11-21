@@ -92,7 +92,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return;
       }
 
-      setProfile(data);
+      setProfile(data ? { ...data, spotify_connected: false } : null);
     } catch (error) {
       logger.error('Error fetching profile:', { error });
     }
@@ -108,7 +108,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Set up auth state listener FIRST
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
 

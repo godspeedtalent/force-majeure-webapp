@@ -1,4 +1,3 @@
-import { Calendar, Music2 } from 'lucide-react';
 import { useEffect, useRef, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
@@ -7,10 +6,12 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import { Layout } from '@/components/layout/Layout';
+import { ParallaxLayerManager } from '@/components/layout/ParallaxLayerManager';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { EventCard } from '@/features/events/components/EventCard';
 import { EventCardSkeleton } from '@/features/events/components/EventCardSkeleton';
 import { MobileSectionIndicator, MobileScrollCue } from '@/components/mobile';
+import { MobileScrollSnapWrapper } from '@/components/mobile/MobileScrollSnapWrapper';
 import { supabase } from '@/shared/api/supabase/client';
 import { useFontLoader } from '@/shared/hooks/useFontLoader';
 import { useScrollPosition } from '@/shared/hooks/useScrollPosition';
@@ -99,7 +100,11 @@ const Index = () => {
           .select(
             `
             *,
-            headliner_artist:artists!events_headliner_id_fkey(id, name, genre, image_url)
+            headliner_artist:artists!events_headliner_id_fkey(id, name, genre, image_url),
+            event_artists!inner(
+              artist:artists(id, name, genre, image_url)
+            ),
+            venues(name)
           `
           )
           .order('start_time', {
@@ -110,48 +115,17 @@ const Index = () => {
           return;
         }
 
-        // Get undercard artists for all events
-        const eventIds = data.map(event => event.id);
-        const undercardArtists =
-          eventIds.length > 0
-            ? await Promise.all(
-                eventIds.map(async eventId => {
-                  const event = data.find(e => e.id === eventId);
-                  if (
-                    !event ||
-                    !event.undercard_ids ||
-                    event.undercard_ids.length === 0
-                  ) {
-                    return {
-                      eventId,
-                      artists: [],
-                    };
-                  }
-                  const { data: artists, error: artistsError } = await supabase
-                    .from('artists')
-                    .select('id, name, genre, image_url')
-                    .in('id', event.undercard_ids);
-                  if (artistsError) {
-                    await handleFetchError(
-                      `fetching undercard for event ${eventId}`,
-                      artistsError
-                    );
-                  }
-                  return {
-                    eventId,
-                    artists: artists || [],
-                  };
-                })
-              )
-            : [];
-
         // Transform the data to match the EventCard expected format
         const transformedEvents: EventData[] = data.map(event => {
-          const undercard =
-            undercardArtists.find(u => u.eventId === event.id)?.artists || [];
+          const undercard = event.event_artists?.map((ea: any) => ({
+            name: ea.artist.name,
+            genre: ea.artist.genre || 'Electronic',
+            image: ea.artist.image_url || null,
+          })) || [];
+
           return {
             id: event.id,
-            title: event.title,
+            title: event.name,
             headliner: event.headliner_artist
               ? {
                   name: event.headliner_artist.name,
@@ -163,17 +137,13 @@ const Index = () => {
                   genre: 'Electronic',
                   image: null,
                 },
-            undercard: undercard.map(artist => ({
-              name: artist.name,
-              genre: artist.genre || 'Electronic',
-              image: artist.image_url || null,
-            })),
-            date: event.date,
-            time: event.time,
-            venue: event.venue,
-            heroImage: event.hero_image || getImageUrl(event.hero_image),
+            undercard,
+            date: event.start_time ? new Date(event.start_time).toISOString().split('T')[0] : '',
+            time: event.start_time ? new Date(event.start_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '',
+            venue: event.venues?.name || 'TBA',
+            heroImage: getImageUrl(null),
             description: event.description || null,
-            ticketUrl: event.ticket_url || null,
+            ticketUrl: null,
           };
         });
         setUpcomingEvents(transformedEvents);
@@ -184,7 +154,7 @@ const Index = () => {
       }
     };
     fetchEvents();
-  }, [handleFetchError]);
+  }, []);
 
   // Memoize scroll-based calculations (reduce parallax on mobile for performance)
   const { parallaxOffset, fadeOpacity } = useMemo(
@@ -197,20 +167,129 @@ const Index = () => {
     [scrollY, isMobile]
   );
 
-  return (
-    <Layout enableScrollSnap={true}>
-      <div className='min-h-screen relative'>
-        <div className='fixed inset-0 bg-gradient-monochrome opacity-10 pointer-events-none' />
+  const heroContent = (
+    <section
+      ref={heroRef}
+      className={`flex items-center justify-center px-4 ${
+        isMobile ? 'h-screen snap-start snap-always' : 'min-h-screen pt-24 pb-32'
+      }`}
+      data-section-id='hero'
+    >
+      <div
+        className='max-w-7xl mx-auto'
+        style={
+          !isMobile
+            ? {
+                transform: `translateY(${parallaxOffset}px)`,
+                opacity: fadeOpacity,
+                transition: 'transform 0.3s ease-out, opacity 0.3s ease-out',
+                willChange: 'transform, opacity',
+              }
+            : undefined
+        }
+      >
+        <div className='flex flex-col items-center text-center'>
+          <ForceMajeureLogo size={isMobile ? 'lg' : 'xl'} className={`mb-${isMobile ? '6' : '8'} h-${isMobile ? '32' : '40'} w-${isMobile ? '32' : '40'}`} />
+          <h1
+            className={`${isMobile ? 'text-2xl' : 'text-3xl lg:text-5xl'} font-screamer leading-none mb-${isMobile ? '8' : '10'}`}
+            style={{ fontWeight: 475 }}
+          >
+            <span className='text-foreground'>FORCE </span>
+            <span className='bg-gradient-gold bg-clip-text text-transparent'>
+              MAJEURE
+            </span>
+          </h1>
+        </div>
+        <DecorativeDivider />
+      </div>
+      {isMobile && <MobileScrollCue />}
+    </section>
+  );
 
+  const eventsContent = (
+    <section
+      ref={eventsRef}
+      className={`px-4 ${
+        isMobile ? 'h-screen snap-start snap-always flex items-center' : 'min-h-screen py-24'
+      }`}
+      data-section-id='events'
+    >
+      <div className='max-w-7xl mx-auto animate-fade-in w-full'>
+        <div className={isMobile ? 'space-y-4 overflow-y-auto max-h-[80vh]' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center'}>
+          {loading ? (
+            Array.from({ length: 6 }).map((_, idx) => (
+              <EventCardSkeleton key={`skeleton-${idx}`} />
+            ))
+          ) : upcomingEvents.length > 0 ? (
+            upcomingEvents.map(event => (
+              <EventCard key={event.id} event={event} isSingleRow={false} />
+            ))
+          ) : (
+            <div className={isMobile ? '' : 'col-span-full flex justify-center'}>
+              <FmInfoCard className='max-w-2xl text-center'>
+                <h2 className='text-lg lg:text-xl text-fm-gold mb-[20px]'>
+                  Our 2026 lineup is coming soon.
+                </h2>
+                <p className='text-sm text-muted-foreground mb-[10px]'>
+                  Are you an artist wanting to open for headlining talent?
+                </p>
+                <p className='text-sm text-muted-foreground mb-[20px]'>
+                  Register with us below!
+                </p>
+                <FmCommonButton onClick={() => navigate('/artists/signup')}>
+                  Artist Registration
+                </FmCommonButton>
+              </FmInfoCard>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+
+  return (
+    <Layout enableScrollSnap={false}>
+      <div className='min-h-screen relative'>
         {!contentReady ? (
           <div className='flex items-center justify-center min-h-screen relative z-10'>
             <FmCommonLoadingState message='Loading...' />
           </div>
         ) : (
-          <div className='relative z-10'>
-            {isSingleRow ? (
+          <>
+            {isMobile ? (
+              <ParallaxLayerManager
+                layers={[
+                  {
+                    id: 'topography',
+                    content: <TopographicBackground opacity={0.35} parallax={false} />,
+                    speed: 0.3,
+                    zIndex: 1,
+                  },
+                  {
+                    id: 'gradient',
+                    content: <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />,
+                    speed: 0.5,
+                    zIndex: 2,
+                  },
+                ]}
+              >
+                <MobileScrollSnapWrapper enabled={true}>
+                  {heroContent}
+                  {eventsContent}
+                  <MobileSectionIndicator
+                    sections={[
+                      { id: 'hero', label: 'Welcome' },
+                      { id: 'events', label: 'Events' },
+                    ]}
+                    activeSection={activeSection}
+                    onSectionClick={scrollToSection}
+                  />
+                </MobileScrollSnapWrapper>
+              </ParallaxLayerManager>
+            ) : isSingleRow ? (
               /* Single Page Layout - Combined view */
-              <div className='h-screen flex flex-col justify-around py-8 px-4'>
+              <div className='h-screen flex flex-col justify-around py-8 px-4 relative z-10'>
+                <div className='fixed inset-0 bg-gradient-monochrome opacity-10 pointer-events-none' />
                 {/* Logo Section - Top Row */}
                 <div className='flex items-center justify-center'>
                   <div className='max-w-7xl mx-auto'>
@@ -266,95 +345,13 @@ const Index = () => {
                 </div>
               </div>
             ) : (
-              <>
-                {/* Hero Section with Parallax */}
-                <section
-                  ref={heroRef}
-                  className='min-h-screen flex items-center justify-center snap-start snap-always pt-24 pb-32 px-4'
-                  data-section-id='hero'
-                >
-                  <div
-                    className='max-w-7xl mx-auto'
-                    style={{
-                      transform: `translateY(${parallaxOffset}px)`,
-                      opacity: fadeOpacity,
-                      transition: 'transform 0.3s ease-out, opacity 0.3s ease-out',
-                      willChange: 'transform, opacity',
-                    }}
-                  >
-                    {/* Logo and Title Section */}
-                    <div className='flex flex-col items-center text-center'>
-                      <ForceMajeureLogo size='xl' className='mb-8 h-40 w-40' />
-
-                      <h1
-                        className='text-3xl lg:text-5xl font-screamer leading-none mb-10'
-                        style={{ fontWeight: 475 }}
-                      >
-                        <span className='text-foreground'>FORCE </span>
-                        <span className='bg-gradient-gold bg-clip-text text-transparent'>
-                          MAJEURE
-                        </span>
-                      </h1>
-                    </div>
-
-                    {/* Decorative Divider */}
-                    <DecorativeDivider />
-                  </div>
-
-                  {/* Mobile scroll cue */}
-                  <MobileScrollCue />
-                </section>
-
-                {/* Events Grid Section */}
-                <section
-                  ref={eventsRef}
-                  className='min-h-screen snap-start snap-always py-24 px-4'
-                  data-section-id='events'
-                >
-                  <div className='max-w-7xl mx-auto animate-fade-in w-full'>
-                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center'>
-                      {loading ? (
-                        Array.from({ length: 6 }).map((_, idx) => (
-                          <EventCardSkeleton key={`skeleton-${idx}`} />
-                        ))
-                      ) : upcomingEvents.length > 0 ? (
-                        upcomingEvents.map(event => (
-                          <EventCard key={event.id} event={event} isSingleRow={false} />
-                        ))
-                      ) : (
-                        <div className='col-span-full flex justify-center'>
-                          <FmInfoCard className='max-w-2xl text-center'>
-                            <h2 className='text-lg lg:text-xl text-fm-gold mb-[20px]'>
-                              Our 2026 lineup is coming soon.
-                            </h2>
-                            <p className='text-sm text-muted-foreground mb-[10px]'>
-                              Are you an artist wanting to open for headlining talent?
-                            </p>
-                            <p className='text-sm text-muted-foreground mb-[20px]'>
-                              Register with us below!
-                            </p>
-                            <FmCommonButton onClick={() => navigate('/artists/signup')}>
-                              Artist Registration
-                            </FmCommonButton>
-                          </FmInfoCard>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </section>
-
-                {/* Mobile Section Indicator */}
-                <MobileSectionIndicator
-                  sections={[
-                    { id: 'hero', label: 'Welcome' },
-                    { id: 'events', label: 'Events' },
-                  ]}
-                  activeSection={activeSection}
-                  onSectionClick={scrollToSection}
-                />
-              </>
+              <div className='relative z-10'>
+                <div className='fixed inset-0 bg-gradient-monochrome opacity-10 pointer-events-none' />
+                {heroContent}
+                {eventsContent}
+              </div>
             )}
-          </div>
+          </>
         )}
       </div>
     </Layout>

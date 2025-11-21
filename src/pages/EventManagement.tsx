@@ -31,7 +31,7 @@ import { FmImageUpload } from '@/components/common/forms/FmImageUpload';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { Checkbox } from '@/components/common/shadcn/checkbox';
-import { format, parse } from 'date-fns';
+import { format } from 'date-fns';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared/auth/permissions';
 import { handleError } from '@/shared/services/errorHandler';
@@ -87,26 +87,20 @@ export default function EventManagement() {
   useEffect(() => {
     if (event) {
       setHeadlinerId(event.headliner_id || '');
-      setVenueId((event as any).venue_id || '');
-      setIsAfterHours((event as any).is_after_hours || false);
-      setEndTime((event as any).end_time || '02:00');
-      setHeroImage(event.hero_image || '');
+      setVenueId(event.venue_id || '');
+      setIsAfterHours(event.is_after_hours || false);
+      setEndTime(event.end_time || '02:00');
+      setHeroImage(''); // No hero_image in DB yet
 
-      // Check if event has a custom title (not generated from headliner @ venue)
-      if (event.title) {
-        setCustomTitle(event.title);
-        // Determine if it's a custom title by checking if it matches the auto-generated format
-        // We'll default to not having a custom title (checkbox unchecked)
+      // Check if event has a custom title
+      if (event.name) {
+        setCustomTitle(event.name);
         setHasCustomTitle(false);
       }
 
-      // Parse date and time
-      if (event.date) {
-        const dateStr = event.date;
-        const timeStr = event.time || '20:00';
-        const [hours, minutes] = timeStr.split(':');
-        const parsedDate = parse(dateStr, 'yyyy-MM-dd', new Date());
-        parsedDate.setHours(parseInt(hours, 10), parseInt(minutes, 10));
+      // Parse date and time from start_time
+      if (event.start_time) {
+        const parsedDate = new Date(event.start_time);
         setEventDate(parsedDate);
       }
     }
@@ -249,20 +243,15 @@ export default function EventManagement() {
             : (headlinerRes.data as any)?.name || 'Event';
       }
 
-      const eventDateString = format(eventDate, 'yyyy-MM-dd');
-      const eventTimeString = format(eventDate, 'HH:mm');
-
       const { error } = await supabase
         .from('events')
         .update({
-          title: eventTitle,
+          name: eventTitle,
           headliner_id: headlinerId,
           venue_id: venueId,
-          date: eventDateString,
-          time: eventTimeString,
+          start_time: eventDate.toISOString(),
           end_time: isAfterHours ? null : endTime,
           is_after_hours: isAfterHours,
-          hero_image: heroImage || null,
         })
         .eq('id', id!);
 
@@ -286,7 +275,7 @@ export default function EventManagement() {
     if (!id || !event) return;
 
     const confirmed = window.confirm(
-      `Are you sure you want to delete "${event.title}"?\n\nThis action cannot be undone. All ticket tiers and orders associated with this event will also be deleted.`
+      `Are you sure you want to delete "${event.name}"?\n\nThis action cannot be undone. All ticket tiers and orders associated with this event will also be deleted.`
     );
 
     if (!confirmed) return;
@@ -367,7 +356,7 @@ export default function EventManagement() {
           </FmCommonButton>
           <div>
             <h1 className='text-3xl font-bold text-foreground'>
-              {event.title}
+              {event.name}
             </h1>
             <p className='text-muted-foreground'>Event Management</p>
           </div>
@@ -523,7 +512,7 @@ export default function EventManagement() {
           {activeTab === 'artists' && (
             <EventArtistManagement
               headlinerId={event.headliner_id || ''}
-              undercardIds={event.undercard_ids || []}
+              undercardIds={[]}
               onChange={data => handleEventUpdate(data)}
             />
           )}

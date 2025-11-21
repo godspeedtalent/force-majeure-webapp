@@ -5,19 +5,6 @@ import { RelationCell } from '../components/cells/RelationCell';
 import { RoleCell } from '../components/cells/RoleCell';
 import { BadgeListCell } from '../components/cells/BadgeListCell';
 import { EntityType } from '@/components/common/display/FmEntityAvatar';
-import {
-  Type,
-  Hash,
-  Mail,
-  Link as LinkIcon,
-  Calendar,
-  ToggleLeft,
-  Clock,
-  ImageIcon,
-  Users,
-  Shield,
-  Tag,
-} from 'lucide-react';
 
 /**
  * Preset column type configurations for FmDataGrid
@@ -98,11 +85,9 @@ export const DataGridColumns = {
     filterable?: boolean;
     editable?: boolean;
     width?: string;
-    icon?: React.ReactNode;
   }): DataGridColumn<T> => ({
     key: config.key as string,
     label: config.label,
-    icon: config.icon || <Type className='h-4 w-4' />,
     sortable: config.sortable,
     filterable: config.filterable,
     editable: config.editable,
@@ -125,13 +110,10 @@ export const DataGridColumns = {
     bucket?: string;
     storagePath?: string;
     onImageUpdate?: (row: T, newImageUrl: string) => void;
-    icon?: React.ReactNode;
   }): DataGridColumn<T> => ({
     key: config.key as string,
     label: config.label,
-    icon: config.icon || <ImageIcon className='h-4 w-4' />,
     width: config.width || '75px',
-    cellClassName: 'p-0', // Remove default TableCell padding for images
     render: (value: any, row: T) => (
       <ImageCell
         value={value as string}
@@ -162,11 +144,9 @@ export const DataGridColumns = {
     sortable?: boolean;
     width?: string;
     emptyText?: string;
-    icon?: React.ReactNode;
   }): DataGridColumn<T> => ({
     key: config.key as string,
     label: config.label,
-    icon: config.icon || <Calendar className='h-4 w-4' />,
     sortable: config.sortable ?? true,
     width: config.width || '150px',
     render: (value: any) => (
@@ -190,11 +170,9 @@ export const DataGridColumns = {
     sortable?: boolean;
     width?: string;
     emptyText?: string;
-    icon?: React.ReactNode;
   }): DataGridColumn<T> => ({
     key: config.key as string,
     label: config.label,
-    icon: config.icon || <Users className='h-4 w-4' />,
     sortable: config.sortable,
     width: config.width,
     render: (value: any, row: T) => (
@@ -217,11 +195,9 @@ export const DataGridColumns = {
     onClick?: (row: T) => void;
     width?: string;
     emptyText?: string;
-    icon?: React.ReactNode;
   }): DataGridColumn<T> => ({
     key: config.key as string,
     label: config.label,
-    icon: config.icon || <Shield className='h-4 w-4' />,
     width: config.width || '200px',
     render: (value: any, row: T) => (
       <RoleCell
@@ -241,11 +217,9 @@ export const DataGridColumns = {
     variant?: 'default' | 'gold' | 'muted';
     width?: string;
     emptyText?: string;
-    icon?: React.ReactNode;
   }): DataGridColumn<T> => ({
     key: config.key as string,
     label: config.label,
-    icon: config.icon || <Tag className='h-4 w-4' />,
     width: config.width || '200px',
     render: (value: any) => (
       <BadgeListCell
@@ -265,11 +239,9 @@ export const DataGridColumns = {
     getHref: (row: T) => string;
     external?: boolean;
     width?: string;
-    icon?: React.ReactNode;
   }): DataGridColumn<T> => ({
     key: config.key as string,
     label: config.label,
-    icon: config.icon || <LinkIcon className='h-4 w-4' />,
     width: config.width,
     render: (value: any, row: T) => (
       <RelationCell

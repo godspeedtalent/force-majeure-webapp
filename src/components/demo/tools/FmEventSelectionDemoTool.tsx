@@ -39,7 +39,7 @@ export const FmEventSelectionDemoTool = ({
       onEventChange(eventId);
       onEventUpdated?.();
     } catch (error) {
-      logger.error('Error creating random event:', error);
+      logger.error('Error creating random event:', { error: error instanceof Error ? error.message : 'Unknown' });
       toast.error('Failed to create random event', {
         description:
           error instanceof Error
@@ -70,7 +70,7 @@ export const FmEventSelectionDemoTool = ({
         toast.error('No events found in database');
       }
     } catch (error) {
-      logger.error('Error selecting random event:', error);
+      logger.error('Error selecting random event:', { error: error instanceof Error ? error.message : 'Unknown' });
       toast.error('Failed to select random event');
     } finally {
       setIsSelectingRandom(false);

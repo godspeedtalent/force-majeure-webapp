@@ -1,7 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { logger } from '@/shared/services/logger';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { DataGridAction, FmConfigurableDataGrid } from '@/features/data-grid';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
@@ -10,7 +9,6 @@ import {
   MapPin,
   Database,
   Calendar,
-  Edit,
   Trash2,
   Mic2,
   Building2,
@@ -23,7 +21,6 @@ import { OrganizationsManagement } from '../admin/OrganizationsManagement';
 import { UserManagement } from '../admin/UserManagement';
 import { DatabaseNavigatorSearch } from '@/components/admin/DatabaseNavigatorSearch';
 import { toast } from 'sonner';
-import { formatHeader } from '@/shared/utils/styleUtils';
 import { artistColumns, venueColumns } from '../admin/config/adminGridColumns';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared/auth/permissions';
@@ -239,7 +236,7 @@ export default function DeveloperDatabase() {
 
       toast.success('Artist updated');
     } catch (error) {
-      logger.error('Error updating artist:', error);
+      logger.error('Error updating artist:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'DeveloperDatabase.tsx' });
       toast.error('Failed to update artist');
       throw error;
     }
@@ -274,7 +271,7 @@ export default function DeveloperDatabase() {
       toast.success('Artist created');
       await queryClient.invalidateQueries({ queryKey: ['admin-artists'] });
     } catch (error) {
-      logger.error('Error creating artist:', error);
+      logger.error('Error creating artist:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'DeveloperDatabase.tsx' });
       toast.error('Failed to create artist');
       throw error;
     }
@@ -296,7 +293,7 @@ export default function DeveloperDatabase() {
       toast.success('Artist deleted');
       queryClient.invalidateQueries({ queryKey: ['admin-artists'] });
     } catch (error) {
-      logger.error('Error deleting artist:', error);
+      logger.error('Error deleting artist:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'DeveloperDatabase.tsx' });
       toast.error('Failed to delete artist');
     }
   };
@@ -364,7 +361,7 @@ export default function DeveloperDatabase() {
       toast.success('Venue deleted successfully');
       queryClient.invalidateQueries({ queryKey: ['admin-venues'] });
     } catch (error) {
-      logger.error('Error deleting venue:', error);
+      logger.error('Error deleting venue:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'DeveloperDatabase.tsx' });
       toast.error('Failed to delete venue');
     }
   };
@@ -533,9 +530,7 @@ export default function DeveloperDatabase() {
         )}
 
         {activeTab === 'events' && (
-          <EventsManagement
-            initialEditEventId={(location.state as any)?.editEventId}
-          />
+          <EventsManagement />
         )}
       </div>
     </SideNavbarLayout>

@@ -89,7 +89,7 @@ export const FmTimerToast = ({
                   await onAction();
                   sonnerToast.dismiss(id);
                 } catch (error) {
-                  logger.error('Action failed:', error);
+                  logger.error('Action failed:', { error: error instanceof Error ? error.message : 'Unknown' });
                 } finally {
                   setIsExecuting(false);
                 }

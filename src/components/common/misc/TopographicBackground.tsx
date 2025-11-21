@@ -1,4 +1,4 @@
-import { CSSProperties, useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 
 import { cn } from '@/shared/utils/utils';
 

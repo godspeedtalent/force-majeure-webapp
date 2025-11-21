@@ -6,7 +6,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import type { Genre, GenreWithParent, GenreTree } from '../types';
+import type { GenreTree } from '../types';
 import * as genreService from '../services/genreService';
 
 // ========================================
@@ -205,14 +205,14 @@ export function useHierarchicalGenreOptions() {
   const { data: tree, isLoading, error } = useGenreTree();
 
   const buildOptions = (
-    nodes: typeof tree extends GenreTree ? GenreTree['topLevel'] : never,
+    nodes: GenreTree['topLevel'],
     level: number = 0
   ): Array<{ value: string; label: string; level: number }> => {
     if (!nodes) return [];
 
     const options: Array<{ value: string; label: string; level: number }> = [];
 
-    nodes.forEach(node => {
+    nodes.forEach((node: any) => {
       const indent = '  '.repeat(level);
       options.push({
         value: node.id,

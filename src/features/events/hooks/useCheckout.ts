@@ -37,7 +37,10 @@ export const useCheckout = () => {
       // Redirect to Stripe checkout
       window.location.href = data.url;
     } catch (error) {
-      logger.error('Checkout error:', error);
+      logger.error('Checkout error:', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        source: 'useCheckout.initiateCheckout'
+      });
       toast.error('Checkout Failed', {
         description:
           error instanceof Error

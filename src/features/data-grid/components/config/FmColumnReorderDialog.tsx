@@ -1,4 +1,4 @@
-import React from 'react';
+
 import {
   Dialog,
   DialogContent,
@@ -16,7 +16,6 @@ import {
   DragEndEvent,
 } from '@dnd-kit/core';
 import {
-  arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,

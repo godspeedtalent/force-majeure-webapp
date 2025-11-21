@@ -182,14 +182,14 @@ const simulatePurchase = async (
 const fetchRandomEvent = async () => {
   const { data: events, error } = await supabase
     .from('events')
-    .select('id, title, start_time')
+    .select('id, name, start_time')
     .order('start_time', { ascending: true })
     .limit(10);
 
   if (error || !events || events.length === 0) {
     return {
       id: `mock-event-${Math.floor(Math.random() * 100)}`,
-      title: 'Mock Event',
+      name: 'Mock Event',
       start_time: new Date().toISOString(),
     };
   }
@@ -237,7 +237,7 @@ const performanceTestSuite: TestSuite = {
         logger.info(
           `🚀 TEST START: ${userCount} concurrent users purchasing tickets`
         );
-        logger.info(`📍 Event: "${event.title}"`);
+        logger.info(`📍 Event: "${event.name}"`);
         logger.info(`⏰ Start time: ${new Date().toLocaleTimeString()}`);
         logger.info('='.repeat(80));
 
@@ -246,7 +246,7 @@ const performanceTestSuite: TestSuite = {
           return simulatePurchase(
             i + 1,
             event.id,
-            event.title,
+            event.name,
             userData,
             logger
           );
@@ -310,7 +310,7 @@ const performanceTestSuite: TestSuite = {
         logger.info(
           `🚀 TEST START: ${userCount} concurrent users purchasing tickets`
         );
-        logger.info(`📍 Event: "${event.title}"`);
+        logger.info(`📍 Event: "${event.name}"`);
         logger.info(`⏰ Start time: ${new Date().toLocaleTimeString()}`);
         logger.info('='.repeat(80));
 
@@ -319,7 +319,7 @@ const performanceTestSuite: TestSuite = {
           return simulatePurchase(
             i + 1,
             event.id,
-            event.title,
+            event.name,
             userData,
             logger
           );
@@ -381,7 +381,7 @@ const performanceTestSuite: TestSuite = {
         logger.info(
           `🚀 TEST START: ${userCount} concurrent users purchasing tickets`
         );
-        logger.info(`📍 Event: "${event.title}"`);
+        logger.info(`📍 Event: "${event.name}"`);
         logger.info(`⏰ Start time: ${new Date().toLocaleTimeString()}`);
         logger.info('='.repeat(80));
 
@@ -390,7 +390,7 @@ const performanceTestSuite: TestSuite = {
           return simulatePurchase(
             i + 1,
             event.id,
-            event.title,
+            event.name,
             userData,
             logger
           );
@@ -453,7 +453,7 @@ const performanceTestSuite: TestSuite = {
 
         logger.info('='.repeat(80));
         logger.info(`🚀 STRESS TEST: ${userCount} concurrent users`);
-        logger.info(`📍 Event: "${event.title}"`);
+        logger.info(`📍 Event: "${event.name}"`);
         logger.info(`⏰ Start time: ${new Date().toLocaleTimeString()}`);
         logger.warn(`⚠️  Warning: This test pushes the system to its limits`);
         logger.info('='.repeat(80));
@@ -463,7 +463,7 @@ const performanceTestSuite: TestSuite = {
           return simulatePurchase(
             i + 1,
             event.id,
-            event.title,
+            event.name,
             userData,
             logger
           );
@@ -522,7 +522,7 @@ const performanceTestSuite: TestSuite = {
 
         logger.info('='.repeat(80));
         logger.info(`🚀 EXTREME STRESS TEST: ${userCount} concurrent users`);
-        logger.info(`📍 Event: "${event.title}"`);
+        logger.info(`📍 Event: "${event.name}"`);
         logger.info(`⏰ Start time: ${new Date().toLocaleTimeString()}`);
         logger.warn(
           `⚠️  Warning: Extreme load test - expect performance degradation`
@@ -534,7 +534,7 @@ const performanceTestSuite: TestSuite = {
           return simulatePurchase(
             i + 1,
             event.id,
-            event.title,
+            event.name,
             userData,
             logger
           );
@@ -605,7 +605,7 @@ const performanceTestSuite: TestSuite = {
 
         const { data: events } = await supabase
           .from('events')
-          .select('id, title')
+          .select('id, name')
           .order('start_time', { ascending: true })
           .limit(10);
 
@@ -613,13 +613,13 @@ const performanceTestSuite: TestSuite = {
           events && events.length > 0
             ? events
             : [
-                { id: 'mock-1', title: 'Mock Event 1' },
-                { id: 'mock-2', title: 'Mock Event 2' },
-                { id: 'mock-3', title: 'Mock Event 3' },
+                { id: 'mock-1', name: 'Mock Event 1' },
+                { id: 'mock-2', name: 'Mock Event 2' },
+                { id: 'mock-3', name: 'Mock Event 3' },
               ];
 
         logger.info(`📍 Testing across ${eventList.length} events:`);
-        eventList.forEach((e, i) => logger.info(`   ${i + 1}. "${e.title}"`));
+        eventList.forEach((e, i) => logger.info(`   ${i + 1}. "${e.name}"`));
 
         const purchases = Array.from({ length: userCount }, (_, i) => {
           const userData = generateRandomUser();
@@ -628,7 +628,7 @@ const performanceTestSuite: TestSuite = {
           return simulatePurchase(
             i + 1,
             randomEvent.id,
-            randomEvent.title,
+            randomEvent.name,
             userData,
             logger
           );
@@ -697,7 +697,7 @@ const performanceTestSuite: TestSuite = {
 
         logger.info('🔥'.repeat(40));
         logger.info(`🚀 PEAK TRAFFIC TEST: ${userCount} CONCURRENT USERS`);
-        logger.info(`📍 Event: "${event.title}"`);
+        logger.info(`📍 Event: "${event.name}"`);
         logger.info(`⏰ Start time: ${new Date().toLocaleTimeString()}`);
         logger.warn(`⚠️  WARNING: MAXIMUM LOAD - BRACE FOR IMPACT`);
         logger.info('🔥'.repeat(40));
@@ -707,7 +707,7 @@ const performanceTestSuite: TestSuite = {
           return simulatePurchase(
             i + 1,
             event.id,
-            event.title,
+            event.name,
             userData,
             logger
           );

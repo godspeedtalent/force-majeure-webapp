@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/shared/api/supabase/client';
-import { ArrowLeft, Music, Calendar, ExternalLink, MapPin } from 'lucide-react';
+import { ArrowLeft, Music, Calendar, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/shadcn/card';
 import { Badge } from '@/components/common/shadcn/badge';
@@ -18,10 +18,7 @@ interface Artist {
   bio?: string;
   image_url?: string;
   website?: string;
-  spotify_url?: string;
-  instagram_handle?: string;
-  soundcloud_url?: string;
-  location?: string;
+  test_data: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -30,18 +27,19 @@ export default function ArtistDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const { data: artist, isLoading, error } = useQuery<Artist>({
+  const { data: artist, isLoading, error } = useQuery({
     queryKey: ['artist', id],
-    queryFn: async () => {
+    queryFn: async (): Promise<Artist> => {
       if (!id) throw new Error('Artist ID is required');
 
       const { data, error } = await supabase
-        .from('artists' as any)
+        .from('artists')
         .select('*')
         .eq('id', id)
         .single();
 
       if (error) throw error;
+      if (!data) throw new Error('Artist not found');
       return data as Artist;
     },
     enabled: !!id,
@@ -134,15 +132,6 @@ export default function ArtistDetails() {
                 </div>
               )}
 
-              {artist.location && (
-                <div>
-                  <label className='text-sm text-muted-foreground flex items-center gap-2'>
-                    <MapPin className='h-4 w-4' />
-                    Location
-                  </label>
-                  <p>{artist.location}</p>
-                </div>
-              )}
 
               {artist.bio && (
                 <div>
@@ -154,59 +143,21 @@ export default function ArtistDetails() {
           </Card>
 
           {/* Social Links */}
-          {(artist.website || artist.spotify_url || artist.soundcloud_url || artist.instagram_handle) && (
+          {artist.website && (
             <Card>
               <CardHeader>
-                <CardTitle>Links & Social Media</CardTitle>
+                <CardTitle>Links</CardTitle>
               </CardHeader>
               <CardContent className='space-y-3'>
-                {artist.website && (
-                  <a
-                    href={artist.website}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='flex items-center gap-2 text-fm-gold hover:underline'
-                  >
-                    <ExternalLink className='h-4 w-4' />
-                    Website
-                  </a>
-                )}
-
-                {artist.spotify_url && (
-                  <a
-                    href={artist.spotify_url}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='flex items-center gap-2 text-fm-gold hover:underline'
-                  >
-                    <ExternalLink className='h-4 w-4' />
-                    Spotify
-                  </a>
-                )}
-
-                {artist.soundcloud_url && (
-                  <a
-                    href={artist.soundcloud_url}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='flex items-center gap-2 text-fm-gold hover:underline'
-                  >
-                    <ExternalLink className='h-4 w-4' />
-                    SoundCloud
-                  </a>
-                )}
-
-                {artist.instagram_handle && (
-                  <a
-                    href={`https://instagram.com/${artist.instagram_handle.replace('@', '')}`}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='flex items-center gap-2 text-fm-gold hover:underline'
-                  >
-                    <ExternalLink className='h-4 w-4' />
-                    Instagram: {artist.instagram_handle}
-                  </a>
-                )}
+                <a
+                  href={artist.website}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='flex items-center gap-2 text-fm-gold hover:underline'
+                >
+                  <ExternalLink className='h-4 w-4' />
+                  Website
+                </a>
               </CardContent>
             </Card>
           )}

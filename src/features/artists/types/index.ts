@@ -25,8 +25,8 @@ export interface Genre {
   id: string;
   name: string;
   parentId: string | null;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: string | null;
+  updatedAt: string | null;
 }
 
 /**
@@ -96,11 +96,11 @@ export interface Artist {
   name: string;
   bio: string | null;
   imageUrl: string | null;
-  socialLinks: Record<string, string> | null;
   createdAt: string;
   updatedAt: string;
   // Legacy field - will be deprecated
   genre: string | null;
+<<<<<<< HEAD
   // Spotify integration fields
   spotifyId: string | null;
   spotifyData: SpotifyArtistData | null;
@@ -117,6 +117,9 @@ export interface SpotifyArtistData {
   };
   uri: string;
   genres: string[];
+=======
+  website: string | null;
+>>>>>>> 9dbe30b583ab4968f8e8afe7c49af6f16dc3fabe
 }
 
 /**
@@ -226,12 +229,15 @@ export function artistFromRow(row: ArtistRow): Artist {
     name: row.name,
     bio: row.bio,
     imageUrl: row.image_url,
-    socialLinks: row.social_links as Record<string, string> | null,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
+    createdAt: row.created_at ?? new Date().toISOString(),
+    updatedAt: row.updated_at ?? new Date().toISOString(),
     genre: row.genre,
+<<<<<<< HEAD
     spotifyId: row.spotify_id ?? null,
     spotifyData: row.spotify_data ? (row.spotify_data as unknown as SpotifyArtistData) : null,
+=======
+    website: row.website,
+>>>>>>> 9dbe30b583ab4968f8e8afe7c49af6f16dc3fabe
   };
 }
 
@@ -243,8 +249,8 @@ export function artistGenreFromRow(row: ArtistGenreRow): ArtistGenre {
     id: row.id,
     artistId: row.artist_id,
     genreId: row.genre_id,
-    isPrimary: row.is_primary,
-    createdAt: row.created_at,
+    isPrimary: row.is_primary ?? false,
+    createdAt: row.created_at ?? new Date().toISOString(),
   };
 }
 

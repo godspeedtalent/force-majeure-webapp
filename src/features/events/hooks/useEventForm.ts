@@ -57,6 +57,7 @@ export function useEventForm(options: UseEventFormOptions) {
 
       // Prepare event data
       const eventData = {
+        name: eventTitle,
         title: eventTitle,
         headliner_id: formState.headlinerId || null,
         venue_id: formState.venueId || null,

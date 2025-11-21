@@ -52,7 +52,7 @@ export const FmPromoCodeInput = ({
         onPromoCodeApplied?.(null);
       }
     } catch (error) {
-      logger.error('Error validating promo code:', error);
+      logger.error('Error validating promo code:', { error: error instanceof Error ? error.message : 'Unknown' });
       setValidationState('invalid');
       setAppliedPromo(null);
       setErrorMessage('Error validating code');

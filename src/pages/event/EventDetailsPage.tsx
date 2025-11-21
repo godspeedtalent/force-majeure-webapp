@@ -8,6 +8,7 @@ import { EventDetailsLayout } from '@/components/layout/EventDetailsLayout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { useUserRole } from '@/shared/hooks/useUserRole';
+import { logger } from '@/shared/services/logger';
 
 import { EventHero } from './EventHero';
 import { EventDetailsContent } from './EventDetailsContent';
@@ -34,7 +35,7 @@ export const EventDetailsPage = () => {
       try {
         await navigator.share(payload);
       } catch (err) {
-        logger.error('Error sharing:', err);
+        logger.error('Error sharing:', { error: err });
       }
     } else {
       await navigator.clipboard.writeText(payload.url);
@@ -101,7 +102,7 @@ export const EventDetailsPage = () => {
   }
 
   const displayTitle = event.title || event.headliner.name;
-  const canManage = Boolean(role && role === 'admin');
+  const canManage = Boolean(role && role.some(r => r.role_name === 'admin'));
 
   return (
     <>

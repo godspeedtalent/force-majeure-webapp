@@ -217,7 +217,7 @@ export const EventTicketingPage = () => {
 
           {/* Queue waiting view */}
           <FmQueueWaitingView
-            event={event}
+            event={event as any}
             queuePosition={queuePosition}
             totalWaiting={waitingCount}
             activeCount={activeCount}

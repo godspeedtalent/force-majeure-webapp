@@ -117,7 +117,6 @@ export function FmDataGrid<T extends Record<string, any>>({
 
   // Selection State
   const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
-  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
 
   // Editing State
   const [editingCell, setEditingCell] = useState<{
@@ -215,7 +214,7 @@ export function FmDataGrid<T extends Record<string, any>>({
     if (groupConfig && groupedRows.length > 0) {
       return flattenGroupedData(groupedRows);
     }
-    return paginatedData.map(row => ({ isGroup: false as const, row }));
+    return paginatedData.map(row => ({ type: 'data' as const, row, depth: 0 }));
   }, [groupConfig, groupedRows, paginatedData]);
 
   // Keyboard navigation
@@ -296,7 +295,7 @@ export function FmDataGrid<T extends Record<string, any>>({
 
     // Type handling
     if (column?.type === 'boolean') {
-      newValue = overrideValue !== undefined ? overrideValue : editValue === 'true' || editValue === true;
+      newValue = overrideValue !== undefined ? overrideValue : (typeof editValue === 'boolean' ? editValue : editValue === 'true');
     } else if (column?.type === 'number') {
       if (!newValue || newValue.toString().trim() === '') newValue = '0';
       if (parseFloat(newValue) === parseFloat(oldValue?.toString() || '0')) {
@@ -739,21 +738,22 @@ export function FmDataGrid<T extends Record<string, any>>({
                 if (!displayRow) return null;
 
                 // Group row
-                if (displayRow.isGroup) {
+                if (displayRow.type === 'group') {
+                  const groupRow = displayRow as any;
                   return (
                     <FmDataGridGroupRow
-                      key={`group-${displayRow.groupData.groupValue}`}
-                      groupData={displayRow.groupData}
+                      key={`group-${groupRow.groupData.groupValue}`}
+                      groupData={groupRow.groupData}
                       columns={columns}
                       hasActions={actions.length > 0}
-                      isExpanded={expandedGroups.has(displayRow.groupData.groupValue)}
-                      onToggle={() => handleToggleGroup(displayRow.groupData.groupValue)}
+                      isExpanded={expandedGroups.has(groupRow.groupData.groupValue)}
+                      onToggle={() => handleToggleGroup(groupRow.groupData.groupValue)}
                     />
                   );
                 }
 
                 // Data row
-                const row = displayRow.row;
+                const row = displayRow.row as T;
                 const globalIndex = (currentPage - 1) * pageSize + index;
                 const isSelected = selectedRows.has(globalIndex);
                 const isEvenRow = index % 2 === 0;
@@ -806,7 +806,6 @@ export function FmDataGrid<T extends Record<string, any>>({
                     isMultipleSelected={selectedRows.size > 1}
                     onUnselectAll={() => {
                       setSelectedRows(new Set());
-                      setLastSelectedIndex(null);
                     }}
                     getFocusableCellProps={getFocusableCellProps}
                     columnWidths={columnWidths}
