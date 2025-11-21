@@ -7,6 +7,7 @@ import { FormSection } from '@/components/common/forms/FormSection';
 import { ScrollArea } from '@/components/common/shadcn/scroll-area';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { supabase } from '@/shared/api/supabase/client';
+import { handleError } from '@/shared/services/errorHandler';
 
 interface RegistrationFormProps {
   onSuccess?: (email: string) => void;
@@ -148,10 +149,22 @@ export function RegistrationForm({
 
       if (error) throw error;
 
+      // If user email is not confirmed, sign them out to prevent auto-login
+      if (data.user && !data.user.email_confirmed_at) {
+        await supabase.auth.signOut();
+      }
+
       toast.success('Verification email sent');
       onSuccess?.(formData.email);
     } catch (error: any) {
-      toast.error(error.message || 'Failed to register');
+      // Use centralized error handler for network/connection errors
+      await handleError(error, {
+        title: 'Registration failed',
+        description: 'Unable to create your account',
+        context: 'Scavenger hunt registration',
+        endpoint: '/auth/signup',
+        method: 'POST',
+      });
     } finally {
       setIsSubmitting(false);
     }

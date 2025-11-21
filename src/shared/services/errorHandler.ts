@@ -22,6 +22,7 @@
 
 import { showErrorToast } from '@/components/common/feedback/FmErrorToast';
 import { logApiError } from '@/shared/utils/apiLogger';
+import { logger } from '@/shared/services/logger';
 
 interface ErrorHandlerOptions {
   /** Title to display in the error toast */
@@ -61,6 +62,38 @@ function isDeveloperOrAdmin(userRole?: string): boolean {
 }
 
 /**
+ * Check if error is a network/server connection error
+ */
+function isNetworkError(error: unknown): boolean {
+  if (error instanceof Error) {
+    const message = error.message.toLowerCase();
+    return (
+      message.includes('failed to fetch') ||
+      message.includes('network request failed') ||
+      message.includes('network error') ||
+      message.includes('connection refused') ||
+      message.includes('econnrefused') ||
+      message.includes('timeout') ||
+      message.includes('network timeout')
+    );
+  }
+
+  if (error && typeof error === 'object') {
+    const err = error as any;
+    // Check for fetch errors
+    if (err.name === 'TypeError' && err.message?.includes('fetch')) {
+      return true;
+    }
+    // Check for network status codes
+    if (err.status === 0 || err.status === 503 || err.status === 504) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
  * Extract error details from various error types
  */
 function extractErrorDetails(error: unknown): {
@@ -68,7 +101,19 @@ function extractErrorDetails(error: unknown): {
   details?: any;
   status?: number;
   stack?: string;
+  isNetworkError?: boolean;
 } {
+  const networkError = isNetworkError(error);
+
+  // Network/Server connection errors get special treatment
+  if (networkError) {
+    return {
+      message: 'Unable to connect to server',
+      details: 'The server appears to be offline or unreachable. Please check your connection or try again later.',
+      isNetworkError: true,
+    };
+  }
+
   // Standard Error object
   if (error instanceof Error) {
     return {
@@ -180,8 +225,8 @@ export async function handleError(
     logger.error(`[ErrorHandler] Context: ${context}`);
   }
 
-  // Log to backend if enabled
-  if (logError) {
+  // Log to backend if enabled (skip if network error to prevent cascade)
+  if (logError && !errorDetails.isNetworkError) {
     try {
       await logApiError({
         level: 'error',
@@ -210,18 +255,30 @@ export async function handleError(
       errorObject.stack = errorDetails.stack;
     }
 
-    // Build enhanced description for developers
-    let devDescription = description || errorDetails.message;
-    if (isDev && errorDetails.details) {
+    // Build enhanced description
+    let finalDescription = description || errorDetails.message;
+
+    // Special handling for network errors
+    if (errorDetails.isNetworkError) {
+      if (isDev) {
+        finalDescription = `${errorDetails.message}\n\n${errorDetails.details}\n\n💡 Tip: Check if Supabase is running locally (npx supabase start)`;
+      } else {
+        finalDescription = `${errorDetails.details}\n\nWe're working to resolve this issue. Please try again in a few moments.`;
+      }
+    } else if (isDev && errorDetails.details) {
+      // Build enhanced description for developers on other errors
       const responseBody = buildResponseBody(errorDetails);
-      devDescription = `${description || errorDetails.message}\n\nResponse:\n${responseBody}`;
+      finalDescription = `${description || errorDetails.message}\n\nResponse:\n${responseBody}`;
     }
 
     showErrorToast({
       title,
-      description: devDescription,
+      description: finalDescription,
       error: errorObject,
       isDeveloper: isDev,
+      context,
+      endpoint,
+      method,
     });
   }
 }

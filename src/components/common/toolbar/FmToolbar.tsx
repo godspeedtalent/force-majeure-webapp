@@ -19,6 +19,7 @@ import {
   ExternalLink,
   Building2,
   Scan,
+  Mail,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -37,6 +38,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/common/shadcn/context-menu';
+import { FmCommonCollapsibleSection } from '@/components/common/data/FmCommonCollapsibleSection';
 
 // Lazy load sections
 import { DatabaseNavigatorSearch } from '@/components/admin/DatabaseNavigatorSearch';
@@ -211,24 +213,57 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         content: (
           <div className='space-y-4'>
             <Separator className='bg-white/10' />
-            <div className='flex flex-col gap-2'>
-              {/* Alphabetically sorted links */}
-              {isAdmin && (
-                <ContextMenu>
-                  <ContextMenuTrigger asChild>
-                    <div>
-                      <FmCommonButton
-                        variant='default'
-                        icon={Shield}
-                        iconPosition='left'
+            <div className='flex flex-col gap-4'>
+              {/* App Links Section */}
+              <div className='flex flex-col gap-2'>
+                {isAdmin && (
+                  <ContextMenu>
+                    <ContextMenuTrigger asChild>
+                      <div>
+                        <FmCommonButton
+                          variant='default'
+                          icon={Shield}
+                          iconPosition='left'
+                          onClick={() => {
+                            setIsOpen(false);
+                            setActiveTab(null);
+                            navigate('/admin/controls');
+                          }}
+                          className='w-full justify-start'
+                        >
+                          Admin Controls
+                        </FmCommonButton>
+                      </div>
+                    </ContextMenuTrigger>
+                    <ContextMenuContent className='bg-card border-border rounded-none w-40'>
+                      <ContextMenuItem
                         onClick={() => {
                           setIsOpen(false);
                           setActiveTab(null);
                           navigate('/admin/controls');
                         }}
+                        className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
+                      >
+                        Go to
+                      </ContextMenuItem>
+                    </ContextMenuContent>
+                  </ContextMenu>
+                )}
+                <ContextMenu>
+                  <ContextMenuTrigger asChild>
+                    <div>
+                      <FmCommonButton
+                        variant='default'
+                        icon={Home}
+                        iconPosition='left'
+                        onClick={() => {
+                          setIsOpen(false);
+                          setActiveTab(null);
+                          navigate('/developer');
+                        }}
                         className='w-full justify-start'
                       >
-                        Admin Controls
+                        Developer Home
                       </FmCommonButton>
                     </div>
                   </ContextMenuTrigger>
@@ -237,7 +272,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
                       onClick={() => {
                         setIsOpen(false);
                         setActiveTab(null);
-                        navigate('/admin/controls');
+                        navigate('/developer');
                       }}
                       className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
                     >
@@ -245,117 +280,123 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
                     </ContextMenuItem>
                   </ContextMenuContent>
                 </ContextMenu>
-              )}
-              <ContextMenu>
-                <ContextMenuTrigger asChild>
-                  <div>
+              </div>
+
+              {/* Supabase Links Section */}
+              <FmCommonCollapsibleSection title='Supabase' defaultExpanded={true}>
+                <div className='flex flex-col gap-2'>
+                  <ContextMenu>
+                    <ContextMenuTrigger asChild>
+                      <div>
+                        <FmCommonButton
+                          variant='default'
+                          icon={Database}
+                          iconPosition='left'
+                          onClick={() => {
+                            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+                            if (supabaseUrl) {
+                              const isLocal = supabaseUrl.includes('localhost') || supabaseUrl.includes('127.0.0.1');
+
+                              if (isLocal) {
+                                window.open('http://localhost:54323', '_blank');
+                              } else {
+                                const projectId = new URL(supabaseUrl).hostname.split('.')[0];
+                                window.open(
+                                  `https://supabase.com/dashboard/project/${projectId}`,
+                                  '_blank'
+                                );
+                              }
+                            }
+                          }}
+                          className='w-full justify-start'
+                        >
+                          Supabase Dashboard
+                        </FmCommonButton>
+                      </div>
+                    </ContextMenuTrigger>
+                    <ContextMenuContent className='bg-card border-border rounded-none w-48'>
+                      <ContextMenuItem
+                        onClick={() => {
+                          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+                          if (supabaseUrl) {
+                            const isLocal = supabaseUrl.includes('localhost') || supabaseUrl.includes('127.0.0.1');
+
+                            if (isLocal) {
+                              window.open('http://localhost:54323', '_blank');
+                            } else {
+                              const projectId = new URL(supabaseUrl).hostname.split('.')[0];
+                              window.open(
+                                `https://supabase.com/dashboard/project/${projectId}`,
+                                '_blank'
+                              );
+                            }
+                          }
+                        }}
+                        className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
+                      >
+                        Go to
+                      </ContextMenuItem>
+                      <ContextMenuItem
+                        onClick={() => {
+                          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+                          if (supabaseUrl) {
+                            const isLocal = supabaseUrl.includes('localhost') || supabaseUrl.includes('127.0.0.1');
+
+                            if (isLocal) {
+                              window.open('http://localhost:54323/project/default', '_blank');
+                            } else {
+                              const projectId = new URL(supabaseUrl).hostname.split('.')[0];
+                              window.open(
+                                `https://supabase.com/dashboard/project/${projectId}/editor`,
+                                '_blank'
+                              );
+                            }
+                          }
+                        }}
+                        className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
+                      >
+                        Go to Table Editor
+                      </ContextMenuItem>
+                      <ContextMenuItem
+                        onClick={() => {
+                          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+                          if (supabaseUrl) {
+                            const isLocal = supabaseUrl.includes('localhost') || supabaseUrl.includes('127.0.0.1');
+
+                            if (isLocal) {
+                              window.open('http://localhost:54323/project/default/sql/new', '_blank');
+                            } else {
+                              const projectId = new URL(supabaseUrl).hostname.split('.')[0];
+                              window.open(
+                                `https://supabase.com/dashboard/project/${projectId}/sql/new`,
+                                '_blank'
+                              );
+                            }
+                          }
+                        }}
+                        className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
+                      >
+                        Go to SQL Editor
+                      </ContextMenuItem>
+                    </ContextMenuContent>
+                  </ContextMenu>
+
+                  {/* Mailpit link - only shown in dev environment */}
+                  {import.meta.env.VITE_ENVIRONMENT === 'dev' && (
                     <FmCommonButton
                       variant='default'
-                      icon={Home}
+                      icon={Mail}
                       iconPosition='left'
                       onClick={() => {
-                        setIsOpen(false);
-                        setActiveTab(null);
-                        navigate('/developer');
+                        window.open('http://localhost:55324', '_blank');
                       }}
                       className='w-full justify-start'
                     >
-                      Developer Home
+                      Mailpit (Local Email)
                     </FmCommonButton>
-                  </div>
-                </ContextMenuTrigger>
-                <ContextMenuContent className='bg-card border-border rounded-none w-40'>
-                  <ContextMenuItem
-                    onClick={() => {
-                      setIsOpen(false);
-                      setActiveTab(null);
-                      navigate('/developer');
-                    }}
-                    className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                  >
-                    Go to
-                  </ContextMenuItem>
-                </ContextMenuContent>
-              </ContextMenu>
-              <ContextMenu>
-                <ContextMenuTrigger asChild>
-                  <div>
-                    <FmCommonButton
-                      variant='default'
-                      icon={ExternalLink}
-                      iconPosition='left'
-                      onClick={() => {
-                        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-                        if (supabaseUrl) {
-                          const projectId = new URL(supabaseUrl).hostname.split(
-                            '.'
-                          )[0];
-                          window.open(
-                            `https://supabase.com/dashboard/project/${projectId}`,
-                            '_blank'
-                          );
-                        }
-                      }}
-                      className='w-full justify-start'
-                    >
-                      Supabase Dashboard
-                    </FmCommonButton>
-                  </div>
-                </ContextMenuTrigger>
-                <ContextMenuContent className='bg-card border-border rounded-none w-48'>
-                  <ContextMenuItem
-                    onClick={() => {
-                      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-                      if (supabaseUrl) {
-                        const projectId = new URL(supabaseUrl).hostname.split(
-                          '.'
-                        )[0];
-                        window.open(
-                          `https://supabase.com/dashboard/project/${projectId}`,
-                          '_blank'
-                        );
-                      }
-                    }}
-                    className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                  >
-                    Go to
-                  </ContextMenuItem>
-                  <ContextMenuItem
-                    onClick={() => {
-                      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-                      if (supabaseUrl) {
-                        const projectId = new URL(supabaseUrl).hostname.split(
-                          '.'
-                        )[0];
-                        window.open(
-                          `https://supabase.com/dashboard/project/${projectId}/editor`,
-                          '_blank'
-                        );
-                      }
-                    }}
-                    className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                  >
-                    Go to Table Editor
-                  </ContextMenuItem>
-                  <ContextMenuItem
-                    onClick={() => {
-                      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-                      if (supabaseUrl) {
-                        const projectId = new URL(supabaseUrl).hostname.split(
-                          '.'
-                        )[0];
-                        window.open(
-                          `https://supabase.com/dashboard/project/${projectId}/sql/new`,
-                          '_blank'
-                        );
-                      }
-                    }}
-                    className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                  >
-                    Go to SQL Editor
-                  </ContextMenuItem>
-                </ContextMenuContent>
-              </ContextMenu>
+                  )}
+                </div>
+              </FmCommonCollapsibleSection>
             </div>
           </div>
         ),

@@ -1,14 +1,18 @@
-import { AlertCircle, Copy, Check } from 'lucide-react';
+import { AlertCircle, Copy, Check, FileText } from 'lucide-react';
 import { logger } from '@/shared/services/logger';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/shared/utils/utils';
+import { FmErrorOverlay } from './FmErrorOverlay';
 
 interface FmErrorToastProps {
   title: string;
   description?: string;
   error?: Error;
   isDeveloper?: boolean;
+  context?: string;
+  endpoint?: string;
+  method?: string;
 }
 
 /**
@@ -36,8 +40,12 @@ export const FmErrorToast = ({
   description,
   error,
   isDeveloper = false,
+  context,
+  endpoint,
+  method,
 }: FmErrorToastProps) => {
   const [copied, setCopied] = useState(false);
+  const [showOverlay, setShowOverlay] = useState(false);
 
   const handleCopy = async () => {
     const errorDetails = [
@@ -80,20 +88,41 @@ export const FmErrorToast = ({
         )}
       </div>
       {isDeveloper && (
-        <button
-          onClick={handleCopy}
-          className={cn(
-            'flex-shrink-0 p-1.5 rounded hover:bg-white/10 transition-colors',
-            copied && 'bg-white/10'
-          )}
-          title='Copy error details'
-        >
-          {copied ? (
-            <Check className='h-4 w-4 text-fm-gold' />
-          ) : (
-            <Copy className='h-4 w-4 text-muted-foreground' />
-          )}
-        </button>
+        <div className='flex items-center gap-1'>
+          <button
+            onClick={() => setShowOverlay(true)}
+            className='flex-shrink-0 p-1.5 rounded hover:bg-white/10 transition-colors'
+            title='View details'
+          >
+            <FileText className='h-4 w-4 text-muted-foreground' />
+          </button>
+          <button
+            onClick={handleCopy}
+            className={cn(
+              'flex-shrink-0 p-1.5 rounded hover:bg-white/10 transition-colors',
+              copied && 'bg-white/10'
+            )}
+            title='Copy error details'
+          >
+            {copied ? (
+              <Check className='h-4 w-4 text-fm-gold' />
+            ) : (
+              <Copy className='h-4 w-4 text-muted-foreground' />
+            )}
+          </button>
+        </div>
+      )}
+      {error && (
+        <FmErrorOverlay
+          error={error}
+          title={title}
+          description={description}
+          context={context}
+          endpoint={endpoint}
+          method={method}
+          isOpen={showOverlay}
+          onClose={() => setShowOverlay(false)}
+        />
       )}
     </div>
   );

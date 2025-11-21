@@ -24,7 +24,15 @@
       "Bash(timeout 5 docker ps:*)",
       "Bash(npm install:*)",
       "Bash(npx jscpd:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(test:*)",
+      "Bash(git rm:*)",
+      "Bash(netsh interface ipv4 show excludedportrange:*)",
+      "Bash(docker system prune:*)",
+      "Bash(netsh int ipv4 add excludedportrange:*)",
+      "Bash(docker rm:*)"
     ],
     "deny": [],
     "ask": []

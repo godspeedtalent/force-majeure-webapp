@@ -1,14 +1,18 @@
 /**
  * Session persistence utilities for "Remember Device" functionality
+ *
+ * Note: Supabase handles session persistence automatically via localStorage
+ * and manages token refresh. This utility only tracks user preference for
+ * the "Remember Me" checkbox state for UI purposes.
  */
 
 const REMEMBER_DEVICE_KEY = 'fm_remember_device';
 const REMEMBER_EXPIRES_KEY = 'fm_remember_expires';
-const SESSION_START_KEY = 'fm_session_start';
 
 export const sessionPersistence = {
   /**
    * Set the remember device preference
+   * This is tracked for UI purposes only - Supabase handles actual session persistence
    */
   setRememberDevice: (remember: boolean) => {
     if (remember) {
@@ -19,8 +23,6 @@ export const sessionPersistence = {
       localStorage.removeItem(REMEMBER_DEVICE_KEY);
       localStorage.removeItem(REMEMBER_EXPIRES_KEY);
     }
-    // Always record when the session started
-    localStorage.setItem(SESSION_START_KEY, Date.now().toString());
   },
 
   /**
@@ -47,33 +49,11 @@ export const sessionPersistence = {
   },
 
   /**
-   * Check if current session has exceeded the default timeout (1 hour)
-   */
-  isSessionExpired: (): boolean => {
-    const sessionStart = localStorage.getItem(SESSION_START_KEY);
-    if (!sessionStart) return true;
-
-    const now = Date.now();
-    const start = parseInt(sessionStart, 10);
-    const oneHour = 60 * 60 * 1000;
-
-    return now - start > oneHour;
-  },
-
-  /**
-   * Update session start time (call on fresh login)
-   */
-  updateSessionStart: () => {
-    localStorage.setItem(SESSION_START_KEY, Date.now().toString());
-  },
-
-  /**
    * Clear remember device preference
    */
   clearRememberDevice: () => {
     localStorage.removeItem(REMEMBER_DEVICE_KEY);
     localStorage.removeItem(REMEMBER_EXPIRES_KEY);
-    localStorage.removeItem(SESSION_START_KEY);
   },
 
   /**

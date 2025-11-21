@@ -25,13 +25,13 @@ interface TopographicBackgroundProps {
  *
  * This creates perfect mirroring where every edge matches seamlessly with its neighbor
  *
- * @param opacity - Opacity level (0-1), defaults to 0.03
+ * @param opacity - Opacity level (0-1), defaults to 0.015
  * @param className - Additional CSS classes for the container
  * @param parallax - Enable parallax scrolling effect (default: true)
  * @param parallaxSpeed - Parallax scroll speed multiplier (default: 0.5)
  */
 export const TopographicBackground = ({
-  opacity = 0.03,
+  opacity = 0.015,
   className,
   parallax = true,
   parallaxSpeed = 0.5,
@@ -74,12 +74,12 @@ export const TopographicBackground = ({
 
   return (
     <div
-      className={cn('absolute inset-0 pointer-events-none overflow-hidden', className)}
+      className={cn('fixed inset-0 pointer-events-none overflow-hidden', className)}
       style={{ opacity }}
     >
       {/* Create repeating 3x3 mirrored grid pattern with parallax and rotation */}
       <div
-        className='absolute inset-0'
+        className='absolute'
         style={{
           width: `${gridCols * superTileSize}px`,
           height: `${gridRows * superTileSize}px`,

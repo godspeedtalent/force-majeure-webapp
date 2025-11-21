@@ -11,6 +11,7 @@ import { supabase } from '@/shared/api/supabase/client';
 import { useToast } from '@/shared/hooks/use-toast';
 import { sessionPersistence } from '@/shared/utils/sessionPersistence';
 import { logger } from '@/shared/services/logger';
+import { handleError } from '@/shared/services/errorHandler';
 
 const authLogger = logger.createNamespace('Auth');
 
@@ -108,20 +109,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      // Check if session should be maintained based on remember device preference
-      if (session && event === 'SIGNED_IN') {
-        // Update session start time on fresh sign-in
-        sessionPersistence.updateSessionStart();
-      } else if (
-        session &&
-        !sessionPersistence.shouldRememberDevice() &&
-        sessionPersistence.isSessionExpired()
-      ) {
-        // If device shouldn't be remembered and session is expired, sign out
-        await supabase.auth.signOut();
-        return;
-      }
-
       setSession(session);
       setUser(session?.user ?? null);
 
@@ -141,17 +128,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     supabase.auth
       .getSession()
       .then(({ data: { session } }) => {
-        // Perform the same remember device check for existing sessions
-        if (
-          session &&
-          !sessionPersistence.shouldRememberDevice() &&
-          sessionPersistence.isSessionExpired()
-        ) {
-          // Session is expired and device isn't remembered, sign out
-          supabase.auth.signOut();
-          return;
-        }
-
         setSession(session);
         setUser(session?.user ?? null);
 
@@ -223,11 +199,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       return { error };
     } catch (error: any) {
       authLogger.error('Sign up exception', { error });
-      const errorMsg = error?.message || 'An unexpected error occurred';
-      toast({
+      // Use centralized error handler for network/connection errors
+      await handleError(error, {
         title: 'Sign up failed',
-        description: errorMsg,
-        variant: 'destructive',
+        description: 'Unable to create your account',
+        context: 'User registration',
+        endpoint: '/auth/signup',
+        method: 'POST',
       });
       return { error };
     }
@@ -257,11 +235,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       return { error };
     } catch (error: any) {
-      const errorMsg = error?.message || 'An unexpected error occurred';
-      toast({
+      // Use centralized error handler for network/connection errors
+      await handleError(error, {
         title: 'Sign in failed',
-        description: errorMsg,
-        variant: 'destructive',
+        description: 'Unable to sign in to your account',
+        context: 'User authentication',
+        endpoint: '/auth/signin',
+        method: 'POST',
       });
       return { error };
     }

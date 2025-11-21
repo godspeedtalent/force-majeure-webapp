@@ -45,9 +45,10 @@ interface Event {
 
 interface EventCardProps {
   event: Event;
+  isSingleRow?: boolean;
 }
 
-export const EventCard = ({ event }: EventCardProps) => {
+export const EventCard = ({ event, isSingleRow = false }: EventCardProps) => {
   const navigate = useNavigate();
   const [showTicketDialog, setShowTicketDialog] = useState(false);
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
@@ -126,11 +127,14 @@ export const EventCard = ({ event }: EventCardProps) => {
         <div
           className={cn(
             'group relative overflow-hidden rounded-none border border-border bg-card',
-            'transition-all duration-300 cursor-pointer aspect-[2/3]',
+            'transition-all duration-300 cursor-pointer',
+            // Single row: viewport-based height with 2:3 aspect ratio (50vh to fit within 60vh container)
+            isSingleRow ? 'h-[50vh] w-auto' : 'aspect-[2/3]',
             // Apply hover state when actually hovering OR when context menu is open
             contextMenuOpen && 'border-fm-gold/50 shadow-lg shadow-fm-gold/10',
             'hover:border-fm-gold/50 hover:shadow-lg hover:shadow-fm-gold/10'
           )}
+          style={isSingleRow ? { aspectRatio: '2/3' } : undefined}
           onClick={handleCardClick}
         >
           {/* Hero Image Section - Takes up more space for 2:3 ratio */}

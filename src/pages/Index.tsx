@@ -49,6 +49,9 @@ const Index = () => {
   const heroRef = useRef<HTMLDivElement>(null);
   const eventsRef = useRef<HTMLDivElement>(null);
 
+  // Determine if we have a single row of events (3 or fewer on desktop, or no events with the "coming soon" card)
+  const isSingleRow = !isMobile && upcomingEvents.length <= 3;
+
   // Mobile scroll snap functionality
   const { activeSection, scrollToSection, registerSection, unregisterSection } = useScrollSnap({
     enabled: true,
@@ -205,91 +208,152 @@ const Index = () => {
           </div>
         ) : (
           <div className='relative z-10'>
-            {/* Hero Section with Parallax */}
-            <section
-              ref={heroRef}
-              className='min-h-screen flex items-center justify-center snap-start snap-always pt-24 pb-32 px-4'
-              data-section-id='hero'
-            >
-              <div
-                className='max-w-7xl mx-auto'
-                style={{
-                  transform: `translateY(${parallaxOffset}px)`,
-                  opacity: fadeOpacity,
-                  transition: 'transform 0.3s ease-out, opacity 0.3s ease-out',
-                  willChange: 'transform, opacity',
-                }}
-              >
-                {/* Logo and Title Section */}
-                <div className='flex flex-col items-center text-center'>
-                  <ForceMajeureLogo size='xl' className='mb-8 h-40 w-40' />
-
-                  <h1
-                    className='text-3xl lg:text-5xl font-screamer leading-none mb-10'
-                    style={{ fontWeight: 475 }}
-                  >
-                    <span className='text-foreground'>FORCE </span>
-                    <span className='bg-gradient-gold bg-clip-text text-transparent'>
-                      MAJEURE
-                    </span>
-                  </h1>
-                </div>
-
-                {/* Decorative Divider */}
-                <DecorativeDivider />
-              </div>
-
-              {/* Mobile scroll cue */}
-              <MobileScrollCue />
-            </section>
-
-            {/* Events Grid Section */}
-            <section
-              ref={eventsRef}
-              className='min-h-screen snap-start snap-always py-24 px-4'
-              data-section-id='events'
-            >
-              <div className='max-w-7xl mx-auto animate-fade-in'>
-                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center'>
-                {loading ? (
-                  Array.from({ length: 6 }).map((_, idx) => (
-                    <EventCardSkeleton key={`skeleton-${idx}`} />
-                  ))
-                ) : upcomingEvents.length > 0 ? (
-                  upcomingEvents.map(event => (
-                    <EventCard key={event.id} event={event} />
-                  ))
-                ) : (
-                  <div className='col-span-full flex justify-center'>
-                    <FmInfoCard className='max-w-2xl text-center'>
-                      <h2 className='text-lg lg:text-xl text-fm-gold mb-[20px]'>
-                        Our 2026 lineup is coming soon.
-                      </h2>
-                      <p className='text-sm text-muted-foreground mb-[10px]'>
-                        Are you an artist wanting to open for headlining talent?
-                      </p>
-                      <p className='text-sm text-muted-foreground mb-[20px]'>
-                        Register with us below!
-                      </p>
-                      <FmCommonButton onClick={() => navigate('/artists/signup')}>
-                        Artist Registration
-                      </FmCommonButton>
-                    </FmInfoCard>
+            {isSingleRow ? (
+              /* Single Page Layout - Combined view */
+              <div className='h-screen flex flex-col justify-around py-8 px-4'>
+                {/* Logo Section - Top Row */}
+                <div className='flex items-center justify-center'>
+                  <div className='max-w-7xl mx-auto'>
+                    <div className='flex flex-col items-center text-center'>
+                      <ForceMajeureLogo size='lg' className='mb-4 h-32 w-32' />
+                      <h1
+                        className='text-2xl lg:text-4xl font-screamer leading-none mb-8'
+                        style={{ fontWeight: 475 }}
+                      >
+                        <span className='text-foreground'>FORCE </span>
+                        <span className='bg-gradient-gold bg-clip-text text-transparent'>
+                          MAJEURE
+                        </span>
+                      </h1>
+                      {/* Decorative Divider - Only in single row layout */}
+                      <DecorativeDivider />
+                    </div>
                   </div>
-                )}
+                </div>
+
+                {/* Events Section - Bottom Row */}
+                <div ref={eventsRef} className='flex items-center justify-center' data-section-id='events'>
+                  <div className='max-w-7xl mx-auto animate-fade-in w-full'>
+                    <div className='flex justify-center items-center gap-8'>
+                      {loading ? (
+                        Array.from({ length: 6 }).map((_, idx) => (
+                          <EventCardSkeleton key={`skeleton-${idx}`} />
+                        ))
+                      ) : upcomingEvents.length > 0 ? (
+                        upcomingEvents.map(event => (
+                          <EventCard key={event.id} event={event} isSingleRow={isSingleRow} />
+                        ))
+                      ) : (
+                        <div className='flex justify-center'>
+                          <FmInfoCard className='max-w-2xl text-center'>
+                            <h2 className='text-lg lg:text-xl text-fm-gold mb-[20px]'>
+                              Our 2026 lineup is coming soon.
+                            </h2>
+                            <p className='text-sm text-muted-foreground mb-[10px]'>
+                              Are you an artist wanting to open for headlining talent?
+                            </p>
+                            <p className='text-sm text-muted-foreground mb-[20px]'>
+                              Register with us below!
+                            </p>
+                            <FmCommonButton onClick={() => navigate('/artists/signup')}>
+                              Artist Registration
+                            </FmCommonButton>
+                          </FmInfoCard>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </section>
+            ) : (
+              <>
+                {/* Hero Section with Parallax */}
+                <section
+                  ref={heroRef}
+                  className='min-h-screen flex items-center justify-center snap-start snap-always pt-24 pb-32 px-4'
+                  data-section-id='hero'
+                >
+                  <div
+                    className='max-w-7xl mx-auto'
+                    style={{
+                      transform: `translateY(${parallaxOffset}px)`,
+                      opacity: fadeOpacity,
+                      transition: 'transform 0.3s ease-out, opacity 0.3s ease-out',
+                      willChange: 'transform, opacity',
+                    }}
+                  >
+                    {/* Logo and Title Section */}
+                    <div className='flex flex-col items-center text-center'>
+                      <ForceMajeureLogo size='xl' className='mb-8 h-40 w-40' />
 
-            {/* Mobile Section Indicator */}
-            <MobileSectionIndicator
-              sections={[
-                { id: 'hero', label: 'Welcome' },
-                { id: 'events', label: 'Events' },
-              ]}
-              activeSection={activeSection}
-              onSectionClick={scrollToSection}
-            />
+                      <h1
+                        className='text-3xl lg:text-5xl font-screamer leading-none mb-10'
+                        style={{ fontWeight: 475 }}
+                      >
+                        <span className='text-foreground'>FORCE </span>
+                        <span className='bg-gradient-gold bg-clip-text text-transparent'>
+                          MAJEURE
+                        </span>
+                      </h1>
+                    </div>
+
+                    {/* Decorative Divider */}
+                    <DecorativeDivider />
+                  </div>
+
+                  {/* Mobile scroll cue */}
+                  <MobileScrollCue />
+                </section>
+
+                {/* Events Grid Section */}
+                <section
+                  ref={eventsRef}
+                  className='min-h-screen snap-start snap-always py-24 px-4'
+                  data-section-id='events'
+                >
+                  <div className='max-w-7xl mx-auto animate-fade-in w-full'>
+                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center'>
+                      {loading ? (
+                        Array.from({ length: 6 }).map((_, idx) => (
+                          <EventCardSkeleton key={`skeleton-${idx}`} />
+                        ))
+                      ) : upcomingEvents.length > 0 ? (
+                        upcomingEvents.map(event => (
+                          <EventCard key={event.id} event={event} isSingleRow={false} />
+                        ))
+                      ) : (
+                        <div className='col-span-full flex justify-center'>
+                          <FmInfoCard className='max-w-2xl text-center'>
+                            <h2 className='text-lg lg:text-xl text-fm-gold mb-[20px]'>
+                              Our 2026 lineup is coming soon.
+                            </h2>
+                            <p className='text-sm text-muted-foreground mb-[10px]'>
+                              Are you an artist wanting to open for headlining talent?
+                            </p>
+                            <p className='text-sm text-muted-foreground mb-[20px]'>
+                              Register with us below!
+                            </p>
+                            <FmCommonButton onClick={() => navigate('/artists/signup')}>
+                              Artist Registration
+                            </FmCommonButton>
+                          </FmInfoCard>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </section>
+
+                {/* Mobile Section Indicator */}
+                <MobileSectionIndicator
+                  sections={[
+                    { id: 'hero', label: 'Welcome' },
+                    { id: 'events', label: 'Events' },
+                  ]}
+                  activeSection={activeSection}
+                  onSectionClick={scrollToSection}
+                />
+              </>
+            )}
           </div>
         )}
       </div>

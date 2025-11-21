@@ -24,6 +24,10 @@ dist-ssr
 *.sln
 *.sw?
 
+# Environment files
+.env
+.env.local
+
 # Backup and archived files
 *.backup
 *.archived.*
