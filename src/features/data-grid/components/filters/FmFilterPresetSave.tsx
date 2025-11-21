@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Input } from '@/components/common/shadcn/input';
 import { Button } from '@/components/common/shadcn/button';
 import { Save } from 'lucide-react';

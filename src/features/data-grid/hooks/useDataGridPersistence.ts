@@ -46,7 +46,11 @@ export function useDataGridPersistence({
       setIsLoaded(true);
       return parsed;
     } catch (error) {
-      logger.error('Failed to load DataGrid state:', error);
+      logger.error('Failed to load DataGrid state', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        source: 'loadState',
+        details: { fullKey, error }
+      });
       return null;
     }
   }, [fullKey, enabled]);
@@ -65,7 +69,11 @@ export function useDataGridPersistence({
 
         localStorage.setItem(fullKey, JSON.stringify(updated));
       } catch (error) {
-        logger.error('Failed to save DataGrid state:', error);
+        logger.error('Failed to save DataGrid state', {
+          error: error instanceof Error ? error.message : 'Unknown error',
+          source: 'saveState',
+          details: { fullKey, error }
+        });
       }
     },
     [fullKey, enabled, loadState]
@@ -81,7 +89,11 @@ export function useDataGridPersistence({
       localStorage.removeItem(fullKey);
       setIsLoaded(false);
     } catch (error) {
-      logger.error('Failed to clear DataGrid state:', error);
+      logger.error('Failed to clear DataGrid state', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        source: 'clearState',
+        details: { fullKey, error }
+      });
     }
   }, [fullKey, enabled]);
 

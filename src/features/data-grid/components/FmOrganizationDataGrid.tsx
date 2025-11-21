@@ -102,7 +102,7 @@ export function FmOrganizationDataGrid() {
       filterable: false,
       editable: true,
       isRelation: true,
-      render: (value, row) => {
+      render: (_value, row) => {
         const owner = (row as any).owner;
         const ownerName = owner?.display_name || owner?.full_name || 'Unknown User';
 
@@ -186,16 +186,16 @@ export function FmOrganizationDataGrid() {
           const { data: ownerProfile } = await supabase
             .from('profiles')
             .select('user_id, display_name, full_name, avatar_url')
-            .eq('user_id', updatedOrg.owner_id)
+            .eq('user_id', (updatedOrg as any).owner_id)
             .single();
 
           const orgWithOwner = {
-            ...updatedOrg,
+            ...(updatedOrg as any),
             owner: ownerProfile,
           };
 
           setOrganizations(prevOrgs =>
-            prevOrgs.map(org => (org.id === row.id ? orgWithOwner as any : org))
+            prevOrgs.map(org => (org.id === row.id ? orgWithOwner : org))
           );
         }
       } else {
@@ -247,17 +247,17 @@ export function FmOrganizationDataGrid() {
         .single();
 
       const orgWithOwner = {
-        ...data,
+        ...(data as any),
         owner: ownerProfile,
       };
 
-      setOrganizations(prev => [...prev, orgWithOwner as any]);
+      setOrganizations(prev => [...prev, orgWithOwner]);
 
       toast.success('Organization created', {
-        description: `${data.name} has been created`,
+        description: `${(data as any).name} has been created`,
       });
 
-      return orgWithOwner as any;
+      return orgWithOwner;
     } catch (error: any) {
       logger.error('Error creating organization:', error);
       toast.error('Creation failed', {

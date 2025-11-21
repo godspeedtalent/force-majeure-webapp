@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { logger } from '@/shared/services/logger';
-import { Search, Plus, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import {
   Popover,
   PopoverContent,

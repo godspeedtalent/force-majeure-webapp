@@ -16,7 +16,6 @@ import {
   X,
   Home,
   Shield,
-  ExternalLink,
   Building2,
   Scan,
   Mail,
