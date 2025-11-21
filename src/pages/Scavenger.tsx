@@ -1,7 +1,6 @@
 import { logger } from '@/shared/services/logger';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { useState } from 'react';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { UnauthenticatedWizard } from '@/components/scavenger/auth/UnauthenticatedWizard';
 import { ScavengerFullLayout } from '@/components/scavenger/layouts/ScavengerFullLayout';

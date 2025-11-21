@@ -16,13 +16,10 @@ interface Venue {
   address?: string;
   city?: string;
   state?: string;
-  zip_code?: string;
   capacity?: number;
-  description?: string;
   image_url?: string;
-  website?: string;
-  phone?: string;
-  email?: string;
+  city_id?: string;
+  test_data: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -31,20 +28,20 @@ export default function VenueDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const { data: venue, isLoading, error } = useQuery<Venue>({
+  const { data: venue, isLoading, error } = useQuery({
     queryKey: ['venue', id],
-    queryFn: async () => {
+    queryFn: async (): Promise<Venue> => {
       if (!id) throw new Error('Venue ID is required');
 
       const { data, error } = await supabase
-        .from('venues' as any)
+        .from('venues')
         .select('*')
         .eq('id', id)
         .single();
 
       if (error) throw error;
       if (!data) throw new Error('Venue not found');
-      return data;
+      return data as Venue;
     },
     enabled: !!id,
   });
@@ -73,7 +70,7 @@ export default function VenueDetails() {
     );
   }
 
-  const fullAddress = [venue.address, venue.city, venue.state, venue.zip_code]
+  const fullAddress = [venue.address, venue.city, venue.state]
     .filter(Boolean)
     .join(', ');
 
@@ -162,63 +159,9 @@ export default function VenueDetails() {
                 </div>
               )}
 
-              {venue.description && (
-                <div>
-                  <label className='text-sm text-muted-foreground'>Description</label>
-                  <p className='whitespace-pre-wrap'>{venue.description}</p>
-                </div>
-              )}
             </CardContent>
           </Card>
 
-          {/* Contact Information */}
-          {(venue.phone || venue.email || venue.website) && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Contact Information</CardTitle>
-              </CardHeader>
-              <CardContent className='space-y-3'>
-                {venue.phone && (
-                  <div>
-                    <label className='text-sm text-muted-foreground'>Phone</label>
-                    <p>
-                      <a href={`tel:${venue.phone}`} className='text-fm-gold hover:underline'>
-                        {venue.phone}
-                      </a>
-                    </p>
-                  </div>
-                )}
-
-                {venue.email && (
-                  <div>
-                    <label className='text-sm text-muted-foreground'>Email</label>
-                    <p>
-                      <a href={`mailto:${venue.email}`} className='text-fm-gold hover:underline'>
-                        {venue.email}
-                      </a>
-                    </p>
-                  </div>
-                )}
-
-                {venue.website && (
-                  <div>
-                    <label className='text-sm text-muted-foreground'>Website</label>
-                    <p>
-                      <a
-                        href={venue.website}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        className='flex items-center gap-2 text-fm-gold hover:underline'
-                      >
-                        {venue.website}
-                        <ExternalLink className='h-4 w-4' />
-                      </a>
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
         </div>
 
         {/* Right Column - Metadata */}

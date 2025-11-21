@@ -27,7 +27,6 @@ interface AdminUser {
 export const UserManagement = () => {
   const queryClient = useQueryClient();
   const [roleModalOpen, setRoleModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
 
   // Fetch users with their auth email
   const { data: users = [], isLoading } = useQuery({
@@ -110,11 +109,6 @@ export const UserManagement = () => {
     }
   };
 
-  const handleOpenRoleModal = (_user: AdminUser) => {
-    // Role management disabled in current implementation
-    return;
-  };
-
   const handleRolesUpdated = () => {
     // Refresh users to get updated roles
     queryClient.invalidateQueries({ queryKey: ['admin-users'] });
@@ -191,17 +185,6 @@ export const UserManagement = () => {
         onUpdate={handleUserUpdate}
         resourceName='User'
       />
-
-      {selectedUser && (
-        <RoleManagementModal
-          open={roleModalOpen}
-          onOpenChange={setRoleModalOpen}
-          userId={selectedUser.id}
-          userEmail={selectedUser.email}
-          currentRoles={selectedUser.roles}
-          onRolesUpdated={handleRolesUpdated}
-        />
-      )}
     </div>
   );
 };
