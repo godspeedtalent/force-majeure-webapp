@@ -1,4 +1,5 @@
 import { supabase } from '@/shared/api/supabase/client';
+import { logger } from '@/shared/services/logger';
 
 export interface RecordEventViewParams {
   eventId: string;
@@ -19,19 +20,19 @@ export async function recordEventView({
   try {
     const { error } = await supabase.rpc('record_event_view', {
       p_event_id: eventId,
-      p_session_id: sessionId || null,
-      p_ip_address: ipAddress || null,
-      p_user_agent: userAgent || null,
+      p_session_id: sessionId ?? undefined,
+      p_ip_address: ipAddress ?? undefined,
+      p_user_agent: userAgent ?? undefined,
     });
 
     if (error) {
-      logger.error('Error recording event view:', error);
+      logger.error('Error recording event view:', { error });
       return { success: false, error: error.message };
     }
 
     return { success: true };
   } catch (error) {
-    logger.error('Error recording event view:', error);
+    logger.error('Error recording event view:', { error });
     return { success: false, error: String(error) };
   }
 }
@@ -48,13 +49,13 @@ export async function getEventViewCount(
     });
 
     if (error) {
-      logger.error('Error fetching event view count:', error);
+      logger.error('Error fetching event view count:', { error });
       return { count: 0, error: error.message };
     }
 
     return { count: Number(data) || 0 };
   } catch (error) {
-    logger.error('Error fetching event view count:', error);
+    logger.error('Error fetching event view count:', { error });
     return { count: 0, error: String(error) };
   }
 }

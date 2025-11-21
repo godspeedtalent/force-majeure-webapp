@@ -29,11 +29,18 @@ export const useUserRole = () => {
       });
 
       if (error) {
-        logger.error('Error fetching user roles:', error);
+        logger.error('Error fetching user roles:', { error });
         return null;
       }
 
-      return data as UserRole[];
+      // Map database response to UserRole interface
+      return (data || []).map(role => ({
+        role_name: role.role_name,
+        display_name: role.display_name,
+        permission_names: Array.isArray(role.permissions)
+          ? role.permissions
+          : [],
+      })) as UserRole[];
     },
     enabled: !!user,
     staleTime: 5 * 60 * 1000, // 5 minutes

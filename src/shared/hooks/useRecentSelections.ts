@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { logger } from '@/shared/services/logger';
 
 const STORAGE_KEY_PREFIX = 'fm_recent_';
 const MAX_RECENT_ITEMS = 5;
@@ -30,7 +31,7 @@ export function useRecentSelections(storageKey: string) {
         setRecentItems(sorted);
       }
     } catch (error) {
-      logger.error('Error loading recent selections:', error);
+      logger.error('Error loading recent selections:', { error });
     }
   }, [fullKey]);
 
@@ -51,7 +52,7 @@ export function useRecentSelections(storageKey: string) {
         try {
           localStorage.setItem(fullKey, JSON.stringify(updated));
         } catch (error) {
-          logger.error('Error saving recent selections:', error);
+          logger.error('Error saving recent selections:', { error });
         }
 
         return updated;
@@ -66,7 +67,7 @@ export function useRecentSelections(storageKey: string) {
     try {
       localStorage.removeItem(fullKey);
     } catch (error) {
-      logger.error('Error clearing recent selections:', error);
+      logger.error('Error clearing recent selections:', { error });
     }
   }, [fullKey]);
 
