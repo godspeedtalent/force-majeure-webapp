@@ -6,7 +6,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import type { Genre, GenreWithParent, GenreTree } from '../types';
+import type { GenreTree, GenreHierarchyNode } from '../types';
 import * as genreService from '../services/genreService';
 
 // ========================================
