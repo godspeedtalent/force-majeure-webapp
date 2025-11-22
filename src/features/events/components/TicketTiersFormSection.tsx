@@ -69,11 +69,32 @@ export function TicketTiersFormSection({ state, actions }: TicketTiersFormSectio
         addLabel='Add Ticket Tier'
         minItems={1}
         maxItems={5}
+        canRemoveItem={(tier: TicketTier) => !tier.hasOrders}
+        getRemoveTooltip={(tier: TicketTier) =>
+          tier.hasOrders
+            ? 'This tier cannot be deleted because it has associated orders'
+            : 'Remove this tier'
+        }
         renderRow={(tier: TicketTier, index: number) => (
-          <div className='space-y-3 p-4 rounded-md bg-white/5 border border-white/10'>
+          <div
+            className={cn(
+              'space-y-3 p-4 rounded-md bg-white/5 border',
+              tier.hasOrders ? 'border-fm-gold/30 bg-fm-gold/5' : 'border-white/10'
+            )}
+          >
+            {tier.hasOrders && (
+              <div className='flex items-center gap-2 pb-2 border-b border-fm-gold/20'>
+                <div className='h-2 w-2 rounded-full bg-fm-gold animate-pulse' />
+                <p className='text-xs text-fm-gold font-medium'>
+                  This tier has orders and cannot be deleted
+                </p>
+              </div>
+            )}
             <div className='grid grid-cols-3 gap-3'>
               <div className='space-y-1'>
-                <Label className='text-white/70 text-xs'>Name</Label>
+                <Label className='text-white/70 text-xs'>
+                  Name <span className='text-fm-danger'>*</span>
+                </Label>
                 <Input
                   value={tier.name}
                   onChange={e => handleUpdateField(index, 'name', e.target.value)}
@@ -82,7 +103,9 @@ export function TicketTiersFormSection({ state, actions }: TicketTiersFormSectio
                 />
               </div>
               <div className='space-y-1'>
-                <Label className='text-white/70 text-xs'>Price ($)</Label>
+                <Label className='text-white/70 text-xs'>
+                  Price ($) <span className='text-fm-danger'>*</span>
+                </Label>
                 <Input
                   type='number'
                   min='0'
@@ -98,7 +121,9 @@ export function TicketTiersFormSection({ state, actions }: TicketTiersFormSectio
                 />
               </div>
               <div className='space-y-1'>
-                <Label className='text-white/70 text-xs'>Quantity</Label>
+                <Label className='text-white/70 text-xs'>
+                  Quantity <span className='text-fm-danger'>*</span>
+                </Label>
                 <Input
                   type='number'
                   min='1'

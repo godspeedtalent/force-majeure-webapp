@@ -8,7 +8,7 @@ import { EventFormState, TicketTier } from './useEventFormState';
  */
 export function useEventFormValidation() {
   const validateForm = (state: EventFormState): string | null => {
-    const { headlinerId, eventDate, venueId, ticketTiers, venueCapacity } = state;
+    const { headlinerId, eventDate, venueId, ticketTiers, venueCapacity, endTime, isAfterHours } = state;
 
     // Required fields
     if (!headlinerId) {
@@ -17,6 +17,17 @@ export function useEventFormValidation() {
     if (!eventDate) {
       return 'Please select an event date';
     }
+
+    // Start time is required (part of eventDate)
+    if (eventDate && (!eventDate.getHours() && eventDate.getHours() !== 0)) {
+      return 'Please select a start time';
+    }
+
+    // Either end time or is_after_hours must be set
+    if (!isAfterHours && (!endTime || endTime === '')) {
+      return 'Please select an end time or mark as after hours event';
+    }
+
     if (!venueId) {
       return 'Please select a venue';
     }
@@ -43,15 +54,26 @@ export function useEventFormValidation() {
   };
 
   const validateTicketTier = (tier: TicketTier, tierNumber: number): string | null => {
+    // Name is required
     if (!tier.name || tier.name.trim() === '') {
       return `Ticket tier ${tierNumber} must have a name`;
+    }
+
+    // Price is required (can be 0, but must be set)
+    if (tier.priceInCents === undefined || tier.priceInCents === null) {
+      return `Ticket tier "${tier.name}" must have a price (use 0 for free)`;
     }
     if (tier.priceInCents < 0) {
       return `Ticket tier "${tier.name}" cannot have a negative price`;
     }
-    if (tier.quantity <= 0) {
+
+    // Quantity is required and must be at least 1
+    if (!tier.quantity || tier.quantity <= 0) {
       return `Ticket tier "${tier.name}" must have at least 1 ticket`;
     }
+
+    // Description is optional - no validation needed
+
     return null;
   };
 

@@ -192,14 +192,65 @@ async function updateTicketTiers(
   eventId: string,
   ticketTiers: EventFormState['ticketTiers']
 ) {
-  // Delete existing ticket tiers
-  const { error: deleteError } = await supabase
+  // Fetch existing ticket tiers to check which ones have orders
+  const { data: existingTiers, error: fetchError } = await supabase
     .from('ticket_tiers' as any)
-    .delete()
+    .select('id')
     .eq('event_id', eventId);
 
-  if (deleteError) throw deleteError;
+  if (fetchError) throw fetchError;
 
-  // Insert updated ticket tiers
-  await createTicketTiers(eventId, ticketTiers);
+  if (existingTiers && existingTiers.length > 0) {
+    // For each existing tier, check if it has orders
+    const tierIds = existingTiers.map((t: any) => t.id);
+
+    const { data: ordersData, error: ordersError } = await supabase
+      .from('order_items' as any)
+      .select('ticket_tier_id')
+      .in('ticket_tier_id', tierIds);
+
+    if (ordersError) throw ordersError;
+
+    // Get set of tier IDs that have orders
+    const tiersWithOrders = new Set(
+      ordersData?.map((item: any) => item.ticket_tier_id) || []
+    );
+
+    // Only delete tiers that don't have orders
+    const tiersToDelete = existingTiers
+      .filter((tier: any) => !tiersWithOrders.has(tier.id))
+      .map((tier: any) => tier.id);
+
+    if (tiersToDelete.length > 0) {
+      const { error: deleteError } = await supabase
+        .from('ticket_tiers' as any)
+        .delete()
+        .in('id', tiersToDelete);
+
+      if (deleteError) throw deleteError;
+    }
+  }
+
+  // Insert new ticket tiers (those without an id)
+  const newTiers = ticketTiers.filter((tier) => !tier.id);
+  if (newTiers.length > 0) {
+    await createTicketTiers(eventId, newTiers);
+  }
+
+  // Update existing ticket tiers (those with an id)
+  const existingTiersToUpdate = ticketTiers.filter((tier) => tier.id);
+  for (const tier of existingTiersToUpdate) {
+    const { error: updateError } = await supabase
+      .from('ticket_tiers' as any)
+      .update({
+        name: tier.name,
+        description: tier.description || null,
+        price_cents: tier.priceInCents,
+        total_tickets: tier.quantity,
+        hide_until_previous_sold_out: tier.hideUntilPreviousSoldOut,
+      })
+      .eq('id', tier.id);
+
+    if (updateError) throw updateError;
+  }
 }

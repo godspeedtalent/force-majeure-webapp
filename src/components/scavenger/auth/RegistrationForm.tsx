@@ -1,9 +1,9 @@
-import { Check, X } from 'lucide-react';
+import { Check, X, User, AtSign, Lock, MessageSquare } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
-import { FormSection } from '@/components/common/forms/FormSection';
+import { FmFormFieldGroup } from '@/components/common/forms/FmFormFieldGroup';
 import { ScrollArea } from '@/components/common/shadcn/scroll-area';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { supabase } from '@/shared/api/supabase/client';
@@ -180,9 +180,14 @@ export function RegistrationForm({
         <form
           id='registration-form'
           onSubmit={handleSubmit}
-          className='px-8 lg:px-12 pb-6'
+          className='px-8 lg:px-12 pb-6 space-y-[20px]'
         >
-          <FormSection title='Contact Info' showTopDivider={false}>
+          {/* Contact Information */}
+          <FmFormFieldGroup
+            title='Contact Information'
+            icon={User}
+            layout='stack'
+          >
             <FmCommonTextField
               label='Full Name'
               id='fullName'
@@ -214,9 +219,15 @@ export function RegistrationForm({
               }
               required
             />
-          </FormSection>
+          </FmFormFieldGroup>
 
-          <FormSection title='Social'>
+          {/* Social Profile */}
+          <FmFormFieldGroup
+            title='Social Profile'
+            icon={AtSign}
+            description='How you appear to others'
+            layout='stack'
+          >
             <div className='space-y-3'>
               <FmCommonTextField
                 label='Display Name'
@@ -250,12 +261,16 @@ export function RegistrationForm({
               onChange={e => updateFormData('instagramHandle', e.target.value)}
               prepend='@'
             />
+          </FmFormFieldGroup>
 
-          </FormSection>
-
-          <FormSection title='Password'>
+          {/* Password Section */}
+          <FmFormFieldGroup
+            title='Account Security'
+            icon={Lock}
+            layout='stack'
+          >
             <FmCommonTextField
-              label='Password *'
+              label='Password'
               id='password'
               password
               placeholder='Enter your password'
@@ -267,7 +282,7 @@ export function RegistrationForm({
 
             <div className='space-y-2'>
               <FmCommonTextField
-                label='Confirm Password *'
+                label='Confirm Password'
                 id='confirmPassword'
                 password
                 placeholder='Confirm your password'
@@ -375,10 +390,14 @@ export function RegistrationForm({
                 </div>
               </div>
             )}
-          </FormSection>
+          </FmFormFieldGroup>
 
           {/* Agreements */}
-          <div className='space-y-3 pb-6'>
+          <FmFormFieldGroup
+            title='Preferences'
+            icon={MessageSquare}
+            layout='stack'
+          >
             <FmCommonToggle
               id='agreeToContact'
               label='I agree to receive event updates via email and SMS *'
@@ -388,7 +407,7 @@ export function RegistrationForm({
               }
               className='text-xs'
             />
-          </div>
+          </FmFormFieldGroup>
         </form>
 
         <div className='px-8 lg:px-12 py-6 border-t border-border/40'>

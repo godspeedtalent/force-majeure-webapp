@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { Mic2 } from 'lucide-react';
+import { Mic2, User, Music, Share2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useCreateEntityNavigation } from '@/shared/hooks/useCreatedEntityReturn';
 import { FmCommonCreateForm } from '@/components/common/forms/FmCommonCreateForm';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonJsonEditor } from '@/components/common/forms/FmCommonJsonEditor';
 import { FmFlexibleImageUpload } from '@/components/common/forms/FmFlexibleImageUpload';
+import { FmFormFieldGroup } from '@/components/common/forms/FmFormFieldGroup';
 import { FmGenreMultiSelect } from '@/features/artists/components/FmGenreMultiSelect';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmSpotifyArtistImportModal } from '@/components/common/modals/FmSpotifyArtistImportModal';
@@ -16,6 +18,7 @@ import type { Genre } from '@/features/artists/types';
 
 const DeveloperCreateArtistPage = () => {
   const navigate = useNavigate();
+  const { returnTo, navigateWithEntity } = useCreateEntityNavigation('newArtistId');
   const [formData, setFormData] = useState({
     name: '',
     image_url: '',
@@ -66,14 +69,17 @@ const DeveloperCreateArtistPage = () => {
       }
 
       toast.success('Artist created successfully');
-      setFormData({
-        name: '',
-        image_url: '',
-        bio: '',
-      });
-      setSelectedGenres([]);
-      setSocialLinks({});
-      navigate('/developer/database');
+
+      // Return to origin page with new entity, or go to database page
+      const returnUrl = navigateWithEntity(artist.id);
+      if (returnUrl) {
+        navigate(returnUrl);
+      } else {
+        setFormData({ name: '', image_url: '', bio: '' });
+        setSelectedGenres([]);
+        setSocialLinks({});
+        navigate('/developer/database');
+      }
     } catch (error) {
       logger.error('Error creating artist:', {
         error: error instanceof Error ? error.message : 'Unknown',
@@ -85,14 +91,15 @@ const DeveloperCreateArtistPage = () => {
   };
 
   const handleCancel = () => {
-    setFormData({
-      name: '',
-      image_url: '',
-      bio: '',
-    });
-    setSelectedGenres([]);
-    setSocialLinks({});
-    navigate('/developer/database');
+    // If we came from a dropdown, go back there; otherwise go to database
+    if (returnTo) {
+      navigate(decodeURIComponent(returnTo));
+    } else {
+      setFormData({ name: '', image_url: '', bio: '' });
+      setSelectedGenres([]);
+      setSocialLinks({});
+      navigate('/developer/database');
+    }
   };
 
   return (
@@ -134,7 +141,12 @@ const DeveloperCreateArtistPage = () => {
         </div>
       </div>
 
-      <FmCommonTextField
+      <FmFormFieldGroup
+        title='Basic Information'
+        icon={User}
+        layout='stack'
+      >
+        <FmCommonTextField
           label='Artist Name'
           required
           value={formData.name}
@@ -158,14 +170,26 @@ const DeveloperCreateArtistPage = () => {
           onChange={e => setFormData({ ...formData, bio: e.target.value })}
           placeholder='Artist biography...'
         />
+      </FmFormFieldGroup>
 
+      <FmFormFieldGroup
+        title='Genre & Style'
+        icon={Music}
+        layout='stack'
+      >
         <FmGenreMultiSelect
           label='Genres'
           selectedGenres={selectedGenres}
           onChange={setSelectedGenres}
           maxGenres={5}
         />
+      </FmFormFieldGroup>
 
+      <FmFormFieldGroup
+        title='Social Links'
+        icon={Share2}
+        layout='stack'
+      >
         <FmCommonJsonEditor
           label='Social Links'
           value={socialLinks}
@@ -173,6 +197,7 @@ const DeveloperCreateArtistPage = () => {
           keyPlaceholder='Platform (instagram, twitter, etc.)'
           valuePlaceholder='Handle or URL'
         />
+      </FmFormFieldGroup>
     </FmCommonCreateForm>
 
       {/* Spotify Import Modal */}

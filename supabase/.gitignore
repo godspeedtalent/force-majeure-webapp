@@ -3,6 +3,12 @@
 .temp
 
 # dotenvx
+.env
 .env.keys
 .env.local
 .env.*.local
+
+
+# Claude
+.claude/*
+.claude/settings.local.json

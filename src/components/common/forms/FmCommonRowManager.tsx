@@ -12,6 +12,8 @@ interface FmCommonRowManagerProps<T> {
   minItems?: number;
   maxItems?: number;
   className?: string;
+  canRemoveItem?: (item: T, index: number) => boolean; // Optional function to determine if specific item can be removed
+  getRemoveTooltip?: (item: T, index: number) => string; // Optional tooltip for disabled remove button
 }
 
 export function FmCommonRowManager<T>({
@@ -23,28 +25,43 @@ export function FmCommonRowManager<T>({
   minItems = 1,
   maxItems = 10,
   className,
+  canRemoveItem,
+  getRemoveTooltip,
 }: FmCommonRowManagerProps<T>) {
   const canAdd = items.length < maxItems;
-  const canRemove = items.length > minItems;
+  const baseCanRemove = items.length > minItems;
 
   return (
     <div className={cn('space-y-3', className)}>
-      {items.map((item, index) => (
-        <div key={index} className='relative'>
-          {canRemove && (
-            <Button
-              type='button'
-              variant='ghost'
-              size='icon'
-              onClick={() => onRemove(index)}
-              className='absolute -top-2 -right-2 z-10 h-6 w-6 text-white/50 hover:text-red-400 hover:bg-red-400/10'
-            >
-              <Trash2 className='h-3 w-3' />
-            </Button>
-          )}
-          {renderRow(item, index)}
-        </div>
-      ))}
+      {items.map((item, index) => {
+        // Check if this specific item can be removed
+        const itemCanRemove = baseCanRemove && (canRemoveItem ? canRemoveItem(item, index) : true);
+        const tooltip = !itemCanRemove && getRemoveTooltip ? getRemoveTooltip(item, index) : undefined;
+
+        return (
+          <div key={index} className='relative'>
+            {baseCanRemove && (
+              <Button
+                type='button'
+                variant='ghost'
+                size='icon'
+                onClick={() => itemCanRemove && onRemove(index)}
+                disabled={!itemCanRemove}
+                title={tooltip}
+                className={cn(
+                  'absolute -top-2 -right-2 z-10 h-6 w-6',
+                  itemCanRemove
+                    ? 'text-white/50 hover:text-red-400 hover:bg-red-400/10'
+                    : 'text-white/20 cursor-not-allowed opacity-50'
+                )}
+              >
+                <Trash2 className='h-3 w-3' />
+              </Button>
+            )}
+            {renderRow(item, index)}
+          </div>
+        );
+      })}
       {canAdd && (
         <Button
           type='button'

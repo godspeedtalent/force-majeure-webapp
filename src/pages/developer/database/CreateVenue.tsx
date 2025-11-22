@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useCreateEntityNavigation } from '@/shared/hooks/useCreatedEntityReturn';
 import { FmCommonCreateForm } from '@/components/common/forms/FmCommonCreateForm';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmFlexibleImageUpload } from '@/components/common/forms/FmFlexibleImageUpload';
@@ -10,6 +11,7 @@ import { logger } from '@/shared/services/logger';
 
 const DeveloperCreateVenuePage = () => {
   const navigate = useNavigate();
+  const { returnTo, navigateWithEntity } = useCreateEntityNavigation('newVenueId');
   const [formData, setFormData] = useState({
     name: '',
     website: '',
@@ -31,7 +33,7 @@ const DeveloperCreateVenuePage = () => {
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from('venues').insert({
+      const { data: venue, error } = await supabase.from('venues').insert({
         name: formData.name.trim(),
         website: formData.website.trim() || null,
         address_line_1: formData.address_line_1.trim() || null,
@@ -41,11 +43,56 @@ const DeveloperCreateVenuePage = () => {
         zip_code: formData.zip_code.trim() || null,
         capacity: formData.capacity ? parseInt(formData.capacity) : null,
         image_url: formData.image_url.trim() || null,
-      });
+      }).select().single();
 
       if (error) throw error;
 
       toast.success('Venue created successfully');
+
+      // Return to origin page with new entity, or go to database page
+      const returnUrl = navigateWithEntity(venue.id);
+      if (returnUrl) {
+        navigate(returnUrl);
+      } else {
+        setFormData({
+          name: '',
+          website: '',
+          address_line_1: '',
+          address_line_2: '',
+          city: '',
+          state: '',
+          zip_code: '',
+          capacity: '',
+          image_url: '',
+        });
+        navigate('/developer/database');
+      }
+    } catch (error) {
+      // Enhanced error logging for Supabase errors
+      const supabaseError = error as any;
+      logger.error('Error creating venue:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        code: supabaseError?.code,
+        details: supabaseError?.details,
+        hint: supabaseError?.hint,
+        statusCode: supabaseError?.statusCode,
+        fullError: error,
+      });
+
+      // Show detailed error to user
+      const errorMessage = supabaseError?.message || 'Failed to create venue';
+      const errorHint = supabaseError?.hint ? ` (${supabaseError.hint})` : '';
+      toast.error(`${errorMessage}${errorHint}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCancel = () => {
+    // If we came from a dropdown, go back there; otherwise go to database
+    if (returnTo) {
+      navigate(decodeURIComponent(returnTo));
+    } else {
       setFormData({
         name: '',
         website: '',
@@ -58,29 +105,7 @@ const DeveloperCreateVenuePage = () => {
         image_url: '',
       });
       navigate('/developer/database');
-    } catch (error) {
-      logger.error('Error creating venue:', {
-        error: error instanceof Error ? error.message : 'Unknown',
-      });
-      toast.error('Failed to create venue');
-    } finally {
-      setIsSubmitting(false);
     }
-  };
-
-  const handleCancel = () => {
-    setFormData({
-      name: '',
-      website: '',
-      address_line_1: '',
-      address_line_2: '',
-      city: '',
-      state: '',
-      zip_code: '',
-      capacity: '',
-      image_url: '',
-    });
-    navigate('/developer/database');
   };
 
   return (
@@ -107,7 +132,6 @@ const DeveloperCreateVenuePage = () => {
         value={formData.website}
         onChange={e => setFormData({ ...formData, website: e.target.value })}
         placeholder='https://example.com'
-        description='Venue or company website'
       />
 
       {/* Address Section - Grouped */}
@@ -116,25 +140,26 @@ const DeveloperCreateVenuePage = () => {
           Address
         </h3>
 
-        <FmCommonTextField
-          label='Address Line 1'
-          value={formData.address_line_1}
-          onChange={e =>
-            setFormData({ ...formData, address_line_1: e.target.value })
-          }
-          placeholder='123 Main St'
-          description='Street address'
-        />
-
-        <FmCommonTextField
-          label='Address Line 2'
-          value={formData.address_line_2}
-          onChange={e =>
-            setFormData({ ...formData, address_line_2: e.target.value })
-          }
-          placeholder='Suite 100'
-          description='Apartment, suite, unit, building, floor, etc. (optional)'
-        />
+        {/* Stacked address lines with single label below */}
+        <div className='space-y-0'>
+          <FmCommonTextField
+            value={formData.address_line_1}
+            onChange={e =>
+              setFormData({ ...formData, address_line_1: e.target.value })
+            }
+            placeholder='Street address'
+          />
+          <FmCommonTextField
+            value={formData.address_line_2}
+            onChange={e =>
+              setFormData({ ...formData, address_line_2: e.target.value })
+            }
+            placeholder='Apt, suite, unit, etc. (optional)'
+          />
+          <p className='text-xs text-muted-foreground uppercase tracking-wider mt-1'>
+            Address
+          </p>
+        </div>
 
         <div className='grid grid-cols-2 gap-[10px]'>
           <FmCommonTextField
@@ -148,7 +173,6 @@ const DeveloperCreateVenuePage = () => {
             value={formData.state}
             onChange={e => setFormData({ ...formData, state: e.target.value.toUpperCase() })}
             placeholder='CA'
-            description='Two-letter state code'
           />
         </div>
 
@@ -157,7 +181,6 @@ const DeveloperCreateVenuePage = () => {
           value={formData.zip_code}
           onChange={e => setFormData({ ...formData, zip_code: e.target.value })}
           placeholder='90001'
-          description='5-digit ZIP code or ZIP+4 format'
         />
       </div>
 

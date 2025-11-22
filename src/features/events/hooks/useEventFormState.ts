@@ -12,11 +12,13 @@ export interface UndercardArtist {
 }
 
 export interface TicketTier {
+  id?: string; // Optional: only present when loaded from database
   name: string;
   description?: string;
   priceInCents: number;
   quantity: number;
   hideUntilPreviousSoldOut: boolean;
+  hasOrders?: boolean; // Indicates if this tier has associated orders (cannot be deleted)
 }
 
 export interface EventFormState {
@@ -89,26 +91,13 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
             // Only initialize default tiers if no tiers exist (for create mode)
             if (ticketTiers.length === 0) {
               const capacity = data.capacity;
-              const tierCapacity = Math.floor(capacity / 3);
-              const remainder = capacity % 3;
 
               setTicketTiers([
                 {
-                  name: 'GA1',
+                  name: 'GA',
+                  description: '',
                   priceInCents: 0,
-                  quantity: tierCapacity + (remainder > 0 ? 1 : 0),
-                  hideUntilPreviousSoldOut: false,
-                },
-                {
-                  name: 'GA2',
-                  priceInCents: 0,
-                  quantity: tierCapacity + (remainder > 1 ? 1 : 0),
-                  hideUntilPreviousSoldOut: false,
-                },
-                {
-                  name: 'GA3',
-                  priceInCents: 0,
-                  quantity: tierCapacity,
+                  quantity: capacity,
                   hideUntilPreviousSoldOut: false,
                 },
               ]);

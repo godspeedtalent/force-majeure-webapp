@@ -137,7 +137,7 @@ export const AuthPanel = ({
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value='signin' className='space-y-6'>
+          <TabsContent value='signin' className='space-y-6 mt-6'>
             <form onSubmit={handleSignIn} className='space-y-6'>
               <FmCommonTextField
                 label='Email'
@@ -202,7 +202,7 @@ export const AuthPanel = ({
             )}
           </TabsContent>
 
-          <TabsContent value='signup' className='space-y-6'>
+          <TabsContent value='signup' className='space-y-6 mt-6'>
             <form onSubmit={handleSignUp} className='space-y-8'>
               <div className='grid grid-cols-2 gap-4'>
                 <FmCommonTextField

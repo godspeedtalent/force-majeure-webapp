@@ -174,12 +174,13 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
       }
     };
 
-    // Create new handler
+    // Create new handler - passes returnTo param so create page can return with new entity
     const handleCreateNew = () => {
       if (onCreateNew) {
         onCreateNew();
       } else if (createRoute) {
-        navigate(createRoute);
+        const returnTo = encodeURIComponent(window.location.pathname + window.location.search);
+        navigate(`${createRoute}?returnTo=${returnTo}`);
       }
     };
 

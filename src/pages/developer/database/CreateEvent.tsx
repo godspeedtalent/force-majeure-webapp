@@ -1,8 +1,9 @@
-import { Calendar } from 'lucide-react';
+import { Calendar, Mic2, Ticket } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/common/shadcn/button';
 import { DemoLayout } from '@/components/demo/DemoLayout';
 import { FmCommonLoadingOverlay } from '@/components/common/feedback/FmCommonLoadingOverlay';
+import { FmFormFieldGroup } from '@/components/common/forms/FmFormFieldGroup';
 import { useEventFormState } from '@/features/events/hooks/useEventFormState';
 import { useEventFormSubmit } from '@/features/events/hooks/useEventFormSubmit';
 import { EventDetailsFormSection } from '@/features/events/components/EventDetailsFormSection';
@@ -51,25 +52,29 @@ const DeveloperCreateEventPage = () => {
           </p>
 
           <div className='space-y-6'>
-            {/* Event Details Section */}
-            <div className='space-y-4'>
-              <h3 className='text-lg font-medium text-white'>Event Details</h3>
+            <FmFormFieldGroup
+              title='Event Details'
+              icon={Calendar}
+              layout='stack'
+            >
               <EventDetailsFormSection state={state} actions={actions} />
-            </div>
+            </FmFormFieldGroup>
 
-            {/* Undercard Artists Section */}
-            <div className='space-y-4'>
-              <h3 className='text-lg font-medium text-white'>
-                Undercard Artists
-              </h3>
+            <FmFormFieldGroup
+              title='Undercard Artists'
+              icon={Mic2}
+              layout='stack'
+            >
               <UndercardArtistsFormSection state={state} actions={actions} />
-            </div>
+            </FmFormFieldGroup>
 
-            {/* Ticket Tiers Section */}
-            <div className='space-y-4'>
-              <h3 className='text-lg font-medium text-white'>Ticket Tiers</h3>
+            <FmFormFieldGroup
+              title='Ticket Tiers'
+              icon={Ticket}
+              layout='stack'
+            >
               <TicketTiersFormSection state={state} actions={actions} />
-            </div>
+            </FmFormFieldGroup>
           </div>
 
           {/* Form Actions */}

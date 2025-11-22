@@ -23,7 +23,9 @@ export function EventDetailsFormSection({ state, actions }: EventDetailsFormSect
   return (
     <div className='space-y-4'>
       <div className='space-y-2'>
-        <Label className='text-white'>Headliner</Label>
+        <Label className='text-white'>
+          Headliner <span className='text-fm-danger'>*</span>
+        </Label>
         <FmArtistSearchDropdown
           value={state.headlinerId}
           onChange={actions.setHeadlinerId}
@@ -32,7 +34,9 @@ export function EventDetailsFormSection({ state, actions }: EventDetailsFormSect
       </div>
 
       <div className='space-y-2'>
-        <Label className='text-white'>Date</Label>
+        <Label className='text-white'>
+          Date <span className='text-fm-danger'>*</span>
+        </Label>
         <FmCommonDatePicker
           value={state.eventDate}
           onChange={actions.setEventDate}
@@ -42,7 +46,9 @@ export function EventDetailsFormSection({ state, actions }: EventDetailsFormSect
 
       <div className='grid grid-cols-2 gap-4'>
         <div className='space-y-2'>
-          <Label className='text-white'>Start Time</Label>
+          <Label className='text-white'>
+            Start Time <span className='text-fm-danger'>*</span>
+          </Label>
           <FmCommonTimePicker
             value={state.eventDate ? format(state.eventDate, 'HH:mm') : '20:00'}
             onChange={time => {
@@ -57,7 +63,9 @@ export function EventDetailsFormSection({ state, actions }: EventDetailsFormSect
           />
         </div>
         <div className='space-y-2'>
-          <Label className='text-white'>End Time</Label>
+          <Label className='text-white'>
+            End Time <span className='text-fm-danger'>*</span>
+          </Label>
           <FmCommonTimePicker
             value={state.endTime}
             onChange={actions.setEndTime}
@@ -67,19 +75,26 @@ export function EventDetailsFormSection({ state, actions }: EventDetailsFormSect
         </div>
       </div>
 
-      <div className='flex items-center gap-2'>
-        <Checkbox
-          id='after-hours'
-          checked={state.isAfterHours}
-          onCheckedChange={checked => actions.setIsAfterHours(checked === true)}
-        />
-        <Label htmlFor='after-hours' className='text-white/70 cursor-pointer'>
-          After Hours Event
-        </Label>
+      <div className='space-y-1'>
+        <div className='flex items-center gap-2'>
+          <Checkbox
+            id='after-hours'
+            checked={state.isAfterHours}
+            onCheckedChange={checked => actions.setIsAfterHours(checked === true)}
+          />
+          <Label htmlFor='after-hours' className='text-white/70 cursor-pointer'>
+            After Hours Event
+          </Label>
+        </div>
+        <p className='text-xs text-white/50 ml-6'>
+          Check this if the event has no defined end time (end time not required)
+        </p>
       </div>
 
       <div className='space-y-2'>
-        <Label className='text-white'>Venue</Label>
+        <Label className='text-white'>
+          Venue <span className='text-fm-danger'>*</span>
+        </Label>
         <FmVenueSearchDropdown
           value={state.venueId}
           onChange={actions.setVenueId}
