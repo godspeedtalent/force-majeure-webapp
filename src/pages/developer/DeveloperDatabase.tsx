@@ -199,6 +199,19 @@ export default function DeveloperDatabase() {
     },
   });
 
+  // Fetch events count for dashboard
+  const { data: eventsCount = 0 } = useQuery({
+    queryKey: ['events-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('events')
+        .select('*', { count: 'exact', head: true });
+
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
   const handleArtistUpdate = async (
     row: any,
     columnKey: string,
@@ -407,7 +420,6 @@ export default function DeveloperDatabase() {
   };
 
   const currentData = getCurrentData();
-  const totalRecords = currentData.length;
   const completeness = calculateCompleteness(currentData);
 
   return (
@@ -448,10 +460,10 @@ export default function DeveloperDatabase() {
                 </div>
                 <div className='bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]'>
                   <div className='text-xs text-muted-foreground mb-1'>
-                    Total Records
+                    Events
                   </div>
                   <div className='text-2xl font-bold text-foreground'>
-                    {totalRecords}
+                    {eventsCount}
                   </div>
                 </div>
                 <div className='bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]'>

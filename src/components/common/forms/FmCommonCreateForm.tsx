@@ -108,7 +108,7 @@ export const FmCommonCreateForm = ({
           </FmCommonButton>
           <FmCommonButton
             type='button'
-            variant='default'
+            variant='outline'
             onClick={onSubmit}
             disabled={isSubmitting}
           >

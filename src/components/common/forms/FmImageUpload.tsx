@@ -75,19 +75,8 @@ export const FmImageUpload = ({
       return;
     }
 
-    // Validate file size
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    if (file.size > maxSize) {
-      const error = new Error('File size exceeds 5MB limit.');
-      showErrorToast({
-        title: 'File Too Large',
-        description: error.message,
-        error,
-        isDeveloper,
-      });
-      onUploadError?.(error);
-      return;
-    }
+    // Note: File size validation removed - compression now handles oversized images automatically
+    // Images larger than 5MB will be compressed to fit within the limit
 
     setUploading(true);
 
@@ -101,7 +90,9 @@ export const FmImageUpload = ({
       setImageUrl(result.publicUrl);
       toast({
         title: 'Upload Successful',
-        description: 'Image uploaded successfully.',
+        description: file.size > 5 * 1024 * 1024
+          ? 'Image compressed and uploaded successfully.'
+          : 'Image uploaded successfully.',
       });
       onUploadComplete?.(result.publicUrl);
     } catch (error) {
@@ -228,7 +219,7 @@ export const FmImageUpload = ({
                 </button>
               </p>
               <p className='text-xs text-muted-foreground'>
-                JPEG, PNG, WebP, or GIF (max 5MB)
+                JPEG, PNG, WebP, or GIF (large images compressed automatically)
               </p>
             </>
           )}

@@ -667,7 +667,20 @@ npm run preview      # Preview production build
     - Muted color: `text-muted-foreground`
     - Gold when focused: `text-fm-gold`
 
-11. **Context Menus** (`FmCommonContextMenu`):
+11. **Button styling**:
+    - **Form submission buttons**: Use `variant="outline"` with minimal custom styling
+      - ✅ `<Button variant="outline" className="border-white/20 hover:bg-white/10">Submit</Button>`
+      - ❌ `<Button className="bg-fm-gold text-black">Submit</Button>`
+      - ❌ `<Button variant="default">Submit</Button>` (this creates a solid white button)
+    - **Cancel/secondary buttons**: Use `variant="outline"` or `variant="secondary"`
+      - ✅ `<Button variant="outline">Cancel</Button>`
+    - **Destructive actions**: Use `variant="destructive"`
+      - ✅ `<Button variant="destructive">Delete</Button>`
+    - **NEVER use gold/colored backgrounds** for form buttons unless specifically required
+    - Default form button style is outline with subtle hover state
+    - Keep button styling consistent across all create/edit forms
+
+12. **Context Menus** (`FmCommonContextMenu`):
     - **Visual Design**:
       - Striped background: Even items `bg-background/40`, odd items `bg-background/60`
       - Hover: `hover:bg-fm-gold/10 hover:scale-[1.02]` with gold glow `shadow-fm-gold/20`

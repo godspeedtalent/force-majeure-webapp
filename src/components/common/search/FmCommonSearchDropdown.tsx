@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { logger } from '@/shared/services/logger';
-import { Search, X } from 'lucide-react';
+import { Search, X, Pencil } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import {
   Popover,
   PopoverContent,
@@ -14,6 +15,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/common/shadcn/tooltip';
+import {
+  FmCommonContextMenu,
+  ContextMenuAction,
+} from '@/components/common/modals/FmCommonContextMenu';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { ROLES } from '@/shared/auth/permissions';
 import { cn } from '@/shared/utils/utils';
 
 export interface SearchDropdownOption {
@@ -35,6 +42,12 @@ interface FmCommonSearchDropdownProps {
   typeIcon?: React.ReactNode;
   /** Tooltip text for the type icon */
   typeTooltip?: string;
+  /** Selected entity ID for context menu actions */
+  selectedValue?: string;
+  /** Route pattern for editing entity (e.g., '/artists/edit') - ID will be appended */
+  editRoute?: string;
+  /** Entity type name for context menu (e.g., 'Artist', 'Venue') */
+  entityTypeName?: string;
 }
 
 export function FmCommonSearchDropdown({
@@ -48,7 +61,12 @@ export function FmCommonSearchDropdown({
   disabled = false,
   typeIcon,
   typeTooltip,
+  selectedValue,
+  editRoute,
+  entityTypeName,
 }: FmCommonSearchDropdownProps) {
+  const navigate = useNavigate();
+  const { hasRole } = useUserPermissions();
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState('');
   const [options, setOptions] = React.useState<SearchDropdownOption[]>([]);
@@ -58,6 +76,9 @@ export function FmCommonSearchDropdown({
   const [loading, setLoading] = React.useState(false);
   const [isFocused, setIsFocused] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
+
+  const isAdminOrDeveloper = hasRole(ROLES.ADMIN) || hasRole(ROLES.DEVELOPER);
+  const showContextMenu = isAdminOrDeveloper && selectedValue && editRoute && entityTypeName;
 
   // Load recent options when dropdown opens
   React.useEffect(() => {
@@ -112,40 +133,68 @@ export function FmCommonSearchDropdown({
 
   const showClearButton = query.length > 0 || isFocused;
 
+  // Context menu actions for viewing in database
+  const contextMenuActions: ContextMenuAction<{ id: string }>[] = showContextMenu
+    ? [
+        {
+          label: `View ${entityTypeName} in Database`,
+          icon: <Pencil className='h-4 w-4' />,
+          onClick: _data => {
+            // Navigate to database page with the appropriate table
+            const table = entityTypeName?.toLowerCase() + 's'; // e.g., 'artists', 'venues'
+            navigate(`${editRoute}?table=${table}`);
+          },
+        },
+      ]
+    : [];
+
+  const triggerButton = (
+    <button
+      type='button'
+      className={cn(
+        'w-full flex items-center gap-2 px-3 py-2 rounded-none',
+        'bg-black/40 border border-white/20',
+        'text-white text-left font-light',
+        'hover:border-fm-gold/50 transition-colors',
+        disabled && 'opacity-50 cursor-not-allowed'
+      )}
+    >
+      <Search className='h-3 w-3 text-white/50 flex-shrink-0' />
+      {typeIcon && (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className='flex items-center justify-center w-5 h-5 bg-white/10 flex-shrink-0'>
+                {typeIcon}
+              </div>
+            </TooltipTrigger>
+            {typeTooltip && (
+              <TooltipContent>
+                <p>{typeTooltip}</p>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
+      )}
+      <span className='flex-1 truncate font-light'>
+        {selectedLabel || placeholder}
+      </span>
+    </button>
+  );
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild disabled={disabled}>
-        <button
-          type='button'
-          className={cn(
-            'w-full flex items-center gap-2 px-3 py-2 rounded-none',
-            'bg-black/40 border border-white/20',
-            'text-white text-left font-light',
-            'hover:border-fm-gold/50 transition-colors',
-            disabled && 'opacity-50 cursor-not-allowed'
-          )}
-        >
-          <Search className='h-3 w-3 text-white/50 flex-shrink-0' />
-          {typeIcon && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className='flex items-center justify-center w-5 h-5 bg-white/10 flex-shrink-0'>
-                    {typeIcon}
-                  </div>
-                </TooltipTrigger>
-                {typeTooltip && (
-                  <TooltipContent>
-                    <p>{typeTooltip}</p>
-                  </TooltipContent>
-                )}
-              </Tooltip>
-            </TooltipProvider>
-          )}
-          <span className='flex-1 truncate font-light'>
-            {selectedLabel || placeholder}
-          </span>
-        </button>
+        {showContextMenu ? (
+          <FmCommonContextMenu
+            actions={contextMenuActions}
+            data={{ id: selectedValue! }}
+          >
+            {triggerButton}
+          </FmCommonContextMenu>
+        ) : (
+          triggerButton
+        )}
       </PopoverTrigger>
       <PopoverContent
         className='w-[400px] p-0 bg-black/90 backdrop-blur-md border border-white/20'

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Calendar, Mic2, Ticket } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/common/shadcn/button';
@@ -12,6 +13,7 @@ import { TicketTiersFormSection } from '@/features/events/components/TicketTiers
 
 const DeveloperCreateEventPage = () => {
   const navigate = useNavigate();
+  const [isImageUploading, setIsImageUploading] = useState(false);
 
   // Shared form state
   const { state, actions } = useEventFormState();
@@ -21,7 +23,7 @@ const DeveloperCreateEventPage = () => {
     mode: 'create',
     onSuccess: _eventId => {
       actions.resetForm();
-      navigate('/developer/database');
+      navigate('/developer/database?table=events');
     },
     onError: () => {
       // Stay on page on error
@@ -34,7 +36,7 @@ const DeveloperCreateEventPage = () => {
 
   const handleCancel = () => {
     actions.resetForm();
-    navigate('/developer/database');
+    navigate('/developer/database?table=events');
   };
 
   return (
@@ -57,7 +59,11 @@ const DeveloperCreateEventPage = () => {
               icon={Calendar}
               layout='stack'
             >
-              <EventDetailsFormSection state={state} actions={actions} />
+              <EventDetailsFormSection
+                state={state}
+                actions={actions}
+                onImageUploadStateChange={setIsImageUploading}
+              />
             </FmFormFieldGroup>
 
             <FmFormFieldGroup
@@ -88,11 +94,12 @@ const DeveloperCreateEventPage = () => {
               Cancel
             </Button>
             <Button
+              variant='outline'
               onClick={handleSubmit}
-              disabled={isLoading}
-              className='bg-fm-gold hover:bg-fm-gold/90 text-black'
+              disabled={isLoading || isImageUploading}
+              className='border-white/20 hover:bg-white/10'
             >
-              {isLoading ? 'Creating...' : 'Create Event'}
+              {isLoading ? 'Creating...' : isImageUploading ? 'Uploading Image...' : 'Create Event'}
             </Button>
           </div>
         </div>

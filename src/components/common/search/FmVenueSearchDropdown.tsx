@@ -23,4 +23,6 @@ export const FmVenueSearchDropdown = createSearchDropdown<Venue>({
   useRecents: false,
   typeIcon: <MapPin className='h-3 w-3 text-white/70' />,
   typeTooltip: 'Venue',
+  editRoute: '/developer/database',
+  entityTypeName: 'Venue',
 });

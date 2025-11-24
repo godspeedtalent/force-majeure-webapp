@@ -1,4 +1,4 @@
-import {
+import React, {
   ReactNode,
   useCallback,
   useEffect,
@@ -756,13 +756,12 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
             const groupLabel = group.tabs[0]?.groupLabel;
 
             return (
-              <>
+              <React.Fragment key={group.group}>
                 {/* Horizontal divider between groups */}
                 {groupIndex > 0 && (
                   <div className='my-3 h-[1px] bg-white/10 w-full' />
                 )}
                 <div
-                  key={group.group}
                   className='relative flex flex-col gap-2'
                   onMouseEnter={() => handleGroupMouseEnter(group.group)}
                   onMouseLeave={handleGroupMouseLeave}
@@ -823,7 +822,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
                     />
                   ))}
                 </div>
-              </>
+              </React.Fragment>
             );
           })}
         </div>
@@ -849,13 +848,12 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
             const groupLabel = group.tabs[0]?.groupLabel;
 
             return (
-              <>
+              <React.Fragment key={group.group}>
                 {/* Horizontal divider between groups */}
                 {groupIndex > 0 && (
                   <div className='my-3 h-[1px] bg-white/10 w-full' />
                 )}
                 <div
-                  key={group.group}
                   className='relative flex flex-col gap-2'
                   onMouseEnter={() => handleGroupMouseEnter(group.group)}
                   onMouseLeave={handleGroupMouseLeave}
@@ -916,7 +914,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
                     />
                   ))}
                 </div>
-              </>
+              </React.Fragment>
             );
           })}
         </div>

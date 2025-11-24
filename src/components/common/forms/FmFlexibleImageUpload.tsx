@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Upload, X, ImageIcon, Loader2, Link as LinkIcon } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
@@ -8,6 +8,8 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { useUserRole } from '@/shared/hooks/useUserRole';
 import { showErrorToast } from '@/components/common/feedback/FmErrorToast';
 import { cn } from '@/shared/utils/utils';
+
+type UploadState = 'idle' | 'compressing' | 'uploading';
 
 interface FmFlexibleImageUploadProps {
   /** Current image URL (can be external or internal) */
@@ -26,6 +28,8 @@ interface FmFlexibleImageUploadProps {
   isPrimary?: boolean;
   /** Additional CSS classes */
   className?: string;
+  /** Callback when upload state changes (for form submission control) */
+  onUploadStateChange?: (isUploading: boolean) => void;
 }
 
 /**
@@ -52,11 +56,13 @@ export const FmFlexibleImageUpload = ({
   entityId,
   isPrimary = false,
   className,
+  onUploadStateChange,
 }: FmFlexibleImageUploadProps) => {
-  const [uploading, setUploading] = useState(false);
+  const [uploadState, setUploadState] = useState<UploadState>('idle');
   const [dragActive, setDragActive] = useState(false);
   const [mode, setMode] = useState<'upload' | 'url'>('upload');
   const [urlInput, setUrlInput] = useState(value || '');
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const { data: userRole } = useUserRole();
@@ -64,6 +70,13 @@ export const FmFlexibleImageUpload = ({
   // Check if user is developer or admin for detailed error messages
   const isDeveloper =
     userRole === ('developer' as any) || userRole === ('admin' as any);
+
+  const isUploading = uploadState !== 'idle';
+
+  // Notify parent of upload state changes
+  useEffect(() => {
+    onUploadStateChange?.(isUploading);
+  }, [isUploading, onUploadStateChange]);
 
   const handleFile = async (file: File) => {
     if (!file) return;
@@ -89,39 +102,44 @@ export const FmFlexibleImageUpload = ({
       return;
     }
 
-    // Validate file size
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    if (file.size > maxSize) {
-      const error = new Error('File size exceeds 5MB limit.');
-      showErrorToast({
-        title: 'File Too Large',
-        description: error.message,
-        error,
-        isDeveloper,
-      });
-      return;
+    // Create immediate preview
+    const filePreviewUrl = URL.createObjectURL(file);
+    setPreviewUrl(filePreviewUrl);
+
+    // Show compression state if file is large
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadState('compressing');
+    } else {
+      setUploadState('uploading');
     }
 
-    setUploading(true);
-
     try {
+      // Upload will handle compression internally
       const result = await imageUploadService.uploadImage({
         file,
         bucket,
-        path: pathPrefix
-          ? `${pathPrefix}/${Date.now()}-${file.name}`
-          : undefined,
+        path: pathPrefix,
         eventId: entityId,
         isPrimary,
       });
+
+      // Clean up preview URL
+      URL.revokeObjectURL(filePreviewUrl);
+      setPreviewUrl(null);
 
       onChange(result.publicUrl);
       setUrlInput(result.publicUrl);
       toast({
         title: 'Upload Successful',
-        description: 'Image uploaded successfully.',
+        description: file.size > 5 * 1024 * 1024
+          ? 'Image compressed and uploaded successfully.'
+          : 'Image uploaded successfully.',
       });
     } catch (error) {
+      // Clean up preview URL on error
+      URL.revokeObjectURL(filePreviewUrl);
+      setPreviewUrl(null);
+
       const err = error instanceof Error ? error : new Error('Upload failed');
       showErrorToast({
         title: 'Upload Failed',
@@ -130,7 +148,7 @@ export const FmFlexibleImageUpload = ({
         isDeveloper,
       });
     } finally {
-      setUploading(false);
+      setUploadState('idle');
     }
   };
 
@@ -166,6 +184,11 @@ export const FmFlexibleImageUpload = ({
   };
 
   const handleRemove = () => {
+    // Clean up preview URL if it exists
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+    }
     onChange('');
     setUrlInput('');
     if (fileInputRef.current) {
@@ -245,33 +268,50 @@ export const FmFlexibleImageUpload = ({
             className='hidden'
           />
 
-          {value ? (
-            /* Preview uploaded image */
+          {value || previewUrl ? (
+            /* Preview uploaded or uploading image */
             <div className='space-y-4'>
               <div className='relative aspect-video w-full overflow-hidden rounded-none bg-muted'>
                 <img
-                  src={value}
+                  src={previewUrl || value}
                   alt='Preview'
-                  className='h-full w-full object-cover'
+                  className={cn(
+                    'h-full w-full object-cover transition-opacity',
+                    isUploading && 'opacity-60'
+                  )}
                 />
-                <button
-                  type='button'
-                  onClick={handleRemove}
-                  className='absolute top-2 right-2 rounded-full bg-black/60 p-2 text-white transition-colors hover:bg-black/80'
-                  disabled={uploading}
-                >
-                  <X className='h-4 w-4' />
-                </button>
+                {/* Upload progress overlay */}
+                {isUploading && (
+                  <div className='absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm'>
+                    <Loader2 className='mb-3 h-12 w-12 animate-spin text-fm-gold' />
+                    <p className='text-sm font-medium text-white'>
+                      {uploadState === 'compressing'
+                        ? 'Compressing image...'
+                        : 'Uploading...'}
+                    </p>
+                  </div>
+                )}
+                {/* Remove button (disabled during upload) */}
+                {!isUploading && (
+                  <button
+                    type='button'
+                    onClick={handleRemove}
+                    className='absolute top-2 right-2 rounded-full bg-black/60 p-2 text-white transition-colors hover:bg-black/80'
+                  >
+                    <X className='h-4 w-4' />
+                  </button>
+                )}
               </div>
-              <FmCommonButton
-                variant='secondary'
-                onClick={handleButtonClick}
-                disabled={uploading}
-                className='w-full'
-              >
-                <Upload className='mr-2 h-4 w-4' />
-                Replace Image
-              </FmCommonButton>
+              {!isUploading && (
+                <FmCommonButton
+                  variant='secondary'
+                  onClick={handleButtonClick}
+                  className='w-full'
+                >
+                  <Upload className='mr-2 h-4 w-4' />
+                  Replace Image
+                </FmCommonButton>
+              )}
             </div>
           ) : (
             /* Upload dropzone */
@@ -284,33 +324,23 @@ export const FmFlexibleImageUpload = ({
                 'flex flex-col items-center justify-center rounded-none border-2 border-dashed p-12 transition-colors',
                 dragActive
                   ? 'border-fm-gold bg-fm-gold/10'
-                  : 'border-border bg-card hover:border-fm-gold/50 hover:bg-muted/50',
-                uploading && 'pointer-events-none opacity-50'
+                  : 'border-border bg-card hover:border-fm-gold/50 hover:bg-muted/50'
               )}
             >
-              {uploading ? (
-                <>
-                  <Loader2 className='mb-4 h-12 w-12 animate-spin text-fm-gold' />
-                  <p className='text-sm text-muted-foreground'>Uploading...</p>
-                </>
-              ) : (
-                <>
-                  <ImageIcon className='mb-4 h-12 w-12 text-muted-foreground' />
-                  <p className='mb-2 text-sm font-medium'>
-                    Drop your image here, or{' '}
-                    <button
-                      type='button'
-                      onClick={handleButtonClick}
-                      className='text-fm-gold hover:underline'
-                    >
-                      browse
-                    </button>
-                  </p>
-                  <p className='text-xs text-muted-foreground'>
-                    JPEG, PNG, WebP, or GIF (max 5MB)
-                  </p>
-                </>
-              )}
+              <ImageIcon className='mb-4 h-12 w-12 text-muted-foreground' />
+              <p className='mb-2 text-sm font-medium'>
+                Drop your image here, or{' '}
+                <button
+                  type='button'
+                  onClick={handleButtonClick}
+                  className='text-fm-gold hover:underline'
+                >
+                  browse
+                </button>
+              </p>
+              <p className='text-xs text-muted-foreground'>
+                JPEG, PNG, WebP, or GIF (large images compressed automatically)
+              </p>
             </div>
           )}
         </FmCommonCard>

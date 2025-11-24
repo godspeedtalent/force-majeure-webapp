@@ -1,16 +1,17 @@
 import { format } from 'date-fns';
 import { Label } from '@/components/common/shadcn/label';
-import { Input } from '@/components/common/shadcn/input';
 import { Checkbox } from '@/components/common/shadcn/checkbox';
 import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
 import { FmVenueSearchDropdown } from '@/components/common/search/FmVenueSearchDropdown';
 import { FmCommonDatePicker } from '@/components/common/forms/FmCommonDatePicker';
 import { FmCommonTimePicker } from '@/components/common/forms/FmCommonTimePicker';
+import { FmFlexibleImageUpload } from '@/components/common/forms/FmFlexibleImageUpload';
 import { EventFormState, EventFormActions } from '../hooks/useEventFormState';
 
 interface EventDetailsFormSectionProps {
   state: EventFormState;
   actions: EventFormActions;
+  onImageUploadStateChange?: (isUploading: boolean) => void;
 }
 
 /**
@@ -19,7 +20,11 @@ interface EventDetailsFormSectionProps {
  * Shared form section for event details (headliner, date/time, venue, hero image).
  * Used by both FmCreateEventButton and FmEditEventButton.
  */
-export function EventDetailsFormSection({ state, actions }: EventDetailsFormSectionProps) {
+export function EventDetailsFormSection({
+  state,
+  actions,
+  onImageUploadStateChange
+}: EventDetailsFormSectionProps) {
   return (
     <div className='space-y-4'>
       <div className='space-y-2'>
@@ -103,12 +108,13 @@ export function EventDetailsFormSection({ state, actions }: EventDetailsFormSect
       </div>
 
       <div className='space-y-2'>
-        <Label className='text-white'>Hero Image URL</Label>
-        <Input
+        <FmFlexibleImageUpload
+          label='Main Event Image'
           value={state.heroImage}
-          onChange={e => actions.setHeroImage(e.target.value)}
-          placeholder='https://example.com/image.jpg'
-          className='bg-black/40 border-white/20 text-white'
+          onChange={actions.setHeroImage}
+          bucket='event-images'
+          pathPrefix='events'
+          onUploadStateChange={onImageUploadStateChange}
         />
       </div>
     </div>

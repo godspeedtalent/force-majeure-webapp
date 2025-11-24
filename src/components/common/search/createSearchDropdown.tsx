@@ -39,6 +39,10 @@ export interface SearchDropdownConfig<T = any> {
   typeIcon?: React.ReactNode;
   /** Tooltip text for the type icon */
   typeTooltip?: string;
+  /** Route pattern for editing entity (e.g., '/developer/database/artists/edit') - ID will be appended */
+  editRoute?: string;
+  /** Entity type name for context menu (e.g., 'Artist', 'Venue') */
+  entityTypeName?: string;
 }
 
 interface SearchDropdownProps {
@@ -83,6 +87,8 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
     recentsKey,
     typeIcon,
     typeTooltip,
+    editRoute,
+    entityTypeName,
   } = config;
 
   return function SearchDropdown({
@@ -196,6 +202,9 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
         disabled={disabled}
         typeIcon={typeIcon}
         typeTooltip={typeTooltip}
+        selectedValue={value}
+        editRoute={editRoute}
+        entityTypeName={entityTypeName}
       />
     );
   };

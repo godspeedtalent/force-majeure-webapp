@@ -31,4 +31,6 @@ export const FmArtistSearchDropdown = createSearchDropdown<Artist>({
   recentsKey: 'artists',
   typeIcon: <User className='h-3 w-3 text-white/70' />,
   typeTooltip: 'Artist',
+  editRoute: '/developer/database',
+  entityTypeName: 'Artist',
 });

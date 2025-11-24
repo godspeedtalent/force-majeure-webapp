@@ -24,6 +24,7 @@ const DeveloperCreateVenuePage = () => {
     image_url: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isImageUploading, setIsImageUploading] = useState(false);
 
   const handleSubmit = async () => {
     if (!formData.name.trim()) {
@@ -50,22 +51,11 @@ const DeveloperCreateVenuePage = () => {
       toast.success('Venue created successfully');
 
       // Return to origin page with new entity, or go to database page
-      const returnUrl = navigateWithEntity(venue.id);
-      if (returnUrl) {
-        navigate(returnUrl);
+      if (returnTo) {
+        const returnUrl = navigateWithEntity(venue.id);
+        navigate(returnUrl!);
       } else {
-        setFormData({
-          name: '',
-          website: '',
-          address_line_1: '',
-          address_line_2: '',
-          city: '',
-          state: '',
-          zip_code: '',
-          capacity: '',
-          image_url: '',
-        });
-        navigate('/developer/database');
+        navigate('/developer/database?table=venues');
       }
     } catch (error) {
       // Enhanced error logging for Supabase errors
@@ -114,7 +104,7 @@ const DeveloperCreateVenuePage = () => {
       description='Register a new venue with capacity and location details.'
       icon={MapPin}
       helperText='Provide venue metadata so events can reference accurate locations.'
-      isSubmitting={isSubmitting}
+      isSubmitting={isSubmitting || isImageUploading}
       onSubmit={handleSubmit}
       onCancel={handleCancel}
       submitText='Create Venue'
@@ -200,6 +190,7 @@ const DeveloperCreateVenuePage = () => {
         onChange={url => setFormData({ ...formData, image_url: url })}
         bucket='venue-images'
         pathPrefix='venues'
+        onUploadStateChange={setIsImageUploading}
       />
     </FmCommonCreateForm>
   );

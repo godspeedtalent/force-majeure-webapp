@@ -11,6 +11,8 @@ import {
   BreadcrumbSeparator,
 } from '@/components/common/shadcn/breadcrumb';
 import { useBreadcrumbs } from '@/shared/hooks/useBreadcrumbs';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { ROLES } from '@/shared/auth/permissions';
 import { cn } from '@/shared/utils/utils';
 
 /**
@@ -21,20 +23,35 @@ import { cn } from '@/shared/utils/utils';
 export const Breadcrumbs = () => {
   const { breadcrumbs, isLoading } = useBreadcrumbs();
   const navigate = useNavigate();
+  const { hasRole } = useUserPermissions();
   const [animatingAfter, setAnimatingAfter] = useState<number | null>(null);
+
+  const isAdminOrDeveloper = hasRole(ROLES.ADMIN) || hasRole(ROLES.DEVELOPER);
 
   // Don't render anything if no breadcrumbs (including the separator)
   if (breadcrumbs.length === 0) {
     return null;
   }
 
-  const handleBreadcrumbClick = (path: string, index: number) => {
+  const handleBreadcrumbClick = (path: string, index: number, label: string) => {
     // Trigger animation for all breadcrumbs after this one
     setAnimatingAfter(index);
 
     // Navigate after animation starts
     setTimeout(() => {
-      navigate(path);
+      let targetPath = path;
+
+      // If user is admin/developer, redirect Artists/Events breadcrumbs to database
+      if (isAdminOrDeveloper) {
+        // Check if this is an event detail page or artists page
+        if (path.startsWith('/event/') || label.toLowerCase() === 'events') {
+          targetPath = '/developer/database?table=events';
+        } else if (path.startsWith('/artist/') || label.toLowerCase() === 'artists') {
+          targetPath = '/developer/database?table=artists';
+        }
+      }
+
+      navigate(targetPath);
       setAnimatingAfter(null);
     }, 300);
   };
@@ -74,7 +91,7 @@ export const Breadcrumbs = () => {
                       <button
                         onClick={e => {
                           e.preventDefault();
-                          handleBreadcrumbClick(item.path, index);
+                          handleBreadcrumbClick(item.path, index, item.label);
                         }}
                         className='hover:underline cursor-pointer'
                       >

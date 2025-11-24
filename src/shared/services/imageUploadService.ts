@@ -1,5 +1,6 @@
 import { supabase } from '@/shared/api/supabase/client';
 import { logger } from '@/shared/services/logger';
+import { compressImage, ImageCompressionOptions } from '@/shared/utils/imageUtils';
 
 export interface UploadImageOptions {
   file: File;
@@ -7,6 +8,8 @@ export interface UploadImageOptions {
   path?: string;
   eventId?: string;
   isPrimary?: boolean;
+  /** Compression options (enabled by default) */
+  compressionOptions?: ImageCompressionOptions | false;
 }
 
 export interface UploadImageResult {
@@ -46,6 +49,7 @@ export const imageUploadService = {
     path,
     eventId,
     isPrimary = false,
+    compressionOptions,
   }: UploadImageOptions): Promise<UploadImageResult> {
     // Validate file type
     const validTypes = [
@@ -61,26 +65,57 @@ export const imageUploadService = {
       );
     }
 
-    // Validate file size (5MB limit)
+    // Compress image if needed (enabled by default unless explicitly disabled)
+    let processedFile = file;
+    if (compressionOptions !== false) {
+      try {
+        processedFile = await compressImage(file, compressionOptions || {});
+      } catch (error) {
+        logger.error('Image compression failed, using original file', {
+          error: error instanceof Error ? error.message : 'Unknown error',
+          source: 'imageUploadService.uploadImage',
+        });
+        // Continue with original file if compression fails
+        processedFile = file;
+      }
+    }
+
+    // Validate file size after compression (5MB limit)
     const maxSize = 5 * 1024 * 1024; // 5MB
-    if (file.size > maxSize) {
-      throw new Error('File size exceeds 5MB limit.');
+    if (processedFile.size > maxSize) {
+      throw new Error(
+        `File size exceeds 5MB limit even after compression. Current size: ${(processedFile.size / 1024 / 1024).toFixed(2)}MB`
+      );
     }
 
     // Generate unique filename
     const timestamp = Date.now();
     const randomSuffix = Math.random().toString(36).substring(2, 8);
-    const fileExt = file.name.split('.').pop();
+    const fileExt = processedFile.name.split('.').pop();
     const fileName = `${timestamp}-${randomSuffix}.${fileExt}`;
 
     // Construct storage path
-    const storagePath =
-      path || (eventId ? `events/${eventId}/${fileName}` : `misc/${fileName}`);
+    // If path is provided as a prefix (e.g., "venues" or "events/123"), append the filename
+    // If path is a complete path with extension, use it as-is
+    let storagePath: string;
+    if (path) {
+      // Check if path already has a file extension
+      if (/\.\w+$/.test(path)) {
+        // Path has extension, use as-is (e.g., "venues/123456.jpg")
+        storagePath = path;
+      } else {
+        // Path is a prefix, append filename (e.g., "venues" -> "venues/123456.jpg")
+        storagePath = `${path}/${fileName}`;
+      }
+    } else {
+      // No path provided, use default based on eventId
+      storagePath = eventId ? `events/${eventId}/${fileName}` : `misc/${fileName}`;
+    }
 
     // Upload to Supabase Storage
     const { error: uploadError } = await supabase.storage
       .from(bucket)
-      .upload(storagePath, file, {
+      .upload(storagePath, processedFile, {
         cacheControl: '3600',
         upsert: false,
       });
@@ -99,7 +134,7 @@ export const imageUploadService = {
     }
 
     // Get image dimensions (optional)
-    const dimensions = await getImageDimensions(file);
+    const dimensions = await getImageDimensions(processedFile);
 
     // Save metadata to database if eventId is provided
     let imageId: string | undefined;
@@ -109,9 +144,9 @@ export const imageUploadService = {
         .insert({
           event_id: eventId,
           storage_path: storagePath,
-          file_name: file.name,
-          file_size: file.size,
-          mime_type: file.type,
+          file_name: processedFile.name,
+          file_size: processedFile.size,
+          mime_type: processedFile.type,
           width: dimensions?.width,
           height: dimensions?.height,
           is_primary: isPrimary,

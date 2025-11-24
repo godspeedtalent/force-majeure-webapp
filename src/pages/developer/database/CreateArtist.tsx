@@ -71,14 +71,11 @@ const DeveloperCreateArtistPage = () => {
       toast.success('Artist created successfully');
 
       // Return to origin page with new entity, or go to database page
-      const returnUrl = navigateWithEntity(artist.id);
-      if (returnUrl) {
-        navigate(returnUrl);
+      if (returnTo) {
+        const returnUrl = navigateWithEntity(artist.id);
+        navigate(returnUrl!);
       } else {
-        setFormData({ name: '', image_url: '', bio: '' });
-        setSelectedGenres([]);
-        setSocialLinks({});
-        navigate('/developer/database');
+        navigate('/developer/database?table=artists');
       }
     } catch (error) {
       logger.error('Error creating artist:', {

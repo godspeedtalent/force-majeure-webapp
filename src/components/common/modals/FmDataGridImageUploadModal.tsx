@@ -9,9 +9,11 @@ import {
   DialogFooter,
 } from '@/components/common/shadcn/dialog';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { Button } from '@/components/common/shadcn/button';
 import { toast } from 'sonner';
 import { supabase } from '@/shared/api/supabase/client';
 import { cn } from '@/shared/utils/utils';
+import { compressImage } from '@/shared/utils/imageUtils';
 
 interface FmDataGridImageUploadModalProps {
   open: boolean;
@@ -66,26 +68,29 @@ export function FmDataGridImageUploadModal({
       return;
     }
 
-    // Validate file size (5MB limit)
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    if (file.size > maxSize) {
-      toast.error('File too large', {
-        description: 'Please upload an image smaller than 5MB.',
+    try {
+      // Compress and resize image automatically
+      const processedFile = await compressImage(file, {
+        maxWidth: 500,
+        maxHeight: 500,
+        maxSizeBytes: 5 * 1024 * 1024, // 5MB
+        quality: 0.85,
       });
-      return;
+
+      setSelectedFile(processedFile);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(processedFile);
+    } catch (error) {
+      logger.error('Error processing image:', error);
+      toast.error('Failed to process image', {
+        description: 'Please try a different image.',
+      });
     }
-
-    // Resize image to max 500x500
-    const resizedFile = await resizeImage(file, 500, 500);
-    
-    setSelectedFile(resizedFile);
-
-    // Create preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreview(reader.result as string);
-    };
-    reader.readAsDataURL(resizedFile);
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -195,11 +200,13 @@ export function FmDataGridImageUploadModal({
           {currentImageUrl && !preview && (
             <div className='space-y-[10px]'>
               <p className='text-sm text-white/70'>Current Image:</p>
-              <img
-                src={currentImageUrl}
-                alt='Current'
-                className='w-full h-[200px] object-cover border border-white/20'
-              />
+              <div className='flex items-center justify-center bg-black/20 border border-white/20 p-[10px]'>
+                <img
+                  src={currentImageUrl}
+                  alt='Current'
+                  className='max-w-full max-h-[300px] object-contain'
+                />
+              </div>
             </div>
           )}
 
@@ -219,11 +226,11 @@ export function FmDataGridImageUploadModal({
             )}
           >
             {preview ? (
-              <div className='relative w-full'>
+              <div className='relative w-full flex items-center justify-center'>
                 <img
                   src={preview}
                   alt='Preview'
-                  className='w-full h-[200px] object-cover border border-white/20'
+                  className='max-w-full max-h-[300px] object-contain border border-white/20'
                 />
                 <button
                   onClick={e => {
@@ -266,105 +273,33 @@ export function FmDataGridImageUploadModal({
         </div>
 
         <DialogFooter className='gap-[10px]'>
-          <FmCommonButton
-            variant='secondary'
+          <Button
+            variant='outline'
             onClick={() => onOpenChange(false)}
             disabled={isUploading}
+            className='bg-white/5 border-white/20 hover:bg-white/10'
           >
             Cancel
-          </FmCommonButton>
-          <FmCommonButton
-            variant='gold'
+          </Button>
+          <Button
             onClick={handleUpload}
             disabled={!selectedFile || isUploading}
+            className='bg-fm-gold hover:bg-fm-gold/90 text-black'
           >
             {isUploading ? (
-              <>
-                <Loader2 className='h-4 w-4 animate-spin mr-2' />
-                Uploading...
-              </>
+              <div className='flex items-center gap-2 whitespace-nowrap'>
+                <Loader2 className='h-4 w-4 animate-spin' />
+                <span>Uploading...</span>
+              </div>
             ) : (
-              <>
-                <Upload className='h-4 w-4 mr-2' />
-                Upload Image
-              </>
+              <div className='flex items-center gap-2 whitespace-nowrap'>
+                <Upload className='h-4 w-4' />
+                <span>Upload</span>
+              </div>
             )}
-          </FmCommonButton>
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
-}
-
-/**
- * Resize image to fit within max dimensions while maintaining aspect ratio
- */
-async function resizeImage(
-  file: File,
-  maxWidth: number,
-  maxHeight: number
-): Promise<File> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = new Image();
-      img.onload = () => {
-        // Calculate new dimensions
-        let width = img.width;
-        let height = img.height;
-
-        if (width > maxWidth || height > maxHeight) {
-          const aspectRatio = width / height;
-
-          if (width > height) {
-            width = maxWidth;
-            height = Math.round(width / aspectRatio);
-          } else {
-            height = maxHeight;
-            width = Math.round(height * aspectRatio);
-          }
-        }
-
-        // Create canvas
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          reject(new Error('Failed to get canvas context'));
-          return;
-        }
-
-        // Draw resized image
-        ctx.drawImage(img, 0, 0, width, height);
-
-        // Convert to blob
-        canvas.toBlob(
-          blob => {
-            if (!blob) {
-              reject(new Error('Failed to create blob'));
-              return;
-            }
-
-            // Create new file
-            const resizedFile = new File([blob], file.name, {
-              type: file.type,
-              lastModified: Date.now(),
-            });
-
-            resolve(resizedFile);
-          },
-          file.type,
-          0.9
-        );
-      };
-
-      img.onerror = () => reject(new Error('Failed to load image'));
-      img.src = e.target?.result as string;
-    };
-
-    reader.onerror = () => reject(new Error('Failed to read file'));
-    reader.readAsDataURL(file);
-  });
 }
