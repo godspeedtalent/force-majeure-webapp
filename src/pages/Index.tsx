@@ -109,6 +109,7 @@ const Index = () => {
             venues(name)
           `
           )
+  .eq('status', 'published')
           .order('start_time', {
             ascending: true,
           });

@@ -482,6 +482,7 @@ export type Database = {
           is_tba: boolean | null
           organization_id: string | null
           start_time: string | null
+          status: string
           test_data: boolean
           title: string
           updated_at: string | null
@@ -497,6 +498,7 @@ export type Database = {
           is_tba?: boolean | null
           organization_id?: string | null
           start_time?: string | null
+          status?: string
           test_data?: boolean
           title: string
           updated_at?: string | null
@@ -512,6 +514,7 @@ export type Database = {
           is_tba?: boolean | null
           organization_id?: string | null
           start_time?: string | null
+          status?: string
           test_data?: boolean
           title?: string
           updated_at?: string | null
@@ -1934,6 +1937,10 @@ export type Database = {
           genre_name: string
           is_primary: boolean
         }[]
+      }
+      get_event_order_count: {
+        Args: { event_id_param: string }
+        Returns: number
       }
       get_event_view_count: { Args: { p_event_id: string }; Returns: number }
       get_foreign_keys: {

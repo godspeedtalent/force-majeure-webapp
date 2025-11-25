@@ -25,6 +25,8 @@ import { EventOrderManagement } from '@/components/events/orders';
 import { EventAnalytics } from '@/components/events/analytics';
 import Reports from './Reports';
 import { TrackingLinksManagement } from '@/components/events/tracking/TrackingLinksManagement';
+import { EventStatusBadge, PublishEventButton, StatusActionsDropdown } from '@/components/events/status';
+import { eventService } from '@/features/events/services/eventService';
 
 import { toast } from 'sonner';
 import { Card } from '@/components/common/shadcn/card';
@@ -63,6 +65,7 @@ export default function EventManagement() {
   const [isSaving, setIsSaving] = useState(false);
   const [hasCustomTitle, setHasCustomTitle] = useState(false);
   const [customTitle, setCustomTitle] = useState<string>('');
+  const [orderCount, setOrderCount] = useState(0);
 
   // Fetch event data
   const { data: event, isLoading } = useQuery({
@@ -110,6 +113,17 @@ export default function EventManagement() {
       }
     }
   }, [event]);
+
+  // Fetch order count for status actions
+  useEffect(() => {
+    const fetchOrderCount = async () => {
+      if (id) {
+        const count = await eventService.getEventOrderCount(id);
+        setOrderCount(count);
+      }
+    };
+    fetchOrderCount();
+  }, [id]);
 
   // Navigation groups configuration
   const navigationGroups: FmCommonSideNavGroup<EventTab>[] = [
@@ -333,6 +347,39 @@ export default function EventManagement() {
     }
   };
 
+  const handlePublishEvent = async () => {
+    if (!id) return;
+    
+    try {
+      await eventService.updateEventStatus(id, 'published');
+      toast.success('Event published successfully!');
+      queryClient.invalidateQueries({ queryKey: ['event', id] });
+    } catch (error) {
+      await handleError(error, {
+        title: 'Failed to Publish Event',
+        description: 'Could not publish the event',
+        endpoint: 'EventManagement',
+        method: 'UPDATE',
+      });
+    }
+  };
+
+  const handleMakeInvisible = async () => {
+    if (!id) return;
+    
+    try {
+      await eventService.updateEventStatus(id, 'invisible');
+      queryClient.invalidateQueries({ queryKey: ['event', id] });
+    } catch (error) {
+      await handleError(error, {
+        title: 'Failed to Hide Event',
+        description: 'Could not hide the event',
+        endpoint: 'EventManagement',
+        method: 'UPDATE',
+      });
+    }
+  };
+
   if (isLoading) {
     return (
       <div className='flex items-center justify-center min-h-screen'>
@@ -369,9 +416,29 @@ export default function EventManagement() {
       <div className='max-w-full'>
         {/* Header */}
         <div className='mb-6'>
-          <h1 className='text-3xl font-bold text-foreground'>
-            {event.name}
-          </h1>
+          <div className='flex items-center justify-between mb-4'>
+            <div className='flex items-center gap-4'>
+              <h1 className='text-3xl font-bold text-foreground'>
+                {event.name}
+              </h1>
+              <EventStatusBadge status={(event as any).status || 'draft'} />
+            </div>
+            <div className='flex items-center gap-2'>
+              {((event as any).status === 'draft' || (event as any).status === 'invisible') && (
+                <PublishEventButton
+                  currentStatus={(event as any).status || 'draft'}
+                  onPublish={handlePublishEvent}
+                />
+              )}
+              {((event as any).status === 'published' || (event as any).status === 'invisible') && (
+                <StatusActionsDropdown
+                  currentStatus={(event as any).status || 'draft'}
+                  orderCount={orderCount}
+                  onMakeInvisible={handleMakeInvisible}
+                />
+              )}
+            </div>
+          </div>
           <p className='text-muted-foreground'>Event Management</p>
         </div>
 

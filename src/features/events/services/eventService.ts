@@ -97,10 +97,11 @@ export const eventService = {
   },
 
   /**
-   * Create a new event
+   * Create a new event (defaults to draft status)
    */
   async createEvent(eventData: CreateEventData) {
     // Add 'name' field for database compatibility
+    // Note: status defaults to 'draft' in the database
     const insertData = {
       ...eventData,
       name: eventData.title || 'Untitled Event',
@@ -129,6 +130,38 @@ export const eventService = {
 
     if (error) throw error;
     return data as unknown as Event;
+  },
+
+  /**
+   * Update event status (publish, make invisible, etc.)
+   */
+  async updateEventStatus(eventId: string, status: 'draft' | 'published' | 'invisible') {
+    const { data, error } = await supabase
+      .from('events')
+      .update({ status } as any) // Type assertion until Supabase types are regenerated
+      .eq('id', eventId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data as unknown as Event;
+  },
+
+  /**
+   * Get order count for an event
+   */
+  async getEventOrderCount(eventId: string): Promise<number> {
+    const { count, error } = await supabase
+      .from('orders')
+      .select('*', { count: 'exact', head: true })
+      .eq('event_id', eventId);
+
+    if (error) {
+      logger.error('Error fetching event order count:', { error: error.message, source: 'eventService' });
+      return 0;
+    }
+
+    return count || 0;
   },
 
   /**

@@ -80,7 +80,7 @@ export interface Event {
   venue_id: string;
   headliner_id: string;
   image_url?: string | null;
-  status?: 'draft' | 'published' | 'cancelled';
+  status?: 'draft' | 'published' | 'invisible';
   is_tba?: boolean;     // TBA (To Be Announced) placeholder event
   is_after_hours?: boolean; // Event has no end time (runs past closing)
   organization_id?: string | null;
@@ -117,7 +117,7 @@ export interface TicketTierFormData {
 }
 
 // Utility types
-export type EventStatus = 'draft' | 'published' | 'cancelled';
+export type EventStatus = 'draft' | 'published' | 'invisible';
 
 export interface EventFilters {
   status?: EventStatus;
