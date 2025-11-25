@@ -477,6 +477,7 @@ export type Database = {
           description: string | null
           end_time: string | null
           headliner_id: string | null
+          hero_image: string | null
           id: string
           is_after_hours: boolean
           is_tba: boolean | null
@@ -493,6 +494,7 @@ export type Database = {
           description?: string | null
           end_time?: string | null
           headliner_id?: string | null
+          hero_image?: string | null
           id?: string
           is_after_hours?: boolean
           is_tba?: boolean | null
@@ -509,6 +511,7 @@ export type Database = {
           description?: string | null
           end_time?: string | null
           headliner_id?: string | null
+          hero_image?: string | null
           id?: string
           is_after_hours?: boolean
           is_tba?: boolean | null

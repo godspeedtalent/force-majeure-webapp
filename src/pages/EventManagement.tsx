@@ -98,7 +98,7 @@ export default function EventManagement() {
       setVenueId(event.venue_id || '');
       setIsAfterHours(event.is_after_hours || false);
       setEndTime(event.end_time || '02:00');
-      setHeroImage(''); // No hero_image in DB yet
+      setHeroImage((event as any).hero_image || '');
 
       // Check if event has a custom title
       if (event.name) {
@@ -285,6 +285,7 @@ export default function EventManagement() {
           start_time: eventDate.toISOString(),
           end_time: isAfterHours ? null : endTime,
           is_after_hours: isAfterHours,
+          hero_image: heroImage || null,
         })
         .eq('id', id!);
 

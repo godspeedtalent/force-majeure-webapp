@@ -12,6 +12,7 @@ interface EventRow {
   end_time: string | null;
   venue_id?: string | null;
   description: string | null;
+  hero_image?: string | null;
   venue?: {
     name: string;
   } | null;
@@ -73,7 +74,7 @@ const transformEvent = (row: EventRow): EventDetailsRecord => {
     date,
     time,
     venue: row.venue?.name ?? 'Venue TBA',
-    heroImage: getImageUrl(row.headliner_artist?.image_url ?? null),
+    heroImage: getImageUrl(row.hero_image ?? row.headliner_artist?.image_url ?? null),
     description: row.description ?? null,
   };
 };
@@ -91,6 +92,7 @@ const fetchEventDetails = async (
       end_time,
       venue_id,
       description,
+      hero_image,
       venue:venues(name),
       headliner_artist:artists!events_headliner_id_fkey(id, name, genre, image_url),
       event_artists!left(
