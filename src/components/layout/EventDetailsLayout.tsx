@@ -38,7 +38,7 @@ export function EventDetailsLayout({
       {/* Desktop: two-column side-by-side layout */}
       <div className='hidden lg:flex lg:min-h-screen'>
         {/* Left Column - Hero Image */}
-        <div className='w-1/2 relative overflow-hidden'>
+        <div className='w-1/2 relative overflow-hidden flex-shrink-0'>
           {leftColumn}
         </div>
 

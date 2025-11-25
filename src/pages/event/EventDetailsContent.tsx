@@ -136,12 +136,12 @@ export const EventDetailsContent = ({
     []
   );
 
-  // Format date/time as: FRI MM/DD/YY 9pm-2am PST
+  // Format date/time as: Fri MM/DD/YY 9pm-2am PST
   const formattedDateTime = useMemo(() => {
     const date = new Date(event.date);
     
-    // Get day of week
-    const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
+    // Get day of week (title case)
+    const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'short' });
     
     // Get date as MM/DD/YY
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -176,7 +176,7 @@ export const EventDetailsContent = ({
     // Get timezone
     const timezone = new Date().toLocaleTimeString('en-US', { timeZoneName: 'short' }).split(' ')[2];
     
-    return `${dayOfWeek} ${dateStr} ${startDisplay}${startMeridiemDisplay}-${endDisplay}${endMeridiemDisplay} ${timezone}`;
+    return `${dayOfWeek} ${dateStr} ${startDisplay}${startMeridiemDisplay} - ${endDisplay}${endMeridiemDisplay} ${timezone}`;
   }, [event.date, event.time]);
 
   const eventDate = useMemo(() => new Date(event.date), [event.date]);
@@ -562,7 +562,7 @@ export const EventDetailsContent = ({
               })
             }
           />
-          <div className='flex flex-col gap-1.5 text-sm text-muted-foreground/90 sm:flex-row sm:flex-wrap sm:items-center'>
+          <div className='flex flex-col gap-1.5 text-sm text-muted-foreground/90 sm:flex-row sm:flex-wrap sm:items-center tracking-wide'>
             <div className='flex items-center gap-2'>
               <Clock className='h-4 w-4 text-fm-gold flex-shrink-0' />
               <span>{formattedDateTime}</span>
