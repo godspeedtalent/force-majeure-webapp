@@ -233,14 +233,10 @@ export function DatabaseNavigatorSearch() {
         navigate(`/admin/users/${resourceId}`);
         break;
       case 'artist':
-        navigate('/developer/database', {
-          state: { openTab: 'artists', editArtistId: resourceId },
-        });
+        navigate(`/artists/${resourceId}`);
         break;
       case 'venue':
-        navigate('/developer/database', {
-          state: { openTab: 'venues', editVenueId: resourceId },
-        });
+        navigate(`/venues/${resourceId}`);
         break;
       case 'event':
         navigate(`/event/${resourceId}`);

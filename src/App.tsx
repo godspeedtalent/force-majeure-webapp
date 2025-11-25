@@ -35,9 +35,13 @@ const DeveloperIndex = lazy(() => import('./pages/developer/DeveloperIndex'));
 const Statistics = lazy(() => import('./pages/admin/Statistics'));
 const AdminControls = lazy(() => import('./pages/admin/AdminControls'));
 const OrganizationDetails = lazy(() => import('./pages/admin/OrganizationDetails'));
-const ArtistDetails = lazy(() => import('./pages/admin/ArtistDetails'));
 const UserDetails = lazy(() => import('./pages/admin/UserDetails'));
-const VenueDetails = lazy(() => import('./pages/admin/VenueDetails'));
+
+// Lazy load venue and artist pages
+const VenueDetails = lazy(() => import('./pages/venues/VenueDetails'));
+const VenueManagement = lazy(() => import('./pages/venues/VenueManagement'));
+const ArtistDetails = lazy(() => import('./pages/artists/ArtistDetails'));
+const ArtistManagement = lazy(() => import('./pages/artists/ArtistManagement'));
 
 // Lazy load testing pages
 const TestingIndex = lazy(() => import('./pages/testing/TestingIndex'));
@@ -120,6 +124,46 @@ const AppRoutes = () => {
           <Route path='/event/:id' element={<EventDetails />} />
           <Route path='/event/:id/tickets' element={<EventTicketing />} />
           <Route path='/event/:id/manage' element={<EventManagement />} />
+
+          {/* Venue Routes */}
+          <Route
+            path='/venues/:id'
+            element={
+              <Suspense fallback={<LazyLoadFallback />}>
+                <VenueDetails />
+              </Suspense>
+            }
+          />
+          <Route
+            path='/venues/:id/manage'
+            element={
+              <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <VenueManagement />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Artist Routes */}
+          <Route
+            path='/artists/:id'
+            element={
+              <Suspense fallback={<LazyLoadFallback />}>
+                <ArtistDetails />
+              </Suspense>
+            }
+          />
+          <Route
+            path='/artists/:id/manage'
+            element={
+              <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <ArtistManagement />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
 
           {/* Conditionally render merch route based on feature flag */}
           {isFeatureEnabled(FEATURE_FLAGS.MERCH_STORE) && (
@@ -318,31 +362,11 @@ const AppRoutes = () => {
             }
           />
           <Route
-            path='/admin/artists/:id'
-            element={
-              <ProtectedRoute role={ROLES.ADMIN}>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <ArtistDetails />
-                </Suspense>
-              </ProtectedRoute>
-            }
-          />
-          <Route
             path='/admin/users/:id'
             element={
               <ProtectedRoute role={ROLES.ADMIN}>
                 <Suspense fallback={<LazyLoadFallback />}>
                   <UserDetails />
-                </Suspense>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path='/admin/venues/:id'
-            element={
-              <ProtectedRoute role={ROLES.ADMIN}>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <VenueDetails />
                 </Suspense>
               </ProtectedRoute>
             }
