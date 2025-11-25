@@ -490,46 +490,44 @@ export const EventDetailsContent = ({
 
   const primaryHeader = (
     <div className='flex flex-col gap-5'>
-      <div className='flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between'>
-        <div className='flex flex-wrap items-center gap-4 lg:flex-nowrap'>
-          <FmDateBox
-            weekday={weekdayLabel}
-            month={monthLabel}
-            day={dayNumber}
-            year={yearNumber}
-            size='lg'
+      <div className='flex flex-wrap items-center gap-4 lg:flex-nowrap'>
+        <FmDateBox
+          weekday={weekdayLabel}
+          month={monthLabel}
+          day={dayNumber}
+          year={yearNumber}
+          size='lg'
+        />
+        <div className='space-y-3'>
+          <h1 className='text-3xl lg:text-4xl font-canela font-medium text-foreground leading-tight'>
+            {displayTitle}
+          </h1>
+          <FmUndercardList
+            artists={event.undercard}
+            onArtistClick={artist =>
+              handleArtistSelect({
+                id: artist.id ?? undefined,
+                name: artist.name,
+                genre: artist.genre,
+                image: artist.image,
+              })
+            }
           />
-          <div className='space-y-3'>
-            <h1 className='text-3xl lg:text-4xl font-canela font-medium text-foreground leading-tight'>
-              {displayTitle}
-            </h1>
-            <FmUndercardList
-              artists={event.undercard}
-              onArtistClick={artist =>
-                handleArtistSelect({
-                  id: artist.id ?? undefined,
-                  name: artist.name,
-                  genre: artist.genre,
-                  image: artist.image,
-                })
-              }
-            />
-            <div className='flex flex-col gap-1.5 text-sm text-muted-foreground/90 sm:flex-row sm:flex-wrap sm:items-center'>
-              <div className='flex items-center gap-2'>
-                <Clock className='h-4 w-4 text-fm-gold flex-shrink-0' />
-                <span>{`${longDateLabel} ${BULLET_SEPARATOR} ${formattedTime}`}</span>
-              </div>
-              <div className='flex items-center gap-2'>
-                <MapPin className='h-4 w-4 text-fm-gold flex-shrink-0' />
-                <FmTextLink onClick={handleVenueSelect}>
-                  {event.venue || 'Venue TBA'}
-                </FmTextLink>
-              </div>
+          <div className='flex flex-col gap-1.5 text-sm text-muted-foreground/90 sm:flex-row sm:flex-wrap sm:items-center'>
+            <div className='flex items-center gap-2'>
+              <Clock className='h-4 w-4 text-fm-gold flex-shrink-0' />
+              <span>{`${longDateLabel} ${BULLET_SEPARATOR} ${formattedTime}`}</span>
+            </div>
+            <div className='flex items-center gap-2'>
+              <MapPin className='h-4 w-4 text-fm-gold flex-shrink-0' />
+              <FmTextLink onClick={handleVenueSelect}>
+                {event.venue || 'Venue TBA'}
+              </FmTextLink>
             </div>
           </div>
         </div>
-        {headerActions}
       </div>
+      {headerActions}
     </div>
   );
 
