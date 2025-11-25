@@ -44,6 +44,10 @@ export function EventDetailsLayout({
 
         {/* Right Column - Content (scrollable) */}
         <div className='w-1/2 overflow-y-auto relative h-screen'>
+          <div className='absolute inset-0 pointer-events-none'>
+            <TopographicBackground opacity={0.35} />
+            <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
+          </div>
           <div className='relative'>{rightColumn}</div>
         </div>
       </div>
