@@ -1,9 +1,19 @@
-import { forwardRef, useState, useCallback } from 'react';
+import React, { forwardRef, useState, useCallback } from 'react';
 import { Button } from '@/components/common/shadcn/button';
 import { cn } from '@/shared/utils/utils';
 import { LucideIcon } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 import { useRipple } from '@/hooks/useRipple';
+
+// Helper to check if something is a renderable React component (function or forwardRef)
+const isReactComponent = (component: unknown): component is React.ComponentType<any> => {
+  return (
+    typeof component === 'function' ||
+    (typeof component === 'object' && 
+     component !== null && 
+     '$$typeof' in component)
+  );
+};
 
 interface FmCommonButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -103,23 +113,23 @@ export const FmCommonButton = forwardRef<
         <>
           {loading && <Loader2 className='w-4 h-4 mr-2 animate-spin' />}
           {!loading && Icon && iconPosition === 'left' && (
-            typeof Icon === 'function' ? (
+            isReactComponent(Icon) ? (
               <Icon className='w-4 h-4 mr-2 transition-transform duration-200 group-hover:scale-110' />
-            ) : (
+            ) : React.isValidElement(Icon) ? (
               <span className='w-4 h-4 mr-2 flex items-center justify-center transition-transform duration-200 group-hover:scale-110'>
                 {Icon}
               </span>
-            )
+            ) : null
           )}
           <span className='relative z-10'>{children}</span>
           {!loading && Icon && iconPosition === 'right' && (
-            typeof Icon === 'function' ? (
+            isReactComponent(Icon) ? (
               <Icon className='w-4 h-4 ml-2 transition-transform duration-200 group-hover:scale-110' />
-            ) : (
+            ) : React.isValidElement(Icon) ? (
               <span className='w-4 h-4 ml-2 flex items-center justify-center transition-transform duration-200 group-hover:scale-110'>
                 {Icon}
               </span>
-            )
+            ) : null
           )}
           {/* Ripple effects */}
           {ripples.map(ripple => (
