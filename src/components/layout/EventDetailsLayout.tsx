@@ -35,24 +35,20 @@ export function EventDetailsLayout({
         </div>
       </div>
 
-      {/* Desktop: parallax layout */}
-      <div className='hidden lg:block relative min-h-screen'>
-        {/* Fixed hero background */}
-        <div className='fixed inset-0 top-16 h-[calc(100vh-4rem)] z-0'>
+      {/* Desktop: two-column side-by-side layout */}
+      <div className='hidden lg:flex lg:min-h-screen'>
+        {/* Left Column - Hero Image */}
+        <div className='w-1/2 relative overflow-hidden'>
           {leftColumn}
         </div>
 
-        {/* Scrolling content overlay */}
-        <div className='relative z-10 min-h-screen pt-[60vh]'>
-          <div className='relative bg-background/95 backdrop-blur-sm'>
-            <div className='absolute inset-0 pointer-events-none'>
-              <TopographicBackground opacity={0.35} />
-              <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
-            </div>
-            <div className='relative'>
-              {rightColumn}
-            </div>
+        {/* Right Column - Content */}
+        <div className='w-1/2 overflow-y-auto relative'>
+          <div className='absolute inset-0 pointer-events-none'>
+            <TopographicBackground opacity={0.35} />
+            <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
           </div>
+          <div className='relative'>{rightColumn}</div>
         </div>
       </div>
     </div>
