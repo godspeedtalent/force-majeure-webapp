@@ -378,9 +378,10 @@ const Index = () => {
               </div>
             ) : (
               <div className='relative z-10'>
-                <div className='fixed inset-0 left-0 right-0 bottom-0 bg-background/20 backdrop-blur-xl pointer-events-none' />
                 {heroContent}
-                {eventsContent}
+                <div className='bg-background/20 backdrop-blur-xl -mx-4 px-4'>
+                  {eventsContent}
+                </div>
               </div>
             )}
           </>
