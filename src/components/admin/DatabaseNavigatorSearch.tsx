@@ -135,12 +135,31 @@ export function DatabaseNavigatorSearch() {
         .ilike('name', searchPattern)
         .limit(5);
 
-      // Search events
+      // Search events by title, description, venue name, and artist names
       const { data: eventsData } = await supabase
         .from('events')
-        .select('id, name, start_time')
-        .ilike('name', `%${query}%`)
-        .limit(5);
+        .select(`
+          id,
+          title,
+          description,
+          start_time,
+          hero_image,
+          venue:venue_id(name),
+          headliner:headliner_id(name)
+        `)
+        .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
+        .limit(50);
+
+      // Filter by venue or artist names
+      const filteredEvents = (eventsData || []).filter((event: any) => {
+        const queryLower = query.toLowerCase();
+        const titleMatch = event.title?.toLowerCase().includes(queryLower);
+        const descMatch = event.description?.toLowerCase().includes(queryLower);
+        const venueMatch = event.venue?.name?.toLowerCase().includes(queryLower);
+        const headlinerMatch = event.headliner?.name?.toLowerCase().includes(queryLower);
+        
+        return titleMatch || descMatch || venueMatch || headlinerMatch;
+      }).slice(0, 5);
 
       // Search Organizations - with type casting for missing table
       let organizations: Organization[] = [];
@@ -173,10 +192,12 @@ export function DatabaseNavigatorSearch() {
         users: usersWithEmail,
         artists: artists || [],
         venues,
-        events: (eventsData || []).map(e => ({
+        events: filteredEvents.map((e: any) => ({
           id: e.id,
-          title: e.name || '',
+          title: e.title || '',
           date: e.start_time || '',
+          hero_image: e.hero_image,
+          venue_name: e.venue?.name,
         })),
       });
     } catch (error) {
