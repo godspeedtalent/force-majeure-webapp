@@ -66,9 +66,7 @@ export default function EventManagement() {
   const [endTime, setEndTime] = useState<string>('02:00');
   const [isAfterHours, setIsAfterHours] = useState(false);
   const [heroImage, setHeroImage] = useState<string>('');
-  const [heroImageFocalX, setHeroImageFocalX] = useState<number>(50);
   const [heroImageFocalY, setHeroImageFocalY] = useState<number>(50);
-  const [showViewCount, setShowViewCount] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [hasCustomTitle, setHasCustomTitle] = useState(false);
   const [customTitle, setCustomTitle] = useState<string>('');
@@ -106,9 +104,7 @@ export default function EventManagement() {
       setIsAfterHours(event.is_after_hours || false);
       setEndTime(event.end_time || '02:00');
       setHeroImage((event as any).hero_image || '');
-      setHeroImageFocalX((event as any).hero_image_focal_x ?? 50);
       setHeroImageFocalY((event as any).hero_image_focal_y ?? 50);
-      setShowViewCount((event as any).show_view_count ?? true);
 
       // Check if event has a custom title
       if (event.name) {
@@ -287,9 +283,8 @@ export default function EventManagement() {
           end_time: isAfterHours ? null : endTime,
           is_after_hours: isAfterHours,
           hero_image: heroImage || null,
-          hero_image_focal_x: heroImageFocalX,
+          hero_image_focal_x: 50,
           hero_image_focal_y: heroImageFocalY,
-          show_view_count: showViewCount,
         } as any)
         .eq('id', id!);
 
@@ -630,34 +625,13 @@ export default function EventManagement() {
                     <div className='md:col-span-2'>
                       <HeroImageFocalPoint
                         imageUrl={heroImage}
-                        focalX={heroImageFocalX}
                         focalY={heroImageFocalY}
-                        onChange={(x, y) => {
-                          setHeroImageFocalX(x);
+                        onChange={(y) => {
                           setHeroImageFocalY(y);
                         }}
                       />
                     </div>
                   )}
-
-                  {/* View Count Toggle */}
-                  <div className='space-y-2 md:col-span-2'>
-                    <div className='flex items-center gap-2'>
-                      <Checkbox
-                        id='show-view-count'
-                        checked={showViewCount}
-                        onCheckedChange={checked =>
-                          setShowViewCount(!!checked)
-                        }
-                      />
-                      <Label htmlFor='show-view-count' className='cursor-pointer'>
-                        Display view count on event details page
-                      </Label>
-                    </div>
-                    <p className='text-sm text-muted-foreground'>
-                      When enabled, the view count will be shown alongside share buttons or within the guest list section
-                    </p>
-                  </div>
                 </div>
               </div>
             </Card>

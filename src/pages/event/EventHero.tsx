@@ -22,7 +22,6 @@ export const EventHero = ({
   const [imageLoaded, setImageLoaded] = useState(false);
 
   // Get focal point from event data, default to center
-  const focalX = (event as any).hero_image_focal_x ?? 50;
   const focalY = (event as any).hero_image_focal_y ?? 50;
 
   return (
@@ -38,7 +37,7 @@ export const EventHero = ({
           imageLoaded ? 'opacity-100' : 'opacity-0'
         )}
         style={{
-          objectPosition: `${focalX}% ${focalY}%`,
+          objectPosition: `center ${focalY}%`,
         }}
         onLoad={() => setImageLoaded(true)}
       />
