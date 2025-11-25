@@ -10,10 +10,12 @@ import { FmFormFieldGroup } from '@/components/common/forms/FmFormFieldGroup';
 import { FmGenreMultiSelect } from '@/features/artists/components/FmGenreMultiSelect';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { SpotifyIcon } from '@/components/common/icons/SpotifyIcon';
+import { SpotifyArtistImport } from '@/components/spotify/SpotifyArtistImport';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
 import { logger } from '@/shared/services/logger';
 import type { Genre } from '@/features/artists/types';
+import type { SpotifyArtist } from '@/services/spotify/spotifyApiService';
 
 const DeveloperCreateArtistPage = () => {
   const navigate = useNavigate();
@@ -27,6 +29,15 @@ const DeveloperCreateArtistPage = () => {
   const [socialLinks, setSocialLinks] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSpotifyImport, setShowSpotifyImport] = useState(false);
+
+  const handleSpotifyImport = (artist: SpotifyArtist) => {
+    setFormData({
+      name: artist.name,
+      image_url: artist.images[0]?.url || '',
+      bio: `${artist.name} - ${artist.genres.slice(0, 3).join(', ')}`,
+    });
+    toast.success('Artist data imported from Spotify');
+  };
 
   const handleSubmit = async () => {
     if (!formData.name.trim()) {
@@ -115,12 +126,11 @@ const DeveloperCreateArtistPage = () => {
         <FmCommonButton
           type='button'
           variant='default'
-          iconPosition='left'
           onClick={() => setShowSpotifyImport(true)}
           disabled={isSubmitting}
           className='text-[#1DB954]'
+          icon={<SpotifyIcon className='h-4 w-4' />}
         >
-          <SpotifyIcon className='h-4 w-4 mr-2' />
           Import Artist from Spotify
         </FmCommonButton>
       </div>
@@ -196,17 +206,12 @@ const DeveloperCreateArtistPage = () => {
       </FmFormFieldGroup>
     </FmCommonCreateForm>
 
-      {/* Spotify Import Disabled */}
-      {showSpotifyImport && (
-        <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
-          <div className='bg-card p-6 rounded-lg'>
-            <p className='text-foreground'>Spotify import functionality has been temporarily disabled.</p>
-            <FmCommonButton onClick={() => setShowSpotifyImport(false)} className='mt-4'>
-              Close
-            </FmCommonButton>
-          </div>
-        </div>
-      )}
+      {/* Spotify Import Modal */}
+      <SpotifyArtistImport
+        open={showSpotifyImport}
+        onClose={() => setShowSpotifyImport(false)}
+        onImport={handleSpotifyImport}
+      />
     </>
   );
 };

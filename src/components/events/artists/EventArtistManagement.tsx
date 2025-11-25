@@ -395,6 +395,23 @@ export function EventArtistManagement({
         />
       </div>
 
+      {/* Artist Sign Up Toggle */}
+      <div className='flex items-center gap-3 p-4 rounded-lg bg-white/5 border border-white/20'>
+        <Users2 className='h-5 w-5 text-fm-gold' />
+        <div className='flex-1'>
+          <h3 className='font-semibold'>Display Artist Sign Up in Undercard</h3>
+          <p className='text-sm text-muted-foreground'>
+            Show a link to the artist registration page in the event call times list
+          </p>
+        </div>
+        <FmCommonToggle
+          id='show-artist-signup'
+          label='Display Artist Sign Up'
+          checked={false}
+          onCheckedChange={() => {}}
+        />
+      </div>
+
       {/* Summary Card */}
       {artistSlots.length > 0 && (
         <div className='p-4 rounded-lg bg-fm-gold/10 border border-fm-gold/30'>

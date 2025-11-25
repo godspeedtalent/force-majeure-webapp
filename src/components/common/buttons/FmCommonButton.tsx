@@ -113,22 +113,22 @@ export const FmCommonButton = forwardRef<
         {...props}
       >
         <>
-          {loading && <div className='w-4 h-4 mr-2 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />}
+          {loading && <div className='w-4 h-4 mr-2 animate-spin rounded-full border-2 border-fm-gold border-b-transparent flex-shrink-0' />}
           {!loading && Icon && iconPosition === 'left' && (
             isReactComponent(Icon) ? (
-              <Icon className='w-4 h-4 mr-2 transition-transform duration-200 group-hover:scale-110' />
+              <Icon className='w-4 h-4 mr-2 transition-transform duration-200 group-hover:scale-110 flex-shrink-0' />
             ) : React.isValidElement(Icon) ? (
-              <span className='w-4 h-4 mr-2 flex items-center justify-center transition-transform duration-200 group-hover:scale-110'>
+              <span className='w-4 h-4 mr-2 flex items-center justify-center transition-transform duration-200 group-hover:scale-110 flex-shrink-0'>
                 {Icon}
               </span>
             ) : null
           )}
-          <span className='relative z-10'>{children}</span>
+          <span className='relative z-10 whitespace-nowrap'>{children}</span>
           {!loading && Icon && iconPosition === 'right' && (
             isReactComponent(Icon) ? (
-              <Icon className='w-4 h-4 ml-2 transition-transform duration-200 group-hover:scale-110' />
+              <Icon className='w-4 h-4 ml-2 transition-transform duration-200 group-hover:scale-110 flex-shrink-0' />
             ) : React.isValidElement(Icon) ? (
-              <span className='w-4 h-4 ml-2 flex items-center justify-center transition-transform duration-200 group-hover:scale-110'>
+              <span className='w-4 h-4 ml-2 flex items-center justify-center transition-transform duration-200 group-hover:scale-110 flex-shrink-0'>
                 {Icon}
               </span>
             ) : null
