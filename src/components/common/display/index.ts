@@ -6,4 +6,13 @@ export { FmCommonStatCard } from './FmCommonStatCard';
 export { FmCommonPageHeader } from './FmCommonPageHeader';
 export { FmCommonDetailSection } from './FmCommonDetailSection';
 export { FmTextLink } from './FmTextLink';
+export {
+  FmCommonCard,
+  FmCommonCardHeader,
+  FmCommonCardTitle,
+  FmCommonCardDescription,
+  FmCommonCardContent,
+  FmCommonCardFooter,
+} from './FmCommonCard';
+export { FmCommonSeparator } from './FmCommonSeparator';
 export type { FmCommonBadgeItem } from './FmCommonBadgeGroup';
