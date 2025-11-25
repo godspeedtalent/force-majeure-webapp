@@ -3,13 +3,14 @@ import { Badge } from '@/components/ui/badge';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/shared/api/supabase/client';
 import { format } from 'date-fns';
+import type { ReportHistory } from '@/types/reports';
 
 interface ReportHistoryTableProps {
   configId: string;
 }
 
 export const ReportHistoryTable = ({ configId }: ReportHistoryTableProps) => {
-  const { data: history, isLoading } = useQuery({
+  const { data: history, isLoading } = useQuery<ReportHistory[]>({
     queryKey: ['report-history', configId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -20,7 +21,7 @@ export const ReportHistoryTable = ({ configId }: ReportHistoryTableProps) => {
         .limit(50);
 
       if (error) throw error;
-      return data;
+      return data as ReportHistory[];
     },
   });
 

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
+import type { ReportConfiguration } from '@/types/reports';
 
 interface ReportScheduleConfigProps {
   configId: string;
@@ -15,7 +16,7 @@ interface ReportScheduleConfigProps {
 export const ReportScheduleConfig = ({ configId }: ReportScheduleConfigProps) => {
   const queryClient = useQueryClient();
 
-  const { data: config } = useQuery({
+  const { data: config } = useQuery<ReportConfiguration>({
     queryKey: ['report-schedule', configId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -25,7 +26,7 @@ export const ReportScheduleConfig = ({ configId }: ReportScheduleConfigProps) =>
         .single();
 
       if (error) throw error;
-      return data;
+      return data as ReportConfiguration;
     },
   });
 

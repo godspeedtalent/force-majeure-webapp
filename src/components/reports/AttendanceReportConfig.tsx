@@ -2,10 +2,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 
 interface AttendanceReportConfigProps {
-  eventId: string;
+  eventId?: string;
 }
 
-export const AttendanceReportConfig = ({ eventId }: AttendanceReportConfigProps) => {
+export const AttendanceReportConfig = ({ eventId: _eventId }: AttendanceReportConfigProps) => {
   return (
     <Card>
       <CardHeader>
