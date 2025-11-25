@@ -192,113 +192,119 @@ export function FmDataGridRow<T extends Record<string, any>>({
       : actionsWithRelations;
 
   return (
-    <TableRow
-      ref={setRowRef}
-      className={cn(
-        'border-border/50 transition-all duration-200 group',
-        isEvenRow && 'bg-muted/20',
-        isSelected && 'bg-fm-gold/10 border-fm-gold/30',
-        hasContextMenuOpen && 'bg-fm-gold/20 border-fm-gold/50',
-        !hasContextMenuOpen && 'hover:bg-fm-gold/5',
-        isDragSelected && 'bg-fm-gold/15'
-      )}
-      onMouseDown={onMouseDown}
-      onMouseUp={onMouseUp}
-      onMouseEnter={onMouseEnter}
+    <FmDataGridContextMenu
+      row={row}
+      actions={finalContextMenuActions}
+      onOpenChange={onContextMenuOpenChange}
     >
-      {/* Checkbox Cell */}
-      <TableCell
+      <TableRow
+        ref={setRowRef}
         className={cn(
-          'transition-colors duration-200 border-l border-r border-border/60',
-          !isDragMode && hoveredColumn === '__checkbox' && 'bg-muted/40'
+          'border-border/50 transition-all duration-200 group',
+          isEvenRow && 'bg-muted/20',
+          isSelected && 'bg-fm-gold/10 border-fm-gold/30',
+          hasContextMenuOpen && 'bg-fm-gold/20 border-fm-gold/50',
+          !hasContextMenuOpen && 'hover:bg-fm-gold/5',
+          isDragSelected && 'bg-fm-gold/15'
         )}
-        onMouseEnter={() => !isDragMode && onSetHoveredColumn('__checkbox')}
-        onMouseLeave={() => !isDragMode && onSetHoveredColumn(null)}
+        onMouseDown={onMouseDown}
+        onMouseUp={onMouseUp}
+        onMouseEnter={onMouseEnter}
       >
-        <FmCommonCheckbox
-          checked={isSelected}
-          onCheckedChange={onSelectRow}
-          aria-label={`Select row ${globalIndex + 1}`}
-        />
-      </TableCell>
-
-      {/* Data Cells */}
-      {columns.map(column => {
-        const isEditing =
-          editingCell?.rowIndex === globalIndex &&
-          editingCell?.columnKey === column.key;
-        const cellValue = row[column.key];
-
-        return (
-          <FmDataGridCell
-            key={column.key}
-            row={row}
-            column={column}
-            value={cellValue}
-            isEditing={isEditing}
-            editValue={editValue}
-            onEditValueChange={onEditValueChange}
-            onStartEdit={() => onStartEdit(globalIndex, column.key, cellValue)}
-            onSaveEdit={overrideValue => onSaveEdit(row, column.key, overrideValue)}
-            onCancelEdit={onCancelEdit}
-            onUpdate={onUpdate}
-            hoveredColumn={hoveredColumn}
-            isDragMode={isDragMode}
-            focusableProps={
-              column.editable && !column.readonly && onUpdate
-                ? getFocusableCellProps(rowIndex, column.key)
-                : {}
-            }
-            frozenLeft={column.frozen ? frozenColumnPositions[column.key] : undefined}
-            columnWidths={columnWidths}
-          />
-        );
-      })}
-
-      {/* Actions Cell */}
-      {actions.length > 0 && (
+        {/* Checkbox Cell */}
         <TableCell
           className={cn(
-            'text-right transition-colors duration-200 border-l border-r border-border/60',
-            !isDragMode && hoveredColumn === '__actions' && 'bg-muted/40'
+            'transition-colors duration-200 border-l border-r border-border/60',
+            !isDragMode && hoveredColumn === '__checkbox' && 'bg-muted/40'
           )}
-          onMouseEnter={() => !isDragMode && onSetHoveredColumn('__actions')}
+          onMouseEnter={() => !isDragMode && onSetHoveredColumn('__checkbox')}
           onMouseLeave={() => !isDragMode && onSetHoveredColumn(null)}
         >
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant='ghost'
-                size='sm'
-                className='h-8 w-8 p-0 hover:bg-fm-gold/20 transition-all duration-200'
-                onClick={e => e.stopPropagation()}
-              >
-                <MoreVertical className='h-4 w-4' />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align='end'>
-              {actions.map((action, idx) => (
-                <DropdownMenuItem
-                  key={idx}
-                  onClick={e => {
-                    e.stopPropagation();
-                    action.onClick?.(row);
-                  }}
-                  className={cn(
-                    'cursor-pointer transition-colors duration-200',
-                    action.variant === 'destructive' &&
-                      'text-destructive focus:text-destructive'
-                  )}
-                >
-                  {action.icon && <span className='mr-2'>{action.icon}</span>}
-                  {action.label}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <FmCommonCheckbox
+            checked={isSelected}
+            onCheckedChange={onSelectRow}
+            aria-label={`Select row ${globalIndex + 1}`}
+          />
         </TableCell>
-      )}
-    </TableRow>
+
+        {/* Data Cells */}
+        {columns.map(column => {
+          const isEditing =
+            editingCell?.rowIndex === globalIndex &&
+            editingCell?.columnKey === column.key;
+          const cellValue = row[column.key];
+
+          return (
+            <FmDataGridCell
+              key={column.key}
+              row={row}
+              column={column}
+              value={cellValue}
+              isEditing={isEditing}
+              editValue={editValue}
+              onEditValueChange={onEditValueChange}
+              onStartEdit={() => onStartEdit(globalIndex, column.key, cellValue)}
+              onSaveEdit={overrideValue => onSaveEdit(row, column.key, overrideValue)}
+              onCancelEdit={onCancelEdit}
+              onUpdate={onUpdate}
+              hoveredColumn={hoveredColumn}
+              isDragMode={isDragMode}
+              focusableProps={
+                column.editable && !column.readonly && onUpdate
+                  ? getFocusableCellProps(rowIndex, column.key)
+                  : {}
+              }
+              frozenLeft={column.frozen ? frozenColumnPositions[column.key] : undefined}
+              columnWidths={columnWidths}
+            />
+          );
+        })}
+
+        {/* Actions Cell */}
+        {actions.length > 0 && (
+          <TableCell
+            className={cn(
+              'text-right transition-colors duration-200 border-l border-r border-border/60',
+              !isDragMode && hoveredColumn === '__actions' && 'bg-muted/40'
+            )}
+            onMouseEnter={() => !isDragMode && onSetHoveredColumn('__actions')}
+            onMouseLeave={() => !isDragMode && onSetHoveredColumn(null)}
+          >
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  className='h-8 w-8 p-0 hover:bg-fm-gold/20 transition-all duration-200'
+                  onClick={e => e.stopPropagation()}
+                >
+                  <MoreVertical className='h-4 w-4' />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align='end'>
+                {actions.map((action, idx) => (
+                  <DropdownMenuItem
+                    key={idx}
+                    onClick={e => {
+                      e.stopPropagation();
+                      action.onClick?.(row);
+                    }}
+                    className={cn(
+                      'cursor-pointer transition-colors duration-200',
+                      action.variant === 'destructive' &&
+                        'text-destructive focus:text-destructive'
+                    )}
+                  >
+                    {action.icon && <span className='mr-2'>{action.icon}</span>}
+                    {action.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </TableCell>
+        )}
+      </TableRow>
+    </FmDataGridContextMenu>
   );
 }
 
