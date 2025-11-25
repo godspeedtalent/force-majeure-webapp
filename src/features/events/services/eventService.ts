@@ -73,7 +73,7 @@ export const eventService = {
   }) {
     let query = supabase.from('events').select(`
       *,
-      venue:venues(id, name, address, city, capacity, image_url),
+      venue:venues(id, name, address:address_line_1, city, capacity, image_url),
       headliner:artists!events_headliner_id_fkey(id, name, image_url, genre)
     `);
 

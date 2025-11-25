@@ -69,7 +69,7 @@ export const useOrder = (orderId: string | undefined) => {
         .select(
           `
           *,
-          event:events(title, date, time, venue:venues(name, address, city)),
+          event:events(title, date, time, venue:venues(name, address:address_line_1, city)),
           items:order_items(
             id,
             quantity,
