@@ -19,6 +19,9 @@ import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSid
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
 import { EventArtistManagement } from '@/components/events/artists/EventArtistManagement';
+import { EventTicketTierManagement } from '@/components/events/ticketing/EventTicketTierManagement';
+import { EventOrderManagement } from '@/components/events/orders';
+
 
 import { toast } from 'sonner';
 import { Card } from '@/components/common/shadcn/card';
@@ -510,28 +513,12 @@ export default function EventManagement() {
             />
           )}
 
-          {activeTab === 'tiers' && (
-            <div className='rounded-none border border-border bg-card p-8 text-center'>
-              <Ticket className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
-              <h3 className='text-lg font-semibold text-foreground mb-2'>
-                Ticket Tier Management
-              </h3>
-              <p className='text-muted-foreground'>
-                Ticket tier management interface coming soon
-              </p>
-            </div>
+          {activeTab === 'tiers' && id && (
+            <EventTicketTierManagement eventId={id} />
           )}
 
-          {activeTab === 'orders' && (
-            <div className='rounded-none border border-border bg-card p-8 text-center'>
-              <ShoppingBag className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
-              <h3 className='text-lg font-semibold text-foreground mb-2'>
-                Order Management
-              </h3>
-              <p className='text-muted-foreground'>
-                Order management coming soon
-              </p>
-            </div>
+          {activeTab === 'orders' && id && (
+            <EventOrderManagement eventId={id} />
           )}
 
           {activeTab === 'sales' && (
