@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import { Button } from '@/components/common/shadcn/button';
+import { Switch } from '@/components/common/shadcn/switch';
+import { Label } from '@/components/common/shadcn/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
 import { ReportScheduleConfig } from './ReportScheduleConfig';
 import { ReportRecipientsManager } from './ReportRecipientsManager';
 import { ReportHistoryTable } from './ReportHistoryTable';
@@ -27,14 +27,14 @@ export const SalesReportConfig = ({ eventId }: SalesReportConfigProps) => {
     queryKey: ['report-config', eventId, 'sales'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('report_configurations')
+        .from('report_configurations' as any)
         .select('*')
         .eq('event_id', eventId)
         .eq('report_type', 'daily_sales')
         .maybeSingle();
 
       if (error) throw error;
-      return data as ReportConfiguration | null;
+      return data as unknown as ReportConfiguration | null;
     },
   });
 
@@ -45,7 +45,7 @@ export const SalesReportConfig = ({ eventId }: SalesReportConfigProps) => {
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
-        .from('report_configurations')
+        .from('report_configurations' as any)
         .insert({
           event_id: eventId,
           report_type: 'daily_sales',
@@ -72,7 +72,7 @@ export const SalesReportConfig = ({ eventId }: SalesReportConfigProps) => {
       if (!config) throw new Error('No configuration found');
 
       const { error } = await supabase
-        .from('report_configurations')
+        .from('report_configurations' as any)
         .update({ is_active: isActive })
         .eq('id', config.id);
 
@@ -148,7 +148,7 @@ export const SalesReportConfig = ({ eventId }: SalesReportConfigProps) => {
               <div className="flex items-center gap-2">
                 <Switch
                   checked={config.is_active}
-                  onCheckedChange={(checked) => toggleActiveMutation.mutate(checked)}
+                  onCheckedChange={(checked: boolean) => toggleActiveMutation.mutate(checked)}
                 />
                 <Label>{config.is_active ? 'Enabled' : 'Disabled'}</Label>
               </div>

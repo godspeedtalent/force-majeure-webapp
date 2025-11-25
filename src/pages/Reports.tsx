@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Card } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card } from '@/components/common/shadcn/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
 import { SalesReportConfig } from '@/components/reports/SalesReportConfig';
 import { AttendanceReportConfig } from '@/components/reports/AttendanceReportConfig';
 

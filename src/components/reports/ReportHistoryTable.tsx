@@ -1,5 +1,5 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/common/shadcn/table';
+import { Badge } from '@/components/common/shadcn/badge';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/shared/api/supabase/client';
 import { format } from 'date-fns';
@@ -14,14 +14,14 @@ export const ReportHistoryTable = ({ configId }: ReportHistoryTableProps) => {
     queryKey: ['report-history', configId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('report_history')
+        .from('report_history' as any)
         .select('*')
         .eq('report_config_id', configId)
         .order('sent_at', { ascending: false })
         .limit(50);
 
       if (error) throw error;
-      return data as ReportHistory[];
+      return data as unknown as ReportHistory[];
     },
   });
 

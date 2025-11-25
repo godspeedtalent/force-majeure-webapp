@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Label } from '@/components/common/shadcn/label';
+import { Switch } from '@/components/common/shadcn/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/common/shadcn/select';
+import { Input } from '@/components/common/shadcn/input';
+import { Button } from '@/components/common/shadcn/button';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
@@ -20,13 +20,13 @@ export const ReportScheduleConfig = ({ configId }: ReportScheduleConfigProps) =>
     queryKey: ['report-schedule', configId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('report_configurations')
+        .from('report_configurations' as any)
         .select('*')
         .eq('id', configId)
         .single();
 
       if (error) throw error;
-      return data as ReportConfiguration;
+      return data as unknown as ReportConfiguration;
     },
   });
 
@@ -51,7 +51,7 @@ export const ReportScheduleConfig = ({ configId }: ReportScheduleConfigProps) =>
       }
 
       const { error } = await supabase
-        .from('report_configurations')
+        .from('report_configurations' as any)
         .update(updates)
         .eq('id', configId);
 
@@ -96,7 +96,7 @@ export const ReportScheduleConfig = ({ configId }: ReportScheduleConfigProps) =>
             <Input
               type="time"
               value={scheduleTime}
-              onChange={(e) => setScheduleTime(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setScheduleTime(e.target.value)}
             />
           </div>
 
@@ -128,7 +128,7 @@ export const ReportScheduleConfig = ({ configId }: ReportScheduleConfigProps) =>
                 min="1"
                 max="31"
                 value={dayOfMonth}
-                onChange={(e) => setDayOfMonth(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDayOfMonth(e.target.value)}
               />
             </div>
           )}
