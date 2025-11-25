@@ -21,6 +21,7 @@ import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
 import { EventArtistManagement } from '@/components/events/artists/EventArtistManagement';
 import { EventTicketTierManagement } from '@/components/events/ticketing/EventTicketTierManagement';
 import { EventOrderManagement } from '@/components/events/orders';
+import { EventAnalytics } from '@/components/events/analytics';
 
 
 import { toast } from 'sonner';
@@ -521,16 +522,8 @@ export default function EventManagement() {
             <EventOrderManagement eventId={id} />
           )}
 
-          {activeTab === 'sales' && (
-            <div className='rounded-none border border-border bg-card p-8 text-center'>
-              <DollarSign className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
-              <h3 className='text-lg font-semibold text-foreground mb-2'>
-                Sales Summary
-              </h3>
-              <p className='text-muted-foreground'>
-                Sales analytics coming soon
-              </p>
-            </div>
+          {activeTab === 'sales' && id && (
+            <EventAnalytics eventId={id} />
           )}
 
           {activeTab === 'admin' && isAdmin && (
