@@ -6,12 +6,15 @@ import { Loader2 } from 'lucide-react';
 import { useRipple } from '@/hooks/useRipple';
 
 // Helper to check if something is a renderable React component (function or forwardRef)
+// - Function components: typeof === 'function'
+// - forwardRef/memo components: objects with `$$typeof` and `render` properties
 const isReactComponent = (component: unknown): component is React.ComponentType<any> => {
   return (
     typeof component === 'function' ||
-    (typeof component === 'object' && 
-     component !== null && 
-     '$$typeof' in component)
+    (typeof component === 'object' &&
+      component !== null &&
+      '$$typeof' in component &&
+      'render' in (component as Record<string, unknown>))
   );
 };
 
