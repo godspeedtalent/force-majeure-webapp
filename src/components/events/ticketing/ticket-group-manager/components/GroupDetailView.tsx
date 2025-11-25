@@ -18,7 +18,7 @@ import {
 } from '@/components/common/shadcn/tooltip';
 import { cn } from '@/shared/utils/utils';
 import type { TicketGroup, TicketTier } from '../types';
-import { GROUP_COLORS } from '../constants';
+import { GROUP_COLORS, NO_GROUP_ID } from '../constants';
 import { formatPrice, getTotalTicketsInGroup, getTotalRevenueInGroup } from '../utils';
 import { TierListItem } from './TierListItem';
 
@@ -26,6 +26,7 @@ interface GroupDetailViewProps {
   group: TicketGroup;
   groupIndex: number;
   isOnlyGroup: boolean;
+  allGroups: TicketGroup[];
   onUpdateGroup: (updates: Partial<TicketGroup>) => void;
   onDuplicateGroup: () => void;
   onDeleteGroup: () => void;
@@ -38,6 +39,7 @@ interface GroupDetailViewProps {
 export function GroupDetailView({
   group,
   isOnlyGroup,
+  allGroups,
   onUpdateGroup,
   onDuplicateGroup,
   onDeleteGroup,
@@ -48,6 +50,9 @@ export function GroupDetailView({
 }: GroupDetailViewProps) {
   const colorConfig =
     GROUP_COLORS.find(c => c.value === group.color) || GROUP_COLORS[0];
+  
+  const isNoGroup = group.id === NO_GROUP_ID;
+  const totalTiersAcrossAllGroups = allGroups.reduce((sum, g) => sum + g.tiers.length, 0);
 
   return (
     <div className='space-y-6'>
@@ -150,14 +155,14 @@ export function GroupDetailView({
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
-                      variant='ghost'
-                      size='sm'
-                      onClick={onDeleteGroup}
-                      disabled={isOnlyGroup}
-                    >
-                      <Trash2 className='h-4 w-4 text-destructive' />
-                    </Button>
+                     <Button
+                       variant='ghost'
+                       size='sm'
+                       onClick={onDeleteGroup}
+                       disabled={isOnlyGroup || isNoGroup}
+                     >
+                       <Trash2 className='h-4 w-4 text-destructive' />
+                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>Delete group</p>
@@ -173,18 +178,24 @@ export function GroupDetailView({
       <div className='space-y-4'>
         <h4 className='text-lg font-semibold'>Ticket Tiers</h4>
 
-        {group.tiers.map((tier, tierIndex) => (
-          <TierListItem
-            key={`${group.id}-tier-${tierIndex}`}
-            tier={tier}
-            tierIndex={tierIndex}
-            isFirstTier={tierIndex === 0}
-            isOnlyTier={group.tiers.length === 1}
-            onUpdate={updates => onUpdateTier(tierIndex, updates)}
-            onDuplicate={() => onDuplicateTier(tierIndex)}
-            onDelete={() => onDeleteTier(tierIndex)}
-          />
-        ))}
+        {group.tiers.map((tier, tierIndex) => {
+          // Last tier in No Group and only tier in entire system cannot be deleted
+          const isLastTierInSystem = isNoGroup && group.tiers.length === 1 && totalTiersAcrossAllGroups === 1;
+          
+          return (
+            <TierListItem
+              key={`${group.id}-tier-${tierIndex}`}
+              tier={tier}
+              tierIndex={tierIndex}
+              isFirstTier={tierIndex === 0}
+              isOnlyTier={group.tiers.length === 1}
+              isProtected={isLastTierInSystem}
+              onUpdate={updates => onUpdateTier(tierIndex, updates)}
+              onDuplicate={() => onDuplicateTier(tierIndex)}
+              onDelete={() => onDeleteTier(tierIndex)}
+            />
+          );
+        })}
 
         <Button
           variant='outline'
