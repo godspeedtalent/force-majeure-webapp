@@ -12,6 +12,7 @@ import {
   BarChart3,
   Shield,
   Trash2,
+  Link2,
 } from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
@@ -23,7 +24,7 @@ import { EventTicketTierManagement } from '@/components/events/ticketing/EventTi
 import { EventOrderManagement } from '@/components/events/orders';
 import { EventAnalytics } from '@/components/events/analytics';
 import Reports from './Reports';
-
+import { TrackingLinksManagement } from '@/components/events/tracking/TrackingLinksManagement';
 
 import { toast } from 'sonner';
 import { Card } from '@/components/common/shadcn/card';
@@ -41,7 +42,7 @@ import { ROLES } from '@/shared/auth/permissions';
 import { handleError } from '@/shared/services/errorHandler';
 import { AdminLockIndicator } from '@/components/common/indicators';
 
-type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'reports' | 'admin';
+type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'reports' | 'tracking' | 'admin';
 
 export default function EventManagement() {
   const { id } = useParams<{ id: string }>();
@@ -136,15 +137,21 @@ export default function EventManagement() {
       items: [
         {
           id: 'tiers',
-          label: 'Tier Management',
+          label: 'Ticket Tiers',
           icon: Ticket,
-          description: 'Manage ticket tiers and pricing',
+          description: 'Manage ticket pricing and inventory',
         },
         {
           id: 'orders',
           label: 'Orders',
           icon: ShoppingBag,
-          description: 'View and manage orders',
+          description: 'View and manage ticket orders',
+        },
+        {
+          id: 'tracking',
+          label: 'Tracking Links',
+          icon: Link2,
+          description: 'Marketing links and campaign tracking',
         },
       ],
     },
@@ -191,6 +198,7 @@ export default function EventManagement() {
     { id: 'artists', label: 'Artists', icon: Users },
     { id: 'tiers', label: 'Tiers', icon: Ticket },
     { id: 'orders', label: 'Orders', icon: ShoppingBag },
+    { id: 'tracking', label: 'Links', icon: Link2 },
     { id: 'sales', label: 'Sales', icon: DollarSign },
     { id: 'reports', label: 'Reports', icon: FileText },
     ...(isAdmin ? [{ id: 'admin' as EventTab, label: 'Admin', icon: Shield }] : []),
@@ -536,6 +544,10 @@ export default function EventManagement() {
 
           {activeTab === 'reports' && id && (
             <Reports eventId={id} />
+          )}
+
+          {activeTab === 'tracking' && id && (
+            <TrackingLinksManagement eventId={id} />
           )}
 
           {activeTab === 'admin' && isAdmin && (
