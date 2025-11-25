@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { logger } from '@/shared/services/logger';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';

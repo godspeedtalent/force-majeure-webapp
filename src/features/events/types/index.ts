@@ -65,6 +65,7 @@ export interface Artist {
   bio?: string | null;
   image_url?: string | null;
   spotify_id?: string | null;
+  spotify_data?: any;
   website_url?: string | null;
   genre?: string | null;      // Artist genre
   image?: string | null;      // Alias for image_url
