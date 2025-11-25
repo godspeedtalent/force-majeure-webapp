@@ -14,7 +14,7 @@ import { useEvents } from '@/features/events/hooks/useEvents';
 
 interface EventListItem {
   id: string;
-  name: string;
+  title: string;
   start_time: string;
   venue?: { name: string };
   headliner?: { name: string };
@@ -66,7 +66,7 @@ export const EventListSection = () => {
       label: 'Headliner',
       render: (_, item) => (
         <div className='font-medium text-white'>
-          {(item as any).headliner?.name || item.name || '-'}
+          {(item as any).headliner?.name || item.title || '-'}
         </div>
       ),
     },

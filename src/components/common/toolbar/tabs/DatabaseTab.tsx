@@ -7,7 +7,7 @@ interface DatabaseTabContentProps {
   onNavigate: (path: string) => void;
 }
 
-export function DatabaseTabContent({ onNavigate }: DatabaseTabContentProps) {
+export function DatabaseTabContent() {
   return (
     <div className='space-y-4'>
       <Separator className='bg-white/10' />

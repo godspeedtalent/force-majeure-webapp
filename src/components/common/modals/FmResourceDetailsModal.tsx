@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 
 import { FmCommonModal } from './FmCommonModal';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { FmCommonBadgeGroup, BadgeItem } from '@/components/common/display/FmCommonBadgeGroup';
+import { FmCommonBadgeGroup, FmCommonBadgeItem as BadgeItem } from '@/components/common/display/FmCommonBadgeGroup';
 import { DialogTitle } from '@/components/common/shadcn/dialog';
 import { cn } from '@/shared/utils/utils';
 
@@ -42,7 +42,6 @@ export const FmResourceDetailsModal = ({
   open,
   onOpenChange,
   title,
-  subtitle,
   eyebrow,
   imageUrl,
   metadata,

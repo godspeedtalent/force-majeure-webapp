@@ -90,14 +90,6 @@ export interface Event {
   headliner?: Artist;
   undercard_artists?: UndercardArtist[];
   ticket_tiers?: TicketTier[];
-
-  // Legacy/computed fields for backward compatibility
-  name?: string;        // Alias for title
-  date?: string;        // Extracted date from start_time
-  time?: string | number; // Extracted time from start_time
-  doors_time?: string;  // Door opening time
-  hero_image?: string;  // Alias for image_url
-  undercard_ids?: string[]; // Array of undercard artist IDs
 }
 
 // Form data types (used in create/edit forms)

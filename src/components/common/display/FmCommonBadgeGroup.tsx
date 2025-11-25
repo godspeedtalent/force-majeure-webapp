@@ -8,6 +8,9 @@ export interface FmCommonBadgeItem {
   className?: string;
 }
 
+// Export type alias for backward compatibility
+export type BadgeItem = FmCommonBadgeItem;
+
 interface FmCommonBadgeGroupProps {
   badges: FmCommonBadgeItem[];
   maxDisplay?: number;

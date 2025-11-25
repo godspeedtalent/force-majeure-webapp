@@ -11,17 +11,12 @@ import { logger } from '@/shared/services/logger';
 
 export interface CreateEventData {
   title: string;
-  name?: string; // Legacy alias for backward compatibility
   description?: string;
-  date?: string;
-  time?: string;
   start_time?: string;
   end_time?: string;
-  doors_time?: string;
   venue_id: string | null;
   headliner_id: string | null;
   image_url?: string | null;
-  status: 'draft' | 'published';
   is_tba?: boolean;
   is_after_hours?: boolean;
 }
@@ -105,15 +100,9 @@ export const eventService = {
    * Create a new event
    */
   async createEvent(eventData: CreateEventData) {
-    // Ensure required title field is present
-    const insertData = {
-      ...eventData,
-      title: eventData.title || eventData.name || 'Untitled Event'
-    };
-
     const { data, error} = await supabase
       .from('events')
-      .insert([insertData])
+      .insert([eventData])
       .select()
       .single();
 

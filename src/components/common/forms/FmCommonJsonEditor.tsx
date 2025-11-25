@@ -183,7 +183,7 @@ export const FmCommonJsonEditor = ({
             {/* Add Button */}
             <FmCommonButton
               type='button'
-              variant='outline'
+              variant='secondary'
               icon={Plus}
               iconPosition='left'
               onClick={handleAdd}

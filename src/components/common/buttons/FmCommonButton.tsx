@@ -103,7 +103,7 @@ export const FmCommonButton = forwardRef<
         <>
           {loading && <Loader2 className='w-4 h-4 mr-2 animate-spin' />}
           {!loading && Icon && iconPosition === 'left' && (
-            typeof Icon === 'function' || typeof Icon === 'object' && Icon.$$typeof ? (
+            typeof Icon === 'function' ? (
               <Icon className='w-4 h-4 mr-2 transition-transform duration-200 group-hover:scale-110' />
             ) : (
               <span className='w-4 h-4 mr-2 flex items-center justify-center transition-transform duration-200 group-hover:scale-110'>
@@ -113,7 +113,7 @@ export const FmCommonButton = forwardRef<
           )}
           <span className='relative z-10'>{children}</span>
           {!loading && Icon && iconPosition === 'right' && (
-            typeof Icon === 'function' || typeof Icon === 'object' && Icon.$$typeof ? (
+            typeof Icon === 'function' ? (
               <Icon className='w-4 h-4 ml-2 transition-transform duration-200 group-hover:scale-110' />
             ) : (
               <span className='w-4 h-4 ml-2 flex items-center justify-center transition-transform duration-200 group-hover:scale-110'>

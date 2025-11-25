@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  ArrowLeft,
   FileText,
   Users,
   Ticket,
@@ -246,7 +245,7 @@ export default function EventManagement() {
       const { error } = await supabase
         .from('events')
         .update({
-          name: eventTitle,
+          title: eventTitle,
           headliner_id: headlinerId,
           venue_id: venueId,
           start_time: eventDate.toISOString(),
