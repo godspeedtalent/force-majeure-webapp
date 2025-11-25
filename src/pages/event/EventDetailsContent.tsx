@@ -50,6 +50,8 @@ import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserRole } from '@/shared/hooks/useUserRole';
 import { useEventViews } from '@/shared/hooks/useEventViews';
 import { formatTimeDisplay } from '@/shared/utils/timeUtils';
+import { supabase } from '@/shared/api/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 
 import { EventDetailsRecord } from './types';
 
@@ -88,6 +90,35 @@ export const EventDetailsContent = ({
     useState<FmVenueDetailsModalProps['venue']>(null);
   const [isVenueModalOpen, setIsVenueModalOpen] = useState(false);
   const [isAttendeeModalOpen, setIsAttendeeModalOpen] = useState(false);
+
+  // Check feature flag and event settings for guest list
+  const { data: guestListEnabled } = useQuery({
+    queryKey: ['guest-list-enabled', event.id],
+    queryFn: async () => {
+      // Check feature flag
+      const { data: flagData } = await supabase
+        .from('feature_flags' as any)
+        .select('is_enabled, environment_id, environments!inner(name)')
+        .eq('flag_name', 'guest_list')
+        .eq('environments.name', 'production')
+        .maybeSingle();
+
+      if (!(flagData as any)?.is_enabled) return false;
+
+      // Check event settings
+      const { data: settingsData } = await supabase
+        .from('guest_list_settings' as any)
+        .select('*')
+        .eq('event_id', event.id)
+        .maybeSingle();
+
+      // Guest list is enabled if:
+      // - Feature flag is on
+      // - Event has settings enabled
+      // - At least one threshold is met (for now we'll show if enabled)
+      return (settingsData as any)?.is_enabled ?? false;
+    },
+  });
 
   // Record page view on mount
   useEffect(() => {
@@ -301,12 +332,13 @@ export const EventDetailsContent = ({
           </FmCommonCollapsibleSection>
         )}
 
-        {/* Guest List - always shows */}
-        <FmCommonCard
-          variant='outline'
-          onClick={user ? handleAttendeeCardClick : undefined}
-          className='relative overflow-hidden'
-        >
+        {/* Guest List - conditionally shows based on feature flag and event settings */}
+        {guestListEnabled && (
+          <FmCommonCard
+            variant='outline'
+            onClick={user ? handleAttendeeCardClick : undefined}
+            className='relative overflow-hidden'
+          >
           <h3 className='text-lg mb-4 font-canela'>Guest list</h3>
 
           <div className='flex items-center gap-3 mb-4'>
@@ -356,6 +388,7 @@ export const EventDetailsContent = ({
             </div>
           </div>
         </FmCommonCard>
+        )}
 
         {/* Event Information - always shows */}
         <FmCommonCollapsibleSection

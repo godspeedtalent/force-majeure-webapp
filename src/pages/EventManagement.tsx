@@ -14,6 +14,7 @@ import {
   Trash2,
   Link2,
   Eye,
+  Share2,
 } from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
@@ -28,6 +29,7 @@ import Reports from './Reports';
 import { TrackingLinksManagement } from '@/components/events/tracking/TrackingLinksManagement';
 import { EventStatusBadge, PublishEventButton, StatusActionsDropdown } from '@/components/events/status';
 import { eventService } from '@/features/events/services/eventService';
+import { GuestListSettings } from '@/components/events/social/GuestListSettings';
 
 import { toast } from 'sonner';
 import { Card } from '@/components/common/shadcn/card';
@@ -45,7 +47,7 @@ import { ROLES } from '@/shared/auth/permissions';
 import { handleError } from '@/shared/services/errorHandler';
 import { AdminLockIndicator } from '@/components/common/indicators';
 
-type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'reports' | 'tracking' | 'admin' | 'view';
+type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'reports' | 'tracking' | 'social' | 'admin' | 'view';
 
 export default function EventManagement() {
   const { id } = useParams<{ id: string }>();
@@ -150,6 +152,12 @@ export default function EventManagement() {
           icon: Users,
           description: 'Manage lineup and scheduling',
         },
+        {
+          id: 'social',
+          label: 'Social',
+          icon: Share2,
+          description: 'Guest list and social settings',
+        },
       ],
     },
     {
@@ -218,6 +226,7 @@ export default function EventManagement() {
     { id: 'view', label: 'View', icon: Eye },
     { id: 'overview', label: 'Overview', icon: FileText },
     { id: 'artists', label: 'Artists', icon: Users },
+    { id: 'social', label: 'Social', icon: Share2 },
     { id: 'tiers', label: 'Tiers', icon: Ticket },
     { id: 'orders', label: 'Orders', icon: ShoppingBag },
     { id: 'tracking', label: 'Links', icon: Link2 },
@@ -681,6 +690,10 @@ export default function EventManagement() {
 
           {activeTab === 'tracking' && id && (
             <TrackingLinksManagement eventId={id} />
+          )}
+
+          {activeTab === 'social' && id && (
+            <GuestListSettings eventId={id} />
           )}
 
           {activeTab === 'admin' && isAdmin && (
