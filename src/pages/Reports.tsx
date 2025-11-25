@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { Card } from '@/components/common/shadcn/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
 import { SalesReportConfig } from '@/components/reports/SalesReportConfig';
 import { AttendanceReportConfig } from '@/components/reports/AttendanceReportConfig';
 
-const Reports = () => {
-  const { eventId } = useParams<{ eventId: string }>();
+interface ReportsProps {
+  eventId?: string;
+}
+
+const Reports = ({ eventId }: ReportsProps) => {
   const [activeTab, setActiveTab] = useState('sales');
 
   if (!eventId) {
