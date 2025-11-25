@@ -671,6 +671,47 @@ export type Database = {
           },
         ]
       }
+      guest_list_settings: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          is_enabled: boolean
+          min_interested_guests: number
+          min_private_guests: number
+          min_public_guests: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          is_enabled?: boolean
+          min_interested_guests?: number
+          min_private_guests?: number
+          min_public_guests?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          is_enabled?: boolean
+          min_interested_guests?: number
+          min_private_guests?: number
+          min_public_guests?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guest_list_settings_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: true
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       link_clicks: {
         Row: {
           city: string | null
