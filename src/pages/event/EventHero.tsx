@@ -26,7 +26,7 @@ export const EventHero = ({
 
   return (
     <div
-      className='relative h-full max-h-[40vh] lg:max-h-none'
+      className='relative w-full h-full'
       style={{ viewTransitionName: `magazine-hero-${event.id}` }}
     >
       <img
