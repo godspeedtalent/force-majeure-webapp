@@ -136,6 +136,49 @@ export const EventDetailsContent = ({
     []
   );
 
+  // Format date/time as: FRI MM/DD/YY 9pm-2am PST
+  const formattedDateTime = useMemo(() => {
+    const date = new Date(event.date);
+    
+    // Get day of week
+    const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
+    
+    // Get date as MM/DD/YY
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const year = String(date.getFullYear()).slice(-2);
+    const dateStr = `${month}/${day}/${year}`;
+    
+    // Parse start time
+    const startMatch = event.time?.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+    if (!startMatch) return `${dayOfWeek} ${dateStr}`;
+    
+    let startHours = parseInt(startMatch[1], 10);
+    const startMeridiem = startMatch[3]?.toUpperCase() || 'PM';
+    
+    // Assume end time is 5 hours later (placeholder logic)
+    const startDate = new Date(`${event.date}T${startHours.toString().padStart(2, '0')}:${startMatch[2]}:00`);
+    const endDate = new Date(startDate.getTime() + 5 * 60 * 60 * 1000);
+    let endHours = endDate.getHours();
+    const endMeridiem = endHours >= 12 ? 'PM' : 'AM';
+    
+    // Convert to 12-hour format
+    if (startMeridiem === 'PM' && startHours !== 12) startHours += 12;
+    if (startMeridiem === 'AM' && startHours === 12) startHours = 0;
+    
+    const startDisplay = startHours > 12 ? startHours - 12 : (startHours === 0 ? 12 : startHours);
+    const endDisplay = endHours > 12 ? endHours - 12 : (endHours === 0 ? 12 : endHours);
+    
+    // Only show first meridiem if different from second
+    const startMeridiemDisplay = startMeridiem !== endMeridiem ? startMeridiem.toLowerCase() : '';
+    const endMeridiemDisplay = endMeridiem.toLowerCase();
+    
+    // Get timezone
+    const timezone = new Date().toLocaleTimeString('en-US', { timeZoneName: 'short' }).split(' ')[2];
+    
+    return `${dayOfWeek} ${dateStr} ${startDisplay}${startMeridiemDisplay}-${endDisplay}${endMeridiemDisplay} ${timezone}`;
+  }, [event.date, event.time]);
+
   const eventDate = useMemo(() => new Date(event.date), [event.date]);
   const longDateLabel = useMemo(
     () =>
@@ -503,6 +546,11 @@ export const EventDetailsContent = ({
           <h1 className='text-3xl lg:text-4xl font-canela font-medium text-foreground leading-tight'>
             {displayTitle}
           </h1>
+          {(event as any).subtitle && (
+            <p className='text-lg text-muted-foreground font-normal'>
+              {(event as any).subtitle}
+            </p>
+          )}
           <FmUndercardList
             artists={event.undercard}
             onArtistClick={artist =>
@@ -517,7 +565,7 @@ export const EventDetailsContent = ({
           <div className='flex flex-col gap-1.5 text-sm text-muted-foreground/90 sm:flex-row sm:flex-wrap sm:items-center'>
             <div className='flex items-center gap-2'>
               <Clock className='h-4 w-4 text-fm-gold flex-shrink-0' />
-              <span>{`${longDateLabel} ${BULLET_SEPARATOR} ${formattedTime}`}</span>
+              <span>{formattedDateTime}</span>
             </div>
             <div className='flex items-center gap-2'>
               <MapPin className='h-4 w-4 text-fm-gold flex-shrink-0' />
