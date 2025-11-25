@@ -7,30 +7,10 @@ export type Json =
   | Json[]
 
 export type Database = {
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "13.0.4"
   }
   public: {
     Tables: {
@@ -499,10 +479,11 @@ export type Database = {
           headliner_id: string | null
           id: string
           is_after_hours: boolean
-          name: string
+          is_tba: boolean | null
           organization_id: string | null
           start_time: string | null
           test_data: boolean
+          title: string
           updated_at: string | null
           venue_id: string | null
         }
@@ -513,10 +494,11 @@ export type Database = {
           headliner_id?: string | null
           id?: string
           is_after_hours?: boolean
-          name: string
+          is_tba?: boolean | null
           organization_id?: string | null
           start_time?: string | null
           test_data?: boolean
+          title: string
           updated_at?: string | null
           venue_id?: string | null
         }
@@ -527,10 +509,11 @@ export type Database = {
           headliner_id?: string | null
           id?: string
           is_after_hours?: boolean
-          name?: string
+          is_tba?: boolean | null
           organization_id?: string | null
           start_time?: string | null
           test_data?: boolean
+          title?: string
           updated_at?: string | null
           venue_id?: string | null
         }
@@ -1453,7 +1436,6 @@ export type Database = {
       }
       venues: {
         Row: {
-          address: string | null
           address_line_1: string | null
           address_line_2: string | null
           capacity: number | null
@@ -1466,10 +1448,10 @@ export type Database = {
           state: string | null
           test_data: boolean
           updated_at: string | null
+          website: string | null
           zip_code: string | null
         }
         Insert: {
-          address?: string | null
           address_line_1?: string | null
           address_line_2?: string | null
           capacity?: number | null
@@ -1482,10 +1464,10 @@ export type Database = {
           state?: string | null
           test_data?: boolean
           updated_at?: string | null
+          website?: string | null
           zip_code?: string | null
         }
         Update: {
-          address?: string | null
           address_line_1?: string | null
           address_line_2?: string | null
           capacity?: number | null
@@ -1498,6 +1480,7 @@ export type Database = {
           state?: string | null
           test_data?: boolean
           updated_at?: string | null
+          website?: string | null
           zip_code?: string | null
         }
         Relationships: [
@@ -1559,6 +1542,10 @@ export type Database = {
     Functions: {
       cleanup_old_ticketing_sessions: { Args: never; Returns: undefined }
       convert_hold_to_sale: { Args: { p_hold_id: string }; Returns: boolean }
+      create_event_with_tiers: {
+        Args: { p_event_data: Json; p_ticket_tiers: Json }
+        Returns: Json
+      }
       create_ticket_hold: {
         Args: {
           p_fingerprint: string
@@ -1596,10 +1583,10 @@ export type Database = {
         Returns: {
           age_range: string
           avatar_url: string
-          billing_address: string
+          billing_address_line_1: string
           billing_city: string
           billing_state: string
-          billing_zip: string
+          billing_zip_code: string
           created_at: string
           display_name: string
           email: string
@@ -1835,13 +1822,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
       app_role: ["user", "admin", "developer", "org_admin", "org_staff"],
     },
   },
 } as const
-

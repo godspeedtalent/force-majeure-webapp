@@ -99,9 +99,13 @@ serve(async req => {
       status: 200,
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 400,
-    });
+    console.error('Error in get-stripe-customer:', error);
+    return new Response(
+      JSON.stringify({ 
+        error: 'Failed to retrieve customer information. Please try again.',
+        request_id: crypto.randomUUID()
+      }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
   }
 });
