@@ -144,7 +144,7 @@ const Index = () => {
             date: event.start_time ? new Date(event.start_time).toISOString().split('T')[0] : '',
             time: event.start_time ? new Date(event.start_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '',
             venue: event.venues?.name || 'TBA',
-            heroImage: getImageUrl(null),
+            heroImage: (event as any).hero_image ? getImageUrl((event as any).hero_image) : getImageUrl(null),
             description: event.description || null,
             ticketUrl: null,
             is_tba: (event as any).is_tba ?? false,
