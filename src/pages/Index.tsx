@@ -193,16 +193,18 @@ const Index = () => {
         }
       >
         <div className='flex flex-col items-center text-center'>
-          <ForceMajeureLogo size={isMobile ? 'lg' : 'xl'} className={`mb-${isMobile ? '6' : '8'} h-${isMobile ? '32' : '40'} w-${isMobile ? '32' : '40'}`} />
-          <h1
-            className={`${isMobile ? 'text-2xl' : 'text-3xl lg:text-5xl'} font-screamer leading-none mb-${isMobile ? '8' : '10'}`}
-            style={{ fontWeight: 475 }}
-          >
-            <span className='text-foreground'>FORCE </span>
-            <span className='bg-gradient-gold bg-clip-text text-transparent'>
-              MAJEURE
-            </span>
-          </h1>
+          <div className='bg-background/40 backdrop-blur-xl border border-border/30 rounded-lg p-8 lg:p-12'>
+            <ForceMajeureLogo size={isMobile ? 'lg' : 'xl'} className={`mb-${isMobile ? '6' : '8'} h-${isMobile ? '32' : '40'} w-${isMobile ? '32' : '40'}`} />
+            <h1
+              className={`${isMobile ? 'text-2xl' : 'text-3xl lg:text-5xl'} font-screamer leading-none mb-${isMobile ? '8' : '10'}`}
+              style={{ fontWeight: 475 }}
+            >
+              <span className='text-foreground'>FORCE </span>
+              <span className='bg-gradient-gold bg-clip-text text-transparent'>
+                MAJEURE
+              </span>
+            </h1>
+          </div>
         </div>
         <DecorativeDivider />
       </div>
@@ -312,16 +314,18 @@ const Index = () => {
                 <div className='flex items-center justify-center'>
                   <div className='max-w-7xl mx-auto'>
                     <div className='flex flex-col items-center text-center'>
-                      <ForceMajeureLogo size='lg' className='mb-4 h-32 w-32' />
-                      <h1
-                        className='text-2xl lg:text-4xl font-screamer leading-none mb-8'
-                        style={{ fontWeight: 475 }}
-                      >
-                        <span className='text-foreground'>FORCE </span>
-                        <span className='bg-gradient-gold bg-clip-text text-transparent'>
-                          MAJEURE
-                        </span>
-                      </h1>
+                      <div className='bg-background/40 backdrop-blur-xl border border-border/30 rounded-lg p-8 lg:p-12'>
+                        <ForceMajeureLogo size='lg' className='mb-4 h-32 w-32' />
+                        <h1
+                          className='text-2xl lg:text-4xl font-screamer leading-none mb-8'
+                          style={{ fontWeight: 475 }}
+                        >
+                          <span className='text-foreground'>FORCE </span>
+                          <span className='bg-gradient-gold bg-clip-text text-transparent'>
+                            MAJEURE
+                          </span>
+                        </h1>
+                      </div>
                       {/* Decorative Divider - Only in single row layout */}
                       <DecorativeDivider />
                     </div>
