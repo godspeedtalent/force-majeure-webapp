@@ -24,7 +24,6 @@ import { FmDynamicStickyHeader } from '@/components/common/layout/FmDynamicStick
 import { ScrollBar } from '@/components/common/shadcn/scroll-area';
 import {
   FmCommonStackLayout,
-  FmStickyFooter,
 } from '@/components/common/layout';
 import { FmCommonCollapsibleSection } from '@/components/common/data/FmCommonCollapsibleSection';
 import {
@@ -535,14 +534,16 @@ export const EventDetailsContent = ({
           size='lg'
         />
         <div className='space-y-3'>
-          <h1 className='text-3xl lg:text-4xl font-canela font-medium text-foreground leading-tight'>
-            {displayTitle}
-          </h1>
-          {displaySubtitle && (
-            <p className='text-lg text-muted-foreground font-normal'>
-              {displaySubtitle}
-            </p>
-          )}
+          <div className='space-y-0.5'>
+            <h1 className='text-3xl lg:text-4xl font-canela font-medium text-foreground leading-tight'>
+              {displayTitle}
+            </h1>
+            {displaySubtitle && (
+              <p className='text-lg text-muted-foreground font-normal'>
+                {displaySubtitle}
+              </p>
+            )}
+          </div>
           <FmUndercardList
             artists={event.undercard}
             onArtistClick={artist =>
@@ -568,7 +569,12 @@ export const EventDetailsContent = ({
           </div>
         </div>
       </div>
-      {headerActions}
+      <div className='flex flex-col gap-4'>
+        {headerActions}
+        <FmBigButton onClick={handleOpenCheckout}>
+          Get Tickets
+        </FmBigButton>
+      </div>
     </div>
   );
 
@@ -622,14 +628,6 @@ export const EventDetailsContent = ({
                       <div className='pb-10'>{detailsContent}</div>
                     </div>
                   </div>
-
-                  <FmStickyFooter>
-                    <div className='mx-auto w-full lg:w-[65%]'>
-                      <FmBigButton onClick={handleOpenCheckout}>
-                        Get Tickets
-                      </FmBigButton>
-                    </div>
-                  </FmStickyFooter>
                 </div>
               </ScrollAreaPrimitive.Viewport>
               <ScrollBar orientation='vertical' />
