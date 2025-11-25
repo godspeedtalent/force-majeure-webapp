@@ -46,33 +46,36 @@ export const EventHero = ({
         <div className='absolute inset-0 animate-pulse bg-gradient-to-br from-muted via-muted-foreground/10 to-muted' />
       )}
 
-      <div className='absolute inset-0 bg-gradient-to-b from-black/45 via-black/15 to-transparent' />
+      {/* Gradient overlay only on desktop */}
+      <div className='hidden lg:block absolute inset-0 bg-gradient-to-b from-black/45 via-black/15 to-transparent' />
 
       {/* Fixed buttons on mobile, absolute on desktop */}
-      <div className='fixed lg:absolute top-6 left-6 lg:inset-0 lg:p-10 flex flex-col justify-between z-50 lg:z-auto pointer-events-none'>
+      <div className='fixed lg:absolute top-6 left-6 right-6 lg:inset-0 lg:p-10 flex justify-between lg:flex-col lg:justify-between z-50 lg:z-auto pointer-events-none'>
         <div className='flex gap-2 pointer-events-auto'>
           <FmCommonButton
             variant='secondary'
-            size='sm'
+            size='icon'
             onClick={onBack}
             icon={ArrowLeft}
-            className='text-white bg-black/40 hover:bg-black/20 backdrop-blur-sm border-white/20 hover:border-fm-gold hover:text-fm-gold hover:shadow-[0_0_20px_rgba(255,255,255,0.6)]'
+            className='text-white bg-black/40 hover:bg-black/20 backdrop-blur-sm border-white/20 hover:border-fm-gold hover:text-fm-gold hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] lg:w-auto lg:px-4'
           >
-            Back
+            <span className='hidden lg:inline'>Back</span>
           </FmCommonButton>
+        </div>
 
-          {canManage && (
+        {canManage && (
+          <div className='pointer-events-auto'>
             <FmCommonButton
               variant='secondary'
-              size='sm'
+              size='icon'
               onClick={onManage}
               icon={Settings}
-              className='text-white bg-black/40 hover:bg-black/20 backdrop-blur-sm border-white/20 hover:border-fm-gold hover:text-fm-gold hover:shadow-[0_0_20px_rgba(255,255,255,0.6)]'
+              className='text-white bg-black/40 hover:bg-black/20 backdrop-blur-sm border-white/20 hover:border-fm-gold hover:text-fm-gold hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] lg:w-auto lg:px-4'
             >
-              Manage
+              <span className='hidden lg:inline'>Manage</span>
             </FmCommonButton>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
