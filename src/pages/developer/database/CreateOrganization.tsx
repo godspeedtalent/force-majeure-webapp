@@ -31,13 +31,33 @@ const DeveloperCreateOrganizationPage = () => {
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from('organizations').insert({
-        name: formData.name.trim(),
-        profile_picture: formData.profile_picture.trim() || null,
-        owner_id: session.user.id,
-      });
+      const { data: newOrg, error } = await supabase
+        .from('organizations')
+        .insert({
+          name: formData.name.trim(),
+          profile_picture: formData.profile_picture.trim() || null,
+          owner_id: session.user.id,
+        })
+        .select('id')
+        .single();
 
       if (error) throw error;
+
+      // Update the creator's profile with the new organization_id
+      if (newOrg) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({ organization_id: newOrg.id })
+          .eq('user_id', session.user.id);
+
+        if (profileError) {
+          logger.error('Failed to update profile with organization_id:', {
+            error: profileError.message,
+            source: 'CreateOrganization',
+            organizationId: newOrg.id,
+          });
+        }
+      }
 
       toast.success('Organization created successfully');
       setFormData({
