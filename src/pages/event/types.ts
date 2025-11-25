@@ -8,6 +8,7 @@ export interface ArtistSummary {
 export interface EventDetailsRecord {
   id: string;
   title: string | null;
+  subtitle?: string | null;
   headliner: ArtistSummary;
   undercard: ArtistSummary[];
   date: string;
