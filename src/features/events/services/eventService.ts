@@ -100,9 +100,15 @@ export const eventService = {
    * Create a new event
    */
   async createEvent(eventData: CreateEventData) {
+    // Add 'name' field for database compatibility
+    const insertData = {
+      ...eventData,
+      name: eventData.title || 'Untitled Event',
+    };
+    
     const { data, error} = await supabase
       .from('events')
-      .insert([eventData])
+      .insert([insertData])
       .select()
       .single();
 

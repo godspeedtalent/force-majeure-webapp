@@ -31,12 +31,12 @@ export function FmEventSearchDropdown({
     if (value) {
       supabase
         .from('events')
-        .select('title')
+        .select('name')
         .eq('id', value)
         .maybeSingle()
         .then(({ data }) => {
           if (data) {
-            setSelectedEvent({ title: data.title });
+            setSelectedEvent({ title: data.name || '' });
           }
         });
     } else {

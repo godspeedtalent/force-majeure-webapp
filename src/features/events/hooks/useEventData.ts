@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { parse } from 'date-fns';
 import { logger } from '@/shared/services/logger';
 import { eventService } from '../services/eventService';
 import { Event } from '../types';
@@ -72,21 +71,13 @@ export function useEventData(
       const event = await eventService.getEventById(eventId, true);
       setEventData(event);
 
-      // Parse date and time
+      // Parse start_time to Date
       let parsedDate: Date | undefined;
-      if (event.date) {
+      if (event.start_time) {
         try {
-          const timeStr =
-            typeof event.time === 'number'
-              ? `${event.time}:00`
-              : event.time || '20:00';
-          parsedDate = parse(
-            `${event.date} ${timeStr}`,
-            'yyyy-MM-dd HH:mm',
-            new Date()
-          );
+          parsedDate = new Date(event.start_time);
         } catch (error) {
-          logger.error('Error parsing date:', {
+          logger.error('Error parsing start_time:', {
             error: error instanceof Error ? error.message : 'Unknown error',
             source: 'useEventData.loadEventData',
             eventId
@@ -109,11 +100,18 @@ export function useEventData(
         artistId: ua.artist_id,
       }));
 
+      // Parse end time from end_time if available
+      let endTimeStr = '02:00';
+      if (event.end_time) {
+        const endDate = new Date(event.end_time);
+        endTimeStr = `${endDate.getHours().toString().padStart(2, '0')}:${endDate.getMinutes().toString().padStart(2, '0')}`;
+      }
+
       setFormState({
         headlinerId: event.headliner_id || '',
         eventDate: parsedDate,
-        endTime: event.doors_time ? String(event.doors_time) : '02:00',
-        isAfterHours: false,
+        endTime: endTimeStr,
+        isAfterHours: event.is_after_hours || false,
         venueId: event.venue_id || '',
         venueCapacity: event.venue?.capacity || 0,
         undercardArtists: undercard,

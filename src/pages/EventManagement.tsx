@@ -92,8 +92,8 @@ export default function EventManagement() {
       setHeroImage(''); // No hero_image in DB yet
 
       // Check if event has a custom title
-      if (event.title) {
-        setCustomTitle(event.title);
+      if (event.name) {
+        setCustomTitle(event.name);
         setHasCustomTitle(false);
       }
 
