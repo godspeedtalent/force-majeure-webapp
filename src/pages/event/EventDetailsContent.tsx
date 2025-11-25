@@ -399,6 +399,7 @@ export const EventDetailsContent = ({
         <FmCommonCollapsibleSection
           title='Event Information'
           defaultExpanded={true}
+          className={!guestListEnabled ? 'lg:col-span-2' : ''}
         >
           <div className='grid gap-4'>
             <FmCommonInfoCard
