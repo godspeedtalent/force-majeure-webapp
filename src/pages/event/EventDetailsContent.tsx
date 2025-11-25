@@ -120,6 +120,9 @@ export const EventDetailsContent = ({
     },
   });
 
+  // Check if view count should be shown
+  const showViewCount = (event as any).show_view_count ?? true;
+
   // Record page view on mount
   useEffect(() => {
     recordView();
@@ -381,10 +384,12 @@ export const EventDetailsContent = ({
                   Log in to see the full list
                 </button>
               )}
-              <div className='flex items-center gap-2'>
-                <Eye className='w-4 h-4' />
-                <span>{viewCount.toLocaleString()} page views</span>
-              </div>
+              {showViewCount && (
+                <div className='flex items-center gap-2'>
+                  <Eye className='w-4 h-4' />
+                  <span>{viewCount.toLocaleString()} page views</span>
+                </div>
+              )}
             </div>
           </div>
         </FmCommonCard>
@@ -473,6 +478,13 @@ export const EventDetailsContent = ({
       >
         <Heart className='h-4 w-4' />
       </FmCommonButton>
+      {/* Show view count here if guest list is disabled but view count is enabled */}
+      {!guestListEnabled && showViewCount && (
+        <div className='flex items-center gap-2 px-3 py-2 bg-white/5 rounded-lg'>
+          <Eye className='w-4 h-4 text-muted-foreground' />
+          <span className='text-sm text-muted-foreground'>{viewCount.toLocaleString()}</span>
+        </div>
+      )}
     </div>
   );
 
