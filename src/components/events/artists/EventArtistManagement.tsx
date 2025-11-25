@@ -72,6 +72,7 @@ export function EventArtistManagement({
   });
 
   const [showScheduling, setShowScheduling] = useState(false);
+  const [stagedSlotId, setStagedSlotId] = useState<string | null>(null);
 
   // Get artists by role
   const headliners = artistSlots.filter(
@@ -102,7 +103,8 @@ export function EventArtistManagement({
 
     const updated = [...artistSlots, newSlot];
     setArtistSlots(updated);
-    updateParent(updated);
+    setStagedSlotId(newSlot.id);
+    // Don't update parent yet - wait for artist selection
   };
 
   const updateArtist = (id: string, updates: Partial<ArtistSlot>) => {
@@ -110,12 +112,23 @@ export function EventArtistManagement({
       slot.id === id ? { ...slot, ...updates } : slot
     );
     setArtistSlots(updated);
-    updateParent(updated);
+    
+    // If this was a staged slot and we're setting an artist, commit it
+    if (id === stagedSlotId && updates.artistId) {
+      setStagedSlotId(null);
+      updateParent(updated);
+    } else if (id !== stagedSlotId) {
+      // Only update parent for non-staged slots
+      updateParent(updated);
+    }
   };
 
   const removeArtist = (id: string) => {
     const updated = artistSlots.filter(slot => slot.id !== id);
     setArtistSlots(updated);
+    if (id === stagedSlotId) {
+      setStagedSlotId(null);
+    }
     updateParent(updated);
   };
 
