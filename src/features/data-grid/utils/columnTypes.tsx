@@ -4,6 +4,7 @@ import { DateCell } from '../components/cells/DateCell';
 import { RelationCell } from '../components/cells/RelationCell';
 import { RoleCell } from '../components/cells/RoleCell';
 import { BadgeListCell } from '../components/cells/BadgeListCell';
+import { JsonCell } from '../cells/JsonCell';
 import { EntityType } from '@/components/common/display/FmEntityAvatar';
 
 /**
@@ -288,6 +289,31 @@ export const DataGridColumns = {
         <span className="text-sm">{parts.join(', ')}</span>
       ) : (
         <span className="text-xs text-muted-foreground">—</span>
+      );
+    },
+  }),
+
+  /**
+   * JSON column - displays JSONB data as expandable key-value pairs
+   */
+  json: <T = any,>(config: {
+    key: keyof T | string;
+    label: string;
+    maxHeight?: string;
+    formatValue?: (key: string, value: any) => string;
+    width?: string;
+  }): DataGridColumn<T> => ({
+    key: config.key as string,
+    label: config.label,
+    width: config.width || '200px',
+    render: (_value: any, row: T) => {
+      const jsonData = row[config.key as keyof T] as Record<string, any> | null | undefined;
+      return (
+        <JsonCell
+          data={jsonData || null}
+          maxHeight={config.maxHeight}
+          formatValue={config.formatValue}
+        />
       );
     },
   }),
