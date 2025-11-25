@@ -38,6 +38,16 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
     setIsLoading(true);
 
     try {
+      // Get current user's organization_id from profile
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('organization_id')
+        .eq('user_id', user.id)
+        .single();
+
       // Fetch headliner name for event title
       const { data: headliner, error: headlinerError } = await supabase
         .from('artists')
@@ -104,6 +114,7 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
         is_after_hours: state.isAfterHours,
         is_tba: state.isTba,
         test_data: false,
+        organization_id: profile?.organization_id || null,
       } as const;
 
       let resultEventId: string;
