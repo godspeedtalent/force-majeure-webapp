@@ -22,7 +22,7 @@ const NotFound = () => {
       <div className='text-center relative z-10'>
         <h1 className='text-6xl font-canela mb-4 text-fm-gold'>404</h1>
         <p className='text-xl text-foreground mb-8'>Oops! Page not found</p>
-        <Button asChild>
+        <Button asChild variant='outline' className='border-white/20 hover:bg-white/10'>
           <Link to='/'>
             <Home className='mr-2 h-4 w-4' />
             Return to Home

@@ -101,6 +101,14 @@ export interface ColumnConfig {
   width?: number;
   frozen?: boolean;
   customLabel?: string;
+  type?:
+    | 'text'
+    | 'number'
+    | 'email'
+    | 'url'
+    | 'date'
+    | 'boolean'
+    | 'created_date';
 }
 
 /**

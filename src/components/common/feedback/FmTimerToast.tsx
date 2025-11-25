@@ -122,6 +122,7 @@ export const FmTimerToast = ({
       id,
       duration: Infinity,
       position: 'bottom-left',
+      dismissible: false,
       className:
         'bg-black/80 backdrop-blur-md border border-white/20 text-white shadow-xl',
       style: {

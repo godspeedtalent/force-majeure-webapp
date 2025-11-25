@@ -114,19 +114,54 @@ class Logger {
     // Choose console method based on level
     const consoleMethod = this.getConsoleMethod(level);
 
+    // Serialize context to properly handle nested objects
+    const serializedContext = context ? this.serializeContext(context) : undefined;
+
     // Log with styling in development
     if (this.isDevelopment && style) {
       consoleMethod(`%c${logMessage}`, style);
-      if (context) {
-        console.log('Context:', context);
+      if (serializedContext) {
+        console.log('Context:', serializedContext);
       }
     } else {
       // Simple logging for production errors
       consoleMethod(logMessage);
-      if (context) {
-        consoleMethod('Context:', context);
+      if (serializedContext) {
+        consoleMethod('Context:', serializedContext);
       }
     }
+  }
+
+  /**
+   * Serialize context objects to handle nested objects and errors properly
+   */
+  private serializeContext(context: LogContext): LogContext {
+    const serialized: LogContext = {};
+
+    for (const [key, value] of Object.entries(context)) {
+      if (value === null || value === undefined) {
+        serialized[key] = value;
+      } else if (value instanceof Error) {
+        // Serialize Error objects
+        serialized[key] = {
+          message: value.message,
+          name: value.name,
+          stack: value.stack,
+        };
+      } else if (typeof value === 'object') {
+        try {
+          // Try to stringify and parse to ensure it's serializable
+          serialized[key] = JSON.parse(JSON.stringify(value));
+        } catch {
+          // If serialization fails, convert to string
+          serialized[key] = String(value);
+        }
+      } else {
+        serialized[key] = value;
+      }
+    }
+
+    return serialized;
   }
 
   /**

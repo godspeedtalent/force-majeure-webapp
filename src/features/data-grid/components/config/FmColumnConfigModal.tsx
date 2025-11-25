@@ -19,6 +19,13 @@ import {
 } from '@/components/common/shadcn/dialog';
 import { Button } from '@/components/common/shadcn/button';
 import { Input } from '@/components/common/shadcn/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/common/shadcn/select';
 import { DataGridColumn } from '../FmDataGrid';
 import {
   Eye,
@@ -40,6 +47,14 @@ interface ColumnConfig {
   width?: number;
   frozen?: boolean;
   customLabel?: string;
+  type?:
+    | 'text'
+    | 'number'
+    | 'email'
+    | 'url'
+    | 'date'
+    | 'boolean'
+    | 'created_date';
 }
 
 export interface FmColumnConfigModalProps {
@@ -80,6 +95,7 @@ export function FmColumnConfigModal({
         width: existing?.width,
         frozen: existing?.frozen ?? false,
         customLabel: existing?.customLabel,
+        type: existing?.type ?? col.type ?? 'text',
       });
     });
     return map;
@@ -134,6 +150,18 @@ export function FmColumnConfigModal({
       const config = newMap.get(key);
       if (config) {
         newMap.set(key, { ...config, frozen: !config.frozen });
+      }
+      return newMap;
+    });
+  };
+
+  // Update column type
+  const updateType = (key: string, type: ColumnConfig['type']) => {
+    setLocalConfigs(prev => {
+      const newMap = new Map(prev);
+      const config = newMap.get(key);
+      if (config) {
+        newMap.set(key, { ...config, type });
       }
       return newMap;
     });
@@ -377,6 +405,31 @@ export function FmColumnConfigModal({
                       </div>
                     )}
                   </div>
+
+                  {/* Type Selector */}
+                  {!isEditing && (
+                    <div className='w-32'>
+                      <Select
+                        value={config.type || 'text'}
+                        onValueChange={(value: ColumnConfig['type']) =>
+                          updateType(column.key, value)
+                        }
+                      >
+                        <SelectTrigger className='h-8 text-xs'>
+                          <SelectValue placeholder='Type' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='text'>Text</SelectItem>
+                          <SelectItem value='number'>Number</SelectItem>
+                          <SelectItem value='email'>Email</SelectItem>
+                          <SelectItem value='url'>URL</SelectItem>
+                          <SelectItem value='date'>Date</SelectItem>
+                          <SelectItem value='boolean'>Boolean</SelectItem>
+                          <SelectItem value='created_date'>Created Date</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
 
                   {/* Edit Button */}
                   {!isEditing && (

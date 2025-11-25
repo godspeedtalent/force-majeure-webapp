@@ -20,7 +20,7 @@ import {
   Scan,
   Mail,
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { cn } from '@/shared/utils/utils';
 import { FmCommonTab } from '@/components/common/data/FmCommonTab';
@@ -42,7 +42,6 @@ import { FmCommonCollapsibleSection } from '@/components/common/data/FmCommonCol
 // Import tab components
 import { CartTabContent } from './tabs/CartTab';
 import { OrgDashboardTabContent, ScanTicketsTabContent } from './tabs/OrganizationTab';
-import { DevNavigationTabContent } from './tabs/DevNavigationTab';
 import { DatabaseTabContent, DatabaseTabFooter } from './tabs/DatabaseTab';
 import { FeatureTogglesTabContent } from './tabs/FeatureTogglesTab';
 import { DevNotesTabContent } from './tabs/DevNotesTab';
@@ -362,31 +361,8 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         id: 'database',
         label: 'Database',
         icon: Database,
-        content: (
-          <div className='space-y-4'>
-            <Separator className='bg-white/10' />
-            <div className='px-4 py-2 space-y-4'>
-              <DatabaseNavigatorSearch />
-            </div>
-          </div>
-        ),
-        footer: (
-          <div className='pb-4'>
-            <FmCommonButton
-              variant='default'
-              icon={Database}
-              iconPosition='left'
-              onClick={() => {
-                setIsOpen(false);
-                setActiveTab(null);
-                navigate('/developer/database');
-              }}
-              className='w-full justify-start'
-            >
-              Go to Database Manager
-            </FmCommonButton>
-          </div>
-        ),
+        content: <DatabaseTabContent onNavigate={handleNavigate} />,
+        footer: <DatabaseTabFooter onNavigate={handleNavigate} />,
         title: 'Database Manager',
         visible: isDeveloperOrAdmin,
         group: 'developer',
@@ -399,12 +375,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         id: 'features',
         label: 'Feature Toggles',
         icon: ToggleLeft,
-        content: (
-          <div className='space-y-4'>
-            <Separator className='bg-white/10' />
-            <FeatureToggleSection />
-          </div>
-        ),
+        content: <FeatureTogglesTabContent />,
         title: 'Feature Toggles',
         visible: isDeveloperOrAdmin,
         group: 'developer',
@@ -416,12 +387,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         id: 'notes',
         label: 'TODO Notes',
         icon: ClipboardList,
-        content: (
-          <div className='space-y-4'>
-            <Separator className='bg-white/10' />
-            <DevNotesSection />
-          </div>
-        ),
+        content: <DevNotesTabContent />,
         title: 'Dev Notes',
         visible: isDeveloperOrAdmin,
         group: 'developer',

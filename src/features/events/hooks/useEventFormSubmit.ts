@@ -48,10 +48,7 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
 
       if (headlinerError) {
         logger.error('Error fetching headliner:', {
-          error: headlinerError.message,
-          code: headlinerError.code,
-          details: headlinerError.details,
-          hint: headlinerError.hint,
+          error: headlinerError, // Pass full error object
           headlinerId: state.headlinerId,
           source: 'useEventFormSubmit.submitEvent',
           mode,
@@ -67,10 +64,7 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
 
       if (venueError) {
         logger.error('Error fetching venue:', {
-          error: venueError.message,
-          code: venueError.code,
-          details: venueError.details,
-          hint: venueError.hint,
+          error: venueError, // Pass full error object
           venueId: state.venueId,
           source: 'useEventFormSubmit.submitEvent',
           mode,
@@ -158,6 +152,7 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
       onSuccess?.(resultEventId);
     } catch (error) {
       // Enhanced error logging with full details
+      // The logger will now properly serialize the error object
       const errorDetails = {
         source: 'useEventFormSubmit.submitEvent',
         mode,
@@ -168,10 +163,7 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
           isTba: state.isTba,
           isAfterHours: state.isAfterHours,
         },
-        error: error instanceof Error ? error.message : String(error),
-        code: (error as { code?: string })?.code,
-        details: (error as { details?: string })?.details,
-        hint: (error as { hint?: string })?.hint,
+        error, // Pass the full error object - logger will serialize it
       };
 
       logger.error(`Error ${mode === 'create' ? 'creating' : 'updating'} event:`, errorDetails);

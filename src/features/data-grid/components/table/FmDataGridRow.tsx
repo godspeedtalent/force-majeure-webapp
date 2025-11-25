@@ -16,6 +16,7 @@ import { cn } from '@/shared/utils/utils';
 import { DataGridColumn, DataGridAction } from '../FmDataGrid';
 import type { GroupedRow } from '../../utils/grouping';
 import { isRelationField, getRelationConfig } from '../../utils/dataGridRelations';
+import { logger } from '@/shared/services/logger';
 
 export interface FmDataGridRowProps<T> {
   row: T;
@@ -95,6 +96,23 @@ export function FmDataGridRow<T extends Record<string, any>>({
   columnWidths = {},
 }: FmDataGridRowProps<T>) {
   const navigate = useNavigate();
+
+  // Validate column keys against row data (only in development)
+  useMemo(() => {
+    if (process.env.NODE_ENV === 'development') {
+      const missingKeys = columns
+        .filter(col => !(col.key in row) && !col.render)
+        .map(col => col.key);
+
+      if (missingKeys.length > 0) {
+        logger.warn('Column keys missing in row data', {
+          missingKeys,
+          availableKeys: Object.keys(row),
+          source: 'FmDataGridRow',
+        });
+      }
+    }
+  }, [columns, row]);
 
   // Calculate cumulative left positions for frozen columns
   const frozenColumnPositions = useMemo(() => {

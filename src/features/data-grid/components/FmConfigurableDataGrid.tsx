@@ -25,6 +25,14 @@ interface ColumnConfig {
   width?: number;
   frozen?: boolean;
   customLabel?: string;
+  type?:
+    | 'text'
+    | 'number'
+    | 'email'
+    | 'url'
+    | 'date'
+    | 'boolean'
+    | 'created_date';
 }
 
 interface FmConfigurableDataGridProps<T> {
@@ -189,12 +197,29 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
       initializedConfig.columns.map(c => [c.key, c as ColumnConfig])
     );
 
+    // Validate column keys against data
+    if (process.env.NODE_ENV === 'development' && data.length > 0) {
+      const sampleRow = data[0];
+      const missingKeys = baseColumns
+        .filter(col => !(col.key in sampleRow) && !col.render)
+        .map(col => col.key);
+
+      if (missingKeys.length > 0) {
+        logger.warn('Column keys missing in data', {
+          missingKeys,
+          availableKeys: Object.keys(sampleRow),
+          source: 'FmConfigurableDataGrid',
+        });
+      }
+    }
+
     return baseColumns
       .map(col => {
         const colConfig = configMap.get(col.key);
         return {
           ...col,
           label: colConfig?.customLabel || col.label,
+          type: colConfig?.type || col.type || 'text',
           visible: colConfig?.visible ?? true,
           order: colConfig?.order ?? 0,
           frozen: colConfig?.frozen ?? false,
@@ -202,7 +227,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
       })
       .filter((col: any) => col.visible)
       .sort((a: any, b: any) => a.order - b.order);
-  }, [baseColumns, initializedConfig]);
+  }, [baseColumns, initializedConfig, data]);
 
   // Handle drag end
   const handleDragEnd = (event: DragEndEvent) => {
