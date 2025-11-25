@@ -218,29 +218,6 @@ export default function EventManagement() {
     ...(isAdmin ? [{ id: 'admin' as EventTab, label: 'Admin', icon: Shield }] : []),
   ];
 
-  const handleEventUpdate = async (updates: any) => {
-    try {
-      if (!id) throw new Error('Event ID is required');
-
-      const { error } = await supabase
-        .from('events')
-        .update(updates)
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast.success('Event updated successfully');
-      queryClient.invalidateQueries({ queryKey: ['event', id] });
-    } catch (error) {
-      await handleError(error, {
-        title: 'Failed to Update Event',
-        description: 'Could not save event changes',
-        endpoint: 'EventManagement',
-        method: 'UPDATE',
-      });
-    }
-  };
-
   const handleSaveOverview = async () => {
     if (!headlinerId || !venueId || !eventDate) {
       toast.error('Please fill in all required fields');
@@ -594,7 +571,52 @@ export default function EventManagement() {
             <EventArtistManagement
               headlinerId={event.headliner_id || ''}
               undercardIds={[]}
-              onChange={data => handleEventUpdate(data)}
+              onChange={async (data) => {
+                try {
+                  if (!id) throw new Error('Event ID is required');
+
+                  // Update the headliner in the events table
+                  const { error: eventError } = await supabase
+                    .from('events')
+                    .update({ headliner_id: data.headlinerId })
+                    .eq('id', id);
+
+                  if (eventError) throw eventError;
+
+                  // Update undercard artists in event_artists junction table
+                  // First, delete existing undercard artists
+                  const { error: deleteError } = await supabase
+                    .from('event_artists')
+                    .delete()
+                    .eq('event_id', id);
+
+                  if (deleteError) throw deleteError;
+
+                  // Then insert new undercard artists
+                  if (data.undercardIds.length > 0) {
+                    const undercardRecords = data.undercardIds.map(artistId => ({
+                      event_id: id,
+                      artist_id: artistId,
+                    }));
+
+                    const { error: insertError } = await supabase
+                      .from('event_artists')
+                      .insert(undercardRecords);
+
+                    if (insertError) throw insertError;
+                  }
+
+                  toast.success('Artists updated successfully');
+                  queryClient.invalidateQueries({ queryKey: ['event', id] });
+                } catch (error) {
+                  await handleError(error, {
+                    title: 'Failed to Update Artists',
+                    description: 'Could not save artist changes',
+                    endpoint: 'EventManagement/artists',
+                    method: 'UPDATE',
+                  });
+                }
+              }}
             />
           )}
 
