@@ -995,6 +995,141 @@ export type Database = {
           },
         ]
       }
+      report_configurations: {
+        Row: {
+          created_at: string
+          created_by: string
+          event_id: string
+          id: string
+          is_active: boolean
+          is_scheduled: boolean
+          last_sent_at: string | null
+          next_send_at: string | null
+          report_type: string
+          schedule_day_of_month: number | null
+          schedule_day_of_week: number | null
+          schedule_time: string
+          schedule_type: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          event_id: string
+          id?: string
+          is_active?: boolean
+          is_scheduled?: boolean
+          last_sent_at?: string | null
+          next_send_at?: string | null
+          report_type: string
+          schedule_day_of_month?: number | null
+          schedule_day_of_week?: number | null
+          schedule_time?: string
+          schedule_type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          event_id?: string
+          id?: string
+          is_active?: boolean
+          is_scheduled?: boolean
+          last_sent_at?: string | null
+          next_send_at?: string | null
+          report_type?: string
+          schedule_day_of_month?: number | null
+          schedule_day_of_week?: number | null
+          schedule_time?: string
+          schedule_type?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_configurations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      report_history: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          file_url: string | null
+          id: string
+          recipients_count: number
+          report_config_id: string
+          sent_at: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          file_url?: string | null
+          id?: string
+          recipients_count?: number
+          report_config_id: string
+          sent_at?: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          file_url?: string | null
+          id?: string
+          recipients_count?: number
+          report_config_id?: string
+          sent_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_history_report_config_id_fkey"
+            columns: ["report_config_id"]
+            isOneToOne: false
+            referencedRelation: "report_configurations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      report_recipients: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_active: boolean
+          name: string | null
+          report_config_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          is_active?: boolean
+          name?: string | null
+          report_config_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_active?: boolean
+          name?: string | null
+          report_config_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_recipients_report_config_id_fkey"
+            columns: ["report_config_id"]
+            isOneToOne: false
+            referencedRelation: "report_configurations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       roles: {
         Row: {
           created_at: string | null
