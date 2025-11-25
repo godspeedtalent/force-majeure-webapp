@@ -29,7 +29,7 @@ export const EventDetailsPage = () => {
 
   const handleShare = async () => {
     if (!event) return;
-    const shareTitle = event.title || event.headliner.name;
+    const shareTitle = event.headliner.name;
     const payload = formatSharePayload(shareTitle, event.venue);
 
     if (navigator.share) {
@@ -132,7 +132,7 @@ export const EventDetailsPage = () => {
     );
   }
 
-  const displayTitle = event.title || event.headliner.name;
+  const displayTitle = event.headliner.name;
   const canManage = canViewDraft;
 
   return (

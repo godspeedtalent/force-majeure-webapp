@@ -135,8 +135,8 @@ export const EventTicketingPage = () => {
   );
 
   const displayTitle = useMemo(
-    () => event?.title || event?.headliner?.name || 'Event',
-    [event?.title, event?.headliner?.name]
+    () => event?.headliner?.name || 'Event',
+    [event?.headliner?.name]
   );
 
   const handleBack = () => {

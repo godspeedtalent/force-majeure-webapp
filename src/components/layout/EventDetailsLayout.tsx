@@ -36,14 +36,14 @@ export function EventDetailsLayout({
       </div>
 
       {/* Desktop: two-column side-by-side layout */}
-      <div className='hidden lg:flex lg:min-h-screen'>
-        {/* Left Column - Hero Image */}
-        <div className='w-1/2 relative overflow-hidden flex-shrink-0'>
+      <div className='hidden lg:flex lg:h-screen'>
+        {/* Left Column - Hero Image (fixed height, always visible) */}
+        <div className='w-1/2 relative overflow-hidden flex-shrink-0 h-screen'>
           {leftColumn}
         </div>
 
-        {/* Right Column - Content */}
-        <div className='w-1/2 overflow-y-auto relative'>
+        {/* Right Column - Content (scrollable) */}
+        <div className='w-1/2 overflow-y-auto relative h-screen'>
           <div className='absolute inset-0 pointer-events-none'>
             <TopographicBackground opacity={0.35} />
             <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
