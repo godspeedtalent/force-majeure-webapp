@@ -38,7 +38,7 @@ export const UserManagement = () => {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-users`,
+        `https://orgxcrnnecblhuxjfruy.supabase.co/functions/v1/get-users`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

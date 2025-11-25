@@ -95,16 +95,16 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
 
       // Prepare event data matching database schema
       const eventData = {
-        name: eventTitle, // Database uses 'name' field
-        title: eventTitle, // Keep for compatibility
-        description: null, // Can add description field later
+        title: eventTitle,
+        description: null,
         headliner_id: state.headlinerId || null,
         venue_id: state.venueId || null,
         start_time: startTimeISO,
         end_time: state.isAfterHours ? null : endTimeISO,
         is_after_hours: state.isAfterHours,
         is_tba: state.isTba,
-      };
+        test_data: false,
+      } as const;
 
       let resultEventId: string;
 
@@ -112,7 +112,7 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
         // Create new event
         const { data: newEvent, error: eventError } = await supabase
           .from('events')
-          .insert([eventData])
+          .insert([eventData as any])
           .select()
           .single();
 
@@ -132,7 +132,7 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
 
         const { error: eventError } = await supabase
           .from('events')
-          .update(eventData)
+          .update(eventData as any)
           .eq('id', eventId)
           .select()
           .single();
