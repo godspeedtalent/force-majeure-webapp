@@ -93,7 +93,7 @@ async function getAccessToken(): Promise<string> {
     tokenExpiry = Date.now() + (data.expires_in - 300) * 1000;
 
     logger.info('Spotify access token obtained successfully');
-    return accessToken;
+    return accessToken || '';
   } catch (error) {
     logger.error('Error getting Spotify access token', { error });
     throw error;

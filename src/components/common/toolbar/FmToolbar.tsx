@@ -361,7 +361,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         id: 'database',
         label: 'Database',
         icon: Database,
-        content: <DatabaseTabContent onNavigate={handleNavigate} />,
+        content: <DatabaseTabContent />,
         footer: <DatabaseTabFooter onNavigate={handleNavigate} />,
         title: 'Database Manager',
         visible: isDeveloperOrAdmin,
