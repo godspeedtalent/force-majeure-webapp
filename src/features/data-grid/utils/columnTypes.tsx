@@ -251,5 +251,45 @@ export const DataGridColumns = {
       />
     ),
   }),
+
+  /**
+   * Address column - displays formatted multi-line address
+   */
+  address: <T = any,>(config: {
+    keys: {
+      line1: keyof T | string;
+      line2?: keyof T | string;
+      city?: keyof T | string;
+      state?: keyof T | string;
+      zipCode?: keyof T | string;
+    };
+    label: string;
+    sortable?: boolean;
+    width?: string;
+  }): DataGridColumn<T> => ({
+    key: config.keys.line1 as string,
+    label: config.label,
+    sortable: config.sortable,
+    width: config.width || '250px',
+    render: (_value: any, row: T) => {
+      const parts = [
+        row[config.keys.line1 as keyof T],
+        row[config.keys.line2 as keyof T],
+        [
+          row[config.keys.city as keyof T],
+          row[config.keys.state as keyof T],
+        ]
+          .filter(Boolean)
+          .join(', '),
+        row[config.keys.zipCode as keyof T],
+      ].filter(Boolean);
+
+      return parts.length > 0 ? (
+        <span className="text-sm">{parts.join(', ')}</span>
+      ) : (
+        <span className="text-xs text-muted-foreground">—</span>
+      );
+    },
+  }),
 };
 

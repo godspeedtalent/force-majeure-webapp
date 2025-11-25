@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { logger } from '@/shared/services/logger';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { DataGridAction, FmConfigurableDataGrid } from '@/features/data-grid';
@@ -13,6 +13,7 @@ import {
   Mic2,
   Building2,
   Users,
+  RefreshCw,
 } from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -25,6 +26,8 @@ import { artistColumns, venueColumns } from '../admin/config/adminGridColumns';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared/auth/permissions';
 import { AdminLockIndicator } from '@/components/common/indicators';
+import { refreshAllTableSchemas } from '@/features/data-grid/services/schemaRefresh';
+import { FmCommonButton } from '@/components/common/buttons';
 
 type DatabaseTab =
   | 'overview'
@@ -41,6 +44,7 @@ export default function DeveloperDatabase() {
   const queryClient = useQueryClient();
   const { hasRole } = useUserPermissions();
   const isAdmin = hasRole(ROLES.ADMIN);
+  const [isRefreshingSchema, setIsRefreshingSchema] = useState(false);
 
   // Get active tab from URL query string, fallback to 'overview'
   const tabFromUrl = searchParams.get('table') as DatabaseTab | null;
@@ -181,7 +185,8 @@ export default function DeveloperDatabase() {
         .from('venues')
         .select(
           `
-          *,
+          id, name, address_line_1, address_line_2, city, state, zip_code,
+          capacity, image_url, website, created_at, updated_at,
           cities!city_id(name, state)
         `
         )
@@ -422,6 +427,28 @@ export default function DeveloperDatabase() {
   const currentData = getCurrentData();
   const completeness = calculateCompleteness(currentData);
 
+  // Schema refresh handler
+  const handleSchemaRefresh = async () => {
+    setIsRefreshingSchema(true);
+    try {
+      const result = await refreshAllTableSchemas();
+      if (result.success) {
+        toast.success(`Schema refreshed successfully! ${result.tablesRefreshed} tables updated.`);
+      } else {
+        toast.error(result.error || 'Failed to refresh schema');
+      }
+    } catch (error) {
+      logger.error('Error refreshing schema', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        source: 'DeveloperDatabase',
+        details: {},
+      });
+      toast.error('Failed to refresh schema');
+    } finally {
+      setIsRefreshingSchema(false);
+    }
+  };
+
   return (
     <SideNavbarLayout
       navigationGroups={navigationGroups}
@@ -439,6 +466,20 @@ export default function DeveloperDatabase() {
         {/* Overview Tab */}
         {activeTab === 'overview' && (
           <div className='flex flex-col items-center justify-center min-h-[60vh]'>
+            {/* Schema Refresh Button */}
+            <div className='w-full max-w-4xl mb-6 flex justify-end'>
+              <FmCommonButton
+                onClick={handleSchemaRefresh}
+                disabled={isRefreshingSchema}
+                variant="secondary"
+                size="sm"
+                icon={RefreshCw}
+                className={isRefreshingSchema ? '[&_svg]:animate-spin' : ''}
+              >
+                {isRefreshingSchema ? 'Refreshing Schema...' : 'Refresh Schema'}
+              </FmCommonButton>
+            </div>
+
             {/* Stats Groups in Columns */}
             <div className='w-full max-w-4xl mb-12'>
               <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
