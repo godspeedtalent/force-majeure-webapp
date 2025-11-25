@@ -19,6 +19,7 @@ interface TierListItemProps {
   tierIndex: number;
   isFirstTier: boolean;
   isOnlyTier: boolean;
+  isProtected?: boolean;
   onUpdate: (updates: Partial<TicketTier>) => void;
   onDuplicate: () => void;
   onDelete: () => void;
@@ -29,6 +30,7 @@ export function TierListItem({
   tierIndex,
   isFirstTier,
   isOnlyTier,
+  isProtected = false,
   onUpdate,
   onDuplicate,
   onDelete,
@@ -162,19 +164,19 @@ export function TierListItem({
 
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    onClick={onDelete}
-                    disabled={isOnlyTier}
-                  >
-                    <Trash2 className='h-4 w-4 text-destructive' />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Delete tier</p>
-                </TooltipContent>
+                 <TooltipTrigger asChild>
+                   <Button
+                     variant='ghost'
+                     size='sm'
+                     onClick={onDelete}
+                     disabled={isOnlyTier || isProtected}
+                   >
+                     <Trash2 className='h-4 w-4 text-destructive' />
+                   </Button>
+                 </TooltipTrigger>
+                 <TooltipContent>
+                   <p>{isProtected ? 'Cannot delete last tier' : 'Delete tier'}</p>
+                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>

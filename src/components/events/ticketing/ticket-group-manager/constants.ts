@@ -1,3 +1,5 @@
+export const NO_GROUP_ID = 'no-group';
+
 export const GROUP_COLORS = [
   { name: 'Gold', value: 'bg-amber-500/20 border-amber-500/50 text-amber-200' },
   {

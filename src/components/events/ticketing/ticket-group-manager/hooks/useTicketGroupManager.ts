@@ -1,12 +1,39 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { TicketGroup, TicketTier } from '../types';
-import { GROUP_COLORS } from '../constants';
+import { GROUP_COLORS, NO_GROUP_ID } from '../constants';
+
+// Helper to create default No Group
+const createNoGroup = (): TicketGroup => ({
+  id: NO_GROUP_ID,
+  name: 'No Group',
+  description: 'Tickets without a specific group',
+  color: GROUP_COLORS[0].value,
+  tiers: [
+    {
+      name: 'General Admission',
+      description: '',
+      price_cents: 0,
+      total_tickets: 0,
+      tier_order: 1,
+      hide_until_previous_sold_out: false,
+    },
+  ],
+});
 
 export function useTicketGroupManager(
   groups: TicketGroup[],
   onChange: (groups: TicketGroup[]) => void
 ) {
   const [activeView, setActiveView] = useState<'overview' | string>('overview');
+
+  // Ensure "No Group" always exists
+  useEffect(() => {
+    const hasNoGroup = groups.some(g => g.id === NO_GROUP_ID);
+    if (!hasNoGroup) {
+      const noGroup = createNoGroup();
+      onChange([noGroup, ...groups]);
+    }
+  }, []);
 
   const addGroup = () => {
     const newGroup: TicketGroup = {
@@ -36,6 +63,10 @@ export function useTicketGroupManager(
   };
 
   const deleteGroup = (groupIndex: number) => {
+    // Prevent deleting "No Group"
+    if (groups[groupIndex].id === NO_GROUP_ID) {
+      return;
+    }
     onChange(groups.filter((_, i) => i !== groupIndex));
   };
 
@@ -81,13 +112,23 @@ export function useTicketGroupManager(
 
   const deleteTier = (groupIndex: number, tierIndex: number) => {
     const newGroups = [...groups];
-    newGroups[groupIndex].tiers = newGroups[groupIndex].tiers.filter(
-      (_, i) => i !== tierIndex
-    );
+    const group = newGroups[groupIndex];
+    
+    // Calculate total tiers across all groups
+    const totalTiers = groups.reduce((sum, g) => sum + g.tiers.length, 0);
+    
+    // If this is the last tier in "No Group" and there are no other tiers, prevent deletion
+    if (group.id === NO_GROUP_ID && group.tiers.length === 1 && totalTiers === 1) {
+      return;
+    }
+    
+    group.tiers = group.tiers.filter((_, i) => i !== tierIndex);
+    
     // Reorder remaining tiers
-    newGroups[groupIndex].tiers.forEach((tier, i) => {
+    group.tiers.forEach((tier, i) => {
       tier.tier_order = i + 1;
     });
+    
     onChange(newGroups);
   };
 

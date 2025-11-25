@@ -54,6 +54,7 @@ export function TicketGroupManager({
             group={groups[currentGroupIndex]}
             groupIndex={currentGroupIndex}
             isOnlyGroup={groups.length === 1}
+            allGroups={groups}
             onUpdateGroup={updates => updateGroup(currentGroupIndex, updates)}
             onDuplicateGroup={() => duplicateGroup(currentGroupIndex)}
             onDeleteGroup={() => {
