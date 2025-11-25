@@ -131,15 +131,6 @@ export function DatabaseNavigatorSearch() {
       // Get today's date for upcoming events filter
       const today = new Date().toISOString();
 
-      // Search Events
-      const { data: events } = await supabase
-        .from('events')
-        .select('id, title, start_time')
-        .gte('start_time', today)
-        .ilike('title', searchPattern)
-        .order('start_time', { ascending: true })
-        .limit(5);
-
       // Search Artists
       const { data: artists } = await supabase
         .from('artists')
@@ -148,7 +139,7 @@ export function DatabaseNavigatorSearch() {
         .limit(5);
 
       // Search events
-      const { data: events } = await supabase
+      const { data: eventsData } = await supabase
         .from('events')
         .select('id, name, start_time')
         .ilike('name', `%${query}%`)
@@ -185,7 +176,7 @@ export function DatabaseNavigatorSearch() {
         users: usersWithEmail,
         artists: artists || [],
         venues,
-        events: (events || []).map(e => ({
+        events: (eventsData || []).map(e => ({
           id: e.id,
           title: e.name || '',
           date: e.start_time || '',

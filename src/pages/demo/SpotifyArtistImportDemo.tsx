@@ -41,7 +41,6 @@ export default function SpotifyArtistImportDemo() {
         name: data.name,
         bio: data.bio || '',
         imageUrl: data.image_url || '',
-        socialLinks: null,
         createdAt: data.created_at || '',
         updatedAt: data.updated_at || '',
         genre: data.genre || '',
