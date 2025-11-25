@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Copy, Edit, Trash2, Power, PowerOff, Plus } from 'lucide-react';
+import { Copy, Edit, Trash2, Power, Plus } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { FmConfigurableDataGrid } from '@/features/data-grid';
+import { FmConfigurableDataGrid, DataGridAction } from '@/features/data-grid';
 import { useTrackingLinks } from './hooks/useTrackingLinks';
 import { TrackingLink } from '@/types/tracking';
 import { CreateLinkDialog } from './CreateLinkDialog';
@@ -105,29 +105,29 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
     },
   ];
 
-  const contextMenuActions = [
+  const contextMenuActions: DataGridAction<TrackingLink>[] = [
     {
       label: 'Copy Link',
-      icon: Copy,
-      onClick: (row: TrackingLink) => copyToClipboard(row.code),
+      icon: <Copy className="h-4 w-4" />,
+      onClick: (row) => copyToClipboard(row.code),
     },
     {
       label: 'Edit',
-      icon: Edit,
-      onClick: (row: TrackingLink) => {
+      icon: <Edit className="h-4 w-4" />,
+      onClick: (row) => {
         setEditingLink(row);
         setIsCreateDialogOpen(true);
       },
     },
     {
-      label: (row: TrackingLink) => (row.is_active ? 'Deactivate' : 'Activate'),
-      icon: (row: TrackingLink) => (row.is_active ? PowerOff : Power),
-      onClick: (row: TrackingLink) => toggleActive.mutate({ id: row.id, isActive: !row.is_active }),
+      label: 'Toggle Active',
+      icon: <Power className="h-4 w-4" />,
+      onClick: (row) => toggleActive.mutate({ id: row.id, isActive: !row.is_active }),
     },
     {
       label: 'Delete',
-      icon: Trash2,
-      onClick: (row: TrackingLink) => {
+      icon: <Trash2 className="h-4 w-4" />,
+      onClick: (row) => {
         if (confirm(`Delete tracking link "${row.name}"?`)) {
           deleteLink.mutate(row.id);
         }
@@ -163,7 +163,7 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
             tableName="tracking_links"
             data={links || []}
             columns={columns}
-            isLoading={isLoading}
+            loading={isLoading}
             contextMenuActions={contextMenuActions}
           />
         </TabsContent>
