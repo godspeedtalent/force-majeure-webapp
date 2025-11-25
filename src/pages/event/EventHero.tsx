@@ -37,7 +37,7 @@ export const EventHero = ({
           imageLoaded ? 'opacity-100' : 'opacity-0'
         )}
         style={{
-          objectPosition: `50% ${focalY}%`,
+          objectPosition: `center ${focalY}%`,
         }}
         onLoad={() => setImageLoaded(true)}
       />
