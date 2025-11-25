@@ -34,7 +34,7 @@ export const Navigation = () => {
   const { isCheckoutActive, endCheckout, redirectUrl } = useCheckoutTimer();
 
   return (
-    <nav className='sticky top-0 z-50 w-full bg-background/50 backdrop-blur-md border-b border-border'>
+    <nav className='sticky top-0 z-50 w-full bg-background/80 backdrop-blur-xl border-b border-border/50'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='flex justify-between items-center h-16'>
           {/* Logo and Breadcrumbs */}
@@ -147,7 +147,7 @@ export const Navigation = () => {
         <div 
           className='md:hidden absolute top-full left-0 right-0 z-40 animate-in slide-in-from-top-4 duration-300'
         >
-          <div className='px-2 pt-2 pb-3 space-y-1 bg-background/95 backdrop-blur-md border-b border-border shadow-lg'>
+          <div className='px-2 pt-2 pb-3 space-y-1 bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-lg'>
             <Link
               to='/'
               className='block px-3 py-2 text-base font-canela font-medium text-foreground hover:text-fm-gold hover:bg-hover-overlay rounded-none transition-colors'
