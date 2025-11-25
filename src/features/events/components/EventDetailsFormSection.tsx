@@ -29,6 +29,32 @@ export function EventDetailsFormSection({
     <div className='space-y-4'>
       <div className='space-y-2'>
         <Label className='text-white'>
+          Event Title <span className='text-fm-danger'>*</span>
+        </Label>
+        <input
+          type='text'
+          value={state.title}
+          onChange={e => actions.setTitle(e.target.value)}
+          placeholder='Enter event title'
+          className='w-full px-3 py-2 bg-white/5 border border-white/20 rounded-md text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-fm-gold/50'
+        />
+      </div>
+
+      <div className='space-y-2'>
+        <Label className='text-white'>
+          Subtitle (Optional)
+        </Label>
+        <input
+          type='text'
+          value={state.subtitle}
+          onChange={e => actions.setSubtitle(e.target.value)}
+          placeholder='Enter event subtitle'
+          className='w-full px-3 py-2 bg-white/5 border border-white/20 rounded-md text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-fm-gold/50'
+        />
+      </div>
+
+      <div className='space-y-2'>
+        <Label className='text-white'>
           Headliner <span className='text-fm-danger'>*</span>
         </Label>
         <FmArtistSearchDropdown

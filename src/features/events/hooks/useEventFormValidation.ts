@@ -8,9 +8,12 @@ import { EventFormState, TicketTier } from './useEventFormState';
  */
 export function useEventFormValidation() {
   const validateForm = (state: EventFormState): string | null => {
-    const { headlinerId, eventDate, venueId, ticketTiers, venueCapacity, endTime, isAfterHours } = state;
+    const { title, headlinerId, eventDate, venueId, ticketTiers, venueCapacity, endTime, isAfterHours } = state;
 
     // Required fields
+    if (!title || title.trim() === '') {
+      return 'Please provide an event title';
+    }
     if (!headlinerId) {
       return 'Please select a headliner';
     }

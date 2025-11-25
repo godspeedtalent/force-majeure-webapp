@@ -80,15 +80,16 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
         });
       }
 
-      // Construct event title
-      const eventTitle =
+      // Construct event title - use provided title or fallback to headliner @ venue
+      const eventTitle = state.title || (
         headliner && venue
           ? `${headliner.name} @ ${venue.name}`
           : headliner
             ? headliner.name
             : mode === 'create'
               ? 'New Event'
-              : 'Updated Event';
+              : 'Updated Event'
+      );
 
       // Format the date and time for the database as ISO timestamp (TIMESTAMPTZ)
       const startTimeISO = state.eventDate ? state.eventDate.toISOString() : null;
@@ -106,7 +107,7 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
       // Prepare event data matching database schema
       const eventData = {
         title: eventTitle,
-        description: null,
+        description: state.subtitle || null,
         headliner_id: state.headlinerId || null,
         venue_id: state.venueId || null,
         start_time: startTimeISO,
