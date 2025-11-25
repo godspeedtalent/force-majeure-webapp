@@ -8,7 +8,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/common/shadcn/dialog';
-import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { Button } from '@/components/common/shadcn/button';
 import { toast } from 'sonner';
 import { supabase } from '@/shared/api/supabase/client';
@@ -86,7 +85,7 @@ export function FmDataGridImageUploadModal({
       };
       reader.readAsDataURL(processedFile);
     } catch (error) {
-      logger.error('Error processing image:', error);
+      logger.error('Error processing image:', { error });
       toast.error('Failed to process image', {
         description: 'Please try a different image.',
       });

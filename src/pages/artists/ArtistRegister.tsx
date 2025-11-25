@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ArtistRegistrationLayout } from '@/components/layout/ArtistRegistrationLayout';
@@ -6,6 +6,9 @@ import { supabase } from '@/shared/api/supabase/client';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { logApiError } from '@/shared/utils/apiLogger';
 import { logger } from '@/shared/services/logger';
+import { ArrowLeft } from 'lucide-react';
+import { cn } from '@/shared/utils/utils';
+import { FmCommonBadgeGroup } from '@/components/common/display/FmCommonBadgeGroup';
 import {
   Carousel,
   CarouselContent,
@@ -14,7 +17,7 @@ import {
 } from '@/components/common/shadcn/carousel';
 
 // Import centralized types and step components
-import { DEFAULT_FORM_DATA, STEP_TITLES } from './types/registration';
+import { DEFAULT_FORM_DATA } from './types/registration';
 import type { ArtistRegistrationFormData } from './types/registration';
 import { BasicDetailsStep } from './components/registration-steps/BasicDetailsStep';
 import { SocialImagesStep } from './components/registration-steps/SocialImagesStep';

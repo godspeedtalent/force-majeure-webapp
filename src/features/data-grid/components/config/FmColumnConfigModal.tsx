@@ -411,8 +411,8 @@ export function FmColumnConfigModal({
                     <div className='w-32'>
                       <Select
                         value={config.type || 'text'}
-                        onValueChange={(value: ColumnConfig['type']) =>
-                          updateType(column.key, value)
+                        onValueChange={(value) =>
+                          updateType(column.key, value as ColumnConfig['type'])
                         }
                       >
                         <SelectTrigger className='h-8 text-xs'>

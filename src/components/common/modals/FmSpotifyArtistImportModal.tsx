@@ -11,7 +11,6 @@ import { useNavigate } from 'react-router-dom';
 import { FmCommonModal } from './FmCommonModal';
 import { FmSpotifyArtistSearchDropdown } from '@/components/common/search/FmSpotifyArtistSearchDropdown';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { SpotifyIcon } from '@/components/common/icons/SpotifyIcon';
 import { getSpotifyArtist } from '@/services/spotify/spotifyApiService';
 import { createArtistFromSpotify } from '@/services/spotify/spotifyArtistService';
 import { logger } from '@/shared/services/logger';
@@ -43,7 +42,7 @@ export function FmSpotifyArtistImportModal({
   /**
    * Handle artist selection from Spotify search
    */
-  const handleArtistSelected = async (spotifyId: string, artistName: string) => {
+  const handleArtistSelected = async (spotifyId: string) => {
     setSelectedSpotifyId(spotifyId);
     setIsLoadingPreview(true);
 

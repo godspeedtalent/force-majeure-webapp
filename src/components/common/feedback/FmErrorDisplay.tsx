@@ -11,8 +11,6 @@ import {
 import { Button } from '@/components/common/shadcn/button';
 import { FmInfoCard } from '@/components/common/data/FmInfoCard';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
-import { useUserPermissions } from '@/shared/hooks/useUserRole';
-import { ROLES } from '@/shared/auth/permissions';
 
 interface FmErrorDisplayProps {
   error: Error;

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { format } from 'date-fns';
 import { logger } from '@/shared/services/logger';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
@@ -112,7 +111,7 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
         // Create new event
         const { data: newEvent, error: eventError } = await supabase
           .from('events')
-          .insert(eventData)
+          .insert([eventData])
           .select()
           .single();
 
@@ -269,6 +268,8 @@ async function updateTicketTiers(
   // Update existing ticket tiers (those with an id)
   const existingTiersToUpdate = ticketTiers.filter((tier) => tier.id);
   for (const tier of existingTiersToUpdate) {
+    if (!tier.id) continue;
+    
     const { error: updateError } = await supabase
       .from('ticket_tiers')
       .update({
