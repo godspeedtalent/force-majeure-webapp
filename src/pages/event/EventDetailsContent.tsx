@@ -136,22 +136,14 @@ export const EventDetailsContent = ({
     []
   );
 
-  // Format date/time as: Fri MM/DD/YY 9pm-2am PST
+  // Display subtitle as venue
+  const displaySubtitle = event?.venue || '';
+
+  // Format time as: 9pm - 2am PST (just the time, no date)
   const formattedDateTime = useMemo(() => {
-    const date = new Date(event.date);
-    
-    // Get day of week (title case)
-    const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'short' });
-    
-    // Get date as MM/DD/YY
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const year = String(date.getFullYear()).slice(-2);
-    const dateStr = `${month}/${day}/${year}`;
-    
     // Parse start time
     const startMatch = event.time?.match(/(\d+):(\d+)\s*(AM|PM)?/i);
-    if (!startMatch) return `${dayOfWeek} ${dateStr}`;
+    if (!startMatch) return '';
     
     let startHours = parseInt(startMatch[1], 10);
     const startMeridiem = startMatch[3]?.toUpperCase() || 'PM';
@@ -176,7 +168,7 @@ export const EventDetailsContent = ({
     // Get timezone
     const timezone = new Date().toLocaleTimeString('en-US', { timeZoneName: 'short' }).split(' ')[2];
     
-    return `${dayOfWeek} ${dateStr} ${startDisplay}${startMeridiemDisplay} - ${endDisplay}${endMeridiemDisplay} ${timezone}`;
+    return `${startDisplay}${startMeridiemDisplay} - ${endDisplay}${endMeridiemDisplay} ${timezone}`;
   }, [event.date, event.time]);
 
   const eventDate = useMemo(() => new Date(event.date), [event.date]);
@@ -546,9 +538,9 @@ export const EventDetailsContent = ({
           <h1 className='text-3xl lg:text-4xl font-canela font-medium text-foreground leading-tight'>
             {displayTitle}
           </h1>
-          {(event as any).subtitle && (
+          {displaySubtitle && (
             <p className='text-lg text-muted-foreground font-normal'>
-              {(event as any).subtitle}
+              {displaySubtitle}
             </p>
           )}
           <FmUndercardList
