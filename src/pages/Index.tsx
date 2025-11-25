@@ -219,8 +219,7 @@ const Index = () => {
       data-section-id='events'
     >
       <div className='max-w-7xl mx-auto animate-fade-in w-full'>
-        <div className='bg-background/40 backdrop-blur-xl border border-border/30 rounded-lg p-6 lg:p-8'>
-          <div className={isMobile ? 'space-y-4 overflow-y-auto max-h-[80vh]' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center'}>
+        <div className={isMobile ? 'space-y-4 overflow-y-auto max-h-[80vh]' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center'}>
           {loading ? (
             Array.from({ length: 6 }).map((_, idx) => (
               <EventCardSkeleton key={`skeleton-${idx}`} />
@@ -262,7 +261,6 @@ const Index = () => {
             </div>
           )}
           </div>
-        </div>
       </div>
     </section>
   );
@@ -309,7 +307,7 @@ const Index = () => {
             ) : isSingleRow ? (
               /* Single Page Layout - Combined view */
               <div className='h-screen flex flex-col justify-around py-8 px-4 relative z-10'>
-                <div className='fixed inset-0 bg-gradient-monochrome opacity-10 pointer-events-none' />
+                <div className='fixed inset-0 left-0 right-0 bottom-0 bg-background/20 backdrop-blur-xl pointer-events-none' />
                 {/* Logo Section - Top Row */}
                 <div className='flex items-center justify-center'>
                   <div className='max-w-7xl mx-auto'>
@@ -333,8 +331,7 @@ const Index = () => {
                 {/* Events Section - Bottom Row */}
                 <div ref={eventsRef} className='flex items-center justify-center' data-section-id='events'>
                   <div className='max-w-7xl mx-auto animate-fade-in w-full'>
-                    <div className='bg-background/40 backdrop-blur-xl border border-border/30 rounded-lg p-6 lg:p-8'>
-                      <div className='flex justify-center items-center gap-8'>
+                    <div className='flex justify-center items-center gap-8'>
                       {loading ? (
                         Array.from({ length: 6 }).map((_, idx) => (
                           <EventCardSkeleton key={`skeleton-${idx}`} />
@@ -376,13 +373,12 @@ const Index = () => {
                         </div>
                       )}
                     </div>
-                      </div>
-                    </div>
                   </div>
+                </div>
               </div>
             ) : (
               <div className='relative z-10'>
-                <div className='fixed inset-0 bg-gradient-monochrome opacity-10 pointer-events-none' />
+                <div className='fixed inset-0 left-0 right-0 bottom-0 bg-background/20 backdrop-blur-xl pointer-events-none' />
                 {heroContent}
                 {eventsContent}
               </div>
