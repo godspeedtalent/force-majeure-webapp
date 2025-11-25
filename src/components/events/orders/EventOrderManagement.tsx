@@ -5,6 +5,8 @@ import { Badge } from '@/components/common/shadcn/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/shadcn/avatar';
 import { Eye, XCircle, RefreshCw, Mail } from 'lucide-react';
 import { OrderDetailModal } from './OrderDetailModal';
+import { DataGridColumns } from '@/features/data-grid/utils';
+import { formatCurrency } from '@/lib/utils/currency';
 import type { DataGridColumn, DataGridAction } from '@/features/data-grid/types';
 
 interface EventOrderManagementProps {
@@ -78,10 +80,21 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
       type: 'number',
       render: (order) => (
         <span className="font-semibold">
-          ${(order.total_cents / 100).toFixed(2)}
+          {formatCurrency(order.total_cents, order.currency)}
         </span>
       ),
     },
+    DataGridColumns.json<EventOrder>({
+      key: 'fee_breakdown',
+      label: 'Fee Breakdown',
+      formatValue: (key, value) => {
+        // Format cents values as currency
+        if (key.endsWith('_cents') && typeof value === 'number') {
+          return formatCurrency(value);
+        }
+        return String(value);
+      },
+    }),
     {
       key: 'created_at',
       label: 'Date',
