@@ -16,7 +16,7 @@ export function useTrackingLinks(eventId: string) {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as TrackingLink[];
+      return (data || []) as unknown as TrackingLink[];
     },
     enabled: !!eventId,
   });
