@@ -128,7 +128,7 @@ const Index = () => {
 
           return {
             id: event.id,
-            title: event.name,
+            title: (event as any).title,
             headliner: event.headliner_artist
               ? {
                   name: event.headliner_artist.name,
