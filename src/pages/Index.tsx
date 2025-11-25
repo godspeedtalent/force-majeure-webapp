@@ -307,7 +307,6 @@ const Index = () => {
             ) : isSingleRow ? (
               /* Single Page Layout - Combined view */
               <div className='h-screen flex flex-col justify-around py-8 px-4 relative z-10'>
-                <div className='fixed inset-0 left-0 right-0 bottom-0 bg-background/20 backdrop-blur-xl pointer-events-none' />
                 {/* Logo Section - Top Row */}
                 <div className='flex items-center justify-center'>
                   <div className='max-w-7xl mx-auto'>
