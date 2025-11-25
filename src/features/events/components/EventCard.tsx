@@ -159,9 +159,12 @@ export const EventCard = ({ event, isSingleRow = false }: EventCardProps) => {
 
             {/* Event Title Overlay - at bottom of hero image */}
             <div className='absolute bottom-0 left-0 right-0 p-4'>
-              <h3 className='font-canela text-2xl font-medium text-foreground line-clamp-2'>
+              <h3 className='font-canela text-2xl font-medium text-foreground line-clamp-2 mb-1'>
                 {displayTitle}
               </h3>
+              <p className='text-sm text-muted-foreground/90 truncate'>
+                {event.venue}
+              </p>
             </div>
           </div>
 
