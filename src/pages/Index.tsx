@@ -103,13 +103,13 @@ const Index = () => {
             `
             *,
             headliner_artist:artists!events_headliner_id_fkey(id, name, genre, image_url),
-            event_artists!inner(
+            event_artists!left(
               artist:artists(id, name, genre, image_url)
             ),
             venues(name)
           `
           )
-  .eq('status', 'published')
+          .eq('status', 'published')
           .order('start_time', {
             ascending: true,
           });
