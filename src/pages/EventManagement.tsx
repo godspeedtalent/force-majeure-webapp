@@ -290,6 +290,31 @@ export default function EventManagement() {
     }
   };
 
+  const handleHeroImageUpload = async (publicUrl: string) => {
+    setHeroImage(publicUrl);
+
+    if (!id) return;
+
+    try {
+      const { error } = await supabase
+        .from('events' as any)
+        .update({ hero_image: publicUrl } as any)
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast.success('Hero image saved');
+      queryClient.invalidateQueries({ queryKey: ['event', id] });
+    } catch (error) {
+      await handleError(error, {
+        title: 'Failed to Save Hero Image',
+        description: 'The image was uploaded but could not be linked to this event.',
+        endpoint: 'EventManagement/hero-image',
+        method: 'UPDATE',
+      });
+    }
+  };
+
   const handleDeleteEvent = async () => {
     if (!id || !event) return;
 
@@ -577,9 +602,7 @@ export default function EventManagement() {
                       eventId={id}
                       currentImageUrl={heroImage}
                       isPrimary={true}
-                      onUploadComplete={(publicUrl: string) => {
-                        setHeroImage(publicUrl);
-                      }}
+                      onUploadComplete={handleHeroImageUpload}
                     />
                   </div>
                 </div>
