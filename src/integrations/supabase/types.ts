@@ -1140,6 +1140,56 @@ export type Database = {
         }
         Relationships: []
       }
+      ticket_groups: {
+        Row: {
+          color: string
+          created_at: string
+          description: string | null
+          event_id: string
+          fee_flat_cents: number
+          fee_pct_bps: number
+          group_order: number
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          event_id: string
+          fee_flat_cents?: number
+          fee_pct_bps?: number
+          group_order: number
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          event_id?: string
+          fee_flat_cents?: number
+          fee_pct_bps?: number
+          group_order?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_groups_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ticket_holds: {
         Row: {
           created_at: string
@@ -1186,6 +1236,7 @@ export type Database = {
           event_id: string
           fee_flat_cents: number
           fee_pct_bps: number
+          group_id: string | null
           hide_until_previous_sold_out: boolean
           id: string
           is_active: boolean
@@ -1204,6 +1255,7 @@ export type Database = {
           event_id: string
           fee_flat_cents?: number
           fee_pct_bps?: number
+          group_id?: string | null
           hide_until_previous_sold_out?: boolean
           id?: string
           is_active?: boolean
@@ -1222,6 +1274,7 @@ export type Database = {
           event_id?: string
           fee_flat_cents?: number
           fee_pct_bps?: number
+          group_id?: string | null
           hide_until_previous_sold_out?: boolean
           id?: string
           is_active?: boolean
@@ -1239,6 +1292,13 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ticket_tiers_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_groups"
             referencedColumns: ["id"]
           },
         ]
