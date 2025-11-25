@@ -29,10 +29,13 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
           .from('events')
           .select('title, headliner:artists!events_headliner_id_fkey(name)')
           .eq('id', params.id)
-          .single();
+          .maybeSingle();
 
-        if (error) throw error;
-        return data?.headliner?.name || data?.title || '';
+        if (error || !data) {
+          logger.error('Failed to fetch event for breadcrumb:', { context: error });
+          return '';
+        }
+        return (data as any)?.headliner?.name || (data as any)?.title || '';
       } catch (error) {
         logger.error('Failed to fetch event for breadcrumb:', { context: error });
         return '';

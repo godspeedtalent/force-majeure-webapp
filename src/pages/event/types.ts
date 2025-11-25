@@ -15,5 +15,4 @@ export interface EventDetailsRecord {
   venue: string;
   heroImage: string;
   description: string | null;
-  ticketUrl?: string | null;
 }

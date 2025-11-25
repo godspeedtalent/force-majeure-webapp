@@ -8,12 +8,10 @@ import { ArtistSummary, EventDetailsRecord } from '../types';
 interface EventRow {
   id: string;
   title: string | null;
-  date: string;
-  time: string;
+  start_time: string | null;
+  end_time: string | null;
   venue_id?: string | null;
   description: string | null;
-  ticket_url?: string | null;
-  hero_image?: string | null;
   venue?: {
     name: string;
   } | null;
@@ -23,7 +21,9 @@ interface EventRow {
     genre?: string | null;
     image_url?: string | null;
   } | null;
-  undercard_ids?: string[] | null;
+  event_artists: Array<{
+    artist: ArtistRow;
+  }>;
 }
 
 interface ArtistRow {
@@ -40,23 +40,43 @@ const transformArtist = (artist: ArtistRow | null): ArtistSummary => ({
   image: artist?.image_url ?? null,
 });
 
-const transformEvent = (
-  row: EventRow,
-  undercard: ArtistRow[]
-): EventDetailsRecord => ({
-  id: row.id,
-  title: row.title,
-  headliner: row.headliner_artist
-    ? transformArtist(row.headliner_artist)
-    : { name: 'TBA', genre: 'Electronic', image: null },
-  undercard: undercard.map(transformArtist),
-  date: row.date,
-  time: row.time,
-  venue: row.venue?.name ?? 'Venue TBA',
-  heroImage: getImageUrl(row.hero_image ?? null),
-  description: row.description ?? null,
-  ticketUrl: row.ticket_url ?? null,
-});
+const transformEvent = (row: EventRow): EventDetailsRecord => {
+  // Extract undercard artists from event_artists junction
+  const undercard = row.event_artists?.map(ea => transformArtist(ea.artist)) ?? [];
+  
+  // Format date from start_time
+  const date = row.start_time 
+    ? new Date(row.start_time).toLocaleDateString('en-US', { 
+        weekday: 'short', 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric' 
+      })
+    : 'Date TBA';
+  
+  // Format time from start_time
+  const time = row.start_time
+    ? new Date(row.start_time).toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+      })
+    : 'Time TBA';
+
+  return {
+    id: row.id,
+    title: row.title,
+    headliner: row.headliner_artist
+      ? transformArtist(row.headliner_artist)
+      : { name: 'TBA', genre: 'Electronic', image: null },
+    undercard,
+    date,
+    time,
+    venue: row.venue?.name ?? 'Venue TBA',
+    heroImage: getImageUrl(row.headliner_artist?.image_url ?? null),
+    description: row.description ?? null,
+  };
+};
 
 const fetchEventDetails = async (
   eventId: string
@@ -67,36 +87,25 @@ const fetchEventDetails = async (
       `
       id,
       title,
-      date,
-      time,
+      start_time,
+      end_time,
       venue_id,
       description,
-      ticket_url,
-      hero_image,
-      undercard_ids,
       venue:venues(name),
-      headliner_artist:artists!events_headliner_id_fkey(id, name, genre, image_url)
+      headliner_artist:artists!events_headliner_id_fkey(id, name, genre, image_url),
+      event_artists!left(
+        artist:artists(id, name, genre, image_url)
+      )
     `
     )
     .eq('id', eventId)
-    .single<EventRow>();
+    .maybeSingle();
 
   if (error) throw error;
   if (!data) throw new Error('Event not found');
 
-  let undercardRows: ArtistRow[] = [];
-
-  if (data.undercard_ids && data.undercard_ids.length > 0) {
-    const { data: undercardData, error: undercardError } = await supabase
-      .from('artists')
-      .select('id, name, genre, image_url')
-      .in('id', data.undercard_ids);
-
-    if (undercardError) throw undercardError;
-    undercardRows = undercardData ?? [];
-  }
-
-  return transformEvent(data, undercardRows);
+  // Type assertion needed due to Supabase types being out of sync
+  return transformEvent(data as any as EventRow);
 };
 
 export const useEventDetails = (eventId: string | undefined) => {
