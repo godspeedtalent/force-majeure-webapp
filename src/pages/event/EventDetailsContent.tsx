@@ -22,6 +22,7 @@ import { FmTextLink } from '@/components/common/display/FmTextLink';
 import { FmUndercardList } from '@/components/common/display/FmUndercardList';
 import { FmDynamicStickyHeader } from '@/components/common/layout/FmDynamicStickyHeader';
 import { ScrollBar } from '@/components/common/shadcn/scroll-area';
+import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import {
   FmCommonStackLayout,
 } from '@/components/common/layout';
@@ -569,12 +570,7 @@ export const EventDetailsContent = ({
           </div>
         </div>
       </div>
-      <div className='flex flex-col gap-4'>
-        {headerActions}
-        <FmBigButton onClick={handleOpenCheckout}>
-          Get Tickets
-        </FmBigButton>
-      </div>
+      {headerActions}
     </div>
   );
 
@@ -604,7 +600,13 @@ export const EventDetailsContent = ({
 
   return (
     <>
-      <ScrollAreaPrimitive.Root className='relative h-full overflow-hidden'>
+      <div className='relative h-full'>
+        <div className='absolute inset-0 pointer-events-none overflow-hidden'>
+          <TopographicBackground opacity={0.35} parallax={false} />
+          <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
+        </div>
+
+        <ScrollAreaPrimitive.Root className='relative h-full overflow-hidden'>
         <ScrollAreaPrimitive.Viewport className='h-full w-full'>
           <div className='flex min-h-full flex-col'>
             <ScrollAreaPrimitive.Root className='relative flex-1 overflow-hidden'>
@@ -625,7 +627,13 @@ export const EventDetailsContent = ({
                         scrollContainerRef={contentViewportRef}
                       />
 
-                      <div className='pb-10'>{detailsContent}</div>
+                      <div className='mt-6'>
+                        <FmBigButton onClick={handleOpenCheckout}>
+                          Get Tickets
+                        </FmBigButton>
+                      </div>
+
+                      <div className='pb-10 mt-4'>{detailsContent}</div>
                     </div>
                   </div>
                 </div>
@@ -636,6 +644,7 @@ export const EventDetailsContent = ({
         </ScrollAreaPrimitive.Viewport>
         <ScrollBar orientation='vertical' />
       </ScrollAreaPrimitive.Root>
+    </div>
 
       <Dialog open={isAttendeeModalOpen} onOpenChange={setIsAttendeeModalOpen}>
         <DialogContent className='max-w-md bg-background/95 backdrop-blur border border-border/60 max-h-[85vh] flex flex-col p-0 overflow-hidden'>

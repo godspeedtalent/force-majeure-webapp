@@ -1,6 +1,4 @@
 import { cn } from '@/shared/utils/utils';
-import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
-
 interface EventDetailsLayoutProps {
   leftColumn: React.ReactNode;
   rightColumn: React.ReactNode;
@@ -26,13 +24,7 @@ export function EventDetailsLayout({
       {/* Mobile: stacked layout */}
       <div className='lg:hidden'>
         <div className='max-h-[40vh]'>{leftColumn}</div>
-        <div className='relative'>
-          <div className='absolute inset-0 pointer-events-none'>
-            <TopographicBackground opacity={0.35} />
-            <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
-          </div>
-          <div className='relative'>{rightColumn}</div>
-        </div>
+        <div className='relative'>{rightColumn}</div>
       </div>
 
       {/* Desktop: two-column side-by-side layout */}
@@ -44,10 +36,6 @@ export function EventDetailsLayout({
 
         {/* Right Column - Content (scrollable) */}
         <div className='w-1/2 overflow-y-auto relative h-screen'>
-          <div className='absolute inset-0 pointer-events-none'>
-            <TopographicBackground opacity={0.35} />
-            <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
-          </div>
           <div className='relative'>{rightColumn}</div>
         </div>
       </div>
