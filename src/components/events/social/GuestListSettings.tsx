@@ -31,6 +31,7 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
   const [minInterested, setMinInterested] = useState(0);
   const [minPrivate, setMinPrivate] = useState(0);
   const [minPublic, setMinPublic] = useState(0);
+  const [showViewCount, setShowViewCount] = useState(true);
 
   // Fetch existing settings
   const { data: settings, isLoading } = useQuery({
@@ -48,6 +49,22 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
     enabled: !!eventId,
   });
 
+  // Fetch event settings for view count
+  const { data: event } = useQuery({
+    queryKey: ['event-social-settings', eventId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('events' as any)
+        .select('show_view_count')
+        .eq('id', eventId)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!eventId,
+  });
+
   // Populate form when settings load
   useEffect(() => {
     if (settings) {
@@ -57,6 +74,13 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
       setMinPublic(settings.min_public_guests);
     }
   }, [settings]);
+
+  // Populate view count setting when event loads
+  useEffect(() => {
+    if (event) {
+      setShowViewCount((event as any).show_view_count ?? true);
+    }
+  }, [event]);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -69,6 +93,7 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
         min_public_guests: minPublic,
       };
 
+      // Save guest list settings
       if (settings?.id) {
         // Update existing settings
         const { error } = await supabase
@@ -86,12 +111,21 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
         if (error) throw error;
       }
 
-      toast.success('Guest list settings saved successfully');
+      // Update event view count setting
+      const { error: eventError } = await supabase
+        .from('events' as any)
+        .update({ show_view_count: showViewCount })
+        .eq('id', eventId);
+
+      if (eventError) throw eventError;
+
+      toast.success('Social settings saved successfully');
       queryClient.invalidateQueries({ queryKey: ['guest-list-settings', eventId] });
+      queryClient.invalidateQueries({ queryKey: ['event-social-settings', eventId] });
     } catch (error) {
       await handleError(error, {
-        title: 'Failed to Save Guest List Settings',
-        description: 'Could not save guest list settings',
+        title: 'Failed to Save Social Settings',
+        description: 'Could not save social settings',
         endpoint: 'GuestListSettings',
         method: settings?.id ? 'UPDATE' : 'INSERT',
       });
@@ -114,10 +148,10 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold text-foreground mb-2">
-              Guest List Settings
+              Social Settings
             </h2>
             <p className="text-muted-foreground">
-              Configure guest list visibility and minimum thresholds
+              Configure guest list visibility and view count display
             </p>
           </div>
           <FmCommonButton
@@ -210,11 +244,28 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
           </div>
         </div>
 
+        {/* View Count Toggle */}
+        <div className="flex items-center justify-between p-4 border border-border rounded-none bg-muted/20">
+          <div className="space-y-1">
+            <Label htmlFor="view-count-enabled" className="text-base font-semibold">
+              Display View Count
+            </Label>
+            <p className="text-sm text-muted-foreground">
+              Show page view count on the event details page
+            </p>
+          </div>
+          <Switch
+            id="view-count-enabled"
+            checked={showViewCount}
+            onCheckedChange={setShowViewCount}
+          />
+        </div>
+
         {/* Info Box */}
         {isEnabled && (
           <div className="p-4 border border-fm-gold/30 rounded-none bg-fm-gold/5">
             <p className="text-sm text-foreground">
-              <strong>Note:</strong> The guest list will only be visible on the event page if the feature flag is enabled globally and this event has the guest list enabled with thresholds met.
+              <strong>Note:</strong> The guest list will only be visible on the event page if the feature flag is enabled globally and this event has the guest list enabled with thresholds met. View count will display alongside share buttons if guest list is off, or within the guest list section if enabled.
             </p>
           </div>
         )}

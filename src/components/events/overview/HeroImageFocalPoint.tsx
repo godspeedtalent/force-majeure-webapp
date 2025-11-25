@@ -1,18 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { Label } from '@/components/common/shadcn/label';
 import { cn } from '@/shared/utils/utils';
-import { Crosshair } from 'lucide-react';
+import { MoveVertical } from 'lucide-react';
 
 interface HeroImageFocalPointProps {
   imageUrl: string;
-  focalX: number;
   focalY: number;
-  onChange: (x: number, y: number) => void;
+  onChange: (y: number) => void;
 }
 
 export const HeroImageFocalPoint = ({
   imageUrl,
-  focalX,
   focalY,
   onChange,
 }: HeroImageFocalPointProps) => {
@@ -21,30 +19,28 @@ export const HeroImageFocalPoint = ({
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isDragging || !containerRef.current) return;
-    updateFocalPoint(e.clientX, e.clientY);
+    updateFocalPoint(e.clientY);
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     setIsDragging(true);
-    updateFocalPoint(e.clientX, e.clientY);
+    updateFocalPoint(e.clientY);
   };
 
   const handleMouseUp = () => {
     setIsDragging(false);
   };
 
-  const updateFocalPoint = (clientX: number, clientY: number) => {
+  const updateFocalPoint = (clientY: number) => {
     if (!containerRef.current) return;
     
     const rect = containerRef.current.getBoundingClientRect();
-    const x = Math.round(((clientX - rect.left) / rect.width) * 100);
     const y = Math.round(((clientY - rect.top) / rect.height) * 100);
     
-    // Clamp values between 0 and 100
-    const clampedX = Math.max(0, Math.min(100, x));
+    // Clamp value between 0 and 100
     const clampedY = Math.max(0, Math.min(100, y));
     
-    onChange(clampedX, clampedY);
+    onChange(clampedY);
   };
 
   useEffect(() => {
@@ -58,10 +54,10 @@ export const HeroImageFocalPoint = ({
   if (!imageUrl) {
     return (
       <div className='space-y-2'>
-        <Label>Mobile Image Focal Point</Label>
+        <Label>Mobile Image Vertical Center</Label>
         <div className='flex items-center justify-center h-32 border border-dashed border-border rounded-lg bg-muted/20'>
           <p className='text-sm text-muted-foreground'>
-            Upload a hero image to set focal point
+            Upload a hero image to set vertical center
           </p>
         </div>
       </div>
@@ -71,15 +67,15 @@ export const HeroImageFocalPoint = ({
   return (
     <div className='space-y-3'>
       <div className='flex items-center justify-between'>
-        <Label>Mobile Image Focal Point</Label>
+        <Label>Mobile Image Vertical Center</Label>
         <span className='text-xs text-muted-foreground'>
-          {focalX}%, {focalY}%
+          {focalY}%
         </span>
       </div>
       <div
         ref={containerRef}
         className={cn(
-          'relative w-full h-48 rounded-lg overflow-hidden border border-border cursor-crosshair',
+          'relative w-full h-48 rounded-lg overflow-hidden border border-border cursor-ns-resize',
           isDragging && 'ring-2 ring-fm-gold'
         )}
         onMouseDown={handleMouseDown}
@@ -93,30 +89,32 @@ export const HeroImageFocalPoint = ({
           draggable={false}
         />
         
-        {/* Focal point indicator */}
+        {/* Horizontal center line indicator */}
         <div
-          className='absolute w-8 h-8 -ml-4 -mt-4 pointer-events-none transition-all duration-150'
+          className='absolute left-0 right-0 pointer-events-none transition-all duration-150'
           style={{
-            left: `${focalX}%`,
             top: `${focalY}%`,
           }}
         >
-          <Crosshair className='w-8 h-8 text-fm-gold drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]' />
-          <div className='absolute inset-0 flex items-center justify-center'>
-            <div className='w-1.5 h-1.5 bg-fm-gold rounded-full shadow-lg' />
+          {/* Line */}
+          <div className='h-0.5 bg-fm-gold shadow-[0_0_12px_rgba(255,215,0,0.8)]' />
+          
+          {/* Drag handle */}
+          <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center'>
+            <div className='bg-fm-gold rounded-full p-2 shadow-lg'>
+              <MoveVertical className='w-4 h-4 text-background' />
+            </div>
           </div>
         </div>
 
-        {/* Grid overlay (optional) */}
-        <div className='absolute inset-0 pointer-events-none opacity-20'>
+        {/* Top and bottom thirds guides */}
+        <div className='absolute inset-0 pointer-events-none opacity-10'>
           <div className='absolute top-1/3 left-0 right-0 h-px bg-white' />
           <div className='absolute top-2/3 left-0 right-0 h-px bg-white' />
-          <div className='absolute left-1/3 top-0 bottom-0 w-px bg-white' />
-          <div className='absolute left-2/3 top-0 bottom-0 w-px bg-white' />
         </div>
       </div>
       <p className='text-xs text-muted-foreground'>
-        Click or drag on the image to set where it should be centered on mobile devices
+        Drag the center line up or down to adjust where the image is centered on mobile devices
       </p>
     </div>
   );
