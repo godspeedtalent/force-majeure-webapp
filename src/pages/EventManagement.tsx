@@ -70,6 +70,7 @@ export default function EventManagement() {
   const [isSaving, setIsSaving] = useState(false);
   const [customTitle, setCustomTitle] = useState<string>('');
   const [eventSubtitle, setEventSubtitle] = useState<string>('');
+  const [aboutEvent, setAboutEvent] = useState<string>('');
   const [orderCount, setOrderCount] = useState(0);
 
   // Fetch event data
@@ -106,9 +107,10 @@ export default function EventManagement() {
       setHeroImage((event as any).hero_image || '');
       setHeroImageFocalY((event as any).hero_image_focal_y ?? 50);
 
-      // Set title and subtitle
+      // Set title, subtitle, and description
       setCustomTitle((event as any).title || event.name || '');
       setEventSubtitle(event.description || '');
+      setAboutEvent((event as any).about_event || '');
 
       // Parse date and time from start_time
       if (event.start_time) {
@@ -254,6 +256,7 @@ export default function EventManagement() {
         .update({
           title: customTitle.trim(),
           description: eventSubtitle.trim() || null,
+          about_event: aboutEvent.trim() || null,
           headliner_id: headlinerId,
           venue_id: venueId,
           start_time: eventDate.toISOString(),
@@ -526,6 +529,21 @@ export default function EventManagement() {
                       value={eventSubtitle}
                       onChange={e => setEventSubtitle(e.target.value)}
                       placeholder='Enter event subtitle'
+                    />
+                  </div>
+
+                  {/* About This Event Description */}
+                  <div className='space-y-2 md:col-span-2'>
+                    <Label htmlFor='about-event'>
+                      About This Event (Optional)
+                    </Label>
+                    <textarea
+                      id='about-event'
+                      value={aboutEvent}
+                      onChange={e => setAboutEvent(e.target.value)}
+                      placeholder='Enter event description...'
+                      className='w-full min-h-[120px] p-3 rounded-md border border-input bg-background text-foreground resize-y'
+                      rows={5}
                     />
                   </div>
 
