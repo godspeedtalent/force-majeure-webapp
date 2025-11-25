@@ -149,7 +149,7 @@ export const EventDetailsPage = () => {
               canManage={canManage}
               onBack={() => navigate('/')}
               onManage={
-                canManage ? () => navigate(`/admin/events/${id}`) : undefined
+                canManage ? () => navigate(`/event/${id}/manage`) : undefined
               }
             />
           }
