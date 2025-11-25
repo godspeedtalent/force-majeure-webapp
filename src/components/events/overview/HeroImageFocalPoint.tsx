@@ -54,10 +54,10 @@ export const HeroImageFocalPoint = ({
   if (!imageUrl) {
     return (
       <div className='space-y-2'>
-        <Label>Mobile Image Vertical Center</Label>
+        <Label>Horizontal rendering focal point</Label>
         <div className='flex items-center justify-center h-32 border border-dashed border-border rounded-lg bg-muted/20'>
           <p className='text-sm text-muted-foreground'>
-            Upload a hero image to set vertical center
+            Upload a hero image to set focal point
           </p>
         </div>
       </div>
@@ -67,7 +67,7 @@ export const HeroImageFocalPoint = ({
   return (
     <div className='space-y-3'>
       <div className='flex items-center justify-between'>
-        <Label>Mobile Image Vertical Center</Label>
+        <Label>Horizontal rendering focal point</Label>
         <span className='text-xs text-muted-foreground'>
           {focalY}%
         </span>
@@ -114,7 +114,7 @@ export const HeroImageFocalPoint = ({
         </div>
       </div>
       <p className='text-xs text-muted-foreground'>
-        Drag the center line up or down to adjust where the image is centered on mobile devices
+        Drag the center line up or down to adjust the vertical focal point for horizontal rendering
       </p>
     </div>
   );

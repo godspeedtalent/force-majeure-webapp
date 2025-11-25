@@ -33,11 +33,11 @@ export const EventHero = ({
         src={event.heroImage}
         alt={event.title || event.headliner.name}
         className={cn(
-          'w-full h-full object-cover transition-opacity duration-700 lg:object-center',
+          'w-full h-full object-cover transition-opacity duration-700',
           imageLoaded ? 'opacity-100' : 'opacity-0'
         )}
         style={{
-          objectPosition: `center ${focalY}%`,
+          objectPosition: `50% ${focalY}%`,
         }}
         onLoad={() => setImageLoaded(true)}
       />
