@@ -39,14 +39,14 @@ export default function SpotifyArtistImportDemo() {
       setArtistData({
         id: data.id,
         name: data.name,
-        bio: data.bio,
-        imageUrl: data.image_url,
-        socialLinks: data.social_links as Record<string, string> | null,
-        createdAt: data.created_at,
-        updatedAt: data.updated_at,
-        genre: data.genre,
-        spotifyId: data.spotify_id,
-        spotifyData: data.spotify_data as any,
+        bio: data.bio || '',
+        imageUrl: data.image_url || '',
+        socialLinks: null,
+        createdAt: data.created_at || '',
+        updatedAt: data.updated_at || '',
+        genre: data.genre || '',
+        spotifyId: data.spotify_id || null,
+        spotifyData: data.spotify_data as any || null,
       });
     } catch (error) {
       logger.error('Failed to fetch artist data', { error });
@@ -77,7 +77,7 @@ export default function SpotifyArtistImportDemo() {
           </div>
 
           {/* Search Section */}
-          <FmCommonCard title='Search Spotify' icon={<Music className='h-5 w-5' />}>
+          <FmCommonCard>
             <div className='space-y-[20px]'>
               <div>
                 <label className='block font-canela text-sm text-muted-foreground uppercase mb-[5px]'>

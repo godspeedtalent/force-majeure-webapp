@@ -3,10 +3,6 @@ import { Separator } from '@/components/common/shadcn/separator';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { DatabaseNavigatorSearch } from '@/components/admin/DatabaseNavigatorSearch';
 
-interface DatabaseTabContentProps {
-  onNavigate: (path: string) => void;
-}
-
 export function DatabaseTabContent() {
   return (
     <div className='space-y-4'>
@@ -18,7 +14,7 @@ export function DatabaseTabContent() {
   );
 }
 
-export function DatabaseTabFooter({ onNavigate }: DatabaseTabContentProps) {
+export function DatabaseTabFooter({ onNavigate }: { onNavigate: (path: string) => void }) {
   return (
     <div className='pb-4'>
       <FmCommonButton

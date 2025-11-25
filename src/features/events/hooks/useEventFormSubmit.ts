@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { logger } from '@/shared/services/logger';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
@@ -95,7 +95,8 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
 
       // Prepare event data matching database schema
       const eventData = {
-        title: eventTitle,
+        name: eventTitle, // Database uses 'name' field
+        title: eventTitle, // Keep for compatibility
         description: null, // Can add description field later
         headliner_id: state.headlinerId || null,
         venue_id: state.venueId || null,
@@ -268,7 +269,8 @@ async function updateTicketTiers(
   // Update existing ticket tiers (those with an id)
   const existingTiersToUpdate = ticketTiers.filter((tier) => tier.id);
   for (const tier of existingTiersToUpdate) {
-    if (!tier.id) continue;
+    const tierId = tier.id;
+    if (!tierId) continue;
     
     const { error: updateError } = await supabase
       .from('ticket_tiers')
@@ -279,7 +281,7 @@ async function updateTicketTiers(
         total_tickets: tier.quantity,
         hide_until_previous_sold_out: tier.hideUntilPreviousSoldOut,
       })
-      .eq('id', tier.id);
+      .eq('id', tierId);
 
     if (updateError) throw updateError;
   }
