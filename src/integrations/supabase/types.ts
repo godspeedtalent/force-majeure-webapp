@@ -665,6 +665,53 @@ export type Database = {
           },
         ]
       }
+      link_clicks: {
+        Row: {
+          city: string | null
+          clicked_at: string
+          country: string | null
+          device_info: Json | null
+          id: string
+          ip_address: unknown
+          link_id: string
+          referrer: string | null
+          session_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          city?: string | null
+          clicked_at?: string
+          country?: string | null
+          device_info?: Json | null
+          id?: string
+          ip_address?: unknown
+          link_id: string
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          city?: string | null
+          clicked_at?: string
+          country?: string | null
+          device_info?: Json | null
+          id?: string
+          ip_address?: unknown
+          link_id?: string
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "link_clicks_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "tracking_links"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_items: {
         Row: {
           created_at: string
@@ -1602,6 +1649,71 @@ export type Database = {
             columns: ["ticket_tier_id"]
             isOneToOne: false
             referencedRelation: "ticket_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tracking_links: {
+        Row: {
+          click_count: number
+          code: string
+          created_at: string
+          custom_destination_url: string | null
+          event_id: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          max_clicks: number | null
+          name: string
+          updated_at: string
+          utm_campaign: string
+          utm_content: string | null
+          utm_medium: string
+          utm_source: string
+          utm_term: string | null
+        }
+        Insert: {
+          click_count?: number
+          code: string
+          created_at?: string
+          custom_destination_url?: string | null
+          event_id: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_clicks?: number | null
+          name: string
+          updated_at?: string
+          utm_campaign: string
+          utm_content?: string | null
+          utm_medium: string
+          utm_source: string
+          utm_term?: string | null
+        }
+        Update: {
+          click_count?: number
+          code?: string
+          created_at?: string
+          custom_destination_url?: string | null
+          event_id?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_clicks?: number | null
+          name?: string
+          updated_at?: string
+          utm_campaign?: string
+          utm_content?: string | null
+          utm_medium?: string
+          utm_source?: string
+          utm_term?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tracking_links_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
             referencedColumns: ["id"]
           },
         ]
