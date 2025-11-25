@@ -72,23 +72,27 @@ export interface Artist {
 
 export interface Event {
   id: string;
-  name: string;
+  title: string;        // Event title (e.g., "Artist Name @ Venue Name")
   description?: string | null;
-  start_time: string;
-  end_time?: string | null;
+  start_time: string;   // ISO timestamp (TIMESTAMPTZ from database)
+  end_time?: string | null; // ISO timestamp (TIMESTAMPTZ from database)
   venue_id: string;
   headliner_id: string;
   image_url?: string | null;
-  status: 'draft' | 'published' | 'cancelled';
+  status?: 'draft' | 'published' | 'cancelled';
+  is_tba?: boolean;     // TBA (To Be Announced) placeholder event
+  is_after_hours?: boolean; // Event has no end time (runs past closing)
+  organization_id?: string | null;
+  test_data?: boolean;
   created_at: string;
   updated_at: string;
   venue?: Venue;
   headliner?: Artist;
   undercard_artists?: UndercardArtist[];
   ticket_tiers?: TicketTier[];
-  
+
   // Legacy/computed fields for backward compatibility
-  title?: string;       // Alias for name or computed from headliner + venue
+  name?: string;        // Alias for title
   date?: string;        // Extracted date from start_time
   time?: string | number; // Extracted time from start_time
   doors_time?: string;  // Door opening time
@@ -98,14 +102,16 @@ export interface Event {
 
 // Form data types (used in create/edit forms)
 export interface EventFormData {
-  name: string;
+  title: string;
   description?: string;
-  start_time: string;
-  end_time?: string;
+  start_time: string;   // ISO timestamp
+  end_time?: string;    // ISO timestamp
   venue_id: string;
   headliner_id: string;
   image_url?: string;
-  status: 'draft' | 'published';
+  status?: 'draft' | 'published';
+  is_tba?: boolean;
+  is_after_hours?: boolean;
 }
 
 export interface TicketTierFormData {

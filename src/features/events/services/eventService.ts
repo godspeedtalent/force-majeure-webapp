@@ -10,8 +10,8 @@ import { logger } from '@/shared/services/logger';
  */
 
 export interface CreateEventData {
-  name: string;
-  title?: string;
+  title: string;
+  name?: string; // Legacy alias for backward compatibility
   description?: string;
   date?: string;
   time?: string;
@@ -22,6 +22,8 @@ export interface CreateEventData {
   headliner_id: string | null;
   image_url?: string | null;
   status: 'draft' | 'published';
+  is_tba?: boolean;
+  is_after_hours?: boolean;
 }
 
 export interface UpdateEventData extends Partial<CreateEventData> {
@@ -74,7 +76,11 @@ export const eventService = {
     date_from?: string;
     date_to?: string;
   }) {
-    let query = supabase.from('events').select('*');
+    let query = supabase.from('events').select(`
+      *,
+      venue:venues(id, name, address, city, capacity, image_url),
+      headliner:artists!events_headliner_id_fkey(id, name, image_url, genre)
+    `);
 
     if (filters?.status) {
       query = query.eq('status', filters.status);
@@ -99,13 +105,13 @@ export const eventService = {
    * Create a new event
    */
   async createEvent(eventData: CreateEventData) {
-    // Ensure required name field is present
+    // Ensure required title field is present
     const insertData = {
       ...eventData,
-      name: eventData.name || eventData.title || 'Untitled Event'
+      title: eventData.title || eventData.name || 'Untitled Event'
     };
-    
-    const { data, error } = await supabase
+
+    const { data, error} = await supabase
       .from('events')
       .insert([insertData])
       .select()

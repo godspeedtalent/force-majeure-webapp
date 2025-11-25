@@ -10,6 +10,7 @@ import { ParallaxLayerManager } from '@/components/layout/ParallaxLayerManager';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { EventCard } from '@/features/events/components/EventCard';
 import { EventCardSkeleton } from '@/features/events/components/EventCardSkeleton';
+import { FmTbaEventCard } from '@/features/events/components/FmTbaEventCard';
 import { MobileSectionIndicator, MobileScrollCue } from '@/components/mobile';
 import { MobileScrollSnapWrapper } from '@/components/mobile/MobileScrollSnapWrapper';
 import { supabase } from '@/shared/api/supabase/client';
@@ -37,6 +38,7 @@ interface EventData {
   heroImage: string;
   description: string | null;
   ticketUrl?: string | null;
+  is_tba?: boolean;
 }
 
 const Index = () => {
@@ -125,7 +127,7 @@ const Index = () => {
 
           return {
             id: event.id,
-            title: event.name,
+            title: event.title,
             headliner: event.headliner_artist
               ? {
                   name: event.headliner_artist.name,
@@ -144,6 +146,7 @@ const Index = () => {
             heroImage: getImageUrl(null),
             description: event.description || null,
             ticketUrl: null,
+            is_tba: event.is_tba || false,
           };
         });
         setUpcomingEvents(transformedEvents);
@@ -221,9 +224,23 @@ const Index = () => {
               <EventCardSkeleton key={`skeleton-${idx}`} />
             ))
           ) : upcomingEvents.length > 0 ? (
-            upcomingEvents.map(event => (
-              <EventCard key={event.id} event={event} isSingleRow={false} />
-            ))
+            upcomingEvents.map(event =>
+              event.is_tba ? (
+                <FmTbaEventCard
+                  key={event.id}
+                  event={{
+                    id: event.id,
+                    date: event.date,
+                    time: event.time,
+                    venue: event.venue !== 'TBA' ? event.venue : undefined,
+                    is_tba: true,
+                  }}
+                  isSingleRow={false}
+                />
+              ) : (
+                <EventCard key={event.id} event={event} isSingleRow={false} />
+              )
+            )
           ) : (
             <div className={isMobile ? '' : 'col-span-full flex justify-center'}>
               <FmInfoCard className='max-w-2xl text-center'>
@@ -319,9 +336,23 @@ const Index = () => {
                           <EventCardSkeleton key={`skeleton-${idx}`} />
                         ))
                       ) : upcomingEvents.length > 0 ? (
-                        upcomingEvents.map(event => (
-                          <EventCard key={event.id} event={event} isSingleRow={isSingleRow} />
-                        ))
+                        upcomingEvents.map(event =>
+                          event.is_tba ? (
+                            <FmTbaEventCard
+                              key={event.id}
+                              event={{
+                                id: event.id,
+                                date: event.date,
+                                time: event.time,
+                                venue: event.venue !== 'TBA' ? event.venue : undefined,
+                                is_tba: true,
+                              }}
+                              isSingleRow={isSingleRow}
+                            />
+                          ) : (
+                            <EventCard key={event.id} event={event} isSingleRow={isSingleRow} />
+                          )
+                        )
                       ) : (
                         <div className='flex justify-center'>
                           <FmInfoCard className='max-w-2xl text-center'>

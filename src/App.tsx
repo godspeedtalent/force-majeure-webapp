@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 
 import Auth from './pages/Auth';
 import CheckoutCancel from './pages/CheckoutCancel';
@@ -10,30 +11,38 @@ import EventDetails from './pages/EventDetails';
 import EventTicketing from './pages/event/EventTicketingPage';
 import Index from './pages/Index';
 import Orders from './pages/Orders';
-import DemoIndex from './pages/demo/DemoIndex';
-import EventCheckout from './pages/demo/EventCheckout';
-import EventCheckoutConfirmation from './pages/demo/EventCheckoutConfirmation';
-import EmailTemplateDemo from './pages/demo/EmailTemplateDemo';
-import DeveloperDatabase from './pages/developer/DeveloperDatabase';
-import DeveloperDocumentation from './pages/developer/DeveloperDocumentation';
-import TicketFlowTests from './pages/developer/TicketFlowTests';
-import DeveloperCreateEventPage from './pages/developer/database/CreateEvent';
-import DeveloperCreateArtistPage from './pages/developer/database/CreateArtist';
-import DeveloperCreateVenuePage from './pages/developer/database/CreateVenue';
-import DeveloperCreateOrganizationPage from './pages/developer/database/CreateOrganization';
 import EventManagement from './pages/EventManagement';
-import TestingIndex from './pages/testing/TestingIndex';
-import CheckoutFlowTests from './pages/testing/CheckoutFlowTests';
 import MemberHome from './pages/members/MemberHome';
-import Statistics from './pages/admin/Statistics';
-import AdminControls from './pages/admin/AdminControls';
-import OrganizationDetails from './pages/admin/OrganizationDetails';
-import ArtistDetails from './pages/admin/ArtistDetails';
-import UserDetails from './pages/admin/UserDetails';
-import VenueDetails from './pages/admin/VenueDetails';
-import DeveloperIndex from './pages/developer/DeveloperIndex';
 import OrganizationTools from './pages/organization/OrganizationTools';
 import TicketScanning from './pages/organization/TicketScanning';
+
+// Lazy load demo pages
+const DemoIndex = lazy(() => import('./pages/demo/DemoIndex'));
+const EventCheckout = lazy(() => import('./pages/demo/EventCheckout'));
+const EventCheckoutConfirmation = lazy(() => import('./pages/demo/EventCheckoutConfirmation'));
+const EmailTemplateDemo = lazy(() => import('./pages/demo/EmailTemplateDemo'));
+
+// Lazy load developer pages
+const DeveloperDatabase = lazy(() => import('./pages/developer/DeveloperDatabase'));
+const DeveloperDocumentation = lazy(() => import('./pages/developer/DeveloperDocumentation'));
+const TicketFlowTests = lazy(() => import('./pages/developer/TicketFlowTests'));
+const DeveloperCreateEventPage = lazy(() => import('./pages/developer/database/CreateEvent'));
+const DeveloperCreateArtistPage = lazy(() => import('./pages/developer/database/CreateArtist'));
+const DeveloperCreateVenuePage = lazy(() => import('./pages/developer/database/CreateVenue'));
+const DeveloperCreateOrganizationPage = lazy(() => import('./pages/developer/database/CreateOrganization'));
+const DeveloperIndex = lazy(() => import('./pages/developer/DeveloperIndex'));
+
+// Lazy load admin pages
+const Statistics = lazy(() => import('./pages/admin/Statistics'));
+const AdminControls = lazy(() => import('./pages/admin/AdminControls'));
+const OrganizationDetails = lazy(() => import('./pages/admin/OrganizationDetails'));
+const ArtistDetails = lazy(() => import('./pages/admin/ArtistDetails'));
+const UserDetails = lazy(() => import('./pages/admin/UserDetails'));
+const VenueDetails = lazy(() => import('./pages/admin/VenueDetails'));
+
+// Lazy load testing pages
+const TestingIndex = lazy(() => import('./pages/testing/TestingIndex'));
+const CheckoutFlowTests = lazy(() => import('./pages/testing/CheckoutFlowTests'));
 
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary';
 import { DemoProtectedRoute } from '@/components/routing/DemoProtectedRoute';
@@ -66,6 +75,13 @@ import ArtistSignup from './pages/artists/ArtistSignup';
 import ArtistRegister from './pages/artists/ArtistRegister';
 
 const queryClient = new QueryClient();
+
+// Loading fallback for lazy-loaded components
+const LazyLoadFallback = () => (
+  <div className='min-h-screen flex items-center justify-center bg-background'>
+    <Loader2 className='w-8 h-8 animate-spin text-fm-gold' />
+  </div>
+);
 
 const GlobalSearchWrapper = () => {
   const { isOpen, closeSearch } = useGlobalSearch();
@@ -129,7 +145,9 @@ const AppRoutes = () => {
             path='/developer'
             element={
               <DemoProtectedRoute>
-                <DeveloperIndex />
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <DeveloperIndex />
+                </Suspense>
               </DemoProtectedRoute>
             }
           />
@@ -137,7 +155,9 @@ const AppRoutes = () => {
             path='/developer/database'
             element={
               <DemoProtectedRoute>
-                <DeveloperDatabase />
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <DeveloperDatabase />
+                </Suspense>
               </DemoProtectedRoute>
             }
           />
@@ -145,7 +165,9 @@ const AppRoutes = () => {
             path='/developer/documentation'
             element={
               <DemoProtectedRoute>
-                <DeveloperDocumentation />
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <DeveloperDocumentation />
+                </Suspense>
               </DemoProtectedRoute>
             }
           />
@@ -153,7 +175,9 @@ const AppRoutes = () => {
             path='/developer/ticket-flow'
             element={
               <DemoProtectedRoute>
-                <TicketFlowTests />
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <TicketFlowTests />
+                </Suspense>
               </DemoProtectedRoute>
             }
           />
@@ -163,7 +187,9 @@ const AppRoutes = () => {
             path='/events/create'
             element={
               <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
-                <DeveloperCreateEventPage />
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <DeveloperCreateEventPage />
+                </Suspense>
               </ProtectedRoute>
             }
           />
@@ -171,7 +197,9 @@ const AppRoutes = () => {
             path='/artists/create'
             element={
               <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
-                <DeveloperCreateArtistPage />
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <DeveloperCreateArtistPage />
+                </Suspense>
               </ProtectedRoute>
             }
           />
@@ -179,7 +207,9 @@ const AppRoutes = () => {
             path='/venues/create'
             element={
               <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
-                <DeveloperCreateVenuePage />
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <DeveloperCreateVenuePage />
+                </Suspense>
               </ProtectedRoute>
             }
           />
@@ -187,7 +217,9 @@ const AppRoutes = () => {
             path='/organizations/create'
             element={
               <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
-                <DeveloperCreateOrganizationPage />
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <DeveloperCreateOrganizationPage />
+                </Suspense>
               </ProtectedRoute>
             }
           />
@@ -197,7 +229,9 @@ const AppRoutes = () => {
             path='/developer/demo'
             element={
               <DemoProtectedRoute>
-                <DemoIndex />
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <DemoIndex />
+                </Suspense>
               </DemoProtectedRoute>
             }
           />
@@ -205,7 +239,9 @@ const AppRoutes = () => {
             path='/developer/demo/event-checkout'
             element={
               <DemoProtectedRoute>
-                <EventCheckout />
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <EventCheckout />
+                </Suspense>
               </DemoProtectedRoute>
             }
           />
@@ -213,7 +249,9 @@ const AppRoutes = () => {
             path='/developer/demo/event-checkout-confirmation'
             element={
               <DemoProtectedRoute>
-                <EventCheckoutConfirmation />
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <EventCheckoutConfirmation />
+                </Suspense>
               </DemoProtectedRoute>
             }
           />
@@ -221,7 +259,9 @@ const AppRoutes = () => {
             path='/developer/demo/email-template'
             element={
               <DemoProtectedRoute>
-                <EmailTemplateDemo />
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <EmailTemplateDemo />
+                </Suspense>
               </DemoProtectedRoute>
             }
           />
@@ -230,7 +270,9 @@ const AppRoutes = () => {
             path='/testing'
             element={
               <DemoProtectedRoute>
-                <TestingIndex />
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <TestingIndex />
+                </Suspense>
               </DemoProtectedRoute>
             }
           />
@@ -238,7 +280,9 @@ const AppRoutes = () => {
             path='/testing/checkout-flow'
             element={
               <DemoProtectedRoute>
-                <CheckoutFlowTests />
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <CheckoutFlowTests />
+                </Suspense>
               </DemoProtectedRoute>
             }
           />
@@ -248,7 +292,9 @@ const AppRoutes = () => {
             path='/admin/statistics'
             element={
               <ProtectedRoute role={ROLES.ADMIN}>
-                <Statistics />
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <Statistics />
+                </Suspense>
               </ProtectedRoute>
             }
           />
@@ -256,7 +302,9 @@ const AppRoutes = () => {
             path='/admin/controls'
             element={
               <ProtectedRoute role={ROLES.ADMIN}>
-                <AdminControls />
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <AdminControls />
+                </Suspense>
               </ProtectedRoute>
             }
           />
@@ -264,7 +312,9 @@ const AppRoutes = () => {
             path='/admin/organizations/:id'
             element={
               <ProtectedRoute role={ROLES.ADMIN}>
-                <OrganizationDetails />
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <OrganizationDetails />
+                </Suspense>
               </ProtectedRoute>
             }
           />
@@ -272,7 +322,9 @@ const AppRoutes = () => {
             path='/admin/artists/:id'
             element={
               <ProtectedRoute role={ROLES.ADMIN}>
-                <ArtistDetails />
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <ArtistDetails />
+                </Suspense>
               </ProtectedRoute>
             }
           />
@@ -280,7 +332,9 @@ const AppRoutes = () => {
             path='/admin/users/:id'
             element={
               <ProtectedRoute role={ROLES.ADMIN}>
-                <UserDetails />
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <UserDetails />
+                </Suspense>
               </ProtectedRoute>
             }
           />
@@ -288,7 +342,9 @@ const AppRoutes = () => {
             path='/admin/venues/:id'
             element={
               <ProtectedRoute role={ROLES.ADMIN}>
-                <VenueDetails />
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <VenueDetails />
+                </Suspense>
               </ProtectedRoute>
             }
           />

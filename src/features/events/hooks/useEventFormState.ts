@@ -26,6 +26,7 @@ export interface EventFormState {
   eventDate: Date | undefined;
   endTime: string;
   isAfterHours: boolean;
+  isTba: boolean;
   venueId: string;
   venueCapacity: number;
   undercardArtists: UndercardArtist[];
@@ -38,6 +39,7 @@ export interface EventFormActions {
   setEventDate: (date: Date | undefined) => void;
   setEndTime: (time: string) => void;
   setIsAfterHours: (isAfterHours: boolean) => void;
+  setIsTba: (isTba: boolean) => void;
   setVenueId: (id: string) => void;
   setVenueCapacity: (capacity: number) => void;
   setUndercardArtists: (artists: UndercardArtist[]) => void;
@@ -59,6 +61,7 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
   const [eventDate, setEventDate] = useState<Date | undefined>(initialState?.eventDate);
   const [endTime, setEndTime] = useState<string>(initialState?.endTime || '02:00');
   const [isAfterHours, setIsAfterHours] = useState(initialState?.isAfterHours || false);
+  const [isTba, setIsTba] = useState(initialState?.isTba || false);
   const [venueId, setVenueId] = useState<string>(initialState?.venueId || '');
   const [venueCapacity, setVenueCapacity] = useState<number>(initialState?.venueCapacity || 0);
   const [undercardArtists, setUndercardArtists] = useState<UndercardArtist[]>(
@@ -71,13 +74,13 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
   useEffect(() => {
     if (venueId) {
       supabase
-        .from('venues' as any)
+        .from('venues')
         .select('capacity')
         .eq('id', venueId)
         .single()
-        .then(({ data, error }: any) => {
+        .then(({ data, error }) => {
           if (error) {
-            logger.error('Error fetching venue capacity:', error);
+            logger.error('Error fetching venue capacity:', { error, venueId });
             toast.error('Failed to fetch venue capacity', {
               description: 'Using default capacity of 100',
             });
@@ -113,6 +116,7 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
     setEventDate(undefined);
     setEndTime('02:00');
     setIsAfterHours(false);
+    setIsTba(false);
     setVenueId('');
     setVenueCapacity(0);
     setUndercardArtists([]);
@@ -125,6 +129,7 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
     eventDate,
     endTime,
     isAfterHours,
+    isTba,
     venueId,
     venueCapacity,
     undercardArtists,
@@ -137,6 +142,7 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
     setEventDate,
     setEndTime,
     setIsAfterHours,
+    setIsTba,
     setVenueId,
     setVenueCapacity,
     setUndercardArtists,

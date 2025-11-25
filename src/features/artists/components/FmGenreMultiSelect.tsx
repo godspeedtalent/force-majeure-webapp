@@ -11,6 +11,7 @@ import { cn } from '@/shared/utils/utils';
 import { searchGenres } from '../services/genreService';
 import type { Genre } from '../types';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { logger } from '@/shared/services/logger';
 import {
   Popover,
   PopoverContent,
@@ -83,7 +84,7 @@ export const FmGenreMultiSelect = ({
         );
         setOptions(filtered);
       } catch (error) {
-        console.error('Failed to search genres:', error);
+        logger.error('Failed to search genres', { error: error instanceof Error ? error.message : String(error), query });
         setOptions([]);
       } finally {
         setLoading(false);

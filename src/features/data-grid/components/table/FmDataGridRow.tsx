@@ -237,6 +237,7 @@ export function FmDataGridRow<T extends Record<string, any>>({
                   : {}
               }
               frozenLeft={column.frozen ? frozenColumnPositions[column.key] : undefined}
+              columnWidths={columnWidths}
             />
           );
         })}

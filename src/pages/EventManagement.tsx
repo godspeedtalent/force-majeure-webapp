@@ -93,8 +93,8 @@ export default function EventManagement() {
       setHeroImage(''); // No hero_image in DB yet
 
       // Check if event has a custom title
-      if (event.name) {
-        setCustomTitle(event.name);
+      if (event.title) {
+        setCustomTitle(event.title);
         setHasCustomTitle(false);
       }
 
@@ -275,7 +275,7 @@ export default function EventManagement() {
     if (!id || !event) return;
 
     const confirmed = window.confirm(
-      `Are you sure you want to delete "${event.name}"?\n\nThis action cannot be undone. All ticket tiers and orders associated with this event will also be deleted.`
+      `Are you sure you want to delete "${event.title}"?\n\nThis action cannot be undone. All ticket tiers and orders associated with this event will also be deleted.`
     );
 
     if (!confirmed) return;
@@ -336,6 +336,9 @@ export default function EventManagement() {
       activeItem={activeTab}
       onItemChange={setActiveTab}
       showDividers
+      showBackButton
+      onBack={() => navigate(`/event/${id}`)}
+      backButtonLabel='Event Details'
       mobileTabBar={
         <MobileBottomTabBar
           tabs={mobileTabs}
@@ -346,20 +349,11 @@ export default function EventManagement() {
     >
       <div className='max-w-full'>
         {/* Header */}
-        <div className='flex items-center gap-4 mb-6'>
-          <FmCommonButton
-            variant='secondary'
-            icon={ArrowLeft}
-            onClick={() => navigate(`/event/${id}`)}
-          >
-            Back to Event
-          </FmCommonButton>
-          <div>
-            <h1 className='text-3xl font-bold text-foreground'>
-              {event.name}
-            </h1>
-            <p className='text-muted-foreground'>Event Management</p>
-          </div>
+        <div className='mb-6'>
+          <h1 className='text-3xl font-bold text-foreground'>
+            {event.title}
+          </h1>
+          <p className='text-muted-foreground'>Event Management</p>
         </div>
 
         {/* Main Content */}

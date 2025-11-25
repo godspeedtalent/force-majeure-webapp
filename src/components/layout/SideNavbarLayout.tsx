@@ -8,6 +8,7 @@ import {
   FmCommonSideNavGroup,
 } from '@/components/common/navigation/FmCommonSideNav';
 import { SidebarProvider } from '@/components/common/shadcn/sidebar';
+import { FmBackButton } from '@/components/common/buttons/FmBackButton';
 
 interface SideNavbarLayoutProps<T extends string> {
   children: ReactNode;
@@ -27,6 +28,12 @@ interface SideNavbarLayoutProps<T extends string> {
   className?: string;
   /** Optional mobile bottom tab bar component */
   mobileTabBar?: ReactNode;
+  /** Show back button in top-left (default: false) */
+  showBackButton?: boolean;
+  /** Custom back button click handler */
+  onBack?: () => void;
+  /** Text label for back button destination */
+  backButtonLabel?: string;
 }
 
 /**
@@ -51,6 +58,9 @@ export const SideNavbarLayout = <T extends string>({
   backgroundOpacity = 0.35,
   className = '',
   mobileTabBar,
+  showBackButton = false,
+  onBack,
+  backButtonLabel,
 }: SideNavbarLayoutProps<T>) => {
   const isMobile = useIsMobile();
 
@@ -78,7 +88,16 @@ export const SideNavbarLayout = <T extends string>({
           >
             <TopographicBackground opacity={backgroundOpacity} />
             <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
-            <div className='max-w-full relative z-10 m-10'>{children}</div>
+            <div className='max-w-full relative z-10 m-10'>
+              {showBackButton && (
+                <FmBackButton
+                  position='floating'
+                  onClick={onBack}
+                  label={backButtonLabel}
+                />
+              )}
+              {children}
+            </div>
           </main>
         </div>
       </SidebarProvider>

@@ -41,7 +41,9 @@ export function FmCommonContextMenu<T = any>({
 
   return (
     <ContextMenu onOpenChange={onOpenChange}>
-      <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
+      <ContextMenuTrigger asChild>
+        <span>{children}</span>
+      </ContextMenuTrigger>
       <ContextMenuContent
         className={cn(
           'w-56',

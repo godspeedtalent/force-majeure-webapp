@@ -109,6 +109,9 @@ export const EventDetailsPage = () => {
       <Navigation />
       <PageTransition>
         <EventDetailsLayout
+          showBackButton
+          onBack={() => navigate('/')}
+          backButtonLabel='Home'
           leftColumn={
             <EventHero
               event={event}

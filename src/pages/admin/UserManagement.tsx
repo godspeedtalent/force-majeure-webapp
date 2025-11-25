@@ -53,7 +53,7 @@ export const UserManagement = () => {
       }
 
       const { users } = await response.json();
-      console.log(`Fetched ${users?.length || 0} users from database`);
+      logger.info('Fetched users from database', { count: users?.length || 0 });
       return users || [];
     },
   });

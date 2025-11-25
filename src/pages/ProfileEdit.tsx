@@ -197,6 +197,9 @@ const ProfileEdit = () => {
       onItemChange={setActiveSection}
       showDividers={false}
       defaultOpen={true}
+      showBackButton
+      onBack={() => navigate('/profile')}
+      backButtonLabel='Profile'
     >
       <div className='space-y-6'>
         {/* Profile Section */}

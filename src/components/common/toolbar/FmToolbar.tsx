@@ -39,10 +39,13 @@ import {
 } from '@/components/common/shadcn/context-menu';
 import { FmCommonCollapsibleSection } from '@/components/common/data/FmCommonCollapsibleSection';
 
-// Lazy load sections
-import { DatabaseNavigatorSearch } from '@/components/admin/DatabaseNavigatorSearch';
-import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
-import { DevNotesSection } from '@/components/DevTools/DevNotesSection';
+// Import tab components
+import { CartTabContent } from './tabs/CartTab';
+import { OrgDashboardTabContent, ScanTicketsTabContent } from './tabs/OrganizationTab';
+import { DevNavigationTabContent } from './tabs/DevNavigationTab';
+import { DatabaseTabContent, DatabaseTabFooter } from './tabs/DatabaseTab';
+import { FeatureTogglesTabContent } from './tabs/FeatureTogglesTab';
+import { DevNotesTabContent } from './tabs/DevNotesTab';
 
 export interface ToolbarTab {
   id: string;
@@ -109,6 +112,13 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
     (profile?.organization_id &&
       hasAnyRole(ROLES.ORG_ADMIN, ROLES.ORG_STAFF));
 
+  // Helper to navigate and close drawer
+  const handleNavigate = useCallback((path: string) => {
+    setIsOpen(false);
+    setActiveTab(null);
+    navigate(path);
+  }, [navigate]);
+
   // Define all tabs based on user roles/permissions
   const tabs: ToolbarTab[] = useMemo(
     () => [
@@ -116,29 +126,9 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         id: 'cart',
         label: 'Shopping Cart',
         icon: ShoppingCart,
-        content: (
-          <div className='space-y-4'>
-            <Separator className='bg-white/10' />
-            <div className='text-center py-12'>
-              <ShoppingCart className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
-              <h3 className='text-lg font-medium text-foreground mb-2'>
-                Your cart is empty
-              </h3>
-              <p className='text-sm text-muted-foreground'>
-                Why not{' '}
-                <Link
-                  to='/merch'
-                  className='text-fm-gold hover:text-fm-gold/80 underline transition-colors'
-                >
-                  check out our merch
-                </Link>
-                ?
-              </p>
-            </div>
-          </div>
-        ),
+        content: <CartTabContent />,
         title: 'Shopping Cart',
-        visible: Boolean(user) && hasCartItems, // Only show if logged in AND has items in cart
+        visible: Boolean(user) && hasCartItems,
         group: 'user',
         groupOrder: 1,
         alignment: 'top',
@@ -147,26 +137,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         id: 'org-dashboard',
         label: 'Org Dashboard',
         icon: Building2,
-        content: (
-          <div className='space-y-4'>
-            <Separator className='bg-white/10' />
-            <div className='flex flex-col gap-2'>
-              <FmCommonButton
-                variant='default'
-                icon={Building2}
-                iconPosition='left'
-                onClick={() => {
-                  setIsOpen(false);
-                  setActiveTab(null);
-                  navigate('/organization/tools');
-                }}
-                className='w-full justify-start'
-              >
-                Go to Org Dashboard
-              </FmCommonButton>
-            </div>
-          </div>
-        ),
+        content: <OrgDashboardTabContent onNavigate={handleNavigate} />,
         title: 'Org Dashboard',
         visible: Boolean(hasOrganizationAccess),
         group: 'organization',
@@ -178,26 +149,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         id: 'scan-tickets',
         label: 'Scan Tickets',
         icon: Scan,
-        content: (
-          <div className='space-y-4'>
-            <Separator className='bg-white/10' />
-            <div className='flex flex-col gap-2'>
-              <FmCommonButton
-                variant='default'
-                icon={Scan}
-                iconPosition='left'
-                onClick={() => {
-                  setIsOpen(false);
-                  setActiveTab(null);
-                  navigate('/organization/scanning');
-                }}
-                className='w-full justify-start'
-              >
-                Go to Ticket Scanner
-              </FmCommonButton>
-            </div>
-          </div>
-        ),
+        content: <ScanTicketsTabContent onNavigate={handleNavigate} />,
         title: 'Scan Tickets',
         visible: Boolean(hasOrganizationAccess),
         group: 'organization',

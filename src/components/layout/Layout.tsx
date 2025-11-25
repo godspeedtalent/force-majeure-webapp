@@ -4,13 +4,23 @@ import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { Footer } from '@/components/navigation/Footer';
 import { Navigation } from '@/components/navigation/Navigation';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import { FmBackButton } from '@/components/common/buttons/FmBackButton';
 
 interface LayoutProps {
   children: ReactNode;
   enableScrollSnap?: boolean;
+  showBackButton?: boolean;
+  onBack?: () => void;
+  backButtonLabel?: string;
 }
 
-export const Layout = ({ children, enableScrollSnap = false }: LayoutProps) => {
+export const Layout = ({
+  children,
+  enableScrollSnap = false,
+  showBackButton = false,
+  onBack,
+  backButtonLabel,
+}: LayoutProps) => {
   const isMobile = useIsMobile();
 
   return (
@@ -33,7 +43,16 @@ export const Layout = ({ children, enableScrollSnap = false }: LayoutProps) => {
       >
         <TopographicBackground opacity={0.35} />
         <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
-        <div className='relative'>{children}</div>
+        <div className='relative'>
+          {showBackButton && (
+            <FmBackButton
+              position='floating'
+              onClick={onBack}
+              label={backButtonLabel}
+            />
+          )}
+          {children}
+        </div>
       </main>
 
       <Footer />

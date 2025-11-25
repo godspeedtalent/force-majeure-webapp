@@ -27,12 +27,12 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
       try {
         const { data, error } = await supabase
           .from('events')
-          .select('name, headliner:artists!events_headliner_id_fkey(name)')
+          .select('title, headliner:artists!events_headliner_id_fkey(name)')
           .eq('id', params.id)
           .single();
 
         if (error) throw error;
-        return data?.headliner?.name || data?.name || '';
+        return data?.headliner?.name || data?.title || '';
       } catch (error) {
         logger.error('Failed to fetch event for breadcrumb:', { context: error });
         return '';

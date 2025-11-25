@@ -28,7 +28,7 @@ interface FmCommonEventDatePickerProps {
 
 interface EventOnDate {
   id: string;
-  name: string;
+  title: string;
   start_time: string;
 }
 
@@ -62,9 +62,9 @@ export function FmCommonEventDatePicker({
 
       const { data, error } = await supabase
         .from('events')
-        .select('id, name, start_time')
+        .select('id, title, start_time')
         .gte('start_time', today.toISOString().split('T')[0])
-        .order('start_time', { ascending: true });
+        .order('start_time', { ascending: true});
 
       if (!error && data) {
         const grouped: Record<string, EventOnDate[]> = {};
@@ -124,7 +124,7 @@ export function FmCommonEventDatePicker({
               <ul className='space-y-0.5 text-xs'>
                 {events.map(event => (
                   <li key={event.id} className='text-white/80'>
-                    • {event.name}
+                    • {event.title}
                   </li>
                 ))}
               </ul>

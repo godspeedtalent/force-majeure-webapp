@@ -41,7 +41,7 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
     try {
       // Fetch headliner name for event title
       const { data: headliner, error: headlinerError } = await supabase
-        .from('artists' as any)
+        .from('artists')
         .select('name')
         .eq('id', state.headlinerId)
         .single();
@@ -49,13 +49,18 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
       if (headlinerError) {
         logger.error('Error fetching headliner:', {
           error: headlinerError.message,
-          source: 'useEventFormSubmit.submitEvent'
+          code: headlinerError.code,
+          details: headlinerError.details,
+          hint: headlinerError.hint,
+          headlinerId: state.headlinerId,
+          source: 'useEventFormSubmit.submitEvent',
+          mode,
         });
       }
 
       // Fetch venue name for event title
       const { data: venue, error: venueError } = await supabase
-        .from('venues' as any)
+        .from('venues')
         .select('name')
         .eq('id', state.venueId)
         .single();
@@ -63,35 +68,48 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
       if (venueError) {
         logger.error('Error fetching venue:', {
           error: venueError.message,
-          source: 'useEventFormSubmit.submitEvent'
+          code: venueError.code,
+          details: venueError.details,
+          hint: venueError.hint,
+          venueId: state.venueId,
+          source: 'useEventFormSubmit.submitEvent',
+          mode,
         });
       }
 
       // Construct event title
       const eventTitle =
-        (headliner as any) && (venue as any)
-          ? `${(headliner as any).name} @ ${(venue as any).name}`
-          : (headliner as any)
-            ? (headliner as any).name
+        headliner && venue
+          ? `${headliner.name} @ ${venue.name}`
+          : headliner
+            ? headliner.name
             : mode === 'create'
               ? 'New Event'
               : 'Updated Event';
 
-      // Format the date and time for the database
-      const eventDateString = state.eventDate ? format(state.eventDate, 'yyyy-MM-dd') : null;
-      const eventTimeString = state.eventDate ? format(state.eventDate, 'HH:mm') : null;
+      // Format the date and time for the database as ISO timestamp (TIMESTAMPTZ)
+      const startTimeISO = state.eventDate ? state.eventDate.toISOString() : null;
 
-      // Prepare event data
+      // Calculate end time as ISO timestamp
+      // If end_time is provided (e.g., "02:00"), combine with event date
+      let endTimeISO: string | null = null;
+      if (!state.isAfterHours && state.endTime && state.eventDate) {
+        const [hours, minutes] = state.endTime.split(':');
+        const endDate = new Date(state.eventDate);
+        endDate.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
+        endTimeISO = endDate.toISOString();
+      }
+
+      // Prepare event data matching database schema
       const eventData = {
         title: eventTitle,
+        description: null, // Can add description field later
         headliner_id: state.headlinerId || null,
         venue_id: state.venueId || null,
-        date: eventDateString,
-        time: eventTimeString,
-        end_time: state.isAfterHours ? null : state.endTime,
+        start_time: startTimeISO,
+        end_time: state.isAfterHours ? null : endTimeISO,
         is_after_hours: state.isAfterHours,
-        undercard_ids: state.undercardArtists.map(a => a.artistId).filter(Boolean),
-        hero_image: state.heroImage || null,
+        is_tba: state.isTba,
       };
 
       let resultEventId: string;
@@ -99,13 +117,14 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
       if (mode === 'create') {
         // Create new event
         const { data: newEvent, error: eventError } = await supabase
-          .from('events' as any)
+          .from('events')
           .insert(eventData)
           .select()
           .single();
 
         if (eventError) throw eventError;
-        resultEventId = (newEvent as any).id;
+        if (!newEvent) throw new Error('Failed to create event - no data returned');
+        resultEventId = newEvent.id;
 
         // Create ticket tiers
         await createTicketTiers(resultEventId, state.ticketTiers);
@@ -118,7 +137,7 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
         if (!eventId) throw new Error('Event ID is required for update');
 
         const { error: eventError } = await supabase
-          .from('events' as any)
+          .from('events')
           .update(eventData)
           .eq('id', eventId)
           .select()
@@ -138,16 +157,34 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
       setIsLoading(false);
       onSuccess?.(resultEventId);
     } catch (error) {
-      logger.error(`Error ${mode === 'create' ? 'creating' : 'updating'} event:`, {
-        error: error instanceof Error ? error.message : 'Unknown error',
+      // Enhanced error logging with full details
+      const errorDetails = {
         source: 'useEventFormSubmit.submitEvent',
-        mode
-      });
+        mode,
+        formState: {
+          headlinerId: state.headlinerId,
+          venueId: state.venueId,
+          eventDate: state.eventDate?.toISOString(),
+          isTba: state.isTba,
+          isAfterHours: state.isAfterHours,
+        },
+        error: error instanceof Error ? error.message : String(error),
+        code: (error as { code?: string })?.code,
+        details: (error as { details?: string })?.details,
+        hint: (error as { hint?: string })?.hint,
+      };
+
+      logger.error(`Error ${mode === 'create' ? 'creating' : 'updating'} event:`, errorDetails);
+
       setIsLoading(false);
       const err = error instanceof Error ? error : new Error('An unexpected error occurred');
       onError?.(err);
+
+      // Show more helpful error message to user
+      const userMessage = (error as { hint?: string })?.hint || (error as { details?: string })?.details || err.message;
       toast.error(`Failed to ${mode === 'create' ? 'create' : 'update'} event`, {
-        description: err.message,
+        description: userMessage,
+        duration: 8000, // Show longer for error messages
       });
       throw error; // Re-throw to allow caller to handle
     }
@@ -183,7 +220,7 @@ async function createTicketTiers(
     fee_pct_bps: 0,
   }));
 
-  const { error } = await supabase.from('ticket_tiers' as any).insert(tiersToInsert);
+  const { error } = await supabase.from('ticket_tiers').insert(tiersToInsert);
 
   if (error) throw error;
 }
@@ -194,7 +231,7 @@ async function updateTicketTiers(
 ) {
   // Fetch existing ticket tiers to check which ones have orders
   const { data: existingTiers, error: fetchError } = await supabase
-    .from('ticket_tiers' as any)
+    .from('ticket_tiers')
     .select('id')
     .eq('event_id', eventId);
 
@@ -202,10 +239,10 @@ async function updateTicketTiers(
 
   if (existingTiers && existingTiers.length > 0) {
     // For each existing tier, check if it has orders
-    const tierIds = existingTiers.map((t: any) => t.id);
+    const tierIds = existingTiers.map(t => t.id);
 
     const { data: ordersData, error: ordersError } = await supabase
-      .from('order_items' as any)
+      .from('order_items')
       .select('ticket_tier_id')
       .in('ticket_tier_id', tierIds);
 
@@ -213,17 +250,17 @@ async function updateTicketTiers(
 
     // Get set of tier IDs that have orders
     const tiersWithOrders = new Set(
-      ordersData?.map((item: any) => item.ticket_tier_id) || []
+      ordersData?.map(item => item.ticket_tier_id) || []
     );
 
     // Only delete tiers that don't have orders
     const tiersToDelete = existingTiers
-      .filter((tier: any) => !tiersWithOrders.has(tier.id))
-      .map((tier: any) => tier.id);
+      .filter(tier => !tiersWithOrders.has(tier.id))
+      .map(tier => tier.id);
 
     if (tiersToDelete.length > 0) {
       const { error: deleteError } = await supabase
-        .from('ticket_tiers' as any)
+        .from('ticket_tiers')
         .delete()
         .in('id', tiersToDelete);
 
@@ -241,7 +278,7 @@ async function updateTicketTiers(
   const existingTiersToUpdate = ticketTiers.filter((tier) => tier.id);
   for (const tier of existingTiersToUpdate) {
     const { error: updateError } = await supabase
-      .from('ticket_tiers' as any)
+      .from('ticket_tiers')
       .update({
         name: tier.name,
         description: tier.description || null,

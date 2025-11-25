@@ -119,7 +119,7 @@ class RolesStore {
       this.loaded = true;
       this.notify();
 
-      console.log(`Loaded ${this.roles.length} roles into store`);
+      logger.info('Loaded roles into store', { count: this.roles.length });
     } catch (error) {
       logger.error('Failed to load roles:', { error });
       throw error;

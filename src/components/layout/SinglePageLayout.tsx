@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { Navigation } from '@/components/navigation/Navigation';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import { FmBackButton } from '@/components/common/buttons/FmBackButton';
 
 interface SinglePageLayoutProps {
   children: ReactNode;
@@ -8,6 +9,12 @@ interface SinglePageLayoutProps {
   backgroundOpacity?: number;
   /** Optional additional classes for the main content container */
   className?: string;
+  /** Show back button in top-left (default: false) */
+  showBackButton?: boolean;
+  /** Custom back button click handler */
+  onBack?: () => void;
+  /** Text label for back button destination */
+  backButtonLabel?: string;
 }
 
 /**
@@ -25,6 +32,9 @@ export const SinglePageLayout = ({
   children,
   backgroundOpacity = 0.35,
   className = '',
+  showBackButton = false,
+  onBack,
+  backButtonLabel,
 }: SinglePageLayoutProps) => {
   return (
     <div className='min-h-screen bg-background flex flex-col'>
@@ -35,7 +45,16 @@ export const SinglePageLayout = ({
       >
         <TopographicBackground opacity={backgroundOpacity} />
         <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
-        <div className='relative z-10 h-full'>{children}</div>
+        <div className='relative z-10 h-full'>
+          {showBackButton && (
+            <FmBackButton
+              position='floating'
+              onClick={onBack}
+              label={backButtonLabel}
+            />
+          )}
+          {children}
+        </div>
       </main>
     </div>
   );

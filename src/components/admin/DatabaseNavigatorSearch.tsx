@@ -134,9 +134,9 @@ export function DatabaseNavigatorSearch() {
       // Search Events
       const { data: events } = await supabase
         .from('events')
-        .select('id, name, start_time')
+        .select('id, title, start_time')
         .gte('start_time', today)
-        .ilike('name', searchPattern)
+        .ilike('title', searchPattern)
         .order('start_time', { ascending: true })
         .limit(5);
 
@@ -180,7 +180,7 @@ export function DatabaseNavigatorSearch() {
         venues,
         events: (events || []).map(e => ({
           id: e.id,
-          title: e.name || '',
+          title: e.title || '',
           date: e.start_time || '',
         })),
       });

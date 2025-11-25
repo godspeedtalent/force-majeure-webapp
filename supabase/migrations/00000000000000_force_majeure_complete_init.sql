@@ -246,12 +246,13 @@ ALTER TABLE artists ENABLE ROW LEVEL SECURITY;
 
 CREATE TABLE IF NOT EXISTS events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name TEXT NOT NULL,
+  title TEXT NOT NULL,
   description TEXT,
   venue_id UUID REFERENCES venues(id),
-  start_time TEXT,
-  end_time TEXT,
+  start_time TIMESTAMPTZ,
+  end_time TIMESTAMPTZ,
   is_after_hours BOOLEAN DEFAULT false NOT NULL,
+  is_tba BOOLEAN DEFAULT false,
   organization_id UUID REFERENCES organizations(id) ON DELETE SET NULL,
   headliner_id UUID REFERENCES artists(id) ON DELETE SET NULL,
   test_data BOOLEAN NOT NULL DEFAULT false,
@@ -259,8 +260,11 @@ CREATE TABLE IF NOT EXISTS events (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-COMMENT ON COLUMN events.end_time IS 'End time for the event. NULL when is_after_hours is true';
+COMMENT ON COLUMN events.title IS 'Display title for the event (e.g., "Artist Name @ Venue Name")';
+COMMENT ON COLUMN events.start_time IS 'Event start date and time (TIMESTAMPTZ)';
+COMMENT ON COLUMN events.end_time IS 'Event end date and time (TIMESTAMPTZ). NULL when is_after_hours is true';
 COMMENT ON COLUMN events.is_after_hours IS 'When true, event has no end time (runs past closing/into morning)';
+COMMENT ON COLUMN events.is_tba IS 'Indicates if this event is a TBA (To Be Announced) placeholder';
 COMMENT ON COLUMN events.test_data IS 'Indicates if this event record was created for testing purposes';
 COMMENT ON COLUMN events.headliner_id IS 'Primary headliner artist for the event';
 

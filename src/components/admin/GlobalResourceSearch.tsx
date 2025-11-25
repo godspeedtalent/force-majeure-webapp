@@ -171,9 +171,9 @@ export function GlobalResourceSearch({
       // Search Events
       const { data: events } = await supabase
         .from('events')
-        .select('id, name, start_time')
+        .select('id, title, start_time')
         .gte('start_time', today)
-        .ilike('name', searchPattern)
+        .ilike('title', searchPattern)
         .order('start_time', { ascending: true })
         .limit(5);
 

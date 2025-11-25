@@ -50,7 +50,7 @@ export function FmQueueWaitingView({
           />
           <div className='flex-1'>
             <h1 className='text-2xl font-canela text-white mb-[5px]'>
-              {event.name}
+              {event.title}
             </h1>
             {event.venue && (
               <p className='text-sm text-muted-foreground font-canela'>

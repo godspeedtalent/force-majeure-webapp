@@ -1,10 +1,14 @@
 import { cn } from '@/shared/utils/utils';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import { FmBackButton } from '@/components/common/buttons/FmBackButton';
 
 interface EventDetailsLayoutProps {
   leftColumn: React.ReactNode;
   rightColumn: React.ReactNode;
   className?: string;
+  showBackButton?: boolean;
+  onBack?: () => void;
+  backButtonLabel?: string;
 }
 
 /**
@@ -22,6 +26,9 @@ export function EventDetailsLayout({
   leftColumn,
   rightColumn,
   className,
+  showBackButton = false,
+  onBack,
+  backButtonLabel,
 }: EventDetailsLayoutProps) {
   return (
     <div className={cn('min-h-[calc(100vh-4rem)] bg-background', className)}>
@@ -37,7 +44,16 @@ export function EventDetailsLayout({
             <TopographicBackground opacity={0.35} />
             <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
           </div>
-          <div className='relative w-full magazine-content'>{rightColumn}</div>
+          <div className='relative w-full magazine-content'>
+            {showBackButton && (
+              <FmBackButton
+                position='floating'
+                onClick={onBack}
+                label={backButtonLabel}
+              />
+            )}
+            {rightColumn}
+          </div>
         </div>
       </div>
     </div>

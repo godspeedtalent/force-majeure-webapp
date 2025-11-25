@@ -42,7 +42,7 @@ const DeveloperCreateVenuePage = () => {
         city: formData.city.trim() || null,
         state: formData.state.trim().toUpperCase() || null,
         zip_code: formData.zip_code.trim() || null,
-        capacity: formData.capacity ? parseInt(formData.capacity) : null,
+        capacity: formData.capacity !== '' ? parseInt(formData.capacity, 10) : null,
         image_url: formData.image_url.trim() || null,
       }).select().single();
 

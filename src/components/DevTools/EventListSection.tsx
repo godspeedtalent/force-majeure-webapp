@@ -44,7 +44,7 @@ export const EventListSection = () => {
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(event => {
-        const name = event.name?.toLowerCase() || '';
+        const name = event.title?.toLowerCase() || '';
         const venueName = (event as any).venue?.name?.toLowerCase() || '';
         const headlinerName =
           (event as any).headliner?.name?.toLowerCase() || '';

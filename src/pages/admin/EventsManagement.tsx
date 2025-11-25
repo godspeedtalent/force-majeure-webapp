@@ -87,36 +87,41 @@ export const EventsManagement = () => {
     }),
     {
       ...DataGridColumns.date({
-        key: 'date',
+        key: 'start_time',
         label: 'Date',
         format: 'short',
         sortable: true,
       }),
       filterable: true,
     },
-    DataGridColumns.text({
-      key: 'time',
+    {
+      key: 'event_time',
       label: 'Time',
+      sortable: false,
+      render: (_value: any, row: any) => {
+        if (!row.start_time) return '—';
+        const date = new Date(row.start_time);
+        return date.toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true,
+        });
+      },
+    },
+    DataGridColumns.relation({
+      key: 'venue_id',
+      label: 'Venue',
       sortable: true,
+      getLabel: (row: any) => row.venue?.name || '—',
+      getHref: (row: any) => row.venue_id ? `/venue/${row.venue_id}` : '#',
     }),
-    {
-      ...DataGridColumns.relation({
-        key: 'venue_id',
-        label: 'Venue',
-        sortable: true,
-      }),
-      editable: true,
-      filterable: true,
-    },
-    {
-      ...DataGridColumns.relation({
-        key: 'headliner_id',
-        label: 'Headliner',
-        sortable: true,
-      }),
-      editable: true,
-      filterable: true,
-    },
+    DataGridColumns.relation({
+      key: 'headliner_id',
+      label: 'Headliner',
+      sortable: true,
+      getLabel: (row: any) => row.headliner?.name || '—',
+      getHref: (row: any) => row.headliner_id ? `/artist/${row.headliner_id}` : '#',
+    }),
   ];
 
   const contextMenuActions: DataGridAction[] = [

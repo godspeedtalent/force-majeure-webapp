@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { Navigation } from '@/components/navigation/Navigation';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import { FmBackButton } from '@/components/common/buttons/FmBackButton';
 import { cn } from '@/shared/utils/utils';
 
 interface DemoLayoutProps {
@@ -11,6 +12,9 @@ interface DemoLayoutProps {
   children: ReactNode;
   demoTools?: ReactNode;
   condensed?: boolean;
+  showBackButton?: boolean;
+  onBack?: () => void;
+  backButtonLabel?: string;
 }
 
 export const DemoLayout = ({
@@ -20,6 +24,9 @@ export const DemoLayout = ({
   children,
   demoTools: _demoTools,
   condensed = false,
+  showBackButton = true,
+  onBack,
+  backButtonLabel = 'Database',
 }: DemoLayoutProps) => {
   return (
     <>
@@ -29,6 +36,13 @@ export const DemoLayout = ({
         <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
 
         <div className='container mx-auto pt-24 pb-8 px-4 relative z-10'>
+          {showBackButton && (
+            <FmBackButton
+              position='floating'
+              onClick={onBack}
+              label={backButtonLabel}
+            />
+          )}
           <div className={cn('mx-auto', condensed ? 'max-w-4xl' : 'max-w-7xl')}>
             {/* Header - Single Row */}
             <div className='mb-4'>

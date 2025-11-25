@@ -96,6 +96,22 @@ export function EventDetailsFormSection({
         </p>
       </div>
 
+      <div className='space-y-1'>
+        <div className='flex items-center gap-2'>
+          <Checkbox
+            id='tba-event'
+            checked={state.isTba}
+            onCheckedChange={checked => actions.setIsTba(checked === true)}
+          />
+          <Label htmlFor='tba-event' className='text-white/70 cursor-pointer'>
+            TBA Event (To Be Announced)
+          </Label>
+        </div>
+        <p className='text-xs text-white/50 ml-6'>
+          Check this for placeholder events. TBA events can still have a venue and date assigned.
+        </p>
+      </div>
+
       <div className='space-y-2'>
         <Label className='text-white'>
           Venue <span className='text-fm-danger'>*</span>

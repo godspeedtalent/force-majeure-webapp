@@ -30,6 +30,7 @@ export interface FmDataGridCellProps<T> {
   isDragMode: boolean;
   focusableProps?: any;
   frozenLeft?: number; // Left position if column is frozen
+  columnWidths?: Record<string, number>; // Column widths for alignment
 }
 
 export function FmDataGridCell<T extends Record<string, any>>({
@@ -47,6 +48,7 @@ export function FmDataGridCell<T extends Record<string, any>>({
   isDragMode,
   focusableProps = {},
   frozenLeft,
+  columnWidths = {},
 }: FmDataGridCellProps<T>) {
   const relationConfig = isRelationField(column.key)
     ? getRelationConfig(column.key)
@@ -72,15 +74,24 @@ export function FmDataGridCell<T extends Record<string, any>>({
         // Allow column-specific className overrides (e.g., p-0 for images)
         column.cellClassName
       )}
-      style={
-        column.frozen && frozenLeft !== undefined
+      style={{
+        ...(columnWidths[column.key]
+          ? {
+              width: `${columnWidths[column.key]}px`,
+              minWidth: `${columnWidths[column.key]}px`,
+              maxWidth: `${columnWidths[column.key]}px`,
+            }
+          : column.width
+          ? { width: column.width }
+          : {}),
+        ...(column.frozen && frozenLeft !== undefined
           ? {
               position: 'sticky',
               left: `${frozenLeft}px`,
               zIndex: 10,
             }
-          : undefined
-      }
+          : {}),
+      }}
       {...(column.editable && !column.readonly && onUpdate ? focusableProps : {})}
       onMouseEnter={() => {}}
       onMouseLeave={() => {}}

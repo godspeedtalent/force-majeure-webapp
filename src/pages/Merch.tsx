@@ -5,7 +5,7 @@ import { logger } from '@/shared/services/logger';
 
 import { FmCommonEmptyState } from '@/components/common/display/FmCommonEmptyState';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
-import { ForceMajeureRootLayout } from '@/components/layout/ForceMajeureRootLayout';
+import { Layout } from '@/components/layout/Layout';
 import { Badge } from '@/components/common/shadcn/badge';
 import { Button } from '@/components/common/shadcn/button';
 import {
@@ -94,16 +94,16 @@ export default function Merch() {
 
   if (loading) {
     return (
-      <ForceMajeureRootLayout>
+      <Layout>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12'>
           <FmCommonLoadingState message='Loading merchandise...' />
         </div>
-      </ForceMajeureRootLayout>
+      </Layout>
     );
   }
 
   return (
-    <ForceMajeureRootLayout>
+    <Layout>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in'>
         {/* Header */}
         <div className='text-center mb-12'>
@@ -190,6 +190,6 @@ export default function Merch() {
           </div>
         )}
       </div>
-    </ForceMajeureRootLayout>
+    </Layout>
   );
 }

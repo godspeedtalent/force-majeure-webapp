@@ -31,12 +31,12 @@ export function FmEventSearchDropdown({
     if (value) {
       supabase
         .from('events')
-        .select('name')
+        .select('title')
         .eq('id', value)
         .maybeSingle()
         .then(({ data }) => {
           if (data) {
-            setSelectedEvent({ title: data.name });
+            setSelectedEvent({ title: data.title });
           }
         });
     } else {
@@ -52,7 +52,7 @@ export function FmEventSearchDropdown({
       .select(
         `
         id,
-        name,
+        title,
         start_time,
         headliner:headliner_id (
           id,
@@ -121,15 +121,15 @@ export function FmEventSearchDropdown({
 
     return filtered.slice(0, 10).map((event: any) => {
       const headlinerImage = event.headliner?.image_url;
-      const eventName = event.name || 'Untitled Event';
+      const eventTitle = event.title || 'Untitled Event';
 
       return {
         id: event.id,
-        label: `${eventName} - ${new Date(event.start_time).toLocaleDateString()}`,
+        label: `${eventTitle} - ${new Date(event.start_time).toLocaleDateString()}`,
         icon: headlinerImage ? (
           <img
             src={headlinerImage}
-            alt={eventName}
+            alt={eventTitle}
             className='h-8 w-8 rounded-full object-cover'
           />
         ) : (
