@@ -46,9 +46,6 @@ export const EventHero = ({
         <div className='absolute inset-0 animate-pulse bg-gradient-to-br from-muted via-muted-foreground/10 to-muted' />
       )}
 
-      {/* Gradient overlay only on desktop */}
-      <div className='hidden lg:block absolute inset-0 bg-gradient-to-b from-black/45 via-black/15 to-transparent' />
-
       {/* Fixed buttons on mobile, absolute on desktop */}
       <div className='fixed lg:absolute top-6 left-6 right-6 lg:inset-0 lg:p-10 flex justify-between lg:flex-col lg:justify-between z-50 lg:z-auto pointer-events-none'>
         <div className='flex gap-2 pointer-events-auto'>
