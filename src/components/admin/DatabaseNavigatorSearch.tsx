@@ -128,9 +128,6 @@ export function DatabaseNavigatorSearch() {
         }).filter(u => u.email); // Only include users with email
       }
 
-      // Get today's date for upcoming events filter
-      const today = new Date().toISOString();
-
       // Search Artists
       const { data: artists } = await supabase
         .from('artists')

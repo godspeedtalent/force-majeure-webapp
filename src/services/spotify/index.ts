@@ -5,4 +5,3 @@
  */
 
 export * from './spotifyApiService';
-export * from './spotifyArtistService';

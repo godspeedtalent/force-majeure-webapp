@@ -9,7 +9,6 @@ import { FmFlexibleImageUpload } from '@/components/common/forms/FmFlexibleImage
 import { FmFormFieldGroup } from '@/components/common/forms/FmFormFieldGroup';
 import { FmGenreMultiSelect } from '@/features/artists/components/FmGenreMultiSelect';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { FmSpotifyArtistImportModal } from '@/components/common/modals/FmSpotifyArtistImportModal';
 import { SpotifyIcon } from '@/components/common/icons/SpotifyIcon';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
@@ -116,12 +115,12 @@ const DeveloperCreateArtistPage = () => {
         <FmCommonButton
           type='button'
           variant='default'
-          icon={SpotifyIcon}
           iconPosition='left'
           onClick={() => setShowSpotifyImport(true)}
           disabled={isSubmitting}
           className='text-[#1DB954]'
         >
+          <SpotifyIcon className='h-4 w-4 mr-2' />
           Import Artist from Spotify
         </FmCommonButton>
       </div>
@@ -197,11 +196,17 @@ const DeveloperCreateArtistPage = () => {
       </FmFormFieldGroup>
     </FmCommonCreateForm>
 
-      {/* Spotify Import Modal */}
-      <FmSpotifyArtistImportModal
-        open={showSpotifyImport}
-        onOpenChange={setShowSpotifyImport}
-      />
+      {/* Spotify Import Disabled */}
+      {showSpotifyImport && (
+        <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
+          <div className='bg-card p-6 rounded-lg'>
+            <p className='text-foreground'>Spotify import functionality has been temporarily disabled.</p>
+            <FmCommonButton onClick={() => setShowSpotifyImport(false)} className='mt-4'>
+              Close
+            </FmCommonButton>
+          </div>
+        </div>
+      )}
     </>
   );
 };

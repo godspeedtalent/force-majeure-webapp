@@ -274,7 +274,7 @@ export default function EventManagement() {
     if (!id || !event) return;
 
     const confirmed = window.confirm(
-      `Are you sure you want to delete "${event.title}"?\n\nThis action cannot be undone. All ticket tiers and orders associated with this event will also be deleted.`
+      `Are you sure you want to delete "${event.name}"?\n\nThis action cannot be undone. All ticket tiers and orders associated with this event will also be deleted.`
     );
 
     if (!confirmed) return;
@@ -350,7 +350,7 @@ export default function EventManagement() {
         {/* Header */}
         <div className='mb-6'>
           <h1 className='text-3xl font-bold text-foreground'>
-            {event.title}
+            {event.name}
           </h1>
           <p className='text-muted-foreground'>Event Management</p>
         </div>

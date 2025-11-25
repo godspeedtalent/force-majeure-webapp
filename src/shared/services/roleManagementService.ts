@@ -1,7 +1,6 @@
 import { supabase } from '@/shared/api/supabase/client';
 import { logger } from '@/shared/services/logger';
 import { handleError } from '@/shared/services/errorHandler';
-import type { TablesInsert, Enums } from '@/integrations/supabase/types';
 
 const roleLogger = logger.createNamespace('RoleManagement');
 
@@ -40,15 +39,14 @@ export class RoleManagementService {
       }
 
       // Insert the user_role relationship
-      const payload: TablesInsert<'user_roles'> = {
+      const payload = {
         user_id: userId,
         role_id: roleData.id,
-        role: roleName as Enums<'app_role'>,
       };
 
       const { error: insertError } = await supabase
         .from('user_roles')
-        .insert(payload);
+        .insert([payload] as any);
 
       if (insertError) {
         roleLogger.error('Failed to add role to user', {

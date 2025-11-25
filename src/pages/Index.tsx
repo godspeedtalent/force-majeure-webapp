@@ -127,7 +127,7 @@ const Index = () => {
 
           return {
             id: event.id,
-            title: event.title,
+            title: event.name,
             headliner: event.headliner_artist
               ? {
                   name: event.headliner_artist.name,
@@ -146,7 +146,7 @@ const Index = () => {
             heroImage: getImageUrl(null),
             description: event.description || null,
             ticketUrl: null,
-            is_tba: event.is_tba || false,
+            is_tba: (event as any).is_tba ?? false,
           };
         });
         setUpcomingEvents(transformedEvents);
