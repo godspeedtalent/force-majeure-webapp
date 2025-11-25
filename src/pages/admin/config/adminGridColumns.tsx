@@ -44,15 +44,25 @@ async function updateUserAvatar(row: any, newImageUrl: string) {
 
 /**
  * Update venue image URL in the database
- * TODO: Uncomment when venues table is added to database schema
  */
-async function updateVenueImage(row: any, _newImageUrl: string) {
-  // Venues table not yet in schema - this is a placeholder
-  logger.warn('Venue image update not implemented - venues table missing', {
-    venueId: row.id,
-  });
-  toast.error('Venue image updates not yet supported');
-  throw new Error('Venues table not in database schema');
+async function updateVenueImage(row: any, newImageUrl: string) {
+  try {
+    const { error } = await supabase
+      .from('venues')
+      .update({ image_url: newImageUrl })
+      .eq('id', row.id);
+
+    if (error) throw error;
+    toast.success('Venue image updated');
+  } catch (error) {
+    logger.error('Failed to update venue image', { 
+      error: error instanceof Error ? error.message : 'Unknown error',
+      source: 'adminGridColumns',
+      details: { venueId: row.id }
+    });
+    toast.error('Failed to update venue image');
+    throw error;
+  }
 }
 
 /**
@@ -196,12 +206,16 @@ export const venueColumns: DataGridColumn[] = [
     sortable: true,
     getLabel: (row: any) => row.city || '—',
   }),
-  DataGridColumns.text({
-    key: 'address',
+  DataGridColumns.address({
+    keys: {
+      line1: 'address_line_1',
+      line2: 'address_line_2',
+      city: 'city',
+      state: 'state',
+      zipCode: 'zip_code',
+    },
     label: 'Address',
     sortable: true,
-    filterable: true,
-    editable: true,
   }),
   {
     key: 'capacity',
