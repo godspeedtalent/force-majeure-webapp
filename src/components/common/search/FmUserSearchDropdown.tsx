@@ -5,15 +5,16 @@ interface UserProfile {
   id: string;
   user_id: string;
   display_name: string | null;
+  full_name: string | null;
   avatar_url: string | null;
 }
 
 export const FmUserSearchDropdown = createSearchDropdown<UserProfile>({
   tableName: 'profiles',
   searchField: 'display_name',
-  selectFields: 'id, user_id, display_name, avatar_url',
+  selectFields: 'id, user_id, display_name, full_name, avatar_url',
   formatLabel: profile =>
-    profile.display_name || profile.user_id || 'Unknown User',
+    profile.full_name || profile.display_name || profile.user_id || 'Unknown User',
   formatValue: profile => profile.user_id, // Return user_id instead of profile id
   valueField: 'user_id', // Use user_id for lookups instead of id
   renderIcon: profile =>
