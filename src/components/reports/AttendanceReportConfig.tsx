@@ -1,5 +1,5 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import { Button } from '@/components/common/shadcn/button';
 
 interface AttendanceReportConfigProps {
   eventId?: string;

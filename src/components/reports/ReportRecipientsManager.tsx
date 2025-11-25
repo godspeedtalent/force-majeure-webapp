@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Button } from '@/components/common/shadcn/button';
+import { Input } from '@/components/common/shadcn/input';
+import { Label } from '@/components/common/shadcn/label';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/common/shadcn/table';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
@@ -22,13 +22,13 @@ export const ReportRecipientsManager = ({ configId }: ReportRecipientsManagerPro
     queryKey: ['report-recipients', configId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('report_recipients')
+        .from('report_recipients' as any)
         .select('*')
         .eq('report_config_id', configId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as ReportRecipient[];
+      return data as unknown as ReportRecipient[];
     },
   });
 
@@ -37,7 +37,7 @@ export const ReportRecipientsManager = ({ configId }: ReportRecipientsManagerPro
       if (!newEmail) throw new Error('Email is required');
 
       const { error } = await supabase
-        .from('report_recipients')
+        .from('report_recipients' as any)
         .insert({
           report_config_id: configId,
           email: newEmail,
@@ -60,7 +60,7 @@ export const ReportRecipientsManager = ({ configId }: ReportRecipientsManagerPro
   const removeRecipientMutation = useMutation({
     mutationFn: async (recipientId: string) => {
       const { error } = await supabase
-        .from('report_recipients')
+        .from('report_recipients' as any)
         .delete()
         .eq('id', recipientId);
 
