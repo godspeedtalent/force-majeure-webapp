@@ -22,6 +22,7 @@ import { EventArtistManagement } from '@/components/events/artists/EventArtistMa
 import { EventTicketTierManagement } from '@/components/events/ticketing/EventTicketTierManagement';
 import { EventOrderManagement } from '@/components/events/orders';
 import { EventAnalytics } from '@/components/events/analytics';
+import Reports from './Reports';
 
 
 import { toast } from 'sonner';
@@ -40,7 +41,7 @@ import { ROLES } from '@/shared/auth/permissions';
 import { handleError } from '@/shared/services/errorHandler';
 import { AdminLockIndicator } from '@/components/common/indicators';
 
-type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'admin';
+type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'reports' | 'admin';
 
 export default function EventManagement() {
   const { id } = useParams<{ id: string }>();
@@ -157,6 +158,12 @@ export default function EventManagement() {
           icon: DollarSign,
           description: 'Revenue and sales analytics',
         },
+        {
+          id: 'reports',
+          label: 'Reports',
+          icon: FileText,
+          description: 'Scheduled reports and email delivery',
+        },
       ],
     },
     ...(isAdmin
@@ -185,6 +192,7 @@ export default function EventManagement() {
     { id: 'tiers', label: 'Tiers', icon: Ticket },
     { id: 'orders', label: 'Orders', icon: ShoppingBag },
     { id: 'sales', label: 'Sales', icon: DollarSign },
+    { id: 'reports', label: 'Reports', icon: FileText },
     ...(isAdmin ? [{ id: 'admin' as EventTab, label: 'Admin', icon: Shield }] : []),
   ];
 
@@ -524,6 +532,10 @@ export default function EventManagement() {
 
           {activeTab === 'sales' && id && (
             <EventAnalytics eventId={id} />
+          )}
+
+          {activeTab === 'reports' && id && (
+            <Reports />
           )}
 
           {activeTab === 'admin' && isAdmin && (
