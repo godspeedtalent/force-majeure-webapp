@@ -13,6 +13,7 @@ import {
   Shield,
   Trash2,
   Link2,
+  Eye,
 } from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
@@ -44,7 +45,7 @@ import { ROLES } from '@/shared/auth/permissions';
 import { handleError } from '@/shared/services/errorHandler';
 import { AdminLockIndicator } from '@/components/common/indicators';
 
-type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'reports' | 'tracking' | 'admin';
+type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'reports' | 'tracking' | 'admin' | 'view';
 
 export default function EventManagement() {
   const { id } = useParams<{ id: string }>();
@@ -132,6 +133,12 @@ export default function EventManagement() {
       icon: Calendar,
       items: [
         {
+          id: 'view',
+          label: 'View Event',
+          icon: Eye,
+          description: 'View event details page',
+        },
+        {
           id: 'overview',
           label: 'Overview',
           icon: FileText,
@@ -208,6 +215,7 @@ export default function EventManagement() {
 
   // Mobile bottom tabs configuration
   const mobileTabs: MobileBottomTab[] = [
+    { id: 'view', label: 'View', icon: Eye },
     { id: 'overview', label: 'Overview', icon: FileText },
     { id: 'artists', label: 'Artists', icon: Users },
     { id: 'tiers', label: 'Tiers', icon: Ticket },
@@ -378,7 +386,13 @@ export default function EventManagement() {
     <SideNavbarLayout
       navigationGroups={navigationGroups}
       activeItem={activeTab}
-      onItemChange={setActiveTab}
+      onItemChange={(tab) => {
+        if (tab === 'view') {
+          navigate(`/event/${id}`);
+        } else {
+          setActiveTab(tab);
+        }
+      }}
       showDividers
       showBackButton
       onBack={() => navigate(`/event/${id}`)}
@@ -387,7 +401,13 @@ export default function EventManagement() {
         <MobileBottomTabBar
           tabs={mobileTabs}
           activeTab={activeTab}
-          onTabChange={tab => setActiveTab(tab as EventTab)}
+          onTabChange={tab => {
+            if (tab === 'view') {
+              navigate(`/event/${id}`);
+            } else {
+              setActiveTab(tab as EventTab);
+            }
+          }}
         />
       }
     >
