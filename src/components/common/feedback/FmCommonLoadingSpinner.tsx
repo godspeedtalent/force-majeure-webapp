@@ -1,4 +1,3 @@
-import { Loader2 } from 'lucide-react';
 import { cn } from '@/shared/utils/utils';
 
 interface FmCommonLoadingSpinnerProps {
@@ -11,14 +10,18 @@ export function FmCommonLoadingSpinner({
   className,
 }: FmCommonLoadingSpinnerProps) {
   const sizeClasses = {
-    sm: 'h-4 w-4',
-    md: 'h-6 w-6',
-    lg: 'h-8 w-8',
+    sm: 'h-4 w-4 border-2',
+    md: 'h-6 w-6 border-[3px]',
+    lg: 'h-8 w-8 border-4',
   };
 
   return (
-    <Loader2
-      className={cn('animate-spin text-fm-gold', sizeClasses[size], className)}
+    <div
+      className={cn(
+        'animate-spin rounded-full border-fm-gold border-b-transparent',
+        sizeClasses[size],
+        className
+      )}
     />
   );
 }

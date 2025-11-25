@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Upload, X, ImageIcon, Loader2 } from 'lucide-react';
+import { Upload, X, ImageIcon } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { imageUploadService } from '@/shared/services/imageUploadService';
@@ -202,7 +202,7 @@ export const FmImageUpload = ({
         >
           {uploading ? (
             <>
-              <Loader2 className='mb-4 h-12 w-12 animate-spin text-fm-gold' />
+              <div className='mb-4 h-12 w-12 animate-spin rounded-full border-4 border-fm-gold border-b-transparent' />
               <p className='text-sm text-muted-foreground'>Uploading...</p>
             </>
           ) : (

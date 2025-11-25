@@ -1,5 +1,4 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Loader2 } from 'lucide-react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 
@@ -79,7 +78,7 @@ const queryClient = new QueryClient();
 // Loading fallback for lazy-loaded components
 const LazyLoadFallback = () => (
   <div className='min-h-screen flex items-center justify-center bg-background'>
-    <Loader2 className='w-8 h-8 animate-spin text-fm-gold' />
+    <div className='animate-spin rounded-full h-8 w-8 border-[3px] border-fm-gold border-b-transparent' />
   </div>
 );
 
@@ -94,7 +93,7 @@ const AppRoutes = () => {
   if (isLoading) {
     return (
       <div className='min-h-screen flex items-center justify-center bg-background'>
-        <Loader2 className='w-8 h-8 animate-spin text-fm-gold' />
+        <div className='animate-spin rounded-full h-8 w-8 border-[3px] border-fm-gold border-b-transparent' />
       </div>
     );
   }

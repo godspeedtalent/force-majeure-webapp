@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Upload, X, ImageIcon, Loader2, Link as LinkIcon } from 'lucide-react';
+import { Upload, X, ImageIcon, Link as LinkIcon } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
@@ -283,7 +283,7 @@ export const FmFlexibleImageUpload = ({
                 {/* Upload progress overlay */}
                 {isUploading && (
                   <div className='absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm'>
-                    <Loader2 className='mb-3 h-12 w-12 animate-spin text-fm-gold' />
+                    <div className='mb-3 h-12 w-12 animate-spin rounded-full border-4 border-fm-gold border-b-transparent' />
                     <p className='text-sm font-medium text-white'>
                       {uploadState === 'compressing'
                         ? 'Compressing image...'

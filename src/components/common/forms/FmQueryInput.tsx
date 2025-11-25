@@ -1,7 +1,7 @@
 import { useState, forwardRef } from 'react';
 import { Input } from '@/components/common/shadcn/input';
 import { Button } from '@/components/common/shadcn/button';
-import { Loader2, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { cn } from '@/shared/utils/utils';
 
 interface FmQueryInputProps {
@@ -58,7 +58,7 @@ export const FmQueryInput = forwardRef<HTMLInputElement, FmQueryInputProps>(
           />
           {isProcessing && (
             <div className='absolute right-2 top-1/2 -translate-y-1/2'>
-              <Loader2 className='h-3 w-3 animate-spin text-muted-foreground' />
+              <div className='h-3 w-3 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
             </div>
           )}
         </div>

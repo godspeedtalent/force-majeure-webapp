@@ -2,7 +2,6 @@ import { forwardRef, useState, useCallback } from 'react';
 import { Button } from '@/components/common/shadcn/button';
 import { cn } from '@/shared/utils/utils';
 import { LucideIcon, Plus } from 'lucide-react';
-import { Loader2 } from 'lucide-react';
 import { useRipple } from '@/hooks/useRipple';
 import {
   Tooltip,
@@ -117,7 +116,7 @@ export const FmCommonIconButton = forwardRef<
       >
         <>
           {loading ? (
-            <Loader2 className={cn('animate-spin', iconSizeClasses[size])} />
+            <div className={cn('animate-spin rounded-full border-2 border-fm-gold border-b-transparent', iconSizeClasses[size])} />
           ) : (
             <div className='relative flex items-center justify-center w-full h-full'>
               <Icon

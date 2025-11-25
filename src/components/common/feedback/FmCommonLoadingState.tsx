@@ -5,8 +5,6 @@
  * Can be centered in container or inline.
  */
 
-import { Loader2 } from 'lucide-react';
-
 import { cn } from '@/shared/utils/utils';
 
 interface FmCommonLoadingStateProps {
@@ -21,9 +19,9 @@ interface FmCommonLoadingStateProps {
 }
 
 const sizeMap = {
-  sm: 'w-4 h-4',
-  md: 'w-8 h-8',
-  lg: 'w-12 h-12',
+  sm: 'w-4 h-4 border-2',
+  md: 'w-8 h-8 border-[3px]',
+  lg: 'w-12 h-12 border-4',
 };
 
 export const FmCommonLoadingState = ({
@@ -34,8 +32,11 @@ export const FmCommonLoadingState = ({
 }: FmCommonLoadingStateProps) => {
   const content = (
     <div className={cn('text-center', className)}>
-      <Loader2
-        className={cn(sizeMap[size], 'animate-spin text-fm-gold mx-auto mb-4')}
+      <div
+        className={cn(
+          sizeMap[size],
+          'animate-spin rounded-full border-fm-gold border-b-transparent mx-auto mb-4'
+        )}
       />
       {message && <p className='text-sm text-muted-foreground'>{message}</p>}
     </div>

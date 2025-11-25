@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { logger } from '@/shared/services/logger';
-import { Upload, X, Loader2, ImageIcon } from 'lucide-react';
+import { Upload, X, ImageIcon } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -287,7 +287,7 @@ export function FmDataGridImageUploadModal({
           >
             {isUploading ? (
               <div className='flex items-center gap-2 whitespace-nowrap'>
-                <Loader2 className='h-4 w-4 animate-spin' />
+                <div className='h-4 w-4 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
                 <span>Uploading...</span>
               </div>
             ) : (
