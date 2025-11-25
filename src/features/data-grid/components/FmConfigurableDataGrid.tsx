@@ -131,9 +131,9 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
         .select('config')
         .eq('user_id', user.id)
         .eq('grid_id', gridId)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         logger.error('Error loading grid config:', error);
       }
 
