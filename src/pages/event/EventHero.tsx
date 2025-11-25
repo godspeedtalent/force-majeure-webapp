@@ -23,7 +23,7 @@ export const EventHero = ({
 
   return (
     <div
-      className='relative h-full'
+      className='relative h-full max-h-[40vh] lg:max-h-none'
       style={{ viewTransitionName: `magazine-hero-${event.id}` }}
     >
       <img
@@ -42,8 +42,9 @@ export const EventHero = ({
 
       <div className='absolute inset-0 bg-gradient-to-b from-black/45 via-black/15 to-transparent' />
 
-      <div className='absolute inset-0 p-6 lg:p-10 flex flex-col justify-between'>
-        <div className='flex gap-2'>
+      {/* Fixed buttons on mobile, absolute on desktop */}
+      <div className='fixed lg:absolute top-6 left-6 lg:inset-0 lg:p-10 flex flex-col justify-between z-50 lg:z-auto pointer-events-none'>
+        <div className='flex gap-2 pointer-events-auto'>
           <FmCommonButton
             variant='secondary'
             size='sm'
