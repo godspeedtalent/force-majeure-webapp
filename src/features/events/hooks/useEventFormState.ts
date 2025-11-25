@@ -22,6 +22,8 @@ export interface TicketTier {
 }
 
 export interface EventFormState {
+  title: string;
+  subtitle: string;
   headlinerId: string;
   eventDate: Date | undefined;
   endTime: string;
@@ -35,6 +37,8 @@ export interface EventFormState {
 }
 
 export interface EventFormActions {
+  setTitle: (title: string) => void;
+  setSubtitle: (subtitle: string) => void;
   setHeadlinerId: (id: string) => void;
   setEventDate: (date: Date | undefined) => void;
   setEndTime: (time: string) => void;
@@ -57,6 +61,8 @@ export interface EventFormActions {
  * @param initialState - Optional initial state for editing existing events
  */
 export function useEventFormState(initialState?: Partial<EventFormState>) {
+  const [title, setTitle] = useState<string>(initialState?.title || '');
+  const [subtitle, setSubtitle] = useState<string>(initialState?.subtitle || '');
   const [headlinerId, setHeadlinerId] = useState<string>(initialState?.headlinerId || '');
   const [eventDate, setEventDate] = useState<Date | undefined>(initialState?.eventDate);
   const [endTime, setEndTime] = useState<string>(initialState?.endTime || '02:00');
@@ -112,6 +118,8 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
 
   // Reset form helper
   const resetForm = useCallback(() => {
+    setTitle('');
+    setSubtitle('');
     setHeadlinerId('');
     setEventDate(undefined);
     setEndTime('02:00');
@@ -125,6 +133,8 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
   }, []);
 
   const state: EventFormState = {
+    title,
+    subtitle,
     headlinerId,
     eventDate,
     endTime,
@@ -138,6 +148,8 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
   };
 
   const actions: EventFormActions = {
+    setTitle,
+    setSubtitle,
     setHeadlinerId,
     setEventDate,
     setEndTime,

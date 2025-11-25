@@ -68,8 +68,8 @@ export default function EventManagement() {
   const [heroImage, setHeroImage] = useState<string>('');
   const [heroImageFocalY, setHeroImageFocalY] = useState<number>(50);
   const [isSaving, setIsSaving] = useState(false);
-  const [hasCustomTitle, setHasCustomTitle] = useState(false);
   const [customTitle, setCustomTitle] = useState<string>('');
+  const [eventSubtitle, setEventSubtitle] = useState<string>('');
   const [orderCount, setOrderCount] = useState(0);
 
   // Fetch event data
@@ -106,11 +106,9 @@ export default function EventManagement() {
       setHeroImage((event as any).hero_image || '');
       setHeroImageFocalY((event as any).hero_image_focal_y ?? 50);
 
-      // Check if event has a custom title
-      if (event.name) {
-        setCustomTitle(event.name);
-        setHasCustomTitle(false);
-      }
+      // Set title and subtitle
+      setCustomTitle((event as any).title || event.name || '');
+      setEventSubtitle(event.description || '');
 
       // Parse date and time from start_time
       if (event.start_time) {
@@ -239,6 +237,11 @@ export default function EventManagement() {
   ];
 
   const handleSaveOverview = async () => {
+    if (!customTitle.trim()) {
+      toast.error('Please provide an event title');
+      return;
+    }
+    
     if (!headlinerId || !venueId || !eventDate) {
       toast.error('Please fill in all required fields');
       return;
@@ -246,37 +249,11 @@ export default function EventManagement() {
 
     setIsSaving(true);
     try {
-      // Determine the event title
-      let eventTitle: string;
-
-      if (hasCustomTitle && customTitle.trim()) {
-        // Use custom title if checkbox is checked and title is provided
-        eventTitle = customTitle.trim();
-      } else {
-        // Auto-generate title from headliner @ venue
-        const [headlinerRes, venueRes] = await Promise.all([
-          supabase
-            .from('artists')
-            .select('name')
-            .eq('id', headlinerId)
-            .maybeSingle(),
-          supabase
-            .from('venues' as any)
-            .select('name')
-            .eq('id', venueId)
-            .maybeSingle(),
-        ]);
-
-        eventTitle =
-          headlinerRes.data && venueRes.data
-            ? `${(headlinerRes.data as any).name} @ ${(venueRes.data as any).name}`
-            : (headlinerRes.data as any)?.name || 'Event';
-      }
-
       const { error } = await supabase
         .from('events')
         .update({
-          title: eventTitle,
+          title: customTitle.trim(),
+          description: eventSubtitle.trim() || null,
           headliner_id: headlinerId,
           venue_id: venueId,
           start_time: eventDate.toISOString(),
@@ -527,34 +504,29 @@ export default function EventManagement() {
                     />
                   </div>
 
-                  {/* Custom Event Title */}
-                  <div className='space-y-2 md:col-span-2'>
-                    <div className='flex items-center gap-2 mb-2'>
-                      <Checkbox
-                        id='custom-title'
-                        checked={hasCustomTitle}
-                        onCheckedChange={checked =>
-                          setHasCustomTitle(!!checked)
-                        }
-                      />
-                      <Label htmlFor='custom-title' className='cursor-pointer'>
-                        Provide event title
-                      </Label>
-                    </div>
-                    {hasCustomTitle && (
-                      <Input
-                        id='event-title'
-                        value={customTitle}
-                        onChange={e => setCustomTitle(e.target.value)}
-                        placeholder='Enter custom event title'
-                      />
-                    )}
-                    {!hasCustomTitle && (
-                      <p className='text-sm text-muted-foreground'>
-                        Event title will be auto-generated as "Headliner @
-                        Venue"
-                      </p>
-                    )}
+                  {/* Event Title & Subtitle */}
+                  <div className='space-y-2'>
+                    <Label htmlFor='event-title'>
+                      Event Title <span className='text-destructive'>*</span>
+                    </Label>
+                    <Input
+                      id='event-title'
+                      value={customTitle}
+                      onChange={e => setCustomTitle(e.target.value)}
+                      placeholder='Enter event title'
+                    />
+                  </div>
+
+                  <div className='space-y-2'>
+                    <Label htmlFor='event-subtitle'>
+                      Subtitle (Optional)
+                    </Label>
+                    <Input
+                      id='event-subtitle'
+                      value={eventSubtitle}
+                      onChange={e => setEventSubtitle(e.target.value)}
+                      placeholder='Enter event subtitle'
+                    />
                   </div>
 
                   {/* Date & Time */}
