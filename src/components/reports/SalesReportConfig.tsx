@@ -12,6 +12,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
 import { Send, Eye } from 'lucide-react';
+import type { ReportConfiguration } from '@/types/reports';
 
 interface SalesReportConfigProps {
   eventId: string;
@@ -22,7 +23,7 @@ export const SalesReportConfig = ({ eventId }: SalesReportConfigProps) => {
   const queryClient = useQueryClient();
 
   // Fetch report configuration
-  const { data: config, isLoading } = useQuery({
+  const { data: config, isLoading } = useQuery<ReportConfiguration | null>({
     queryKey: ['report-config', eventId, 'sales'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -33,7 +34,7 @@ export const SalesReportConfig = ({ eventId }: SalesReportConfigProps) => {
         .maybeSingle();
 
       if (error) throw error;
-      return data;
+      return data as ReportConfiguration | null;
     },
   });
 

@@ -7,6 +7,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
 import { Plus, Trash2 } from 'lucide-react';
+import type { ReportRecipient } from '@/types/reports';
 
 interface ReportRecipientsManagerProps {
   configId: string;
@@ -17,7 +18,7 @@ export const ReportRecipientsManager = ({ configId }: ReportRecipientsManagerPro
   const [newName, setNewName] = useState('');
   const queryClient = useQueryClient();
 
-  const { data: recipients, isLoading } = useQuery({
+  const { data: recipients, isLoading } = useQuery<ReportRecipient[]>({
     queryKey: ['report-recipients', configId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -27,7 +28,7 @@ export const ReportRecipientsManager = ({ configId }: ReportRecipientsManagerPro
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data as ReportRecipient[];
     },
   });
 
@@ -83,7 +84,7 @@ export const ReportRecipientsManager = ({ configId }: ReportRecipientsManagerPro
             type="email"
             placeholder="email@example.com"
             value={newEmail}
-            onChange={(e) => setNewEmail(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewEmail(e.target.value)}
           />
         </div>
         <div className="flex-1 space-y-2">
@@ -91,7 +92,7 @@ export const ReportRecipientsManager = ({ configId }: ReportRecipientsManagerPro
           <Input
             placeholder="John Doe"
             value={newName}
-            onChange={(e) => setNewName(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewName(e.target.value)}
           />
         </div>
         <div className="flex items-end">
