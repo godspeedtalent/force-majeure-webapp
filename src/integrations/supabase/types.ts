@@ -473,6 +473,7 @@ export type Database = {
       }
       events: {
         Row: {
+          about_event: string | null
           created_at: string | null
           description: string | null
           end_time: string | null
@@ -493,6 +494,7 @@ export type Database = {
           venue_id: string | null
         }
         Insert: {
+          about_event?: string | null
           created_at?: string | null
           description?: string | null
           end_time?: string | null
@@ -513,6 +515,7 @@ export type Database = {
           venue_id?: string | null
         }
         Update: {
+          about_event?: string | null
           created_at?: string | null
           description?: string | null
           end_time?: string | null
