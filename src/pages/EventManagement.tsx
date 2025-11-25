@@ -535,7 +535,7 @@ export default function EventManagement() {
           )}
 
           {activeTab === 'reports' && id && (
-            <Reports />
+            <Reports eventId={id} />
           )}
 
           {activeTab === 'admin' && isAdmin && (
