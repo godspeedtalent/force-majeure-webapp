@@ -478,10 +478,13 @@ export type Database = {
           end_time: string | null
           headliner_id: string | null
           hero_image: string | null
+          hero_image_focal_x: number | null
+          hero_image_focal_y: number | null
           id: string
           is_after_hours: boolean
           is_tba: boolean | null
           organization_id: string | null
+          show_view_count: boolean | null
           start_time: string | null
           status: string
           test_data: boolean
@@ -495,10 +498,13 @@ export type Database = {
           end_time?: string | null
           headliner_id?: string | null
           hero_image?: string | null
+          hero_image_focal_x?: number | null
+          hero_image_focal_y?: number | null
           id?: string
           is_after_hours?: boolean
           is_tba?: boolean | null
           organization_id?: string | null
+          show_view_count?: boolean | null
           start_time?: string | null
           status?: string
           test_data?: boolean
@@ -512,10 +518,13 @@ export type Database = {
           end_time?: string | null
           headliner_id?: string | null
           hero_image?: string | null
+          hero_image_focal_x?: number | null
+          hero_image_focal_y?: number | null
           id?: string
           is_after_hours?: boolean
           is_tba?: boolean | null
           organization_id?: string | null
+          show_view_count?: boolean | null
           start_time?: string | null
           status?: string
           test_data?: boolean

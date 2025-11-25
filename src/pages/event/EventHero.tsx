@@ -21,6 +21,10 @@ export const EventHero = ({
 }: EventHeroProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
+  // Get focal point from event data, default to center
+  const focalX = (event as any).hero_image_focal_x ?? 50;
+  const focalY = (event as any).hero_image_focal_y ?? 50;
+
   return (
     <div
       className='relative h-full max-h-[40vh] lg:max-h-none'
@@ -30,9 +34,12 @@ export const EventHero = ({
         src={event.heroImage}
         alt={event.title || event.headliner.name}
         className={cn(
-          'w-full h-full object-cover transition-opacity duration-700',
+          'w-full h-full object-cover transition-opacity duration-700 lg:object-center',
           imageLoaded ? 'opacity-100' : 'opacity-0'
         )}
+        style={{
+          objectPosition: `${focalX}% ${focalY}%`,
+        }}
         onLoad={() => setImageLoaded(true)}
       />
 
