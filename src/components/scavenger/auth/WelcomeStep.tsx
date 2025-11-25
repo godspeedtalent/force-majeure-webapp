@@ -1,4 +1,4 @@
-import { ExternalLink, Loader2 } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { MessagePanel } from '@/components/feedback/MessagePanel';
@@ -110,7 +110,7 @@ export function CheckpointClaimPanel({
           >
             {isLoading ? (
               <>
-                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                <div className='mr-2 h-4 w-4 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
                 Adding to Guestlist...
               </>
             ) : (

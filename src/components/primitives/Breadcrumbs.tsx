@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
 
 import {
   Breadcrumb,
@@ -79,7 +78,7 @@ export const Breadcrumbs = () => {
                     <BreadcrumbPage>
                       {isLoading ? (
                         <span className='flex items-center gap-1'>
-                          <Loader2 className='h-3 w-3 animate-spin' />
+                          <div className='h-3 w-3 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
                           {item.label}
                         </span>
                       ) : (

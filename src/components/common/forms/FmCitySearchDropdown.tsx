@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { Check, ChevronsUpDown, Loader2, MapPin } from 'lucide-react';
+import { Check, ChevronsUpDown, MapPin } from 'lucide-react';
 import { logger } from '@/shared/services/logger';
 import {
   Command,
@@ -161,7 +161,7 @@ export const FmCitySearchDropdown = ({
             <CommandList>
               {isLoading ? (
                 <div className='flex items-center justify-center py-6'>
-                  <Loader2 className='h-4 w-4 animate-spin text-muted-foreground' />
+                  <div className='h-4 w-4 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
                 </div>
               ) : cities.length === 0 && searchQuery.length >= 2 ? (
                 <CommandEmpty>No cities found.</CommandEmpty>

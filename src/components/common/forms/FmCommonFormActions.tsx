@@ -5,8 +5,6 @@
  * Provides consistent layout and states for form actions
  */
 
-import { Loader2 } from 'lucide-react';
-
 import { Button } from '@/components/common/shadcn/button';
 import { cn } from '@/shared/utils/utils';
 
@@ -101,7 +99,7 @@ export const FmCommonFormActions = ({
       )}
 
       <Button type='submit' disabled={isSubmitting || disabled}>
-        {isSubmitting && <Loader2 className='w-4 h-4 mr-2 animate-spin' />}
+        {isSubmitting && <div className='w-4 h-4 mr-2 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />}
         {submitText}
       </Button>
     </div>

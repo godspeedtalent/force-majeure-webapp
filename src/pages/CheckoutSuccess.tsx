@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { CheckCircle2, Loader2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -25,7 +25,7 @@ export default function CheckoutSuccess() {
   if (!sessionId) {
     return (
       <div className='min-h-screen flex items-center justify-center'>
-        <Loader2 className='h-8 w-8 animate-spin text-muted-foreground' />
+        <div className='h-8 w-8 animate-spin rounded-full border-[3px] border-fm-gold border-b-transparent' />
       </div>
     );
   }

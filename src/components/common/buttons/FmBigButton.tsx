@@ -1,5 +1,4 @@
 import { forwardRef, useState, useEffect, useRef } from 'react';
-import { Loader2 } from 'lucide-react';
 
 import { cn } from '@/shared/utils/utils';
 
@@ -281,7 +280,7 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
         <span className='relative z-10 flex items-center justify-center gap-2'>
           {isLoading ? (
             <>
-              <Loader2 className='h-4 w-4 animate-spin' />
+              <div className='h-4 w-4 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
               <span>Processing...</span>
             </>
           ) : (

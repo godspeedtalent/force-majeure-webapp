@@ -1,4 +1,3 @@
-import { Loader2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -28,7 +27,7 @@ const Auth = () => {
     return (
       <ForceMajeureRootLayout>
         <div className='flex items-center justify-center min-h-full'>
-          <Loader2 className='w-8 h-8 animate-spin text-fm-gold' />
+          <div className='w-8 h-8 animate-spin rounded-full border-[3px] border-fm-gold border-b-transparent' />
         </div>
       </ForceMajeureRootLayout>
     );

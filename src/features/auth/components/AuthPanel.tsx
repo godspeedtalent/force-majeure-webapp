@@ -1,4 +1,4 @@
-import { Loader2, UserX } from 'lucide-react';
+import { UserX } from 'lucide-react';
 import React, { useState } from 'react';
 
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
@@ -100,7 +100,7 @@ export const AuthPanel = ({
     return (
       <Card className='w-full max-w-md border border-white/20 bg-black/70 backdrop-blur-md shadow-2xl rounded-none'>
         <CardContent className='flex items-center justify-center py-12'>
-          <Loader2 className='w-8 h-8 animate-spin text-fm-gold' />
+          <div className='w-8 h-8 animate-spin rounded-full border-[3px] border-fm-gold border-b-transparent' />
         </CardContent>
       </Card>
     );

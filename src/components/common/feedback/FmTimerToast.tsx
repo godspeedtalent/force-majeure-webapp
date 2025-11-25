@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { logger } from '@/shared/services/logger';
-import { Clock, Loader2 } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { toast as sonnerToast } from 'sonner';
 
 interface FmTimerToastProps {
@@ -99,7 +99,7 @@ export const FmTimerToast = ({
             >
               {isExecuting ? (
                 <>
-                  <Loader2 className='h-3 w-3 animate-spin' />
+                  <div className='h-3 w-3 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
                   <span>Loading...</span>
                 </>
               ) : (
