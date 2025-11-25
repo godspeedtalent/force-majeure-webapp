@@ -1,11 +1,5 @@
 import { Shield } from 'lucide-react';
 import { cn } from '@/shared/utils/utils';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/common/shadcn/tooltip';
 
 interface AdminLockIndicatorProps {
   /**
@@ -54,24 +48,16 @@ export function AdminLockIndicator({
   };
 
   return (
-    <TooltipProvider delayDuration={300}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span
-            className={cn(
-              positionClasses[position],
-              'text-muted-foreground/40 hover:text-muted-foreground/60 transition-colors duration-200 cursor-help',
-              className
-            )}
-            aria-label={tooltipText}
-          >
-            <Shield className={sizeClasses[size]} />
-          </span>
-        </TooltipTrigger>
-        <TooltipContent side="top" className="text-xs z-[9999]">
-          <p>{tooltipText}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <span
+      className={cn(
+        positionClasses[position],
+        'text-muted-foreground/40 hover:text-muted-foreground/60 transition-colors duration-200',
+        className
+      )}
+      title={tooltipText}
+      aria-label={tooltipText}
+    >
+      <Shield className={sizeClasses[size]} />
+    </span>
   );
 }
