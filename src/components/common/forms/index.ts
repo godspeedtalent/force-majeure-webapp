@@ -12,4 +12,6 @@ export {
   FmAccountFieldGroup,
   FmSocialLinksFieldGroup,
 } from './FmFormFieldGroup';
+export { FmCommonSwitch } from './FmCommonSwitch';
+export { FmCommonLabel } from './FmCommonLabel';
 export type { FmFormFieldGroupProps } from './FmFormFieldGroup';

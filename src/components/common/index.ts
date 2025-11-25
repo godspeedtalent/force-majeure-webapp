@@ -9,6 +9,15 @@ export { FmCommonPageHeader } from './display/FmCommonPageHeader';
 export { FmCommonDetailSection } from './display/FmCommonDetailSection';
 export { FmCommonEmptyState } from './display/FmCommonEmptyState';
 export { FmTextLink } from './display/FmTextLink';
+export {
+  FmCommonCard as FmCommonCardDisplay,
+  FmCommonCardHeader,
+  FmCommonCardTitle,
+  FmCommonCardDescription,
+  FmCommonCardContent,
+  FmCommonCardFooter,
+} from './display/FmCommonCard';
+export { FmCommonSeparator } from './display/FmCommonSeparator';
 export type { FmCommonBadgeItem } from './display/FmCommonBadgeGroup';
 
 // Feedback components
@@ -16,6 +25,12 @@ export { FmCommonLoadingState } from './feedback/FmCommonLoadingState';
 
 // Navigation components
 export { FmCommonBackButton } from './navigation/FmCommonBackButton';
+export {
+  FmCommonTabs,
+  FmCommonTabsList,
+  FmCommonTabsTrigger,
+  FmCommonTabsContent,
+} from './navigation/FmCommonTabs';
 
 // Modal components
 export { FmCommonConfirmDialog } from './modals/FmCommonConfirmDialog';
@@ -26,6 +41,8 @@ export { FmCommonForm } from './forms/FmCommonForm';
 export { FmCommonFormField } from './forms/FmCommonFormField';
 export { FmCommonFormSelect } from './forms/FmCommonFormSelect';
 export { FmCommonFormActions } from './forms/FmCommonFormActions';
+export { FmCommonSwitch } from './forms/FmCommonSwitch';
+export { FmCommonLabel } from './forms/FmCommonLabel';
 
 // Layout components
 export { FmCommonCard } from './layout/FmCommonCard';
