@@ -8,15 +8,13 @@ interface EventDetailsLayoutProps {
 }
 
 /**
- * EventDetailsLayout - Option 3: Magazine Spread
+ * EventDetailsLayout - Parallax Scrolling Layout
  *
  * Features:
- * - Editorial split layout with left column sized to show vertical image
- * - Card slides and scales into left position
- * - Content cascades in from right with staggered delays
- * - Magazine-style typography and spacing
- * - Clean, sophisticated aesthetic
- * - Topographic background on right column
+ * - Hero image fixed in background on desktop
+ * - Content scrolls over hero image with parallax effect
+ * - Mobile: stacked layout (hero above content)
+ * - Desktop: content overlays hero with transparent background
  */
 export function EventDetailsLayout({
   leftColumn,
@@ -24,21 +22,36 @@ export function EventDetailsLayout({
   className,
 }: EventDetailsLayoutProps) {
   return (
-    <div className={cn('min-h-[calc(100vh-4rem)] bg-background', className)}>
-      <div className='grid grid-cols-1 lg:grid-cols-[35%_65%] min-h-[calc(100vh-4rem)]'>
-        {/* Left column - Hero image with magazine-style positioning */}
-        <div className='lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)] lg:overflow-hidden bg-card border-r border-border lg:w-auto'>
-          <div className='w-full h-full magazine-hero'>{leftColumn}</div>
-        </div>
-
-        {/* Right column - Content with cascading animation and topographic background */}
-        <div className='relative lg:overflow-y-auto lg:max-h-[calc(100vh-4rem)]'>
-          <div className='fixed inset-0 lg:left-[35%] pointer-events-none'>
+    <div className={cn('min-h-screen bg-background', className)}>
+      {/* Mobile: stacked layout */}
+      <div className='lg:hidden'>
+        <div className='max-h-[40vh]'>{leftColumn}</div>
+        <div className='relative'>
+          <div className='absolute inset-0 pointer-events-none'>
             <TopographicBackground opacity={0.35} />
             <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
           </div>
-          <div className='relative w-full magazine-content'>
-            {rightColumn}
+          <div className='relative'>{rightColumn}</div>
+        </div>
+      </div>
+
+      {/* Desktop: parallax layout */}
+      <div className='hidden lg:block relative min-h-screen'>
+        {/* Fixed hero background */}
+        <div className='fixed inset-0 top-16 h-[calc(100vh-4rem)] z-0'>
+          {leftColumn}
+        </div>
+
+        {/* Scrolling content overlay */}
+        <div className='relative z-10 min-h-screen pt-[60vh]'>
+          <div className='relative bg-background/95 backdrop-blur-sm'>
+            <div className='absolute inset-0 pointer-events-none'>
+              <TopographicBackground opacity={0.35} />
+              <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
+            </div>
+            <div className='relative'>
+              {rightColumn}
+            </div>
           </div>
         </div>
       </div>
