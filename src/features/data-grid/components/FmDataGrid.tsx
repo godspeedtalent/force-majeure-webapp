@@ -10,6 +10,10 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { cn } from '@/shared/utils/utils';
 import { useDataGridKeyboardNav } from '../hooks/useDataGridKeyboardNav';
 import { useDataGridVirtualization } from '../hooks/useDataGridVirtualization';
+import { useDataGridState } from '../hooks/useDataGridState';
+import { useDataGridSelection } from '../hooks/useDataGridSelection';
+import { useDataGridFilters } from '../hooks/useDataGridFilters';
+import { useDataGridUI } from '../hooks/useDataGridUI';
 import { FmDataGridExportDialog, ExportFormat } from './FmDataGridExportDialog';
 import { FmDataGridGroupDialog } from './FmDataGridGroupDialog';
 import { FmBulkEditDialog } from './FmBulkEditDialog';
@@ -108,32 +112,11 @@ export function FmDataGrid<T extends Record<string, any>>({
 }: FmDataGridProps<T>) {
   const { toast } = useToast();
 
-  // Search & Filter State
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortColumn, setSortColumn] = useState<string | null>(null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [columnFilters, setColumnFilters] = useState<Record<string, string>>({});
-
-  // Selection State
-  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
-
-  // Editing State
-  const [editingCell, setEditingCell] = useState<{
-    rowIndex: number;
-    columnKey: string;
-  } | null>(null);
-  const [editValue, setEditValue] = useState<string>('');
-
-  // New Row State
-  const [isCreatingRow, setIsCreatingRow] = useState(false);
-  const [newRowData, setNewRowData] = useState<Partial<T>>({});
-
-  // UI State
-  const [contextMenuOpenRow, setContextMenuOpenRow] = useState<number | null>(null);
-  const [showBatchDeleteDialog, setShowBatchDeleteDialog] = useState(false);
-  const [isBatchDeleting, setIsBatchDeleting] = useState(false);
-  const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
+  // Custom hooks for state management
+  const gridState = useDataGridState({ dataLength: data.length });
+  const selection = useDataGridSelection();
+  const filters = useDataGridFilters({ data, columns });
+  const ui = useDataGridUI();
 
   // Column Resize State
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
@@ -142,70 +125,22 @@ export function FmDataGrid<T extends Record<string, any>>({
   const resizeStartWidth = useRef<number>(0);
 
   // Export/Group/Bulk Edit State
-  const [showExportDialog, setShowExportDialog] = useState(false);
-  const [showGroupDialog, setShowGroupDialog] = useState(false);
   const [groupConfig, setGroupConfig] = useState<GroupConfig | null>(null);
   const [groupedRows, setGroupedRows] = useState<GroupedRow<T>[]>([]);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
-  const [showBulkEditDialog, setShowBulkEditDialog] = useState(false);
 
-  // Drag Select State
-  const [isDragMode, setIsDragMode] = useState(false);
-  const [dragStartRow, setDragStartRow] = useState<number | null>(null);
-  const [dragCurrentRow, setDragCurrentRow] = useState<number | null>(null);
+  // Drag Select State (kept local as it's UI-specific and temporary)
   const dragTimerRef = useRef<NodeJS.Timeout | null>(null);
   const rowRefs = useRef<Map<number, HTMLTableRowElement>>(new Map());
 
-  // Reset page when data changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [data]);
-
-  // Filter data
-  const filteredData = useMemo(() => {
-    let filtered = [...data];
-
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(row =>
-        columns.some(col => {
-          const value = row[col.key];
-          return value?.toString().toLowerCase().includes(query);
-        })
-      );
-    }
-
-    Object.entries(columnFilters).forEach(([key, value]) => {
-      if (value) {
-        const query = value.toLowerCase();
-        filtered = filtered.filter(row => {
-          const cellValue = row[key];
-          return cellValue?.toString().toLowerCase().includes(query);
-        });
-      }
-    });
-
-    return filtered;
-  }, [data, searchQuery, columns, columnFilters]);
-
-  // Sort data
-  const sortedData = useMemo(() => {
-    if (!sortColumn) return filteredData;
-
-    return [...filteredData].sort((a, b) => {
-      const aValue = a[sortColumn];
-      const bValue = b[sortColumn];
-      if (aValue === bValue) return 0;
-      const comparison = aValue < bValue ? -1 : 1;
-      return sortDirection === 'asc' ? comparison : -comparison;
-    });
-  }, [filteredData, sortColumn, sortDirection]);
+  // Get filtered and sorted data from filters hook
+  const { sortedData } = filters;
 
   // Paginate data
   const paginatedData = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize;
+    const startIndex = (gridState.currentPage - 1) * pageSize;
     return sortedData.slice(startIndex, startIndex + pageSize);
-  }, [sortedData, currentPage, pageSize]);
+  }, [sortedData, gridState.currentPage, pageSize]);
 
   const totalPages = Math.ceil(sortedData.length / pageSize);
 
@@ -221,8 +156,8 @@ export function FmDataGrid<T extends Record<string, any>>({
   const { handleTableKeyDown, getFocusableCellProps } = useDataGridKeyboardNav({
     rows: paginatedData,
     columns,
-    isEditing: !!editingCell,
-    editingCell,
+    isEditing: !!gridState.editingCell,
+    editingCell: gridState.editingCell,
     onStartEditing: (rowIndex, columnKey) => {
       const row = paginatedData[rowIndex];
       if (row) {
@@ -230,7 +165,7 @@ export function FmDataGrid<T extends Record<string, any>>({
         handleCellEdit(rowIndex, columnKey, currentValue);
       }
     },
-    onStopEditing: () => setEditingCell(null),
+    onStopEditing: () => gridState.setEditingCell(null),
   });
 
   // Virtualization
@@ -247,39 +182,25 @@ export function FmDataGrid<T extends Record<string, any>>({
 
   // Handlers
   const handleSort = (columnKey: string) => {
-    if (sortColumn === columnKey) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortColumn(columnKey);
-      setSortDirection('asc');
-    }
+    filters.handleSort(columnKey);
   };
 
   const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      const allIndices = new Set(
-        paginatedData.map((_, idx) => (currentPage - 1) * pageSize + idx)
-      );
-      setSelectedRows(allIndices);
-    } else {
-      setSelectedRows(new Set());
-    }
+    selection.handleSelectAll(checked, paginatedData.length, gridState.currentPage, pageSize);
   };
 
   const handleColumnFilter = (columnKey: string, value: string) => {
-    setColumnFilters(prev => ({ ...prev, [columnKey]: value }));
-    setCurrentPage(1);
+    filters.setColumnFilter(columnKey, value);
+    gridState.setCurrentPage(1);
   };
 
   const clearFilters = () => {
-    setSearchQuery('');
-    setColumnFilters({});
-    setCurrentPage(1);
+    filters.clearAllFilters();
+    gridState.setCurrentPage(1);
   };
 
   const handleCellEdit = (rowIndex: number, columnKey: string, currentValue: any) => {
-    setEditingCell({ rowIndex, columnKey });
-    setEditValue(currentValue?.toString() || '');
+    gridState.startEditing(rowIndex, columnKey, currentValue);
   };
 
   const handleCellSave = async (
@@ -287,24 +208,24 @@ export function FmDataGrid<T extends Record<string, any>>({
     columnKey: string,
     overrideValue?: any
   ) => {
-    if (!onUpdate || !editingCell) return;
+    if (!onUpdate || !gridState.editingCell) return;
 
     const column = columns.find(col => col.key === columnKey);
-    let newValue = overrideValue !== undefined ? overrideValue : editValue;
+    let newValue = overrideValue !== undefined ? overrideValue : gridState.editValue;
     const oldValue = row[columnKey];
 
     // Type handling
     if (column?.type === 'boolean') {
-      newValue = overrideValue !== undefined ? overrideValue : (typeof editValue === 'boolean' ? editValue : editValue === 'true');
+      newValue = overrideValue !== undefined ? overrideValue : (typeof gridState.editValue === 'boolean' ? gridState.editValue : gridState.editValue === 'true');
     } else if (column?.type === 'number') {
       if (!newValue || newValue.toString().trim() === '') newValue = '0';
       if (parseFloat(newValue) === parseFloat(oldValue?.toString() || '0')) {
-        setEditingCell(null);
+        gridState.setEditingCell(null);
         return;
       }
     } else {
       if (!newValue || newValue.toString().trim() === '' || newValue === oldValue?.toString()) {
-        setEditingCell(null);
+        gridState.setEditingCell(null);
         return;
       }
     }
@@ -325,7 +246,7 @@ export function FmDataGrid<T extends Record<string, any>>({
       await onUpdate(row, columnKey, newValue);
       loadingToast.dismiss();
       toast({ title: `${displayName} updated.`, duration: 2000 });
-      setEditingCell(null);
+      gridState.setEditingCell(null);
     } catch (error) {
       loadingToast.dismiss();
       toast({
@@ -340,7 +261,7 @@ export function FmDataGrid<T extends Record<string, any>>({
   const handleSaveNewRow = async () => {
     if (!onCreate) return;
 
-    const processedData = { ...newRowData };
+    const processedData = { ...gridState.newRowData };
     columns.forEach(col => {
       if (col.type === 'number') {
         const value = processedData[col.key as keyof T];
@@ -378,8 +299,7 @@ export function FmDataGrid<T extends Record<string, any>>({
       await onCreate(processedData);
       loadingToast.dismiss();
       toast({ title: `${resourceName} created successfully`, duration: 2000 });
-      setIsCreatingRow(false);
-      setNewRowData({});
+      gridState.cancelCreating();
     } catch (error) {
       loadingToast.dismiss();
       toast({
@@ -394,8 +314,8 @@ export function FmDataGrid<T extends Record<string, any>>({
   const handleBatchDelete = async () => {
     if (!onBatchDelete) return;
 
-    setIsBatchDeleting(true);
-    const selectedRowsData = sortedData.filter((_, idx) => selectedRows.has(idx));
+    ui.startBatchDelete();
+    const selectedRowsData = sortedData.filter((_, idx) => selection.selectedRows.has(idx));
 
     const loadingToast = toast({
       title: `Deleting ${selectedRowsData.length} ${resourceName}${selectedRowsData.length !== 1 ? 's' : ''}...`,
@@ -416,8 +336,8 @@ export function FmDataGrid<T extends Record<string, any>>({
         description: `Deleted ${selectedRowsData.length} ${resourceName}${selectedRowsData.length !== 1 ? 's' : ''}`,
         duration: 3000,
       });
-      setSelectedRows(new Set());
-      setShowBatchDeleteDialog(false);
+      selection.clearSelection();
+      ui.closeBatchDeleteDialog();
     } catch (error) {
       loadingToast.dismiss();
       toast({
@@ -427,7 +347,7 @@ export function FmDataGrid<T extends Record<string, any>>({
         duration: 3000,
       });
     } finally {
-      setIsBatchDeleting(false);
+      ui.stopBatchDelete();
     }
   };
 
@@ -447,7 +367,7 @@ export function FmDataGrid<T extends Record<string, any>>({
     setGroupedRows(grouped);
     const allGroupKeys = grouped.map(g => g.groupValue);
     setExpandedGroups(new Set(allGroupKeys));
-    setCurrentPage(1);
+    gridState.setCurrentPage(1);
   };
 
   const handleClearGrouping = () => {
@@ -470,7 +390,7 @@ export function FmDataGrid<T extends Record<string, any>>({
   const handleBulkEdit = async (updates: Partial<T>) => {
     if (!onUpdate) return;
 
-    const selectedRowsData = sortedData.filter((_, idx) => selectedRows.has(idx));
+    const selectedRowsData = sortedData.filter((_, idx) => selection.selectedRows.has(idx));
     const loadingToast = toast({
       title: 'Updating rows...',
       description: `Applying changes to ${selectedRowsData.length} row${selectedRowsData.length !== 1 ? 's' : ''}`,
@@ -485,7 +405,7 @@ export function FmDataGrid<T extends Record<string, any>>({
         description: `Updated ${selectedRowsData.length} row${selectedRowsData.length !== 1 ? 's' : ''}`,
         duration: 3000,
       });
-      setSelectedRows(new Set());
+      selection.clearSelection();
     } catch (error) {
       loadingToast.dismiss();
       toast({
@@ -560,14 +480,12 @@ export function FmDataGrid<T extends Record<string, any>>({
       return;
     }
 
-    const globalIndex = (currentPage - 1) * pageSize + index;
+    const globalIndex = (gridState.currentPage - 1) * pageSize + index;
     dragTimerRef.current = setTimeout(() => {
       // Double-check we're not resizing before activating drag mode
       if (!resizingColumn) {
-        setIsDragMode(true);
-        setDragStartRow(globalIndex);
-        setDragCurrentRow(globalIndex);
-        setHoveredColumn(null);
+        selection.startDragSelection(globalIndex);
+        gridState.setHoveredColumn(null);
         document.body.style.userSelect = 'none';
       }
     }, 300);
@@ -579,24 +497,14 @@ export function FmDataGrid<T extends Record<string, any>>({
       dragTimerRef.current = null;
     }
 
-    if (isDragMode && dragStartRow !== null && dragCurrentRow !== null) {
-      const start = Math.min(dragStartRow, dragCurrentRow);
-      const end = Math.max(dragStartRow, dragCurrentRow);
-      const newSelection = new Set(selectedRows);
-      for (let i = start; i <= end; i++) newSelection.add(i);
-      setSelectedRows(newSelection);
-    }
-
+    selection.endDragSelection();
     document.body.style.userSelect = '';
-    setIsDragMode(false);
-    setDragStartRow(null);
-    setDragCurrentRow(null);
   };
 
   const handleMouseEnterRow = (index: number) => {
-    if (isDragMode) {
-      const globalIndex = (currentPage - 1) * pageSize + index;
-      setDragCurrentRow(globalIndex);
+    if (selection.isDragMode) {
+      const globalIndex = (gridState.currentPage - 1) * pageSize + index;
+      selection.updateDragSelection(globalIndex);
     }
   };
 
@@ -607,10 +515,10 @@ export function FmDataGrid<T extends Record<string, any>>({
   }, []);
 
   const getDragBoxStyle = (): React.CSSProperties | null => {
-    if (!isDragMode || dragStartRow === null || dragCurrentRow === null) return null;
+    if (!selection.isDragMode || selection.dragStartRow === null || selection.dragCurrentRow === null) return null;
 
-    const startRowEl = rowRefs.current.get(dragStartRow);
-    const endRowEl = rowRefs.current.get(dragCurrentRow);
+    const startRowEl = rowRefs.current.get(selection.dragStartRow);
+    const endRowEl = rowRefs.current.get(selection.dragCurrentRow);
     if (!startRowEl || !endRowEl) return null;
 
     const startRect = startRowEl.getBoundingClientRect();
@@ -639,30 +547,30 @@ export function FmDataGrid<T extends Record<string, any>>({
 
   const isAllSelected =
     paginatedData.length > 0 &&
-    paginatedData.every((_, idx) => selectedRows.has((currentPage - 1) * pageSize + idx));
+    paginatedData.every((_, idx) => selection.selectedRows.has((gridState.currentPage - 1) * pageSize + idx));
 
   const selectedRowsData = useMemo(
-    () => sortedData.filter((_, idx) => selectedRows.has(idx)),
-    [sortedData, selectedRows]
+    () => sortedData.filter((_, idx) => selection.selectedRows.has(idx)),
+    [sortedData, selection.selectedRows]
   );
 
   return (
     <div className={cn('space-y-4', className)}>
       {/* Toolbar */}
       <FmDataGridToolbar
-        searchQuery={searchQuery}
+        searchQuery={filters.searchQuery}
         onSearchChange={value => {
-          setSearchQuery(value);
-          setCurrentPage(1);
+          filters.setSearchQuery(value);
+          gridState.setCurrentPage(1);
         }}
-        hasActiveFilters={!!searchQuery || Object.values(columnFilters).some(v => v)}
+        hasActiveFilters={filters.activeFilterCount > 0}
         onClearFilters={clearFilters}
-        selectedCount={selectedRows.size}
-        onBatchDelete={onBatchDelete ? () => setShowBatchDeleteDialog(true) : undefined}
-        onBulkEdit={onUpdate && selectedRows.size > 0 ? () => setShowBulkEditDialog(true) : undefined}
-        onExport={enableExport && sortedData.length > 0 ? () => setShowExportDialog(true) : undefined}
-        onGroupBy={sortedData.length > 0 ? () => setShowGroupDialog(true) : undefined}
-        onCreate={onCreate ? () => { setIsCreatingRow(true); setNewRowData({}); } : undefined}
+        selectedCount={selection.selectedRows.size}
+        onBatchDelete={onBatchDelete ? () => ui.openBatchDeleteDialog() : undefined}
+        onBulkEdit={onUpdate && selection.selectedRows.size > 0 ? () => ui.openBulkEditDialog() : undefined}
+        onExport={enableExport && sortedData.length > 0 ? () => ui.openExportDialog() : undefined}
+        onGroupBy={sortedData.length > 0 ? () => ui.openGroupDialog() : undefined}
+        onCreate={onCreate ? () => gridState.startCreating() : undefined}
         onCreateButtonClick={onCreateButtonClick}
         resourceName={resourceName}
         createButtonLabel={createButtonLabel}
@@ -670,7 +578,7 @@ export function FmDataGrid<T extends Record<string, any>>({
         hasGrouping={!!groupConfig}
         totalDataCount={sortedData.length}
         toolbarActions={toolbarActions}
-        isBatchDeleting={isBatchDeleting}
+        isBatchDeleting={ui.isBatchDeleting}
       />
 
       {/* Table */}
@@ -691,10 +599,10 @@ export function FmDataGrid<T extends Record<string, any>>({
             hasActions={actions.length > 0}
             isAllSelected={isAllSelected}
             onSelectAll={handleSelectAll}
-            sortColumn={sortColumn}
-            sortDirection={sortDirection}
+            sortColumn={filters.sortColumn}
+            sortDirection={filters.sortDirection}
             onSort={handleSort}
-            columnFilters={columnFilters}
+            columnFilters={filters.columnFilters}
             onColumnFilter={handleColumnFilter}
             onHideColumn={onHideColumn}
             onColumnReorder={onColumnReorder}
@@ -754,17 +662,17 @@ export function FmDataGrid<T extends Record<string, any>>({
 
                 // Data row
                 const row = displayRow.row as T;
-                const globalIndex = (currentPage - 1) * pageSize + index;
-                const isSelected = selectedRows.has(globalIndex);
+                const globalIndex = (gridState.currentPage - 1) * pageSize + index;
+                const isSelected = selection.selectedRows.has(globalIndex);
                 const isEvenRow = index % 2 === 0;
-                const hasContextMenuOpen = contextMenuOpenRow === globalIndex;
+                const hasContextMenuOpen = gridState.contextMenuOpenRow === globalIndex;
 
                 const isDragSelected =
-                  isDragMode &&
-                  dragStartRow !== null &&
-                  dragCurrentRow !== null &&
-                  globalIndex >= Math.min(dragStartRow, dragCurrentRow) &&
-                  globalIndex <= Math.max(dragStartRow, dragCurrentRow);
+                  selection.isDragMode &&
+                  selection.dragStartRow !== null &&
+                  selection.dragCurrentRow !== null &&
+                  globalIndex >= Math.min(selection.dragStartRow, selection.dragCurrentRow) &&
+                  globalIndex <= Math.max(selection.dragStartRow, selection.dragCurrentRow);
 
                 return (
                   <FmDataGridRow
@@ -778,12 +686,7 @@ export function FmDataGrid<T extends Record<string, any>>({
                     isSelected={isSelected}
                     isEvenRow={isEvenRow}
                     hasContextMenuOpen={hasContextMenuOpen}
-                    onSelectRow={() => {
-                      const newSelection = new Set(selectedRows);
-                      if (newSelection.has(globalIndex)) newSelection.delete(globalIndex);
-                      else newSelection.add(globalIndex);
-                      setSelectedRows(newSelection);
-                    }}
+                    onSelectRow={() => selection.toggleRowSelection(globalIndex)}
                     onMouseDown={e => handleMouseDown(index, e)}
                     onMouseUp={handleMouseUp}
                     onMouseEnter={() => handleMouseEnterRow(index)}
@@ -791,22 +694,20 @@ export function FmDataGrid<T extends Record<string, any>>({
                       if (el) rowRefs.current.set(globalIndex, el);
                       else rowRefs.current.delete(globalIndex);
                     }}
-                    editingCell={editingCell}
-                    editValue={editValue}
-                    onEditValueChange={setEditValue}
+                    editingCell={gridState.editingCell}
+                    editValue={gridState.editValue}
+                    onEditValueChange={gridState.setEditValue}
                     onStartEdit={handleCellEdit}
                     onSaveEdit={handleCellSave}
-                    onCancelEdit={() => { setEditingCell(null); setEditValue(''); }}
+                    onCancelEdit={() => gridState.setEditingCell(null)}
                     onUpdate={onUpdate}
-                    isDragMode={isDragMode}
+                    isDragMode={selection.isDragMode}
                     isDragSelected={isDragSelected}
-                    hoveredColumn={hoveredColumn}
-                    onSetHoveredColumn={setHoveredColumn}
-                    onContextMenuOpenChange={open => setContextMenuOpenRow(open ? globalIndex : null)}
-                    isMultipleSelected={selectedRows.size > 1}
-                    onUnselectAll={() => {
-                      setSelectedRows(new Set());
-                    }}
+                    hoveredColumn={gridState.hoveredColumn}
+                    onSetHoveredColumn={gridState.setHoveredColumn}
+                    onContextMenuOpenChange={open => gridState.setContextMenuOpenRow(open ? globalIndex : null)}
+                    isMultipleSelected={selection.selectedRows.size > 1}
+                    onUnselectAll={() => selection.clearSelection()}
                     getFocusableCellProps={getFocusableCellProps}
                     columnWidths={columnWidths}
                   />
@@ -830,23 +731,17 @@ export function FmDataGrid<T extends Record<string, any>>({
               <FmDataGridNewRow
                 columns={columns}
                 hasActions={actions.length > 0}
-                isCreating={isCreatingRow}
-                newRowData={newRowData}
+                isCreating={gridState.isCreatingRow}
+                newRowData={gridState.newRowData}
                 onFieldChange={(columnKey, value) =>
-                  setNewRowData(prev => ({ ...prev, [columnKey]: value }))
+                  gridState.setNewRowData(prev => ({ ...prev, [columnKey]: value }))
                 }
                 onSave={handleSaveNewRow}
-                onCancel={() => {
-                  setIsCreatingRow(false);
-                  setNewRowData({});
-                }}
+                onCancel={() => gridState.cancelCreating()}
                 onStartCreating={
                   onCreateButtonClick
                     ? onCreateButtonClick
-                    : () => {
-                        setIsCreatingRow(true);
-                        setNewRowData({});
-                      }
+                    : () => gridState.startCreating()
                 }
                 resourceName={resourceName}
               />
@@ -855,33 +750,33 @@ export function FmDataGrid<T extends Record<string, any>>({
         </Table>
 
         {/* Drag selection overlay */}
-        {isDragMode && getDragBoxStyle() && (
+        {selection.isDragMode && getDragBoxStyle() && (
           <div style={getDragBoxStyle()!} className='animate-in fade-in duration-100' />
         )}
       </div>
 
       {/* Pagination */}
       <FmDataGridPagination
-        currentPage={currentPage}
+        currentPage={gridState.currentPage}
         totalPages={totalPages}
         pageSize={pageSize}
         totalCount={sortedData.length}
-        onPageChange={setCurrentPage}
+        onPageChange={gridState.setCurrentPage}
       />
 
       {/* Dialogs */}
       <FmDataGridBatchDeleteDialog
-        open={showBatchDeleteDialog}
-        onOpenChange={setShowBatchDeleteDialog}
+        open={ui.showBatchDeleteDialog}
+        onOpenChange={ui.closeBatchDeleteDialog}
         selectedRows={selectedRowsData}
         resourceName={resourceName}
         onConfirm={handleBatchDelete}
-        isDeleting={isBatchDeleting}
+        isDeleting={ui.isBatchDeleting}
       />
 
       <FmDataGridExportDialog
-        open={showExportDialog}
-        onOpenChange={setShowExportDialog}
+        open={ui.showExportDialog}
+        onOpenChange={ui.closeExportDialog}
         columns={columns}
         data={sortedData}
         filename={exportFilename || resourceName.toLowerCase().replace(/\s+/g, '-')}
@@ -889,8 +784,8 @@ export function FmDataGrid<T extends Record<string, any>>({
       />
 
       <FmDataGridGroupDialog
-        open={showGroupDialog}
-        onOpenChange={setShowGroupDialog}
+        open={ui.showGroupDialog}
+        onOpenChange={ui.closeGroupDialog}
         columns={columns}
         currentGroupConfig={groupConfig}
         onApply={handleApplyGrouping}
@@ -898,8 +793,8 @@ export function FmDataGrid<T extends Record<string, any>>({
       />
 
       <FmBulkEditDialog
-        open={showBulkEditDialog}
-        onOpenChange={setShowBulkEditDialog}
+        open={ui.showBulkEditDialog}
+        onOpenChange={ui.closeBulkEditDialog}
         columns={columns}
         selectedRows={selectedRowsData}
         onApply={handleBulkEdit}
