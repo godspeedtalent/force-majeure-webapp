@@ -306,14 +306,14 @@ const Index = () => {
               </ParallaxLayerManager>
             ) : isSingleRow ? (
               /* Single Page Layout - Combined view */
-              <div className='h-screen flex flex-col justify-around py-8 px-4 relative z-10'>
+              <div className='h-screen flex flex-col py-8 px-4 relative z-10'>
                 {/* Logo Section - Top Row */}
-                <div className='flex items-center justify-center'>
+                <div className='flex items-center justify-center flex-shrink-0'>
                   <div className='max-w-7xl mx-auto'>
                     <div className='flex flex-col items-center text-center'>
                       <ForceMajeureLogo size='lg' className='mb-4 h-32 w-32' />
                       <h1
-                        className='text-2xl lg:text-4xl font-screamer leading-none mb-8'
+                        className='text-2xl lg:text-4xl font-screamer leading-none'
                         style={{ fontWeight: 475 }}
                       >
                         <span className='text-foreground'>FORCE </span>
@@ -321,56 +321,62 @@ const Index = () => {
                           MAJEURE
                         </span>
                       </h1>
-                      {/* Decorative Divider - Only in single row layout */}
-                      <DecorativeDivider />
                     </div>
                   </div>
                 </div>
 
-                {/* Events Section - Bottom Row */}
-                <div ref={eventsRef} className='flex items-center justify-center' data-section-id='events'>
-                  <div className='max-w-7xl mx-auto animate-fade-in w-full'>
-                    <div className='flex justify-center items-center gap-8'>
-                      {loading ? (
-                        Array.from({ length: 6 }).map((_, idx) => (
-                          <EventCardSkeleton key={`skeleton-${idx}`} />
-                        ))
-                      ) : upcomingEvents.length > 0 ? (
-                        upcomingEvents.map(event =>
-                          event.is_tba ? (
-                            <FmTbaEventCard
-                              key={event.id}
-                              event={{
-                                id: event.id,
-                                date: event.date,
-                                time: event.time,
-                                venue: event.venue !== 'TBA' ? event.venue : undefined,
-                                is_tba: true,
-                              }}
-                              isSingleRow={isSingleRow}
-                            />
-                          ) : (
-                            <EventCard key={event.id} event={event} isSingleRow={isSingleRow} />
+                {/* Frosted Background - starts at divider, extends down */}
+                <div className='flex-1 bg-background/20 backdrop-blur-xl -mx-4 px-4 pt-8 flex flex-col justify-around'>
+                  {/* Decorative Divider */}
+                  <div className='flex-shrink-0 mb-8'>
+                    <DecorativeDivider />
+                  </div>
+
+                  {/* Events Section - Bottom Row */}
+                  <div ref={eventsRef} className='flex items-center justify-center' data-section-id='events'>
+                    <div className='max-w-7xl mx-auto animate-fade-in w-full'>
+                      <div className='flex justify-center items-center gap-8'>
+                        {loading ? (
+                          Array.from({ length: 6 }).map((_, idx) => (
+                            <EventCardSkeleton key={`skeleton-${idx}`} />
+                          ))
+                        ) : upcomingEvents.length > 0 ? (
+                          upcomingEvents.map(event =>
+                            event.is_tba ? (
+                              <FmTbaEventCard
+                                key={event.id}
+                                event={{
+                                  id: event.id,
+                                  date: event.date,
+                                  time: event.time,
+                                  venue: event.venue !== 'TBA' ? event.venue : undefined,
+                                  is_tba: true,
+                                }}
+                                isSingleRow={isSingleRow}
+                              />
+                            ) : (
+                              <EventCard key={event.id} event={event} isSingleRow={isSingleRow} />
+                            )
                           )
-                        )
-                      ) : (
-                        <div className='flex justify-center'>
-                          <FmInfoCard className='max-w-2xl text-center'>
-                            <h2 className='text-lg lg:text-xl text-fm-gold mb-[20px]'>
-                              Our 2026 lineup is coming soon.
-                            </h2>
-                            <p className='text-sm text-muted-foreground mb-[10px]'>
-                              Are you an artist wanting to open for headlining talent?
-                            </p>
-                            <p className='text-sm text-muted-foreground mb-[20px]'>
-                              Register with us below!
-                            </p>
-                            <FmCommonButton onClick={() => navigate('/artists/signup')}>
-                              Artist Registration
-                            </FmCommonButton>
-                          </FmInfoCard>
-                        </div>
-                      )}
+                        ) : (
+                          <div className='flex justify-center'>
+                            <FmInfoCard className='max-w-2xl text-center'>
+                              <h2 className='text-lg lg:text-xl text-fm-gold mb-[20px]'>
+                                Our 2026 lineup is coming soon.
+                              </h2>
+                              <p className='text-sm text-muted-foreground mb-[10px]'>
+                                Are you an artist wanting to open for headlining talent?
+                              </p>
+                              <p className='text-sm text-muted-foreground mb-[20px]'>
+                                Register with us below!
+                              </p>
+                              <FmCommonButton onClick={() => navigate('/artists/signup')}>
+                                Artist Registration
+                              </FmCommonButton>
+                            </FmInfoCard>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
