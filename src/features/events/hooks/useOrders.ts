@@ -35,8 +35,8 @@ export const useOrders = () => {
   return useQuery({
     queryKey: ['orders'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('orders' as any)
+      const { data, error} = await supabase
+        .from('orders')
         .select(
           `
           *,
@@ -65,7 +65,7 @@ export const useOrder = (orderId: string | undefined) => {
       if (!orderId) return null;
 
       const { data, error } = await supabase
-        .from('orders' as any)
+        .from('orders')
         .select(
           `
           *,

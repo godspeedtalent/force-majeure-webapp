@@ -8,6 +8,7 @@ import { ArtistSummary, EventDetailsRecord } from '../types';
 interface EventRow {
   id: string;
   title: string | null;
+  subtitle?: string | null;
   start_time: string | null;
   end_time: string | null;
   venue_id?: string | null;
@@ -67,6 +68,7 @@ const transformEvent = (row: EventRow): EventDetailsRecord => {
   return {
     id: row.id,
     title: row.title,
+    subtitle: row.subtitle ?? null,
     headliner: row.headliner_artist
       ? transformArtist(row.headliner_artist)
       : { name: 'TBA', genre: 'Electronic', image: null },
@@ -88,6 +90,7 @@ const fetchEventDetails = async (
       `
       id,
       title,
+      subtitle,
       start_time,
       end_time,
       venue_id,

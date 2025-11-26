@@ -35,24 +35,20 @@ export const EventCheckoutWizard = ({
 
   const formattedTiers = useMemo(() => {
     return tiers.map(tier => {
-      const basePrice =
-        typeof (tier as any).price === 'number'
-          ? (tier as any).price
-          : typeof (tier as any).price_cents === 'number'
-            ? (tier as any).price_cents / 100
-            : 0;
+      // price_cents is the canonical field in TicketTier type
+      const basePrice = tier.price_cents / 100;
 
       return {
         id: tier.id,
         name: tier.name,
         description: tier.description ?? undefined,
         price: basePrice,
-        total_tickets: (tier as any).total_tickets ?? 0,
-        available_inventory: (tier as any).available_inventory ?? 0,
-        tier_order: (tier as any).tier_order ?? 0,
-        is_active: (tier as any).is_active ?? true,
+        total_tickets: tier.total_tickets ?? 0,
+        available_inventory: tier.available_inventory ?? 0,
+        tier_order: tier.tier_order ?? 0,
+        is_active: tier.is_active ?? true,
         hide_until_previous_sold_out:
-          (tier as any).hide_until_previous_sold_out ?? false,
+          tier.hide_until_previous_sold_out ?? false,
       };
     });
   }, [tiers]);

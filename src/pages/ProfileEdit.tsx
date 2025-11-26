@@ -136,16 +136,17 @@ const ProfileEdit = () => {
         title: 'Profile picture updated',
         description: 'Your profile picture has been updated successfully.',
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       logger.error('Error uploading image', {
-        error: error.message || 'Unknown error',
+        error: errorMessage,
         source: 'ProfileEdit.tsx',
         details: 'handleImageUpload',
       });
       toast({
         title: 'Upload failed',
         description:
-          error.message || 'Failed to upload image. Please try again.',
+          errorMessage || 'Failed to upload image. Please try again.',
         variant: 'destructive',
       });
     } finally {

@@ -107,7 +107,8 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
       // Prepare event data matching database schema
       const eventData = {
         title: eventTitle,
-        description: state.subtitle || null,
+        subtitle: state.subtitle || null,
+        description: null, // Description is managed separately in event details page
         headliner_id: state.headlinerId || null,
         venue_id: state.venueId || null,
         start_time: startTimeISO,

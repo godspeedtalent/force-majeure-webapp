@@ -39,7 +39,7 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
 
       // Fetch groups
       const { data: groupsData, error: groupsError } = await supabase
-        .from('ticket_groups' as any)
+        .from('ticket_groups')
         .select('*')
         .eq('event_id', eventId)
         .order('group_order', { ascending: true });
@@ -48,7 +48,7 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
 
       // Fetch tiers with order count check
       const { data: tiersData, error: tiersError } = await supabase
-        .from('ticket_tiers' as any)
+        .from('ticket_tiers')
         .select(`
           *,
           order_items:order_items(count)
@@ -133,20 +133,20 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
         if (group.id && !group.id.startsWith('temp-')) {
           // Update existing
           const { error } = await supabase
-            .from('ticket_groups' as any)
+            .from('ticket_groups')
             .update(groupData)
             .eq('id', group.id);
           if (error) throw error;
         } else {
           // Insert new
           const { data, error } = await supabase
-            .from('ticket_groups' as any)
+            .from('ticket_groups')
             .insert(groupData)
             .select()
             .single();
           if (error) throw error;
           if (data) {
-            group.id = (data as any).id; // Update temp ID
+            group.id = data.id;
           }
         }
       }
@@ -174,14 +174,14 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
           if (tier.id && !tier.id.startsWith('temp-')) {
             // Update existing
             const { error } = await supabase
-              .from('ticket_tiers' as any)
+              .from('ticket_tiers')
               .update(tierData)
               .eq('id', tier.id);
             if (error) throw error;
           } else {
             // Insert new
             const { error } = await supabase
-              .from('ticket_tiers' as any)
+              .from('ticket_tiers')
               .insert(tierData);
             if (error) throw error;
           }
@@ -200,7 +200,7 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
   const deleteTier = useMutation({
     mutationFn: async (tierId: string) => {
       const { error } = await supabase
-        .from('ticket_tiers' as any)
+        .from('ticket_tiers')
         .delete()
         .eq('id', tierId);
       if (error) throw error;
@@ -217,7 +217,7 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
   const toggleTierActive = useMutation({
     mutationFn: async ({ tierId, isActive }: { tierId: string; isActive: boolean }) => {
       const { error } = await supabase
-        .from('ticket_tiers' as any)
+        .from('ticket_tiers')
         .update({ is_active: isActive })
         .eq('id', tierId);
       if (error) throw error;

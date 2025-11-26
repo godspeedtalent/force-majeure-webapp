@@ -74,7 +74,8 @@ export interface Artist {
 export interface Event {
   id: string;
   title: string;        // Event title (e.g., "Artist Name @ Venue Name")
-  description?: string | null;
+  subtitle?: string | null; // Short subtitle displayed prominently
+  description?: string | null; // Full description for "About This Event" section
   start_time: string;   // ISO timestamp (TIMESTAMPTZ from database)
   end_time?: string | null; // ISO timestamp (TIMESTAMPTZ from database)
   venue_id: string;
@@ -96,6 +97,7 @@ export interface Event {
 // Form data types (used in create/edit forms)
 export interface EventFormData {
   title: string;
+  subtitle?: string;
   description?: string;
   start_time: string;   // ISO timestamp
   end_time?: string;    // ISO timestamp

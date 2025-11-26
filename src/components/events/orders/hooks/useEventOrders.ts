@@ -45,7 +45,7 @@ export const useEventOrders = (eventId: string | undefined) => {
       if (!eventId) return [];
 
       const { data, error } = await supabase
-        .from('orders' as any)
+        .from('orders')
         .select(`
           *,
           profile:profiles!user_id(
@@ -82,7 +82,7 @@ export const useEventOrders = (eventId: string | undefined) => {
   const cancelOrder = useMutation({
     mutationFn: async (orderId: string) => {
       const { error } = await supabase
-        .from('orders' as any)
+        .from('orders')
         .update({ status: 'cancelled' })
         .eq('id', orderId);
       if (error) throw error;
@@ -100,7 +100,7 @@ export const useEventOrders = (eventId: string | undefined) => {
     mutationFn: async (orderId: string) => {
       // TODO: Implement Stripe refund via edge function
       const { error } = await supabase
-        .from('orders' as any)
+        .from('orders')
         .update({ status: 'refunded' })
         .eq('id', orderId);
       if (error) throw error;

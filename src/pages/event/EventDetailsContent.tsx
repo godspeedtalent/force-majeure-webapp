@@ -136,8 +136,8 @@ export const EventDetailsContent = ({
     []
   );
 
-  // Display subtitle as venue
-  const displaySubtitle = event?.venue || '';
+  // Display subtitle from event data, fallback to venue if no subtitle
+  const displaySubtitle = event?.subtitle || event?.venue || '';
 
   // Format time as: 9pm - 2am PST (just the time, no date)
   const formattedDateTime = useMemo(() => {

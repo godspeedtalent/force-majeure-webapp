@@ -10,7 +10,7 @@ export const useTicketTiers = (eventId: string | undefined) => {
       if (!eventId) return [] as TicketTier[];
 
       const { data, error } = await supabase
-        .from('ticket_tiers' as any)
+        .from('ticket_tiers')
         .select('*')
         .eq('event_id', eventId)
         .eq('is_active', true)

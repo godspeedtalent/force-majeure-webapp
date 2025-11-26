@@ -2,7 +2,9 @@ import { format } from 'date-fns';
 import { useAsyncAction } from '@/shared/hooks/useAsyncAction';
 import { eventService } from '../services/eventService';
 import { EventFormState } from './useEventData';
-import { supabase } from '@/shared/api/supabase/client';
+import { getArtistName } from '@/features/artists/services/artistQueries';
+import { getVenueName } from '@/features/venues/services/venueQueries';
+import type { Artist, Venue } from '@/features/events/types';
 
 /**
  * useEventForm Hook
@@ -22,22 +24,11 @@ export function useEventForm(options: UseEventFormOptions) {
 
   const { execute: submitForm, isLoading } = useAsyncAction(
     async (formState: EventFormState) => {
-      // Fetch artist and venue names for title
-      const [headlinerResponse, venueResponse] = await Promise.all([
-        supabase
-          .from('artists' as any)
-          .select('name')
-          .eq('id', formState.headlinerId)
-          .single(),
-        supabase
-          .from('venues' as any)
-          .select('name')
-          .eq('id', formState.venueId)
-          .single(),
+      // Fetch artist and venue names for title using centralized query services
+      const [headliner, venue] = await Promise.all([
+        getArtistName(formState.headlinerId),
+        getVenueName(formState.venueId),
       ]);
-
-      const headliner = headlinerResponse.data as any;
-      const venue = venueResponse.data as any;
 
       // Construct event title
       const eventTitle =
