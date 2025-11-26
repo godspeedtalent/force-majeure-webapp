@@ -8,6 +8,7 @@ import {
 } from '@/components/common/shadcn/dialog';
 import { Separator } from '@/components/common/shadcn/separator';
 import { cn } from '@/shared/utils/utils';
+import { GLASS_STYLES } from '@/shared/utils/styleUtils';
 
 interface FormSection {
   title?: string;
@@ -37,7 +38,8 @@ export const FmCommonFormModal = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={cn(
-          'bg-black/90 backdrop-blur-md border border-white/20 text-white max-w-2xl pointer-events-auto',
+          GLASS_STYLES.PANEL,
+          'text-white max-w-2xl pointer-events-auto',
           className
         )}
       >

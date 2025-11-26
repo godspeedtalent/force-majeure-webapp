@@ -316,3 +316,212 @@ export function getSpacing(size: 'xs' | 'sm' | 'md' | 'lg' | 'xl'): string {
 
   return spacingMap[size];
 }
+
+/**
+ * Frosted glass styling constants
+ * Based on the depth system with additional glass-specific effects
+ *
+ * @example
+ * ```tsx
+ * // Base glass panel
+ * <div className={GLASS_STYLES.BASE}>...</div>
+ *
+ * // Elevated glass modal
+ * <div className={GLASS_STYLES.ELEVATED}>...</div>
+ *
+ * // High glass overlay
+ * <div className={GLASS_STYLES.HIGH}>...</div>
+ * ```
+ */
+export const GLASS_STYLES = {
+  /**
+   * Base frosted glass (Level 1)
+   * Light blur with 60% black opacity
+   */
+  BASE: 'bg-black/60 backdrop-blur-sm',
+
+  /**
+   * Elevated frosted glass (Level 2)
+   * Medium blur with 70% black opacity
+   */
+  ELEVATED: 'bg-black/70 backdrop-blur-md',
+
+  /**
+   * High elevation frosted glass (Level 3)
+   * Strong blur with 80% black opacity
+   */
+  HIGH: 'bg-black/80 backdrop-blur-lg',
+
+  /**
+   * Outline/transparent with border (Level 0)
+   * No background, only border
+   */
+  OUTLINE: 'bg-transparent border border-white/20',
+
+  /**
+   * Glass with gradient backdrop
+   * Gradient from solid to transparent
+   */
+  GRADIENT: 'bg-gradient-to-b from-background to-background/95 backdrop-blur-xl',
+
+  /**
+   * Glass panel with border and shadow
+   * Complete glass panel styling
+   */
+  PANEL: cn(
+    'bg-black/70 backdrop-blur-md',
+    'border-2 border-white/20',
+    'shadow-xl shadow-black/50'
+  ),
+
+  /**
+   * Modal overlay glass
+   * Full screen overlay with blur
+   */
+  MODAL_OVERLAY: 'bg-black/80 backdrop-blur-lg',
+
+  /**
+   * Dropdown menu glass
+   * Optimized for menus and dropdowns
+   */
+  DROPDOWN: cn(
+    'bg-gradient-to-r from-background to-background/95',
+    'backdrop-blur-xl',
+    'border-2 border-white/20',
+    'shadow-xl shadow-black/50'
+  ),
+} as const;
+
+/**
+ * Gold accent styling constants
+ * Reusable gold-themed styles for interactive elements
+ *
+ * @example
+ * ```tsx
+ * // Gold border
+ * <div className={GOLD_ACCENT_STYLES.BORDER}>...</div>
+ *
+ * // Gold text
+ * <span className={GOLD_ACCENT_STYLES.TEXT}>Important</span>
+ *
+ * // Gold hover effect
+ * <button className={GOLD_ACCENT_STYLES.HOVER}>Click me</button>
+ * ```
+ */
+export const GOLD_ACCENT_STYLES = {
+  /**
+   * Gold text color
+   */
+  TEXT: COLOR_CLASSES.GOLD_TEXT,
+
+  /**
+   * Gold background
+   */
+  BG: COLOR_CLASSES.GOLD_BG,
+
+  /**
+   * Gold border
+   */
+  BORDER: COLOR_CLASSES.GOLD_BORDER,
+
+  /**
+   * Gold border with glow
+   */
+  BORDER_GLOW: cn(
+    COLOR_CLASSES.GOLD_BORDER,
+    'shadow-[0_0_12px_rgba(223,186,125,0.3)]'
+  ),
+
+  /**
+   * Hover state - gold background
+   */
+  HOVER_BG: cn(
+    COLOR_CLASSES.GOLD_HOVER_BG,
+    'transition-colors duration-300'
+  ),
+
+  /**
+   * Hover state - gold text
+   */
+  HOVER_TEXT: cn(
+    COLOR_CLASSES.GOLD_HOVER_TEXT,
+    'transition-colors duration-300'
+  ),
+
+  /**
+   * Hover state - gold border with glow
+   */
+  HOVER_BORDER_GLOW: cn(
+    'hover:border-fm-gold/50',
+    'hover:shadow-[0_0_12px_rgba(223,186,125,0.15)]',
+    'transition-all duration-300'
+  ),
+
+  /**
+   * Focus state - gold border with strong glow
+   */
+  FOCUS_BORDER_GLOW: cn(
+    'focus-visible:border-fm-gold',
+    'focus-visible:shadow-[0_4px_16px_rgba(223,186,125,0.3)]',
+    'focus-visible:outline-none',
+    'transition-all duration-300'
+  ),
+
+  /**
+   * Active/pressed state - slightly darker gold
+   */
+  ACTIVE: 'active:opacity-90',
+
+  /**
+   * Gold accent on hover (background overlay)
+   */
+  HOVER_OVERLAY: 'hover:bg-fm-gold/10 transition-colors duration-300',
+
+  /**
+   * Gold accent on focus (background overlay)
+   */
+  FOCUS_OVERLAY: 'focus:bg-fm-gold/15 transition-colors duration-300',
+
+  /**
+   * Combined hover and focus overlay
+   */
+  INTERACTIVE_OVERLAY: cn(
+    'hover:bg-fm-gold/10',
+    'focus:bg-fm-gold/15',
+    'active:opacity-90',
+    'transition-all duration-300'
+  ),
+
+  /**
+   * Gold divider line
+   */
+  DIVIDER: 'h-px bg-gradient-to-r from-transparent via-fm-gold/30 to-transparent',
+
+  /**
+   * Gold underline (for links or emphasis)
+   */
+  UNDERLINE: 'border-b border-fm-gold',
+
+  /**
+   * Gold underline on hover
+   */
+  HOVER_UNDERLINE: cn(
+    'hover:border-b hover:border-fm-gold',
+    'transition-all duration-300'
+  ),
+
+  /**
+   * Gold glow effect (shadow only)
+   */
+  GLOW: 'shadow-[0_0_20px_rgba(223,186,125,0.4)]',
+
+  /**
+   * Subtle gold glow
+   */
+  GLOW_SUBTLE: 'shadow-[0_0_12px_rgba(223,186,125,0.2)]',
+
+  /**
+   * Strong gold glow
+   */
+  GLOW_STRONG: 'shadow-[0_4px_24px_rgba(223,186,125,0.5)]',
+} as const;

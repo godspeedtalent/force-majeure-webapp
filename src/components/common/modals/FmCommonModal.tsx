@@ -7,6 +7,7 @@ import {
   DialogTitle,
 } from '@/components/common/shadcn/dialog';
 import { cn } from '@/shared/utils/utils';
+import { GLASS_STYLES } from '@/shared/utils/styleUtils';
 
 interface FmCommonModalProps {
   open: boolean;
@@ -33,7 +34,8 @@ export const FmCommonModal = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={cn(
-          'bg-black/90 backdrop-blur-md border border-white/20 text-white max-w-2xl',
+          GLASS_STYLES.PANEL,
+          'text-white max-w-2xl',
           className
         )}
       >
