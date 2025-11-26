@@ -46,9 +46,10 @@ interface Event {
 interface EventCardProps {
   event: Event;
   isSingleRow?: boolean;
+  isPastEvent?: boolean;
 }
 
-export const EventCard = ({ event, isSingleRow = false }: EventCardProps) => {
+export const EventCard = ({ event, isSingleRow = false, isPastEvent = false }: EventCardProps) => {
   const navigate = useNavigate();
   const [showTicketDialog, setShowTicketDialog] = useState(false);
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
@@ -196,7 +197,7 @@ export const EventCard = ({ event, isSingleRow = false }: EventCardProps) => {
               </div>
 
               {/* Action Buttons - Push to bottom */}
-              {event.ticketUrl && (
+              {!isPastEvent && event.ticketUrl && (
                 <div className='flex gap-2 mt-auto'>
                   <Button
                     size='sm'

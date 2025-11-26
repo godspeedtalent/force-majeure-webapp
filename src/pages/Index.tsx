@@ -44,6 +44,8 @@ interface EventData {
 const Index = () => {
   const navigate = useNavigate();
   const [upcomingEvents, setUpcomingEvents] = useState<EventData[]>([]);
+  const [pastEvents, setPastEvents] = useState<EventData[]>([]);
+  const [showPastEvents, setShowPastEvents] = useState(false);
   const [loading, setLoading] = useState(true);
   const fontsLoaded = useFontLoader();
   const scrollY = useScrollPosition();
@@ -97,7 +99,10 @@ const Index = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const { data, error } = await supabase
+        const now = new Date().toISOString();
+
+        // Fetch upcoming events (future events, ascending order)
+        const { data: upcomingData, error: upcomingError } = await supabase
           .from('events')
           .select(
             `
@@ -110,16 +115,42 @@ const Index = () => {
           `
           )
           .eq('status', 'published')
+          .gte('start_time', now)
           .order('start_time', {
             ascending: true,
           });
-        if (error) {
-          await handleFetchError('fetching events', error);
+
+        if (upcomingError) {
+          await handleFetchError('fetching upcoming events', upcomingError);
           return;
         }
 
-        // Transform the data to match the EventCard expected format
-        const transformedEvents: EventData[] = data.map(event => {
+        // Fetch past events (past events, descending order)
+        const { data: pastData, error: pastError } = await supabase
+          .from('events')
+          .select(
+            `
+            *,
+            headliner_artist:artists!events_headliner_id_fkey(id, name, genre, image_url),
+            event_artists!left(
+              artist:artists(id, name, genre, image_url)
+            ),
+            venues(name)
+          `
+          )
+          .eq('status', 'published')
+          .lt('start_time', now)
+          .order('start_time', {
+            ascending: false,
+          });
+
+        if (pastError) {
+          await handleFetchError('fetching past events', pastError);
+          return;
+        }
+
+        // Transform function for reusability
+        const transformEvent = (event: any): EventData => {
           const undercard = event.event_artists?.map((ea: any) => ({
             name: ea.artist.name,
             genre: ea.artist.genre || 'Electronic',
@@ -149,8 +180,10 @@ const Index = () => {
             ticketUrl: null,
             is_tba: (event as any).is_tba ?? false,
           };
-        });
-        setUpcomingEvents(transformedEvents);
+        };
+
+        setUpcomingEvents(upcomingData.map(transformEvent));
+        setPastEvents(pastData.map(transformEvent));
       } catch (error) {
         await handleFetchError('in initialization', error);
       } finally {
@@ -219,6 +252,7 @@ const Index = () => {
       data-section-id='events'
     >
       <div className='max-w-7xl mx-auto animate-fade-in w-full'>
+        {/* Upcoming Events */}
         <div className={isMobile ? 'space-y-4 overflow-y-auto max-h-[80vh]' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center'}>
           {loading ? (
             Array.from({ length: 6 }).map((_, idx) => (
@@ -260,7 +294,47 @@ const Index = () => {
               </FmInfoCard>
             </div>
           )}
+        </div>
+
+        {/* Display Past Events Button */}
+        {!loading && pastEvents.length > 0 && (
+          <div className='flex justify-center mt-[40px]'>
+            <FmCommonButton
+              onClick={() => setShowPastEvents(!showPastEvents)}
+              variant='outline'
+            >
+              {showPastEvents ? 'Hide past events' : 'Display past events'}
+            </FmCommonButton>
           </div>
+        )}
+
+        {/* Past Events Section */}
+        {!loading && showPastEvents && pastEvents.length > 0 && (
+          <div className='mt-[60px]'>
+            <h2 className='text-2xl lg:text-3xl font-canela text-fm-gold mb-[40px] text-center'>
+              Past events.
+            </h2>
+            <div className={isMobile ? 'space-y-4' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center'}>
+              {pastEvents.map(event =>
+                event.is_tba ? (
+                  <FmTbaEventCard
+                    key={event.id}
+                    event={{
+                      id: event.id,
+                      date: event.date,
+                      time: event.time,
+                      venue: event.venue !== 'TBA' ? event.venue : undefined,
+                      is_tba: true,
+                    }}
+                    isSingleRow={false}
+                  />
+                ) : (
+                  <EventCard key={event.id} event={event} isSingleRow={false} isPastEvent />
+                )
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
