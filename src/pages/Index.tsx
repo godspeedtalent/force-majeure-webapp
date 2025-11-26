@@ -380,14 +380,14 @@ const Index = () => {
               </ParallaxLayerManager>
             ) : isSingleRow ? (
               /* Single Page Layout - Combined view */
-              <div className='h-screen flex flex-col py-8 px-4 relative z-10'>
+              <div className='h-screen flex flex-col justify-around py-8 px-4 relative z-10'>
                 {/* Logo Section - Top Row */}
-                <div className='flex items-center justify-center flex-shrink-0'>
+                <div className='flex items-center justify-center'>
                   <div className='max-w-7xl mx-auto'>
                     <div className='flex flex-col items-center text-center'>
                       <ForceMajeureLogo size='lg' className='mb-4 h-32 w-32' />
                       <h1
-                        className='text-2xl lg:text-4xl font-screamer leading-none'
+                        className='text-2xl lg:text-4xl font-screamer leading-none mb-8'
                         style={{ fontWeight: 475 }}
                       >
                         <span className='text-foreground'>FORCE </span>
@@ -395,19 +395,14 @@ const Index = () => {
                           MAJEURE
                         </span>
                       </h1>
+                      {/* Decorative Divider */}
+                      <DecorativeDivider />
                     </div>
                   </div>
                 </div>
 
-                {/* Frosted Background - starts at divider, extends down */}
-                <div className='flex-1 bg-background/20 backdrop-blur-xl -mx-4 px-4 pt-8 flex flex-col justify-around'>
-                  {/* Decorative Divider */}
-                  <div className='flex-shrink-0 mb-8'>
-                    <DecorativeDivider />
-                  </div>
-
-                  {/* Events Section - Bottom Row */}
-                  <div ref={eventsRef} className='flex items-center justify-center' data-section-id='events'>
+                {/* Events Section - Bottom Row */}
+                <div ref={eventsRef} className='flex items-center justify-center' data-section-id='events'>
                     <div className='max-w-7xl mx-auto animate-fade-in w-full'>
                       <div className='flex justify-center items-center gap-8'>
                         {loading ? (
@@ -450,20 +445,15 @@ const Index = () => {
                             </FmInfoCard>
                           </div>
                         )}
-                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             ) : (
-              <>
-                <div className='relative z-10'>
-                  {heroContent}
-                </div>
-                <div className='relative z-10 bg-background/20 backdrop-blur-xl min-h-[calc(100vh-100px)]'>
-                  {eventsContent}
-                </div>
-              </>
+              <div className='relative z-10'>
+                {heroContent}
+                {eventsContent}
+              </div>
             )}
           </>
         )}
