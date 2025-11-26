@@ -47,6 +47,7 @@ import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared/auth/permissions';
 import { handleError } from '@/shared/services/errorHandler';
 import { AdminLockIndicator } from '@/components/common/indicators';
+import { useEventOverviewForm } from './event/hooks/useEventOverviewForm';
 
 type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'reports' | 'tracking' | 'social' | 'admin' | 'view';
 
@@ -58,19 +59,6 @@ export default function EventManagement() {
   const [activeTab, setActiveTab] = useState<EventTab>('overview');
   const queryClient = useQueryClient();
   const [isDeleting, setIsDeleting] = useState(false);
-
-  // Overview form state
-  const [headlinerId, setHeadlinerId] = useState<string>('');
-  const [venueId, setVenueId] = useState<string>('');
-  const [eventDate, setEventDate] = useState<Date>();
-  const [endTime, setEndTime] = useState<string>('02:00');
-  const [isAfterHours, setIsAfterHours] = useState(false);
-  const [heroImage, setHeroImage] = useState<string>('');
-  const [heroImageFocalY, setHeroImageFocalY] = useState<number>(50);
-  const [isSaving, setIsSaving] = useState(false);
-  const [customTitle, setCustomTitle] = useState<string>('');
-  const [eventSubtitle, setEventSubtitle] = useState<string>('');
-  const [aboutEvent, setAboutEvent] = useState<string>('');
   const [orderCount, setOrderCount] = useState(0);
 
   // Fetch event data
@@ -97,28 +85,8 @@ export default function EventManagement() {
     enabled: !!id,
   });
 
-  // Populate form when event data loads
-  useEffect(() => {
-    if (event) {
-      setHeadlinerId(event.headliner_id || '');
-      setVenueId(event.venue_id || '');
-      setIsAfterHours(event.is_after_hours || false);
-      setEndTime(event.end_time || '02:00');
-      setHeroImage((event as any).hero_image || '');
-      setHeroImageFocalY((event as any).hero_image_focal_y ?? 50);
-
-      // Set title, subtitle, and description
-      setCustomTitle((event as any).title || event.name || '');
-      setEventSubtitle(event.description || '');
-      setAboutEvent((event as any).about_event || '');
-
-      // Parse date and time from start_time
-      if (event.start_time) {
-        const parsedDate = new Date(event.start_time);
-        setEventDate(parsedDate);
-      }
-    }
-  }, [event]);
+  // Overview form management
+  const form = useEventOverviewForm(event);
 
   // Fetch order count for status actions
   useEffect(() => {
@@ -239,74 +207,21 @@ export default function EventManagement() {
   ];
 
   const handleSaveOverview = async () => {
-    if (!customTitle.trim()) {
-      toast.error('Please provide an event title');
-      return;
-    }
-    
-    if (!headlinerId || !venueId || !eventDate) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
+    if (!id) return;
 
-    setIsSaving(true);
-    try {
-      const { error } = await supabase
-        .from('events')
-        .update({
-          title: customTitle.trim(),
-          description: eventSubtitle.trim() || null,
-          about_event: aboutEvent.trim() || null,
-          headliner_id: headlinerId,
-          venue_id: venueId,
-          start_time: eventDate.toISOString(),
-          end_time: isAfterHours ? null : endTime,
-          is_after_hours: isAfterHours,
-          hero_image: heroImage || null,
-          hero_image_focal_x: 50,
-          hero_image_focal_y: heroImageFocalY,
-        } as any)
-        .eq('id', id!);
-
-      if (error) throw error;
-
-      toast.success('Overview updated successfully');
+    const success = await form.save(id, () => {
       queryClient.invalidateQueries({ queryKey: ['event', id] });
-    } catch (error) {
-      await handleError(error, {
-        title: 'Failed to Update Overview',
-        description: 'Could not save event overview changes',
-        endpoint: 'EventManagement/overview',
-        method: 'UPDATE',
-      });
-    } finally {
-      setIsSaving(false);
-    }
+    });
+
+    return success;
   };
 
   const handleHeroImageUpload = async (publicUrl: string) => {
-    setHeroImage(publicUrl);
-
     if (!id) return;
 
-    try {
-      const { error } = await supabase
-        .from('events' as any)
-        .update({ hero_image: publicUrl } as any)
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast.success('Hero image saved');
+    await form.saveHeroImage(id, publicUrl, () => {
       queryClient.invalidateQueries({ queryKey: ['event', id] });
-    } catch (error) {
-      await handleError(error, {
-        title: 'Failed to Save Hero Image',
-        description: 'The image was uploaded but could not be linked to this event.',
-        endpoint: 'EventManagement/hero-image',
-        method: 'UPDATE',
-      });
-    }
+    });
   };
 
   const handleDeleteEvent = async () => {
@@ -475,7 +390,7 @@ export default function EventManagement() {
                   </div>
                   <FmCommonButton
                     onClick={handleSaveOverview}
-                    loading={isSaving}
+                    loading={form.isSaving}
                     icon={Save}
                   >
                     Save Changes
@@ -489,8 +404,8 @@ export default function EventManagement() {
                       Headliner <span className='text-destructive'>*</span>
                     </Label>
                     <FmArtistSearchDropdown
-                      value={headlinerId}
-                      onChange={setHeadlinerId}
+                      value={form.headlinerId}
+                      onChange={value => form.updateField('headlinerId', value)}
                       placeholder='Select headliner'
                     />
                   </div>
@@ -501,8 +416,8 @@ export default function EventManagement() {
                       Venue <span className='text-destructive'>*</span>
                     </Label>
                     <FmVenueSearchDropdown
-                      value={venueId}
-                      onChange={setVenueId}
+                      value={form.venueId}
+                      onChange={value => form.updateField('venueId', value)}
                       placeholder='Select venue'
                     />
                   </div>
@@ -514,8 +429,8 @@ export default function EventManagement() {
                     </Label>
                     <Input
                       id='event-title'
-                      value={customTitle}
-                      onChange={e => setCustomTitle(e.target.value)}
+                      value={form.customTitle}
+                      onChange={e => form.updateField('customTitle', e.target.value)}
                       placeholder='Enter event title'
                     />
                   </div>
@@ -526,8 +441,8 @@ export default function EventManagement() {
                     </Label>
                     <Input
                       id='event-subtitle'
-                      value={eventSubtitle}
-                      onChange={e => setEventSubtitle(e.target.value)}
+                      value={form.eventSubtitle}
+                      onChange={e => form.updateField('eventSubtitle', e.target.value)}
                       placeholder='Enter event subtitle'
                     />
                   </div>
@@ -539,8 +454,8 @@ export default function EventManagement() {
                     </Label>
                     <textarea
                       id='about-event'
-                      value={aboutEvent}
-                      onChange={e => setAboutEvent(e.target.value)}
+                      value={form.aboutEvent}
+                      onChange={e => form.updateField('aboutEvent', e.target.value)}
                       placeholder='Enter event description...'
                       className='w-full min-h-[120px] p-3 rounded-md border border-input bg-background text-foreground resize-y'
                       rows={5}
@@ -555,20 +470,20 @@ export default function EventManagement() {
                     </Label>
                     <div className='flex gap-2'>
                       <FmCommonDatePicker
-                        value={eventDate}
-                        onChange={setEventDate}
+                        value={form.eventDate}
+                        onChange={date => form.updateField('eventDate', date)}
                       />
                       <FmCommonTimePicker
-                        value={eventDate ? format(eventDate, 'HH:mm') : '20:00'}
+                        value={form.eventDate ? format(form.eventDate, 'HH:mm') : '20:00'}
                         onChange={(time: string) => {
-                          if (eventDate) {
+                          if (form.eventDate) {
                             const [hours, minutes] = time.split(':');
-                            const newDate = new Date(eventDate);
+                            const newDate = new Date(form.eventDate);
                             newDate.setHours(
                               parseInt(hours),
                               parseInt(minutes)
                             );
-                            setEventDate(newDate);
+                            form.updateField('eventDate', newDate);
                           }
                         }}
                       />
@@ -580,16 +495,16 @@ export default function EventManagement() {
                     <Label>End Time</Label>
                     <div className='flex items-center gap-4'>
                       <FmCommonTimePicker
-                        value={endTime}
-                        onChange={setEndTime}
-                        disabled={isAfterHours}
+                        value={form.endTime}
+                        onChange={time => form.updateField('endTime', time)}
+                        disabled={form.isAfterHours}
                       />
                       <div className='flex items-center gap-2'>
                         <Checkbox
                           id='after-hours'
-                          checked={isAfterHours}
+                          checked={form.isAfterHours}
                           onCheckedChange={checked =>
-                            setIsAfterHours(!!checked)
+                            form.updateField('isAfterHours', !!checked)
                           }
                         />
                         <Label htmlFor='after-hours' className='cursor-pointer'>
@@ -604,21 +519,19 @@ export default function EventManagement() {
                     <Label htmlFor='hero-image'>Hero Image</Label>
                     <FmImageUpload
                       eventId={id}
-                      currentImageUrl={heroImage}
+                      currentImageUrl={form.heroImage}
                       isPrimary={true}
                       onUploadComplete={handleHeroImageUpload}
                     />
                   </div>
 
                   {/* Hero Image Focal Point */}
-                  {heroImage && (
+                  {form.heroImage && (
                     <div className='md:col-span-2'>
                       <HeroImageFocalPoint
-                        imageUrl={heroImage}
-                        focalY={heroImageFocalY}
-                        onChange={(y) => {
-                          setHeroImageFocalY(y);
-                        }}
+                        imageUrl={form.heroImage}
+                        focalY={form.heroImageFocalY}
+                        onChange={y => form.updateField('heroImageFocalY', y)}
                       />
                     </div>
                   )}
