@@ -87,12 +87,21 @@ export interface Event {
   organization_id?: string | null;
   test_data?: boolean;
   share_count?: number; // Number of times this event has been shared
+  min_interest_count_display?: number; // Minimum interest count to display publicly
+  min_share_count_display?: number; // Minimum share count to display publicly
   created_at: string;
   updated_at: string;
   venue?: Venue;
   headliner?: Artist;
   undercard_artists?: UndercardArtist[];
   ticket_tiers?: TicketTier[];
+}
+
+export interface UserEventInterest {
+  id: string;
+  user_id: string;
+  event_id: string;
+  created_at: string;
 }
 
 // Form data types (used in create/edit forms)

@@ -4,9 +4,9 @@ import {
   Calendar,
   Clock,
   Eye,
-  Heart,
   MapPin,
   Share2,
+  Star,
   Users,
 } from 'lucide-react';
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
@@ -49,6 +49,7 @@ import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserRole } from '@/shared/hooks/useUserRole';
 import { useEventViews } from '@/shared/hooks/useEventViews';
 import { useShareEvent } from '@/features/events/hooks/useShareEvent';
+import { useEventInterest } from '@/features/events/hooks/useEventInterest';
 import { formatTimeDisplay } from '@/shared/utils/timeUtils';
 import { supabase } from '@/shared/api/supabase/client';
 import { useQuery } from '@tanstack/react-query';
@@ -90,6 +91,15 @@ export const EventDetailsContent = ({
     eventId: event.id,
     eventTitle: displayTitle,
   });
+  
+  // Event interest hook
+  const { 
+    interestCount, 
+    isInterested, 
+    toggleInterest, 
+    isLoading: isInterestLoading 
+  } = useEventInterest(event.id, displayTitle);
+  
   const [selectedArtist, setSelectedArtist] =
     useState<FmArtistDetailsModalProps['artist']>(null);
   const [isArtistModalOpen, setIsArtistModalOpen] = useState(false);
@@ -504,10 +514,59 @@ export const EventDetailsContent = ({
   );
 
   const shareCount = (event as any).share_count || 0;
-  const showShareCount = shareCount > 0;
+  const minShareThreshold = (event as any).min_share_count_display ?? 0;
+  const shouldShowShareCount = shareCount >= minShareThreshold;
+  
+  const minInterestThreshold = (event as any).min_interest_count_display ?? 0;
+  const shouldShowInterestCount = interestCount >= minInterestThreshold;
+
+  // Handle interest click for unauthenticated users
+  const handleInterestClick = () => {
+    if (!user) {
+      // Redirect to auth with pending action
+      navigate('/auth', {
+        state: {
+          from: location,
+          pendingAction: {
+            type: 'mark-interested',
+            eventId: event.id,
+            eventTitle: displayTitle,
+          },
+        },
+      });
+      return;
+    }
+
+    toggleInterest();
+  };
 
   const headerActions = (
     <div className='flex items-center gap-2'>
+      {/* Interest Button */}
+      <div className='flex items-center gap-1'>
+        <button
+          type='button'
+          aria-label={isInterested ? 'Remove interest' : 'Mark as interested'}
+          onClick={handleInterestClick}
+          disabled={isInterestLoading}
+          className='h-10 w-10 rounded-none flex items-center justify-center bg-white/5 text-muted-foreground border border-transparent transition-all duration-200 hover:bg-white/10 hover:text-fm-gold hover:border-fm-gold hover:scale-105 active:scale-95 relative overflow-hidden cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
+        >
+          <Star
+            className={`h-4 w-4 transition-all duration-300 ${
+              isInterested
+                ? 'fill-fm-gold text-fm-gold'
+                : 'text-muted-foreground'
+            }`}
+          />
+        </button>
+        {shouldShowInterestCount && interestCount > 0 && (
+          <span className='text-xs text-muted-foreground ml-1'>
+            {interestCount.toLocaleString()}
+          </span>
+        )}
+      </div>
+      
+      {/* Share Button */}
       <div className='flex items-center gap-1'>
         <button
           type='button'
@@ -517,19 +576,12 @@ export const EventDetailsContent = ({
         >
           <Share2 className='h-4 w-4' />
         </button>
-        {showShareCount && (
+        {shouldShowShareCount && shareCount > 0 && (
           <span className='text-xs text-muted-foreground ml-1'>
             {shareCount.toLocaleString()}
           </span>
         )}
       </div>
-      <button
-        type='button'
-        aria-label='Save event'
-        className='h-10 w-10 rounded-none flex items-center justify-center bg-white/5 text-muted-foreground border border-transparent transition-all duration-200 hover:bg-white/10 hover:text-fm-gold hover:border-fm-gold relative overflow-hidden cursor-pointer'
-      >
-        <Heart className='h-4 w-4' />
-      </button>
       {/* Show view count here if guest list is disabled but view count is enabled */}
       {!guestListEnabled && showViewCount && (
         <div className='flex items-center gap-2 px-3 py-2 h-10 bg-white/5 rounded-none border border-transparent'>

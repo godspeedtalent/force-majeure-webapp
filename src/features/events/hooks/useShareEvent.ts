@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 
 import { supabase } from '@/shared/api/supabase/client';
 import { logger } from '@/shared/services/logger';
