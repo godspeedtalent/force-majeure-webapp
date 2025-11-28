@@ -844,6 +844,9 @@ export const EventDetailsContent = ({
         shareCount={shareCount}
         viewCount={viewCount}
         eventImage={event.heroImage}
+        venueName={event.venue}
+        dateTime={`${longDateLabel} • ${formattedTime}`}
+        undercardArtists={event.undercard.map(artist => artist.name)}
       />
     </>
   );

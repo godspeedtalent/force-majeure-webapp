@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Copy, Check, Share2, Eye } from 'lucide-react';
+import { Copy, Check, Share2, Eye, MapPin, Calendar, Music } from 'lucide-react';
 import { toast } from 'sonner';
 
 import {
@@ -20,6 +20,9 @@ interface FmShareModalProps {
   shareCount?: number;
   viewCount?: number;
   eventImage?: string | null;
+  venueName?: string;
+  dateTime?: string;
+  undercardArtists?: string[];
 }
 
 export const FmShareModal = ({
@@ -31,6 +34,9 @@ export const FmShareModal = ({
   shareCount = 0,
   viewCount = 0,
   eventImage,
+  venueName,
+  dateTime,
+  undercardArtists = [],
 }: FmShareModalProps) => {
   const [copied, setCopied] = useState(false);
 
@@ -82,7 +88,31 @@ export const FmShareModal = ({
             <div>
               <p className='text-sm text-muted-foreground mb-2'>Sharing:</p>
               <div className='flex items-start justify-between gap-4'>
-                <p className='font-canela text-lg text-foreground flex-1'>{title}</p>
+                <div className='flex-1'>
+                  <p className='font-canela text-lg text-foreground mb-3'>{title}</p>
+                  
+                  {/* Event Details */}
+                  <div className='space-y-2 text-sm'>
+                    {venueName && (
+                      <div className='flex items-center gap-2 text-muted-foreground'>
+                        <MapPin className='h-3.5 w-3.5 flex-shrink-0' />
+                        <span>{venueName}</span>
+                      </div>
+                    )}
+                    {dateTime && (
+                      <div className='flex items-center gap-2 text-muted-foreground'>
+                        <Calendar className='h-3.5 w-3.5 flex-shrink-0' />
+                        <span>{dateTime}</span>
+                      </div>
+                    )}
+                    {undercardArtists.length > 0 && (
+                      <div className='flex items-start gap-2 text-muted-foreground'>
+                        <Music className='h-3.5 w-3.5 flex-shrink-0 mt-0.5' />
+                        <span>{undercardArtists.join(', ')}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
                 <div className='flex flex-col gap-2 text-sm text-muted-foreground'>
                   {shareCount > 0 && (
                     <div className='flex items-center gap-2'>
