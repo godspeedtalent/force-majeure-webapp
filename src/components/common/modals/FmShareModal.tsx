@@ -95,19 +95,19 @@ export const FmShareModal = ({
                   <div className='space-y-2 text-sm'>
                     {venueName && (
                       <div className='flex items-center gap-2 text-muted-foreground'>
-                        <MapPin className='h-3.5 w-3.5 flex-shrink-0' />
+                        <MapPin className='h-3.5 w-3.5 flex-shrink-0 text-fm-gold' />
                         <span>{venueName}</span>
                       </div>
                     )}
                     {dateTime && (
                       <div className='flex items-center gap-2 text-muted-foreground'>
-                        <Calendar className='h-3.5 w-3.5 flex-shrink-0' />
+                        <Calendar className='h-3.5 w-3.5 flex-shrink-0 text-fm-gold' />
                         <span>{dateTime}</span>
                       </div>
                     )}
                     {undercardArtists.length > 0 && (
                       <div className='flex items-start gap-2 text-muted-foreground'>
-                        <Music className='h-3.5 w-3.5 flex-shrink-0 mt-0.5' />
+                        <Music className='h-3.5 w-3.5 flex-shrink-0 mt-0.5 text-fm-gold' />
                         <span>{undercardArtists.join(', ')}</span>
                       </div>
                     )}
@@ -137,15 +137,16 @@ export const FmShareModal = ({
               </label>
               <div
                 className={cn(
-                  'relative flex items-center gap-3 p-4 border-2 rounded-none transition-all duration-200 cursor-pointer group',
+                  'relative flex items-center gap-3 p-4 border-2 border-t-2 border-l-2 border-r-2 border-b-[3px] rounded-none transition-all duration-300 cursor-pointer group overflow-hidden',
                   'bg-background/40 hover:bg-white/5',
-                  'border-white/20 hover:border-fm-gold',
-                  'hover:shadow-[0_4px_16px_rgba(223,186,125,0.2)]'
+                  'border-white/20 hover:border-fm-gold border-b-fm-gold',
+                  'hover:shadow-[0_4px_16px_rgba(223,186,125,0.2)]',
+                  'active:shadow-[0_0_30px_rgba(223,186,125,0.4)] active:bg-fm-gold/10'
                 )}
                 onClick={handleCopyUrl}
               >
-                <div className='flex-1 min-w-0'>
-                  <p className='text-sm text-foreground truncate font-mono'>
+                <div className='flex-1 min-w-0 overflow-hidden'>
+                  <p className='text-sm text-foreground group-hover:text-fm-gold truncate font-mono transition-colors duration-200'>
                     {url}
                   </p>
                 </div>
