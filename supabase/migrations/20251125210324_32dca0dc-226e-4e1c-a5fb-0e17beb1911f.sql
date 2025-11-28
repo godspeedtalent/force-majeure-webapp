@@ -1,8 +1,11 @@
--- Add RLS policies for event_artists to allow org members with manage_events permission
+-- Add RLS policies for event_artists to allow org members with manage_events permission (idempotent)
 -- to manage event artists for their organization's events
 
--- Drop existing restrictive policies
+-- Drop existing policies
 DROP POLICY IF EXISTS "Admins can manage event artists" ON public.event_artists;
+DROP POLICY IF EXISTS "Admins and org members can insert event artists" ON public.event_artists;
+DROP POLICY IF EXISTS "Admins and org members can update event artists" ON public.event_artists;
+DROP POLICY IF EXISTS "Admins and org members can delete event artists" ON public.event_artists;
 
 -- Create new policies that allow both admins and org members with manage_events permission
 
@@ -15,7 +18,7 @@ ON public.event_artists
 FOR INSERT
 WITH CHECK (
   (auth.uid() IS NOT NULL) AND (
-    has_role(auth.uid(), 'admin'::text) OR 
+    has_role(auth.uid(), 'admin'::text) OR
     is_dev_admin(auth.uid()) OR
     (
       has_permission(auth.uid(), 'manage_events'::text) AND
@@ -35,7 +38,7 @@ ON public.event_artists
 FOR UPDATE
 USING (
   (auth.uid() IS NOT NULL) AND (
-    has_role(auth.uid(), 'admin'::text) OR 
+    has_role(auth.uid(), 'admin'::text) OR
     is_dev_admin(auth.uid()) OR
     (
       has_permission(auth.uid(), 'manage_events'::text) AND
@@ -55,7 +58,7 @@ ON public.event_artists
 FOR DELETE
 USING (
   (auth.uid() IS NOT NULL) AND (
-    has_role(auth.uid(), 'admin'::text) OR 
+    has_role(auth.uid(), 'admin'::text) OR
     is_dev_admin(auth.uid()) OR
     (
       has_permission(auth.uid(), 'manage_events'::text) AND

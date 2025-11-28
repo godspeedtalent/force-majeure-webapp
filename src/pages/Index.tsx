@@ -39,6 +39,7 @@ interface EventData {
   description: string | null;
   ticketUrl?: string | null;
   is_tba?: boolean;
+  display_subtitle?: boolean;
 }
 
 const Index = () => {
@@ -179,6 +180,7 @@ const Index = () => {
             description: event.description || null,
             ticketUrl: null,
             is_tba: (event as any).is_tba ?? false,
+            display_subtitle: (event as any).display_subtitle ?? true,
           };
         };
 
@@ -253,7 +255,7 @@ const Index = () => {
     >
       <div className='max-w-7xl mx-auto animate-fade-in w-full'>
         {/* Upcoming Events */}
-        <div className={isMobile ? 'space-y-4 overflow-y-auto max-h-[80vh]' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center'}>
+        <div className={isMobile ? 'space-y-4 overflow-y-auto max-h-[80vh]' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center'}>
           {loading ? (
             Array.from({ length: 6 }).map((_, idx) => (
               <EventCardSkeleton key={`skeleton-${idx}`} />
@@ -314,7 +316,7 @@ const Index = () => {
             <h2 className='text-2xl lg:text-3xl font-canela text-fm-gold mb-[40px] text-center'>
               Past events.
             </h2>
-            <div className={isMobile ? 'space-y-4' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center'}>
+            <div className={isMobile ? 'space-y-4' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center'}>
               {pastEvents.map(event =>
                 event.is_tba ? (
                   <FmTbaEventCard
@@ -380,7 +382,7 @@ const Index = () => {
               </ParallaxLayerManager>
             ) : isSingleRow ? (
               /* Single Page Layout - Combined view */
-              <div className='h-screen flex flex-col justify-around py-8 px-4 relative z-10'>
+              <div className='flex flex-col justify-between py-8 pb-[100px] px-4 relative z-10'>
                 {/* Logo Section - Top Row */}
                 <div className='flex items-center justify-center'>
                   <div className='max-w-7xl mx-auto'>

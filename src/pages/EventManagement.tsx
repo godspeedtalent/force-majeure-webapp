@@ -15,6 +15,7 @@ import {
   Link2,
   Eye,
   Share2,
+  Palette,
 } from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
@@ -27,7 +28,7 @@ import { EventOrderManagement } from '@/components/events/orders';
 import { EventAnalytics } from '@/components/events/analytics';
 import Reports from './Reports';
 import { TrackingLinksManagement } from '@/components/events/tracking/TrackingLinksManagement';
-import { EventStatusBadge, PublishEventButton, StatusActionsDropdown } from '@/components/events/status';
+import { EventStatusBadge, PublishEventButton } from '@/components/events/status';
 import { eventService } from '@/features/events/services/eventService';
 import { GuestListSettings } from '@/components/events/social/GuestListSettings';
 import { HeroImageFocalPoint } from '@/components/events/overview/HeroImageFocalPoint';
@@ -47,8 +48,10 @@ import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared/auth/permissions';
 import { handleError } from '@/shared/services/errorHandler';
 import { AdminLockIndicator } from '@/components/common/indicators';
+import { useFeatureFlagHelpers } from '@/shared/hooks/useFeatureFlags';
+import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 
-type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'reports' | 'tracking' | 'social' | 'admin' | 'view';
+type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'reports' | 'tracking' | 'social' | 'ux_display' | 'admin' | 'view';
 
 export default function EventManagement() {
   const { id } = useParams<{ id: string }>();
@@ -57,6 +60,7 @@ export default function EventManagement() {
   const isAdmin = hasRole(ROLES.ADMIN);
   const [activeTab, setActiveTab] = useState<EventTab>('overview');
   const queryClient = useQueryClient();
+  const { isFeatureEnabled } = useFeatureFlagHelpers();
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Overview form state
@@ -72,6 +76,7 @@ export default function EventManagement() {
   const [eventSubtitle, setEventSubtitle] = useState<string>('');
   const [aboutEvent, setAboutEvent] = useState<string>('');
   const [orderCount, setOrderCount] = useState(0);
+  const [displaySubtitle, setDisplaySubtitle] = useState<boolean>(true);
 
   // Fetch event data
   const { data: event, isLoading } = useQuery({
@@ -103,7 +108,17 @@ export default function EventManagement() {
       setHeadlinerId(event.headliner_id || '');
       setVenueId(event.venue_id || '');
       setIsAfterHours(event.is_after_hours || false);
-      setEndTime(event.end_time || '02:00');
+
+      // Parse end_time if it exists (it's stored as ISO timestamp)
+      if (event.end_time) {
+        const endDate = new Date(event.end_time);
+        const hours = endDate.getHours().toString().padStart(2, '0');
+        const minutes = endDate.getMinutes().toString().padStart(2, '0');
+        setEndTime(`${hours}:${minutes}`);
+      } else {
+        setEndTime('02:00');
+      }
+
       setHeroImage((event as any).hero_image || '');
       setHeroImageFocalY((event as any).hero_image_focal_y ?? 50);
 
@@ -111,6 +126,7 @@ export default function EventManagement() {
       setCustomTitle((event as any).title || event.name || '');
       setEventSubtitle(event.description || '');
       setAboutEvent((event as any).about_event || '');
+      setDisplaySubtitle((event as any).display_subtitle ?? true);
 
       // Parse date and time from start_time
       if (event.start_time) {
@@ -160,6 +176,12 @@ export default function EventManagement() {
           label: 'Social',
           icon: Share2,
           description: 'Guest list and social settings',
+        },
+        {
+          id: 'ux_display',
+          label: 'UX Display',
+          icon: Palette,
+          description: 'Homepage card display settings',
         },
       ],
     },
@@ -230,6 +252,7 @@ export default function EventManagement() {
     { id: 'overview', label: 'Overview', icon: FileText },
     { id: 'artists', label: 'Artists', icon: Users },
     { id: 'social', label: 'Social', icon: Share2 },
+    { id: 'ux_display', label: 'UX', icon: Palette },
     { id: 'tiers', label: 'Tiers', icon: Ticket },
     { id: 'orders', label: 'Orders', icon: ShoppingBag },
     { id: 'tracking', label: 'Links', icon: Link2 },
@@ -243,7 +266,7 @@ export default function EventManagement() {
       toast.error('Please provide an event title');
       return;
     }
-    
+
     if (!headlinerId || !venueId || !eventDate) {
       toast.error('Please fill in all required fields');
       return;
@@ -251,6 +274,15 @@ export default function EventManagement() {
 
     setIsSaving(true);
     try {
+      // Convert end time to ISO timestamp if not after hours
+      let endTimeISO = null;
+      if (!isAfterHours && endTime) {
+        const [hours, minutes] = endTime.split(':');
+        const endDate = new Date(eventDate);
+        endDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+        endTimeISO = endDate.toISOString();
+      }
+
       const { error } = await supabase
         .from('events')
         .update({
@@ -260,7 +292,7 @@ export default function EventManagement() {
           headliner_id: headlinerId,
           venue_id: venueId,
           start_time: eventDate.toISOString(),
-          end_time: isAfterHours ? null : endTime,
+          end_time: endTimeISO,
           is_after_hours: isAfterHours,
           hero_image: heroImage || null,
           hero_image_focal_x: 50,
@@ -352,9 +384,35 @@ export default function EventManagement() {
     }
   };
 
+  const handleSaveUXDisplay = async () => {
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('events')
+        .update({
+          display_subtitle: displaySubtitle,
+        } as any)
+        .eq('id', id!);
+
+      if (error) throw error;
+
+      toast.success('UX Display settings updated successfully');
+      queryClient.invalidateQueries({ queryKey: ['event', id] });
+    } catch (error) {
+      await handleError(error, {
+        title: 'Failed to Update UX Display',
+        description: 'Could not save UX display settings',
+        endpoint: 'EventManagement/ux-display',
+        method: 'UPDATE',
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handlePublishEvent = async () => {
     if (!id) return;
-    
+
     try {
       await eventService.updateEventStatus(id, 'published');
       toast.success('Event published successfully!');
@@ -438,20 +496,13 @@ export default function EventManagement() {
               <h1 className='text-3xl font-bold text-foreground'>
                 {event.name}
               </h1>
-              <EventStatusBadge status={(event as any).status || 'draft'} />
             </div>
             <div className='flex items-center gap-2'>
+              <EventStatusBadge status={(event as any).status || 'draft'} />
               {((event as any).status === 'draft' || (event as any).status === 'invisible') && (
                 <PublishEventButton
                   currentStatus={(event as any).status || 'draft'}
                   onPublish={handlePublishEvent}
-                />
-              )}
-              {((event as any).status === 'published' || (event as any).status === 'invisible') && (
-                <StatusActionsDropdown
-                  currentStatus={(event as any).status || 'draft'}
-                  orderCount={orderCount}
-                  onMakeInvisible={handleMakeInvisible}
                 />
               )}
             </div>
@@ -462,8 +513,9 @@ export default function EventManagement() {
         {/* Main Content */}
         <div className='space-y-6'>
           {activeTab === 'overview' && (
-            <Card className='p-8'>
-              <div className='space-y-6'>
+            <Card className='p-8 relative'>
+              {/* Sticky Save Button */}
+              <div className='sticky top-0 z-10 -mx-8 -mt-8 px-8 pt-8 pb-6 bg-card border-b border-border mb-6'>
                 <div className='flex items-center justify-between'>
                   <div>
                     <h2 className='text-2xl font-bold text-foreground mb-2'>
@@ -481,6 +533,7 @@ export default function EventManagement() {
                     Save Changes
                   </FmCommonButton>
                 </div>
+              </div>
 
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                   {/* Headliner */}
@@ -599,6 +652,35 @@ export default function EventManagement() {
                     </div>
                   </div>
 
+                  {/* Event Visibility Control */}
+                  {(event as any).status === 'published' && (
+                    <div className='md:col-span-2'>
+                      <div className='rounded-none border border-yellow-500/50 bg-yellow-500/5 p-6'>
+                        <div className='flex items-start gap-4'>
+                          <div className='p-3 rounded-none bg-yellow-500/10'>
+                            <Eye className='h-6 w-6 text-yellow-500' />
+                          </div>
+                          <div className='flex-1'>
+                            <h3 className='text-lg font-semibold text-foreground mb-2'>
+                              Event Visibility
+                            </h3>
+                            <p className='text-sm text-muted-foreground mb-4'>
+                              Hide this event from public view while keeping it accessible via direct link.
+                              {orderCount > 0 && ` This event has ${orderCount} order${orderCount === 1 ? '' : 's'}.`}
+                            </p>
+                            <FmCommonButton
+                              variant='secondary'
+                              icon={Eye}
+                              onClick={handleMakeInvisible}
+                            >
+                              Make Invisible
+                            </FmCommonButton>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Hero Image */}
                   <div className='space-y-2 md:col-span-2'>
                     <Label htmlFor='hero-image'>Hero Image</Label>
@@ -611,7 +693,7 @@ export default function EventManagement() {
                   </div>
 
                   {/* Hero Image Focal Point */}
-                  {heroImage && (
+                  {heroImage && isFeatureEnabled(FEATURE_FLAGS.HERO_IMAGE_HORIZONTAL_CENTERING) && (
                     <div className='md:col-span-2'>
                       <HeroImageFocalPoint
                         imageUrl={heroImage}
@@ -623,7 +705,6 @@ export default function EventManagement() {
                     </div>
                   )}
                 </div>
-              </div>
             </Card>
           )}
 
@@ -702,6 +783,59 @@ export default function EventManagement() {
 
           {activeTab === 'social' && id && (
             <GuestListSettings eventId={id} />
+          )}
+
+          {activeTab === 'ux_display' && (
+            <Card className='p-8 relative'>
+              {/* Sticky Save Button */}
+              <div className='sticky top-0 z-10 -mx-8 -mt-8 px-8 pt-8 pb-6 bg-card border-b border-border mb-6'>
+                <div className='flex items-center justify-between'>
+                  <div>
+                    <h2 className='text-2xl font-bold text-foreground mb-2'>
+                      UX Display Settings
+                    </h2>
+                    <p className='text-muted-foreground'>
+                      Customize how this event appears on the homepage
+                    </p>
+                  </div>
+                  <FmCommonButton
+                    onClick={handleSaveUXDisplay}
+                    loading={isSaving}
+                    icon={Save}
+                  >
+                    Save Changes
+                  </FmCommonButton>
+                </div>
+              </div>
+
+                <div className='space-y-6'>
+                  {/* Homepage Event Card Section */}
+                  <div className='space-y-4'>
+                    <h3 className='text-lg font-semibold text-foreground'>
+                      Homepage Event Card
+                    </h3>
+                    <p className='text-sm text-muted-foreground'>
+                      Control how your event card is displayed on the homepage.
+                    </p>
+
+                    <div className='flex items-center gap-3 p-4 rounded-none border border-border bg-card'>
+                      <Checkbox
+                        id='display-subtitle'
+                        checked={displaySubtitle}
+                        onCheckedChange={checked => setDisplaySubtitle(!!checked)}
+                      />
+                      <div className='flex-1'>
+                        <Label htmlFor='display-subtitle' className='cursor-pointer font-medium'>
+                          Display Subtitle
+                        </Label>
+                        <p className='text-xs text-muted-foreground mt-1'>
+                          Show the event subtitle on the homepage event card
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </Card>
           )}
 
           {activeTab === 'admin' && isAdmin && (

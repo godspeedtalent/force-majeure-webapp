@@ -9,6 +9,7 @@ export const FEATURE_FLAGS = {
 
   // Event features
   EVENT_CHECKOUT_TIMER: 'event_checkout_timer',
+  HERO_IMAGE_HORIZONTAL_CENTERING: 'hero_image_horizontal_centering',
 
   // Social/Community features
   SCAVENGER_HUNT: 'scavenger_hunt',
@@ -49,6 +50,11 @@ export const FEATURE_FLAG_METADATA: Record<
   [FEATURE_FLAGS.EVENT_CHECKOUT_TIMER]: {
     displayName: 'Event Checkout Timer',
     description: 'Shows countdown timer during event checkout',
+    category: 'events',
+  },
+  [FEATURE_FLAGS.HERO_IMAGE_HORIZONTAL_CENTERING]: {
+    displayName: 'Hero Image Horizontal Centering',
+    description: 'Enables focal point control for hero image horizontal rendering',
     category: 'events',
   },
   [FEATURE_FLAGS.SCAVENGER_HUNT]: {

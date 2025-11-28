@@ -22,7 +22,6 @@ import { FmTextLink } from '@/components/common/display/FmTextLink';
 import { FmUndercardList } from '@/components/common/display/FmUndercardList';
 import { FmDynamicStickyHeader } from '@/components/common/layout/FmDynamicStickyHeader';
 import { ScrollBar } from '@/components/common/shadcn/scroll-area';
-import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import {
   FmCommonStackLayout,
 } from '@/components/common/layout';
@@ -39,6 +38,7 @@ import {
   FmVenueDetailsModal,
   type FmVenueDetailsModalProps,
 } from '@/components/venue/FmVenueDetailsModal';
+import { FmShareModal } from '@/components/common/modals/FmShareModal';
 import {
   Dialog,
   DialogContent,
@@ -49,6 +49,7 @@ import { Badge } from '@/components/common/shadcn/badge';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserRole } from '@/shared/hooks/useUserRole';
 import { useEventViews } from '@/shared/hooks/useEventViews';
+import { useShareEvent } from '@/features/events/hooks/useShareEvent';
 import { formatTimeDisplay } from '@/shared/utils/timeUtils';
 import { supabase } from '@/shared/api/supabase/client';
 import { useQuery } from '@tanstack/react-query';
@@ -57,7 +58,6 @@ import { EventDetailsRecord } from './types';
 
 interface EventDetailsContentProps {
   event: EventDetailsRecord;
-  onShare: () => void;
   displayTitle: string;
 }
 
@@ -74,7 +74,6 @@ const CALL_TIME_INTERVAL_MINUTES = 45;
 
 export const EventDetailsContent = ({
   event,
-  onShare,
   displayTitle,
 }: EventDetailsContentProps) => {
   const { user } = useAuth();
@@ -83,6 +82,15 @@ export const EventDetailsContent = ({
   const location = useLocation();
   const [ticketCount] = useState(() => Math.floor(Math.random() * 100) + 50);
   const { viewCount, recordView } = useEventViews(event.id);
+  const {
+    isShareModalOpen,
+    handleOpenShareModal,
+    handleCloseShareModal,
+    handleShare,
+  } = useShareEvent({
+    eventId: event.id,
+    eventTitle: displayTitle,
+  });
   const [selectedArtist, setSelectedArtist] =
     useState<FmArtistDetailsModalProps['artist']>(null);
   const [isArtistModalOpen, setIsArtistModalOpen] = useState(false);
@@ -363,6 +371,7 @@ export const EventDetailsContent = ({
           <FmCommonCollapsibleSection
             title='About This Event'
             defaultExpanded={true}
+            className='lg:col-span-2'
           >
             <p className='text-muted-foreground leading-relaxed text-sm'>
               {event.description}
@@ -470,12 +479,12 @@ export const EventDetailsContent = ({
           </div>
         </FmCommonCollapsibleSection>
 
-        {/* Call Times - only shows if lineup exists, spans full width if it's the 4th item */}
+        {/* Call Times - only shows if lineup exists, spans full width */}
         {callTimeLineup.length > 0 && (
           <FmCommonCollapsibleSection
             title='Call times'
             defaultExpanded={true}
-            className={!event.description?.trim() ? 'lg:col-span-2' : ''}
+            className='lg:col-span-2'
           >
             {/* Use vertical stack layout when taking full width, row format in column */}
             <FmCommonStackLayout spacing='md'>
@@ -495,28 +504,38 @@ export const EventDetailsContent = ({
     </>
   );
 
+  const shareCount = (event as any).share_count || 0;
+  const showShareCount = shareCount > 0;
+
   const headerActions = (
     <div className='flex items-center gap-2'>
-      <FmCommonButton
-        aria-label='Share event'
-        variant='secondary'
-        size='icon'
-        onClick={onShare}
-        className='bg-white/5 text-muted-foreground transition-colors duration-200 hover:bg-white/10 hover:text-foreground'
-      >
-        <Share2 className='h-4 w-4' />
-      </FmCommonButton>
+      <div className='flex items-center gap-1'>
+        <FmCommonButton
+          aria-label='Share event'
+          variant='secondary'
+          size='icon'
+          onClick={handleOpenShareModal}
+          className='h-10 w-10 bg-white/5 text-muted-foreground border border-transparent transition-all duration-200 hover:bg-white/10 hover:text-fm-gold hover:border-fm-gold'
+        >
+          <Share2 className='h-4 w-4' />
+        </FmCommonButton>
+        {showShareCount && (
+          <span className='text-xs text-muted-foreground ml-1'>
+            {shareCount.toLocaleString()}
+          </span>
+        )}
+      </div>
       <FmCommonButton
         aria-label='Save event'
         variant='secondary'
         size='icon'
-        className='bg-white/5 text-muted-foreground transition-colors duration-200 hover:bg-white/10 hover:text-foreground'
+        className='h-10 w-10 bg-white/5 text-muted-foreground border border-transparent transition-all duration-200 hover:bg-white/10 hover:text-fm-gold hover:border-fm-gold'
       >
         <Heart className='h-4 w-4' />
       </FmCommonButton>
       {/* Show view count here if guest list is disabled but view count is enabled */}
       {!guestListEnabled && showViewCount && (
-        <div className='flex items-center gap-2 px-3 py-2 bg-white/5 rounded-lg'>
+        <div className='flex items-center gap-2 px-3 py-2 h-10 bg-white/5 rounded-none border border-transparent'>
           <Eye className='w-4 h-4 text-muted-foreground' />
           <span className='text-sm text-muted-foreground'>{viewCount.toLocaleString()}</span>
         </div>
@@ -601,21 +620,16 @@ export const EventDetailsContent = ({
   return (
     <>
       <div className='relative h-full'>
-        <div className='absolute inset-0 pointer-events-none overflow-hidden'>
-          <TopographicBackground opacity={0.35} parallax={false} />
-          <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
-        </div>
-
         <ScrollAreaPrimitive.Root className='relative h-full overflow-hidden'>
         <ScrollAreaPrimitive.Viewport className='h-full w-full'>
-          <div className='flex min-h-full flex-col'>
+          <div className='flex flex-col'>
             <ScrollAreaPrimitive.Root className='relative flex-1 overflow-hidden'>
               <ScrollAreaPrimitive.Viewport
                 ref={handleContentViewportRef}
                 className='h-full w-full'
               >
-                <div className='flex min-h-full flex-col'>
-                  <div className='flex-1 p-6 lg:p-8'>
+                <div className='flex flex-col'>
+                  <div className='p-6 lg:p-8'>
                     <div className='mx-auto w-full lg:w-[65%] space-y-8'>
                       <FmDynamicStickyHeader
                         primaryContent={primaryHeader}
@@ -773,6 +787,13 @@ export const EventDetailsContent = ({
         venue={selectedVenue}
         open={isVenueModalOpen}
         onOpenChange={handleVenueModalChange}
+      />
+
+      <FmShareModal
+        open={isShareModalOpen}
+        onOpenChange={handleCloseShareModal}
+        title={displayTitle}
+        onShare={handleShare}
       />
     </>
   );

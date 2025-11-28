@@ -15,6 +15,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
+-- Drop existing trigger if it exists (idempotent)
+DROP TRIGGER IF EXISTS on_organization_created ON organizations;
+
 -- Create trigger to fire after organization creation
 CREATE TRIGGER on_organization_created
   AFTER INSERT ON organizations

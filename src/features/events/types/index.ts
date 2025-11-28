@@ -86,6 +86,7 @@ export interface Event {
   is_after_hours?: boolean; // Event has no end time (runs past closing)
   organization_id?: string | null;
   test_data?: boolean;
+  share_count?: number; // Number of times this event has been shared
   created_at: string;
   updated_at: string;
   venue?: Venue;

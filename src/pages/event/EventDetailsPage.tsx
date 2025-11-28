@@ -1,48 +1,24 @@
 import { ArrowLeft } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'sonner';
 
 import { Navigation } from '@/components/navigation/Navigation';
 import { PageTransition } from '@/components/primitives/PageTransition';
 import { EventDetailsLayout } from '@/components/layout/EventDetailsLayout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared/auth/permissions';
-import { logger } from '@/shared/services/logger';
 
 import { EventHero } from './EventHero';
 import { EventDetailsContent } from './EventDetailsContent';
 import { useEventDetails } from './hooks/useEventDetails';
-
-const formatSharePayload = (title: string, venue: string) => ({
-  title,
-  text: `Check out ${title} at ${venue}!`,
-  url: window.location.href,
-});
 
 export const EventDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: event, isLoading, error } = useEventDetails(id);
   const { hasAnyRole } = useUserPermissions();
-
-  const handleShare = async () => {
-    if (!event) return;
-    const shareTitle = event.headliner.name;
-    const payload = formatSharePayload(shareTitle, event.venue);
-
-    if (navigator.share) {
-      try {
-        await navigator.share(payload);
-      } catch (err) {
-        logger.error('Error sharing:', { error: err });
-      }
-    } else {
-      await navigator.clipboard.writeText(payload.url);
-      toast.success('Link copied to clipboard!');
-    }
-  };
 
   // Check if user can view non-published events
   const canViewDraft = hasAnyRole(ROLES.ADMIN, ROLES.DEVELOPER);
@@ -74,7 +50,7 @@ export const EventDetailsPage = () => {
         <TopographicBackground opacity={0.25} />
         <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
         <div className='flex flex-col items-center gap-6 relative z-10'>
-          <div className='animate-spin rounded-full h-16 w-16 border-b-4 border-fm-gold' />
+          <FmCommonLoadingSpinner size='lg' />
           <p className='text-foreground text-lg font-medium'>
             Loading event details...
           </p>
@@ -153,7 +129,6 @@ export const EventDetailsPage = () => {
           rightColumn={
             <EventDetailsContent
               event={event}
-              onShare={handleShare}
               displayTitle={displayTitle}
             />
           }

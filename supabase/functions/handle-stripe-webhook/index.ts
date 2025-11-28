@@ -100,14 +100,21 @@ Deno.serve(async req => {
           break;
         }
 
-        // Convert holds to sales
+        // Check if order has ticket protection
         const { data: orderItems } = await supabase
           .from('order_items')
-          .select('*')
+          .select('*, products(type)')
           .eq('order_id', orderId);
+
+        const hasProtection = orderItems?.some(
+          item => item.item_type === 'product' && item.products?.type === 'ticket_protection'
+        ) || false;
 
         if (orderItems) {
           for (const item of orderItems) {
+            // Only process ticket items (skip products like protection)
+            if (item.item_type !== 'ticket') continue;
+
             // Find the hold for this ticket tier and user
             const { data: holds } = await supabase
               .from('ticket_holds')
@@ -123,7 +130,7 @@ Deno.serve(async req => {
               });
             }
 
-            // Create tickets
+            // Create tickets with protection flag
             for (let i = 0; i < item.quantity; i++) {
               const ticketId = crypto.randomUUID();
               await supabase.from('tickets').insert({
@@ -134,6 +141,7 @@ Deno.serve(async req => {
                 ticket_tier_id: item.ticket_tier_id,
                 qr_code_data: `TICKET-${ticketId}`,
                 status: 'valid',
+                has_protection: hasProtection,
               });
             }
           }

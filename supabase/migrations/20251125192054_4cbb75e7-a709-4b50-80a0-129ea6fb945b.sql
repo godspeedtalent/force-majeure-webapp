@@ -1,5 +1,5 @@
--- Create ticket_groups table
-CREATE TABLE public.ticket_groups (
+-- Create ticket_groups table (idempotent)
+CREATE TABLE IF NOT EXISTS public.ticket_groups (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   event_id uuid NOT NULL REFERENCES public.events(id) ON DELETE CASCADE,
   name text NOT NULL,
@@ -13,12 +13,31 @@ CREATE TABLE public.ticket_groups (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
--- Add group_id to ticket_tiers
-ALTER TABLE public.ticket_tiers 
-ADD COLUMN group_id uuid REFERENCES public.ticket_groups(id) ON DELETE SET NULL;
+-- Add group_id to ticket_tiers (idempotent)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public'
+    AND table_name = 'ticket_tiers'
+    AND column_name = 'group_id'
+  ) THEN
+    ALTER TABLE public.ticket_tiers
+    ADD COLUMN group_id uuid REFERENCES public.ticket_groups(id) ON DELETE SET NULL;
+  END IF;
+END $$;
 
 -- Enable RLS on ticket_groups
 ALTER TABLE public.ticket_groups ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist (idempotent)
+DROP POLICY IF EXISTS "Ticket groups are publicly viewable" ON public.ticket_groups;
+DROP POLICY IF EXISTS "Admins and devs can insert ticket groups" ON public.ticket_groups;
+DROP POLICY IF EXISTS "Admins and devs can update ticket groups" ON public.ticket_groups;
+DROP POLICY IF EXISTS "Admins and devs can delete ticket groups" ON public.ticket_groups;
+DROP POLICY IF EXISTS "Org members with manage_events can insert ticket groups" ON public.ticket_groups;
+DROP POLICY IF EXISTS "Org members with manage_events can update ticket groups" ON public.ticket_groups;
+DROP POLICY IF EXISTS "Org members with manage_events can delete ticket groups" ON public.ticket_groups;
 
 -- RLS policies for ticket_groups
 CREATE POLICY "Ticket groups are publicly viewable"
@@ -29,8 +48,8 @@ CREATE POLICY "Admins and devs can insert ticket groups"
   ON public.ticket_groups FOR INSERT
   WITH CHECK (
     auth.uid() IS NOT NULL AND (
-      has_role(auth.uid(), 'admin') OR 
-      has_role(auth.uid(), 'developer') OR 
+      has_role(auth.uid(), 'admin') OR
+      has_role(auth.uid(), 'developer') OR
       is_dev_admin(auth.uid())
     )
   );
@@ -39,15 +58,15 @@ CREATE POLICY "Admins and devs can update ticket groups"
   ON public.ticket_groups FOR UPDATE
   USING (
     auth.uid() IS NOT NULL AND (
-      has_role(auth.uid(), 'admin') OR 
-      has_role(auth.uid(), 'developer') OR 
+      has_role(auth.uid(), 'admin') OR
+      has_role(auth.uid(), 'developer') OR
       is_dev_admin(auth.uid())
     )
   )
   WITH CHECK (
     auth.uid() IS NOT NULL AND (
-      has_role(auth.uid(), 'admin') OR 
-      has_role(auth.uid(), 'developer') OR 
+      has_role(auth.uid(), 'admin') OR
+      has_role(auth.uid(), 'developer') OR
       is_dev_admin(auth.uid())
     )
   );
@@ -56,8 +75,8 @@ CREATE POLICY "Admins and devs can delete ticket groups"
   ON public.ticket_groups FOR DELETE
   USING (
     auth.uid() IS NOT NULL AND (
-      has_role(auth.uid(), 'admin') OR 
-      has_role(auth.uid(), 'developer') OR 
+      has_role(auth.uid(), 'admin') OR
+      has_role(auth.uid(), 'developer') OR
       is_dev_admin(auth.uid())
     )
   );
@@ -65,7 +84,7 @@ CREATE POLICY "Admins and devs can delete ticket groups"
 CREATE POLICY "Org members with manage_events can insert ticket groups"
   ON public.ticket_groups FOR INSERT
   WITH CHECK (
-    auth.uid() IS NOT NULL AND 
+    auth.uid() IS NOT NULL AND
     has_permission(auth.uid(), 'manage_events') AND
     EXISTS (
       SELECT 1 FROM public.events e
@@ -77,7 +96,7 @@ CREATE POLICY "Org members with manage_events can insert ticket groups"
 CREATE POLICY "Org members with manage_events can update ticket groups"
   ON public.ticket_groups FOR UPDATE
   USING (
-    auth.uid() IS NOT NULL AND 
+    auth.uid() IS NOT NULL AND
     has_permission(auth.uid(), 'manage_events') AND
     EXISTS (
       SELECT 1 FROM public.events e
@@ -86,7 +105,7 @@ CREATE POLICY "Org members with manage_events can update ticket groups"
     )
   )
   WITH CHECK (
-    auth.uid() IS NOT NULL AND 
+    auth.uid() IS NOT NULL AND
     has_permission(auth.uid(), 'manage_events') AND
     EXISTS (
       SELECT 1 FROM public.events e
@@ -98,7 +117,7 @@ CREATE POLICY "Org members with manage_events can update ticket groups"
 CREATE POLICY "Org members with manage_events can delete ticket groups"
   ON public.ticket_groups FOR DELETE
   USING (
-    auth.uid() IS NOT NULL AND 
+    auth.uid() IS NOT NULL AND
     has_permission(auth.uid(), 'manage_events') AND
     EXISTS (
       SELECT 1 FROM public.events e
@@ -107,7 +126,8 @@ CREATE POLICY "Org members with manage_events can delete ticket groups"
     )
   );
 
--- Add trigger for updated_at on ticket_groups
+-- Add trigger for updated_at on ticket_groups (idempotent)
+DROP TRIGGER IF EXISTS update_ticket_groups_updated_at ON public.ticket_groups;
 CREATE TRIGGER update_ticket_groups_updated_at
   BEFORE UPDATE ON public.ticket_groups
   FOR EACH ROW

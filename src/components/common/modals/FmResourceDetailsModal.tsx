@@ -78,7 +78,7 @@ export const FmResourceDetailsModal = ({
       <FmCommonModal
         open={open}
         onOpenChange={onOpenChange}
-        title={title}
+        title=''
         headerContent={headerContent}
         className={cn('max-w-3xl p-0 overflow-hidden', className)}
       >

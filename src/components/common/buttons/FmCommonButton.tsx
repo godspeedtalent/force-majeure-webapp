@@ -137,7 +137,7 @@ export const FmCommonButton = forwardRef<
           {ripples.map(ripple => (
             <span
               key={ripple.id}
-              className='absolute rounded-full bg-white/30 animate-ripple'
+              className='absolute rounded-full bg-fm-gold/40 animate-ripple'
               style={{
                 left: ripple.x,
                 top: ripple.y,

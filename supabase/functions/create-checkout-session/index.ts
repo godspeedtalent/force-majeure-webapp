@@ -6,12 +6,16 @@ const corsHeaders = {
     'authorization, x-client-info, apikey, content-type',
 };
 
+interface CheckoutItem {
+  type: 'ticket' | 'product';
+  ticketTierId?: string; // Required if type='ticket'
+  productId?: string; // Required if type='product'
+  quantity: number;
+}
+
 interface CheckoutRequest {
   eventId: string;
-  items: Array<{
-    ticketTierId: string;
-    quantity: number;
-  }>;
+  items: CheckoutItem[];
   fingerprint: string;
 }
 
@@ -73,83 +77,142 @@ Deno.serve(async req => {
       eventId
     );
 
-    // Validate ticket tiers and calculate totals
+    // Validate items and calculate totals
     let subtotalCents = 0;
     let feesCents = 0;
     const lineItems = [];
     const holds = [];
+    const itemsData = []; // Store item details for order_items creation
 
     for (const item of items) {
-      const { data: tier, error: tierError } = await supabase
-        .from('ticket_tiers')
-        .select('*')
-        .eq('id', item.ticketTierId)
-        .eq('event_id', eventId)
-        .eq('is_active', true)
-        .single();
+      if (item.type === 'ticket') {
+        // TICKET ITEM - Validate tier and create hold
+        const { data: tier, error: tierError } = await supabase
+          .from('ticket_tiers')
+          .select('*')
+          .eq('id', item.ticketTierId)
+          .eq('event_id', eventId)
+          .eq('is_active', true)
+          .single();
 
-      if (tierError || !tier) {
-        console.error('Ticket tier not found or inactive:', item.ticketTierId);
-        return new Response(
-          JSON.stringify({
-            error: `Invalid ticket tier: ${item.ticketTierId}`,
-          }),
-          {
-            status: 400,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          }
-        );
-      }
-
-      // Create ticket hold
-      const { data: holdData, error: holdError } = await supabase.rpc(
-        'create_ticket_hold',
-        {
-          p_ticket_tier_id: item.ticketTierId,
-          p_quantity: item.quantity,
-          p_user_id: user.id,
-          p_fingerprint: fingerprint,
-          p_hold_duration_seconds: 600, // 10 minutes
+        if (tierError || !tier) {
+          console.error('Ticket tier not found or inactive:', item.ticketTierId);
+          return new Response(
+            JSON.stringify({
+              error: `Invalid ticket tier: ${item.ticketTierId}`,
+            }),
+            {
+              status: 400,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            }
+          );
         }
-      );
 
-      if (holdError) {
-        console.error('Failed to create hold:', holdError);
-        return new Response(
-          JSON.stringify({
-            error: 'Failed to reserve tickets. They may be sold out.',
-          }),
+        // Create ticket hold
+        const { data: holdData, error: holdError } = await supabase.rpc(
+          'create_ticket_hold',
           {
-            status: 400,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            p_ticket_tier_id: item.ticketTierId,
+            p_quantity: item.quantity,
+            p_user_id: user.id,
+            p_fingerprint: fingerprint,
+            p_hold_duration_seconds: 600, // 10 minutes
           }
         );
-      }
 
-      holds.push(holdData[0].hold_id);
+        if (holdError) {
+          console.error('Failed to create hold:', holdError);
+          return new Response(
+            JSON.stringify({
+              error: 'Failed to reserve tickets. They may be sold out.',
+            }),
+            {
+              status: 400,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            }
+          );
+        }
 
-      // Calculate pricing
-      const unitPrice = tier.price_cents;
-      const unitFee =
-        tier.fee_flat_cents +
-        Math.floor((unitPrice * tier.fee_pct_bps) / 10000);
-      const itemSubtotal = unitPrice * item.quantity;
-      const itemFees = unitFee * item.quantity;
+        holds.push(holdData[0].hold_id);
 
-      subtotalCents += itemSubtotal;
-      feesCents += itemFees;
+        // Calculate pricing
+        const unitPrice = tier.price_cents;
+        const unitFee =
+          tier.fee_flat_cents +
+          Math.floor((unitPrice * tier.fee_pct_bps) / 10000);
+        const itemSubtotal = unitPrice * item.quantity;
+        const itemFees = unitFee * item.quantity;
 
-      lineItems.push({
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: tier.name,
-            description: tier.description || `Ticket for event`,
+        subtotalCents += itemSubtotal;
+        feesCents += itemFees;
+
+        lineItems.push({
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: tier.name,
+              description: tier.description || `Ticket for event`,
+            },
+            unit_amount: unitPrice + unitFee,
           },
-          unit_amount: unitPrice + unitFee,
-        },
-        quantity: item.quantity,
-      });
+          quantity: item.quantity,
+        });
+
+        itemsData.push({
+          type: 'ticket',
+          ticketTierId: item.ticketTierId,
+          quantity: item.quantity,
+          unitPrice: unitPrice,
+          unitFee: unitFee,
+        });
+      } else if (item.type === 'product') {
+        // PRODUCT ITEM - Validate product
+        const { data: product, error: productError } = await supabase
+          .from('products')
+          .select('*')
+          .eq('id', item.productId)
+          .eq('is_active', true)
+          .single();
+
+        if (productError || !product) {
+          console.error('Product not found or inactive:', item.productId);
+          return new Response(
+            JSON.stringify({
+              error: `Invalid product: ${item.productId}`,
+            }),
+            {
+              status: 400,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            }
+          );
+        }
+
+        // Products have no fees (price is all-inclusive)
+        const unitPrice = product.price_cents;
+        const itemSubtotal = unitPrice * item.quantity;
+
+        subtotalCents += itemSubtotal;
+
+        lineItems.push({
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: product.name,
+              description: product.description || `Product`,
+            },
+            unit_amount: unitPrice,
+          },
+          quantity: item.quantity,
+        });
+
+        itemsData.push({
+          type: 'product',
+          productId: item.productId,
+          quantity: item.quantity,
+          unitPrice: unitPrice,
+          unitFee: 0,
+        });
+      }
     }
 
     const totalCents = subtotalCents + feesCents;
@@ -182,30 +245,31 @@ Deno.serve(async req => {
     }
 
     // Create order items
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      const { data: tier } = await supabase
-        .from('ticket_tiers')
-        .select('price_cents, fee_flat_cents, fee_pct_bps')
-        .eq('id', item.ticketTierId)
-        .single();
+    for (const itemData of itemsData) {
+      const orderItemData: any = {
+        order_id: order.id,
+        item_type: itemData.type,
+        quantity: itemData.quantity,
+        unit_price_cents: itemData.unitPrice,
+        unit_fee_cents: itemData.unitFee,
+        subtotal_cents: itemData.unitPrice * itemData.quantity,
+        fees_cents: itemData.unitFee * itemData.quantity,
+        total_cents: (itemData.unitPrice + itemData.unitFee) * itemData.quantity,
+      };
 
-      if (tier) {
-        const unitPrice = tier.price_cents;
-        const unitFee =
-          tier.fee_flat_cents +
-          Math.floor((unitPrice * tier.fee_pct_bps) / 10000);
+      // Add type-specific references
+      if (itemData.type === 'ticket') {
+        orderItemData.ticket_tier_id = itemData.ticketTierId;
+      } else if (itemData.type === 'product') {
+        orderItemData.product_id = itemData.productId;
+      }
 
-        await supabase.from('order_items').insert({
-          order_id: order.id,
-          ticket_tier_id: item.ticketTierId,
-          quantity: item.quantity,
-          unit_price_cents: unitPrice,
-          unit_fee_cents: unitFee,
-          subtotal_cents: unitPrice * item.quantity,
-          fees_cents: unitFee * item.quantity,
-          total_cents: (unitPrice + unitFee) * item.quantity,
-        });
+      const { error: insertError } = await supabase
+        .from('order_items')
+        .insert(orderItemData);
+
+      if (insertError) {
+        console.error('Failed to create order item:', insertError);
       }
     }
 
