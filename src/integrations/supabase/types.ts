@@ -488,6 +488,7 @@ export type Database = {
           min_interest_count_display: number
           min_share_count_display: number
           organization_id: string | null
+          share_count: number
           show_view_count: boolean | null
           start_time: string | null
           status: string
@@ -513,6 +514,7 @@ export type Database = {
           min_interest_count_display?: number
           min_share_count_display?: number
           organization_id?: string | null
+          share_count?: number
           show_view_count?: boolean | null
           start_time?: string | null
           status?: string
@@ -538,6 +540,7 @@ export type Database = {
           min_interest_count_display?: number
           min_share_count_display?: number
           organization_id?: string | null
+          share_count?: number
           show_view_count?: boolean | null
           start_time?: string | null
           status?: string
@@ -2153,6 +2156,10 @@ export type Database = {
       has_role: {
         Args: { role_name_param: string; user_id_param: string }
         Returns: boolean
+      }
+      increment_event_share_count: {
+        Args: { p_event_id: string }
+        Returns: number
       }
       is_dev_admin: { Args: { user_id_param: string }; Returns: boolean }
       is_user_interested: {
