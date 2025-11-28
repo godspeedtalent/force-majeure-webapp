@@ -303,7 +303,7 @@ const Index = () => {
           <div className='flex justify-center mt-[40px]'>
             <FmCommonButton
               onClick={() => setShowPastEvents(!showPastEvents)}
-              variant='outline'
+              variant='secondary'
             >
               {showPastEvents ? 'Hide past events' : 'Display past events'}
             </FmCommonButton>

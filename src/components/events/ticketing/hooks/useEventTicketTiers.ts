@@ -39,7 +39,7 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
 
       // Fetch groups
       const { data: groupsData, error: groupsError } = await supabase
-        .from('ticket_groups')
+        .from('ticket_groups' as any)
         .select('*')
         .eq('event_id', eventId)
         .order('group_order', { ascending: true });
@@ -133,20 +133,20 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
         if (group.id && !group.id.startsWith('temp-')) {
           // Update existing
           const { error } = await supabase
-            .from('ticket_groups')
+            .from('ticket_groups' as any)
             .update(groupData)
             .eq('id', group.id);
           if (error) throw error;
         } else {
           // Insert new
-          const { data, error } = await supabase
-            .from('ticket_groups')
+          const { data: insertedGroup, error } = await supabase
+            .from('ticket_groups' as any)
             .insert(groupData)
             .select()
             .single();
           if (error) throw error;
-          if (data) {
-            group.id = data.id;
+          if (insertedGroup && (insertedGroup as any).id) {
+            group.id = (insertedGroup as any).id;
           }
         }
       }
