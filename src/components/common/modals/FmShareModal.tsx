@@ -120,7 +120,7 @@ export const FmShareModal = ({
           {/* Action Buttons */}
           <div className='flex justify-end gap-3 pt-4'>
             <FmCommonButton
-              variant='outline'
+              variant='secondary'
               onClick={() => onOpenChange(false)}
             >
               Close

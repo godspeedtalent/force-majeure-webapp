@@ -17,7 +17,7 @@ export const useShareEvent = ({ eventId, eventTitle }: UseShareEventOptions) => 
   const shareMutation = useMutation({
     mutationFn: async () => {
       // Increment share count in database
-      const { data, error } = await supabase.rpc('increment_event_share_count', {
+      const { data, error } = await supabase.rpc('increment_event_share_count' as any, {
         event_id: eventId,
       });
 

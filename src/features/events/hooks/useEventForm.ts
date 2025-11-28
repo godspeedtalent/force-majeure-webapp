@@ -4,7 +4,6 @@ import { eventService } from '../services/eventService';
 import { EventFormState } from './useEventData';
 import { getArtistName } from '@/features/artists/services/artistQueries';
 import { getVenueName } from '@/features/venues/services/venueQueries';
-import type { Artist, Venue } from '@/features/events/types';
 
 /**
  * useEventForm Hook
