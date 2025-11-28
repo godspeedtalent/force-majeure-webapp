@@ -13,7 +13,6 @@ import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
 import { TIME_CONSTANTS } from '@/shared/constants/timeConstants';
 
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
-import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmBigButton } from '@/components/common/buttons/FmBigButton';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmCommonInfoCard } from '@/components/common/display/FmCommonInfoCard';
@@ -510,29 +509,27 @@ export const EventDetailsContent = ({
   const headerActions = (
     <div className='flex items-center gap-2'>
       <div className='flex items-center gap-1'>
-        <FmCommonButton
+        <button
+          type='button'
           aria-label='Share event'
-          variant='secondary'
-          size='icon'
           onClick={handleOpenShareModal}
-          className='h-10 w-10 bg-white/5 text-muted-foreground border border-transparent transition-all duration-200 hover:bg-white/10 hover:text-fm-gold hover:border-fm-gold'
+          className='h-10 w-10 rounded-none flex items-center justify-center bg-white/5 text-muted-foreground border border-transparent transition-all duration-200 hover:bg-white/10 hover:text-fm-gold hover:border-fm-gold hover:scale-105 active:scale-95 relative overflow-hidden cursor-pointer'
         >
           <Share2 className='h-4 w-4' />
-        </FmCommonButton>
+        </button>
         {showShareCount && (
           <span className='text-xs text-muted-foreground ml-1'>
             {shareCount.toLocaleString()}
           </span>
         )}
       </div>
-      <FmCommonButton
+      <button
+        type='button'
         aria-label='Save event'
-        variant='secondary'
-        size='icon'
-        className='h-10 w-10 bg-white/5 text-muted-foreground border border-transparent transition-all duration-200 hover:bg-white/10 hover:text-fm-gold hover:border-fm-gold'
+        className='h-10 w-10 rounded-none flex items-center justify-center bg-white/5 text-muted-foreground border border-transparent transition-all duration-200 hover:bg-white/10 hover:text-fm-gold hover:border-fm-gold relative overflow-hidden cursor-pointer'
       >
         <Heart className='h-4 w-4' />
-      </FmCommonButton>
+      </button>
       {/* Show view count here if guest list is disabled but view count is enabled */}
       {!guestListEnabled && showViewCount && (
         <div className='flex items-center gap-2 px-3 py-2 h-10 bg-white/5 rounded-none border border-transparent'>
@@ -794,6 +791,8 @@ export const EventDetailsContent = ({
         onOpenChange={handleCloseShareModal}
         title={displayTitle}
         onShare={handleShare}
+        shareCount={shareCount}
+        viewCount={viewCount}
       />
     </>
   );

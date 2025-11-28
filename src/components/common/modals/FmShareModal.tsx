@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Copy, Check, Share2 } from 'lucide-react';
+import { Copy, Check, Share2, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 
 import {
@@ -17,6 +17,8 @@ interface FmShareModalProps {
   title: string;
   url?: string;
   onShare?: () => void;
+  shareCount?: number;
+  viewCount?: number;
 }
 
 export const FmShareModal = ({
@@ -25,6 +27,8 @@ export const FmShareModal = ({
   title,
   url = window.location.href,
   onShare,
+  shareCount = 0,
+  viewCount = 0,
 }: FmShareModalProps) => {
   const [copied, setCopied] = useState(false);
 
@@ -50,7 +54,7 @@ export const FmShareModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-w-md bg-background/95 backdrop-blur border-2 border-white/20'>
+      <DialogContent className='max-w-2xl'>
         <DialogHeader>
           <DialogTitle className='font-canela text-2xl flex items-center gap-3'>
             <Share2 className='h-5 w-5 text-fm-gold' />
@@ -59,10 +63,26 @@ export const FmShareModal = ({
         </DialogHeader>
 
         <div className='space-y-6 mt-4'>
-          {/* Event Title */}
+          {/* Event Title with Stats */}
           <div>
             <p className='text-sm text-muted-foreground mb-2'>Sharing:</p>
-            <p className='font-canela text-lg text-foreground'>{title}</p>
+            <div className='flex items-start justify-between gap-4'>
+              <p className='font-canela text-lg text-foreground flex-1'>{title}</p>
+              <div className='flex flex-col gap-2 text-sm text-muted-foreground'>
+                {shareCount > 0 && (
+                  <div className='flex items-center gap-2'>
+                    <Share2 className='h-4 w-4' />
+                    <span>{shareCount.toLocaleString()} share{shareCount === 1 ? '' : 's'}</span>
+                  </div>
+                )}
+                {viewCount > 0 && (
+                  <div className='flex items-center gap-2'>
+                    <Eye className='h-4 w-4' />
+                    <span>{viewCount.toLocaleString()} view{viewCount === 1 ? '' : 's'}</span>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* URL Display and Copy */}
