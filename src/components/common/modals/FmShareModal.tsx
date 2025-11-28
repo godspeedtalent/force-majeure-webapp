@@ -131,7 +131,7 @@ export const FmShareModal = ({
             </div>
 
             {/* URL Display and Copy */}
-            <div>
+            <div className='max-w-[25vw]'>
               <label className='text-xs uppercase text-muted-foreground mb-2 block'>
                 Event URL
               </label>
