@@ -117,18 +117,18 @@ export const EventCard = ({ event, isSingleRow = false, isPastEvent = false }: E
           className={cn(
             'group relative overflow-hidden rounded-none border border-border bg-card',
             'transition-all duration-300 cursor-pointer',
-            // Single row: viewport-based height with 2:3 aspect ratio (72vh for 20% increase from 60vh)
-            isSingleRow ? 'h-[72vh] w-auto' : 'w-full max-w-[25vw] min-w-[280px]',
+            isSingleRow
+              ? 'w-full max-w-[40vw] min-w-[320px]'
+              : 'w-full max-w-[25vw] min-w-[280px]',
             // Apply hover state when actually hovering OR when context menu is open
             contextMenuOpen && 'border-fm-gold/50 shadow-lg shadow-fm-gold/10',
             'hover:border-fm-gold/50 hover:shadow-lg hover:shadow-fm-gold/10'
           )}
-          style={isSingleRow ? { aspectRatio: '2/3' } : undefined}
           onClick={handleCardClick}
         >
-          {/* Hero Image Section - Takes up more space for 2:3 ratio */}
+          {/* Hero Image Section - Scales with card width */}
           <div
-            className='relative h-[300px] overflow-hidden bg-muted'
+            className='relative w-full overflow-hidden bg-muted aspect-[4/5]'
             style={{ viewTransitionName: `magazine-hero-${event.id}` }}
           >
             <ImageWithSkeleton
