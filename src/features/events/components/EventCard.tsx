@@ -135,7 +135,7 @@ export const EventCard = ({ event, isSingleRow = false, isPastEvent = false }: E
               src={event.heroImage}
               alt={displayTitle}
               className={cn(
-                'h-full w-full object-cover transition-all duration-500',
+                'h-full w-full object-contain transition-all duration-500',
                 'group-hover:scale-105',
                 // Keep scaled when context menu is open
                 contextMenuOpen && 'scale-105'
