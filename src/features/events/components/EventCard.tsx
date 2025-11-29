@@ -128,7 +128,7 @@ export const EventCard = ({ event, isSingleRow = false, isPastEvent = false }: E
         >
           {/* Hero Image Section - Takes up more space for 2:3 ratio */}
           <div
-            className='relative h-[55%] overflow-hidden bg-muted'
+            className='relative flex-1 min-h-0 bg-muted'
             style={{ viewTransitionName: `magazine-hero-${event.id}` }}
           >
             <ImageWithSkeleton
@@ -220,8 +220,8 @@ export const EventCard = ({ event, isSingleRow = false, isPastEvent = false }: E
 
             {/* Card Footer - After Hours Badge */}
             {isAfterHours && (
-              <div className='w-full border-t border-border bg-transparent px-2 py-1 text-center transition-all duration-200 group-hover:bg-fm-gold group-hover:text-background mb-0'>
-                <span className='text-[9px] font-bold tracking-wider uppercase text-fm-gold group-hover:text-background'>
+              <div className='w-full border-t border-border bg-transparent py-0.5 text-center transition-all duration-200 group-hover:bg-fm-gold group-hover:text-background mb-0'>
+                <span className='text-[8px] font-bold tracking-wider uppercase leading-none text-fm-gold group-hover:text-background'>
                   After Hours
                 </span>
               </div>
