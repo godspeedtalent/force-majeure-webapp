@@ -118,7 +118,7 @@ export const EventCard = ({ event, isSingleRow = false, isPastEvent = false }: E
             'group relative overflow-hidden rounded-none border border-border bg-card',
             'transition-all duration-300 cursor-pointer',
             // Single row: viewport-based height with 2:3 aspect ratio (72vh for 20% increase from 60vh)
-            isSingleRow ? 'h-[72vh] w-auto' : 'aspect-[2/3] w-full max-w-[500px]',
+            isSingleRow ? 'h-[72vh] w-auto' : 'w-full max-w-[25vw] min-w-[280px]',
             // Apply hover state when actually hovering OR when context menu is open
             contextMenuOpen && 'border-fm-gold/50 shadow-lg shadow-fm-gold/10',
             'hover:border-fm-gold/50 hover:shadow-lg hover:shadow-fm-gold/10'
@@ -128,14 +128,14 @@ export const EventCard = ({ event, isSingleRow = false, isPastEvent = false }: E
         >
           {/* Hero Image Section - Takes up more space for 2:3 ratio */}
           <div
-            className='relative flex-1 min-h-0 bg-muted'
+            className='relative h-[300px] overflow-hidden bg-muted'
             style={{ viewTransitionName: `magazine-hero-${event.id}` }}
           >
             <ImageWithSkeleton
               src={event.heroImage}
               alt={displayTitle}
               className={cn(
-                'h-full w-full object-contain transition-all duration-500',
+                'h-full w-full object-cover transition-all duration-500',
                 'group-hover:scale-105',
                 // Keep scaled when context menu is open
                 contextMenuOpen && 'scale-105'
@@ -148,7 +148,7 @@ export const EventCard = ({ event, isSingleRow = false, isPastEvent = false }: E
           </div>
 
           {/* Content Section - Card Body */}
-          <div className='relative flex-1 flex flex-col'>
+          <div className='relative flex flex-col'>
             <div className='flex flex-1'>
               {/* Main Content - Left Side */}
               <div className='flex-1 p-6 flex flex-col min-w-0'>
