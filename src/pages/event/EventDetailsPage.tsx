@@ -8,7 +8,7 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
-import { ROLES } from '@/shared/auth/permissions';
+import { ROLES, PERMISSIONS } from '@/shared/auth/permissions';
 
 import { EventHero } from './EventHero';
 import { EventDetailsContent } from './EventDetailsContent';
@@ -18,12 +18,15 @@ export const EventDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: event, isLoading, error } = useEventDetails(id);
-  const { hasAnyRole } = useUserPermissions();
+  const { hasAnyRole, hasPermission } = useUserPermissions();
 
   // Check if user can view non-published events
   const canViewDraft = hasAnyRole(ROLES.ADMIN, ROLES.DEVELOPER);
   const eventStatus = (event as any)?.status || 'published';
   const isPublished = eventStatus === 'published';
+
+  // Check if user can manage events
+  const canManage = hasAnyRole(ROLES.ADMIN, ROLES.DEVELOPER) || hasPermission(PERMISSIONS.MANAGE_EVENTS);
 
   if (!id) {
     return (
@@ -109,7 +112,6 @@ export const EventDetailsPage = () => {
   }
 
   const displayTitle = event.headliner.name;
-  const canManage = canViewDraft;
 
   return (
     <>

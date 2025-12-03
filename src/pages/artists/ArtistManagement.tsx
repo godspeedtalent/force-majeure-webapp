@@ -13,6 +13,7 @@ import { Card } from '@/components/common/shadcn/card';
 import { Textarea } from '@/components/common/shadcn/textarea';
 import { toast } from 'sonner';
 import { handleError } from '@/shared/services/errorHandler';
+import { useDebouncedSave } from '@/shared/hooks/useDebouncedSave';
 
 type ArtistTab = 'overview' | 'view';
 
@@ -30,6 +31,58 @@ export default function ArtistManagement() {
   const [bio, setBio] = useState('');
   const [website, setWebsite] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+
+  // Debounced auto-save for artist changes
+  const saveArtistData = async (data: {
+    name: string;
+    genre: string;
+    bio: string;
+    website: string;
+    image_url: string;
+  }) => {
+    if (!id) return;
+
+    try {
+      const { error } = await supabase
+        .from('artists')
+        .update({
+          ...data,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast.success('Changes saved automatically');
+      queryClient.invalidateQueries({ queryKey: ['artist', id] });
+    } catch (error) {
+      await handleError(error, {
+        title: 'Auto-save Failed',
+        description: 'Could not save changes automatically',
+        endpoint: 'ArtistManagement',
+        method: 'UPDATE',
+      });
+    }
+  };
+
+  const { triggerSave: triggerArtistSave, flushSave: flushArtistSave } =
+    useDebouncedSave({
+      saveFn: saveArtistData,
+      delay: 5000,
+    });
+
+  // Helper to trigger auto-save
+  const triggerAutoSave = () => {
+    if (name.trim()) {
+      triggerArtistSave({
+        name,
+        genre,
+        bio,
+        website,
+        image_url: imageUrl,
+      });
+    }
+  };
 
   const { data: artist, isLoading } = useQuery({
     queryKey: ['artist', id],
@@ -84,6 +137,9 @@ export default function ArtistManagement() {
 
     setIsSaving(true);
     try {
+      // Flush any pending debounced save first
+      await flushArtistSave();
+
       const { error } = await supabase
         .from('artists')
         .update({
@@ -135,7 +191,10 @@ export default function ArtistManagement() {
             <Label>Artist Name *</Label>
             <Input
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+                triggerAutoSave();
+              }}
               placeholder='Enter artist name'
             />
           </div>
@@ -144,7 +203,10 @@ export default function ArtistManagement() {
             <Label>Artist Image</Label>
             <FmImageUpload
               currentImageUrl={imageUrl}
-              onUploadComplete={setImageUrl}
+              onUploadComplete={(url) => {
+                setImageUrl(url);
+                triggerAutoSave();
+              }}
             />
           </div>
 
@@ -152,7 +214,10 @@ export default function ArtistManagement() {
             <Label>Genre</Label>
             <Input
               value={genre}
-              onChange={(e) => setGenre(e.target.value)}
+              onChange={(e) => {
+                setGenre(e.target.value);
+                triggerAutoSave();
+              }}
               placeholder='e.g., House, Techno, Bass'
             />
           </div>
@@ -161,7 +226,10 @@ export default function ArtistManagement() {
             <Label>Bio</Label>
             <Textarea
               value={bio}
-              onChange={(e) => setBio(e.target.value)}
+              onChange={(e) => {
+                setBio(e.target.value);
+                triggerAutoSave();
+              }}
               placeholder='Artist biography...'
               rows={5}
             />
@@ -171,7 +239,10 @@ export default function ArtistManagement() {
             <Label>Website</Label>
             <Input
               value={website}
-              onChange={(e) => setWebsite(e.target.value)}
+              onChange={(e) => {
+                setWebsite(e.target.value);
+                triggerAutoSave();
+              }}
               placeholder='https://...'
             />
           </div>

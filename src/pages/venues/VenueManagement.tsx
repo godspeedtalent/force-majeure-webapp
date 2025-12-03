@@ -12,6 +12,7 @@ import { Label } from '@/components/common/shadcn/label';
 import { Card } from '@/components/common/shadcn/card';
 import { toast } from 'sonner';
 import { handleError } from '@/shared/services/errorHandler';
+import { useDebouncedSave } from '@/shared/hooks/useDebouncedSave';
 
 type VenueTab = 'overview' | 'view';
 
@@ -30,6 +31,60 @@ export default function VenueManagement() {
   const [state, setState] = useState('');
   const [capacity, setCapacity] = useState<number>(0);
   const [imageUrl, setImageUrl] = useState('');
+
+  // Debounced auto-save for venue changes
+  const saveVenueData = async (data: {
+    name: string;
+    address: string;
+    city: string;
+    state: string;
+    capacity: number;
+    image_url: string;
+  }) => {
+    if (!id) return;
+
+    try {
+      const { error } = await supabase
+        .from('venues')
+        .update({
+          ...data,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast.success('Changes saved automatically');
+      queryClient.invalidateQueries({ queryKey: ['venue', id] });
+    } catch (error) {
+      await handleError(error, {
+        title: 'Auto-save Failed',
+        description: 'Could not save changes automatically',
+        endpoint: 'VenueManagement',
+        method: 'UPDATE',
+      });
+    }
+  };
+
+  const { triggerSave: triggerVenueSave, flushSave: flushVenueSave } =
+    useDebouncedSave({
+      saveFn: saveVenueData,
+      delay: 5000,
+    });
+
+  // Helper to trigger auto-save
+  const triggerAutoSave = () => {
+    if (name.trim()) {
+      triggerVenueSave({
+        name,
+        address,
+        city,
+        state,
+        capacity,
+        image_url: imageUrl,
+      });
+    }
+  };
 
   const { data: venue, isLoading } = useQuery({
     queryKey: ['venue', id],
@@ -85,6 +140,9 @@ export default function VenueManagement() {
 
     setIsSaving(true);
     try {
+      // Flush any pending debounced save first
+      await flushVenueSave();
+
       const { error } = await supabase
         .from('venues')
         .update({
@@ -137,7 +195,10 @@ export default function VenueManagement() {
             <Label>Venue Name *</Label>
             <Input
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+                triggerAutoSave();
+              }}
               placeholder='Enter venue name'
             />
           </div>
@@ -146,7 +207,10 @@ export default function VenueManagement() {
             <Label>Venue Image</Label>
             <FmImageUpload
               currentImageUrl={imageUrl}
-              onUploadComplete={setImageUrl}
+              onUploadComplete={(url) => {
+                setImageUrl(url);
+                triggerAutoSave();
+              }}
             />
           </div>
 
@@ -154,7 +218,10 @@ export default function VenueManagement() {
             <Label>Address</Label>
             <Input
               value={address}
-              onChange={(e) => setAddress(e.target.value)}
+              onChange={(e) => {
+                setAddress(e.target.value);
+                triggerAutoSave();
+              }}
               placeholder='Street address'
             />
           </div>
@@ -164,7 +231,10 @@ export default function VenueManagement() {
               <Label>City</Label>
               <Input
                 value={city}
-                onChange={(e) => setCity(e.target.value)}
+                onChange={(e) => {
+                  setCity(e.target.value);
+                  triggerAutoSave();
+                }}
                 placeholder='City'
               />
             </div>
@@ -172,7 +242,10 @@ export default function VenueManagement() {
               <Label>State</Label>
               <Input
                 value={state}
-                onChange={(e) => setState(e.target.value)}
+                onChange={(e) => {
+                  setState(e.target.value);
+                  triggerAutoSave();
+                }}
                 placeholder='State'
               />
             </div>
@@ -183,7 +256,10 @@ export default function VenueManagement() {
             <Input
               type='number'
               value={capacity}
-              onChange={(e) => setCapacity(Number(e.target.value))}
+              onChange={(e) => {
+                setCapacity(Number(e.target.value));
+                triggerAutoSave();
+              }}
               placeholder='Capacity'
             />
           </div>

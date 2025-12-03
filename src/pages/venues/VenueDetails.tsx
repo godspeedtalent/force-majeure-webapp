@@ -1,13 +1,39 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { MapPin, Users, Calendar, ArrowLeft } from 'lucide-react';
+import { MapPin, Calendar, Settings, Users } from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { Card } from '@/components/common/shadcn/card';
+import { Layout } from '@/components/layout/Layout';
+import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmEventRow } from '@/components/common/display/FmEventRow';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { ROLES, PERMISSIONS } from '@/shared/auth/permissions';
+import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
+
+interface VenueEventCard {
+  id: string;
+  title: string;
+  start_time: string;
+  hero_image: string | null;
+  artists: {
+    name: string;
+  } | null;
+}
+
+interface Venue {
+  id: string;
+  name: string;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  capacity?: number | null;
+  image_url?: string | null;
+}
 
 export default function VenueDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { hasAnyRole, hasPermission } = useUserPermissions();
 
   const { data: venue, isLoading } = useQuery({
     queryKey: ['venue', id],
@@ -21,7 +47,7 @@ export default function VenueDetails() {
         .single();
 
       if (error) throw error;
-      return data;
+      return data as Venue;
     },
     enabled: !!id,
   });
@@ -41,143 +67,140 @@ export default function VenueDetails() {
           artists!events_headliner_id_fkey(name)
         `)
         .eq('venue_id', id)
-        .eq('status', 'published')
         .gte('start_time', new Date().toISOString())
         .order('start_time', { ascending: true })
         .limit(10);
 
       if (error) throw error;
-      return data;
+      return data as unknown as VenueEventCard[];
     },
     enabled: !!id,
   });
 
+  // Check if user can manage venue
+  const canManageVenue =
+    hasAnyRole(ROLES.ADMIN, ROLES.DEVELOPER) ||
+    hasPermission(PERMISSIONS.MANAGE_VENUES);
+
   if (isLoading) {
     return (
-      <div className='min-h-screen flex items-center justify-center bg-background'>
-        <div className='animate-spin rounded-full h-8 w-8 border-[3px] border-fm-gold border-b-transparent' />
-      </div>
+      <Layout>
+        <div className='flex items-center justify-center min-h-[400px]'>
+          <FmCommonLoadingSpinner size='lg' />
+        </div>
+      </Layout>
     );
   }
 
   if (!venue) {
     return (
-      <div className='min-h-screen flex items-center justify-center bg-background'>
-        <div className='text-center'>
-          <h1 className='text-2xl font-bold mb-4'>Venue Not Found</h1>
+      <Layout>
+        <div className='text-center py-12'>
+          <h1 className='text-2xl font-canela mb-4'>Venue not found.</h1>
           <FmCommonButton onClick={() => navigate('/')}>
             Go Home
           </FmCommonButton>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className='min-h-screen bg-background'>
-      {/* Header */}
-      <div className='border-b bg-background/50 backdrop-blur-sm sticky top-0 z-10'>
-        <div className='container mx-auto px-4 py-4'>
-          <div className='flex items-center gap-4'>
+    <Layout
+      showBackButton
+      onBack={() => navigate(-1)}
+      backButtonLabel={venue.name}
+    >
+      <div className='container mx-auto px-4 py-8'>
+        {/* Manage Button - Under Back Button */}
+        {canManageVenue && (
+          <div className='mb-6'>
             <FmCommonButton
-              variant='secondary'
-              size='sm'
-              icon={ArrowLeft}
-              onClick={() => navigate(-1)}
+              variant='default'
+              size='default'
+              icon={Settings}
+              onClick={() => navigate(`/venues/${id}/manage`)}
             >
-              Back
+              Manage Venue
             </FmCommonButton>
           </div>
-        </div>
-      </div>
+        )}
 
-      {/* Hero Image */}
-      {venue.image_url && (
-        <div className='h-[40vh] relative'>
-          <img
-            src={venue.image_url}
-            alt={venue.name}
-            className='w-full h-full object-cover'
-          />
-          <div className='absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent' />
-        </div>
-      )}
+        {/* Hero Image Section */}
+        {venue.image_url && (
+          <div className='relative h-[50vh] mb-8 overflow-hidden rounded-none border border-border'>
+            <ImageWithSkeleton
+              src={venue.image_url}
+              alt={venue.name}
+              className='w-full h-full object-cover'
+              skeletonClassName='rounded-none'
+            />
+            <div className='absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent' />
 
-      {/* Content */}
-      <div className='container mx-auto px-4 py-8'>
-        <div className='max-w-4xl mx-auto'>
-          {/* Venue Info */}
-          <div className='mb-8'>
-            <h1 className='text-4xl font-bold mb-4'>{venue.name}</h1>
-            
-            <div className='flex flex-wrap gap-4 text-muted-foreground'>
-              {venue.address && (
-                <div className='flex items-center gap-2'>
-                  <MapPin className='h-4 w-4' />
-                  <span>
-                    {venue.address}
-                    {venue.city && `, ${venue.city}`}
-                    {venue.state && `, ${venue.state}`}
-                  </span>
-                </div>
-              )}
-              {venue.capacity && (
-                <div className='flex items-center gap-2'>
-                  <Users className='h-4 w-4' />
-                  <span>Capacity: {venue.capacity}</span>
-                </div>
-              )}
+            {/* Venue Title Overlay */}
+            <div className='absolute bottom-0 left-0 right-0 p-8'>
+              <h1 className='text-5xl font-canela font-medium text-foreground mb-2'>
+                {venue.name}
+              </h1>
             </div>
+          </div>
+        )}
+
+        {/* Venue Info Section */}
+        <div className='max-w-4xl mx-auto'>
+          {/* No hero image - show title at top */}
+          {!venue.image_url && (
+            <h1 className='text-5xl font-canela font-medium mb-6'>
+              {venue.name}
+            </h1>
+          )}
+
+          {/* Venue Details */}
+          <div className='mb-8 space-y-3'>
+            {venue.address && (
+              <div className='flex items-start gap-3 text-muted-foreground'>
+                <MapPin className='h-5 w-5 text-fm-gold flex-shrink-0 mt-0.5' />
+                <span className='text-lg'>
+                  {venue.address}
+                  {venue.city && `, ${venue.city}`}
+                  {venue.state && `, ${venue.state}`}
+                </span>
+              </div>
+            )}
+            {venue.capacity && (
+              <div className='flex items-center gap-3 text-muted-foreground'>
+                <Users className='h-5 w-5 text-fm-gold flex-shrink-0' />
+                <span className='text-lg'>
+                  Capacity: {venue.capacity.toLocaleString()}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Upcoming Events */}
           {upcomingEvents && upcomingEvents.length > 0 && (
             <div>
-              <h2 className='text-2xl font-bold mb-4 flex items-center gap-2'>
-                <Calendar className='h-6 w-6' />
-                Upcoming Events
+              <h2 className='text-3xl font-canela font-medium mb-6 flex items-center gap-3'>
+                <Calendar className='h-7 w-7 text-fm-gold' />
+                Upcoming events.
               </h2>
               <div className='grid gap-4'>
-                {upcomingEvents.map((event: any) => (
-                  <Card
+                {upcomingEvents.map((event: VenueEventCard) => (
+                  <FmEventRow
                     key={event.id}
-                    className='p-4 cursor-pointer hover:bg-muted/50 transition-colors'
-                    onClick={() => navigate(`/event/${event.id}`)}
-                  >
-                    <div className='flex gap-4'>
-                      {event.hero_image && (
-                        <img
-                          src={event.hero_image}
-                          alt={event.title}
-                          className='w-24 h-24 object-cover rounded'
-                        />
-                      )}
-                      <div className='flex-1'>
-                        <h3 className='font-semibold text-lg mb-1'>
-                          {event.title}
-                        </h3>
-                        {event.artists?.name && (
-                          <p className='text-muted-foreground mb-2'>
-                            {event.artists.name}
-                          </p>
-                        )}
-                        <p className='text-sm text-muted-foreground'>
-                          {new Date(event.start_time).toLocaleDateString('en-US', {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                  </Card>
+                    id={event.id}
+                    title={event.title}
+                    artistName={event.artists?.name}
+                    heroImage={event.hero_image}
+                    startTime={event.start_time}
+                    venueName={venue.name}
+                  />
                 ))}
               </div>
             </div>
           )}
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }

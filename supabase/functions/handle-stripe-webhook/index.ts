@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
+import { generateTicketQR } from '../_shared/qr.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -130,16 +131,18 @@ Deno.serve(async req => {
               });
             }
 
-            // Create tickets with protection flag
+            // Create tickets with protection flag and secure QR codes
             for (let i = 0; i < item.quantity; i++) {
               const ticketId = crypto.randomUUID();
+              const qrCodeData = await generateTicketQR(ticketId, order.event_id);
+
               await supabase.from('tickets').insert({
                 id: ticketId,
                 order_id: orderId,
                 order_item_id: item.id,
                 event_id: order.event_id,
                 ticket_tier_id: item.ticket_tier_id,
-                qr_code_data: `TICKET-${ticketId}`,
+                qr_code_data: qrCodeData,
                 status: 'valid',
                 has_protection: hasProtection,
               });
@@ -155,6 +158,32 @@ Deno.serve(async req => {
           content_type: 'event_access',
           content_url: `/events/${order.event_id}/content`,
         });
+
+        // Send order receipt email with tickets
+        try {
+          const emailResponse = await fetch(
+            `${supabaseUrl}/functions/v1/send-order-receipt-email`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${supabaseKey}`,
+              },
+              body: JSON.stringify({ order_id: orderId }),
+            }
+          );
+
+          if (!emailResponse.ok) {
+            const errorText = await emailResponse.text();
+            console.error('Email sending failed:', errorText);
+            // Don't fail the webhook if email fails - order is still complete
+          } else {
+            console.log('Order receipt email sent successfully');
+          }
+        } catch (emailError) {
+          console.error('Error triggering email:', emailError);
+          // Don't fail the webhook if email fails
+        }
 
         console.log('Order completed successfully:', orderId);
         break;

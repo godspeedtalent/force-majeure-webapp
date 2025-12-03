@@ -50,6 +50,7 @@ import { handleError } from '@/shared/services/errorHandler';
 import { AdminLockIndicator } from '@/components/common/indicators';
 import { useFeatureFlagHelpers } from '@/shared/hooks/useFeatureFlags';
 import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
+import { useDebouncedSave } from '@/shared/hooks/useDebouncedSave';
 
 type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'reports' | 'tracking' | 'social' | 'ux_display' | 'admin' | 'view';
 
@@ -77,6 +78,52 @@ export default function EventManagement() {
   const [aboutEvent, setAboutEvent] = useState<string>('');
   const [orderCount, setOrderCount] = useState(0);
   const [displaySubtitle, setDisplaySubtitle] = useState<boolean>(true);
+
+  // Debounced auto-save for overview changes
+  const saveOverviewData = async (data: {
+    title: string;
+    description: string;
+    about_event: string;
+    headliner_id: string;
+    venue_id: string;
+    start_time: string;
+    end_time: string | null;
+    is_after_hours: boolean;
+    hero_image: string | null;
+    hero_image_focal_x: number;
+    hero_image_focal_y: number;
+    display_subtitle: boolean;
+  }) => {
+    if (!id) return;
+
+    try {
+      const { error } = await supabase
+        .from('events')
+        .update({
+          ...data,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast.success('Changes saved automatically');
+      queryClient.invalidateQueries({ queryKey: ['event', id] });
+    } catch (error) {
+      await handleError(error, {
+        title: 'Auto-save Failed',
+        description: 'Could not save changes automatically',
+        endpoint: 'EventManagement',
+        method: 'UPDATE',
+      });
+    }
+  };
+
+  const { triggerSave: triggerOverviewSave, flushSave: flushOverviewSave } =
+    useDebouncedSave({
+      saveFn: saveOverviewData,
+      delay: 5000,
+    });
 
   // Fetch event data
   const { data: event, isLoading } = useQuery({
@@ -261,6 +308,40 @@ export default function EventManagement() {
     ...(isAdmin ? [{ id: 'admin' as EventTab, label: 'Admin', icon: Shield }] : []),
   ];
 
+  // Trigger debounced save whenever form data changes
+  const triggerAutoSave = () => {
+    if (customTitle.trim() && headlinerId && venueId && eventDate) {
+      triggerOverviewSave(getOverviewData());
+    }
+  };
+
+  // Helper to gather overview data for saving
+  const getOverviewData = () => {
+    // Convert end time to ISO timestamp if not after hours
+    let endTimeISO = null;
+    if (!isAfterHours && endTime && eventDate) {
+      const [hours, minutes] = endTime.split(':');
+      const endDate = new Date(eventDate);
+      endDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+      endTimeISO = endDate.toISOString();
+    }
+
+    return {
+      title: customTitle.trim(),
+      description: eventSubtitle.trim() || null,
+      about_event: aboutEvent.trim() || null,
+      headliner_id: headlinerId,
+      venue_id: venueId,
+      start_time: eventDate ? eventDate.toISOString() : new Date().toISOString(),
+      end_time: endTimeISO,
+      is_after_hours: isAfterHours,
+      hero_image: heroImage || null,
+      hero_image_focal_x: 50,
+      hero_image_focal_y: heroImageFocalY,
+      display_subtitle: displaySubtitle,
+    };
+  };
+
   const handleSaveOverview = async () => {
     if (!customTitle.trim()) {
       toast.error('Please provide an event title');
@@ -274,35 +355,22 @@ export default function EventManagement() {
 
     setIsSaving(true);
     try {
-      // Convert end time to ISO timestamp if not after hours
-      let endTimeISO = null;
-      if (!isAfterHours && endTime) {
-        const [hours, minutes] = endTime.split(':');
-        const endDate = new Date(eventDate);
-        endDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-        endTimeISO = endDate.toISOString();
-      }
+      // Flush any pending debounced save first
+      await flushOverviewSave();
+
+      const data = getOverviewData();
 
       const { error } = await supabase
         .from('events')
         .update({
-          title: customTitle.trim(),
-          description: eventSubtitle.trim() || null,
-          about_event: aboutEvent.trim() || null,
-          headliner_id: headlinerId,
-          venue_id: venueId,
-          start_time: eventDate.toISOString(),
-          end_time: endTimeISO,
-          is_after_hours: isAfterHours,
-          hero_image: heroImage || null,
-          hero_image_focal_x: 50,
-          hero_image_focal_y: heroImageFocalY,
+          ...data,
+          updated_at: new Date().toISOString(),
         } as any)
         .eq('id', id!);
 
       if (error) throw error;
 
-      toast.success('Overview updated successfully');
+      toast.success('Changes saved successfully');
       queryClient.invalidateQueries({ queryKey: ['event', id] });
     } catch (error) {
       await handleError(error, {
@@ -543,7 +611,10 @@ export default function EventManagement() {
                     </Label>
                     <FmArtistSearchDropdown
                       value={headlinerId}
-                      onChange={setHeadlinerId}
+                      onChange={value => {
+                        setHeadlinerId(value);
+                        triggerAutoSave();
+                      }}
                       placeholder='Select headliner'
                     />
                   </div>
@@ -555,7 +626,10 @@ export default function EventManagement() {
                     </Label>
                     <FmVenueSearchDropdown
                       value={venueId}
-                      onChange={setVenueId}
+                      onChange={value => {
+                        setVenueId(value);
+                        triggerAutoSave();
+                      }}
                       placeholder='Select venue'
                     />
                   </div>
@@ -568,7 +642,10 @@ export default function EventManagement() {
                     <Input
                       id='event-title'
                       value={customTitle}
-                      onChange={e => setCustomTitle(e.target.value)}
+                      onChange={e => {
+                        setCustomTitle(e.target.value);
+                        triggerAutoSave();
+                      }}
                       placeholder='Enter event title'
                     />
                   </div>
@@ -580,7 +657,10 @@ export default function EventManagement() {
                     <Input
                       id='event-subtitle'
                       value={eventSubtitle}
-                      onChange={e => setEventSubtitle(e.target.value)}
+                      onChange={e => {
+                        setEventSubtitle(e.target.value);
+                        triggerAutoSave();
+                      }}
                       placeholder='Enter event subtitle'
                     />
                   </div>
@@ -593,7 +673,10 @@ export default function EventManagement() {
                     <textarea
                       id='about-event'
                       value={aboutEvent}
-                      onChange={e => setAboutEvent(e.target.value)}
+                      onChange={e => {
+                        setAboutEvent(e.target.value);
+                        triggerAutoSave();
+                      }}
                       placeholder='Enter event description...'
                       className='w-full min-h-[120px] p-3 rounded-md border border-input bg-background text-foreground resize-y'
                       rows={5}
@@ -609,7 +692,10 @@ export default function EventManagement() {
                     <div className='flex gap-2'>
                       <FmCommonDatePicker
                         value={eventDate}
-                        onChange={setEventDate}
+                        onChange={value => {
+                          setEventDate(value);
+                          triggerAutoSave();
+                        }}
                       />
                       <FmCommonTimePicker
                         value={eventDate ? format(eventDate, 'HH:mm') : '20:00'}
@@ -622,6 +708,7 @@ export default function EventManagement() {
                               parseInt(minutes)
                             );
                             setEventDate(newDate);
+                            triggerAutoSave();
                           }
                         }}
                       />
@@ -634,16 +721,20 @@ export default function EventManagement() {
                     <div className='flex items-center gap-4'>
                       <FmCommonTimePicker
                         value={endTime}
-                        onChange={setEndTime}
+                        onChange={value => {
+                          setEndTime(value);
+                          triggerAutoSave();
+                        }}
                         disabled={isAfterHours}
                       />
                       <div className='flex items-center gap-2'>
                         <Checkbox
                           id='after-hours'
                           checked={isAfterHours}
-                          onCheckedChange={checked =>
-                            setIsAfterHours(!!checked)
-                          }
+                          onCheckedChange={checked => {
+                            setIsAfterHours(!!checked);
+                            triggerAutoSave();
+                          }}
                         />
                         <Label htmlFor='after-hours' className='cursor-pointer'>
                           After hours

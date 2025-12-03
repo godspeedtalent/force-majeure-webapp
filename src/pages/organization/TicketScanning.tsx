@@ -12,6 +12,12 @@ import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { useToast } from '@/shared/hooks/use-toast';
 import { PERMISSIONS } from '@/shared/auth/permissions';
 import { formatHeader } from '@/shared/utils/styleUtils';
+import { supabase } from '@/shared/api/supabase/client';
+import { useScanStatistics } from '@/features/events/hooks/useScanStatistics';
+import { logger } from '@/shared/services/logger';
+import { QRScanner } from '@/components/ticketing/QRScanner';
+
+const scanLogger = logger.createNamespace('TicketScanning');
 
 interface ScanResult {
   success: boolean;
@@ -20,6 +26,8 @@ interface ScanResult {
     eventName: string;
     attendeeName: string;
     ticketType: string;
+    checkedInAt?: string;
+    venueName?: string;
   };
 }
 
@@ -39,10 +47,16 @@ const TicketScanning = () => {
   const [ticketCode, setTicketCode] = useState('');
   const [scanning, setScanning] = useState(false);
   const [lastScan, setLastScan] = useState<ScanResult | null>(null);
+  const [showCamera, setShowCamera] = useState(false);
   const isLoading = !roles;
 
   // Check for scanning permission
   const hasAccess = hasPermission(PERMISSIONS.SCAN_TICKETS);
+
+  // Get real-time scan statistics
+  const { data: stats, isLoading: statsLoading } = useScanStatistics({
+    refreshInterval: 5000, // Refresh every 5 seconds
+  });
 
   useEffect(() => {
     if (!isLoading && !hasAccess) {
@@ -62,34 +76,87 @@ const TicketScanning = () => {
 
     setScanning(true);
 
-    // Simulate ticket validation (replace with actual API call)
-    await new Promise(resolve => setTimeout(resolve, 800));
+    try {
+      // Call validation edge function
+      const { data, error } = await supabase.functions.invoke('validate-ticket', {
+        body: {
+          qr_data: ticketCode.trim(),
+          device_info: {
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+          },
+        },
+      });
 
-    // Mock response - replace with actual validation
-    const isValid = Math.random() > 0.3;
-    const result: ScanResult = {
-      success: isValid,
-      message: isValid
-        ? 'Ticket validated successfully!'
-        : 'Invalid ticket or already used',
-      ticketInfo: isValid
-        ? {
-            eventName: 'Force Majeure - November 2025',
-            attendeeName: 'John Doe',
-            ticketType: 'General Admission',
-          }
-        : undefined,
-    };
+      if (error) {
+        scanLogger.error('Error calling validation function', {
+          error: error.message,
+        });
+        throw error;
+      }
 
-    setLastScan(result);
-    setScanning(false);
-    setTicketCode('');
+      const response = data as {
+        valid: boolean;
+        ticket?: {
+          event_name: string;
+          attendee_name: string | null;
+          ticket_tier_name: string;
+          venue_name: string;
+          checked_in_at: string;
+        };
+        error?: string;
+        reason?: string;
+      };
 
-    toast({
-      title: result.success ? 'Valid Ticket' : 'Invalid Ticket',
-      description: result.message,
-      variant: result.success ? 'default' : 'destructive',
-    });
+      const result: ScanResult = {
+        success: response.valid,
+        message: response.valid
+          ? 'Ticket validated successfully!'
+          : response.error || 'Invalid ticket',
+        ticketInfo: response.ticket
+          ? {
+              eventName: response.ticket.event_name,
+              attendeeName: response.ticket.attendee_name || 'No name provided',
+              ticketType: response.ticket.ticket_tier_name,
+              venueName: response.ticket.venue_name,
+              checkedInAt: new Date(response.ticket.checked_in_at).toLocaleString(),
+            }
+          : undefined,
+      };
+
+      setLastScan(result);
+      setTicketCode('');
+
+      toast({
+        title: result.success ? 'Valid Ticket' : 'Invalid Ticket',
+        description: result.message,
+        variant: result.success ? 'default' : 'destructive',
+      });
+
+      scanLogger.info('Scan completed', {
+        success: result.success,
+        reason: response.reason,
+      });
+    } catch (error) {
+      scanLogger.error('Validation error', {
+        error: error instanceof Error ? error.message : 'Unknown',
+      });
+
+      const result: ScanResult = {
+        success: false,
+        message: 'Failed to validate ticket. Please try again.',
+      };
+
+      setLastScan(result);
+
+      toast({
+        title: 'Validation Error',
+        description: 'Unable to validate ticket. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setScanning(false);
+    }
   };
 
   if (isLoading) {
@@ -164,12 +231,8 @@ const TicketScanning = () => {
                 <FmCommonButton
                   variant='secondary'
                   size='sm'
-                  onClick={() => {
-                    toast({
-                      title: 'Camera Scanner',
-                      description: 'QR/Barcode camera scanner coming soon',
-                    });
-                  }}
+                  onClick={() => setShowCamera(true)}
+                  disabled={scanning}
                 >
                   <Scan className='h-4 w-4 mr-2' />
                   Use Camera Scanner
@@ -240,6 +303,22 @@ const TicketScanning = () => {
                           {lastScan.ticketInfo.ticketType}
                         </span>
                       </div>
+                      {lastScan.ticketInfo.venueName && (
+                        <div className='flex justify-between'>
+                          <span className='text-muted-foreground'>Venue:</span>
+                          <span className='text-foreground font-medium'>
+                            {lastScan.ticketInfo.venueName}
+                          </span>
+                        </div>
+                      )}
+                      {lastScan.ticketInfo.checkedInAt && (
+                        <div className='flex justify-between'>
+                          <span className='text-muted-foreground'>Checked In:</span>
+                          <span className='text-foreground font-medium'>
+                            {lastScan.ticketInfo.checkedInAt}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -261,21 +340,55 @@ const TicketScanning = () => {
         <h3 className='text-lg font-canela mb-[20px]'>
           {formatHeader("today's statistics")}
         </h3>
-        <div className='grid grid-cols-1 sm:grid-cols-3 gap-[20px]'>
-          <div className='text-center p-[20px] bg-muted/30 rounded-none'>
-            <p className='text-2xl font-canela text-fm-gold'>0</p>
-            <p className='text-sm text-muted-foreground'>Tickets scanned</p>
+        {statsLoading ? (
+          <div className='text-center py-8 text-muted-foreground'>
+            Loading statistics...
           </div>
-          <div className='text-center p-[20px] bg-muted/30 rounded-none'>
-            <p className='text-2xl font-canela text-green-500'>0</p>
-            <p className='text-sm text-muted-foreground'>Valid</p>
+        ) : (
+          <div className='grid grid-cols-1 sm:grid-cols-3 gap-[20px]'>
+            <div className='text-center p-[20px] bg-muted/30 rounded-none'>
+              <p className='text-2xl font-canela text-fm-gold'>
+                {stats?.uniqueTicketsScanned || 0}
+              </p>
+              <p className='text-sm text-muted-foreground'>Tickets scanned</p>
+            </div>
+            <div className='text-center p-[20px] bg-muted/30 rounded-none'>
+              <p className='text-2xl font-canela text-green-500'>
+                {stats?.successfulScans || 0}
+              </p>
+              <p className='text-sm text-muted-foreground'>Valid</p>
+            </div>
+            <div className='text-center p-[20px] bg-muted/30 rounded-none'>
+              <p className='text-2xl font-canela text-red-500'>
+                {(stats?.invalidScans || 0) + (stats?.duplicateScans || 0) + (stats?.rejectedScans || 0)}
+              </p>
+              <p className='text-sm text-muted-foreground'>Invalid</p>
+            </div>
           </div>
-          <div className='text-center p-[20px] bg-muted/30 rounded-none'>
-            <p className='text-2xl font-canela text-red-500'>0</p>
-            <p className='text-sm text-muted-foreground'>Invalid</p>
-          </div>
-        </div>
+        )}
       </FmCommonCard>
+
+      {/* Camera Scanner Modal */}
+      {showCamera && (
+        <QRScanner
+          onScan={(qrData) => {
+            setShowCamera(false);
+            setTicketCode(qrData);
+            // Auto-trigger validation after scan
+            setTimeout(() => {
+              handleScan();
+            }, 100);
+          }}
+          onClose={() => setShowCamera(false)}
+          onError={(error) => {
+            toast({
+              title: 'Scanner Error',
+              description: error,
+              variant: 'destructive',
+            });
+          }}
+        />
+      )}
     </FmCommonPageLayout>
     </Layout>
   );
