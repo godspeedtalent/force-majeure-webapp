@@ -10,7 +10,7 @@ export function useTrackingLinks(eventId: string) {
     queryKey: ['tracking-links', eventId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('tracking_links' as any)
+        .from('tracking_links')
         .select('*')
         .eq('event_id', eventId)
         .order('created_at', { ascending: false });
@@ -24,7 +24,7 @@ export function useTrackingLinks(eventId: string) {
   const createLink = useMutation({
     mutationFn: async (formData: TrackingLinkFormData) => {
       const { data, error } = await supabase
-        .from('tracking_links' as any)
+        .from('tracking_links')
         .insert([{
           event_id: eventId,
           code: formData.code,
@@ -56,7 +56,7 @@ export function useTrackingLinks(eventId: string) {
   const updateLink = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<TrackingLinkFormData> }) => {
       const { error } = await supabase
-        .from('tracking_links' as any)
+        .from('tracking_links')
         .update({
           name: data.name,
           utm_source: data.utm_source,
@@ -84,7 +84,7 @@ export function useTrackingLinks(eventId: string) {
   const toggleActive = useMutation({
     mutationFn: async ({ id, isActive }: { id: string; isActive: boolean }) => {
       const { error } = await supabase
-        .from('tracking_links' as any)
+        .from('tracking_links')
         .update({ is_active: isActive })
         .eq('id', id);
 
@@ -102,7 +102,7 @@ export function useTrackingLinks(eventId: string) {
   const deleteLink = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .from('tracking_links' as any)
+        .from('tracking_links')
         .delete()
         .eq('id', id);
 

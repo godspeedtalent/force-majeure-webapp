@@ -14,6 +14,7 @@ import {
   Building2,
   Users,
   RefreshCw,
+  Disc3,
 } from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -22,7 +23,7 @@ import { OrganizationsManagement } from '../admin/OrganizationsManagement';
 import { UserManagement } from '../admin/UserManagement';
 import { DatabaseNavigatorSearch } from '@/components/admin/DatabaseNavigatorSearch';
 import { toast } from 'sonner';
-import { artistColumns, venueColumns } from '../admin/config/adminGridColumns';
+import { artistColumns, venueColumns, recordingColumns } from '../admin/config/adminGridColumns';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared/auth/permissions';
 import { AdminLockIndicator } from '@/components/common/indicators';
@@ -34,6 +35,7 @@ type DatabaseTab =
   | 'artists'
   | 'events'
   | 'organizations'
+  | 'recordings'
   | 'users'
   | 'venues';
 
@@ -48,7 +50,7 @@ export default function DeveloperDatabase() {
 
   // Get active tab from URL query string, fallback to 'overview'
   const tabFromUrl = searchParams.get('table') as DatabaseTab | null;
-  const validTabs: DatabaseTab[] = ['overview', 'artists', 'events', 'organizations', 'users', 'venues'];
+  const validTabs: DatabaseTab[] = ['overview', 'artists', 'events', 'organizations', 'recordings', 'users', 'venues'];
   const activeTab: DatabaseTab = tabFromUrl && validTabs.includes(tabFromUrl) ? tabFromUrl : 'overview';
 
   // Navigation groups configuration - conditionally include admin-only tabs
@@ -71,6 +73,12 @@ export default function DeveloperDatabase() {
         label: 'Events',
         icon: Calendar,
         description: 'Event Management',
+      },
+      {
+        id: 'recordings',
+        label: 'Recordings',
+        icon: Disc3,
+        description: 'Music Recordings',
       },
       {
         id: 'venues',
@@ -129,6 +137,7 @@ export default function DeveloperDatabase() {
     const baseTabs = [
       { id: 'artists', label: 'Artists', icon: Mic2 },
       { id: 'events', label: 'Events', icon: Calendar },
+      { id: 'recordings', label: 'Tracks', icon: Disc3 },
       { id: 'venues', label: 'Venues', icon: MapPin },
     ];
     if (isAdmin) {
@@ -214,6 +223,41 @@ export default function DeveloperDatabase() {
 
       if (error) throw error;
       return count ?? 0;
+    },
+  });
+
+  // Fetch recordings count for dashboard
+  const { data: recordingsCount = 0 } = useQuery({
+    queryKey: ['recordings-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('artist_recordings')
+        .select('*', { count: 'exact', head: true });
+
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
+  // Fetch recordings data with artist join
+  const { data: recordings = [], isLoading: recordingsLoading } = useQuery({
+    queryKey: ['admin-recordings'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('artist_recordings')
+        .select(`
+          id, artist_id, name, duration, url, cover_art, platform, created_at, updated_at,
+          artists!artist_id(name)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Flatten artist name for easier access
+      return (data ?? []).map((recording: any) => ({
+        ...recording,
+        artist_name: recording.artists?.name || null,
+      }));
     },
   });
 
@@ -394,10 +438,85 @@ export default function DeveloperDatabase() {
     },
   ];
 
+  // Handle recording updates
+  const handleRecordingUpdate = async (
+    row: any,
+    columnKey: string,
+    newValue: any
+  ) => {
+    const normalizedValue =
+      typeof newValue === 'string' ? newValue.trim() : newValue;
+    const updateData: Record<string, any> = {
+      [columnKey]: normalizedValue === '' ? null : normalizedValue,
+    };
+
+    try {
+      const { error } = await supabase
+        .from('artist_recordings')
+        .update(updateData)
+        .eq('id', row.id);
+
+      if (error) throw error;
+
+      queryClient.setQueryData(
+        ['admin-recordings'],
+        (oldData: any[] | undefined) => {
+          if (!oldData) return oldData;
+          return oldData.map(recording =>
+            recording.id === row.id
+              ? {
+                  ...recording,
+                  ...updateData,
+                  updated_at: new Date().toISOString(),
+                }
+              : recording
+          );
+        }
+      );
+
+      toast.success('Recording updated');
+    } catch (error) {
+      logger.error('Error updating recording:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'DeveloperDatabase.tsx' });
+      toast.error('Failed to update recording');
+      throw error;
+    }
+  };
+
+  const handleDeleteRecording = async (recording: any) => {
+    if (!confirm(`Are you sure you want to delete "${recording.name}"?`)) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('artist_recordings')
+        .delete()
+        .eq('id', recording.id);
+
+      if (error) throw error;
+
+      toast.success('Recording deleted');
+      queryClient.invalidateQueries({ queryKey: ['admin-recordings'] });
+    } catch (error) {
+      logger.error('Error deleting recording:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'DeveloperDatabase.tsx' });
+      toast.error('Failed to delete recording');
+    }
+  };
+
+  const recordingContextActions: DataGridAction[] = [
+    {
+      label: 'Delete Recording',
+      icon: <Trash2 className='h-4 w-4' />,
+      onClick: handleDeleteRecording,
+      variant: 'destructive',
+    },
+  ];
+
   // Calculate statistics for current data
   const getCurrentData = () => {
     if (activeTab === 'artists') return artists;
     if (activeTab === 'venues') return venues;
+    if (activeTab === 'recordings') return recordings;
     if (activeTab === 'events') return []; // Events data is managed in EventsManagement component
     if (activeTab === 'organizations') return [];
     return [];
@@ -481,8 +600,8 @@ export default function DeveloperDatabase() {
             </div>
 
             {/* Stats Groups in Columns */}
-            <div className='w-full max-w-4xl mb-12'>
-              <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+            <div className='w-full max-w-5xl mb-12'>
+              <div className='grid grid-cols-2 md:grid-cols-5 gap-4'>
                 <div className='bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]'>
                   <div className='text-xs text-muted-foreground mb-1'>
                     Artists
@@ -505,6 +624,14 @@ export default function DeveloperDatabase() {
                   </div>
                   <div className='text-2xl font-bold text-foreground'>
                     {eventsCount}
+                  </div>
+                </div>
+                <div className='bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]'>
+                  <div className='text-xs text-muted-foreground mb-1'>
+                    Recordings
+                  </div>
+                  <div className='text-2xl font-bold text-foreground'>
+                    {recordingsCount}
                   </div>
                 </div>
                 <div className='bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]'>
@@ -584,6 +711,30 @@ export default function DeveloperDatabase() {
 
         {activeTab === 'events' && (
           <EventsManagement />
+        )}
+
+        {activeTab === 'recordings' && (
+          <div className='space-y-6'>
+            <div>
+              <h1 className='text-3xl font-canela font-bold text-foreground mb-2'>
+                Recordings Management
+              </h1>
+              <p className='text-muted-foreground'>
+                Manage artist recordings from Spotify and SoundCloud.
+              </p>
+            </div>
+
+            <FmConfigurableDataGrid
+              gridId='dev-recordings'
+              data={recordings}
+              columns={recordingColumns}
+              contextMenuActions={recordingContextActions}
+              loading={recordingsLoading}
+              pageSize={15}
+              onUpdate={handleRecordingUpdate}
+              resourceName='Recording'
+            />
+          </div>
         )}
       </div>
     </SideNavbarLayout>

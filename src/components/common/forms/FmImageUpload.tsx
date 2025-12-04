@@ -192,8 +192,9 @@ export const FmImageUpload = ({
           onDragLeave={handleDrag}
           onDragOver={handleDrag}
           onDrop={handleDrop}
+          onClick={handleButtonClick}
           className={cn(
-            'flex flex-col items-center justify-center rounded-none border-2 border-dashed p-12 transition-colors',
+            'flex flex-col items-center justify-center rounded-none border-2 border-dashed p-12 transition-colors cursor-pointer',
             dragActive
               ? 'border-fm-gold bg-fm-gold/10'
               : 'border-border bg-card hover:border-fm-gold/50 hover:bg-muted/50',

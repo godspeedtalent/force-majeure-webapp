@@ -48,6 +48,10 @@ export const eventService = {
           venue:venues(*),
           headliner:artists!events_headliner_id_fkey(*),
           undercard_artists:event_artists(
+            id,
+            event_id,
+            artist_id,
+            set_time,
             set_order,
             artist:artists(*)
           ),
@@ -244,10 +248,9 @@ export const eventService = {
    * Add undercard artists to an event
    */
   async addUndercardArtists(eventId: string, artistIds: string[]) {
-    const undercardData = artistIds.map((artistId, index) => ({
+    const undercardData = artistIds.map((artistId) => ({
       event_id: eventId,
       artist_id: artistId,
-      set_order: index + 1,
     }));
 
     const { error } = await supabase

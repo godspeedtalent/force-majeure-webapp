@@ -1,34 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import {
-  Calendar,
-  Clock,
-  Eye,
-  MapPin,
-  Share2,
-  Star,
-  Users,
-} from 'lucide-react';
+import { Clock, MapPin } from 'lucide-react';
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
-import { TIME_CONSTANTS } from '@/shared/constants/timeConstants';
 
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { FmBigButton } from '@/components/common/buttons/FmBigButton';
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
-import { FmCommonInfoCard } from '@/components/common/display/FmCommonInfoCard';
 import { FmDateBox } from '@/components/common/display/FmDateBox';
 import { FmTextLink } from '@/components/common/display/FmTextLink';
 import { FmUndercardList } from '@/components/common/display/FmUndercardList';
 import { FmDynamicStickyHeader } from '@/components/common/layout/FmDynamicStickyHeader';
 import { ScrollBar } from '@/components/common/shadcn/scroll-area';
-import {
-  FmCommonStackLayout,
-} from '@/components/common/layout';
 import { FmCommonCollapsibleSection } from '@/components/common/data/FmCommonCollapsibleSection';
-import {
-  FmArtistRow,
-  type FmArtistRowProps,
-} from '@/components/artist/FmArtistRow';
+import { type FmArtistRowProps } from '@/components/artist/FmArtistRow';
 import {
   FmArtistDetailsModal,
   type FmArtistDetailsModalProps,
@@ -44,9 +27,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/common/shadcn/dialog';
-import { Badge } from '@/components/common/shadcn/badge';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { useUserRole } from '@/shared/hooks/useUserRole';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { ROLES } from '@/shared/auth/permissions';
 import { useEventViews } from '@/shared/hooks/useEventViews';
 import { useShareEvent } from '@/features/events/hooks/useShareEvent';
 import { useEventInterest } from '@/features/events/hooks/useEventInterest';
@@ -55,6 +38,12 @@ import { supabase } from '@/shared/api/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 
 import { EventDetailsRecord } from './types';
+import {
+  EventInfoSection,
+  EventHeaderActions,
+  EventCallTimes,
+  EventGuestList,
+} from './components';
 
 interface EventDetailsContentProps {
   event: EventDetailsRecord;
@@ -77,7 +66,7 @@ export const EventDetailsContent = ({
   displayTitle,
 }: EventDetailsContentProps) => {
   const { user } = useAuth();
-  const { data: role } = useUserRole();
+  const { hasAnyRole } = useUserPermissions();
   const navigate = useNavigate();
   const location = useLocation();
   const [ticketCount] = useState(() => Math.floor(Math.random() * 100) + 50);
@@ -114,17 +103,17 @@ export const EventDetailsContent = ({
     queryFn: async () => {
       // Check feature flag
       const { data: flagData } = await supabase
-        .from('feature_flags' as any)
+        .from('feature_flags')
         .select('is_enabled, environment_id, environments!inner(name)')
         .eq('flag_name', 'guest_list')
         .eq('environments.name', 'production')
         .maybeSingle();
 
-      if (!(flagData as any)?.is_enabled) return false;
+      if (!flagData?.is_enabled) return false;
 
       // Check event settings
       const { data: settingsData } = await supabase
-        .from('guest_list_settings' as any)
+        .from('guest_list_settings')
         .select('*')
         .eq('event_id', event.id)
         .maybeSingle();
@@ -133,7 +122,7 @@ export const EventDetailsContent = ({
       // - Feature flag is on
       // - Event has settings enabled
       // - At least one threshold is met (for now we'll show if enabled)
-      return (settingsData as any)?.is_enabled ?? false;
+      return settingsData?.is_enabled ?? false;
     },
   });
 
@@ -158,35 +147,41 @@ export const EventDetailsContent = ({
 
   // Format time as: 9pm - 2am PST (just the time, no date)
   const formattedDateTime = useMemo(() => {
-    // Parse start time
+    // Get timezone
+    const timezone = new Date().toLocaleTimeString('en-US', { timeZoneName: 'short' }).split(' ')[2];
+
+    // Parse start time (e.g., "9:00 PM")
     const startMatch = event.time?.match(/(\d+):(\d+)\s*(AM|PM)?/i);
     if (!startMatch) return '';
-    
-    let startHours = parseInt(startMatch[1], 10);
-    const startMeridiem = startMatch[3]?.toUpperCase() || 'PM';
-    
-    // Assume end time is 5 hours later (placeholder logic)
-    const startDate = new Date(`${event.date}T${startHours.toString().padStart(2, '0')}:${startMatch[2]}:00`);
-    const endDate = new Date(startDate.getTime() + 5 * 60 * 60 * 1000);
-    let endHours = endDate.getHours();
-    const endMeridiem = endHours >= 12 ? 'PM' : 'AM';
-    
-    // Convert to 12-hour format
-    if (startMeridiem === 'PM' && startHours !== 12) startHours += 12;
-    if (startMeridiem === 'AM' && startHours === 12) startHours = 0;
-    
-    const startDisplay = startHours > 12 ? startHours - 12 : (startHours === 0 ? 12 : startHours);
-    const endDisplay = endHours > 12 ? endHours - 12 : (endHours === 0 ? 12 : endHours);
-    
+
+    const startHour = parseInt(startMatch[1], 10);
+    const startMeridiem = (startMatch[3] || 'PM').toUpperCase();
+
+    // If after hours, just show start time
+    if (event.isAfterHours) {
+      return `${startHour}${startMeridiem.toLowerCase()} ${timezone}`;
+    }
+
+    // If no end time, just show start time
+    if (!event.endTime) {
+      return `${startHour}${startMeridiem.toLowerCase()} ${timezone}`;
+    }
+
+    // Parse end time (e.g., "2:00 AM")
+    const endMatch = event.endTime.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+    if (!endMatch) {
+      return `${startHour}${startMeridiem.toLowerCase()} ${timezone}`;
+    }
+
+    const endHour = parseInt(endMatch[1], 10);
+    const endMeridiem = (endMatch[3] || 'AM').toUpperCase();
+
     // Only show first meridiem if different from second
     const startMeridiemDisplay = startMeridiem !== endMeridiem ? startMeridiem.toLowerCase() : '';
     const endMeridiemDisplay = endMeridiem.toLowerCase();
-    
-    // Get timezone
-    const timezone = new Date().toLocaleTimeString('en-US', { timeZoneName: 'short' }).split(' ')[2];
-    
-    return `${startDisplay}${startMeridiemDisplay} - ${endDisplay}${endMeridiemDisplay} ${timezone}`;
-  }, [event.date, event.time]);
+
+    return `${startHour}${startMeridiemDisplay} - ${endHour}${endMeridiemDisplay} ${timezone}`;
+  }, [event.time, event.endTime, event.isAfterHours]);
 
   const eventDate = useMemo(() => new Date(event.date), [event.date]);
   const longDateLabel = useMemo(
@@ -212,20 +207,9 @@ export const EventDetailsContent = ({
     () => formatTimeDisplay(event.time),
     [event.time]
   );
-  const isAfterHours = useMemo(() => {
-    if (!event.time) return false;
-    const timeParts = event.time.match(/(\d+):(\d+)\s*(AM|PM)?/i);
-    if (!timeParts) return false;
 
-    let hours = parseInt(timeParts[1], 10);
-    const meridiem = timeParts[3]?.toUpperCase();
-
-    if (meridiem === 'PM' && hours !== TIME_CONSTANTS.NOON_HOUR) hours += TIME_CONSTANTS.NOON_HOUR;
-    if (meridiem === 'AM' && hours === TIME_CONSTANTS.NOON_HOUR) hours = TIME_CONSTANTS.MIDNIGHT_HOUR;
-
-    // After hours: 10 PM or later, or before 6 AM
-    return hours >= TIME_CONSTANTS.AFTER_HOURS_START || hours < TIME_CONSTANTS.EARLY_MORNING_END;
-  }, [event.time]);
+  // Use the isAfterHours flag from event data
+  const isAfterHours = event.isAfterHours;
   const weekdayLabel = useMemo(
     () =>
       eventDate.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase(),
@@ -239,39 +223,118 @@ export const EventDetailsContent = ({
   const dayNumber = useMemo(() => eventDate.getDate().toString(), [eventDate]);
   const yearNumber = useMemo(() => eventDate.getFullYear(), [eventDate]);
   const callTimeLineup = useMemo(() => {
-    const lineup = [...event.undercard, event.headliner].filter(Boolean);
+    // Build lineup with headliner first (descending order - headliner at top)
+    const lineup = [event.headliner, ...event.undercard].filter(Boolean);
     if (lineup.length === 0) {
       return [];
     }
 
-    const baseDate = new Date(`${event.date}T${event.time || '19:00'}`);
-    const hasValidBase = !Number.isNaN(baseDate.getTime());
+    // Check if any artist has a set_time - if so, use real schedule data
+    const hasRealSchedule = lineup.some(artist => artist.setTime);
 
-    return lineup.map((artist, index) => {
-      const callDate =
-        hasValidBase && index >= 0
-          ? new Date(
-              baseDate.getTime() + index * CALL_TIME_INTERVAL_MINUTES * 60_000
-            )
-          : null;
+    if (hasRealSchedule) {
+      // Use actual set times from the database, sorted by set time descending (latest first)
+      const lineupWithTimes = lineup.map((artist, index) => {
+        let callTimeLabel = 'TBD';
 
-      const callTimeLabel =
-        callDate !== null
-          ? formatTimeDisplay(
-              callDate.toLocaleTimeString('en-US', {
-                hour: 'numeric',
-                minute: '2-digit',
-              })
-            )
-          : 'TBD';
+        if (artist.setTime) {
+          const setDate = new Date(artist.setTime);
+          callTimeLabel = formatTimeDisplay(
+            setDate.toLocaleTimeString('en-US', {
+              hour: 'numeric',
+              minute: '2-digit',
+            })
+          );
+        }
+
+        return {
+          ...artist,
+          callTime: callTimeLabel,
+          roleLabel: index === 0 ? 'Headliner' : undefined,
+          _setTime: artist.setTime ? new Date(artist.setTime).getTime() : 0,
+        };
+      });
+
+      // Sort by set time descending (latest/headliner first)
+      return lineupWithTimes
+        .sort((a, b) => b._setTime - a._setTime)
+        .map(({ _setTime: _, ...artist }) => artist);
+    }
+
+    // Fallback: Calculate estimated times based on event start/end time
+    const startTimeMatch = event.time?.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+    if (!startTimeMatch) {
+      // No valid start time - show TBD for all artists
+      return lineup.map((artist, index) => ({
+        ...artist,
+        callTime: 'TBD',
+        roleLabel: index === 0 ? 'Headliner' : undefined,
+      }));
+    }
+
+    // Build start date
+    let startHour = parseInt(startTimeMatch[1], 10);
+    const startMinutes = parseInt(startTimeMatch[2], 10);
+    const startMeridiem = (startTimeMatch[3] || 'PM').toUpperCase();
+
+    if (startMeridiem === 'PM' && startHour !== 12) startHour += 12;
+    if (startMeridiem === 'AM' && startHour === 12) startHour = 0;
+
+    const baseDate = new Date(event.date);
+    baseDate.setHours(startHour, startMinutes, 0, 0);
+
+    // Calculate interval based on end time if available, otherwise use default
+    let intervalMinutes = CALL_TIME_INTERVAL_MINUTES;
+
+    if (event.endTime && !event.isAfterHours) {
+      const endTimeMatch = event.endTime.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+      if (endTimeMatch) {
+        let endHour = parseInt(endTimeMatch[1], 10);
+        const endMinutes = parseInt(endTimeMatch[2], 10);
+        const endMeridiem = (endTimeMatch[3] || 'AM').toUpperCase();
+
+        if (endMeridiem === 'PM' && endHour !== 12) endHour += 12;
+        if (endMeridiem === 'AM' && endHour === 12) endHour = 0;
+
+        const endDate = new Date(event.date);
+        endDate.setHours(endHour, endMinutes, 0, 0);
+
+        // If end time is before start time, it's the next day
+        if (endDate <= baseDate) {
+          endDate.setDate(endDate.getDate() + 1);
+        }
+
+        // Calculate total duration and divide by number of artists
+        const totalDurationMinutes = (endDate.getTime() - baseDate.getTime()) / 60000;
+        if (lineup.length > 1 && totalDurationMinutes > 0) {
+          intervalMinutes = Math.floor(totalDurationMinutes / lineup.length);
+        }
+      }
+    }
+
+    // Calculate times in ascending order (first opener to headliner)
+    // then reverse for display (headliner at top)
+    const lineupWithTimes = lineup.map((artist, index) => {
+      // Headliner plays last, so calculate from end
+      const slotIndex = lineup.length - 1 - index;
+      const callDate = new Date(baseDate.getTime() + slotIndex * intervalMinutes * 60_000);
+
+      const callTimeLabel = formatTimeDisplay(
+        callDate.toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+        })
+      );
 
       return {
         ...artist,
         callTime: callTimeLabel,
-        roleLabel: index === lineup.length - 1 ? 'Headliner' : undefined,
+        roleLabel: index === 0 ? 'Headliner' : undefined,
       };
     });
-  }, [event.date, event.time, event.headliner, event.undercard]);
+
+    return lineupWithTimes;
+  }, [event.date, event.time, event.endTime, event.isAfterHours, event.headliner, event.undercard]);
   const attendeeList = useMemo(() => {
     const baseAttendees = [...ATTENDEE_PLACEHOLDERS];
     const limit = Math.min(Math.max(ticketCount, baseAttendees.length), 64);
@@ -324,8 +387,15 @@ export const EventDetailsContent = ({
 
   const handleVenueSelect = () => {
     setSelectedVenue({
+      id: event.venueDetails?.id,
       name: event.venue,
-      // Additional venue details could be fetched here
+      address: event.venueDetails?.address ?? undefined,
+      city: event.venueDetails?.city ?? undefined,
+      state: event.venueDetails?.state ?? undefined,
+      zipCode: event.venueDetails?.zipCode ?? undefined,
+      image: event.venueDetails?.image,
+      website: event.venueDetails?.website,
+      googleMapsUrl: event.venueDetails?.googleMapsUrl,
     });
     setIsVenueModalOpen(true);
   };
@@ -341,15 +411,7 @@ export const EventDetailsContent = ({
     navigate('/auth', { state: { from: location } });
   }, [navigate, location]);
 
-  const normalizedRole = useMemo(
-    () => (role ? String(role).toLowerCase() : ''),
-    [role]
-  );
-
-  const canManageArtists = useMemo(
-    () => ['admin', 'developer'].includes(normalizedRole),
-    [normalizedRole]
-  );
+  const canManage = hasAnyRole(ROLES.ADMIN, ROLES.DEVELOPER);
 
   const handleAttendeeCardClick = useCallback(() => {
     if (!user) {
@@ -361,12 +423,15 @@ export const EventDetailsContent = ({
   const handleManageArtist = useCallback(
     (artistId: string) => {
       setIsArtistModalOpen(false);
-      navigate('/admin', {
-        state: {
-          openTab: 'artists',
-          editArtistId: artistId,
-        },
-      });
+      navigate(`/artists/${artistId}/manage`);
+    },
+    [navigate]
+  );
+
+  const handleManageVenue = useCallback(
+    (venueId: string) => {
+      setIsVenueModalOpen(false);
+      navigate(`/venues/${venueId}/manage`);
     },
     [navigate]
   );
@@ -390,123 +455,32 @@ export const EventDetailsContent = ({
 
         {/* Guest List - conditionally shows based on feature flag and event settings */}
         {guestListEnabled && (
-          <FmCommonCard
-            variant='outline'
-            onClick={user ? handleAttendeeCardClick : undefined}
-            className='relative overflow-hidden'
-          >
-          <h3 className='text-lg mb-4 font-canela'>Guest list</h3>
-
-          <div className='flex items-center gap-3 mb-4'>
-            <div className='flex -space-x-2'>
-              {attendeePreview.map((attendee, index) => (
-                <div
-                  key={`${attendee.avatar}-${index}`}
-                  className='w-8 h-8 rounded-full bg-gradient-to-br from-fm-gold/20 to-fm-gold/40 border-2 border-card flex items-center justify-center transition-all duration-200 hover:scale-110 hover:border-fm-gold cursor-pointer'
-                  title={attendee.name}
-                >
-                  <span className='text-[10px] font-semibold text-fm-gold'>
-                    {attendee.avatar}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <div className='flex items-center gap-2'>
-              <Users className='w-4 h-4 text-fm-gold' />
-              <span className='text-xs font-normal text-muted-foreground'>
-                + {ticketCount.toLocaleString()} others
-              </span>
-            </div>
-          </div>
-
-          <div className='mt-4 border-t border-border pt-3'>
-            <div className='flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground'>
-              {user ? (
-                <span className='font-normal text-muted-foreground'>
-                  Click to see full list
-                </span>
-              ) : (
-                <button
-                  type='button'
-                  onClick={event => {
-                    event.stopPropagation();
-                    handlePromptLogin();
-                  }}
-                  className='text-xs font-semibold text-fm-gold hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-fm-gold/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
-                >
-                  Log in to see the full list
-                </button>
-              )}
-              {showViewCount && (
-                <div className='flex items-center gap-2'>
-                  <Eye className='w-4 h-4' />
-                  <span>{viewCount.toLocaleString()} page views</span>
-                </div>
-              )}
-            </div>
-          </div>
-        </FmCommonCard>
+          <EventGuestList
+            attendeePreview={attendeePreview}
+            ticketCount={ticketCount}
+            viewCount={viewCount}
+            showViewCount={showViewCount}
+            isLoggedIn={!!user}
+            onCardClick={handleAttendeeCardClick}
+            onPromptLogin={handlePromptLogin}
+          />
         )}
 
         {/* Event Information - always shows */}
-        <FmCommonCollapsibleSection
-          title='Event Information'
-          defaultExpanded={true}
+        <EventInfoSection
+          longDateLabel={longDateLabel}
+          formattedDateTime={formattedDateTime}
+          isAfterHours={isAfterHours}
+          venue={event.venue}
+          onVenueSelect={handleVenueSelect}
           className={!guestListEnabled ? 'lg:col-span-2' : ''}
-        >
-          <div className='grid gap-4'>
-            <FmCommonInfoCard
-              icon={Calendar}
-              label='Date & Time'
-              size='sm'
-              value={
-                <div className='flex flex-col gap-1.5'>
-                  <div>{longDateLabel}</div>
-                  <div className='flex items-center gap-2 text-xs text-muted-foreground'>
-                    <Clock className='w-3 h-3' />
-                    <span>{formattedTime}</span>
-                    {isAfterHours && (
-                      <Badge className='bg-fm-gold/20 text-fm-gold border-fm-gold/40 text-[10px] px-1.5 py-0'>
-                        After Hours
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              }
-            />
-
-            <FmCommonInfoCard
-              icon={MapPin}
-              label='Venue'
-              size='sm'
-              value={
-                <FmTextLink onClick={handleVenueSelect}>
-                  {event.venue || 'Venue TBA'}
-                </FmTextLink>
-              }
-            />
-          </div>
-        </FmCommonCollapsibleSection>
+        />
 
         {/* Call Times - only shows if lineup exists, spans full width */}
-        {callTimeLineup.length > 0 && (
-          <FmCommonCollapsibleSection
-            title='Call times'
-            defaultExpanded={true}
-            className='lg:col-span-2'
-          >
-            {/* Use vertical stack layout when taking full width, row format in column */}
-            <FmCommonStackLayout spacing='md'>
-              {callTimeLineup.map((artist, index) => (
-                <FmArtistRow
-                  key={`${artist.name}-${index}`}
-                  artist={artist}
-                  onSelect={handleArtistSelect}
-                />
-              ))}
-            </FmCommonStackLayout>
-          </FmCommonCollapsibleSection>
-        )}
+        <EventCallTimes
+          callTimeLineup={callTimeLineup}
+          onArtistSelect={handleArtistSelect}
+        />
       </div>
 
       <DecorativeDivider marginTop='mt-8' marginBottom='mb-6' />
@@ -541,53 +515,19 @@ export const EventDetailsContent = ({
   };
 
   const headerActions = (
-    <div className='flex items-center gap-2'>
-      {/* Interest Button - with count inside */}
-      <button
-        type='button'
-        aria-label={isInterested ? 'Remove interest' : 'Mark as interested'}
-        onClick={handleInterestClick}
-        disabled={isInterestLoading}
-        className='h-10 px-3 rounded-none flex items-center justify-center gap-2 bg-white/5 text-muted-foreground border border-transparent transition-all duration-200 hover:bg-white/10 hover:text-fm-gold hover:border-fm-gold hover:scale-105 active:scale-95 relative overflow-hidden cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
-      >
-        <Star
-          className={`h-4 w-4 transition-all duration-300 ${
-            isInterested
-              ? 'fill-fm-gold text-fm-gold'
-              : 'text-muted-foreground'
-          }`}
-        />
-        {shouldShowInterestCount && interestCount > 0 && (
-          <span className='text-xs text-muted-foreground'>
-            {interestCount.toLocaleString()}
-          </span>
-        )}
-      </button>
-      
-      {/* Share Button */}
-      <div className='flex items-center gap-1'>
-        <button
-          type='button'
-          aria-label='Share event'
-          onClick={handleOpenShareModal}
-          className='h-10 w-10 rounded-none flex items-center justify-center bg-white/5 text-muted-foreground border border-transparent transition-all duration-200 hover:bg-white/10 hover:text-fm-gold hover:border-fm-gold hover:scale-105 active:scale-95 relative overflow-hidden cursor-pointer'
-        >
-          <Share2 className='h-4 w-4' />
-        </button>
-        {shouldShowShareCount && shareCount > 0 && (
-          <span className='text-xs text-muted-foreground ml-1'>
-            {shareCount.toLocaleString()}
-          </span>
-        )}
-      </div>
-      {/* Show view count here if guest list is disabled but view count is enabled */}
-      {!guestListEnabled && showViewCount && (
-        <div className='flex items-center gap-2 px-3 py-2 h-10 bg-white/5 rounded-none border border-transparent'>
-          <Eye className='w-4 h-4 text-muted-foreground' />
-          <span className='text-sm text-muted-foreground'>{viewCount.toLocaleString()}</span>
-        </div>
-      )}
-    </div>
+    <EventHeaderActions
+      isInterested={isInterested}
+      isInterestLoading={isInterestLoading}
+      interestCount={interestCount}
+      shouldShowInterestCount={shouldShowInterestCount}
+      shareCount={shareCount}
+      shouldShowShareCount={shouldShowShareCount}
+      viewCount={viewCount}
+      showViewCount={showViewCount}
+      guestListEnabled={guestListEnabled ?? false}
+      onInterestClick={handleInterestClick}
+      onShareClick={handleOpenShareModal}
+    />
   );
 
   const primaryHeader = (
@@ -826,7 +766,7 @@ export const EventDetailsContent = ({
         artist={selectedArtist}
         open={isArtistModalOpen}
         onOpenChange={handleArtistModalChange}
-        canManage={canManageArtists}
+        canManage={canManage}
         onManage={handleManageArtist}
       />
 
@@ -834,6 +774,8 @@ export const EventDetailsContent = ({
         venue={selectedVenue}
         open={isVenueModalOpen}
         onOpenChange={handleVenueModalChange}
+        canManage={canManage}
+        onManage={handleManageVenue}
       />
 
       <FmShareModal

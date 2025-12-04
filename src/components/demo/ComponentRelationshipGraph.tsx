@@ -357,7 +357,7 @@ export function ComponentRelationshipGraph() {
 
   return (
     <div className='space-y-4'>
-      <div className='h-[700px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-lg p-6 border border-border shadow-2xl'>
+      <div className='h-[700px] bg-black/60 backdrop-blur-sm rounded-none p-6 border border-white/20 shadow-2xl'>
         <Scatter ref={chartRef} data={chartData} options={options} />
       </div>
 

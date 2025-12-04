@@ -1,5 +1,5 @@
--- Create user_event_interests junction table
-CREATE TABLE user_event_interests (
+-- Create user_event_interests junction table (if not exists)
+CREATE TABLE IF NOT EXISTS user_event_interests (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
@@ -7,29 +7,32 @@ CREATE TABLE user_event_interests (
   UNIQUE(user_id, event_id)
 );
 
-CREATE INDEX idx_user_event_interests_event_id ON user_event_interests(event_id);
-CREATE INDEX idx_user_event_interests_user_id ON user_event_interests(user_id);
-CREATE INDEX idx_user_event_interests_created_at ON user_event_interests(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_user_event_interests_event_id ON user_event_interests(event_id);
+CREATE INDEX IF NOT EXISTS idx_user_event_interests_user_id ON user_event_interests(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_event_interests_created_at ON user_event_interests(created_at DESC);
 
 -- Enable RLS
 ALTER TABLE user_event_interests ENABLE ROW LEVEL SECURITY;
 
 -- Public read access
+DROP POLICY IF EXISTS "Public read access" ON user_event_interests;
 CREATE POLICY "Public read access" ON user_event_interests
   FOR SELECT USING (true);
 
 -- Authenticated users can insert own interests
+DROP POLICY IF EXISTS "Authenticated users can insert own interests" ON user_event_interests;
 CREATE POLICY "Authenticated users can insert own interests" ON user_event_interests
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- Users can delete own interests
+DROP POLICY IF EXISTS "Users can delete own interests" ON user_event_interests;
 CREATE POLICY "Users can delete own interests" ON user_event_interests
   FOR DELETE USING (auth.uid() = user_id);
 
--- Add threshold columns to events table
+-- Add threshold columns to events table (if not exists)
 ALTER TABLE events
-  ADD COLUMN min_interest_count_display INTEGER NOT NULL DEFAULT 0,
-  ADD COLUMN min_share_count_display INTEGER NOT NULL DEFAULT 0;
+  ADD COLUMN IF NOT EXISTS min_interest_count_display INTEGER NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS min_share_count_display INTEGER NOT NULL DEFAULT 0;
 
 COMMENT ON COLUMN events.min_interest_count_display IS
   'Minimum interest count required to display count publicly';

@@ -37,47 +37,35 @@ COMMENT ON COLUMN ticket_scan_events.device_info IS 'Optional device information
 ALTER TABLE ticket_scan_events ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policy: Staff with SCAN_TICKETS permission can insert scan events
+DROP POLICY IF EXISTS "Staff can log scan events" ON ticket_scan_events;
 CREATE POLICY "Staff can log scan events"
   ON ticket_scan_events
   FOR INSERT
   WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM user_permissions up
-      WHERE up.user_id = auth.uid()
-      AND up.permission = 'scan_tickets'
-    )
-    OR
-    EXISTS (
-      SELECT 1 FROM user_roles ur
-      WHERE ur.user_id = auth.uid()
-      AND ur.role IN ('admin', 'developer')
-    )
+    has_permission(auth.uid(), 'scan_tickets')
+    OR has_role(auth.uid(), 'admin')
+    OR has_role(auth.uid(), 'developer')
   );
 
 -- RLS Policy: Staff and event organizers can view scan events
+DROP POLICY IF EXISTS "Staff and organizers can view scan events" ON ticket_scan_events;
 CREATE POLICY "Staff and organizers can view scan events"
   ON ticket_scan_events
   FOR SELECT
   USING (
     -- Admins and developers can see all
-    EXISTS (
-      SELECT 1 FROM user_roles ur
-      WHERE ur.user_id = auth.uid()
-      AND ur.role IN ('admin', 'developer')
-    )
+    has_role(auth.uid(), 'admin')
+    OR has_role(auth.uid(), 'developer')
     OR
     -- Users with scan permission can see all
-    EXISTS (
-      SELECT 1 FROM user_permissions up
-      WHERE up.user_id = auth.uid()
-      AND up.permission = 'scan_tickets'
-    )
+    has_permission(auth.uid(), 'scan_tickets')
     OR
-    -- Event organizers can see events for their events
+    -- Organization owners can see scan events for their organization's events
     EXISTS (
       SELECT 1 FROM events e
+      JOIN organizations o ON o.id = e.organization_id
       WHERE e.id = ticket_scan_events.event_id
-      AND e.created_by = auth.uid()
+      AND o.owner_id = auth.uid()
     )
   );
 

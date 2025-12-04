@@ -1,7 +1,8 @@
 -- Create function to atomically increment event share count
 -- This ensures thread-safe increments when multiple users share simultaneously
+-- Note: Using p_event_id to match the existing function signature
 
-CREATE OR REPLACE FUNCTION increment_event_share_count(event_id UUID)
+CREATE OR REPLACE FUNCTION increment_event_share_count(p_event_id UUID)
 RETURNS INTEGER
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -12,7 +13,7 @@ BEGIN
   -- Atomically increment share_count and return new value
   UPDATE events
   SET share_count = share_count + 1
-  WHERE id = event_id
+  WHERE id = p_event_id
   RETURNING share_count INTO new_count;
 
   -- Return the new count

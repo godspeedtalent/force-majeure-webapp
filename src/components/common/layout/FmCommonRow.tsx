@@ -5,7 +5,9 @@ import { cn } from '@/shared/utils/utils';
 export interface FmCommonRowProps {
   leading?: ReactNode;
   title: ReactNode;
+  titleClassName?: string;
   subtitle?: ReactNode;
+  subtitleClassName?: string;
   trailing?: ReactNode;
   onClick?: () => void;
   className?: string;
@@ -15,7 +17,9 @@ export interface FmCommonRowProps {
 export const FmCommonRow = ({
   leading,
   title,
+  titleClassName,
   subtitle,
+  subtitleClassName,
   trailing,
   onClick,
   className,
@@ -39,11 +43,11 @@ export const FmCommonRow = ({
     >
       {leading && <div className='flex-shrink-0'>{leading}</div>}
       <div className='flex-1 min-w-0 space-y-1'>
-        <div className='text-sm font-semibold text-foreground truncate'>
+        <div className={cn('text-sm font-semibold text-foreground truncate', titleClassName)}>
           {title}
         </div>
         {subtitle && (
-          <div className='text-xs text-muted-foreground/80 truncate'>
+          <div className={cn('text-xs text-muted-foreground/80 truncate', subtitleClassName)}>
             {subtitle}
           </div>
         )}

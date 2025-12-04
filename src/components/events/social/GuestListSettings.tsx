@@ -38,7 +38,7 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
     queryKey: ['guest-list-settings', eventId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('guest_list_settings' as any)
+        .from('guest_list_settings')
         .select('*')
         .eq('event_id', eventId)
         .maybeSingle();
@@ -97,7 +97,7 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
       if (settings?.id) {
         // Update existing settings
         const { error } = await supabase
-          .from('guest_list_settings' as any)
+          .from('guest_list_settings')
           .update(settingsData)
           .eq('id', settings.id);
 
@@ -105,7 +105,7 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
       } else {
         // Insert new settings
         const { error } = await supabase
-          .from('guest_list_settings' as any)
+          .from('guest_list_settings')
           .insert([settingsData]);
 
         if (error) throw error;

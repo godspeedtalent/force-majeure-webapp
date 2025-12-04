@@ -25,7 +25,7 @@ export function useEventViews(eventId: string | undefined) {
 
         // Fetch view count using raw query
         const { count, error: countError } = await supabase
-          .from('event_views' as any)
+          .from('event_views')
           .select('*', { count: 'exact', head: true })
           .eq('event_id', eventId);
 
@@ -67,7 +67,7 @@ export function useEventViews(eventId: string | undefined) {
       sessionStorage.setItem('session_id', sessionId);
 
       const { error: insertError } = await supabase
-        .from('event_views' as any)
+        .from('event_views')
         .insert({
           event_id: eventId,
           session_id: sessionId,

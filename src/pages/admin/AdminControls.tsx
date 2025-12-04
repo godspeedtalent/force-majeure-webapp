@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
@@ -12,6 +13,7 @@ import {
   Users,
   Database,
   Building2,
+  Activity,
 } from 'lucide-react';
 import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
 import { AdminFeesSection } from '@/components/admin/AdminFeesSection';
@@ -20,10 +22,20 @@ import { UserManagement } from './UserManagement';
 import { OrganizationsManagement } from './OrganizationsManagement';
 import { formatHeader } from '@/shared/utils/styleUtils';
 
-type AdminTab = 'devtools' | 'fees' | 'settings' | 'users' | 'organizations';
+type AdminTab = 'devtools' | 'fees' | 'settings' | 'users' | 'organizations' | 'logs';
 
 export default function AdminControls() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<AdminTab>('settings');
+
+  // Handle tab changes - some tabs navigate to external pages
+  const handleTabChange = useCallback((tab: AdminTab) => {
+    if (tab === 'logs') {
+      navigate('/admin/logs');
+    } else {
+      setActiveTab(tab);
+    }
+  }, [navigate]);
 
   // Navigation groups configuration - Alphabetically sorted
   const navigationGroups: FmCommonSideNavGroup<AdminTab>[] = [
@@ -69,6 +81,19 @@ export default function AdminControls() {
         },
       ],
     },
+    {
+      label: 'Monitoring',
+      icon: Activity,
+      items: [
+        {
+          id: 'logs',
+          label: 'Activity Logs',
+          icon: Activity,
+          description: 'View system activity logs',
+          isExternal: true,
+        },
+      ],
+    },
   ];
 
   // Mobile bottom tabs configuration
@@ -93,12 +118,12 @@ export default function AdminControls() {
     <SideNavbarLayout
       navigationGroups={navigationGroups}
       activeItem={activeTab}
-      onItemChange={setActiveTab}
+      onItemChange={handleTabChange}
       mobileTabBar={
         <MobileBottomTabBar
           tabs={mobileTabs}
           activeTab={activeTab}
-          onTabChange={tab => setActiveTab(tab as AdminTab)}
+          onTabChange={tab => handleTabChange(tab as AdminTab)}
         />
       }
     >

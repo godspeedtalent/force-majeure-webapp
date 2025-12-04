@@ -1,7 +1,7 @@
 export function OverviewSection() {
   return (
     <div className='space-y-6'>
-      <div className='p-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-lg border border-border shadow-xl'>
+      <div className='p-6 bg-black/60 backdrop-blur-sm rounded-none border border-white/20 shadow-xl'>
         <h3 className='text-2xl font-canela font-semibold mb-4 text-fm-gold'>
           FM Component System
         </h3>
@@ -90,65 +90,65 @@ export function OverviewSection() {
               and organized into logical categories (see sidebar):
             </p>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-4 ml-4'>
-              <div className='p-4 bg-slate-900/50 rounded-lg border border-slate-700'>
+              <div className='p-4 bg-black/40 rounded-none border border-white/10'>
                 <strong className='text-foreground'>Buttons</strong>
                 <p className='text-sm mt-1'>
                   Action buttons, creation buttons, navigation buttons
                 </p>
               </div>
-              <div className='p-4 bg-slate-900/50 rounded-lg border border-slate-700'>
+              <div className='p-4 bg-black/40 rounded-none border border-white/10'>
                 <strong className='text-foreground'>Cards & Display</strong>
                 <p className='text-sm mt-1'>
                   Cards, badges, stats, headers, and structured information
                 </p>
               </div>
-              <div className='p-4 bg-slate-900/50 rounded-lg border border-slate-700'>
+              <div className='p-4 bg-black/40 rounded-none border border-white/10'>
                 <strong className='text-foreground'>Data</strong>
                 <p className='text-sm mt-1'>
                   Tables, lists, tabs, and data display components
                 </p>
               </div>
-              <div className='p-4 bg-slate-900/50 rounded-lg border border-slate-700'>
+              <div className='p-4 bg-black/40 rounded-none border border-white/10'>
                 <strong className='text-foreground'>Display</strong>
                 <p className='text-sm mt-1'>Avatars and user photos</p>
               </div>
-              <div className='p-4 bg-slate-900/50 rounded-lg border border-slate-700'>
+              <div className='p-4 bg-black/40 rounded-none border border-white/10'>
                 <strong className='text-foreground'>Feedback</strong>
                 <p className='text-sm mt-1'>Toasts, spinners, error displays</p>
               </div>
-              <div className='p-4 bg-slate-900/50 rounded-lg border border-slate-700'>
+              <div className='p-4 bg-black/40 rounded-none border border-white/10'>
                 <strong className='text-foreground'>Form Inputs</strong>
                 <p className='text-sm mt-1'>
                   Individual input components with validation
                 </p>
               </div>
-              <div className='p-4 bg-slate-900/50 rounded-lg border border-slate-700'>
+              <div className='p-4 bg-black/40 rounded-none border border-white/10'>
                 <strong className='text-foreground'>Form System</strong>
                 <p className='text-sm mt-1'>
                   Complete form system with react-hook-form and Zod
                 </p>
               </div>
-              <div className='p-4 bg-slate-900/50 rounded-lg border border-slate-700'>
+              <div className='p-4 bg-black/40 rounded-none border border-white/10'>
                 <strong className='text-foreground'>Layout</strong>
                 <p className='text-sm mt-1'>Grid and stack layout components</p>
               </div>
-              <div className='p-4 bg-slate-900/50 rounded-lg border border-slate-700'>
+              <div className='p-4 bg-black/40 rounded-none border border-white/10'>
                 <strong className='text-foreground'>Modals</strong>
                 <p className='text-sm mt-1'>
                   Dialogs, confirmations, and modal windows
                 </p>
               </div>
-              <div className='p-4 bg-slate-900/50 rounded-lg border border-slate-700'>
+              <div className='p-4 bg-black/40 rounded-none border border-white/10'>
                 <strong className='text-foreground'>Navigation</strong>
                 <p className='text-sm mt-1'>Back buttons and sidebar navigation</p>
               </div>
-              <div className='p-4 bg-slate-900/50 rounded-lg border border-slate-700'>
+              <div className='p-4 bg-black/40 rounded-none border border-white/10'>
                 <strong className='text-foreground'>Search</strong>
                 <p className='text-sm mt-1'>
                   Autocomplete search dropdowns for various entities
                 </p>
               </div>
-              <div className='p-4 bg-slate-900/50 rounded-lg border border-slate-700'>
+              <div className='p-4 bg-black/40 rounded-none border border-white/10'>
                 <strong className='text-foreground'>Miscellaneous</strong>
                 <p className='text-sm mt-1'>
                   Backgrounds, promo codes, and utility components

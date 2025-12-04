@@ -1,7 +1,50 @@
 # Force Majeure - Claude Context
 
-> **📖 Master Reference**: See `/docs/AI_INSTRUCTIONS.md` for shared TypeScript standards across all AI assistants.
-> When updating coding standards, ensure both files stay synchronized.
+## How to Use This Documentation
+
+**This file (CLAUDE.md) is your entry point.** It contains essential context for working on this codebase. For deeper information, use the documentation index.
+
+### Documentation Structure
+
+```
+CLAUDE.md (you are here)
+│   ├── Project overview, tech stack, code standards
+│   ├── Key patterns and conventions
+│   └── Quick reference for common tasks
+│
+└── docs/INDEX.md (master catalog)
+    ├── architecture/    → System design, design system
+    ├── features/        → Feature-specific guides (data grid, feature flags, etc.)
+    ├── security/        → Permissions, roles
+    ├── backend/         → Edge Functions, database, infrastructure
+    ├── error-handling/  → Error patterns
+    ├── testing/         → Test patterns
+    └── refactoring/     → Active refactoring plans
+```
+
+### When to Consult Additional Docs
+
+| Task | Consult |
+|------|---------|
+| Implementing UI components | `docs/architecture/DESIGN_SYSTEM.md` |
+| Working with permissions/roles | `docs/security/PERMISSION_MANAGEMENT_GUIDE.md` |
+| Using feature flags | `docs/features/FEATURE_FLAG_GUIDE.md` |
+| Working with data grids | `docs/features/DATA_GRID_DOCUMENTATION.md` |
+| Calling Edge Functions | `docs/backend/EDGE_FUNCTIONS.md` |
+| Database migrations | `docs/backend/DATABASE_MIGRATION_STRATEGY.md` |
+| Component refactoring | `docs/refactoring/COMPONENT_REFACTORING_GUIDE.md` |
+| Finding any doc | `docs/INDEX.md` |
+
+### Quick Start for New Conversations
+
+1. **Read this file first** - Contains 90% of what you need
+2. **Check `docs/INDEX.md`** if you need deeper documentation on a specific topic
+3. **Search the codebase** for existing patterns before implementing new features
+4. **Follow existing conventions** - This codebase has established patterns
+
+> **📖 TypeScript Standards**: See `docs/AI_INSTRUCTIONS.md` for shared TypeScript standards across all AI assistants.
+
+---
 
 ## Project Overview
 
@@ -140,7 +183,7 @@ export default function EntityDetails() {
 
 ### Design System
 
-- **Complete design system documentation**: `/docs/DESIGN_SYSTEM.md`
+- **Complete design system documentation**: `docs/architecture/DESIGN_SYSTEM.md`
 - **Design constants**: `/src/shared/constants/designSystem.ts`
 
 #### Colors
@@ -186,7 +229,7 @@ export default function EntityDetails() {
 
 ## Code Standards
 
-> **📖 Master Reference**: See `/docs/AI_INSTRUCTIONS.md` for shared TypeScript standards across all AI assistants.
+> **📖 Master Reference**: See `docs/AI_INSTRUCTIONS.md` for shared TypeScript standards across all AI assistants.
 
 ### TypeScript
 
@@ -311,7 +354,7 @@ When code and types don't match:
 - Comprehensive migration from scattered flag checks (`flags?.flag_name`) to centralized system
 - Updated files: App.tsx, Scavenger.tsx, ProfileEdit.tsx, Navigation.tsx, GlobalSearchContext.tsx, ForceMajeureRootLayout.tsx
 - Deprecated old `FeatureFlagGuard` with migration guidance
-- **📖 Full documentation:** `/docs/FEATURE_FLAG_GUIDE.md`
+- **📖 Full documentation:** `docs/features/FEATURE_FLAG_GUIDE.md`
 
 ### Role & Permission System (Nov 2025)
 
@@ -372,7 +415,7 @@ const isAdminUser = isAdmin(); // Check if user has admin role
 5. ✅ Admin routes (`/admin/*`) can use `<ProtectedRoute permission={PERMISSIONS.MANAGE_*}>` or specific role checks
 6. ✅ Use permission checks for features, role checks for access levels
 
-**See also:** `/docs/PERMISSION_MANAGEMENT_GUIDE.md` for detailed examples
+**See also:** `docs/security/PERMISSION_MANAGEMENT_GUIDE.md` for detailed examples
 
 ### Authentication (Nov 2025)
 
@@ -419,7 +462,7 @@ npm run preview      # Preview production build
 - Use `FeatureGuard` component for conditional UI rendering
 - Use `useFeatureFlagHelpers` hook for programmatic checks
 - FmToolbar provides access to feature toggles (admin/developer only)
-- Full documentation: `docs/FEATURE_FLAG_GUIDE.md`
+- Full documentation: `docs/features/FEATURE_FLAG_GUIDE.md`
 
 ### FmToolbar (Floating Toolbar)
 
@@ -562,7 +605,10 @@ npm run preview      # Preview production build
 - Prefer named exports over default exports (better refactoring)
 - Always read files before editing
 - Use parallel tool calls when possible
-- Test builds after significant changes
+- Test builds after significant changes (`npm run build`)
+- Run relevant unit tests after code changes (`npm test -- --run`)
+  - For changes to files with existing tests, run the full test suite
+  - Verify all tests pass before considering the task complete
 - Keep components focused and under 300 lines
 - Extract shared logic into hooks or utilities
 - Follow existing patterns in the codebase
@@ -766,7 +812,7 @@ npm run preview      # Preview production build
       - Typography: `font-medium` for labels
       - Transitions: `transition-all duration-300` for smooth interactions
 
-12. **Reference documentation**: When in doubt, check `/docs/DESIGN_SYSTEM.md`
+12. **Reference documentation**: When in doubt, check `docs/architecture/DESIGN_SYSTEM.md`
 
 ### Design System Enforcement Tools
 

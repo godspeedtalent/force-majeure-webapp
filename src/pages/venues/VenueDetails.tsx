@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { MapPin, Calendar, Settings, Users } from 'lucide-react';
+import { MapPin, Calendar, Settings, Users, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { Layout } from '@/components/layout/Layout';
@@ -9,6 +9,7 @@ import { FmEventRow } from '@/components/common/display/FmEventRow';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES, PERMISSIONS } from '@/shared/auth/permissions';
 import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
+import { useVenueById } from '@/shared/api/queries/venueQueries';
 
 interface VenueEventCard {
   id: string;
@@ -20,37 +21,12 @@ interface VenueEventCard {
   } | null;
 }
 
-interface Venue {
-  id: string;
-  name: string;
-  address?: string | null;
-  city?: string | null;
-  state?: string | null;
-  capacity?: number | null;
-  image_url?: string | null;
-}
-
 export default function VenueDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { hasAnyRole, hasPermission } = useUserPermissions();
 
-  const { data: venue, isLoading } = useQuery({
-    queryKey: ['venue', id],
-    queryFn: async () => {
-      if (!id) throw new Error('No venue ID provided');
-
-      const { data, error } = await supabase
-        .from('venues')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (error) throw error;
-      return data as Venue;
-    },
-    enabled: !!id,
-  });
+  const { data: venue, isLoading } = useVenueById(id);
 
   const { data: upcomingEvents } = useQuery({
     queryKey: ['venue-events', id],
@@ -106,25 +82,31 @@ export default function VenueDetails() {
   }
 
   return (
-    <Layout
-      showBackButton
-      onBack={() => navigate(-1)}
-      backButtonLabel={venue.name}
-    >
-      <div className='container mx-auto px-4 py-8'>
-        {/* Manage Button - Under Back Button */}
-        {canManageVenue && (
-          <div className='mb-6'>
+    <Layout>
+      <div className='w-full lg:w-[70%] mx-auto px-4 py-8'>
+        {/* Back & Manage Button Row */}
+        <div className='flex items-center justify-between mb-4'>
+          <FmCommonButton
+            variant='secondary'
+            size='sm'
+            icon={ArrowLeft}
+            onClick={() => navigate(-1)}
+            className='bg-white/10 text-white hover:bg-white/20 border border-white/30'
+          >
+            Back
+          </FmCommonButton>
+          {canManageVenue && (
             <FmCommonButton
-              variant='default'
-              size='default'
+              variant='secondary'
+              size='sm'
               icon={Settings}
               onClick={() => navigate(`/venues/${id}/manage`)}
+              className='bg-white/10 text-white hover:bg-white/20 border border-white/30'
             >
-              Manage Venue
+              Manage
             </FmCommonButton>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Hero Image Section */}
         {venue.image_url && (
@@ -147,7 +129,7 @@ export default function VenueDetails() {
         )}
 
         {/* Venue Info Section */}
-        <div className='max-w-4xl mx-auto'>
+        <div>
           {/* No hero image - show title at top */}
           {!venue.image_url && (
             <h1 className='text-5xl font-canela font-medium mb-6'>
@@ -157,11 +139,12 @@ export default function VenueDetails() {
 
           {/* Venue Details */}
           <div className='mb-8 space-y-3'>
-            {venue.address && (
+            {venue.address_line_1 && (
               <div className='flex items-start gap-3 text-muted-foreground'>
                 <MapPin className='h-5 w-5 text-fm-gold flex-shrink-0 mt-0.5' />
                 <span className='text-lg'>
-                  {venue.address}
+                  {venue.address_line_1}
+                  {venue.address_line_2 && `, ${venue.address_line_2}`}
                   {venue.city && `, ${venue.city}`}
                   {venue.state && `, ${venue.state}`}
                 </span>

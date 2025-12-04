@@ -1,4 +1,4 @@
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, ExternalLink } from 'lucide-react';
 import * as React from 'react';
 import {
   Sidebar,
@@ -20,6 +20,8 @@ export interface FmCommonSideNavItem<T = string> {
   icon: LucideIcon;
   description?: string;
   badge?: React.ReactNode;
+  /** Mark this item as an external navigation (navigates to a new page) */
+  isExternal?: boolean;
 }
 
 export interface FmCommonSideNavGroup<T = string> {
@@ -130,6 +132,7 @@ export function FmCommonSideNav<T extends string = string>({
                     const isActive = activeItem === item.id;
                     const isPrevious = previousItem === item.id && !isActive;
                     const showRipple = clickedItem === item.id;
+                    const isExternal = item.isExternal;
 
                     return (
                       <SidebarMenuItem key={item.id as string}>
@@ -139,8 +142,16 @@ export function FmCommonSideNav<T extends string = string>({
                             'cursor-pointer transition-all duration-200',
                             'relative overflow-hidden',
                             open ? 'justify-start pl-4' : 'justify-center',
-                            // Hover effects
+                            // External item styling - frosted glass background
+                            isExternal && [
+                              'bg-white/5 backdrop-blur-sm',
+                              'border border-white/10',
+                              'hover:bg-white/10 hover:border-white/20',
+                              'hover:shadow-[0_0_12px_rgba(255,255,255,0.1)]',
+                            ],
+                            // Hover effects (non-external, non-active)
                             !isActive &&
+                              !isExternal &&
                               'hover:bg-white/5 hover:translate-x-0.5',
                             // Active state
                             isActive && [
@@ -171,7 +182,11 @@ export function FmCommonSideNav<T extends string = string>({
                               )}
                             >
                               {item.label}
-                              {item.badge && <span className='ml-auto'>{item.badge}</span>}
+                              {/* External link icon for external items */}
+                              {isExternal && (
+                                <ExternalLink className='h-3 w-3 ml-auto text-white/50' />
+                              )}
+                              {item.badge && !isExternal && <span className='ml-auto'>{item.badge}</span>}
                             </span>
                           )}
 

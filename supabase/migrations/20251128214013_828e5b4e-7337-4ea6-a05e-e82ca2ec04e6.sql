@@ -1,6 +1,6 @@
--- Add share_count column to events table
+-- Add share_count column to events table (if not exists)
 ALTER TABLE events
-  ADD COLUMN share_count INTEGER NOT NULL DEFAULT 0;
+  ADD COLUMN IF NOT EXISTS share_count INTEGER NOT NULL DEFAULT 0;
 
 COMMENT ON COLUMN events.share_count IS 'Number of times this event has been shared';
 

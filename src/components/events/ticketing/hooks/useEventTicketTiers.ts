@@ -2,6 +2,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/shared/api/supabase/client';
 import { toast } from 'sonner';
 import type { TicketGroup } from '../ticket-group-manager/types';
+import {
+  useDeleteTicketTier,
+  useSetTierActive,
+  ticketTierKeys,
+} from '@/shared/api/queries/ticketTierQueries';
 
 interface TicketTierWithOrders {
   id: string;
@@ -29,17 +34,30 @@ interface TicketGroupWithTiers extends Omit<TicketGroup, 'tiers'> {
   group_order: number;
 }
 
+// Custom query key for ticket groups (extends ticketTierKeys)
+const ticketGroupKeys = {
+  byEvent: (eventId: string) => ['event-ticket-groups', eventId] as const,
+};
+
+/**
+ * Hook for managing event ticket tiers and groups
+ *
+ * Uses centralized ticketTierQueries for tier mutations while maintaining
+ * custom query logic for the complex group/tier organization.
+ */
 export const useEventTicketTiers = (eventId: string | undefined) => {
   const queryClient = useQueryClient();
 
+  // Custom query for groups with tiers - this has complex business logic
+  // that doesn't fit the standard pattern
   const { data: groups = [], isLoading, error } = useQuery({
-    queryKey: ['event-ticket-groups', eventId],
+    queryKey: ticketGroupKeys.byEvent(eventId || ''),
     queryFn: async () => {
       if (!eventId) return [];
 
       // Fetch groups
       const { data: groupsData, error: groupsError } = await supabase
-        .from('ticket_groups' as any)
+        .from('ticket_groups')
         .select('*')
         .eq('event_id', eventId)
         .order('group_order', { ascending: true });
@@ -111,6 +129,11 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
     enabled: !!eventId,
   });
 
+  // Use centralized mutation hooks
+  const deleteTierMutation = useDeleteTicketTier();
+  const toggleTierActiveMutation = useSetTierActive();
+
+  // Custom save groups mutation - complex business logic for batch operations
   const saveGroups = useMutation({
     mutationFn: async (groups: TicketGroup[]) => {
       if (!eventId) throw new Error('Event ID is required');
@@ -133,20 +156,20 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
         if (group.id && !group.id.startsWith('temp-')) {
           // Update existing
           const { error } = await supabase
-            .from('ticket_groups' as any)
+            .from('ticket_groups')
             .update(groupData)
             .eq('id', group.id);
           if (error) throw error;
         } else {
           // Insert new
           const { data: insertedGroup, error } = await supabase
-            .from('ticket_groups' as any)
+            .from('ticket_groups')
             .insert(groupData)
             .select()
             .single();
           if (error) throw error;
-          if (insertedGroup && (insertedGroup as any).id) {
-            group.id = (insertedGroup as any).id;
+          if (insertedGroup && insertedGroup.id) {
+            group.id = insertedGroup.id;
           }
         }
       }
@@ -189,7 +212,9 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['event-ticket-groups', eventId] });
+      // Invalidate both group and tier queries
+      queryClient.invalidateQueries({ queryKey: ticketGroupKeys.byEvent(eventId!) });
+      queryClient.invalidateQueries({ queryKey: ticketTierKeys.byEvent(eventId!) });
       toast.success('Ticket tiers saved successfully');
     },
     onError: (error: Error) => {
@@ -197,38 +222,35 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
     },
   });
 
-  const deleteTier = useMutation({
-    mutationFn: async (tierId: string) => {
-      const { error } = await supabase
-        .from('ticket_tiers')
-        .delete()
-        .eq('id', tierId);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['event-ticket-groups', eventId] });
-      toast.success('Tier deleted successfully');
-    },
-    onError: (error: Error) => {
-      toast.error(`Failed to delete tier: ${error.message}`);
-    },
-  });
+  // Wrapper functions to maintain the same API
+  const deleteTier = (tierId: string) => {
+    deleteTierMutation.mutate(
+      { tierId, eventId: eventId! },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ticketGroupKeys.byEvent(eventId!) });
+          toast.success('Tier deleted successfully');
+        },
+        onError: (error: Error) => {
+          toast.error(`Failed to delete tier: ${error.message}`);
+        },
+      }
+    );
+  };
 
-  const toggleTierActive = useMutation({
-    mutationFn: async ({ tierId, isActive }: { tierId: string; isActive: boolean }) => {
-      const { error } = await supabase
-        .from('ticket_tiers')
-        .update({ is_active: isActive })
-        .eq('id', tierId);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['event-ticket-groups', eventId] });
-    },
-    onError: (error: Error) => {
-      toast.error(`Failed to toggle tier: ${error.message}`);
-    },
-  });
+  const toggleTierActive = ({ tierId, isActive }: { tierId: string; isActive: boolean }) => {
+    toggleTierActiveMutation.mutate(
+      { tierId, isActive, eventId: eventId! },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ticketGroupKeys.byEvent(eventId!) });
+        },
+        onError: (error: Error) => {
+          toast.error(`Failed to toggle tier: ${error.message}`);
+        },
+      }
+    );
+  };
 
   return {
     groups,
@@ -236,7 +258,7 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
     error,
     saveGroups: saveGroups.mutate,
     isSaving: saveGroups.isPending,
-    deleteTier: deleteTier.mutate,
-    toggleTierActive: toggleTierActive.mutate,
+    deleteTier,
+    toggleTierActive,
   };
 };

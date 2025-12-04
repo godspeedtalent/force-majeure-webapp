@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { Settings } from 'lucide-react';
 
 import { FmCommonModal } from './FmCommonModal';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -58,19 +59,18 @@ export const FmResourceDetailsModal = ({
 }: FmResourceDetailsModalProps) => {
   const showManage = canManage && onManage;
 
-  const headerContent = showManage ? (
-    <div className='flex justify-end pr-12'>
-      <DialogTitle className='sr-only'>{title}</DialogTitle>
-      <FmCommonButton
-        size='sm'
-        variant='secondary'
-        onClick={onManage}
-        className='bg-white/10 text-white hover:bg-white/20'
-      >
-        Manage
-      </FmCommonButton>
-    </div>
-  ) : undefined;
+  // Manage button styled to sit in top-right, left of the close X button
+  const manageButton = showManage ? (
+    <FmCommonButton
+      size='sm'
+      variant='secondary'
+      icon={Settings}
+      onClick={onManage}
+      className='absolute right-12 top-4 bg-white/10 text-white hover:bg-white/20 border border-white/30 px-3 py-1 h-7 text-xs'
+    >
+      Manage
+    </FmCommonButton>
+  ) : null;
 
   // Hero layout - full-width image at top
   if (layout === 'hero') {
@@ -79,9 +79,10 @@ export const FmResourceDetailsModal = ({
         open={open}
         onOpenChange={onOpenChange}
         title=''
-        headerContent={headerContent}
+        headerContent={<DialogTitle className='sr-only'>{title}</DialogTitle>}
         className={cn('max-w-3xl p-0 overflow-hidden', className)}
       >
+        {manageButton}
         {/* Hero Image */}
         {imageUrl && (
           <div className='w-full h-64 overflow-hidden relative'>
@@ -152,10 +153,11 @@ export const FmResourceDetailsModal = ({
     <FmCommonModal
       open={open}
       onOpenChange={onOpenChange}
-      title={title}
-      headerContent={headerContent}
+      title=''
+      headerContent={<DialogTitle className='sr-only'>{title}</DialogTitle>}
       className={cn('max-w-3xl', className)}
     >
+      {manageButton}
       <div className='flex flex-col gap-8 sm:flex-row sm:items-stretch'>
         <div className='sm:w-60 flex-shrink-0'>
           <div className='space-y-3'>

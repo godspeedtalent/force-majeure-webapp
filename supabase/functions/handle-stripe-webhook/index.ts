@@ -1,5 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
 import { generateTicketQR } from '../_shared/qr.ts';
+import { logActivity, getRequestContext, createTicketSaleLog } from '../_shared/activityLogger.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -183,6 +184,43 @@ Deno.serve(async req => {
         } catch (emailError) {
           console.error('Error triggering email:', emailError);
           // Don't fail the webhook if email fails
+        }
+
+        // Log ticket sale to activity logs
+        try {
+          const { data: eventData } = await supabase
+            .from('events')
+            .select('title')
+            .eq('id', order.event_id)
+            .single();
+
+          const ticketCount = orderItems?.filter(i => i.item_type === 'ticket')
+            .reduce((sum, i) => sum + (i.quantity || 0), 0) || 0;
+
+          const tierDetails = orderItems?.filter(i => i.item_type === 'ticket')
+            .map(i => ({
+              name: i.ticket_tier_name || 'Unknown',
+              quantity: i.quantity || 0,
+              price_cents: i.unit_price_cents || 0,
+            }));
+
+          const activityLogParams = createTicketSaleLog({
+            orderId,
+            eventId: order.event_id,
+            eventName: eventData?.title || 'Unknown Event',
+            userId: order.user_id,
+            ticketCount,
+            totalCents: order.total_cents || 0,
+            tierDetails,
+          });
+
+          await logActivity(supabase, {
+            ...activityLogParams,
+            ...getRequestContext(req),
+          });
+        } catch (logError) {
+          console.error('Error logging activity:', logError);
+          // Don't fail the webhook if logging fails
         }
 
         console.log('Order completed successfully:', orderId);

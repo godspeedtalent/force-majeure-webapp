@@ -17,7 +17,7 @@ export function FmOrganizationDataGrid() {
     try {
       // Fetch organizations
       const { data: orgsData, error: orgsError } = await supabase
-        .from('organizations' as any)
+        .from('organizations')
         .select('*')
         .order('name');
 

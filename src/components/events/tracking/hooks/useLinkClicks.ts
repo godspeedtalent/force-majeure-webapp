@@ -9,14 +9,14 @@ export function useLinkClicks(linkId: string | null) {
       if (!linkId) return [];
 
       const { data, error } = await supabase
-        .from('link_clicks' as any)
+        .from('link_clicks')
         .select('*')
         .eq('link_id', linkId)
         .order('clicked_at', { ascending: false })
         .limit(100);
 
       if (error) throw error;
-      return (data || []) as unknown as LinkClick[];
+      return (data || []) as LinkClick[];
     },
     enabled: !!linkId,
   });
@@ -28,7 +28,7 @@ export function useClickAnalytics(eventId: string) {
     queryFn: async () => {
       // Get all links for this event
       const { data: links, error: linksError } = await supabase
-        .from('tracking_links' as any)
+        .from('tracking_links')
         .select('id, name, click_count, utm_source')
         .eq('event_id', eventId);
 
@@ -39,9 +39,9 @@ export function useClickAnalytics(eventId: string) {
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
       const { data: clicks, error: clicksError } = await supabase
-        .from('link_clicks' as any)
+        .from('link_clicks')
         .select('link_id, clicked_at, device_info')
-        .in('link_id', links?.map((l: any) => l.id) || [])
+        .in('link_id', links?.map((l) => l.id) || [])
         .gte('clicked_at', thirtyDaysAgo.toISOString());
 
       if (clicksError) throw clicksError;

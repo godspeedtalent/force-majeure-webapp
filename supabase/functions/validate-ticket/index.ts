@@ -14,6 +14,7 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
 import { verifyTicketQR } from '../_shared/qr.ts';
+import { logActivity, getRequestContext, createTicketScanLog } from '../_shared/activityLogger.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -366,7 +367,28 @@ Deno.serve(async req => {
       device_info: device_info || null,
     });
 
-    // Step 7: Return success with ticket details
+    // Step 7: Log to activity logs
+    try {
+      const activityLogParams = createTicketScanLog({
+        ticketId,
+        eventId,
+        eventName: ticket.events?.title || 'Unknown Event',
+        scannerId: user.id,
+        scannerEmail: user.email || undefined,
+        ticketTierName: ticket.ticket_tiers?.name || 'Unknown',
+        attendeeName: ticket.attendee_name || undefined,
+      });
+
+      await logActivity(supabase, {
+        ...activityLogParams,
+        ...getRequestContext(req),
+      });
+    } catch (logError) {
+      console.error('Error logging activity:', logError);
+      // Don't fail the scan if logging fails
+    }
+
+    // Step 8: Return success with ticket details
     return new Response(
       JSON.stringify({
         valid: true,

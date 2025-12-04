@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { logger } from '@/shared/services/logger';
 import { MapPin, Users } from 'lucide-react';
 import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
-import { supabase } from '@/shared/api/supabase/client';
 import { FmInfoChip } from '@/components/common/data/FmInfoChip';
+import { venueService } from '@/features/venues/services/venueService';
 
 interface VenueModalProps {
   venueId: string | null;
@@ -47,13 +47,7 @@ export const VenueModal = ({
 
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('venues')
-        .select('*')
-        .eq('id', venueId)
-        .single();
-
-      if (error) throw error;
+      const data = await venueService.getVenueById(venueId);
       setVenue(data);
     } catch (error) {
       logger.error('Error fetching venue:', { error: error instanceof Error ? error.message : 'Unknown' });

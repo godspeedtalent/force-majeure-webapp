@@ -32,7 +32,8 @@ export interface UndercardArtist {
   id: string;
   event_id: string;
   artist_id: string;
-  set_order: number;
+  set_time?: string | null;
+  set_order?: number | null;
   artist?: {
     id: string;
     name: string;
@@ -50,12 +51,13 @@ export interface TicketGroup {
 export interface Venue {
   id: string;
   name: string;
-  address: string;
-  city: string;
+  address_line_1?: string | null;
+  address_line_2?: string | null;
+  city?: string | null;
   state?: string | null;
   zip_code?: string | null;
   capacity?: number | null;
-  website_url?: string | null;
+  website?: string | null;
   image_url?: string | null;
 }
 

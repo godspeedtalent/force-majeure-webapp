@@ -27,7 +27,7 @@ export const getVenueById = async (venueId: string) => {
 export const getAllVenues = async () => {
   const { data, error } = await supabase
     .from('venues')
-    .select('id, name, address, city, state, zip_code, capacity, website_url, image_url')
+    .select('id, name, address_line_1, address_line_2, city, state, zip_code, capacity, website, image_url')
     .order('name', { ascending: true });
 
   if (error) throw error;
@@ -40,7 +40,7 @@ export const getAllVenues = async () => {
 export const searchVenues = async (searchTerm: string) => {
   const { data, error } = await supabase
     .from('venues')
-    .select('id, name, address, city, state, capacity')
+    .select('id, name, address_line_1, address_line_2, city, state, capacity')
     .ilike('name', `%${searchTerm}%`)
     .order('name', { ascending: true });
 
@@ -54,7 +54,7 @@ export const searchVenues = async (searchTerm: string) => {
 export const getVenuesByCity = async (city: string) => {
   const { data, error } = await supabase
     .from('venues')
-    .select('id, name, address, city, capacity')
+    .select('id, name, address_line_1, address_line_2, city, capacity')
     .eq('city', city)
     .order('name', { ascending: true});
 
