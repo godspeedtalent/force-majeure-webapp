@@ -98,7 +98,7 @@ export function FmUserDataGrid() {
     },
     {
       key: 'display_name',
-      label: 'Display Name',
+      label: 'Username',
       sortable: true,
       filterable: true,
       editable: true,

@@ -480,6 +480,8 @@ export const EventDetailsContent = ({
         <EventCallTimes
           callTimeLineup={callTimeLineup}
           onArtistSelect={handleArtistSelect}
+          lookingForUndercard={event.lookingForUndercard}
+          eventId={event.id}
         />
       </div>
 

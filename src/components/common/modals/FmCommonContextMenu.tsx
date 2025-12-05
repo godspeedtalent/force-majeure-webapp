@@ -48,7 +48,7 @@ export function FmCommonContextMenu<T = any>({
         className={cn(
           'w-56',
           getDepthClasses(3),
-          'border-2 border-white/20 shadow-lg shadow-black/50',
+          'border border-white/20 border-l-[3px] border-l-fm-gold/60 shadow-lg shadow-black/50',
           'animate-in fade-in zoom-in-95 duration-200',
           'p-1'
         )}
@@ -82,7 +82,7 @@ export function FmCommonContextMenu<T = any>({
                     className={cn(
                       'w-48',
                       getDepthClasses(3),
-                      'border-2 border-white/20 shadow-lg shadow-black/50',
+                      'border border-white/20 border-l-[3px] border-l-fm-gold/60 shadow-lg shadow-black/50',
                       'p-1'
                     )}
                   >

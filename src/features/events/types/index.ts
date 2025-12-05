@@ -86,6 +86,7 @@ export interface Event {
   status?: 'draft' | 'published' | 'invisible';
   is_tba?: boolean;     // TBA (To Be Announced) placeholder event
   is_after_hours?: boolean; // Event has no end time (runs past closing)
+  looking_for_undercard?: boolean; // Event is looking for local artists to open
   organization_id?: string | null;
   test_data?: boolean;
   share_count?: number; // Number of times this event has been shared
@@ -119,6 +120,7 @@ export interface EventFormData {
   status?: 'draft' | 'published';
   is_tba?: boolean;
   is_after_hours?: boolean;
+  looking_for_undercard?: boolean;
 }
 
 export interface TicketTierFormData {

@@ -29,6 +29,7 @@ export interface EventDetailsRecord {
   time: string;
   endTime: string | null;
   isAfterHours: boolean;
+  lookingForUndercard: boolean;
   venue: string;
   venueDetails: VenueDetails | null;
   heroImage: string;

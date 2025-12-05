@@ -24,6 +24,7 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmBackButton } from '@/components/common/buttons/FmBackButton';
 import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
 import { EventArtistManagement } from '@/components/events/artists/EventArtistManagement';
+import { UndercardRequestsList } from '@/components/events/artists/UndercardRequestsList';
 import { EventTicketTierManagement } from '@/components/events/ticketing/EventTicketTierManagement';
 import { EventOrderManagement } from '@/components/events/orders';
 import { EventAnalytics } from '@/components/events/analytics';
@@ -395,56 +396,84 @@ export default function EventManagement() {
           )}
 
           {activeTab === 'artists' && (
-            <EventArtistManagement
-              headlinerId={event.headliner_id || ''}
-              undercardIds={[]}
-              onChange={async (data) => {
-                try {
-                  if (!id) throw new Error('Event ID is required');
+            <div className='space-y-8'>
+              <EventArtistManagement
+                headlinerId={event.headliner_id || ''}
+                undercardIds={[]}
+                lookingForUndercard={(event as any).looking_for_undercard ?? false}
+                onLookingForUndercardChange={async (checked) => {
+                  try {
+                    if (!id) throw new Error('Event ID is required');
 
-                  // Update the headliner in the events table
-                  const { error: eventError } = await supabase
-                    .from('events')
-                    .update({ headliner_id: data.headlinerId })
-                    .eq('id', id);
+                    const { error } = await supabase
+                      .from('events')
+                      .update({ looking_for_undercard: checked })
+                      .eq('id', id);
 
-                  if (eventError) throw eventError;
+                    if (error) throw error;
 
-                  // Update undercard artists in event_artists junction table
-                  // First, delete existing undercard artists
-                  const { error: deleteError } = await supabase
-                    .from('event_artists')
-                    .delete()
-                    .eq('event_id', id);
-
-                  if (deleteError) throw deleteError;
-
-                  // Then insert new undercard artists
-                  if (data.undercardIds.length > 0) {
-                    const undercardRecords = data.undercardIds.map(artistId => ({
-                      event_id: id,
-                      artist_id: artistId,
-                    }));
-
-                    const { error: insertError } = await supabase
-                      .from('event_artists')
-                      .insert(undercardRecords);
-
-                    if (insertError) throw insertError;
+                    toast.success(checked ? 'Looking for undercard enabled' : 'Looking for undercard disabled');
+                    queryClient.invalidateQueries({ queryKey: ['event', id] });
+                  } catch (error) {
+                    await handleError(error, {
+                      title: 'Failed to Update Setting',
+                      description: 'Could not save looking for undercard setting',
+                      endpoint: 'EventManagement/artists',
+                      method: 'UPDATE',
+                    });
                   }
+                }}
+                onChange={async (data) => {
+                  try {
+                    if (!id) throw new Error('Event ID is required');
 
-                  toast.success('Artists updated successfully');
-                  queryClient.invalidateQueries({ queryKey: ['event', id] });
-                } catch (error) {
-                  await handleError(error, {
-                    title: 'Failed to Update Artists',
-                    description: 'Could not save artist changes',
-                    endpoint: 'EventManagement/artists',
-                    method: 'UPDATE',
-                  });
-                }
-              }}
-            />
+                    // Update the headliner in the events table
+                    const { error: eventError } = await supabase
+                      .from('events')
+                      .update({ headliner_id: data.headlinerId })
+                      .eq('id', id);
+
+                    if (eventError) throw eventError;
+
+                    // Update undercard artists in event_artists junction table
+                    // First, delete existing undercard artists
+                    const { error: deleteError } = await supabase
+                      .from('event_artists')
+                      .delete()
+                      .eq('event_id', id);
+
+                    if (deleteError) throw deleteError;
+
+                    // Then insert new undercard artists
+                    if (data.undercardIds.length > 0) {
+                      const undercardRecords = data.undercardIds.map(artistId => ({
+                        event_id: id,
+                        artist_id: artistId,
+                      }));
+
+                      const { error: insertError } = await supabase
+                        .from('event_artists')
+                        .insert(undercardRecords);
+
+                      if (insertError) throw insertError;
+                    }
+
+                    toast.success('Artists updated successfully');
+                    queryClient.invalidateQueries({ queryKey: ['event', id] });
+                  } catch (error) {
+                    await handleError(error, {
+                      title: 'Failed to Update Artists',
+                      description: 'Could not save artist changes',
+                      endpoint: 'EventManagement/artists',
+                      method: 'UPDATE',
+                    });
+                  }
+                }}
+              />
+
+              {/* Undercard Requests - shows artists who signed up via "Looking for Artists" */}
+              {id && <UndercardRequestsList eventId={id} />}
+            </div>
           )}
 
           {activeTab === 'tiers' && id && (

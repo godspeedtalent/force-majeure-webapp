@@ -1,0 +1,76 @@
+{
+  "success": {
+    "saved": "Cambios guardados exitosamente",
+    "deleted": "Eliminado exitosamente",
+    "created": "Creado exitosamente",
+    "updated": "Actualizado exitosamente",
+    "copied": "Copiado al portapapeles",
+    "uploaded": "Carga completa",
+    "sent": "Enviado exitosamente"
+  },
+  "error": {
+    "generic": "Algo salió mal. Por favor, inténtalo de nuevo.",
+    "network": "Error de conexión. Por favor, verifica tu conexión.",
+    "save": "Error al guardar cambios. Por favor, inténtalo de nuevo.",
+    "delete": "Error al eliminar. Por favor, inténtalo de nuevo.",
+    "create": "Error al crear. Por favor, inténtalo de nuevo.",
+    "update": "Error al actualizar. Por favor, inténtalo de nuevo.",
+    "upload": "Error al subir. Por favor, inténtalo de nuevo.",
+    "load": "Error al cargar datos. Por favor, inténtalo de nuevo."
+  },
+  "auth": {
+    "signInSuccess": "¡Bienvenido de nuevo!",
+    "signInError": "Correo electrónico o contraseña inválidos",
+    "signUpSuccess": "¡Cuenta creada! Por favor revisa tu correo para verificar.",
+    "signUpError": "Error al crear cuenta. Por favor, inténtalo de nuevo.",
+    "signOutSuccess": "Has cerrado sesión",
+    "passwordResetSent": "Enlace para restablecer contraseña enviado a tu correo",
+    "passwordResetError": "Error al enviar enlace. Por favor, inténtalo de nuevo.",
+    "passwordChanged": "Contraseña cambiada exitosamente",
+    "emailVerified": "¡Correo verificado exitosamente!",
+    "emailVerificationSent": "Correo de verificación enviado",
+    "sessionExpired": "Tu sesión ha expirado. Por favor, inicia sesión de nuevo."
+  },
+  "profile": {
+    "updateSuccess": "Perfil actualizado exitosamente",
+    "updateError": "Error al actualizar perfil. Por favor, inténtalo de nuevo.",
+    "photoUploaded": "Foto de perfil actualizada",
+    "photoUploadError": "Error al subir foto. Por favor, inténtalo de nuevo.",
+    "photoRemoved": "Foto de perfil eliminada"
+  },
+  "checkout": {
+    "addedToCart": "Añadido al carrito",
+    "removedFromCart": "Eliminado del carrito",
+    "cartUpdated": "Carrito actualizado",
+    "orderPlaced": "¡Pedido realizado exitosamente!",
+    "orderError": "Error al realizar pedido. Por favor, inténtalo de nuevo.",
+    "paymentProcessing": "Procesando pago...",
+    "paymentSuccess": "¡Pago exitoso!",
+    "paymentError": "Pago fallido. Por favor, inténtalo de nuevo.",
+    "promoApplied": "¡Código promocional aplicado!",
+    "promoInvalid": "Código promocional inválido",
+    "promoExpired": "Este código promocional ha expirado"
+  },
+  "tickets": {
+    "downloaded": "Entrada descargada",
+    "downloadError": "Error al descargar entrada",
+    "transferred": "Entrada transferida exitosamente",
+    "transferError": "Error al transferir entrada"
+  },
+  "events": {
+    "addedToCalendar": "Evento añadido al calendario",
+    "linkCopied": "Enlace del evento copiado"
+  },
+  "validation": {
+    "stageNameRequired": "Por favor ingresa tu nombre artístico",
+    "bioRequired": "Por favor cuéntanos sobre ti",
+    "cityRequired": "Por favor ingresa tu ciudad",
+    "genreRequired": "Por favor selecciona un género",
+    "emailRequired": "Por favor ingresa tu correo electrónico",
+    "phoneRequired": "Por favor ingresa tu número de teléfono"
+  },
+  "settings": {
+    "languageChanged": "Idioma cambiado",
+    "preferencesUpdated": "Preferencias actualizadas"
+  }
+}

@@ -12,6 +12,8 @@ interface FmCommonToggleProps {
   onCheckedChange: (checked: boolean) => void;
   disabled?: boolean;
   className?: string;
+  /** Hide the label text (for use when context already provides the label) */
+  hideLabel?: boolean;
 }
 
 /**
@@ -26,6 +28,7 @@ export const FmCommonToggle = ({
   onCheckedChange,
   disabled = false,
   className = '',
+  hideLabel = false,
 }: FmCommonToggleProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -49,26 +52,28 @@ export const FmCommonToggle = ({
       )}
       onClick={() => !disabled && handleToggle(!checked)}
     >
-      <Label
-        htmlFor={id}
-        className={cn(
-          'flex items-center gap-2 text-white transition-all duration-200',
-          !disabled &&
-            'cursor-pointer group-hover:text-fm-gold group-hover:translate-x-1',
-          disabled && 'cursor-not-allowed'
-        )}
-      >
-        {Icon && (
-          <Icon
-            className={cn(
-              'h-4 w-4 transition-all duration-300',
-              isAnimating && 'scale-125 rotate-12',
-              checked && 'text-fm-gold'
-            )}
-          />
-        )}
-        <span className='transition-all duration-200'>{label}</span>
-      </Label>
+      {!hideLabel && (
+        <Label
+          htmlFor={id}
+          className={cn(
+            'flex items-center gap-2 text-white transition-all duration-200',
+            !disabled &&
+              'cursor-pointer group-hover:text-fm-gold group-hover:translate-x-1',
+            disabled && 'cursor-not-allowed'
+          )}
+        >
+          {Icon && (
+            <Icon
+              className={cn(
+                'h-4 w-4 transition-all duration-300',
+                isAnimating && 'scale-125 rotate-12',
+                checked && 'text-fm-gold'
+              )}
+            />
+          )}
+          <span className='transition-all duration-200'>{label}</span>
+        </Label>
+      )}
       <Switch
         id={id}
         checked={checked}

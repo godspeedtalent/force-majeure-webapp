@@ -141,7 +141,7 @@ export default function UserDetails() {
               )}
 
               <div>
-                <label className='text-sm text-muted-foreground'>Display Name</label>
+                <label className='text-sm text-muted-foreground'>Username</label>
                 <p className='text-lg font-medium'>{user.display_name}</p>
               </div>
 

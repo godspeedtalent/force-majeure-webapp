@@ -1,0 +1,65 @@
+{
+  "required": "Este campo es requerido",
+  "email": {
+    "invalid": "Por favor ingresa un correo electrónico válido",
+    "required": "El correo electrónico es requerido"
+  },
+  "password": {
+    "required": "La contraseña es requerida",
+    "minLength": "La contraseña debe tener al menos {{min}} caracteres",
+    "maxLength": "La contraseña debe tener menos de {{max}} caracteres",
+    "mismatch": "Las contraseñas no coinciden",
+    "weak": "La contraseña es muy débil",
+    "requirements": "La contraseña debe contener al menos una letra mayúscula, una minúscula y un número"
+  },
+  "name": {
+    "required": "El nombre es requerido",
+    "minLength": "El nombre debe tener al menos {{min}} caracteres",
+    "maxLength": "El nombre debe tener menos de {{max}} caracteres"
+  },
+  "phone": {
+    "invalid": "Por favor ingresa un número de teléfono válido",
+    "required": "El número de teléfono es requerido"
+  },
+  "url": {
+    "invalid": "Por favor ingresa una URL válida"
+  },
+  "date": {
+    "invalid": "Por favor ingresa una fecha válida",
+    "future": "La fecha debe ser en el futuro",
+    "past": "La fecha debe ser en el pasado"
+  },
+  "number": {
+    "invalid": "Por favor ingresa un número válido",
+    "positive": "El número debe ser positivo",
+    "integer": "El número debe ser entero",
+    "min": "El número debe ser al menos {{min}}",
+    "max": "El número debe ser como máximo {{max}}"
+  },
+  "string": {
+    "minLength": "Debe tener al menos {{min}} caracteres",
+    "maxLength": "Debe tener menos de {{max}} caracteres",
+    "pattern": "Formato inválido"
+  },
+  "file": {
+    "required": "Por favor selecciona un archivo",
+    "tooLarge": "El archivo es muy grande. Tamaño máximo: {{max}}",
+    "invalidType": "Tipo de archivo inválido. Tipos permitidos: {{types}}"
+  },
+  "quantity": {
+    "min": "La cantidad debe ser al menos {{min}}",
+    "max": "La cantidad máxima es {{max}}",
+    "invalid": "Por favor ingresa una cantidad válida"
+  },
+  "promoCode": {
+    "invalid": "Código promocional inválido",
+    "expired": "Este código promocional ha expirado",
+    "alreadyUsed": "Este código promocional ya ha sido usado"
+  },
+  "terms": {
+    "required": "Debes aceptar los términos y condiciones"
+  },
+  "age": {
+    "required": "Debes confirmar que cumples con el requisito de edad"
+  }
+}

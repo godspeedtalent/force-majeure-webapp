@@ -118,7 +118,7 @@ export const artistColumns: DataGridColumn[] = [
 export const userColumns: DataGridColumn[] = [
   DataGridColumns.text({
     key: 'display_name',
-    label: 'Display Name',
+    label: 'Username',
     sortable: true,
     filterable: true,
     editable: true,
@@ -318,6 +318,51 @@ export const recordingColumns: DataGridColumn[] = [
   DataGridColumns.date({
     key: 'created_at',
     label: 'Added',
+    format: 'short',
+    sortable: true,
+  }),
+];
+
+/**
+ * Column definitions for the Genres data grid in Admin Controls
+ */
+export const genreColumns: DataGridColumn[] = [
+  DataGridColumns.text({
+    key: 'name',
+    label: 'Name',
+    sortable: true,
+    filterable: true,
+    editable: true,
+  }),
+  DataGridColumns.relation({
+    key: 'parent_id',
+    label: 'Parent Genre',
+    sortable: true,
+    getLabel: (row: any) => row.parent_name || '—',
+  }),
+  {
+    key: 'children_count',
+    label: 'Subgenres',
+    sortable: true,
+    render: (value: any) => (
+      <span className='text-xs text-muted-foreground'>
+        {value || 0}
+      </span>
+    ),
+  },
+  {
+    key: 'artists_count',
+    label: 'Artists',
+    sortable: true,
+    render: (value: any) => (
+      <span className='text-xs text-muted-foreground'>
+        {value || 0}
+      </span>
+    ),
+  },
+  DataGridColumns.date({
+    key: 'created_at',
+    label: 'Created',
     format: 'short',
     sortable: true,
   }),

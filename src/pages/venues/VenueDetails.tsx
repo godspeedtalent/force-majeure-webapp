@@ -11,6 +11,9 @@ import { ROLES, PERMISSIONS } from '@/shared/auth/permissions';
 import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
 import { useVenueById } from '@/shared/api/queries/venueQueries';
 
+// Default placeholder image for venues without an image
+const VENUE_PLACEHOLDER_IMAGE = '/images/artist-showcase/_KAK4846.jpg';
+
 interface VenueEventCard {
   id: string;
   title: string;
@@ -108,34 +111,26 @@ export default function VenueDetails() {
           )}
         </div>
 
-        {/* Hero Image Section */}
-        {venue.image_url && (
-          <div className='relative h-[50vh] mb-8 overflow-hidden rounded-none border border-border'>
-            <ImageWithSkeleton
-              src={venue.image_url}
-              alt={venue.name}
-              className='w-full h-full object-cover'
-              skeletonClassName='rounded-none'
-            />
-            <div className='absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent' />
+        {/* Hero Image Section - always show with placeholder fallback */}
+        <div className='relative h-[50vh] mb-8 overflow-hidden rounded-none border border-border'>
+          <ImageWithSkeleton
+            src={venue.image_url || VENUE_PLACEHOLDER_IMAGE}
+            alt={venue.name}
+            className='w-full h-full object-cover'
+            skeletonClassName='rounded-none'
+          />
+          <div className='absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent' />
 
-            {/* Venue Title Overlay */}
-            <div className='absolute bottom-0 left-0 right-0 p-8'>
-              <h1 className='text-5xl font-canela font-medium text-foreground mb-2'>
-                {venue.name}
-              </h1>
-            </div>
+          {/* Venue Title Overlay */}
+          <div className='absolute bottom-0 left-0 right-0 p-8'>
+            <h1 className='text-5xl font-canela font-medium text-foreground mb-2'>
+              {venue.name}
+            </h1>
           </div>
-        )}
+        </div>
 
         {/* Venue Info Section */}
         <div>
-          {/* No hero image - show title at top */}
-          {!venue.image_url && (
-            <h1 className='text-5xl font-canela font-medium mb-6'>
-              {venue.name}
-            </h1>
-          )}
 
           {/* Venue Details */}
           <div className='mb-8 space-y-3'>

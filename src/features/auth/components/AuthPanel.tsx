@@ -237,10 +237,10 @@ export const AuthPanel = ({
               </div>
 
               <FmCommonTextField
-                label='Display Name (Optional)'
+                label='Username (Optional)'
                 id='signup-name'
                 type='text'
-                placeholder='Enter your display name'
+                placeholder='Enter your username'
                 value={signUpForm.displayName}
                 onChange={e =>
                   setSignUpForm({

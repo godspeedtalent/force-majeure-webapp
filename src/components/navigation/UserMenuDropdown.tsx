@@ -64,7 +64,7 @@ export function UserMenuDropdown() {
       label: 'Sign Out',
       icon: LogOut,
       onClick: handleSignOut,
-      variant: 'destructive' as const,
+      variant: 'muted' as const,
       separator: true,
     },
   ];
@@ -81,6 +81,7 @@ export function UserMenuDropdown() {
         </Button>
       }
       items={dropdownItems}
+      hideChevron
     />
   );
 }

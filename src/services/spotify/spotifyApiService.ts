@@ -38,6 +38,24 @@ export interface SpotifySearchResponse {
   };
 }
 
+export interface SpotifyTrack {
+  id: string;
+  name: string;
+  external_urls: {
+    spotify: string;
+  };
+  album: {
+    name: string;
+    images: SpotifyImage[];
+  };
+  artists: {
+    id: string;
+    name: string;
+  }[];
+  duration_ms: number;
+  popularity: number;
+}
+
 // Token management
 let accessToken: string | null = null;
 let tokenExpiry: number | null = null;
@@ -203,6 +221,72 @@ export async function getSpotifyArtists(artistIds: string[]): Promise<SpotifyArt
     return data.artists;
   } catch (error) {
     logger.error('Error fetching Spotify artists', { error });
+    throw error;
+  }
+}
+
+/**
+ * Extract Spotify artist ID from a URL
+ * Handles URLs like:
+ * - https://open.spotify.com/artist/4Z8W4fKeB5YxbusRsdQVPb
+ * - https://open.spotify.com/artist/4Z8W4fKeB5YxbusRsdQVPb?si=xxx
+ * - spotify:artist:4Z8W4fKeB5YxbusRsdQVPb
+ */
+export function extractSpotifyArtistId(url: string): string | null {
+  // Handle spotify URLs
+  const urlMatch = url.match(/spotify\.com\/artist\/([a-zA-Z0-9]+)/);
+  if (urlMatch) return urlMatch[1];
+
+  // Handle spotify URIs
+  const uriMatch = url.match(/spotify:artist:([a-zA-Z0-9]+)/);
+  if (uriMatch) return uriMatch[1];
+
+  return null;
+}
+
+/**
+ * Check if a string is a Spotify artist URL or URI
+ */
+export function isSpotifyArtistUrl(input: string): boolean {
+  return extractSpotifyArtistId(input) !== null;
+}
+
+/**
+ * Get an artist's top tracks from Spotify
+ * @param artistId - The Spotify artist ID
+ * @param market - The market/country code (default: US)
+ * @returns Array of top tracks (usually 10)
+ */
+export async function getArtistTopTracks(
+  artistId: string,
+  market: string = 'US'
+): Promise<SpotifyTrack[]> {
+  try {
+    const token = await getAccessToken();
+
+    logger.info('Fetching Spotify artist top tracks', { artistId, market });
+
+    const response = await fetch(
+      `https://api.spotify.com/v1/artists/${artistId}/top-tracks?market=${market}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.text();
+      logger.error('Failed to fetch artist top tracks', { error, status: response.status, artistId });
+      throw new Error(`Failed to fetch artist top tracks: ${response.status}`);
+    }
+
+    const data = await response.json();
+    logger.info('Spotify artist top tracks fetched', { artistId, trackCount: data.tracks?.length || 0 });
+
+    return data.tracks || [];
+  } catch (error) {
+    logger.error('Error fetching artist top tracks', { error, artistId });
     throw error;
   }
 }

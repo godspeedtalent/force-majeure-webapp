@@ -24,6 +24,7 @@ interface EventRow {
   start_time: string | null;
   end_time: string | null;
   is_after_hours?: boolean | null;
+  looking_for_undercard?: boolean | null;
   venue_id?: string | null;
   description: string | null;
   hero_image?: string | null;
@@ -134,6 +135,7 @@ const transformEvent = (row: EventRow): EventDetailsRecord => {
     time,
     endTime,
     isAfterHours: row.is_after_hours ?? false,
+    lookingForUndercard: row.looking_for_undercard ?? false,
     venue: row.venue?.name ?? 'Venue TBA',
     venueDetails: transformVenue(row.venue ?? null),
     heroImage: getImageUrl(row.hero_image ?? row.headliner_artist?.image_url ?? null),
@@ -154,6 +156,7 @@ const fetchEventDetails = async (
       start_time,
       end_time,
       is_after_hours,
+      looking_for_undercard,
       venue_id,
       description,
       hero_image,

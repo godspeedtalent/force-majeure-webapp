@@ -1,7 +1,15 @@
+import { useState } from 'react';
+import { FaSpotify, FaSoundcloud } from 'react-icons/fa6';
+import { toast } from 'sonner';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmGenreMultiSelect } from '@/features/artists/components/FmGenreMultiSelect';
-import type { ArtistRegistrationFormData } from '../../types/registration';
+import { SpotifyArtistImport } from '@/components/spotify/SpotifyArtistImport';
+import { SoundCloudUserImport, type SoundCloudUserData } from '@/components/soundcloud/SoundCloudUserImport';
+import { getArtistTopTracks, type SpotifyArtist } from '@/services/spotify/spotifyApiService';
+import { getArtistPopularTrack } from '@/services/soundcloud/soundcloudApiService';
+import { logger } from '@/shared/services/logger';
+import type { ArtistRegistrationFormData, RegistrationTrack } from '../../types/registration';
 import type { Genre } from '@/features/artists/types';
 
 interface BasicDetailsStepProps {
@@ -15,11 +23,79 @@ export function BasicDetailsStep({
   onInputChange,
   onNext,
 }: BasicDetailsStepProps) {
+  const [showSpotifyImport, setShowSpotifyImport] = useState(false);
+  const [showSoundCloudImport, setShowSoundCloudImport] = useState(false);
+
+  const handleSpotifyImport = async (artist: SpotifyArtist) => {
+    onInputChange('stageName', artist.name);
+    // Use the largest image for profile
+    if (artist.images.length > 0) {
+      onInputChange('profileImageUrl', artist.images[0].url);
+    }
+    // Set Spotify URL
+    onInputChange('spotifyUrl', artist.external_urls.spotify);
+
+    // Fetch and add top track
+    try {
+      const topTracks = await getArtistTopTracks(artist.id);
+      if (topTracks.length > 0) {
+        const topTrack = topTracks[0];
+        const newTrack: RegistrationTrack = {
+          id: crypto.randomUUID(),
+          name: topTrack.name,
+          url: topTrack.external_urls.spotify,
+          coverArt: topTrack.album.images[0]?.url,
+          platform: 'spotify',
+          recordingType: 'track',
+        };
+        // Add to existing tracks (don't overwrite)
+        onInputChange('tracks', [...formData.tracks, newTrack]);
+        toast.success(`Added "${topTrack.name}" to your recordings`);
+      }
+    } catch (error) {
+      logger.error('Failed to fetch top track from Spotify', { error, artistId: artist.id });
+      // Don't show error toast - profile import still succeeded
+    }
+  };
+
+  const handleSoundCloudImport = async (user: SoundCloudUserData) => {
+    onInputChange('stageName', user.name);
+    if (user.avatarUrl) {
+      onInputChange('profileImageUrl', user.avatarUrl);
+    }
+    if (user.description) {
+      onInputChange('bio', user.description);
+    }
+    // Set SoundCloud URL
+    onInputChange('soundcloudUrl', user.profileUrl);
+
+    // Try to fetch a popular track
+    try {
+      const popularTrack = await getArtistPopularTrack(user.profileUrl);
+      if (popularTrack) {
+        const newTrack: RegistrationTrack = {
+          id: crypto.randomUUID(),
+          name: popularTrack.name,
+          url: popularTrack.url,
+          coverArt: popularTrack.coverArt,
+          platform: 'soundcloud',
+          recordingType: 'track',
+        };
+        // Add to existing tracks (don't overwrite)
+        onInputChange('tracks', [...formData.tracks, newTrack]);
+        toast.success(`Added "${popularTrack.name}" to your recordings`);
+      }
+    } catch (error) {
+      logger.error('Failed to fetch popular track from SoundCloud', { error, profileUrl: user.profileUrl });
+      // Don't show error toast - profile import still succeeded
+    }
+  };
+
   return (
     <div className='h-full flex flex-col p-[20px]'>
       <div className='flex-1 overflow-y-auto pr-[10px]'>
         <div className='flex justify-center'>
-          <div className='w-[60%] space-y-[20px]'>
+          <div className='w-[80%] space-y-[20px]'>
             <div>
               <h2 className='font-canela text-3xl mb-[10px]'>
                 Tell us about your sound.
@@ -27,6 +103,26 @@ export function BasicDetailsStep({
               <p className='font-canela text-sm text-muted-foreground'>
                 Share your stage name, bio, and musical style.
               </p>
+            </div>
+
+            {/* Import Buttons */}
+            <div className='flex gap-[10px]'>
+              <button
+                type='button'
+                onClick={() => setShowSpotifyImport(true)}
+                className='flex-1 flex items-center justify-center gap-[10px] px-[20px] py-[12px] border border-white/20 hover:border-[#1DB954]/50 hover:bg-[#1DB954]/10 transition-all duration-300 font-canela text-sm'
+              >
+                <FaSpotify className='h-4 w-4 text-[#1DB954]' />
+                Import from Spotify
+              </button>
+              <button
+                type='button'
+                onClick={() => setShowSoundCloudImport(true)}
+                className='flex-1 flex items-center justify-center gap-[10px] px-[20px] py-[12px] border border-white/20 hover:border-[#FF5500]/50 hover:bg-[#FF5500]/10 transition-all duration-300 font-canela text-sm'
+              >
+                <FaSoundcloud className='h-4 w-4 text-[#FF5500]' />
+                Import from SoundCloud
+              </button>
             </div>
 
             <div className='w-full h-[1px] bg-gradient-to-r from-fm-gold via-white/30 to-transparent' />
@@ -50,6 +146,14 @@ export function BasicDetailsStep({
                 rows={6}
               />
 
+              <FmCommonTextField
+                label='City'
+                required
+                value={formData.city}
+                onChange={e => onInputChange('city', e.target.value)}
+                placeholder='Where are you based? (e.g., Los Angeles, CA)'
+              />
+
               <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent' />
 
               <FmGenreMultiSelect
@@ -69,6 +173,18 @@ export function BasicDetailsStep({
           Next
         </FmCommonButton>
       </div>
+
+      {/* Import Modals */}
+      <SpotifyArtistImport
+        open={showSpotifyImport}
+        onClose={() => setShowSpotifyImport(false)}
+        onImport={handleSpotifyImport}
+      />
+      <SoundCloudUserImport
+        open={showSoundCloudImport}
+        onClose={() => setShowSoundCloudImport(false)}
+        onImport={handleSoundCloudImport}
+      />
     </div>
   );
 }

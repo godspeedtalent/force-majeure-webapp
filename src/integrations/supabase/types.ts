@@ -485,6 +485,7 @@ export type Database = {
           id: string
           is_after_hours: boolean
           is_tba: boolean | null
+          looking_for_undercard: boolean
           min_interest_count_display: number
           min_share_count_display: number
           organization_id: string | null
@@ -511,6 +512,7 @@ export type Database = {
           id?: string
           is_after_hours?: boolean
           is_tba?: boolean | null
+          looking_for_undercard?: boolean
           min_interest_count_display?: number
           min_share_count_display?: number
           organization_id?: string | null
@@ -537,6 +539,7 @@ export type Database = {
           id?: string
           is_after_hours?: boolean
           is_tba?: boolean | null
+          looking_for_undercard?: boolean
           min_interest_count_display?: number
           min_share_count_display?: number
           organization_id?: string | null
