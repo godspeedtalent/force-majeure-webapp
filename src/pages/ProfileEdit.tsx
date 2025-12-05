@@ -4,9 +4,12 @@ import {
   Upload,
   Mail,
   AlertCircle,
+  Mic2,
+  Globe,
 } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
@@ -20,21 +23,28 @@ import { useAuth } from '@/features/auth/services/AuthContext';
 import { useToast } from '@/shared/hooks/use-toast';
 import { supabase } from '@/shared/api/supabase/client';
 import { logger } from '@/shared/services/logger';
+import { UserArtistTab } from '@/components/profile/UserArtistTab';
+import { LanguageSelector } from '@/components/common/i18n/LanguageSelector';
+import { useLocaleSync } from '@/hooks/useLocaleSync';
+import type { SupportedLocale } from '@/i18n';
 
-type ProfileSection = 'profile';
+type ProfileSection = 'profile' | 'artist';
 
 const ProfileEdit = () => {
   const { user, profile, updateProfile, resendVerificationEmail } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation('pages');
+  const { currentLocale, changeLocale } = useLocaleSync();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isSendingVerification, setIsSendingVerification] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Form state
-  const [fullName, setFullName] = useState(profile?.full_name || '');
+  // Form state - split full_name into first and last
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [displayName, setDisplayName] = useState(profile?.display_name || '');
   const [gender, setGender] = useState(profile?.gender || 'unspecified');
   const [billingAddress, setBillingAddress] = useState(
@@ -49,7 +59,10 @@ const ProfileEdit = () => {
 
   useEffect(() => {
     if (profile) {
-      setFullName(profile.full_name || '');
+      // Split full_name into first and last name
+      const nameParts = (profile.full_name || '').trim().split(' ');
+      setFirstName(nameParts[0] || '');
+      setLastName(nameParts.slice(1).join(' ') || '');
       setDisplayName(profile.display_name || '');
       setGender(profile.gender || 'unspecified');
       setBillingAddress(profile.billing_address || '');
@@ -62,6 +75,9 @@ const ProfileEdit = () => {
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+
+    // Combine first and last name into full_name
+    const fullName = [firstName, lastName].filter(Boolean).join(' ').trim();
 
     await updateProfile({
       full_name: fullName || null,
@@ -169,6 +185,12 @@ const ProfileEdit = () => {
           label: 'Profile',
           icon: User,
           description: 'Manage your profile information',
+        },
+        {
+          id: 'artist',
+          label: 'Artist',
+          icon: Mic2,
+          description: 'Manage your artist profile',
         },
       ],
     },
@@ -323,7 +345,7 @@ const ProfileEdit = () => {
                     />
 
                     <FmCommonTextField
-                      label='Display Name'
+                      label='Username'
                       id='displayName'
                       type='text'
                       placeholder='How you want to be known'
@@ -334,12 +356,23 @@ const ProfileEdit = () => {
                     />
 
                     <FmCommonTextField
-                      label='Full Name'
-                      id='fullName'
+                      label='First Name'
+                      id='firstName'
                       type='text'
-                      placeholder='Enter your full name'
-                      value={fullName}
-                      onChange={e => setFullName(e.target.value)}
+                      placeholder='Enter your first name'
+                      value={firstName}
+                      onChange={e => setFirstName(e.target.value)}
+                      description='Optional'
+                      disabled={!user.email_confirmed_at}
+                    />
+
+                    <FmCommonTextField
+                      label='Last Name'
+                      id='lastName'
+                      type='text'
+                      placeholder='Enter your last name'
+                      value={lastName}
+                      onChange={e => setLastName(e.target.value)}
                       description='Optional'
                       disabled={!user.email_confirmed_at}
                     />
@@ -364,7 +397,7 @@ const ProfileEdit = () => {
 
                   <FmCommonButton
                     type='submit'
-                    variant='gold'
+                    variant='outline'
                     loading={isLoading}
                     disabled={!user.email_confirmed_at || isLoading}
                   >
@@ -437,7 +470,7 @@ const ProfileEdit = () => {
 
                   <FmCommonButton
                     type='submit'
-                    variant='gold'
+                    variant='outline'
                     loading={isLoading}
                     disabled={!user.email_confirmed_at || isLoading}
                   >
@@ -446,6 +479,46 @@ const ProfileEdit = () => {
                 </form>
               </CardContent>
             </Card>
+
+            {/* Preferences Card */}
+            <Card className='border-border/30 bg-card/20 backdrop-blur-lg'>
+              <CardContent className='p-8 space-y-6'>
+                <div>
+                  <h2 className='text-xl font-canela font-medium text-foreground mb-2'>
+                    {t('profile.preferences')}
+                  </h2>
+                  <p className='text-sm text-muted-foreground'>
+                    {t('profile.languageDescription')}
+                  </p>
+                </div>
+
+                <div className='max-w-xs'>
+                  <LanguageSelector
+                    value={currentLocale}
+                    onChange={(locale: SupportedLocale) => {
+                      changeLocale(locale);
+                      toast({
+                        title: 'Language updated',
+                        description: 'Your language preference has been saved.',
+                      });
+                    }}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
+
+        {/* Artist Section */}
+        {activeSection === 'artist' && (
+          <>
+            <FmCommonPageHeader
+              title='Artist Profile'
+              description='Link and manage your artist account'
+              showDivider={true}
+            />
+
+            <UserArtistTab />
           </>
         )}
       </div>

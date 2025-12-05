@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ArtistRegistrationLayout } from '@/components/layout/ArtistRegistrationLayout';
 import { supabase } from '@/shared/api/supabase/client';
@@ -26,11 +26,15 @@ import { TermsStep } from './components/registration-steps/TermsStep';
 
 const ArtistRegister = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<ArtistRegistrationFormData>(DEFAULT_FORM_DATA);
+
+  // Check if coming from an event's "Looking for Artists" link
+  const eventId = searchParams.get('event_id');
 
   // Sync carousel with current step
   useEffect(() => {
@@ -70,6 +74,10 @@ const ArtistRegister = () => {
           toast.error('Please tell us about yourself');
           return false;
         }
+        if (!formData.city.trim()) {
+          toast.error('Please enter your city');
+          return false;
+        }
         if (formData.genres.length === 0) {
           toast.error('Please select at least one genre');
           return false;
@@ -92,15 +100,13 @@ const ArtistRegister = () => {
         return true;
 
       case 2: // Music
-        if (!formData.soundcloudSetUrl.trim()) {
-          toast.error('A SoundCloud sample set is required');
+        if (formData.tracks.length === 0) {
+          toast.error('Please add at least one recording');
           return false;
         }
-        // Validate URL format
-        try {
-          new URL(formData.soundcloudSetUrl);
-        } catch {
-          toast.error('Please provide a valid SoundCloud URL');
+        const hasDjSet = formData.tracks.some(t => t.recordingType === 'dj_set');
+        if (!hasDjSet) {
+          toast.error('Please add at least one DJ Set recording');
           return false;
         }
         return true;
@@ -146,6 +152,7 @@ const ArtistRegister = () => {
             user_id: user?.id || null,
             artist_name: formData.stageName,
             bio: formData.bio,
+            city: formData.city,
             genres: formData.genres.map(g => g.id),
             profile_image_url: formData.profileImageUrl,
             press_images: [
@@ -157,10 +164,14 @@ const ArtistRegister = () => {
             soundcloud_url: formData.soundcloudUrl || null,
             spotify_url: formData.spotifyUrl || null,
             tiktok_handle: formData.tiktokHandle || null,
-            spotify_track_url: formData.spotifyTrackUrl || null,
-            soundcloud_set_url: formData.soundcloudSetUrl,
-            link_personal_profile: formData.linkPersonalProfile,
-            notifications_opt_in: formData.notificationsOptIn,
+            tracks: formData.tracks.map(t => ({
+              name: t.name,
+              url: t.url,
+              cover_art: t.coverArt,
+              platform: t.platform,
+              recording_type: t.recordingType,
+            })),
+            subscribed_to_notifications: formData.notificationsOptIn,
             status: 'pending',
             submitted_at: new Date().toISOString(),
           },
@@ -178,7 +189,33 @@ const ArtistRegister = () => {
         return;
       }
 
-      logger.info('Artist registration submitted successfully', { data });
+      const registrationId = (data as any)?.[0]?.id;
+
+      // If coming from an event's "Looking for Artists" link, create an undercard request
+      if (eventId && registrationId) {
+        const { error: undercardError } = await supabase
+          .from('undercard_requests' as any)
+          .insert([
+            {
+              event_id: eventId,
+              artist_registration_id: registrationId,
+              status: 'pending',
+            },
+          ]);
+
+        if (undercardError) {
+          logger.error('Failed to create undercard request', {
+            error: undercardError,
+            eventId,
+            registrationId
+          });
+          // Don't fail the whole registration - undercard request is secondary
+        } else {
+          logger.info('Undercard request created', { eventId, registrationId });
+        }
+      }
+
+      logger.info('Artist registration submitted successfully', { data, eventId });
       toast.success("Registration submitted successfully! We'll be in touch soon.");
 
       setTimeout(() => {
@@ -220,14 +257,14 @@ const ArtistRegister = () => {
   return (
     <ArtistRegistrationLayout>
       {/* Full viewport split layout */}
-      <div className='fixed inset-0 top-[80px] flex overflow-hidden'>
+      <div className='fixed inset-0 top-[80px] flex'>
         {/* Left Column - Form Carousel (50% width) */}
-        <div className='w-1/2 relative flex flex-col border-r border-white/10 z-10'>
+        <div className='w-1/2 relative flex flex-col border-r border-white/10 z-10 overflow-hidden'>
           {/* Frosted Glass Background */}
           <div className='absolute inset-0 bg-black/70 backdrop-blur-md' />
 
           {/* Header */}
-          <div className='relative z-10 flex items-center justify-between p-[20px] border-b border-white/10'>
+          <div className='relative z-10 flex items-center justify-between h-[60px] px-[20px] border-b border-white/10 flex-shrink-0'>
             <button
               onClick={() => navigate('/artists/signup')}
               className='text-white/70 hover:text-fm-gold transition-colors duration-300 flex items-center gap-[10px] font-canela text-sm'
@@ -246,16 +283,16 @@ const ArtistRegister = () => {
           </div>
 
           {/* Form Carousel */}
-          <div className='relative z-10 flex-1 overflow-hidden'>
+          <div className='relative z-10 flex-1 min-h-0'>
             <Carousel
               setApi={setCarouselApi}
               opts={{
                 align: 'start',
                 watchDrag: false,
               }}
-              className='h-full'
+              className='h-full [&>div]:h-full'
             >
-              <CarouselContent className='h-full'>
+              <CarouselContent className='h-full [&>div]:h-full'>
                 {/* Step 1: Basic Details */}
                 <CarouselItem className='h-full'>
                   <BasicDetailsStep
@@ -319,11 +356,9 @@ const ArtistRegister = () => {
 
         {/* Right Column - Live Preview (50% width) - Modal Style */}
         <div className='w-1/2 relative flex flex-col overflow-hidden z-10'>
-          {/* Preview Header - Thin row at top */}
-          <div className='flex-shrink-0 flex items-center justify-between px-[40px] py-[15px] border-b border-white/10 bg-black/30 backdrop-blur-sm'>
-            <div>
-              <h3 className='font-canela text-lg text-white'>Profile Preview</h3>
-            </div>
+          {/* Preview Header - Matching height with left column */}
+          <div className='flex-shrink-0 flex items-center justify-between h-[60px] px-[20px] border-b border-white/10 bg-black/30 backdrop-blur-sm'>
+            <h3 className='font-canela text-lg text-white'>Profile Preview</h3>
             <p className='font-canela text-xs text-muted-foreground'>
               This is how your profile will look to others
             </p>

@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { FileText, MapPin, Save, Trash2, Eye } from 'lucide-react';
-import { supabase } from '@/shared/api/supabase/client';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -12,6 +11,9 @@ import { Label } from '@/components/common/shadcn/label';
 import { Card } from '@/components/common/shadcn/card';
 import { toast } from 'sonner';
 import { handleError } from '@/shared/services/errorHandler';
+import { useDebouncedSave } from '@/shared/hooks/useDebouncedSave';
+import { venueService } from '@/features/venues/services/venueService';
+import { useVenueById, venueKeys } from '@/shared/api/queries/venueQueries';
 
 type VenueTab = 'overview' | 'view';
 
@@ -25,33 +27,63 @@ export default function VenueManagement() {
 
   // Form state
   const [name, setName] = useState('');
-  const [address, setAddress] = useState('');
+  const [addressLine1, setAddressLine1] = useState('');
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [capacity, setCapacity] = useState<number>(0);
   const [imageUrl, setImageUrl] = useState('');
 
-  const { data: venue, isLoading } = useQuery({
-    queryKey: ['venue', id],
-    queryFn: async () => {
-      if (!id) throw new Error('No venue ID provided');
+  // Debounced auto-save for venue changes
+  const saveVenueData = async (data: {
+    name: string;
+    address_line_1: string;
+    city: string;
+    state: string;
+    capacity: number;
+    image_url: string;
+  }) => {
+    if (!id) return;
 
-      const { data, error } = await supabase
-        .from('venues')
-        .select('*')
-        .eq('id', id)
-        .single();
+    try {
+      await venueService.updateVenue(id, data);
+      toast.success('Changes saved automatically');
+      queryClient.invalidateQueries({ queryKey: venueKeys.detail(id) });
+    } catch (error) {
+      await handleError(error, {
+        title: 'Auto-save Failed',
+        description: 'Could not save changes automatically',
+        endpoint: 'VenueManagement',
+        method: 'UPDATE',
+      });
+    }
+  };
 
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!id,
-  });
+  const { triggerSave: triggerVenueSave, flushSave: flushVenueSave } =
+    useDebouncedSave({
+      saveFn: saveVenueData,
+      delay: 5000,
+    });
+
+  // Helper to trigger auto-save
+  const triggerAutoSave = () => {
+    if (name.trim()) {
+      triggerVenueSave({
+        name,
+        address_line_1: addressLine1,
+        city,
+        state,
+        capacity,
+        image_url: imageUrl,
+      });
+    }
+  };
+
+  const { data: venue, isLoading } = useVenueById(id);
 
   useEffect(() => {
     if (venue) {
       setName(venue.name || '');
-      setAddress(venue.address || '');
+      setAddressLine1(venue.address_line_1 || '');
       setCity(venue.city || '');
       setState(venue.state || '');
       setCapacity(venue.capacity || 0);
@@ -69,6 +101,7 @@ export default function VenueManagement() {
           label: 'View Venue',
           icon: Eye,
           description: 'View venue details page',
+          isExternal: true,
         },
         {
           id: 'overview',
@@ -85,23 +118,20 @@ export default function VenueManagement() {
 
     setIsSaving(true);
     try {
-      const { error } = await supabase
-        .from('venues')
-        .update({
-          name,
-          address,
-          city,
-          state,
-          capacity,
-          image_url: imageUrl,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', id);
+      // Flush any pending debounced save first
+      await flushVenueSave();
 
-      if (error) throw error;
+      await venueService.updateVenue(id, {
+        name,
+        address_line_1: addressLine1,
+        city,
+        state,
+        capacity,
+        image_url: imageUrl,
+      });
 
       toast.success('Venue updated successfully');
-      queryClient.invalidateQueries({ queryKey: ['venue', id] });
+      queryClient.invalidateQueries({ queryKey: venueKeys.detail(id) });
     } catch (error) {
       handleError(error, { title: 'Failed to update venue' });
     } finally {
@@ -114,10 +144,7 @@ export default function VenueManagement() {
 
     setIsDeleting(true);
     try {
-      const { error } = await supabase.from('venues').delete().eq('id', id);
-
-      if (error) throw error;
-
+      await venueService.deleteVenue(id);
       toast.success('Venue deleted successfully');
       navigate('/developer/database?table=venues');
     } catch (error) {
@@ -137,7 +164,10 @@ export default function VenueManagement() {
             <Label>Venue Name *</Label>
             <Input
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+                triggerAutoSave();
+              }}
               placeholder='Enter venue name'
             />
           </div>
@@ -146,15 +176,21 @@ export default function VenueManagement() {
             <Label>Venue Image</Label>
             <FmImageUpload
               currentImageUrl={imageUrl}
-              onUploadComplete={setImageUrl}
+              onUploadComplete={(url) => {
+                setImageUrl(url);
+                triggerAutoSave();
+              }}
             />
           </div>
 
           <div>
             <Label>Address</Label>
             <Input
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
+              value={addressLine1}
+              onChange={(e) => {
+                setAddressLine1(e.target.value);
+                triggerAutoSave();
+              }}
               placeholder='Street address'
             />
           </div>
@@ -164,7 +200,10 @@ export default function VenueManagement() {
               <Label>City</Label>
               <Input
                 value={city}
-                onChange={(e) => setCity(e.target.value)}
+                onChange={(e) => {
+                  setCity(e.target.value);
+                  triggerAutoSave();
+                }}
                 placeholder='City'
               />
             </div>
@@ -172,7 +211,10 @@ export default function VenueManagement() {
               <Label>State</Label>
               <Input
                 value={state}
-                onChange={(e) => setState(e.target.value)}
+                onChange={(e) => {
+                  setState(e.target.value);
+                  triggerAutoSave();
+                }}
                 placeholder='State'
               />
             </div>
@@ -183,7 +225,10 @@ export default function VenueManagement() {
             <Input
               type='number'
               value={capacity}
-              onChange={(e) => setCapacity(Number(e.target.value))}
+              onChange={(e) => {
+                setCapacity(Number(e.target.value));
+                triggerAutoSave();
+              }}
               placeholder='Capacity'
             />
           </div>

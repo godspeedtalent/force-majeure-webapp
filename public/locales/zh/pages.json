@@ -1,0 +1,189 @@
+{
+  "home": {
+    "title": "Force Majeure",
+    "subtitle": "探索电子音乐活动",
+    "heroTitle": "体验地下音乐。",
+    "heroSubtitle": "精选您城市的电子音乐活动",
+    "upcomingEvents": "即将举办的活动",
+    "featuredArtists": "精选艺术家",
+    "viewAllEvents": "查看所有活动",
+    "noUpcomingEvents": "目前没有即将举办的活动，请稍后再来！"
+  },
+  "events": {
+    "title": "活动",
+    "subtitle": "探索即将举办的电子音乐活动",
+    "allEvents": "所有活动",
+    "upcomingEvents": "即将举办",
+    "pastEvents": "往期活动",
+    "noEvents": "未找到活动",
+    "filterByDate": "按日期筛选",
+    "filterByVenue": "按场馆筛选",
+    "filterByGenre": "按风格筛选",
+    "sortBy": "排序",
+    "sortByDate": "日期",
+    "sortByName": "名称",
+    "sortByPrice": "价格"
+  },
+  "eventDetails": {
+    "about": "关于本活动",
+    "lineup": "演出阵容",
+    "venue": "场馆",
+    "date": "日期和时间",
+    "tickets": "门票",
+    "soldOut": "已售罄",
+    "doorsOpen": "开门时间",
+    "ageRestriction": "年龄限制",
+    "shareEvent": "分享活动",
+    "addToCalendar": "添加到日历",
+    "getDirections": "获取路线",
+    "eventInfo": "活动信息",
+    "ticketInfo": "门票信息",
+    "venueInfo": "场馆信息"
+  },
+  "artists": {
+    "title": "艺术家",
+    "subtitle": "发现才华横溢的艺术家",
+    "allArtists": "所有艺术家",
+    "featuredArtists": "精选艺术家",
+    "noArtists": "未找到艺术家",
+    "upcomingShows": "即将演出",
+    "pastShows": "往期演出",
+    "bio": "简介",
+    "genres": "风格",
+    "socialLinks": "社交媒体",
+    "listenOn": "在此收听"
+  },
+  "venues": {
+    "title": "场馆",
+    "subtitle": "探索我们的合作场馆",
+    "allVenues": "所有场馆",
+    "noVenues": "未找到场馆",
+    "upcomingEvents": "此场馆即将举办的活动",
+    "capacity": "容量",
+    "location": "位置",
+    "amenities": "设施",
+    "contact": "联系方式"
+  },
+  "auth": {
+    "signIn": {
+      "title": "欢迎回来。",
+      "subtitle": "登录您的账户",
+      "emailPlaceholder": "输入您的邮箱",
+      "passwordPlaceholder": "输入您的密码",
+      "rememberMe": "记住我",
+      "forgotPassword": "忘记密码？",
+      "noAccount": "还没有账户？",
+      "signUpLink": "注册"
+    },
+    "signUp": {
+      "title": "创建账户。",
+      "subtitle": "加入 Force Majeure",
+      "emailPlaceholder": "输入您的邮箱",
+      "passwordPlaceholder": "创建密码",
+      "confirmPasswordPlaceholder": "确认您的密码",
+      "termsAgreement": "注册即表示您同意我们的",
+      "termsOfService": "服务条款",
+      "and": "和",
+      "privacyPolicy": "隐私政策",
+      "hasAccount": "已有账户？",
+      "signInLink": "登录"
+    },
+    "forgotPassword": {
+      "title": "重置密码。",
+      "subtitle": "我们将向您发送重置密码的链接",
+      "emailPlaceholder": "输入您的邮箱",
+      "sendLink": "发送重置链接",
+      "backToSignIn": "返回登录",
+      "checkEmail": "检查您的邮箱",
+      "emailSent": "我们已向您的邮箱发送了密码重置链接"
+    },
+    "resetPassword": {
+      "title": "创建新密码。",
+      "subtitle": "在下方输入您的新密码",
+      "newPassword": "新密码",
+      "confirmNewPassword": "确认新密码",
+      "resetPassword": "重置密码"
+    },
+    "verifyEmail": {
+      "title": "验证您的邮箱。",
+      "subtitle": "请检查您的收件箱",
+      "resendEmail": "重新发送验证邮件",
+      "emailVerified": "邮箱验证成功！"
+    }
+  },
+  "profile": {
+    "title": "个人资料",
+    "editProfile": "编辑资料",
+    "viewProfile": "查看资料",
+    "myTickets": "我的门票",
+    "myOrders": "我的订单",
+    "settings": "设置",
+    "accountSettings": "账户设置",
+    "profilePicture": "头像",
+    "uploadPhoto": "上传照片",
+    "removePhoto": "移除照片",
+    "photoHint": "支持 JPG、PNG 或 GIF，最大 5MB。",
+    "personalInfo": "个人信息",
+    "billingAddress": "账单地址",
+    "preferences": "偏好设置",
+    "languagePreference": "语言偏好",
+    "languageDescription": "选择您偏好的应用语言",
+    "updateProfile": "更新资料",
+    "changePassword": "更改密码",
+    "deleteAccount": "删除账户"
+  },
+  "checkout": {
+    "title": "结账",
+    "orderSummary": "订单摘要",
+    "paymentDetails": "支付详情",
+    "billingInfo": "账单信息",
+    "contactInfo": "联系信息",
+    "ticketDelivery": "门票配送",
+    "promoCode": "优惠码",
+    "applyCode": "应用代码",
+    "codeApplied": "代码已应用",
+    "invalidCode": "无效代码",
+    "placeOrder": "提交订单",
+    "processing": "处理中...",
+    "paymentSuccessful": "支付成功！",
+    "orderConfirmed": "您的订单已确认",
+    "confirmationEmail": "确认邮件已发送到您的邮箱",
+    "viewTickets": "查看门票",
+    "continueShopping": "继续购物"
+  },
+  "tickets": {
+    "title": "我的门票",
+    "noTickets": "您还没有门票",
+    "browseEvents": "浏览活动",
+    "ticketDetails": "门票详情",
+    "downloadTicket": "下载门票",
+    "transferTicket": "转让门票",
+    "qrCode": "二维码",
+    "ticketHolder": "持票人",
+    "eventDate": "活动日期",
+    "ticketType": "门票类型",
+    "orderNumber": "订单号"
+  },
+  "orders": {
+    "title": "订单历史",
+    "noOrders": "暂无订单",
+    "orderDetails": "订单详情",
+    "orderDate": "订单日期",
+    "orderTotal": "订单总额",
+    "orderStatus": "订单状态",
+    "viewReceipt": "查看收据",
+    "downloadReceipt": "下载收据"
+  },
+  "errors": {
+    "404": {
+      "title": "页面未找到。",
+      "subtitle": "您要找的页面不存在或已被移动。",
+      "backHome": "返回首页"
+    },
+    "500": {
+      "title": "出错了。",
+      "subtitle": "我们正在修复问题，请稍后重试。",
+      "retry": "重试"
+    }
+  }
+}

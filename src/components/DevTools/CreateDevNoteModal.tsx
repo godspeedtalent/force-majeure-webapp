@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { logger } from '@/shared/services/logger';
-import { X, CheckCircle2, Info, Bug, HelpCircle } from 'lucide-react';
+import { CheckCircle2, Info, Bug, HelpCircle } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -115,25 +115,19 @@ export const CreateDevNoteModal = ({
       >
         {/* Topography Background */}
         <div
-          className='absolute inset-0 opacity-[0.03] pointer-events-none'
+          className='absolute inset-0 opacity-[0.03] pointer-events-none z-0'
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M50 50c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10zM10 10c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10S0 25.523 0 20s4.477-10 10-10zm10 8c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm40 40c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}
         />
 
-        <DialogHeader className='relative z-10 p-6 pb-2 flex-shrink-0'>
-          <DialogTitle className='text-fm-gold flex items-center justify-between'>
+        <DialogHeader className='relative z-[5] p-6 pb-2 flex-shrink-0'>
+          <DialogTitle className='text-fm-gold'>
             Create Developer Note
-            <button
-              onClick={() => onOpenChange(false)}
-              className='text-white/50 hover:text-white transition-colors'
-            >
-              <X className='h-5 w-5' />
-            </button>
           </DialogTitle>
         </DialogHeader>
 
-        <div className='space-y-4 px-6 py-4 relative z-10 flex-1 overflow-y-auto min-h-0'>
+        <div className='space-y-4 px-6 py-4 relative z-[5] flex-1 overflow-y-auto min-h-0'>
           <FmCommonSelect
             label='Type'
             value={type}
@@ -153,7 +147,7 @@ export const CreateDevNoteModal = ({
           />
         </div>
 
-        <DialogFooter className='relative z-10 p-6 pt-2 flex-shrink-0'>
+        <DialogFooter className='relative z-[5] p-6 pt-2 flex-shrink-0'>
           <div className='flex items-center justify-between w-full'>
             {/* Keyboard shortcuts footnote */}
             <div className='flex flex-col gap-0.5 text-[10px] text-white/40'>

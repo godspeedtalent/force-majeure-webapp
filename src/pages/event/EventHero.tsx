@@ -26,14 +26,17 @@ export const EventHero = ({
 
   return (
     <div
-      className='relative w-full h-full'
-      style={{ viewTransitionName: `magazine-hero-${event.id}` }}
+      className='relative'
+      style={{
+        viewTransitionName: `magazine-hero-${event.id}`,
+        height: 'calc(100vh - 4rem)' // 100vh minus nav bar height (h-16 = 4rem = 64px)
+      }}
     >
       <img
         src={event.heroImage}
         alt={event.title || event.headliner.name}
         className={cn(
-          'w-full h-full object-cover transition-opacity duration-700',
+          'h-full w-auto object-contain transition-opacity duration-700',
           imageLoaded ? 'opacity-100' : 'opacity-0'
         )}
         style={{
@@ -47,19 +50,21 @@ export const EventHero = ({
       )}
 
       {/* Fixed buttons on mobile, absolute on desktop */}
-      <div className='fixed lg:absolute top-6 left-6 right-6 lg:inset-0 lg:p-10 flex justify-between lg:flex-col lg:justify-between z-50 lg:z-auto pointer-events-none'>
+      <div className='fixed lg:absolute top-6 left-6 right-6 lg:top-10 lg:left-10 lg:right-10 flex justify-between z-50 lg:z-auto pointer-events-none'>
+        {/* Back button - left side */}
         <div className='flex gap-2 pointer-events-auto'>
           <FmCommonButton
             variant='secondary'
             size='icon'
             onClick={onBack}
             icon={ArrowLeft}
-            className='text-white bg-black/40 hover:bg-black/20 backdrop-blur-sm border-white/20 hover:border-fm-gold hover:text-fm-gold hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] lg:w-auto lg:px-4'
+            className='text-white bg-black/40 hover:bg-black/20 backdrop-blur-sm border-white border-2 hover:border-fm-gold hover:text-fm-gold hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] transition-colors duration-200 lg:w-auto lg:px-4'
           >
             <span className='hidden lg:inline'>Back</span>
           </FmCommonButton>
         </div>
 
+        {/* Manage button - right side (top right on desktop) */}
         {canManage && (
           <div className='pointer-events-auto'>
             <FmCommonButton
@@ -67,7 +72,7 @@ export const EventHero = ({
               size='icon'
               onClick={onManage}
               icon={Settings}
-              className='text-white bg-black/40 hover:bg-black/20 backdrop-blur-sm border-white/20 hover:border-fm-gold hover:text-fm-gold hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] lg:w-auto lg:px-4'
+              className='text-white bg-black/40 hover:bg-black/20 backdrop-blur-sm border-white border-2 hover:border-fm-gold hover:text-fm-gold hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] transition-colors duration-200 lg:w-auto lg:px-4'
             >
               <span className='hidden lg:inline'>Manage</span>
             </FmCommonButton>

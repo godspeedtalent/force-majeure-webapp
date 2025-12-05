@@ -29,7 +29,7 @@ export const Layout = ({
 
       <main
         className={cn(
-          'flex-1 animate-fade-in pb-20 relative overflow-hidden',
+          'flex-1 animate-fade-in pb-[400px] relative overflow-hidden',
           enableScrollSnap && isMobile && 'snap-y snap-mandatory overflow-y-auto'
         )}
         style={

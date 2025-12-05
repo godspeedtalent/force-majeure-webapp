@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { eventService, CreateEventData, CreateTicketTierData } from '@/features/events/services/eventService';
+import { eventService, CreateEventData } from '@/features/events/services/eventService';
 import { Event, TicketTier } from '@/features/events/types';
 
 /**
@@ -26,7 +26,6 @@ export const eventKeys = {
   list: (filters?: Record<string, any>) => [...eventKeys.lists(), filters] as const,
   details: () => [...eventKeys.all, 'detail'] as const,
   detail: (id: string) => [...eventKeys.details(), id] as const,
-  venueCapacity: (venueId: string) => ['venue', venueId, 'capacity'] as const,
 };
 
 // ============================================================================
@@ -71,23 +70,6 @@ export function useEvents(filters?: {
   return useQuery<Event[], Error>({
     queryKey: eventKeys.list(filters),
     queryFn: () => eventService.getEvents(filters),
-  });
-}
-
-/**
- * Fetch venue capacity
- *
- * @param venueId - Venue ID
- */
-export function useVenueCapacity(venueId: string | undefined) {
-  return useQuery<number, Error>({
-    queryKey: eventKeys.venueCapacity(venueId || ''),
-    queryFn: () => {
-      if (!venueId) throw new Error('Venue ID is required');
-      return eventService.getVenueCapacity(venueId);
-    },
-    enabled: Boolean(venueId),
-    staleTime: 5 * 60 * 1000, // 5 minutes - venue capacity rarely changes
   });
 }
 
@@ -141,22 +123,6 @@ export function useDeleteEvent() {
     onSuccess: (_, eventId) => {
       queryClient.removeQueries({ queryKey: eventKeys.detail(eventId) });
       queryClient.invalidateQueries({ queryKey: eventKeys.lists() });
-    },
-  });
-}
-
-/**
- * Create ticket tiers for an event
- *
- * Automatically invalidates event detail query on success
- */
-export function useCreateTicketTiers() {
-  const queryClient = useQueryClient();
-
-  return useMutation<TicketTier[], Error, { eventId: string; tiers: CreateTicketTierData[] }>({
-    mutationFn: ({ tiers }) => eventService.createTicketTiers(tiers),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: eventKeys.detail(variables.eventId) });
     },
   });
 }

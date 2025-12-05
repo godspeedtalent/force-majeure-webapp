@@ -55,6 +55,7 @@ describe('ROLES', () => {
       'DEVELOPER',
       'ORG_ADMIN',
       'ORG_STAFF',
+      'VENUE_ADMIN',
       'USER',
     ]);
   });

@@ -1,4 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
+import { generateTicketQR } from '../_shared/qr.ts';
+import { logActivity, getRequestContext, createTicketSaleLog } from '../_shared/activityLogger.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -100,14 +102,21 @@ Deno.serve(async req => {
           break;
         }
 
-        // Convert holds to sales
+        // Check if order has ticket protection
         const { data: orderItems } = await supabase
           .from('order_items')
-          .select('*')
+          .select('*, products(type)')
           .eq('order_id', orderId);
+
+        const hasProtection = orderItems?.some(
+          item => item.item_type === 'product' && item.products?.type === 'ticket_protection'
+        ) || false;
 
         if (orderItems) {
           for (const item of orderItems) {
+            // Only process ticket items (skip products like protection)
+            if (item.item_type !== 'ticket') continue;
+
             // Find the hold for this ticket tier and user
             const { data: holds } = await supabase
               .from('ticket_holds')
@@ -123,17 +132,20 @@ Deno.serve(async req => {
               });
             }
 
-            // Create tickets
+            // Create tickets with protection flag and secure QR codes
             for (let i = 0; i < item.quantity; i++) {
               const ticketId = crypto.randomUUID();
+              const qrCodeData = await generateTicketQR(ticketId, order.event_id);
+
               await supabase.from('tickets').insert({
                 id: ticketId,
                 order_id: orderId,
                 order_item_id: item.id,
                 event_id: order.event_id,
                 ticket_tier_id: item.ticket_tier_id,
-                qr_code_data: `TICKET-${ticketId}`,
+                qr_code_data: qrCodeData,
                 status: 'valid',
+                has_protection: hasProtection,
               });
             }
           }
@@ -147,6 +159,69 @@ Deno.serve(async req => {
           content_type: 'event_access',
           content_url: `/events/${order.event_id}/content`,
         });
+
+        // Send order receipt email with tickets
+        try {
+          const emailResponse = await fetch(
+            `${supabaseUrl}/functions/v1/send-order-receipt-email`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${supabaseKey}`,
+              },
+              body: JSON.stringify({ order_id: orderId }),
+            }
+          );
+
+          if (!emailResponse.ok) {
+            const errorText = await emailResponse.text();
+            console.error('Email sending failed:', errorText);
+            // Don't fail the webhook if email fails - order is still complete
+          } else {
+            console.log('Order receipt email sent successfully');
+          }
+        } catch (emailError) {
+          console.error('Error triggering email:', emailError);
+          // Don't fail the webhook if email fails
+        }
+
+        // Log ticket sale to activity logs
+        try {
+          const { data: eventData } = await supabase
+            .from('events')
+            .select('title')
+            .eq('id', order.event_id)
+            .single();
+
+          const ticketCount = orderItems?.filter(i => i.item_type === 'ticket')
+            .reduce((sum, i) => sum + (i.quantity || 0), 0) || 0;
+
+          const tierDetails = orderItems?.filter(i => i.item_type === 'ticket')
+            .map(i => ({
+              name: i.ticket_tier_name || 'Unknown',
+              quantity: i.quantity || 0,
+              price_cents: i.unit_price_cents || 0,
+            }));
+
+          const activityLogParams = createTicketSaleLog({
+            orderId,
+            eventId: order.event_id,
+            eventName: eventData?.title || 'Unknown Event',
+            userId: order.user_id,
+            ticketCount,
+            totalCents: order.total_cents || 0,
+            tierDetails,
+          });
+
+          await logActivity(supabase, {
+            ...activityLogParams,
+            ...getRequestContext(req),
+          });
+        } catch (logError) {
+          console.error('Error logging activity:', logError);
+          // Don't fail the webhook if logging fails
+        }
 
         console.log('Order completed successfully:', orderId);
         break;

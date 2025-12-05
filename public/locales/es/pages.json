@@ -1,0 +1,189 @@
+{
+  "home": {
+    "title": "Force Majeure",
+    "subtitle": "Descubre eventos de música electrónica",
+    "heroTitle": "Vive el underground.",
+    "heroSubtitle": "Eventos de música electrónica curados en tu ciudad",
+    "upcomingEvents": "Próximos Eventos",
+    "featuredArtists": "Artistas Destacados",
+    "viewAllEvents": "Ver Todos los Eventos",
+    "noUpcomingEvents": "No hay eventos próximos en este momento. ¡Vuelve pronto!"
+  },
+  "events": {
+    "title": "Eventos",
+    "subtitle": "Descubre próximos eventos de música electrónica",
+    "allEvents": "Todos los Eventos",
+    "upcomingEvents": "Próximos Eventos",
+    "pastEvents": "Eventos Pasados",
+    "noEvents": "No se encontraron eventos",
+    "filterByDate": "Filtrar por Fecha",
+    "filterByVenue": "Filtrar por Lugar",
+    "filterByGenre": "Filtrar por Género",
+    "sortBy": "Ordenar Por",
+    "sortByDate": "Fecha",
+    "sortByName": "Nombre",
+    "sortByPrice": "Precio"
+  },
+  "eventDetails": {
+    "about": "Sobre Este Evento",
+    "lineup": "Cartel",
+    "venue": "Lugar",
+    "date": "Fecha y Hora",
+    "tickets": "Entradas",
+    "soldOut": "Agotado",
+    "doorsOpen": "Apertura de Puertas",
+    "ageRestriction": "Restricción de Edad",
+    "shareEvent": "Compartir Evento",
+    "addToCalendar": "Añadir al Calendario",
+    "getDirections": "Cómo Llegar",
+    "eventInfo": "Info del Evento",
+    "ticketInfo": "Info de Entradas",
+    "venueInfo": "Info del Lugar"
+  },
+  "artists": {
+    "title": "Artistas",
+    "subtitle": "Descubre artistas talentosos",
+    "allArtists": "Todos los Artistas",
+    "featuredArtists": "Artistas Destacados",
+    "noArtists": "No se encontraron artistas",
+    "upcomingShows": "Próximas Presentaciones",
+    "pastShows": "Presentaciones Pasadas",
+    "bio": "Biografía",
+    "genres": "Géneros",
+    "socialLinks": "Redes Sociales",
+    "listenOn": "Escuchar en"
+  },
+  "venues": {
+    "title": "Lugares",
+    "subtitle": "Explora nuestros lugares asociados",
+    "allVenues": "Todos los Lugares",
+    "noVenues": "No se encontraron lugares",
+    "upcomingEvents": "Próximos Eventos en Este Lugar",
+    "capacity": "Capacidad",
+    "location": "Ubicación",
+    "amenities": "Servicios",
+    "contact": "Contacto"
+  },
+  "auth": {
+    "signIn": {
+      "title": "Bienvenido de nuevo.",
+      "subtitle": "Inicia sesión en tu cuenta",
+      "emailPlaceholder": "Ingresa tu correo electrónico",
+      "passwordPlaceholder": "Ingresa tu contraseña",
+      "rememberMe": "Recordarme",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "noAccount": "¿No tienes una cuenta?",
+      "signUpLink": "Regístrate"
+    },
+    "signUp": {
+      "title": "Crea una cuenta.",
+      "subtitle": "Únete a Force Majeure",
+      "emailPlaceholder": "Ingresa tu correo electrónico",
+      "passwordPlaceholder": "Crea una contraseña",
+      "confirmPasswordPlaceholder": "Confirma tu contraseña",
+      "termsAgreement": "Al registrarte, aceptas nuestros",
+      "termsOfService": "Términos de Servicio",
+      "and": "y",
+      "privacyPolicy": "Política de Privacidad",
+      "hasAccount": "¿Ya tienes una cuenta?",
+      "signInLink": "Inicia sesión"
+    },
+    "forgotPassword": {
+      "title": "Restablece tu contraseña.",
+      "subtitle": "Te enviaremos un enlace para restablecer tu contraseña",
+      "emailPlaceholder": "Ingresa tu correo electrónico",
+      "sendLink": "Enviar Enlace",
+      "backToSignIn": "Volver a iniciar sesión",
+      "checkEmail": "Revisa tu correo",
+      "emailSent": "Hemos enviado un enlace para restablecer tu contraseña"
+    },
+    "resetPassword": {
+      "title": "Crea una nueva contraseña.",
+      "subtitle": "Ingresa tu nueva contraseña abajo",
+      "newPassword": "Nueva Contraseña",
+      "confirmNewPassword": "Confirmar Nueva Contraseña",
+      "resetPassword": "Restablecer Contraseña"
+    },
+    "verifyEmail": {
+      "title": "Verifica tu correo.",
+      "subtitle": "Por favor revisa tu bandeja de entrada",
+      "resendEmail": "Reenviar correo de verificación",
+      "emailVerified": "¡Correo verificado exitosamente!"
+    }
+  },
+  "profile": {
+    "title": "Perfil",
+    "editProfile": "Editar Perfil",
+    "viewProfile": "Ver Perfil",
+    "myTickets": "Mis Entradas",
+    "myOrders": "Mis Pedidos",
+    "settings": "Configuración",
+    "accountSettings": "Configuración de Cuenta",
+    "profilePicture": "Foto de Perfil",
+    "uploadPhoto": "Subir Foto",
+    "removePhoto": "Eliminar Foto",
+    "photoHint": "JPG, PNG o GIF. Tamaño máximo 5MB.",
+    "personalInfo": "Información Personal",
+    "billingAddress": "Dirección de Facturación",
+    "preferences": "Preferencias",
+    "languagePreference": "Preferencia de Idioma",
+    "languageDescription": "Elige tu idioma preferido para la aplicación",
+    "updateProfile": "Actualizar Perfil",
+    "changePassword": "Cambiar Contraseña",
+    "deleteAccount": "Eliminar Cuenta"
+  },
+  "checkout": {
+    "title": "Finalizar Compra",
+    "orderSummary": "Resumen del Pedido",
+    "paymentDetails": "Detalles de Pago",
+    "billingInfo": "Información de Facturación",
+    "contactInfo": "Información de Contacto",
+    "ticketDelivery": "Entrega de Entradas",
+    "promoCode": "Código Promocional",
+    "applyCode": "Aplicar Código",
+    "codeApplied": "Código Aplicado",
+    "invalidCode": "Código Inválido",
+    "placeOrder": "Realizar Pedido",
+    "processing": "Procesando...",
+    "paymentSuccessful": "¡Pago Exitoso!",
+    "orderConfirmed": "Tu pedido ha sido confirmado",
+    "confirmationEmail": "Se ha enviado un correo de confirmación a tu bandeja",
+    "viewTickets": "Ver Entradas",
+    "continueShopping": "Continuar Comprando"
+  },
+  "tickets": {
+    "title": "Mis Entradas",
+    "noTickets": "Aún no tienes entradas",
+    "browseEvents": "Explorar Eventos",
+    "ticketDetails": "Detalles de la Entrada",
+    "downloadTicket": "Descargar Entrada",
+    "transferTicket": "Transferir Entrada",
+    "qrCode": "Código QR",
+    "ticketHolder": "Titular de la Entrada",
+    "eventDate": "Fecha del Evento",
+    "ticketType": "Tipo de Entrada",
+    "orderNumber": "Número de Pedido"
+  },
+  "orders": {
+    "title": "Historial de Pedidos",
+    "noOrders": "Sin pedidos aún",
+    "orderDetails": "Detalles del Pedido",
+    "orderDate": "Fecha del Pedido",
+    "orderTotal": "Total del Pedido",
+    "orderStatus": "Estado del Pedido",
+    "viewReceipt": "Ver Recibo",
+    "downloadReceipt": "Descargar Recibo"
+  },
+  "errors": {
+    "404": {
+      "title": "Página no encontrada.",
+      "subtitle": "La página que buscas no existe o ha sido movida.",
+      "backHome": "Volver al Inicio"
+    },
+    "500": {
+      "title": "Algo salió mal.",
+      "subtitle": "Estamos trabajando en solucionar el problema. Por favor, inténtalo más tarde.",
+      "retry": "Intentar de Nuevo"
+    }
+  }
+}

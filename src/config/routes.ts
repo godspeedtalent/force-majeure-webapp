@@ -110,12 +110,75 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
     label: 'Sign In',
   },
 
+  // Venues
+  '/venues': {
+    label: 'Venues',
+  },
+  '/venues/:id': {
+    label: '',
+    async: true,
+    resolver: async params => {
+      try {
+        const { data, error } = await supabase
+          .from('venues')
+          .select('name')
+          .eq('id', params.id)
+          .maybeSingle();
+
+        if (error || !data) {
+          logger.error('Failed to fetch venue for breadcrumb:', { context: error });
+          return 'Venue';
+        }
+        return data.name || 'Venue';
+      } catch (error) {
+        logger.error('Failed to fetch venue for breadcrumb:', { context: error });
+        return 'Venue';
+      }
+    },
+  },
+  '/venues/:id/manage': {
+    label: 'Manage',
+  },
+
+  // Artists
+  '/artists': {
+    label: 'Artists',
+  },
+  '/artists/:id': {
+    label: '',
+    async: true,
+    resolver: async params => {
+      try {
+        const { data, error } = await supabase
+          .from('artists')
+          .select('name')
+          .eq('id', params.id)
+          .maybeSingle();
+
+        if (error || !data) {
+          logger.error('Failed to fetch artist for breadcrumb:', { context: error });
+          return 'Artist';
+        }
+        return data.name || 'Artist';
+      } catch (error) {
+        logger.error('Failed to fetch artist for breadcrumb:', { context: error });
+        return 'Artist';
+      }
+    },
+  },
+  '/artists/:id/manage': {
+    label: 'Manage',
+  },
+
   // Admin Routes
   '/admin/controls': {
     label: 'Admin Controls',
   },
   '/admin/statistics': {
     label: 'Statistics',
+  },
+  '/admin/logs': {
+    label: 'Activity Logs',
   },
 
   // Demo Routes

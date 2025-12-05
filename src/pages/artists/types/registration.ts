@@ -1,10 +1,22 @@
 import type { Genre } from '@/features/artists/types';
 
+export type RecordingType = 'track' | 'dj_set';
+
+export interface RegistrationTrack {
+  id: string;
+  name: string;
+  url: string;
+  coverArt?: string;
+  platform: 'spotify' | 'soundcloud';
+  recordingType: RecordingType;
+}
+
 export interface ArtistRegistrationFormData {
   // Basic Details
   stageName: string;
   bio: string;
   genres: Genre[];
+  city: string;
 
   // Social
   profileImageUrl: string;
@@ -17,12 +29,10 @@ export interface ArtistRegistrationFormData {
   tiktokHandle: string;
 
   // Music
-  spotifyTrackUrl: string;
-  soundcloudSetUrl: string;
+  tracks: RegistrationTrack[];
 
   // Terms
   agreeToTerms: boolean;
-  linkPersonalProfile: boolean;
   followOnInstagram: boolean;
   notificationsOptIn: boolean;
 }
@@ -32,6 +42,7 @@ export const DEFAULT_FORM_DATA: ArtistRegistrationFormData = {
   stageName: '',
   bio: '',
   genres: [],
+  city: '',
 
   // Social
   profileImageUrl: '',
@@ -44,12 +55,10 @@ export const DEFAULT_FORM_DATA: ArtistRegistrationFormData = {
   tiktokHandle: '',
 
   // Music
-  spotifyTrackUrl: '',
-  soundcloudSetUrl: '',
+  tracks: [],
 
   // Terms
   agreeToTerms: false,
-  linkPersonalProfile: false,
   followOnInstagram: false,
   notificationsOptIn: false,
 };

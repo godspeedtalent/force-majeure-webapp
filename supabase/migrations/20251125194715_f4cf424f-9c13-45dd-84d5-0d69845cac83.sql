@@ -1,5 +1,5 @@
--- Create report configurations table
-CREATE TABLE public.report_configurations (
+-- Create report configurations table (idempotent)
+CREATE TABLE IF NOT EXISTS public.report_configurations (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   event_id UUID NOT NULL REFERENCES public.events(id) ON DELETE CASCADE,
   report_type TEXT NOT NULL,
@@ -16,8 +16,8 @@ CREATE TABLE public.report_configurations (
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 
--- Create report recipients table
-CREATE TABLE public.report_recipients (
+-- Create report recipients table (idempotent)
+CREATE TABLE IF NOT EXISTS public.report_recipients (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   report_config_id UUID NOT NULL REFERENCES public.report_configurations(id) ON DELETE CASCADE,
   email TEXT NOT NULL,
@@ -26,8 +26,8 @@ CREATE TABLE public.report_recipients (
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 
--- Create report history table
-CREATE TABLE public.report_history (
+-- Create report history table (idempotent)
+CREATE TABLE IF NOT EXISTS public.report_history (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   report_config_id UUID NOT NULL REFERENCES public.report_configurations(id) ON DELETE CASCADE,
   sent_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
@@ -43,12 +43,20 @@ ALTER TABLE public.report_configurations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.report_recipients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.report_history ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist (idempotent)
+DROP POLICY IF EXISTS "Admins can manage report configurations" ON public.report_configurations;
+DROP POLICY IF EXISTS "Org admins can manage their org's report configurations" ON public.report_configurations;
+DROP POLICY IF EXISTS "Admins can manage report recipients" ON public.report_recipients;
+DROP POLICY IF EXISTS "Org admins can manage their org's report recipients" ON public.report_recipients;
+DROP POLICY IF EXISTS "Admins can view report history" ON public.report_history;
+DROP POLICY IF EXISTS "Org admins can view their org's report history" ON public.report_history;
+
 -- RLS Policies for report_configurations
 CREATE POLICY "Admins can manage report configurations"
 ON public.report_configurations
 FOR ALL
 USING (
-  (auth.uid() IS NOT NULL) AND 
+  (auth.uid() IS NOT NULL) AND
   (has_role(auth.uid(), 'admin') OR has_role(auth.uid(), 'developer') OR is_dev_admin(auth.uid()))
 );
 
@@ -56,7 +64,7 @@ CREATE POLICY "Org admins can manage their org's report configurations"
 ON public.report_configurations
 FOR ALL
 USING (
-  (auth.uid() IS NOT NULL) AND 
+  (auth.uid() IS NOT NULL) AND
   has_permission(auth.uid(), 'manage_events') AND
   (EXISTS (
     SELECT 1 FROM events e
@@ -70,7 +78,7 @@ CREATE POLICY "Admins can manage report recipients"
 ON public.report_recipients
 FOR ALL
 USING (
-  (auth.uid() IS NOT NULL) AND 
+  (auth.uid() IS NOT NULL) AND
   (has_role(auth.uid(), 'admin') OR has_role(auth.uid(), 'developer') OR is_dev_admin(auth.uid()))
 );
 
@@ -78,7 +86,7 @@ CREATE POLICY "Org admins can manage their org's report recipients"
 ON public.report_recipients
 FOR ALL
 USING (
-  (auth.uid() IS NOT NULL) AND 
+  (auth.uid() IS NOT NULL) AND
   has_permission(auth.uid(), 'manage_events') AND
   (EXISTS (
     SELECT 1 FROM report_configurations rc
@@ -93,7 +101,7 @@ CREATE POLICY "Admins can view report history"
 ON public.report_history
 FOR SELECT
 USING (
-  (auth.uid() IS NOT NULL) AND 
+  (auth.uid() IS NOT NULL) AND
   (has_role(auth.uid(), 'admin') OR has_role(auth.uid(), 'developer') OR is_dev_admin(auth.uid()))
 );
 
@@ -101,7 +109,7 @@ CREATE POLICY "Org admins can view their org's report history"
 ON public.report_history
 FOR SELECT
 USING (
-  (auth.uid() IS NOT NULL) AND 
+  (auth.uid() IS NOT NULL) AND
   has_permission(auth.uid(), 'manage_events') AND
   (EXISTS (
     SELECT 1 FROM report_configurations rc
@@ -111,13 +119,14 @@ USING (
   ))
 );
 
--- Create indexes for performance
-CREATE INDEX idx_report_configurations_event_id ON public.report_configurations(event_id);
-CREATE INDEX idx_report_recipients_report_config_id ON public.report_recipients(report_config_id);
-CREATE INDEX idx_report_history_report_config_id ON public.report_history(report_config_id);
-CREATE INDEX idx_report_history_sent_at ON public.report_history(sent_at DESC);
+-- Create indexes for performance (idempotent)
+CREATE INDEX IF NOT EXISTS idx_report_configurations_event_id ON public.report_configurations(event_id);
+CREATE INDEX IF NOT EXISTS idx_report_recipients_report_config_id ON public.report_recipients(report_config_id);
+CREATE INDEX IF NOT EXISTS idx_report_history_report_config_id ON public.report_history(report_config_id);
+CREATE INDEX IF NOT EXISTS idx_report_history_sent_at ON public.report_history(sent_at DESC);
 
--- Create trigger for updated_at
+-- Create trigger for updated_at (idempotent)
+DROP TRIGGER IF EXISTS update_report_configurations_updated_at ON public.report_configurations;
 CREATE TRIGGER update_report_configurations_updated_at
 BEFORE UPDATE ON public.report_configurations
 FOR EACH ROW

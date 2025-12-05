@@ -1,10 +1,17 @@
-import { useState } from 'react';
-import { Search } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Link2, Search, AlertCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common/shadcn/dialog';
-import { Input } from '@/components/common/shadcn/input';
+import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { SpotifyIcon } from '@/components/common/icons/SpotifyIcon';
-import { searchSpotifyArtists, type SpotifyArtist } from '@/services/spotify/spotifyApiService';
+import {
+  searchSpotifyArtists,
+  getSpotifyArtist,
+  extractSpotifyArtistId,
+  isSpotifyArtistUrl,
+  type SpotifyArtist,
+} from '@/services/spotify/spotifyApiService';
 import { toast } from 'sonner';
 import { logger } from '@/shared/services/logger';
 
@@ -14,28 +21,110 @@ interface SpotifyArtistImportProps {
   onImport: (artist: SpotifyArtist) => void;
 }
 
+const DEBOUNCE_MS = 400;
+
 export function SpotifyArtistImport({ open, onClose, onImport }: SpotifyArtistImportProps) {
+  const [artistUrl, setArtistUrl] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const [isLoadingUrl, setIsLoadingUrl] = useState(false);
   const [results, setResults] = useState<SpotifyArtist[]>([]);
+  const [urlArtist, setUrlArtist] = useState<SpotifyArtist | null>(null);
+  const [urlError, setUrlError] = useState<string | null>(null);
+  const [hasSearched, setHasSearched] = useState(false);
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
-
-    setIsSearching(true);
-    try {
-      const artists = await searchSpotifyArtists(searchQuery, 10);
-      setResults(artists);
-      if (artists.length === 0) {
-        toast.info('No artists found');
-      }
-    } catch (error) {
-      logger.error('Error searching Spotify:', { error: error instanceof Error ? error.message : 'Unknown', source: 'SpotifyArtistImport' });
-      toast.error('Failed to search Spotify');
-    } finally {
+  // Reset state when modal closes
+  useEffect(() => {
+    if (!open) {
+      setArtistUrl('');
+      setSearchQuery('');
+      setResults([]);
+      setUrlArtist(null);
+      setUrlError(null);
+      setHasSearched(false);
       setIsSearching(false);
+      setIsLoadingUrl(false);
     }
-  };
+  }, [open]);
+
+  // Handle URL input - fetch artist directly
+  useEffect(() => {
+    if (!artistUrl.trim()) {
+      setUrlArtist(null);
+      setUrlError(null);
+      return;
+    }
+
+    const artistId = extractSpotifyArtistId(artistUrl);
+    if (!artistId) {
+      if (artistUrl.includes('spotify')) {
+        setUrlError('Invalid Spotify artist URL');
+      }
+      setUrlArtist(null);
+      return;
+    }
+
+    setIsLoadingUrl(true);
+    setUrlError(null);
+
+    getSpotifyArtist(artistId)
+      .then(artist => {
+        setUrlArtist(artist);
+        setUrlError(null);
+      })
+      .catch(error => {
+        logger.error('Failed to fetch artist from URL', { error, artistId });
+        setUrlError('Could not find artist. Please check the URL.');
+        setUrlArtist(null);
+      })
+      .finally(() => {
+        setIsLoadingUrl(false);
+      });
+  }, [artistUrl]);
+
+  // Debounced search effect
+  useEffect(() => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    if (!searchQuery.trim()) {
+      setResults([]);
+      setHasSearched(false);
+      return;
+    }
+
+    // Don't search if it looks like a URL
+    if (isSpotifyArtistUrl(searchQuery)) {
+      return;
+    }
+
+    debounceRef.current = setTimeout(async () => {
+      setIsSearching(true);
+      setHasSearched(true);
+      try {
+        logger.info('Searching Spotify for artists', { query: searchQuery });
+        const artists = await searchSpotifyArtists(searchQuery, 10);
+        logger.info('Spotify search results', { count: artists.length });
+        setResults(artists);
+      } catch (error) {
+        logger.error('Error searching Spotify:', {
+          error: error instanceof Error ? error.message : 'Unknown',
+          source: 'SpotifyArtistImport',
+        });
+        toast.error('Failed to search Spotify');
+      } finally {
+        setIsSearching(false);
+      }
+    }, DEBOUNCE_MS);
+
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, [searchQuery]);
 
   const handleImport = (artist: SpotifyArtist) => {
     onImport(artist);
@@ -46,65 +135,126 @@ export function SpotifyArtistImport({ open, onClose, onImport }: SpotifyArtistIm
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className='max-w-2xl max-h-[80vh] overflow-y-auto'>
         <DialogHeader>
-          <DialogTitle className='flex items-center gap-2'>
+          <DialogTitle className='flex items-center gap-[10px]'>
             <SpotifyIcon className='h-5 w-5 text-[#1DB954]' />
             Import from Spotify
           </DialogTitle>
         </DialogHeader>
 
-        <div className='space-y-4'>
-          {/* Search Bar */}
-          <div className='flex gap-2'>
-            <Input
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSearch()}
-              placeholder='Search for an artist...'
-              className='flex-1'
+        <div className='space-y-[20px]'>
+          {/* URL Input */}
+          <div className='space-y-[10px]'>
+            <FmCommonTextField
+              label='Spotify Artist URL'
+              value={artistUrl}
+              onChange={e => setArtistUrl(e.target.value)}
+              placeholder='https://open.spotify.com/artist/...'
             />
-            <FmCommonButton
-              onClick={handleSearch}
-              disabled={isSearching || !searchQuery.trim()}
-              icon={Search}
-            >
-              {isSearching ? 'Searching...' : 'Search'}
-            </FmCommonButton>
-          </div>
 
-          {/* Results */}
-          <div className='space-y-2'>
-            {results.map(artist => (
-              <div
-                key={artist.id}
-                className='flex items-center gap-4 p-4 rounded-lg border border-border/30 bg-background/50 hover:bg-background/80 transition-colors'
-              >
-                {artist.images[0] && (
+            {/* URL Loading */}
+            {isLoadingUrl && (
+              <div className='flex items-center gap-[10px] text-muted-foreground'>
+                <FmCommonLoadingSpinner size='sm' />
+                <span className='text-sm'>Fetching artist...</span>
+              </div>
+            )}
+
+            {/* URL Error */}
+            {urlError && !isLoadingUrl && (
+              <div className='flex items-center gap-[10px] text-red-400 text-sm'>
+                <AlertCircle className='h-4 w-4' />
+                {urlError}
+              </div>
+            )}
+
+            {/* URL Artist Preview */}
+            {urlArtist && !isLoadingUrl && (
+              <div className='flex items-center gap-[20px] p-[20px] border border-[#1DB954]/30 bg-[#1DB954]/5'>
+                {urlArtist.images[0] && (
                   <img
-                    src={artist.images[0].url}
-                    alt={artist.name}
-                    className='w-16 h-16 rounded-full object-cover'
+                    src={urlArtist.images[0].url}
+                    alt={urlArtist.name}
+                    className='w-16 h-16 object-cover'
                   />
                 )}
                 <div className='flex-1'>
-                  <h3 className='font-semibold'>{artist.name}</h3>
+                  <h3 className='font-semibold'>{urlArtist.name}</h3>
                   <p className='text-sm text-muted-foreground'>
-                    {artist.genres.slice(0, 3).join(', ') || 'No genres listed'}
+                    {urlArtist.genres.slice(0, 3).join(', ') || 'No genres listed'}
                   </p>
                   <p className='text-xs text-muted-foreground'>
-                    {artist.followers.total.toLocaleString()} followers
+                    {urlArtist.followers.total.toLocaleString()} followers
                   </p>
                 </div>
-                <FmCommonButton onClick={() => handleImport(artist)} size='sm'>
+                <FmCommonButton onClick={() => handleImport(urlArtist)} icon={Link2}>
                   Import
                 </FmCommonButton>
               </div>
-            ))}
-            {results.length === 0 && searchQuery && !isSearching && (
-              <div className='text-center py-8 text-muted-foreground'>
-                No results found. Try a different search.
-              </div>
             )}
           </div>
+
+          {/* Divider */}
+          <div className='flex items-center gap-[20px]'>
+            <div className='flex-1 h-[1px] bg-white/20' />
+            <span className='text-xs text-muted-foreground uppercase'>or search</span>
+            <div className='flex-1 h-[1px] bg-white/20' />
+          </div>
+
+          {/* Search Input */}
+          <div className='space-y-[10px]'>
+            <FmCommonTextField
+              label='Search Artists'
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder='Search for an artist...'
+            />
+          </div>
+
+          {/* Search Loading */}
+          {isSearching && (
+            <div className='flex items-center justify-center py-[20px]'>
+              <FmCommonLoadingSpinner size='md' />
+              <span className='ml-[10px] text-muted-foreground'>Searching...</span>
+            </div>
+          )}
+
+          {/* Search Results */}
+          {!isSearching && results.length > 0 && (
+            <div className='space-y-[10px]'>
+              {results.map(artist => (
+                <div
+                  key={artist.id}
+                  className='flex items-center gap-[20px] p-[20px] border border-white/10 bg-black/20 hover:bg-black/40 transition-colors cursor-pointer'
+                  onClick={() => handleImport(artist)}
+                >
+                  {artist.images[0] && (
+                    <img
+                      src={artist.images[0].url}
+                      alt={artist.name}
+                      className='w-14 h-14 object-cover'
+                    />
+                  )}
+                  <div className='flex-1'>
+                    <h3 className='font-semibold'>{artist.name}</h3>
+                    <p className='text-sm text-muted-foreground'>
+                      {artist.genres.slice(0, 3).join(', ') || 'No genres listed'}
+                    </p>
+                    <p className='text-xs text-muted-foreground'>
+                      {artist.followers.total.toLocaleString()} followers
+                    </p>
+                  </div>
+                  <Search className='h-4 w-4 text-muted-foreground' />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* No Results */}
+          {!isSearching && results.length === 0 && hasSearched && (
+            <div className='text-center py-[40px] text-muted-foreground'>
+              No results found. Try a different search.
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

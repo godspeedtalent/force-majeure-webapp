@@ -6,6 +6,7 @@ import {
   Music2,
   MapPin,
   Clock,
+  Mic2,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -27,6 +28,7 @@ import { supabase } from '@/shared/api/supabase/client';
 import { Badge } from '@/components/common/shadcn/badge';
 import { handleError } from '@/shared/services/errorHandler';
 import { logger } from '@/shared/services/logger';
+import { UserArtistTab } from '@/components/profile/UserArtistTab';
 
 interface UpcomingEvent {
   id: string;
@@ -268,11 +270,20 @@ const Profile = () => {
 
                 {/* Tabs */}
                 <Tabs defaultValue='upcoming' className='w-full'>
-                  <TabsList className='grid w-full grid-cols-3'>
+                  <TabsList className='grid w-full grid-cols-4'>
                     <TabsTrigger value='upcoming'>Upcoming Shows</TabsTrigger>
+                    <TabsTrigger value='artist' className='flex items-center gap-1'>
+                      <Mic2 className='h-3 w-3' />
+                      Artist
+                    </TabsTrigger>
                     <TabsTrigger value='stats'>Stats</TabsTrigger>
                     <TabsTrigger value='account'>Account</TabsTrigger>
                   </TabsList>
+
+                  {/* Artist Tab */}
+                  <TabsContent value='artist' className='mt-6'>
+                    <UserArtistTab />
+                  </TabsContent>
 
                   {/* Upcoming Shows Tab */}
                   <TabsContent value='upcoming' className='space-y-4 mt-6'>

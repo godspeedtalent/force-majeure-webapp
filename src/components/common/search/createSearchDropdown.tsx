@@ -10,6 +10,13 @@ import { useRecentSelections } from '@/shared/hooks/useRecentSelections';
 /**
  * Configuration for creating a search dropdown component
  */
+/** Filter configuration for additional query constraints */
+export interface SearchDropdownFilter {
+  column: string;
+  operator: 'eq' | 'neq' | 'gt' | 'gte' | 'lt' | 'lte' | 'is' | 'in' | 'not';
+  value: unknown;
+}
+
 export interface SearchDropdownConfig<T = any> {
   /** Supabase table name */
   tableName: string;
@@ -45,12 +52,14 @@ export interface SearchDropdownConfig<T = any> {
   entityTypeName?: string;
 }
 
-interface SearchDropdownProps {
-  value?: string;
-  onChange: (value: string) => void;
+interface SearchDropdownProps<T = any> {
+  value?: string | null;
+  onChange: (value: string, item?: T) => void;
   onCreateNew?: () => void;
   placeholder?: string;
   disabled?: boolean;
+  /** Additional filters to apply to the search query */
+  additionalFilters?: SearchDropdownFilter[];
 }
 
 /**
@@ -97,15 +106,53 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
     onCreateNew,
     placeholder = defaultPlaceholder,
     disabled = false,
-  }: SearchDropdownProps) {
+    additionalFilters = [],
+  }: SearchDropdownProps<T>) {
     const navigate = useNavigate();
     const [selectedItem, setSelectedItem] = React.useState<{
       label: string;
+      data?: T;
     } | null>(null);
     const { recentItems, addRecentItem } =
       useRecents && recentsKey
         ? useRecentSelections(recentsKey)
         : { recentItems: [], addRecentItem: () => {} };
+
+    // Helper to apply additional filters to a query
+    const applyFilters = (queryBuilder: any) => {
+      for (const filter of additionalFilters) {
+        switch (filter.operator) {
+          case 'eq':
+            queryBuilder = queryBuilder.eq(filter.column, filter.value);
+            break;
+          case 'neq':
+            queryBuilder = queryBuilder.neq(filter.column, filter.value);
+            break;
+          case 'gt':
+            queryBuilder = queryBuilder.gt(filter.column, filter.value);
+            break;
+          case 'gte':
+            queryBuilder = queryBuilder.gte(filter.column, filter.value);
+            break;
+          case 'lt':
+            queryBuilder = queryBuilder.lt(filter.column, filter.value);
+            break;
+          case 'lte':
+            queryBuilder = queryBuilder.lte(filter.column, filter.value);
+            break;
+          case 'is':
+            queryBuilder = queryBuilder.is(filter.column, filter.value);
+            break;
+          case 'in':
+            queryBuilder = queryBuilder.in(filter.column, filter.value as any[]);
+            break;
+          case 'not':
+            queryBuilder = queryBuilder.not(filter.column, 'is', filter.value);
+            break;
+        }
+      }
+      return queryBuilder;
+    };
 
     // Load selected item when value changes
     React.useEffect(() => {
@@ -117,7 +164,7 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
           .single()
           .then(({ data }) => {
             if (data) {
-              setSelectedItem({ label: formatLabel(data as T) });
+              setSelectedItem({ label: formatLabel(data as T), data: data as T });
             }
           });
       } else {
@@ -138,6 +185,9 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
         queryBuilder = queryBuilder.ilike(searchField, `%${query}%`);
       }
 
+      // Apply additional filters
+      queryBuilder = applyFilters(queryBuilder);
+
       const { data, error } = await queryBuilder.limit(10);
 
       if (error || !data) return [];
@@ -146,6 +196,7 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
         id: formatValue ? formatValue(item as T) : item.id,
         label: formatLabel(item as T),
         icon: renderIcon(item as T),
+        data: item as T,
       }));
     };
 
@@ -173,8 +224,8 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
     };
 
     // Change handler
-    const handleChange = (newValue: string, label?: string) => {
-      onChange(newValue);
+    const handleChange = (newValue: string, label?: string, data?: any) => {
+      onChange(newValue, data as T);
       if (useRecents && label) {
         addRecentItem(newValue, label);
       }
@@ -202,7 +253,7 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
         disabled={disabled}
         typeIcon={typeIcon}
         typeTooltip={typeTooltip}
-        selectedValue={value}
+        selectedValue={value || undefined}
         editRoute={editRoute}
         entityTypeName={entityTypeName}
       />

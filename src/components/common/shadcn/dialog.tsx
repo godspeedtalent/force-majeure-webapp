@@ -19,7 +19,7 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      'fixed inset-0 z-[9998] bg-black/85 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
+      'fixed inset-0 z-[9998] bg-black/70 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
       className
     )}
     {...props}
@@ -36,14 +36,18 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed left-[50%] top-[50%] z-[9999] grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-border/60 bg-background/95 backdrop-blur-xl p-6 shadow-[0_8px_32px_rgba(0,0,0,0.5)] duration-200 pointer-events-auto data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-none',
+        'fixed left-[50%] top-[50%] z-[9999] grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border-x-2 border-fm-gold/30 bg-gradient-to-br from-black/80 to-neutral-800/80 backdrop-blur-xl p-6 shadow-[0_8px_32px_rgba(0,0,0,0.5)] duration-200 pointer-events-auto data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-none',
         className
       )}
       {...props}
     >
+      {/* Top gold border */}
+      <div className='absolute top-0 left-0 right-0 h-1 bg-fm-gold z-10' />
       {children}
-      <DialogPrimitive.Close className='absolute right-4 top-4 rounded-none opacity-70 ring-offset-background transition-all hover:opacity-100 hover:bg-white/10 p-1.5 focus:outline-none focus:ring-2 focus:ring-fm-gold/50 focus:ring-offset-2 disabled:pointer-events-none'>
-        <X className='h-4 w-4' />
+      {/* Bottom gold border */}
+      <div className='absolute bottom-0 left-0 right-0 h-1 bg-fm-gold z-10' />
+      <DialogPrimitive.Close className='absolute right-4 top-4 rounded-none opacity-70 ring-offset-background transition-all hover:opacity-100 hover:bg-white/10 p-1.5 focus:outline-none focus:ring-2 focus:ring-fm-gold/50 focus:ring-offset-2 disabled:pointer-events-none group'>
+        <X className='h-4 w-4 transition-colors group-hover:text-fm-gold' />
         <span className='sr-only'>Close</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>

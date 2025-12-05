@@ -230,10 +230,10 @@ export function RegistrationForm({
           >
             <div className='space-y-3'>
               <FmCommonTextField
-                label='Display Name'
+                label='Username'
                 id='displayName'
                 type='text'
-                placeholder='Your display name'
+                placeholder='Your username'
                 value={formData.displayName}
                 onChange={e => updateFormData('displayName', e.target.value)}
                 required

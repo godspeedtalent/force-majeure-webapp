@@ -32,7 +32,8 @@ export interface UndercardArtist {
   id: string;
   event_id: string;
   artist_id: string;
-  set_order: number;
+  set_time?: string | null;
+  set_order?: number | null;
   artist?: {
     id: string;
     name: string;
@@ -50,12 +51,13 @@ export interface TicketGroup {
 export interface Venue {
   id: string;
   name: string;
-  address: string;
-  city: string;
+  address_line_1?: string | null;
+  address_line_2?: string | null;
+  city?: string | null;
   state?: string | null;
   zip_code?: string | null;
   capacity?: number | null;
-  website_url?: string | null;
+  website?: string | null;
   image_url?: string | null;
 }
 
@@ -84,14 +86,25 @@ export interface Event {
   status?: 'draft' | 'published' | 'invisible';
   is_tba?: boolean;     // TBA (To Be Announced) placeholder event
   is_after_hours?: boolean; // Event has no end time (runs past closing)
+  looking_for_undercard?: boolean; // Event is looking for local artists to open
   organization_id?: string | null;
   test_data?: boolean;
+  share_count?: number; // Number of times this event has been shared
+  min_interest_count_display?: number; // Minimum interest count to display publicly
+  min_share_count_display?: number; // Minimum share count to display publicly
   created_at: string;
   updated_at: string;
   venue?: Venue;
   headliner?: Artist;
   undercard_artists?: UndercardArtist[];
   ticket_tiers?: TicketTier[];
+}
+
+export interface UserEventInterest {
+  id: string;
+  user_id: string;
+  event_id: string;
+  created_at: string;
 }
 
 // Form data types (used in create/edit forms)
@@ -107,6 +120,7 @@ export interface EventFormData {
   status?: 'draft' | 'published';
   is_tba?: boolean;
   is_after_hours?: boolean;
+  looking_for_undercard?: boolean;
 }
 
 export interface TicketTierFormData {

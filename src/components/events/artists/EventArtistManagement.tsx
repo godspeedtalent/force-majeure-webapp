@@ -33,6 +33,8 @@ interface EventArtistManagementProps {
     undercardIds: string[];
     artistSlots: ArtistSlot[];
   }) => void;
+  lookingForUndercard?: boolean;
+  onLookingForUndercardChange?: (checked: boolean) => void;
   className?: string;
 }
 
@@ -44,6 +46,8 @@ export function EventArtistManagement({
   headlinerId = '',
   undercardIds = [],
   onChange,
+  lookingForUndercard = false,
+  onLookingForUndercardChange,
   className,
 }: EventArtistManagementProps) {
   // Initialize artist slots from props
@@ -392,23 +396,25 @@ export function EventArtistManagement({
           label='Set Scheduling'
           checked={showScheduling}
           onCheckedChange={setShowScheduling}
+          hideLabel
         />
       </div>
 
-      {/* Artist Sign Up Toggle */}
+      {/* Looking for Undercard Toggle */}
       <div className='flex items-center gap-3 p-4 rounded-lg bg-white/5 border border-white/20'>
         <Users2 className='h-5 w-5 text-fm-gold' />
         <div className='flex-1'>
-          <h3 className='font-semibold'>Display Artist Sign Up in Undercard</h3>
+          <h3 className='font-semibold'>Looking for undercard.</h3>
           <p className='text-sm text-muted-foreground'>
-            Show a link to the artist registration page in the event call times list
+            Display a "Looking for Artists" prompt in the event call times, inviting local talent to sign up
           </p>
         </div>
         <FmCommonToggle
-          id='show-artist-signup'
-          label='Display Artist Sign Up'
-          checked={false}
-          onCheckedChange={() => {}}
+          id='looking-for-undercard'
+          label='Looking for Undercard'
+          checked={lookingForUndercard}
+          onCheckedChange={onLookingForUndercardChange ?? (() => {})}
+          hideLabel
         />
       </div>
 

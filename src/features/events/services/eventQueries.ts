@@ -18,10 +18,11 @@ export const getEventWithRelations = async (eventId: string) => {
       *,
       venues(id, name, address, city, state, zip_code, capacity, website_url, image_url),
       headliner:artists!events_headliner_id_fkey(id, name, bio, image_url, spotify_id, website_url, genre),
-      undercard_artists(
+      undercard_artists:event_artists(
         id,
         event_id,
         artist_id,
+        set_time,
         set_order,
         artist:artists(id, name, image_url)
       ),

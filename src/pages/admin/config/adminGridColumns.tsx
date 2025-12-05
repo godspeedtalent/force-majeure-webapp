@@ -118,7 +118,7 @@ export const artistColumns: DataGridColumn[] = [
 export const userColumns: DataGridColumn[] = [
   DataGridColumns.text({
     key: 'display_name',
-    label: 'Display Name',
+    label: 'Username',
     sortable: true,
     filterable: true,
     editable: true,
@@ -223,6 +223,142 @@ export const venueColumns: DataGridColumn[] = [
     sortable: true,
     editable: true,
     render: (value: any) => (value ? value.toLocaleString() : '—'),
+  },
+  DataGridColumns.date({
+    key: 'created_at',
+    label: 'Created',
+    format: 'short',
+    sortable: true,
+  }),
+];
+
+/**
+ * Column definitions for the Recordings data grid in Admin Controls
+ */
+export const recordingColumns: DataGridColumn[] = [
+  DataGridColumns.image({
+    key: 'cover_art',
+    label: 'Cover',
+    shape: 'square',
+    entityType: 'recording',
+    editable: false,
+  }),
+  DataGridColumns.text({
+    key: 'name',
+    label: 'Track Name',
+    sortable: true,
+    filterable: true,
+    editable: true,
+  }),
+  DataGridColumns.relation({
+    key: 'artist_id',
+    label: 'Artist',
+    sortable: true,
+    getLabel: (row: any) => row.artist_name || '—',
+    getHref: (row: any) => row.artist_id ? `/artists/${row.artist_id}` : '#',
+  }),
+  {
+    key: 'platform',
+    label: 'Platform',
+    sortable: true,
+    filterable: true,
+    render: (value: any) => {
+      if (!value) return <span className='text-muted-foreground'>—</span>;
+      const isSpotify = value === 'spotify';
+      return (
+        <span className={`px-2 py-0.5 text-xs font-medium uppercase ${isSpotify ? 'bg-[#1DB954]/20 text-[#1DB954]' : 'bg-[#FF5500]/20 text-[#FF5500]'}`}>
+          {value}
+        </span>
+      );
+    },
+  },
+  {
+    key: 'recording_type',
+    label: 'Type',
+    sortable: true,
+    filterable: true,
+    editable: true,
+    render: (value: any) => {
+      if (!value) return <span className='text-muted-foreground'>—</span>;
+      const isTrack = value === 'track';
+      return (
+        <span className={`px-2 py-0.5 text-xs font-medium uppercase ${isTrack ? 'bg-fm-gold/20 text-fm-gold' : 'bg-fm-navy/20 text-fm-navy'}`}>
+          {isTrack ? 'Track' : 'DJ Set'}
+        </span>
+      );
+    },
+  },
+  {
+    key: 'click_count',
+    label: 'Clicks',
+    sortable: true,
+    render: (value: any) => (
+      <span className='text-xs text-muted-foreground'>
+        {value || 0}
+      </span>
+    ),
+  },
+  {
+    key: 'url',
+    label: 'Link',
+    render: (value: any) => {
+      if (!value) return <span className='text-muted-foreground'>—</span>;
+      return (
+        <a
+          href={value}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='text-fm-gold hover:underline text-xs'
+        >
+          Open →
+        </a>
+      );
+    },
+  },
+  DataGridColumns.date({
+    key: 'created_at',
+    label: 'Added',
+    format: 'short',
+    sortable: true,
+  }),
+];
+
+/**
+ * Column definitions for the Genres data grid in Admin Controls
+ */
+export const genreColumns: DataGridColumn[] = [
+  DataGridColumns.text({
+    key: 'name',
+    label: 'Name',
+    sortable: true,
+    filterable: true,
+    editable: true,
+  }),
+  DataGridColumns.relation({
+    key: 'parent_id',
+    label: 'Parent Genre',
+    sortable: true,
+    getLabel: (row: any) => row.parent_name || '—',
+  }),
+  {
+    key: 'children_count',
+    label: 'Subgenres',
+    sortable: true,
+    render: (value: any) => (
+      <span className='text-xs text-muted-foreground'>
+        {value || 0}
+      </span>
+    ),
+  },
+  {
+    key: 'artists_count',
+    label: 'Artists',
+    sortable: true,
+    render: (value: any) => (
+      <span className='text-xs text-muted-foreground'>
+        {value || 0}
+      </span>
+    ),
   },
   DataGridColumns.date({
     key: 'created_at',

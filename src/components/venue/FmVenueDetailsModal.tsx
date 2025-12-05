@@ -62,10 +62,10 @@ export const FmVenueDetailsModal = ({
         <FmCommonButton
           size='sm'
           variant='secondary'
+          icon={MapPin}
           onClick={() => window.open(venue.googleMapsUrl!, '_blank')}
-          className='bg-white/10 text-white hover:bg-white/20'
+          className='bg-white/10 text-white hover:bg-white/20 px-4'
         >
-          <MapPin className='w-4 h-4 mr-2' />
           View on Maps
         </FmCommonButton>
       )}
@@ -73,10 +73,10 @@ export const FmVenueDetailsModal = ({
         <FmCommonButton
           size='sm'
           variant='secondary'
+          icon={ExternalLink}
           onClick={() => window.open(venue.website!, '_blank')}
-          className='bg-white/10 text-white hover:bg-white/20'
+          className='bg-white/10 text-white hover:bg-white/20 px-4'
         >
-          <ExternalLink className='w-4 h-4 mr-2' />
           Visit Website
         </FmCommonButton>
       )}

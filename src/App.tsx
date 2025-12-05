@@ -34,6 +34,7 @@ const DeveloperIndex = lazy(() => import('./pages/developer/DeveloperIndex'));
 // Lazy load admin pages
 const Statistics = lazy(() => import('./pages/admin/Statistics'));
 const AdminControls = lazy(() => import('./pages/admin/AdminControls'));
+const ActivityLogs = lazy(() => import('./pages/admin/ActivityLogs'));
 const OrganizationDetails = lazy(() => import('./pages/admin/OrganizationDetails'));
 const UserDetails = lazy(() => import('./pages/admin/UserDetails'));
 
@@ -367,6 +368,16 @@ const AppRoutes = () => {
               <ProtectedRoute role={ROLES.ADMIN}>
                 <Suspense fallback={<LazyLoadFallback />}>
                   <UserDetails />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/admin/logs'
+            element={
+              <ProtectedRoute role={ROLES.ADMIN}>
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <ActivityLogs />
                 </Suspense>
               </ProtectedRoute>
             }

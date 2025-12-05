@@ -1,0 +1,76 @@
+{
+  "success": {
+    "saved": "Changes saved successfully",
+    "deleted": "Deleted successfully",
+    "created": "Created successfully",
+    "updated": "Updated successfully",
+    "copied": "Copied to clipboard",
+    "uploaded": "Upload complete",
+    "sent": "Sent successfully"
+  },
+  "error": {
+    "generic": "Something went wrong. Please try again.",
+    "network": "Network error. Please check your connection.",
+    "save": "Failed to save changes. Please try again.",
+    "delete": "Failed to delete. Please try again.",
+    "create": "Failed to create. Please try again.",
+    "update": "Failed to update. Please try again.",
+    "upload": "Failed to upload. Please try again.",
+    "load": "Failed to load data. Please try again."
+  },
+  "auth": {
+    "signInSuccess": "Welcome back!",
+    "signInError": "Invalid email or password",
+    "signUpSuccess": "Account created! Please check your email to verify.",
+    "signUpError": "Failed to create account. Please try again.",
+    "signOutSuccess": "You have been signed out",
+    "passwordResetSent": "Password reset link sent to your email",
+    "passwordResetError": "Failed to send reset link. Please try again.",
+    "passwordChanged": "Password changed successfully",
+    "emailVerified": "Email verified successfully!",
+    "emailVerificationSent": "Verification email sent",
+    "sessionExpired": "Your session has expired. Please sign in again."
+  },
+  "profile": {
+    "updateSuccess": "Profile updated successfully",
+    "updateError": "Failed to update profile. Please try again.",
+    "photoUploaded": "Profile picture updated",
+    "photoUploadError": "Failed to upload photo. Please try again.",
+    "photoRemoved": "Profile picture removed"
+  },
+  "checkout": {
+    "addedToCart": "Added to cart",
+    "removedFromCart": "Removed from cart",
+    "cartUpdated": "Cart updated",
+    "orderPlaced": "Order placed successfully!",
+    "orderError": "Failed to place order. Please try again.",
+    "paymentProcessing": "Processing payment...",
+    "paymentSuccess": "Payment successful!",
+    "paymentError": "Payment failed. Please try again.",
+    "promoApplied": "Promo code applied!",
+    "promoInvalid": "Invalid promo code",
+    "promoExpired": "This promo code has expired"
+  },
+  "tickets": {
+    "downloaded": "Ticket downloaded",
+    "downloadError": "Failed to download ticket",
+    "transferred": "Ticket transferred successfully",
+    "transferError": "Failed to transfer ticket"
+  },
+  "events": {
+    "addedToCalendar": "Event added to calendar",
+    "linkCopied": "Event link copied to clipboard"
+  },
+  "validation": {
+    "stageNameRequired": "Please enter your stage name",
+    "bioRequired": "Please tell us about yourself",
+    "cityRequired": "Please enter your city",
+    "genreRequired": "Please select a genre",
+    "emailRequired": "Please enter your email",
+    "phoneRequired": "Please enter your phone number"
+  },
+  "settings": {
+    "languageChanged": "Language changed",
+    "preferencesUpdated": "Preferences updated"
+  }
+}

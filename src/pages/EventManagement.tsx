@@ -15,41 +15,37 @@ import {
   Link2,
   Eye,
   Share2,
+  Palette,
 } from 'lucide-react';
 import { supabase } from '@/shared/api/supabase/client';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmBackButton } from '@/components/common/buttons/FmBackButton';
 import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
 import { EventArtistManagement } from '@/components/events/artists/EventArtistManagement';
+import { UndercardRequestsList } from '@/components/events/artists/UndercardRequestsList';
 import { EventTicketTierManagement } from '@/components/events/ticketing/EventTicketTierManagement';
 import { EventOrderManagement } from '@/components/events/orders';
 import { EventAnalytics } from '@/components/events/analytics';
 import Reports from './Reports';
 import { TrackingLinksManagement } from '@/components/events/tracking/TrackingLinksManagement';
-import { EventStatusBadge, PublishEventButton, StatusActionsDropdown } from '@/components/events/status';
+import { EventStatusBadge, PublishEventButton } from '@/components/events/status';
 import { eventService } from '@/features/events/services/eventService';
 import { GuestListSettings } from '@/components/events/social/GuestListSettings';
-import { HeroImageFocalPoint } from '@/components/events/overview/HeroImageFocalPoint';
+import { EventOverviewForm } from '@/components/events/overview/EventOverviewForm';
 
 import { toast } from 'sonner';
 import { Card } from '@/components/common/shadcn/card';
-import { FmVenueSearchDropdown } from '@/components/common/search/FmVenueSearchDropdown';
-import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
-import { FmCommonDatePicker } from '@/components/common/forms/FmCommonDatePicker';
-import { FmCommonTimePicker } from '@/components/common/forms/FmCommonTimePicker';
-import { FmImageUpload } from '@/components/common/forms/FmImageUpload';
-import { Input } from '@/components/common/shadcn/input';
-import { Label } from '@/components/common/shadcn/label';
 import { Checkbox } from '@/components/common/shadcn/checkbox';
-import { format } from 'date-fns';
+import { Label } from '@/components/common/shadcn/label';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared/auth/permissions';
 import { handleError } from '@/shared/services/errorHandler';
 import { AdminLockIndicator } from '@/components/common/indicators';
 import { useEventOverviewForm } from './event/hooks/useEventOverviewForm';
 
-type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'reports' | 'tracking' | 'social' | 'admin' | 'view';
+type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'reports' | 'tracking' | 'social' | 'ux_display' | 'admin' | 'view';
 
 export default function EventManagement() {
   const { id } = useParams<{ id: string }>();
@@ -60,6 +56,8 @@ export default function EventManagement() {
   const queryClient = useQueryClient();
   const [isDeleting, setIsDeleting] = useState(false);
   const [orderCount, setOrderCount] = useState(0);
+  const [displaySubtitle, setDisplaySubtitle] = useState<boolean>(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Fetch event data
   const { data: event, isLoading } = useQuery({
@@ -85,8 +83,12 @@ export default function EventManagement() {
     enabled: !!id,
   });
 
-  // Overview form management
-  const form = useEventOverviewForm(event);
+  // Sync displaySubtitle from event data (for UX Display tab)
+  useEffect(() => {
+    if (event) {
+      setDisplaySubtitle((event as any).display_subtitle ?? true);
+    }
+  }, [event]);
 
   // Fetch order count for status actions
   useEffect(() => {
@@ -128,6 +130,12 @@ export default function EventManagement() {
           label: 'Social',
           icon: Share2,
           description: 'Guest list and social settings',
+        },
+        {
+          id: 'ux_display',
+          label: 'UX Display',
+          icon: Palette,
+          description: 'Homepage card display settings',
         },
       ],
     },
@@ -198,6 +206,7 @@ export default function EventManagement() {
     { id: 'overview', label: 'Overview', icon: FileText },
     { id: 'artists', label: 'Artists', icon: Users },
     { id: 'social', label: 'Social', icon: Share2 },
+    { id: 'ux_display', label: 'UX', icon: Palette },
     { id: 'tiers', label: 'Tiers', icon: Ticket },
     { id: 'orders', label: 'Orders', icon: ShoppingBag },
     { id: 'tracking', label: 'Links', icon: Link2 },
@@ -206,29 +215,11 @@ export default function EventManagement() {
     ...(isAdmin ? [{ id: 'admin' as EventTab, label: 'Admin', icon: Shield }] : []),
   ];
 
-  const handleSaveOverview = async () => {
-    if (!id) return;
-
-    const success = await form.save(id, () => {
-      queryClient.invalidateQueries({ queryKey: ['event', id] });
-    });
-
-    return success;
-  };
-
-  const handleHeroImageUpload = async (publicUrl: string) => {
-    if (!id) return;
-
-    await form.saveHeroImage(id, publicUrl, () => {
-      queryClient.invalidateQueries({ queryKey: ['event', id] });
-    });
-  };
-
   const handleDeleteEvent = async () => {
     if (!id || !event) return;
 
     const confirmed = window.confirm(
-      `Are you sure you want to delete "${event.name}"?\n\nThis action cannot be undone. All ticket tiers and orders associated with this event will also be deleted.`
+      `Are you sure you want to delete "${event.title}"?\n\nThis action cannot be undone. All ticket tiers and orders associated with this event will also be deleted.`
     );
 
     if (!confirmed) return;
@@ -267,9 +258,35 @@ export default function EventManagement() {
     }
   };
 
+  const handleSaveUXDisplay = async () => {
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('events')
+        .update({
+          display_subtitle: displaySubtitle,
+        } as any)
+        .eq('id', id!);
+
+      if (error) throw error;
+
+      toast.success('UX Display settings updated successfully');
+      queryClient.invalidateQueries({ queryKey: ['event', id] });
+    } catch (error) {
+      await handleError(error, {
+        title: 'Failed to Update UX Display',
+        description: 'Could not save UX display settings',
+        endpoint: 'EventManagement/ux-display',
+        method: 'UPDATE',
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handlePublishEvent = async () => {
     if (!id) return;
-    
+
     try {
       await eventService.updateEventStatus(id, 'published');
       toast.success('Event published successfully!');
@@ -328,9 +345,6 @@ export default function EventManagement() {
         }
       }}
       showDividers
-      showBackButton
-      onBack={() => navigate(`/event/${id}`)}
-      backButtonLabel='Event Details'
       mobileTabBar={
         <MobileBottomTabBar
           tabs={mobileTabs}
@@ -346,251 +360,121 @@ export default function EventManagement() {
       }
     >
       <div className='max-w-full'>
-        {/* Header */}
-        <div className='mb-6'>
-          <div className='flex items-center justify-between mb-4'>
-            <div className='flex items-center gap-4'>
-              <h1 className='text-3xl font-bold text-foreground'>
-                {event.name}
-              </h1>
-              <EventStatusBadge status={(event as any).status || 'draft'} />
-            </div>
-            <div className='flex items-center gap-2'>
-              {((event as any).status === 'draft' || (event as any).status === 'invisible') && (
-                <PublishEventButton
-                  currentStatus={(event as any).status || 'draft'}
-                  onPublish={handlePublishEvent}
-                />
-              )}
-              {((event as any).status === 'published' || (event as any).status === 'invisible') && (
-                <StatusActionsDropdown
-                  currentStatus={(event as any).status || 'draft'}
-                  orderCount={orderCount}
-                  onMakeInvisible={handleMakeInvisible}
-                />
-              )}
-            </div>
+        {/* Top Row: Back Button + Status Badge */}
+        <div className='flex items-center justify-between mb-4'>
+          <FmBackButton
+            position='inline'
+            onClick={() => navigate(`/event/${id}`)}
+            label='Event Details'
+          />
+          <div className='flex items-center gap-2'>
+            <EventStatusBadge status={(event as any).status || 'draft'} />
+            {((event as any).status === 'draft' || (event as any).status === 'invisible') && (
+              <PublishEventButton
+                currentStatus={(event as any).status || 'draft'}
+                onPublish={handlePublishEvent}
+              />
+            )}
           </div>
-          <p className='text-muted-foreground'>Event Management</p>
+        </div>
+
+        {/* Title */}
+        <div className='mb-6'>
+          <h1 className='text-3xl font-bold text-foreground'>
+            {event.title}
+          </h1>
         </div>
 
         {/* Main Content */}
         <div className='space-y-6'>
-          {activeTab === 'overview' && (
-            <Card className='p-8'>
-              <div className='space-y-6'>
-                <div className='flex items-center justify-between'>
-                  <div>
-                    <h2 className='text-2xl font-bold text-foreground mb-2'>
-                      Event Overview
-                    </h2>
-                    <p className='text-muted-foreground'>
-                      Basic event information and details
-                    </p>
-                  </div>
-                  <FmCommonButton
-                    onClick={handleSaveOverview}
-                    loading={form.isSaving}
-                    icon={Save}
-                  >
-                    Save Changes
-                  </FmCommonButton>
-                </div>
-
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                  {/* Headliner */}
-                  <div className='space-y-2'>
-                    <Label htmlFor='headliner'>
-                      Headliner <span className='text-destructive'>*</span>
-                    </Label>
-                    <FmArtistSearchDropdown
-                      value={form.headlinerId}
-                      onChange={value => form.updateField('headlinerId', value)}
-                      placeholder='Select headliner'
-                    />
-                  </div>
-
-                  {/* Venue */}
-                  <div className='space-y-2'>
-                    <Label htmlFor='venue'>
-                      Venue <span className='text-destructive'>*</span>
-                    </Label>
-                    <FmVenueSearchDropdown
-                      value={form.venueId}
-                      onChange={value => form.updateField('venueId', value)}
-                      placeholder='Select venue'
-                    />
-                  </div>
-
-                  {/* Event Title & Subtitle */}
-                  <div className='space-y-2'>
-                    <Label htmlFor='event-title'>
-                      Event Title <span className='text-destructive'>*</span>
-                    </Label>
-                    <Input
-                      id='event-title'
-                      value={form.customTitle}
-                      onChange={e => form.updateField('customTitle', e.target.value)}
-                      placeholder='Enter event title'
-                    />
-                  </div>
-
-                  <div className='space-y-2'>
-                    <Label htmlFor='event-subtitle'>
-                      Subtitle (Optional)
-                    </Label>
-                    <Input
-                      id='event-subtitle'
-                      value={form.eventSubtitle}
-                      onChange={e => form.updateField('eventSubtitle', e.target.value)}
-                      placeholder='Enter event subtitle'
-                    />
-                  </div>
-
-                  {/* About This Event Description */}
-                  <div className='space-y-2 md:col-span-2'>
-                    <Label htmlFor='about-event'>
-                      About This Event (Optional)
-                    </Label>
-                    <textarea
-                      id='about-event'
-                      value={form.aboutEvent}
-                      onChange={e => form.updateField('aboutEvent', e.target.value)}
-                      placeholder='Enter event description...'
-                      className='w-full min-h-[120px] p-3 rounded-md border border-input bg-background text-foreground resize-y'
-                      rows={5}
-                    />
-                  </div>
-
-                  {/* Date & Time */}
-                  <div className='space-y-2'>
-                    <Label>
-                      Event Date & Time{' '}
-                      <span className='text-destructive'>*</span>
-                    </Label>
-                    <div className='flex gap-2'>
-                      <FmCommonDatePicker
-                        value={form.eventDate}
-                        onChange={date => form.updateField('eventDate', date)}
-                      />
-                      <FmCommonTimePicker
-                        value={form.eventDate ? format(form.eventDate, 'HH:mm') : '20:00'}
-                        onChange={(time: string) => {
-                          if (form.eventDate) {
-                            const [hours, minutes] = time.split(':');
-                            const newDate = new Date(form.eventDate);
-                            newDate.setHours(
-                              parseInt(hours),
-                              parseInt(minutes)
-                            );
-                            form.updateField('eventDate', newDate);
-                          }
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* End Time */}
-                  <div className='space-y-2'>
-                    <Label>End Time</Label>
-                    <div className='flex items-center gap-4'>
-                      <FmCommonTimePicker
-                        value={form.endTime}
-                        onChange={time => form.updateField('endTime', time)}
-                        disabled={form.isAfterHours}
-                      />
-                      <div className='flex items-center gap-2'>
-                        <Checkbox
-                          id='after-hours'
-                          checked={form.isAfterHours}
-                          onCheckedChange={checked =>
-                            form.updateField('isAfterHours', !!checked)
-                          }
-                        />
-                        <Label htmlFor='after-hours' className='cursor-pointer'>
-                          After hours
-                        </Label>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Hero Image */}
-                  <div className='space-y-2 md:col-span-2'>
-                    <Label htmlFor='hero-image'>Hero Image</Label>
-                    <FmImageUpload
-                      eventId={id}
-                      currentImageUrl={form.heroImage}
-                      isPrimary={true}
-                      onUploadComplete={handleHeroImageUpload}
-                    />
-                  </div>
-
-                  {/* Hero Image Focal Point */}
-                  {form.heroImage && (
-                    <div className='md:col-span-2'>
-                      <HeroImageFocalPoint
-                        imageUrl={form.heroImage}
-                        focalY={form.heroImageFocalY}
-                        onChange={y => form.updateField('heroImageFocalY', y)}
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-            </Card>
+          {activeTab === 'overview' && id && (
+            <EventOverviewForm
+              eventId={id}
+              event={event}
+              orderCount={orderCount}
+              onMakeInvisible={handleMakeInvisible}
+            />
           )}
 
           {activeTab === 'artists' && (
-            <EventArtistManagement
-              headlinerId={event.headliner_id || ''}
-              undercardIds={[]}
-              onChange={async (data) => {
-                try {
-                  if (!id) throw new Error('Event ID is required');
+            <div className='space-y-8'>
+              <EventArtistManagement
+                headlinerId={event.headliner_id || ''}
+                undercardIds={[]}
+                lookingForUndercard={(event as any).looking_for_undercard ?? false}
+                onLookingForUndercardChange={async (checked) => {
+                  try {
+                    if (!id) throw new Error('Event ID is required');
 
-                  // Update the headliner in the events table
-                  const { error: eventError } = await supabase
-                    .from('events')
-                    .update({ headliner_id: data.headlinerId })
-                    .eq('id', id);
+                    const { error } = await supabase
+                      .from('events')
+                      .update({ looking_for_undercard: checked })
+                      .eq('id', id);
 
-                  if (eventError) throw eventError;
+                    if (error) throw error;
 
-                  // Update undercard artists in event_artists junction table
-                  // First, delete existing undercard artists
-                  const { error: deleteError } = await supabase
-                    .from('event_artists')
-                    .delete()
-                    .eq('event_id', id);
-
-                  if (deleteError) throw deleteError;
-
-                  // Then insert new undercard artists
-                  if (data.undercardIds.length > 0) {
-                    const undercardRecords = data.undercardIds.map(artistId => ({
-                      event_id: id,
-                      artist_id: artistId,
-                    }));
-
-                    const { error: insertError } = await supabase
-                      .from('event_artists')
-                      .insert(undercardRecords);
-
-                    if (insertError) throw insertError;
+                    toast.success(checked ? 'Looking for undercard enabled' : 'Looking for undercard disabled');
+                    queryClient.invalidateQueries({ queryKey: ['event', id] });
+                  } catch (error) {
+                    await handleError(error, {
+                      title: 'Failed to Update Setting',
+                      description: 'Could not save looking for undercard setting',
+                      endpoint: 'EventManagement/artists',
+                      method: 'UPDATE',
+                    });
                   }
+                }}
+                onChange={async (data) => {
+                  try {
+                    if (!id) throw new Error('Event ID is required');
 
-                  toast.success('Artists updated successfully');
-                  queryClient.invalidateQueries({ queryKey: ['event', id] });
-                } catch (error) {
-                  await handleError(error, {
-                    title: 'Failed to Update Artists',
-                    description: 'Could not save artist changes',
-                    endpoint: 'EventManagement/artists',
-                    method: 'UPDATE',
-                  });
-                }
-              }}
-            />
+                    // Update the headliner in the events table
+                    const { error: eventError } = await supabase
+                      .from('events')
+                      .update({ headliner_id: data.headlinerId })
+                      .eq('id', id);
+
+                    if (eventError) throw eventError;
+
+                    // Update undercard artists in event_artists junction table
+                    // First, delete existing undercard artists
+                    const { error: deleteError } = await supabase
+                      .from('event_artists')
+                      .delete()
+                      .eq('event_id', id);
+
+                    if (deleteError) throw deleteError;
+
+                    // Then insert new undercard artists
+                    if (data.undercardIds.length > 0) {
+                      const undercardRecords = data.undercardIds.map(artistId => ({
+                        event_id: id,
+                        artist_id: artistId,
+                      }));
+
+                      const { error: insertError } = await supabase
+                        .from('event_artists')
+                        .insert(undercardRecords);
+
+                      if (insertError) throw insertError;
+                    }
+
+                    toast.success('Artists updated successfully');
+                    queryClient.invalidateQueries({ queryKey: ['event', id] });
+                  } catch (error) {
+                    await handleError(error, {
+                      title: 'Failed to Update Artists',
+                      description: 'Could not save artist changes',
+                      endpoint: 'EventManagement/artists',
+                      method: 'UPDATE',
+                    });
+                  }
+                }}
+              />
+
+              {/* Undercard Requests - shows artists who signed up via "Looking for Artists" */}
+              {id && <UndercardRequestsList eventId={id} />}
+            </div>
           )}
 
           {activeTab === 'tiers' && id && (
@@ -615,6 +499,59 @@ export default function EventManagement() {
 
           {activeTab === 'social' && id && (
             <GuestListSettings eventId={id} />
+          )}
+
+          {activeTab === 'ux_display' && (
+            <Card className='p-8 relative'>
+              {/* Sticky Save Button */}
+              <div className='sticky top-0 z-10 -mx-8 -mt-8 px-8 pt-8 pb-6 bg-card border-b border-border mb-6'>
+                <div className='flex items-center justify-between'>
+                  <div>
+                    <h2 className='text-2xl font-bold text-foreground mb-2'>
+                      UX Display Settings
+                    </h2>
+                    <p className='text-muted-foreground'>
+                      Customize how this event appears on the homepage
+                    </p>
+                  </div>
+                  <FmCommonButton
+                    onClick={handleSaveUXDisplay}
+                    loading={isSaving}
+                    icon={Save}
+                  >
+                    Save Changes
+                  </FmCommonButton>
+                </div>
+              </div>
+
+                <div className='space-y-6'>
+                  {/* Homepage Event Card Section */}
+                  <div className='space-y-4'>
+                    <h3 className='text-lg font-semibold text-foreground'>
+                      Homepage Event Card
+                    </h3>
+                    <p className='text-sm text-muted-foreground'>
+                      Control how your event card is displayed on the homepage.
+                    </p>
+
+                    <div className='flex items-center gap-3 p-4 rounded-none border border-border bg-card'>
+                      <Checkbox
+                        id='display-subtitle'
+                        checked={displaySubtitle}
+                        onCheckedChange={checked => setDisplaySubtitle(!!checked)}
+                      />
+                      <div className='flex-1'>
+                        <Label htmlFor='display-subtitle' className='cursor-pointer font-medium'>
+                          Display Subtitle
+                        </Label>
+                        <p className='text-xs text-muted-foreground mt-1'>
+                          Show the event subtitle on the homepage event card
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </Card>
           )}
 
           {activeTab === 'admin' && isAdmin && (

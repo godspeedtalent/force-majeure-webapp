@@ -33,6 +33,7 @@ export const ROLES = {
   DEVELOPER: 'developer',
   ORG_ADMIN: 'org_admin',
   ORG_STAFF: 'org_staff',
+  VENUE_ADMIN: 'venue_admin',
   USER: 'user',
 } as const;
 
@@ -59,5 +60,6 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     PERMISSIONS.MANAGE_EVENTS,
   ],
   [ROLES.ORG_STAFF]: [PERMISSIONS.VIEW_ORGANIZATION, PERMISSIONS.SCAN_TICKETS],
+  [ROLES.VENUE_ADMIN]: [PERMISSIONS.MANAGE_VENUES],
   [ROLES.USER]: [],
 };

@@ -27,6 +27,11 @@ CREATE TABLE IF NOT EXISTS public.guest_list_settings (
 -- Enable RLS
 ALTER TABLE public.guest_list_settings ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist (idempotent)
+DROP POLICY IF EXISTS "Guest list settings are publicly viewable for published events" ON public.guest_list_settings;
+DROP POLICY IF EXISTS "Admins and developers can manage guest list settings" ON public.guest_list_settings;
+DROP POLICY IF EXISTS "Org members can manage their org's guest list settings" ON public.guest_list_settings;
+
 -- RLS Policies for guest_list_settings
 
 -- Public can view guest list settings for published events
@@ -47,8 +52,8 @@ ON public.guest_list_settings
 FOR ALL
 USING (
   (auth.uid() IS NOT NULL) AND (
-    has_role(auth.uid(), 'admin'::text) OR 
-    has_role(auth.uid(), 'developer'::text) OR 
+    has_role(auth.uid(), 'admin'::text) OR
+    has_role(auth.uid(), 'developer'::text) OR
     is_dev_admin(auth.uid())
   )
 );
@@ -58,7 +63,7 @@ CREATE POLICY "Org members can manage their org's guest list settings"
 ON public.guest_list_settings
 FOR ALL
 USING (
-  (auth.uid() IS NOT NULL) AND 
+  (auth.uid() IS NOT NULL) AND
   has_permission(auth.uid(), 'manage_events'::text) AND
   EXISTS (
     SELECT 1 FROM public.events e
@@ -68,7 +73,8 @@ USING (
   )
 );
 
--- Add trigger for updated_at
+-- Add trigger for updated_at (idempotent)
+DROP TRIGGER IF EXISTS update_guest_list_settings_updated_at ON public.guest_list_settings;
 CREATE TRIGGER update_guest_list_settings_updated_at
 BEFORE UPDATE ON public.guest_list_settings
 FOR EACH ROW

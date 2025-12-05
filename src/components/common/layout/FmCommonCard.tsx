@@ -2,7 +2,7 @@
  * FmCommonCard
  *
  * Versatile card component with two distinct styles:
- * - Default: Frosted glass effect with gradient background (classic FM style)
+ * - Default: Frosted glass effect (classic FM style)
  * - Outline: Clean bordered style with minimal background
  *
  * Both variants include hover effects for enhanced UX.
@@ -47,26 +47,26 @@ export const FmCommonCard = ({
     default: cn(
       // Base frosted glass effect
       'rounded-none',
-      'bg-gradient-to-br from-slate-900/90 via-slate-800/80 to-slate-900/90',
+      'bg-black/60',
       'backdrop-blur-sm',
-      'border border-border/50',
+      'border border-white/20',
       'shadow-xl',
       // Hover effects
       hoverable && 'transition-all duration-300',
       hoverable && 'hover:shadow-2xl',
-      hoverable && 'hover:border-border',
+      hoverable && 'hover:border-white/30',
       hoverable && 'hover:shadow-fm-gold/10',
       hoverable && isClickable && 'hover:scale-[1.01]'
     ),
     outline: cn(
       // Clean outline style
       'rounded-none',
-      'bg-card',
-      'border border-input',
+      'bg-black/40',
+      'border border-white/10',
       'shadow-sm',
       // Hover effects
       hoverable && 'transition-all duration-300',
-      hoverable && 'hover:bg-white/5',
+      hoverable && 'hover:bg-black/50',
       hoverable && 'hover:border-fm-gold/50',
       hoverable && 'hover:shadow-[0_0_12px_rgba(212,175,55,0.15)]',
       hoverable && isClickable && 'hover:scale-[1.005]'

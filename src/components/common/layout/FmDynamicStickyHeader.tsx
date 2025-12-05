@@ -347,7 +347,7 @@ export const FmDynamicStickyHeader = ({
 
       {stickyNode && (
         <div
-          className='sticky z-30 pointer-events-none'
+          className='sticky z-30'
           style={{
             top:
               typeof stickyOffset === 'number'
@@ -355,12 +355,13 @@ export const FmDynamicStickyHeader = ({
                 : stickyOffset,
             height: stickyHeight,
             marginTop: -stickyHeight,
+            pointerEvents: progress <= 0 ? 'none' : 'auto',
           }}
         >
           <div
             ref={stickyInnerRef}
             className={cn(
-              'pointer-events-auto transition-none will-change-[opacity,transform]',
+              'transition-none will-change-[opacity,transform]',
               stickyClassName
             )}
             style={{

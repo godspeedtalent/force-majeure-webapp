@@ -1,0 +1,76 @@
+{
+  "success": {
+    "saved": "保存成功",
+    "deleted": "删除成功",
+    "created": "创建成功",
+    "updated": "更新成功",
+    "copied": "已复制到剪贴板",
+    "uploaded": "上传完成",
+    "sent": "发送成功"
+  },
+  "error": {
+    "generic": "出错了，请重试。",
+    "network": "网络错误，请检查您的连接。",
+    "save": "保存失败，请重试。",
+    "delete": "删除失败，请重试。",
+    "create": "创建失败，请重试。",
+    "update": "更新失败，请重试。",
+    "upload": "上传失败，请重试。",
+    "load": "加载数据失败，请重试。"
+  },
+  "auth": {
+    "signInSuccess": "欢迎回来！",
+    "signInError": "邮箱或密码无效",
+    "signUpSuccess": "账户创建成功！请查收验证邮件。",
+    "signUpError": "创建账户失败，请重试。",
+    "signOutSuccess": "您已退出登录",
+    "passwordResetSent": "密码重置链接已发送到您的邮箱",
+    "passwordResetError": "发送重置链接失败，请重试。",
+    "passwordChanged": "密码修改成功",
+    "emailVerified": "邮箱验证成功！",
+    "emailVerificationSent": "验证邮件已发送",
+    "sessionExpired": "您的会话已过期，请重新登录。"
+  },
+  "profile": {
+    "updateSuccess": "资料更新成功",
+    "updateError": "更新资料失败，请重试。",
+    "photoUploaded": "头像已更新",
+    "photoUploadError": "上传照片失败，请重试。",
+    "photoRemoved": "头像已移除"
+  },
+  "checkout": {
+    "addedToCart": "已加入购物车",
+    "removedFromCart": "已从购物车移除",
+    "cartUpdated": "购物车已更新",
+    "orderPlaced": "订单提交成功！",
+    "orderError": "提交订单失败，请重试。",
+    "paymentProcessing": "正在处理支付...",
+    "paymentSuccess": "支付成功！",
+    "paymentError": "支付失败，请重试。",
+    "promoApplied": "优惠码已应用！",
+    "promoInvalid": "无效的优惠码",
+    "promoExpired": "此优惠码已过期"
+  },
+  "tickets": {
+    "downloaded": "门票已下载",
+    "downloadError": "下载门票失败",
+    "transferred": "门票转让成功",
+    "transferError": "转让门票失败"
+  },
+  "events": {
+    "addedToCalendar": "活动已添加到日历",
+    "linkCopied": "活动链接已复制"
+  },
+  "validation": {
+    "stageNameRequired": "请输入您的艺名",
+    "bioRequired": "请介绍一下您自己",
+    "cityRequired": "请输入您的城市",
+    "genreRequired": "请选择一个风格",
+    "emailRequired": "请输入您的邮箱",
+    "phoneRequired": "请输入您的电话号码"
+  },
+  "settings": {
+    "languageChanged": "语言已更改",
+    "preferencesUpdated": "偏好设置已更新"
+  }
+}

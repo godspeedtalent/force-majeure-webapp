@@ -31,6 +31,7 @@ interface Profile {
   organization_id?: string | null;
   spotify_token_expires_at?: string | null;
   spotify_connected: boolean | null;
+  preferred_locale?: string | null;
   created_at: string;
   updated_at: string;
 }

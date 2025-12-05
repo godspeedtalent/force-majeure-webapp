@@ -1,10 +1,20 @@
--- Add status column to events table
-ALTER TABLE events 
-ADD COLUMN status text NOT NULL DEFAULT 'draft'
-CHECK (status IN ('draft', 'published', 'invisible'));
+-- Add status column to events table (idempotent)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public'
+    AND table_name = 'events'
+    AND column_name = 'status'
+  ) THEN
+    ALTER TABLE events
+    ADD COLUMN status text NOT NULL DEFAULT 'draft'
+    CHECK (status IN ('draft', 'published', 'invisible'));
+  END IF;
+END $$;
 
--- Create index for status filtering
-CREATE INDEX idx_events_status ON events(status);
+-- Create index for status filtering (idempotent)
+CREATE INDEX IF NOT EXISTS idx_events_status ON events(status);
 
 -- Create helper function to count orders for an event
 CREATE OR REPLACE FUNCTION get_event_order_count(event_id_param uuid)
@@ -19,9 +29,11 @@ AS $$
   WHERE event_id = event_id_param;
 $$;
 
--- Update RLS policies for events table
--- Drop existing public select policy
+-- Update RLS policies for events table (idempotent)
+-- Drop existing policies
 DROP POLICY IF EXISTS "Events are publicly viewable" ON events;
+DROP POLICY IF EXISTS "Published events are publicly viewable" ON events;
+DROP POLICY IF EXISTS "Privileged users can view all events" ON events;
 
 -- Create new policy for public (only published events)
 CREATE POLICY "Published events are publicly viewable"

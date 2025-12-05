@@ -3,6 +3,20 @@ export interface ArtistSummary {
   name: string;
   genre: string;
   image?: string | null;
+  setTime?: string | null;
+  setOrder?: number | null;
+}
+
+export interface VenueDetails {
+  id?: string;
+  name: string;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  zipCode?: string | null;
+  image?: string | null;
+  website?: string | null;
+  googleMapsUrl?: string | null;
 }
 
 export interface EventDetailsRecord {
@@ -13,7 +27,11 @@ export interface EventDetailsRecord {
   undercard: ArtistSummary[];
   date: string;
   time: string;
+  endTime: string | null;
+  isAfterHours: boolean;
+  lookingForUndercard: boolean;
   venue: string;
+  venueDetails: VenueDetails | null;
   heroImage: string;
   description: string | null;
 }

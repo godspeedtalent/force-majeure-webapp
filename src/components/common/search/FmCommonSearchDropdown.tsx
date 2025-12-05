@@ -20,10 +20,11 @@ export interface SearchDropdownOption {
   id: string;
   label: string;
   icon?: React.ReactNode;
+  data?: unknown;
 }
 
 interface FmCommonSearchDropdownProps {
-  onChange: (value: string, label?: string) => void;
+  onChange: (value: string, label?: string, data?: unknown) => void;
   onSearch: (query: string) => Promise<SearchDropdownOption[]>;
   onGetRecentOptions?: () => Promise<SearchDropdownOption[]>;
   onCreateNew?: () => void;
@@ -106,8 +107,8 @@ export function FmCommonSearchDropdown({
     return () => clearTimeout(searchDebounce);
   }, [query, onSearch, open]);
 
-  const handleSelect = (optionId: string, optionLabel: string) => {
-    onChange(optionId, optionLabel);
+  const handleSelect = (option: SearchDropdownOption) => {
+    onChange(option.id, option.label, option.data);
     setOpen(false);
     setQuery('');
   };
@@ -219,7 +220,7 @@ export function FmCommonSearchDropdown({
               {recentOptions.map(option => (
                 <button
                   key={option.id}
-                  onClick={() => handleSelect(option.id, option.label)}
+                  onClick={() => handleSelect(option)}
                   className='w-full flex items-center gap-3 px-3 py-2 hover:bg-white/10 transition-colors text-left'
                 >
                   {option.icon}
@@ -235,7 +236,7 @@ export function FmCommonSearchDropdown({
             options.map(option => (
               <button
                 key={option.id}
-                onClick={() => handleSelect(option.id, option.label)}
+                onClick={() => handleSelect(option)}
                 className='w-full flex items-center gap-3 px-3 py-2 hover:bg-white/10 transition-colors text-left'
               >
                 {option.icon}

@@ -1,0 +1,189 @@
+{
+  "home": {
+    "title": "Force Majeure",
+    "subtitle": "Discover electronic music events",
+    "heroTitle": "Experience the underground.",
+    "heroSubtitle": "Curated electronic music events in your city",
+    "upcomingEvents": "Upcoming Events",
+    "featuredArtists": "Featured Artists",
+    "viewAllEvents": "View All Events",
+    "noUpcomingEvents": "No upcoming events at the moment. Check back soon!"
+  },
+  "events": {
+    "title": "Events",
+    "subtitle": "Discover upcoming electronic music events",
+    "allEvents": "All Events",
+    "upcomingEvents": "Upcoming Events",
+    "pastEvents": "Past Events",
+    "noEvents": "No events found",
+    "filterByDate": "Filter by Date",
+    "filterByVenue": "Filter by Venue",
+    "filterByGenre": "Filter by Genre",
+    "sortBy": "Sort By",
+    "sortByDate": "Date",
+    "sortByName": "Name",
+    "sortByPrice": "Price"
+  },
+  "eventDetails": {
+    "about": "About This Event",
+    "lineup": "Lineup",
+    "venue": "Venue",
+    "date": "Date & Time",
+    "tickets": "Tickets",
+    "soldOut": "Sold Out",
+    "doorsOpen": "Doors Open",
+    "ageRestriction": "Age Restriction",
+    "shareEvent": "Share Event",
+    "addToCalendar": "Add to Calendar",
+    "getDirections": "Get Directions",
+    "eventInfo": "Event Info",
+    "ticketInfo": "Ticket Info",
+    "venueInfo": "Venue Info"
+  },
+  "artists": {
+    "title": "Artists",
+    "subtitle": "Discover talented artists",
+    "allArtists": "All Artists",
+    "featuredArtists": "Featured Artists",
+    "noArtists": "No artists found",
+    "upcomingShows": "Upcoming Shows",
+    "pastShows": "Past Shows",
+    "bio": "Bio",
+    "genres": "Genres",
+    "socialLinks": "Social Links",
+    "listenOn": "Listen On"
+  },
+  "venues": {
+    "title": "Venues",
+    "subtitle": "Explore our partner venues",
+    "allVenues": "All Venues",
+    "noVenues": "No venues found",
+    "upcomingEvents": "Upcoming Events at This Venue",
+    "capacity": "Capacity",
+    "location": "Location",
+    "amenities": "Amenities",
+    "contact": "Contact"
+  },
+  "auth": {
+    "signIn": {
+      "title": "Welcome back.",
+      "subtitle": "Sign in to your account",
+      "emailPlaceholder": "Enter your email",
+      "passwordPlaceholder": "Enter your password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "Don't have an account?",
+      "signUpLink": "Sign up"
+    },
+    "signUp": {
+      "title": "Create an account.",
+      "subtitle": "Join Force Majeure",
+      "emailPlaceholder": "Enter your email",
+      "passwordPlaceholder": "Create a password",
+      "confirmPasswordPlaceholder": "Confirm your password",
+      "termsAgreement": "By signing up, you agree to our",
+      "termsOfService": "Terms of Service",
+      "and": "and",
+      "privacyPolicy": "Privacy Policy",
+      "hasAccount": "Already have an account?",
+      "signInLink": "Sign in"
+    },
+    "forgotPassword": {
+      "title": "Reset your password.",
+      "subtitle": "We'll send you a link to reset your password",
+      "emailPlaceholder": "Enter your email",
+      "sendLink": "Send Reset Link",
+      "backToSignIn": "Back to sign in",
+      "checkEmail": "Check your email",
+      "emailSent": "We've sent a password reset link to your email"
+    },
+    "resetPassword": {
+      "title": "Create new password.",
+      "subtitle": "Enter your new password below",
+      "newPassword": "New Password",
+      "confirmNewPassword": "Confirm New Password",
+      "resetPassword": "Reset Password"
+    },
+    "verifyEmail": {
+      "title": "Verify your email.",
+      "subtitle": "Please check your inbox",
+      "resendEmail": "Resend verification email",
+      "emailVerified": "Email verified successfully!"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "editProfile": "Edit Profile",
+    "viewProfile": "View Profile",
+    "myTickets": "My Tickets",
+    "myOrders": "My Orders",
+    "settings": "Settings",
+    "accountSettings": "Account Settings",
+    "profilePicture": "Profile Picture",
+    "uploadPhoto": "Upload Photo",
+    "removePhoto": "Remove Photo",
+    "photoHint": "JPG, PNG or GIF. Max size 5MB.",
+    "personalInfo": "Personal Information",
+    "billingAddress": "Billing Address",
+    "preferences": "Preferences",
+    "languagePreference": "Language Preference",
+    "languageDescription": "Choose your preferred language for the app",
+    "updateProfile": "Update Profile",
+    "changePassword": "Change Password",
+    "deleteAccount": "Delete Account"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "orderSummary": "Order Summary",
+    "paymentDetails": "Payment Details",
+    "billingInfo": "Billing Information",
+    "contactInfo": "Contact Information",
+    "ticketDelivery": "Ticket Delivery",
+    "promoCode": "Promo Code",
+    "applyCode": "Apply Code",
+    "codeApplied": "Code Applied",
+    "invalidCode": "Invalid Code",
+    "placeOrder": "Place Order",
+    "processing": "Processing...",
+    "paymentSuccessful": "Payment Successful!",
+    "orderConfirmed": "Your order has been confirmed",
+    "confirmationEmail": "A confirmation email has been sent to your inbox",
+    "viewTickets": "View Tickets",
+    "continueShopping": "Continue Shopping"
+  },
+  "tickets": {
+    "title": "My Tickets",
+    "noTickets": "You don't have any tickets yet",
+    "browseEvents": "Browse Events",
+    "ticketDetails": "Ticket Details",
+    "downloadTicket": "Download Ticket",
+    "transferTicket": "Transfer Ticket",
+    "qrCode": "QR Code",
+    "ticketHolder": "Ticket Holder",
+    "eventDate": "Event Date",
+    "ticketType": "Ticket Type",
+    "orderNumber": "Order Number"
+  },
+  "orders": {
+    "title": "Order History",
+    "noOrders": "No orders yet",
+    "orderDetails": "Order Details",
+    "orderDate": "Order Date",
+    "orderTotal": "Order Total",
+    "orderStatus": "Order Status",
+    "viewReceipt": "View Receipt",
+    "downloadReceipt": "Download Receipt"
+  },
+  "errors": {
+    "404": {
+      "title": "Page not found.",
+      "subtitle": "The page you're looking for doesn't exist or has been moved.",
+      "backHome": "Back to Home"
+    },
+    "500": {
+      "title": "Something went wrong.",
+      "subtitle": "We're working on fixing the problem. Please try again later.",
+      "retry": "Try Again"
+    }
+  }
+}

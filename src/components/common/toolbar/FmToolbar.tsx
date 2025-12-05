@@ -14,30 +14,18 @@ import {
   ClipboardList,
   LucideIcon,
   X,
-  Home,
-  Shield,
   Building2,
   Scan,
-  Mail,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { cn } from '@/shared/utils/utils';
 import { FmCommonTab } from '@/components/common/data/FmCommonTab';
 import { Button } from '@/components/common/shadcn/button';
-import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { Separator } from '@/components/common/shadcn/separator';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared/auth/permissions';
 import { useShoppingCart } from '@/shared/hooks/useShoppingCart';
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-} from '@/components/common/shadcn/context-menu';
-import { FmCommonCollapsibleSection } from '@/components/common/data/FmCommonCollapsibleSection';
 
 // Import tab components
 import { CartTabContent } from './tabs/CartTab';
@@ -45,6 +33,7 @@ import { OrgDashboardTabContent, ScanTicketsTabContent } from './tabs/Organizati
 import { DatabaseTabContent, DatabaseTabFooter } from './tabs/DatabaseTab';
 import { FeatureTogglesTabContent } from './tabs/FeatureTogglesTab';
 import { DevNotesTabContent } from './tabs/DevNotesTab';
+import { DevNavigationTabContent } from './tabs/DevNavigationTab';
 
 export interface ToolbarTab {
   id: string;
@@ -160,196 +149,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         id: 'tools',
         label: 'Dev Navigation',
         icon: Compass,
-        content: (
-          <div className='space-y-4'>
-            <Separator className='bg-white/10' />
-            <div className='flex flex-col gap-4'>
-              {/* App Links Section */}
-              <div className='flex flex-col gap-2'>
-                {isAdmin && (
-                  <ContextMenu>
-                    <ContextMenuTrigger asChild>
-                      <div>
-                        <FmCommonButton
-                          variant='default'
-                          icon={Shield}
-                          iconPosition='left'
-                          onClick={() => {
-                            setIsOpen(false);
-                            setActiveTab(null);
-                            navigate('/admin/controls');
-                          }}
-                          className='w-full justify-start'
-                        >
-                          Admin Controls
-                        </FmCommonButton>
-                      </div>
-                    </ContextMenuTrigger>
-                    <ContextMenuContent className='bg-card border-border rounded-none w-40'>
-                      <ContextMenuItem
-                        onClick={() => {
-                          setIsOpen(false);
-                          setActiveTab(null);
-                          navigate('/admin/controls');
-                        }}
-                        className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                      >
-                        Go to
-                      </ContextMenuItem>
-                    </ContextMenuContent>
-                  </ContextMenu>
-                )}
-                <ContextMenu>
-                  <ContextMenuTrigger asChild>
-                    <div>
-                      <FmCommonButton
-                        variant='default'
-                        icon={Home}
-                        iconPosition='left'
-                        onClick={() => {
-                          setIsOpen(false);
-                          setActiveTab(null);
-                          navigate('/developer');
-                        }}
-                        className='w-full justify-start'
-                      >
-                        Developer Home
-                      </FmCommonButton>
-                    </div>
-                  </ContextMenuTrigger>
-                  <ContextMenuContent className='bg-card border-border rounded-none w-40'>
-                    <ContextMenuItem
-                      onClick={() => {
-                        setIsOpen(false);
-                        setActiveTab(null);
-                        navigate('/developer');
-                      }}
-                      className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                    >
-                      Go to
-                    </ContextMenuItem>
-                  </ContextMenuContent>
-                </ContextMenu>
-              </div>
-
-              {/* Supabase Links Section */}
-              <FmCommonCollapsibleSection title='Supabase' defaultExpanded={true}>
-                <div className='flex flex-col gap-2'>
-                  <ContextMenu>
-                    <ContextMenuTrigger asChild>
-                      <div>
-                        <FmCommonButton
-                          variant='default'
-                          icon={Database}
-                          iconPosition='left'
-                          onClick={() => {
-                            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-                            if (supabaseUrl) {
-                              const isLocal = supabaseUrl.includes('localhost') || supabaseUrl.includes('127.0.0.1');
-
-                              if (isLocal) {
-                                window.open('http://localhost:54323', '_blank');
-                              } else {
-                                const projectId = new URL(supabaseUrl).hostname.split('.')[0];
-                                window.open(
-                                  `https://supabase.com/dashboard/project/${projectId}`,
-                                  '_blank'
-                                );
-                              }
-                            }
-                          }}
-                          className='w-full justify-start'
-                        >
-                          Supabase Dashboard
-                        </FmCommonButton>
-                      </div>
-                    </ContextMenuTrigger>
-                    <ContextMenuContent className='bg-card border-border rounded-none w-48'>
-                      <ContextMenuItem
-                        onClick={() => {
-                          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-                          if (supabaseUrl) {
-                            const isLocal = supabaseUrl.includes('localhost') || supabaseUrl.includes('127.0.0.1');
-
-                            if (isLocal) {
-                              window.open('http://localhost:54323', '_blank');
-                            } else {
-                              const projectId = new URL(supabaseUrl).hostname.split('.')[0];
-                              window.open(
-                                `https://supabase.com/dashboard/project/${projectId}`,
-                                '_blank'
-                              );
-                            }
-                          }
-                        }}
-                        className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                      >
-                        Go to
-                      </ContextMenuItem>
-                      <ContextMenuItem
-                        onClick={() => {
-                          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-                          if (supabaseUrl) {
-                            const isLocal = supabaseUrl.includes('localhost') || supabaseUrl.includes('127.0.0.1');
-
-                            if (isLocal) {
-                              window.open('http://localhost:54323/project/default', '_blank');
-                            } else {
-                              const projectId = new URL(supabaseUrl).hostname.split('.')[0];
-                              window.open(
-                                `https://supabase.com/dashboard/project/${projectId}/editor`,
-                                '_blank'
-                              );
-                            }
-                          }
-                        }}
-                        className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                      >
-                        Go to Table Editor
-                      </ContextMenuItem>
-                      <ContextMenuItem
-                        onClick={() => {
-                          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-                          if (supabaseUrl) {
-                            const isLocal = supabaseUrl.includes('localhost') || supabaseUrl.includes('127.0.0.1');
-
-                            if (isLocal) {
-                              window.open('http://localhost:54323/project/default/sql/new', '_blank');
-                            } else {
-                              const projectId = new URL(supabaseUrl).hostname.split('.')[0];
-                              window.open(
-                                `https://supabase.com/dashboard/project/${projectId}/sql/new`,
-                                '_blank'
-                              );
-                            }
-                          }
-                        }}
-                        className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                      >
-                        Go to SQL Editor
-                      </ContextMenuItem>
-                    </ContextMenuContent>
-                  </ContextMenu>
-
-                  {/* Mailpit link - only shown in dev environment */}
-                  {import.meta.env.VITE_ENVIRONMENT === 'dev' && (
-                    <FmCommonButton
-                      variant='default'
-                      icon={Mail}
-                      iconPosition='left'
-                      onClick={() => {
-                        window.open('http://localhost:55324', '_blank');
-                      }}
-                      className='w-full justify-start'
-                    >
-                      Mailpit (Local Email)
-                    </FmCommonButton>
-                  )}
-                </div>
-              </FmCommonCollapsibleSection>
-            </div>
-          </div>
-        ),
+        content: <DevNavigationTabContent onNavigate={handleNavigate} isAdmin={isAdmin} />,
         title: 'Dev Navigation',
         visible: isDeveloperOrAdmin,
         group: 'developer',

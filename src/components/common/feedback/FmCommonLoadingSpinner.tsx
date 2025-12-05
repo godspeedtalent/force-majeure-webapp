@@ -18,7 +18,7 @@ export function FmCommonLoadingSpinner({
   return (
     <div
       className={cn(
-        'animate-spin rounded-full border-fm-gold border-b-transparent',
+        'animate-spin rounded-full border-b-transparent border-fm-gold',
         sizeClasses[size],
         className
       )}
