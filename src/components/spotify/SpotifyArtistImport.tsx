@@ -133,7 +133,7 @@ export function SpotifyArtistImport({ open, onClose, onImport }: SpotifyArtistIm
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className='max-w-2xl max-h-[80vh] overflow-y-auto'>
+      <DialogContent className='w-[90vw] h-[90vh] sm:h-auto sm:max-h-[80vh] max-w-2xl overflow-y-auto'>
         <DialogHeader>
           <DialogTitle className='flex items-center gap-[10px]'>
             <SpotifyIcon className='h-5 w-5 text-[#1DB954]' />
@@ -169,24 +169,30 @@ export function SpotifyArtistImport({ open, onClose, onImport }: SpotifyArtistIm
 
             {/* URL Artist Preview */}
             {urlArtist && !isLoadingUrl && (
-              <div className='flex items-center gap-[20px] p-[20px] border border-[#1DB954]/30 bg-[#1DB954]/5'>
-                {urlArtist.images[0] && (
-                  <img
-                    src={urlArtist.images[0].url}
-                    alt={urlArtist.name}
-                    className='w-16 h-16 object-cover'
-                  />
-                )}
-                <div className='flex-1'>
-                  <h3 className='font-semibold'>{urlArtist.name}</h3>
-                  <p className='text-sm text-muted-foreground'>
-                    {urlArtist.genres.slice(0, 3).join(', ') || 'No genres listed'}
-                  </p>
-                  <p className='text-xs text-muted-foreground'>
-                    {urlArtist.followers.total.toLocaleString()} followers
-                  </p>
+              <div className='flex flex-col sm:flex-row items-start sm:items-center gap-[10px] sm:gap-[20px] p-[15px] sm:p-[20px] border border-[#1DB954]/30 bg-[#1DB954]/5'>
+                <div className='flex items-center gap-[10px] sm:gap-[20px] w-full sm:w-auto'>
+                  {urlArtist.images[0] && (
+                    <img
+                      src={urlArtist.images[0].url}
+                      alt={urlArtist.name}
+                      className='w-12 h-12 sm:w-16 sm:h-16 object-cover flex-shrink-0'
+                    />
+                  )}
+                  <div className='flex-1 min-w-0'>
+                    <h3 className='font-semibold text-sm sm:text-base truncate'>{urlArtist.name}</h3>
+                    <p className='text-xs sm:text-sm text-muted-foreground truncate'>
+                      {urlArtist.genres.slice(0, 3).join(', ') || 'No genres listed'}
+                    </p>
+                    <p className='text-xs text-muted-foreground'>
+                      {urlArtist.followers.total.toLocaleString()} followers
+                    </p>
+                  </div>
                 </div>
-                <FmCommonButton onClick={() => handleImport(urlArtist)} icon={Link2}>
+                <FmCommonButton
+                  onClick={() => handleImport(urlArtist)}
+                  icon={Link2}
+                  className='w-full sm:w-auto flex-shrink-0'
+                >
                   Import
                 </FmCommonButton>
               </div>
@@ -224,26 +230,26 @@ export function SpotifyArtistImport({ open, onClose, onImport }: SpotifyArtistIm
               {results.map(artist => (
                 <div
                   key={artist.id}
-                  className='flex items-center gap-[20px] p-[20px] border border-white/10 bg-black/20 hover:bg-black/40 transition-colors cursor-pointer'
+                  className='flex items-center gap-[10px] sm:gap-[20px] p-[10px] sm:p-[20px] border border-white/10 bg-black/20 hover:bg-black/40 transition-colors cursor-pointer'
                   onClick={() => handleImport(artist)}
                 >
                   {artist.images[0] && (
                     <img
                       src={artist.images[0].url}
                       alt={artist.name}
-                      className='w-14 h-14 object-cover'
+                      className='w-10 h-10 sm:w-14 sm:h-14 object-cover flex-shrink-0'
                     />
                   )}
-                  <div className='flex-1'>
-                    <h3 className='font-semibold'>{artist.name}</h3>
-                    <p className='text-sm text-muted-foreground'>
+                  <div className='flex-1 min-w-0'>
+                    <h3 className='font-semibold text-sm sm:text-base truncate'>{artist.name}</h3>
+                    <p className='text-xs sm:text-sm text-muted-foreground truncate'>
                       {artist.genres.slice(0, 3).join(', ') || 'No genres listed'}
                     </p>
                     <p className='text-xs text-muted-foreground'>
                       {artist.followers.total.toLocaleString()} followers
                     </p>
                   </div>
-                  <Search className='h-4 w-4 text-muted-foreground' />
+                  <Search className='h-4 w-4 text-muted-foreground flex-shrink-0' />
                 </div>
               ))}
             </div>

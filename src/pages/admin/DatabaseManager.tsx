@@ -6,6 +6,7 @@ import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { MobileHorizontalTabs, MobileHorizontalTab } from '@/components/mobile';
 import { GenresManagement } from './GenresManagement';
+import { useIsMobile } from '@/shared/hooks/use-mobile';
 
 type DatabaseManagerTab = 'overview' | 'genres';
 
@@ -15,6 +16,7 @@ type DatabaseManagerTab = 'overview' | 'genres';
 export function DatabaseManager() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const isMobile = useIsMobile();
 
   // Get active tab from URL query string, fallback to 'overview'
   const tabFromUrl = searchParams.get('tab') as DatabaseManagerTab | null;
@@ -72,26 +74,28 @@ export function DatabaseManager() {
       navigationGroups={navigationGroups}
       activeItem={activeTab}
       onItemChange={handleTabChange}
+      mobileHorizontalTabs={
+        <MobileHorizontalTabs
+          tabs={mobileTabs}
+          activeTab={activeTab}
+          onTabChange={tab => handleTabChange(tab as DatabaseManagerTab)}
+        />
+      }
     >
-      {/* Mobile horizontal tabs */}
-      <MobileHorizontalTabs
-        tabs={mobileTabs}
-        activeTab={activeTab}
-        onTabChange={tab => handleTabChange(tab as DatabaseManagerTab)}
-      />
-
       <div className='max-w-full'>
         {/* Overview Tab */}
         {activeTab === 'overview' && (
           <div className='space-y-8'>
-            <div>
-              <h1 className='text-3xl font-canela font-bold mb-2'>
+            <div className={isMobile ? 'text-center' : ''}>
+              <h1 className={`font-canela font-bold ${isMobile ? 'text-xl' : 'text-3xl mb-2'}`}>
                 Database Manager
               </h1>
-              <p className='text-muted-foreground'>
-                Search across all resources - users, artists, venues, events,
-                and organizations
-              </p>
+              {!isMobile && (
+                <p className='text-muted-foreground'>
+                  Search across all resources - users, artists, venues, events,
+                  and organizations
+                </p>
+              )}
             </div>
 
             {/* Global Search Bar */}

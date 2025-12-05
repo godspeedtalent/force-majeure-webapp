@@ -94,8 +94,8 @@ export function BasicDetailsStep({
   return (
     <div className='h-full flex flex-col p-[20px]'>
       <div className='flex-1 overflow-y-auto pr-[10px]'>
-        <div className='flex justify-center'>
-          <div className='w-[80%] space-y-[20px]'>
+        <div className='flex justify-center items-start'>
+          <div className='w-[85vw] sm:w-[80%] space-y-[20px] bg-black/60 backdrop-blur-sm border border-white/10 p-[30px] sm:p-[40px]'>
             <div>
               <h2 className='font-canela text-3xl mb-[10px]'>
                 Tell us about your sound.
@@ -105,23 +105,23 @@ export function BasicDetailsStep({
               </p>
             </div>
 
-            {/* Import Buttons */}
-            <div className='flex gap-[10px]'>
+            {/* OAuth-style Import Buttons */}
+            <div className='flex flex-col gap-[10px] max-w-[65vw] mx-auto'>
               <button
                 type='button'
                 onClick={() => setShowSpotifyImport(true)}
-                className='flex-1 flex items-center justify-center gap-[10px] px-[20px] py-[12px] border border-white/20 hover:border-[#1DB954]/50 hover:bg-[#1DB954]/10 transition-all duration-300 font-canela text-sm'
+                className='flex items-center justify-center gap-[10px] px-[20px] py-[12px] bg-transparent hover:bg-[#1DB954]/10 border-2 border-[#1DB954] text-[#1DB954] font-canela text-sm font-medium transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]'
               >
-                <FaSpotify className='h-4 w-4 text-[#1DB954]' />
-                Import from Spotify
+                <FaSpotify className='h-5 w-5' />
+                Continue with Spotify
               </button>
               <button
                 type='button'
                 onClick={() => setShowSoundCloudImport(true)}
-                className='flex-1 flex items-center justify-center gap-[10px] px-[20px] py-[12px] border border-white/20 hover:border-[#FF5500]/50 hover:bg-[#FF5500]/10 transition-all duration-300 font-canela text-sm'
+                className='flex items-center justify-center gap-[10px] px-[20px] py-[12px] bg-transparent hover:bg-[#FF5500]/10 border-2 border-[#FF5500] text-[#FF5500] font-canela text-sm font-medium transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]'
               >
-                <FaSoundcloud className='h-4 w-4 text-[#FF5500]' />
-                Import from SoundCloud
+                <FaSoundcloud className='h-5 w-5' />
+                Continue with SoundCloud
               </button>
             </div>
 

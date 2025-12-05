@@ -319,9 +319,9 @@ export const LABEL_STYLES = {
  * Alternating background opacity for visual separation.
  */
 export const LIST_ITEM_STYLES = {
-  // Striped Background Pattern
-  EVEN_BG: 'bg-background/40', // Lighter stripe
-  ODD_BG: 'bg-background/60', // Darker stripe
+  // Striped Background Pattern - more apparent contrast
+  EVEN_BG: 'bg-white/5', // Lighter stripe
+  ODD_BG: 'bg-black/30', // Darker stripe
 
   // Hover States
   HOVER_BG: 'hover:bg-fm-gold/10',
@@ -343,11 +343,11 @@ export const LIST_ITEM_STYLES = {
 
   // Complete Classes for Even Items
   EVEN_CLASSES:
-    'bg-background/40 hover:bg-fm-gold/10 hover:scale-[1.02] hover:shadow-lg hover:shadow-fm-gold/20 hover:text-white focus:bg-fm-gold/15 focus:scale-[1.02] focus:shadow-lg focus:shadow-fm-gold/20 focus:text-white active:scale-[0.98] transition-all duration-300',
+    'bg-white/5 hover:bg-fm-gold/10 hover:scale-[1.02] hover:shadow-lg hover:shadow-fm-gold/20 hover:text-white focus:bg-fm-gold/15 focus:scale-[1.02] focus:shadow-lg focus:shadow-fm-gold/20 focus:text-white active:scale-[0.98] transition-all duration-300',
 
   // Complete Classes for Odd Items
   ODD_CLASSES:
-    'bg-background/60 hover:bg-fm-gold/10 hover:scale-[1.02] hover:shadow-lg hover:shadow-fm-gold/20 hover:text-white focus:bg-fm-gold/15 focus:scale-[1.02] focus:shadow-lg focus:shadow-fm-gold/20 focus:text-white active:scale-[0.98] transition-all duration-300',
+    'bg-black/30 hover:bg-fm-gold/10 hover:scale-[1.02] hover:shadow-lg hover:shadow-fm-gold/20 hover:text-white focus:bg-fm-gold/15 focus:scale-[1.02] focus:shadow-lg focus:shadow-fm-gold/20 focus:text-white active:scale-[0.98] transition-all duration-300',
 
   // Divider between items
   DIVIDER:

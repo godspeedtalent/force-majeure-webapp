@@ -39,7 +39,7 @@ export const FmCommonCollapsibleSection = ({
       <div className='flex items-center justify-between mb-4'>
         <h3 className='font-canela text-lg text-white'>{title}</h3>
         <Button
-          variant='ghost'
+          variant='secondary'
           size='sm'
           onClick={() => setIsExpanded(!isExpanded)}
           className='text-white hover:text-fm-gold'

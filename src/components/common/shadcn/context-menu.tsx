@@ -57,6 +57,8 @@ const ContextMenuContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Content>
 >(({ className, ...props }, ref) => (
   <ContextMenuPrimitive.Portal>
+    {/* Invisible overlay to capture outside clicks on mobile */}
+    <div className='fixed inset-0 z-[9999]' aria-hidden='true' />
     <ContextMenuPrimitive.Content
       ref={ref}
       className={cn(

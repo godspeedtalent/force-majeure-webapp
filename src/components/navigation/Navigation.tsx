@@ -1,11 +1,8 @@
 import {
   Instagram,
-  Menu,
   ShoppingCart,
   User,
-  X,
 } from 'lucide-react';
-import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { Breadcrumbs } from '@/components/primitives/Breadcrumbs';
@@ -27,7 +24,6 @@ import { SOCIAL_LINKS } from '@/shared/constants/socialLinks';
 import { FeatureGuard } from '@/components/common/guards/FeatureGuard';
 
 export const Navigation = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
   const { isFeatureEnabled } = useFeatureFlagHelpers();
@@ -122,89 +118,23 @@ export const Navigation = () => {
             )}
           </div>
 
-          {/* Mobile menu button */}
-          <div className='md:hidden flex items-center space-x-2'>
-            {user && <UserMenuDropdown />}
-
-            <Button
-              variant='ghost'
-              size='sm'
-              onClick={() => setIsOpen(!isOpen)}
-              className='text-foreground hover:text-fm-gold hover:bg-hover-overlay'
-            >
-              {isOpen ? (
-                <X className='h-5 w-5' />
-              ) : (
-                <Menu className='h-5 w-5' />
-              )}
-            </Button>
+          {/* Mobile menu - user dropdown only */}
+          <div className='md:hidden flex items-center'>
+            {user ? (
+              <UserMenuDropdown />
+            ) : (
+              <Button
+                variant='ghost'
+                size='sm'
+                className='text-foreground hover:text-fm-gold hover:bg-hover-overlay'
+                onClick={() => navigate('/auth')}
+              >
+                <User className='h-4 w-4' />
+              </Button>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Mobile Navigation Dropdown - Slides over content */}
-      {isOpen && (
-        <div 
-          className='md:hidden absolute top-full left-0 right-0 z-40 animate-in slide-in-from-top-4 duration-300'
-        >
-          <div className='px-2 pt-2 pb-3 space-y-1 bg-background/95 backdrop-blur-md border-b border-border shadow-lg'>
-            <Link
-              to='/'
-              className='block px-3 py-2 text-base font-canela font-medium text-foreground hover:text-fm-gold hover:bg-hover-overlay rounded-none transition-colors'
-              onClick={() => setIsOpen(false)}
-            >
-              Events
-            </Link>
-            <FeatureGuard feature={FEATURE_FLAGS.MERCH_STORE}>
-              <Link
-                to='/merch'
-                className='block px-3 py-2 text-base font-canela font-medium text-foreground hover:text-fm-gold hover:bg-hover-overlay rounded-none transition-colors'
-                onClick={() => setIsOpen(false)}
-              >
-                Merchandise
-              </Link>
-            </FeatureGuard>
-            {user ? (
-              <>
-                <Link
-                  to='/profile'
-                  className='block px-3 py-2 text-base font-canela font-medium text-foreground hover:text-fm-gold hover:bg-hover-overlay rounded-none transition-colors'
-                  onClick={() => setIsOpen(false)}
-                >
-                  Profile
-                </Link>
-                <Link
-                  to='/orders'
-                  className='block px-3 py-2 text-base font-canela font-medium text-foreground hover:text-fm-gold hover:bg-hover-overlay rounded-none transition-colors'
-                  onClick={() => setIsOpen(false)}
-                >
-                  My Tickets
-                </Link>
-              </>
-            ) : (
-              <button
-                onClick={() => {
-                  navigate('/auth');
-                  setIsOpen(false);
-                }}
-                className='block w-full text-left px-3 py-2 text-base font-canela font-medium text-foreground hover:text-fm-gold hover:bg-hover-overlay rounded-none transition-colors'
-              >
-                <User className='h-4 w-4 inline mr-2' />
-                Login / Sign Up
-              </button>
-            )}
-            <a
-              href={SOCIAL_LINKS.instagram}
-              target='_blank'
-              rel='noopener noreferrer'
-              className='block px-3 py-2 text-base font-canela font-medium text-foreground hover:text-fm-gold hover:bg-hover-overlay rounded-none transition-colors'
-              onClick={() => setIsOpen(false)}
-            >
-              Instagram
-            </a>
-          </div>
-        </div>
-      )}
     </nav>
   );
 };

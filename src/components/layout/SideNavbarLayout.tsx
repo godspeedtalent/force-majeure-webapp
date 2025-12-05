@@ -28,6 +28,8 @@ interface SideNavbarLayoutProps<T extends string> {
   className?: string;
   /** Optional mobile bottom tab bar component */
   mobileTabBar?: ReactNode;
+  /** Optional mobile horizontal tabs component (renders at layout level for full width) */
+  mobileHorizontalTabs?: ReactNode;
   /** Show back button in top-left (default: false) */
   showBackButton?: boolean;
   /** Custom back button click handler */
@@ -58,6 +60,7 @@ export const SideNavbarLayout = <T extends string>({
   backgroundOpacity = 0.35,
   className = '',
   mobileTabBar,
+  mobileHorizontalTabs,
   showBackButton = false,
   onBack,
   backButtonLabel,
@@ -67,6 +70,8 @@ export const SideNavbarLayout = <T extends string>({
   return (
     <>
       <Navigation />
+      {/* Mobile horizontal tabs - rendered at layout level for full width */}
+      {mobileHorizontalTabs}
       <SidebarProvider defaultOpen={defaultOpen}>
         <div className='flex min-h-screen w-full'>
           {/* Desktop sidebar - hidden on mobile when mobile tab bar is provided */}
@@ -81,14 +86,20 @@ export const SideNavbarLayout = <T extends string>({
 
           <main
             className={cn(
-              'flex-1 pb-6 px-6 relative overflow-hidden',
-              mobileTabBar && isMobile && 'pb-[80px]', // Add bottom padding on mobile to prevent tab bar overlap
+              'flex-1 relative overflow-hidden',
+              !isMobile && 'pb-6 px-6',
               className
             )}
           >
             <TopographicBackground opacity={backgroundOpacity} />
             <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
-            <div className='max-w-full relative z-10 m-10'>
+            <div
+              className={cn(
+                'max-w-full relative z-10',
+                isMobile ? 'h-full overflow-y-auto px-4 py-4' : 'm-10',
+                isMobile && mobileTabBar && 'pb-[100px]' // Extra padding for tab bar
+              )}
+            >
               {showBackButton && (
                 <FmBackButton
                   position='floating'

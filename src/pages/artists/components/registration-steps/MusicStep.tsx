@@ -41,8 +41,8 @@ export function MusicStep({
   return (
     <div className='h-full flex flex-col p-[20px]'>
       <div className='flex-1 overflow-y-auto pr-[10px]'>
-        <div className='flex justify-center'>
-          <div className='w-[80%] space-y-[20px]'>
+        <div className='flex justify-center items-start'>
+          <div className='w-[85vw] sm:w-[80%] space-y-[20px] bg-black/60 backdrop-blur-sm border border-white/10 p-[30px] sm:p-[40px]'>
             <div>
               <h2 className='font-canela text-3xl mb-[10px]'>Show us your music.</h2>
               <p className='font-canela text-sm text-muted-foreground'>

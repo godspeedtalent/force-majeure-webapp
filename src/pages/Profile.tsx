@@ -1,98 +1,24 @@
-import {
-  Calendar,
-  Settings,
-  TrendingUp,
-  ArrowLeft,
-  Music2,
-  MapPin,
-  Clock,
-  Mic2,
-} from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Layout } from '@/components/layout/Layout';
-import { FmCommonUserPhoto } from '@/components/common/display/FmCommonUserPhoto';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { FmCommonInfoCard } from '@/components/common/display/FmCommonInfoCard';
-import { FmCommonStatCard } from '@/components/common/display/FmCommonStatCard';
 import { Card, CardContent } from '@/components/common/shadcn/card';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/common/shadcn/tabs';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { supabase } from '@/shared/api/supabase/client';
-import { Badge } from '@/components/common/shadcn/badge';
 import { handleError } from '@/shared/services/errorHandler';
 import { logger } from '@/shared/services/logger';
-import { UserArtistTab } from '@/components/profile/UserArtistTab';
-
-interface UpcomingEvent {
-  id: string;
-  title: string;
-  date: string;
-  location: string;
-  cover_image_url: string | null;
-  ticket_count: number;
-}
+import { useUserLinkedArtist } from '@/shared/hooks/useUserLinkedArtist';
+import { MobileProfileLayout } from '@/components/profile/MobileProfileLayout';
+import { DesktopProfileLayout } from '@/components/profile/DesktopProfileLayout';
+import { UpcomingEvent } from '@/components/profile/types';
 
 const Profile = () => {
   const { user, profile, loading } = useAuth();
   const navigate = useNavigate();
-  const [showsCount, setShowsCount] = useState<number>(0);
-  const [loadingStats, setLoadingStats] = useState(true);
   const [upcomingShows, setUpcomingShows] = useState<UpcomingEvent[]>([]);
   const [loadingShows, setLoadingShows] = useState(true);
-
-  // Fetch user stats
-  useEffect(() => {
-    const fetchStats = async () => {
-      if (!user?.id) {
-        setLoadingStats(false);
-        return;
-      }
-
-      try {
-        // Get unique event_ids from orders for this user
-        const { data: orders, error } = await supabase
-          .from('orders')
-          .select('event_id')
-          .eq('user_id', user.id)
-          .eq('status', 'paid');
-
-        if (error) {
-          logger.error('Error fetching orders', {
-            error: error.message,
-            source: 'Profile.tsx',
-            details: 'fetchStats',
-          });
-          setShowsCount(0);
-        } else {
-          // Count unique event_ids
-          const uniqueEvents = new Set(
-            orders?.map(order => order.event_id) || []
-          );
-          setShowsCount(uniqueEvents.size);
-        }
-      } catch (error) {
-        await handleError(error, {
-          title: 'Failed to Load Stats',
-          description: 'Could not retrieve your event statistics',
-          endpoint: 'orders',
-          method: 'SELECT',
-          showToast: false, // Don't show toast for stats loading
-        });
-        setShowsCount(0);
-      } finally {
-        setLoadingStats(false);
-      }
-    };
-
-    fetchStats();
-  }, [user]);
+  const { hasLinkedArtist, isLoading: loadingArtist } = useUserLinkedArtist();
 
   // Fetch upcoming shows
   useEffect(() => {
@@ -103,7 +29,7 @@ const Profile = () => {
       }
 
       try {
-        // Get events with paid orders for this user, filtering for future events
+        // Get events with paid orders for this user
         const { data, error } = await supabase
           .from('orders')
           .select(
@@ -119,8 +45,7 @@ const Profile = () => {
           `
           )
           .eq('user_id', user.id)
-          .eq('status', 'paid')
-          .gte('events.date', new Date().toISOString());
+          .eq('status', 'paid');
 
         if (error) {
           logger.error('Error fetching upcoming shows', {
@@ -130,24 +55,30 @@ const Profile = () => {
           });
           setUpcomingShows([]);
         } else {
-          // Group by event and count tickets
+          // Group by event and count tickets, filtering for future events
           const eventMap = new Map<string, UpcomingEvent>();
+          const now = new Date();
 
           data?.forEach((order: any) => {
             if (order.events) {
               const event = order.events;
-              if (eventMap.has(event.id)) {
-                const existing = eventMap.get(event.id)!;
-                existing.ticket_count += 1;
-              } else {
-                eventMap.set(event.id, {
-                  id: event.id,
-                  title: event.title,
-                  date: event.date,
-                  location: event.location,
-                  cover_image_url: event.cover_image_url,
-                  ticket_count: 1,
-                });
+              const eventDate = new Date(event.date);
+
+              // Only include future events
+              if (eventDate >= now) {
+                if (eventMap.has(event.id)) {
+                  const existing = eventMap.get(event.id)!;
+                  existing.ticket_count += 1;
+                } else {
+                  eventMap.set(event.id, {
+                    id: event.id,
+                    title: event.title,
+                    date: event.date,
+                    location: event.location,
+                    cover_image_url: event.cover_image_url,
+                    ticket_count: 1,
+                  });
+                }
               }
             }
           });
@@ -214,211 +145,26 @@ const Profile = () => {
       })
     : 'Unknown';
 
+  const layoutProps = {
+    user,
+    profile,
+    upcomingShows,
+    loadingShows,
+    hasLinkedArtist,
+    loadingArtist,
+    createdAt,
+  };
+
   return (
     <Layout>
-      <div className='max-w-6xl mx-auto px-4 py-12 space-y-8'>
-        {/* Back Button */}
-        <FmCommonButton
-          variant='secondary'
-          size='sm'
-          onClick={() => navigate('/')}
-          icon={ArrowLeft}
-          className='text-muted-foreground hover:text-foreground'
-        >
-          Back to Events
-        </FmCommonButton>
+      {/* Mobile Layout */}
+      <div className='lg:hidden'>
+        <MobileProfileLayout {...layoutProps} />
+      </div>
 
-        {/* Profile Card */}
-        <Card className='border-border/30 bg-card/20 backdrop-blur-lg relative'>
-          <CardContent className='p-0'>
-            <div className='grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-0'>
-              {/* Left Column - Avatar */}
-              <div className='relative h-full min-h-[400px] lg:min-h-[600px]'>
-                {/* Edit Profile Button - Top Left Corner */}
-                <div className='absolute top-4 left-4 z-10'>
-                  <FmCommonButton
-                    variant='default'
-                    size='sm'
-                    onClick={() => navigate('/profile/edit')}
-                    icon={Settings}
-                    className='bg-background/80 backdrop-blur-sm'
-                  >
-                    Edit Profile
-                  </FmCommonButton>
-                </div>
-
-                <FmCommonUserPhoto
-                  src={profile?.avatar_url}
-                  name={profile?.display_name || user.email}
-                  size='square'
-                  useAnimatedGradient={!profile?.avatar_url}
-                  className='rounded-l-lg lg:rounded-l-md'
-                />
-              </div>
-
-              {/* Right Column - Info and Tabs */}
-              <div className='p-8 space-y-6'>
-                {/* User Display Name */}
-                <div>
-                  <h2 className='text-3xl font-canela font-medium text-foreground'>
-                    {profile?.display_name || 'Raver'}
-                  </h2>
-                  <p className='text-sm text-muted-foreground mt-1'>
-                    Force Majeure Member
-                  </p>
-                </div>
-
-                {/* Tabs */}
-                <Tabs defaultValue='upcoming' className='w-full'>
-                  <TabsList className='grid w-full grid-cols-4'>
-                    <TabsTrigger value='upcoming'>Upcoming Shows</TabsTrigger>
-                    <TabsTrigger value='artist' className='flex items-center gap-1'>
-                      <Mic2 className='h-3 w-3' />
-                      Artist
-                    </TabsTrigger>
-                    <TabsTrigger value='stats'>Stats</TabsTrigger>
-                    <TabsTrigger value='account'>Account</TabsTrigger>
-                  </TabsList>
-
-                  {/* Artist Tab */}
-                  <TabsContent value='artist' className='mt-6'>
-                    <UserArtistTab />
-                  </TabsContent>
-
-                  {/* Upcoming Shows Tab */}
-                  <TabsContent value='upcoming' className='space-y-4 mt-6'>
-                    {loadingShows ? (
-                      <div className='text-center py-8 text-muted-foreground'>
-                        Loading upcoming shows...
-                      </div>
-                    ) : upcomingShows.length === 0 ? (
-                      <div className='text-center py-12'>
-                        <Music2 className='h-12 w-12 text-muted-foreground mx-auto mb-4' />
-                        <p className='text-muted-foreground mb-4'>
-                          No upcoming shows yet
-                        </p>
-                        <FmCommonButton
-                          variant='gold'
-                          size='sm'
-                          onClick={() => navigate('/')}
-                        >
-                          Browse Events
-                        </FmCommonButton>
-                      </div>
-                    ) : (
-                      <div className='space-y-3'>
-                        {upcomingShows.map(event => {
-                          const eventDate = new Date(event.date);
-                          const formattedDate = eventDate.toLocaleDateString(
-                            'en-US',
-                            {
-                              weekday: 'short',
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric',
-                            }
-                          );
-                          const formattedTime = eventDate.toLocaleTimeString(
-                            'en-US',
-                            {
-                              hour: 'numeric',
-                              minute: '2-digit',
-                            }
-                          );
-
-                          return (
-                            <Card
-                              key={event.id}
-                              className='border-border/30 bg-card/10 backdrop-blur-sm hover:bg-card/20 transition-colors cursor-pointer'
-                              onClick={() => navigate(`/events/${event.id}`)}
-                            >
-                              <CardContent className='p-4'>
-                                <div className='flex gap-4'>
-                                  {/* Event Image */}
-                                  <div className='w-20 h-20 rounded-md overflow-hidden bg-muted flex-shrink-0'>
-                                    {event.cover_image_url ? (
-                                      <img
-                                        src={event.cover_image_url}
-                                        alt={event.title}
-                                        className='w-full h-full object-cover'
-                                      />
-                                    ) : (
-                                      <div className='w-full h-full bg-gradient-gold flex items-center justify-center'>
-                                        <Music2 className='h-8 w-8 text-black' />
-                                      </div>
-                                    )}
-                                  </div>
-
-                                  {/* Event Info */}
-                                  <div className='flex-1 min-w-0'>
-                                    <h3 className='font-canela font-medium text-foreground mb-1 truncate'>
-                                      {event.title}
-                                    </h3>
-                                    <div className='space-y-1'>
-                                      <div className='flex items-center gap-1.5 text-xs text-muted-foreground'>
-                                        <Clock className='h-3 w-3' />
-                                        <span>
-                                          {formattedDate} at {formattedTime}
-                                        </span>
-                                      </div>
-                                      <div className='flex items-center gap-1.5 text-xs text-muted-foreground'>
-                                        <MapPin className='h-3 w-3' />
-                                        <span className='truncate'>
-                                          {event.location}
-                                        </span>
-                                      </div>
-                                    </div>
-                                    <div className='mt-2'>
-                                      <Badge
-                                        variant='outline'
-                                        className='text-xs'
-                                      >
-                                        {event.ticket_count}{' '}
-                                        {event.ticket_count === 1
-                                          ? 'Ticket'
-                                          : 'Tickets'}
-                                      </Badge>
-                                    </div>
-                                  </div>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </TabsContent>
-
-                  {/* Stats Tab */}
-                  <TabsContent value='stats' className='space-y-4 mt-6'>
-                    <div className='grid gap-4'>
-                      <FmCommonStatCard
-                        icon={TrendingUp}
-                        label='Number of Shows'
-                        value={loadingStats ? '...' : showsCount.toString()}
-                        size='md'
-                        className='text-fm-gold'
-                      />
-                    </div>
-                  </TabsContent>
-
-                  {/* Account Information Tab */}
-                  <TabsContent value='account' className='space-y-4 mt-6'>
-                    <div className='grid gap-4'>
-                      <FmCommonInfoCard
-                        icon={Calendar}
-                        label='Member Since'
-                        value={createdAt}
-                        size='sm'
-                        iconClassName='text-fm-gold'
-                      />
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Desktop Layout */}
+      <div className='hidden lg:block'>
+        <DesktopProfileLayout {...layoutProps} />
       </div>
     </Layout>
   );

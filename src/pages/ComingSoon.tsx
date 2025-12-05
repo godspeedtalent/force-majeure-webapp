@@ -3,8 +3,7 @@ import { useEffect, useState } from 'react';
 
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
-import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
-import { ParallaxLayerManager } from '@/components/layout/ParallaxLayerManager';
+import { Layout } from '@/components/layout/Layout';
 
 export default function ComingSoon() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -30,78 +29,62 @@ export default function ComingSoon() {
   }, []);
 
   return (
-    <ParallaxLayerManager
-      className='min-h-screen bg-background flex items-center justify-center relative overflow-hidden'
-      layers={[
-        {
-          id: 'topography',
-          content: <TopographicBackground opacity={0.1} parallax={false} />,
-          speed: 0.3,
-          zIndex: 1,
-        },
-        {
-          id: 'gradient',
-          content: <div className='absolute inset-0 bg-gradient-monochrome' />,
-          speed: 0.5,
-          zIndex: 2,
-          opacity: 0.05,
-        },
-      ]}
-    >
+    <Layout hideFooter>
+      {/* Single viewport container */}
+      <div className='h-[calc(100vh-64px)] flex items-center justify-center relative'>
+        {/* Content */}
+        <div
+          className={`text-center px-6 max-w-2xl mx-auto transition-opacity duration-500 ${fontsLoaded ? 'opacity-100' : 'opacity-0'}`}
+        >
+          {/* Logo */}
+          <div className={`mb-8 md:mb-12 flex justify-center ${fontsLoaded ? 'animate-fade-in' : ''}`}>
+            <div className='w-full max-w-xs md:max-w-md'>
+              <ForceMajeureLogo size='responsive' />
+            </div>
+          </div>
 
-      {/* Content */}
-      <div
-        className={`relative z-10 text-center px-6 max-w-2xl mx-auto transition-opacity duration-500 ${fontsLoaded ? 'opacity-100' : 'opacity-0'}`}
-      >
-        {/* Logo */}
-        <div className={`mb-12 flex justify-center ${fontsLoaded ? 'animate-fade-in' : ''}`}>
-          <div className='w-full max-w-md'>
-            <ForceMajeureLogo size='responsive' />
+          {/* Main message */}
+          <h1
+            className={`font-display text-3xl md:text-6xl mb-4 md:mb-6 ${fontsLoaded ? 'animate-slide-down-in' : ''}`}
+          >
+            forcemajeure.vip
+            <br />
+            <span className='text-fm-gold text-xl md:text-2xl'>Coming Soon</span>
+          </h1>
+
+          <p
+            className={`text-base md:text-lg text-muted-foreground mb-8 md:mb-12 ${fontsLoaded ? 'animate-fade-in' : ''}`}
+            style={{ animationDelay: fontsLoaded ? '0.2s' : '0s' }}
+          >
+            Just hang tight.
+          </p>
+
+          {/* Decorative elements */}
+          <DecorativeDivider marginTop='mt-6' marginBottom='mb-6' />
+
+          {/* Social links */}
+          <div
+            className={`flex items-center justify-center gap-6 ${fontsLoaded ? 'animate-fade-in' : 'opacity-0'}`}
+            style={{ animationDelay: fontsLoaded ? '0.4s' : '0s' }}
+          >
+            <a
+              href='https://www.instagram.com/force.majeure.events'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='p-4 rounded-full bg-muted/30 hover:bg-fm-gold hover:text-primary-foreground transition-all duration-300 hover:scale-110'
+            >
+              <Instagram className='w-6 h-6' />
+            </a>
           </div>
         </div>
 
-        {/* Main message */}
-        <h1
-          className={`font-display text-4xl md:text-6xl mb-6 ${fontsLoaded ? 'animate-slide-down-in' : ''}`}
-        >
-          The Force Majeure Hub
-          <br />
-          <span className='text-fm-gold'>Coming Soon</span>
-        </h1>
-
-        <p
-          className={`text-lg md:text-l text-muted-foreground mb-12 ${fontsLoaded ? 'animate-fade-in' : ''}`}
-          style={{ animationDelay: fontsLoaded ? '0.2s' : '0s' }}
-        >
-          Just hang tight.
-          <br />
-        </p>
-
-        {/* Decorative elements */}
-        <DecorativeDivider />
-
-        {/* Social links */}
-        <div
-          className={`flex items-center justify-center gap-6 ${fontsLoaded ? 'animate-fade-in' : 'opacity-0'}`}
-          style={{ animationDelay: fontsLoaded ? '0.4s' : '0s' }}
-        >
-          <a
-            href='https://www.instagram.com/force.majeure.events'
-            target='_blank'
-            rel='noopener noreferrer'
-            className='p-4 rounded-full bg-muted/30 hover:bg-fm-gold hover:text-primary-foreground transition-all duration-300 hover:scale-110'
-          >
-            <Instagram className='w-6 h-6' />
-          </a>
-        </div>
+        {/* Loading fallback */}
+        {!fontsLoaded && (
+          <div className='absolute inset-0 flex items-center justify-center bg-background z-20'>
+            <div className='animate-pulse text-muted-foreground'>Loading...</div>
+          </div>
+        )}
       </div>
-
-      {/* Loading fallback */}
-      {!fontsLoaded && (
-        <div className='absolute inset-0 flex items-center justify-center bg-background z-20'>
-          <div className='animate-pulse text-muted-foreground'>Loading...</div>
-        </div>
-      )}
-    </ParallaxLayerManager>
+    </Layout>
   );
 }

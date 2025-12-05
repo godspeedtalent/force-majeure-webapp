@@ -57,7 +57,7 @@ export const MobileHorizontalTabs = ({
   return (
     <div
       className={cn(
-        'sticky top-[64px] z-30',
+        'z-30',
         'bg-black/80 backdrop-blur-lg',
         'border-b border-white/20',
         'md:hidden',

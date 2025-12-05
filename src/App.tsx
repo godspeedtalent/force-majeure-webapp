@@ -6,6 +6,7 @@ import Auth from './pages/Auth';
 import CheckoutCancel from './pages/CheckoutCancel';
 import CheckoutSuccess from './pages/CheckoutSuccess';
 import ComingSoon from './pages/ComingSoon';
+import Contact from './pages/Contact';
 import EventDetails from './pages/EventDetails';
 import EventTicketing from './pages/event/EventTicketingPage';
 import Index from './pages/Index';
@@ -179,6 +180,7 @@ const AppRoutes = () => {
           <Route path='/profile' element={<Profile />} />
           <Route path='/profile/edit' element={<ProfileEdit />} />
           <Route path='/orders' element={<Orders />} />
+          <Route path='/contact' element={<Contact />} />
 
           {/* Checkout Routes */}
           <Route path='/checkout/success' element={<CheckoutSuccess />} />

@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
+import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
 import { Card, CardContent } from '@/components/common/shadcn/card';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
@@ -196,6 +197,12 @@ const ProfileEdit = () => {
     },
   ];
 
+  // Mobile bottom tabs configuration
+  const mobileTabs: MobileBottomTab[] = [
+    { id: 'profile', label: 'Profile', icon: User },
+    { id: 'artist', label: 'Artist', icon: Mic2 },
+  ];
+
   if (!user) {
     return (
       <div className='flex items-center justify-center min-h-screen'>
@@ -223,6 +230,13 @@ const ProfileEdit = () => {
       showBackButton
       onBack={() => navigate('/profile')}
       backButtonLabel='Profile'
+      mobileTabBar={
+        <MobileBottomTabBar
+          tabs={mobileTabs}
+          activeTab={activeSection}
+          onTabChange={tab => setActiveSection(tab as ProfileSection)}
+        />
+      }
     >
       <div className='space-y-6'>
         {/* Profile Section */}

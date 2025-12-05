@@ -1,12 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { Music2, Users, LucideIcon } from 'lucide-react';
+import { Music2, Users, LucideIcon, Heart, Sparkles, PartyPopper } from 'lucide-react';
 import { ArtistRegistrationLayout } from '@/components/layout/ArtistRegistrationLayout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCardCarousel } from '@/components/common/data/FmCardCarousel';
 import { FmAnimatedGradientAvatar } from '@/components/common/display/FmAnimatedGradientAvatar';
 import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
 import { ImageAnchor } from '@/shared/types/imageAnchor';
+import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import {
   Carousel,
   CarouselContent,
@@ -68,9 +69,10 @@ const ArtistSignup = () => {
   return (
     <ArtistRegistrationLayout>
 
-      <div className='relative overflow-hidden z-10 flex flex-col lg:block' style={{ height: 'calc(100vh - 80px)' }}>
+      <div className='relative overflow-hidden z-10' style={{ height: 'calc(100vh - 80px)' }}>
+        {/* Image carousel - full screen background on mobile, right 65% on desktop */}
         <div
-          className='relative lg:absolute inset-0 w-full h-[50vh] lg:h-full'
+          className='absolute inset-0 lg:left-[35%] w-full lg:w-[65%] h-full'
           onMouseEnter={() => setIsHoveringCarousel(true)}
           onMouseLeave={() => setIsHoveringCarousel(false)}
         >
@@ -80,14 +82,14 @@ const ArtistSignup = () => {
               loop: true,
               align: 'center',
             }}
-            className='h-full w-full'
+            className='h-full w-full [&>div]:h-full'
           >
-            <CarouselContent className='h-full'>
+            <CarouselContent className='h-full ml-0 [&>div]:h-full'>
               {PAST_SHOW_IMAGES.map((image) => {
                 const IconComponent = image.icon;
                 return (
-                  <CarouselItem key={image.id} className='h-full p-0'>
-                    <div className='relative h-full w-full'>
+                  <CarouselItem key={image.id} className='h-full p-0 basis-full pl-0'>
+                    <div className='absolute inset-0'>
                       {image.placeholder ? (
                         <div className='absolute inset-0 bg-gradient-to-br from-black via-fm-navy/30 to-black flex items-center justify-center'>
                           <div className='text-center space-y-[20px]'>
@@ -107,7 +109,10 @@ const ArtistSignup = () => {
                         />
                       )}
 
-                      <div className='absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent' />
+                      {/* Gradient overlays to blend image into topography background */}
+                      <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent' />
+                      <div className='absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-black/60 lg:hidden' />
+                      <div className='absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent hidden lg:block' />
 
                       {!image.placeholder && (
                         <>
@@ -149,21 +154,46 @@ const ArtistSignup = () => {
           </Carousel>
         </div>
 
-        <div className='relative lg:absolute left-0 top-0 w-full lg:w-[40%] h-[50vh] lg:h-full z-20 flex-shrink-0'>
-          <div className='absolute inset-0 bg-black/85 lg:bg-black/70 backdrop-blur-md' />
+        {/* Content panel - full screen overlay on mobile, left 35% on desktop */}
+        <div className='absolute left-0 top-0 w-full lg:w-[35%] h-full z-20 flex items-center justify-center'>
+          <div className='absolute inset-0 bg-black/30 backdrop-blur-sm border-r border-white/10 lg:border-r-white/20' />
 
-          <div className='relative z-10 h-full flex items-center justify-center py-6 px-6 lg:py-[8vh] lg:px-[4vw]'>
-            <div className='w-full flex flex-col justify-center gap-6 lg:gap-[3vh] max-w-xl mx-auto'>
-              <div className='space-y-2 lg:space-y-[1vh]'>
-                <h1 className='font-canela text-2xl sm:text-3xl lg:text-[clamp(1.75rem,3.5vw,3rem)] leading-[1.1] tracking-tight'>
-                  Play with us.
-                </h1>
-                <p className='font-canela text-xs sm:text-sm lg:text-[clamp(0.8rem,1.1vw,1rem)] text-muted-foreground leading-snug lg:leading-relaxed'>
-                  A platform where electronic music artists connect with dedicated audiences and take center stage.
-                </p>
+          <div className='relative z-10 h-full flex items-center justify-center py-8 px-6 lg:py-[8vh] lg:px-[4vw]'>
+            <div className='w-[80vw] lg:w-full flex flex-col justify-center gap-6 lg:gap-[4vh] max-w-md lg:max-w-xl mx-auto'>
+              {/* FM Logo */}
+              <div className='flex justify-center lg:justify-start'>
+                <ForceMajeureLogo size='lg' className='opacity-90' />
               </div>
 
-              <div className='flex flex-col justify-center gap-4 lg:gap-[2vh]'>
+              <div className='space-y-4 lg:space-y-[2vh]'>
+                <h1 className='font-canela text-3xl sm:text-4xl lg:text-[clamp(1.75rem,3.5vw,3rem)] leading-[1.1] tracking-tight text-center lg:text-left'>
+                  Come spin with us.
+                </h1>
+                <div className='font-canela text-sm lg:text-[clamp(0.8rem,1.1vw,1rem)] text-white leading-relaxed space-y-6 lg:space-y-5 text-center lg:text-left'>
+                  <div className='flex items-start gap-3 justify-center lg:justify-start'>
+                    <Heart className='w-4 h-4 text-fm-gold/70 flex-shrink-0 mt-0.5' />
+                    <p>
+                      FM has, and always will be, a group that elevates the local Austin electronic scene by taking care of our artists.
+                    </p>
+                  </div>
+                  <div className='flex items-start gap-3 justify-center lg:justify-start'>
+                    <Sparkles className='w-4 h-4 text-fm-gold/70 flex-shrink-0 mt-0.5' />
+                    <p>
+                      We proudly make sure our event undercards represent a diverse selection of rising stars from an expansive pantheon of genre.
+                    </p>
+                  </div>
+                  <div className='flex items-start gap-3 justify-center lg:justify-start'>
+                    <PartyPopper className='w-4 h-4 text-fm-gold/70 flex-shrink-0 mt-0.5' />
+                    <p>
+                      So go ahead and click that button below and let's get rolling.
+                      <span className='block mt-1 text-fm-gold'>Can't wait to make you a part of our rave fam.</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card carousel - hidden on mobile */}
+              <div className='hidden lg:flex flex-col justify-center gap-4 lg:gap-[2vh]'>
                 <FmCardCarousel autoPlayInterval={4000}>
                   <div className='bg-black/60 backdrop-blur-sm border border-fm-gold rounded-none overflow-hidden'>
                     <div className='flex items-stretch'>
@@ -176,7 +206,7 @@ const ArtistSignup = () => {
                         </h3>
                         <div className='w-full h-[1px] bg-white/30 mb-[8px]' />
                         <p className='font-canela text-xs lg:text-[clamp(0.75rem,1vw,0.875rem)] text-muted-foreground leading-snug lg:leading-relaxed'>
-                          Perform alongside internationally acclaimed headliners at meticulously curated shows.
+                          Perform alongside internationally acclaimed headliners at curated shows.
                         </p>
                       </div>
                     </div>
@@ -189,7 +219,7 @@ const ArtistSignup = () => {
                       </div>
                       <div className='flex-1 p-3 lg:p-[clamp(0.75rem,1.3vw,1.125rem)]'>
                         <h3 className='font-canela text-sm lg:text-[clamp(0.9375rem,1.3vw,1.125rem)] mb-[8px]'>
-                          Engaged audiences.
+                          Rising stars.
                         </h3>
                         <div className='w-full h-[1px] bg-white/30 mb-[8px]' />
                         <p className='font-canela text-xs lg:text-[clamp(0.75rem,1vw,0.875rem)] text-muted-foreground leading-snug lg:leading-relaxed'>
@@ -210,7 +240,7 @@ const ArtistSignup = () => {
                         </h3>
                         <div className='w-full h-[1px] bg-white/30 mb-[8px]' />
                         <p className='font-canela text-xs lg:text-[clamp(0.75rem,1vw,0.875rem)] text-muted-foreground leading-snug lg:leading-relaxed'>
-                          Be part of a thriving community that celebrates electronic music and supports emerging artists.
+                          Join the movement that's fueling Austin's explosion into the electronic world.
                         </p>
                       </div>
                     </div>
@@ -218,11 +248,11 @@ const ArtistSignup = () => {
                 </FmCardCarousel>
               </div>
 
-              <div>
+              <div className='mt-2 lg:mt-0'>
                 <FmCommonButton
                   onClick={handleNavigateToRegister}
                   variant='default'
-                  className='w-full text-xs sm:text-sm lg:text-[clamp(0.8125rem,1vw,0.9375rem)] py-2.5 lg:py-[clamp(0.5rem,1vh,0.75rem)] font-canela'
+                  className='w-full text-sm lg:text-[clamp(0.6875rem,0.9vw,0.8125rem)] py-3 lg:py-[clamp(0.375rem,0.75vh,0.5rem)] font-canela'
                 >
                   Register with us now
                 </FmCommonButton>

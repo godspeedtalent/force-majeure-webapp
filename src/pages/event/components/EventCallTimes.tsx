@@ -85,7 +85,7 @@ export const EventCallTimes = ({
               <Button
                 variant='outline'
                 onClick={() => setIsModalOpen(true)}
-                className='w-1/2 py-2 px-4 border border-white/20 hover:bg-white/10 text-muted-foreground hover:text-foreground text-sm transition-all duration-300'
+                className='w-full py-1.5 px-4 border border-fm-gold bg-transparent text-white hover:text-fm-gold hover:bg-fm-gold/10 text-xs transition-all duration-300'
               >
                 Accepting Artist Undercard Applications
               </Button>
@@ -121,7 +121,7 @@ export const EventCallTimes = ({
             <Button
               variant='outline'
               onClick={handleSignUp}
-              className='w-full border-white/20 hover:bg-white/10'
+              className='w-full border-fm-gold bg-transparent text-white hover:text-fm-gold hover:bg-fm-gold/10'
             >
               Sign up as an artist
               <ArrowRight className='ml-2 h-4 w-4' />

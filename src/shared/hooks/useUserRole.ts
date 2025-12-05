@@ -102,9 +102,12 @@ export const useUserPermissions = () => {
    * Check if user has a specific role
    * @param roleName - Role to check (use ROLES constant)
    * @returns true if user has the specified role
+   * @note Admins are automatically considered developers
    */
   const hasRole = (roleName: Role): boolean => {
     if (!roles) return false;
+    // Admins are automatically considered developers
+    if (roleName === 'developer' && isAdmin()) return true;
     return roles.some(role => role.role_name === roleName);
   };
 
