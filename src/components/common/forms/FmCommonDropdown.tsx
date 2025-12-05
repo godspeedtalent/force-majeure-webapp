@@ -11,7 +11,6 @@ import {
   DropdownMenuGroup,
 } from '@/components/common/shadcn/dropdown-menu';
 import { cn } from '@/shared/utils/utils';
-import { getListItemClasses, getDepthClasses } from '@/shared/utils/styleUtils';
 
 export interface DropdownItem {
   label: string;
@@ -59,7 +58,11 @@ function DropdownItemRenderer({
         onClick={item.onClick}
         className={cn(
           'group cursor-pointer rounded-md my-0.5 relative',
-          getListItemClasses(index),
+          // Transparent backgrounds to let frosted glass show through
+          index % 2 === 0 ? 'bg-white/[0.02]' : 'bg-white/[0.06]',
+          'hover:bg-fm-gold/15 hover:scale-[1.02] hover:shadow-lg hover:shadow-fm-gold/20 hover:text-white',
+          'focus:bg-fm-gold/20 focus:scale-[1.02] focus:shadow-lg focus:shadow-fm-gold/20 focus:text-white',
+          'active:scale-[0.98] transition-all duration-300',
           item.variant === 'destructive' &&
             'text-destructive hover:bg-destructive/15 hover:shadow-destructive/20 focus:bg-destructive/20 focus:shadow-destructive/20 hover:text-destructive',
           item.variant === 'muted' &&
@@ -119,7 +122,7 @@ export function FmCommonDropdown({
         align={align}
         className={cn(
           'w-56 z-[200]',
-          getDepthClasses(3),
+          'bg-black/90 backdrop-blur-xl',
           'border border-white/20 border-l-[3px] border-l-fm-gold/60 shadow-lg shadow-black/50',
           'animate-in fade-in zoom-in-95 duration-200',
           'p-1'
