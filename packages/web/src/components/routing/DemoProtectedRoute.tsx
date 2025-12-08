@@ -2,8 +2,8 @@ import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { useUserPermissions } from '@/shared/hooks/useUserRole';
-import { ROLES } from '@/shared/auth/permissions';
+import { useUserPermissions } from '@force-majeure/shared/hooks/useUserRole';
+import { ROLES } from '@force-majeure/shared/auth/permissions';
 
 interface DemoProtectedRouteProps {
   children: ReactNode;

@@ -7,7 +7,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/common/shadcn/pagination';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 export interface FmDataGridPaginationProps {
   currentPage: number;

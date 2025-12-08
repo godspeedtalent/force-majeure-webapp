@@ -7,7 +7,7 @@ import { Button } from '@/components/common/shadcn/button';
 import {
   LF_SYSTEM_TICKET_URL,
   PROMO_CODE,
-} from '@/shared/constants/ticketLinks';
+} from '@force-majeure/shared/constants/ticketLinks';
 
 interface PromoCodePanelProps {
   userDisplayName?: string;

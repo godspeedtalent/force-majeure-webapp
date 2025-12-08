@@ -12,7 +12,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from '@/components/common/shadcn/sidebar';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 export interface FmCommonSideNavItem<T = string> {
   id: T;

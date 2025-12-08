@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from '@/components/common/shadcn/select';
 import { Label } from '@/components/common/shadcn/label';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 export interface SelectOption {
   value: string;

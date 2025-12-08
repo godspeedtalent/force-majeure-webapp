@@ -33,7 +33,7 @@ import {
   FmMultiCheckboxOption,
 } from '@/components/common/forms/FmMultiCheckboxInput';
 import { ScrollArea } from '@/components/common/shadcn/scroll-area';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 import * as React from 'react';
 
 interface DevNote {

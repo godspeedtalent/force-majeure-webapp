@@ -23,7 +23,7 @@ import {
   FaTiktok,
   FaYoutube,
 } from 'react-icons/fa6';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -32,14 +32,14 @@ import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmImageUpload } from '@/components/common/forms/FmImageUpload';
 import { toast } from 'sonner';
-import { handleError } from '@/shared/services/errorHandler';
-import { useDebouncedSave } from '@/shared/hooks/useDebouncedSave';
+import { handleError } from '@force-majeure/shared/services/errorHandler';
+import { useDebouncedSave } from '@force-majeure/shared/hooks/useDebouncedSave';
 import { FmGenreMultiSelect } from '@/features/artists/components/FmGenreMultiSelect';
 import { AddTrackModal } from '@/features/artists/components/AddTrackModal';
 import { EditTrackModal } from '@/features/artists/components/EditTrackModal';
 import { useArtistGenres, useUpdateArtistGenres } from '@/features/artists/hooks/useArtistGenres';
 import type { Genre } from '@/features/artists/types';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 type ArtistTab = 'overview' | 'music' | 'social' | 'view';
 

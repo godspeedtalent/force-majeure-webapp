@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/shared/api/supabase/client';
-import { logger } from '@/shared/services/logger';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { logger } from '@force-majeure/shared/services/logger';
 import type { Artist } from '@/features/events/types';
 
 /**

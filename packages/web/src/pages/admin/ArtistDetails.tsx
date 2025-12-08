@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/sh
 import { Badge } from '@/components/common/shadcn/badge';
 import { Separator } from '@/components/common/shadcn/separator';
 import { format } from 'date-fns';
-import { useArtistById } from '@/shared/api/queries/artistQueries';
+import { useArtistById } from '@force-majeure/shared/api/queries/artistQueries';
 import { DetailPageWrapper } from '@/components/layout/DetailPageWrapper';
 
 export default function ArtistDetails() {

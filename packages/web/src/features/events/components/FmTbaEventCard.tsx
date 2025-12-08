@@ -1,10 +1,10 @@
 import { MapPin, Calendar, Clock } from 'lucide-react';
 import { FmDateBox } from '@/components/common/display/FmDateBox';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 import {
   formatTimeDisplay,
   parseTimeToMinutes,
-} from '@/shared/utils/timeUtils';
+} from '@force-majeure/shared/utils/timeUtils';
 
 interface TbaEvent {
   id: string;

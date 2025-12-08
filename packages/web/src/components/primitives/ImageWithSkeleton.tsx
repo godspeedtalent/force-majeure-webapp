@@ -4,8 +4,8 @@ import { Skeleton } from '@/components/common/shadcn/skeleton';
 import {
   ImageAnchor,
   getObjectPositionClass,
-} from '@/shared/types/imageAnchor';
-import { cn } from '@/shared/utils/utils';
+} from '@force-majeure/shared/types/imageAnchor';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 interface ImageWithSkeletonProps {
   src: string;

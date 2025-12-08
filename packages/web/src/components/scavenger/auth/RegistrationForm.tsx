@@ -6,8 +6,8 @@ import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
 import { FmFormFieldGroup } from '@/components/common/forms/FmFormFieldGroup';
 import { ScrollArea } from '@/components/common/shadcn/scroll-area';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
-import { supabase } from '@/shared/api/supabase/client';
-import { handleError } from '@/shared/services/errorHandler';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { handleError } from '@force-majeure/shared/services/errorHandler';
 
 interface RegistrationFormProps {
   onSuccess?: (email: string) => void;

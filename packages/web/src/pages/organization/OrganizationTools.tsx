@@ -5,8 +5,8 @@ import { Building2, Users, TrendingUp, Settings } from 'lucide-react';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonPageLayout } from '@/components/common/layout';
-import { useUserPermissions } from '@/shared/hooks/useUserRole';
-import { PERMISSIONS } from '@/shared/auth/permissions';
+import { useUserPermissions } from '@force-majeure/shared/hooks/useUserRole';
+import { PERMISSIONS } from '@force-majeure/shared/auth/permissions';
 
 /**
  * OrganizationTools - Main dashboard for organization admins

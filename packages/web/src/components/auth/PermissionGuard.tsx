@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
-import { useUserPermissions } from '@/shared/hooks/useUserRole';
-import { Permission, Role } from '@/shared/auth/permissions';
+import { useUserPermissions } from '@force-majeure/shared/hooks/useUserRole';
+import { Permission, Role } from '@force-majeure/shared/auth/permissions';
 
 interface PermissionGuardProps {
   children: ReactNode;

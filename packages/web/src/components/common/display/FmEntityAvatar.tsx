@@ -1,6 +1,6 @@
 import { User, Music, MapPin, Building2, Calendar } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/common/shadcn/avatar';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 export type EntityType = 'user' | 'artist' | 'venue' | 'organization' | 'event';
 

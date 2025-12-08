@@ -7,8 +7,8 @@ import { EventDetailsLayout } from '@/components/layout/EventDetailsLayout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
-import { useUserPermissions } from '@/shared/hooks/useUserRole';
-import { ROLES, PERMISSIONS } from '@/shared/auth/permissions';
+import { useUserPermissions } from '@force-majeure/shared/hooks/useUserRole';
+import { ROLES, PERMISSIONS } from '@force-majeure/shared/auth/permissions';
 
 import { EventHero } from './EventHero';
 import { EventDetailsContent } from './EventDetailsContent';

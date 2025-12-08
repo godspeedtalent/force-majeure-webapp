@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FmBadge } from './FmBadge';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 export interface FmCommonBadgeItem {
   label: string;

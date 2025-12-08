@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 
 interface LinkedArtist {
   id: string;

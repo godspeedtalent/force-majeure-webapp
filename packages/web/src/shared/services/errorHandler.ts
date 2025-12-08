@@ -7,7 +7,7 @@
  *
  * Usage:
  * ```ts
- * import { handleError } from '@/shared/services/errorHandler';
+ * import { handleError } from '@force-majeure/shared/services/errorHandler';
  *
  * try {
  *   await someApiCall();
@@ -21,8 +21,8 @@
  */
 
 import { showErrorToast } from '@/components/common/feedback/FmErrorToast';
-import { logApiError } from '@/shared/utils/apiLogger';
-import { logger } from '@/shared/services/logger';
+import { logApiError } from '@force-majeure/shared/utils/apiLogger';
+import { logger } from '@force-majeure/shared/services/logger';
 
 interface ErrorHandlerOptions {
   /** Title to display in the error toast */

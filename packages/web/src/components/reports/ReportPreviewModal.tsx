@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/common/shadcn/dialog';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 
 interface ReportPreviewModalProps {
   open: boolean;

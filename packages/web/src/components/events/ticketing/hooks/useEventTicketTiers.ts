@@ -1,12 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import { toast } from 'sonner';
 import type { TicketGroup } from '../ticket-group-manager/types';
 import {
   useDeleteTicketTier,
   useSetTierActive,
   ticketTierKeys,
-} from '@/shared/api/queries/ticketTierQueries';
+} from '@force-majeure/shared/api/queries/ticketTierQueries';
 
 interface TicketTierWithOrders {
   id: string;

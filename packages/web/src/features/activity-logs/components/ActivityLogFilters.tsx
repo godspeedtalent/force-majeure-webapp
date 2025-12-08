@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import { Search, Calendar, X } from 'lucide-react';
 import { format } from 'date-fns';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 import { Button } from '@/components/common/shadcn/button';
 import { Input } from '@/components/common/shadcn/input';
 import { Calendar as CalendarComponent } from '@/components/common/shadcn/calendar';

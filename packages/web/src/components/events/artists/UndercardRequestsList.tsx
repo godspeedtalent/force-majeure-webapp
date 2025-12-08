@@ -17,13 +17,13 @@ import {
   User,
 } from 'lucide-react';
 import { FaSpotify, FaSoundcloud, FaInstagram } from 'react-icons/fa6';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import { FormSection } from '@/components/common/forms/FormSection';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 import { toast } from 'sonner';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 
 interface UndercardRequest {
   id: string;

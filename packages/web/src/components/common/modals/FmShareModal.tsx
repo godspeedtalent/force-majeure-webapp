@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from '@/components/common/shadcn/dialog';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 interface FmShareModalProps {
   open: boolean;

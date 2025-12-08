@@ -5,7 +5,7 @@ import {
   TabsTrigger,
   TabsContent,
 } from '@/components/common/shadcn/tabs';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 // ============================================================
 // FmCommonTabs - Force Majeure branded Tabs wrapper

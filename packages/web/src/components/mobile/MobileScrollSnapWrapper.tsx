@@ -1,7 +1,7 @@
 import { ReactNode, useRef, useEffect } from 'react';
-import { cn } from '@/shared/utils/utils';
-import { useIsMobile } from '@/shared/hooks/use-mobile';
-import { useScrollSnap } from '@/shared/hooks/useScrollSnap';
+import { cn } from '@force-majeure/shared/utils/utils';
+import { useIsMobile } from '@force-majeure/shared/hooks/use-mobile';
+import { useScrollSnap } from '@force-majeure/shared/hooks/useScrollSnap';
 
 export interface MobileScrollSnapWrapperProps {
   children: ReactNode;

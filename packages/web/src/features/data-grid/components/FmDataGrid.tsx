@@ -6,8 +6,8 @@ import React, {
   useCallback,
 } from 'react';
 import { Table, TableBody, TableCell, TableRow } from '@/components/common/shadcn/table';
-import { useToast } from '@/shared/hooks/use-toast';
-import { cn } from '@/shared/utils/utils';
+import { useToast } from '@force-majeure/shared/hooks/use-toast';
+import { cn } from '@force-majeure/shared/utils/utils';
 import { useDataGridKeyboardNav } from '../hooks/useDataGridKeyboardNav';
 import { useDataGridVirtualization } from '../hooks/useDataGridVirtualization';
 import { useDataGridState } from '../hooks/useDataGridState';

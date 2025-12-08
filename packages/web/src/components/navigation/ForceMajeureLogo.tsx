@@ -1,5 +1,5 @@
 import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 interface ForceMajeureLogoProps {
   className?: string;

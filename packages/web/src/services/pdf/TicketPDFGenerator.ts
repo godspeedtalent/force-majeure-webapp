@@ -9,7 +9,7 @@
 
 import jsPDF from 'jspdf';
 import QRCode from 'qrcode';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 
 const pdfLogger = logger.createNamespace('TicketPDFGenerator');
 

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { X, Copy, Check, AlertTriangle } from 'lucide-react';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 import { Button } from '@/components/common/shadcn/button';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 interface FmErrorOverlayProps {
   error: Error;

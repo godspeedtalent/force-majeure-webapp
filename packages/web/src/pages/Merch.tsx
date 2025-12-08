@@ -1,7 +1,7 @@
 import { ShoppingCart, Filter } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 
 import { FmCommonEmptyState } from '@/components/common/display/FmCommonEmptyState';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';

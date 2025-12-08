@@ -23,7 +23,7 @@ vi.mock('@/shared/services/logger', () => ({
   },
 }));
 
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 
 // Wrapper for React Query
 function createWrapper() {

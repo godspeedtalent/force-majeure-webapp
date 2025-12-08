@@ -4,8 +4,8 @@ import {
   FmCommonSearchDropdown,
   SearchDropdownOption,
 } from './FmCommonSearchDropdown';
-import { supabase } from '@/shared/api/supabase/client';
-import { useRecentSelections } from '@/shared/hooks/useRecentSelections';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { useRecentSelections } from '@force-majeure/shared/hooks/useRecentSelections';
 
 /**
  * Configuration for creating a search dropdown component

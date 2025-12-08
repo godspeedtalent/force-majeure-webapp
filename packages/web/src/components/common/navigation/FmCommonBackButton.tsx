@@ -1,7 +1,7 @@
 import { ArrowLeft, LucideIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/common/shadcn/button';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 interface FmCommonBackButtonProps {
   /** Text to display on the button */

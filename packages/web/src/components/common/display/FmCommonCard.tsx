@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/common/shadcn/card';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 // ============================================================
 // FmCommonCard - Force Majeure branded Card wrapper

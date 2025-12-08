@@ -1,4 +1,4 @@
-import { getQueueProgressPercentage, formatQueuePosition } from '@/shared/utils/queueUtils';
+import { getQueueProgressPercentage, formatQueuePosition } from '@force-majeure/shared/utils/queueUtils';
 
 interface FmQueueProgressBarProps {
   currentPosition: number;

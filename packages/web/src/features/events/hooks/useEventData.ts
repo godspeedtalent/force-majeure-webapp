@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 import { eventService } from '../services/eventService';
 import { Event } from '../types';
 

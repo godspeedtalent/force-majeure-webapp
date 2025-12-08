@@ -6,7 +6,7 @@
  */
 
 import { Music2, ExternalLink, Globe } from 'lucide-react';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 interface ArtistProfileProps {
   artist: {

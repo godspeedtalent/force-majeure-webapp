@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 import { Layout } from '@/components/layout/Layout';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { BarChart3 } from 'lucide-react';
 import { Card } from '@/components/common/shadcn/card';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 
 export default function Statistics() {

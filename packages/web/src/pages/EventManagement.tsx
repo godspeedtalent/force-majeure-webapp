@@ -17,7 +17,7 @@ import {
   Share2,
   Palette,
 } from 'lucide-react';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -39,9 +39,9 @@ import { toast } from 'sonner';
 import { Card } from '@/components/common/shadcn/card';
 import { Checkbox } from '@/components/common/shadcn/checkbox';
 import { Label } from '@/components/common/shadcn/label';
-import { useUserPermissions } from '@/shared/hooks/useUserRole';
-import { ROLES } from '@/shared/auth/permissions';
-import { handleError } from '@/shared/services/errorHandler';
+import { useUserPermissions } from '@force-majeure/shared/hooks/useUserRole';
+import { ROLES } from '@force-majeure/shared/auth/permissions';
+import { handleError } from '@force-majeure/shared/services/errorHandler';
 import { AdminLockIndicator } from '@/components/common/indicators';
 import { useEventOverviewForm } from './event/hooks/useEventOverviewForm';
 

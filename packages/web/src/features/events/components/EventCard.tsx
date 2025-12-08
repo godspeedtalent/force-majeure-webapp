@@ -17,8 +17,8 @@ import {
   ContextMenuAction,
 } from '@/components/common/modals/FmCommonContextMenu';
 import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
-import { cn } from '@/shared/utils/utils';
-import { parseTimeToMinutes } from '@/shared/utils/timeUtils';
+import { cn } from '@force-majeure/shared/utils/utils';
+import { parseTimeToMinutes } from '@force-majeure/shared/utils/timeUtils';
 
 interface Artist {
   name: string;

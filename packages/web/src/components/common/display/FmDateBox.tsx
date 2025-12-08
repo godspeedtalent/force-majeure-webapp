@@ -1,5 +1,5 @@
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 interface FmDateBoxProps {
   weekday: string;

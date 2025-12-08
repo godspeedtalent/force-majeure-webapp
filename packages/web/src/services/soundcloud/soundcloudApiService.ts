@@ -5,7 +5,7 @@
  * Uses SoundCloud's oEmbed and resolve endpoints.
  */
 
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 
 // SoundCloud User types
 export interface SoundCloudUser {

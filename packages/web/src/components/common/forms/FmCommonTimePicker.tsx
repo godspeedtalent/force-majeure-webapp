@@ -1,5 +1,5 @@
 import { Clock } from 'lucide-react';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 import { Input } from '@/components/common/shadcn/input';
 
 interface FmCommonTimePickerProps {

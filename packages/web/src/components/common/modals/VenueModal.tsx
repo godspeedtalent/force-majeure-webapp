@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 import { MapPin, Users } from 'lucide-react';
 import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
 import { FmInfoChip } from '@/components/common/data/FmInfoChip';

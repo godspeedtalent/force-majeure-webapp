@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Music, Calendar, ArrowLeft } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { Card } from '@/components/common/shadcn/card';
-import { useArtistById, useArtistEvents } from '@/shared/api/queries/artistQueries';
+import { useArtistById, useArtistEvents } from '@force-majeure/shared/api/queries/artistQueries';
 import { DetailPageWrapper } from '@/components/layout/DetailPageWrapper';
 
 // Default placeholder image for artists without an image

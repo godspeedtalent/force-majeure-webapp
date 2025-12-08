@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Label } from '@/components/common/shadcn/label';
 import { Switch } from '@/components/common/shadcn/switch';
 import { LucideIcon } from 'lucide-react';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 interface FmCommonToggleProps {
   id: string;

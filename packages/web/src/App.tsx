@@ -58,13 +58,13 @@ import { TooltipProvider } from '@/components/common/shadcn/tooltip';
 import Merch from './pages/Merch';
 
 import { AuthProvider } from '@/features/auth/services/AuthContext';
-import { useFeatureFlagHelpers } from '@/shared/hooks/useFeatureFlags';
+import { useFeatureFlagHelpers } from '@force-majeure/shared/hooks/useFeatureFlags';
 import { FmToolbar } from '@/components/common/toolbar/FmToolbar';
 import { FmMobileDevToolbar } from '@/components/common/toolbar/mobile/FmMobileDevToolbar';
-import { ROLES } from '@/shared/auth/permissions';
-import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
+import { ROLES } from '@force-majeure/shared/auth/permissions';
+import { FEATURE_FLAGS } from '@force-majeure/shared/config/featureFlags';
 import { CheckoutProvider } from '@/contexts/CheckoutContext';
-import { ShoppingCartProvider } from '@/shared/hooks/useShoppingCart';
+import { ShoppingCartProvider } from '@force-majeure/shared/hooks/useShoppingCart';
 import {
   GlobalSearchProvider,
   useGlobalSearch,

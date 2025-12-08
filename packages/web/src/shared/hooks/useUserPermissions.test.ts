@@ -3,7 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { useUserRole, useUserPermissions } from './useUserRole';
-import { PERMISSIONS, ROLES } from '@/shared/auth/permissions';
+import { PERMISSIONS, ROLES } from '@force-majeure/shared/auth/permissions';
 
 // Mock Supabase
 vi.mock('@/shared/api/supabase/client', () => ({
@@ -24,7 +24,7 @@ vi.mock('@/shared/services/logger', () => ({
   },
 }));
 
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import { useAuth } from '@/features/auth/services/AuthContext';
 
 function createWrapper() {

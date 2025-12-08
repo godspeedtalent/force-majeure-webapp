@@ -1,7 +1,7 @@
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import { OrderReceiptEmailData, EmailSendResult } from '@/types/email';
 import { generateOrderReceiptEmailHTML } from './templates/OrderReceiptEmail';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 // import { TicketPDFService } from './TicketPDFService'; // TODO: Re-enable when PDF generation is implemented
 
 /**

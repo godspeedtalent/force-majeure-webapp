@@ -8,7 +8,7 @@
  * @see /src/shared/constants/designSystem.ts
  */
 
-import { COLORS, SPACING } from '@/shared/constants/designSystem';
+import { COLORS, SPACING } from '@force-majeure/shared/constants/designSystem';
 
 /**
  * Only allow design system colors

@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 
 import { FmImageCard } from '@/components/common/display/FmImageCard';
-import { getImageUrl } from '@/shared/utils/imageUtils';
+import { getImageUrl } from '@force-majeure/shared/utils/imageUtils';
 
 interface MerchCardProps {
   id: string;

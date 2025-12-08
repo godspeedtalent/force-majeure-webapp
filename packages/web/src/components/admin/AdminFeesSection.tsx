@@ -12,11 +12,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/common/shadcn/alert-dialog';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import { toast } from 'sonner';
-import { cn } from '@/shared/utils/utils';
-import { logger } from '@/shared/services/logger';
-import { useEnvironmentName } from '@/shared/hooks/useEnvironment';
+import { cn } from '@force-majeure/shared/utils/utils';
+import { logger } from '@force-majeure/shared/services/logger';
+import { useEnvironmentName } from '@force-majeure/shared/hooks/useEnvironment';
 
 interface Fee {
   id: string;

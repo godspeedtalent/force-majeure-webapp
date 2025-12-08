@@ -7,9 +7,9 @@ import { Separator } from '@/components/common/shadcn/separator';
 import { Mail, Copy, Send, Eye } from 'lucide-react';
 import { OrderReceiptEmailData } from '@/types/email';
 import { generateOrderReceiptEmailHTML } from '@/services/email/templates/OrderReceiptEmail';
-import { useSendTestEmail } from '@/shared/hooks/useEmailReceipt';
+import { useSendTestEmail } from '@force-majeure/shared/hooks/useEmailReceipt';
 import { toast } from 'sonner';
-import { formatHeader } from '@/shared/utils/styleUtils';
+import { formatHeader } from '@force-majeure/shared/utils/styleUtils';
 
 /**
  * EmailPreview - Developer tool for previewing and testing email templates

@@ -1,5 +1,5 @@
 import React from 'react';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 import { FmErrorDisplay } from '@/components/common/feedback/FmErrorDisplay';
 
 interface Props {

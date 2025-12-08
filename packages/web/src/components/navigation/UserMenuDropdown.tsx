@@ -10,11 +10,11 @@ import {
 } from '@/components/common/forms/FmCommonDropdown';
 import { FmUserAvatar } from '@/components/common/display/FmUserAvatar';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { useUserPermissions } from '@/shared/hooks/useUserRole';
-import { PERMISSIONS, ROLES } from '@/shared/auth/permissions';
+import { useUserPermissions } from '@force-majeure/shared/hooks/useUserRole';
+import { PERMISSIONS, ROLES } from '@force-majeure/shared/auth/permissions';
 import { AdminLockIndicator } from '@/components/common/indicators';
-import { useIsMobile } from '@/shared/hooks/use-mobile';
-import { cn } from '@/shared/utils/utils';
+import { useIsMobile } from '@force-majeure/shared/hooks/use-mobile';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 interface MobileMenuItem {
   label: string;

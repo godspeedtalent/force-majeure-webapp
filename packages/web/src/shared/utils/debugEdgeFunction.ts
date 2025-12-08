@@ -2,7 +2,7 @@
  * Debug utility to test Supabase edge function connectivity
  */
 
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 
 const debugLogger = logger.createNamespace('EdgeFunction');
 

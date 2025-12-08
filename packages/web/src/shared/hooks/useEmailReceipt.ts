@@ -19,7 +19,7 @@ import { toast } from 'sonner';
  * };
  * ```
  */
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 
 export const useEmailReceipt = () => {
   const [lastResult, setLastResult] = useState<EmailSendResult | null>(null);

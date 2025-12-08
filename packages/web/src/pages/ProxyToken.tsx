@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 import { FmCommonLoadingOverlay } from '@/components/common/feedback/FmCommonLoadingOverlay';
-import { useProxyToken } from '@/shared/hooks/useProxyToken';
+import { useProxyToken } from '@force-majeure/shared/hooks/useProxyToken';
 
 export default function ProxyToken() {
   const { processToken } = useProxyToken();

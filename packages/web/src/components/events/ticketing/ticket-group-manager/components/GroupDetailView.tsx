@@ -16,7 +16,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/common/shadcn/tooltip';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 import type { TicketGroup, TicketTier } from '../types';
 import { GROUP_COLORS, NO_GROUP_ID } from '../constants';
 import { formatPrice, getTotalTicketsInGroup, getTotalRevenueInGroup } from '../utils';

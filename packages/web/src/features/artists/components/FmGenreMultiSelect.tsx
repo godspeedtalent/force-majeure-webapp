@@ -7,11 +7,11 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 import { searchGenres } from '../services/genreService';
 import type { Genre } from '../types';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 import {
   Popover,
   PopoverContent,

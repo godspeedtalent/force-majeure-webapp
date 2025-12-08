@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Label } from '@/components/common/shadcn/label';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 import { MoveVertical } from 'lucide-react';
 
 interface HeroImageFocalPointProps {

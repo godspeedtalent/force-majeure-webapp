@@ -7,7 +7,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Check, ChevronsUpDown, MapPin } from 'lucide-react';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 import {
   Command,
   CommandEmpty,
@@ -22,7 +22,7 @@ import {
   PopoverTrigger,
 } from '@/components/common/shadcn/popover';
 import { Button } from '@/components/common/shadcn/button';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 import { Label } from '@/components/common/shadcn/label';
 
 interface City {

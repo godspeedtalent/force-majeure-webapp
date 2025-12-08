@@ -2,11 +2,11 @@ import { useState, useRef } from 'react';
 import { Upload, X, ImageIcon } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
-import { imageUploadService } from '@/shared/services/imageUploadService';
-import { useToast } from '@/shared/hooks/use-toast';
-import { useUserRole } from '@/shared/hooks/useUserRole';
+import { imageUploadService } from '@force-majeure/shared/services/imageUploadService';
+import { useToast } from '@force-majeure/shared/hooks/use-toast';
+import { useUserRole } from '@force-majeure/shared/hooks/useUserRole';
 import { showErrorToast } from '@/components/common/feedback/FmErrorToast';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 interface FmImageUploadProps {
   eventId?: string;

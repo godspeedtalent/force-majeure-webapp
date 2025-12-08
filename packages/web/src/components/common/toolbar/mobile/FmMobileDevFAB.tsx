@@ -1,5 +1,5 @@
 import { Wrench } from 'lucide-react';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 interface FmMobileDevFABProps {
   onClick: () => void;
@@ -28,7 +28,7 @@ export function FmMobileDevFAB({
         // Size - Material Design standard FAB
         'h-[56px] w-[56px]',
         // Styling - semi-transparent gold background with black text
-        'bg-fm-gold/80 text-black backdrop-blur-sm',
+        'bg-fm-gold/60 text-black backdrop-blur-sm',
         // Shape - full circle (exception to sharp corners)
         'rounded-full',
         // Shadow - gold glow

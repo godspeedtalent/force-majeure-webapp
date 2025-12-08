@@ -2,7 +2,7 @@ import { ChevronLeft, AlertCircle, CheckCircle } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { TrackInputForm, TrackList, type TrackFormData } from '@/features/artists/components/TrackInputForm';
 import type { ArtistRegistrationFormData, RegistrationTrack } from '../../types/registration';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 interface MusicStepProps {
   formData: ArtistRegistrationFormData;

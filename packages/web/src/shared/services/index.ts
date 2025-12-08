@@ -18,7 +18,7 @@ export {
 
 // Logging utilities
 export { logger } from './logger';
-export { logApiError, logApi } from '@/shared/utils/apiLogger';
+export { logApiError, logApi } from '@force-majeure/shared/utils/apiLogger';
 
 // Environment utilities
 export {

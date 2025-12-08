@@ -1,4 +1,4 @@
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
@@ -17,8 +17,8 @@ import {
   useScavengerNavigation,
   useUserClaims,
 } from '@/features/scavenger/hooks/useScavenger';
-import { useFeatureFlagHelpers } from '@/shared/hooks/useFeatureFlags';
-import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
+import { useFeatureFlagHelpers } from '@force-majeure/shared/hooks/useFeatureFlags';
+import { FEATURE_FLAGS } from '@force-majeure/shared/config/featureFlags';
 
 // Layout components
 // Scavenger components

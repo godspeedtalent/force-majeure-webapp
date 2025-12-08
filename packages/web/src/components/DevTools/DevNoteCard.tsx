@@ -10,7 +10,7 @@ import {
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from '@/components/common/shadcn/context-menu';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 type NoteType = 'TODO' | 'INFO' | 'BUG' | 'QUESTION';
 type NoteStatus =

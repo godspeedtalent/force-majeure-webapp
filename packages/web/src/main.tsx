@@ -1,6 +1,9 @@
 import { Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 
+// Initialize Supabase
+import './lib/supabase';
+
 // Initialize i18n before React renders
 import './i18n/config';
 import './index.css';

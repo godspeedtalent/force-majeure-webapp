@@ -8,7 +8,7 @@
  */
 
 import { LucideIcon } from 'lucide-react';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 export interface FmFormFieldGroupProps {
   /** Group title displayed at top */

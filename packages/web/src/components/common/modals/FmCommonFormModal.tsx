@@ -7,8 +7,8 @@ import {
   DialogTitle,
 } from '@/components/common/shadcn/dialog';
 import { Separator } from '@/components/common/shadcn/separator';
-import { cn } from '@/shared/utils/utils';
-import { GLASS_STYLES } from '@/shared/utils/styleUtils';
+import { cn } from '@force-majeure/shared/utils/utils';
+import { GLASS_STYLES } from '@force-majeure/shared/utils/styleUtils';
 
 interface FormSection {
   title?: string;

@@ -1,8 +1,8 @@
 import { DataGridColumn, DataGridColumns } from '@/features/data-grid';
 import { BadgeListCell } from '@/features/data-grid/components/cells';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import { toast } from 'sonner';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 
 /**
  * Update artist image URL in the database

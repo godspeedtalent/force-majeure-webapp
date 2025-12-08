@@ -2,11 +2,11 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ArtistRegistrationLayout } from '@/components/layout/ArtistRegistrationLayout';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { logApiError } from '@/shared/utils/apiLogger';
-import { logger } from '@/shared/services/logger';
-import { useIsMobile } from '@/shared/hooks/use-mobile';
+import { logApiError } from '@force-majeure/shared/utils/apiLogger';
+import { logger } from '@force-majeure/shared/services/logger';
+import { useIsMobile } from '@force-majeure/shared/hooks/use-mobile';
 import { CarouselApi } from '@/components/common/shadcn/carousel';
 
 // Import centralized types and layout components

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 import { Search, X } from 'lucide-react';
 import {
   Popover,
@@ -14,7 +14,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/common/shadcn/tooltip';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 export interface SearchDropdownOption {
   id: string;

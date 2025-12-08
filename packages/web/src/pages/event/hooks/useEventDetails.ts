@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { supabase } from '@/shared/api/supabase/client';
-import { getImageUrl } from '@/shared/utils/imageUtils';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { getImageUrl } from '@force-majeure/shared/utils/imageUtils';
 
 import { ArtistSummary, EventDetailsRecord, VenueDetails } from '../types';
 

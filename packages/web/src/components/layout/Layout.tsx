@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
-import { cn } from '@/shared/utils/utils';
-import { useIsMobile } from '@/shared/hooks/use-mobile';
+import { cn } from '@force-majeure/shared/utils/utils';
+import { useIsMobile } from '@force-majeure/shared/hooks/use-mobile';
 import { Footer } from '@/components/navigation/Footer';
 import { Navigation } from '@/components/navigation/Navigation';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';

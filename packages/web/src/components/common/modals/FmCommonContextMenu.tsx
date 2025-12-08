@@ -8,8 +8,8 @@ import {
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from '@/components/common/shadcn/context-menu';
-import { cn } from '@/shared/utils/utils';
-import { getListItemClasses, getDepthClasses } from '@/shared/utils/styleUtils';
+import { cn } from '@force-majeure/shared/utils/utils';
+import { getListItemClasses, getDepthClasses } from '@force-majeure/shared/utils/styleUtils';
 
 export interface ContextMenuAction<T = any> {
   label: string;

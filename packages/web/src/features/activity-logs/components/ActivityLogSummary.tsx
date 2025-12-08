@@ -14,7 +14,7 @@ import {
   Ticket,
   Settings,
 } from 'lucide-react';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 import {
   ActivityLogSummary as Summary,
   CATEGORY_CONFIG,

@@ -3,7 +3,7 @@ import { Input } from '@/components/common/shadcn/input';
 import { Checkbox } from '@/components/common/shadcn/checkbox';
 import { FmCommonRowManager } from '@/components/common/forms/FmCommonRowManager';
 import { EventFormState } from '../hooks/useEventData';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 /**
  * TicketTiersSection Component

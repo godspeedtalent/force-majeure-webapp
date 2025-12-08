@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { FmDataGrid, DataGridColumn, DataGridAction } from './FmDataGrid';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import { Badge } from '@/components/common/shadcn/badge';
 import { Mail, Shield, Trash2, Edit, UserCog, Building2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { RoleManagementModal } from '@/components/admin/RoleManagementModal';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 
 interface UserData {
   id: string;

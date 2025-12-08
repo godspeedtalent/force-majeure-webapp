@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 import { Button } from '@/components/common/shadcn/button';
 import { Calendar } from '@/components/common/shadcn/calendar';
 import {

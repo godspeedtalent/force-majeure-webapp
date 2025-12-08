@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 interface FormSectionProps {
   title: string;

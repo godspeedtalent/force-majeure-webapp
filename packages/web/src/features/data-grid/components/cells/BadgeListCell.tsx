@@ -1,4 +1,4 @@
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 export interface BadgeListCellProps {
   items: Array<string | { label: string; variant?: 'default' | 'gold' | 'muted' }>;

@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
-import { useFeatureFlagHelpers } from '@/shared/hooks/useFeatureFlags';
-import { FeatureFlag } from '@/shared/config/featureFlags';
+import { useFeatureFlagHelpers } from '@force-majeure/shared/hooks/useFeatureFlags';
+import { FeatureFlag } from '@force-majeure/shared/config/featureFlags';
 
 interface FeatureGuardProps {
   children: ReactNode;

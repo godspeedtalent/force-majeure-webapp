@@ -1,4 +1,4 @@
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 import { FmCommonBadgeGroup } from '@/components/common/display/FmCommonBadgeGroup';
 import { Instagram as InstagramIcon } from 'lucide-react';
 import { SiSoundcloud, SiSpotify, SiTiktok } from 'react-icons/si';

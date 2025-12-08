@@ -1,7 +1,7 @@
 import { User } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
-import { formatHeader } from '@/shared/utils/styleUtils';
+import { formatHeader } from '@force-majeure/shared/utils/styleUtils';
 
 export default function MemberHome() {
   return (

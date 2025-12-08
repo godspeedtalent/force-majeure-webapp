@@ -17,10 +17,10 @@ import {
   TooltipTrigger,
 } from '@/components/common/shadcn/tooltip';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { useFeatureFlagHelpers } from '@/shared/hooks/useFeatureFlags';
-import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
+import { useFeatureFlagHelpers } from '@force-majeure/shared/hooks/useFeatureFlags';
+import { FEATURE_FLAGS } from '@force-majeure/shared/config/featureFlags';
 import { useCheckoutTimer } from '@/contexts/CheckoutContext';
-import { SOCIAL_LINKS } from '@/shared/constants/socialLinks';
+import { SOCIAL_LINKS } from '@force-majeure/shared/constants/socialLinks';
 import { FeatureGuard } from '@/components/common/guards/FeatureGuard';
 
 export const Navigation = () => {

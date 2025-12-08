@@ -1,8 +1,8 @@
 import { AlertCircle, Copy, Check, FileText } from 'lucide-react';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 import { FmErrorOverlay } from './FmErrorOverlay';
 
 interface FmErrorToastProps {

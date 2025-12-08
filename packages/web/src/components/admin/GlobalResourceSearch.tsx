@@ -10,11 +10,11 @@ import {
   X,
 } from 'lucide-react';
 import { Input } from '@/components/common/shadcn/input';
-import { supabase } from '@/shared/api/supabase/client';
-import { useDebounce } from '@/shared/hooks';
-import { handleError } from '@/shared/services/errorHandler';
-import { cn } from '@/shared/utils/utils';
-import { logger } from '@/shared/services/logger';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { useDebounce } from '@force-majeure/shared/hooks';
+import { handleError } from '@force-majeure/shared/services/errorHandler';
+import { cn } from '@force-majeure/shared/utils/utils';
+import { logger } from '@force-majeure/shared/services/logger';
 
 interface Organization {
   id: string;

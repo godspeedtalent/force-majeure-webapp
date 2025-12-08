@@ -27,8 +27,8 @@ vi.mock('@/shared/services/errorHandler', () => ({
   handleError: vi.fn(),
 }));
 
-import { supabase } from '@/shared/api/supabase/client';
-import { handleError } from '@/shared/services/errorHandler';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { handleError } from '@force-majeure/shared/services/errorHandler';
 
 describe('RoleManagementService', () => {
   beforeEach(() => {

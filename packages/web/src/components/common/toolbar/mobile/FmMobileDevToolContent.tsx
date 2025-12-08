@@ -5,7 +5,7 @@ import {
   DrawerContent,
   DrawerHeader,
 } from '@/components/common/shadcn/drawer';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 import { MobileDevToolId } from './useMobileDevTools';
 import { DevNavigationTabContent } from '../tabs/DevNavigationTab';
 import {

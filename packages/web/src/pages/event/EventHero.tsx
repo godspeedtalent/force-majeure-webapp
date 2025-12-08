@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ArrowLeft, Settings } from 'lucide-react';
 
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 import { EventDetailsRecord } from './types';
 

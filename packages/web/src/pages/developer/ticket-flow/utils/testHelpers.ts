@@ -2,8 +2,8 @@
  * Shared test helper utilities for ticket flow testing
  */
 
-import { supabase } from '@/shared/api/supabase/client';
-import { logger } from '@/shared/services/logger';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { logger } from '@force-majeure/shared/services/logger';
 import { TEST_PREFIXES } from './mockData';
 import type { TestLogger } from '@/features/testing/services/TestLogger';
 

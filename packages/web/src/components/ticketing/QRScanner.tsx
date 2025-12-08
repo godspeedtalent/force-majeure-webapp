@@ -15,7 +15,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode, Html5QrcodeScanner } from 'html5-qrcode';
 import { X, Camera } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 
 const scannerLogger = logger.createNamespace('QRScanner');
 

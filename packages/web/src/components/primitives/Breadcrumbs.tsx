@@ -9,10 +9,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/common/shadcn/breadcrumb';
-import { useBreadcrumbs } from '@/shared/hooks/useBreadcrumbs';
-import { useUserPermissions } from '@/shared/hooks/useUserRole';
-import { ROLES } from '@/shared/auth/permissions';
-import { cn } from '@/shared/utils/utils';
+import { useBreadcrumbs } from '@force-majeure/shared/hooks/useBreadcrumbs';
+import { useUserPermissions } from '@force-majeure/shared/hooks/useUserRole';
+import { ROLES } from '@force-majeure/shared/auth/permissions';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 /**
  * Comprehensive breadcrumb navigation component

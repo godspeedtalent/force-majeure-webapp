@@ -1,5 +1,5 @@
 import { ChevronUp, ChevronDown } from 'lucide-react';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 import { ArtistPreviewCard } from './ArtistPreviewCard';
 import type { ArtistRegistrationFormData } from '../types/registration';
 

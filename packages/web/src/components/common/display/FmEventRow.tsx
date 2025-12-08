@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { MapPin, Clock } from 'lucide-react';
 import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
 import { FmDateBox } from '@/components/common/display/FmDateBox';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 export interface FmEventRowProps {
   id: string;

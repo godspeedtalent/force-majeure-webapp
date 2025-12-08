@@ -1,5 +1,5 @@
 import { OrderReceiptEmailData } from '@/types/email';
-import { formatTimeDisplay } from '@/shared/utils/timeUtils';
+import { formatTimeDisplay } from '@force-majeure/shared/utils/timeUtils';
 
 /**
  * OrderReceiptEmail - HTML email template for order receipts

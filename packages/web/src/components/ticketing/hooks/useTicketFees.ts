@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { supabase } from '@/shared/api/supabase/client';
-import { environmentService } from '@/shared/services/environmentService';
-import { logger } from '@/shared/services/logger';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { environmentService } from '@force-majeure/shared/services/environmentService';
+import { logger } from '@force-majeure/shared/services/logger';
 
 const feeLogger = logger.createNamespace('TicketFees');
 

@@ -1,6 +1,6 @@
-import { supabase } from '@/shared/api/supabase/client';
-import { logger } from '@/shared/services/logger';
-import { handleError } from '@/shared/services/errorHandler';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { logger } from '@force-majeure/shared/services/logger';
+import { handleError } from '@force-majeure/shared/services/errorHandler';
 
 const roleLogger = logger.createNamespace('RoleManagement');
 

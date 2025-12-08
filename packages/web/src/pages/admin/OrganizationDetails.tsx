@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import { ArrowLeft, Building2, Calendar } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/shadcn/card';

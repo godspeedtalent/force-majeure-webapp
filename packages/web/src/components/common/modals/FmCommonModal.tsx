@@ -6,8 +6,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/common/shadcn/dialog';
-import { cn } from '@/shared/utils/utils';
-import { GLASS_STYLES } from '@/shared/utils/styleUtils';
+import { cn } from '@force-majeure/shared/utils/utils';
+import { GLASS_STYLES } from '@force-majeure/shared/utils/styleUtils';
 
 interface FmCommonModalProps {
   open: boolean;

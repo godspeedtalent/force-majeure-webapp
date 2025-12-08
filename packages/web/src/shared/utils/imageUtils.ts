@@ -1,5 +1,5 @@
-import { supabase } from '@/shared/api/supabase/client';
-import { logger } from '@/shared/services/logger';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { logger } from '@force-majeure/shared/services/logger';
 
 export const getImageUrl = (imagePath: string | null): string => {
   if (!imagePath) {

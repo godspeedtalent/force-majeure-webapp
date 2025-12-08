@@ -21,7 +21,7 @@ import {
 } from '@/components/common/shadcn/tooltip';
 import { ChevronDown, ChevronUp, Filter, X, GripVertical, Pin, PinOff } from 'lucide-react';
 import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 import { DataGridColumn } from '../FmDataGrid';
 
 export interface FmDataGridHeaderProps<T> {

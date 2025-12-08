@@ -7,7 +7,7 @@
 
 import { ReactNode, useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 import {
   Carousel,
   CarouselContent,

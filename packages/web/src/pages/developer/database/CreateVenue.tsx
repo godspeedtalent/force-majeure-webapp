@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useCreateEntityNavigation } from '@/shared/hooks/useCreatedEntityReturn';
+import { useCreateEntityNavigation } from '@force-majeure/shared/hooks/useCreatedEntityReturn';
 import { FmCommonCreateForm } from '@/components/common/forms/FmCommonCreateForm';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmFlexibleImageUpload } from '@/components/common/forms/FmFlexibleImageUpload';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import { toast } from 'sonner';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 
 const DeveloperCreateVenuePage = () => {
   const navigate = useNavigate();

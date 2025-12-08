@@ -4,7 +4,7 @@ import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/common/shadcn/table';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import { toast } from 'sonner';
 import { Plus, Trash2 } from 'lucide-react';
 import type { ReportRecipient } from '@/types/reports';

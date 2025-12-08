@@ -3,7 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { useFeatureFlags, useFeatureFlagHelpers } from './useFeatureFlags';
-import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
+import { FEATURE_FLAGS } from '@force-majeure/shared/config/featureFlags';
 
 // Mock Supabase
 vi.mock('@/shared/api/supabase/client', () => ({
@@ -36,9 +36,9 @@ vi.mock('@/shared/services/logger', () => ({
   },
 }));
 
-import { supabase } from '@/shared/api/supabase/client';
-import { environmentService } from '@/shared/services/environmentService';
-import { isDevelopment, getEnvironmentOverride } from '@/shared/utils/environment';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { environmentService } from '@force-majeure/shared/services/environmentService';
+import { isDevelopment, getEnvironmentOverride } from '@force-majeure/shared/utils/environment';
 
 function createWrapper() {
   const queryClient = new QueryClient({

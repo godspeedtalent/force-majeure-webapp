@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Users } from 'lucide-react';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { Label } from '@/components/common/shadcn/label';
 import { Input } from '@/components/common/shadcn/input';
 import { Switch } from '@/components/common/shadcn/switch';
 import { toast } from 'sonner';
-import { handleError } from '@/shared/services/errorHandler';
+import { handleError } from '@force-majeure/shared/services/errorHandler';
 
 interface GuestListSettingsProps {
   eventId: string;

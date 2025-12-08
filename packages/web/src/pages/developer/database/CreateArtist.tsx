@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Mic2, User, Music, Share2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useCreateEntityNavigation } from '@/shared/hooks/useCreatedEntityReturn';
+import { useCreateEntityNavigation } from '@force-majeure/shared/hooks/useCreatedEntityReturn';
 import { FmCommonCreateForm } from '@/components/common/forms/FmCommonCreateForm';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonJsonEditor } from '@/components/common/forms/FmCommonJsonEditor';
@@ -11,9 +11,9 @@ import { FmGenreMultiSelect } from '@/features/artists/components/FmGenreMultiSe
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { SpotifyIcon } from '@/components/common/icons/SpotifyIcon';
 import { SpotifyArtistImport } from '@/components/spotify/SpotifyArtistImport';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import { toast } from 'sonner';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 import type { Genre } from '@/features/artists/types';
 import type { SpotifyArtist } from '@/services/spotify/spotifyApiService';
 

@@ -8,7 +8,7 @@ import { SpotifyArtistImport } from '@/components/spotify/SpotifyArtistImport';
 import { SoundCloudUserImport, type SoundCloudUserData } from '@/components/soundcloud/SoundCloudUserImport';
 import { getArtistTopTracks, type SpotifyArtist } from '@/services/spotify/spotifyApiService';
 import { getArtistPopularTrack } from '@/services/soundcloud/soundcloudApiService';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 import type { ArtistRegistrationFormData, RegistrationTrack } from '../../types/registration';
 import type { Genre } from '@/features/artists/types';
 

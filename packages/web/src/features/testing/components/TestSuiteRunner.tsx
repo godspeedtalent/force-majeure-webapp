@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useToast } from '@/shared/hooks/use-toast';
+import { useToast } from '@force-majeure/shared/hooks/use-toast';
 
 interface TestSuiteRunnerProps {
   suite: TestSuite;

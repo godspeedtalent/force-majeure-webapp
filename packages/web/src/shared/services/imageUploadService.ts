@@ -1,6 +1,6 @@
-import { supabase } from '@/shared/api/supabase/client';
-import { logger } from '@/shared/services/logger';
-import { compressImage, ImageCompressionOptions } from '@/shared/utils/imageUtils';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { logger } from '@force-majeure/shared/services/logger';
+import { compressImage, ImageCompressionOptions } from '@force-majeure/shared/utils/imageUtils';
 
 export interface UploadImageOptions {
   file: File;

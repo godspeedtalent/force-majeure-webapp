@@ -7,7 +7,7 @@
 
 import { TestSuite } from '@/features/testing/types/testing';
 import { TestLogger } from '@/features/testing/services/TestLogger';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import {
   createMockEvent,
   TEST_PREFIXES,

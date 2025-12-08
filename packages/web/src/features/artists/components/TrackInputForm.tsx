@@ -13,7 +13,7 @@ import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 export type RecordingType = 'track' | 'dj_set';
 

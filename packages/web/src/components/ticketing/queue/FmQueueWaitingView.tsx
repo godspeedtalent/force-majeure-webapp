@@ -3,7 +3,7 @@ import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmQueueProgressBar } from '@/components/common/feedback/FmQueueProgressBar';
 import { FmDateBox } from '@/components/common/display/FmDateBox';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
-import { formatWaitTime } from '@/shared/utils/queueUtils';
+import { formatWaitTime } from '@force-majeure/shared/utils/queueUtils';
 import { Event } from '@/features/events/types';
 
 interface FmQueueWaitingViewProps {

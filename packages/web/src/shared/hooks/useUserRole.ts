@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import {
   PERMISSIONS,
   type Permission,
   type Role,
-} from '@/shared/auth/permissions';
+} from '@force-majeure/shared/auth/permissions';
 
 export interface UserRole {
   role_name: string;

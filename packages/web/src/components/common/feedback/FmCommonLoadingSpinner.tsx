@@ -1,4 +1,4 @@
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 interface FmCommonLoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg';

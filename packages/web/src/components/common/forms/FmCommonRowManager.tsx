@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 interface FmCommonRowManagerProps<T> {
   items: T[];

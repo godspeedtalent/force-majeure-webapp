@@ -15,7 +15,7 @@ import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoa
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { getSoundCloudUserFromUrl } from '@/services/soundcloud/soundcloudApiService';
 import { toast } from 'sonner';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 
 export interface SoundCloudUserData {
   name: string;

@@ -14,7 +14,7 @@ import {
   AvatarImage,
 } from '@/components/common/shadcn/avatar';
 import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 import { FmAnimatedGradientAvatar } from './FmAnimatedGradientAvatar';
 
 interface FmCommonUserPhotoProps {

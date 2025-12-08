@@ -1,7 +1,7 @@
 import { TestSuite } from '@/features/testing/types/testing';
 import { TestSuiteRunner } from '@/features/testing/components/TestSuiteRunner';
 import { ShoppingCart } from 'lucide-react';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import { TestLogger } from '@/features/testing/services/TestLogger';
 
 // ============================================================================

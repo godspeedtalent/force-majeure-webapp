@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { logApiError } from '@/shared/utils/apiLogger';
-import { logger } from '@/shared/services/logger';
+import { logApiError } from '@force-majeure/shared/utils/apiLogger';
+import { logger } from '@force-majeure/shared/services/logger';
 import type { ArtistRegistrationFormData } from '../types/registration';
 
 export function useArtistRegistrationSubmit() {

@@ -9,7 +9,7 @@
  *
  * @example Web usage:
  * ```typescript
- * import { useCartStore } from '@/shared/stores/cartStore';
+ * import { useCartStore } from '@force-majeure/shared/stores/cartStore';
  *
  * function CartButton() {
  *   const { items, getTotalItems, addItem } = useCartStore();
@@ -32,7 +32,7 @@
 
 import { create, StateCreator } from 'zustand';
 import { persist, createJSONStorage, PersistOptions, StateStorage } from 'zustand/middleware';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 
 // =============================================================================
 // TYPES

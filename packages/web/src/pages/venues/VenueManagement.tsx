@@ -10,10 +10,10 @@ import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { Card } from '@/components/common/shadcn/card';
 import { toast } from 'sonner';
-import { handleError } from '@/shared/services/errorHandler';
-import { useDebouncedSave } from '@/shared/hooks/useDebouncedSave';
+import { handleError } from '@force-majeure/shared/services/errorHandler';
+import { useDebouncedSave } from '@force-majeure/shared/hooks/useDebouncedSave';
 import { venueService } from '@/features/venues/services/venueService';
-import { useVenueById, venueKeys } from '@/shared/api/queries/venueQueries';
+import { useVenueById, venueKeys } from '@force-majeure/shared/api/queries/venueQueries';
 
 type VenueTab = 'overview' | 'view';
 

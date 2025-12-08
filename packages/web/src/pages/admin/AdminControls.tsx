@@ -22,7 +22,7 @@ import { DevToolsManagement } from '@/components/admin/DevToolsManagement';
 import { UserManagement } from './UserManagement';
 import { OrganizationsManagement } from './OrganizationsManagement';
 import { UserRequestsAdmin } from '@/components/admin/UserRequestsAdmin';
-import { formatHeader } from '@/shared/utils/styleUtils';
+import { formatHeader } from '@force-majeure/shared/utils/styleUtils';
 
 type AdminTab = 'devtools' | 'fees' | 'settings' | 'users' | 'organizations' | 'requests' | 'logs';
 

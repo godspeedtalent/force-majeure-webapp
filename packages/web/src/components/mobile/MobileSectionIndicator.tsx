@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { cn } from '@/shared/utils/utils';
-import { useIsMobile } from '@/shared/hooks/use-mobile';
-import { SCROLL_THRESHOLDS } from '@/shared/constants/scrollThresholds';
+import { cn } from '@force-majeure/shared/utils/utils';
+import { useIsMobile } from '@force-majeure/shared/hooks/use-mobile';
+import { SCROLL_THRESHOLDS } from '@force-majeure/shared/constants/scrollThresholds';
 
 export interface Section {
   id: string;

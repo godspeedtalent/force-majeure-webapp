@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { logger } from '@/shared/services/logger';
+import { logger } from '@force-majeure/shared/services/logger';
 import { useNavigate } from 'react-router-dom';
 import { FileEdit, Dices } from 'lucide-react';
 import { Label } from '@/components/common/shadcn/label';

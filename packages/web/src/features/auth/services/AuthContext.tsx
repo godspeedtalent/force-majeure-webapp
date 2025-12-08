@@ -7,11 +7,11 @@ import {
   ReactNode,
 } from 'react';
 
-import { supabase } from '@/shared/api/supabase/client';
-import { useToast } from '@/shared/hooks/use-toast';
-import { sessionPersistence } from '@/shared/utils/sessionPersistence';
-import { logger } from '@/shared/services/logger';
-import { handleError } from '@/shared/services/errorHandler';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { useToast } from '@force-majeure/shared/hooks/use-toast';
+import { sessionPersistence } from '@force-majeure/shared/utils/sessionPersistence';
+import { logger } from '@force-majeure/shared/services/logger';
+import { handleError } from '@force-majeure/shared/services/errorHandler';
 
 const authLogger = logger.createNamespace('Auth');
 

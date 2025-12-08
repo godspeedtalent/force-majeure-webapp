@@ -1,9 +1,9 @@
 import { ReactNode, useEffect } from 'react';
 import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
-import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { useUserPermissions } from '@force-majeure/shared/hooks/useUserRole';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { Permission, Role } from '@/shared/auth/permissions';
+import { Permission, Role } from '@force-majeure/shared/auth/permissions';
 
 interface ProtectedRouteProps {
   children: ReactNode;

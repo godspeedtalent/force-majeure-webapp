@@ -1,5 +1,5 @@
 import { CardElement } from '@stripe/react-stripe-js';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 interface StripeCardInputProps {
   className?: string;

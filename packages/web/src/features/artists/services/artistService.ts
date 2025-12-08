@@ -4,9 +4,9 @@
  * Handles artist-related database operations including genre relationships
  */
 
-import { supabase } from '@/shared/api/supabase/client';
-import { logger } from '@/shared/services/logger';
-import { logApiError, logApi } from '@/shared/utils/apiLogger';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { logger } from '@force-majeure/shared/services/logger';
+import { logApiError, logApi } from '@force-majeure/shared/utils/apiLogger';
 import type {
   Artist,
   ArtistWithGenres,

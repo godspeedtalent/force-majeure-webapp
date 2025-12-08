@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Switch } from '@/components/common/shadcn/switch';
 import { Label } from '@/components/common/shadcn/label';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 // ============================================================
 // FmCommonSwitch - Force Majeure branded Switch wrapper

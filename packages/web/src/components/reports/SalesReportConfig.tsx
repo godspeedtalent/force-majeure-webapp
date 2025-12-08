@@ -9,7 +9,7 @@ import { ReportRecipientsManager } from './ReportRecipientsManager';
 import { ReportHistoryTable } from './ReportHistoryTable';
 import { ReportPreviewModal } from './ReportPreviewModal';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
 import { toast } from 'sonner';
 import { Send, Eye } from 'lucide-react';
 import type { ReportConfiguration } from '@/types/reports';

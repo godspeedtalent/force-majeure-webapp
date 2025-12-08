@@ -3,7 +3,7 @@ import { ReactNode, useState } from 'react';
 
 import { Button } from '@/components/common/shadcn/button';
 
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 export interface WizardStep {
   content: ReactNode;

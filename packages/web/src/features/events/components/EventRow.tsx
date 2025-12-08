@@ -8,7 +8,7 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import {
   formatTimeDisplay,
   parseTimeToMinutes,
-} from '@/shared/utils/timeUtils';
+} from '@force-majeure/shared/utils/timeUtils';
 
 interface Artist {
   id?: string;

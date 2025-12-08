@@ -38,7 +38,7 @@ import {
   Edit2,
   Check,
 } from 'lucide-react';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 
 interface ColumnConfig {
   key: string;

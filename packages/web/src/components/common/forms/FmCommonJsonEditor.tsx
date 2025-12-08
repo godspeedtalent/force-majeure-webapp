@@ -7,7 +7,7 @@
 
 import { useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
-import { cn } from '@/shared/utils/utils';
+import { cn } from '@force-majeure/shared/utils/utils';
 import { FmCommonTextField } from './FmCommonTextField';
 import { FmCommonButton } from '../buttons/FmCommonButton';
 

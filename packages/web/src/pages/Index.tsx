@@ -1,13 +1,13 @@
 import { useEffect, useRef, useMemo, useState } from 'react';
 import { Layout } from '@/components/layout/Layout';
-import { supabase } from '@/shared/api/supabase/client';
-import { useFontLoader } from '@/shared/hooks/useFontLoader';
-import { useScrollPosition } from '@/shared/hooks/useScrollPosition';
-import { useIsMobile } from '@/shared/hooks/use-mobile';
-import { useScrollSnap } from '@/shared/hooks/useScrollSnap';
-import { SCROLL_THRESHOLDS } from '@/shared/constants/scrollThresholds';
-import { getImageUrl } from '@/shared/utils/imageUtils';
-import { logApiError } from '@/shared/utils/apiLogger';
+import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { useFontLoader } from '@force-majeure/shared/hooks/useFontLoader';
+import { useScrollPosition } from '@force-majeure/shared/hooks/useScrollPosition';
+import { useIsMobile } from '@force-majeure/shared/hooks/use-mobile';
+import { useScrollSnap } from '@force-majeure/shared/hooks/useScrollSnap';
+import { SCROLL_THRESHOLDS } from '@force-majeure/shared/constants/scrollThresholds';
+import { getImageUrl } from '@force-majeure/shared/utils/imageUtils';
+import { logApiError } from '@force-majeure/shared/utils/apiLogger';
 import { IndexMobile } from './components/IndexMobile';
 import { IndexDesktop } from './components/IndexDesktop';
 
