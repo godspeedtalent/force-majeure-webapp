@@ -27,8 +27,8 @@ export function FmMobileDevFAB({
         'fixed bottom-[80px] right-[16px] z-[60]',
         // Size - Material Design standard FAB
         'h-[56px] w-[56px]',
-        // Styling - gold background with black text
-        'bg-fm-gold text-black',
+        // Styling - semi-transparent gold background with black text
+        'bg-fm-gold/80 text-black backdrop-blur-sm',
         // Shape - full circle (exception to sharp corners)
         'rounded-full',
         // Shadow - gold glow
@@ -38,8 +38,6 @@ export function FmMobileDevFAB({
         // Transitions and animations
         'transition-all duration-200',
         'hover:scale-110 active:scale-95',
-        // Pulsing animation for attention
-        'animate-pulse hover:animate-none',
         // Flex for icon centering
         'flex items-center justify-center',
         // Visibility - mobile only
@@ -52,7 +50,7 @@ export function FmMobileDevFAB({
       type="button"
     >
       {/* Wrench Icon */}
-      <Wrench className="h-[24px] w-[24px]" strokeWidth={2} />
+      <Wrench className="h-[26px] w-[26px]" strokeWidth={2.5} />
 
       {/* Notification Badge */}
       {hasBadge && (
