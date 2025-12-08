@@ -2,11 +2,19 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import react from '@vitejs/plugin-react-swc';
-import { componentTagger } from 'lovable-tagger';
 import { defineConfig } from 'vite';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Optionally load lovable-tagger if available (Lovable environment)
+let componentTagger;
+try {
+  componentTagger = require('lovable-tagger').componentTagger;
+} catch {
+  // lovable-tagger not installed, skip it
+  componentTagger = null;
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -14,9 +22,10 @@ export default defineConfig(({ mode }) => ({
     host: '::',
     port: 8080,
   },
-  plugins: [react(), mode === 'development' && componentTagger()].filter(
-    Boolean
-  ),
+  plugins: [
+    react(),
+    mode === 'development' && componentTagger && componentTagger()
+  ].filter(Boolean),
   optimizeDeps: {
     exclude: ['src/integrations/supabase/client.ts'],
   },
