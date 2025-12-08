@@ -32,3 +32,13 @@ dist-ssr
 *.backup
 *.archived.*
 *.old
+
+# Build artifacts
+dist/
+coverage/
+report/
+schema-exports/
+
+# Development files
+design-system-audit-report.json
+audit-output.txt
