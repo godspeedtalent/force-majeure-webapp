@@ -156,7 +156,7 @@ export function useFormState<T extends Record<string, unknown>>({
 
   // Update initial data ref when initialData prop changes
   // This allows for controlled form resets with new data
-  const updateInitialData = useCallback((newInitialData: T) => {
+  const _updateInitialData = useCallback((newInitialData: T) => {
     initialDataRef.current = newInitialData;
     setData(newInitialData);
     setErrors({});

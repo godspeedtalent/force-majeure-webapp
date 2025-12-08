@@ -192,7 +192,7 @@ export function createCartStore(storage: StateStorage) {
     partialize: (state) => ({
       items: state.items,
       updatedAt: state.updatedAt,
-    }),
+    } as CartStore),
     onRehydrateStorage: () => (state) => {
       if (state) {
         logger.info('Cart state rehydrated', {

@@ -5,7 +5,29 @@ export * from './api/supabase/types';
 // Types - Feature types
 export * from './types/features/events';
 export * from './types/features/ticketing';
-export * from './types/features/artists';
+// Artists exports Artist interface - explicitly re-export to resolve conflict with events.ts
+export type {
+  Artist,
+  ArtistWithGenres,
+  ArtistSummary,
+  ArtistFormData,
+  ArtistSearchCriteria,
+  ArtistRow,
+  ArtistGenre,
+  ArtistGenreRow,
+  ArtistGenreWithDetails,
+  Genre,
+  GenreRow,
+  GenreWithParent,
+  GenreHierarchy
+} from './types/features/artists';
+export {
+  isArtistWithGenres,
+  artistFromRow,
+  artistGenreFromRow,
+  genreFromRow,
+  getPrimaryGenre
+} from './types/features/artists';
 export * from './types/features/products';
 export * from './types/features/payments';
 export * from './types/features/activity-logs';
