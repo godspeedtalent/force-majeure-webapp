@@ -16,6 +16,7 @@ import {
   X,
   Building2,
   Scan,
+  Settings2,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -34,6 +35,7 @@ import { DatabaseTabContent, DatabaseTabFooter } from './tabs/DatabaseTab';
 import { FeatureTogglesTabContent } from './tabs/FeatureTogglesTab';
 import { DevNotesTabContent } from './tabs/DevNotesTab';
 import { DevNavigationTabContent } from './tabs/DevNavigationTab';
+import { SessionOverridesTabContent } from './tabs/SessionOverridesTab';
 
 export interface ToolbarTab {
   id: string;
@@ -177,6 +179,18 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         icon: ToggleLeft,
         content: <FeatureTogglesTabContent />,
         title: 'Feature Toggles',
+        visible: isDeveloperOrAdmin,
+        group: 'developer',
+        groupOrder: 2,
+        alignment: 'bottom',
+        groupLabel: 'Developer Tools',
+      },
+      {
+        id: 'session-overrides',
+        label: 'Session Overrides',
+        icon: Settings2,
+        content: <SessionOverridesTabContent />,
+        title: 'Session Overrides',
         visible: isDeveloperOrAdmin,
         group: 'developer',
         groupOrder: 2,

@@ -13,6 +13,7 @@ import {
   type FeatureFlagsState,
   createEmptyFeatureFlagsState,
 } from '@/shared/config/featureFlags';
+import { getFeatureFlagOverride } from '@/shared/utils/featureFlagOverrides';
 
 const flagLogger = logger.createNamespace('FeatureFlags');
 
@@ -89,6 +90,15 @@ export const useFeatureFlags = () => {
           }
         });
       }
+
+      // Apply session-based overrides (takes precedence over everything)
+      // This allows admins/developers to override feature flags for their session only
+      (Object.keys(flags) as Array<keyof FeatureFlags>).forEach(flagKey => {
+        const sessionOverride = getFeatureFlagOverride(flagKey);
+        if (sessionOverride !== null) {
+          flags[flagKey] = sessionOverride;
+        }
+      });
 
       flagLogger.debug('Feature flags loaded', {
         environment: currentEnv.name,

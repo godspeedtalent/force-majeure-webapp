@@ -33,6 +33,8 @@
 | [DATA_GRID_COLUMN_TYPES.md](./features/DATA_GRID_COLUMN_TYPES.md) | Column type definitions for data grids |
 | [DYNAMIC_DATAGRID_IMPLEMENTATION.md](./features/DYNAMIC_DATAGRID_IMPLEMENTATION.md) | Dynamic data grid implementation guide |
 | [FEATURE_FLAG_GUIDE.md](./features/FEATURE_FLAG_GUIDE.md) | Feature flag system documentation |
+| [MOBILE_DEV_TOOLBAR.md](./features/MOBILE_DEV_TOOLBAR.md) | Mobile developer toolbar - FAB and bottom sheet implementation |
+| [SESSION_OVERRIDES.md](./features/SESSION_OVERRIDES.md) | Session-based feature flag overrides for dev/admin |
 | [SHOPPING_CART_GUIDE.md](./features/SHOPPING_CART_GUIDE.md) | Shopping cart implementation and Zustand store |
 | [SKELETON_LOADING_GUIDE.md](./features/SKELETON_LOADING_GUIDE.md) | Skeleton loading state patterns |
 | [TICKETING_GATE_IMPLEMENTATION.md](./features/TICKETING_GATE_IMPLEMENTATION.md) | Ticketing gate/scanning feature |
@@ -136,7 +138,7 @@ docs/
 ├── architecture/            # System design docs (4)
 ├── backend/                 # Infrastructure docs (6)
 ├── error-handling/          # Error handling docs (3)
-├── features/                # Feature-specific docs (7)
+├── features/                # Feature-specific docs (8)
 ├── refactoring/             # Active refactoring plans (4)
 ├── security/                # Auth & permissions (2)
 ├── testing/                 # Testing docs (1)

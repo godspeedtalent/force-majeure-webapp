@@ -60,6 +60,7 @@ import Merch from './pages/Merch';
 import { AuthProvider } from '@/features/auth/services/AuthContext';
 import { useFeatureFlagHelpers } from '@/shared/hooks/useFeatureFlags';
 import { FmToolbar } from '@/components/common/toolbar/FmToolbar';
+import { FmMobileDevToolbar } from '@/components/common/toolbar/mobile/FmMobileDevToolbar';
 import { ROLES } from '@/shared/auth/permissions';
 import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 import { CheckoutProvider } from '@/contexts/CheckoutContext';
@@ -112,6 +113,17 @@ const AppRoutes = () => {
       <Route path='/auth' element={<Auth />} />
       <Route path='/scavenger' element={<Scavenger />} />
       <Route path='/proxy-token' element={<ProxyToken />} />
+
+      {/* Artist Registration Routes - Always accessible even in coming soon mode */}
+      <Route path='/artists/signup' element={<ArtistSignup />} />
+      <Route
+        path='/artists/register'
+        element={
+          <ProtectedRoute>
+            <ArtistRegister />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Coming Soon Mode - Show only coming soon page for other routes */}
       {comingSoonMode ? (
@@ -389,17 +401,8 @@ const AppRoutes = () => {
           <Route path='/organization/tools' element={<OrganizationTools />} />
           <Route path='/organization/scanning' element={<TicketScanning />} />
 
-          {/* Artist Routes */}
+          {/* Artist Routes - signup and register are above, outside coming soon mode */}
           <Route path='/artists' element={<Navigate to='/' replace />} />
-          <Route path='/artists/signup' element={<ArtistSignup />} />
-          <Route
-            path='/artists/register'
-            element={
-              <ProtectedRoute>
-                <ArtistRegister />
-              </ProtectedRoute>
-            }
-          />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path='*' element={<NotFound />} />
@@ -429,6 +432,7 @@ const App = () => {
                     <CheckoutProvider>
                       <AppRoutes />
                       <FmToolbar />
+                      <FmMobileDevToolbar />
                       <GlobalSearchWrapper />
                     </CheckoutProvider>
                   </BrowserRouter>
