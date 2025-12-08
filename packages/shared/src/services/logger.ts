@@ -10,7 +10,7 @@
  *
  * Usage:
  * ```typescript
- * import { logger } from '@/shared/services/logger';
+ * import { logger } from '@/services/logger';
  *
  * logger.debug('Feature flags loaded', { flags });
  * logger.info('User signed up', { userId });

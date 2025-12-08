@@ -9,16 +9,9 @@
  * - Shared services provide cross-cutting concerns (logging, error handling, etc.)
  */
 
-// Error handling utilities
-export {
-  handleError,
-  withErrorHandler,
-  withErrorHandlerSync,
-} from './errorHandler';
-
 // Logging utilities
 export { logger } from './logger';
-export { logApiError, logApi } from '@/shared/utils/apiLogger';
+export { logApiError, logApi } from '@/utils/apiLogger';
 
 // Environment utilities
 export {
@@ -34,10 +27,10 @@ export {
 
 // Service factory for creating type-safe CRUD services
 export { createService } from './createService';
-export type { ServiceConfig, ServiceResult } from './createService';
+export type { ServiceConfig } from './createService';
 
 // Image upload service
 export { imageUploadService } from './imageUploadService';
 
 // Role management service
-export { roleManagementService } from './roleManagementService';
+export { RoleManagementService } from './roleManagementService';

@@ -1,4 +1,4 @@
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@/api/supabase/client';
 import { logger } from './logger';
 
 const envLogger = logger.createNamespace('Environment');

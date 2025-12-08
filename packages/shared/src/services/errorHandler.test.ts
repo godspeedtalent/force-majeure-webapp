@@ -18,8 +18,8 @@ vi.mock('@/shared/services/logger', () => ({
 // Import after mocking
 import { handleError, withErrorHandler, withErrorHandlerSync } from './errorHandler';
 import { showErrorToast } from '@/components/common/feedback/FmErrorToast';
-import { logApiError } from '@/shared/utils/apiLogger';
-import { logger } from '@/shared/services/logger';
+import { logApiError } from '@/utils/apiLogger';
+import { logger } from '@/services/logger';
 
 describe('errorHandler', () => {
   beforeEach(() => {

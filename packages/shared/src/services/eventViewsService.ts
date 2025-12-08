@@ -1,5 +1,5 @@
-import { supabase } from '@/shared/api/supabase/client';
-import { logger } from '@/shared/services/logger';
+import { supabase } from '@/api/supabase/client';
+import { logger } from '@/services/logger';
 
 export interface RecordEventViewParams {
   eventId: string;

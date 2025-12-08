@@ -16,7 +16,6 @@ export * from './stores/rolesStore';
 
 // Services
 export * from './services/logger';
-export * from './services/errorHandler';
 export * from './services/roleManagementService';
 export * from './services/imageUploadService';
 
@@ -30,8 +29,6 @@ export * from './utils/featureFlagOverrides';
 
 // Hooks
 export * from './hooks/useAsyncOperation';
-export * from './hooks/useUserPermissions';
-export * from './hooks/useFeatureFlagHelpers';
 export * from './hooks/useFeatureFlags';
 
 // Constants

@@ -4,7 +4,7 @@
  * Centralized types for artists and music genres with hierarchical support
  */
 
-import { Tables } from '@/shared/api/supabase/types';
+import { Tables } from '@/api/supabase/types';
 
 // ========================================
 // Database Types (from Supabase)

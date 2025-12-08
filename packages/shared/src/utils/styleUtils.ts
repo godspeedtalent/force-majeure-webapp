@@ -16,8 +16,8 @@ import {
   COLOR_CLASSES,
   BORDER_RADIUS,
   TYPOGRAPHY,
-} from '@/shared/constants/designSystem';
-import { cn } from '@/shared/utils/utils';
+} from '@/constants/designSystem';
+import { cn } from '@/utils/utils';
 
 /**
  * Get striped list item classes based on index
