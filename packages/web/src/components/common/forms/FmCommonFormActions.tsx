@@ -6,7 +6,7 @@
  */
 
 import { Button } from '@/components/common/shadcn/button';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface FmCommonFormActionsProps {
   /** Submit button text */

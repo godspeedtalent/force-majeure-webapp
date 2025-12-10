@@ -4,6 +4,7 @@ import {
   User,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { Breadcrumbs } from '@/components/primitives/Breadcrumbs';
 import { ForceMajeureLogo } from './ForceMajeureLogo';
@@ -17,15 +18,16 @@ import {
   TooltipTrigger,
 } from '@/components/common/shadcn/tooltip';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { useFeatureFlagHelpers } from '@force-majeure/shared/hooks/useFeatureFlags';
-import { FEATURE_FLAGS } from '@force-majeure/shared/config/featureFlags';
+import { useFeatureFlagHelpers } from '@force-majeure/shared';
+import { FEATURE_FLAGS } from '@force-majeure/shared';
 import { useCheckoutTimer } from '@/contexts/CheckoutContext';
-import { SOCIAL_LINKS } from '@force-majeure/shared/constants/socialLinks';
+import { SOCIAL_LINKS } from '@force-majeure/shared';
 import { FeatureGuard } from '@/components/common/guards/FeatureGuard';
 
 export const Navigation = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation('common');
   const { isFeatureEnabled } = useFeatureFlagHelpers();
   const { isCheckoutActive, endCheckout, redirectUrl } = useCheckoutTimer();
 
@@ -89,13 +91,13 @@ export const Navigation = () => {
                     <Link
                       to='/merch'
                       className='text-foreground hover:text-fm-gold transition-colors duration-200'
-                      aria-label='Shop Merch'
+                      aria-label={t('nav.shopMerch')}
                     >
                       <ShoppingCart className='h-5 w-5' />
                     </Link>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Shop Merch</p>
+                    <p>{t('nav.shopMerch')}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

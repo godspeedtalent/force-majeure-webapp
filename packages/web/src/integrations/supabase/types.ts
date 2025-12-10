@@ -1034,6 +1034,8 @@ export type Database = {
           instagram_handle: string | null
           organization_id: string | null
           phone_number: string | null
+          preferred_locale: string | null
+          privacy_settings: Json | null
           stripe_customer_id: string | null
           updated_at: string
           user_id: string
@@ -1057,6 +1059,8 @@ export type Database = {
           instagram_handle?: string | null
           organization_id?: string | null
           phone_number?: string | null
+          preferred_locale?: string | null
+          privacy_settings?: Json | null
           stripe_customer_id?: string | null
           updated_at?: string
           user_id: string
@@ -1080,6 +1084,8 @@ export type Database = {
           instagram_handle?: string | null
           organization_id?: string | null
           phone_number?: string | null
+          preferred_locale?: string | null
+          privacy_settings?: Json | null
           stripe_customer_id?: string | null
           updated_at?: string
           user_id?: string

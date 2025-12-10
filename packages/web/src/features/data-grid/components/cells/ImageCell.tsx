@@ -5,7 +5,7 @@ import {
 } from '@/components/common/display/FmEntityAvatar';
 import { FmDataGridImageUploadModal } from '@/components/common/modals/FmDataGridImageUploadModal';
 import { Pencil } from 'lucide-react';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 export interface ImageCellProps {
   value: string | null | undefined;

@@ -1,4 +1,4 @@
-import { supabase } from '@/api/supabase/client';
+import { supabase } from '../api/supabase/client';
 
 export interface ApiLogPayload {
   level?: 'error' | 'warn' | 'info';

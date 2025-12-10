@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 import { Upload, X, ImageIcon } from 'lucide-react';
 import {
   Dialog,
@@ -10,9 +10,9 @@ import {
 } from '@/components/common/shadcn/dialog';
 import { Button } from '@/components/common/shadcn/button';
 import { toast } from 'sonner';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
-import { cn } from '@force-majeure/shared/utils/utils';
-import { compressImage } from '@force-majeure/shared/utils/imageUtils';
+import { supabase } from '@force-majeure/shared';
+import { cn } from '@force-majeure/shared';
+import { compressImage } from '@force-majeure/shared';
 
 interface FmDataGridImageUploadModalProps {
   open: boolean;

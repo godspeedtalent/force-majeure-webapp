@@ -1,8 +1,9 @@
+import { useState } from 'react';
 import { ChevronLeft, AlertCircle, CheckCircle } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { TrackInputForm, TrackList, type TrackFormData } from '@/features/artists/components/TrackInputForm';
 import type { ArtistRegistrationFormData, RegistrationTrack } from '../../types/registration';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface MusicStepProps {
   formData: ArtistRegistrationFormData;
@@ -17,6 +18,8 @@ export function MusicStep({
   onNext,
   onPrevious,
 }: MusicStepProps) {
+  const [editingTrack, setEditingTrack] = useState<TrackFormData | null>(null);
+
   // Check if we have at least one DJ Set
   const hasDjSet = formData.tracks.some(t => t.recordingType === 'dj_set');
   const djSetCount = formData.tracks.filter(t => t.recordingType === 'dj_set').length;
@@ -35,7 +38,41 @@ export function MusicStep({
   };
 
   const handleRemoveTrack = (trackId: string) => {
+    // If we're editing this track, cancel the edit
+    if (editingTrack?.id === trackId) {
+      setEditingTrack(null);
+    }
     onInputChange('tracks', formData.tracks.filter(t => t.id !== trackId));
+  };
+
+  const handleEditTrack = (track: TrackFormData) => {
+    // Toggle edit mode - if clicking the same track, cancel edit
+    if (editingTrack?.id === track.id) {
+      setEditingTrack(null);
+    } else {
+      setEditingTrack(track);
+    }
+  };
+
+  const handleEditComplete = (updatedTrack: TrackFormData) => {
+    const updatedTracks = formData.tracks.map(t =>
+      t.id === updatedTrack.id
+        ? {
+            id: updatedTrack.id,
+            name: updatedTrack.name,
+            url: updatedTrack.url,
+            coverArt: updatedTrack.coverArt,
+            platform: updatedTrack.platform,
+            recordingType: updatedTrack.recordingType,
+          }
+        : t
+    );
+    onInputChange('tracks', updatedTracks);
+    setEditingTrack(null);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingTrack(null);
   };
 
   return (
@@ -75,13 +112,27 @@ export function MusicStep({
             <TrackList
               tracks={formData.tracks}
               onRemoveTrack={handleRemoveTrack}
+              onEditTrack={handleEditTrack}
+              editingTrackId={editingTrack?.id}
             />
 
-            {/* Add Track Form */}
-            <TrackInputForm
-              onAddTrack={handleAddTrack}
-              submitButtonText="Add Recording"
-            />
+            {/* Add/Edit Track Form */}
+            {editingTrack ? (
+              <div className="space-y-[10px]">
+                <label className="text-xs uppercase text-fm-gold">Editing Recording</label>
+                <TrackInputForm
+                  onAddTrack={handleAddTrack}
+                  editingTrack={editingTrack}
+                  onEditComplete={handleEditComplete}
+                  onCancel={handleCancelEdit}
+                />
+              </div>
+            ) : (
+              <TrackInputForm
+                onAddTrack={handleAddTrack}
+                submitButtonText="Add Recording"
+              />
+            )}
           </div>
         </div>
       </div>

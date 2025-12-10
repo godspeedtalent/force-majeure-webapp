@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as RechartsPrimitive from 'recharts';
 
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: '', dark: '.dark' } as const;

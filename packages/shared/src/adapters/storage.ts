@@ -8,7 +8,7 @@
  * Usage:
  * ```typescript
  * // Web implementation
- * import { webStorage } from '@/adapters/storage';
+ * import { webStorage } from '../adapters/storage';
  * await webStorage.setItem('key', 'value');
  *
  * // Mobile implementation (in mobile app)

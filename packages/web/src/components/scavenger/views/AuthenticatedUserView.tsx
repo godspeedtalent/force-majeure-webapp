@@ -1,7 +1,7 @@
 import { AnimatedCounter } from '@/components/primitives/AnimatedCounter';
 import { MessagePanel } from '@/components/feedback/MessagePanel';
 import { Button } from '@/components/common/shadcn/button';
-import { LF_SYSTEM_TICKET_URL } from '@force-majeure/shared/constants/ticketLinks';
+import { LF_SYSTEM_TICKET_URL } from '@force-majeure/shared';
 
 interface AuthenticatedUserViewProps {
   displayName?: string;

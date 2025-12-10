@@ -2,7 +2,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { FmCommonIconButton } from './FmCommonIconButton';
 import { FmCommonButton } from './FmCommonButton';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface FmBackButtonProps {
   /** Display variant: icon-only or with text label */

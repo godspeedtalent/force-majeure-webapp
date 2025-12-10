@@ -12,11 +12,11 @@ import { ChevronDown, ChevronUp, MoreVertical, X, Eye } from 'lucide-react';
 import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
 import { FmDataGridContextMenu } from '../FmDataGridContextMenu';
 import { FmDataGridCell } from './FmDataGridCell';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 import { DataGridColumn, DataGridAction } from '../FmDataGrid';
 import type { GroupedRow } from '../../utils/grouping';
 import { isRelationField, getRelationConfig } from '../../utils/dataGridRelations';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 
 export interface FmDataGridRowProps<T> {
   row: T;

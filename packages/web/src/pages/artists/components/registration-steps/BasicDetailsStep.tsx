@@ -4,11 +4,12 @@ import { toast } from 'sonner';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmGenreMultiSelect } from '@/features/artists/components/FmGenreMultiSelect';
+import { FmCityDropdown } from '@/components/common/forms/FmCityDropdown';
 import { SpotifyArtistImport } from '@/components/spotify/SpotifyArtistImport';
 import { SoundCloudUserImport, type SoundCloudUserData } from '@/components/soundcloud/SoundCloudUserImport';
 import { getArtistTopTracks, type SpotifyArtist } from '@/services/spotify/spotifyApiService';
 import { getArtistPopularTrack } from '@/services/soundcloud/soundcloudApiService';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 import type { ArtistRegistrationFormData, RegistrationTrack } from '../../types/registration';
 import type { Genre } from '@/features/artists/types';
 
@@ -98,7 +99,7 @@ export function BasicDetailsStep({
           <div className='w-[85vw] sm:w-[80%] space-y-[20px] bg-black/60 backdrop-blur-sm border border-white/10 p-[30px] sm:p-[40px]'>
             <div>
               <h2 className='font-canela text-3xl mb-[10px]'>
-                Tell us about your sound.
+                Tell us about you.
               </h2>
               <p className='font-canela text-sm text-muted-foreground'>
                 Share your stage name, bio, and musical style.
@@ -146,12 +147,12 @@ export function BasicDetailsStep({
                 rows={6}
               />
 
-              <FmCommonTextField
+              <FmCityDropdown
                 label='City'
                 required
-                value={formData.city}
-                onChange={e => onInputChange('city', e.target.value)}
-                placeholder='Where are you based? (e.g., Los Angeles, CA)'
+                value={formData.cityId}
+                onChange={cityId => onInputChange('cityId', cityId)}
+                placeholder='Select your city'
               />
 
               <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent' />

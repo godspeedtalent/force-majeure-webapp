@@ -9,7 +9,7 @@
  *
  * @example Web usage:
  * ```typescript
- * import { useCartStore } from '@force-majeure/shared/stores/cartStore';
+ * import { useCartStore } from '@force-majeure/shared';
  *
  * function CartButton() {
  *   const { items, getTotalItems, addItem } = useCartStore();
@@ -19,7 +19,7 @@
  *
  * @example Mobile usage (with AsyncStorage):
  * ```typescript
- * import { createCartStore } from '@force-majeure/shared/stores/cartStore';
+ * import { createCartStore } from '@force-majeure/shared';
  * import AsyncStorage from '@react-native-async-storage/async-storage';
  *
  * const useCartStore = createCartStore({
@@ -32,7 +32,7 @@
 
 import { create, StateCreator } from 'zustand';
 import { persist, createJSONStorage, PersistOptions, StateStorage } from 'zustand/middleware';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 
 // =============================================================================
 // TYPES

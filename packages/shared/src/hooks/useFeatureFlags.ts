@@ -1,19 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { supabase } from '@/api/supabase/client';
+import { supabase } from '../api/supabase/client';
 import {
   getEnvironmentOverride,
   isDevelopment,
-} from '@/utils/environment';
-import { logger } from '@/services/logger';
-import { environmentService } from '@/services/environmentService';
+} from '../utils/environment';
+import { logger } from '../services/logger';
+import { environmentService } from '../services/environmentService';
 import {
   FEATURE_FLAGS,
   type FeatureFlag,
   type FeatureFlagsState,
   createEmptyFeatureFlagsState,
-} from '@/config/featureFlags';
-import { getFeatureFlagOverride } from '@/utils/featureFlagOverrides';
+} from '../config/featureFlags';
+import { getFeatureFlagOverride } from '../utils/featureFlagOverrides';
 
 const flagLogger = logger.createNamespace('FeatureFlags');
 

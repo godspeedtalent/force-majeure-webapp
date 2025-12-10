@@ -1,7 +1,7 @@
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import { TestDataService } from './TestDataService';
 import { format } from 'date-fns';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 
 export interface TestEventConfig {
   /** Use real artists and venues from database */

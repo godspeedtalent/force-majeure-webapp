@@ -18,9 +18,9 @@ import { FmCommonFormCheckbox } from '@/components/common/forms/FmCommonFormChec
 import { FmTextLink } from '@/components/common/display/FmTextLink';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 import { TermsAndConditionsModal } from './TermsAndConditionsModal';
-import { useToast } from '@force-majeure/shared/hooks/use-toast';
+import { toast } from 'sonner';
 import {
   useStripePayment,
   StripeCardInput,

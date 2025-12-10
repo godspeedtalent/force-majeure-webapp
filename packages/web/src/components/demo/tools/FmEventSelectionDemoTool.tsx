@@ -4,9 +4,9 @@ import { FileEdit, Dices, Shuffle, Plus } from 'lucide-react';
 import { Label } from '@/components/common/shadcn/label';
 import { Button } from '@/components/common/shadcn/button';
 import { FmEventSearchDropdown } from '@/components/common/search/FmEventSearchDropdown';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 import { TestEventDataService } from '@/services/testData/TestEventDataService';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import { toast } from 'sonner';
 import { FmCommonDemoTool } from '../types/FmCommonDemoTool';
 

@@ -1,4 +1,4 @@
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 import { TestSuite } from '../types/testing';
 
 class TestRegistryService {

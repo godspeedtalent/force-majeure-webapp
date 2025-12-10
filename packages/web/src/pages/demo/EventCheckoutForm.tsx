@@ -37,9 +37,9 @@ import {
   emailField,
   stringRequired,
   phoneField,
-} from '@force-majeure/shared/utils/formValidation';
+} from '@force-majeure/shared';
 import { useNavigate } from 'react-router-dom';
-import { formatHeader } from '@force-majeure/shared/utils/styleUtils';
+import { formatHeader } from '@force-majeure/shared';
 
 const US_STATES = [
   { value: 'AL', label: 'Alabama' },

@@ -2,11 +2,11 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ArtistRegistrationLayout } from '@/components/layout/ArtistRegistrationLayout';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { logApiError } from '@force-majeure/shared/utils/apiLogger';
-import { logger } from '@force-majeure/shared/services/logger';
-import { useIsMobile } from '@force-majeure/shared/hooks/use-mobile';
+import { logApiError } from '@force-majeure/shared';
+import { logger } from '@force-majeure/shared';
+import { useIsMobile } from '@force-majeure/shared';
 import { CarouselApi } from '@/components/common/shadcn/carousel';
 
 // Import centralized types and layout components
@@ -74,8 +74,8 @@ const ArtistRegister = () => {
           toast.error('Please tell us about yourself');
           return false;
         }
-        if (!formData.city.trim()) {
-          toast.error('Please enter your city');
+        if (!formData.cityId) {
+          toast.error('Please select your city');
           return false;
         }
         if (formData.genres.length === 0) {
@@ -152,7 +152,7 @@ const ArtistRegister = () => {
             user_id: user?.id || null,
             artist_name: formData.stageName,
             bio: formData.bio,
-            city: formData.city,
+            city_id: formData.cityId,
             genres: formData.genres.map(g => g.id),
             profile_image_url: formData.profileImageUrl,
             press_images: [

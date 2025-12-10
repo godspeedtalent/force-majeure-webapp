@@ -1,5 +1,5 @@
-import { supabase } from '@force-majeure/shared/api/supabase/client';
-import { logger } from '@force-majeure/shared/services/logger';
+import { supabase } from '@force-majeure/shared';
+import { logger } from '@force-majeure/shared';
 
 export const getImageUrl = (imagePath: string | null): string => {
   if (!imagePath) {
@@ -38,6 +38,8 @@ export interface ImageCompressionOptions {
   quality?: number;
   /** Output format (default: original format or 'jpeg') */
   outputFormat?: 'jpeg' | 'png' | 'webp';
+  /** Force resize even if file is under size limit (default: false) */
+  forceResize?: boolean;
 }
 
 /**
@@ -57,10 +59,11 @@ export const compressImage = async (
     maxSizeBytes = 5 * 1024 * 1024, // 5MB
     quality = 0.85,
     outputFormat,
+    forceResize = false,
   } = options;
 
-  // If file is already small enough, return as is
-  if (file.size <= maxSizeBytes) {
+  // If file is already small enough and we're not forcing resize, return as is
+  if (file.size <= maxSizeBytes && !forceResize) {
     logger.info('Image within size limit, skipping compression', {
       fileSize: file.size,
       maxSize: maxSizeBytes,
@@ -89,17 +92,19 @@ export const compressImage = async (
       try {
         // Calculate new dimensions while maintaining aspect ratio
         let { width, height } = img;
+        const aspectRatio = width / height;
 
+        // Scale down if either dimension exceeds the max
         if (width > maxWidth || height > maxHeight) {
-          const aspectRatio = width / height;
+          // Calculate scale factors for both dimensions
+          const widthScale = maxWidth / width;
+          const heightScale = maxHeight / height;
 
-          if (width > height) {
-            width = Math.min(width, maxWidth);
-            height = width / aspectRatio;
-          } else {
-            height = Math.min(height, maxHeight);
-            width = height * aspectRatio;
-          }
+          // Use the smaller scale to ensure both dimensions fit within limits
+          const scale = Math.min(widthScale, heightScale);
+
+          width = Math.round(width * scale);
+          height = Math.round(height * scale);
         }
 
         // Set canvas dimensions

@@ -1,5 +1,5 @@
 import { TestLog } from '../types/testing';
-import { logApi } from '@force-majeure/shared/utils/apiLogger';
+import { logApi } from '@force-majeure/shared';
 
 export class TestLogger {
   private logs: TestLog[] = [];

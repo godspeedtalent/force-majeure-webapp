@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { logger } from '@/services/logger';
-import { rolesStore, type Role } from '@/stores/rolesStore';
+import { logger } from '../services/logger';
+import { rolesStore, type Role } from '../stores/rolesStore';
 
 /**
  * Hook to access the roles store

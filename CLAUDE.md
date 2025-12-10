@@ -33,6 +33,8 @@ CLAUDE.md (you are here)
 | Calling Edge Functions | `docs/backend/EDGE_FUNCTIONS.md` |
 | Database migrations | `docs/backend/DATABASE_MIGRATION_STRATEGY.md` |
 | Component refactoring | `docs/refactoring/COMPONENT_REFACTORING_GUIDE.md` |
+| Adding user-facing text/labels | See "Internationalization (i18n)" section below |
+| i18n remaining work | `docs/refactoring/I18N_REMAINING_WORK.md` |
 | Finding any doc | `docs/INDEX.md` |
 
 ### Quick Start for New Conversations
@@ -48,57 +50,150 @@ CLAUDE.md (you are here)
 
 ## Project Overview
 
-Force Majeure is a company website and web application for electronic music events, featuring ticket sales, artist profiles, event management, and light social media features. Built with React, TypeScript, Vite, Supabase, and Tailwind CSS.
+Force Majeure is a company website and web application for electronic music events, featuring ticket sales, artist profiles, event management, and light social media features. Built as a **monorepo** with separate web and mobile applications sharing a common codebase.
+
+## Monorepo Architecture
+
+This project uses **pnpm workspaces** + **Turborepo** to manage three packages:
+
+- `@force-majeure/shared` - Platform-agnostic business logic, types, API client
+- `@force-majeure/web` - React web application (Vite)
+- `@force-majeure/mobile` - React Native mobile app (Expo)
 
 ## Tech Stack
 
-- **Frontend**: React 18, TypeScript, Vite
-- **Backend**: Supabase (PostgreSQL, Auth, Storage, Edge Functions)
-- **Styling**: Tailwind CSS with custom design system
-- **UI Components**: Radix UI primitives + custom FmCommon components
-- **State**: React Query, Context API
-- **Routing**: React Router v6
-- **Forms**: Custom validation utilities (`/src/shared/utils/formValidation.ts`)
+### Shared (`packages/shared`)
+- **TypeScript** - Type safety across all platforms
+- **Supabase Client** - Platform-agnostic database client
+- **React Query** - Server state management
+- **Zustand** - Client state management
+- **Zod** - Schema validation
+
+### Web (`packages/web`)
+- **React 18** - UI library
+- **Vite** - Build tool and dev server
+- **Tailwind CSS** - Utility-first styling
+- **Radix UI** - Headless component primitives
+- **React Router v6** - Client-side routing
+- **Supabase** - Backend (PostgreSQL, Auth, Storage, Edge Functions)
+
+### Mobile (`packages/mobile`)
+- **Expo SDK 54** - React Native framework
+- **React Navigation** - Native navigation
+- **NativeWind** - Tailwind for React Native
+- **React Native** - Cross-platform mobile development
 
 ## Key Architectural Patterns
 
 ### Component Organization
 
 ```
-src/
-├── components/          # Shared UI components
-│   ├── ui/             # FmCommon design system components
-│   │   ├── buttons/    # FmCommonButton, action buttons
-│   │   ├── forms/      # FmCommonTextField, FmCommonSelect, etc.
-│   │   ├── data/       # FmCommonDataGrid, FmInfoCard, etc.
-│   │   ├── feedback/   # FmCommonToast, FmTimerToast, FmErrorDisplay
-│   │   └── modals/     # Modal components
-│   └── layout/         # Layout components
-├── features/           # Feature-based modules
-│   ├── auth/          # Authentication (email/password)
-│   ├── events/        # Event management
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   ├── types/     # Centralized type definitions
-│   │   └── services/
-│   └── merch/
-├── pages/             # Route-level components
-├── contexts/          # React Context providers
-├── services/          # Business logic and external integrations
-└── shared/            # Shared utilities
-    ├── api/           # Supabase client
-    ├── hooks/         # Reusable hooks
-    ├── utils/         # Utility functions
-    └── services/      # Shared services (logger, etc.)
+force-majeure-webapp/
+├── packages/
+│   ├── shared/                      # @force-majeure/shared
+│   │   ├── src/
+│   │   │   ├── api/                # Supabase client & queries
+│   │   │   │   ├── supabase/       # Client factory, types
+│   │   │   │   └── queries/        # React Query hooks
+│   │   │   ├── types/              # Shared type definitions
+│   │   │   │   └── features/       # Feature-specific types
+│   │   │   ├── stores/             # Zustand stores
+│   │   │   ├── hooks/              # Shared React hooks
+│   │   │   ├── utils/              # Utility functions
+│   │   │   ├── services/           # Business logic services
+│   │   │   ├── constants/          # Design system constants
+│   │   │   └── validation/         # Zod schemas
+│   │   └── package.json
+│   │
+│   ├── web/                         # @force-majeure/web
+│   │   ├── src/
+│   │   │   ├── components/         # UI components
+│   │   │   │   ├── common/         # FmCommon components
+│   │   │   │   ├── layout/         # Layout components
+│   │   │   │   └── [feature]/      # Feature components
+│   │   │   ├── features/           # Web-specific features
+│   │   │   │   ├── auth/
+│   │   │   │   ├── events/
+│   │   │   │   └── ticketing/
+│   │   │   ├── pages/              # Route-level components
+│   │   │   ├── contexts/           # React Context providers
+│   │   │   ├── shared/             # Web-specific shared code
+│   │   │   │   ├── api/            # Web API utilities
+│   │   │   │   ├── hooks/          # Web-specific hooks
+│   │   │   │   └── utils/          # Web-specific utilities
+│   │   │   └── App.tsx
+│   │   ├── vite.config.ts
+│   │   └── package.json
+│   │
+│   └── mobile/                      # @force-majeure/mobile
+│       ├── src/
+│       │   ├── screens/            # Screen components
+│       │   ├── components/         # Mobile UI components
+│       │   ├── navigation/         # React Navigation
+│       │   ├── services/           # Platform-specific services
+│       │   └── lib/                # Mobile-specific utilities
+│       ├── App.tsx
+│       ├── app.json
+│       └── package.json
+│
+├── supabase/                        # Database migrations (root level)
+├── config/                          # Shared config files
+├── docs/                            # Documentation
+└── package.json                     # Root workspace config
 ```
 
 ### Import Conventions
 
-- **Supabase**: Always import from `@/shared/api/supabase/client`
-- **Toast**: Use `import { toast } from 'sonner'`
-- **Logger**: Use `import { logger } from '@/shared/services/logger'`
-- **API Logging**: Use `import { logApiError, logApi } from '@/shared/utils/apiLogger'`
-- **Types**: Import from centralized locations (e.g., `@/features/events/types`)
+**In Web Package (`packages/web`):**
+
+```typescript
+// Import from shared package
+import { supabase, useEvents, Event } from '@force-majeure/shared';
+import { cartStore } from '@force-majeure/shared';
+
+// Import web-specific code (path alias @/)
+import { Button } from '@/components/common/ui/Button';
+import { Layout } from '@/components/layout/Layout';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+
+// Toast (web package dependency)
+import { toast } from 'sonner';
+```
+
+**In Mobile Package (`packages/mobile`):**
+
+```typescript
+// Import from shared package
+import { supabase, useEvents, Event } from '@force-majeure/shared';
+import { cartStore } from '@force-majeure/shared';
+
+// Import mobile-specific code (path alias @/)
+import { Button } from '@/components/Button';
+import { HomeScreen } from '@/screens/HomeScreen';
+
+// Platform-specific imports
+import AsyncStorage from '@react-native-async-storage/async-storage';
+```
+
+**In Shared Package (`packages/shared`):**
+
+```typescript
+// Use relative imports within shared package
+import { supabase } from './api/supabase/client';
+import { Event } from './types/features/events';
+import { logger } from './services/logger';
+
+// NO imports from web or mobile packages
+```
+
+**Key Import Rules:**
+
+- **Shared Package**: Platform-agnostic code that works on both web and mobile
+- **Supabase**: Always import from `@force-majeure/shared` (uses platform-specific storage adapter)
+- **Types**: Import from `@force-majeure/shared` for shared types
+- **Logger**: Import from `@force-majeure/shared/services/logger`
+- **Toast**: Web uses `sonner`, mobile uses native toast
+- **Never import**: Web/mobile code should never import from each other
 
 ### Layout System
 
@@ -449,10 +544,28 @@ const isAdminUser = isAdmin(); // Check if user has admin role
 
 ### Running the App
 
+**Web Application:**
+
 ```bash
-npm run dev          # Start dev server (localhost:5173)
-npm run build        # Production build
-npm run preview      # Preview production build
+pnpm web:dev         # Start web dev server (localhost:8080)
+pnpm web:build       # Build web for production
+```
+
+**Mobile Application:**
+
+```bash
+pnpm mobile:dev      # Start Expo dev server
+pnpm mobile:android  # Run on Android device/emulator
+pnpm mobile:ios      # Run on iOS simulator
+```
+
+**Both Platforms:**
+
+```bash
+pnpm dev             # Run both web and mobile concurrently
+pnpm build           # Build all packages
+pnpm type-check      # Type check all packages
+pnpm lint            # Lint all packages
 ```
 
 ### Feature Flags
@@ -511,29 +624,98 @@ npm run preview      # Preview production build
 
 ## Common Tasks
 
-### Adding a New Feature
+### Adding Platform-Agnostic Code to Shared Package
 
-1. Create feature module in `/src/features/[feature-name]/`
-2. Define types in `types/index.ts`
-3. Create components in `components/`
-4. Create hooks in `hooks/`
-5. Add services in `services/` if needed
-6. Update routes in `App.tsx`
+1. **Determine if code is truly platform-agnostic**
+   - Does it work on both web and mobile without changes?
+   - Does it depend only on React, not on DOM or React Native APIs?
+   - Can it use the shared Supabase client?
 
-### Adding a New FmCommon Component
+2. **Add to appropriate directory in `packages/shared/src/`**
+   - Types: `types/features/[feature].ts`
+   - API queries: `api/queries/[resource]Queries.ts`
+   - Business logic: `services/[service].ts`
+   - React hooks: `hooks/use[Hook].ts`
+   - Utilities: `utils/[utility].ts`
 
-1. Create component in `/src/components/ui/[category]/`
+3. **Export from shared package barrel**
+   - Add export to `packages/shared/src/index.ts`
+   - Use deep imports if needed: `@force-majeure/shared/hooks/useAuth`
+
+4. **Import in web or mobile**
+   ```typescript
+   import { useEvents, Event } from '@force-majeure/shared';
+   ```
+
+### Adding a Web-Specific Feature
+
+1. Create feature module in `packages/web/src/features/[feature-name]/`
+2. Define types (or import from shared if platform-agnostic)
+3. Create components using Radix UI + Tailwind
+4. Create hooks for feature logic
+5. Add page components in `packages/web/src/pages/`
+6. Update routes in `packages/web/src/App.tsx`
+
+### Adding a Mobile-Specific Feature
+
+1. Create screen in `packages/mobile/src/screens/[ScreenName].tsx`
+2. Define types (or import from shared if platform-agnostic)
+3. Create components using React Native + NativeWind
+4. Add navigation in `packages/mobile/src/navigation/`
+5. Use shared package for business logic and API calls
+
+### Adding a New FmCommon Component (Web)
+
+1. Create component in `packages/web/src/components/common/ui/[category]/`
 2. Use existing patterns (props, styling, accessibility)
-3. Export from barrel file (if exists)
-4. Document props with JSDoc
-5. Use Radix UI primitives where appropriate
+3. Follow design system (Tailwind, sharp corners, Canela font)
+4. Export from barrel file if exists
+5. Document props with JSDoc
+6. Use Radix UI primitives where appropriate
 
 ### Working with Supabase
 
-- Always use typed queries with TypeScript
-- Handle errors with toast notifications
-- Use React Query for caching when appropriate
-- Test with row-level security (RLS) policies in mind
+**In Shared Package:**
+- Use platform-agnostic client: `import { supabase } from '@force-majeure/shared'`
+- Create React Query hooks in `packages/shared/src/api/queries/`
+- Export types from database: `packages/shared/src/api/supabase/types.ts`
+
+**In Web/Mobile:**
+- Initialize Supabase client with platform-specific storage (already done)
+- Import queries from shared: `import { useEvents } from '@force-majeure/shared'`
+- Handle errors with toast notifications (platform-specific)
+- Test with row-level security (RLS) policies
+
+### Regenerating Database Types
+
+```bash
+# After creating/modifying migrations
+pnpm supabase:db:reset
+
+# Generate TypeScript types
+pnpm supabase:gen-types
+# This outputs to packages/shared/src/api/supabase/types.ts
+```
+
+### Working Across Packages
+
+**Install dependency in specific package:**
+```bash
+pnpm --filter @force-majeure/web add react-router-dom
+pnpm --filter @force-majeure/mobile add @react-navigation/native
+pnpm --filter @force-majeure/shared add zod
+```
+
+**Run commands in specific package:**
+```bash
+pnpm --filter @force-majeure/web type-check
+pnpm --filter @force-majeure/mobile dev
+```
+
+**Add shared code:**
+1. Add to `packages/shared/src/`
+2. Export from `packages/shared/src/index.ts`
+3. Import in web/mobile: `import { ... } from '@force-majeure/shared'`
 
 ## Contact & Resources
 
@@ -834,3 +1016,84 @@ npm run preview      # Preview production build
 - `DesignSystemSpacing` - Only scale values (5, 10, 20, 40, 60)
 - `DepthLevel` - Only valid depth levels (0-3)
 - `ButtonVariant`, `CardVariant`, etc.
+
+### Internationalization (i18n)
+
+**CRITICAL: All user-facing text must use the translation system.**
+
+This application supports multiple languages (English, Spanish, Chinese). When adding any user-facing text, labels, messages, or content, you MUST use the i18n system.
+
+**Translation Files Location:**
+
+```text
+packages/web/public/locales/
+├── en/           # English
+│   ├── common.json      # Nav, buttons, labels, status, errors
+│   ├── pages.json       # Page-specific content
+│   ├── validation.json  # Form validation messages
+│   └── toasts.json      # Toast notifications
+├── es/           # Spanish (same structure)
+└── zh/           # Chinese (same structure)
+```
+
+**How to Add Translations:**
+
+1. **Add keys to ALL THREE language files** (en, es, zh):
+
+   ```json
+   // en/pages.json
+   {
+     "featureName": {
+       "title": "Feature Title",
+       "description": "Feature description"
+     }
+   }
+   ```
+
+2. **Use in components** with `useTranslation` hook:
+
+   ```tsx
+   import { useTranslation } from 'react-i18next';
+
+   function MyComponent() {
+     const { t } = useTranslation('pages');  // Specify namespace
+
+     return (
+       <div>
+         <h1>{t('featureName.title')}</h1>
+         <p>{t('featureName.description')}</p>
+       </div>
+     );
+   }
+   ```
+
+3. **For multiple namespaces**:
+
+   ```tsx
+   const { t } = useTranslation('pages');
+   const { t: tCommon } = useTranslation('common');
+
+   // Use t() for pages, tCommon() for common
+   <label>{tCommon('labels.email')}</label>
+   <p>{t('profile.description')}</p>
+   ```
+
+**Namespace Guidelines:**
+
+- `common` - Shared UI elements: nav items, buttons, form labels, status text, generic errors
+- `pages` - Page-specific content: headers, descriptions, feature text
+- `validation` - Form validation error messages
+- `toasts` - Toast notification messages
+
+**DO NOT:**
+
+- ❌ Hardcode English strings in components
+- ❌ Add translation keys to only one language file
+- ❌ Use template literals for user-facing text without i18n
+
+**DO:**
+
+- ✅ Add translation keys to all three language files
+- ✅ Use `t()` function for all user-facing text
+- ✅ Follow existing key naming patterns (camelCase, nested by feature)
+- ✅ Check `docs/refactoring/I18N_REMAINING_WORK.md` for remaining i18n work

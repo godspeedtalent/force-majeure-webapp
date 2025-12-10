@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { DataGridAction, FmConfigurableDataGrid } from '@/features/data-grid';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
@@ -16,7 +16,7 @@ import {
   RefreshCw,
   Disc3,
 } from 'lucide-react';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { EventsManagement } from '../admin/EventsManagement';
 import { OrganizationsManagement } from '../admin/OrganizationsManagement';
@@ -24,8 +24,8 @@ import { UserManagement } from '../admin/UserManagement';
 import { DatabaseNavigatorSearch } from '@/components/admin/DatabaseNavigatorSearch';
 import { toast } from 'sonner';
 import { artistColumns, venueColumns, recordingColumns } from '../admin/config/adminGridColumns';
-import { useUserPermissions } from '@force-majeure/shared/hooks/useUserRole';
-import { ROLES } from '@force-majeure/shared/auth/permissions';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { ROLES } from '@force-majeure/shared';
 import { AdminLockIndicator } from '@/components/common/indicators';
 import { refreshAllTableSchemas } from '@/features/data-grid/services/schemaRefresh';
 import { FmCommonButton } from '@/components/common/buttons';

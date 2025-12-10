@@ -11,8 +11,8 @@ import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
 import { Label } from '@/components/common/shadcn/label';
 import { Shield, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import { logger } from '@force-majeure/shared/services/logger';
-import { RoleManagementService } from '@force-majeure/shared/services/roleManagementService';
+import { logger } from '@force-majeure/shared';
+import { RoleManagementService } from '@force-majeure/shared';
 
 interface RoleInfo {
   role_name: string;

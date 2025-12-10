@@ -3,7 +3,7 @@ import { DollarSign, Percent } from 'lucide-react';
 import { FmCommonToggleHeader } from '@/components/common/forms/FmCommonToggleHeader';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { Button } from '@/components/common/shadcn/button';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,9 +14,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/common/shadcn/alert-dialog';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import { toast } from 'sonner';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface Fee {
   id: string;

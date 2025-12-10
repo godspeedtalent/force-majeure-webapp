@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 import { Button } from '@/components/common/shadcn/button';
 import { Calendar } from '@/components/common/shadcn/calendar';
 import {
@@ -16,8 +16,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/common/shadcn/tooltip';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
-import { useDateTimePicker } from '@force-majeure/shared/hooks/useDateTimePicker';
+import { supabase } from '@force-majeure/shared';
+import { useDateTimePicker } from '@force-majeure/shared';
 
 interface FmCommonEventDatePickerProps {
   value?: Date;

@@ -2,9 +2,9 @@
  * Event Query Hooks
  *
  * Re-exports from centralized query utilities for backward compatibility.
- * New code should import directly from '@force-majeure/shared/api/queries'.
+ * New code should import directly from '@/shared/api/queries/eventQueries'.
  *
- * @deprecated Import from '@force-majeure/shared/api/queries' instead
+ * @deprecated Import from '@/shared/api/queries/eventQueries' instead
  */
 export {
   useEvents,
@@ -17,7 +17,7 @@ export {
   useUpdateTicketTiers,
   useAddUndercardArtists,
   useUpdateUndercardArtists,
-} from '@force-majeure/shared/api/queries';
+} from '@/shared/api/queries/eventQueries';
 
 // Re-export Event type from centralized location
 export type { Event } from '../types';

@@ -2,10 +2,10 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Building2, Music, MapPin, Calendar, User } from 'lucide-react';
 import { Input } from '@/components/common/shadcn/input';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
-import { useDebounce } from '@force-majeure/shared/hooks';
-import { handleError } from '@force-majeure/shared/services/errorHandler';
-import { logger } from '@force-majeure/shared/services/logger';
+import { supabase } from '@force-majeure/shared';
+import { useDebounce } from '@force-majeure/shared';
+import { handleError } from '@/shared/services/errorHandler';
+import { logger } from '@force-majeure/shared';
 
 interface Organization {
   id: string;

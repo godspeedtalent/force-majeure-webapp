@@ -20,7 +20,7 @@ import {
   Settings,
   ExternalLink,
 } from 'lucide-react';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 import { Button } from '@/components/common/shadcn/button';
 import {
   ActivityLog,

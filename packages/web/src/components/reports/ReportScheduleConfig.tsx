@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/common/shadcn/input';
 import { Button } from '@/components/common/shadcn/button';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import { toast } from 'sonner';
 import type { ReportConfiguration } from '@/types/reports';
 

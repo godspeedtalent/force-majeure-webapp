@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface MessagePanelProps {
   title: string;

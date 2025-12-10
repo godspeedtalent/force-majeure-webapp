@@ -1,6 +1,6 @@
-import { supabase } from '@/api/supabase/client';
-import { logger } from '@/services/logger';
-import type { Tables } from '@/api/supabase/types';
+import { supabase } from '../api/supabase/client';
+import { logger } from '../services/logger';
+import type { Tables } from '../api/supabase/types';
 
 export interface Role {
   id: string;

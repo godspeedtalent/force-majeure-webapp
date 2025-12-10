@@ -3,7 +3,7 @@ import { MessagePanel } from '@/components/feedback/MessagePanel';
 import { Button } from '@/components/common/shadcn/button';
 import { ExternalLink } from 'lucide-react';
 
-import { LF_SYSTEM_TICKET_URL } from '@force-majeure/shared/constants/ticketLinks';
+import { LF_SYSTEM_TICKET_URL } from '@force-majeure/shared';
 
 export function InvalidTokenView() {
   return (

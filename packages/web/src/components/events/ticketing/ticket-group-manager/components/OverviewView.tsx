@@ -1,6 +1,6 @@
 import { Ticket, BarChart3, ChevronRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/common/shadcn/card';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 import type { TicketGroup } from '../types';
 import { GROUP_COLORS } from '../constants';
 import {

@@ -5,7 +5,7 @@ import { FmCommonModal } from './FmCommonModal';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonBadgeGroup, FmCommonBadgeItem as BadgeItem } from '@/components/common/display/FmCommonBadgeGroup';
 import { DialogTitle } from '@/components/common/shadcn/dialog';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 export interface ResourceMetadataItem {
   label: string;

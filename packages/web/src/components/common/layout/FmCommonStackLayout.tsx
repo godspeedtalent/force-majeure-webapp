@@ -5,7 +5,7 @@
  * Provides consistent spacing for stacked content
  */
 
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface FmCommonStackLayoutProps {
   /** Stack items */

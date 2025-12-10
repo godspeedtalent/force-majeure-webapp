@@ -5,7 +5,7 @@
  * Can be centered in container or inline.
  */
 
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface FmCommonLoadingStateProps {
   /** Loading message */

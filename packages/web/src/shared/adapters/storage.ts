@@ -8,7 +8,7 @@
  * Usage:
  * ```typescript
  * // Web implementation
- * import { webStorage } from '@force-majeure/shared/adapters/storage';
+ * import { webStorage } from '@force-majeure/shared';
  * await webStorage.setItem('key', 'value');
  *
  * // Mobile implementation (in mobile app)

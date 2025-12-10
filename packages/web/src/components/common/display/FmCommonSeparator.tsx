@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Separator } from '@/components/common/shadcn/separator';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 // ============================================================
 // FmCommonSeparator - Force Majeure branded Separator wrapper

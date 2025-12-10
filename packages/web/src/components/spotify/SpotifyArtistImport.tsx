@@ -13,7 +13,7 @@ import {
   type SpotifyArtist,
 } from '@/services/spotify/spotifyApiService';
 import { toast } from 'sonner';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 
 interface SpotifyArtistImportProps {
   open: boolean;

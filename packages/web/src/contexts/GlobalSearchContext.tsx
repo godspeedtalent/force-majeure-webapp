@@ -5,8 +5,8 @@ import {
   useEffect,
   ReactNode,
 } from 'react';
-import { useFeatureFlagHelpers } from '@force-majeure/shared/hooks/useFeatureFlags';
-import { FEATURE_FLAGS } from '@force-majeure/shared/config/featureFlags';
+import { useFeatureFlagHelpers } from '@force-majeure/shared';
+import { FEATURE_FLAGS } from '@force-majeure/shared';
 
 interface GlobalSearchContextType {
   isOpen: boolean;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 import { useLocation } from 'react-router-dom';
 import { findRouteConfig } from '@/config/routes';
 

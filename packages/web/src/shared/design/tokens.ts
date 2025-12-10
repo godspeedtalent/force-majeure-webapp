@@ -9,13 +9,13 @@
  *
  * @example Web usage:
  * ```typescript
- * import { FM_COLORS, FM_SPACING } from '@force-majeure/shared/design/tokens';
+ * import { FM_COLORS, FM_SPACING } from '@force-majeure/shared';
  * // Use in inline styles or CSS-in-JS
  * ```
  *
  * @example Mobile (Tamagui) usage:
  * ```typescript
- * import { FM_COLORS, FM_SPACING } from '@force-majeure/shared/design/tokens';
+ * import { FM_COLORS, FM_SPACING } from '@force-majeure/shared';
  * import { createTokens } from 'tamagui';
  *
  * const tokens = createTokens({

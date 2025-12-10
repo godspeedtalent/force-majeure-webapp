@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 
 interface DataGridPersistedState {
   sortColumn: string | null;

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 
 export const useFontLoader = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);

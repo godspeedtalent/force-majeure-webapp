@@ -8,7 +8,7 @@
 import { LucideIcon } from 'lucide-react';
 import { ReactNode } from 'react';
 
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface FmCommonEmptyStateProps {
   /** Icon to display */

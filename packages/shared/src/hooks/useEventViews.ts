@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/api/supabase/client';
-import { logger } from '@/services/logger';
+import { supabase } from '../api/supabase/client';
+import { logger } from '../services/logger';
 
 /**
  * Hook to fetch and track event view count

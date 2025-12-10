@@ -11,7 +11,7 @@
 import { LucideIcon } from 'lucide-react';
 
 import { Separator } from '@/components/common/shadcn/separator';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface FmCommonDetailSectionProps {
   /** Section title */

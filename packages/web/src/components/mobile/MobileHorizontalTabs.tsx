@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { LucideIcon } from 'lucide-react';
-import { cn } from '@force-majeure/shared/utils/utils';
-import { useIsMobile } from '@force-majeure/shared/hooks/use-mobile';
+import { cn } from '@force-majeure/shared';
+import { useIsMobile } from '@force-majeure/shared';
 
 export interface MobileHorizontalTab {
   id: string;

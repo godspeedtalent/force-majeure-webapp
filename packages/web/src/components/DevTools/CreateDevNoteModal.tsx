@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 import { CheckCircle2, Info, Bug, HelpCircle } from 'lucide-react';
 import {
   Dialog,
@@ -14,7 +14,7 @@ import {
 } from '@/components/common/forms/FmCommonSelect';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { toast } from 'sonner';
 

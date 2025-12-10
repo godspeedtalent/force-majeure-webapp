@@ -1,5 +1,5 @@
 import { User } from '@supabase/supabase-js';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 import { useState } from 'react';
 
 import { useAuth } from '@/features/auth/services/AuthContext';
@@ -8,7 +8,7 @@ import {
   useScavengerLocations,
   useUserClaims,
 } from '@/features/scavenger/hooks/useScavenger';
-import { useToast } from '@force-majeure/shared/hooks/use-toast';
+import { toast } from 'sonner';
 
 // Centralized state interface for the entire scavenger hunt flow
 export interface ScavengerState {

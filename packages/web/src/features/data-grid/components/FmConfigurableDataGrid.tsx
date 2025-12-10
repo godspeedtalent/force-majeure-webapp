@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import { FmDataGrid, DataGridColumn, DataGridAction } from './FmDataGrid';
 
 import { useTableSchema } from '../hooks/useTableSchema';
 import { Button } from '@/components/common/shadcn/button';
 import { GripVertical, Settings2 } from 'lucide-react';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 import { DragEndEvent } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import { toast } from 'sonner';

@@ -50,6 +50,7 @@ export * from './utils/imageUtils';
 export * from './utils/environment';
 export * from './utils/apiLogger';
 export * from './utils/featureFlagOverrides';
+export * from './utils/utils';
 
 // Hooks
 export * from './hooks/useAsyncOperation';
@@ -63,3 +64,60 @@ export * from './auth/permissions';
 
 // Config
 export * from './config/featureFlags';
+
+// Adapters
+export * from './adapters/storage';
+
+// API - Additional
+export * from './api/supabase/database.types';
+
+// Auth - Additional
+export * from './auth/permissionTypeGuards';
+
+// Constants - Additional
+export * from './constants/scrollThresholds';
+export * from './constants/socialLinks';
+export * from './constants/ticketLinks';
+export * from './constants/timeConstants';
+
+// Design
+export * from './design/tokens';
+
+// Hooks - Additional
+export * from './hooks/use-mobile';
+export * from './hooks/useAsyncAction';
+export * from './hooks/useCreatedEntityReturn';
+export * from './hooks/useDateTimePicker';
+export * from './hooks/useDebounce';
+export * from './hooks/useEntityDetailsModal';
+export * from './hooks/useEnvironment';
+export * from './hooks/useEventViews';
+export * from './hooks/useFontLoaded';
+export * from './hooks/useFontLoader';
+export * from './hooks/useFormState';
+export * from './hooks/useModalState';
+export * from './hooks/useMutationWithToast';
+export * from './hooks/useRecentSelections';
+export * from './hooks/useRoles';
+export * from './hooks/useScrollPosition';
+export * from './hooks/useScrollSnap';
+export * from './hooks/useSectionInView';
+export * from './hooks/useShoppingCart';
+export * from './hooks/useTouchGesture';
+
+// Services - Additional
+export * from './services/createService';
+export * from './services/environmentService';
+export * from './services/eventViewsService';
+
+// Types
+export * from './types/imageAnchor';
+export * from './types/designSystem';
+
+// Utils - Additional
+export * from './utils/featureFlagUtils';
+export * from './utils/queueUtils';
+export * from './utils/sessionPersistence';
+export * from './utils/debugEdgeFunction';
+export * from './utils/scavengerApi';
+export * from './utils/styleUtils';

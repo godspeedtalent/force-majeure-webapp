@@ -1,7 +1,7 @@
 import { OrderReceiptEmailData } from '@/types/email';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 import { TicketPDFGenerator } from '@/services/pdf/TicketPDFGenerator';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 
 const pdfLogger = logger.createNamespace('TicketPDF');
 

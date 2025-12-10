@@ -1,24 +1,7 @@
 {
-  "extends": "../../tsconfig.json",
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" },
     { "path": "../shared" }
-  ],
-  "compilerOptions": {
-    "composite": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"],
-      "@features/*": ["./src/features/*"],
-      "@shared/*": ["../shared/src/*"],
-      "@core/*": ["./src/core/*"],
-      "@components/*": ["./src/shared/components/*"],
-      "@hooks/*": ["./src/shared/hooks/*"],
-      "@utils/*": ["./src/shared/utils/*"],
-      "@types/*": ["./src/shared/types/*"]
-    },
-    "lib": ["ES2020", "DOM", "DOM.Iterable"]
-  }
+  ]
 }

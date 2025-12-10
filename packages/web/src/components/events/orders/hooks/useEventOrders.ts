@@ -4,7 +4,7 @@ import {
   useOrdersByEventId,
   useCancelOrder,
   useRefundOrder,
-} from '@force-majeure/shared/api/queries/orderQueries';
+} from '@/shared/api/queries/orderQueries';
 
 // Re-export for backward compatibility
 export type EventOrder = Order;

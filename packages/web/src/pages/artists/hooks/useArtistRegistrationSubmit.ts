@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { logApiError } from '@force-majeure/shared/utils/apiLogger';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logApiError } from '@force-majeure/shared';
+import { logger } from '@force-majeure/shared';
 import type { ArtistRegistrationFormData } from '../types/registration';
 
 export function useArtistRegistrationSubmit() {
@@ -16,6 +16,41 @@ export function useArtistRegistrationSubmit() {
     setIsSubmitting(true);
 
     try {
+      // Check for duplicate artist name in existing artists
+      const { data: existingArtist } = await supabase
+        .from('artists')
+        .select('id, name')
+        .ilike('name', formData.stageName.trim())
+        .limit(1)
+        .single();
+
+      if (existingArtist) {
+        toast.error(
+          'An artist with this name already exists. If this is you, please email management@forcemajeure.vip for help linking your profile.',
+          { duration: 8000 }
+        );
+        setIsSubmitting(false);
+        return false;
+      }
+
+      // Check for duplicate artist name in pending registrations
+      const { data: pendingRegistration } = await supabase
+        .from('artist_registrations' as any)
+        .select('id, artist_name')
+        .ilike('artist_name', formData.stageName.trim())
+        .eq('status', 'pending')
+        .limit(1)
+        .single();
+
+      if (pendingRegistration) {
+        toast.error(
+          'A registration with this artist name is already pending review. If this is you, please email management@forcemajeure.vip for help.',
+          { duration: 8000 }
+        );
+        setIsSubmitting(false);
+        return false;
+      }
+
       const { data, error } = await supabase
         .from('artist_registrations' as any)
         .insert([
@@ -57,10 +92,13 @@ export function useArtistRegistrationSubmit() {
       }
 
       logger.info('Artist registration submitted successfully', { data });
-      toast.success("Registration submitted successfully! We'll be in touch soon.");
+      toast.success(
+        "Thank you for registering! If your sound is a good fit for a future event, we'll reach out to you!",
+        { duration: 6000 }
+      );
 
       setTimeout(() => {
-        navigate('/artists/signup');
+        navigate('/profile/edit', { state: { activeTab: 'artist' } });
       }, 1000);
 
       return true;

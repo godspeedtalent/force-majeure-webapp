@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
 
 import { Skeleton } from '@/components/common/shadcn/skeleton';
-import { useCanelaLoaded } from '@force-majeure/shared/hooks/useFontLoaded';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { useCanelaLoaded } from '@force-majeure/shared';
+import { cn } from '@force-majeure/shared';
 
 interface FmCommonTextSkeletonProps {
   /**

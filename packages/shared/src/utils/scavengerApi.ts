@@ -1,5 +1,5 @@
-import { supabase } from '@/api/supabase/client';
-import { logger } from '@/services/logger';
+import { supabase } from '../api/supabase/client';
+import { logger } from '../services/logger';
 
 export interface ClaimResult {
   success: boolean;

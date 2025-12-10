@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { formatTimeDisplay } from '@force-majeure/shared/utils/timeUtils';
+import { formatTimeDisplay } from '@force-majeure/shared';
 import type { EventDetailsRecord } from '../types';
 import { CALL_TIME_INTERVAL_MINUTES } from '../components/constants';
 

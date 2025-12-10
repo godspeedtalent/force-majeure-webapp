@@ -9,8 +9,8 @@
  *
  * Usage:
  * ```ts
- * import { useEventById, useVenueById, useArtists } from '@force-majeure/shared/api/queries';
- * import { eventKeys, venueKeys, artistKeys } from '@force-majeure/shared/api/queries';
+ * import { useEventById, useVenueById, useArtists } from '@force-majeure/shared';
+ * import { eventKeys, venueKeys, artistKeys } from '@force-majeure/shared';
  * ```
  */
 

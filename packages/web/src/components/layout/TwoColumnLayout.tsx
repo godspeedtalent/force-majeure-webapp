@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface TwoColumnLayoutProps {
   left: ReactNode;

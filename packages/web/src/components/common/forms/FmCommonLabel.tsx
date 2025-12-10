@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Label } from '@/components/common/shadcn/label';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 // ============================================================
 // FmCommonLabel - Force Majeure branded Label wrapper

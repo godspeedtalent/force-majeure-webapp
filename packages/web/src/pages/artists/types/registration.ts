@@ -16,7 +16,7 @@ export interface ArtistRegistrationFormData {
   stageName: string;
   bio: string;
   genres: Genre[];
-  city: string;
+  cityId: string | null;
 
   // Social
   profileImageUrl: string;
@@ -42,7 +42,7 @@ export const DEFAULT_FORM_DATA: ArtistRegistrationFormData = {
   stageName: '',
   bio: '',
   genres: [],
-  city: '',
+  cityId: null,
 
   // Social
   profileImageUrl: '',

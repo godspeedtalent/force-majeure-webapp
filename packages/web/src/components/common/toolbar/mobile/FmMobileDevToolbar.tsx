@@ -1,6 +1,6 @@
-import { useUserPermissions } from '@force-majeure/shared/hooks/useUserRole';
-import { useIsMobile } from '@force-majeure/shared/hooks/use-mobile';
-import { ROLES } from '@force-majeure/shared/auth/permissions';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { useIsMobile } from '@force-majeure/shared';
+import { ROLES } from '@force-majeure/shared';
 import { FmMobileDevFAB } from './FmMobileDevFAB';
 import { FmMobileDevDrawer } from './FmMobileDevDrawer';
 import { FmMobileDevToolContent } from './FmMobileDevToolContent';

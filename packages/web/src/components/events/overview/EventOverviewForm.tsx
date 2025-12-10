@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Save, Eye } from 'lucide-react';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmVenueSearchDropdown } from '@/components/common/search/FmVenueSearchDropdown';
 import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
@@ -14,10 +14,9 @@ import { Checkbox } from '@/components/common/shadcn/checkbox';
 import { Card } from '@/components/common/shadcn/card';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-import { handleError } from '@force-majeure/shared/services/errorHandler';
-import { useDebouncedSave } from '@force-majeure/shared/hooks/useDebouncedSave';
-import { useFeatureFlagHelpers } from '@force-majeure/shared/hooks/useFeatureFlags';
-import { FEATURE_FLAGS } from '@force-majeure/shared/config/featureFlags';
+import { handleError } from '@/shared/services/errorHandler';
+import { useDebouncedSave } from '@/shared/hooks/useDebouncedSave';
+import { useFeatureFlagHelpers, FEATURE_FLAGS } from '@force-majeure/shared';
 import { HeroImageFocalPoint } from '@/components/events/overview/HeroImageFocalPoint';
 
 interface EventOverviewFormProps {

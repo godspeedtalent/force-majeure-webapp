@@ -5,7 +5,7 @@
  * Uses Client Credentials flow for server-to-server requests.
  */
 
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 
 // Spotify API types
 export interface SpotifyArtist {

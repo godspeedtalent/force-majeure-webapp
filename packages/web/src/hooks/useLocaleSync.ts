@@ -2,8 +2,8 @@ import { useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
-import { logger } from '@force-majeure/shared/services/logger';
+import { supabase } from '@force-majeure/shared';
+import { logger } from '@force-majeure/shared';
 import {
   type SupportedLocale,
   isSupportedLocale,

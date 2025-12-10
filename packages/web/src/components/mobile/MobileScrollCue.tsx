@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { cn } from '@force-majeure/shared/utils/utils';
-import { useIsMobile } from '@force-majeure/shared/hooks/use-mobile';
-import { useScrollPosition } from '@force-majeure/shared/hooks/useScrollPosition';
-import { SCROLL_THRESHOLDS } from '@force-majeure/shared/constants/scrollThresholds';
+import { cn } from '@force-majeure/shared';
+import { useIsMobile } from '@force-majeure/shared';
+import { useScrollPosition } from '@force-majeure/shared';
+import { SCROLL_THRESHOLDS } from '@force-majeure/shared';
 
 export interface MobileScrollCueProps {
   show?: boolean;

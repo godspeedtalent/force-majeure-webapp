@@ -1,6 +1,6 @@
 import { forwardRef, useState, useEffect, useRef } from 'react';
 
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface FmBigButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {

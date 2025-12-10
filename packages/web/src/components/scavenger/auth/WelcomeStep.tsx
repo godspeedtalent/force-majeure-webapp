@@ -7,7 +7,7 @@ import { PromoCodePanel } from './PromoCodePanel';
 import {
   LF_SYSTEM_TICKET_URL,
   PROMO_CODE,
-} from '@force-majeure/shared/constants/ticketLinks';
+} from '@force-majeure/shared';
 
 // Simple component interfaces - no state management
 interface ClaimSuccessPanelProps {

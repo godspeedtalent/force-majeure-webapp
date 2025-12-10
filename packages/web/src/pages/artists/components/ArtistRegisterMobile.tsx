@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 import {
   Carousel,
   CarouselContent,
@@ -160,6 +160,7 @@ export function ArtistRegisterMobile({
         genreBadges={genreBadges}
         isExpanded={previewExpanded}
         onToggle={() => setPreviewExpanded(!previewExpanded)}
+        onInputChange={handleInputChange}
       />
     </>
   );

@@ -3,8 +3,8 @@ import { toast } from 'sonner';
 
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
-import { sessionPersistence } from '@force-majeure/shared/utils/sessionPersistence';
+import { supabase } from '@force-majeure/shared';
+import { sessionPersistence } from '@force-majeure/shared';
 
 interface LoginFormProps {
   onSuccess?: () => void;

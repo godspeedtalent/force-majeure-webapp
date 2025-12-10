@@ -16,7 +16,7 @@ import {
 import { z } from 'zod';
 
 import { Form } from '@/components/common/shadcn/form';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface FmCommonFormProps<T extends FieldValues> {
   /** Zod schema for validation */

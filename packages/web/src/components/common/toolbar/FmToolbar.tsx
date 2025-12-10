@@ -20,13 +20,13 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 import { FmCommonTab } from '@/components/common/data/FmCommonTab';
 import { Button } from '@/components/common/shadcn/button';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { useUserPermissions } from '@force-majeure/shared/hooks/useUserRole';
-import { ROLES } from '@force-majeure/shared/auth/permissions';
-import { useShoppingCart } from '@force-majeure/shared/hooks/useShoppingCart';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { ROLES } from '@force-majeure/shared';
+import { useShoppingCart } from '@force-majeure/shared';
 
 // Import tab components
 import { CartTabContent } from './tabs/CartTab';

@@ -1,6 +1,6 @@
-import { supabase } from '@force-majeure/shared/api/supabase/client';
-import { logger } from '@force-majeure/shared/services/logger';
-import { createService } from '@force-majeure/shared/services/createService';
+import { supabase } from '@force-majeure/shared';
+import { logger } from '@force-majeure/shared';
+import { createService } from '@force-majeure/shared';
 import type { Venue } from '@/features/events/types';
 
 /**

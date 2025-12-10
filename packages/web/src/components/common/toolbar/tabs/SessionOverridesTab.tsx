@@ -9,15 +9,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/common/shadcn/tooltip';
-import { FEATURE_FLAGS } from '@force-majeure/shared/config/featureFlags';
+import { FEATURE_FLAGS } from '@force-majeure/shared';
 import {
   setFeatureFlagOverride,
   getFeatureFlagOverride,
   clearFeatureFlagOverride,
   clearAllFeatureFlagOverrides,
   hasFeatureFlagOverride,
-} from '@force-majeure/shared/utils/featureFlagOverrides';
-import { useFeatureFlagHelpers } from '@force-majeure/shared/hooks/useFeatureFlags';
+} from '@force-majeure/shared';
+import { useFeatureFlagHelpers } from '@force-majeure/shared';
 import { useQueryClient } from '@tanstack/react-query';
 
 export function SessionOverridesTabContent() {

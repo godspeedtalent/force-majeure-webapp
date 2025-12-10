@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { logger } from '@force-majeure/shared/services/logger';
-import { rolesStore, type Role } from '@force-majeure/shared/stores/rolesStore';
+import { logger } from '@force-majeure/shared';
+import { rolesStore, type Role } from '@force-majeure/shared';
 
 /**
  * Hook to access the roles store

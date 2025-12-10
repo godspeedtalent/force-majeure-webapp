@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 export interface FmCommonListColumn<T> {
   key: keyof T | string;

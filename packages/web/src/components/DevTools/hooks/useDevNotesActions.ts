@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import { toast } from 'sonner';
 import { NoteType, NoteStatus } from '../config/devNotesConfig';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 
 interface DevNote {
   id: string;

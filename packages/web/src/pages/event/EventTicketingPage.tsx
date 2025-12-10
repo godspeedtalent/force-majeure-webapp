@@ -11,8 +11,8 @@ import { useEventDetails } from './hooks/useEventDetails';
 import { useTicketingGate, QueueEvent } from './hooks/useTicketingGate';
 import { useQueueConfiguration } from './hooks/useQueueConfiguration';
 import { useCheckoutTimer } from '@/contexts/CheckoutContext';
-import { formatTimeDisplay } from '@force-majeure/shared/utils/timeUtils';
-import { logger } from '@force-majeure/shared/services/logger';
+import { formatTimeDisplay } from '@force-majeure/shared';
+import { logger } from '@force-majeure/shared';
 import { toast } from 'sonner';
 
 export const EventTicketingPage = () => {

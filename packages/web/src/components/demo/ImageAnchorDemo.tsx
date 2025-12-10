@@ -2,7 +2,7 @@
  * Demo component to test all ImageAnchor positions
  * This is for testing purposes and can be used in development
  */
-import { ImageAnchor } from '@force-majeure/shared/types/imageAnchor';
+import { ImageAnchor } from '@force-majeure/shared';
 
 export const ImageAnchorDemo = () => {
   const anchors = [

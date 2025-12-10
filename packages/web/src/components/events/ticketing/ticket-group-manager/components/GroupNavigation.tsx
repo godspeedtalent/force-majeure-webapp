@@ -3,7 +3,7 @@ import { Button } from '@/components/common/shadcn/button';
 import { Card, CardContent } from '@/components/common/shadcn/card';
 import { Badge } from '@/components/common/shadcn/badge';
 import { Separator } from '@/components/common/shadcn/separator';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 import type { TicketGroup } from '../types';
 import { GROUP_COLORS } from '../constants';
 

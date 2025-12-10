@@ -9,7 +9,7 @@
  */
 
 // Re-export the canonical TicketTier from events types
-export type { TicketTier, TicketTierFormData } from '@/types/features/events';
+export type { TicketTier, TicketTierFormData } from '../../types/features/events';
 
 /**
  * Ticket tier with order statistics

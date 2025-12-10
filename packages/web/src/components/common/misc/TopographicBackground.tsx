@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface TopographicBackgroundProps {
   opacity?: number;

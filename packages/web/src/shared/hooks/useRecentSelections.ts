@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 
 const STORAGE_KEY_PREFIX = 'fm_recent_';
 const MAX_RECENT_ITEMS = 5;

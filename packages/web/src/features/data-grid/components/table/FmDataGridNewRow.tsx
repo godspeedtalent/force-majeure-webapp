@@ -3,7 +3,7 @@ import { TableCell, TableRow } from '@/components/common/shadcn/table';
 import { Button } from '@/components/common/shadcn/button';
 import { Input } from '@/components/common/shadcn/input';
 import { Plus } from 'lucide-react';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 import { DataGridColumn } from '../FmDataGrid';
 import { isRelationField, getRelationConfig } from '../../utils/dataGridRelations';
 

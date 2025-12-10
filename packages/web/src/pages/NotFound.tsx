@@ -3,7 +3,7 @@ import { useLocation, Link } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/common/shadcn/button';
 import { Home } from 'lucide-react';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 
 const NotFound = () => {
   const location = useLocation();

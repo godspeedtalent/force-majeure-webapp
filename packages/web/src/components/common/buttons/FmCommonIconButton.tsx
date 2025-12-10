@@ -1,6 +1,6 @@
 import { forwardRef, useState, useCallback } from 'react';
 import { Button } from '@/components/common/shadcn/button';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 import { LucideIcon, Plus } from 'lucide-react';
 import { useRipple } from '@/hooks/useRipple';
 import {

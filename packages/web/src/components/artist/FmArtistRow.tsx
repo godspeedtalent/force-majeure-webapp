@@ -1,4 +1,4 @@
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 import { FmCommonRow } from '@/components/common/layout/FmCommonRow';
 
 export interface FmArtistRowProps {

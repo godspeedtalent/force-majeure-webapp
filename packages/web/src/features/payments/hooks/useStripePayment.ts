@@ -1,8 +1,8 @@
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import { useState, useCallback } from 'react';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import { stripeService } from '../services/stripeService';
 import type { SavedCard, PaymentResult } from '../types';
 

@@ -10,7 +10,21 @@
     "signOut": "Cerrar Sesión",
     "signUp": "Registrarse",
     "admin": "Admin",
-    "dashboard": "Panel"
+    "dashboard": "Panel",
+    "shopMerch": "Tienda",
+    "organization": "Organización",
+    "orgTools": "Herramientas de Org",
+    "scanning": "Escaneo",
+    "developer": "Desarrollador",
+    "database": "Base de Datos",
+    "adminPanel": "Panel de Admin",
+    "site": "Sitio",
+    "contactUs": "Contáctanos",
+    "user": "Usuario",
+    "requiresAdminPermissions": "Requiere permisos de administrador",
+    "requiresScanningPermissions": "Requiere permisos de escaneo",
+    "developerOnly": "Solo desarrolladores",
+    "adminOnly": "Solo administradores"
   },
   "buttons": {
     "save": "Guardar",

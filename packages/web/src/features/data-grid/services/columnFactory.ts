@@ -23,7 +23,7 @@ import {
   detectRelations,
   isRelationEditable,
 } from './relationDetector';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 
 /**
  * Column customization (from database or config)

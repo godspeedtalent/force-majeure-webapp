@@ -1,4 +1,4 @@
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 export interface FmBadgeProps {
   label: string;

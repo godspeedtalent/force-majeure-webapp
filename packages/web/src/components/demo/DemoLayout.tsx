@@ -3,7 +3,7 @@ import { Navigation } from '@/components/navigation/Navigation';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { FmBackButton } from '@/components/common/buttons/FmBackButton';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface DemoLayoutProps {
   title: string;

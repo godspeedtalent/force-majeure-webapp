@@ -13,7 +13,7 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
 import { FormSection } from '@/components/common/forms/FormSection';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 export interface ArtistSlot {
   id: string;

@@ -8,9 +8,9 @@ import {
 import { useEvents } from '@/features/events/hooks/useEvents';
 import { useQueryClient } from '@tanstack/react-query';
 import { Edit, Trash2 } from 'lucide-react';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import { toast } from 'sonner';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 
 export const EventsManagement = () => {
   const { data: events, isLoading } = useEvents();

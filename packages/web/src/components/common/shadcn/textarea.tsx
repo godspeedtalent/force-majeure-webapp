@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 export type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 

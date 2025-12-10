@@ -2,7 +2,7 @@ import { TestResult } from '../types/testing';
 import { FmCommonCollapsibleSection } from '@/components/common/data/FmCommonCollapsibleSection';
 import { Badge } from '@/components/common/shadcn/badge';
 import { CheckCircle2, XCircle, Clock, AlertCircle } from 'lucide-react';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface TestCaseItemProps {
   result: TestResult;

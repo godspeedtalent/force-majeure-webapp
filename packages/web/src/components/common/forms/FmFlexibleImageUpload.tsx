@@ -3,11 +3,11 @@ import { Upload, X, ImageIcon, Link as LinkIcon } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
-import { imageUploadService } from '@force-majeure/shared/services/imageUploadService';
-import { useToast } from '@force-majeure/shared/hooks/use-toast';
-import { useUserRole } from '@force-majeure/shared/hooks/useUserRole';
+import { imageUploadService } from '@force-majeure/shared';
+import { toast } from 'sonner';
+import { useUserRole } from '@/shared/hooks/useUserRole';
 import { showErrorToast } from '@/components/common/feedback/FmErrorToast';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 type UploadState = 'idle' | 'compressing' | 'uploading';
 

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 import { Clock } from 'lucide-react';
 import { toast as sonnerToast } from 'sonner';
 

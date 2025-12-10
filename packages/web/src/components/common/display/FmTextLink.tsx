@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface FmTextLinkProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {

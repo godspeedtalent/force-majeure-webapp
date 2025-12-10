@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
   environmentService,
   type Environment,
-} from '@force-majeure/shared/services/environmentService';
+} from '@force-majeure/shared';
 
 /**
  * Hook to get current environment configuration

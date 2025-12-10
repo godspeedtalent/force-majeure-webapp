@@ -4,7 +4,7 @@
  * Centralized query builders for artist-related database operations.
  */
 
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import type { Artist } from '@/features/events/types';
 
 /**

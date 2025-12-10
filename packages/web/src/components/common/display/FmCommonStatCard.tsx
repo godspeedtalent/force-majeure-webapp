@@ -9,7 +9,7 @@ import { LucideIcon } from 'lucide-react';
 
 import { Badge } from '@/components/common/shadcn/badge';
 import { Card, CardContent, CardHeader } from '@/components/common/shadcn/card';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface FmCommonStatCardProps {
   /** Main stat value */

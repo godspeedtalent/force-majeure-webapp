@@ -7,13 +7,13 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Link2, Music, ExternalLink, AlertCircle, Disc, Radio, Trash2 } from 'lucide-react';
+import { Link2, Music, ExternalLink, AlertCircle, Disc, Radio, Trash2, Pencil, X } from 'lucide-react';
 import { FaSpotify, FaSoundcloud } from 'react-icons/fa6';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 export type RecordingType = 'track' | 'dj_set';
 
@@ -39,6 +39,10 @@ interface TrackInputFormProps {
   onCancel?: () => void;
   showCancelButton?: boolean;
   submitButtonText?: string;
+  /** Track to edit - when provided, form will be in edit mode */
+  editingTrack?: TrackFormData | null;
+  /** Called when editing is complete */
+  onEditComplete?: (track: TrackFormData) => void;
 }
 
 // Parse platform from URL
@@ -124,6 +128,8 @@ export function TrackInputForm({
   onCancel,
   showCancelButton = false,
   submitButtonText = 'Add Recording',
+  editingTrack,
+  onEditComplete,
 }: TrackInputFormProps) {
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -131,6 +137,23 @@ export function TrackInputForm({
   const [trackData, setTrackData] = useState<TrackMetadata | null>(null);
   const [isLinking, setIsLinking] = useState(false);
   const [recordingType, setRecordingType] = useState<RecordingType>('track');
+
+  const isEditMode = !!editingTrack;
+
+  // Initialize form when editing track changes
+  useEffect(() => {
+    if (editingTrack) {
+      setUrl(editingTrack.url);
+      setRecordingType(editingTrack.recordingType);
+      // Set initial track data from the editing track
+      setTrackData({
+        name: editingTrack.name,
+        coverArt: editingTrack.coverArt,
+        platform: editingTrack.platform,
+        url: editingTrack.url,
+      });
+    }
+  }, [editingTrack]);
 
   // Auto-fetch when URL changes
   useEffect(() => {
@@ -184,16 +207,30 @@ export function TrackInputForm({
 
     setIsLinking(true);
 
-    const newTrack: TrackFormData = {
-      id: crypto.randomUUID(),
-      name: trackData.name,
-      url: trackData.url,
-      coverArt: trackData.coverArt,
-      platform: trackData.platform,
-      recordingType,
-    };
+    if (isEditMode && editingTrack && onEditComplete) {
+      // Edit mode - update existing track
+      const updatedTrack: TrackFormData = {
+        id: editingTrack.id,
+        name: trackData.name,
+        url: trackData.url,
+        coverArt: trackData.coverArt,
+        platform: trackData.platform,
+        recordingType,
+      };
+      onEditComplete(updatedTrack);
+    } else {
+      // Add mode - create new track
+      const newTrack: TrackFormData = {
+        id: crypto.randomUUID(),
+        name: trackData.name,
+        url: trackData.url,
+        coverArt: trackData.coverArt,
+        platform: trackData.platform,
+        recordingType,
+      };
+      onAddTrack(newTrack);
+    }
 
-    onAddTrack(newTrack);
     setIsLinking(false);
 
     // Reset form
@@ -334,7 +371,7 @@ export function TrackInputForm({
 
       {/* Action Buttons */}
       <div className="flex justify-end gap-[10px]">
-        {showCancelButton && onCancel && (
+        {(showCancelButton || isEditMode) && onCancel && (
           <FmCommonButton
             variant="secondary"
             onClick={onCancel}
@@ -347,7 +384,10 @@ export function TrackInputForm({
           onClick={handleLink}
           disabled={!trackData || isLoading || isLinking}
         >
-          {isLinking ? 'Adding...' : submitButtonText}
+          {isLinking
+            ? (isEditMode ? 'Saving...' : 'Adding...')
+            : (isEditMode ? 'Save Changes' : submitButtonText)
+          }
         </FmCommonButton>
       </div>
     </div>
@@ -358,60 +398,88 @@ export function TrackInputForm({
 interface TrackListProps {
   tracks: TrackFormData[];
   onRemoveTrack: (trackId: string) => void;
+  onEditTrack?: (track: TrackFormData) => void;
+  editingTrackId?: string | null;
 }
 
-export function TrackList({ tracks, onRemoveTrack }: TrackListProps) {
+export function TrackList({ tracks, onRemoveTrack, onEditTrack, editingTrackId }: TrackListProps) {
   if (tracks.length === 0) return null;
 
   return (
     <div className="space-y-[10px]">
       <label className="text-xs uppercase text-muted-foreground">Added Recordings ({tracks.length})</label>
       <div className="space-y-[10px]">
-        {tracks.map((track) => (
-          <FmCommonCard key={track.id} variant="outline" className="p-0 overflow-hidden">
-            <div className="flex gap-[10px] items-center">
-              {/* Cover Art */}
-              <div className="w-16 h-16 flex-shrink-0 relative">
-                {track.coverArt ? (
-                  <img
-                    src={track.coverArt}
-                    alt={track.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-fm-gold/20 to-fm-gold/5 flex items-center justify-center">
-                    <Music className="h-6 w-6 text-fm-gold/50" />
-                  </div>
-                )}
-                {/* Platform badge */}
-                <div className="absolute bottom-0.5 right-0.5">
-                  {track.platform === 'spotify' ? (
-                    <FaSpotify className="h-4 w-4 text-[#1DB954] drop-shadow-lg" />
+        {tracks.map((track) => {
+          const isEditing = editingTrackId === track.id;
+          return (
+            <FmCommonCard
+              key={track.id}
+              variant="outline"
+              className={cn(
+                "p-0 overflow-hidden transition-all duration-200",
+                isEditing && "border-fm-gold/50 bg-fm-gold/5"
+              )}
+            >
+              <div className="flex gap-[10px] items-center">
+                {/* Cover Art */}
+                <div className="w-16 h-16 flex-shrink-0 relative">
+                  {track.coverArt ? (
+                    <img
+                      src={track.coverArt}
+                      alt={track.name}
+                      className="w-full h-full object-cover"
+                    />
                   ) : (
-                    <FaSoundcloud className="h-4 w-4 text-[#FF5500] drop-shadow-lg" />
+                    <div className="w-full h-full bg-gradient-to-br from-fm-gold/20 to-fm-gold/5 flex items-center justify-center">
+                      <Music className="h-6 w-6 text-fm-gold/50" />
+                    </div>
                   )}
+                  {/* Platform badge */}
+                  <div className="absolute bottom-0.5 right-0.5">
+                    {track.platform === 'spotify' ? (
+                      <FaSpotify className="h-4 w-4 text-[#1DB954] drop-shadow-lg" />
+                    ) : (
+                      <FaSoundcloud className="h-4 w-4 text-[#FF5500] drop-shadow-lg" />
+                    )}
+                  </div>
+                </div>
+
+                {/* Track Info */}
+                <div className="flex-1 py-[10px]">
+                  <h4 className="font-medium text-sm line-clamp-1">{track.name}</h4>
+                  <p className="text-xs text-muted-foreground">
+                    {track.recordingType === 'dj_set' ? 'DJ Set' : 'Track'}
+                  </p>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex items-center gap-[5px] mr-[10px]">
+                  {onEditTrack && (
+                    <button
+                      onClick={() => onEditTrack(track)}
+                      className={cn(
+                        "p-[10px] transition-colors",
+                        isEditing
+                          ? "text-fm-gold"
+                          : "text-muted-foreground hover:text-fm-gold"
+                      )}
+                      aria-label="Edit track"
+                    >
+                      {isEditing ? <X className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => onRemoveTrack(track.id)}
+                    className="p-[10px] text-muted-foreground hover:text-red-400 transition-colors"
+                    aria-label="Remove track"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
-
-              {/* Track Info */}
-              <div className="flex-1 py-[10px]">
-                <h4 className="font-medium text-sm line-clamp-1">{track.name}</h4>
-                <p className="text-xs text-muted-foreground">
-                  {track.recordingType === 'dj_set' ? 'DJ Set' : 'Track'}
-                </p>
-              </div>
-
-              {/* Remove Button */}
-              <button
-                onClick={() => onRemoveTrack(track.id)}
-                className="p-[10px] text-muted-foreground hover:text-red-400 transition-colors mr-[10px]"
-                aria-label="Remove track"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
-          </FmCommonCard>
-        ))}
+            </FmCommonCard>
+          );
+        })}
       </div>
     </div>
   );

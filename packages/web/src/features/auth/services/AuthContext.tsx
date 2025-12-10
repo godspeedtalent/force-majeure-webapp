@@ -1,17 +1,9 @@
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  ReactNode,
-} from 'react';
+import { toast } from 'sonner';
 
-import { supabase } from '@force-majeure/shared/api/supabase/client';
-import { useToast } from '@force-majeure/shared/hooks/use-toast';
-import { sessionPersistence } from '@force-majeure/shared/utils/sessionPersistence';
-import { logger } from '@force-majeure/shared/services/logger';
-import { handleError } from '@force-majeure/shared/services/errorHandler';
+import { supabase, sessionPersistence, logger } from '@force-majeure/shared';
+import { handleError } from '@/shared/services/errorHandler';
 
 const authLogger = logger.createNamespace('Auth');
 
@@ -24,10 +16,12 @@ interface Profile {
   gender?: string | null;
   age_range?: string | null;
   home_city?: string | null;
-  billing_address?: string | null;
+  billing_address_line_1?: string | null;
+  billing_address_line_2?: string | null;
   billing_city?: string | null;
   billing_state?: string | null;
-  billing_zip?: string | null;
+  billing_zip_code?: string | null;
+  billing_country?: string | null;
   organization_id?: string | null;
   spotify_token_expires_at?: string | null;
   spotify_connected: boolean | null;
@@ -78,7 +72,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
   const fetchProfile = async (userId: string) => {
     try {
@@ -187,27 +180,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           email,
           source: 'AuthContext.signUp',
         });
-        toast({
-          title: 'Sign up failed',
-          description: error.message,
-          variant: 'destructive',
-        });
+        toast.error(error.message);
       } else {
         authLogger.info('Sign up successful', { userId: data.user?.id });
 
         // Check if user was auto-confirmed (email confirmations disabled)
         if (data.user?.email_confirmed_at) {
-          toast({
-            title: 'Account created',
-            description: 'Your account has been created successfully. Welcome!',
-          });
+          toast.success('Your account has been created successfully. Welcome!');
         } else {
           // User needs to verify email
-          toast({
-            title: 'Check your email',
-            description:
-              "We've sent you a confirmation link to complete your registration.",
-          });
+          toast.success("Check your email - we've sent you a confirmation link.");
         }
       }
 
@@ -238,11 +220,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
-        toast({
-          title: 'Sign in failed',
-          description: error.message,
-          variant: 'destructive',
-        });
+        toast.error(error.message);
       } else {
         // Set remember device preference
         sessionPersistence.setRememberDevice(rememberMe);
@@ -269,18 +247,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       const { error } = await supabase.auth.signOut();
       if (error) {
-        toast({
-          title: 'Sign out failed',
-          description: error.message,
-          variant: 'destructive',
-        });
+        toast.error(error.message);
       }
     } catch (error: any) {
-      toast({
-        title: 'Sign out failed',
-        description: error?.message || 'An unexpected error occurred',
-        variant: 'destructive',
-      });
+      toast.error(error?.message || 'An unexpected error occurred');
     }
   };
 
@@ -296,27 +266,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         .eq('user_id', user.id);
 
       if (error) {
-        toast({
-          title: 'Update failed',
-          description: error.message,
-          variant: 'destructive',
-        });
+        toast.error(error.message);
       } else {
         await refreshProfile();
-        toast({
-          title: 'Profile updated',
-          description: 'Your profile has been updated successfully.',
-        });
+        toast.success('Profile updated successfully.');
       }
 
       return { error };
     } catch (error: any) {
       const errorMsg = error?.message || 'An unexpected error occurred';
-      toast({
-        title: 'Update failed',
-        description: errorMsg,
-        variant: 'destructive',
-      });
+      toast.error(errorMsg);
       return { error };
     }
   };
@@ -336,26 +295,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
-        toast({
-          title: 'Failed to send email',
-          description: error.message,
-          variant: 'destructive',
-        });
+        toast.error(error.message);
       } else {
-        toast({
-          title: 'Verification email sent',
-          description: 'Check your inbox for the verification link.',
-        });
+        toast.success('Verification email sent. Check your inbox.');
       }
 
       return { error };
     } catch (error: any) {
       const errorMsg = error?.message || 'An unexpected error occurred';
-      toast({
-        title: 'Failed to send email',
-        description: errorMsg,
-        variant: 'destructive',
-      });
+      toast.error(errorMsg);
       return { error };
     }
   };

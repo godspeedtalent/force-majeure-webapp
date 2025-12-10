@@ -1,7 +1,7 @@
 import { LucideIcon } from 'lucide-react';
 import { ReactNode } from 'react';
 import { Card } from '@/components/common/shadcn/card';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface FmInfoCardProps {
   icon?: LucideIcon;

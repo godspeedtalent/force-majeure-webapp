@@ -4,7 +4,7 @@ import { Button } from '@/components/common/shadcn/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/shadcn/card';
 import { Separator } from '@/components/common/shadcn/separator';
 import { format } from 'date-fns';
-import { useVenueById } from '@force-majeure/shared/api/queries/venueQueries';
+import { useVenueById } from '@force-majeure/shared';
 import { DetailPageWrapper } from '@/components/layout/DetailPageWrapper';
 
 export default function VenueDetails() {

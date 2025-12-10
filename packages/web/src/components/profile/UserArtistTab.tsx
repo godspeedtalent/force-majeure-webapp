@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Music2, ExternalLink, Settings, Link2, Unlink, Trash2, Clock, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Music2, ExternalLink, Settings, Link2, Unlink, Trash2, Clock, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { Card, CardContent } from '@/components/common/shadcn/card';
 import { Button } from '@/components/common/shadcn/button';
@@ -196,8 +196,9 @@ export function UserArtistTab() {
 
   if (isLoading) {
     return (
-      <div className='flex items-center justify-center py-12'>
-        <div className='text-muted-foreground'>Loading artist information...</div>
+      <div className='flex items-center justify-center gap-3 py-12'>
+        <Loader2 className='h-5 w-5 animate-spin text-fm-gold' />
+        <span className='text-muted-foreground'>Loading artist information...</span>
       </div>
     );
   }

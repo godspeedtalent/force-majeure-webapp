@@ -1,4 +1,4 @@
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 import { FmCommonBadgeGroup } from '@/components/common/display/FmCommonBadgeGroup';
 import { Instagram as InstagramIcon } from 'lucide-react';
 import { SiSoundcloud, SiSpotify, SiTiktok } from 'react-icons/si';
@@ -9,10 +9,13 @@ interface BadgeItem {
   className?: string;
 }
 
+type PressImageField = 'pressImage1Url' | 'pressImage2Url' | 'pressImage3Url';
+
 interface ArtistPreviewCardProps {
   formData: ArtistRegistrationFormData;
   genreBadges: BadgeItem[];
   className?: string;
+  onInputChange?: (field: keyof ArtistRegistrationFormData, value: string | null) => void;
 }
 
 const DEFAULT_BIO =
@@ -22,7 +25,25 @@ export function ArtistPreviewCard({
   formData,
   genreBadges,
   className,
+  onInputChange,
 }: ArtistPreviewCardProps) {
+  const pressImageFields: PressImageField[] = ['pressImage1Url', 'pressImage2Url', 'pressImage3Url'];
+
+  const handleImageSwap = (clickedIndex: number) => {
+    if (!onInputChange) return;
+
+    const clickedField = pressImageFields[clickedIndex];
+    const clickedImageUrl = formData[clickedField];
+
+    // Only swap if the clicked image has a URL
+    if (!clickedImageUrl) return;
+
+    const currentProfileUrl = formData.profileImageUrl;
+
+    // Swap: clicked image becomes profile, profile goes to clicked slot
+    onInputChange('profileImageUrl', clickedImageUrl);
+    onInputChange(clickedField, currentProfileUrl || null);
+  };
   return (
     <div
       className={cn(
@@ -32,19 +53,58 @@ export function ArtistPreviewCard({
     >
       <div className='flex flex-col gap-6 sm:flex-row sm:items-stretch'>
         {/* Left: Image Column */}
-        <div className='w-full sm:w-48 flex-shrink-0'>
-          <div className='overflow-hidden rounded-xl border border-white/15 bg-white/5 shadow-inner'>
-            {formData.profileImageUrl ? (
-              <img
-                src={formData.profileImageUrl}
-                alt={formData.stageName}
-                className='aspect-[16/9] sm:aspect-[3/4] w-full object-cover'
-                onError={e => {
-                  e.currentTarget.style.display = 'none';
-                }}
-              />
-            ) : (
-              <div className='aspect-[16/9] sm:aspect-[3/4] w-full bg-gradient-to-br from-fm-gold/15 via-fm-gold/5 to-transparent' />
+        <div className='w-full sm:w-48 flex-shrink-0 flex flex-col gap-[10px]'>
+          {/* Mobile: Main image + additional photos side by side */}
+          {/* Desktop: Main image with additional photos below */}
+          <div className='flex flex-row gap-[10px] sm:flex-col'>
+            {/* Main Profile Image */}
+            <div className='flex-1 sm:flex-none overflow-hidden rounded-xl border border-white/15 bg-white/5 shadow-inner'>
+              {formData.profileImageUrl ? (
+                <img
+                  src={formData.profileImageUrl}
+                  alt={formData.stageName}
+                  className='aspect-[3/4] w-full object-cover'
+                  onError={e => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <div className='aspect-[3/4] w-full bg-gradient-to-br from-fm-gold/15 via-fm-gold/5 to-transparent' />
+              )}
+            </div>
+
+            {/* Additional Photos - Column on mobile (right of main), row on desktop (below main) */}
+            {(formData.pressImage1Url || formData.pressImage2Url || formData.pressImage3Url) && (
+              <div className='flex flex-col justify-between gap-[5px] w-16 sm:w-full sm:flex-row sm:gap-[10px]'>
+                {[formData.pressImage1Url, formData.pressImage2Url, formData.pressImage3Url].map(
+                  (imageUrl, index) => (
+                    <button
+                      key={index}
+                      type='button'
+                      onClick={() => handleImageSwap(index)}
+                      disabled={!imageUrl || !onInputChange}
+                      className={cn(
+                        'aspect-square flex-1 overflow-hidden rounded-lg border border-white/15 bg-white/5',
+                        'transition-all duration-200',
+                        imageUrl && onInputChange && 'cursor-pointer hover:border-fm-gold/50 hover:scale-105 hover:shadow-lg hover:shadow-fm-gold/20',
+                        (!imageUrl || !onInputChange) && 'cursor-default'
+                      )}
+                      aria-label={imageUrl ? `Click to make this the main image` : undefined}
+                    >
+                      {imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt={`${formData.stageName} press photo ${index + 1}`}
+                          className='w-full h-full object-cover'
+                          onError={e => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      ) : null}
+                    </button>
+                  )
+                )}
+              </div>
             )}
           </div>
         </div>

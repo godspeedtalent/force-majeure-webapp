@@ -36,7 +36,7 @@ vi.mock('@/shared/services/logger', () => ({
   },
 }));
 
-import { supabase } from '@/api/supabase/client';
+import { supabase } from '../api/supabase/client';
 import { environmentService } from '@/services/environmentService';
 import { isDevelopment, getEnvironmentOverride } from '@/utils/environment';
 

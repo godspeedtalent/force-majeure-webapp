@@ -6,7 +6,7 @@ import { ScrollArea } from '@/components/common/shadcn/scroll-area';
 import { Badge } from '@/components/common/shadcn/badge';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 
 interface DocumentFile {
   name: string;

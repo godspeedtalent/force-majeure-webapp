@@ -10,7 +10,21 @@
     "signOut": "Sign Out",
     "signUp": "Sign Up",
     "admin": "Admin",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "shopMerch": "Shop Merch",
+    "organization": "Organization",
+    "orgTools": "Org Tools",
+    "scanning": "Scanning",
+    "developer": "Developer",
+    "database": "Database",
+    "adminPanel": "Admin Panel",
+    "site": "Site",
+    "contactUs": "Contact Us",
+    "user": "User",
+    "requiresAdminPermissions": "Requires admin permissions",
+    "requiresScanningPermissions": "Requires scanning permissions",
+    "developerOnly": "Developer only",
+    "adminOnly": "Admin only"
   },
   "buttons": {
     "save": "Save",

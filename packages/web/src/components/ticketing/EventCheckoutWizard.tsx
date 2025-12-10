@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 import { CheckCircle2 } from 'lucide-react';
 
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';

@@ -1,4 +1,4 @@
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 function Skeleton({
   className,

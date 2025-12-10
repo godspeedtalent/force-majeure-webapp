@@ -15,8 +15,8 @@ vi.mock('@/shared/services/logger', () => ({
   },
 }));
 
-import { supabase } from '@force-majeure/shared/api/supabase/client';
-import { logger } from '@force-majeure/shared/services/logger';
+import { supabase } from '@force-majeure/shared';
+import { logger } from '@force-majeure/shared';
 
 describe('orderService', () => {
   beforeEach(() => {

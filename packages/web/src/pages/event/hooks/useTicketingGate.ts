@@ -1,11 +1,11 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
-import { logger } from '@force-majeure/shared/services/logger';
+import { supabase } from '@force-majeure/shared';
+import { logger } from '@force-majeure/shared';
 import { RealtimeChannel } from '@supabase/supabase-js';
 import {
   calculateEstimatedWaitTime,
   shouldNotifyPositionChange,
-} from '@force-majeure/shared/utils/queueUtils';
+} from '@force-majeure/shared';
 
 interface TicketingGateState {
   canAccess: boolean;

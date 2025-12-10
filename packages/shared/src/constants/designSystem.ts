@@ -320,19 +320,19 @@ export const LABEL_STYLES = {
  */
 export const LIST_ITEM_STYLES = {
   // Striped Background Pattern - more apparent contrast
-  EVEN_BG: 'bg-white/5', // Lighter stripe
-  ODD_BG: 'bg-black/30', // Darker stripe
+  EVEN_BG: 'bg-white/10', // Lighter stripe (increased from /5)
+  ODD_BG: 'bg-black/40', // Darker stripe (increased from /30)
 
   // Hover States
-  HOVER_BG: 'hover:bg-fm-gold/10',
+  HOVER_BG: 'hover:bg-fm-gold/15',
   HOVER_SCALE: 'hover:scale-[1.02]',
   HOVER_GLOW: 'hover:shadow-lg hover:shadow-fm-gold/20',
   HOVER_TEXT: 'hover:text-white',
 
   // Focus States
-  FOCUS_BG: 'focus:bg-fm-gold/15',
+  FOCUS_BG: 'focus:bg-fm-gold/20',
   FOCUS_SCALE: 'focus:scale-[1.02]',
-  FOCUS_GLOW: 'focus:shadow-lg focus:shadow-fm-gold/20',
+  FOCUS_GLOW: 'focus:shadow-lg focus:shadow-fm-gold/25',
   FOCUS_TEXT: 'focus:text-white',
 
   // Active State
@@ -343,15 +343,15 @@ export const LIST_ITEM_STYLES = {
 
   // Complete Classes for Even Items
   EVEN_CLASSES:
-    'bg-white/5 hover:bg-fm-gold/10 hover:scale-[1.02] hover:shadow-lg hover:shadow-fm-gold/20 hover:text-white focus:bg-fm-gold/15 focus:scale-[1.02] focus:shadow-lg focus:shadow-fm-gold/20 focus:text-white active:scale-[0.98] transition-all duration-300',
+    'bg-white/10 hover:bg-fm-gold/15 hover:scale-[1.02] hover:shadow-lg hover:shadow-fm-gold/20 hover:text-white focus:bg-fm-gold/20 focus:scale-[1.02] focus:shadow-lg focus:shadow-fm-gold/25 focus:text-white active:scale-[0.98] transition-all duration-300',
 
   // Complete Classes for Odd Items
   ODD_CLASSES:
-    'bg-black/30 hover:bg-fm-gold/10 hover:scale-[1.02] hover:shadow-lg hover:shadow-fm-gold/20 hover:text-white focus:bg-fm-gold/15 focus:scale-[1.02] focus:shadow-lg focus:shadow-fm-gold/20 focus:text-white active:scale-[0.98] transition-all duration-300',
+    'bg-black/40 hover:bg-fm-gold/15 hover:scale-[1.02] hover:shadow-lg hover:shadow-fm-gold/20 hover:text-white focus:bg-fm-gold/20 focus:scale-[1.02] focus:shadow-lg focus:shadow-fm-gold/25 focus:text-white active:scale-[0.98] transition-all duration-300',
 
   // Divider between items
   DIVIDER:
-    'absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent',
+    'absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent',
 } as const;
 
 /**

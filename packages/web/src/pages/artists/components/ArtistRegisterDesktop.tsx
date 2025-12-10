@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 import {
   Carousel,
   CarouselContent,
@@ -159,7 +159,7 @@ export function ArtistRegisterDesktop({
         {/* Preview Content */}
         <div className='flex-1 flex items-center justify-center overflow-y-auto p-[40px]'>
           <div className='w-full max-w-2xl'>
-            <ArtistPreviewCard formData={formData} genreBadges={genreBadges} />
+            <ArtistPreviewCard formData={formData} genreBadges={genreBadges} onInputChange={handleInputChange} />
           </div>
         </div>
       </div>

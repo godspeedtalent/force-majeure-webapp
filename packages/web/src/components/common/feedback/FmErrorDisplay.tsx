@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 import {
   AlertTriangle,
   Copy,

@@ -33,45 +33,45 @@ export default function ComingSoon() {
 
   return (
     <Layout hideFooter>
-      {/* Single viewport container */}
-      <div className='h-[calc(100vh-64px)] flex items-center justify-center relative'>
-        {/* Content */}
+      {/* Fixed viewport container - no scrolling */}
+      <div className='h-[calc(100vh-64px)] flex items-center justify-center relative overflow-hidden'>
+        {/* Content - vertically centered with minimal spacing */}
         <div
-          className={`text-center px-6 max-w-2xl mx-auto transition-opacity duration-500 ${fontsLoaded ? 'opacity-100' : 'opacity-0'}`}
+          className={`text-center px-4 md:px-6 max-w-xl mx-auto w-full transition-opacity duration-500 ${fontsLoaded ? 'opacity-100' : 'opacity-0'}`}
         >
-          {/* Logo */}
-          <div className={`mb-8 md:mb-12 flex justify-center ${fontsLoaded ? 'animate-fade-in' : ''}`}>
-            <div className='w-full max-w-xs md:max-w-md'>
+          {/* Logo - 50% smaller */}
+          <div className={`mb-3 md:mb-4 flex justify-center ${fontsLoaded ? 'animate-fade-in' : ''}`}>
+            <div className='w-full max-w-[100px] md:max-w-[150px]'>
               <ForceMajeureLogo size='responsive' />
             </div>
           </div>
 
-          {/* Main message */}
+          {/* Main message - 20% smaller */}
           <h1
-            className={`font-display text-3xl md:text-6xl mb-4 md:mb-6 ${fontsLoaded ? 'animate-slide-down-in' : ''}`}
+            className={`font-display text-xl md:text-3xl mb-1.5 md:mb-2 ${fontsLoaded ? 'animate-slide-down-in' : ''}`}
           >
             Coming Soon
           </h1>
 
           <p
-            className={`text-base md:text-lg text-muted-foreground mb-8 md:mb-12 ${fontsLoaded ? 'animate-fade-in' : ''}`}
+            className={`text-xs md:text-sm text-muted-foreground mb-3 md:mb-4 ${fontsLoaded ? 'animate-fade-in' : ''}`}
             style={{ animationDelay: fontsLoaded ? '0.2s' : '0s' }}
           >
             Just hang tight.
           </p>
 
-          {/* Looking for Artists Box */}
+          {/* Looking for Artists Box - 20% smaller */}
           <div
-            className={`p-6 bg-black/60 backdrop-blur-sm border border-fm-gold/20 mb-8 md:mb-12 ${fontsLoaded ? 'animate-fade-in' : ''}`}
+            className={`p-2.5 md:p-4 bg-black/60 backdrop-blur-sm border border-fm-gold/20 mb-3 md:mb-4 ${fontsLoaded ? 'animate-fade-in' : ''}`}
             style={{ animationDelay: fontsLoaded ? '0.3s' : '0s' }}
           >
-            <div className='flex items-start gap-3 mb-4'>
-              <Music className='h-5 w-5 text-fm-gold mt-1 flex-shrink-0' />
-              <div>
-                <h2 className='font-canela text-lg md:text-xl text-fm-gold mb-2'>
+            <div className='flex items-start gap-1.5 md:gap-2 mb-1.5 md:mb-2'>
+              <Music className='h-3.5 w-3.5 text-fm-gold mt-0.5 flex-shrink-0' />
+              <div className='text-left'>
+                <h2 className='font-canela text-xs md:text-sm text-fm-gold mb-0.5 md:mb-1'>
                   Looking for 2026 Undercard Artists
                 </h2>
-                <p className='text-sm md:text-base text-muted-foreground leading-relaxed'>
+                <p className='text-[10px] md:text-xs text-muted-foreground leading-snug'>
                   We're looking for local artists to open up for our 2026 events. If you're a DJ, producer, or performer, we'd love to hear from you.
                 </p>
               </div>
@@ -80,28 +80,28 @@ export default function ComingSoon() {
             <Button
               variant='outline'
               onClick={() => navigate('/artists/register')}
-              className='w-full border-fm-gold bg-transparent text-white hover:text-fm-gold hover:bg-fm-gold/10'
+              className='w-full border-fm-gold bg-transparent text-white hover:text-fm-gold hover:bg-fm-gold/10 text-[10px] md:text-xs py-1.5'
             >
               Sign up as an artist
-              <ArrowRight className='ml-2 h-4 w-4' />
+              <ArrowRight className='ml-1.5 h-2.5 w-2.5' />
             </Button>
           </div>
 
-          {/* Decorative elements */}
-          <DecorativeDivider marginTop='mt-6' marginBottom='mb-6' />
+          {/* Decorative elements - minimal spacing */}
+          <DecorativeDivider marginTop='mt-2 md:mt-3' marginBottom='mb-2 md:mb-3' />
 
-          {/* Social links */}
+          {/* Social links - compact */}
           <div
-            className={`flex items-center justify-center gap-6 ${fontsLoaded ? 'animate-fade-in' : 'opacity-0'}`}
+            className={`flex items-center justify-center ${fontsLoaded ? 'animate-fade-in' : 'opacity-0'}`}
             style={{ animationDelay: fontsLoaded ? '0.4s' : '0s' }}
           >
             <a
               href='https://www.instagram.com/force.majeure.events'
               target='_blank'
               rel='noopener noreferrer'
-              className='p-4 rounded-full bg-muted/30 hover:bg-fm-gold hover:text-primary-foreground transition-all duration-300 hover:scale-110'
+              className='p-2 md:p-2.5 rounded-full bg-muted/30 hover:bg-fm-gold hover:text-primary-foreground transition-all duration-300 hover:scale-110'
             >
-              <Instagram className='w-6 h-6' />
+              <Instagram className='w-4 h-4 md:w-5 md:h-5' />
             </a>
           </div>
         </div>

@@ -15,7 +15,7 @@ vi.mock('@/shared/services/logger', () => ({
   },
 }));
 
-import { supabase } from '@/api/supabase/client';
+import { supabase } from '../api/supabase/client';
 import { logger } from '@/services/logger';
 
 // Test types

@@ -3,7 +3,7 @@ import {
   PERMISSIONS,
   type Role,
   type Permission,
-} from '@force-majeure/shared/auth/permissions';
+} from '@force-majeure/shared';
 
 /**
  * Type guard to check if a string is a valid role

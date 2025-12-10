@@ -11,7 +11,7 @@
 
 // Logging utilities
 export { logger } from './logger';
-export { logApiError, logApi } from '@/utils/apiLogger';
+export { logApiError, logApi } from '../utils/apiLogger';
 
 // Environment utilities
 export {

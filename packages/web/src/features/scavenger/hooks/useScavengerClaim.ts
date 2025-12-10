@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 
-import { claimScavengerReward } from '@force-majeure/shared/utils/scavengerApi';
-import type { ClaimResult } from '@force-majeure/shared/utils/scavengerApi';
+import { claimScavengerReward } from '@force-majeure/shared';
+import type { ClaimResult } from '@force-majeure/shared';
 
 // Create device fingerprint from browser info
 const getDeviceFingerprint = (): string => {

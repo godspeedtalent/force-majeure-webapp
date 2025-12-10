@@ -6,7 +6,7 @@ import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { MobileHorizontalTabs, MobileHorizontalTab } from '@/components/mobile';
 import { GenresManagement } from './GenresManagement';
-import { useIsMobile } from '@force-majeure/shared/hooks/use-mobile';
+import { useIsMobile } from '@force-majeure/shared';
 
 type DatabaseManagerTab = 'overview' | 'genres';
 

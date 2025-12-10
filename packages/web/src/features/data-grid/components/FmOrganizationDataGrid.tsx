@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { FmConfigurableDataGrid } from './FmConfigurableDataGrid';
 import { DataGridColumn, DataGridAction } from './FmDataGrid';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import { Building2, Trash2, Edit, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { Organization } from '@/types/organization';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 
 export function FmOrganizationDataGrid() {
   const [organizations, setOrganizations] = useState<Organization[]>([]);

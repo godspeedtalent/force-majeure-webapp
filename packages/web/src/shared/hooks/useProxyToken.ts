@@ -1,9 +1,9 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 
-import { supabase } from '@force-majeure/shared/api/supabase/client';
-import { useUserPermissions } from '@force-majeure/shared/hooks/useUserRole';
-import { ROLES } from '@force-majeure/shared/auth/permissions';
+import { supabase } from '@force-majeure/shared';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { ROLES } from '@force-majeure/shared';
 
 interface DebugLogger {
   log: (message: string, data?: any) => void;

@@ -5,7 +5,7 @@
  * All event queries should use these functions to ensure consistency.
  */
 
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import type { Event } from '../types';
 
 /**

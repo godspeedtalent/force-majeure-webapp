@@ -5,7 +5,7 @@ import { Button } from '@/components/common/shadcn/button';
 import { Input } from '@/components/common/shadcn/input';
 import { Textarea } from '@/components/common/shadcn/textarea';
 import { Label } from '@/components/common/shadcn/label';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface FmCommonTextFieldProps
   extends React.ComponentPropsWithoutRef<typeof Input> {

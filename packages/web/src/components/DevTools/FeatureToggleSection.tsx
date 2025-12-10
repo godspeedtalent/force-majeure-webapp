@@ -11,7 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/common/shadcn/alert-dialog';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import { toast } from 'sonner';
 import {
   Tooltip,
@@ -23,10 +23,10 @@ import {
   formatFlagName,
   getFlagIcon,
   getFlagDescription,
-} from '@force-majeure/shared/utils/featureFlagUtils';
-import { useEnvironmentName } from '@force-majeure/shared/hooks/useEnvironment';
-import { environmentService } from '@force-majeure/shared/services/environmentService';
-import { logger } from '@force-majeure/shared/services/logger';
+} from '@force-majeure/shared';
+import { useEnvironmentName } from '@force-majeure/shared';
+import { environmentService } from '@force-majeure/shared';
+import { logger } from '@force-majeure/shared';
 
 interface FeatureFlag {
   flag_name: string;

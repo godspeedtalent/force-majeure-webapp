@@ -16,8 +16,8 @@ import {
 } from '@/components/common/shadcn/select';
 import { Separator } from '@/components/common/shadcn/separator';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { cn } from '@force-majeure/shared/utils/utils';
-import { formatHeader } from '@force-majeure/shared/utils/styleUtils';
+import { cn } from '@force-majeure/shared';
+import { formatHeader } from '@force-majeure/shared';
 
 import { FmTicketTierList } from '@/components/ticketing/FmTicketTierList';
 import { useTicketFees } from './hooks/useTicketFees';

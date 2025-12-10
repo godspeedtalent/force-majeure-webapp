@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { eventInterestService } from '../services/eventInterestService';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 
 export function useEventInterest(eventId: string, eventTitle?: string) {
   const queryClient = useQueryClient();

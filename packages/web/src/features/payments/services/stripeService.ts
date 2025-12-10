@@ -1,4 +1,4 @@
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import type { SavedCard, StripeCustomer, PaymentIntent } from '../types';
 
 /**

@@ -1,6 +1,6 @@
 import { FmCheckbox } from './FmCheckbox';
 import { LucideIcon } from 'lucide-react';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 export interface FmMultiCheckboxOption {
   value: string;

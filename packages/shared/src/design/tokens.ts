@@ -9,7 +9,7 @@
  *
  * @example Web usage:
  * ```typescript
- * import { FM_COLORS, FM_SPACING } from '@/design/tokens';
+ * import { FM_COLORS, FM_SPACING } from '../design/tokens';
  * // Use in inline styles or CSS-in-JS
  * ```
  *

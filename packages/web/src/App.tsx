@@ -53,18 +53,17 @@ import { ErrorBoundary } from '@/components/feedback/ErrorBoundary';
 import { DemoProtectedRoute } from '@/components/routing/DemoProtectedRoute';
 import { ProtectedRoute } from '@/components/routing/ProtectedRoute';
 import { Toaster as Sonner } from '@/components/common/shadcn/sonner';
-import { Toaster } from '@/components/common/shadcn/toaster';
 import { TooltipProvider } from '@/components/common/shadcn/tooltip';
 import Merch from './pages/Merch';
 
 import { AuthProvider } from '@/features/auth/services/AuthContext';
-import { useFeatureFlagHelpers } from '@force-majeure/shared/hooks/useFeatureFlags';
+import { useFeatureFlagHelpers } from '@force-majeure/shared';
 import { FmToolbar } from '@/components/common/toolbar/FmToolbar';
 import { FmMobileDevToolbar } from '@/components/common/toolbar/mobile/FmMobileDevToolbar';
-import { ROLES } from '@force-majeure/shared/auth/permissions';
-import { FEATURE_FLAGS } from '@force-majeure/shared/config/featureFlags';
+import { ROLES } from '@force-majeure/shared';
+import { FEATURE_FLAGS } from '@force-majeure/shared';
 import { CheckoutProvider } from '@/contexts/CheckoutContext';
-import { ShoppingCartProvider } from '@force-majeure/shared/hooks/useShoppingCart';
+import { ShoppingCartProvider } from '@force-majeure/shared';
 import {
   GlobalSearchProvider,
   useGlobalSearch,
@@ -121,6 +120,24 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <ArtistRegister />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Profile Routes - Always accessible for logged in users, even in coming soon mode */}
+      <Route
+        path='/profile'
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/profile/edit'
+        element={
+          <ProtectedRoute>
+            <ProfileEdit />
           </ProtectedRoute>
         }
       />
@@ -189,8 +206,7 @@ const AppRoutes = () => {
             <Route path='/members/home' element={<MemberHome />} />
           )}
 
-          <Route path='/profile' element={<Profile />} />
-          <Route path='/profile/edit' element={<ProfileEdit />} />
+          {/* Profile routes are now defined above, outside coming soon mode */}
           <Route path='/orders' element={<Orders />} />
           <Route path='/contact' element={<Contact />} />
 
@@ -426,7 +442,6 @@ const App = () => {
             <ShoppingCartProvider>
               <GlobalSearchProvider>
                 <TooltipProvider>
-                  <Toaster />
                   <Sonner />
                   <BrowserRouter>
                     <CheckoutProvider>

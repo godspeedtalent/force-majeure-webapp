@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { logger } from '@force-majeure/shared/services/logger';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { logger } from '@force-majeure/shared';
+import { supabase } from '@force-majeure/shared';
 import { toast } from 'sonner';
 
 /**

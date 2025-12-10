@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 import { FmQueryInput } from '../forms/FmQueryInput';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import { CheckCircle2, XCircle, X } from 'lucide-react';
 import { Button } from '../shadcn/button';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface PromoCode {
   id: string;

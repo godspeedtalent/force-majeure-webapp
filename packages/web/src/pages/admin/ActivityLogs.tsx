@@ -33,7 +33,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/common/shadcn/dropdown-menu';
-import { formatHeader } from '@force-majeure/shared/utils/styleUtils';
+import { formatHeader } from '@force-majeure/shared';
 import { ActivityLogFilters } from '@/features/activity-logs/components/ActivityLogFilters';
 import { ActivityLogList } from '@/features/activity-logs/components/ActivityLogList';
 import { ActivityLogSummary } from '@/features/activity-logs/components/ActivityLogSummary';

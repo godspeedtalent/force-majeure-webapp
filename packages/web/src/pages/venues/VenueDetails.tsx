@@ -1,15 +1,14 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { MapPin, Calendar, Settings, Users, ArrowLeft } from 'lucide-react';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase, ROLES, PERMISSIONS } from '@force-majeure/shared';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { Layout } from '@/components/layout/Layout';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmEventRow } from '@/components/common/display/FmEventRow';
-import { useUserPermissions } from '@force-majeure/shared/hooks/useUserRole';
-import { ROLES, PERMISSIONS } from '@force-majeure/shared/auth/permissions';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
-import { useVenueById } from '@force-majeure/shared/api/queries/venueQueries';
+import { useVenueById } from '@/shared/api/queries/venueQueries';
 
 // Default placeholder image for venues without an image
 const VENUE_PLACEHOLDER_IMAGE = '/images/artist-showcase/_KAK4846.jpg';

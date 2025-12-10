@@ -6,7 +6,7 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCardCarousel } from '@/components/common/data/FmCardCarousel';
 import { FmAnimatedGradientAvatar } from '@/components/common/display/FmAnimatedGradientAvatar';
 import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
-import { ImageAnchor } from '@force-majeure/shared/types/imageAnchor';
+import { ImageAnchor } from '@force-majeure/shared';
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import {
   Carousel,

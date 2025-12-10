@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 
 interface UseDebouncedSaveOptions<T> {
   /** The save function to call when debounce timer completes */

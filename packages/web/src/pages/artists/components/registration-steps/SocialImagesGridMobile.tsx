@@ -1,5 +1,5 @@
 import { Upload, Star } from 'lucide-react';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 import type { ArtistRegistrationFormData } from '../../types/registration';
 
 export interface SocialImagesGridProps {

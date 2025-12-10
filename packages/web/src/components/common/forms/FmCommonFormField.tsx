@@ -18,7 +18,7 @@ import {
 } from '@/components/common/shadcn/form';
 import { Input } from '@/components/common/shadcn/input';
 import { Textarea } from '@/components/common/shadcn/textarea';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface FmCommonFormFieldProps<T extends FieldValues> {
   /** Form instance from react-hook-form */

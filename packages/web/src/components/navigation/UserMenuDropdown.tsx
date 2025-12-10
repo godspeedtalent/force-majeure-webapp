@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { LogOut, User as UserIcon, Building2, Scan, Database, Shield, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/common/shadcn/button';
 import {
@@ -10,11 +11,11 @@ import {
 } from '@/components/common/forms/FmCommonDropdown';
 import { FmUserAvatar } from '@/components/common/display/FmUserAvatar';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { useUserPermissions } from '@force-majeure/shared/hooks/useUserRole';
-import { PERMISSIONS, ROLES } from '@force-majeure/shared/auth/permissions';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { PERMISSIONS, ROLES } from '@force-majeure/shared';
 import { AdminLockIndicator } from '@/components/common/indicators';
-import { useIsMobile } from '@force-majeure/shared/hooks/use-mobile';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { useIsMobile } from '@force-majeure/shared';
+import { cn } from '@force-majeure/shared';
 
 interface MobileMenuItem {
   label: string;
@@ -37,6 +38,7 @@ export function UserMenuDropdown() {
   const { user, profile, signOut } = useAuth();
   const { hasPermission, hasRole, isAdmin } = useUserPermissions();
   const navigate = useNavigate();
+  const { t } = useTranslation('common');
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -68,7 +70,7 @@ export function UserMenuDropdown() {
     {
       items: [
         {
-          label: 'Profile',
+          label: t('nav.profile'),
           icon: UserIcon,
           onClick: () => navigate('/profile'),
         },
@@ -78,25 +80,25 @@ export function UserMenuDropdown() {
     ...(hasAnyOrgAccess
       ? [
           {
-            label: 'Organization',
+            label: t('nav.organization'),
             items: [
               ...(hasOrgToolsAccess
                 ? [
                     {
-                      label: 'Org Tools',
+                      label: t('nav.orgTools'),
                       icon: Building2,
                       onClick: () => navigate('/organization/tools'),
-                      badge: <AdminLockIndicator position="inline" size="xs" tooltipText="Requires admin permissions" />,
+                      badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.requiresAdminPermissions')} />,
                     },
                   ]
                 : []),
               ...(hasScanningAccess
                 ? [
                     {
-                      label: 'Scanning',
+                      label: t('nav.scanning'),
                       icon: Scan,
                       onClick: () => navigate('/organization/scanning'),
-                      badge: <AdminLockIndicator position="inline" size="xs" tooltipText="Requires scanning permissions" />,
+                      badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.requiresScanningPermissions')} />,
                     },
                   ]
                 : []),
@@ -108,13 +110,13 @@ export function UserMenuDropdown() {
     ...(isDeveloper
       ? [
           {
-            label: 'Developer',
+            label: t('nav.developer'),
             items: [
               {
-                label: 'Database',
+                label: t('nav.database'),
                 icon: Database,
                 onClick: () => navigate('/developer/database'),
-                badge: <AdminLockIndicator position="inline" size="xs" tooltipText="Developer only" />,
+                badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.developerOnly')} />,
               },
             ],
           },
@@ -124,13 +126,13 @@ export function UserMenuDropdown() {
     ...(isAdminUser
       ? [
           {
-            label: 'Admin',
+            label: t('nav.admin'),
             items: [
               {
-                label: 'Admin Panel',
+                label: t('nav.adminPanel'),
                 icon: Shield,
                 onClick: () => navigate('/admin/controls'),
-                badge: <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />,
+                badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.adminOnly')} />,
               },
             ],
           },
@@ -138,15 +140,15 @@ export function UserMenuDropdown() {
       : []),
     // Site section
     {
-      label: 'Site',
+      label: t('nav.site'),
       items: [
         {
-          label: 'Contact Us',
+          label: t('nav.contactUs'),
           icon: Mail,
           onClick: () => navigate('/contact'),
         },
         {
-          label: 'Sign Out',
+          label: t('nav.signOut'),
           icon: LogOut,
           onClick: handleSignOut,
           variant: 'muted' as const,
@@ -161,7 +163,7 @@ export function UserMenuDropdown() {
     {
       items: [
         {
-          label: 'Profile',
+          label: t('nav.profile'),
           icon: UserIcon,
           onClick: () => handleNavigate('/profile'),
         },
@@ -171,25 +173,25 @@ export function UserMenuDropdown() {
     ...(hasAnyOrgAccess
       ? [
           {
-            label: 'Organization',
+            label: t('nav.organization'),
             items: [
               ...(hasOrgToolsAccess
                 ? [
                     {
-                      label: 'Org Tools',
+                      label: t('nav.orgTools'),
                       icon: Building2,
                       onClick: () => handleNavigate('/organization/tools'),
-                      badge: <AdminLockIndicator position="inline" size="xs" tooltipText="Requires admin permissions" />,
+                      badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.requiresAdminPermissions')} />,
                     },
                   ]
                 : []),
               ...(hasScanningAccess
                 ? [
                     {
-                      label: 'Scanning',
+                      label: t('nav.scanning'),
                       icon: Scan,
                       onClick: () => handleNavigate('/organization/scanning'),
-                      badge: <AdminLockIndicator position="inline" size="xs" tooltipText="Requires scanning permissions" />,
+                      badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.requiresScanningPermissions')} />,
                     },
                   ]
                 : []),
@@ -201,13 +203,13 @@ export function UserMenuDropdown() {
     ...(isDeveloper
       ? [
           {
-            label: 'Developer',
+            label: t('nav.developer'),
             items: [
               {
-                label: 'Database',
+                label: t('nav.database'),
                 icon: Database,
                 onClick: () => handleNavigate('/developer/database'),
-                badge: <AdminLockIndicator position="inline" size="xs" tooltipText="Developer only" />,
+                badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.developerOnly')} />,
               },
             ],
           },
@@ -217,13 +219,13 @@ export function UserMenuDropdown() {
     ...(isAdminUser
       ? [
           {
-            label: 'Admin',
+            label: t('nav.admin'),
             items: [
               {
-                label: 'Admin Panel',
+                label: t('nav.adminPanel'),
                 icon: Shield,
                 onClick: () => handleNavigate('/admin/controls'),
-                badge: <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />,
+                badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.adminOnly')} />,
               },
             ],
           },
@@ -231,15 +233,15 @@ export function UserMenuDropdown() {
       : []),
     // Site section
     {
-      label: 'Site',
+      label: t('nav.site'),
       items: [
         {
-          label: 'Contact Us',
+          label: t('nav.contactUs'),
           icon: Mail,
           onClick: () => handleNavigate('/contact'),
         },
         {
-          label: 'Sign Out',
+          label: t('nav.signOut'),
           icon: LogOut,
           onClick: handleSignOut,
           variant: 'muted' as const,
@@ -256,13 +258,14 @@ export function UserMenuDropdown() {
       <>
         <Button
           variant='ghost'
-          className='relative h-8 w-8 p-0 z-[101]'
+          className='relative h-8 w-8 p-0 z-[101] hover:bg-transparent focus:bg-transparent group'
           onClick={() => setIsOpen(!isOpen)}
         >
           <FmUserAvatar
             avatarUrl={profile?.avatar_url}
             displayName={profile?.display_name || user?.user_metadata?.display_name}
             size='sm'
+            className='transition-all duration-200 group-hover:ring-2 group-hover:ring-fm-gold group-hover:ring-offset-1 group-hover:ring-offset-background'
           />
         </Button>
 
@@ -332,7 +335,7 @@ export function UserMenuDropdown() {
                 />
                 <div>
                   <p className='font-canela font-medium text-white'>
-                    {profile?.display_name || user?.user_metadata?.display_name || 'User'}
+                    {profile?.display_name || user?.user_metadata?.display_name || t('nav.user')}
                   </p>
                   <p className='font-canela text-xs text-white/50'>
                     {user?.email}
@@ -403,11 +406,12 @@ export function UserMenuDropdown() {
   return (
     <FmCommonDropdown
       trigger={
-        <Button variant='ghost' className='relative h-8 w-8 p-0'>
+        <Button variant='ghost' className='relative h-8 w-8 p-0 hover:bg-transparent focus:bg-transparent group'>
           <FmUserAvatar
             avatarUrl={profile?.avatar_url}
             displayName={profile?.display_name || user?.user_metadata?.display_name}
             size='sm'
+            className='transition-all duration-200 group-hover:ring-2 group-hover:ring-fm-gold group-hover:ring-offset-1 group-hover:ring-offset-background'
           />
         </Button>
       }

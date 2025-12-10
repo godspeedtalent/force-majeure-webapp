@@ -11,7 +11,7 @@ import {
   Settings2,
   ClipboardList,
 } from 'lucide-react';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 import { MobileDevToolId } from './useMobileDevTools';
 
 interface FmMobileDevDrawerProps {

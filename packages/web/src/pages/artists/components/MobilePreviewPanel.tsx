@@ -1,5 +1,5 @@
 import { ChevronUp, ChevronDown } from 'lucide-react';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 import { ArtistPreviewCard } from './ArtistPreviewCard';
 import type { ArtistRegistrationFormData } from '../types/registration';
 
@@ -13,6 +13,7 @@ interface MobilePreviewPanelProps {
   genreBadges: BadgeItem[];
   isExpanded: boolean;
   onToggle: () => void;
+  onInputChange?: (field: keyof ArtistRegistrationFormData, value: string | null) => void;
 }
 
 export function MobilePreviewPanel({
@@ -20,6 +21,7 @@ export function MobilePreviewPanel({
   genreBadges,
   isExpanded,
   onToggle,
+  onInputChange,
 }: MobilePreviewPanelProps) {
   return (
     <>
@@ -107,6 +109,7 @@ export function MobilePreviewPanel({
               <ArtistPreviewCard
                 formData={formData}
                 genreBadges={genreBadges}
+                onInputChange={onInputChange}
               />
             </div>
           </div>

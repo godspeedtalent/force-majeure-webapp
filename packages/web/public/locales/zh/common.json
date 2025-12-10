@@ -10,7 +10,21 @@
     "signOut": "退出登录",
     "signUp": "注册",
     "admin": "管理",
-    "dashboard": "控制台"
+    "dashboard": "控制台",
+    "shopMerch": "商店",
+    "organization": "组织",
+    "orgTools": "组织工具",
+    "scanning": "扫描",
+    "developer": "开发者",
+    "database": "数据库",
+    "adminPanel": "管理面板",
+    "site": "网站",
+    "contactUs": "联系我们",
+    "user": "用户",
+    "requiresAdminPermissions": "需要管理员权限",
+    "requiresScanningPermissions": "需要扫描权限",
+    "developerOnly": "仅限开发者",
+    "adminOnly": "仅限管理员"
   },
   "buttons": {
     "save": "保存",

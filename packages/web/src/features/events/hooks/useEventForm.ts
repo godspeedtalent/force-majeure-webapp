@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { useAsyncAction } from '@force-majeure/shared/hooks/useAsyncAction';
+import { useAsyncAction } from '@force-majeure/shared';
 import { eventService } from '../services/eventService';
 import { EventFormState } from './useEventData';
 import { getArtistName } from '@/features/artists/services/artistQueries';

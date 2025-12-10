@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import { TrackingLink, TrackingLinkFormData } from '@/types/tracking';
 import { toast } from 'sonner';
 

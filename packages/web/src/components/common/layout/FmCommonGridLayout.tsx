@@ -5,7 +5,7 @@
  * Standardizes grid layouts across the application
  */
 
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface FmCommonGridLayoutProps {
   /** Grid items */

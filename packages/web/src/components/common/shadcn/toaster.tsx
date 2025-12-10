@@ -6,7 +6,7 @@ import {
   ToastTitle,
   ToastViewport,
 } from '@/components/common/shadcn/toast';
-import { useToast } from '@force-majeure/shared/hooks/use-toast';
+import { toast } from 'sonner';
 
 export function Toaster() {
   const { toasts } = useToast();

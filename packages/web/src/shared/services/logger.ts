@@ -10,7 +10,7 @@
  *
  * Usage:
  * ```typescript
- * import { logger } from '@force-majeure/shared/services/logger';
+ * import { logger } from '@force-majeure/shared';
  *
  * logger.debug('Feature flags loaded', { flags });
  * logger.info('User signed up', { userId });

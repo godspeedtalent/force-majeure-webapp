@@ -2,7 +2,7 @@ import { useState, forwardRef } from 'react';
 import { Input } from '@/components/common/shadcn/input';
 import { Button } from '@/components/common/shadcn/button';
 import { ArrowRight } from 'lucide-react';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface FmQueryInputProps {
   placeholder?: string;

@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/common/shadcn/button';
 import { format as formatDate } from 'date-fns';
 import { CalendarIcon, Check } from 'lucide-react';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 import { DataGridColumn } from '../FmDataGrid';
 
 export interface FmBulkEditFieldProps {

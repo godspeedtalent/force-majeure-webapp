@@ -10,7 +10,7 @@ import { FaSpotify, FaSoundcloud } from 'react-icons/fa6';
 import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 import type { ArtistTrack, RecordingType } from '@/pages/artists/ArtistManagement';
 
 interface EditTrackModalProps {

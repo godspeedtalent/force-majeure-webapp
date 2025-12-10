@@ -9,7 +9,7 @@
 import { LucideIcon } from 'lucide-react';
 
 import { Card, CardContent } from '@/components/common/shadcn/card';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 interface FmCommonInfoCardProps {
   /** Icon to display */

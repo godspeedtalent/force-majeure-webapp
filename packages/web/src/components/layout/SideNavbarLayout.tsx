@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
-import { cn } from '@force-majeure/shared/utils/utils';
-import { useIsMobile } from '@force-majeure/shared/hooks/use-mobile';
+import { cn } from '@force-majeure/shared';
+import { useIsMobile } from '@force-majeure/shared';
 import { Navigation } from '@/components/navigation/Navigation';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import {
@@ -36,6 +36,8 @@ interface SideNavbarLayoutProps<T extends string> {
   onBack?: () => void;
   /** Text label for back button destination */
   backButtonLabel?: string;
+  /** Optional actions to render alongside the back button */
+  backButtonActions?: ReactNode;
 }
 
 /**
@@ -64,6 +66,7 @@ export const SideNavbarLayout = <T extends string>({
   showBackButton = false,
   onBack,
   backButtonLabel,
+  backButtonActions,
 }: SideNavbarLayoutProps<T>) => {
   const isMobile = useIsMobile();
 
@@ -100,12 +103,19 @@ export const SideNavbarLayout = <T extends string>({
                 isMobile && mobileTabBar && 'pb-[100px]' // Extra padding for tab bar
               )}
             >
-              {showBackButton && (
-                <FmBackButton
-                  position='floating'
-                  onClick={onBack}
-                  label={backButtonLabel}
-                />
+              {(showBackButton || backButtonActions) && (
+                <div className='absolute top-[20px] left-[20px] right-[20px] z-20 flex items-center justify-between'>
+                  {showBackButton ? (
+                    <FmBackButton
+                      position='inline'
+                      onClick={onBack}
+                      label={backButtonLabel}
+                    />
+                  ) : (
+                    <div />
+                  )}
+                  {backButtonActions}
+                </div>
               )}
               {children}
             </div>

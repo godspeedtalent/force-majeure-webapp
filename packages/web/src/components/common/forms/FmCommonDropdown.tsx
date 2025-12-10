@@ -10,7 +10,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuGroup,
 } from '@/components/common/shadcn/dropdown-menu';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 
 export interface DropdownItem {
   label: string;

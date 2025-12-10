@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { FmConfigurableDataGrid, DataGridAction } from '@/features/data-grid';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Trash2, Plus } from 'lucide-react';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import { toast } from 'sonner';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 import { genreColumns } from './config/adminGridColumns';
 import {
   Dialog,

@@ -28,13 +28,13 @@ import {
   DialogTitle,
 } from '@/components/common/shadcn/dialog';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { useUserPermissions } from '@force-majeure/shared/hooks/useUserRole';
-import { ROLES } from '@force-majeure/shared/auth/permissions';
-import { useEventViews } from '@force-majeure/shared/hooks/useEventViews';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { ROLES } from '@force-majeure/shared';
+import { useEventViews } from '@force-majeure/shared';
 import { useShareEvent } from '@/features/events/hooks/useShareEvent';
 import { useEventInterest } from '@/features/events/hooks/useEventInterest';
-import { formatTimeDisplay } from '@force-majeure/shared/utils/timeUtils';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { formatTimeDisplay } from '@force-majeure/shared';
+import { supabase } from '@force-majeure/shared';
 import { useQuery } from '@tanstack/react-query';
 
 import { EventDetailsRecord } from './types';

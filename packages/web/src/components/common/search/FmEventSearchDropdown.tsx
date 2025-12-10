@@ -5,7 +5,7 @@ import {
   FmCommonSearchDropdown,
   SearchDropdownOption,
 } from './FmCommonSearchDropdown';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 
 interface FmEventSearchDropdownProps {
   value?: string;

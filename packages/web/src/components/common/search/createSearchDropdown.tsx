@@ -4,8 +4,8 @@ import {
   FmCommonSearchDropdown,
   SearchDropdownOption,
 } from './FmCommonSearchDropdown';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
-import { useRecentSelections } from '@force-majeure/shared/hooks/useRecentSelections';
+import { supabase } from '@force-majeure/shared';
+import { useRecentSelections } from '@force-majeure/shared';
 
 /**
  * Configuration for creating a search dropdown component
@@ -220,6 +220,7 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
         id: formatValue ? formatValue(item as T) : item.id,
         label: formatLabel(item as T),
         icon: renderIcon(item as T),
+        data: item as T,
       }));
     };
 

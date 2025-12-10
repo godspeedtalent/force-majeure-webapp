@@ -2,7 +2,7 @@ import { Label } from '@/components/common/shadcn/label';
 import { Input } from '@/components/common/shadcn/input';
 import { Checkbox } from '@/components/common/shadcn/checkbox';
 import { FmCommonRowManager } from '@/components/common/forms/FmCommonRowManager';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 import { EventFormState, EventFormActions, TicketTier } from '../hooks/useEventFormState';
 
 interface TicketTiersFormSectionProps {

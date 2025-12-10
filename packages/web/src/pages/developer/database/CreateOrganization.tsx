@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { FmCommonCreateForm } from '@/components/common/forms/FmCommonCreateForm';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmFlexibleImageUpload } from '@/components/common/forms/FmFlexibleImageUpload';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import { toast } from 'sonner';
-import { logger } from '@force-majeure/shared/services/logger';
+import { logger } from '@force-majeure/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
 
 const DeveloperCreateOrganizationPage = () => {

@@ -1,5 +1,5 @@
 import { CreditCard, Trash2 } from 'lucide-react';
-import { cn } from '@force-majeure/shared/utils/utils';
+import { cn } from '@force-majeure/shared';
 import type { SavedCard } from '../types';
 
 interface SavedCardSelectorProps {

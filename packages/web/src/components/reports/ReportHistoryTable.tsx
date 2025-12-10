@@ -1,7 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/common/shadcn/table';
 import { Badge } from '@/components/common/shadcn/badge';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@force-majeure/shared/api/supabase/client';
+import { supabase } from '@force-majeure/shared';
 import { format } from 'date-fns';
 import type { ReportHistory } from '@/types/reports';
 
