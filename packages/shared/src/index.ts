@@ -31,6 +31,8 @@ export {
 export * from './types/features/products';
 export * from './types/features/payments';
 export * from './types/features/activity-logs';
+export * from './types/features/raveFamily';
+export * from './types/features/groups';
 
 // Stores
 export * from './stores/cartStore';
