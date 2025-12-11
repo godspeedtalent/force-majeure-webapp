@@ -17,14 +17,14 @@ import {
   ClipboardList,
 } from 'lucide-react';
 import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
-import { AdminTicketingSection } from '@/components/admin/AdminTicketingSection';
+import { AdminFeesSection } from '@/components/admin/AdminFeesSection';
 import { DevToolsManagement } from '@/components/admin/DevToolsManagement';
 import { UserManagement } from './UserManagement';
 import { OrganizationsManagement } from './OrganizationsManagement';
 import { UserRequestsAdmin } from '@/components/admin/UserRequestsAdmin';
 import { formatHeader } from '@force-majeure/shared';
 
-type AdminTab = 'devtools' | 'ticketing' | 'settings' | 'users' | 'organizations' | 'requests' | 'logs';
+type AdminTab = 'devtools' | 'fees' | 'settings' | 'users' | 'organizations' | 'requests' | 'logs';
 
 export default function AdminControls() {
   const navigate = useNavigate();
@@ -52,10 +52,10 @@ export default function AdminControls() {
           description: 'Toggle dev environment features',
         },
         {
-          id: 'ticketing',
-          label: 'Ticketing',
+          id: 'fees',
+          label: 'Ticketing Fees',
           icon: DollarSign,
-          description: 'Configure ticketing fees and checkout behavior',
+          description: 'Configure ticketing fees',
         },
         {
           id: 'settings',
@@ -107,7 +107,7 @@ export default function AdminControls() {
   // Mobile bottom tabs configuration
   const mobileTabs: MobileBottomTab[] = [
     { id: 'devtools', label: 'Dev Tools', icon: Code },
-    { id: 'ticketing', label: 'Ticketing', icon: DollarSign },
+    { id: 'fees', label: 'Fees', icon: DollarSign },
     { id: 'settings', label: 'Settings', icon: Sliders },
     { id: 'organizations', label: 'Orgs', icon: Building2 },
     { id: 'requests', label: 'Requests', icon: ClipboardList },
@@ -117,7 +117,7 @@ export default function AdminControls() {
   const getTabTitle = () => {
     if (activeTab === 'settings') return 'Site Settings';
     if (activeTab === 'devtools') return 'Developer Tools';
-    if (activeTab === 'ticketing') return 'Ticketing';
+    if (activeTab === 'fees') return 'Ticketing Fees';
     if (activeTab === 'users') return 'Users';
     if (activeTab === 'organizations') return 'Organizations';
     if (activeTab === 'requests') return 'User Requests';
@@ -168,13 +168,14 @@ export default function AdminControls() {
           </div>
         )}
 
-        {activeTab === 'ticketing' && (
+        {activeTab === 'fees' && (
           <div className='space-y-6'>
             <div>
               <p className='text-muted-foreground text-sm mb-4'>
-                Configure checkout timer and fees applied to all ticket purchases
+                Configure site-wide fees and taxes applied to all ticket
+                purchases
               </p>
-              <AdminTicketingSection />
+              <AdminFeesSection />
             </div>
           </div>
         )}

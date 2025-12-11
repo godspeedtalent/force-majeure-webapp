@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import {
   Card,
   CardContent,
@@ -16,7 +15,6 @@ import { format } from 'date-fns';
 import { Receipt, Calendar } from 'lucide-react';
 
 export default function Orders() {
-  const { t } = useTranslation('pages');
   const { data: orders, isLoading } = useOrders();
 
   const getStatusColor = (status: string) => {
@@ -49,18 +47,18 @@ export default function Orders() {
         <div className='mb-8'>
           <div className='flex items-center gap-2 mb-2'>
             <Receipt className='h-6 w-6 text-fm-gold' />
-            <h1 className='text-3xl font-canela'>{t('orders.title')}</h1>
+            <h1 className='text-3xl font-canela'>My Orders</h1>
           </div>
           <p className='text-muted-foreground'>
-            {t('orders.subtitle')}
+            View your ticket purchases and order history
           </p>
         </div>
 
         {!orders || orders.length === 0 ? (
           <FmCommonEmptyState
             icon={Receipt}
-            title={t('orders.noOrders')}
-            description={t('orders.noOrdersDescription')}
+            title='No Orders Yet'
+            description='Your ticket purchases will appear here'
           />
         ) : (
           <div className='space-y-4'>
@@ -70,7 +68,7 @@ export default function Orders() {
                   <div className='flex items-start justify-between'>
                     <div className='flex-1'>
                       <CardTitle className='font-canela'>
-                        {order.event?.title || t('orders.event')}
+                        {order.event?.title || 'Event'}
                       </CardTitle>
                       <CardDescription className='flex items-center gap-4 mt-2'>
                         <span className='flex items-center gap-1'>
@@ -79,7 +77,7 @@ export default function Orders() {
                             format(new Date(order.event.date), 'MMM d, yyyy')}
                         </span>
                         {order.event?.time && (
-                          <span>{t('orders.at')} {order.event.time}</span>
+                          <span>at {order.event.time}</span>
                         )}
                       </CardDescription>
                     </div>
@@ -94,7 +92,7 @@ export default function Orders() {
                   {/* Order Items */}
                   <div className='space-y-2'>
                     <h4 className='text-sm font-medium text-muted-foreground'>
-                      {t('orders.tickets')}
+                      Tickets
                     </h4>
                     {order.items?.map(item => (
                       <div
@@ -102,7 +100,7 @@ export default function Orders() {
                         className='flex justify-between text-sm'
                       >
                         <span>
-                          {item.quantity}x {item.ticket_tier?.name || t('orders.ticket')}
+                          {item.quantity}x {item.ticket_tier?.name || 'Ticket'}
                         </span>
                         <span className='text-fm-gold'>
                           ${(item.subtotal_cents / 100).toFixed(2)}
@@ -116,16 +114,16 @@ export default function Orders() {
                   {/* Order Totals */}
                   <div className='space-y-1 text-sm'>
                     <div className='flex justify-between text-muted-foreground'>
-                      <span>{t('orders.subtotal')}</span>
+                      <span>Subtotal</span>
                       <span>${(order.subtotal_cents / 100).toFixed(2)}</span>
                     </div>
                     <div className='flex justify-between text-muted-foreground'>
-                      <span>{t('orders.fees')}</span>
+                      <span>Fees</span>
                       <span>${(order.fees_cents / 100).toFixed(2)}</span>
                     </div>
                     <Separator className='my-2' />
                     <div className='flex justify-between font-canela text-base'>
-                      <span>{t('orders.total')}</span>
+                      <span>Total</span>
                       <span className='text-fm-gold'>
                         ${(order.total_cents / 100).toFixed(2)}
                       </span>
@@ -133,7 +131,7 @@ export default function Orders() {
                   </div>
 
                   <div className='text-xs text-muted-foreground pt-2'>
-                    {t('orders.orderPlaced')}{' '}
+                    Order placed{' '}
                     {format(new Date(order.created_at), 'MMM d, yyyy h:mm a')}
                   </div>
                 </CardContent>

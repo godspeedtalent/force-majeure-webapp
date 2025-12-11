@@ -1,5 +1,4 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { Music, Calendar, ArrowLeft } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { Card } from '@/components/common/shadcn/card';
@@ -12,7 +11,6 @@ const ARTIST_PLACEHOLDER_IMAGE = '/images/artist-showcase/DSC02275.jpg';
 export default function ArtistDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { t } = useTranslation('pages');
 
   const { data: artist, isLoading, error } = useArtistById(id);
   const { data: upcomingEvents } = useArtistEvents(id);
@@ -22,9 +20,9 @@ export default function ArtistDetails() {
       data={artist}
       isLoading={isLoading}
       error={error}
-      entityName={t('artistDetails.entityName')}
+      entityName='Artist'
       onBack={() => navigate(-1)}
-      notFoundMessage={t('artistDetails.notFound')}
+      notFoundMessage='Artist Not Found'
       useLayout={true}
     >
       {(artist) => {
@@ -42,7 +40,7 @@ export default function ArtistDetails() {
                     icon={ArrowLeft}
                     onClick={() => navigate(-1)}
                   >
-                    {t('artistDetails.back')}
+                    Back
                   </FmCommonButton>
                 </div>
               </div>
@@ -86,7 +84,7 @@ export default function ArtistDetails() {
                   <div>
                     <h2 className='text-2xl font-bold mb-4 flex items-center gap-2'>
                       <Calendar className='h-6 w-6' />
-                      {t('artistDetails.upcomingEvents')}
+                      Upcoming Events
                     </h2>
                     <div className='grid gap-4'>
                       {upcomingEvents.map((event: any) => (

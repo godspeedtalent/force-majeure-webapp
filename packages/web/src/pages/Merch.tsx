@@ -1,6 +1,5 @@
 import { ShoppingCart, Filter } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { logger } from '@force-majeure/shared';
 
@@ -30,7 +29,6 @@ interface MerchItem {
 }
 
 export default function Merch() {
-  const { t } = useTranslation('pages');
   const [items, setItems] = useState<MerchItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<MerchItem[]>([]);
   const [sortBy, setSortBy] = useState<string>('date');
@@ -73,14 +71,14 @@ export default function Merch() {
         details: 'fetchMerchItems',
       });
       setItems([]);
-      toast.error(t('merch.comingSoon'));
+      toast.error('Merchandise coming soon');
     } catch (error) {
       logger.error('Error fetching merch:', {
         error: error instanceof Error ? error.message : 'Unknown error',
         source: 'Merch.tsx',
         details: 'fetchMerchItems',
       });
-      toast.error(t('merch.loadFailed'));
+      toast.error('Failed to load merchandise');
     } finally {
       setLoading(false);
     }
@@ -91,14 +89,14 @@ export default function Merch() {
   };
 
   const handleAddToCart = (item: MerchItem) => {
-    toast.success(t('merch.addedToCart', { name: item.name }));
+    toast.success(`Added ${item.name} to cart!`);
   };
 
   if (loading) {
     return (
       <Layout>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12'>
-          <FmCommonLoadingState message={t('merch.loading')} />
+          <FmCommonLoadingState message='Loading merchandise...' />
         </div>
       </Layout>
     );
@@ -110,10 +108,10 @@ export default function Merch() {
         {/* Header */}
         <div className='text-center mb-12'>
           <h1 className='text-4xl font-canela text-foreground mb-4'>
-            {t('merch.title')}
+            Force Majeure Merchandise
           </h1>
           <p className='text-lg text-muted-foreground max-w-2xl mx-auto'>
-            {t('merch.subtitle')}
+            Exclusive prints and stickers from the Force Majeure collection
           </p>
         </div>
 
@@ -123,24 +121,24 @@ export default function Merch() {
             <Filter className='h-4 w-4 text-muted-foreground' />
             <Select value={filterType} onValueChange={setFilterType}>
               <SelectTrigger className='w-48'>
-                <SelectValue placeholder={t('merch.filterByType')} />
+                <SelectValue placeholder='Filter by type' />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value='all'>{t('merch.allItems')}</SelectItem>
-                <SelectItem value='Limited Prints'>{t('merch.limitedPrints')}</SelectItem>
-                <SelectItem value='Stickers'>{t('merch.stickers')}</SelectItem>
+                <SelectItem value='all'>All Items</SelectItem>
+                <SelectItem value='Limited Prints'>Limited Prints</SelectItem>
+                <SelectItem value='Stickers'>Stickers</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className='w-48'>
-              <SelectValue placeholder={t('merch.sortBy')} />
+              <SelectValue placeholder='Sort by' />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value='date'>{t('merch.dateAdded')}</SelectItem>
-              <SelectItem value='price-low'>{t('merch.priceLowHigh')}</SelectItem>
-              <SelectItem value='price-high'>{t('merch.priceHighLow')}</SelectItem>
+              <SelectItem value='date'>Date Added</SelectItem>
+              <SelectItem value='price-low'>Price: Low to High</SelectItem>
+              <SelectItem value='price-high'>Price: High to Low</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -149,8 +147,8 @@ export default function Merch() {
         {filteredItems.length === 0 ? (
           <FmCommonEmptyState
             icon={ShoppingCart}
-            title={t('merch.noItems')}
-            description={t('merch.noItemsDescription')}
+            title='No items found'
+            description='No items found matching your criteria.'
           />
         ) : (
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
@@ -175,7 +173,7 @@ export default function Merch() {
                     {formatPrice(item.price)}
                   </span>
                   {!item.in_stock && (
-                    <Badge variant='destructive'>{t('merch.outOfStock')}</Badge>
+                    <Badge variant='destructive'>Out of Stock</Badge>
                   )}
                 </div>
                 <Button
@@ -185,7 +183,7 @@ export default function Merch() {
                   variant={item.in_stock ? 'default' : 'secondary'}
                 >
                   <ShoppingCart className='h-4 w-4 mr-2' />
-                  {item.in_stock ? t('merch.addToCart') : t('merch.outOfStock')}
+                  {item.in_stock ? 'Add to Cart' : 'Out of Stock'}
                 </Button>
               </MerchCard>
             ))}

@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { FmInfoCard } from '@/components/common/data/FmInfoCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -60,12 +59,11 @@ export function IndexMobile({
   contentReady,
 }: IndexMobileProps) {
   const navigate = useNavigate();
-  const { t } = useTranslation('pages');
 
   if (!contentReady) {
     return (
       <div className='flex items-center justify-center min-h-screen relative z-10'>
-        <FmCommonLoadingState message={t('home.loading')} />
+        <FmCommonLoadingState message='Loading...' />
       </div>
     );
   }
@@ -129,16 +127,16 @@ export function IndexMobile({
           ) : (
             <FmInfoCard className='max-w-2xl text-center'>
               <h2 className='text-lg lg:text-xl text-fm-gold mb-[20px]'>
-                {t('home.lineupComingSoon')}
+                Our 2026 lineup is coming soon.
               </h2>
               <p className='text-sm text-muted-foreground mb-[10px]'>
-                {t('home.artistQuestion')}
+                Are you an artist wanting to open for headlining talent?
               </p>
               <p className='text-sm text-muted-foreground mb-[20px]'>
-                {t('home.registerBelow')}
+                Register with us below!
               </p>
               <FmCommonButton onClick={() => navigate('/artists/signup')}>
-                {t('home.artistRegistration')}
+                Artist Registration
               </FmCommonButton>
             </FmInfoCard>
           )}
@@ -151,7 +149,7 @@ export function IndexMobile({
               onClick={() => setShowPastEvents(!showPastEvents)}
               variant='secondary'
             >
-              {showPastEvents ? t('home.hidePastEvents') : t('home.showPastEvents')}
+              {showPastEvents ? 'Hide past events' : 'Display past events'}
             </FmCommonButton>
           </div>
         )}
@@ -160,7 +158,7 @@ export function IndexMobile({
         {!loading && showPastEvents && pastEvents.length > 0 && (
           <div className='mt-[60px]'>
             <h2 className='text-2xl lg:text-3xl font-canela text-fm-gold mb-[40px] text-center'>
-              {t('home.pastEventsTitle')}
+              Past events.
             </h2>
             <div className='space-y-4'>
               {pastEvents.map(event =>
@@ -209,8 +207,8 @@ export function IndexMobile({
         {eventsContent}
         <MobileSectionIndicator
           sections={[
-            { id: 'hero', label: t('home.welcome') },
-            { id: 'events', label: t('events.title') },
+            { id: 'hero', label: 'Welcome' },
+            { id: 'events', label: 'Events' },
           ]}
           activeSection={activeSection}
           onSectionClick={scrollToSection}

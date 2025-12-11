@@ -447,7 +447,7 @@ const ProfileEdit = () => {
                         label={t('profile.streetAddress')}
                         id='billingAddress'
                         type='text'
-                        placeholder={t('profile.streetAddressPlaceholder')}
+                        placeholder='123 Main St'
                         value={billingAddress}
                         onChange={e => setBillingAddress(e.target.value)}
                         description={tCommon('labels.optional')}
@@ -459,7 +459,7 @@ const ProfileEdit = () => {
                       label={tCommon('labels.city')}
                       id='billingCity'
                       type='text'
-                      placeholder={t('profile.cityPlaceholder')}
+                      placeholder='San Francisco'
                       value={billingCity}
                       onChange={e => setBillingCity(e.target.value)}
                       description={tCommon('labels.optional')}
@@ -470,7 +470,7 @@ const ProfileEdit = () => {
                       label={tCommon('labels.state')}
                       id='billingState'
                       type='text'
-                      placeholder={t('profile.statePlaceholder')}
+                      placeholder='CA'
                       value={billingState}
                       onChange={e => setBillingState(e.target.value)}
                       description={tCommon('labels.optional')}
@@ -481,7 +481,7 @@ const ProfileEdit = () => {
                       label={tCommon('labels.zipCode')}
                       id='billingZip'
                       type='text'
-                      placeholder={t('profile.zipCodePlaceholder')}
+                      placeholder='94102'
                       value={billingZip}
                       onChange={e => setBillingZip(e.target.value)}
                       description={tCommon('labels.optional')}
@@ -518,9 +518,8 @@ const ProfileEdit = () => {
                 <div className='max-w-xs'>
                   <LanguageSelector
                     value={currentLocale}
-                    onChange={async (locale: SupportedLocale) => {
-                      await changeLocale(locale);
-                      // Toast will now use the new locale since i18n has been updated
+                    onChange={(locale: SupportedLocale) => {
+                      changeLocale(locale);
                       toast.success(t('profile.languageSaved'));
                     }}
                   />

@@ -14,11 +14,7 @@ export default defineConfig(({ mode }) => ({
   ].filter(Boolean),
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./packages/web/src"),
-      "@force-majeure/shared": path.resolve(__dirname, "./packages/shared/src"),
+      "@": path.resolve(__dirname, "./src"),
     },
-  },
-  optimizeDeps: {
-    include: ['@force-majeure/shared'],
   },
 }));

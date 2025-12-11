@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 
 import { Layout } from '@/components/layout/Layout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -14,7 +13,6 @@ import { DesktopProfileLayout } from '@/components/profile/DesktopProfileLayout'
 import { UpcomingEvent } from '@/components/profile/types';
 
 const Profile = () => {
-  const { t } = useTranslation('pages');
   const { user, profile, loading } = useAuth();
   const navigate = useNavigate();
   const [upcomingShows, setUpcomingShows] = useState<UpcomingEvent[]>([]);
@@ -93,8 +91,8 @@ const Profile = () => {
         }
       } catch (error) {
         await handleError(error, {
-          title: t('profile.loadUpcomingShowsFailed'),
-          description: t('profile.couldNotRetrieveEvents'),
+          title: 'Failed to Load Upcoming Shows',
+          description: 'Could not retrieve your upcoming events',
           endpoint: 'orders',
           method: 'SELECT',
           showToast: false, // Don't show toast for shows loading
@@ -112,7 +110,7 @@ const Profile = () => {
     return (
       <Layout>
         <div className='flex items-center justify-center min-h-[60vh]'>
-          <div className='text-muted-foreground'>{t('profile.loading')}</div>
+          <div className='text-muted-foreground'>Loading profile...</div>
         </div>
       </Layout>
     );
@@ -125,10 +123,10 @@ const Profile = () => {
           <Card className='border-border/30 bg-card/20 backdrop-blur-lg'>
             <CardContent className='p-12 text-center'>
               <p className='text-muted-foreground mb-6'>
-                {t('profile.signInToView')}
+                Please sign in to view your profile.
               </p>
               <FmCommonButton variant='gold' onClick={() => navigate('/auth')}>
-                {t('auth.signInTab')}
+                Sign In
               </FmCommonButton>
             </CardContent>
           </Card>

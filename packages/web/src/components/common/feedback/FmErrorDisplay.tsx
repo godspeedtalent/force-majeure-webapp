@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { logger } from '@force-majeure/shared';
 import {
   AlertTriangle,
@@ -47,7 +46,6 @@ export const FmErrorDisplay = ({
 }: FmErrorDisplayProps) => {
   const [isStackTraceExpanded, setIsStackTraceExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
-  const { t } = useTranslation('common');
 
   // In development mode, always show detailed errors
   // In production, we'd need to check user roles, but that requires AuthProvider
@@ -92,15 +90,17 @@ export const FmErrorDisplay = ({
       <div className='max-w-2xl w-full text-center space-y-6 relative z-10'>
         <div className='space-y-2'>
           <h1 className='text-3xl font-canela text-foreground'>
-            {t('errors.somethingWentWrong')}
+            Something went wrong.
           </h1>
           {isDeveloper ? (
             <p className='text-muted-foreground'>
-              {t('errors.debugDetails')}
+              An error occurred in the application. Details are shown below for
+              debugging.
             </p>
           ) : (
             <p className='text-muted-foreground'>
-              {t('errors.apologize')}
+              We apologize for the inconvenience. Our team has been notified and
+              is working on a fix.
             </p>
           )}
         </div>
@@ -109,7 +109,7 @@ export const FmErrorDisplay = ({
         {isDeveloper ? (
           <FmInfoCard
             icon={AlertTriangle}
-            title={t('errors.errorDetails')}
+            title='Error Details'
             className='text-left'
           >
             <p className='text-sm font-mono text-destructive break-words'>
@@ -124,7 +124,7 @@ export const FmErrorDisplay = ({
                   onClick={() => setIsStackTraceExpanded(!isStackTraceExpanded)}
                   className='w-full justify-between text-xs'
                 >
-                  <span>{t('errors.stackTrace')}</span>
+                  <span>Stack Trace</span>
                   {isStackTraceExpanded ? (
                     <ChevronUp className='h-4 w-4' />
                   ) : (
@@ -148,12 +148,12 @@ export const FmErrorDisplay = ({
                       {copied ? (
                         <>
                           <Check className='h-3 w-3 mr-2' />
-                          {t('errors.copied')}
+                          Copied!
                         </>
                       ) : (
                         <>
                           <Copy className='h-3 w-3 mr-2' />
-                          {t('errors.copyStackTrace')}
+                          Copy Stack Trace
                         </>
                       )}
                     </Button>
@@ -165,11 +165,12 @@ export const FmErrorDisplay = ({
         ) : (
           <FmInfoCard
             icon={MessageCircle}
-            title={t('errors.needHelp')}
+            title='Need help?'
             className='text-left'
           >
             <p className='text-sm text-muted-foreground'>
-              {t('errors.contactUsMessage')}{' '}
+              We've let our developers know. If you need immediate help, please
+              contact us at{' '}
               <a
                 href='https://www.instagram.com/force.majeure.events'
                 target='_blank'
@@ -178,7 +179,7 @@ export const FmErrorDisplay = ({
               >
                 @force.majeure.events
               </a>{' '}
-              {t('errors.onInstagram')}
+              on Instagram.
             </p>
           </FmInfoCard>
         )}
@@ -190,10 +191,10 @@ export const FmErrorDisplay = ({
             variant='default'
             className='bg-fm-gold hover:bg-fm-gold/90 text-black hover:text-black'
           >
-            {t('errors.reloadPage')}
+            Reload Page
           </Button>
           <Button onClick={handleGoBack} variant='outline'>
-            {t('errors.goBack')}
+            Go Back
           </Button>
         </div>
       </div>

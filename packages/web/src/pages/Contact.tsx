@@ -1,20 +1,17 @@
-import { useTranslation } from 'react-i18next';
 import { Mail, Instagram, MapPin } from 'lucide-react';
 
 import { Layout } from '@/components/layout/Layout';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 
 export default function Contact() {
-  const { t } = useTranslation('pages');
-
   return (
     <Layout>
       <div className='container mx-auto py-[40px] px-[20px] max-w-2xl'>
         {/* Header */}
         <div className='text-center mb-[40px]'>
-          <h1 className='font-canela text-3xl md:text-4xl mb-[10px]'>{t('contact.title')}</h1>
+          <h1 className='font-canela text-3xl md:text-4xl mb-[10px]'>Contact us.</h1>
           <p className='text-muted-foreground'>
-            {t('contact.subtitle')}
+            We'd love to hear from you. Reach out through any of the channels below.
           </p>
         </div>
 
@@ -32,7 +29,7 @@ export default function Contact() {
             </div>
             <div>
               <p className='font-canela font-medium text-white group-hover:text-fm-gold transition-colors'>
-                {t('contact.email')}
+                Email
               </p>
               <p className='text-sm text-muted-foreground'>contact@forcemajeure.vip</p>
             </div>
@@ -50,7 +47,7 @@ export default function Contact() {
             </div>
             <div>
               <p className='font-canela font-medium text-white group-hover:text-fm-gold transition-colors'>
-                {t('contact.instagram')}
+                Instagram
               </p>
               <p className='text-sm text-muted-foreground'>@force.majeure.events</p>
             </div>
@@ -62,8 +59,8 @@ export default function Contact() {
               <MapPin className='h-6 w-6 text-fm-gold' />
             </div>
             <div>
-              <p className='font-canela font-medium text-white'>{t('contact.location')}</p>
-              <p className='text-sm text-muted-foreground'>{t('contact.locationValue')}</p>
+              <p className='font-canela font-medium text-white'>Location</p>
+              <p className='text-sm text-muted-foreground'>Los Angeles, California</p>
             </div>
           </div>
         </div>
@@ -72,7 +69,8 @@ export default function Contact() {
 
         {/* Footer note */}
         <p className='text-center text-sm text-muted-foreground'>
-          {t('contact.bookingNote')}
+          For booking inquiries, artist submissions, or partnership opportunities,
+          please reach out via email.
         </p>
       </div>
     </Layout>

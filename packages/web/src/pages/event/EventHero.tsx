@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ArrowLeft, Settings } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { cn } from '@force-majeure/shared';
@@ -20,7 +19,6 @@ export const EventHero = ({
   onBack,
   onManage,
 }: EventHeroProps) => {
-  const { t } = useTranslation('pages');
   const [imageLoaded, setImageLoaded] = useState(false);
 
   // Get focal point from event data, default to center
@@ -62,7 +60,7 @@ export const EventHero = ({
             icon={ArrowLeft}
             className='text-white bg-black/40 hover:bg-black/20 backdrop-blur-sm border-white border-2 hover:border-fm-gold hover:text-fm-gold hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] transition-colors duration-200 lg:w-auto lg:px-4'
           >
-            <span className='hidden lg:inline'>{t('eventDetails.back')}</span>
+            <span className='hidden lg:inline'>Back</span>
           </FmCommonButton>
         </div>
 
@@ -76,7 +74,7 @@ export const EventHero = ({
               icon={Settings}
               className='text-white bg-black/40 hover:bg-black/20 backdrop-blur-sm border-white border-2 hover:border-fm-gold hover:text-fm-gold hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] transition-colors duration-200 lg:w-auto lg:px-4'
             >
-              <span className='hidden lg:inline'>{t('eventDetails.manage')}</span>
+              <span className='hidden lg:inline'>Manage</span>
             </FmCommonButton>
           </div>
         )}
