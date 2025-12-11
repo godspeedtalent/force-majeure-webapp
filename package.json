@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
+    "build:dev": "vite build --mode development",
     "type-check": "turbo run type-check",
     "lint": "turbo run lint",
     "test": "turbo run test",
