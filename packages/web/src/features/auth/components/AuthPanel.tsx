@@ -1,5 +1,6 @@
 import { UserX } from 'lucide-react';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -34,9 +35,10 @@ export const AuthPanel = ({
   showGuestOption = false,
   onGuestContinue,
   onAuthSuccess,
-  title = 'Join the rave fam.',
-  description = 'Sign in to access full Spotify streaming and personalized features',
+  title,
+  description,
 }: AuthPanelProps) => {
+  const { t } = useTranslation('pages');
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [signInForm, setSignInForm] = useState({ email: '', password: '' });
@@ -51,6 +53,10 @@ export const AuthPanel = ({
   const [passwordError, setPasswordError] = useState('');
 
   const { signIn, signUp, loading } = useAuth();
+
+  // Use translated defaults if no custom title/description provided
+  const displayTitle = title ?? t('auth.panelTitle');
+  const displayDescription = description ?? t('auth.panelDescription');
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,7 +80,7 @@ export const AuthPanel = ({
 
     // Validate password match
     if (signUpForm.password !== signUpForm.confirmPassword) {
-      setPasswordError('Passwords do not match');
+      setPasswordError(t('auth.passwordsDoNotMatch'));
       return;
     }
 
@@ -113,10 +119,10 @@ export const AuthPanel = ({
           <ForceMajeureLogo className='w-16 h-16' />
         </div>
         <CardTitle className='text-2xl font-canela font-medium text-foreground'>
-          {title}
+          {displayTitle}
         </CardTitle>
         <CardDescription className='text-muted-foreground'>
-          {description}
+          {displayDescription}
         </CardDescription>
       </CardHeader>
 
@@ -127,23 +133,23 @@ export const AuthPanel = ({
               value='signin'
               className='rounded-none data-[state=active]:bg-fm-gold data-[state=active]:text-black data-[state=active]:shadow-none font-canela'
             >
-              Sign In
+              {t('auth.signInTab')}
             </TabsTrigger>
             <TabsTrigger
               value='signup'
               className='rounded-none data-[state=active]:bg-fm-gold data-[state=active]:text-black data-[state=active]:shadow-none font-canela'
             >
-              Sign Up
+              {t('auth.signUpTab')}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value='signin' className='space-y-6 mt-6'>
             <form onSubmit={handleSignIn} className='space-y-6'>
               <FmCommonTextField
-                label='Email'
+                label={t('auth.emailLabel')}
                 id='signin-email'
                 type='email'
-                placeholder='Enter your email'
+                placeholder={t('auth.signIn.emailPlaceholder')}
                 value={signInForm.email}
                 onChange={e =>
                   setSignInForm({ ...signInForm, email: e.target.value })
@@ -152,10 +158,10 @@ export const AuthPanel = ({
               />
 
               <FmCommonTextField
-                label='Password'
+                label={t('auth.passwordLabel')}
                 id='signin-password'
                 password
-                placeholder='Enter your password'
+                placeholder={t('auth.signIn.passwordPlaceholder')}
                 value={signInForm.password}
                 onChange={e =>
                   setSignInForm({
@@ -176,7 +182,7 @@ export const AuthPanel = ({
                   htmlFor='remember-me'
                   className='text-sm font-normal text-muted-foreground cursor-pointer'
                 >
-                  Remember me for 30 days
+                  {t('auth.rememberMeDays')}
                 </Label>
               </div>
 
@@ -185,7 +191,7 @@ export const AuthPanel = ({
                 className='w-full'
                 loading={isLoading}
               >
-                Sign In
+                {t('auth.signInTab')}
               </FmCommonButton>
             </form>
 
@@ -197,7 +203,7 @@ export const AuthPanel = ({
                 onClick={onGuestContinue}
               >
                 <UserX className='h-4 w-4 mr-2' />
-                Continue as Guest
+                {t('auth.continueAsGuest')}
               </Button>
             )}
           </TabsContent>
@@ -206,10 +212,10 @@ export const AuthPanel = ({
             <form onSubmit={handleSignUp} className='space-y-8'>
               <div className='grid grid-cols-2 gap-4'>
                 <FmCommonTextField
-                  label='First Name'
+                  label={t('auth.firstNameLabel')}
                   id='signup-firstname'
                   type='text'
-                  placeholder='First name'
+                  placeholder={t('auth.firstNamePlaceholder')}
                   value={signUpForm.firstName}
                   onChange={e =>
                     setSignUpForm({
@@ -221,10 +227,10 @@ export const AuthPanel = ({
                 />
 
                 <FmCommonTextField
-                  label='Last Name'
+                  label={t('auth.lastNameLabel')}
                   id='signup-lastname'
                   type='text'
-                  placeholder='Last name'
+                  placeholder={t('auth.lastNamePlaceholder')}
                   value={signUpForm.lastName}
                   onChange={e =>
                     setSignUpForm({
@@ -237,10 +243,10 @@ export const AuthPanel = ({
               </div>
 
               <FmCommonTextField
-                label='Username (Optional)'
+                label={t('auth.usernameLabel')}
                 id='signup-name'
                 type='text'
-                placeholder='Enter your username'
+                placeholder={t('auth.usernamePlaceholder')}
                 value={signUpForm.displayName}
                 onChange={e =>
                   setSignUpForm({
@@ -251,10 +257,10 @@ export const AuthPanel = ({
               />
 
               <FmCommonTextField
-                label='Email'
+                label={t('auth.emailLabel')}
                 id='signup-email'
                 type='email'
-                placeholder='Enter your email'
+                placeholder={t('auth.signUp.emailPlaceholder')}
                 value={signUpForm.email}
                 onChange={e =>
                   setSignUpForm({ ...signUpForm, email: e.target.value })
@@ -263,10 +269,10 @@ export const AuthPanel = ({
               />
 
               <FmCommonTextField
-                label='Password'
+                label={t('auth.passwordLabel')}
                 id='signup-password'
                 password
-                placeholder='Create a password'
+                placeholder={t('auth.signUp.passwordPlaceholder')}
                 value={signUpForm.password}
                 onChange={e => {
                   setSignUpForm({
@@ -280,10 +286,10 @@ export const AuthPanel = ({
               />
 
               <FmCommonTextField
-                label='Confirm Password'
+                label={t('auth.confirmPasswordLabel')}
                 id='signup-confirm-password'
                 password
-                placeholder='Confirm your password'
+                placeholder={t('auth.signUp.confirmPasswordPlaceholder')}
                 value={signUpForm.confirmPassword}
                 onChange={e => {
                   setSignUpForm({
@@ -302,7 +308,7 @@ export const AuthPanel = ({
                 className='w-full'
                 loading={isLoading}
               >
-                Create Account
+                {t('auth.createAccount')}
               </FmCommonButton>
             </form>
 
@@ -314,7 +320,7 @@ export const AuthPanel = ({
                 onClick={onGuestContinue}
               >
                 <UserX className='h-4 w-4 mr-2' />
-                Continue as Guest
+                {t('auth.continueAsGuest')}
               </Button>
             )}
           </TabsContent>

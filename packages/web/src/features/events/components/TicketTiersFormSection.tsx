@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Label } from '@/components/common/shadcn/label';
 import { Input } from '@/components/common/shadcn/input';
 import { Checkbox } from '@/components/common/shadcn/checkbox';
@@ -17,6 +18,8 @@ interface TicketTiersFormSectionProps {
  * Used by both FmCreateEventButton and FmEditEventButton.
  */
 export function TicketTiersFormSection({ state, actions }: TicketTiersFormSectionProps) {
+  const { t } = useTranslation('common');
+
   const handleAdd = () => {
     actions.setTicketTiers([
       ...state.ticketTiers,
@@ -52,12 +55,12 @@ export function TicketTiersFormSection({ state, actions }: TicketTiersFormSectio
   const getTicketStatusMessage = () => {
     if (!state.venueCapacity) return '';
     if (ticketsOverCapacity) {
-      return `Over capacity by ${totalTickets - state.venueCapacity} tickets`;
+      return t('formMessages.overCapacity', { count: totalTickets - state.venueCapacity });
     }
     if (ticketsUnderCapacity) {
-      return `${state.venueCapacity - totalTickets} tickets remaining`;
+      return t('formMessages.ticketsRemaining', { remaining: state.venueCapacity - totalTickets });
     }
-    return 'All tickets allocated';
+    return t('formMessages.allTicketsAllocated');
   };
 
   return (
@@ -66,14 +69,14 @@ export function TicketTiersFormSection({ state, actions }: TicketTiersFormSectio
         items={state.ticketTiers}
         onAdd={handleAdd}
         onRemove={handleRemove}
-        addLabel='Add Ticket Tier'
+        addLabel={t('formActions.addTicketTier')}
         minItems={1}
         maxItems={5}
         canRemoveItem={(tier: TicketTier) => !tier.hasOrders}
         getRemoveTooltip={(tier: TicketTier) =>
           tier.hasOrders
-            ? 'This tier cannot be deleted because it has associated orders'
-            : 'Remove this tier'
+            ? t('formMessages.tierCannotBeDeleted')
+            : t('formActions.removeTicketTier')
         }
         renderRow={(tier: TicketTier, index: number) => (
           <div
@@ -86,25 +89,25 @@ export function TicketTiersFormSection({ state, actions }: TicketTiersFormSectio
               <div className='flex items-center gap-2 pb-2 border-b border-fm-gold/20'>
                 <div className='h-2 w-2 rounded-full bg-fm-gold animate-pulse' />
                 <p className='text-xs text-fm-gold font-medium'>
-                  This tier has orders and cannot be deleted
+                  {t('formMessages.tierHasOrders')}
                 </p>
               </div>
             )}
             <div className='grid grid-cols-3 gap-3'>
               <div className='space-y-1'>
                 <Label className='text-white/70 text-xs'>
-                  Name <span className='text-fm-danger'>*</span>
+                  {t('formLabels.name')} <span className='text-fm-danger'>*</span>
                 </Label>
                 <Input
                   value={tier.name}
                   onChange={e => handleUpdateField(index, 'name', e.target.value)}
-                  placeholder='e.g., General Admission'
+                  placeholder={t('forms.tickets.namePlaceholder')}
                   className='bg-black/40 border-white/20 text-white'
                 />
               </div>
               <div className='space-y-1'>
                 <Label className='text-white/70 text-xs'>
-                  Price ($) <span className='text-fm-danger'>*</span>
+                  {t('formLabels.price')} ($) <span className='text-fm-danger'>*</span>
                 </Label>
                 <Input
                   type='number'
@@ -116,13 +119,13 @@ export function TicketTiersFormSection({ state, actions }: TicketTiersFormSectio
                     handleUpdateField(index, 'priceInCents', Math.max(0, Math.round(value * 100)));
                   }}
                   onFocus={e => e.target.select()}
-                  placeholder='0'
+                  placeholder={t('forms.tickets.pricePlaceholder')}
                   className='bg-black/40 border-white/20 text-white'
                 />
               </div>
               <div className='space-y-1'>
                 <Label className='text-white/70 text-xs'>
-                  Quantity <span className='text-fm-danger'>*</span>
+                  {t('formLabels.quantity')} <span className='text-fm-danger'>*</span>
                 </Label>
                 <Input
                   type='number'
@@ -134,17 +137,17 @@ export function TicketTiersFormSection({ state, actions }: TicketTiersFormSectio
                     handleUpdateField(index, 'quantity', Math.max(1, value));
                   }}
                   onFocus={e => e.target.select()}
-                  placeholder='0'
+                  placeholder={t('forms.tickets.quantityPlaceholder')}
                   className='bg-black/40 border-white/20 text-white'
                 />
               </div>
             </div>
             <div className='space-y-1'>
-              <Label className='text-white/70 text-xs'>Description (Optional)</Label>
+              <Label className='text-white/70 text-xs'>{t('formLabels.description')} ({t('labels.optional')})</Label>
               <Input
                 value={tier.description || ''}
                 onChange={e => handleUpdateField(index, 'description', e.target.value)}
-                placeholder='e.g., Includes coat check and one drink'
+                placeholder={t('forms.tickets.descriptionPlaceholder')}
                 className='bg-black/40 border-white/20 text-white'
               />
             </div>
@@ -157,7 +160,7 @@ export function TicketTiersFormSection({ state, actions }: TicketTiersFormSectio
                 }
               />
               <Label htmlFor={`tier-${index}-hide`} className='text-white/70 text-sm cursor-pointer'>
-                Hide until previous tier sold out
+                {t('forms.tickets.hideUntilSoldOut', 'Hide until previous tier sold out')}
               </Label>
             </div>
           </div>

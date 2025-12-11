@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   FileText,
@@ -34,6 +35,7 @@ import { EventStatusBadge, PublishEventButton } from '@/components/events/status
 import { eventService } from '@/features/events/services/eventService';
 import { GuestListSettings } from '@/components/events/social/GuestListSettings';
 import { EventOverviewForm } from '@/components/events/overview/EventOverviewForm';
+import { EventQueueConfigForm } from '@/components/events/queue';
 
 import { toast } from 'sonner';
 import { Card } from '@/components/common/shadcn/card';
@@ -48,6 +50,7 @@ import { useEventOverviewForm } from './event/hooks/useEventOverviewForm';
 type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'reports' | 'tracking' | 'social' | 'ux_display' | 'admin' | 'view';
 
 export default function EventManagement() {
+  const { t } = useTranslation('toasts');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { hasRole } = useUserPermissions();
@@ -242,7 +245,7 @@ export default function EventManagement() {
 
       if (eventError) throw eventError;
 
-      toast.success('Event deleted successfully');
+      toast.success(t('events.deleted'));
 
       // Navigate back to admin or home
       navigate('/admin');
@@ -270,7 +273,7 @@ export default function EventManagement() {
 
       if (error) throw error;
 
-      toast.success('UX Display settings updated successfully');
+      toast.success(t('events.uxSettingsUpdated'));
       queryClient.invalidateQueries({ queryKey: ['event', id] });
     } catch (error) {
       await handleError(error, {
@@ -289,7 +292,7 @@ export default function EventManagement() {
 
     try {
       await eventService.updateEventStatus(id, 'published');
-      toast.success('Event published successfully!');
+      toast.success(t('events.published'));
       queryClient.invalidateQueries({ queryKey: ['event', id] });
     } catch (error) {
       await handleError(error, {
@@ -459,7 +462,7 @@ export default function EventManagement() {
                       if (insertError) throw insertError;
                     }
 
-                    toast.success('Artists updated successfully');
+                    toast.success(t('events.artistsUpdated'));
                     queryClient.invalidateQueries({ queryKey: ['event', id] });
                   } catch (error) {
                     await handleError(error, {
@@ -555,46 +558,52 @@ export default function EventManagement() {
           )}
 
           {activeTab === 'admin' && isAdmin && (
-            <Card className='p-8'>
-              <div className='space-y-6'>
-                <div>
-                  <h2 className='text-2xl font-bold text-foreground mb-2'>
-                    Admin Controls
-                  </h2>
-                  <p className='text-muted-foreground'>
-                    Advanced event management controls
-                  </p>
-                </div>
+            <div className='space-y-6'>
+              {/* Queue Configuration */}
+              {id && <EventQueueConfigForm eventId={id} />}
 
-                <div className='space-y-4'>
-                  <div className='rounded-none border border-destructive/50 bg-destructive/5 p-6'>
-                    <div className='flex items-start gap-4'>
-                      <div className='p-3 rounded-none bg-destructive/10'>
-                        <Trash2 className='h-6 w-6 text-destructive' />
-                      </div>
-                      <div className='flex-1'>
-                        <h3 className='text-lg font-semibold text-foreground mb-2'>
-                          Delete Event
-                        </h3>
-                        <p className='text-sm text-muted-foreground mb-4'>
-                          Permanently delete this event and all associated data
-                          including ticket tiers and orders. This action cannot
-                          be undone.
-                        </p>
-                        <FmCommonButton
-                          variant='destructive'
-                          icon={Trash2}
-                          onClick={handleDeleteEvent}
-                          loading={isDeleting}
-                        >
-                          {isDeleting ? 'Deleting...' : 'Delete Event'}
-                        </FmCommonButton>
+              {/* Delete Event Card */}
+              <Card className='p-8'>
+                <div className='space-y-6'>
+                  <div>
+                    <h2 className='text-2xl font-bold text-foreground mb-2'>
+                      Danger Zone
+                    </h2>
+                    <p className='text-muted-foreground'>
+                      Irreversible actions
+                    </p>
+                  </div>
+
+                  <div className='space-y-4'>
+                    <div className='rounded-none border border-destructive/50 bg-destructive/5 p-6'>
+                      <div className='flex items-start gap-4'>
+                        <div className='p-3 rounded-none bg-destructive/10'>
+                          <Trash2 className='h-6 w-6 text-destructive' />
+                        </div>
+                        <div className='flex-1'>
+                          <h3 className='text-lg font-semibold text-foreground mb-2'>
+                            Delete Event
+                          </h3>
+                          <p className='text-sm text-muted-foreground mb-4'>
+                            Permanently delete this event and all associated data
+                            including ticket tiers and orders. This action cannot
+                            be undone.
+                          </p>
+                          <FmCommonButton
+                            variant='destructive'
+                            icon={Trash2}
+                            onClick={handleDeleteEvent}
+                            loading={isDeleting}
+                          >
+                            {isDeleting ? 'Deleting...' : 'Delete Event'}
+                          </FmCommonButton>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </Card>
+              </Card>
+            </div>
           )}
         </div>
       </div>

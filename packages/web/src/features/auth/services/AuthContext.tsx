@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 
 import { supabase, sessionPersistence, logger } from '@force-majeure/shared';
 import { handleError } from '@/shared/services/errorHandler';
+import i18n from '@/i18n';
 
 const authLogger = logger.createNamespace('Auth');
 
@@ -186,10 +187,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
         // Check if user was auto-confirmed (email confirmations disabled)
         if (data.user?.email_confirmed_at) {
-          toast.success('Your account has been created successfully. Welcome!');
+          toast.success(i18n.t('auth.signUpSuccess', { ns: 'toasts' }));
         } else {
           // User needs to verify email
-          toast.success("Check your email - we've sent you a confirmation link.");
+          toast.success(i18n.t('auth.signUpSuccess', { ns: 'toasts' }));
         }
       }
 
@@ -269,7 +270,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         toast.error(error.message);
       } else {
         await refreshProfile();
-        toast.success('Profile updated successfully.');
+        toast.success(i18n.t('profile.updateSuccess', { ns: 'toasts' }));
       }
 
       return { error };
@@ -297,7 +298,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       if (error) {
         toast.error(error.message);
       } else {
-        toast.success('Verification email sent. Check your inbox.');
+        toast.success(i18n.t('auth.emailVerificationSent', { ns: 'toasts' }));
       }
 
       return { error };

@@ -1,10 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { eventInterestService } from '../services/eventInterestService';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { logger } from '@force-majeure/shared';
 
 export function useEventInterest(eventId: string, eventTitle?: string) {
+  const { t } = useTranslation('toasts');
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -62,7 +64,7 @@ export function useEventInterest(eventId: string, eventTitle?: string) {
       return { previousInterested, previousCount };
     },
     onSuccess: () => {
-      toast.success(`Marked ${eventTitle || 'event'} as Interested!`);
+      toast.success(t('events.interestMarked', { eventTitle: eventTitle || 'event' }));
       logger.info('User marked event as interested', {
         event_id: eventId,
         event_title: eventTitle,
@@ -83,7 +85,7 @@ export function useEventInterest(eventId: string, eventTitle?: string) {
         );
       }
 
-      toast.error('Failed to mark event as interested. Please try again.');
+      toast.error(t('events.interestFailed'));
       logger.error('Failed to mark event as interested', {
         error: _error instanceof Error ? _error.message : 'Unknown',
         source: 'useEventInterest.markInterested',
@@ -129,7 +131,7 @@ export function useEventInterest(eventId: string, eventTitle?: string) {
       return { previousInterested, previousCount };
     },
     onSuccess: () => {
-      toast.success(`Removed interest in ${eventTitle || 'event'}`);
+      toast.success(t('events.interestRemoved', { eventTitle: eventTitle || 'event' }));
       logger.info('User removed interest in event', {
         event_id: eventId,
         event_title: eventTitle,
@@ -150,7 +152,7 @@ export function useEventInterest(eventId: string, eventTitle?: string) {
         );
       }
 
-      toast.error('Failed to remove interest. Please try again.');
+      toast.error(t('events.removeInterestFailed'));
       logger.error('Failed to remove interest in event', {
         error: _error instanceof Error ? _error.message : 'Unknown',
         source: 'useEventInterest.unmarkInterested',

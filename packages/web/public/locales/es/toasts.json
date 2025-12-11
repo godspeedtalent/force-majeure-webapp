@@ -49,7 +49,8 @@
     "paymentError": "Pago fallido. Por favor, inténtalo de nuevo.",
     "promoApplied": "¡Código promocional aplicado!",
     "promoInvalid": "Código promocional inválido",
-    "promoExpired": "Este código promocional ha expirado"
+    "promoExpired": "Este código promocional ha expirado",
+    "checkoutFailed": "Error en el Pago"
   },
   "tickets": {
     "downloaded": "Entrada descargada",
@@ -59,7 +60,22 @@
   },
   "events": {
     "addedToCalendar": "Evento añadido al calendario",
-    "linkCopied": "Enlace del evento copiado"
+    "linkCopied": "Enlace del evento copiado",
+    "deleted": "Evento eliminado exitosamente",
+    "published": "¡Evento publicado exitosamente!",
+    "updated": "Evento actualizado exitosamente",
+    "artistsUpdated": "Artistas actualizados exitosamente",
+    "uxSettingsUpdated": "Configuración de visualización UX actualizada exitosamente",
+    "interestMarked": "¡Marcado {{eventTitle}} como Interesado!",
+    "interestFailed": "Error al marcar interés en el evento. Por favor, inténtalo de nuevo.",
+    "interestRemoved": "Interés eliminado en {{eventTitle}}",
+    "removeInterestFailed": "Error al eliminar interés. Por favor, inténtalo de nuevo.",
+    "heroImageSaved": "Imagen principal guardada",
+    "overviewUpdated": "Resumen actualizado exitosamente",
+    "created": "¡{{eventTitle}} ha sido creado exitosamente!",
+    "createFailed": "Error al crear evento",
+    "updateFailed": "Error al actualizar evento",
+    "validationError": "Error de Validación"
   },
   "validation": {
     "stageNameRequired": "Por favor ingresa tu nombre artístico",
@@ -72,5 +88,47 @@
   "settings": {
     "languageChanged": "Idioma cambiado",
     "preferencesUpdated": "Preferencias actualizadas"
+  },
+  "venues": {
+    "updated": "Local actualizado exitosamente",
+    "deleted": "Local eliminado exitosamente",
+    "autoSaved": "Cambios guardados automáticamente"
+  },
+  "artists": {
+    "updated": "Artista actualizado exitosamente",
+    "genreAdded": "Género añadido al artista",
+    "genreAddFailed": "Error al añadir género",
+    "genreRemoved": "Género eliminado del artista",
+    "genreRemoveFailed": "Error al eliminar género",
+    "primaryGenreUpdated": "Género principal actualizado",
+    "primaryGenreFailed": "Error al establecer género principal",
+    "genresUpdated": "Géneros del artista actualizados exitosamente",
+    "genresUpdateFailed": "Error al actualizar géneros",
+    "imageUpdated": "Imagen del artista actualizada",
+    "imageUpdateFailed": "Error al actualizar imagen del artista",
+    "registrationFailed": "Error al enviar el registro. Por favor, inténtalo de nuevo.",
+    "unexpectedError": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo."
+  },
+  "genres": {
+    "created": "Género creado exitosamente",
+    "createFailed": "Error al crear género",
+    "updated": "Género actualizado exitosamente",
+    "updateFailed": "Error al actualizar género",
+    "deleted": "Género eliminado exitosamente",
+    "deleteFailed": "Error al eliminar género"
+  },
+  "admin": {
+    "userUpdated": "Usuario actualizado",
+    "userUpdateFailed": "Error al actualizar usuario",
+    "userDeleted": "Usuario eliminado",
+    "userDeleteFailed": "Error al eliminar usuario",
+    "userLoadFailed": "Error al cargar usuario",
+    "schemaRefreshed": "Esquema actualizado exitosamente",
+    "schemaRefreshFailed": "Error al actualizar esquema",
+    "tablesRefreshed": "Tablas actualizadas exitosamente",
+    "tablesRefreshFailed": "Error al actualizar tablas",
+    "columnsSaved": "Personalización de columnas guardada",
+    "columnSaveFailed": "Error al guardar personalización",
+    "deleteEventsFailed": "Error al eliminar evento(s)"
   }
 }

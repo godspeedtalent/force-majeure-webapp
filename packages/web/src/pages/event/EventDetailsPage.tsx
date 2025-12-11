@@ -1,5 +1,6 @@
 import { ArrowLeft } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { Navigation } from '@/components/navigation/Navigation';
 import { PageTransition } from '@/components/primitives/PageTransition';
@@ -15,6 +16,7 @@ import { EventDetailsContent } from './EventDetailsContent';
 import { useEventDetails } from './hooks/useEventDetails';
 
 export const EventDetailsPage = () => {
+  const { t } = useTranslation('pages');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: event, isLoading, error } = useEventDetails(id);
@@ -34,12 +36,12 @@ export const EventDetailsPage = () => {
         <TopographicBackground opacity={0.25} />
         <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
         <div className='text-center relative z-10'>
-          <h1 className='text-6xl font-canela mb-4 text-fm-gold'>Error</h1>
-          <p className='text-xl text-foreground mb-8'>Event ID is required</p>
+          <h1 className='text-6xl font-canela mb-4 text-fm-gold'>{t('eventDetails.error')}</h1>
+          <p className='text-xl text-foreground mb-8'>{t('eventDetails.eventIdRequired')}</p>
           <FmCommonButton asChild variant='default'>
             <Link to='/'>
               <ArrowLeft className='mr-2 h-4 w-4' />
-              Back to Events
+              {t('eventDetails.backToEvents')}
             </Link>
           </FmCommonButton>
         </div>
@@ -55,7 +57,7 @@ export const EventDetailsPage = () => {
         <div className='flex flex-col items-center gap-6 relative z-10'>
           <FmCommonLoadingSpinner size='lg' />
           <p className='text-foreground text-lg font-medium'>
-            Loading event details...
+            {t('eventDetails.loading')}
           </p>
         </div>
       </div>
@@ -68,17 +70,17 @@ export const EventDetailsPage = () => {
         <TopographicBackground opacity={0.25} />
         <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
         <div className='text-center relative z-10'>
-          <h1 className='text-6xl font-canela mb-4 text-fm-gold'>Error</h1>
+          <h1 className='text-6xl font-canela mb-4 text-fm-gold'>{t('eventDetails.error')}</h1>
           <p className='text-xl text-foreground mb-4'>
-            {error?.message || 'Event not found'}
+            {error?.message || t('eventDetails.eventNotFound')}
           </p>
           <p className='text-sm text-muted-foreground mb-8'>
-            The event you're looking for doesn't exist or has been removed
+            {t('eventDetails.eventRemoved')}
           </p>
           <FmCommonButton asChild variant='default'>
             <Link to='/'>
               <ArrowLeft className='mr-2 h-4 w-4' />
-              Back to Events
+              {t('eventDetails.backToEvents')}
             </Link>
           </FmCommonButton>
         </div>
@@ -93,17 +95,17 @@ export const EventDetailsPage = () => {
         <TopographicBackground opacity={0.25} />
         <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
         <div className='text-center relative z-10'>
-          <h1 className='text-6xl font-canela mb-4 text-fm-gold'>Not Found</h1>
+          <h1 className='text-6xl font-canela mb-4 text-fm-gold'>{t('eventDetails.notFound')}</h1>
           <p className='text-xl text-foreground mb-4'>
-            Event not found
+            {t('eventDetails.eventNotFound')}
           </p>
           <p className='text-sm text-muted-foreground mb-8'>
-            The event you're looking for doesn't exist or is not yet available
+            {t('eventDetails.eventNotAvailable')}
           </p>
           <FmCommonButton asChild variant='default'>
             <Link to='/'>
               <ArrowLeft className='mr-2 h-4 w-4' />
-              Back to Events
+              {t('eventDetails.backToEvents')}
             </Link>
           </FmCommonButton>
         </div>

@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { FmInfoCard } from '@/components/common/data/FmInfoCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -57,11 +58,12 @@ export function IndexDesktop({
   contentReady,
 }: IndexDesktopProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation('pages');
 
   if (!contentReady) {
     return (
       <div className='flex items-center justify-center min-h-screen relative z-10'>
-        <FmCommonLoadingState message='Loading...' />
+        <FmCommonLoadingState message={t('home.loading')} />
       </div>
     );
   }
@@ -120,16 +122,16 @@ export function IndexDesktop({
                 <div className='flex justify-center'>
                   <FmInfoCard className='max-w-2xl text-center'>
                     <h2 className='text-lg lg:text-xl text-fm-gold mb-[20px]'>
-                      Our 2026 lineup is coming soon.
+                      {t('home.lineupComingSoon')}
                     </h2>
                     <p className='text-sm text-muted-foreground mb-[10px]'>
-                      Are you an artist wanting to open for headlining talent?
+                      {t('home.artistQuestion')}
                     </p>
                     <p className='text-sm text-muted-foreground mb-[20px]'>
-                      Register with us below!
+                      {t('home.registerBelow')}
                     </p>
                     <FmCommonButton onClick={() => navigate('/artists/signup')}>
-                      Artist Registration
+                      {t('home.artistRegistration')}
                     </FmCommonButton>
                   </FmInfoCard>
                 </div>
@@ -209,16 +211,16 @@ export function IndexDesktop({
             <div className='col-span-full flex justify-center'>
               <FmInfoCard className='max-w-2xl text-center'>
                 <h2 className='text-lg lg:text-xl text-fm-gold mb-[20px]'>
-                  Our 2026 lineup is coming soon.
+                  {t('home.lineupComingSoon')}
                 </h2>
                 <p className='text-sm text-muted-foreground mb-[10px]'>
-                  Are you an artist wanting to open for headlining talent?
+                  {t('home.artistQuestion')}
                 </p>
                 <p className='text-sm text-muted-foreground mb-[20px]'>
-                  Register with us below!
+                  {t('home.registerBelow')}
                 </p>
                 <FmCommonButton onClick={() => navigate('/artists/signup')}>
-                  Artist Registration
+                  {t('home.artistRegistration')}
                 </FmCommonButton>
               </FmInfoCard>
             </div>
@@ -232,7 +234,7 @@ export function IndexDesktop({
               onClick={() => setShowPastEvents(!showPastEvents)}
               variant='secondary'
             >
-              {showPastEvents ? 'Hide past events' : 'Display past events'}
+              {showPastEvents ? t('home.hidePastEvents') : t('home.showPastEvents')}
             </FmCommonButton>
           </div>
         )}
@@ -241,7 +243,7 @@ export function IndexDesktop({
         {!loading && showPastEvents && pastEvents.length > 0 && (
           <div className='mt-[60px]'>
             <h2 className='text-2xl lg:text-3xl font-canela text-fm-gold mb-[40px] text-center'>
-              Past events.
+              {t('home.pastEventsTitle')}
             </h2>
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center'>
               {pastEvents.map(event =>

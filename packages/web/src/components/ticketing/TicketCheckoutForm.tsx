@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
   CheckCircle2,
@@ -66,9 +67,9 @@ export const TicketCheckoutForm = ({
   onComplete,
   showSecureCheckoutHeader = true,
 }: TicketCheckoutFormProps) => {
+  const { t } = useTranslation('pages');
   const { user, updateProfile } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
   const {
     processPayment,
     loadSavedCards,
@@ -126,43 +127,43 @@ export const TicketCheckoutForm = ({
     const nextErrors: Record<string, string> = {};
 
     if (!formData.fullName.trim()) {
-      nextErrors.fullName = 'Full name is required';
+      nextErrors.fullName = t('checkout.validation.fullNameRequired');
     }
 
     if (
       !formData.email.trim() ||
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
     ) {
-      nextErrors.email = 'Valid email is required';
+      nextErrors.email = t('checkout.validation.validEmailRequired');
     }
 
     if (!formData.address.trim()) {
-      nextErrors.address = 'Address is required';
+      nextErrors.address = t('checkout.validation.addressRequired');
     }
 
     if (!formData.city.trim()) {
-      nextErrors.city = 'City is required';
+      nextErrors.city = t('checkout.validation.cityRequired');
     }
 
     if (!formData.state.trim()) {
-      nextErrors.state = 'State is required';
+      nextErrors.state = t('checkout.validation.stateRequired');
     }
 
     if (
       !formData.zipCode.trim() ||
       !/^\d{5}(-\d{4})?$/.test(formData.zipCode)
     ) {
-      nextErrors.zipCode = 'Valid ZIP code is required';
+      nextErrors.zipCode = t('checkout.validation.validZipRequired');
     }
 
     // Card validation is handled by Stripe Elements
     // Only validate if not using a saved card
     if (!selectedSavedCard && !stripeReady) {
-      nextErrors.cardNumber = 'Please wait for payment system to load';
+      nextErrors.cardNumber = t('checkout.validation.paymentLoading');
     }
 
     if (!formData.agreeToTerms) {
-      nextErrors.agreeToTerms = 'You must accept the terms to continue';
+      nextErrors.agreeToTerms = t('checkout.validation.mustAcceptTerms');
     }
 
     setErrors(nextErrors);
@@ -198,11 +199,8 @@ export const TicketCheckoutForm = ({
           });
         } catch (error) {
           logger.error('Failed to save address', { error });
-          toast({
-            title: 'Address not saved',
-            description:
-              "Your order will proceed, but we couldn't save your address for future orders.",
-            variant: 'default',
+          toast.info(t('checkout.toast.addressNotSaved'), {
+            description: t('checkout.toast.addressNotSavedDescription'),
           });
         }
       }
@@ -215,23 +213,20 @@ export const TicketCheckoutForm = ({
       );
 
       if (result.success) {
-        toast({
-          title: 'Payment successful!',
-          description: 'Your tickets have been purchased.',
+        toast.success(t('checkout.toast.paymentSuccessful'), {
+          description: t('checkout.toast.ticketsPurchased'),
         });
         onComplete();
       } else {
-        throw new Error(result.error || 'Payment failed');
+        throw new Error(result.error || t('checkout.toast.paymentFailed'));
       }
     } catch (error) {
       logger.error('Payment error', { error });
-      toast({
-        title: 'Payment failed',
+      toast.error(t('checkout.toast.paymentFailed'), {
         description:
           error instanceof Error
             ? error.message
-            : 'An error occurred processing your payment',
-        variant: 'destructive',
+            : t('checkout.toast.paymentError'),
       });
       setIsSubmitting(false);
     }
@@ -252,13 +247,13 @@ export const TicketCheckoutForm = ({
           onClick={onBack}
           className='text-muted-foreground hover:text-foreground'
         >
-          Back to tickets
+          {t('checkout.backToTickets')}
         </FmCommonButton>
 
         {showSecureCheckoutHeader && (
           <div className='text-right'>
             <p className='text-xs text-muted-foreground uppercase tracking-[0.3em]'>
-              Secure Checkout
+              {t('checkout.secureCheckout')}
             </p>
             <h3 className='text-lg font-canela text-foreground'>{eventName}</h3>
             <p className='text-xs text-muted-foreground'>{eventDate}</p>
@@ -275,11 +270,10 @@ export const TicketCheckoutForm = ({
             <LogIn className='h-5 w-5 text-fm-gold flex-shrink-0 mt-0.5' />
             <div className='flex-1'>
               <h4 className='text-sm font-medium text-foreground mb-1'>
-                Sign in for faster checkout
+                {t('checkout.signInForFasterCheckout')}
               </h4>
               <p className='text-xs text-muted-foreground mb-3'>
-                Save your billing information and get autofill for future
-                purchases
+                {t('checkout.signInDescription')}
               </p>
               <FmCommonButton
                 size='sm'
@@ -287,7 +281,7 @@ export const TicketCheckoutForm = ({
                 onClick={() => navigate('/auth')}
                 className='border-fm-gold text-fm-gold hover:bg-fm-gold/10'
               >
-                Sign In
+                {t('checkout.signIn')}
               </FmCommonButton>
             </div>
           </div>
@@ -299,19 +293,19 @@ export const TicketCheckoutForm = ({
           <div className='space-y-4'>
             <h4 className='text-sm font-medium text-foreground flex items-center gap-2'>
               <CreditCard className='h-4 w-4 text-fm-gold' />
-              Payment Details
+              {t('checkout.paymentDetails')}
             </h4>
 
             <div className='grid gap-4 md:grid-cols-2'>
               <div className='md:col-span-2'>
-                <Label htmlFor='fullName'>Full name on card</Label>
+                <Label htmlFor='fullName'>{t('checkout.fullNameOnCard')}</Label>
                 <Input
                   id='fullName'
                   value={formData.fullName}
                   onChange={event =>
                     handleChange('fullName', event.target.value)
                   }
-                  placeholder='Jordan Rivers'
+                  placeholder={t('checkout.fullNamePlaceholder')}
                 />
                 {errors.fullName && (
                   <p className='mt-1 text-xs text-destructive'>
@@ -321,13 +315,13 @@ export const TicketCheckoutForm = ({
               </div>
 
               <div className='md:col-span-2'>
-                <Label htmlFor='email'>Email address</Label>
+                <Label htmlFor='email'>{t('checkout.emailAddress')}</Label>
                 <Input
                   id='email'
                   type='email'
                   value={formData.email}
                   onChange={event => handleChange('email', event.target.value)}
-                  placeholder='you@example.com'
+                  placeholder={t('checkout.emailPlaceholder')}
                 />
                 {errors.email && (
                   <p className='mt-1 text-xs text-destructive'>
@@ -339,7 +333,7 @@ export const TicketCheckoutForm = ({
               {/* Saved Cards Section */}
               {user && savedCards.length > 0 && (
                 <div className='md:col-span-2'>
-                  <Label>Saved Payment Methods</Label>
+                  <Label>{t('checkout.savedPaymentMethods')}</Label>
                   <SavedCardSelector
                     cards={savedCards}
                     selectedCardId={selectedSavedCard}
@@ -352,7 +346,7 @@ export const TicketCheckoutForm = ({
               {/* New Card Input - only show if no saved card selected or user has no saved cards */}
               {(!selectedSavedCard || savedCards.length === 0) && (
                 <div className='md:col-span-2 space-y-4'>
-                  <Label>Card Information</Label>
+                  <Label>{t('checkout.cardInformation')}</Label>
                   <StripeCardInput />
                   {errors.cardNumber && (
                     <p className='mt-1 text-xs text-destructive'>
@@ -366,7 +360,7 @@ export const TicketCheckoutForm = ({
                       id='saveCard'
                       checked={saveCardForLater}
                       onCheckedChange={setSaveCardForLater}
-                      label='Save this card for future purchases'
+                      label={t('checkout.saveCardForFuture')}
                     />
                   )}
                 </div>
@@ -379,19 +373,19 @@ export const TicketCheckoutForm = ({
           <div className='space-y-4'>
             <h4 className='text-sm font-medium text-foreground flex items-center gap-2'>
               <MapPin className='h-4 w-4 text-fm-gold' />
-              Billing Address
+              {t('checkout.billingAddress')}
             </h4>
 
             <div className='grid gap-4 md:grid-cols-2'>
               <div className='md:col-span-2'>
-                <Label htmlFor='address'>Street address</Label>
+                <Label htmlFor='address'>{t('checkout.streetAddress')}</Label>
                 <Input
                   id='address'
                   value={formData.address}
                   onChange={event =>
                     handleChange('address', event.target.value)
                   }
-                  placeholder='123 Main Street'
+                  placeholder={t('checkout.streetAddressPlaceholder')}
                 />
                 {errors.address && (
                   <p className='mt-1 text-xs text-destructive'>
@@ -401,12 +395,12 @@ export const TicketCheckoutForm = ({
               </div>
 
               <div>
-                <Label htmlFor='city'>City</Label>
+                <Label htmlFor='city'>{t('checkout.city')}</Label>
                 <Input
                   id='city'
                   value={formData.city}
                   onChange={event => handleChange('city', event.target.value)}
-                  placeholder='Los Angeles'
+                  placeholder={t('checkout.cityPlaceholder')}
                 />
                 {errors.city && (
                   <p className='mt-1 text-xs text-destructive'>{errors.city}</p>
@@ -414,12 +408,12 @@ export const TicketCheckoutForm = ({
               </div>
 
               <div>
-                <Label htmlFor='state'>State</Label>
+                <Label htmlFor='state'>{t('checkout.state')}</Label>
                 <Input
                   id='state'
                   value={formData.state}
                   onChange={event => handleChange('state', event.target.value)}
-                  placeholder='CA'
+                  placeholder={t('checkout.statePlaceholder')}
                   maxLength={2}
                 />
                 {errors.state && (
@@ -430,14 +424,14 @@ export const TicketCheckoutForm = ({
               </div>
 
               <div className='md:col-span-2'>
-                <Label htmlFor='zipCode'>ZIP code</Label>
+                <Label htmlFor='zipCode'>{t('checkout.zipCode')}</Label>
                 <Input
                   id='zipCode'
                   value={formData.zipCode}
                   onChange={event =>
                     handleChange('zipCode', event.target.value)
                   }
-                  placeholder='90001'
+                  placeholder={t('checkout.zipCodePlaceholder')}
                   maxLength={10}
                 />
                 {errors.zipCode && (
@@ -456,7 +450,7 @@ export const TicketCheckoutForm = ({
                   onCheckedChange={value =>
                     handleChange('saveAddress', Boolean(value))
                   }
-                  label='Save for future orders'
+                  label={t('checkout.saveForFutureOrders')}
                 />
               </div>
             )}
@@ -468,16 +462,14 @@ export const TicketCheckoutForm = ({
           <div className='flex-1'>
             <div className='flex items-center justify-between mb-1'>
               <h4 className='text-sm font-medium text-foreground'>
-                Ticket Protection
+                {t('checkout.ticketProtection')}
               </h4>
               <span className='text-sm font-medium text-fm-gold'>
                 +${ticketProtectionFee.toFixed(2)}
               </span>
             </div>
             <p className='text-xs text-muted-foreground mb-3'>
-              Get a full refund if you can't attend due to illness, work
-              conflicts, or other covered reasons. Covers all tickets in this
-              order.
+              {t('checkout.ticketProtectionDescription')}
             </p>
             <FmCommonFormCheckbox
               id='ticketProtection'
@@ -485,7 +477,7 @@ export const TicketCheckoutForm = ({
               onCheckedChange={value =>
                 handleChange('ticketProtection', Boolean(value))
               }
-              label='Add Ticket Protection to my order'
+              label={t('checkout.addTicketProtection')}
             />
           </div>
         </div>
@@ -493,7 +485,7 @@ export const TicketCheckoutForm = ({
         <FmCommonCard variant='outline' className='space-y-4'>
           <div className='flex items-center gap-2 text-sm font-medium text-foreground'>
             <CheckCircle2 className='h-4 w-4 text-fm-gold' />
-            Order Summary
+            {t('checkout.orderSummary')}
           </div>
 
           <div className='space-y-3'>
@@ -519,7 +511,7 @@ export const TicketCheckoutForm = ({
 
           <div className='space-y-2 text-sm'>
             <div className='flex justify-between'>
-              <span className='text-muted-foreground'>Subtotal</span>
+              <span className='text-muted-foreground'>{t('checkout.subtotal')}</span>
               <span className='text-foreground'>
                 ${summary.subtotal.toFixed(2)}
               </span>
@@ -541,7 +533,7 @@ export const TicketCheckoutForm = ({
 
             {formData.ticketProtection && (
               <div className='flex justify-between text-xs text-muted-foreground'>
-                <span>Ticket Protection</span>
+                <span>{t('checkout.ticketProtection')}</span>
                 <span className='text-foreground'>
                   ${ticketProtectionFee.toFixed(2)}
                 </span>
@@ -552,7 +544,7 @@ export const TicketCheckoutForm = ({
           <Separator />
 
           <div className='flex justify-between items-center text-base font-canela'>
-            <span>Total</span>
+            <span>{t('checkout.total')}</span>
             <span className='text-fm-gold'>
               ${totalWithProtection.toFixed(2)}
             </span>
@@ -567,7 +559,7 @@ export const TicketCheckoutForm = ({
               onCheckedChange={value =>
                 handleChange('smsNotifications', Boolean(value))
               }
-              label='Sign up for SMS notifications from Force Majeure to stay up to date on latest events and gain access to pre-sale'
+              label={t('checkout.smsNotifications')}
             />
 
             <div className='flex items-start gap-2'>
@@ -583,7 +575,7 @@ export const TicketCheckoutForm = ({
                 htmlFor='agreeToTerms'
                 className='text-sm text-muted-foreground leading-tight'
               >
-                I agree to the{' '}
+                {t('checkout.agreeToTerms')}{' '}
                 <FmTextLink
                   onClick={(e: React.MouseEvent) => {
                     e.preventDefault();
@@ -591,7 +583,7 @@ export const TicketCheckoutForm = ({
                   }}
                   className='text-fm-gold hover:text-fm-gold/80'
                 >
-                  terms and conditions
+                  {t('checkout.termsAndConditions')}
                 </FmTextLink>
               </label>
             </div>
@@ -605,7 +597,7 @@ export const TicketCheckoutForm = ({
             isLoading={isProcessing}
             disabled={isProcessing || !stripeReady}
           >
-            Complete Purchase
+            {t('checkout.completePurchase')}
           </FmBigButton>
         </div>
       </form>

@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Clock } from 'lucide-react';
 import { toast } from 'sonner';
+import { useCheckoutTimer } from '@/contexts/CheckoutContext';
 
-const HOLD_DURATION_SECONDS = 540; // 9 minutes
 const CRITICAL_THRESHOLD = 120; // 2 minutes
 const DANGER_THRESHOLD = 10; // 10 seconds
 
@@ -15,9 +15,12 @@ export const CheckoutCountdown = ({
   onExpire,
   redirectUrl,
 }: CheckoutCountdownProps) => {
-  const [secondsRemaining, setSecondsRemaining] = useState(
-    HOLD_DURATION_SECONDS
-  );
+  const { checkoutDuration } = useCheckoutTimer();
+
+  // Use the duration from context (in seconds)
+  const initialDuration = useMemo(() => checkoutDuration, [checkoutDuration]);
+
+  const [secondsRemaining, setSecondsRemaining] = useState(initialDuration);
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | null = null;

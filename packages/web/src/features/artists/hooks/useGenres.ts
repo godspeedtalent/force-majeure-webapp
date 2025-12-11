@@ -5,6 +5,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import type { GenreTree } from '../types';
 import * as genreService from '../services/genreService';
@@ -119,6 +120,7 @@ export function useGenreSearch(query: string, limit: number = 20) {
  * Create a new genre
  */
 export function useCreateGenre() {
+  const { t } = useTranslation('toasts');
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -126,10 +128,10 @@ export function useCreateGenre() {
       genreService.createGenre(name, parentId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: genreKeys.all });
-      toast.success('Genre created successfully');
+      toast.success(t('genres.created'));
     },
     onError: (error: Error) => {
-      toast.error(`Failed to create genre: ${error.message}`);
+      toast.error(`${t('genres.createFailed')}: ${error.message}`);
     },
   });
 }
@@ -138,6 +140,7 @@ export function useCreateGenre() {
  * Update a genre
  */
 export function useUpdateGenre() {
+  const { t } = useTranslation('toasts');
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -151,10 +154,10 @@ export function useUpdateGenre() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: genreKeys.all });
       queryClient.setQueryData(genreKeys.detail(data.id), data);
-      toast.success('Genre updated successfully');
+      toast.success(t('genres.updated'));
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update genre: ${error.message}`);
+      toast.error(`${t('genres.updateFailed')}: ${error.message}`);
     },
   });
 }
@@ -163,16 +166,17 @@ export function useUpdateGenre() {
  * Delete a genre
  */
 export function useDeleteGenre() {
+  const { t } = useTranslation('toasts');
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (id: string) => genreService.deleteGenre(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: genreKeys.all });
-      toast.success('Genre deleted successfully');
+      toast.success(t('genres.deleted'));
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete genre: ${error.message}`);
+      toast.error(`${t('genres.deleteFailed')}: ${error.message}`);
     },
   });
 }

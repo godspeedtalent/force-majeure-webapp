@@ -1,6 +1,7 @@
 import { Instagram, Music, ArrowRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
@@ -10,6 +11,7 @@ import { Button } from '@/components/common/shadcn/button';
 export default function ComingSoon() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation('pages');
 
   useEffect(() => {
     // Check if fonts are already loaded
@@ -50,14 +52,14 @@ export default function ComingSoon() {
           <h1
             className={`font-display text-xl md:text-3xl mb-1.5 md:mb-2 ${fontsLoaded ? 'animate-slide-down-in' : ''}`}
           >
-            Coming Soon
+            {t('comingSoon.title')}
           </h1>
 
           <p
             className={`text-xs md:text-sm text-muted-foreground mb-3 md:mb-4 ${fontsLoaded ? 'animate-fade-in' : ''}`}
             style={{ animationDelay: fontsLoaded ? '0.2s' : '0s' }}
           >
-            Just hang tight.
+            {t('comingSoon.subtitle')}
           </p>
 
           {/* Looking for Artists Box - 20% smaller */}
@@ -69,10 +71,10 @@ export default function ComingSoon() {
               <Music className='h-3.5 w-3.5 text-fm-gold mt-0.5 flex-shrink-0' />
               <div className='text-left'>
                 <h2 className='font-canela text-xs md:text-sm text-fm-gold mb-0.5 md:mb-1'>
-                  Looking for 2026 Undercard Artists
+                  {t('comingSoon.lookingForArtists')}
                 </h2>
                 <p className='text-[10px] md:text-xs text-muted-foreground leading-snug'>
-                  We're looking for local artists to open up for our 2026 events. If you're a DJ, producer, or performer, we'd love to hear from you.
+                  {t('comingSoon.artistDescription')}
                 </p>
               </div>
             </div>
@@ -82,7 +84,7 @@ export default function ComingSoon() {
               onClick={() => navigate('/artists/register')}
               className='w-full border-fm-gold bg-transparent text-white hover:text-fm-gold hover:bg-fm-gold/10 text-[10px] md:text-xs py-1.5'
             >
-              Sign up as an artist
+              {t('comingSoon.signUpAsArtist')}
               <ArrowRight className='ml-1.5 h-2.5 w-2.5' />
             </Button>
           </div>
@@ -109,7 +111,7 @@ export default function ComingSoon() {
         {/* Loading fallback */}
         {!fontsLoaded && (
           <div className='absolute inset-0 flex items-center justify-center bg-background z-20'>
-            <div className='animate-pulse text-muted-foreground'>Loading...</div>
+            <div className='animate-pulse text-muted-foreground'>{t('comingSoon.loading')}</div>
           </div>
         )}
       </div>

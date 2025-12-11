@@ -2,19 +2,31 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import react from '@vitejs/plugin-react-swc';
-import { defineConfig } from 'vite';
+import { defineConfig, PluginOption } from 'vite';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Optionally load lovable-tagger if available (Lovable environment)
+let componentTagger: (() => PluginOption) | null = null;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  componentTagger = require('lovable-tagger').componentTagger;
+} catch {
+  // lovable-tagger not installed, skip it
+}
+
 // https://vitejs.dev/config/
-export default defineConfig(() => ({
+export default defineConfig(({ mode }) => ({
   envDir: path.resolve(__dirname, '../..'),
   server: {
     host: '::',
     port: 8080,
   },
-  plugins: [react()],
+  plugins: [
+    react(),
+    mode === 'development' && componentTagger && componentTagger(),
+  ].filter(Boolean),
   optimizeDeps: {
     exclude: ['src/integrations/supabase/client.ts'],
   },

@@ -122,7 +122,19 @@
     "notFound": "未找到",
     "unauthorized": "您没有访问权限。",
     "sessionExpired": "您的会话已过期，请重新登录。",
-    "serverError": "服务器错误，请稍后重试。"
+    "serverError": "服务器错误，请稍后重试。",
+    "somethingWentWrong": "出错了。",
+    "debugDetails": "应用程序发生错误。调试详情如下。",
+    "apologize": "对于给您带来的不便，我们深表歉意。我们的团队已收到通知，正在修复中。",
+    "errorDetails": "错误详情",
+    "stackTrace": "堆栈跟踪",
+    "copyStackTrace": "复制堆栈跟踪",
+    "copied": "已复制！",
+    "needHelp": "需要帮助？",
+    "contactUsMessage": "我们已通知开发人员。如需即时帮助，请通过Instagram联系我们",
+    "onInstagram": "。",
+    "reloadPage": "重新加载页面",
+    "goBack": "返回"
   },
   "empty": {
     "noResults": "未找到结果",
@@ -146,5 +158,190 @@
     "loading": "加载中",
     "selected": "已选择",
     "notSelected": "未选择"
+  },
+  "placeholders": {
+    "search": "搜索...",
+    "searchArtist": "搜索艺术家...",
+    "searchVenue": "搜索场馆...",
+    "searchGenre": "搜索风格...",
+    "searchEvent": "搜索活动...",
+    "searchDocumentation": "搜索文档...",
+    "searchLogs": "搜索日志...",
+    "searchAllColumns": "搜索所有列...",
+    "selectCity": "选择城市...",
+    "selectVenue": "选择场馆...",
+    "selectArtist": "选择艺术家...",
+    "selectHeadliner": "选择主演...",
+    "selectOwner": "选择所有者...",
+    "selectOrganization": "选择组织...",
+    "selectColumn": "选择列...",
+    "selectState": "选择省份",
+    "selectDate": "选择日期",
+    "selectTime": "选择时间",
+    "selectParentGenre": "选择父级风格",
+    "enterValue": "输入值...",
+    "enterNumber": "输入数字...",
+    "enterEmail": "输入邮箱...",
+    "enterUrl": "输入网址...",
+    "enterName": "输入名称",
+    "enterTitle": "输入标题",
+    "enterDescription": "输入描述...",
+    "presetName": "预设名称...",
+    "filterValue": "值...",
+    "exampleUrl": "https://example.com",
+    "exampleImageUrl": "https://example.com/image.jpg",
+    "exampleSpotifyUrl": "https://open.spotify.com/track/... 或 https://soundcloud.com/...",
+    "exampleSpotifyArtistUrl": "https://open.spotify.com/artist/...",
+    "exampleSoundcloudUrl": "https://soundcloud.com/your-profile",
+    "socialUsername": "@你的用户名",
+    "socialUsernameSimple": "用户名",
+    "socialPageName": "用户名或页面名称",
+    "channelHandle": "频道名称"
+  },
+  "forms": {
+    "events": {
+      "titlePlaceholder": "输入活动标题",
+      "subtitlePlaceholder": "输入活动副标题",
+      "searchHeadliner": "搜索主演艺术家...",
+      "searchUndercard": "搜索暖场艺术家...",
+      "selectEventDate": "选择活动日期",
+      "selectStartTime": "选择开始时间",
+      "selectEndTime": "选择结束时间"
+    },
+    "tickets": {
+      "namePlaceholder": "例如：普通入场券",
+      "descriptionPlaceholder": "例如：包含存衣服务和一杯饮料",
+      "quantityPlaceholder": "0",
+      "pricePlaceholder": "0"
+    },
+    "artists": {
+      "namePlaceholder": "输入艺术家名称",
+      "stageNamePlaceholder": "你的艺名或DJ名",
+      "bioPlaceholder": "艺术家简介...",
+      "bioLongPlaceholder": "告诉我们你的音乐旅程、风格和影响...",
+      "selectCity": "选择你的城市"
+    },
+    "venues": {
+      "namePlaceholder": "输入场馆名称",
+      "streetAddress": "街道地址",
+      "addressLine2": "公寓、套房、单元等（可选）",
+      "cityPlaceholder": "城市",
+      "statePlaceholder": "省份",
+      "zipPlaceholder": "邮编",
+      "capacityPlaceholder": "容量"
+    },
+    "genres": {
+      "namePlaceholder": "例如：Tech House"
+    },
+    "organizations": {
+      "namePlaceholder": "输入组织名称"
+    },
+    "checkout": {
+      "fullName": "全名",
+      "email": "电子邮箱",
+      "address": "街道地址",
+      "addressLine2": "公寓、套房、单元等（可选）",
+      "city": "城市",
+      "zipCode": "邮编"
+    },
+    "tracks": {
+      "urlLabel": "曲目链接",
+      "urlPlaceholder": "https://open.spotify.com/track/... 或 https://soundcloud.com/..."
+    }
+  },
+  "formLabels": {
+    "eventTitle": "活动标题",
+    "subtitle": "副标题",
+    "subtitleOptional": "副标题（可选）",
+    "headliner": "主演",
+    "date": "日期",
+    "mainEventImage": "活动主图",
+    "name": "名称",
+    "quantity": "数量",
+    "price": "价格",
+    "description": "描述",
+    "recordingType": "录制类型",
+    "track": "曲目",
+    "djSet": "DJ Set",
+    "afterHours": "After Hours"
+  },
+  "formActions": {
+    "addTicketTier": "添加票种",
+    "removeTicketTier": "移除此票种",
+    "linkTrack": "链接曲目",
+    "linking": "链接中...",
+    "saveFeeSettings": "保存费用设置",
+    "saveTicketingSettings": "保存票务设置",
+    "saveChanges": "保存更改",
+    "applyGrouping": "应用分组"
+  },
+  "formMessages": {
+    "tierHasOrders": "此票种有订单，无法删除",
+    "tierCannotBeDeleted": "此票种有关联订单，无法删除",
+    "overCapacity": "超出容量 {{count}} 张票",
+    "ticketsRemaining": "剩余 {{remaining}} 张票",
+    "allTicketsAllocated": "所有票已分配",
+    "editingAllEnvironments": "（编辑：所有环境）",
+    "fetchingTrackInfo": "获取曲目信息...",
+    "invalidTrackUrl": "请输入有效的 Spotify 或 SoundCloud 链接",
+    "couldNotFetchTrack": "无法获取曲目信息，请检查链接。",
+    "failedToFetchTrack": "获取曲目元数据失败",
+    "saveInfoForFasterCheckout": "保存您的信息以便下次更快结账",
+    "noFiltersAdded": "未添加筛选条件。点击"添加规则"开始。"
+  },
+  "dialogs": {
+    "leavingSite": "离开 Force Majeure",
+    "leavingSiteDescription": "您即将被重定向到外部网站。是否继续？",
+    "signInToContinue": "登录以继续",
+    "createAccount": "创建账户",
+    "securePayment": "安全支付"
+  },
+  "sections": {
+    "basicInformation": "基本信息",
+    "genreAndStyle": "风格与类型",
+    "socialLinks": "社交媒体",
+    "eventDetails": "活动详情",
+    "undercardArtists": "暖场艺术家",
+    "ticketTiers": "票种",
+    "eventInformation": "活动信息",
+    "callTimes": "入场时间",
+    "haveTickets": "已购票",
+    "privateGuests": "私人宾客",
+    "interested": "感兴趣"
+  },
+  "pageTitles": {
+    "orgDashboard": "组织控制台",
+    "orgDashboardSubtitle": "管理您的组织、员工和分析数据",
+    "eventCheckoutDemo": "活动购票演示",
+    "eventCheckoutDemoDescription": "测试完整的门票购买流程",
+    "developerDemos": "开发者演示",
+    "developerDemosDescription": "在受控环境中测试和探索应用功能",
+    "emailTemplateDemo": "邮件模板演示",
+    "createVenue": "创建场馆",
+    "createVenueDescription": "注册新场馆，填写容量和位置详情。",
+    "createEvent": "创建活动",
+    "createArtist": "创建艺术家",
+    "createOrganization": "创建组织",
+    "developerTools": "开发者工具",
+    "documentationViewer": "文档查看器"
+  },
+  "dataTypes": {
+    "text": "文本",
+    "number": "数字",
+    "email": "邮箱",
+    "date": "日期",
+    "boolean": "布尔值",
+    "url": "网址"
+  },
+  "table": {
+    "selectAll": "全选",
+    "actions": "操作"
+  },
+  "aria": {
+    "closeSearch": "关闭搜索",
+    "closeModal": "关闭弹窗",
+    "editTrack": "编辑曲目",
+    "removeTrack": "移除曲目",
+    "followOnInstagram": "在 Instagram 上关注 Force Majeure Events"
   }
 }

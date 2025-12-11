@@ -5,6 +5,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import type { GenreSelection } from '../types';
 import * as artistService from '../services/artistService';
@@ -89,6 +90,7 @@ export function useArtistSearch(query: string, genreFilter?: string, limit: numb
  * Add a genre to an artist
  */
 export function useAddGenreToArtist() {
+  const { t } = useTranslation('toasts');
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -108,10 +110,10 @@ export function useAddGenreToArtist() {
       queryClient.invalidateQueries({
         queryKey: ['artists', 'detail', variables.artistId],
       });
-      toast.success('Genre added to artist');
+      toast.success(t('artists.genreAdded'));
     },
     onError: (error: Error) => {
-      toast.error(`Failed to add genre: ${error.message}`);
+      toast.error(`${t('artists.genreAddFailed')}: ${error.message}`);
     },
   });
 }
@@ -120,6 +122,7 @@ export function useAddGenreToArtist() {
  * Remove a genre from an artist
  */
 export function useRemoveGenreFromArtist() {
+  const { t } = useTranslation('toasts');
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -132,10 +135,10 @@ export function useRemoveGenreFromArtist() {
       queryClient.invalidateQueries({
         queryKey: ['artists', 'detail', variables.artistId],
       });
-      toast.success('Genre removed from artist');
+      toast.success(t('artists.genreRemoved'));
     },
     onError: (error: Error) => {
-      toast.error(`Failed to remove genre: ${error.message}`);
+      toast.error(`${t('artists.genreRemoveFailed')}: ${error.message}`);
     },
   });
 }
@@ -144,6 +147,7 @@ export function useRemoveGenreFromArtist() {
  * Set primary genre for an artist
  */
 export function useSetPrimaryGenre() {
+  const { t } = useTranslation('toasts');
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -156,10 +160,10 @@ export function useSetPrimaryGenre() {
       queryClient.invalidateQueries({
         queryKey: ['artists', 'detail', variables.artistId],
       });
-      toast.success('Primary genre updated');
+      toast.success(t('artists.primaryGenreUpdated'));
     },
     onError: (error: Error) => {
-      toast.error(`Failed to set primary genre: ${error.message}`);
+      toast.error(`${t('artists.primaryGenreFailed')}: ${error.message}`);
     },
   });
 }
@@ -168,6 +172,7 @@ export function useSetPrimaryGenre() {
  * Update all genres for an artist (replaces existing)
  */
 export function useUpdateArtistGenres() {
+  const { t } = useTranslation('toasts');
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -185,10 +190,10 @@ export function useUpdateArtistGenres() {
       queryClient.invalidateQueries({
         queryKey: ['artists', 'detail', variables.artistId],
       });
-      toast.success('Artist genres updated successfully');
+      toast.success(t('artists.genresUpdated'));
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update genres: ${error.message}`);
+      toast.error(`${t('artists.genresUpdateFailed')}: ${error.message}`);
     },
   });
 }

@@ -19,7 +19,7 @@ export type {
   Genre,
   GenreRow,
   GenreWithParent,
-  GenreHierarchy
+  GenreHierarchyNode
 } from './types/features/artists';
 export {
   isArtistWithGenres,

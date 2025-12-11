@@ -8,11 +8,15 @@ import {
 import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
+// Default duration in seconds (10 minutes)
+const DEFAULT_CHECKOUT_DURATION = 600;
+
 interface CheckoutContextType {
   isCheckoutActive: boolean;
-  startCheckout: (redirectUrl?: string) => void;
+  startCheckout: (redirectUrl?: string, durationSeconds?: number) => void;
   endCheckout: () => void;
   redirectUrl?: string;
+  checkoutDuration: number; // in seconds
 }
 
 const CheckoutContext = createContext<CheckoutContextType | undefined>(
@@ -23,18 +27,25 @@ export const CheckoutProvider = ({ children }: { children: ReactNode }) => {
   const [isCheckoutActive, setIsCheckoutActive] = useState(false);
   const [redirectUrl, setRedirectUrl] = useState<string | undefined>();
   const [checkoutPath, setCheckoutPath] = useState<string | undefined>();
+  const [checkoutDuration, setCheckoutDuration] = useState(DEFAULT_CHECKOUT_DURATION);
   const location = useLocation();
 
-  const startCheckout = (url?: string) => {
+  const startCheckout = (url?: string, durationSeconds?: number) => {
     setIsCheckoutActive(true);
     setRedirectUrl(url);
     setCheckoutPath(location.pathname);
+    if (durationSeconds && durationSeconds > 0) {
+      setCheckoutDuration(durationSeconds);
+    } else {
+      setCheckoutDuration(DEFAULT_CHECKOUT_DURATION);
+    }
   };
 
   const endCheckout = () => {
     setIsCheckoutActive(false);
     setRedirectUrl(undefined);
     setCheckoutPath(undefined);
+    setCheckoutDuration(DEFAULT_CHECKOUT_DURATION);
     // Dismiss the timer toast
     toast.dismiss('fm-timer-toast');
   };
@@ -57,6 +68,7 @@ export const CheckoutProvider = ({ children }: { children: ReactNode }) => {
         startCheckout,
         endCheckout,
         redirectUrl,
+        checkoutDuration,
       }}
     >
       {children}

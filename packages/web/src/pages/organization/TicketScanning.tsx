@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Scan, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 
 import { Layout } from '@/components/layout/Layout';
@@ -41,9 +42,9 @@ interface ScanResult {
  * - Real-time validation
  */
 const TicketScanning = () => {
+  const { t } = useTranslation('pages');
   const { hasPermission, roles } = useUserPermissions();
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [ticketCode, setTicketCode] = useState('');
   const [scanning, setScanning] = useState(false);
   const [lastScan, setLastScan] = useState<ScanResult | null>(null);
@@ -66,10 +67,8 @@ const TicketScanning = () => {
 
   const handleScan = async () => {
     if (!ticketCode.trim()) {
-      toast({
-        title: 'Invalid Input',
-        description: 'Please enter a ticket code',
-        variant: 'destructive',
+      toast.error(t('ticketScanning.invalidInput'), {
+        description: t('ticketScanning.pleaseEnterTicketCode'),
       });
       return;
     }
@@ -111,8 +110,8 @@ const TicketScanning = () => {
       const result: ScanResult = {
         success: response.valid,
         message: response.valid
-          ? 'Ticket validated successfully!'
-          : response.error || 'Invalid ticket',
+          ? t('ticketScanning.ticketValidatedSuccess')
+          : response.error || t('ticketScanning.invalidTicket'),
         ticketInfo: response.ticket
           ? {
               eventName: response.ticket.event_name,
@@ -127,11 +126,15 @@ const TicketScanning = () => {
       setLastScan(result);
       setTicketCode('');
 
-      toast({
-        title: result.success ? 'Valid Ticket' : 'Invalid Ticket',
-        description: result.message,
-        variant: result.success ? 'default' : 'destructive',
-      });
+      if (result.success) {
+        toast.success(t('ticketScanning.validTicket'), {
+          description: result.message,
+        });
+      } else {
+        toast.error(t('ticketScanning.invalidTicket'), {
+          description: result.message,
+        });
+      }
 
       scanLogger.info('Scan completed', {
         success: result.success,
@@ -144,15 +147,13 @@ const TicketScanning = () => {
 
       const result: ScanResult = {
         success: false,
-        message: 'Failed to validate ticket. Please try again.',
+        message: t('ticketScanning.failedToValidate'),
       };
 
       setLastScan(result);
 
-      toast({
-        title: 'Validation Error',
-        description: 'Unable to validate ticket. Please try again.',
-        variant: 'destructive',
+      toast.error(t('ticketScanning.validationError'), {
+        description: t('ticketScanning.unableToValidate'),
       });
     } finally {
       setScanning(false);
@@ -162,9 +163,9 @@ const TicketScanning = () => {
   if (isLoading) {
     return (
       <Layout>
-        <FmCommonPageLayout title='Scan Tickets'>
+        <FmCommonPageLayout title={t('ticketScanning.title')}>
           <div className='flex items-center justify-center min-h-[400px]'>
-            <p className='text-muted-foreground'>Loading...</p>
+            <p className='text-muted-foreground'>{t('ticketScanning.loading')}</p>
           </div>
         </FmCommonPageLayout>
       </Layout>
@@ -178,8 +179,8 @@ const TicketScanning = () => {
   return (
     <Layout>
       <FmCommonPageLayout
-        title='Scan Tickets'
-        subtitle='Scan and validate event tickets'
+        title={t('ticketScanning.title')}
+        subtitle={t('ticketScanning.subtitle')}
       >
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-[20px]'>
         {/* Scanner Card */}
@@ -191,10 +192,10 @@ const TicketScanning = () => {
               </div>
               <div>
                 <h3 className='text-lg font-canela'>
-                  {formatHeader('scan ticket')}
+                  {formatHeader(t('ticketScanning.scanTicket'))}
                 </h3>
                 <p className='text-sm text-muted-foreground'>
-                  Enter ticket code or use camera to scan
+                  {t('ticketScanning.enterCodeOrCamera')}
                 </p>
               </div>
             </div>
@@ -202,13 +203,13 @@ const TicketScanning = () => {
             <div className='space-y-[20px]'>
               <div>
                 <Label htmlFor='ticketCode' className='text-xs uppercase'>
-                  TICKET CODE
+                  {t('ticketScanning.ticketCode')}
                 </Label>
                 <Input
                   id='ticketCode'
                   value={ticketCode}
                   onChange={e => setTicketCode(e.target.value)}
-                  placeholder='Enter ticket code or barcode'
+                  placeholder={t('ticketScanning.ticketCodePlaceholder')}
                   className='font-mono'
                   onKeyDown={e => {
                     if (e.key === 'Enter') {
@@ -224,7 +225,7 @@ const TicketScanning = () => {
                 disabled={scanning || !ticketCode.trim()}
                 className='w-full'
               >
-                {scanning ? 'Validating...' : 'Validate Ticket'}
+                {scanning ? t('ticketScanning.validating') : t('ticketScanning.validateTicket')}
               </FmCommonButton>
 
               <div className='text-center'>
@@ -235,7 +236,7 @@ const TicketScanning = () => {
                   disabled={scanning}
                 >
                   <Scan className='h-4 w-4 mr-2' />
-                  Use Camera Scanner
+                  {t('ticketScanning.useCameraScanner')}
                 </FmCommonButton>
               </div>
             </div>
@@ -246,7 +247,7 @@ const TicketScanning = () => {
         <FmCommonCard variant='outline' className='p-[20px]'>
           <div className='space-y-[20px]'>
             <h3 className='text-lg font-canela'>
-              {formatHeader('last scan result')}
+              {formatHeader(t('ticketScanning.lastScanResult'))}
             </h3>
 
             {lastScan ? (
@@ -270,7 +271,7 @@ const TicketScanning = () => {
                           lastScan.success ? 'text-green-500' : 'text-red-500'
                         }`}
                       >
-                        {lastScan.success ? 'Valid ticket' : 'Invalid ticket'}
+                        {lastScan.success ? t('ticketScanning.validTicket') : t('ticketScanning.invalidTicket')}
                       </p>
                       <p className='text-sm text-muted-foreground mt-1'>
                         {lastScan.message}
@@ -282,30 +283,30 @@ const TicketScanning = () => {
                 {lastScan.ticketInfo && (
                   <div className='space-y-[10px] p-[20px] bg-muted/30 rounded-none'>
                     <h4 className='text-sm font-medium text-foreground'>
-                      Ticket details.
+                      {t('ticketScanning.ticketDetails')}
                     </h4>
                     <div className='space-y-1 text-sm'>
                       <div className='flex justify-between'>
-                        <span className='text-muted-foreground'>Event:</span>
+                        <span className='text-muted-foreground'>{t('ticketScanning.event')}:</span>
                         <span className='text-foreground font-medium'>
                           {lastScan.ticketInfo.eventName}
                         </span>
                       </div>
                       <div className='flex justify-between'>
-                        <span className='text-muted-foreground'>Attendee:</span>
+                        <span className='text-muted-foreground'>{t('ticketScanning.attendee')}:</span>
                         <span className='text-foreground font-medium'>
                           {lastScan.ticketInfo.attendeeName}
                         </span>
                       </div>
                       <div className='flex justify-between'>
-                        <span className='text-muted-foreground'>Type:</span>
+                        <span className='text-muted-foreground'>{t('ticketScanning.type')}:</span>
                         <span className='text-foreground font-medium'>
                           {lastScan.ticketInfo.ticketType}
                         </span>
                       </div>
                       {lastScan.ticketInfo.venueName && (
                         <div className='flex justify-between'>
-                          <span className='text-muted-foreground'>Venue:</span>
+                          <span className='text-muted-foreground'>{t('ticketScanning.venue')}:</span>
                           <span className='text-foreground font-medium'>
                             {lastScan.ticketInfo.venueName}
                           </span>
@@ -313,7 +314,7 @@ const TicketScanning = () => {
                       )}
                       {lastScan.ticketInfo.checkedInAt && (
                         <div className='flex justify-between'>
-                          <span className='text-muted-foreground'>Checked In:</span>
+                          <span className='text-muted-foreground'>{t('ticketScanning.checkedIn')}:</span>
                           <span className='text-foreground font-medium'>
                             {lastScan.ticketInfo.checkedInAt}
                           </span>
@@ -327,7 +328,7 @@ const TicketScanning = () => {
               <div className='flex flex-col items-center justify-center py-12 text-center'>
                 <AlertCircle className='h-12 w-12 text-muted-foreground/50 mb-3' />
                 <p className='text-sm text-muted-foreground'>
-                  No scans yet. Enter a ticket code to begin.
+                  {t('ticketScanning.noScansYet')}
                 </p>
               </div>
             )}
@@ -338,11 +339,11 @@ const TicketScanning = () => {
       {/* Quick Stats */}
       <FmCommonCard variant='outline' className='p-[20px]'>
         <h3 className='text-lg font-canela mb-[20px]'>
-          {formatHeader("today's statistics")}
+          {formatHeader(t('ticketScanning.todayStatistics'))}
         </h3>
         {statsLoading ? (
           <div className='text-center py-8 text-muted-foreground'>
-            Loading statistics...
+            {t('ticketScanning.loadingStatistics')}
           </div>
         ) : (
           <div className='grid grid-cols-1 sm:grid-cols-3 gap-[20px]'>
@@ -350,19 +351,19 @@ const TicketScanning = () => {
               <p className='text-2xl font-canela text-fm-gold'>
                 {stats?.uniqueTicketsScanned || 0}
               </p>
-              <p className='text-sm text-muted-foreground'>Tickets scanned</p>
+              <p className='text-sm text-muted-foreground'>{t('ticketScanning.ticketsScanned')}</p>
             </div>
             <div className='text-center p-[20px] bg-muted/30 rounded-none'>
               <p className='text-2xl font-canela text-green-500'>
                 {stats?.successfulScans || 0}
               </p>
-              <p className='text-sm text-muted-foreground'>Valid</p>
+              <p className='text-sm text-muted-foreground'>{t('ticketScanning.valid')}</p>
             </div>
             <div className='text-center p-[20px] bg-muted/30 rounded-none'>
               <p className='text-2xl font-canela text-red-500'>
                 {(stats?.invalidScans || 0) + (stats?.duplicateScans || 0) + (stats?.rejectedScans || 0)}
               </p>
-              <p className='text-sm text-muted-foreground'>Invalid</p>
+              <p className='text-sm text-muted-foreground'>{t('ticketScanning.invalid')}</p>
             </div>
           </div>
         )}
@@ -381,10 +382,8 @@ const TicketScanning = () => {
           }}
           onClose={() => setShowCamera(false)}
           onError={(error) => {
-            toast({
-              title: 'Scanner Error',
+            toast.error(t('ticketScanning.scannerError'), {
               description: error,
-              variant: 'destructive',
             });
           }}
         />

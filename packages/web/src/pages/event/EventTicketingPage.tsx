@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, AlertCircle } from 'lucide-react';
 
 import { Layout } from '@/components/layout/Layout';
@@ -11,30 +12,36 @@ import { useEventDetails } from './hooks/useEventDetails';
 import { useTicketingGate, QueueEvent } from './hooks/useTicketingGate';
 import { useQueueConfiguration } from './hooks/useQueueConfiguration';
 import { useCheckoutTimer } from '@/contexts/CheckoutContext';
+import { useCheckoutTimerDuration } from '@/hooks/useAppSettings';
 import { formatTimeDisplay } from '@force-majeure/shared';
 import { logger } from '@force-majeure/shared';
 import { toast } from 'sonner';
 
 export const EventTicketingPage = () => {
+  const { t } = useTranslation('pages');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: event, isLoading, error } = useEventDetails(id);
   const { data: queueConfig, isLoading: isLoadingConfig } = useQueueConfiguration(id);
   const { startCheckout, endCheckout } = useCheckoutTimer();
+  // Fetch checkout timer duration (uses per-event config or global default)
+  const { data: checkoutDuration } = useCheckoutTimerDuration(id);
   const [hasEntered, setHasEntered] = useState(false);
 
   // Handle queue events (promotions, position changes)
-  const handleQueueEvent = (event: QueueEvent) => {
-    switch (event.type) {
+  const handleQueueEvent = (queueEvent: QueueEvent) => {
+    switch (queueEvent.type) {
       case 'promoted':
-        toast.success('Your turn!', {
-          description: 'You can now select your tickets.',
+        toast.success(t('ticketing.yourTurn'), {
+          description: t('ticketing.canSelectTickets'),
         });
         break;
       case 'position_changed':
-        if (event.data?.newPosition && event.data.newPosition <= 5) {
-          toast.info(`You're almost there!`, {
-            description: `Position ${event.data.newPosition} in queue.`,
+        if (queueEvent.data?.newPosition && queueEvent.data.newPosition <= 5) {
+          toast.info(t('ticketing.almostThere'), {
+            description: t('ticketing.positionInQueue', {
+              position: queueEvent.data.newPosition,
+            }),
           });
         }
         break;
@@ -83,12 +90,13 @@ export const EventTicketingPage = () => {
 
   // Start checkout timer when user gains access
   useEffect(() => {
-    if (canAccess && id) {
+    if (canAccess && id && checkoutDuration) {
       // Start the checkout timer with redirect to event details on expiration
-      startCheckout(`/event/${id}`);
-      logger.info('Checkout timer started', { eventId: id });
+      // Pass the duration in seconds from the configuration
+      startCheckout(`/event/${id}`, checkoutDuration);
+      logger.info('Checkout timer started', { eventId: id, durationSeconds: checkoutDuration });
     }
-  }, [canAccess, id, startCheckout]);
+  }, [canAccess, id, startCheckout, checkoutDuration]);
 
   // Clean up on unmount - exit the gate and end checkout
   useEffect(() => {
@@ -167,8 +175,8 @@ export const EventTicketingPage = () => {
             <div className='animate-spin rounded-none h-16 w-16 border-b-4 border-fm-gold' />
             <p className='text-foreground text-lg font-medium font-canela'>
               {isChecking
-                ? 'Checking availability...'
-                : 'Loading event details...'}
+                ? t('ticketing.checkingAvailability')
+                : t('ticketing.loadingEventDetails')}
             </p>
           </div>
         </div>
@@ -184,14 +192,14 @@ export const EventTicketingPage = () => {
           <div className='max-w-2xl mx-auto text-center space-y-6'>
             <AlertCircle className='h-16 w-16 text-fm-danger mx-auto' />
             <h1 className='text-3xl font-canela text-foreground'>
-              Event not found
+              {t('ticketing.eventNotFound')}
             </h1>
             <p className='text-muted-foreground'>
-              The event you're looking for doesn't exist or has been removed.
+              {t('ticketing.eventNotFoundDescription')}
             </p>
             <FmCommonButton onClick={() => navigate('/')} variant='default'>
               <ArrowLeft className='mr-2 h-4 w-4' />
-              Back to Events
+              {t('ticketing.backToEvents')}
             </FmCommonButton>
           </div>
         </div>
@@ -212,7 +220,7 @@ export const EventTicketingPage = () => {
             icon={ArrowLeft}
             className='mb-[20px]'
           >
-            Back to Event
+            {t('ticketing.backToEvent')}
           </FmCommonButton>
 
           {/* Queue waiting view */}
@@ -243,7 +251,7 @@ export const EventTicketingPage = () => {
             icon={ArrowLeft}
             className='mb-[20px]'
           >
-            Back to Event
+            {t('ticketing.backToEvent')}
           </FmCommonButton>
 
           {/* Event Header */}

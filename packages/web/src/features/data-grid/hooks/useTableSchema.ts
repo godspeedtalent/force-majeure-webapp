@@ -6,6 +6,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@force-majeure/shared';
 import { logger } from '@force-majeure/shared';
 import { toast } from 'sonner';
@@ -161,6 +162,7 @@ export function useTableSchema(options: UseTableSchemaOptions) {
     manualOverrides = [],
   } = options;
 
+  const { t } = useTranslation('toasts');
   const queryClient = useQueryClient();
 
   // Fetch table metadata
@@ -192,10 +194,10 @@ export function useTableSchema(options: UseTableSchemaOptions) {
     mutationFn: () => refreshTableMetadata(tableName),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['table-metadata', tableName] });
-      toast.success('Schema refreshed successfully');
+      toast.success(t('admin.schemaRefreshed'));
     },
     onError: (error: Error) => {
-      toast.error(`Failed to refresh schema: ${error.message}`);
+      toast.error(`${t('admin.schemaRefreshFailed')}: ${error.message}`);
     },
   });
 
@@ -277,6 +279,7 @@ export function useTableSchema(options: UseTableSchemaOptions) {
  * Hook for refreshing all table metadata
  */
 export function useRefreshAllTables() {
+  const { t } = useTranslation('toasts');
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -294,10 +297,10 @@ export function useRefreshAllTables() {
       queryClient.invalidateQueries({ queryKey: ['table-metadata'] });
       queryClient.invalidateQueries({ queryKey: ['column-customizations'] });
 
-      toast.success(`Refreshed tables successfully`);
+      toast.success(t('admin.tablesRefreshed'));
     },
     onError: (error: Error) => {
-      toast.error(`Failed to refresh tables: ${error.message}`);
+      toast.error(`${t('admin.tablesRefreshFailed')}: ${error.message}`);
     },
   });
 }
@@ -329,6 +332,7 @@ export function useTableList() {
  * Hook for saving column customization
  */
 export function useSaveColumnCustomization(tableName: string) {
+  const { t } = useTranslation('toasts');
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -351,10 +355,10 @@ export function useSaveColumnCustomization(tableName: string) {
       queryClient.invalidateQueries({
         queryKey: ['column-customizations', tableName],
       });
-      toast.success('Column customization saved');
+      toast.success(t('admin.columnsSaved'));
     },
     onError: (error: Error) => {
-      toast.error(`Failed to save customization: ${error.message}`);
+      toast.error(`${t('admin.columnSaveFailed')}: ${error.message}`);
     },
   });
 }

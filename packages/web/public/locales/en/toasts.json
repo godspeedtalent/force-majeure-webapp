@@ -49,7 +49,8 @@
     "paymentError": "Payment failed. Please try again.",
     "promoApplied": "Promo code applied!",
     "promoInvalid": "Invalid promo code",
-    "promoExpired": "This promo code has expired"
+    "promoExpired": "This promo code has expired",
+    "checkoutFailed": "Checkout Failed"
   },
   "tickets": {
     "downloaded": "Ticket downloaded",
@@ -59,7 +60,22 @@
   },
   "events": {
     "addedToCalendar": "Event added to calendar",
-    "linkCopied": "Event link copied to clipboard"
+    "linkCopied": "Event link copied to clipboard",
+    "deleted": "Event deleted successfully",
+    "published": "Event published successfully!",
+    "updated": "Event updated successfully",
+    "artistsUpdated": "Artists updated successfully",
+    "uxSettingsUpdated": "UX Display settings updated successfully",
+    "interestMarked": "Marked {{eventTitle}} as Interested!",
+    "interestFailed": "Failed to mark event as interested. Please try again.",
+    "interestRemoved": "Removed interest in {{eventTitle}}",
+    "removeInterestFailed": "Failed to remove interest. Please try again.",
+    "heroImageSaved": "Hero image saved",
+    "overviewUpdated": "Overview updated successfully",
+    "created": "{{eventTitle}} has been successfully created!",
+    "createFailed": "Failed to create event",
+    "updateFailed": "Failed to update event",
+    "validationError": "Validation Error"
   },
   "validation": {
     "stageNameRequired": "Please enter your stage name",
@@ -72,5 +88,47 @@
   "settings": {
     "languageChanged": "Language changed",
     "preferencesUpdated": "Preferences updated"
+  },
+  "venues": {
+    "updated": "Venue updated successfully",
+    "deleted": "Venue deleted successfully",
+    "autoSaved": "Changes saved automatically"
+  },
+  "artists": {
+    "updated": "Artist updated successfully",
+    "genreAdded": "Genre added to artist",
+    "genreAddFailed": "Failed to add genre",
+    "genreRemoved": "Genre removed from artist",
+    "genreRemoveFailed": "Failed to remove genre",
+    "primaryGenreUpdated": "Primary genre updated",
+    "primaryGenreFailed": "Failed to set primary genre",
+    "genresUpdated": "Artist genres updated successfully",
+    "genresUpdateFailed": "Failed to update genres",
+    "imageUpdated": "Artist image updated",
+    "imageUpdateFailed": "Failed to update artist image",
+    "registrationFailed": "Failed to submit registration. Please try again.",
+    "unexpectedError": "An unexpected error occurred. Please try again."
+  },
+  "genres": {
+    "created": "Genre created successfully",
+    "createFailed": "Failed to create genre",
+    "updated": "Genre updated successfully",
+    "updateFailed": "Failed to update genre",
+    "deleted": "Genre deleted successfully",
+    "deleteFailed": "Failed to delete genre"
+  },
+  "admin": {
+    "userUpdated": "User updated",
+    "userUpdateFailed": "Failed to update user",
+    "userDeleted": "User deleted",
+    "userDeleteFailed": "Failed to delete user",
+    "userLoadFailed": "Failed to load user",
+    "schemaRefreshed": "Schema refreshed successfully",
+    "schemaRefreshFailed": "Failed to refresh schema",
+    "tablesRefreshed": "Refreshed tables successfully",
+    "tablesRefreshFailed": "Failed to refresh tables",
+    "columnsSaved": "Column customization saved",
+    "columnSaveFailed": "Failed to save customization",
+    "deleteEventsFailed": "Failed to delete event(s)"
   }
 }

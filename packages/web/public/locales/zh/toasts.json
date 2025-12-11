@@ -49,7 +49,8 @@
     "paymentError": "支付失败，请重试。",
     "promoApplied": "优惠码已应用！",
     "promoInvalid": "无效的优惠码",
-    "promoExpired": "此优惠码已过期"
+    "promoExpired": "此优惠码已过期",
+    "checkoutFailed": "结账失败"
   },
   "tickets": {
     "downloaded": "门票已下载",
@@ -59,7 +60,22 @@
   },
   "events": {
     "addedToCalendar": "活动已添加到日历",
-    "linkCopied": "活动链接已复制"
+    "linkCopied": "活动链接已复制",
+    "deleted": "活动删除成功",
+    "published": "活动发布成功！",
+    "updated": "活动更新成功",
+    "artistsUpdated": "艺术家更新成功",
+    "uxSettingsUpdated": "UX显示设置更新成功",
+    "interestMarked": "已标记{{eventTitle}}为感兴趣！",
+    "interestFailed": "标记活动兴趣失败，请重试。",
+    "interestRemoved": "已取消对{{eventTitle}}的兴趣",
+    "removeInterestFailed": "取消兴趣失败，请重试。",
+    "heroImageSaved": "主图已保存",
+    "overviewUpdated": "概览更新成功",
+    "created": "{{eventTitle}}创建成功！",
+    "createFailed": "创建活动失败",
+    "updateFailed": "更新活动失败",
+    "validationError": "验证错误"
   },
   "validation": {
     "stageNameRequired": "请输入您的艺名",
@@ -72,5 +88,47 @@
   "settings": {
     "languageChanged": "语言已更改",
     "preferencesUpdated": "偏好设置已更新"
+  },
+  "venues": {
+    "updated": "场馆更新成功",
+    "deleted": "场馆删除成功",
+    "autoSaved": "更改已自动保存"
+  },
+  "artists": {
+    "updated": "艺术家更新成功",
+    "genreAdded": "已为艺术家添加风格",
+    "genreAddFailed": "添加风格失败",
+    "genreRemoved": "已从艺术家移除风格",
+    "genreRemoveFailed": "移除风格失败",
+    "primaryGenreUpdated": "主要风格已更新",
+    "primaryGenreFailed": "设置主要风格失败",
+    "genresUpdated": "艺术家风格更新成功",
+    "genresUpdateFailed": "更新风格失败",
+    "imageUpdated": "艺术家图片已更新",
+    "imageUpdateFailed": "更新艺术家图片失败",
+    "registrationFailed": "提交注册失败，请重试。",
+    "unexpectedError": "发生意外错误，请重试。"
+  },
+  "genres": {
+    "created": "风格创建成功",
+    "createFailed": "创建风格失败",
+    "updated": "风格更新成功",
+    "updateFailed": "更新风格失败",
+    "deleted": "风格删除成功",
+    "deleteFailed": "删除风格失败"
+  },
+  "admin": {
+    "userUpdated": "用户已更新",
+    "userUpdateFailed": "更新用户失败",
+    "userDeleted": "用户已删除",
+    "userDeleteFailed": "删除用户失败",
+    "userLoadFailed": "加载用户失败",
+    "schemaRefreshed": "架构刷新成功",
+    "schemaRefreshFailed": "刷新架构失败",
+    "tablesRefreshed": "表刷新成功",
+    "tablesRefreshFailed": "刷新表失败",
+    "columnsSaved": "列自定义已保存",
+    "columnSaveFailed": "保存自定义失败",
+    "deleteEventsFailed": "删除活动失败"
   }
 }

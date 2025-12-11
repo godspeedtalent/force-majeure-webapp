@@ -122,7 +122,19 @@
     "notFound": "No encontrado",
     "unauthorized": "No tienes permiso para acceder a esto.",
     "sessionExpired": "Tu sesión ha expirado. Por favor, inicia sesión de nuevo.",
-    "serverError": "Error del servidor. Por favor, inténtalo más tarde."
+    "serverError": "Error del servidor. Por favor, inténtalo más tarde.",
+    "somethingWentWrong": "Algo salió mal.",
+    "debugDetails": "Ocurrió un error en la aplicación. Los detalles se muestran abajo para depuración.",
+    "apologize": "Pedimos disculpas por las molestias. Nuestro equipo ha sido notificado y está trabajando en una solución.",
+    "errorDetails": "Detalles del Error",
+    "stackTrace": "Traza de Pila",
+    "copyStackTrace": "Copiar Traza de Pila",
+    "copied": "¡Copiado!",
+    "needHelp": "¿Necesitas ayuda?",
+    "contactUsMessage": "Hemos notificado a nuestros desarrolladores. Si necesitas ayuda inmediata, contáctanos en",
+    "onInstagram": "en Instagram.",
+    "reloadPage": "Recargar Página",
+    "goBack": "Volver"
   },
   "empty": {
     "noResults": "No se encontraron resultados",
@@ -146,5 +158,191 @@
     "loading": "Cargando",
     "selected": "Seleccionado",
     "notSelected": "No seleccionado"
+  },
+  "placeholders": {
+    "search": "Buscar...",
+    "searchArtist": "Buscar artista...",
+    "searchVenue": "Buscar lugar...",
+    "searchGenre": "Buscar géneros...",
+    "searchEvent": "Buscar eventos...",
+    "searchDocumentation": "Buscar documentación...",
+    "searchLogs": "Buscar registros...",
+    "searchAllColumns": "Buscar en todas las columnas...",
+    "selectCity": "Seleccionar ciudad...",
+    "selectVenue": "Seleccionar lugar...",
+    "selectArtist": "Seleccionar artista...",
+    "selectHeadliner": "Seleccionar artista principal...",
+    "selectOwner": "Seleccionar propietario...",
+    "selectOrganization": "Seleccionar organización...",
+    "selectColumn": "Seleccionar columna...",
+    "selectState": "Seleccionar estado",
+    "selectDate": "Seleccionar fecha",
+    "selectTime": "Seleccionar hora",
+    "selectParentGenre": "Seleccionar género padre",
+    "enterValue": "Ingresar valor...",
+    "enterNumber": "Ingresar número...",
+    "enterEmail": "Ingresar correo...",
+    "enterUrl": "Ingresar URL...",
+    "enterName": "Ingresar nombre",
+    "enterTitle": "Ingresar título",
+    "enterDescription": "Ingresar descripción...",
+    "presetName": "Nombre del preset...",
+    "filterValue": "Valor...",
+    "exampleUrl": "https://ejemplo.com",
+    "exampleImageUrl": "https://ejemplo.com/imagen.jpg",
+    "exampleSpotifyUrl": "https://open.spotify.com/track/... o https://soundcloud.com/...",
+    "exampleSpotifyArtistUrl": "https://open.spotify.com/artist/...",
+    "exampleSoundcloudUrl": "https://soundcloud.com/tu-perfil",
+    "socialUsername": "@tunombredeusuario",
+    "socialUsernameSimple": "nombre de usuario",
+    "socialPageName": "nombre de usuario o página",
+    "channelHandle": "nombre del canal"
+  },
+  "forms": {
+    "events": {
+      "titlePlaceholder": "Ingresar título del evento",
+      "subtitlePlaceholder": "Ingresar subtítulo del evento",
+      "searchHeadliner": "Buscar artista principal...",
+      "searchUndercard": "Buscar artista de apertura...",
+      "selectEventDate": "Seleccionar fecha del evento",
+      "selectStartTime": "Seleccionar hora de inicio",
+      "selectEndTime": "Seleccionar hora de fin"
+    },
+    "tickets": {
+      "namePlaceholder": "ej., Entrada General",
+      "descriptionPlaceholder": "ej., Incluye guardarropa y una bebida",
+      "quantityPlaceholder": "0",
+      "pricePlaceholder": "0",
+      "hideUntilSoldOut": "Ocultar hasta que el tipo anterior se agote"
+    },
+    "artists": {
+      "namePlaceholder": "Ingresar nombre del artista",
+      "stageNamePlaceholder": "Tu nombre artístico o de DJ",
+      "bioPlaceholder": "Biografía del artista...",
+      "bioLongPlaceholder": "Cuéntanos sobre tu trayectoria musical, estilo e influencias...",
+      "selectCity": "Selecciona tu ciudad"
+    },
+    "venues": {
+      "namePlaceholder": "Ingresar nombre del lugar",
+      "streetAddress": "Dirección",
+      "addressLine2": "Apto, suite, unidad, etc. (opcional)",
+      "cityPlaceholder": "Ciudad",
+      "statePlaceholder": "Estado",
+      "zipPlaceholder": "Código Postal",
+      "capacityPlaceholder": "Capacidad"
+    },
+    "genres": {
+      "namePlaceholder": "ej., Tech House"
+    },
+    "organizations": {
+      "namePlaceholder": "Ingresar nombre de la organización"
+    },
+    "checkout": {
+      "fullName": "Nombre completo",
+      "email": "Correo electrónico",
+      "address": "Dirección",
+      "addressLine2": "Apto, Suite, Unidad, etc. (opcional)",
+      "city": "Ciudad",
+      "zipCode": "Código Postal"
+    },
+    "tracks": {
+      "urlLabel": "URL de la Pista",
+      "urlPlaceholder": "https://open.spotify.com/track/... o https://soundcloud.com/..."
+    }
+  },
+  "formLabels": {
+    "eventTitle": "Título del Evento",
+    "subtitle": "Subtítulo",
+    "subtitleOptional": "Subtítulo (Opcional)",
+    "headliner": "Artista Principal",
+    "date": "Fecha",
+    "mainEventImage": "Imagen Principal del Evento",
+    "name": "Nombre",
+    "quantity": "Cantidad",
+    "price": "Precio",
+    "description": "Descripción",
+    "recordingType": "Tipo de Grabación",
+    "track": "Pista",
+    "djSet": "Set de DJ",
+    "afterHours": "After Hours"
+  },
+  "formActions": {
+    "addTicketTier": "Añadir Tipo de Entrada",
+    "removeTicketTier": "Eliminar este tipo",
+    "linkTrack": "Vincular Pista",
+    "linking": "Vinculando...",
+    "saveFeeSettings": "Guardar Configuración de Cargos",
+    "saveTicketingSettings": "Guardar Configuración de Entradas",
+    "saveChanges": "Guardar Cambios",
+    "applyGrouping": "Aplicar Agrupación"
+  },
+  "formMessages": {
+    "tierHasOrders": "Este tipo tiene pedidos y no puede ser eliminado",
+    "tierCannotBeDeleted": "Este tipo no puede ser eliminado porque tiene pedidos asociados",
+    "overCapacity": "Excede la capacidad por {{count}} entradas",
+    "ticketsRemaining": "{{remaining}} entradas restantes",
+    "allTicketsAllocated": "Todas las entradas asignadas",
+    "editingAllEnvironments": "(Editando: todos los entornos)",
+    "fetchingTrackInfo": "Obteniendo información de la pista...",
+    "invalidTrackUrl": "Por favor ingresa una URL válida de Spotify o SoundCloud",
+    "couldNotFetchTrack": "No se pudo obtener la información de la pista. Verifica la URL.",
+    "failedToFetchTrack": "Error al obtener metadatos de la pista",
+    "saveInfoForFasterCheckout": "Guarda tu información para un pago más rápido la próxima vez",
+    "noFiltersAdded": "No hay filtros añadidos. Haz clic en \"Añadir Regla\" para comenzar."
+  },
+  "dialogs": {
+    "leavingSite": "Saliendo de Force Majeure",
+    "leavingSiteDescription": "Estás a punto de ser redirigido a un sitio externo. ¿Continuar?",
+    "signInToContinue": "Inicia sesión para continuar",
+    "createAccount": "Crear una Cuenta",
+    "securePayment": "Pago Seguro"
+  },
+  "sections": {
+    "basicInformation": "Información Básica",
+    "genreAndStyle": "Género y Estilo",
+    "socialLinks": "Redes Sociales",
+    "eventDetails": "Detalles del Evento",
+    "undercardArtists": "Artistas de Apertura",
+    "ticketTiers": "Tipos de Entradas",
+    "eventInformation": "Información del Evento",
+    "callTimes": "Horarios de llamada",
+    "haveTickets": "Tienen Entradas",
+    "privateGuests": "Invitados Privados",
+    "interested": "Interesados"
+  },
+  "pageTitles": {
+    "orgDashboard": "Panel de Organización",
+    "orgDashboardSubtitle": "Administra tu organización, personal y analíticas",
+    "eventCheckoutDemo": "Demo de Compra de Entradas",
+    "eventCheckoutDemoDescription": "Prueba el flujo completo de compra de entradas",
+    "developerDemos": "Demos para Desarrolladores",
+    "developerDemosDescription": "Prueba y explora funciones de la aplicación en un entorno controlado",
+    "emailTemplateDemo": "Demo de Plantilla de Correo",
+    "createVenue": "Crear Lugar",
+    "createVenueDescription": "Registrar un nuevo lugar con detalles de capacidad y ubicación.",
+    "createEvent": "Crear Evento",
+    "createArtist": "Crear Artista",
+    "createOrganization": "Crear Organización",
+    "developerTools": "Herramientas de Desarrollador",
+    "documentationViewer": "Visor de Documentación"
+  },
+  "dataTypes": {
+    "text": "Texto",
+    "number": "Número",
+    "email": "Correo",
+    "date": "Fecha",
+    "boolean": "Booleano",
+    "url": "URL"
+  },
+  "table": {
+    "selectAll": "Seleccionar todo",
+    "actions": "Acciones"
+  },
+  "aria": {
+    "closeSearch": "Cerrar búsqueda",
+    "closeModal": "Cerrar modal",
+    "editTrack": "Editar pista",
+    "removeTrack": "Eliminar pista",
+    "followOnInstagram": "Seguir a Force Majeure Events en Instagram"
   }
 }

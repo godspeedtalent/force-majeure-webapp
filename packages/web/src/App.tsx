@@ -142,7 +142,237 @@ const AppRoutes = () => {
         }
       />
 
-      {/* Coming Soon Mode - Show only coming soon page for other routes */}
+      {/* ==================== ADMIN/DEVELOPER ROUTES ==================== */}
+      {/* These routes are ALWAYS accessible regardless of coming_soon_mode */}
+      {/* They are protected by role-based access control instead */}
+
+      {/* Developer Routes - Protected by developer/admin roles */}
+      <Route
+        path='/developer'
+        element={
+          <DemoProtectedRoute>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <DeveloperIndex />
+            </Suspense>
+          </DemoProtectedRoute>
+        }
+      />
+      <Route
+        path='/developer/database'
+        element={
+          <DemoProtectedRoute>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <DeveloperDatabase />
+            </Suspense>
+          </DemoProtectedRoute>
+        }
+      />
+      <Route
+        path='/developer/documentation'
+        element={
+          <DemoProtectedRoute>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <DeveloperDocumentation />
+            </Suspense>
+          </DemoProtectedRoute>
+        }
+      />
+      <Route
+        path='/developer/ticket-flow'
+        element={
+          <DemoProtectedRoute>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <TicketFlowTests />
+            </Suspense>
+          </DemoProtectedRoute>
+        }
+      />
+
+      {/* Demo Routes - Protected by developer/admin roles */}
+      <Route
+        path='/developer/demo'
+        element={
+          <DemoProtectedRoute>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <DemoIndex />
+            </Suspense>
+          </DemoProtectedRoute>
+        }
+      />
+      <Route
+        path='/developer/demo/event-checkout'
+        element={
+          <DemoProtectedRoute>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <EventCheckout />
+            </Suspense>
+          </DemoProtectedRoute>
+        }
+      />
+      <Route
+        path='/developer/demo/event-checkout-confirmation'
+        element={
+          <DemoProtectedRoute>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <EventCheckoutConfirmation />
+            </Suspense>
+          </DemoProtectedRoute>
+        }
+      />
+      <Route
+        path='/developer/demo/email-template'
+        element={
+          <DemoProtectedRoute>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <EmailTemplateDemo />
+            </Suspense>
+          </DemoProtectedRoute>
+        }
+      />
+
+      {/* Testing Routes - Protected by developer/admin roles */}
+      <Route
+        path='/testing'
+        element={
+          <DemoProtectedRoute>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <TestingIndex />
+            </Suspense>
+          </DemoProtectedRoute>
+        }
+      />
+      <Route
+        path='/testing/checkout-flow'
+        element={
+          <DemoProtectedRoute>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <CheckoutFlowTests />
+            </Suspense>
+          </DemoProtectedRoute>
+        }
+      />
+
+      {/* Admin Routes - Protected by admin role only */}
+      <Route
+        path='/admin/statistics'
+        element={
+          <ProtectedRoute role={ROLES.ADMIN}>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <Statistics />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/admin/controls'
+        element={
+          <ProtectedRoute role={ROLES.ADMIN}>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <AdminControls />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/admin/organizations/:id'
+        element={
+          <ProtectedRoute role={ROLES.ADMIN}>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <OrganizationDetails />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/admin/users/:id'
+        element={
+          <ProtectedRoute role={ROLES.ADMIN}>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <UserDetails />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/admin/logs'
+        element={
+          <ProtectedRoute role={ROLES.ADMIN}>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <ActivityLogs />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Create Routes - Protected by admin/developer roles */}
+      <Route
+        path='/events/create'
+        element={
+          <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <DeveloperCreateEventPage />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/artists/create'
+        element={
+          <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <DeveloperCreateArtistPage />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/venues/create'
+        element={
+          <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <DeveloperCreateVenuePage />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/organizations/create'
+        element={
+          <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <DeveloperCreateOrganizationPage />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Venue Management Routes - Protected by admin/developer roles */}
+      <Route
+        path='/venues/:id/manage'
+        element={
+          <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <VenueManagement />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Artist Management Routes - Protected by admin/developer roles */}
+      <Route
+        path='/artists/:id/manage'
+        element={
+          <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <ArtistManagement />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* ==================== END ADMIN/DEVELOPER ROUTES ==================== */}
+
+      {/* Coming Soon Mode - Show only coming soon page for public routes */}
       {comingSoonMode ? (
         <>
           <Route path='/' element={<ComingSoon />} />
@@ -150,13 +380,13 @@ const AppRoutes = () => {
         </>
       ) : (
         <>
-          {/* Normal App Routes */}
+          {/* Normal App Routes - Only accessible when NOT in coming soon mode */}
           <Route path='/' element={<Index />} />
           <Route path='/event/:id' element={<EventDetails />} />
           <Route path='/event/:id/tickets' element={<EventTicketing />} />
           <Route path='/event/:id/manage' element={<EventManagement />} />
 
-          {/* Venue Routes */}
+          {/* Venue Routes (public) */}
           <Route
             path='/venues/:id'
             element={
@@ -165,34 +395,14 @@ const AppRoutes = () => {
               </Suspense>
             }
           />
-          <Route
-            path='/venues/:id/manage'
-            element={
-              <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <VenueManagement />
-                </Suspense>
-              </ProtectedRoute>
-            }
-          />
 
-          {/* Artist Routes */}
+          {/* Artist Routes (public) */}
           <Route
             path='/artists/:id'
             element={
               <Suspense fallback={<LazyLoadFallback />}>
                 <ArtistDetails />
               </Suspense>
-            }
-          />
-          <Route
-            path='/artists/:id/manage'
-            element={
-              <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <ArtistManagement />
-                </Suspense>
-              </ProtectedRoute>
             }
           />
 
@@ -213,205 +423,6 @@ const AppRoutes = () => {
           {/* Checkout Routes */}
           <Route path='/checkout/success' element={<CheckoutSuccess />} />
           <Route path='/checkout/cancel' element={<CheckoutCancel />} />
-
-          {/* Developer Routes - Protected by developer/admin roles */}
-          <Route
-            path='/developer'
-            element={
-              <DemoProtectedRoute>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <DeveloperIndex />
-                </Suspense>
-              </DemoProtectedRoute>
-            }
-          />
-          <Route
-            path='/developer/database'
-            element={
-              <DemoProtectedRoute>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <DeveloperDatabase />
-                </Suspense>
-              </DemoProtectedRoute>
-            }
-          />
-          <Route
-            path='/developer/documentation'
-            element={
-              <DemoProtectedRoute>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <DeveloperDocumentation />
-                </Suspense>
-              </DemoProtectedRoute>
-            }
-          />
-          <Route
-            path='/developer/ticket-flow'
-            element={
-              <DemoProtectedRoute>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <TicketFlowTests />
-                </Suspense>
-              </DemoProtectedRoute>
-            }
-          />
-
-          {/* Create Routes - Protected by admin/developer roles */}
-          <Route
-            path='/events/create'
-            element={
-              <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <DeveloperCreateEventPage />
-                </Suspense>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path='/artists/create'
-            element={
-              <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <DeveloperCreateArtistPage />
-                </Suspense>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path='/venues/create'
-            element={
-              <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <DeveloperCreateVenuePage />
-                </Suspense>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path='/organizations/create'
-            element={
-              <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <DeveloperCreateOrganizationPage />
-                </Suspense>
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Demo Routes - Now under /developer/demo */}
-          <Route
-            path='/developer/demo'
-            element={
-              <DemoProtectedRoute>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <DemoIndex />
-                </Suspense>
-              </DemoProtectedRoute>
-            }
-          />
-          <Route
-            path='/developer/demo/event-checkout'
-            element={
-              <DemoProtectedRoute>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <EventCheckout />
-                </Suspense>
-              </DemoProtectedRoute>
-            }
-          />
-          <Route
-            path='/developer/demo/event-checkout-confirmation'
-            element={
-              <DemoProtectedRoute>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <EventCheckoutConfirmation />
-                </Suspense>
-              </DemoProtectedRoute>
-            }
-          />
-          <Route
-            path='/developer/demo/email-template'
-            element={
-              <DemoProtectedRoute>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <EmailTemplateDemo />
-                </Suspense>
-              </DemoProtectedRoute>
-            }
-          />
-
-          <Route
-            path='/testing'
-            element={
-              <DemoProtectedRoute>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <TestingIndex />
-                </Suspense>
-              </DemoProtectedRoute>
-            }
-          />
-          <Route
-            path='/testing/checkout-flow'
-            element={
-              <DemoProtectedRoute>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <CheckoutFlowTests />
-                </Suspense>
-              </DemoProtectedRoute>
-            }
-          />
-
-          {/* Admin Routes - Protected by admin role only */}
-          <Route
-            path='/admin/statistics'
-            element={
-              <ProtectedRoute role={ROLES.ADMIN}>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <Statistics />
-                </Suspense>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path='/admin/controls'
-            element={
-              <ProtectedRoute role={ROLES.ADMIN}>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <AdminControls />
-                </Suspense>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path='/admin/organizations/:id'
-            element={
-              <ProtectedRoute role={ROLES.ADMIN}>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <OrganizationDetails />
-                </Suspense>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path='/admin/users/:id'
-            element={
-              <ProtectedRoute role={ROLES.ADMIN}>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <UserDetails />
-                </Suspense>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path='/admin/logs'
-            element={
-              <ProtectedRoute role={ROLES.ADMIN}>
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <ActivityLogs />
-                </Suspense>
-              </ProtectedRoute>
-            }
-          />
 
           {/* Organization Routes */}
           <Route path='/organization/tools' element={<OrganizationTools />} />
