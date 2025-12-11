@@ -3,6 +3,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 
+// NativeWind styles
+import './global.css';
+
 // Initialize Supabase
 import './src/lib/supabase';
 

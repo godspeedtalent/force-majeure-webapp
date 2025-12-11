@@ -6,13 +6,26 @@
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@shared/*": ["../shared/src/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@shared/*": [
+        "../shared/src/*"
+      ]
     }
   },
-  "include": ["src", "App.tsx", "index.ts"],
-  "references": [
-    { "path": "../shared" }
+  "include": [
+    "src",
+    "App.tsx",
+    "index.ts",
+    "nativewind-env.d.ts"
   ],
-  "exclude": ["node_modules"]
+  "references": [
+    {
+      "path": "../shared"
+    }
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
