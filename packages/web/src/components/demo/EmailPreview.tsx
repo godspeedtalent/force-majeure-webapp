@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/common/shadcn/card';
 import { Button } from '@/components/common/shadcn/button';
 import { Input } from '@/components/common/shadcn/input';
@@ -22,6 +23,7 @@ import { formatHeader } from '@force-majeure/shared';
  */
 
 export const EmailPreview = () => {
+  const { t } = useTranslation('common');
   const { sendTestEmail, isSending } = useSendTestEmail();
   const [testEmail, setTestEmail] = useState('');
   const [showPreview, setShowPreview] = useState(false);
@@ -75,19 +77,19 @@ export const EmailPreview = () => {
   const handleCopyHTML = () => {
     const html = generateOrderReceiptEmailHTML(sampleData);
     navigator.clipboard.writeText(html);
-    toast.success('HTML copied to clipboard');
+    toast.success(t('emailPreview.htmlCopied'));
   };
 
   const handleSendTest = async () => {
     if (!testEmail) {
-      toast.error('Please enter an email address');
+      toast.error(t('emailPreview.enterEmailAddress'));
       return;
     }
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(testEmail)) {
-      toast.error('Please enter a valid email address');
+      toast.error(t('emailPreview.invalidEmail'));
       return;
     }
 
@@ -103,20 +105,20 @@ export const EmailPreview = () => {
         <div className='flex items-center gap-[10px] mb-[20px]'>
           <Mail className='h-5 w-5 text-fm-gold' />
           <h3 className='text-lg font-canela'>
-            {formatHeader('Email Template Preview')}
+            {formatHeader(t('emailPreview.title'))}
           </h3>
         </div>
 
         <div className='space-y-4'>
           <div>
             <Label htmlFor='test-email' className='text-xs uppercase'>
-              Test Email Address
+              {t('emailPreview.testEmailAddress')}
             </Label>
             <div className='flex gap-[10px] mt-2'>
               <Input
                 id='test-email'
                 type='email'
-                placeholder='your.email@example.com'
+                placeholder={t('placeholders.email')}
                 value={testEmail}
                 onChange={e => setTestEmail(e.target.value)}
                 className='flex-1'
@@ -127,11 +129,11 @@ export const EmailPreview = () => {
                 className='bg-fm-gold hover:bg-fm-gold/90 text-black'
               >
                 <Send className='h-4 w-4 mr-2' />
-                {isSending ? 'Sending...' : 'Send Test'}
+                {isSending ? t('emailPreview.sending') : t('emailPreview.sendTest')}
               </Button>
             </div>
             <p className='text-xs text-muted-foreground mt-2'>
-              Send a test email to see how it looks in your inbox
+              {t('emailPreview.sendTestHint')}
             </p>
           </div>
 
@@ -144,7 +146,7 @@ export const EmailPreview = () => {
               className='flex-1'
             >
               <Eye className='h-4 w-4 mr-2' />
-              {showPreview ? 'Hide Preview' : 'Show Preview'}
+              {showPreview ? t('emailPreview.hidePreview') : t('emailPreview.showPreview')}
             </Button>
             <Button
               onClick={handleCopyHTML}
@@ -152,7 +154,7 @@ export const EmailPreview = () => {
               className='flex-1'
             >
               <Copy className='h-4 w-4 mr-2' />
-              Copy HTML
+              {t('emailPreview.copyHtml')}
             </Button>
           </div>
         </div>
@@ -162,11 +164,11 @@ export const EmailPreview = () => {
       {showPreview && (
         <Card className='p-[20px]'>
           <h4 className='text-md font-canela mb-[20px]'>
-            {formatHeader('Email Preview')}
+            {formatHeader(t('emailPreview.previewTitle'))}
           </h4>
           <div className='border border-border rounded-none overflow-hidden bg-white'>
             <iframe
-              title='Email Preview'
+              title={t('emailPreview.previewTitle')}
               srcDoc={htmlContent}
               style={{
                 width: '100%',
@@ -176,8 +178,7 @@ export const EmailPreview = () => {
             />
           </div>
           <p className='text-xs text-muted-foreground mt-4'>
-            Note: Preview may differ slightly from actual email clients. Always
-            test in real email clients before sending to users.
+            {t('emailPreview.previewNote')}
           </p>
         </Card>
       )}
@@ -185,61 +186,57 @@ export const EmailPreview = () => {
       {/* Sample Data Display */}
       <Card className='p-[20px]'>
         <h4 className='text-md font-canela mb-[20px]'>
-          {formatHeader('Sample Data')}
+          {formatHeader(t('emailPreview.sampleData'))}
         </h4>
         <div className='bg-muted/50 rounded-none p-[20px] font-mono text-xs overflow-auto max-h-96'>
           <pre>{JSON.stringify(sampleData, null, 2)}</pre>
         </div>
         <p className='text-xs text-muted-foreground mt-4'>
-          This is the data structure used to generate the email. Modify it in
-          the code to test different scenarios.
+          {t('emailPreview.sampleDataNote')}
         </p>
       </Card>
 
       {/* Implementation Notes */}
       <Card className='p-[20px] bg-muted/20 border-fm-gold/30'>
         <h4 className='text-md font-canela mb-[20px]'>
-          {formatHeader('Implementation Notes')}
+          {formatHeader(t('emailPreview.implementationNotes'))}
         </h4>
         <div className='space-y-2 text-sm'>
           <p>
-            <strong>Email Service Setup:</strong> To send emails in production,
-            you need to:
+            <strong>{t('emailPreview.emailServiceSetup')}</strong> {t('emailPreview.emailServiceSetupDescription')}
           </p>
           <ol className='list-decimal list-inside space-y-1 ml-4 text-muted-foreground'>
             <li>
-              Create a Supabase Edge Function named{' '}
+              {t('emailPreview.step1EdgeFunction')}{' '}
               <code className='text-xs bg-muted px-1 py-0.5 rounded'>
                 send-email
               </code>
             </li>
             <li>
-              Configure an email provider (SendGrid, Resend, AWS SES, etc.)
+              {t('emailPreview.step2Provider')}
             </li>
-            <li>Add provider credentials to Supabase secrets</li>
-            <li>Deploy the edge function</li>
+            <li>{t('emailPreview.step3Credentials')}</li>
+            <li>{t('emailPreview.step4Deploy')}</li>
           </ol>
 
           <Separator className='my-4' />
 
           <p>
-            <strong>PDF Tickets:</strong> PDF generation is currently stubbed.
-            To implement:
+            <strong>{t('emailPreview.pdfTickets')}</strong> {t('emailPreview.pdfTicketsDescription')}
           </p>
           <ol className='list-decimal list-inside space-y-1 ml-4 text-muted-foreground'>
             <li>
-              Choose a PDF generation approach (client-side, server-side, or
-              third-party)
+              {t('emailPreview.pdfStep1')}
             </li>
             <li>
-              Implement the{' '}
+              {t('emailPreview.pdfStep2')}{' '}
               <code className='text-xs bg-muted px-1 py-0.5 rounded'>
                 TicketPDFService
               </code>{' '}
-              methods
+              {t('emailPreview.pdfStep2Methods')}
             </li>
-            <li>Add QR code generation for ticket validation</li>
-            <li>Design and implement the PDF ticket template</li>
+            <li>{t('emailPreview.pdfStep3')}</li>
+            <li>{t('emailPreview.pdfStep4')}</li>
           </ol>
         </div>
       </Card>

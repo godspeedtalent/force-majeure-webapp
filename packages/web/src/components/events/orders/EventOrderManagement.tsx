@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FmConfigurableDataGrid } from '@/features/data-grid';
 import { useEventOrders, type EventOrder } from './hooks/useEventOrders';
 import { Badge } from '@/components/common/shadcn/badge';
@@ -14,13 +15,14 @@ interface EventOrderManagementProps {
 }
 
 export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => {
+  const { t } = useTranslation('common');
   const { orders, isLoading, cancelOrder, refundOrder } = useEventOrders(eventId);
   const [selectedOrder, setSelectedOrder] = useState<EventOrder | null>(null);
 
   const columns: DataGridColumn<EventOrder>[] = [
     {
       key: 'id',
-      label: 'Order ID',
+      label: t('orderManagement.orderId'),
       sortable: true,
       filterable: true,
       render: (order) => (
@@ -31,7 +33,7 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
     },
     {
       key: 'profile',
-      label: 'Customer',
+      label: t('orderManagement.customer'),
       sortable: true,
       filterable: true,
       render: (order) => (
@@ -55,7 +57,7 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
     },
     {
       key: 'status',
-      label: 'Status',
+      label: t('labels.status'),
       sortable: true,
       filterable: true,
       render: (order) => {
@@ -67,14 +69,14 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
         };
         return (
           <Badge className={statusColors[order.status] || 'bg-gray-500/10'}>
-            {order.status}
+            {t(`orderStatus.${order.status}`)}
           </Badge>
         );
       },
     },
     {
       key: 'total_cents',
-      label: 'Total',
+      label: t('checkout.total'),
       sortable: true,
       filterable: true,
       type: 'number',
@@ -86,7 +88,7 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
     },
     DataGridColumns.json<EventOrder>({
       key: 'fee_breakdown',
-      label: 'Fee Breakdown',
+      label: t('orderManagement.feeBreakdown'),
       formatValue: (key, value) => {
         // Format cents values as currency
         if (key.endsWith('_cents') && typeof value === 'number') {
@@ -97,7 +99,7 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
     }),
     {
       key: 'created_at',
-      label: 'Date',
+      label: t('labels.date'),
       sortable: true,
       filterable: true,
       type: 'date',
@@ -105,7 +107,7 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
     },
     {
       key: 'items',
-      label: 'Tickets',
+      label: t('orderManagement.tickets'),
       sortable: false,
       filterable: false,
       render: (order) => {
@@ -119,30 +121,30 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
 
   const actions: DataGridAction<EventOrder>[] = [
     {
-      label: 'View Details',
+      label: t('orderManagement.viewDetails'),
       icon: <Eye className="w-4 h-4" />,
       onClick: (order) => setSelectedOrder(order),
     },
     {
-      label: 'Cancel Order',
+      label: t('orderManagement.cancelOrder'),
       icon: <XCircle className="w-4 h-4" />,
       onClick: (order) => {
-        if (confirm('Are you sure you want to cancel this order?')) {
+        if (confirm(t('orderManagement.confirmCancel'))) {
           cancelOrder(order.id);
         }
       },
     },
     {
-      label: 'Refund Order',
+      label: t('orderManagement.refundOrder'),
       icon: <RefreshCw className="w-4 h-4" />,
       onClick: (order) => {
-        if (confirm('Are you sure you want to refund this order?')) {
+        if (confirm(t('orderManagement.confirmRefund'))) {
           refundOrder(order.id);
         }
       },
     },
     {
-      label: 'Resend Confirmation',
+      label: t('orderManagement.resendConfirmation'),
       icon: <Mail className="w-4 h-4" />,
       onClick: (order) => {
         // TODO: Implement email resend
@@ -154,9 +156,9 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-2xl font-bold">Order Management</h2>
+        <h2 className="text-2xl font-bold">{t('orderManagement.title')}</h2>
         <p className="text-muted-foreground">
-          View and manage ticket orders for this event
+          {t('orderManagement.description')}
         </p>
       </div>
 

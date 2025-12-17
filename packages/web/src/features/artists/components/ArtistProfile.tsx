@@ -5,6 +5,7 @@
  * Used in both the artist profile page (/artists/{artist-id}) and the registration preview.
  */
 
+import { useTranslation } from 'react-i18next';
 import { Music2, ExternalLink, Globe } from 'lucide-react';
 import { cn } from '@force-majeure/shared';
 
@@ -47,6 +48,7 @@ export const ArtistProfile = ({
   className,
   isPreview = false,
 }: ArtistProfileProps) => {
+  const { t } = useTranslation('common');
   const hasImage = artist.imageUrl && artist.imageUrl.trim() !== '';
   const hasBio = artist.bio && artist.bio.trim() !== '';
   const hasGenre = artist.primaryGenre && artist.primaryGenre.trim() !== '';
@@ -67,7 +69,7 @@ export const ArtistProfile = ({
             compact ? 'text-4xl' : 'text-6xl md:text-7xl'
           )}
         >
-          {artist.name || (isPreview ? 'Your artist name' : 'Artist Name')}
+          {artist.name || (isPreview ? t('artistProfile.yourArtistName') : t('artistProfile.artistName'))}
         </h1>
         {hasGenre && (
           <div className='flex items-center gap-[10px]'>
@@ -104,7 +106,7 @@ export const ArtistProfile = ({
           <div className='text-center space-y-[10px]'>
             <Music2 className='h-16 w-16 text-fm-gold/30 mx-auto' />
             <p className='font-canela text-muted-foreground text-sm uppercase tracking-wider'>
-              {isPreview ? 'Upload your photo' : 'Artist Photo'}
+              {isPreview ? t('artistProfile.uploadYourPhoto') : t('artistProfile.artistPhoto')}
             </p>
           </div>
         </div>
@@ -112,7 +114,7 @@ export const ArtistProfile = ({
 
       {/* Bio */}
       <div className='space-y-[10px]'>
-        <h2 className='font-canela text-2xl'>About</h2>
+        <h2 className='font-canela text-2xl'>{t('artistProfile.about')}</h2>
         <div className='bg-black/60 backdrop-blur-sm border border-white/20 rounded-none p-[20px]'>
           <p
             className={cn(
@@ -124,8 +126,8 @@ export const ArtistProfile = ({
             {hasBio
               ? artist.bio
               : isPreview
-              ? 'Your bio will appear here. Tell your story, describe your sound, and share what makes you unique.'
-              : 'No bio available.'}
+              ? t('artistProfile.bioPreviewPlaceholder')
+              : t('artistProfile.noBioAvailable')}
           </p>
         </div>
       </div>
@@ -133,7 +135,7 @@ export const ArtistProfile = ({
       {/* Genre Tags */}
       {artist.genres && artist.genres.length > 0 && (
         <div className='space-y-[10px]'>
-          <h3 className='font-canela text-xl'>Genres</h3>
+          <h3 className='font-canela text-xl'>{t('artistProfile.genres')}</h3>
           <div className='flex flex-wrap gap-[10px]'>
             {artist.genres.map((genre, index) => (
               <div
@@ -152,7 +154,7 @@ export const ArtistProfile = ({
       {/* Website Link */}
       {artist.website && (
         <div className='space-y-[10px]'>
-          <h3 className='font-canela text-xl'>Connect</h3>
+          <h3 className='font-canela text-xl'>{t('artistProfile.connect')}</h3>
           <div className='flex flex-wrap gap-[10px]'>
             <a
             href={artist.website ?? undefined}
@@ -161,7 +163,7 @@ export const ArtistProfile = ({
               className='flex items-center gap-[10px] px-[15px] py-[10px] bg-black/60 backdrop-blur-sm border border-white/20 rounded-none hover:border-fm-gold hover:bg-fm-gold/10 transition-all duration-300'
             >
               <Globe className='h-4 w-4' />
-              <span className='font-canela text-sm'>Website</span>
+              <span className='font-canela text-sm'>{t('artistProfile.website')}</span>
               <ExternalLink className='h-3 w-3 text-muted-foreground' />
             </a>
           </div>

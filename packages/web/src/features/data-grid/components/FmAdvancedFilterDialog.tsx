@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -80,6 +81,7 @@ export function FmAdvancedFilterDialog<T = any>({
   onDeletePreset,
   onClear,
 }: FmAdvancedFilterDialogProps<T>) {
+  const { t } = useTranslation('common');
   const [filterGroup, setFilterGroup] = useState<FilterGroup>(
     currentFilter || { logic: 'AND', rules: [] }
   );
@@ -138,16 +140,16 @@ export function FmAdvancedFilterDialog<T = any>({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='max-w-3xl max-h-[80vh] overflow-y-auto'>
         <DialogHeader>
-          <DialogTitle>Advanced Filters</DialogTitle>
+          <DialogTitle>{t('filters.advancedFilters')}</DialogTitle>
           <DialogDescription>
-            Build complex filters with multiple conditions
+            {t('filters.buildComplexFilters')}
           </DialogDescription>
         </DialogHeader>
 
         <div className='space-y-4 py-4'>
           {/* Logic selector */}
           <div className='flex items-center gap-2'>
-            <span className='text-sm text-muted-foreground'>Match</span>
+            <span className='text-sm text-muted-foreground'>{t('filters.match')}</span>
             <Select
               value={filterGroup.logic}
               onValueChange={(value: FilterLogic) =>
@@ -158,12 +160,12 @@ export function FmAdvancedFilterDialog<T = any>({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value='AND'>ALL</SelectItem>
-                <SelectItem value='OR'>ANY</SelectItem>
+                <SelectItem value='AND'>{t('filters.all')}</SelectItem>
+                <SelectItem value='OR'>{t('filters.any')}</SelectItem>
               </SelectContent>
             </Select>
             <span className='text-sm text-muted-foreground'>
-              of the following rules:
+              {t('filters.ofFollowingRules')}
             </span>
           </div>
 
@@ -171,7 +173,7 @@ export function FmAdvancedFilterDialog<T = any>({
           <div className='space-y-2'>
             {filterGroup.rules.length === 0 ? (
               <div className='text-center py-8 text-muted-foreground'>
-                No filters added. Click "Add Rule" to start.
+                {t('formMessages.noFiltersAdded')}
               </div>
             ) : (
               filterGroup.rules.map((rule, index) => (
@@ -190,7 +192,7 @@ export function FmAdvancedFilterDialog<T = any>({
           {/* Add Rule Button */}
           <Button variant='outline' size='sm' onClick={addRule} className='w-full'>
             <Plus className='h-4 w-4 mr-2' />
-            Add Rule
+            {t('filters.addRule')}
           </Button>
 
           {/* Presets */}
@@ -211,13 +213,13 @@ export function FmAdvancedFilterDialog<T = any>({
 
         <DialogFooter className='gap-2'>
           <Button variant='outline' onClick={handleClear}>
-            Clear All
+            {t('filters.clearAll')}
           </Button>
           <Button variant='outline' onClick={() => onOpenChange(false)}>
-            Cancel
+            {t('buttons.cancel')}
           </Button>
           <Button onClick={handleApply} disabled={filterGroup.rules.length === 0}>
-            Apply Filters
+            {t('filters.applyFilters')}
           </Button>
         </DialogFooter>
       </DialogContent>

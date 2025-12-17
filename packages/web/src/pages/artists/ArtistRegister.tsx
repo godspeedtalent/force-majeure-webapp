@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { ArtistRegistrationLayout } from '@/components/layout/ArtistRegistrationLayout';
 import { supabase } from '@force-majeure/shared';
@@ -16,6 +17,8 @@ import { ArtistRegisterDesktop } from './components/ArtistRegisterDesktop';
 import { ArtistRegisterMobile } from './components/ArtistRegisterMobile';
 
 const ArtistRegister = () => {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user } = useAuth();
@@ -67,53 +70,53 @@ const ArtistRegister = () => {
     switch (step) {
       case 0: // Basic Details
         if (!formData.stageName.trim()) {
-          toast.error('Please enter your stage name');
+          toast.error(tToast('validation.stageNameRequired'));
           return false;
         }
         if (!formData.bio.trim()) {
-          toast.error('Please tell us about yourself');
+          toast.error(tToast('validation.bioRequired'));
           return false;
         }
         if (!formData.cityId) {
-          toast.error('Please select your city');
+          toast.error(tToast('validation.cityRequired'));
           return false;
         }
         if (formData.genres.length === 0) {
-          toast.error('Please select at least one genre');
+          toast.error(tToast('validation.genreRequired'));
           return false;
         }
         return true;
 
       case 1: // Social
         if (!formData.profileImageUrl.trim()) {
-          toast.error('Please provide your profile image URL');
+          toast.error(tToast('validation.profileImageRequired'));
           return false;
         }
         if (!formData.instagramHandle.trim()) {
-          toast.error('Instagram handle is required');
+          toast.error(tToast('validation.instagramRequired'));
           return false;
         }
         if (!formData.soundcloudUrl.trim() && !formData.spotifyUrl.trim()) {
-          toast.error('Please provide either a SoundCloud or Spotify URL');
+          toast.error(tToast('validation.musicPlatformRequired'));
           return false;
         }
         return true;
 
       case 2: // Music
         if (formData.tracks.length === 0) {
-          toast.error('Please add at least one recording');
+          toast.error(tToast('validation.recordingRequired'));
           return false;
         }
         const hasDjSet = formData.tracks.some(t => t.recordingType === 'dj_set');
         if (!hasDjSet) {
-          toast.error('Please add at least one DJ Set recording');
+          toast.error(tToast('validation.djSetRequired'));
           return false;
         }
         return true;
 
       case 3: // Terms
         if (!formData.agreeToTerms) {
-          toast.error('You must agree to the terms and conditions');
+          toast.error(tToast('validation.termsRequired'));
           return false;
         }
         return true;
@@ -185,7 +188,7 @@ const ArtistRegister = () => {
           message: 'Error submitting artist registration',
           details: error,
         });
-        toast.error('Failed to submit registration. Please try again.');
+        toast.error(tToast('artists.registrationFailed'));
         return;
       }
 
@@ -216,7 +219,7 @@ const ArtistRegister = () => {
       }
 
       logger.info('Artist registration submitted successfully', { data, eventId });
-      toast.success("Registration submitted successfully! We'll be in touch soon.");
+      toast.success(tToast('artists.registrationSuccess'));
 
       setTimeout(() => {
         navigate('/artists/signup');
@@ -228,7 +231,7 @@ const ArtistRegister = () => {
         message: 'Unexpected error during artist registration',
         details: error,
       });
-      toast.error('An unexpected error occurred. Please try again.');
+      toast.error(tToast('artists.unexpectedError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -245,10 +248,10 @@ const ArtistRegister = () => {
   );
 
   const stepTitles = [
-    'Basic Details',
-    'Social & Images',
-    'Music',
-    'Terms & Conditions',
+    t('artistRegistration.basicDetails'),
+    t('artistRegistration.socialImages'),
+    t('artistRegistration.music'),
+    t('artistRegistration.termsConditions'),
   ];
 
   // Shared props for both desktop and mobile layouts

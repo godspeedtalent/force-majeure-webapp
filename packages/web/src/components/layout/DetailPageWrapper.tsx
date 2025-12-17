@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/common/shadcn/button';
 import { Layout } from '@/components/layout/Layout';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
@@ -39,15 +40,15 @@ export interface DetailPageWrapperProps<T> {
   entityName: string;
   /** Callback for back navigation */
   onBack?: () => void;
-  /** Custom back button label (defaults to "Go Back") */
+  /** Custom back button label (uses i18n default if not provided) */
   backButtonLabel?: string;
-  /** Custom not found message (defaults to "{entityName} not found.") */
+  /** Custom not found message (uses i18n default if not provided) */
   notFoundMessage?: string;
-  /** Custom error message (defaults to "Failed to load {entityName}") */
+  /** Custom error message (uses i18n default if not provided) */
   errorMessage?: string;
   /** Whether to show the not found button (defaults to true) */
   showNotFoundButton?: boolean;
-  /** Custom not found button label (defaults to "Go Home") */
+  /** Custom not found button label (uses i18n default if not provided) */
   notFoundButtonLabel?: string;
   /** Custom not found button action (defaults to navigate home) */
   onNotFoundAction?: () => void;
@@ -69,17 +70,21 @@ export function DetailPageWrapper<T>({
   error,
   entityName,
   onBack,
-  backButtonLabel = 'Go Back',
+  backButtonLabel,
   notFoundMessage,
   errorMessage,
   showNotFoundButton = true,
-  notFoundButtonLabel = 'Go Home',
+  notFoundButtonLabel,
   onNotFoundAction,
   children,
   useLayout = true,
   layoutProps,
 }: DetailPageWrapperProps<T>) {
   const navigate = useNavigate();
+  const { t } = useTranslation('common');
+
+  const resolvedBackButtonLabel = backButtonLabel || t('detailPageWrapper.goBack');
+  const resolvedNotFoundButtonLabel = notFoundButtonLabel || t('detailPageWrapper.goHome');
 
   const handleBack = onBack || (() => navigate(-1));
   const handleNotFound = onNotFoundAction || (() => navigate('/'));
@@ -100,10 +105,10 @@ export function DetailPageWrapper<T>({
     const errorContent = (
       <div className='text-center py-12'>
         <p className='text-muted-foreground mb-4'>
-          {errorMessage || `Failed to load ${entityName.toLowerCase()}`}
+          {errorMessage || t('detailPageWrapper.failedToLoad', { entity: entityName.toLowerCase() })}
         </p>
         <Button onClick={handleBack} variant='outline' className='border-white/20 hover:bg-white/10'>
-          {backButtonLabel}
+          {resolvedBackButtonLabel}
         </Button>
       </div>
     );
@@ -116,11 +121,11 @@ export function DetailPageWrapper<T>({
     const notFoundContent = (
       <div className='text-center py-12'>
         <p className='text-muted-foreground mb-4'>
-          {notFoundMessage || `${entityName} not found.`}
+          {notFoundMessage || t('detailPageWrapper.notFound', { entity: entityName })}
         </p>
         {showNotFoundButton && (
           <Button onClick={handleNotFound} variant='outline' className='border-white/20 hover:bg-white/10'>
-            {notFoundButtonLabel}
+            {resolvedNotFoundButtonLabel}
           </Button>
         )}
       </div>

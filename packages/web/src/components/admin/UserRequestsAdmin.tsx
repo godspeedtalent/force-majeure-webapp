@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link2, Trash2, Unlink, Clock, CheckCircle2, XCircle, User, Calendar, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
@@ -51,11 +52,7 @@ interface UserRequest {
   };
 }
 
-const REQUEST_TYPE_LABELS: Record<string, string> = {
-  link_artist: 'Link Artist',
-  delete_data: 'Delete Data',
-  unlink_artist: 'Unlink Artist',
-};
+// Request type labels are dynamically generated using translation keys
 
 const REQUEST_TYPE_ICONS: Record<string, React.ReactNode> = {
   link_artist: <Link2 className='h-4 w-4' />,
@@ -64,8 +61,17 @@ const REQUEST_TYPE_ICONS: Record<string, React.ReactNode> = {
 };
 
 export function UserRequestsAdmin() {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const queryClient = useQueryClient();
   const { user: currentUser } = useAuth();
+
+  // Request type labels using translations
+  const REQUEST_TYPE_LABELS: Record<string, string> = {
+    link_artist: t('admin.requests.linkArtist'),
+    delete_data: t('admin.requests.deleteData'),
+    unlink_artist: t('admin.requests.unlinkArtist'),
+  };
 
   // Modal states
   const [selectedRequest, setSelectedRequest] = useState<UserRequest | null>(null);
@@ -142,14 +148,14 @@ export function UserRequestsAdmin() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('Request approved successfully');
+      toast.success(tToast('admin.requestApproved'));
       queryClient.invalidateQueries({ queryKey: ['admin-user-requests'] });
       setShowApproveModal(false);
       setSelectedRequest(null);
     },
     onError: (error) => {
       logger.error('Failed to approve request', { error });
-      toast.error('Failed to approve request');
+      toast.error(tToast('admin.requestApproveFailed'));
     },
   });
 
@@ -172,7 +178,7 @@ export function UserRequestsAdmin() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('Request denied');
+      toast.success(tToast('admin.requestDenied'));
       queryClient.invalidateQueries({ queryKey: ['admin-user-requests'] });
       setShowDenyModal(false);
       setSelectedRequest(null);
@@ -180,7 +186,7 @@ export function UserRequestsAdmin() {
     },
     onError: (error) => {
       logger.error('Failed to deny request', { error });
-      toast.error('Failed to deny request');
+      toast.error(tToast('admin.requestDenyFailed'));
     },
   });
 
@@ -259,7 +265,7 @@ export function UserRequestsAdmin() {
                     </div>
                   )}
                   <span className='text-sm'>
-                    Artist: <strong>{request.artist.name}</strong>
+                    {t('labels.artist')}: <strong>{request.artist.name}</strong>
                   </span>
                 </div>
               )}
@@ -268,11 +274,11 @@ export function UserRequestsAdmin() {
               <div className='flex items-center gap-4 text-xs text-muted-foreground mt-2'>
                 <div className='flex items-center gap-1'>
                   <Calendar className='h-3 w-3' />
-                  <span>Requested: {formatDate(request.created_at)}</span>
+                  <span>{t('admin.requests.requested')}: {formatDate(request.created_at)}</span>
                 </div>
                 {request.resolved_at && (
                   <div className='flex items-center gap-1'>
-                    <span>Resolved: {formatDate(request.resolved_at)}</span>
+                    <span>{t('admin.requests.resolved')}: {formatDate(request.resolved_at)}</span>
                   </div>
                 )}
               </div>
@@ -280,7 +286,7 @@ export function UserRequestsAdmin() {
               {/* Resolver Info */}
               {request.resolver && (
                 <div className='text-xs text-muted-foreground'>
-                  By: {request.resolver.display_name || request.resolver.email}
+                  {t('admin.requests.by')}: {request.resolver.display_name || request.resolver.email}
                 </div>
               )}
 
@@ -288,7 +294,7 @@ export function UserRequestsAdmin() {
               {request.denial_reason && (
                 <div className='mt-2 p-2 bg-fm-danger/10 border border-fm-danger/20 rounded-none'>
                   <p className='text-xs text-fm-danger'>
-                    <strong>Denial Reason:</strong> {request.denial_reason}
+                    <strong>{t('admin.requests.denialReason')}:</strong> {request.denial_reason}
                   </p>
                 </div>
               )}
@@ -305,7 +311,7 @@ export function UserRequestsAdmin() {
                 onClick={() => handleApproveClick(request)}
               >
                 <CheckCircle2 className='h-4 w-4 mr-1' />
-                Approve
+                {t('buttons.approve')}
               </Button>
               <Button
                 size='sm'
@@ -314,7 +320,7 @@ export function UserRequestsAdmin() {
                 onClick={() => handleDenyClick(request)}
               >
                 <XCircle className='h-4 w-4 mr-1' />
-                Deny
+                {t('buttons.deny')}
               </Button>
             </div>
           )}
@@ -326,7 +332,7 @@ export function UserRequestsAdmin() {
   if (isLoading) {
     return (
       <div className='flex items-center justify-center py-12'>
-        <div className='text-muted-foreground'>Loading requests...</div>
+        <div className='text-muted-foreground'>{t('status.loadingRequests')}</div>
       </div>
     );
   }
@@ -334,23 +340,23 @@ export function UserRequestsAdmin() {
   return (
     <div className='space-y-6'>
       <div>
-        <h2 className='text-2xl font-canela font-medium mb-2'>User Requests</h2>
+        <h2 className='text-2xl font-canela font-medium mb-2'>{t('admin.requests.title')}</h2>
         <p className='text-muted-foreground text-sm'>
-          Review and manage user requests for artist linking, data deletion, and more.
+          {t('admin.requests.description')}
         </p>
       </div>
 
       <Tabs defaultValue='pending'>
         <TabsList>
           <TabsTrigger value='pending' className='relative'>
-            Pending
+            {t('status.pending')}
             {pendingRequests.length > 0 && (
               <Badge variant='destructive' className='ml-2 h-5 w-5 p-0 flex items-center justify-center text-xs'>
                 {pendingRequests.length}
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger value='resolved'>Resolved</TabsTrigger>
+          <TabsTrigger value='resolved'>{t('status.resolved')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value='pending' className='space-y-4 mt-4'>
@@ -358,7 +364,7 @@ export function UserRequestsAdmin() {
             <Card className='border-border/30 bg-card/10'>
               <CardContent className='p-8 text-center'>
                 <CheckCircle2 className='h-12 w-12 text-green-500 mx-auto mb-4' />
-                <p className='text-muted-foreground'>No pending requests</p>
+                <p className='text-muted-foreground'>{t('admin.requests.noPendingRequests')}</p>
               </CardContent>
             </Card>
           ) : (
@@ -371,7 +377,7 @@ export function UserRequestsAdmin() {
             <Card className='border-border/30 bg-card/10'>
               <CardContent className='p-8 text-center'>
                 <AlertCircle className='h-12 w-12 text-muted-foreground mx-auto mb-4' />
-                <p className='text-muted-foreground'>No resolved requests</p>
+                <p className='text-muted-foreground'>{t('admin.requests.noResolvedRequests')}</p>
               </CardContent>
             </Card>
           ) : (
@@ -384,38 +390,35 @@ export function UserRequestsAdmin() {
       <Dialog open={showApproveModal} onOpenChange={setShowApproveModal}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Approve Request?</DialogTitle>
+            <DialogTitle>{t('admin.requests.approveRequest')}</DialogTitle>
             <DialogDescription>
               {selectedRequest?.request_type === 'link_artist' && (
                 <>
-                  This will link the artist "{selectedRequest?.artist?.name}" to the user's account.
-                  They will be able to manage this artist profile.
+                  {t('admin.requests.approveDescLinkArtist', { artistName: selectedRequest?.artist?.name })}
                 </>
               )}
               {selectedRequest?.request_type === 'delete_data' && (
                 <>
-                  This will mark the request as approved. You will need to manually delete the user's data.
-                  Make sure to remove all artist data, recordings, and other associated information.
+                  {t('admin.requests.approveDescDeleteData')}
                 </>
               )}
               {selectedRequest?.request_type === 'unlink_artist' && (
                 <>
-                  This will unlink the artist from the user's account.
-                  The artist profile will remain but won't be associated with this user.
+                  {t('admin.requests.approveDescUnlinkArtist')}
                 </>
               )}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant='outline' onClick={() => setShowApproveModal(false)}>
-              Cancel
+              {t('buttons.cancel')}
             </Button>
             <Button
               onClick={() => selectedRequest && approveMutation.mutate(selectedRequest)}
               disabled={approveMutation.isPending}
               className='bg-green-600 hover:bg-green-700'
             >
-              {approveMutation.isPending ? 'Approving...' : 'Approve'}
+              {approveMutation.isPending ? t('status.approving') : t('buttons.approve')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -425,14 +428,14 @@ export function UserRequestsAdmin() {
       <Dialog open={showDenyModal} onOpenChange={setShowDenyModal}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Deny Request</DialogTitle>
+            <DialogTitle>{t('admin.requests.denyRequest')}</DialogTitle>
             <DialogDescription>
-              Please provide a reason for denying this request. This will be visible to the user.
+              {t('admin.requests.denyDescription')}
             </DialogDescription>
           </DialogHeader>
           <div className='py-4'>
             <Textarea
-              placeholder='Enter reason for denial...'
+              placeholder={t('placeholders.enterDenialReason')}
               value={denialReason}
               onChange={(e) => setDenialReason(e.target.value)}
               rows={4}
@@ -443,14 +446,14 @@ export function UserRequestsAdmin() {
               setShowDenyModal(false);
               setDenialReason('');
             }}>
-              Cancel
+              {t('buttons.cancel')}
             </Button>
             <Button
               variant='destructive'
               onClick={() => selectedRequest && denyMutation.mutate({ request: selectedRequest, reason: denialReason })}
               disabled={!denialReason.trim() || denyMutation.isPending}
             >
-              {denyMutation.isPending ? 'Denying...' : 'Deny Request'}
+              {denyMutation.isPending ? t('status.denying') : t('admin.requests.denyRequest')}
             </Button>
           </DialogFooter>
         </DialogContent>

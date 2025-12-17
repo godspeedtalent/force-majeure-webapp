@@ -10,6 +10,7 @@
  */
 
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -74,6 +75,7 @@ export function FmColumnConfigModal({
   onSaveConfiguration,
   onResetConfiguration,
 }: FmColumnConfigModalProps) {
+  const { t } = useTranslation('common');
   // Create a map of current configs
   const configMap = useMemo(() => {
     const map = new Map<string, ColumnConfig>();
@@ -259,36 +261,36 @@ export function FmColumnConfigModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='max-w-3xl max-h-[90vh] flex flex-col'>
         <DialogHeader>
-          <DialogTitle>Configure Columns</DialogTitle>
+          <DialogTitle>{t('table.configureColumns')}</DialogTitle>
           <DialogDescription>
-            Manage column visibility, labels, and freezing
+            {t('table.manageColumnsDescription')}
           </DialogDescription>
         </DialogHeader>
 
         {/* Statistics */}
         <div className='flex gap-4 text-sm border-b border-border pb-4'>
           <div className='flex items-center gap-2'>
-            <span className='text-muted-foreground'>Total:</span>
+            <span className='text-muted-foreground'>{t('table.total')}</span>
             <span className='font-semibold'>{stats.total}</span>
           </div>
           <div className='flex items-center gap-2'>
             <Eye className='h-4 w-4 text-green-500' />
-            <span className='text-muted-foreground'>Visible:</span>
+            <span className='text-muted-foreground'>{t('table.visible')}</span>
             <span className='font-semibold'>{stats.visible}</span>
           </div>
           <div className='flex items-center gap-2'>
             <EyeOff className='h-4 w-4 text-muted-foreground' />
-            <span className='text-muted-foreground'>Hidden:</span>
+            <span className='text-muted-foreground'>{t('table.hidden')}</span>
             <span className='font-semibold'>{stats.hidden}</span>
           </div>
           <div className='flex items-center gap-2'>
             <Pin className='h-4 w-4 text-fm-gold' />
-            <span className='text-muted-foreground'>Frozen:</span>
+            <span className='text-muted-foreground'>{t('table.frozen')}</span>
             <span className='font-semibold'>{stats.frozen}</span>
           </div>
           <div className='flex items-center gap-2'>
             <Edit2 className='h-4 w-4 text-blue-500' />
-            <span className='text-muted-foreground'>Renamed:</span>
+            <span className='text-muted-foreground'>{t('table.renamed')}</span>
             <span className='font-semibold'>{stats.renamed}</span>
           </div>
         </div>
@@ -297,19 +299,19 @@ export function FmColumnConfigModal({
         <div className='flex flex-wrap gap-2'>
           <Button variant='outline' size='sm' onClick={showAll}>
             <Eye className='h-4 w-4 mr-2' />
-            Show All
+            {t('table.showAll')}
           </Button>
           <Button variant='outline' size='sm' onClick={hideAll}>
             <EyeOff className='h-4 w-4 mr-2' />
-            Hide All
+            {t('table.hideAll')}
           </Button>
           <Button variant='outline' size='sm' onClick={unfreezeAll}>
             <PinOff className='h-4 w-4 mr-2' />
-            Unfreeze All
+            {t('table.unfreezeAll')}
           </Button>
           <Button variant='outline' size='sm' onClick={resetLabels}>
             <RotateCcw className='h-4 w-4 mr-2' />
-            Reset Labels
+            {t('table.resetLabels')}
           </Button>
         </div>
 
@@ -333,7 +335,7 @@ export function FmColumnConfigModal({
                   <button
                     onClick={() => toggleVisibility(column.key)}
                     className='p-1 hover:bg-muted rounded transition-colors'
-                    title={config.visible ? 'Hide column' : 'Show column'}
+                    title={config.visible ? t('table.hideColumn') : t('table.showColumn')}
                   >
                     {config.visible ? (
                       <Eye className='h-4 w-4 text-green-500' />
@@ -346,7 +348,7 @@ export function FmColumnConfigModal({
                   <button
                     onClick={() => toggleFrozen(column.key)}
                     className='p-1 hover:bg-muted rounded transition-colors'
-                    title={config.frozen ? 'Unfreeze column' : 'Freeze column'}
+                    title={config.frozen ? t('table.unfreezeColumn') : t('table.freezeColumn')}
                   >
                     {config.frozen ? (
                       <Pin className='h-4 w-4 text-fm-gold' />
@@ -390,13 +392,13 @@ export function FmColumnConfigModal({
                           </span>
                           {isRenamed && (
                             <span className='text-xs text-blue-500 font-mono'>
-                              (renamed)
+                              ({t('table.renamed').toLowerCase().replace(':', '')})
                             </span>
                           )}
                         </div>
                         {isRenamed && (
                           <span className='text-xs text-muted-foreground truncate'>
-                            Original: {originalLabel}
+                            {t('table.original', { label: originalLabel })}
                           </span>
                         )}
                         <span className='text-xs text-muted-foreground font-mono truncate'>
@@ -419,13 +421,13 @@ export function FmColumnConfigModal({
                           <SelectValue placeholder='Type' />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value='text'>Text</SelectItem>
-                          <SelectItem value='number'>Number</SelectItem>
-                          <SelectItem value='email'>Email</SelectItem>
-                          <SelectItem value='url'>URL</SelectItem>
-                          <SelectItem value='date'>Date</SelectItem>
-                          <SelectItem value='boolean'>Boolean</SelectItem>
-                          <SelectItem value='created_date'>Created Date</SelectItem>
+                          <SelectItem value='text'>{t('dataTypes.text')}</SelectItem>
+                          <SelectItem value='number'>{t('dataTypes.number')}</SelectItem>
+                          <SelectItem value='email'>{t('dataTypes.email')}</SelectItem>
+                          <SelectItem value='url'>{t('dataTypes.url')}</SelectItem>
+                          <SelectItem value='date'>{t('dataTypes.date')}</SelectItem>
+                          <SelectItem value='boolean'>{t('dataTypes.boolean')}</SelectItem>
+                          <SelectItem value='created_date'>{t('dataTypes.date')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -436,7 +438,7 @@ export function FmColumnConfigModal({
                     <button
                       onClick={() => startEditing(column.key, displayLabel)}
                       className='p-1 hover:bg-muted rounded transition-colors'
-                      title='Rename column'
+                      title={t('table.renameColumn')}
                     >
                       <Edit2 className='h-4 w-4 text-muted-foreground' />
                     </button>
@@ -451,15 +453,15 @@ export function FmColumnConfigModal({
         <div className='flex justify-between pt-4 border-t border-border'>
           <Button variant='outline' onClick={handleReset}>
             <RotateCcw className='h-4 w-4 mr-2' />
-            Reset to Default
+            {t('table.resetToDefault')}
           </Button>
           <div className='flex gap-2'>
             <Button variant='outline' onClick={() => onOpenChange(false)}>
-              Cancel
+              {t('buttons.cancel')}
             </Button>
             <Button onClick={handleSave}>
               <Save className='h-4 w-4 mr-2' />
-              Save Changes
+              {t('formActions.saveChanges')}
             </Button>
           </div>
         </div>

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { MessagePanel } from '@/components/feedback/MessagePanel';
 
 interface AllTokensClaimedViewProps {
@@ -7,10 +8,12 @@ interface AllTokensClaimedViewProps {
 export function AllTokensClaimedView({
   locationName,
 }: AllTokensClaimedViewProps) {
+  const { t } = useTranslation('common');
+
   return (
     <MessagePanel
-      title='All Claimed!'
-      description={`All rewards from ${locationName} have been claimed. Try finding another location!`}
+      title={t('scavenger.views.allClaimed')}
+      description={t('scavenger.views.allClaimedDescription', { locationName })}
       className='mb-4'
     />
   );

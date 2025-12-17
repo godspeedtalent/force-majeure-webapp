@@ -3,6 +3,12 @@ import { BadgeListCell } from '@/features/data-grid/components/cells';
 import { supabase } from '@force-majeure/shared';
 import { toast } from 'sonner';
 import { logger } from '@force-majeure/shared';
+import i18n from '@/i18n';
+
+/**
+ * Helper to get translation
+ */
+const t = (key: string) => i18n.t(key, { ns: 'common' });
 
 /**
  * Update artist image URL in the database
@@ -15,10 +21,10 @@ async function updateArtistImage(row: any, newImageUrl: string) {
       .eq('id', row.id);
 
     if (error) throw error;
-    toast.success('Artist image updated');
+    toast.success(t('adminGrid.artistImageUpdated'));
   } catch (error) {
     logger.error('Failed to update artist image', { error, artistId: row.id });
-    toast.error('Failed to update artist image');
+    toast.error(t('adminGrid.artistImageUpdateFailed'));
     throw error;
   }
 }
@@ -34,10 +40,10 @@ async function updateUserAvatar(row: any, newImageUrl: string) {
       .eq('id', row.id);
 
     if (error) throw error;
-    toast.success('User avatar updated');
+    toast.success(t('adminGrid.userAvatarUpdated'));
   } catch (error) {
     logger.error('Failed to update user avatar', { error, userId: row.id });
-    toast.error('Failed to update user avatar');
+    toast.error(t('adminGrid.userAvatarUpdateFailed'));
     throw error;
   }
 }
@@ -53,14 +59,14 @@ async function updateVenueImage(row: any, newImageUrl: string) {
       .eq('id', row.id);
 
     if (error) throw error;
-    toast.success('Venue image updated');
+    toast.success(t('adminGrid.venueImageUpdated'));
   } catch (error) {
-    logger.error('Failed to update venue image', { 
+    logger.error('Failed to update venue image', {
       error: error instanceof Error ? error.message : 'Unknown error',
       source: 'adminGridColumns',
       details: { venueId: row.id }
     });
-    toast.error('Failed to update venue image');
+    toast.error(t('adminGrid.venueImageUpdateFailed'));
     throw error;
   }
 }

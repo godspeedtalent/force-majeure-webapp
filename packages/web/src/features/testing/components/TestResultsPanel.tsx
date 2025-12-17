@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { TestResult } from '../types/testing';
 import { useTestResults } from '../hooks/useTestResults';
 import { TestCaseItem } from './TestCaseItem';
@@ -26,6 +27,7 @@ interface TestResultsPanelProps {
 }
 
 export function TestResultsPanel({ results }: TestResultsPanelProps) {
+  const { t } = useTranslation('common');
   const {
     filteredResults,
     summary,
@@ -40,7 +42,7 @@ export function TestResultsPanel({ results }: TestResultsPanelProps) {
     return (
       <div className='text-center py-12'>
         <p className='text-muted-foreground'>
-          No test results yet. Run tests to see results.
+          {t('testResultsPanel.noResultsYet')}
         </p>
       </div>
     );
@@ -50,24 +52,24 @@ export function TestResultsPanel({ results }: TestResultsPanelProps) {
     <div className='space-y-6'>
       {/* Summary Stats */}
       <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
-        <FmCommonStatCard value={summary.total} label='Total Tests' size='sm' />
+        <FmCommonStatCard value={summary.total} label={t('testResultsPanel.totalTests')} size='sm' />
         <FmCommonStatCard
           value={summary.passed}
-          label='Passed'
+          label={t('testResultsPanel.passed')}
           icon={CheckCircle2}
           size='sm'
           className='border-green-500/30 bg-green-500/5'
         />
         <FmCommonStatCard
           value={summary.failed}
-          label='Failed'
+          label={t('testResultsPanel.failed')}
           icon={XCircle}
           size='sm'
           className='border-red-500/30 bg-red-500/5'
         />
         <FmCommonStatCard
           value={`${summary.successRate.toFixed(1)}%`}
-          label='Success Rate'
+          label={t('testResultsPanel.successRate')}
           size='sm'
         />
       </div>
@@ -75,12 +77,12 @@ export function TestResultsPanel({ results }: TestResultsPanelProps) {
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <FmCommonStatCard
           value={`${summary.averageExecutionTime.toFixed(0)}ms`}
-          label='Avg Execution Time'
+          label={t('testResultsPanel.avgExecutionTime')}
           size='sm'
         />
         <FmCommonStatCard
           value={`${(summary.totalExecutionTime / 1000).toFixed(2)}s`}
-          label='Total Time'
+          label={t('testResultsPanel.totalTime')}
           size='sm'
         />
       </div>
@@ -90,7 +92,7 @@ export function TestResultsPanel({ results }: TestResultsPanelProps) {
         <div className='relative flex-1'>
           <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
           <Input
-            placeholder='Search tests...'
+            placeholder={t('testResultsPanel.searchTests')}
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             className='pl-10'
@@ -103,7 +105,7 @@ export function TestResultsPanel({ results }: TestResultsPanelProps) {
             size='sm'
             onClick={() => setFilter('all')}
           >
-            All
+            {t('testResultsPanel.all')}
             <Badge variant='secondary' className='ml-2'>
               {results.length}
             </Badge>
@@ -113,7 +115,7 @@ export function TestResultsPanel({ results }: TestResultsPanelProps) {
             size='sm'
             onClick={() => setFilter('passed')}
           >
-            Passed
+            {t('testResultsPanel.passed')}
             <Badge variant='secondary' className='ml-2'>
               {summary.passed}
             </Badge>
@@ -123,7 +125,7 @@ export function TestResultsPanel({ results }: TestResultsPanelProps) {
             size='sm'
             onClick={() => setFilter('failed')}
           >
-            Failed
+            {t('testResultsPanel.failed')}
             <Badge variant='secondary' className='ml-2'>
               {summary.failed}
             </Badge>
@@ -134,17 +136,17 @@ export function TestResultsPanel({ results }: TestResultsPanelProps) {
           <DropdownMenuTrigger asChild>
             <Button variant='outline' size='sm'>
               <Download className='h-4 w-4 mr-2' />
-              Export
+              {t('testResultsPanel.export')}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end'>
             <DropdownMenuItem onClick={() => exportResults('json')}>
               <FileJson className='h-4 w-4 mr-2' />
-              Export as JSON
+              {t('testResultsPanel.exportAsJson')}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => exportResults('csv')}>
               <FileText className='h-4 w-4 mr-2' />
-              Export as CSV
+              {t('testResultsPanel.exportAsCsv')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -155,7 +157,7 @@ export function TestResultsPanel({ results }: TestResultsPanelProps) {
         {filteredResults.length === 0 ? (
           <div className='text-center py-8'>
             <AlertCircle className='h-8 w-8 mx-auto text-muted-foreground mb-2' />
-            <p className='text-muted-foreground'>No tests match your filters</p>
+            <p className='text-muted-foreground'>{t('testResultsPanel.noMatchingTests')}</p>
           </div>
         ) : (
           filteredResults.map(result => (

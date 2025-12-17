@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FmConfigurableDataGrid } from './FmConfigurableDataGrid';
 import { DataGridColumn, DataGridAction } from './FmDataGrid';
 import { supabase } from '@force-majeure/shared';
@@ -9,6 +10,8 @@ import { Organization } from '@/types/organization';
 import { logger } from '@force-majeure/shared';
 
 export function FmOrganizationDataGrid() {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,7 +51,7 @@ export function FmOrganizationDataGrid() {
       }
     } catch (error: any) {
       logger.error('Error fetching organizations:', error);
-      toast.error('Failed to load organizations', {
+      toast.error(tToast('error.load'), {
         description: error.message,
       });
     } finally {
@@ -63,7 +66,7 @@ export function FmOrganizationDataGrid() {
   const columns: DataGridColumn<Organization>[] = [
     {
       key: 'name',
-      label: 'Organization Name',
+      label: t('dataGrid.columns.organizationName'),
       sortable: true,
       filterable: true,
       editable: true,
@@ -77,7 +80,7 @@ export function FmOrganizationDataGrid() {
     },
     {
       key: 'profile_picture',
-      label: 'Profile Picture',
+      label: t('dataGrid.columns.profilePicture'),
       sortable: false,
       filterable: false,
       editable: true,
@@ -86,7 +89,7 @@ export function FmOrganizationDataGrid() {
         value ? (
           <img
             src={value}
-            alt='Organization'
+            alt={t('dataGrid.placeholders.organization')}
             className='h-10 w-10 rounded-full object-cover border border-border'
           />
         ) : (
@@ -97,14 +100,14 @@ export function FmOrganizationDataGrid() {
     },
     {
       key: 'owner_id',
-      label: 'Owner',
+      label: t('dataGrid.columns.owner'),
       sortable: false,
       filterable: false,
       editable: true,
       isRelation: true,
       render: (_value, row) => {
         const owner = (row as any).owner;
-        const ownerName = owner?.display_name || owner?.full_name || 'Unknown User';
+        const ownerName = owner?.display_name || owner?.full_name || t('dataGrid.placeholders.unknownUser');
 
         return (
           <div className='flex items-center gap-2'>
@@ -124,7 +127,7 @@ export function FmOrganizationDataGrid() {
     },
     {
       key: 'created_at',
-      label: 'Created',
+      label: t('dataGrid.columns.created'),
       sortable: true,
       editable: false,
       type: 'created_date',
@@ -138,20 +141,20 @@ export function FmOrganizationDataGrid() {
 
   const actions: DataGridAction<Organization>[] = [
     {
-      label: 'Edit Organization',
+      label: t('dataGrid.actions.editOrganization'),
       icon: <Edit className='h-4 w-4' />,
       onClick: org => {
-        toast.info('Edit Organization', {
-          description: `Editing ${org.name}`,
+        toast.info(t('dataGrid.actions.editOrganization'), {
+          description: org.name,
         });
       },
     },
     {
-      label: 'Delete Organization',
+      label: t('dataGrid.actions.deleteOrganization'),
       icon: <Trash2 className='h-4 w-4' />,
       onClick: org => {
-        toast.error('Delete Organization', {
-          description: `This would delete ${org.name}`,
+        toast.error(t('dataGrid.actions.deleteOrganization'), {
+          description: org.name,
         });
       },
       variant: 'destructive',
@@ -207,12 +210,10 @@ export function FmOrganizationDataGrid() {
         );
       }
 
-      toast.success('Organization updated', {
-        description: `${columnKey} updated successfully`,
-      });
+      toast.success(tToast('admin.organizationUpdated'));
     } catch (error: any) {
       logger.error('Error updating organization:', error);
-      toast.error('Update failed', {
+      toast.error(tToast('error.update'), {
         description: error.message,
       });
       throw error;
@@ -253,14 +254,14 @@ export function FmOrganizationDataGrid() {
 
       setOrganizations(prev => [...prev, orgWithOwner]);
 
-      toast.success('Organization created', {
-        description: `${(data as any).name} has been created`,
+      toast.success(tToast('admin.organizationCreated'), {
+        description: (data as any).name,
       });
 
       return orgWithOwner;
     } catch (error: any) {
       logger.error('Error creating organization:', error);
-      toast.error('Creation failed', {
+      toast.error(tToast('error.create'), {
         description: error.message,
       });
       throw error;
@@ -278,8 +279,8 @@ export function FmOrganizationDataGrid() {
       pageSize={15}
       onUpdate={handleUpdate}
       onCreate={handleCreate}
-      resourceName='Organization'
-      createButtonLabel='Create Organization'
+      resourceName={t('dataGrid.resources.organization')}
+      createButtonLabel={t('dataGrid.actions.createOrganization')}
     />
   );
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -45,6 +46,7 @@ export function FmDataGridGroupDialog<T = any>({
   onApply,
   onClear,
 }: FmDataGridGroupDialogProps<T>) {
+  const { t } = useTranslation('common');
   const [groupColumn, setGroupColumn] = useState<string>(
     currentGroupConfig?.columnKey || columns[0]?.key || ''
   );
@@ -108,19 +110,19 @@ export function FmDataGridGroupDialog<T = any>({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='max-w-2xl max-h-[80vh] overflow-y-auto'>
         <DialogHeader>
-          <DialogTitle>Group & Aggregate Data</DialogTitle>
+          <DialogTitle>{t('dialogs.groupData')}</DialogTitle>
           <DialogDescription>
-            Group rows by a column and optionally calculate aggregations
+            {t('dialogs.groupDescription')}
           </DialogDescription>
         </DialogHeader>
 
         <div className='space-y-6 py-4'>
           {/* Group By Column */}
           <div className='space-y-2'>
-            <Label>Group By Column</Label>
+            <Label>{t('dialogs.groupByColumn')}</Label>
             <Select value={groupColumn} onValueChange={setGroupColumn}>
               <SelectTrigger>
-                <SelectValue placeholder='Select column...' />
+                <SelectValue placeholder={t('placeholders.selectColumn')} />
               </SelectTrigger>
               <SelectContent>
                 {columns.map(col => (
@@ -131,14 +133,14 @@ export function FmDataGridGroupDialog<T = any>({
               </SelectContent>
             </Select>
             <p className='text-xs text-muted-foreground'>
-              Rows will be grouped by unique values in this column
+              {t('dialogs.groupByHelp')}
             </p>
           </div>
 
           {/* Aggregations */}
           <div className='space-y-3'>
             <div className='flex items-center justify-between'>
-              <Label>Aggregations (Optional)</Label>
+              <Label>{t('dialogs.aggregationsOptional')}</Label>
               <Button
                 variant='outline'
                 size='sm'
@@ -146,14 +148,13 @@ export function FmDataGridGroupDialog<T = any>({
                 disabled={numericColumns.length === 0}
               >
                 <Plus className='h-4 w-4 mr-2' />
-                Add Aggregation
+                {t('dialogs.addAggregation')}
               </Button>
             </div>
 
             {aggregations.length === 0 ? (
               <div className='text-center py-6 text-sm text-muted-foreground border border-dashed border-border/50 rounded-none'>
-                No aggregations added. Add aggregations to calculate sums,
-                averages, etc.
+                {t('dialogs.noAggregationsAdded')}
               </div>
             ) : (
               <div className='space-y-2'>
@@ -216,7 +217,7 @@ export function FmDataGridGroupDialog<T = any>({
 
             {numericColumns.length === 0 && (
               <p className='text-xs text-muted-foreground'>
-                No numeric columns available for aggregation
+                {t('dialogs.noNumericColumns')}
               </p>
             )}
           </div>
@@ -225,34 +226,33 @@ export function FmDataGridGroupDialog<T = any>({
           <div className='rounded-none bg-muted/30 p-4 space-y-2'>
             <div className='flex items-center gap-2 text-sm font-medium'>
               <Layers className='h-4 w-4 text-fm-gold' />
-              <span>Preview</span>
+              <span>{t('dialogs.previewSection')}</span>
             </div>
             <div className='text-sm text-muted-foreground space-y-1'>
               <div>
-                • Rows will be grouped by{' '}
+                • {t('dialogs.rowsGroupedBy')}{' '}
                 <span className='text-foreground font-medium'>
                   {columns.find(c => c.key === groupColumn)?.label}
                 </span>
               </div>
               {aggregations.length > 0 && (
                 <div>
-                  • Showing {aggregations.length} aggregation
-                  {aggregations.length !== 1 ? 's' : ''}
+                  • {t('dialogs.showingAggregations', { count: aggregations.length })}
                 </div>
               )}
-              <div>• Click group rows to expand/collapse</div>
+              <div>• {t('dialogs.clickGroupRows')}</div>
             </div>
           </div>
         </div>
 
         <DialogFooter className='gap-2'>
           <Button variant='outline' onClick={handleClear}>
-            Clear Grouping
+            {t('dialogs.clearGrouping')}
           </Button>
           <Button variant='outline' onClick={() => onOpenChange(false)}>
-            Cancel
+            {t('buttons.cancel')}
           </Button>
-          <Button onClick={handleApply}>Apply Grouping</Button>
+          <Button onClick={handleApply}>{t('formActions.applyGrouping')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

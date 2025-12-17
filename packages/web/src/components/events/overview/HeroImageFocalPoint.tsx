@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Label } from '@/components/common/shadcn/label';
 import { cn } from '@force-majeure/shared';
 import { MoveVertical } from 'lucide-react';
@@ -14,6 +15,7 @@ export const HeroImageFocalPoint = ({
   focalY,
   onChange,
 }: HeroImageFocalPointProps) => {
+  const { t } = useTranslation('common');
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -54,10 +56,10 @@ export const HeroImageFocalPoint = ({
   if (!imageUrl) {
     return (
       <div className='space-y-2'>
-        <Label>Horizontal rendering focal point</Label>
+        <Label>{t('focalPoint.label')}</Label>
         <div className='flex items-center justify-center h-32 border border-dashed border-border rounded-lg bg-muted/20'>
           <p className='text-sm text-muted-foreground'>
-            Upload a hero image to set focal point
+            {t('focalPoint.uploadToSet')}
           </p>
         </div>
       </div>
@@ -67,7 +69,7 @@ export const HeroImageFocalPoint = ({
   return (
     <div className='space-y-3'>
       <div className='flex items-center justify-between'>
-        <Label>Horizontal rendering focal point</Label>
+        <Label>{t('focalPoint.label')}</Label>
         <span className='text-xs text-muted-foreground'>
           {focalY}%
         </span>
@@ -84,7 +86,7 @@ export const HeroImageFocalPoint = ({
       >
         <img
           src={imageUrl}
-          alt='Hero image'
+          alt={t('focalPoint.heroImageAlt')}
           className='w-full h-full object-cover'
           draggable={false}
         />
@@ -114,7 +116,7 @@ export const HeroImageFocalPoint = ({
         </div>
       </div>
       <p className='text-xs text-muted-foreground'>
-        Drag the center line up or down to adjust the vertical focal point for horizontal rendering
+        {t('focalPoint.instructions')}
       </p>
     </div>
   );

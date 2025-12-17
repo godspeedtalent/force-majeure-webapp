@@ -61,5 +61,17 @@
   },
   "age": {
     "required": "Debes confirmar que cumples con el requisito de edad"
-  }
+  },
+  "eventTitleRequired": "Por favor proporciona un título para el evento",
+  "headlinerRequired": "Por favor selecciona un artista principal",
+  "eventDateRequired": "Por favor selecciona una fecha de evento",
+  "startTimeRequired": "Por favor selecciona una hora de inicio",
+  "endTimeOrAfterHoursRequired": "Por favor selecciona una hora de fin o marca como evento after hours",
+  "venueRequired": "Por favor selecciona un lugar",
+  "ticketTierRequired": "Por favor añade al menos un nivel de entradas",
+  "totalTicketsExceedsCapacity": "Total de entradas ({{totalTickets}}) excede la capacidad del lugar ({{venueCapacity}})",
+  "tierNameRequired": "El nivel de entradas {{tierNumber}} debe tener un nombre",
+  "tierPriceRequired": "El nivel de entradas \"{{tierName}}\" debe tener un precio (usa 0 para gratis)",
+  "tierNegativePrice": "El nivel de entradas \"{{tierName}}\" no puede tener un precio negativo",
+  "tierQuantityRequired": "El nivel de entradas \"{{tierName}}\" debe tener al menos 1 entrada"
 }

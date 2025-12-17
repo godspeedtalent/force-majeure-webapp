@@ -1,9 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@force-majeure/shared';
 import { TrackingLink, TrackingLinkFormData } from '@/types/tracking';
 import { toast } from 'sonner';
 
 export function useTrackingLinks(eventId: string) {
+  const { t } = useTranslation('common');
   const queryClient = useQueryClient();
 
   const { data: links, isLoading } = useQuery({
@@ -46,10 +48,10 @@ export function useTrackingLinks(eventId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tracking-links', eventId] });
-      toast.success('Tracking link created successfully');
+      toast.success(t('trackingLinks.createSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(`Failed to create link: ${error.message}`);
+      toast.error(t('trackingLinks.createFailed', { error: error.message }));
     },
   });
 
@@ -74,10 +76,10 @@ export function useTrackingLinks(eventId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tracking-links', eventId] });
-      toast.success('Tracking link updated successfully');
+      toast.success(t('trackingLinks.updateSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update link: ${error.message}`);
+      toast.error(t('trackingLinks.updateFailed', { error: error.message }));
     },
   });
 
@@ -92,10 +94,10 @@ export function useTrackingLinks(eventId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tracking-links', eventId] });
-      toast.success('Link status updated');
+      toast.success(t('trackingLinks.statusUpdated'));
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update status: ${error.message}`);
+      toast.error(t('trackingLinks.statusUpdateFailed', { error: error.message }));
     },
   });
 
@@ -110,10 +112,10 @@ export function useTrackingLinks(eventId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tracking-links', eventId] });
-      toast.success('Link deleted successfully');
+      toast.success(t('trackingLinks.deleteSuccess'));
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete link: ${error.message}`);
+      toast.error(t('trackingLinks.deleteFailed', { error: error.message }));
     },
   });
 

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/common/shadcn/badge';
 import {
   Code,
@@ -12,58 +13,55 @@ import {
 import { DemoLayout } from '@/components/demo/DemoLayout';
 
 export default function DeveloperIndex() {
+  const { t } = useTranslation('common');
+
   const pages = [
     {
-      title: 'Database Manager',
-      description:
-        'Manage database resources including artists, events, venues, and organizations with powerful search and editing tools',
+      title: t('developerIndex.databaseManager'),
+      description: t('developerIndex.databaseManagerDescription'),
       path: '/developer/database',
       icon: Database,
-      category: 'Database',
+      category: t('developerIndex.categoryDatabase'),
       status: 'Active',
     },
     {
-      title: 'Demo Tools',
-      description:
-        'Test application features including event checkout flow, email templates, and interactive demos',
+      title: t('developerIndex.demoTools'),
+      description: t('developerIndex.demoToolsDescription'),
       path: '/developer/demo',
       icon: FlaskConical,
-      category: 'Testing',
+      category: t('developerIndex.categoryTesting'),
       status: 'Active',
     },
     {
-      title: 'Documentation Viewer',
-      description:
-        'Browse and search generated markdown documentation including architecture guides, feature documentation, and setup instructions',
+      title: t('developerIndex.documentationViewer'),
+      description: t('developerIndex.documentationViewerDescription'),
       path: '/developer/documentation',
       icon: FileText,
-      category: 'Documentation',
+      category: t('developerIndex.categoryDocumentation'),
       status: 'Active',
     },
     {
-      title: 'FM Components Catalog',
-      description:
-        'Comprehensive catalog of all Force Majeure common components with live demos, documentation, and relationship graph visualization',
+      title: t('developerIndex.componentsCatalog'),
+      description: t('developerIndex.componentsCatalogDescription'),
       path: '/developer/components',
       icon: Package,
-      category: 'Documentation',
+      category: t('developerIndex.categoryDocumentation'),
       status: 'Active',
     },
     {
-      title: 'Ticket Flow Tests',
-      description:
-        'Comprehensive smoke testing suite for the complete ticketing flow including queue management, selection, payment, timeouts, and delivery',
+      title: t('developerIndex.ticketFlowTests'),
+      description: t('developerIndex.ticketFlowTestsDescription'),
       path: '/developer/ticket-flow',
       icon: ClipboardCheck,
-      category: 'Testing',
+      category: t('developerIndex.categoryTesting'),
       status: 'Active',
     },
   ];
 
   return (
     <DemoLayout
-      title='Developer Tools'
-      description='Developer resources, component documentation, and testing utilities'
+      title={t('developerIndex.title')}
+      description={t('developerIndex.description')}
       icon={Code}
     >
       {/* Page List */}
@@ -87,7 +85,7 @@ export default function DeveloperIndex() {
                   </Badge>
                   <p className='text-muted-foreground'>{page.description}</p>
                   <div className='flex items-center gap-2 text-sm text-fm-gold opacity-0 group-hover:opacity-100 transition-opacity mt-auto'>
-                    <span>Open page</span>
+                    <span>{t('developerIndex.openPage')}</span>
                     <ArrowRight className='h-4 w-4' />
                   </div>
                 </div>
@@ -100,7 +98,7 @@ export default function DeveloperIndex() {
       {/* Footer Note */}
       <div className='mt-12 p-4 bg-muted/50 rounded-lg border border-border'>
         <p className='text-sm text-muted-foreground text-center'>
-          These tools are only accessible to admin and developer users
+          {t('developerIndex.accessNote')}
         </p>
       </div>
     </DemoLayout>

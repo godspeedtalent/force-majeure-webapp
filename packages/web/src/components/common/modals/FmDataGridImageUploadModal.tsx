@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { logger } from '@force-majeure/shared';
 import { Upload, X, ImageIcon } from 'lucide-react';
 import {
@@ -42,6 +43,7 @@ export function FmDataGridImageUploadModal({
   bucket = 'entity-images',
   storagePath,
 }: FmDataGridImageUploadModalProps) {
+  const { t } = useTranslation('common');
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [preview, setPreview] = React.useState<string | null>(null);
   const [isUploading, setIsUploading] = React.useState(false);
@@ -61,8 +63,8 @@ export function FmDataGridImageUploadModal({
     // Validate file type
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (!validTypes.includes(file.type)) {
-      toast.error('Invalid file type', {
-        description: 'Please upload a JPEG, PNG, or WebP image.',
+      toast.error(t('imageUpload.invalidFileType'), {
+        description: t('imageUpload.invalidFileTypeDescription'),
       });
       return;
     }
@@ -86,8 +88,8 @@ export function FmDataGridImageUploadModal({
       reader.readAsDataURL(processedFile);
     } catch (error) {
       logger.error('Error processing image:', { error });
-      toast.error('Failed to process image', {
-        description: 'Please try a different image.',
+      toast.error(t('imageUpload.processingFailed'), {
+        description: t('imageUpload.tryDifferentImage'),
       });
     }
   };
@@ -113,8 +115,8 @@ export function FmDataGridImageUploadModal({
 
   const handleUpload = async () => {
     if (!selectedFile) {
-      toast.error('No file selected', {
-        description: 'Please select an image to upload.',
+      toast.error(t('imageUpload.noFileSelected'), {
+        description: t('imageUpload.pleaseSelectImage'),
       });
       return;
     }
@@ -154,8 +156,8 @@ export function FmDataGridImageUploadModal({
         throw new Error('Failed to get public URL.');
       }
 
-      toast.success('Image uploaded', {
-        description: 'Image uploaded successfully.',
+      toast.success(t('imageUpload.uploaded'), {
+        description: t('imageUpload.uploadedSuccessfully'),
       });
 
       // Call the callback with new URL
@@ -163,8 +165,8 @@ export function FmDataGridImageUploadModal({
       onOpenChange(false);
     } catch (error: any) {
       logger.error('Upload error:', error);
-      toast.error('Upload failed', {
-        description: error.message || 'Failed to upload image.',
+      toast.error(t('imageUpload.uploadFailed'), {
+        description: error.message || t('imageUpload.failedToUpload'),
       });
     } finally {
       setIsUploading(false);
@@ -190,7 +192,7 @@ export function FmDataGridImageUploadModal({
       >
         <DialogHeader>
           <DialogTitle className='text-fm-gold'>
-            Upload Image for {entityName}
+            {t('imageUpload.uploadImageFor', { entityName })}
           </DialogTitle>
         </DialogHeader>
 
@@ -198,7 +200,7 @@ export function FmDataGridImageUploadModal({
           {/* Current Image Preview */}
           {currentImageUrl && !preview && (
             <div className='space-y-[10px]'>
-              <p className='text-sm text-white/70'>Current Image:</p>
+              <p className='text-sm text-white/70'>{t('imageUpload.currentImage')}</p>
               <div className='flex items-center justify-center bg-black/20 border border-white/20 p-[10px]'>
                 <img
                   src={currentImageUrl}
@@ -249,10 +251,10 @@ export function FmDataGridImageUploadModal({
                 </div>
                 <div className='text-center'>
                   <p className='text-white font-medium mb-[5px]'>
-                    Drop image here or click to browse
+                    {t('imageUpload.dropOrBrowse')}
                   </p>
                   <p className='text-white/50 text-sm'>
-                    JPEG, PNG, or WebP • Max 5MB • Will be resized to 500x500px
+                    {t('imageUpload.formatSpecs')}
                   </p>
                 </div>
               </>
@@ -278,7 +280,7 @@ export function FmDataGridImageUploadModal({
             disabled={isUploading}
             className='bg-white/5 border-white/20 hover:bg-white/10'
           >
-            Cancel
+            {t('buttons.cancel')}
           </Button>
           <Button
             onClick={handleUpload}
@@ -288,12 +290,12 @@ export function FmDataGridImageUploadModal({
             {isUploading ? (
               <div className='flex items-center gap-2 whitespace-nowrap'>
                 <div className='h-4 w-4 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
-                <span>Uploading...</span>
+                <span>{t('imageUpload.uploading')}</span>
               </div>
             ) : (
               <div className='flex items-center gap-2 whitespace-nowrap'>
                 <Upload className='h-4 w-4' />
-                <span>Upload</span>
+                <span>{t('buttons.upload')}</span>
               </div>
             )}
           </Button>

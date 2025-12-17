@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@force-majeure/shared';
 import { FmConfigurableDataGrid, DataGridAction } from '@/features/data-grid';
 import { userColumns } from './config/adminGridColumns';
@@ -23,6 +24,8 @@ interface AdminUser {
 }
 
 export const UserManagement = () => {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const queryClient = useQueryClient();
 
   // Fetch users with their auth email
@@ -98,20 +101,19 @@ export const UserManagement = () => {
         }
       );
 
-      toast.success('User updated');
+      toast.success(tToast('admin.userUpdated'));
     } catch (error) {
       logger.error('Error updating user:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'UserManagement.tsx' });
-      toast.error('Failed to update user');
+      toast.error(tToast('admin.userUpdateFailed'));
       throw error;
     }
   };
 
 
   const handleDeleteUser = async (user: AdminUser) => {
+    const userName = user.display_name || user.full_name || 'this user';
     if (
-      !confirm(
-        `Are you sure you want to delete user "${user.display_name || user.full_name || 'this user'}"? This will also delete their auth account.`
-      )
+      !confirm(t('dialogs.deleteUserConfirm', { userName }))
     ) {
       return;
     }
@@ -123,22 +125,22 @@ export const UserManagement = () => {
       );
       if (authError) {
         logger.error('Auth deletion error:', authError);
-        toast.error('Failed to delete user auth account');
+        toast.error(tToast('admin.userAuthDeleteFailed'));
         return;
       }
 
       // Profile will be deleted via CASCADE
-      toast.success('User deleted');
+      toast.success(tToast('admin.userDeleted'));
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
     } catch (error) {
       logger.error('Error deleting user:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'UserManagement.tsx' });
-      toast.error('Failed to delete user');
+      toast.error(tToast('admin.userDeleteFailed'));
     }
   };
 
   const userContextActions: DataGridAction[] = [
     {
-      label: 'Delete User',
+      label: t('dialogs.deleteUser'),
       icon: <Trash2 className='h-4 w-4' />,
       onClick: handleDeleteUser,
       variant: 'destructive',
@@ -161,10 +163,10 @@ export const UserManagement = () => {
     <div className='space-y-6'>
       <div>
         <h1 className='text-3xl font-canela font-bold text-foreground mb-2'>
-          Users Management
+          {t('pageTitles.usersManagement')}
         </h1>
         <p className='text-muted-foreground'>
-          Manage user accounts, roles, and permissions.
+          {t('pageTitles.usersManagementDescription')}
         </p>
       </div>
 

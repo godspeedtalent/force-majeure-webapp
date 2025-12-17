@@ -1,5 +1,6 @@
 import { Check, X, User, AtSign, Lock, MessageSquare } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
@@ -38,9 +39,15 @@ interface PasswordStrength {
 
 export function RegistrationForm({
   onSuccess,
-  title = 'Join the Rave Fam',
-  description = 'Register to claim your free tickets when you find them.',
+  title,
+  description,
 }: RegistrationFormProps) {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
+
+  const displayTitle = title ?? t('scavenger.registration.title');
+  const displayDescription = description ?? t('scavenger.registration.description');
+
   const [formData, setFormData] = useState<FormData>({
     fullName: '',
     email: '',
@@ -154,13 +161,13 @@ export function RegistrationForm({
         await supabase.auth.signOut();
       }
 
-      toast.success('Verification email sent');
+      toast.success(tToast('auth.emailVerificationSent'));
       onSuccess?.(formData.email);
     } catch (error: any) {
       // Use centralized error handler for network/connection errors
       await handleError(error, {
-        title: 'Registration failed',
-        description: 'Unable to create your account',
+        title: t('scavenger.registration.registrationFailed'),
+        description: t('scavenger.registration.unableToCreate'),
         context: 'Scavenger hunt registration',
         endpoint: '/auth/signup',
         method: 'POST',
@@ -173,8 +180,8 @@ export function RegistrationForm({
   return (
     <div className='mh-72 bg-background/60 backdrop-blur-md border-2 border-border/40 w-full shadow-2xl animate-slide-up-fade'>
       <div className='px-8 lg:px-12 pt-6 lg:pt-8 pb-4 text-center'>
-        <h1 className='font-display text-2xl md:text-3xl mb-2'>{title}</h1>
-        <p className='text-muted-foreground text-sm'>{description}</p>
+        <h1 className='font-display text-2xl md:text-3xl mb-2'>{displayTitle}</h1>
+        <p className='text-muted-foreground text-sm'>{displayDescription}</p>
       </div>
       <ScrollArea>
         <form
@@ -184,35 +191,35 @@ export function RegistrationForm({
         >
           {/* Contact Information */}
           <FmFormFieldGroup
-            title='Contact Information'
+            title={t('formGroups.contactInformation')}
             icon={User}
             layout='stack'
           >
             <FmCommonTextField
-              label='Full Name'
+              label={t('labels.fullName')}
               id='fullName'
               type='text'
-              placeholder='John Doe'
+              placeholder={t('placeholders.fullName')}
               value={formData.fullName}
               onChange={e => updateFormData('fullName', e.target.value)}
               required
             />
 
             <FmCommonTextField
-              label='Email'
+              label={t('labels.email')}
               id='email'
               type='email'
-              placeholder='your@email.com'
+              placeholder={t('placeholders.yourEmail')}
               value={formData.email}
               onChange={e => updateFormData('email', e.target.value)}
               required
             />
 
             <FmCommonTextField
-              label='Phone Number'
+              label={t('labels.phoneNumber')}
               id='phoneNumber'
               type='tel'
-              placeholder='(555) 123-4567'
+              placeholder={t('placeholders.phoneNumber')}
               value={formData.phoneNumber}
               onChange={e =>
                 updateFormData('phoneNumber', formatPhoneNumber(e.target.value))
@@ -223,27 +230,27 @@ export function RegistrationForm({
 
           {/* Social Profile */}
           <FmFormFieldGroup
-            title='Social Profile'
+            title={t('formGroups.socialProfile')}
             icon={AtSign}
-            description='How you appear to others'
+            description={t('scavenger.registration.howYouAppear')}
             layout='stack'
           >
             <div className='space-y-3'>
               <FmCommonTextField
-                label='Username'
+                label={t('labels.username')}
                 id='displayName'
                 type='text'
-                placeholder='Your username'
+                placeholder={t('placeholders.yourUsername')}
                 value={formData.displayName}
                 onChange={e => updateFormData('displayName', e.target.value)}
                 required
                 disabled={formData.sameAsFullName}
-                description='What others will see if your profile is made public.'
+                description={t('scavenger.registration.publicProfileDescription')}
                 containerClassName='space-y-2'
               />
               <FmCommonToggle
                 id='sameAsFullName'
-                label='Same as full name'
+                label={t('scavenger.registration.sameAsFullName')}
                 checked={formData.sameAsFullName}
                 onCheckedChange={checked =>
                   updateFormData('sameAsFullName', checked as boolean)
@@ -253,10 +260,10 @@ export function RegistrationForm({
             </div>
 
             <FmCommonTextField
-              label='Instagram Handle'
+              label={t('labels.instagramHandle')}
               id='instagramHandle'
               type='text'
-              placeholder='yourhandle'
+              placeholder={t('placeholders.yourHandle')}
               value={formData.instagramHandle}
               onChange={e => updateFormData('instagramHandle', e.target.value)}
               prepend='@'
@@ -265,15 +272,15 @@ export function RegistrationForm({
 
           {/* Password Section */}
           <FmFormFieldGroup
-            title='Account Security'
+            title={t('formGroups.accountSecurity')}
             icon={Lock}
             layout='stack'
           >
             <FmCommonTextField
-              label='Password'
+              label={t('labels.password')}
               id='password'
               password
-              placeholder='Enter your password'
+              placeholder={t('placeholders.enterPassword')}
               value={formData.password}
               onChange={e => updateFormData('password', e.target.value)}
               required
@@ -282,10 +289,10 @@ export function RegistrationForm({
 
             <div className='space-y-2'>
               <FmCommonTextField
-                label='Confirm Password'
+                label={t('labels.confirmPassword')}
                 id='confirmPassword'
                 password
-                placeholder='Confirm your password'
+                placeholder={t('placeholders.confirmPassword')}
                 value={formData.confirmPassword}
                 onChange={e =>
                   updateFormData('confirmPassword', e.target.value)
@@ -295,7 +302,7 @@ export function RegistrationForm({
               />
               {formData.confirmPassword && !passwordsMatch && (
                 <p className='text-xs text-red-500 mt-1'>
-                  Passwords do not match
+                  {t('scavenger.registration.passwordsDoNotMatch')}
                 </p>
               )}
             </div>
@@ -304,7 +311,7 @@ export function RegistrationForm({
             {formData.password && (
               <div className='space-y-2 text-xs mt-3'>
                 <p className='font-medium text-foreground/70'>
-                  Password Requirements:
+                  {t('scavenger.registration.passwordRequirements')}
                 </p>
                 <div className='space-y-1.5'>
                   <div className='flex items-center gap-1.5'>
@@ -320,7 +327,7 @@ export function RegistrationForm({
                           : 'text-muted-foreground'
                       }
                     >
-                      At least 8 characters
+                      {t('scavenger.registration.atLeast8Chars')}
                     </span>
                   </div>
                   <div className='flex items-center gap-1.5'>
@@ -336,7 +343,7 @@ export function RegistrationForm({
                           : 'text-muted-foreground'
                       }
                     >
-                      One uppercase letter
+                      {t('scavenger.registration.oneUppercase')}
                     </span>
                   </div>
                   <div className='flex items-center gap-1.5'>
@@ -352,7 +359,7 @@ export function RegistrationForm({
                           : 'text-muted-foreground'
                       }
                     >
-                      One lowercase letter
+                      {t('scavenger.registration.oneLowercase')}
                     </span>
                   </div>
                   <div className='flex items-center gap-1.5'>
@@ -368,7 +375,7 @@ export function RegistrationForm({
                           : 'text-muted-foreground'
                       }
                     >
-                      One number
+                      {t('scavenger.registration.oneNumber')}
                     </span>
                   </div>
                   <div className='flex items-center gap-1.5'>
@@ -384,7 +391,7 @@ export function RegistrationForm({
                           : 'text-muted-foreground'
                       }
                     >
-                      One special character (!@#$%^&*...)
+                      {t('scavenger.registration.oneSpecialChar')}
                     </span>
                   </div>
                 </div>
@@ -394,13 +401,13 @@ export function RegistrationForm({
 
           {/* Agreements */}
           <FmFormFieldGroup
-            title='Preferences'
+            title={t('formGroups.preferences')}
             icon={MessageSquare}
             layout='stack'
           >
             <FmCommonToggle
               id='agreeToContact'
-              label='I agree to receive event updates via email and SMS *'
+              label={t('scavenger.registration.agreeToContact')}
               checked={formData.agreeToContact}
               onCheckedChange={checked =>
                 updateFormData('agreeToContact', checked as boolean)
@@ -417,7 +424,7 @@ export function RegistrationForm({
             className='w-full bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] h-9 rounded-md disabled:opacity-50 disabled:cursor-not-allowed'
             disabled={isSubmitting || !isFormValid}
           >
-            {isSubmitting ? 'Submitting...' : 'Submit'}
+            {isSubmitting ? t('buttons.submitting') : t('buttons.submit')}
           </button>
         </div>
       </ScrollArea>

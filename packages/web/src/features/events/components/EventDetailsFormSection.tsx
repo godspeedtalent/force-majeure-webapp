@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import { Label } from '@/components/common/shadcn/label';
 import { Checkbox } from '@/components/common/shadcn/checkbox';
 import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
@@ -25,60 +26,62 @@ export function EventDetailsFormSection({
   actions,
   onImageUploadStateChange
 }: EventDetailsFormSectionProps) {
+  const { t } = useTranslation('common');
+
   return (
     <div className='space-y-4'>
       <div className='space-y-2'>
         <Label className='text-white'>
-          Event Title <span className='text-fm-danger'>*</span>
+          {t('formLabels.eventTitle')} <span className='text-fm-danger'>*</span>
         </Label>
         <input
           type='text'
           value={state.title}
           onChange={e => actions.setTitle(e.target.value)}
-          placeholder='Enter event title'
+          placeholder={t('forms.events.titlePlaceholder')}
           className='w-full px-3 py-2 bg-white/5 border border-white/20 rounded-md text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-fm-gold/50'
         />
       </div>
 
       <div className='space-y-2'>
         <Label className='text-white'>
-          Subtitle (Optional)
+          {t('formLabels.subtitleOptional')}
         </Label>
         <input
           type='text'
           value={state.subtitle}
           onChange={e => actions.setSubtitle(e.target.value)}
-          placeholder='Enter event subtitle'
+          placeholder={t('forms.events.subtitlePlaceholder')}
           className='w-full px-3 py-2 bg-white/5 border border-white/20 rounded-md text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-fm-gold/50'
         />
       </div>
 
       <div className='space-y-2'>
         <Label className='text-white'>
-          Headliner <span className='text-fm-danger'>*</span>
+          {t('formLabels.headliner')} <span className='text-fm-danger'>*</span>
         </Label>
         <FmArtistSearchDropdown
           value={state.headlinerId}
           onChange={actions.setHeadlinerId}
-          placeholder='Search for headliner artist...'
+          placeholder={t('forms.events.searchHeadliner')}
         />
       </div>
 
       <div className='space-y-2'>
         <Label className='text-white'>
-          Date <span className='text-fm-danger'>*</span>
+          {t('formLabels.date')} <span className='text-fm-danger'>*</span>
         </Label>
         <FmCommonDatePicker
           value={state.eventDate}
           onChange={actions.setEventDate}
-          placeholder='Select event date'
+          placeholder={t('forms.events.selectEventDate')}
         />
       </div>
 
       <div className='grid grid-cols-2 gap-4'>
         <div className='space-y-2'>
           <Label className='text-white'>
-            Start Time <span className='text-fm-danger'>*</span>
+            {t('formLabels.startTime')} <span className='text-fm-danger'>*</span>
           </Label>
           <FmCommonTimePicker
             value={state.eventDate ? format(state.eventDate, 'HH:mm') : '20:00'}
@@ -90,18 +93,18 @@ export function EventDetailsFormSection({
                 actions.setEventDate(newDate);
               }
             }}
-            placeholder='Select start time'
+            placeholder={t('forms.events.selectStartTime')}
           />
         </div>
         <div className='space-y-2'>
           <Label className='text-white'>
-            End Time <span className='text-fm-danger'>*</span>
+            {t('formLabels.endTime')} <span className='text-fm-danger'>*</span>
           </Label>
           <FmCommonTimePicker
             value={state.endTime}
             onChange={actions.setEndTime}
             disabled={state.isAfterHours}
-            placeholder='Select end time'
+            placeholder={t('forms.events.selectEndTime')}
           />
         </div>
       </div>
@@ -114,11 +117,11 @@ export function EventDetailsFormSection({
             onCheckedChange={checked => actions.setIsAfterHours(checked === true)}
           />
           <Label htmlFor='after-hours' className='text-white/70 cursor-pointer'>
-            After Hours Event
+            {t('formLabels.afterHoursEvent')}
           </Label>
         </div>
         <p className='text-xs text-white/50 ml-6'>
-          Check this if the event has no defined end time (end time not required)
+          {t('formLabels.afterHoursHelp')}
         </p>
       </div>
 
@@ -130,28 +133,28 @@ export function EventDetailsFormSection({
             onCheckedChange={checked => actions.setIsTba(checked === true)}
           />
           <Label htmlFor='tba-event' className='text-white/70 cursor-pointer'>
-            TBA Event (To Be Announced)
+            {t('formLabels.tbaEvent')}
           </Label>
         </div>
         <p className='text-xs text-white/50 ml-6'>
-          Check this for placeholder events. TBA events can still have a venue and date assigned.
+          {t('formLabels.tbaEventHelp')}
         </p>
       </div>
 
       <div className='space-y-2'>
         <Label className='text-white'>
-          Venue <span className='text-fm-danger'>*</span>
+          {t('formLabels.venue')} <span className='text-fm-danger'>*</span>
         </Label>
         <FmVenueSearchDropdown
           value={state.venueId}
           onChange={actions.setVenueId}
-          placeholder='Search for venue...'
+          placeholder={t('placeholders.searchVenue')}
         />
       </div>
 
       <div className='space-y-2'>
         <FmFlexibleImageUpload
-          label='Main Event Image'
+          label={t('formLabels.mainEventImage')}
           value={state.heroImage}
           onChange={actions.setHeroImage}
           bucket='event-images'

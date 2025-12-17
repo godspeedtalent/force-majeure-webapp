@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@force-majeure/shared';
 import { ArrowLeft, Building2, Calendar } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
@@ -21,6 +22,7 @@ interface Organization {
 }
 
 export default function OrganizationDetails() {
+  const { t } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -53,13 +55,13 @@ export default function OrganizationDetails() {
   }
 
   if (error || !organization) {
-    toast.error('Failed to load organization');
+    toast.error(t('organization.loadFailed'));
     return (
       <Layout>
         <div className='text-center py-12'>
-          <p className='text-muted-foreground'>Organization not found</p>
+          <p className='text-muted-foreground'>{t('organization.notFound')}</p>
           <Button onClick={() => navigate(-1)} className='mt-4'>
-            Go Back
+            {t('buttons.goBack')}
           </Button>
         </div>
       </Layout>
@@ -79,14 +81,14 @@ export default function OrganizationDetails() {
             className='border-white/20 hover:bg-white/10'
           >
             <ArrowLeft className='h-4 w-4 mr-2' />
-            Back
+            {t('buttons.back')}
           </Button>
           <div>
             <h1 className='text-3xl font-bold flex items-center gap-3'>
               <Building2 className='h-8 w-8 text-fm-gold' />
               {organization.name}
             </h1>
-            <p className='text-muted-foreground mt-1'>Organization Details</p>
+            <p className='text-muted-foreground mt-1'>{t('organization.details')}</p>
           </div>
         </div>
       </div>
@@ -100,7 +102,7 @@ export default function OrganizationDetails() {
           {/* Basic Information */}
           <Card>
             <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
+              <CardTitle>{t('organization.basicInfo')}</CardTitle>
             </CardHeader>
             <CardContent className='space-y-4'>
               {organization.profile_picture && (
@@ -114,7 +116,7 @@ export default function OrganizationDetails() {
               )}
 
               <div>
-                <label className='text-sm text-muted-foreground'>Name</label>
+                <label className='text-sm text-muted-foreground'>{t('labels.name')}</label>
                 <p className='text-lg font-medium'>{organization.name}</p>
               </div>
             </CardContent>
@@ -125,18 +127,18 @@ export default function OrganizationDetails() {
         <div className='space-y-6'>
           <Card>
             <CardHeader>
-              <CardTitle>Metadata</CardTitle>
+              <CardTitle>{t('organization.metadata')}</CardTitle>
             </CardHeader>
             <CardContent className='space-y-3'>
               <div>
-                <label className='text-sm text-muted-foreground'>Organization ID</label>
+                <label className='text-sm text-muted-foreground'>{t('organization.organizationId')}</label>
                 <p className='font-mono text-sm'>{organization.id}</p>
               </div>
 
               <div>
                 <label className='text-sm text-muted-foreground flex items-center gap-2'>
                   <Calendar className='h-4 w-4' />
-                  Created
+                  {t('labels.created')}
                 </label>
                 <p className='text-sm'>
                   {format(new Date(organization.created_at), 'PPP')}
@@ -146,7 +148,7 @@ export default function OrganizationDetails() {
               <div>
                 <label className='text-sm text-muted-foreground flex items-center gap-2'>
                   <Calendar className='h-4 w-4' />
-                  Last Updated
+                  {t('labels.lastUpdated')}
                 </label>
                 <p className='text-sm'>
                   {format(new Date(organization.updated_at), 'PPP')}
@@ -157,7 +159,7 @@ export default function OrganizationDetails() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Actions</CardTitle>
+              <CardTitle>{t('labels.actions')}</CardTitle>
             </CardHeader>
             <CardContent className='space-y-2'>
               <Button
@@ -165,7 +167,7 @@ export default function OrganizationDetails() {
                 className='w-full border-white/20 hover:bg-white/10'
                 onClick={() => navigate(`/admin/organizations`)}
               >
-                Back to Organizations List
+                {t('organization.backToList')}
               </Button>
             </CardContent>
           </Card>

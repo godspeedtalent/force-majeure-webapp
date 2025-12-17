@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Mic2, User, Music, Share2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCreateEntityNavigation } from '@force-majeure/shared';
@@ -18,6 +19,8 @@ import type { Genre } from '@/features/artists/types';
 import type { SpotifyArtist } from '@/services/spotify/spotifyApiService';
 
 const DeveloperCreateArtistPage = () => {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const navigate = useNavigate();
   const { returnTo, navigateWithEntity } = useCreateEntityNavigation('newArtistId');
   const [formData, setFormData] = useState({
@@ -36,12 +39,12 @@ const DeveloperCreateArtistPage = () => {
       image_url: artist.images[0]?.url || '',
       bio: `${artist.name} - ${artist.genres.slice(0, 3).join(', ')}`,
     });
-    toast.success('Artist data imported from Spotify');
+    toast.success(tToast('artists.importedFromSpotify'));
   };
 
   const handleSubmit = async () => {
     if (!formData.name.trim()) {
-      toast.error('Artist name is required');
+      toast.error(tToast('validation.artistNameRequired'));
       return;
     }
 
@@ -78,7 +81,7 @@ const DeveloperCreateArtistPage = () => {
         }
       }
 
-      toast.success('Artist created successfully');
+      toast.success(tToast('success.created'));
 
       // Return to origin page with new entity, or go to database page
       if (returnTo) {
@@ -91,7 +94,7 @@ const DeveloperCreateArtistPage = () => {
       logger.error('Error creating artist:', {
         error: error instanceof Error ? error.message : 'Unknown',
       });
-      toast.error('Failed to create artist');
+      toast.error(tToast('error.create'));
     } finally {
       setIsSubmitting(false);
     }
@@ -112,14 +115,14 @@ const DeveloperCreateArtistPage = () => {
   return (
     <>
       <FmCommonCreateForm
-      title='Create Artist'
-      description='Add a new artist profile, including imagery and genre metadata.'
+      title={t('createForms.artist.title')}
+      description={t('createForms.artist.description')}
       icon={Mic2}
-      helperText='Use this form to create placeholder or production artist records.'
+      helperText={t('createForms.artist.helperText')}
       isSubmitting={isSubmitting}
       onSubmit={handleSubmit}
       onCancel={handleCancel}
-      submitText='Create Artist'
+      submitText={t('createForms.artist.submitText')}
     >
       {/* Spotify Import Button */}
       <div className='flex justify-center py-[20px]'>
@@ -131,7 +134,7 @@ const DeveloperCreateArtistPage = () => {
           className='text-[#1DB954]'
           icon={<SpotifyIcon className='h-4 w-4' />}
         >
-          Import Artist from Spotify
+          {t('createForms.artist.importFromSpotify')}
         </FmCommonButton>
       </div>
 
@@ -142,26 +145,26 @@ const DeveloperCreateArtistPage = () => {
         </div>
         <div className='relative flex justify-center'>
           <span className='bg-background px-[20px] text-xs uppercase tracking-wider text-muted-foreground font-canela'>
-            Or create manually
+            {t('createForms.orCreateManually')}
           </span>
         </div>
       </div>
 
       <FmFormFieldGroup
-        title='Basic Information'
+        title={t('formGroups.basicInformation')}
         icon={User}
         layout='stack'
       >
         <FmCommonTextField
-          label='Artist Name'
+          label={t('labels.artistName')}
           required
           value={formData.name}
           onChange={e => setFormData({ ...formData, name: e.target.value })}
-          placeholder='Enter artist name'
+          placeholder={t('placeholders.enterArtistName')}
         />
 
         <FmFlexibleImageUpload
-          label='Artist Image'
+          label={t('labels.artistImage')}
           value={formData.image_url}
           onChange={url => setFormData({ ...formData, image_url: url })}
           bucket='artist-images'
@@ -169,22 +172,22 @@ const DeveloperCreateArtistPage = () => {
         />
 
         <FmCommonTextField
-          label='Bio'
+          label={t('labels.bio')}
           multiline
           rows={5}
           value={formData.bio}
           onChange={e => setFormData({ ...formData, bio: e.target.value })}
-          placeholder='Artist biography...'
+          placeholder={t('placeholders.artistBiography')}
         />
       </FmFormFieldGroup>
 
       <FmFormFieldGroup
-        title='Genre & Style'
+        title={t('formGroups.genreAndStyle')}
         icon={Music}
         layout='stack'
       >
         <FmGenreMultiSelect
-          label='Genres'
+          label={t('labels.genres')}
           selectedGenres={selectedGenres}
           onChange={setSelectedGenres}
           maxGenres={5}
@@ -192,16 +195,16 @@ const DeveloperCreateArtistPage = () => {
       </FmFormFieldGroup>
 
       <FmFormFieldGroup
-        title='Social Links'
+        title={t('formGroups.socialLinks')}
         icon={Share2}
         layout='stack'
       >
         <FmCommonJsonEditor
-          label='Social Links'
+          label={t('formGroups.socialLinks')}
           value={socialLinks}
           onChange={setSocialLinks}
-          keyPlaceholder='Platform (instagram, twitter, etc.)'
-          valuePlaceholder='Handle or URL'
+          keyPlaceholder={t('placeholders.platformInstagramTwitter')}
+          valuePlaceholder={t('placeholders.handleOrUrl')}
         />
       </FmFormFieldGroup>
     </FmCommonCreateForm>

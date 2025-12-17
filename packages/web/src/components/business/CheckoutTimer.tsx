@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Clock } from 'lucide-react';
 import { useCheckoutTimer } from '@/contexts/CheckoutContext';
 import { toast } from 'sonner';
@@ -12,6 +13,7 @@ export const CheckoutTimer = ({
   onExpire,
   duration = 600,
 }: CheckoutTimerProps) => {
+  const { t } = useTranslation('common');
   const { isCheckoutActive } = useCheckoutTimer();
   const [timeLeft, setTimeLeft] = useState(duration);
 
@@ -41,16 +43,16 @@ export const CheckoutTimer = ({
 
     // Show warning at 2 minutes
     if (timeLeft === 120) {
-      toast.warning('Hurry up!', {
-        description: '2 minutes remaining to complete your purchase',
+      toast.warning(t('checkoutTimer.hurryUp'), {
+        description: t('checkoutTimer.twoMinutesRemaining'),
         duration: 5000,
       });
     }
 
     // Show urgent warning at 30 seconds
     if (timeLeft === 30) {
-      toast.error('Time running out!', {
-        description: '30 seconds remaining',
+      toast.error(t('checkoutTimer.timeRunningOut'), {
+        description: t('checkoutTimer.thirtySecondsRemaining'),
         duration: 5000,
       });
     }
@@ -61,9 +63,9 @@ export const CheckoutTimer = ({
         <div className='flex items-center gap-2'>
           <Clock className='h-4 w-4' />
           <div>
-            <div className='font-medium'>Tickets Reserved</div>
+            <div className='font-medium'>{t('checkoutTimer.ticketsReserved')}</div>
             <div className='text-xs text-muted-foreground'>
-              {timeString} remaining
+              {t('checkoutTimer.timeRemaining', { time: timeString })}
             </div>
           </div>
         </div>,

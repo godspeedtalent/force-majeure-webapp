@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -35,6 +36,7 @@ export function FmDataGridExportDialog<T = any>({
   data,
   onExport,
 }: FmDataGridExportDialogProps<T>) {
+  const { t } = useTranslation('common');
   const [selectedColumns, setSelectedColumns] = useState<string[]>(
     columns.map(col => col.key)
   );
@@ -67,16 +69,16 @@ export function FmDataGridExportDialog<T = any>({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='max-w-md'>
         <DialogHeader>
-          <DialogTitle>Export Data</DialogTitle>
+          <DialogTitle>{t('dialogs.exportData')}</DialogTitle>
           <DialogDescription>
-            Select columns and format to export {data.length} rows
+            {t('dialogs.exportDescription', { count: data.length })}
           </DialogDescription>
         </DialogHeader>
 
         <div className='space-y-4 py-4'>
           {/* Format Selection */}
           <div className='space-y-3'>
-            <Label>Export Format</Label>
+            <Label>{t('dialogs.exportFormat')}</Label>
             <RadioGroup
               value={format}
               onValueChange={value => setFormat(value as ExportFormat)}
@@ -88,7 +90,7 @@ export function FmDataGridExportDialog<T = any>({
                   className='flex items-center gap-2 cursor-pointer'
                 >
                   <FileSpreadsheet className='h-4 w-4' />
-                  <span>CSV (Comma-separated)</span>
+                  <span>{t('dialogs.csvFormat')}</span>
                 </Label>
               </div>
               <div className='flex items-center space-x-2'>
@@ -98,7 +100,7 @@ export function FmDataGridExportDialog<T = any>({
                   className='flex items-center gap-2 cursor-pointer'
                 >
                   <FileText className='h-4 w-4' />
-                  <span>TSV (Tab-separated)</span>
+                  <span>{t('dialogs.tsvFormat')}</span>
                 </Label>
               </div>
               <div className='flex items-center space-x-2'>
@@ -108,7 +110,7 @@ export function FmDataGridExportDialog<T = any>({
                   className='flex items-center gap-2 cursor-pointer'
                 >
                   <FileText className='h-4 w-4' />
-                  <span>JSON</span>
+                  <span>{t('dialogs.jsonFormat')}</span>
                 </Label>
               </div>
             </RadioGroup>
@@ -117,14 +119,14 @@ export function FmDataGridExportDialog<T = any>({
           {/* Column Selection */}
           <div className='space-y-3'>
             <div className='flex items-center justify-between'>
-              <Label>Select Columns</Label>
+              <Label>{t('dialogs.selectColumns')}</Label>
               <Button
                 variant='ghost'
                 size='sm'
                 onClick={toggleAll}
                 className='h-8 text-xs'
               >
-                {isAllSelected ? 'Deselect All' : 'Select All'}
+                {isAllSelected ? t('table.deselectAll') : t('table.selectAll')}
               </Button>
             </div>
 
@@ -147,21 +149,21 @@ export function FmDataGridExportDialog<T = any>({
             </div>
 
             <div className='text-xs text-muted-foreground'>
-              {selectedColumns.length} of {columns.length} columns selected
+              {t('table.columnsSelected', { selected: selectedColumns.length, total: columns.length })}
             </div>
           </div>
         </div>
 
         <DialogFooter>
           <Button variant='outline' onClick={() => onOpenChange(false)}>
-            Cancel
+            {t('buttons.cancel')}
           </Button>
           <Button
             onClick={handleExport}
             disabled={selectedColumns.length === 0}
           >
             <Download className='h-4 w-4 mr-2' />
-            Export {format.toUpperCase()}
+            {t('dialogs.exportButton', { format: format.toUpperCase() })}
           </Button>
         </DialogFooter>
       </DialogContent>

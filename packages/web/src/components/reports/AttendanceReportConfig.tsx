@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/common/shadcn/card';
 import { Button } from '@/components/common/shadcn/button';
 
@@ -6,25 +7,26 @@ interface AttendanceReportConfigProps {
 }
 
 export const AttendanceReportConfig = ({ eventId: _eventId }: AttendanceReportConfigProps) => {
+  const { t } = useTranslation('common');
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Attendance & Check-in Report</CardTitle>
+        <CardTitle>{t('reports.attendance.title')}</CardTitle>
         <CardDescription>
-          Track attendance and check-in data for your event
+          {t('reports.attendance.description')}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <p className="text-muted-foreground mb-4">
-          This report is coming soon. It will include:
+          {t('reports.attendance.comingSoonText')}
         </p>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
-          <li>Total check-ins vs. tickets sold</li>
-          <li>Check-in timeline and peaks</li>
-          <li>No-show analysis</li>
-          <li>Ticket tier breakdown</li>
+          <li>{t('reports.attendance.checkInsVsTickets')}</li>
+          <li>{t('reports.attendance.checkInTimeline')}</li>
+          <li>{t('reports.attendance.noShowAnalysis')}</li>
+          <li>{t('reports.attendance.tierBreakdown')}</li>
         </ul>
-        <Button disabled>Coming Soon</Button>
+        <Button disabled>{t('reports.attendance.comingSoon')}</Button>
       </CardContent>
     </Card>
   );

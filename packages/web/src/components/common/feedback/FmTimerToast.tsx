@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { logger } from '@force-majeure/shared';
 import { Clock } from 'lucide-react';
 import { toast as sonnerToast } from 'sonner';
@@ -15,13 +16,16 @@ interface FmTimerToastProps {
 
 export const FmTimerToast = ({
   duration,
-  title = 'Tickets Reserved',
+  title,
   message,
   onExpire,
   onAction,
-  actionLabel = 'Extend Time',
+  actionLabel,
   id = 'fm-timer-toast',
 }: FmTimerToastProps) => {
+  const { t } = useTranslation('common');
+  const resolvedTitle = title ?? t('timerToast.ticketsReserved');
+  const resolvedActionLabel = actionLabel ?? t('timerToast.extendTime');
   const [timeLeft, setTimeLeft] = useState(duration);
   const [isExecuting, setIsExecuting] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -75,9 +79,9 @@ export const FmTimerToast = ({
             className={`h-4 w-4 flex-shrink-0 transition-colors duration-1000 ${iconColor}`}
           />
           <div className='flex-1'>
-            <div className='font-canela font-semibold'>{title}</div>
+            <div className='font-canela font-semibold'>{resolvedTitle}</div>
             <div className='text-xs text-muted-foreground'>
-              {message || `${timeString} remaining`}
+              {message || t('timerToast.remaining', { time: timeString })}
             </div>
           </div>
           {onAction && (
@@ -100,10 +104,10 @@ export const FmTimerToast = ({
               {isExecuting ? (
                 <>
                   <div className='h-3 w-3 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
-                  <span>Loading...</span>
+                  <span>{t('labels.loading')}</span>
                 </>
               ) : (
-                actionLabel
+                resolvedActionLabel
               )}
             </button>
           )}

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,11 +24,17 @@ export const ExternalLinkDialog = ({
   open,
   onOpenChange,
   url,
-  title = 'Leaving Force Majeure',
-  description = "You're about to be redirected to an external site. Continue?",
-  continueText = 'Continue',
+  title,
+  description,
+  continueText,
   onStopPropagation = false,
 }: ExternalLinkDialogProps) => {
+  const { t } = useTranslation('common');
+
+  const resolvedTitle = title || t('externalLink.title');
+  const resolvedDescription = description || t('externalLink.description');
+  const resolvedContinueText = continueText || t('externalLink.continue');
+
   const handleClick = (e: React.MouseEvent) => {
     if (onStopPropagation) {
       e.stopPropagation();
@@ -38,18 +45,18 @@ export const ExternalLinkDialog = ({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent onClick={handleClick}>
         <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>{description}</AlertDialogDescription>
+          <AlertDialogTitle>{resolvedTitle}</AlertDialogTitle>
+          <AlertDialogDescription>{resolvedDescription}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={handleClick}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel onClick={handleClick}>{t('buttons.cancel')}</AlertDialogCancel>
           <AlertDialogAction
             onClick={e => {
               handleClick(e);
               window.open(url, '_blank', 'noopener,noreferrer');
             }}
           >
-            {continueText}
+            {resolvedContinueText}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

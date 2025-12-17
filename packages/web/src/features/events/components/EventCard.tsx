@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { ExternalLinkDialog } from '@/components/business/ExternalLinkDialog';
 import { FmDateBox } from '@/components/common/display/FmDateBox';
@@ -47,6 +48,7 @@ interface EventCardProps {
 }
 
 export const EventCard = ({ event, isSingleRow = false, isPastEvent = false }: EventCardProps) => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [showTicketDialog, setShowTicketDialog] = useState(false);
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
@@ -81,14 +83,14 @@ export const EventCard = ({ event, isSingleRow = false, isPastEvent = false }: E
   // Context menu actions for admin/developer
   const contextMenuActions: ContextMenuAction<Event>[] = [
     {
-      label: 'Manage Event',
+      label: t('table.manageEvent'),
       icon: <Settings className='w-4 h-4' />,
       onClick: eventData => {
         navigate(`/events/edit/${eventData.id}`);
       },
     },
     {
-      label: 'Cancel',
+      label: t('buttons.cancel'),
       icon: <X className='w-4 h-4' />,
       onClick: () => {
         // Just closes the menu, no action needed
@@ -201,7 +203,7 @@ export const EventCard = ({ event, isSingleRow = false, isPastEvent = false }: E
                       className='flex-1 bg-fm-gold hover:bg-fm-gold/90 text-background font-medium transition-all duration-200'
                     >
                       <ExternalLink className='w-4 h-4 mr-2' />
-                      Get Tickets
+                      {t('eventCard.getTickets')}
                     </Button>
                   </div>
                 )}
@@ -222,7 +224,7 @@ export const EventCard = ({ event, isSingleRow = false, isPastEvent = false }: E
             {isAfterHours && (
               <div className='w-full border-t border-border bg-transparent py-0.5 text-center transition-all duration-200 group-hover:bg-fm-gold group-hover:text-background mb-0'>
                 <span className='text-[8px] font-bold tracking-wider uppercase leading-none text-fm-gold group-hover:text-background'>
-                  After Hours
+                  {t('eventCard.afterHours')}
                 </span>
               </div>
             )}
@@ -235,8 +237,8 @@ export const EventCard = ({ event, isSingleRow = false, isPastEvent = false }: E
           open={showTicketDialog}
           onOpenChange={setShowTicketDialog}
           url={event.ticketUrl}
-          title='Leaving Force Majeure'
-          description="You're about to be redirected to an external site to purchase tickets. Continue?"
+          title={t('dialogs.leavingSite')}
+          description={t('eventCard.redirectDescription')}
           onStopPropagation={true}
         />
       )}

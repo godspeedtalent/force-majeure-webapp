@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FmConfigurableDataGrid, DataGridAction } from '@/features/data-grid';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Trash2, Plus } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { supabase } from '@force-majeure/shared';
 import { toast } from 'sonner';
 import { logger } from '@force-majeure/shared';
@@ -23,6 +24,8 @@ interface CreateGenreFormData {
 }
 
 export const GenresManagement = () => {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [createFormData, setCreateFormData] = useState<CreateGenreFormData>({
@@ -101,7 +104,7 @@ export const GenresManagement = () => {
 
   // Get parent genre options for the create dialog
   const parentOptions = [
-    { value: '', label: 'None (Top Level)' },
+    { value: '', label: t('dialogs.noneTopLevel') },
     ...genres.map(genre => ({
       value: genre.id,
       label: genre.name,
@@ -119,25 +122,21 @@ export const GenresManagement = () => {
       g => g.children_count > 0
     );
     if (genresWithChildren.length > 0) {
-      toast.error(
-        `Cannot delete genres with subgenres. Please delete subgenres first.`
-      );
+      toast.error(t('dialogs.cannotDeleteWithSubgenres'));
       return;
     }
 
     // Check if any genres are assigned to artists
     const genresWithArtists = genresToDelete.filter(g => g.artists_count > 0);
     if (genresWithArtists.length > 0) {
-      toast.error(
-        `Cannot delete genres assigned to artists. Please unassign artists first.`
-      );
+      toast.error(t('dialogs.cannotDeleteWithArtists'));
       return;
     }
 
     const confirmMessage =
       genreCount === 1
-        ? `Are you sure you want to delete "${genresToDelete[0].name}"?`
-        : `Are you sure you want to delete ${genreCount} selected genres?`;
+        ? t('dialogs.deleteGenreConfirm', { genreName: genresToDelete[0].name })
+        : t('dialogs.deleteGenresConfirm', { count: genreCount });
 
     if (!confirm(confirmMessage)) {
       return;
@@ -157,8 +156,8 @@ export const GenresManagement = () => {
 
       const successMessage =
         genreCount === 1
-          ? 'Genre deleted successfully'
-          : `${genreCount} genres deleted successfully`;
+          ? tToast('genres.deleted')
+          : tToast('genres.deletedMultiple', { count: genreCount });
 
       toast.success(successMessage);
       queryClient.invalidateQueries({ queryKey: ['admin-genres'] });
@@ -168,7 +167,7 @@ export const GenresManagement = () => {
         source: 'GenresManagement',
         details: { genreCount },
       });
-      toast.error('Failed to delete genre(s)');
+      toast.error(tToast('genres.deleteFailed'));
     }
   };
 
@@ -203,21 +202,21 @@ export const GenresManagement = () => {
         }
       );
 
-      toast.success('Genre updated');
+      toast.success(tToast('genres.updated'));
     } catch (error) {
       logger.error('Error updating genre', {
         error: error instanceof Error ? error.message : 'Unknown error',
         source: 'GenresManagement',
         details: { genreId: row.id, columnKey },
       });
-      toast.error('Failed to update genre');
+      toast.error(tToast('genres.updateFailed'));
       throw error;
     }
   };
 
   const handleCreate = async () => {
     if (!createFormData.name.trim()) {
-      toast.error('Genre name is required');
+      toast.error(tToast('genres.nameRequired'));
       return;
     }
 
@@ -230,7 +229,7 @@ export const GenresManagement = () => {
 
       if (error) throw error;
 
-      toast.success('Genre created successfully');
+      toast.success(tToast('genres.created'));
       queryClient.invalidateQueries({ queryKey: ['admin-genres'] });
       setIsCreateDialogOpen(false);
       setCreateFormData({ name: '', parentId: null });
@@ -240,7 +239,7 @@ export const GenresManagement = () => {
         source: 'GenresManagement',
         details: { name: createFormData.name },
       });
-      toast.error('Failed to create genre');
+      toast.error(tToast('genres.createFailed'));
     } finally {
       setIsCreating(false);
     }
@@ -248,7 +247,7 @@ export const GenresManagement = () => {
 
   const contextActions: DataGridAction[] = [
     {
-      label: 'Delete Genre',
+      label: t('table.deleteGenre'),
       icon: <Trash2 className='h-4 w-4' />,
       onClick: handleDelete,
       variant: 'destructive',
@@ -259,10 +258,10 @@ export const GenresManagement = () => {
     <div className='space-y-6'>
       <div>
         <h1 className='text-3xl font-canela font-bold text-foreground mb-2'>
-          Genres Management
+          {t('pageTitles.genresManagement')}
         </h1>
         <p className='text-muted-foreground'>
-          Manage music genres and subgenres for artist categorization.
+          {t('pageTitles.genresManagementDescription')}
         </p>
       </div>
 
@@ -275,7 +274,7 @@ export const GenresManagement = () => {
         pageSize={20}
         onUpdate={handleUpdate}
         resourceName='Genre'
-        createButtonLabel='Add Genre'
+        createButtonLabel={t('table.addGenre')}
         onCreateButtonClick={() => setIsCreateDialogOpen(true)}
       />
 
@@ -283,20 +282,20 @@ export const GenresManagement = () => {
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogContent className='sm:max-w-[425px]'>
           <DialogHeader>
-            <DialogTitle>Create New Genre</DialogTitle>
+            <DialogTitle>{t('dialogs.createGenre')}</DialogTitle>
           </DialogHeader>
           <div className='space-y-4 py-4'>
             <FmCommonTextField
-              label='Genre Name'
+              label={t('labels.genreName')}
               value={createFormData.name}
               onChange={e =>
                 setCreateFormData(prev => ({ ...prev, name: e.target.value }))
               }
-              placeholder='e.g., Tech House'
+              placeholder={t('forms.genres.namePlaceholder')}
               required
             />
             <FmCommonSelect
-              label='Parent Genre (Optional)'
+              label={t('labels.parentGenre')}
               value={createFormData.parentId || ''}
               onChange={value =>
                 setCreateFormData(prev => ({
@@ -305,7 +304,7 @@ export const GenresManagement = () => {
                 }))
               }
               options={parentOptions}
-              placeholder='Select a parent genre'
+              placeholder={t('placeholders.selectParentGenre')}
             />
           </div>
           <DialogFooter>
@@ -313,7 +312,7 @@ export const GenresManagement = () => {
               variant='outline'
               onClick={() => setIsCreateDialogOpen(false)}
             >
-              Cancel
+              {t('buttons.cancel')}
             </Button>
             <Button
               variant='outline'
@@ -321,7 +320,7 @@ export const GenresManagement = () => {
               disabled={isCreating || !createFormData.name.trim()}
               className='border-white/20 hover:bg-white/10'
             >
-              {isCreating ? 'Creating...' : 'Create Genre'}
+              {isCreating ? t('dialogs.creating') : t('buttons.createGenre')}
             </Button>
           </DialogFooter>
         </DialogContent>

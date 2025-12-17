@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronLeft, AlertCircle, CheckCircle } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { TrackInputForm, TrackList, type TrackFormData } from '@/features/artists/components/TrackInputForm';
@@ -18,6 +19,7 @@ export function MusicStep({
   onNext,
   onPrevious,
 }: MusicStepProps) {
+  const { t } = useTranslation('common');
   const [editingTrack, setEditingTrack] = useState<TrackFormData | null>(null);
 
   // Check if we have at least one DJ Set
@@ -81,9 +83,9 @@ export function MusicStep({
         <div className='flex justify-center items-start'>
           <div className='w-[85vw] sm:w-[80%] space-y-[20px] bg-black/60 backdrop-blur-sm border border-white/10 p-[30px] sm:p-[40px]'>
             <div>
-              <h2 className='font-canela text-3xl mb-[10px]'>Show us your music.</h2>
+              <h2 className='font-canela text-3xl mb-[10px]'>{t('artistRegistration.musicTitle')}</h2>
               <p className='font-canela text-sm text-muted-foreground'>
-                Add your recordings from Spotify or SoundCloud. At least one DJ Set is required.
+                {t('artistRegistration.musicDescription')}
               </p>
             </div>
 
@@ -101,8 +103,12 @@ export function MusicStep({
               )}
               <span className='text-sm font-canela'>
                 {hasDjSet
-                  ? `DJ Set requirement met (${djSetCount} DJ Set${djSetCount > 1 ? 's' : ''}${trackCount > 0 ? `, ${trackCount} Track${trackCount > 1 ? 's' : ''}` : ''})`
-                  : 'You need to add at least one DJ Set recording'}
+                  ? t('artistRegistration.djSetRequirementMet', {
+                      djSets: djSetCount,
+                      djSetsPlural: djSetCount > 1 ? 's' : '',
+                      tracks: trackCount > 0 ? `, ${trackCount} Track${trackCount > 1 ? 's' : ''}` : ''
+                    })
+                  : t('artistRegistration.djSetRequired')}
               </span>
             </div>
 
@@ -119,7 +125,7 @@ export function MusicStep({
             {/* Add/Edit Track Form */}
             {editingTrack ? (
               <div className="space-y-[10px]">
-                <label className="text-xs uppercase text-fm-gold">Editing Recording</label>
+                <label className="text-xs uppercase text-fm-gold">{t('labels.editingRecording')}</label>
                 <TrackInputForm
                   onAddTrack={handleAddTrack}
                   editingTrack={editingTrack}
@@ -130,7 +136,7 @@ export function MusicStep({
             ) : (
               <TrackInputForm
                 onAddTrack={handleAddTrack}
-                submitButtonText="Add Recording"
+                submitButtonText={t('labels.addRecording')}
               />
             )}
           </div>
@@ -140,10 +146,10 @@ export function MusicStep({
       <div className='flex justify-between pt-[20px] border-t border-white/10 flex-shrink-0'>
         <FmCommonButton onClick={onPrevious} variant='secondary'>
           <ChevronLeft className='h-4 w-4 mr-[10px]' />
-          Previous
+          {t('buttons.previous')}
         </FmCommonButton>
         <FmCommonButton onClick={onNext} variant='default'>
-          Next
+          {t('buttons.next')}
         </FmCommonButton>
       </div>
     </div>

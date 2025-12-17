@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DollarSign, Percent } from 'lucide-react';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { Button } from '@/components/common/shadcn/button';
@@ -29,13 +30,16 @@ interface Fee {
   updated_at: string;
 }
 
-const feeLabels: Record<string, string> = {
-  sales_tax: 'Sales Tax',
-  processing_fee: 'Processing Fee',
-  platform_fee: 'Platform Fee',
+// Fee label keys - will use translations
+const feeLabelKeys: Record<string, string> = {
+  sales_tax: 'labels.salesTax',
+  processing_fee: 'labels.processingFee',
+  platform_fee: 'labels.platformFee',
 };
 
 export const AdminFeesSection = () => {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const [fees, setFees] = useState<Fee[]>([]);
   const [localFees, setLocalFees] = useState<
     Record<string, { type: 'flat' | 'percentage'; value: string }>
@@ -81,7 +85,7 @@ export const AdminFeesSection = () => {
       setLocalFees(initialLocal);
     } catch (error) {
       logger.error('Failed to fetch fees:', { error: error instanceof Error ? error.message : 'Unknown' });
-      toast.error('Failed to load ticketing fees');
+      toast.error(tToast('admin.feesLoadFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -135,11 +139,11 @@ export const AdminFeesSection = () => {
       });
 
       await Promise.all(updates);
-      toast.success('Ticketing fees updated successfully');
+      toast.success(tToast('admin.feesUpdated'));
       await fetchFees();
     } catch (error) {
       logger.error('Failed to update fees:', { error: error instanceof Error ? error.message : 'Unknown' });
-      toast.error('Failed to update ticketing fees');
+      toast.error(tToast('admin.feesUpdateFailed'));
     }
   };
 
@@ -159,17 +163,17 @@ export const AdminFeesSection = () => {
     <div className='space-y-6 max-w-2xl'>
       <div className='pb-3 border-b border-border'>
         <p className='text-xs text-muted-foreground mb-2'>
-          Configure ticketing fees applied to all ticket purchases
+          {t('pageTitles.ticketingFeesDescription')}
         </p>
         <div className='flex items-center gap-2'>
           <span className='text-xs text-muted-foreground'>
-            Current Environment:
+            {t('labels.currentEnvironment')}:
           </span>
           <span className='text-xs font-medium text-fm-gold uppercase'>
             {currentEnvName}
           </span>
           <span className='text-xs text-muted-foreground'>
-            (Editing: <span className='text-white/70'>all environments</span>)
+            {t('formMessages.editingAllEnvironments')}
           </span>
         </div>
       </div>
@@ -186,7 +190,7 @@ export const AdminFeesSection = () => {
             >
               <div className='flex items-center justify-between'>
                 <span className='text-foreground font-medium'>
-                  {feeLabels[fee.fee_name] || fee.fee_name}
+                  {feeLabelKeys[fee.fee_name] ? t(feeLabelKeys[fee.fee_name]) : fee.fee_name}
                 </span>
                 <div className='flex gap-2'>
                   <Button
@@ -201,7 +205,7 @@ export const AdminFeesSection = () => {
                     )}
                   >
                     <DollarSign className='h-3 w-3 mr-1' />
-                    Flat
+                    {t('labels.flat')}
                   </Button>
                   <Button
                     size='sm'
@@ -219,7 +223,7 @@ export const AdminFeesSection = () => {
                 </div>
               </div>
               <FmCommonTextField
-                label={local.type === 'flat' ? 'Amount ($)' : 'Percentage (%)'}
+                label={local.type === 'flat' ? t('labels.amountDollar') : t('labels.percentage')}
                 type='number'
                 value={local.value}
                 onChange={e => handleValueChange(fee.fee_name, e.target.value)}
@@ -237,7 +241,7 @@ export const AdminFeesSection = () => {
           disabled={!hasChanges}
           className='bg-fm-gold hover:bg-fm-gold/90 text-black disabled:opacity-50 disabled:cursor-not-allowed'
         >
-          Save Fee Settings
+          {t('formActions.saveFeeSettings')}
         </Button>
       </div>
 
@@ -245,22 +249,19 @@ export const AdminFeesSection = () => {
         <AlertDialogContent className='bg-background border-border'>
           <AlertDialogHeader>
             <AlertDialogTitle className='font-canela'>
-              Confirm Fee Changes
+              {t('dialogs.confirmFeeChanges')}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              This will update ticketing fees in the database for the{' '}
-              <span className='font-semibold text-fm-gold'>{currentEnvName}</span>{' '}
-              environment. These changes will affect all future ticket
-              purchases. Continue?
+              {t('dialogs.feeChangesDescription', { env: currentEnvName })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('buttons.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleSave}
               className='bg-fm-gold hover:bg-fm-gold/90 text-black'
             >
-              Save Changes
+              {t('formActions.saveChanges')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

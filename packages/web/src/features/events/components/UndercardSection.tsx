@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { FmCommonRowManager } from '@/components/common/forms/FmCommonRowManager';
 import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
 import { EventFormState } from '../hooks/useEventData';
@@ -20,6 +21,8 @@ export const UndercardSection = ({
   formState,
   setFormState,
 }: UndercardSectionProps) => {
+  const { t } = useTranslation('common');
+
   const handleAdd = () => {
     setFormState(prev => ({
       ...prev,
@@ -47,14 +50,14 @@ export const UndercardSection = ({
       items={formState.undercardArtists}
       onAdd={handleAdd}
       onRemove={handleRemove}
-      addLabel='Add Undercard Artist'
+      addLabel={t('undercardSection.addUndercardArtist')}
       minItems={0}
       maxItems={5}
       renderRow={(item, index) => (
         <FmArtistSearchDropdown
           value={item.artistId}
           onChange={id => handleArtistChange(index, id)}
-          placeholder='Search for undercard artist...'
+          placeholder={t('undercardSection.searchPlaceholder')}
         />
       )}
     />

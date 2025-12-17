@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { EventStatus } from '@/features/events/types';
 import { Badge } from '@/components/common/shadcn/badge';
 
@@ -7,23 +8,25 @@ interface EventStatusBadgeProps {
 }
 
 export const EventStatusBadge = ({ status, className = '' }: EventStatusBadgeProps) => {
+  const { t } = useTranslation('common');
+
   const getStatusConfig = (status: EventStatus) => {
     switch (status) {
       case 'draft':
         return {
-          label: 'DRAFT',
+          label: t('eventStatus.draft'),
           className: 'bg-muted text-muted-foreground border-border',
           showPulse: false,
         };
       case 'published':
         return {
-          label: 'LIVE',
+          label: t('eventStatus.live'),
           className: 'bg-green-500/10 text-green-500 border-green-500/20',
           showPulse: true,
         };
       case 'invisible':
         return {
-          label: 'HIDDEN',
+          label: t('eventStatus.hidden'),
           className: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
           showPulse: false,
         };

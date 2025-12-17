@@ -1,5 +1,6 @@
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/common/shadcn/button';
 import { Input } from '@/components/common/shadcn/input';
@@ -15,12 +16,14 @@ interface PasswordInputProps {
 
 export function PasswordInput({
   id,
-  placeholder = 'Enter your password',
+  placeholder,
   value,
   onChange,
   required = false,
   className = '',
 }: PasswordInputProps) {
+  const { t } = useTranslation('common');
+  const resolvedPlaceholder = placeholder ?? t('passwordInput.enterPassword');
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -28,7 +31,7 @@ export function PasswordInput({
       <Input
         id={id}
         type={showPassword ? 'text' : 'password'}
-        placeholder={placeholder}
+        placeholder={resolvedPlaceholder}
         value={value}
         onChange={e => onChange(e.target.value)}
         required={required}

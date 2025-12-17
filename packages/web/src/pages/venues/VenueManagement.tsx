@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import { FileText, MapPin, Save, Trash2, Eye } from 'lucide-react';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
@@ -18,6 +19,8 @@ import { useVenueById, venueKeys } from '@/shared/api/queries/venueQueries';
 type VenueTab = 'overview' | 'view';
 
 export default function VenueManagement() {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<VenueTab>('overview');
@@ -46,7 +49,7 @@ export default function VenueManagement() {
 
     try {
       await venueService.updateVenue(id, data);
-      toast.success('Changes saved automatically');
+      toast.success(tToast('venues.autoSaved'));
       queryClient.invalidateQueries({ queryKey: venueKeys.detail(id) });
     } catch (error) {
       await handleError(error, {
@@ -93,21 +96,21 @@ export default function VenueManagement() {
 
   const navigationGroups: FmCommonSideNavGroup<VenueTab>[] = [
     {
-      label: 'Venue Details',
+      label: t('venueNav.venueDetails'),
       icon: MapPin,
       items: [
         {
           id: 'view',
-          label: 'View Venue',
+          label: t('venueNav.viewVenue'),
           icon: Eye,
-          description: 'View venue details page',
+          description: t('venueNav.viewVenueDescription'),
           isExternal: true,
         },
         {
           id: 'overview',
-          label: 'Overview',
+          label: t('venueNav.overview'),
           icon: FileText,
-          description: 'Basic venue information',
+          description: t('venueNav.overviewDescription'),
         },
       ],
     },
@@ -130,25 +133,25 @@ export default function VenueManagement() {
         image_url: imageUrl,
       });
 
-      toast.success('Venue updated successfully');
+      toast.success(tToast('venues.updated'));
       queryClient.invalidateQueries({ queryKey: venueKeys.detail(id) });
     } catch (error) {
-      handleError(error, { title: 'Failed to update venue' });
+      handleError(error, { title: tToast('venues.updateFailed') });
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!id || !confirm('Are you sure you want to delete this venue?')) return;
+    if (!id || !confirm(t('venueManagement.deleteVenueConfirm'))) return;
 
     setIsDeleting(true);
     try {
       await venueService.deleteVenue(id);
-      toast.success('Venue deleted successfully');
+      toast.success(tToast('venues.deleted'));
       navigate('/developer/database?table=venues');
     } catch (error) {
-      handleError(error, { title: 'Failed to delete venue' });
+      handleError(error, { title: tToast('venues.deleteFailed') });
     } finally {
       setIsDeleting(false);
     }
@@ -157,23 +160,23 @@ export default function VenueManagement() {
   const renderOverviewTab = () => (
     <div className='space-y-6'>
       <Card className='p-6'>
-        <h2 className='text-xl font-semibold mb-6'>Basic Information</h2>
-        
+        <h2 className='text-xl font-semibold mb-6'>{t('venueManagement.basicInformation')}</h2>
+
         <div className='space-y-4'>
           <div>
-            <Label>Venue Name *</Label>
+            <Label>{t('venueManagement.venueName')} *</Label>
             <Input
               value={name}
               onChange={(e) => {
                 setName(e.target.value);
                 triggerAutoSave();
               }}
-              placeholder='Enter venue name'
+              placeholder={t('venueManagement.enterVenueName')}
             />
           </div>
 
           <div>
-            <Label>Venue Image</Label>
+            <Label>{t('venueManagement.venueImage')}</Label>
             <FmImageUpload
               currentImageUrl={imageUrl}
               onUploadComplete={(url) => {
@@ -184,44 +187,44 @@ export default function VenueManagement() {
           </div>
 
           <div>
-            <Label>Address</Label>
+            <Label>{t('venueManagement.address')}</Label>
             <Input
               value={addressLine1}
               onChange={(e) => {
                 setAddressLine1(e.target.value);
                 triggerAutoSave();
               }}
-              placeholder='Street address'
+              placeholder={t('venueManagement.streetAddress')}
             />
           </div>
 
           <div className='grid grid-cols-2 gap-4'>
             <div>
-              <Label>City</Label>
+              <Label>{t('venueManagement.city')}</Label>
               <Input
                 value={city}
                 onChange={(e) => {
                   setCity(e.target.value);
                   triggerAutoSave();
                 }}
-                placeholder='City'
+                placeholder={t('venueManagement.city')}
               />
             </div>
             <div>
-              <Label>State</Label>
+              <Label>{t('venueManagement.state')}</Label>
               <Input
                 value={state}
                 onChange={(e) => {
                   setState(e.target.value);
                   triggerAutoSave();
                 }}
-                placeholder='State'
+                placeholder={t('venueManagement.state')}
               />
             </div>
           </div>
 
           <div>
-            <Label>Capacity</Label>
+            <Label>{t('venueManagement.capacity')}</Label>
             <Input
               type='number'
               value={capacity}
@@ -229,7 +232,7 @@ export default function VenueManagement() {
                 setCapacity(Number(e.target.value));
                 triggerAutoSave();
               }}
-              placeholder='Capacity'
+              placeholder={t('venueManagement.capacity')}
             />
           </div>
         </div>
@@ -242,7 +245,7 @@ export default function VenueManagement() {
           onClick={handleDelete}
           disabled={isDeleting}
         >
-          {isDeleting ? 'Deleting...' : 'Delete Venue'}
+          {isDeleting ? t('buttons.deleting') : t('venueManagement.deleteVenue')}
         </FmCommonButton>
 
         <FmCommonButton
@@ -250,7 +253,7 @@ export default function VenueManagement() {
           onClick={handleSave}
           disabled={isSaving || !name}
         >
-          {isSaving ? 'Saving...' : 'Save Changes'}
+          {isSaving ? t('buttons.saving') : t('buttons.saveChanges')}
         </FmCommonButton>
       </div>
     </div>

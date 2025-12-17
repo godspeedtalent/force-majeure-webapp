@@ -5,6 +5,7 @@
  * Provides consistent UX for confirmations across the app
  */
 
+import { useTranslation } from 'react-i18next';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -56,12 +57,13 @@ export const FmCommonConfirmDialog = ({
   onOpenChange,
   title,
   description,
-  confirmText = 'Confirm',
-  cancelText = 'Cancel',
+  confirmText,
+  cancelText,
   onConfirm,
   variant = 'default',
   isLoading = false,
 }: FmCommonConfirmDialogProps) => {
+  const { t } = useTranslation('common');
   const config = variantConfig[variant];
 
   const handleConfirm = async () => {
@@ -78,14 +80,14 @@ export const FmCommonConfirmDialog = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isLoading}>
-            {cancelText}
+            {cancelText || t('buttons.cancel')}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
             disabled={isLoading}
             className={cn(config.confirmButton)}
           >
-            {isLoading ? 'Loading...' : confirmText}
+            {isLoading ? t('buttons.loading') : (confirmText || t('buttons.confirm'))}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

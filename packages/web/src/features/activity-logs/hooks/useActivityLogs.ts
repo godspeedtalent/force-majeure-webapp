@@ -5,6 +5,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import {
   getActivityLogs,
@@ -140,6 +141,7 @@ export function useUserActivity(
  * Export activity logs to file
  */
 export function useExportActivityLogs() {
+  const { t } = useTranslation('common');
   return useMutation<
     Blob,
     Error,
@@ -157,10 +159,10 @@ export function useExportActivityLogs() {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      toast.success(`Activity logs exported as ${format.toUpperCase()}`);
+      toast.success(t('activityLogs.exportSuccess', { format: format.toUpperCase() }));
     },
     onError: error => {
-      toast.error(`Failed to export logs: ${error.message}`);
+      toast.error(t('activityLogs.exportFailed', { error: error.message }));
     },
   });
 }
@@ -169,17 +171,18 @@ export function useExportActivityLogs() {
  * Trigger manual archive of old logs
  */
 export function useArchiveActivityLogs() {
+  const { t } = useTranslation('common');
   const queryClient = useQueryClient();
 
   return useMutation<number, Error, number>({
     mutationFn: retentionDays => triggerArchive(retentionDays),
     onSuccess: count => {
-      toast.success(`Archived ${count} activity log${count !== 1 ? 's' : ''}`);
+      toast.success(t('activityLogs.archiveSuccess', { count }));
       // Invalidate all activity log queries
       queryClient.invalidateQueries({ queryKey: activityLogKeys.all });
     },
     onError: error => {
-      toast.error(`Failed to archive logs: ${error.message}`);
+      toast.error(t('activityLogs.archiveFailed', { error: error.message }));
     },
   });
 }

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { MapPin, Tag } from 'lucide-react';
 
 import { Card } from '@/components/common/shadcn/card';
@@ -14,12 +15,13 @@ export const LocationCard = ({
   totalTokens,
   tokensRemaining,
 }: LocationCardProps) => {
+  const { t } = useTranslation('common');
   const claimedCount = totalTokens - tokensRemaining;
   const progressPercentage = (claimedCount / totalTokens) * 100;
   const isFullyClaimed = tokensRemaining === 0;
 
   const rewardIcon = <Tag className='w-5 h-5' />;
-  const rewardText = 'Exclusive Reward';
+  const rewardText = t('locationCard.exclusiveReward');
 
   return (
     <Card
@@ -67,16 +69,16 @@ export const LocationCard = ({
                   : 'text-foreground'
             }`}
           >
-            {claimedCount} of {totalTokens} claimed
+            {t('locationCard.claimedOf', { claimed: claimedCount, total: totalTokens })}
           </span>
 
           {isFullyClaimed ? (
             <span className='text-muted-foreground font-medium'>
-              All claimed! 🎉
+              {t('locationCard.allClaimed')}
             </span>
           ) : (
             <span className='text-fm-gold font-medium'>
-              {tokensRemaining} left
+              {t('locationCard.tokensLeft', { count: tokensRemaining })}
             </span>
           )}
         </div>

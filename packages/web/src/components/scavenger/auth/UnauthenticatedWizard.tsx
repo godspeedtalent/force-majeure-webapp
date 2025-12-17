@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ConfirmationStep } from './ConfirmationStep';
 import { LoginForm } from './LoginForm';
@@ -34,6 +35,7 @@ export function UnauthenticatedWizard({
   claimCount = 0,
   lowClaimLocationsCount,
 }: UnauthenticatedWizardProps) {
+  const { t } = useTranslation('common');
   const { currentStep, setCurrentStep, nextStep } = useWizardNavigation();
   const [isLoginMode, setIsLoginMode] = useState(false);
   const [registrationEmail, setRegistrationEmail] = useState('');
@@ -42,11 +44,11 @@ export function UnauthenticatedWizard({
   if (isLoginMode) {
     return (
       <LoginForm
-        title='Welcome Back'
+        title={t('scavenger.wizard.welcomeBack')}
         description={
           locationName
-            ? 'Sign in to claim your reward'
-            : 'Sign in to continue the scavenger hunt'
+            ? t('scavenger.wizard.signInToClaimReward')
+            : t('scavenger.wizard.signInToContinue')
         }
         onSuccess={() => {
           onLoginSuccess?.();
@@ -86,11 +88,11 @@ export function UnauthenticatedWizard({
     {
       content: (
         <RegistrationForm
-          title='Join the Rave Fam'
+          title={t('scavenger.wizard.joinRaveFam')}
           description={
             locationName
-              ? 'Register to claim your reward.'
-              : 'Register to claim your free tickets when you find them.'
+              ? t('scavenger.wizard.registerToClaimReward')
+              : t('scavenger.wizard.registerToClaimTickets')
           }
           onSuccess={email => {
             setRegistrationEmail(email);

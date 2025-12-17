@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@force-majeure/shared';
 import { toast } from 'sonner';
 import { NoteType, NoteStatus } from '../config/devNotesConfig';
@@ -39,6 +40,7 @@ export interface UseDevNotesActionsReturn {
  * Handles create, read, update status, and delete with proper error handling
  */
 export function useDevNotesActions(): UseDevNotesActionsReturn {
+  const { t } = useTranslation('common');
   const [isLoading, setIsLoading] = useState(false);
 
   /**
@@ -58,7 +60,7 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
       return (data || []) as DevNote[];
     } catch (error) {
       logger.error('Failed to fetch dev notes:', error instanceof Error ? { error: error.message } : {});
-      toast.error('Failed to load notes');
+      toast.error(t('devNotes.loadFailed'));
       return [];
     } finally {
       setIsLoading(false);
@@ -79,10 +81,10 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
       });
 
       if (error) throw error;
-      toast.success('Note created');
+      toast.success(t('devNotes.createSuccess'));
     } catch (error) {
       logger.error('Failed to update dev note:', error instanceof Error ? { error: error.message } : {});
-      toast.error('Failed to create note');
+      toast.error(t('devNotes.createFailed'));
       throw error;
     }
   };
@@ -101,10 +103,10 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
         .eq('id', noteId);
 
       if (error) throw error;
-      toast.success('Status updated');
+      toast.success(t('devNotes.statusUpdated'));
     } catch (error) {
       logger.error('Failed to delete dev note:', error instanceof Error ? { error: error.message } : {});
-      toast.error('Failed to update status');
+      toast.error(t('devNotes.statusUpdateFailed'));
       throw error;
     }
   };
@@ -123,10 +125,10 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
         .eq('id', noteId);
 
       if (error) throw error;
-      toast.success('Note updated');
+      toast.success(t('devNotes.updateSuccess'));
     } catch (error) {
       logger.error('Failed to complete dev note:', error instanceof Error ? { error: error.message } : {});
-      toast.error('Failed to update note');
+      toast.error(t('devNotes.updateFailed'));
       throw error;
     }
   };
@@ -142,10 +144,10 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
         .eq('id', noteId);
 
       if (error) throw error;
-      toast.success('Note deleted');
+      toast.success(t('devNotes.deleteSuccess'));
     } catch (error) {
       logger.error('Failed to update note type:', error instanceof Error ? { error: error.message } : {});
-      toast.error('Failed to delete note');
+      toast.error(t('devNotes.deleteFailed'));
       throw error;
     }
   };

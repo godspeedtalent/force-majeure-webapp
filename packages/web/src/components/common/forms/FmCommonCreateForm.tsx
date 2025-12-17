@@ -6,6 +6,7 @@
  */
 
 import { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { LucideIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { DemoLayout } from '@/components/demo/DemoLayout';
@@ -65,11 +66,12 @@ export const FmCommonCreateForm = ({
   onSubmit,
   onCancel,
   isSubmitting,
-  submitText = 'Create',
-  cancelText = 'Cancel',
+  submitText,
+  cancelText,
   returnPath = '/developer/database',
   returnQuery,
 }: FmCommonCreateFormProps) => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
 
   const handleCancel = () => {
@@ -104,7 +106,7 @@ export const FmCommonCreateForm = ({
             onClick={handleCancel}
             disabled={isSubmitting}
           >
-            {cancelText}
+            {cancelText || t('buttons.cancel')}
           </FmCommonButton>
           <FmCommonButton
             type='button'
@@ -112,7 +114,7 @@ export const FmCommonCreateForm = ({
             onClick={onSubmit}
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Creating...' : submitText}
+            {isSubmitting ? t('status.creating') : (submitText || t('buttons.create'))}
           </FmCommonButton>
         </div>
       </div>

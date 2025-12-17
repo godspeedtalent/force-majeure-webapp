@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Rocket } from 'lucide-react';
 import { FmBigButton } from '@/components/common/buttons/FmBigButton';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
@@ -15,6 +16,7 @@ export const PublishEventButton = ({
   onPublish,
   className = '',
 }: PublishEventButtonProps) => {
+  const { t } = useTranslation('common');
   const [showConfirm, setShowConfirm] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
 
@@ -40,17 +42,17 @@ export const PublishEventButton = ({
         isLoading={isPublishing}
       >
         <Rocket className="mr-2 h-5 w-5" />
-        PUBLISH EVENT
+        {t('events.publish.button')}
       </FmBigButton>
 
       <FmCommonConfirmDialog
         open={showConfirm}
         onOpenChange={setShowConfirm}
         onConfirm={handleConfirm}
-        title="Publish Event?"
-        description="Once published, this event will be visible to the public and ticket sales can begin. This action will make your event appear on the home page and allow customers to purchase tickets."
-        confirmText="Publish Event"
-        cancelText="Cancel"
+        title={t('events.publish.confirmTitle')}
+        description={t('events.publish.confirmDescription')}
+        confirmText={t('events.publish.confirm')}
+        cancelText={t('buttons.cancel')}
         variant="default"
       />
     </>

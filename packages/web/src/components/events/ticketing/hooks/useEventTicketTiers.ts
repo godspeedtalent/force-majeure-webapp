@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@force-majeure/shared';
 import { toast } from 'sonner';
 import type { TicketGroup } from '../ticket-group-manager/types';
@@ -42,6 +43,7 @@ const ticketGroupKeys = {
  * custom query logic for the complex group/tier organization.
  */
 export const useEventTicketTiers = (eventId: string | undefined) => {
+  const { t } = useTranslation('common');
   const queryClient = useQueryClient();
 
   // Custom query for groups with tiers - this has complex business logic
@@ -211,10 +213,10 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
       // Invalidate both group and tier queries
       queryClient.invalidateQueries({ queryKey: ticketGroupKeys.byEvent(eventId!) });
       queryClient.invalidateQueries({ queryKey: ticketTierKeys.byEvent(eventId!) });
-      toast.success('Ticket tiers saved successfully');
+      toast.success(t('ticketing.tiersSaved'));
     },
     onError: (error: Error) => {
-      toast.error(`Failed to save ticket tiers: ${error.message}`);
+      toast.error(t('ticketing.tiersSaveFailed', { error: error.message }));
     },
   });
 
@@ -225,10 +227,10 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ticketGroupKeys.byEvent(eventId!) });
-          toast.success('Tier deleted successfully');
+          toast.success(t('ticketing.tierDeleted'));
         },
         onError: (error: Error) => {
-          toast.error(`Failed to delete tier: ${error.message}`);
+          toast.error(t('ticketing.tierDeleteFailed', { error: error.message }));
         },
       }
     );
@@ -242,7 +244,7 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
           queryClient.invalidateQueries({ queryKey: ticketGroupKeys.byEvent(eventId!) });
         },
         onError: (error: Error) => {
-          toast.error(`Failed to toggle tier: ${error.message}`);
+          toast.error(t('ticketing.tierToggleFailed', { error: error.message }));
         },
       }
     );

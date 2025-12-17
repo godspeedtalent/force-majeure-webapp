@@ -61,5 +61,17 @@
   },
   "age": {
     "required": "您必须确认符合年龄要求"
-  }
+  },
+  "eventTitleRequired": "请提供活动标题",
+  "headlinerRequired": "请选择主演艺术家",
+  "eventDateRequired": "请选择活动日期",
+  "startTimeRequired": "请选择开始时间",
+  "endTimeOrAfterHoursRequired": "请选择结束时间或标记为夜场活动",
+  "venueRequired": "请选择场地",
+  "ticketTierRequired": "请至少添加一个票档",
+  "totalTicketsExceedsCapacity": "总票数 ({{totalTickets}}) 超过场地容量 ({{venueCapacity}})",
+  "tierNameRequired": "票档 {{tierNumber}} 必须有名称",
+  "tierPriceRequired": "票档 \"{{tierName}}\" 必须有价格（免费请使用0）",
+  "tierNegativePrice": "票档 \"{{tierName}}\" 不能为负价格",
+  "tierQuantityRequired": "票档 \"{{tierName}}\" 必须至少有1张票"
 }

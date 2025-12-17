@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { supabase } from '@force-majeure/shared';
@@ -8,6 +9,7 @@ import { logger } from '@force-majeure/shared';
 import type { ArtistRegistrationFormData } from '../types/registration';
 
 export function useArtistRegistrationSubmit() {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,10 +27,7 @@ export function useArtistRegistrationSubmit() {
         .single();
 
       if (existingArtist) {
-        toast.error(
-          'An artist with this name already exists. If this is you, please email management@forcemajeure.vip for help linking your profile.',
-          { duration: 8000 }
-        );
+        toast.error(t('artistRegistration.artistAlreadyExists'), { duration: 8000 });
         setIsSubmitting(false);
         return false;
       }
@@ -43,10 +42,7 @@ export function useArtistRegistrationSubmit() {
         .single();
 
       if (pendingRegistration) {
-        toast.error(
-          'A registration with this artist name is already pending review. If this is you, please email management@forcemajeure.vip for help.',
-          { duration: 8000 }
-        );
+        toast.error(t('artistRegistration.registrationPending'), { duration: 8000 });
         setIsSubmitting(false);
         return false;
       }
@@ -86,16 +82,13 @@ export function useArtistRegistrationSubmit() {
           message: 'Error submitting artist registration',
           details: error,
         });
-        toast.error('Failed to submit registration. Please try again.');
+        toast.error(t('artistRegistration.submitFailed'));
         setIsSubmitting(false);
         return false;
       }
 
       logger.info('Artist registration submitted successfully', { data });
-      toast.success(
-        "Thank you for registering! If your sound is a good fit for a future event, we'll reach out to you!",
-        { duration: 6000 }
-      );
+      toast.success(t('artistRegistration.submitSuccess'), { duration: 6000 });
 
       setTimeout(() => {
         navigate('/profile/edit', { state: { activeTab: 'artist' } });
@@ -109,7 +102,7 @@ export function useArtistRegistrationSubmit() {
         message: 'Unexpected error during artist registration',
         details: error,
       });
-      toast.error('An unexpected error occurred. Please try again.');
+      toast.error(t('errors.genericError'));
       setIsSubmitting(false);
       return false;
     }

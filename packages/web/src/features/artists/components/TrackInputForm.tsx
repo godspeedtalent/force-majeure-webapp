@@ -7,6 +7,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link2, Music, ExternalLink, AlertCircle, Disc, Radio, Trash2, Pencil, X } from 'lucide-react';
 import { FaSpotify, FaSoundcloud } from 'react-icons/fa6';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
@@ -127,10 +128,11 @@ export function TrackInputForm({
   onAddTrack,
   onCancel,
   showCancelButton = false,
-  submitButtonText = 'Add Recording',
+  submitButtonText,
   editingTrack,
   onEditComplete,
 }: TrackInputFormProps) {
+  const { t } = useTranslation('common');
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -139,6 +141,7 @@ export function TrackInputForm({
   const [recordingType, setRecordingType] = useState<RecordingType>('track');
 
   const isEditMode = !!editingTrack;
+  const defaultSubmitText = submitButtonText || t('forms.tracks.addRecording');
 
   // Initialize form when editing track changes
   useEffect(() => {
@@ -166,7 +169,7 @@ export function TrackInputForm({
 
       const platform = detectPlatform(url);
       if (!platform) {
-        setError('Please enter a valid Spotify or SoundCloud URL');
+        setError(t('formMessages.invalidTrackUrl'));
         setTrackData(null);
         return;
       }
@@ -187,11 +190,11 @@ export function TrackInputForm({
           setTrackData(metadata);
           setError(null);
         } else {
-          setError('Could not fetch track information. Please check the URL.');
+          setError(t('formMessages.couldNotFetchTrack'));
           setTrackData(null);
         }
       } catch {
-        setError('Failed to fetch track metadata');
+        setError(t('formMessages.failedToFetchTrack'));
         setTrackData(null);
       } finally {
         setIsLoading(false);
@@ -246,10 +249,10 @@ export function TrackInputForm({
       {/* URL Input */}
       <div className="space-y-[10px]">
         <FmCommonTextField
-          label="Track URL"
+          label={t('forms.tracks.urlLabel')}
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder="https://open.spotify.com/track/... or https://soundcloud.com/..."
+          placeholder={t('forms.tracks.urlPlaceholder')}
         />
 
         {/* Platform indicators */}
@@ -268,7 +271,7 @@ export function TrackInputForm({
       {/* Recording Type Selector */}
       {trackData && !isLoading && (
         <div className="space-y-[10px]">
-          <label className="text-xs uppercase text-muted-foreground">Recording Type</label>
+          <label className="text-xs uppercase text-muted-foreground">{t('formLabels.recordingType')}</label>
           <div className="flex gap-[10px]">
             <button
               type="button"
@@ -281,7 +284,7 @@ export function TrackInputForm({
               )}
             >
               <Disc className="h-4 w-4" />
-              <span className="font-medium">Track</span>
+              <span className="font-medium">{t('formLabels.track')}</span>
             </button>
             <button
               type="button"
@@ -294,7 +297,7 @@ export function TrackInputForm({
               )}
             >
               <Radio className="h-4 w-4" />
-              <span className="font-medium">DJ Set</span>
+              <span className="font-medium">{t('formLabels.djSet')}</span>
             </button>
           </div>
         </div>
@@ -304,7 +307,7 @@ export function TrackInputForm({
       {isLoading && (
         <div className="flex items-center justify-center py-[40px]">
           <FmCommonLoadingSpinner size="md" />
-          <span className="ml-[10px] text-muted-foreground">Fetching track info...</span>
+          <span className="ml-[10px] text-muted-foreground">{t('formMessages.fetchingTrackInfo')}</span>
         </div>
       )}
 
@@ -361,7 +364,7 @@ export function TrackInputForm({
                   className="flex items-center gap-[5px] hover:text-fm-gold transition-colors"
                 >
                   <ExternalLink className="h-3 w-3" />
-                  Preview
+                  {t('forms.tracks.preview')}
                 </a>
               </div>
             </div>
@@ -376,7 +379,7 @@ export function TrackInputForm({
             variant="secondary"
             onClick={onCancel}
           >
-            Cancel
+            {t('buttons.cancel')}
           </FmCommonButton>
         )}
         <FmCommonButton
@@ -385,8 +388,8 @@ export function TrackInputForm({
           disabled={!trackData || isLoading || isLinking}
         >
           {isLinking
-            ? (isEditMode ? 'Saving...' : 'Adding...')
-            : (isEditMode ? 'Save Changes' : submitButtonText)
+            ? (isEditMode ? t('forms.tracks.saving') : t('forms.tracks.adding'))
+            : (isEditMode ? t('formActions.saveChanges') : defaultSubmitText)
           }
         </FmCommonButton>
       </div>
@@ -403,11 +406,13 @@ interface TrackListProps {
 }
 
 export function TrackList({ tracks, onRemoveTrack, onEditTrack, editingTrackId }: TrackListProps) {
+  const { t } = useTranslation('common');
+
   if (tracks.length === 0) return null;
 
   return (
     <div className="space-y-[10px]">
-      <label className="text-xs uppercase text-muted-foreground">Added Recordings ({tracks.length})</label>
+      <label className="text-xs uppercase text-muted-foreground">{t('forms.tracks.addedRecordings', { count: tracks.length })}</label>
       <div className="space-y-[10px]">
         {tracks.map((track) => {
           const isEditing = editingTrackId === track.id;
@@ -448,7 +453,7 @@ export function TrackList({ tracks, onRemoveTrack, onEditTrack, editingTrackId }
                 <div className="flex-1 py-[10px]">
                   <h4 className="font-medium text-sm line-clamp-1">{track.name}</h4>
                   <p className="text-xs text-muted-foreground">
-                    {track.recordingType === 'dj_set' ? 'DJ Set' : 'Track'}
+                    {track.recordingType === 'dj_set' ? t('formLabels.djSet') : t('formLabels.track')}
                   </p>
                 </div>
 
@@ -463,7 +468,7 @@ export function TrackList({ tracks, onRemoveTrack, onEditTrack, editingTrackId }
                           ? "text-fm-gold"
                           : "text-muted-foreground hover:text-fm-gold"
                       )}
-                      aria-label="Edit track"
+                      aria-label={t('aria.editTrack')}
                     >
                       {isEditing ? <X className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
                     </button>
@@ -471,7 +476,7 @@ export function TrackList({ tracks, onRemoveTrack, onEditTrack, editingTrackId }
                   <button
                     onClick={() => onRemoveTrack(track.id)}
                     className="p-[10px] text-muted-foreground hover:text-red-400 transition-colors"
-                    aria-label="Remove track"
+                    aria-label={t('aria.removeTrack')}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>

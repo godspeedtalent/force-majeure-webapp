@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MoreVertical, EyeOff } from 'lucide-react';
 import {
   DropdownMenu,
@@ -22,6 +23,8 @@ export const StatusActionsDropdown = ({
   orderCount,
   onMakeInvisible,
 }: StatusActionsDropdownProps) => {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const [showInvisibleConfirm, setShowInvisibleConfirm] = useState(false);
 
   if (currentStatus === 'draft') {
@@ -30,16 +33,16 @@ export const StatusActionsDropdown = ({
 
   const handleMakeInvisible = async () => {
     if (orderCount > 0) {
-      toast.error('Cannot hide event with existing orders');
+      toast.error(tToast('events.cannotHideWithOrders'));
       return;
     }
 
     try {
       await onMakeInvisible();
       setShowInvisibleConfirm(false);
-      toast.success('Event is now hidden from public view');
-    } catch (error) {
-      toast.error('Failed to hide event');
+      toast.success(tToast('events.hiddenFromPublic'));
+    } catch (_error) {
+      toast.error(tToast('events.hideFailed'));
     }
   };
 
@@ -55,7 +58,7 @@ export const StatusActionsDropdown = ({
           <DropdownMenuItem
             onClick={() => {
               if (orderCount > 0) {
-                toast.error('Cannot hide event with existing orders');
+                toast.error(tToast('events.cannotHideWithOrders'));
               } else {
                 setShowInvisibleConfirm(true);
               }
@@ -63,7 +66,7 @@ export const StatusActionsDropdown = ({
             disabled={orderCount > 0}
           >
             <EyeOff className="mr-2 h-4 w-4" />
-            Make Invisible
+            {t('dialogs.makeInvisible')}
             {orderCount > 0 && (
               <span className="ml-2 text-xs text-muted-foreground">
                 ({orderCount} orders)
@@ -77,10 +80,10 @@ export const StatusActionsDropdown = ({
         open={showInvisibleConfirm}
         onOpenChange={setShowInvisibleConfirm}
         onConfirm={handleMakeInvisible}
-        title="Hide Event from Public?"
-        description="This event will be hidden from public view and will not appear on the home page. Existing ticket holders will retain their tickets."
-        confirmText="Make Invisible"
-        cancelText="Cancel"
+        title={t('dialogs.hideEvent')}
+        description={t('dialogs.hideEventDescription')}
+        confirmText={t('dialogs.makeInvisible')}
+        cancelText={t('buttons.cancel')}
         variant="destructive"
       />
     </>

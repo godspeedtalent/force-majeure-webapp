@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
 import { cn } from '@force-majeure/shared';
@@ -21,15 +22,18 @@ export function FmCommonRowManager<T>({
   onAdd,
   onRemove,
   renderRow,
-  addLabel = 'Add Item',
+  addLabel,
   minItems = 1,
   maxItems = 10,
   className,
   canRemoveItem,
   getRemoveTooltip,
 }: FmCommonRowManagerProps<T>) {
+  const { t } = useTranslation('common');
   const canAdd = items.length < maxItems;
   const baseCanRemove = items.length > minItems;
+
+  const resolvedAddLabel = addLabel || t('rowManager.addItem');
 
   return (
     <div className={cn('space-y-3', className)}>
@@ -70,7 +74,7 @@ export function FmCommonRowManager<T>({
           className='w-full border-white/20 bg-white/5 hover:bg-fm-gold/10 hover:border-fm-gold text-white hover:text-fm-gold'
         >
           <Plus className='h-4 w-4 mr-2' />
-          {addLabel}
+          {resolvedAddLabel}
         </Button>
       )}
     </div>

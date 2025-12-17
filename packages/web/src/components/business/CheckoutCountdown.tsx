@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCheckoutTimer } from '@/contexts/CheckoutContext';
@@ -15,6 +16,7 @@ export const CheckoutCountdown = ({
   onExpire,
   redirectUrl,
 }: CheckoutCountdownProps) => {
+  const { t } = useTranslation('toasts');
   const { checkoutDuration } = useCheckoutTimer();
 
   // Use the duration from context (in seconds)
@@ -26,8 +28,8 @@ export const CheckoutCountdown = ({
     let timeoutId: NodeJS.Timeout | null = null;
 
     const handleExpiration = () => {
-      toast.error('Your tickets have been returned', {
-        description: 'Please reselect and check out again to purchase tickets',
+      toast.error(t('checkout.ticketsReturned'), {
+        description: t('checkout.reselectTickets'),
         className: 'bg-[hsl(348,60%,20%)]/90 border-[hsl(348,60%,30%)]',
       });
 

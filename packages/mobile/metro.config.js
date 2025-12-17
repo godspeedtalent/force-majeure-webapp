@@ -23,4 +23,10 @@ config.resolver.unstable_enableSymlinks = true;
 // 4. Ensure Metro can resolve packages from the pnpm store
 config.resolver.unstable_enablePackageExports = true;
 
-module.exports = withNativeWind(config, { input: './global.css' });
+// 5. Configure source extensions for web
+config.resolver.sourceExts = [...config.resolver.sourceExts, 'mjs', 'cjs'];
+
+module.exports = withNativeWind(config, {
+  input: './global.css',
+  inlineRem: 16,
+});

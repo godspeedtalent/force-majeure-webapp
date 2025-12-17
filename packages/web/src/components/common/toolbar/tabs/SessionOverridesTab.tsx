@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
 import { Button } from '@/components/common/shadcn/button';
 import { RefreshCw, EyeOff } from 'lucide-react';
@@ -21,6 +22,7 @@ import { useFeatureFlagHelpers } from '@force-majeure/shared';
 import { useQueryClient } from '@tanstack/react-query';
 
 export function SessionOverridesTabContent() {
+  const { t } = useTranslation('common');
   const { flags } = useFeatureFlagHelpers();
   const queryClient = useQueryClient();
   const [localOverrides, setLocalOverrides] = useState<Record<string, boolean | null>>({});
@@ -41,8 +43,8 @@ export function SessionOverridesTabContent() {
     // Invalidate feature flags query to trigger re-fetch
     queryClient.invalidateQueries({ queryKey: ['feature-flags'] });
 
-    toast.success('Session override applied', {
-      description: `Override active for this session only`,
+    toast.success(t('devTools.sessionOverrides.overrideApplied'), {
+      description: t('devTools.sessionOverrides.overrideActiveSession'),
     });
   };
 
@@ -53,8 +55,8 @@ export function SessionOverridesTabContent() {
     // Invalidate feature flags query to trigger re-fetch
     queryClient.invalidateQueries({ queryKey: ['feature-flags'] });
 
-    toast.info('Override cleared', {
-      description: 'Using database value',
+    toast.info(t('devTools.sessionOverrides.overrideCleared'), {
+      description: t('devTools.sessionOverrides.usingDatabaseValue'),
     });
   };
 
@@ -68,7 +70,7 @@ export function SessionOverridesTabContent() {
     // Invalidate feature flags query to trigger re-fetch
     queryClient.invalidateQueries({ queryKey: ['feature-flags'] });
 
-    toast.info('All session overrides cleared');
+    toast.info(t('devTools.sessionOverrides.allOverridesCleared'));
   };
 
   const hasAnyOverrides = hasFeatureFlagOverride(FEATURE_FLAGS.COMING_SOON_MODE);
@@ -83,13 +85,12 @@ export function SessionOverridesTabContent() {
     <div className='space-y-4'>
       <div className='mb-4 pb-3 border-b border-white/10'>
         <p className='text-xs text-white/50 mb-2'>
-          Session-based overrides for this browser session only. These override database values
-          and .env settings.
+          {t('devTools.sessionOverrides.description')}
         </p>
         <div className='flex items-center gap-2 text-xs'>
-          <span className='text-white/50'>Active Overrides:</span>
+          <span className='text-white/50'>{t('devTools.sessionOverrides.activeOverrides')}</span>
           <span className='font-medium text-fm-gold'>
-            {hasAnyOverrides ? '1' : 'None'}
+            {hasAnyOverrides ? '1' : t('status.none')}
           </span>
         </div>
       </div>
@@ -103,7 +104,7 @@ export function SessionOverridesTabContent() {
                 <div>
                   <FmCommonToggle
                     id='override-coming-soon-mode'
-                    label='Override Coming Soon Mode'
+                    label={t('devTools.sessionOverrides.overrideComingSoon')}
                     icon={EyeOff}
                     checked={displayValue}
                     onCheckedChange={checked =>
@@ -117,8 +118,7 @@ export function SessionOverridesTabContent() {
                 className='max-w-xs bg-black/95 border-white/20 z-[150]'
               >
                 <p className='text-sm text-white'>
-                  Temporarily disable Coming Soon mode for your session. Useful for testing the
-                  full app while coming_soon_mode is enabled in the database.
+                  {t('devTools.sessionOverrides.comingSoonTooltip')}
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -128,13 +128,13 @@ export function SessionOverridesTabContent() {
           <div className='flex items-center gap-2 text-xs ml-10'>
             {hasOverride ? (
               <>
-                <span className='text-white/50'>Override active:</span>
+                <span className='text-white/50'>{t('devTools.sessionOverrides.overrideActive')}</span>
                 <span className='font-medium text-fm-gold'>
-                  {displayValue ? 'Enabled' : 'Disabled'}
+                  {displayValue ? t('status.enabled') : t('status.disabled')}
                 </span>
                 <span className='text-white/30'>•</span>
                 <span className='text-white/30'>
-                  Database: {databaseValue ? 'Enabled' : 'Disabled'}
+                  {t('labels.database')}: {databaseValue ? t('status.enabled') : t('status.disabled')}
                 </span>
                 <Button
                   variant='ghost'
@@ -142,14 +142,14 @@ export function SessionOverridesTabContent() {
                   onClick={() => handleClear(FEATURE_FLAGS.COMING_SOON_MODE)}
                   className='h-6 px-2 text-xs text-white/50 hover:text-white hover:bg-white/10'
                 >
-                  Clear
+                  {t('buttons.clear')}
                 </Button>
               </>
             ) : (
               <>
-                <span className='text-white/50'>Using database value:</span>
+                <span className='text-white/50'>{t('devTools.sessionOverrides.usingDatabase')}</span>
                 <span className='font-medium text-white/70'>
-                  {databaseValue ? 'Enabled' : 'Disabled'}
+                  {databaseValue ? t('status.enabled') : t('status.disabled')}
                 </span>
               </>
             )}
@@ -166,7 +166,7 @@ export function SessionOverridesTabContent() {
             className='w-full border-white/20 hover:bg-white/10 text-white'
           >
             <RefreshCw className='h-4 w-4 mr-2' />
-            Clear All Session Overrides
+            {t('devTools.sessionOverrides.clearAll')}
           </Button>
         </div>
       )}
@@ -174,9 +174,7 @@ export function SessionOverridesTabContent() {
       {/* Info box */}
       <div className='p-3 rounded-none bg-white/5 border border-white/10'>
         <p className='text-xs text-white/70 leading-relaxed'>
-          <strong className='text-white'>How it works:</strong> Session overrides are stored in
-          your browser's sessionStorage and only affect your current tab. They override both
-          database values and .env settings. Closing the tab will clear all overrides.
+          <strong className='text-white'>{t('devTools.sessionOverrides.howItWorks')}</strong> {t('devTools.sessionOverrides.howItWorksDescription')}
         </p>
       </div>
     </div>

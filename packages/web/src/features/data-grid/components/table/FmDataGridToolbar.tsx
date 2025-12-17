@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, Filter, Download, Trash2, Plus } from 'lucide-react';
 import { Input } from '@/components/common/shadcn/input';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -57,13 +58,15 @@ export function FmDataGridToolbar({
   toolbarActions,
   isBatchDeleting = false,
 }: FmDataGridToolbarProps) {
+  const { t } = useTranslation('common');
+
   return (
     <div className='flex items-center gap-4'>
       {/* Search Bar */}
       <div className='relative flex-1'>
         <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
         <Input
-          placeholder='Search across all columns...'
+          placeholder={t('placeholders.searchAllColumns')}
           value={searchQuery}
           onChange={e => onSearchChange(e.target.value)}
           className='pl-10 bg-background/50 border-border/50 focus:border-fm-gold transition-all duration-300'
@@ -78,7 +81,7 @@ export function FmDataGridToolbar({
           onClick={onClearFilters}
           className='animate-in fade-in duration-300'
         >
-          Clear Filters
+          {t('table.clearFilters')}
         </FmCommonButton>
       )}
 
@@ -87,7 +90,7 @@ export function FmDataGridToolbar({
         <div className='text-sm text-muted-foreground'>
           {selectedCount > 0 && (
             <span className='animate-in fade-in slide-in-from-right duration-300'>
-              {selectedCount} row{selectedCount !== 1 ? 's' : ''} selected
+              {t('table.rowsSelected', { count: selectedCount })}
             </span>
           )}
         </div>
@@ -102,7 +105,7 @@ export function FmDataGridToolbar({
             icon={Trash2}
             className='animate-in fade-in slide-in-from-right duration-300'
           >
-            Delete {selectedCount}
+            {t('table.delete', { count: selectedCount })}
           </FmCommonButton>
         )}
 
@@ -115,14 +118,14 @@ export function FmDataGridToolbar({
             icon={Plus}
             className='animate-in fade-in slide-in-from-right duration-300'
           >
-            Edit {selectedCount}
+            {t('table.edit', { count: selectedCount })}
           </FmCommonButton>
         )}
 
         {/* Export Button */}
         {enableExport && totalDataCount > 0 && onExport && (
           <FmCommonButton onClick={onExport} variant='default' size='sm' icon={Download}>
-            Export
+            {t('table.export')}
           </FmCommonButton>
         )}
 
@@ -134,7 +137,7 @@ export function FmDataGridToolbar({
             size='sm'
             icon={Filter}
           >
-            {hasGrouping ? 'Grouped' : 'Group By'}
+            {hasGrouping ? t('table.grouped') : t('table.groupBy')}
           </FmCommonButton>
         )}
 
@@ -150,7 +153,7 @@ export function FmDataGridToolbar({
             icon={Plus}
             iconPosition='left'
           >
-            {createButtonLabel || `Add ${resourceName}`}
+            {createButtonLabel || t('table.add', { resource: resourceName })}
           </FmCommonButton>
         )}
       </div>

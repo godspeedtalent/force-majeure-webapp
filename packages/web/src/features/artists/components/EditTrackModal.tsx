@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Save, Disc, Radio, ExternalLink, Music } from 'lucide-react';
 import { FaSpotify, FaSoundcloud } from 'react-icons/fa6';
 import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
@@ -20,6 +21,7 @@ interface EditTrackModalProps {
 }
 
 export function EditTrackModal({ track, onClose, onSave }: EditTrackModalProps) {
+  const { t } = useTranslation('common');
   const [recordingType, setRecordingType] = useState<RecordingType>('track');
 
   // Reset state when track changes
@@ -44,8 +46,8 @@ export function EditTrackModal({ track, onClose, onSave }: EditTrackModalProps) 
     <FmCommonModal
       open={!!track}
       onOpenChange={(open) => !open && onClose()}
-      title="Edit Recording"
-      description="Update the recording type for this track."
+      title={t('dialogs.editRecording')}
+      description={t('dialogs.editRecordingDescription')}
     >
       <div className="space-y-6">
         {/* Track Preview */}
@@ -89,7 +91,7 @@ export function EditTrackModal({ track, onClose, onSave }: EditTrackModalProps) 
                 className="flex items-center gap-1 text-xs text-muted-foreground hover:text-fm-gold transition-colors"
               >
                 <ExternalLink className="h-3 w-3" />
-                Open Link
+                {t('forms.tracks.preview')}
               </a>
             </div>
           </div>
@@ -97,7 +99,7 @@ export function EditTrackModal({ track, onClose, onSave }: EditTrackModalProps) 
 
         {/* Recording Type Selector */}
         <div className="space-y-2">
-          <label className="text-xs uppercase text-muted-foreground">Recording Type</label>
+          <label className="text-xs uppercase text-muted-foreground">{t('formLabels.recordingType')}</label>
           <div className="flex gap-2">
             <button
               type="button"
@@ -110,7 +112,7 @@ export function EditTrackModal({ track, onClose, onSave }: EditTrackModalProps) 
               )}
             >
               <Disc className="h-4 w-4" />
-              <span className="font-medium">Track</span>
+              <span className="font-medium">{t('formLabels.track')}</span>
             </button>
             <button
               type="button"
@@ -123,7 +125,7 @@ export function EditTrackModal({ track, onClose, onSave }: EditTrackModalProps) 
               )}
             >
               <Radio className="h-4 w-4" />
-              <span className="font-medium">DJ Set</span>
+              <span className="font-medium">{t('formLabels.djSet')}</span>
             </button>
           </div>
         </div>
@@ -141,13 +143,13 @@ export function EditTrackModal({ track, onClose, onSave }: EditTrackModalProps) 
             variant="secondary"
             onClick={onClose}
           >
-            Cancel
+            {t('buttons.cancel')}
           </FmCommonButton>
           <FmCommonButton
             icon={Save}
             onClick={handleSave}
           >
-            Save Changes
+            {t('formActions.saveChanges')}
           </FmCommonButton>
         </div>
       </div>

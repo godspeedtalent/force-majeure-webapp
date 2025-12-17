@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Copy, Edit, Trash2, Power, Plus } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -15,6 +16,8 @@ interface TrackingLinksManagementProps {
 }
 
 export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProps) {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const { links, isLoading, toggleActive, deleteLink } = useTrackingLinks(eventId);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingLink, setEditingLink] = useState<TrackingLink | null>(null);
@@ -22,30 +25,30 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
   const copyToClipboard = (code: string) => {
     const url = `https://orgxcrnnecblhuxjfruy.supabase.co/functions/v1/track-link?code=${code}`;
     navigator.clipboard.writeText(url);
-    toast.success('Link copied to clipboard');
+    toast.success(tToast('tracking.linkCopied'));
   };
 
   const getStatusBadge = (link: TrackingLink) => {
-    if (!link.is_active) return { text: 'Inactive', color: 'text-muted-foreground' };
+    if (!link.is_active) return { text: t('tracking.status.inactive'), color: 'text-muted-foreground' };
     if (link.expires_at && new Date(link.expires_at) < new Date()) {
-      return { text: 'Expired', color: 'text-orange-500' };
+      return { text: t('tracking.status.expired'), color: 'text-orange-500' };
     }
     if (link.max_clicks && link.click_count >= link.max_clicks) {
-      return { text: 'Max Reached', color: 'text-orange-500' };
+      return { text: t('tracking.status.maxReached'), color: 'text-orange-500' };
     }
-    return { text: 'Active', color: 'text-green-500' };
+    return { text: t('tracking.status.active'), color: 'text-green-500' };
   };
 
   const columns = [
     {
       key: 'name',
-      label: 'Name',
+      label: t('labels.name'),
       width: '200px',
       render: (value: string) => <span className="font-medium">{value}</span>,
     },
     {
       key: 'code',
-      label: 'Short URL',
+      label: t('tracking.shortUrl'),
       width: '300px',
       render: (value: string) => (
         <div className="flex items-center gap-2">
@@ -55,7 +58,7 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
           <button
             className="p-1 hover:bg-muted rounded transition-colors"
             onClick={() => copyToClipboard(value)}
-            title="Copy link"
+            title={t('tracking.copyLink')}
           >
             <Copy className="h-3 w-3" />
           </button>
@@ -64,7 +67,7 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
     },
     {
       key: 'utm_source',
-      label: 'Source / Medium',
+      label: t('tracking.sourceMedium'),
       width: '150px',
       render: (_: string, row: TrackingLink) => (
         <div className="flex flex-col text-xs">
@@ -75,14 +78,14 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
     },
     {
       key: 'click_count',
-      label: 'Clicks',
+      label: t('tracking.clicks'),
       width: '100px',
       render: (value: number, row: TrackingLink) => (
         <div className="text-center">
           <div className="font-medium">{value}</div>
           {row.max_clicks && (
             <div className="text-xs text-muted-foreground">
-              of {row.max_clicks}
+              {t('tracking.ofMax', { max: row.max_clicks })}
             </div>
           )}
         </div>
@@ -90,7 +93,7 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
     },
     {
       key: 'is_active',
-      label: 'Status',
+      label: t('labels.status'),
       width: '120px',
       render: (_: boolean, row: TrackingLink) => {
         const status = getStatusBadge(row);
@@ -99,7 +102,7 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
     },
     {
       key: 'created_at',
-      label: 'Created',
+      label: t('labels.created'),
       width: '120px',
       render: (value: string) => format(new Date(value), 'MMM d, yyyy'),
     },
@@ -107,12 +110,12 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
 
   const contextMenuActions: DataGridAction<TrackingLink>[] = [
     {
-      label: 'Copy Link',
+      label: t('tracking.copyLink'),
       icon: <Copy className="h-4 w-4" />,
       onClick: (row) => copyToClipboard(row.code),
     },
     {
-      label: 'Edit',
+      label: t('buttons.edit'),
       icon: <Edit className="h-4 w-4" />,
       onClick: (row) => {
         setEditingLink(row);
@@ -120,15 +123,15 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
       },
     },
     {
-      label: 'Toggle Active',
+      label: t('tracking.toggleActive'),
       icon: <Power className="h-4 w-4" />,
       onClick: (row) => toggleActive.mutate({ id: row.id, isActive: !row.is_active }),
     },
     {
-      label: 'Delete',
+      label: t('buttons.delete'),
       icon: <Trash2 className="h-4 w-4" />,
       onClick: (row) => {
-        if (confirm(`Delete tracking link "${row.name}"?`)) {
+        if (confirm(t('tracking.deleteConfirm', { name: row.name }))) {
           deleteLink.mutate(row.id);
         }
       },
@@ -141,8 +144,8 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
       <Tabs defaultValue="links" className="w-full">
         <div className="flex items-center justify-between mb-4">
           <TabsList>
-            <TabsTrigger value="links">Links</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="links">{t('tracking.tabs.links')}</TabsTrigger>
+            <TabsTrigger value="analytics">{t('tracking.tabs.analytics')}</TabsTrigger>
           </TabsList>
 
           <FmCommonButton
@@ -153,7 +156,7 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
             }}
             icon={Plus}
           >
-            Create Link
+            {t('tracking.createLink')}
           </FmCommonButton>
         </div>
 

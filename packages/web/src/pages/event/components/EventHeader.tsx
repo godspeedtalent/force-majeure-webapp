@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Share2, Heart, Clock, MapPin } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmDateBox } from '@/components/common/display/FmDateBox';
@@ -36,6 +37,8 @@ export function EventHeader({
   onVenueClick,
   onArtistClick,
 }: EventHeaderProps) {
+  const { t } = useTranslation('common');
+
   return (
     <div className='flex flex-col gap-5'>
       <div className='flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between'>
@@ -70,7 +73,7 @@ export function EventHeader({
               <div className='flex items-center gap-2'>
                 <MapPin className='h-4 w-4 text-fm-gold flex-shrink-0' />
                 <FmTextLink onClick={onVenueClick}>
-                  {venue || 'Venue TBA'}
+                  {venue || t('eventHeader.venueTBA')}
                 </FmTextLink>
               </div>
             </div>
@@ -78,7 +81,7 @@ export function EventHeader({
         </div>
         <div className='flex items-center gap-2'>
           <FmCommonButton
-            aria-label='Share event'
+            aria-label={t('eventHeader.shareEvent')}
             variant='secondary'
             size='icon'
             onClick={onShare}
@@ -87,7 +90,7 @@ export function EventHeader({
             <Share2 className='h-4 w-4' />
           </FmCommonButton>
           <FmCommonButton
-            aria-label='Save event'
+            aria-label={t('eventHeader.saveEvent')}
             variant='secondary'
             size='icon'
             className='bg-white/5 text-muted-foreground transition-colors duration-200 hover:bg-white/10 hover:text-foreground'

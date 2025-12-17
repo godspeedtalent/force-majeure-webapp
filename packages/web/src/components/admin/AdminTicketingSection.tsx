@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DollarSign, Percent, Timer, Info } from 'lucide-react';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
@@ -41,13 +42,15 @@ interface Fee {
   updated_at: string;
 }
 
-const feeLabels: Record<string, string> = {
-  sales_tax: 'Sales Tax',
-  processing_fee: 'Processing Fee',
-  platform_fee: 'Platform Fee',
-};
-
 export const AdminTicketingSection = () => {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
+
+  const feeLabels: Record<string, string> = {
+    sales_tax: t('admin.ticketing.salesTax'),
+    processing_fee: t('admin.ticketing.processingFee'),
+    platform_fee: t('admin.ticketing.platformFee'),
+  };
   // Fees state
   const [fees, setFees] = useState<Fee[]>([]);
   const [localFees, setLocalFees] = useState<
@@ -105,7 +108,7 @@ export const AdminTicketingSection = () => {
       logger.error('Failed to fetch fees:', {
         error: error instanceof Error ? error.message : 'Unknown',
       });
-      toast.error('Failed to load ticketing fees');
+      toast.error(tToast('admin.feesLoadFailed'));
     }
   };
 
@@ -186,13 +189,13 @@ export const AdminTicketingSection = () => {
       );
 
       await Promise.all([...feeUpdates, timerUpdatePromise]);
-      toast.success('Ticketing settings updated successfully');
+      toast.success(tToast('admin.feesUpdated'));
       await fetchAll();
     } catch (error) {
       logger.error('Failed to update ticketing settings:', {
         error: error instanceof Error ? error.message : 'Unknown',
       });
-      toast.error('Failed to update ticketing settings');
+      toast.error(tToast('admin.feesUpdateFailed'));
     }
   };
 
@@ -208,7 +211,7 @@ export const AdminTicketingSection = () => {
   const hasChanges = hasFeesChanges || hasTimerChanges;
 
   if (isLoading) {
-    return <div className='text-muted-foreground text-sm'>Loading...</div>;
+    return <div className='text-muted-foreground text-sm'>{t('status.loading')}</div>;
   }
 
   return (
@@ -216,17 +219,17 @@ export const AdminTicketingSection = () => {
       {/* Header */}
       <div className='pb-3 border-b border-border'>
         <p className='text-xs text-muted-foreground mb-2'>
-          Configure ticketing fees and checkout behavior
+          {t('admin.ticketing.description')}
         </p>
         <div className='flex items-center gap-2'>
           <span className='text-xs text-muted-foreground'>
-            Current Environment:
+            {t('admin.ticketing.currentEnvironment')}
           </span>
           <span className='text-xs font-medium text-fm-gold uppercase'>
             {currentEnvName}
           </span>
           <span className='text-xs text-muted-foreground'>
-            (Editing: <span className='text-white/70'>all environments</span>)
+            ({t('admin.ticketing.editing')}: <span className='text-white/70'>{t('admin.ticketing.allEnvironments')}</span>)
           </span>
         </div>
       </div>
@@ -235,7 +238,7 @@ export const AdminTicketingSection = () => {
       <div className='space-y-4'>
         <div className='flex items-center gap-2'>
           <Timer className='h-5 w-5 text-fm-gold' />
-          <h3 className='text-lg font-canela font-semibold'>Checkout timer</h3>
+          <h3 className='text-lg font-canela font-semibold'>{t('admin.ticketing.checkoutTimer')}</h3>
           <TooltipProvider>
             <Tooltip delayDuration={300}>
               <TooltipTrigger asChild>
@@ -246,9 +249,7 @@ export const AdminTicketingSection = () => {
                 className='max-w-xs bg-black/95 border-white/20'
               >
                 <p className='text-sm text-white'>
-                  The checkout timer creates urgency during the purchase flow.
-                  When enabled, users have a limited time to complete their purchase.
-                  You can override this duration per-event in the event's queue configuration.
+                  {t('admin.ticketing.checkoutTimerTooltip')}
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -263,7 +264,7 @@ export const AdminTicketingSection = () => {
         >
           <div className='flex items-center justify-between'>
             <div className='flex items-center gap-3'>
-              <span className='text-foreground font-medium'>Timer enabled</span>
+              <span className='text-foreground font-medium'>{t('admin.ticketing.timerEnabled')}</span>
               <span
                 className={cn(
                   'text-xs px-2 py-0.5 rounded-none',
@@ -272,17 +273,17 @@ export const AdminTicketingSection = () => {
                     : 'bg-red-500/20 text-red-400'
                 )}
               >
-                {isCheckoutTimerEnabled ? 'ON' : 'OFF'}
+                {isCheckoutTimerEnabled ? t('status.on') : t('status.off')}
               </span>
             </div>
             <span className='text-xs text-muted-foreground'>
-              Toggle in Feature Flags → "Event Checkout Timer"
+              {t('admin.ticketing.toggleInFeatureFlags')}
             </span>
           </div>
 
           <div className={cn(!isCheckoutTimerEnabled && 'pointer-events-none')}>
             <FmCommonTextField
-              label='Default duration (minutes)'
+              label={t('admin.ticketing.defaultDuration')}
               type='number'
               value={checkoutTimerMinutes}
               onChange={e => setCheckoutTimerMinutes(e.target.value)}
@@ -290,13 +291,13 @@ export const AdminTicketingSection = () => {
               min={1}
               max={60}
               disabled={!isCheckoutTimerEnabled}
-              helperText='Time users have to complete checkout. Can be overridden per-event.'
+              helperText={t('admin.ticketing.durationHelperText')}
             />
           </div>
 
           {!isCheckoutTimerEnabled && (
             <p className='text-xs text-muted-foreground italic'>
-              Enable the "Event Checkout Timer" feature flag in Site Settings to configure this option.
+              {t('admin.ticketing.enableFeatureFlagHint')}
             </p>
           )}
         </div>
@@ -306,7 +307,7 @@ export const AdminTicketingSection = () => {
       <div className='space-y-4'>
         <div className='flex items-center gap-2'>
           <DollarSign className='h-5 w-5 text-fm-gold' />
-          <h3 className='text-lg font-canela font-semibold'>Ticketing fees</h3>
+          <h3 className='text-lg font-canela font-semibold'>{t('admin.ticketing.ticketingFees')}</h3>
         </div>
 
         <div className='grid gap-6'>
@@ -336,7 +337,7 @@ export const AdminTicketingSection = () => {
                       )}
                     >
                       <DollarSign className='h-3 w-3 mr-1' />
-                      Flat
+                      {t('admin.ticketing.flat')}
                     </Button>
                     <Button
                       size='sm'
@@ -354,7 +355,7 @@ export const AdminTicketingSection = () => {
                   </div>
                 </div>
                 <FmCommonTextField
-                  label={local.type === 'flat' ? 'Amount ($)' : 'Percentage (%)'}
+                  label={local.type === 'flat' ? t('admin.ticketing.amountDollars') : t('admin.ticketing.percentage')}
                   type='number'
                   value={local.value}
                   onChange={e => handleValueChange(fee.fee_name, e.target.value)}
@@ -374,7 +375,7 @@ export const AdminTicketingSection = () => {
           disabled={!hasChanges}
           className='bg-fm-gold hover:bg-fm-gold/90 text-black disabled:opacity-50 disabled:cursor-not-allowed'
         >
-          Save Ticketing Settings
+          {t('admin.ticketing.saveSettings')}
         </Button>
       </div>
 
@@ -383,23 +384,22 @@ export const AdminTicketingSection = () => {
         <AlertDialogContent className='bg-background border-border'>
           <AlertDialogHeader>
             <AlertDialogTitle className='font-canela'>
-              Confirm Ticketing Changes
+              {t('admin.ticketing.confirmChangesTitle')}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              This will update ticketing settings in the database for{' '}
-              <span className='font-semibold text-fm-gold'>all environments</span>.
-              {hasFeesChanges && ' Fee changes will affect all future ticket purchases.'}
-              {hasTimerChanges && ' Timer changes will affect all future checkouts.'}
-              {' '}Continue?
+              {t('admin.ticketing.confirmChangesDescription')}
+              {hasFeesChanges && ` ${t('admin.ticketing.feeChangesWarning')}`}
+              {hasTimerChanges && ` ${t('admin.ticketing.timerChangesWarning')}`}
+              {` ${t('admin.ticketing.continueQuestion')}`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('buttons.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleSave}
               className='bg-fm-gold hover:bg-fm-gold/90 text-black'
             >
-              Save Changes
+              {t('buttons.saveChanges')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

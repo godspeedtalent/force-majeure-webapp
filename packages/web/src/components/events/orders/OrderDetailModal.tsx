@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -16,6 +17,7 @@ interface OrderDetailModalProps {
 }
 
 export const OrderDetailModal = ({ order, onClose }: OrderDetailModalProps) => {
+  const { t } = useTranslation('common');
   const statusColors: Record<string, string> = {
     pending: 'bg-yellow-500/10 text-yellow-500',
     completed: 'bg-green-500/10 text-green-500',
@@ -27,18 +29,18 @@ export const OrderDetailModal = ({ order, onClose }: OrderDetailModalProps) => {
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Order Details</DialogTitle>
+          <DialogTitle>{t('orderDetails.title')}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Order Header */}
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Order ID</p>
+              <p className="text-sm text-muted-foreground">{t('orderDetails.orderId')}</p>
               <p className="font-mono font-semibold">#{order.id}</p>
             </div>
             <Badge className={statusColors[order.status] || 'bg-gray-500/10'}>
-              {order.status}
+              {t(`orderStatus.${order.status}`)}
             </Badge>
           </div>
 
@@ -46,7 +48,7 @@ export const OrderDetailModal = ({ order, onClose }: OrderDetailModalProps) => {
 
           {/* Customer Info */}
           <div>
-            <h3 className="font-semibold mb-3">Customer Information</h3>
+            <h3 className="font-semibold mb-3">{t('orderDetails.customerInformation')}</h3>
             <div className="flex items-center gap-3">
               <Avatar className="h-12 w-12">
                 <AvatarImage src={order.profile?.avatar_url || undefined} />
@@ -67,7 +69,7 @@ export const OrderDetailModal = ({ order, onClose }: OrderDetailModalProps) => {
 
           {/* Order Items */}
           <div>
-            <h3 className="font-semibold mb-3">Ticket Details</h3>
+            <h3 className="font-semibold mb-3">{t('orderDetails.ticketDetails')}</h3>
             <div className="space-y-3">
               {order.items.map((item) => (
                 <div key={item.id} className="flex justify-between items-start p-3 bg-muted rounded-lg">
@@ -77,13 +79,13 @@ export const OrderDetailModal = ({ order, onClose }: OrderDetailModalProps) => {
                       <p className="text-sm text-muted-foreground">{item.ticket_tier.description}</p>
                     )}
                     <p className="text-sm text-muted-foreground mt-1">
-                      Quantity: {item.quantity} × ${(item.unit_price_cents / 100).toFixed(2)}
+                      {t('orderDetails.quantity')}: {item.quantity} × ${(item.unit_price_cents / 100).toFixed(2)}
                     </p>
                   </div>
                   <div className="text-right">
                     <p className="font-semibold">${(item.total_cents / 100).toFixed(2)}</p>
                     <p className="text-xs text-muted-foreground">
-                      + ${(item.fees_cents / 100).toFixed(2)} fees
+                      + ${(item.fees_cents / 100).toFixed(2)} {t('orderDetails.fees')}
                     </p>
                   </div>
                 </div>
@@ -96,16 +98,16 @@ export const OrderDetailModal = ({ order, onClose }: OrderDetailModalProps) => {
           {/* Order Summary */}
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Subtotal</span>
+              <span className="text-muted-foreground">{t('checkout.subtotal')}</span>
               <span>${(order.subtotal_cents / 100).toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Fees</span>
+              <span className="text-muted-foreground">{t('orderDetails.fees')}</span>
               <span>${(order.fees_cents / 100).toFixed(2)}</span>
             </div>
             <Separator />
             <div className="flex justify-between font-bold text-lg">
-              <span>Total</span>
+              <span>{t('checkout.total')}</span>
               <span>${(order.total_cents / 100).toFixed(2)}</span>
             </div>
           </div>
@@ -115,15 +117,15 @@ export const OrderDetailModal = ({ order, onClose }: OrderDetailModalProps) => {
           {/* Order Metadata */}
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-muted-foreground">Created</p>
+              <p className="text-muted-foreground">{t('orderDetails.created')}</p>
               <p className="font-medium">{new Date(order.created_at).toLocaleString()}</p>
             </div>
             <div>
-              <p className="text-muted-foreground">Last Updated</p>
+              <p className="text-muted-foreground">{t('orderDetails.lastUpdated')}</p>
               <p className="font-medium">{new Date(order.updated_at).toLocaleString()}</p>
             </div>
             <div>
-              <p className="text-muted-foreground">Currency</p>
+              <p className="text-muted-foreground">{t('orderDetails.currency')}</p>
               <p className="font-medium uppercase">{order.currency}</p>
             </div>
           </div>
@@ -131,7 +133,7 @@ export const OrderDetailModal = ({ order, onClose }: OrderDetailModalProps) => {
           {/* Actions */}
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={onClose}>
-              Close
+              {t('buttons.close')}
             </Button>
           </div>
         </div>

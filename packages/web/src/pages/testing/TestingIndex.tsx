@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/common/shadcn/badge';
 import {
   FlaskConical,
@@ -8,16 +9,16 @@ import { DemoLayout } from '@/components/demo/DemoLayout';
 import { useNavigate } from 'react-router-dom';
 
 export default function TestingIndex() {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
 
   const testSuites = [
     {
-      title: 'Ticket Purchase Load Tests',
-      description:
-        'Performance load testing simulating thousands of concurrent ticket purchases',
+      title: t('testingIndex.ticketPurchaseLoadTests'),
+      description: t('testingIndex.ticketPurchaseLoadTestsDescription'),
       icon: ShoppingCart,
-      category: 'Performance',
-      status: 'Ready',
+      category: t('testingIndex.categoryPerformance'),
+      status: t('testingIndex.statusReady'),
       testCount: 7,
       route: '/testing/checkout-flow',
     },
@@ -25,8 +26,8 @@ export default function TestingIndex() {
 
   return (
     <DemoLayout
-      title='Testing Dashboard'
-      description='Launch comprehensive smoke tests and validate application functionality'
+      title={t('testingIndex.title')}
+      description={t('testingIndex.description')}
       icon={FlaskConical}
     >
       {/* Test Suites */}
@@ -52,13 +53,13 @@ export default function TestingIndex() {
                       <Badge variant='outline' className='ml-auto'>
                         {suite.category}
                       </Badge>
-                      <Badge variant='secondary'>{suite.testCount} tests</Badge>
+                      <Badge variant='secondary'>{t('testingIndex.testsCount', { count: suite.testCount })}</Badge>
                     </div>
                     <p className='text-muted-foreground pl-14'>
                       {suite.description}
                     </p>
                     <div className='flex items-center gap-2 text-sm text-fm-gold pl-14 opacity-0 group-hover:opacity-100 transition-opacity'>
-                      <span>Run test suite</span>
+                      <span>{t('testingIndex.runTestSuite')}</span>
                       <ArrowRight className='h-4 w-4' />
                     </div>
                   </div>
@@ -72,8 +73,7 @@ export default function TestingIndex() {
       {/* Footer Note */}
       <div className='mt-12 p-4 bg-muted/50 rounded-lg border border-border'>
         <p className='text-sm text-muted-foreground text-center'>
-          Testing tools are only accessible to admin and developer users in
-          development mode
+          {t('testingIndex.accessNote')}
         </p>
       </div>
     </DemoLayout>

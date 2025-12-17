@@ -6,6 +6,7 @@
  */
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Music,
@@ -61,6 +62,7 @@ export function UndercardRequestsList({
   eventId,
   className,
 }: UndercardRequestsListProps) {
+  const { t } = useTranslation('common');
   const queryClient = useQueryClient();
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -125,22 +127,22 @@ export function UndercardRequestsList({
       queryClient.invalidateQueries({ queryKey: ['undercard-requests', eventId] });
       toast.success(
         variables.status === 'approved'
-          ? 'Artist request approved'
-          : 'Artist request rejected'
+          ? t('undercardRequests.requestApproved')
+          : t('undercardRequests.requestRejected')
       );
     },
     onError: (error) => {
       logger.error('Failed to update undercard request', { error });
-      toast.error('Failed to update request status');
+      toast.error(t('undercardRequests.updateFailed'));
     },
   });
 
   if (isLoading) {
     return (
-      <FormSection title='Artist Requests'>
+      <FormSection title={t('undercardRequests.sectionTitle')}>
         <div className='flex items-center justify-center py-8'>
           <FmCommonLoadingSpinner size='md' />
-          <span className='ml-3 text-muted-foreground'>Loading requests...</span>
+          <span className='ml-3 text-muted-foreground'>{t('undercardRequests.loading')}</span>
         </div>
       </FormSection>
     );
@@ -148,9 +150,9 @@ export function UndercardRequestsList({
 
   if (error) {
     return (
-      <FormSection title='Artist Requests'>
+      <FormSection title={t('undercardRequests.sectionTitle')}>
         <div className='text-center py-8 text-red-400'>
-          Failed to load artist requests
+          {t('undercardRequests.loadFailed')}
         </div>
       </FormSection>
     );
@@ -163,15 +165,15 @@ export function UndercardRequestsList({
     <div className={cn('space-y-6', className)}>
       {/* Pending Requests */}
       <FormSection
-        title={`Pending Requests (${pendingRequests.length})`}
+        title={t('undercardRequests.pendingTitle', { count: pendingRequests.length })}
       >
         <div className='space-y-3'>
           {pendingRequests.length === 0 ? (
             <div className='text-center py-8 text-muted-foreground border-2 border-dashed border-white/10 rounded-lg'>
               <Music className='h-12 w-12 mx-auto mb-2 opacity-30' />
-              <p>No pending artist requests</p>
+              <p>{t('undercardRequests.noPending')}</p>
               <p className='text-xs mt-1 opacity-70'>
-                Artists who sign up via the "Looking for Artists" link will appear here
+                {t('undercardRequests.noPendingDescription')}
               </p>
             </div>
           ) : (
@@ -204,7 +206,7 @@ export function UndercardRequestsList({
 
       {/* Reviewed Requests */}
       {reviewedRequests.length > 0 && (
-        <FormSection title={`Reviewed (${reviewedRequests.length})`}>
+        <FormSection title={t('undercardRequests.reviewedTitle', { count: reviewedRequests.length })}>
           <div className='space-y-3'>
             {reviewedRequests.map(request => (
               <RequestCard
@@ -243,9 +245,10 @@ function RequestCard({
   isUpdating,
   isReviewed,
 }: RequestCardProps) {
+  const { t } = useTranslation('common');
   const registration = request.artist_registration;
   const djSets = registration.tracks?.filter(
-    t => t.recording_type === 'dj_set'
+    track => track.recording_type === 'dj_set'
   ) || [];
 
   return (
@@ -360,7 +363,7 @@ function RequestCard({
           {djSets.length > 0 && (
             <div className='space-y-2'>
               <h5 className='text-xs uppercase text-muted-foreground'>
-                DJ Sets ({djSets.length})
+                {t('undercardRequests.djSets', { count: djSets.length })}
               </h5>
               <div className='space-y-2'>
                 {djSets.map((track, idx) => (
@@ -396,7 +399,7 @@ function RequestCard({
                 disabled={isUpdating}
                 className='flex-1 bg-green-600 hover:bg-green-700'
               >
-                Approve
+                {t('undercardRequests.approve')}
               </FmCommonButton>
               <FmCommonButton
                 onClick={onReject}
@@ -405,7 +408,7 @@ function RequestCard({
                 disabled={isUpdating}
                 className='flex-1'
               >
-                Reject
+                {t('undercardRequests.reject')}
               </FmCommonButton>
             </div>
           )}

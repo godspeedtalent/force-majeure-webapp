@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Timer, Users, Clock, Info, RotateCcw } from 'lucide-react';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
@@ -26,6 +27,8 @@ interface EventQueueConfigFormProps {
 }
 
 export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const [config, setConfig] = useState<QueueConfiguration | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -63,7 +66,7 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
           error: error instanceof Error ? error.message : 'Unknown',
           eventId,
         });
-        toast.error('Failed to load queue configuration');
+        toast.error(tToast('queue.loadFailed'));
       } finally {
         setIsLoading(false);
       }
@@ -89,7 +92,7 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
         session_timeout_minutes: parseInt(sessionTimeoutMinutes, 10) || DEFAULT_QUEUE_CONFIG.session_timeout_minutes,
       });
 
-      toast.success('Queue configuration saved');
+      toast.success(tToast('queue.saved'));
 
       // Reload config to get the new values
       const updatedConfig = await fetchQueueConfiguration(eventId);
@@ -99,7 +102,7 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
         error: error instanceof Error ? error.message : 'Unknown',
         eventId,
       });
-      toast.error('Failed to save queue configuration');
+      toast.error(tToast('queue.saveFailed'));
     } finally {
       setIsSaving(false);
     }
@@ -107,20 +110,18 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
 
   const handleResetToDefaults = async () => {
     if (!hasCustomConfig) {
-      toast.info('Already using default configuration');
+      toast.info(tToast('queue.alreadyDefault'));
       return;
     }
 
-    const confirmed = window.confirm(
-      'This will remove the custom queue configuration for this event and revert to the global defaults. Continue?'
-    );
+    const confirmed = window.confirm(t('queue.resetConfirm'));
 
     if (!confirmed) return;
 
     setIsSaving(true);
     try {
       await deleteQueueConfiguration(eventId);
-      toast.success('Reset to default configuration');
+      toast.success(tToast('queue.resetSuccess'));
 
       // Reload to get defaults
       const defaultConfig = await fetchQueueConfiguration(eventId);
@@ -134,7 +135,7 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
         error: error instanceof Error ? error.message : 'Unknown',
         eventId,
       });
-      toast.error('Failed to reset configuration');
+      toast.error(tToast('queue.resetFailed'));
     } finally {
       setIsSaving(false);
     }
@@ -143,7 +144,7 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
   if (isLoading) {
     return (
       <Card className='p-6'>
-        <div className='text-muted-foreground text-sm'>Loading queue configuration...</div>
+        <div className='text-muted-foreground text-sm'>{t('queue.loading')}</div>
       </Card>
     );
   }
@@ -154,9 +155,9 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
         <div className='flex items-center gap-2'>
           <Timer className='h-5 w-5 text-fm-gold' />
           <div>
-            <h3 className='text-lg font-canela font-semibold'>Queue configuration</h3>
+            <h3 className='text-lg font-canela font-semibold'>{t('queue.title')}</h3>
             <p className='text-sm text-muted-foreground'>
-              Control checkout behavior for this specific event
+              {t('queue.description')}
             </p>
           </div>
         </div>
@@ -168,14 +169,14 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
             onClick={handleResetToDefaults}
             disabled={isSaving}
           >
-            Reset to defaults
+            {t('queue.resetToDefaults')}
           </FmCommonButton>
         )}
       </div>
 
       {/* Status indicator */}
       <div className='flex items-center gap-2 text-xs'>
-        <span className='text-muted-foreground'>Configuration:</span>
+        <span className='text-muted-foreground'>{t('queue.configurationLabel')}:</span>
         <span
           className={`px-2 py-0.5 rounded-none ${
             hasCustomConfig
@@ -183,7 +184,7 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
               : 'bg-muted text-muted-foreground'
           }`}
         >
-          {hasCustomConfig ? 'Custom (event-specific)' : 'Using global defaults'}
+          {hasCustomConfig ? t('queue.customConfig') : t('queue.usingDefaults')}
         </span>
       </div>
 
@@ -193,9 +194,9 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
           <div className='flex items-center gap-3'>
             <Users className='h-5 w-5 text-muted-foreground' />
             <div>
-              <span className='font-medium'>Enable queue system</span>
+              <span className='font-medium'>{t('queue.enableQueueSystem')}</span>
               <p className='text-xs text-muted-foreground'>
-                Control user flow during high-traffic ticket sales
+                {t('queue.enableQueueDescription')}
               </p>
             </div>
           </div>
@@ -210,7 +211,7 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
         <div className='p-4 bg-muted/20 rounded-none border border-border space-y-3'>
           <div className='flex items-center gap-2'>
             <Users className='h-4 w-4 text-muted-foreground' />
-            <span className='font-medium'>Max concurrent users</span>
+            <span className='font-medium'>{t('queue.maxConcurrentUsers')}</span>
             <TooltipProvider>
               <Tooltip delayDuration={300}>
                 <TooltipTrigger asChild>
@@ -218,8 +219,7 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
                 </TooltipTrigger>
                 <TooltipContent side='right' className='max-w-xs bg-black/95 border-white/20'>
                   <p className='text-sm text-white'>
-                    Maximum number of users who can be in the checkout process simultaneously.
-                    Others will be queued until a spot opens up.
+                    {t('queue.maxConcurrentUsersTooltip')}
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -239,7 +239,7 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
         <div className='p-4 bg-muted/20 rounded-none border border-border space-y-3'>
           <div className='flex items-center gap-2'>
             <Clock className='h-4 w-4 text-muted-foreground' />
-            <span className='font-medium'>Checkout timer (minutes)</span>
+            <span className='font-medium'>{t('queue.checkoutTimer')}</span>
             <TooltipProvider>
               <Tooltip delayDuration={300}>
                 <TooltipTrigger asChild>
@@ -247,8 +247,7 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
                 </TooltipTrigger>
                 <TooltipContent side='right' className='max-w-xs bg-black/95 border-white/20'>
                   <p className='text-sm text-white'>
-                    Time users have to complete checkout. Leave empty to use the global default
-                    ({globalDefaultMinutes || 10} minutes).
+                    {t('queue.checkoutTimerTooltip', { minutes: globalDefaultMinutes || 10 })}
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -258,13 +257,13 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
             type='number'
             value={checkoutTimeoutMinutes}
             onChange={e => setCheckoutTimeoutMinutes(e.target.value)}
-            placeholder={`${globalDefaultMinutes || 10} (global default)`}
+            placeholder={t('queue.globalDefaultPlaceholder', { minutes: globalDefaultMinutes || 10 })}
             min={1}
             max={60}
             helperText={
               checkoutTimeoutMinutes
                 ? undefined
-                : `Using global default: ${globalDefaultMinutes || 10} minutes`
+                : t('queue.usingGlobalDefault', { minutes: globalDefaultMinutes || 10 })
             }
           />
         </div>
@@ -273,7 +272,7 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
         <div className='p-4 bg-muted/20 rounded-none border border-border space-y-3'>
           <div className='flex items-center gap-2'>
             <Timer className='h-4 w-4 text-muted-foreground' />
-            <span className='font-medium'>Session timeout (minutes)</span>
+            <span className='font-medium'>{t('queue.sessionTimeout')}</span>
             <TooltipProvider>
               <Tooltip delayDuration={300}>
                 <TooltipTrigger asChild>
@@ -281,7 +280,7 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
                 </TooltipTrigger>
                 <TooltipContent side='right' className='max-w-xs bg-black/95 border-white/20'>
                   <p className='text-sm text-white'>
-                    How long a user's queue session remains valid if they leave and return.
+                    {t('queue.sessionTimeoutTooltip')}
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -305,7 +304,7 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
           loading={isSaving}
           className='bg-fm-gold hover:bg-fm-gold/90 text-black'
         >
-          Save Queue Configuration
+          {t('queue.saveConfiguration')}
         </FmCommonButton>
       </div>
     </Card>

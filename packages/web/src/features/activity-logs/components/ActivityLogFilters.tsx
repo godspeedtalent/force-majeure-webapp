@@ -6,6 +6,7 @@
  */
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, Calendar, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@force-majeure/shared';
@@ -36,6 +37,7 @@ export function ActivityLogFilters({
   onFiltersChange,
   onClearFilters,
 }: ActivityLogFiltersProps) {
+  const { t } = useTranslation('common');
   const [searchValue, setSearchValue] = useState(filters.search || '');
 
   const handleCategoryToggle = (category: ActivityCategory) => {
@@ -88,7 +90,7 @@ export function ActivityLogFilters({
       {/* Search */}
       <div className="space-y-2">
         <label className="text-xs uppercase text-muted-foreground font-medium">
-          Search
+          {t('activityLogFilters.search')}
         </label>
         <div className="flex gap-2">
           <div className="relative flex-1">
@@ -97,7 +99,7 @@ export function ActivityLogFilters({
               value={searchValue}
               onChange={e => setSearchValue(e.target.value)}
               onKeyDown={handleSearchKeyDown}
-              placeholder="Search logs..."
+              placeholder={t('activityLogFilters.searchPlaceholder')}
               className="pl-9 bg-black/40 border-white/20 focus:border-fm-gold"
             />
           </div>
@@ -115,7 +117,7 @@ export function ActivityLogFilters({
       {/* Date Range */}
       <div className="space-y-2">
         <label className="text-xs uppercase text-muted-foreground font-medium">
-          Date range
+          {t('activityLogFilters.dateRange')}
         </label>
         <div className="space-y-2">
           <Popover>
@@ -131,7 +133,7 @@ export function ActivityLogFilters({
                 <Calendar className="mr-2 h-4 w-4" />
                 {filters.dateFrom
                   ? format(new Date(filters.dateFrom), 'MMM d, yyyy')
-                  : 'From date'}
+                  : t('activityLogFilters.fromDate')}
               </Button>
             </PopoverTrigger>
             <PopoverContent
@@ -166,7 +168,7 @@ export function ActivityLogFilters({
                 <Calendar className="mr-2 h-4 w-4" />
                 {filters.dateTo
                   ? format(new Date(filters.dateTo), 'MMM d, yyyy')
-                  : 'To date'}
+                  : t('activityLogFilters.toDate')}
               </Button>
             </PopoverTrigger>
             <PopoverContent
@@ -193,7 +195,7 @@ export function ActivityLogFilters({
       {/* Categories */}
       <div className="space-y-2">
         <label className="text-xs uppercase text-muted-foreground font-medium">
-          Categories
+          {t('activityLogFilters.categories')}
         </label>
         <div className="space-y-2">
           {ALL_CATEGORIES.map(category => {
@@ -230,7 +232,7 @@ export function ActivityLogFilters({
           className="w-full border-white/20 hover:border-fm-danger hover:bg-fm-danger/10 hover:text-fm-danger"
         >
           <X className="mr-2 h-4 w-4" />
-          Clear filters
+          {t('activityLogFilters.clearFilters')}
         </Button>
       )}
     </div>

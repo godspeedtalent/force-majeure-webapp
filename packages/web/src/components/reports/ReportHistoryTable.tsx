@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/common/shadcn/table';
 import { Badge } from '@/components/common/shadcn/badge';
 import { useQuery } from '@tanstack/react-query';
@@ -10,6 +11,7 @@ interface ReportHistoryTableProps {
 }
 
 export const ReportHistoryTable = ({ configId }: ReportHistoryTableProps) => {
+  const { t } = useTranslation('common');
   const { data: history, isLoading } = useQuery<ReportHistory[]>({
     queryKey: ['report-history', configId],
     queryFn: async () => {
@@ -28,11 +30,11 @@ export const ReportHistoryTable = ({ configId }: ReportHistoryTableProps) => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'sent':
-        return <Badge variant="default">Sent</Badge>;
+        return <Badge variant="default">{t('reports.history.sent')}</Badge>;
       case 'failed':
-        return <Badge variant="destructive">Failed</Badge>;
+        return <Badge variant="destructive">{t('reports.history.failed')}</Badge>;
       default:
-        return <Badge variant="secondary">Pending</Badge>;
+        return <Badge variant="secondary">{t('status.pending')}</Badge>;
     }
   };
 
@@ -41,21 +43,21 @@ export const ReportHistoryTable = ({ configId }: ReportHistoryTableProps) => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Date & Time</TableHead>
-            <TableHead>Recipients</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Error</TableHead>
+            <TableHead>{t('reports.history.dateTime')}</TableHead>
+            <TableHead>{t('reports.history.recipients')}</TableHead>
+            <TableHead>{t('labels.status')}</TableHead>
+            <TableHead>{t('reports.history.error')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {isLoading ? (
             <TableRow>
-              <TableCell colSpan={4} className="text-center">Loading...</TableCell>
+              <TableCell colSpan={4} className="text-center">{t('status.loading')}</TableCell>
             </TableRow>
           ) : history?.length === 0 ? (
             <TableRow>
               <TableCell colSpan={4} className="text-center text-muted-foreground">
-                No reports sent yet
+                {t('reports.history.noReportsYet')}
               </TableCell>
             </TableRow>
           ) : (

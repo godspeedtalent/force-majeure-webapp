@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaSpotify, FaSoundcloud } from 'react-icons/fa6';
 import { toast } from 'sonner';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
@@ -24,6 +25,8 @@ export function BasicDetailsStep({
   onInputChange,
   onNext,
 }: BasicDetailsStepProps) {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const [showSpotifyImport, setShowSpotifyImport] = useState(false);
   const [showSoundCloudImport, setShowSoundCloudImport] = useState(false);
 
@@ -51,7 +54,7 @@ export function BasicDetailsStep({
         };
         // Add to existing tracks (don't overwrite)
         onInputChange('tracks', [...formData.tracks, newTrack]);
-        toast.success(`Added "${topTrack.name}" to your recordings`);
+        toast.success(tToast('artists.recordingAdded', { trackName: topTrack.name }));
       }
     } catch (error) {
       logger.error('Failed to fetch top track from Spotify', { error, artistId: artist.id });
@@ -84,7 +87,7 @@ export function BasicDetailsStep({
         };
         // Add to existing tracks (don't overwrite)
         onInputChange('tracks', [...formData.tracks, newTrack]);
-        toast.success(`Added "${popularTrack.name}" to your recordings`);
+        toast.success(tToast('artists.recordingAdded', { trackName: popularTrack.name }));
       }
     } catch (error) {
       logger.error('Failed to fetch popular track from SoundCloud', { error, profileUrl: user.profileUrl });
@@ -99,10 +102,10 @@ export function BasicDetailsStep({
           <div className='w-[85vw] sm:w-[80%] space-y-[20px] bg-black/60 backdrop-blur-sm border border-white/10 p-[30px] sm:p-[40px]'>
             <div>
               <h2 className='font-canela text-3xl mb-[10px]'>
-                Tell us about you.
+                {t('artistRegistration.basicDetailsTitle')}
               </h2>
               <p className='font-canela text-sm text-muted-foreground'>
-                Share your stage name, bio, and musical style.
+                {t('artistRegistration.basicDetailsDescription')}
               </p>
             </div>
 
@@ -114,7 +117,7 @@ export function BasicDetailsStep({
                 className='flex items-center justify-center gap-[10px] px-[20px] py-[12px] bg-transparent hover:bg-[#1DB954]/10 border-2 border-[#1DB954] text-[#1DB954] font-canela text-sm font-medium transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]'
               >
                 <FaSpotify className='h-5 w-5' />
-                Continue with Spotify
+                {t('buttons.continueWithSpotify')}
               </button>
               <button
                 type='button'
@@ -122,7 +125,7 @@ export function BasicDetailsStep({
                 className='flex items-center justify-center gap-[10px] px-[20px] py-[12px] bg-transparent hover:bg-[#FF5500]/10 border-2 border-[#FF5500] text-[#FF5500] font-canela text-sm font-medium transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]'
               >
                 <FaSoundcloud className='h-5 w-5' />
-                Continue with SoundCloud
+                {t('buttons.continueWithSoundcloud')}
               </button>
             </div>
 
@@ -130,35 +133,35 @@ export function BasicDetailsStep({
 
             <div className='space-y-[20px]'>
               <FmCommonTextField
-                label='Stage Name'
+                label={t('labels.stageName')}
                 required
                 value={formData.stageName}
                 onChange={e => onInputChange('stageName', e.target.value)}
-                placeholder='Your artist or DJ name'
+                placeholder={t('forms.artists.stageNamePlaceholder')}
               />
 
               <FmCommonTextField
-                label='Bio'
+                label={t('labels.bio')}
                 required
                 value={formData.bio}
                 onChange={e => onInputChange('bio', e.target.value)}
-                placeholder='Tell us about your musical journey, style, and influences...'
+                placeholder={t('forms.artists.bioLongPlaceholder')}
                 multiline
                 rows={6}
               />
 
               <FmCityDropdown
-                label='City'
+                label={t('labels.city')}
                 required
                 value={formData.cityId}
                 onChange={cityId => onInputChange('cityId', cityId)}
-                placeholder='Select your city'
+                placeholder={t('forms.artists.selectCity')}
               />
 
               <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent' />
 
               <FmGenreMultiSelect
-                label='Genres'
+                label={t('labels.genres')}
                 required
                 selectedGenres={formData.genres}
                 onChange={(genres: Genre[]) => onInputChange('genres', genres)}
@@ -171,7 +174,7 @@ export function BasicDetailsStep({
 
       <div className='flex justify-end pt-[20px] border-t border-white/10 flex-shrink-0'>
         <FmCommonButton onClick={onNext} variant='default'>
-          Next
+          {t('buttons.next')}
         </FmCommonButton>
       </div>
 

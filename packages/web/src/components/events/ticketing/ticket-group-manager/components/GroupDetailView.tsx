@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Plus, GripVertical, Copy, Trash2, Ticket } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
 import { Input } from '@/components/common/shadcn/input';
@@ -48,9 +49,10 @@ export function GroupDetailView({
   onDuplicateTier,
   onDeleteTier,
 }: GroupDetailViewProps) {
+  const { t } = useTranslation('common');
   const colorConfig =
     GROUP_COLORS.find(c => c.value === group.color) || GROUP_COLORS[0];
-  
+
   const isNoGroup = group.id === NO_GROUP_ID;
   const totalTiersAcrossAllGroups = allGroups.reduce((sum, g) => sum + g.tiers.length, 0);
 
@@ -69,7 +71,7 @@ export function GroupDetailView({
                     </button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Drag to reorder groups</p>
+                    <p>{t('ticketGroupManager.dragToReorder')}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -80,7 +82,7 @@ export function GroupDetailView({
                     value={group.name}
                     onChange={e => onUpdateGroup({ name: e.target.value })}
                     className='font-semibold text-lg bg-background/50'
-                    placeholder='Group name'
+                    placeholder={t('ticketGroupManager.groupNamePlaceholder')}
                   />
                   <Select
                     value={group.color}
@@ -113,22 +115,22 @@ export function GroupDetailView({
                     onUpdateGroup({ description: e.target.value })
                   }
                   className='text-sm bg-background/50'
-                  placeholder="Group description (e.g., 'General Admission', 'VIP', 'Tables')"
+                  placeholder={t('ticketGroupManager.groupDescriptionPlaceholder')}
                 />
 
                 <div className='flex items-center gap-4 text-sm'>
                   <Badge variant='outline'>
                     <Ticket className='h-3 w-3 mr-1' />
-                    {group.tiers.length} tier{group.tiers.length !== 1 && 's'}
+                    {t('ticketGroupManager.tiersCount', { count: group.tiers.length })}
                   </Badge>
                   <Badge variant='outline'>
-                    {getTotalTicketsInGroup(group).toLocaleString()} tickets
+                    {t('ticketGroupManager.ticketsCount', { count: getTotalTicketsInGroup(group).toLocaleString() })}
                   </Badge>
                   <Badge
                     variant='outline'
                     className='text-fm-gold border-fm-gold/50'
                   >
-                    {formatPrice(getTotalRevenueInGroup(group))} revenue
+                    {formatPrice(getTotalRevenueInGroup(group))} {t('ticketGroupManager.revenue')}
                   </Badge>
                 </div>
               </div>
@@ -147,7 +149,7 @@ export function GroupDetailView({
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Duplicate group</p>
+                    <p>{t('ticketGroupManager.duplicateGroup')}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -165,7 +167,7 @@ export function GroupDetailView({
                      </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Delete group</p>
+                    <p>{t('ticketGroupManager.deleteGroup')}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -176,7 +178,7 @@ export function GroupDetailView({
 
       {/* Tiers */}
       <div className='space-y-4'>
-        <h4 className='text-lg font-semibold'>Ticket Tiers</h4>
+        <h4 className='text-lg font-semibold'>{t('ticketGroupManager.ticketTiers')}</h4>
 
         {group.tiers.map((tier, tierIndex) => {
           // Last tier in No Group and only tier in entire system cannot be deleted
@@ -204,7 +206,7 @@ export function GroupDetailView({
           className='w-full border-dashed hover:border-fm-gold hover:text-fm-gold'
         >
           <Plus className='h-4 w-4 mr-2' />
-          Add Tier to {group.name}
+          {t('ticketGroupManager.addTierToGroup', { groupName: group.name })}
         </Button>
       </div>
     </div>

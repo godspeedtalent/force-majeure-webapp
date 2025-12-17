@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { logger } from '@force-majeure/shared';
 import { supabase } from '@force-majeure/shared';
 import { toast } from 'sonner';
@@ -61,6 +62,7 @@ export interface EventFormActions {
  * @param initialState - Optional initial state for editing existing events
  */
 export function useEventFormState(initialState?: Partial<EventFormState>) {
+  const { t } = useTranslation('common');
   const [title, setTitle] = useState<string>(initialState?.title || '');
   const [subtitle, setSubtitle] = useState<string>(initialState?.subtitle || '');
   const [headlinerId, setHeadlinerId] = useState<string>(initialState?.headlinerId || '');
@@ -87,8 +89,8 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
         .then(({ data, error }) => {
           if (error) {
             logger.error('Error fetching venue capacity:', { error, venueId });
-            toast.error('Failed to fetch venue capacity', {
-              description: 'Using default capacity of 100',
+            toast.error(t('eventForm.venueCapacityFailed'), {
+              description: t('eventForm.venueCapacityDefault'),
             });
             setVenueCapacity(100);
             return;

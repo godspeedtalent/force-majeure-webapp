@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, Copy, Check, AlertTriangle } from 'lucide-react';
 import { logger } from '@force-majeure/shared';
 import { Button } from '@/components/common/shadcn/button';
@@ -48,6 +49,7 @@ export const FmErrorOverlay = ({
   isOpen,
   onClose,
 }: FmErrorOverlayProps) => {
+  const { t } = useTranslation('common');
   const [copied, setCopied] = useState(false);
 
   const handleCopyStackTrace = async () => {
@@ -122,7 +124,7 @@ export const FmErrorOverlay = ({
           {/* Error Message */}
           <div className='space-y-2'>
             <h3 className='text-sm font-semibold text-fm-gold uppercase tracking-wide'>
-              Error Message
+              {t('errorOverlay.errorMessage')}
             </h3>
             <div className='p-4 bg-fm-danger/10 border border-fm-danger/30 rounded-none'>
               <p className='text-sm font-mono text-fm-danger break-words'>
@@ -135,13 +137,13 @@ export const FmErrorOverlay = ({
           {(context || endpoint || method) && (
             <div className='space-y-2'>
               <h3 className='text-sm font-semibold text-fm-gold uppercase tracking-wide'>
-                Context
+                {t('errorOverlay.context')}
               </h3>
               <div className='space-y-2'>
                 {context && (
                   <div className='flex gap-2'>
                     <span className='text-sm text-muted-foreground w-24'>
-                      Context:
+                      {t('errorOverlay.contextLabel')}
                     </span>
                     <span className='text-sm text-foreground'>{context}</span>
                   </div>
@@ -149,7 +151,7 @@ export const FmErrorOverlay = ({
                 {endpoint && (
                   <div className='flex gap-2'>
                     <span className='text-sm text-muted-foreground w-24'>
-                      Endpoint:
+                      {t('errorOverlay.endpoint')}
                     </span>
                     <span className='text-sm text-foreground font-mono'>
                       {endpoint}
@@ -159,7 +161,7 @@ export const FmErrorOverlay = ({
                 {method && (
                   <div className='flex gap-2'>
                     <span className='text-sm text-muted-foreground w-24'>
-                      Method:
+                      {t('errorOverlay.method')}
                     </span>
                     <span className='text-sm text-foreground font-mono'>
                       {method}
@@ -174,7 +176,7 @@ export const FmErrorOverlay = ({
           {error.stack && (
             <div className='space-y-2'>
               <h3 className='text-sm font-semibold text-fm-gold uppercase tracking-wide'>
-                Stack Trace
+                {t('errors.stackTrace')}
               </h3>
               <div className='p-4 bg-black/60 border border-white/20 rounded-none overflow-auto max-h-96'>
                 <pre className='text-xs font-mono text-fm-danger whitespace-pre-wrap break-words'>
@@ -195,12 +197,12 @@ export const FmErrorOverlay = ({
             {copied ? (
               <>
                 <Check className='h-4 w-4 mr-2' />
-                Copied!
+                {t('errors.copied')}
               </>
             ) : (
               <>
                 <Copy className='h-4 w-4 mr-2' />
-                Copy Details
+                {t('errorOverlay.copyDetails')}
               </>
             )}
           </Button>
@@ -209,7 +211,7 @@ export const FmErrorOverlay = ({
             onClick={onClose}
             className='bg-fm-gold hover:bg-fm-gold/90 text-black'
           >
-            Close
+            {t('dialogs.close')}
           </Button>
         </div>
       </div>

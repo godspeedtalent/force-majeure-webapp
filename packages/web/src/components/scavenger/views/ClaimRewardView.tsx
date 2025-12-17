@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { MessagePanel } from '@/components/feedback/MessagePanel';
@@ -14,21 +15,23 @@ export function ClaimRewardView({
   onClaim,
   isLoading,
 }: ClaimRewardViewProps) {
+  const { t } = useTranslation('common');
+
   const handleClaim = async () => {
     try {
       await onClaim();
-      toast.success('Checkpoint discovered! You and a friend are on the list.');
+      toast.success(t('scavenger.claimReward.successMessage'));
       window.location.href = '/scavenger';
     } catch (_error) {
-      toast.error('Failed to claim checkpoint');
+      toast.error(t('scavenger.claimReward.errorMessage'));
     }
   };
 
   return (
     <>
       <MessagePanel
-        title={`Welcome to the ${locationName} Checkpoint`}
-        description='Discover this checkpoint to get you and a friend on the guestlist!'
+        title={t('scavenger.claimReward.title', { locationName })}
+        description={t('scavenger.claimReward.description')}
         className='mb-6'
       />
       <div className='text-center'>
@@ -38,7 +41,7 @@ export function ClaimRewardView({
           onClick={handleClaim}
           disabled={isLoading}
         >
-          {isLoading ? 'Claiming...' : 'Claim Checkpoint'}
+          {isLoading ? t('scavenger.claimReward.claiming') : t('scavenger.claimReward.claimButton')}
         </Button>
       </div>
     </>

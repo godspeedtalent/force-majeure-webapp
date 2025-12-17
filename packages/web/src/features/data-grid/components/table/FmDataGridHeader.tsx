@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TableHead, TableHeader, TableRow } from '@/components/common/shadcn/table';
 import { Input } from '@/components/common/shadcn/input';
 import {
@@ -57,6 +58,7 @@ export function FmDataGridHeader<T>({
   onResizeStart,
   onToggleFreeze,
 }: FmDataGridHeaderProps<T>) {
+  const { t } = useTranslation('common');
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [isResizing, setIsResizing] = useState(false);
@@ -157,7 +159,7 @@ export function FmDataGridHeader<T>({
           <FmCommonCheckbox
             checked={isAllSelected}
             onCheckedChange={onSelectAll}
-            aria-label='Select all'
+            aria-label={t('table.selectAll')}
           />
         </TableHead>
 
@@ -270,7 +272,7 @@ export function FmDataGridHeader<T>({
                         <div className='p-2'>
                           <div className='relative'>
                             <Input
-                              placeholder={`Filter ${column.label}...`}
+                              placeholder={t('table.filterColumn', { column: column.label })}
                               value={columnFilters[column.key] || ''}
                               onChange={e =>
                                 onColumnFilter(column.key, e.target.value)
@@ -318,7 +320,7 @@ export function FmDataGridHeader<T>({
                   }}
                   className='text-white hover:bg-muted focus:bg-muted'
                 >
-                  Filter
+                  {t('table.filter')}
                 </ContextMenuItem>
               )}
               {column.sortable && (
@@ -328,7 +330,7 @@ export function FmDataGridHeader<T>({
                       onClick={() => onSort(column.key)}
                       className='text-white hover:bg-muted focus:bg-muted'
                     >
-                      Sort Ascending
+                      {t('table.sortAscending')}
                     </ContextMenuItem>
                   )}
                   {(sortColumn !== column.key || sortDirection === 'asc') && (
@@ -336,7 +338,7 @@ export function FmDataGridHeader<T>({
                       onClick={() => onSort(column.key)}
                       className='text-white hover:bg-muted focus:bg-muted'
                     >
-                      Sort Descending
+                      {t('table.sortDescending')}
                     </ContextMenuItem>
                   )}
                 </>
@@ -351,12 +353,12 @@ export function FmDataGridHeader<T>({
                     {column.frozen ? (
                       <>
                         <PinOff className='h-4 w-4 mr-2' />
-                        Unfreeze Column
+                        {t('table.unfreezeColumn')}
                       </>
                     ) : (
                       <>
                         <Pin className='h-4 w-4 mr-2' />
-                        Freeze Column
+                        {t('table.freezeColumn')}
                       </>
                     )}
                   </ContextMenuItem>
@@ -369,7 +371,7 @@ export function FmDataGridHeader<T>({
                     onClick={() => onHideColumn(column.key)}
                     className='text-white hover:bg-muted focus:bg-muted'
                   >
-                    Hide Column
+                    {t('table.hideColumn')}
                   </ContextMenuItem>
                 </>
               )}
@@ -378,7 +380,7 @@ export function FmDataGridHeader<T>({
         ))}
 
         {/* Actions Column */}
-        {hasActions && <TableHead className='w-24 text-right'>Actions</TableHead>}
+        {hasActions && <TableHead className='w-24 text-right'>{t('table.actions')}</TableHead>}
       </TableRow>
     </TableHeader>
   );

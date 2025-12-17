@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FmConfigurableDataGrid } from '@/features/data-grid/components/FmConfigurableDataGrid';
 import {
   DataGridColumn,
@@ -13,6 +14,8 @@ import { toast } from 'sonner';
 import { logger } from '@force-majeure/shared';
 
 export const EventsManagement = () => {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const { data: events, isLoading } = useEvents();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -27,8 +30,8 @@ export const EventsManagement = () => {
     // Confirm deletion
     const confirmMessage =
       eventCount === 1
-        ? `Are you sure you want to delete "${eventsToDelete[0].title}"?`
-        : `Are you sure you want to delete ${eventCount} selected events?`;
+        ? t('dialogs.deleteEventConfirm', { eventTitle: eventsToDelete[0].title })
+        : t('dialogs.deleteEventsConfirm', { count: eventCount });
 
     if (!confirm(confirmMessage)) {
       return;
@@ -50,14 +53,14 @@ export const EventsManagement = () => {
 
       const successMessage =
         eventCount === 1
-          ? 'Event deleted successfully'
-          : `${eventCount} events deleted successfully`;
+          ? tToast('events.deleted')
+          : tToast('events.deletedMultiple', { count: eventCount });
 
       toast.success(successMessage);
       queryClient.invalidateQueries({ queryKey: ['events'] });
     } catch (error) {
       logger.error('Error deleting event(s):', { error: error instanceof Error ? error.message : 'Unknown error', source: 'EventsManagement.tsx' });
-      toast.error('Failed to delete event(s)');
+      toast.error(tToast('admin.deleteEventsFailed'));
     }
   };
 
@@ -126,13 +129,13 @@ export const EventsManagement = () => {
 
   const contextMenuActions: DataGridAction[] = [
     {
-      label: 'Manage Event',
+      label: t('table.manageEvent'),
       icon: <Edit className='h-4 w-4' />,
       separator: true,
       onClick: row => navigate(`/event/${row.id}/manage`),
     },
     {
-      label: 'Delete Event',
+      label: t('table.deleteEvent'),
       icon: <Trash2 className='h-4 w-4' />,
       onClick: handleDelete,
       variant: 'destructive',
@@ -147,10 +150,10 @@ export const EventsManagement = () => {
     <div className='space-y-6'>
       <div>
         <h1 className='text-3xl font-canela font-bold text-foreground mb-2'>
-          Events Management
+          {t('pageTitles.eventsManagement')}
         </h1>
         <p className='text-muted-foreground'>
-          Manage events, ticket tiers, and lineups.
+          {t('pageTitles.eventsManagementDescription')}
         </p>
       </div>
 

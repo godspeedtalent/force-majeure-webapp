@@ -1,5 +1,6 @@
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FmCommonIconButton } from './FmCommonIconButton';
 import { FmCommonButton } from './FmCommonButton';
 import { cn } from '@force-majeure/shared';
@@ -51,12 +52,16 @@ export const FmBackButton = ({
   variant = 'text',
   position = 'floating',
   onClick,
-  tooltip = 'Go back',
+  tooltip,
   className,
-  label = 'Back',
+  label,
   size = 'sm',
 }: FmBackButtonProps) => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
+
+  const resolvedTooltip = tooltip ?? t('buttons.goBack');
+  const resolvedLabel = label ?? t('buttons.back');
 
   const handleClick = () => {
     if (onClick) {
@@ -75,7 +80,7 @@ export const FmBackButton = ({
         <FmCommonIconButton
           icon={ArrowLeft}
           onClick={handleClick}
-          tooltip={tooltip}
+          tooltip={resolvedTooltip}
           variant='default'
           size={size}
         />
@@ -92,7 +97,7 @@ export const FmBackButton = ({
         variant='default'
         size={size}
       >
-        {label}
+        {resolvedLabel}
       </FmCommonButton>
     </div>
   );

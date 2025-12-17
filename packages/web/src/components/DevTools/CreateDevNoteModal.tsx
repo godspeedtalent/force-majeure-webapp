@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { logger } from '@force-majeure/shared';
 import { CheckCircle2, Info, Bug, HelpCircle } from 'lucide-react';
 import {
@@ -38,6 +39,7 @@ export const CreateDevNoteModal = ({
   onOpenChange,
   onNoteCreated,
 }: CreateDevNoteModalProps) => {
+  const { t } = useTranslation('common');
   const { user, profile } = useAuth();
   const [message, setMessage] = useState('');
   const [type, setType] = useState<NoteType>('TODO');
@@ -64,12 +66,12 @@ export const CreateDevNoteModal = ({
 
   const handleSubmit = async () => {
     if (!message.trim()) {
-      toast.error('Please enter a message');
+      toast.error(t('devTools.notes.enterMessage'));
       return;
     }
 
     if (!user) {
-      toast.error('You must be logged in to create a note');
+      toast.error(t('devTools.notes.mustBeLoggedIn'));
       return;
     }
 
@@ -88,14 +90,14 @@ export const CreateDevNoteModal = ({
 
       if (error) throw error;
 
-      toast.success('Note created successfully');
+      toast.success(t('devTools.notes.createSuccess'));
       setMessage('');
       setType('TODO');
       onOpenChange(false);
       onNoteCreated();
     } catch (error) {
       logger.error('Failed to create dev note:', error instanceof Error ? { error: error.message } : {});
-      toast.error('Failed to create note');
+      toast.error(t('devTools.notes.createError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -123,13 +125,13 @@ export const CreateDevNoteModal = ({
 
         <DialogHeader className='relative z-[5] p-6 pb-2 flex-shrink-0'>
           <DialogTitle className='text-fm-gold'>
-            Create Developer Note
+            {t('devTools.notes.createTitle')}
           </DialogTitle>
         </DialogHeader>
 
         <div className='space-y-4 px-6 py-4 relative z-[5] flex-1 overflow-y-auto min-h-0'>
           <FmCommonSelect
-            label='Type'
+            label={t('labels.type')}
             value={type}
             onChange={value => setType(value as NoteType)}
             options={TYPE_OPTIONS}
@@ -137,10 +139,10 @@ export const CreateDevNoteModal = ({
           />
 
           <FmCommonTextField
-            label='Message'
+            label={t('devTools.notes.messageLabel')}
             value={message}
             onChange={e => setMessage(e.target.value)}
-            placeholder='Enter your note here...'
+            placeholder={t('devTools.notes.messagePlaceholder')}
             multiline
             rows={5}
             required
@@ -159,13 +161,13 @@ export const CreateDevNoteModal = ({
                 <kbd className='px-1 py-0.5 bg-white/10 rounded text-[9px]'>
                   Enter
                 </kbd>{' '}
-                to save
+                {t('devTools.notes.toSave')}
               </span>
               <span>
                 <kbd className='px-1 py-0.5 bg-white/10 rounded text-[9px]'>
                   Esc
                 </kbd>{' '}
-                to close
+                {t('devTools.notes.toClose')}
               </span>
             </div>
 
@@ -176,14 +178,14 @@ export const CreateDevNoteModal = ({
                 onClick={() => onOpenChange(false)}
                 disabled={isSubmitting}
               >
-                Cancel
+                {t('buttons.cancel')}
               </FmCommonButton>
               <FmCommonButton
                 variant='default'
                 onClick={handleSubmit}
                 disabled={isSubmitting || !message.trim()}
               >
-                {isSubmitting ? 'Creating...' : 'Create Note'}
+                {isSubmitting ? t('devTools.notes.creating') : t('devTools.notes.createButton')}
               </FmCommonButton>
             </div>
           </div>

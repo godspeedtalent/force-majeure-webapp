@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { MessagePanel } from '@/components/feedback/MessagePanel';
 
 interface ConfirmationStepProps {
@@ -5,10 +6,11 @@ interface ConfirmationStepProps {
 }
 
 export function ConfirmationStep({ email }: ConfirmationStepProps) {
+  const { t } = useTranslation('common');
   return (
     <MessagePanel
-      title='Check Your Email'
-      description={`We've sent a verification link to ${email}. Click the link to verify your account and claim your reward!`}
+      title={t('scavenger.confirmation.title')}
+      description={t('scavenger.confirmation.description', { email })}
     />
   );
 }

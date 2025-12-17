@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Upload, X, ImageIcon } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
@@ -39,11 +40,12 @@ export const FmImageUpload = ({
   isPrimary = true,
   className,
 }: FmImageUploadProps) => {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const [uploading, setUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState(currentImageUrl);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
   const { data: userRole } = useUserRole();
 
   // Check if user is developer or admin for detailed error messages
@@ -62,11 +64,9 @@ export const FmImageUpload = ({
       'image/gif',
     ];
     if (!validTypes.includes(file.type)) {
-      const error = new Error(
-        'Invalid file type. Please upload a JPEG, PNG, WebP, or GIF image.'
-      );
+      const error = new Error(t('upload.invalidFileTypeMessage'));
       showErrorToast({
-        title: 'Invalid File Type',
+        title: t('upload.invalidFileType'),
         description: error.message,
         error,
         isDeveloper,
@@ -88,18 +88,17 @@ export const FmImageUpload = ({
       });
 
       setImageUrl(result.publicUrl);
-      toast({
-        title: 'Upload Successful',
+      toast.success(tToast('upload.success'), {
         description: file.size > 5 * 1024 * 1024
-          ? 'Image compressed and uploaded successfully.'
-          : 'Image uploaded successfully.',
+          ? t('upload.compressedAndUploaded')
+          : t('upload.uploadedSuccessfully'),
       });
       onUploadComplete?.(result.publicUrl);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error('Upload failed');
+      const err = error instanceof Error ? error : new Error(t('upload.uploadFailed'));
       showErrorToast({
-        title: 'Upload Failed',
-        description: 'Image failed to upload.',
+        title: t('upload.uploadFailed'),
+        description: t('upload.imageFailed'),
         error: err,
         isDeveloper,
       });
@@ -163,7 +162,7 @@ export const FmImageUpload = ({
           <div className='relative aspect-video w-full overflow-hidden rounded-none bg-muted'>
             <img
               src={imageUrl}
-              alt='Event'
+              alt={t('upload.imagePreview')}
               className='h-full w-full object-cover'
             />
             <button
@@ -182,7 +181,7 @@ export const FmImageUpload = ({
             className='w-full'
           >
             <Upload className='mr-2 h-4 w-4' />
-            Replace Image
+            {t('upload.replaceImage')}
           </FmCommonButton>
         </div>
       ) : (
@@ -204,23 +203,23 @@ export const FmImageUpload = ({
           {uploading ? (
             <>
               <div className='mb-4 h-12 w-12 animate-spin rounded-full border-4 border-fm-gold border-b-transparent' />
-              <p className='text-sm text-muted-foreground'>Uploading...</p>
+              <p className='text-sm text-muted-foreground'>{t('upload.uploading')}</p>
             </>
           ) : (
             <>
               <ImageIcon className='mb-4 h-12 w-12 text-muted-foreground' />
               <p className='mb-2 text-sm font-medium'>
-                Drop your image here, or{' '}
+                {t('upload.dropImageOr')}{' '}
                 <button
                   type='button'
                   onClick={handleButtonClick}
                   className='text-fm-gold hover:underline'
                 >
-                  browse
+                  {t('upload.browse')}
                 </button>
               </p>
               <p className='text-xs text-muted-foreground'>
-                JPEG, PNG, WebP, or GIF (large images compressed automatically)
+                {t('upload.supportedFormats')}
               </p>
             </>
           )}

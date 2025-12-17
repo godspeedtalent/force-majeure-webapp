@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   FmCommonList,
   type FmCommonListColumn,
@@ -26,10 +27,12 @@ export const FmTicketTierList = ({
   selections,
   className,
 }: FmTicketTierListProps) => {
+  const { t } = useTranslation('common');
+
   const columns: FmCommonListColumn<TicketSelection>[] = [
     {
       key: 'name',
-      label: 'Ticket',
+      label: t('ticketTierList.ticket'),
       render: (_, item) => (
         <div className='flex flex-col gap-0.5'>
           <span className='font-medium text-foreground'>{item.tier.name}</span>
@@ -42,7 +45,7 @@ export const FmTicketTierList = ({
     },
     {
       key: 'subtotal',
-      label: 'Subtotal',
+      label: t('checkout.subtotal'),
       render: (_, item) => (
         <span className='font-medium text-foreground'>
           ${item.subtotal.toFixed(2)}
@@ -59,7 +62,7 @@ export const FmTicketTierList = ({
       striped
       dense
       className={className}
-      emptyMessage='No tickets selected'
+      emptyMessage={t('ticketTierList.noTicketsSelected')}
     />
   );
 };

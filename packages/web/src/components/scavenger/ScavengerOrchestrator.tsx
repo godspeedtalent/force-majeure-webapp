@@ -1,4 +1,5 @@
 import { User } from '@supabase/supabase-js';
+import { useTranslation } from 'react-i18next';
 import { logger } from '@force-majeure/shared';
 import { useState } from 'react';
 
@@ -8,7 +9,7 @@ import {
   useScavengerLocations,
   useUserClaims,
 } from '@/features/scavenger/hooks/useScavenger';
-import { toast } from 'sonner';
+import { useToast } from '@/shared/hooks/use-toast';
 
 // Centralized state interface for the entire scavenger hunt flow
 export interface ScavengerState {
@@ -72,6 +73,7 @@ export function ScavengerOrchestrator({
   children,
   initialLocationId = null,
 }: ScavengerOrchestratorProps) {
+  const { t } = useTranslation('common');
   const { toast } = useToast();
   const { user, profile } = useAuth();
   const claimMutation = useClaimReward();
@@ -166,15 +168,15 @@ export function ScavengerOrchestrator({
         });
 
         toast({
-          title: 'Success!',
-          description: "You've been added to the LF SYSTEM guestlist.",
+          title: t('scavengerOrchestrator.successTitle'),
+          description: t('scavengerOrchestrator.addedToGuestlist'),
         });
       } catch (error: any) {
         logger.error('Claim error:', error);
         toast({
-          title: 'Error',
+          title: t('scavengerOrchestrator.errorTitle'),
           description:
-            error.message || 'Failed to claim checkpoint. Please try again.',
+            error.message || t('scavengerOrchestrator.claimFailed'),
           variant: 'destructive',
         });
       } finally {

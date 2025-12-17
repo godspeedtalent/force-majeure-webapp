@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { AlertCircle, Clock, Users, Timer } from 'lucide-react';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmQueueProgressBar } from '@/components/common/feedback/FmQueueProgressBar';
@@ -29,6 +30,8 @@ export function FmQueueWaitingView({
   estimatedWaitMinutes,
   checkoutTimeoutMinutes,
 }: FmQueueWaitingViewProps) {
+  const { t } = useTranslation('common');
+
   // Parse event date for display
   const eventDate = event.start_time ? new Date(event.start_time) : new Date();
   const weekday = eventDate.toLocaleDateString('en-US', { weekday: 'short' });
@@ -73,10 +76,10 @@ export function FmQueueWaitingView({
               </div>
             </div>
             <h2 className='text-xl font-canela text-white'>
-              You're in the queue.
+              {t('queue.youreInTheQueue')}
             </h2>
             <p className='text-sm text-muted-foreground font-canela'>
-              We'll get you in as soon as possible.
+              {t('queue.wellGetYouIn')}
             </p>
           </div>
 
@@ -95,7 +98,7 @@ export function FmQueueWaitingView({
               <div className='flex items-center justify-center gap-[10px] text-fm-gold mb-[5px]'>
                 <Clock className='h-5 w-5' />
                 <span className='text-xs uppercase font-canela'>
-                  Estimated wait time
+                  {t('queue.estimatedWaitTime')}
                 </span>
               </div>
               <p className='text-2xl font-canela text-white'>
@@ -110,11 +113,10 @@ export function FmQueueWaitingView({
               <AlertCircle className='h-5 w-5 text-fm-crimson flex-shrink-0 mt-[2px]' />
               <div className='space-y-[5px]'>
                 <p className='text-sm font-canela text-white font-bold'>
-                  Important: Don't navigate away or refresh this page.
+                  {t('queue.dontNavigateAway')}
                 </p>
                 <p className='text-xs text-muted-foreground font-canela'>
-                  If you leave this page or refresh your browser, you'll lose your
-                  place in the queue and will need to start over.
+                  {t('queue.loseYourPlace')}
                 </p>
               </div>
             </div>
@@ -123,12 +125,10 @@ export function FmQueueWaitingView({
               <Timer className='h-5 w-5 text-fm-gold flex-shrink-0 mt-[2px]' />
               <div className='space-y-[5px]'>
                 <p className='text-sm font-canela text-white'>
-                  You'll have {checkoutTimeoutMinutes} minutes to complete your
-                  purchase.
+                  {t('queue.timeToComplete', { minutes: checkoutTimeoutMinutes })}
                 </p>
                 <p className='text-xs text-muted-foreground font-canela'>
-                  Once you reach the ticket selection screen, a timer will start.
-                  Make sure you complete your purchase before the timer runs out.
+                  {t('queue.timerWillStart')}
                 </p>
               </div>
             </div>
@@ -138,15 +138,14 @@ export function FmQueueWaitingView({
           <div className='flex items-center justify-center gap-[10px] text-xs text-muted-foreground font-canela'>
             <div className='flex items-center gap-[5px]'>
               <div className='h-2 w-2 bg-fm-gold rounded-full animate-pulse' />
-              <span>Live updates enabled</span>
+              <span>{t('queue.liveUpdatesEnabled')}</span>
             </div>
           </div>
         </FmCommonCard>
 
         {/* Additional info */}
         <p className='text-center text-xs text-muted-foreground font-canela'>
-          Your position will update automatically as people ahead of you complete
-          their purchases or their time expires.
+          {t('queue.positionUpdatesAutomatically')}
         </p>
       </div>
     </div>

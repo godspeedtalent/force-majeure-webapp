@@ -61,5 +61,17 @@
   },
   "age": {
     "required": "You must confirm you meet the age requirement"
-  }
+  },
+  "eventTitleRequired": "Please provide an event title",
+  "headlinerRequired": "Please select a headliner",
+  "eventDateRequired": "Please select an event date",
+  "startTimeRequired": "Please select a start time",
+  "endTimeOrAfterHoursRequired": "Please select an end time or mark as after hours event",
+  "venueRequired": "Please select a venue",
+  "ticketTierRequired": "Please add at least one ticket tier",
+  "totalTicketsExceedsCapacity": "Total tickets ({{totalTickets}}) exceeds venue capacity ({{venueCapacity}})",
+  "tierNameRequired": "Ticket tier {{tierNumber}} must have a name",
+  "tierPriceRequired": "Ticket tier \"{{tierName}}\" must have a price (use 0 for free)",
+  "tierNegativePrice": "Ticket tier \"{{tierName}}\" cannot have a negative price",
+  "tierQuantityRequired": "Ticket tier \"{{tierName}}\" must have at least 1 ticket"
 }

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ExternalLink } from 'lucide-react';
 
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
@@ -22,6 +23,7 @@ export function PromoCodePanel({
   onSignInClick,
   lowClaimLocationsCount,
 }: PromoCodePanelProps) {
+  const { t } = useTranslation('common');
   return (
     <MessagePanel
       title=''
@@ -29,27 +31,25 @@ export function PromoCodePanel({
       action={
         <>
           <h1 className='font-display text-4xl md:text-5xl mb-4'>
-            Guestlist Spots Claimed!
+            {t('scavenger.promoCode.spotsClaimed')}
           </h1>
           <p className='text-base text-muted-foreground mb-4'>
-            Sorry, both guestlist passes have been snagged at this location. But
-            you&apos;re not leaving empty handed! Sign up to receive a promo
-            code for 20% off tickets.
+            {t('scavenger.promoCode.spotsClaimedDescription')}
           </p>
           <DecorativeDivider />
           {typeof lowClaimLocationsCount === 'number' && (
             <p className='text-sm text-muted-foreground mb-4'>
-              There are still{' '}
+              {t('scavenger.promoCode.locationsAvailable')}{' '}
               <AnimatedCounter
                 value={lowClaimLocationsCount}
                 duration={1200}
                 className='inline text-fm-gold font-bold text-xl align-baseline mx-2'
               />{' '}
-              locations that have guest passes available, check the reel at{' '}
+              {t('scavenger.promoCode.checkInstagram')}{' '}
               <span className='text-fm-gold font-semibold'>
                 @force.majeure.events
               </span>{' '}
-              on Instagram for hints.
+              {t('scavenger.promoCode.forHints')}
             </p>
           )}
           <DecorativeDivider />
@@ -57,7 +57,7 @@ export function PromoCodePanel({
           {userDisplayName ? (
             <>
               <h2 className='font-display text-2xl md:text-3xl text-fm-gold mb-4'>
-                Your Promo Code
+                {t('scavenger.promoCode.yourPromoCode')}
               </h2>
               <div className='bg-black/50 border-2 border-fm-gold p-4 rounded-lg mb-6'>
                 <code className='font-mono text-lg md:text-xl text-fm-gold tracking-wider'>
@@ -70,7 +70,7 @@ export function PromoCodePanel({
                 onClick={() => window.open(LF_SYSTEM_TICKET_URL, '_blank')}
               >
                 <ExternalLink className='mr-2 h-4 w-4' />
-                Buy Tickets Now
+                {t('scavenger.promoCode.buyTicketsNow')}
               </Button>
             </>
           ) : (
@@ -80,14 +80,14 @@ export function PromoCodePanel({
                 className='w-full max-w-xs mx-auto bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]'
                 onClick={onJoinClick}
               >
-                Join
+                {t('scavenger.buttons.join')}
               </Button>
               <Button
                 size='lg'
                 className='w-full max-w-xs mx-auto mt-4 bg-transparent border-2 border-white text-white hover:bg-white hover:text-black font-semibold transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]'
                 onClick={onSignInClick}
               >
-                Sign In
+                {t('auth.signIn')}
               </Button>
             </>
           )}

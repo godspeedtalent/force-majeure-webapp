@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -32,12 +33,13 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/common/shadcn/collapsible';
 import { ChevronDown } from 'lucide-react';
 
-const formSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  code: z.string().min(3, 'Code must be at least 3 characters').regex(/^[a-z0-9-]+$/, 'Only lowercase letters, numbers, and hyphens'),
-  utm_source: z.string().min(1, 'Source is required'),
-  utm_medium: z.string().min(1, 'Medium is required'),
-  utm_campaign: z.string().min(1, 'Campaign is required'),
+// Schema is created inside component to access translations
+const createFormSchema = (t: (key: string) => string) => z.object({
+  name: z.string().min(1, t('tracking.validation.nameRequired')),
+  code: z.string().min(3, t('tracking.validation.codeMinLength')).regex(/^[a-z0-9-]+$/, t('tracking.validation.codePattern')),
+  utm_source: z.string().min(1, t('tracking.validation.sourceRequired')),
+  utm_medium: z.string().min(1, t('tracking.validation.mediumRequired')),
+  utm_campaign: z.string().min(1, t('tracking.validation.campaignRequired')),
   utm_content: z.string().optional(),
   utm_term: z.string().optional(),
   custom_destination_url: z.string().url().optional().or(z.literal('')),
@@ -45,7 +47,7 @@ const formSchema = z.object({
   max_clicks: z.number().int().positive().optional(),
 });
 
-type FormData = z.infer<typeof formSchema>;
+type FormData = z.infer<ReturnType<typeof createFormSchema>>;
 
 const SOURCE_SUGGESTIONS = ['instagram', 'facebook', 'twitter', 'email', 'google', 'tiktok', 'linkedin'];
 const MEDIUM_SUGGESTIONS = ['social', 'email', 'cpc', 'banner', 'affiliate', 'referral'];
@@ -58,9 +60,11 @@ interface CreateLinkDialogProps {
 }
 
 export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: CreateLinkDialogProps) {
+  const { t } = useTranslation('common');
   const { createLink, updateLink } = useTrackingLinks(eventId);
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 
+  const formSchema = createFormSchema(t);
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -126,9 +130,9 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{editingLink ? 'Edit' : 'Create'} Tracking Link</DialogTitle>
+          <DialogTitle>{editingLink ? t('tracking.editLink') : t('tracking.createLink')}</DialogTitle>
           <DialogDescription>
-            Create a unique tracking link to measure campaign performance
+            {t('tracking.createLinkDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -139,9 +143,9 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Link Name</FormLabel>
+                  <FormLabel>{t('tracking.linkName')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Instagram Bio Link" {...field} />
+                    <Input placeholder={t('tracking.placeholders.linkName')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -153,9 +157,9 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
               name="code"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Short Code</FormLabel>
+                  <FormLabel>{t('tracking.shortCode')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="instagram-bio" {...field} />
+                    <Input placeholder={t('tracking.placeholders.shortCode')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -164,7 +168,7 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
 
             {previewUrl && (
               <div className="p-3 bg-muted rounded-md">
-                <p className="text-xs text-muted-foreground mb-1">Preview URL:</p>
+                <p className="text-xs text-muted-foreground mb-1">{t('tracking.previewUrl')}:</p>
                 <code className="text-xs break-all">{previewUrl}</code>
               </div>
             )}
@@ -175,11 +179,11 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
                 name="utm_source"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>UTM Source *</FormLabel>
+                    <FormLabel>{t('tracking.utmSource')} *</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select source" />
+                          <SelectValue placeholder={t('tracking.placeholders.selectSource')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -188,12 +192,12 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
                             {source}
                           </SelectItem>
                         ))}
-                        <SelectItem value="custom">Custom</SelectItem>
+                        <SelectItem value="custom">{t('tracking.custom')}</SelectItem>
                       </SelectContent>
                     </Select>
                     {field.value === 'custom' && (
                       <Input
-                        placeholder="Enter custom source"
+                        placeholder={t('tracking.placeholders.customSource')}
                         onChange={(e) => field.onChange(e.target.value)}
                         className="mt-2"
                       />
@@ -208,11 +212,11 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
                 name="utm_medium"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>UTM Medium *</FormLabel>
+                    <FormLabel>{t('tracking.utmMedium')} *</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select medium" />
+                          <SelectValue placeholder={t('tracking.placeholders.selectMedium')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -221,12 +225,12 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
                             {medium}
                           </SelectItem>
                         ))}
-                        <SelectItem value="custom">Custom</SelectItem>
+                        <SelectItem value="custom">{t('tracking.custom')}</SelectItem>
                       </SelectContent>
                     </Select>
                     {field.value === 'custom' && (
                       <Input
-                        placeholder="Enter custom medium"
+                        placeholder={t('tracking.placeholders.customMedium')}
                         onChange={(e) => field.onChange(e.target.value)}
                         className="mt-2"
                       />
@@ -242,9 +246,9 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
               name="utm_campaign"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>UTM Campaign *</FormLabel>
+                  <FormLabel>{t('tracking.utmCampaign')} *</FormLabel>
                   <FormControl>
-                    <Input placeholder="summer-sale-2024" {...field} />
+                    <Input placeholder={t('tracking.placeholders.campaign')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -257,9 +261,9 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
                 name="utm_content"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>UTM Content</FormLabel>
+                    <FormLabel>{t('tracking.utmContent')}</FormLabel>
                     <FormControl>
-                      <Input placeholder="bio-link" {...field} />
+                      <Input placeholder={t('tracking.placeholders.content')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -271,9 +275,9 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
                 name="utm_term"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>UTM Term</FormLabel>
+                    <FormLabel>{t('tracking.utmTerm')}</FormLabel>
                     <FormControl>
-                      <Input placeholder="electronic music" {...field} />
+                      <Input placeholder={t('tracking.placeholders.term')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -283,7 +287,7 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
 
             <Collapsible open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
               <CollapsibleTrigger className="flex items-center gap-2 text-sm font-medium">
-                Advanced Options
+                {t('tracking.advancedOptions')}
                 <ChevronDown className={`h-4 w-4 transition-transform ${isAdvancedOpen ? 'rotate-180' : ''}`} />
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-4 mt-4">
@@ -292,12 +296,12 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
                   name="custom_destination_url"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Custom Destination URL</FormLabel>
+                      <FormLabel>{t('tracking.customDestinationUrl')}</FormLabel>
                       <FormControl>
-                        <Input placeholder="https://forcemajeure.app/event/..." {...field} />
+                        <Input placeholder={t('tracking.placeholders.customUrl')} {...field} />
                       </FormControl>
                       <p className="text-xs text-muted-foreground">
-                        Leave empty to use default event page
+                        {t('tracking.customUrlHelp')}
                       </p>
                       <FormMessage />
                     </FormItem>
@@ -310,12 +314,12 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
                     name="expires_at"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Expiration Date</FormLabel>
+                        <FormLabel>{t('tracking.expirationDate')}</FormLabel>
                         <FormControl>
                           <FmCommonDatePicker
                             value={field.value}
                             onChange={field.onChange}
-                            placeholder="Never expires"
+                            placeholder={t('tracking.neverExpires')}
                           />
                         </FormControl>
                         <FormMessage />
@@ -328,11 +332,11 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
                     name="max_clicks"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Max Clicks</FormLabel>
+                        <FormLabel>{t('tracking.maxClicks')}</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
-                            placeholder="Unlimited"
+                            placeholder={t('tracking.unlimited')}
                             {...field}
                             onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
                             value={field.value || ''}
@@ -352,13 +356,13 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
                 variant="secondary"
                 onClick={() => onOpenChange(false)}
               >
-                Cancel
+                {t('buttons.cancel')}
               </FmCommonButton>
               <FmCommonButton
                 type="submit"
                 loading={createLink.isPending || updateLink.isPending}
               >
-                {editingLink ? 'Update' : 'Create'} Link
+                {editingLink ? t('tracking.updateLink') : t('tracking.createLinkButton')}
               </FmCommonButton>
             </div>
           </form>

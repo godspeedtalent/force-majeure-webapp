@@ -1,34 +1,35 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/common/shadcn/badge';
 import { Code, ShoppingCart, Mail, ArrowRight } from 'lucide-react';
 import { DemoLayout } from '@/components/demo/DemoLayout';
 
 export default function DemoIndex() {
+  const { t } = useTranslation('common');
+
   const demos = [
     {
-      title: 'Event Checkout',
-      description:
-        'Complete ticket purchasing flow with Stripe checkout integration, inventory management, and order tracking',
+      title: t('demoIndex.eventCheckout'),
+      description: t('demoIndex.eventCheckoutDescription'),
       path: '/demo/event-checkout',
       icon: ShoppingCart,
-      category: 'E-Commerce',
+      category: t('demoIndex.categoryEcommerce'),
       status: 'Active',
     },
     {
-      title: 'Email Template Preview',
-      description:
-        'Preview and test order receipt email templates with configurable data and live sending capabilities',
+      title: t('demoIndex.emailTemplate'),
+      description: t('demoIndex.emailTemplateDescription'),
       path: '/demo/email-template',
       icon: Mail,
-      category: 'Communication',
+      category: t('demoIndex.categoryCommunication'),
       status: 'Active',
     },
   ];
 
   return (
     <DemoLayout
-      title='Developer Demos'
-      description='Test and explore application features in a controlled environment'
+      title={t('demoIndex.title')}
+      description={t('demoIndex.description')}
       icon={Code}
     >
       {/* Demo List */}
@@ -55,7 +56,7 @@ export default function DemoIndex() {
                       {demo.description}
                     </p>
                     <div className='flex items-center gap-2 text-sm text-fm-gold pl-14 opacity-0 group-hover:opacity-100 transition-opacity'>
-                      <span>Open demo</span>
+                      <span>{t('demoIndex.openDemo')}</span>
                       <ArrowRight className='h-4 w-4' />
                     </div>
                   </div>
@@ -69,8 +70,7 @@ export default function DemoIndex() {
       {/* Footer Note */}
       <div className='mt-12 p-4 bg-muted/50 rounded-lg border border-border'>
         <p className='text-sm text-muted-foreground text-center'>
-          These demos are only accessible to admin users and are not visible in
-          production
+          {t('demoIndex.accessNote')}
         </p>
       </div>
     </DemoLayout>

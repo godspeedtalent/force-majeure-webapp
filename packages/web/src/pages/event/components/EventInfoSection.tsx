@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Calendar, Clock, MapPin } from 'lucide-react';
 
 import { FmCommonCollapsibleSection } from '@/components/common/data/FmCommonCollapsibleSection';
@@ -28,16 +29,18 @@ export const EventInfoSection = ({
   onVenueSelect,
   className = '',
 }: EventInfoSectionProps) => {
+  const { t } = useTranslation('common');
+
   return (
     <FmCommonCollapsibleSection
-      title='Event Information'
+      title={t('eventInfo.title')}
       defaultExpanded={true}
       className={className}
     >
       <div className='grid gap-4'>
         <FmCommonInfoCard
           icon={Calendar}
-          label='Date & Time'
+          label={t('eventInfo.dateTime')}
           size='sm'
           value={
             <div className='flex flex-col gap-1.5'>
@@ -47,7 +50,7 @@ export const EventInfoSection = ({
                 <span>{formattedDateTime}</span>
                 {isAfterHours && (
                   <Badge className='bg-fm-gold/20 text-fm-gold border-fm-gold/40 text-[10px] px-1.5 py-0'>
-                    After Hours
+                    {t('eventInfo.afterHours')}
                   </Badge>
                 )}
               </div>
@@ -57,11 +60,11 @@ export const EventInfoSection = ({
 
         <FmCommonInfoCard
           icon={MapPin}
-          label='Venue'
+          label={t('eventInfo.venue')}
           size='sm'
           value={
             <FmTextLink onClick={onVenueSelect}>
-              {venue || 'Venue TBA'}
+              {venue || t('eventInfo.venueTBA')}
             </FmTextLink>
           }
         />

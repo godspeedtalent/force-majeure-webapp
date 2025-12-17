@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { GripVertical, Copy, Trash2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
 import { Input } from '@/components/common/shadcn/input';
@@ -35,6 +36,8 @@ export function TierListItem({
   onDuplicate,
   onDelete,
 }: TierListItemProps) {
+  const { t } = useTranslation('common');
+
   return (
     <Card className='bg-background/50 border-border/50'>
       <CardContent className='pt-4 space-y-4'>
@@ -46,7 +49,7 @@ export function TierListItem({
           <div className='flex-1 space-y-3'>
             <div className='grid grid-cols-2 gap-3'>
               <div>
-                <Label className='text-xs'>Tier Name *</Label>
+                <Label className='text-xs'>{t('tierListItem.tierName')}</Label>
                 <Input
                   value={tier.name}
                   onChange={e =>
@@ -54,11 +57,11 @@ export function TierListItem({
                       name: e.target.value,
                     })
                   }
-                  placeholder='e.g., Early Bird, Standard'
+                  placeholder={t('tierListItem.tierNamePlaceholder')}
                 />
               </div>
               <div>
-                <Label className='text-xs'>Price *</Label>
+                <Label className='text-xs'>{t('tierListItem.price')}</Label>
                 <div className='relative'>
                   <span className='absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground'>
                     $
@@ -83,7 +86,7 @@ export function TierListItem({
             </div>
 
             <FmCommonTextField
-              label='Description'
+              label={t('tierListItem.description')}
               multiline
               rows={2}
               value={tier.description}
@@ -92,13 +95,13 @@ export function TierListItem({
                   description: e.target.value,
                 })
               }
-              placeholder='Optional tier description'
+              placeholder={t('tierListItem.descriptionPlaceholder')}
               className='text-xs'
             />
 
             <div className='grid grid-cols-2 gap-3'>
               <div>
-                <Label className='text-xs'>Total Tickets *</Label>
+                <Label className='text-xs'>{t('tierListItem.totalTickets')}</Label>
                 <Input
                   type='number'
                   min='0'
@@ -112,7 +115,7 @@ export function TierListItem({
                 />
               </div>
               <div>
-                <Label className='text-xs'>Potential Revenue</Label>
+                <Label className='text-xs'>{t('tierListItem.potentialRevenue')}</Label>
                 <div className='h-10 px-3 flex items-center bg-muted/50 rounded-md text-sm font-semibold text-fm-gold'>
                   {formatPrice(tier.total_tickets * tier.price_cents)}
                 </div>
@@ -134,13 +137,13 @@ export function TierListItem({
                   htmlFor={`hide-tier-${tierIndex}`}
                   className='cursor-pointer text-xs'
                 >
-                  Hide until previous tier sold out
+                  {t('tierListItem.hideUntilSoldOut')}
                 </Label>
                 {isFirstTier && tier.hide_until_previous_sold_out && (
                   <div className='flex items-center gap-1 text-xs text-amber-500 mt-1'>
                     <AlertCircle className='h-3 w-3' />
                     <span>
-                      First tier in group - will be visible immediately
+                      {t('tierListItem.firstTierWarning')}
                     </span>
                   </div>
                 )}
@@ -157,7 +160,7 @@ export function TierListItem({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Duplicate tier</p>
+                  <p>{t('tierListItem.duplicateTier')}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -175,7 +178,7 @@ export function TierListItem({
                    </Button>
                  </TooltipTrigger>
                  <TooltipContent>
-                   <p>{isProtected ? 'Cannot delete last tier' : 'Delete tier'}</p>
+                   <p>{isProtected ? t('tierListItem.cannotDeleteLast') : t('tierListItem.deleteTier')}</p>
                  </TooltipContent>
               </Tooltip>
             </TooltipProvider>

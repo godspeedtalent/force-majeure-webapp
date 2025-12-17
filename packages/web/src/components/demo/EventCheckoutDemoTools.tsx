@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { logger } from '@force-majeure/shared';
 import { useNavigate } from 'react-router-dom';
 import { FileEdit, Dices } from 'lucide-react';
@@ -20,6 +21,7 @@ export const EventCheckoutDemoTools = ({
   onEventChange,
   onEventUpdated,
 }: EventCheckoutDemoToolsProps) => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [isCreatingRandomEvent, setIsCreatingRandomEvent] = useState(false);
 
@@ -30,8 +32,8 @@ export const EventCheckoutDemoTools = ({
       const testService = new TestEventDataService();
       const eventId = await testService.createTestEvent();
 
-      toast.success('Random test event created!', {
-        description: 'Event has been generated with randomized data',
+      toast.success(t('demoTools.randomEventCreated'), {
+        description: t('demoTools.randomEventDescription'),
       });
 
       // Select the newly created event
@@ -39,11 +41,11 @@ export const EventCheckoutDemoTools = ({
       onEventUpdated?.();
     } catch (error) {
       logger.error('Error creating random event:', { error: error instanceof Error ? error.message : 'Unknown' });
-      toast.error('Failed to create random event', {
+      toast.error(t('demoTools.randomEventFailed'), {
         description:
           error instanceof Error
             ? error.message
-            : 'An unexpected error occurred',
+            : t('errors.genericError'),
       });
     } finally {
       setIsCreatingRandomEvent(false);
@@ -54,17 +56,17 @@ export const EventCheckoutDemoTools = ({
     <div className='space-y-6'>
       <div className='space-y-3'>
         <Label htmlFor='event-select' className='text-white'>
-          Select Event
+          {t('demoTools.selectEvent')}
         </Label>
         <FmEventSearchDropdown
           value={selectedEventId}
           onChange={onEventChange}
-          placeholder='Search for an event...'
+          placeholder={t('placeholders.searchEvent')}
         />
       </div>
 
       <div className='space-y-3'>
-        <Label className='text-white'>Quick Actions</Label>
+        <Label className='text-white'>{t('demoTools.quickActions')}</Label>
         <div className='flex gap-2'>
           <Button
             variant='outline'
@@ -73,7 +75,7 @@ export const EventCheckoutDemoTools = ({
             disabled={isCreatingRandomEvent}
           >
             <Dices className='h-4 w-4 mr-2' />
-            {isCreatingRandomEvent ? 'Creating...' : 'Random Event'}
+            {isCreatingRandomEvent ? t('status.creating') : t('demoTools.randomEvent')}
           </Button>
           <Button
             variant='outline'
@@ -81,7 +83,7 @@ export const EventCheckoutDemoTools = ({
             onClick={() => navigate('/events/create')}
           >
             <Plus className='h-4 w-4 mr-2' />
-            Create Event
+            {t('demoTools.createEvent')}
           </Button>
           {selectedEventId && (
             <Button
@@ -90,7 +92,7 @@ export const EventCheckoutDemoTools = ({
               onClick={() => navigate(`/event/${selectedEventId}/manage`)}
             >
               <FileEdit className='h-4 w-4 mr-2' />
-              Manage Event
+              {t('demoTools.manageEvent')}
             </Button>
           )}
         </div>

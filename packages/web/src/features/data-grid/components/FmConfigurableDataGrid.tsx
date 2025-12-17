@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { supabase } from '@force-majeure/shared';
 import { FmDataGrid, DataGridColumn, DataGridAction } from './FmDataGrid';
@@ -72,6 +73,8 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
   resourceName = 'Resource',
   createButtonLabel,
 }: FmConfigurableDataGridProps<T>) {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const { user } = useAuth();
   const [config, setConfig] = useState<GridConfig | null>(null);
   const [isLoadingConfig, setIsLoadingConfig] = useState(true);
@@ -111,9 +114,11 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
   useEffect(() => {
     if (tableName && schemaError) {
       logger.error(`Failed to load schema for table ${tableName}:`, schemaError);
-      toast.error(`Failed to load table schema: ${(schemaError as Error).message}`);
+      toast.error(tToast('admin.schemaRefreshFailed'), {
+        description: (schemaError as Error).message,
+      });
     }
-  }, [tableName, schemaError]);
+  }, [tableName, schemaError, tToast]);
 
   useEffect(() => {
     loadConfig();
@@ -167,13 +172,13 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
 
       if (error) {
         logger.error('Error saving grid config:', error);
-        toast.error('Failed to save column configuration');
+        toast.error(tToast('admin.columnSaveFailed'));
       } else {
-        toast.success('Column configuration saved');
+        toast.success(tToast('admin.columnConfigSaved'));
       }
     } catch (error) {
       logger.error('Error saving grid config:', { error: error instanceof Error ? error.message : 'Unknown' });
-      toast.error('Failed to save column configuration');
+      toast.error(tToast('admin.columnSaveFailed'));
     }
   };
 
@@ -265,7 +270,6 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
 
     setConfig(newConfig);
     saveConfig(newConfig);
-    toast.success('Column configuration saved');
   };
 
   const hideColumn = (columnKey: string) => {
@@ -278,9 +282,8 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
 
     setConfig(newConfig);
     saveConfig(newConfig);
-    toast.success(
-      `Column "${baseColumns.find(c => c.key === columnKey)?.label}" hidden`
-    );
+    const columnLabel = baseColumns.find(c => c.key === columnKey)?.label;
+    toast.success(t('dataGrid.columnHidden', { column: columnLabel }));
   };
 
   const handleColumnReorder = (fromIndex: number, toIndex: number) => {
@@ -324,7 +327,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
     setRecentlyMovedKey(movedColumn.key);
     setTimeout(() => setRecentlyMovedKey(null), 600);
 
-    toast.success('Column order updated');
+    toast.success(tToast('admin.columnOrderUpdated'));
   };
 
   const handleToggleFreeze = (columnKey: string) => {
@@ -343,7 +346,9 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
     const column = baseColumns.find(c => c.key === columnKey);
     const isFrozen = !currentCol?.frozen;
     toast.success(
-      `Column "${column?.label}" ${isFrozen ? 'frozen' : 'unfrozen'}`
+      isFrozen
+        ? t('dataGrid.columnFrozen', { column: column?.label })
+        : t('dataGrid.columnUnfrozen', { column: column?.label })
     );
   };
 
@@ -369,13 +374,13 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
 
         if (error) {
           logger.error('Error resetting grid config:', error);
-          toast.error('Failed to reset configuration');
+          toast.error(t('dataGrid.resetFailed'));
         } else {
-          toast.success('Configuration reset to default');
+          toast.success(t('dataGrid.resetSuccess'));
         }
       } catch (error) {
         logger.error('Error resetting grid config:', { error: error instanceof Error ? error.message : 'Unknown' });
-        toast.error('Failed to reset configuration');
+        toast.error(t('dataGrid.resetFailed'));
       }
     }
   };
@@ -386,7 +391,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
       <div className='flex items-center justify-center p-8'>
         <div className='h-8 w-8 border-2 border-fm-gold border-t-transparent rounded-full animate-spin' />
         <span className='ml-3 text-muted-foreground'>
-          {isLoadingSchema ? 'Loading schema...' : 'Loading configuration...'}
+          {isLoadingSchema ? t('dataGrid.loadingSchema') : t('dataGrid.loadingConfig')}
         </span>
       </div>
     );
@@ -397,7 +402,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
     return (
       <div className='flex items-center justify-center p-8'>
         <div className='text-center'>
-          <p className='text-destructive mb-2'>Failed to load table schema</p>
+          <p className='text-destructive mb-2'>{t('dataGrid.schemaLoadFailed')}</p>
           <p className='text-sm text-muted-foreground'>{(schemaError as Error).message}</p>
         </div>
       </div>
@@ -431,7 +436,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
               onClick={() => setIsReorderDialogOpen(true)}
             >
               <GripVertical className='h-4 w-4' />
-              Reorder
+              {t('dataGrid.reorder')}
             </Button>
 
             <Button
@@ -441,7 +446,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
               onClick={() => setIsColumnConfigOpen(true)}
             >
               <Settings2 className='h-4 w-4' />
-              Columns
+              {t('dataGrid.columns')}
             </Button>
 
             <FmColumnConfigModal

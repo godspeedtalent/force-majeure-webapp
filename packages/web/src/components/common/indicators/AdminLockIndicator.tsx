@@ -1,4 +1,5 @@
 import { Shield } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@force-majeure/shared';
 
 interface AdminLockIndicatorProps {
@@ -18,7 +19,6 @@ interface AdminLockIndicatorProps {
   className?: string;
   /**
    * Custom tooltip text
-   * @default 'Admin Access'
    */
   tooltipText?: string;
 }
@@ -31,8 +31,10 @@ export function AdminLockIndicator({
   position = 'top-right',
   size = 'sm',
   className,
-  tooltipText = 'Admin Access',
+  tooltipText,
 }: AdminLockIndicatorProps) {
+  const { t } = useTranslation('common');
+  const resolvedTooltipText = tooltipText ?? t('adminLockIndicator.adminAccess');
   const sizeClasses = {
     xs: 'h-2.5 w-2.5',
     sm: 'h-3 w-3',
@@ -54,8 +56,8 @@ export function AdminLockIndicator({
         'text-muted-foreground/40 hover:text-muted-foreground/60 transition-colors duration-200',
         className
       )}
-      title={tooltipText}
-      aria-label={tooltipText}
+      title={resolvedTooltipText}
+      aria-label={resolvedTooltipText}
     >
       <Shield className={sizeClasses[size]} />
     </span>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { Save, Eye } from 'lucide-react';
 import { supabase } from '@force-majeure/shared';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -60,6 +61,8 @@ export const EventOverviewForm = ({
   orderCount,
   onMakeInvisible,
 }: EventOverviewFormProps) => {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const queryClient = useQueryClient();
   const { isFeatureEnabled } = useFeatureFlagHelpers();
 
@@ -151,7 +154,7 @@ export const EventOverviewForm = ({
 
       if (error) throw error;
 
-      toast.success('Changes saved automatically');
+      toast.success(tToast('events.autoSaved'));
       queryClient.invalidateQueries({ queryKey: ['event', eventId] });
     } catch (error) {
       await handleError(error, {
@@ -178,12 +181,12 @@ export const EventOverviewForm = ({
 
   const handleSaveOverview = async () => {
     if (!customTitle.trim()) {
-      toast.error('Please provide an event title');
+      toast.error(tToast('events.titleRequired'));
       return;
     }
 
     if (!headlinerId || !venueId || !eventDate) {
-      toast.error('Please fill in all required fields');
+      toast.error(tToast('events.requiredFieldsMissing'));
       return;
     }
 
@@ -204,7 +207,7 @@ export const EventOverviewForm = ({
 
       if (error) throw error;
 
-      toast.success('Changes saved successfully');
+      toast.success(tToast('success.saved'));
       queryClient.invalidateQueries({ queryKey: ['event', eventId] });
     } catch (error) {
       await handleError(error, {
@@ -229,7 +232,7 @@ export const EventOverviewForm = ({
 
       if (error) throw error;
 
-      toast.success('Hero image saved');
+      toast.success(tToast('events.heroImageSaved'));
       queryClient.invalidateQueries({ queryKey: ['event', eventId] });
     } catch (error) {
       await handleError(error, {
@@ -248,10 +251,10 @@ export const EventOverviewForm = ({
         <div className='flex items-center justify-between'>
           <div>
             <h2 className='text-2xl font-bold text-foreground mb-2'>
-              Event Overview
+              {t('eventOverview.eventOverview')}
             </h2>
             <p className='text-muted-foreground'>
-              Basic event information and details
+              {t('eventOverview.basicEventInfo')}
             </p>
           </div>
           <FmCommonButton
@@ -259,7 +262,7 @@ export const EventOverviewForm = ({
             loading={isSaving}
             icon={Save}
           >
-            Save Changes
+            {t('buttons.saveChanges')}
           </FmCommonButton>
         </div>
       </div>
@@ -268,7 +271,7 @@ export const EventOverviewForm = ({
         {/* Headliner */}
         <div className='space-y-2'>
           <Label htmlFor='headliner'>
-            Headliner <span className='text-destructive'>*</span>
+            {t('eventOverview.headliner')} <span className='text-destructive'>*</span>
           </Label>
           <FmArtistSearchDropdown
             value={headlinerId}
@@ -276,14 +279,14 @@ export const EventOverviewForm = ({
               setHeadlinerId(value);
               triggerAutoSave();
             }}
-            placeholder='Select headliner'
+            placeholder={t('placeholders.selectHeadliner')}
           />
         </div>
 
         {/* Venue */}
         <div className='space-y-2'>
           <Label htmlFor='venue'>
-            Venue <span className='text-destructive'>*</span>
+            {t('eventOverview.venue')} <span className='text-destructive'>*</span>
           </Label>
           <FmVenueSearchDropdown
             value={venueId}
@@ -291,14 +294,14 @@ export const EventOverviewForm = ({
               setVenueId(value);
               triggerAutoSave();
             }}
-            placeholder='Select venue'
+            placeholder={t('placeholders.selectVenue')}
           />
         </div>
 
         {/* Event Title & Subtitle */}
         <div className='space-y-2'>
           <Label htmlFor='event-title'>
-            Event Title <span className='text-destructive'>*</span>
+            {t('eventOverview.eventTitle')} <span className='text-destructive'>*</span>
           </Label>
           <Input
             id='event-title'
@@ -307,13 +310,13 @@ export const EventOverviewForm = ({
               setCustomTitle(e.target.value);
               triggerAutoSave();
             }}
-            placeholder='Enter event title'
+            placeholder={t('eventOverview.enterEventTitle')}
           />
         </div>
 
         <div className='space-y-2'>
           <Label htmlFor='event-subtitle'>
-            Subtitle (Optional)
+            {t('eventOverview.subtitleOptional')}
           </Label>
           <Input
             id='event-subtitle'
@@ -322,14 +325,14 @@ export const EventOverviewForm = ({
               setEventSubtitle(e.target.value);
               triggerAutoSave();
             }}
-            placeholder='Enter event subtitle'
+            placeholder={t('eventOverview.enterEventSubtitle')}
           />
         </div>
 
         {/* About This Event Description */}
         <div className='space-y-2 md:col-span-2'>
           <Label htmlFor='about-event'>
-            About This Event (Optional)
+            {t('eventOverview.aboutEventOptional')}
           </Label>
           <textarea
             id='about-event'
@@ -338,7 +341,7 @@ export const EventOverviewForm = ({
               setAboutEvent(e.target.value);
               triggerAutoSave();
             }}
-            placeholder='Enter event description...'
+            placeholder={t('eventOverview.enterEventDescription')}
             className='w-full min-h-[120px] p-3 rounded-md border border-input bg-background text-foreground resize-y'
             rows={5}
           />
@@ -347,7 +350,7 @@ export const EventOverviewForm = ({
         {/* Date & Time */}
         <div className='space-y-2'>
           <Label>
-            Event Date & Time{' '}
+            {t('eventOverview.eventDateTime')}{' '}
             <span className='text-destructive'>*</span>
           </Label>
           <div className='flex gap-2'>
@@ -378,7 +381,7 @@ export const EventOverviewForm = ({
 
         {/* End Time */}
         <div className='space-y-2'>
-          <Label>End Time</Label>
+          <Label>{t('eventOverview.endTime')}</Label>
           <div className='flex items-center gap-4'>
             <FmCommonTimePicker
               value={endTime}
@@ -398,7 +401,7 @@ export const EventOverviewForm = ({
                 }}
               />
               <Label htmlFor='after-hours' className='cursor-pointer'>
-                After hours
+                {t('eventOverview.afterHours')}
               </Label>
             </div>
           </div>
@@ -414,18 +417,18 @@ export const EventOverviewForm = ({
                 </div>
                 <div className='flex-1'>
                   <h3 className='text-lg font-semibold text-foreground mb-2'>
-                    Event Visibility
+                    {t('eventOverview.eventVisibility')}
                   </h3>
                   <p className='text-sm text-muted-foreground mb-4'>
-                    Hide this event from public view while keeping it accessible via direct link.
-                    {orderCount > 0 && ` This event has ${orderCount} order${orderCount === 1 ? '' : 's'}.`}
+                    {t('eventOverview.eventVisibilityDescription')}
+                    {orderCount > 0 && ` ${t('eventOverview.eventHasOrders', { count: orderCount, plural: orderCount === 1 ? '' : 's' })}`}
                   </p>
                   <FmCommonButton
                     variant='secondary'
                     icon={Eye}
                     onClick={onMakeInvisible}
                   >
-                    Make Invisible
+                    {t('eventOverview.makeInvisible')}
                   </FmCommonButton>
                 </div>
               </div>
@@ -435,7 +438,7 @@ export const EventOverviewForm = ({
 
         {/* Hero Image */}
         <div className='space-y-2 md:col-span-2'>
-          <Label htmlFor='hero-image'>Hero Image</Label>
+          <Label htmlFor='hero-image'>{t('eventOverview.heroImage')}</Label>
           <FmImageUpload
             eventId={eventId}
             currentImageUrl={heroImage}

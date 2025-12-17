@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCreateEntityNavigation } from '@force-majeure/shared';
@@ -10,6 +11,8 @@ import { toast } from 'sonner';
 import { logger } from '@force-majeure/shared';
 
 const DeveloperCreateVenuePage = () => {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const navigate = useNavigate();
   const { returnTo, navigateWithEntity } = useCreateEntityNavigation('newVenueId');
   const [formData, setFormData] = useState({
@@ -28,7 +31,7 @@ const DeveloperCreateVenuePage = () => {
 
   const handleSubmit = async () => {
     if (!formData.name.trim()) {
-      toast.error('Venue name is required');
+      toast.error(tToast('validation.venueNameRequired'));
       return;
     }
 
@@ -48,7 +51,7 @@ const DeveloperCreateVenuePage = () => {
 
       if (error) throw error;
 
-      toast.success('Venue created successfully');
+      toast.success(tToast('success.created'));
 
       // Return to origin page with new entity, or go to database page
       if (returnTo) {
@@ -70,7 +73,7 @@ const DeveloperCreateVenuePage = () => {
       });
 
       // Show detailed error to user
-      const errorMessage = supabaseError?.message || 'Failed to create venue';
+      const errorMessage = supabaseError?.message || tToast('error.create');
       const errorHint = supabaseError?.hint ? ` (${supabaseError.hint})` : '';
       toast.error(`${errorMessage}${errorHint}`);
     } finally {
@@ -100,34 +103,34 @@ const DeveloperCreateVenuePage = () => {
 
   return (
     <FmCommonCreateForm
-      title='Create Venue'
-      description='Register a new venue with capacity and location details.'
+      title={t('createForms.venue.title')}
+      description={t('createForms.venue.description')}
       icon={MapPin}
-      helperText='Provide venue metadata so events can reference accurate locations.'
+      helperText={t('createForms.venue.helperText')}
       isSubmitting={isSubmitting || isImageUploading}
       onSubmit={handleSubmit}
       onCancel={handleCancel}
-      submitText='Create Venue'
+      submitText={t('createForms.venue.submitText')}
     >
       <FmCommonTextField
-        label='Venue Name'
+        label={t('labels.venueName')}
         required
         value={formData.name}
         onChange={e => setFormData({ ...formData, name: e.target.value })}
-        placeholder='Enter venue name'
+        placeholder={t('placeholders.enterVenueName')}
       />
 
       <FmCommonTextField
-        label='Website'
+        label={t('labels.website')}
         value={formData.website}
         onChange={e => setFormData({ ...formData, website: e.target.value })}
-        placeholder='https://example.com'
+        placeholder={t('placeholders.exampleUrl')}
       />
 
       {/* Address Section - Grouped */}
       <div className='space-y-[10px] p-[20px] border border-white/10 bg-black/20 backdrop-blur-sm'>
         <h3 className='text-sm font-canela uppercase tracking-wider text-fm-gold mb-[10px]'>
-          Address
+          {t('labels.address')}
         </h3>
 
         {/* Stacked address lines with single label below */}
@@ -137,55 +140,55 @@ const DeveloperCreateVenuePage = () => {
             onChange={e =>
               setFormData({ ...formData, address_line_1: e.target.value })
             }
-            placeholder='Street address'
+            placeholder={t('placeholders.streetAddress')}
           />
           <FmCommonTextField
             value={formData.address_line_2}
             onChange={e =>
               setFormData({ ...formData, address_line_2: e.target.value })
             }
-            placeholder='Apt, suite, unit, etc. (optional)'
+            placeholder={t('placeholders.aptSuiteUnit')}
           />
           <p className='text-xs text-muted-foreground uppercase tracking-wider mt-1'>
-            Address
+            {t('labels.address')}
           </p>
         </div>
 
         <div className='grid grid-cols-2 gap-[10px]'>
           <FmCommonTextField
-            label='City'
+            label={t('labels.city')}
             value={formData.city}
             onChange={e => setFormData({ ...formData, city: e.target.value })}
-            placeholder='Los Angeles'
+            placeholder={t('placeholders.losAngeles')}
           />
           <FmCommonTextField
-            label='State'
+            label={t('labels.state')}
             value={formData.state}
             onChange={e => setFormData({ ...formData, state: e.target.value.toUpperCase() })}
-            placeholder='CA'
+            placeholder={t('placeholders.ca')}
           />
         </div>
 
         <FmCommonTextField
-          label='ZIP Code'
+          label={t('labels.zipCode')}
           value={formData.zip_code}
           onChange={e => setFormData({ ...formData, zip_code: e.target.value })}
-          placeholder='90001'
+          placeholder={t('placeholders.zipCode')}
         />
       </div>
 
       <FmCommonTextField
-        label='Capacity'
+        label={t('labels.capacity')}
         type='number'
         value={formData.capacity}
         onChange={e =>
           setFormData({ ...formData, capacity: e.target.value })
         }
-        placeholder='500'
+        placeholder={t('placeholders.capacity')}
       />
 
       <FmFlexibleImageUpload
-        label='Venue Image'
+        label={t('labels.venueImage')}
         value={formData.image_url}
         onChange={url => setFormData({ ...formData, image_url: url })}
         bucket='venue-images'

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { subDays } from 'date-fns';
 import { Calendar, DollarSign, TrendingUp, Eye, Target, Download } from 'lucide-react';
 import { useEventAnalytics } from './hooks/useEventAnalytics';
@@ -17,6 +18,7 @@ interface EventAnalyticsProps {
 }
 
 export const EventAnalytics = ({ eventId }: EventAnalyticsProps) => {
+  const { t } = useTranslation('common');
   const [dateRange, setDateRange] = useState<DateRange>({
     from: subDays(new Date(), 30),
     to: new Date(),
@@ -31,15 +33,15 @@ export const EventAnalytics = ({ eventId }: EventAnalyticsProps) => {
     if (!analytics) return;
 
     const csvData = [
-      ['Metric', 'Value'],
-      ['Total Revenue', formatCurrency(analytics.totalRevenue)],
-      ['Total Tickets Sold', analytics.totalTicketsSold.toString()],
-      ['Average Order Value', formatCurrency(analytics.averageOrderValue)],
-      ['Total Fees Collected', formatCurrency(analytics.totalFees)],
-      ['Refund Rate', `${analytics.refundRate.toFixed(1)}%`],
-      ['Total Page Views', analytics.totalViews.toString()],
-      ['Unique Visitors', analytics.uniqueVisitors.toString()],
-      ['Conversion Rate', `${analytics.conversionRate.toFixed(1)}%`],
+      [t('analytics.metric'), t('analytics.value')],
+      [t('analytics.totalRevenue'), formatCurrency(analytics.totalRevenue)],
+      [t('analytics.totalTicketsSold'), analytics.totalTicketsSold.toString()],
+      [t('analytics.averageOrderValue'), formatCurrency(analytics.averageOrderValue)],
+      [t('analytics.totalFeesCollected'), formatCurrency(analytics.totalFees)],
+      [t('analytics.refundRate'), `${analytics.refundRate.toFixed(1)}%`],
+      [t('analytics.totalPageViews'), analytics.totalViews.toString()],
+      [t('analytics.uniqueVisitors'), analytics.uniqueVisitors.toString()],
+      [t('analytics.conversionRate'), `${analytics.conversionRate.toFixed(1)}%`],
     ];
 
     const csv = csvData.map(row => row.join(',')).join('\n');
@@ -55,7 +57,7 @@ export const EventAnalytics = ({ eventId }: EventAnalyticsProps) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-muted-foreground">Loading analytics...</div>
+        <div className="text-muted-foreground">{t('analytics.loadingAnalytics')}</div>
       </div>
     );
   }
@@ -63,7 +65,7 @@ export const EventAnalytics = ({ eventId }: EventAnalyticsProps) => {
   if (!analytics) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-muted-foreground">No analytics data available</div>
+        <div className="text-muted-foreground">{t('analytics.noDataAvailable')}</div>
       </div>
     );
   }
@@ -73,9 +75,9 @@ export const EventAnalytics = ({ eventId }: EventAnalyticsProps) => {
       {/* Header with Date Range and Export */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold">Event Analytics</h2>
+          <h2 className="text-2xl font-bold">{t('analytics.eventAnalytics')}</h2>
           <p className="text-muted-foreground">
-            Track performance and engagement metrics
+            {t('analytics.trackPerformance')}
           </p>
         </div>
         <div className="flex gap-2">
@@ -89,7 +91,7 @@ export const EventAnalytics = ({ eventId }: EventAnalyticsProps) => {
           />
           <Button onClick={handleExportCSV} variant="outline" size="sm">
             <Download className="w-4 h-4 mr-2" />
-            Export CSV
+            {t('analytics.exportCSV')}
           </Button>
         </div>
       </div>
@@ -97,50 +99,50 @@ export const EventAnalytics = ({ eventId }: EventAnalyticsProps) => {
       {/* KPI Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <AnalyticsStatCard
-          title="Total Revenue"
+          title={t('analytics.totalRevenue')}
           value={analytics.totalRevenue}
           icon={DollarSign}
           format="currency"
-          subtitle="Excluding fees"
+          subtitle={t('analytics.excludingFees')}
         />
         <AnalyticsStatCard
-          title="Tickets Sold"
+          title={t('analytics.ticketsSold')}
           value={analytics.totalTicketsSold}
           icon={TrendingUp}
           format="number"
         />
         <AnalyticsStatCard
-          title="Page Views"
+          title={t('analytics.pageViews')}
           value={analytics.totalViews}
           icon={Eye}
           format="number"
-          subtitle={`${analytics.uniqueVisitors} unique visitors`}
+          subtitle={t('analytics.uniqueVisitorsCount', { count: analytics.uniqueVisitors })}
         />
         <AnalyticsStatCard
-          title="Conversion Rate"
+          title={t('analytics.conversionRate')}
           value={analytics.conversionRate}
           icon={Target}
           format="percentage"
-          subtitle="Views to purchases"
+          subtitle={t('analytics.viewsToPurchases')}
         />
       </div>
 
       {/* Secondary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <AnalyticsStatCard
-          title="Average Order Value"
+          title={t('analytics.averageOrderValue')}
           value={analytics.averageOrderValue}
           icon={DollarSign}
           format="currency"
         />
         <AnalyticsStatCard
-          title="Total Fees Collected"
+          title={t('analytics.totalFeesCollected')}
           value={analytics.totalFees}
           icon={DollarSign}
           format="currency"
         />
         <AnalyticsStatCard
-          title="Refund Rate"
+          title={t('analytics.refundRate')}
           value={analytics.refundRate}
           icon={Calendar}
           format="percentage"

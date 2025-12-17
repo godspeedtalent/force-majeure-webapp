@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronLeft, Instagram as InstagramIcon, ExternalLink } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import type { ArtistRegistrationFormData } from '../../types/registration';
@@ -18,6 +19,7 @@ export function TermsStep({
   onPrevious,
   isSubmitting,
 }: TermsStepProps) {
+  const { t } = useTranslation('common');
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
   const termsContainerRef = useRef<HTMLDivElement>(null);
 
@@ -40,9 +42,9 @@ export function TermsStep({
         <div className='flex justify-center items-start'>
           <div className='w-[85vw] sm:w-[80%] space-y-[20px] bg-black/60 backdrop-blur-sm border border-white/10 p-[30px] sm:p-[40px]'>
             <div>
-              <h2 className='font-canela text-3xl mb-[10px]'>Almost there!</h2>
+              <h2 className='font-canela text-3xl mb-[10px]'>{t('artistRegistration.termsTitle')}</h2>
               <p className='font-canela text-sm text-muted-foreground'>
-                Review the terms and customize your profile settings.
+                {t('artistRegistration.termsDescription')}
               </p>
             </div>
 
@@ -50,9 +52,9 @@ export function TermsStep({
 
             {/* Terms and Conditions */}
             <div className='bg-black/40 backdrop-blur-sm border border-white/20 rounded-none p-[20px]'>
-              <h3 className='font-canela text-base mb-[10px]'>Artist Submission Terms & Conditions</h3>
+              <h3 className='font-canela text-base mb-[10px]'>{t('artistRegistration.artistTermsTitle')}</h3>
               <p className='font-canela text-xs text-muted-foreground mb-[10px]'>
-                For Mix Submission and Consideration for Opening Slots
+                {t('artistRegistration.artistTermsSubtitle')}
               </p>
               <div
                 ref={termsContainerRef}
@@ -182,7 +184,7 @@ export function TermsStep({
 
               {!hasScrolledToBottom && (
                 <p className='font-canela text-xs text-fm-gold mb-[10px] animate-pulse'>
-                  Please scroll to the bottom of the terms to continue.
+                  {t('artistRegistration.scrollToBottom')}
                 </p>
               )}
 
@@ -207,7 +209,7 @@ export function TermsStep({
                     hasScrolledToBottom ? 'group-hover:text-fm-gold' : ''
                   }`}
                 >
-                  I agree to the terms and conditions{' '}
+                  {t('artistRegistration.agreeToTerms')}{' '}
                   <span className='text-fm-danger'>*</span>
                 </span>
               </label>
@@ -217,7 +219,7 @@ export function TermsStep({
 
             {/* Profile Settings */}
             <div className='space-y-[15px]'>
-              <h3 className='font-canela text-base'>Profile Settings</h3>
+              <h3 className='font-canela text-base'>{t('sections.profileSettings')}</h3>
 
               <label className='flex items-start gap-[10px] cursor-pointer group'>
                 <input
@@ -230,10 +232,10 @@ export function TermsStep({
                 />
                 <div className='flex-1'>
                   <span className='font-canela text-sm group-hover:text-fm-gold transition-colors block'>
-                    Send me booking and FM updates notifications
+                    {t('artistRegistration.notificationsOptIn')}
                   </span>
                   <span className='font-canela text-xs text-muted-foreground'>
-                    Get notified about booking opportunities, event updates, and Force Majeure news
+                    {t('artistRegistration.notificationsOptInDescription')}
                   </span>
                 </div>
               </label>
@@ -244,20 +246,20 @@ export function TermsStep({
             {/* Support Force Majeure */}
             <div className='bg-fm-gold/10 border border-fm-gold/30 rounded-none p-[20px]'>
               <h3 className='font-canela text-base mb-[10px] text-fm-gold'>
-                Support Force Majeure
+                {t('sections.supportForceMajeure')}
               </h3>
               <p className='font-canela text-sm text-muted-foreground mb-[15px]'>
-                Your support helps us create better events and support more artists.
-                Follow us on Instagram to stay connected with the community.
+                {t('sections.supportDescription')}
               </p>
               <a
                 href='https://instagram.com/forcemajeureevents'
                 target='_blank'
                 rel='noopener noreferrer'
                 className='inline-flex items-center gap-[10px] px-[20px] py-[12px] bg-fm-gold/20 hover:bg-fm-gold/30 border border-fm-gold/50 rounded-none transition-all duration-300 font-canela text-sm'
+                aria-label={t('aria.followOnInstagram')}
               >
                 <InstagramIcon className='h-4 w-4' />
-                Follow us on Instagram
+                {t('buttons.followOnInstagram')}
                 <ExternalLink className='h-3 w-3' />
               </a>
             </div>
@@ -271,11 +273,11 @@ export function TermsStep({
                 disabled={!formData.agreeToTerms}
                 className='w-full'
               >
-                Submit Registration
+                {t('buttons.submitRegistration')}
               </FmCommonButton>
               {!formData.agreeToTerms && (
                 <p className='font-canela text-xs text-muted-foreground text-center mt-[10px]'>
-                  Please agree to the terms and conditions to submit
+                  {t('artistRegistration.agreeToTermsRequired')}
                 </p>
               )}
             </div>
@@ -286,7 +288,7 @@ export function TermsStep({
       <div className='flex justify-start pt-[20px] border-t border-white/10 flex-shrink-0'>
         <FmCommonButton onClick={onPrevious} variant='secondary'>
           <ChevronLeft className='h-4 w-4 mr-[10px]' />
-          Previous
+          {t('buttons.previous')}
         </FmCommonButton>
       </div>
     </div>

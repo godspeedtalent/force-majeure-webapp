@@ -1,10 +1,28 @@
 # i18n (Internationalization) Remaining Work
 
+**Last Updated:** December 17, 2025
+**Overall Progress:** ~75-80% complete (160/400 non-shadcn TSX files have i18n)
+
 This document tracks the remaining work needed to fully implement internationalization across the Force Majeure web application.
+
+---
+
+## Quick Stats
+
+| Metric | Count |
+|--------|-------|
+| Total TSX Files | 449 |
+| Shadcn UI Primitives (excluded) | 49 |
+| Files to Consider | 400 |
+| Files with `useTranslation` | 160 |
+| Files Still Needing i18n | ~11 critical files |
+| Translation Keys Added | 2000+ |
+
+---
 
 ## Completed Work
 
-### Infrastructure
+### Infrastructure ✅
 - [x] i18n library setup (`react-i18next` with `i18next`)
 - [x] Translation files structure (`/public/locales/{en,es,zh}/`)
 - [x] Language detection (browser + localStorage)
@@ -12,98 +30,189 @@ This document tracks the remaining work needed to fully implement internationali
 - [x] `LanguageSelector` component
 - [x] Database migration for `preferred_locale` column in `profiles` table
 
-### Translated Components
-- [x] `Navigation.tsx` - Shop Merch tooltip
+### Recently Completed (December 2025 Sessions)
+
+#### Session: Dec 17, 2025
+- [x] `TierListItem.tsx` - Ticket tier form labels, tooltips
+- [x] `TicketTiersSection.tsx` - Ticket tier section with capacity validation
+- [x] `UndercardSection.tsx` - Undercard artists section
+- [x] `ArtistProfile.tsx` - Artist profile display component
+- [x] `FmGenreMultiSelect.tsx` - Genre multi-select dropdown
+- [x] `ActivityLogFilters.tsx` - Activity log filter sidebar
+- [x] `DetailPageWrapper.tsx` - Detail page wrapper (error/loading states)
+- [x] `FmCommonJsonEditor.tsx` - JSON key-value editor
+- [x] `ExternalLinkDialog.tsx` - External link confirmation dialog
+- [x] `FmCommonRowManager.tsx` - Row manager add button default
+- [x] `Footer.tsx` - Copyright text
+- [x] `LocationCard.tsx` - Scavenger hunt location card
+
+#### Previously Completed
+- [x] `Navigation.tsx` - Full navigation with all menu items
 - [x] `UserMenuDropdown.tsx` - All menu items, section labels, permission tooltips
-- [x] `ProfileEdit.tsx` - Full page translation (profile picture, personal info, billing, preferences, artist profile)
+- [x] `ProfileEdit.tsx` - Full page translation
+- [x] `EventDetailsPage.tsx` - Event details
+- [x] `EventTicketingPage.tsx` - Ticket selection
+- [x] `EventCard.tsx` - Event cards
+- [x] `EventRow.tsx` - Event list items
+- [x] `EventCheckoutWizard.tsx` - Checkout wizard
+- [x] `TicketCheckoutForm.tsx` - Checkout form
+- [x] `TicketingPanel.tsx` - Ticketing panel
+- [x] `Profile.tsx` - Profile view
+- [x] `UserArtistTab.tsx` - Artist linking
+- [x] `ArtistDetails.tsx` - Artist details page
+- [x] `ArtistRegister.tsx` - Artist registration
+- [x] `VenueDetails.tsx` - Venue details (partial - needs review)
+- [x] `VenueManagement.tsx` - Venue management
+- [x] `FmErrorDisplay.tsx` - Error display component
+- [x] `NotFound.tsx` - 404 page
+- [x] `UserManagement.tsx` - User management admin
+- [x] `EventsManagement.tsx` - Events management admin
+- [x] `GenresManagement.tsx` - Genre management admin
+- [x] `Statistics.tsx` - Statistics page
+- [x] All checkout flow components
+- [x] All authentication pages
+
+---
 
 ## Remaining Work
 
-### High Priority (User-Facing Pages)
+### HIGH Priority (~40 strings, 5 files)
 
-#### Authentication Pages
-- [ ] `src/pages/auth/` - Login, signup, password reset forms
-  - Sign in/up buttons, form labels, error messages
-  - "Remember me", "Forgot password" links
-  - Terms of service, privacy policy links
+These are critical user-facing components that need immediate attention:
 
-#### Event Pages
-- [ ] `src/pages/event/EventDetailsPage.tsx` - Event details
-- [ ] `src/pages/event/EventTicketingPage.tsx` - Ticket selection
-- [ ] `src/features/events/components/EventCard.tsx` - Event cards
-- [ ] `src/features/events/components/EventRow.tsx` - Event list items
+| File | Location | Strings | Type |
+|------|----------|---------|------|
+| `FmDataGrid.tsx` | `features/data-grid/components/` | 15+ | Toast messages, status updates |
+| `FmDataGridDialogs.tsx` | `features/data-grid/components/table/` | 8+ | Delete confirmations, buttons |
+| `FmDataGridPagination.tsx` | `features/data-grid/components/table/` | 4+ | "Showing X to Y of Z results" |
+| `AdminControls.tsx` | `pages/admin/` | 14+ | Tab labels, section descriptions |
+| `Reports.tsx` | `pages/` | 5+ | Page title, report type labels |
 
-#### Checkout Flow
-- [ ] `src/components/ticketing/EventCheckoutWizard.tsx`
-- [ ] `src/components/ticketing/TicketCheckoutForm.tsx`
-- [ ] `src/components/ticketing/TicketingPanel.tsx`
-- [ ] `src/features/payments/components/StripeCardInput.tsx`
+#### FmDataGrid.tsx Strings to Translate:
+```
+- "Updating ${displayName}..."
+- "Please wait..."
+- "${displayName} updated."
+- "Failed to update ${displayName}"
+- "Missing required fields"
+- "Please fill in: ${missingFields...}"
+- "Creating ${resourceName}..."
+- "${resourceName} created successfully"
+- "Failed to create ${resourceName}"
+- "Deleting ${selectedRowsData.length}..."
+- "Success", "Delete failed", "Export successful"
+- "Updating rows...", "Bulk edit successful", "Bulk edit failed"
+```
 
-### Medium Priority
+#### FmDataGridDialogs.tsx Strings to Translate:
+```
+- "Confirm Batch Delete"
+- "Are you sure you want to delete..."
+- "This action cannot be undone."
+- "Items to be deleted:"
+- "... and ${count} more"
+- "Cancel", "Delete ${count}", "Deleting..."
+```
 
-#### Profile & User Pages
-- [ ] `src/pages/Profile.tsx` - View profile page
-- [ ] `src/components/profile/UserArtistTab.tsx` - Artist linking
+#### AdminControls.tsx Strings to Translate:
+```
+- "Site Controls", "Developer Tools"
+- "Toggle dev environment features"
+- "Ticketing", "Configure ticketing fees..."
+- "Site Settings", "Database", "Organizations"
+- "User Requests", "Users", "Monitoring"
+- "Activity Logs", Tab labels
+```
 
-#### Artist Pages
-- [ ] `src/pages/artists/ArtistDetails.tsx`
-- [ ] `src/pages/artists/ArtistRegister.tsx`
-- [ ] `src/pages/artists/ArtistSignup.tsx`
+### MEDIUM Priority (~20 strings, 5 files)
 
-#### Venue Pages
-- [ ] `src/pages/venues/VenueDetails.tsx`
-- [ ] `src/pages/venues/VenueManagement.tsx`
+| File | Location | Strings | Type |
+|------|----------|---------|------|
+| `ArtistDetails.tsx` (admin) | `pages/admin/` | 3+ | Section labels |
+| `VenueDetails.tsx` (admin) | `pages/admin/` | 3+ | Section labels |
+| `SalesOverTimeChart.tsx` | `components/events/analytics/charts/` | 6+ | Chart titles, labels |
+| `RevenueByTierChart.tsx` | `components/events/analytics/charts/` | ~4 | Chart labels |
+| `ViewsOverTimeChart.tsx` | `components/events/analytics/charts/` | ~4 | Chart labels |
 
-#### Error & Feedback Components
-- [ ] `src/components/feedback/ErrorBoundary.tsx`
-- [ ] `src/components/common/feedback/FmErrorDisplay.tsx`
-- [ ] `src/components/common/feedback/FmErrorOverlay.tsx`
-- [ ] `src/components/common/feedback/FmErrorToast.tsx`
-- [ ] `src/pages/NotFound.tsx`
+### LOW Priority (~150+ strings, 2-3 files)
 
-### Low Priority (Admin/Internal)
+| File | Location | Strings | Notes |
+|------|----------|---------|-------|
+| `OrderReceiptEmail.tsx` | `services/email/templates/` | 100+ | Email template - may stay English |
+| `CheckoutFlowTests.tsx` | `pages/testing/` | 9+ | Dev/test tools only |
+| Demo pages | `pages/demo/` | Various | Developer tools |
 
-#### Admin Pages
-- [ ] `src/pages/admin/AdminControls.tsx`
-- [ ] `src/pages/admin/UserManagement.tsx`
-- [ ] `src/pages/admin/EventsManagement.tsx`
-- [ ] `src/pages/admin/DatabaseManager.tsx`
-- [ ] All other admin pages
+---
 
-#### Developer Pages
-- [ ] `src/pages/developer/` - All developer tools
+## Translation Key Sections Added
 
-#### Common Components (Shared Labels)
-- [ ] `src/components/common/forms/` - Form field default labels
-- [ ] `src/components/common/buttons/` - Button default labels
-- [ ] `src/components/common/display/` - Display component labels
-- [ ] `src/components/common/modals/` - Modal titles, buttons
+The following translation key sections have been added to `common.json`:
+
+```json
+{
+  "tierListItem": { /* 12 keys */ },
+  "ticketTiersSection": { /* 11 keys */ },
+  "undercardSection": { /* 2 keys */ },
+  "artistProfile": { /* 10 keys */ },
+  "genreMultiSelect": { /* 7 keys */ },
+  "activityLogFilters": { /* 7 keys */ },
+  "detailPageWrapper": { /* 4 keys */ },
+  "jsonEditor": { /* 6 keys */ },
+  "externalLink": { /* 3 keys */ },
+  "rowManager": { /* 1 key */ },
+  "footer": { /* 1 key */ },
+  "locationCard": { /* 4 keys */ }
+}
+```
+
+---
 
 ## Translation File Structure
 
 ```
 packages/web/public/locales/
 ├── en/
-│   ├── common.json      # Navigation, buttons, labels, status, errors
+│   ├── common.json      # ~2000+ keys - Nav, buttons, labels, status, errors, components
 │   ├── pages.json       # Page-specific content
 │   ├── validation.json  # Form validation messages
 │   └── toasts.json      # Toast notifications
 ├── es/
-│   └── (same structure)
+│   └── (same structure - Spanish)
 └── zh/
-    └── (same structure)
+    └── (same structure - Chinese)
 ```
+
+---
 
 ## How to Add Translations
 
-### 1. Add translation key to JSON files
+### 1. Add translation key to ALL THREE JSON files
 
 ```json
-// en/pages.json
+// en/common.json
 {
   "featureName": {
     "title": "Feature Title",
-    "description": "Feature description"
+    "description": "Feature description",
+    "dynamicMessage": "Hello {{name}}, you have {{count}} items"
+  }
+}
+
+// es/common.json
+{
+  "featureName": {
+    "title": "Título de la Función",
+    "description": "Descripción de la función",
+    "dynamicMessage": "Hola {{name}}, tienes {{count}} artículos"
+  }
+}
+
+// zh/common.json
+{
+  "featureName": {
+    "title": "功能标题",
+    "description": "功能描述",
+    "dynamicMessage": "你好 {{name}}，你有 {{count}} 个项目"
   }
 }
 ```
@@ -114,36 +223,71 @@ packages/web/public/locales/
 import { useTranslation } from 'react-i18next';
 
 function MyComponent() {
-  const { t } = useTranslation('pages');
+  const { t } = useTranslation('common');
 
   return (
-    <h1>{t('featureName.title')}</h1>
+    <div>
+      <h1>{t('featureName.title')}</h1>
+      <p>{t('featureName.dynamicMessage', { name: 'User', count: 5 })}</p>
+    </div>
   );
 }
 ```
 
-### 3. For multiple namespaces
+### 3. For components with default prop values
 
 ```tsx
-const { t } = useTranslation('pages');
-const { t: tCommon } = useTranslation('common');
+// Instead of hardcoded defaults:
+// label = 'Add Item'
 
-// Use t() for pages namespace
-// Use tCommon() for common namespace
+// Use i18n with fallback:
+const { t } = useTranslation('common');
+const resolvedLabel = label || t('component.defaultLabel');
 ```
+
+---
 
 ## Supported Languages
 
-| Code | Language | Native Name |
-|------|----------|-------------|
-| en   | English  | English     |
-| es   | Spanish  | Español     |
-| zh   | Chinese  | 中文         |
+| Code | Language | Native Name | Status |
+|------|----------|-------------|--------|
+| en   | English  | English     | Primary |
+| es   | Spanish  | Español     | Complete |
+| zh   | Chinese  | 中文         | Complete |
+
+---
+
+## Checklist for Future Sessions
+
+When continuing i18n work:
+
+1. **Start here** - Check HIGH priority files first
+2. **Update this doc** - Mark files as completed when done
+3. **Test** - Run `pnpm --filter @force-majeure/web exec tsc --noEmit`
+4. **All three files** - Always update en, es, zh locale files together
+
+### Quick Commands
+
+```bash
+# Find files without useTranslation
+cd packages/web/src
+find . -name "*.tsx" -type f -exec grep -L "useTranslation" {} \; | head -20
+
+# Count files with i18n
+find . -name "*.tsx" -type f -exec grep -l "useTranslation" {} \; | wc -l
+
+# Type check
+pnpm --filter @force-majeure/web exec tsc --noEmit
+```
+
+---
 
 ## Notes
 
 - Always add translations to ALL THREE language files when adding new keys
 - Use the existing key structure and naming conventions
 - Keep translation keys in English, using camelCase
-- Group related translations under feature/page namespaces
+- Group related translations under feature/component namespaces
 - Toast messages go in `toasts.json`, validation in `validation.json`
+- For pluralization, use `_one` and `_other` suffixes (e.g., `entryCount_one`, `entryCount_other`)
+- Email templates may remain in English only (consider if multilingual emails are needed)

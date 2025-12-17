@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { type Order } from '@/features/orders/services/orderService';
 import {
@@ -15,6 +16,7 @@ export type EventOrder = Order;
  * Uses centralized query hooks from orderQueries.ts
  */
 export const useEventOrders = (eventId: string | undefined) => {
+  const { t } = useTranslation('common');
   const { data: orders = [], isLoading, error } = useOrdersByEventId(eventId);
 
   const cancelOrderMutation = useCancelOrder();
@@ -25,10 +27,10 @@ export const useEventOrders = (eventId: string | undefined) => {
       { orderId, eventId },
       {
         onSuccess: () => {
-          toast.success('Order cancelled successfully');
+          toast.success(t('orders.cancelSuccess'));
         },
         onError: (error: Error) => {
-          toast.error(`Failed to cancel order: ${error.message}`);
+          toast.error(t('orders.cancelFailed', { error: error.message }));
         },
       }
     );
@@ -39,10 +41,10 @@ export const useEventOrders = (eventId: string | undefined) => {
       { orderId, eventId },
       {
         onSuccess: () => {
-          toast.success('Order refunded successfully');
+          toast.success(t('orders.refundSuccess'));
         },
         onError: (error: Error) => {
-          toast.error(`Failed to refund order: ${error.message}`);
+          toast.error(t('orders.refundFailed', { error: error.message }));
         },
       }
     );

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { logger } from '@force-majeure/shared';
 import { CheckCircle2 } from 'lucide-react';
 
@@ -25,6 +26,7 @@ export const EventCheckoutWizard = ({
   displayTitle,
   onClose,
 }: EventCheckoutWizardProps) => {
+  const { t } = useTranslation('common');
   const [step, setStep] = useState<WizardStep>('selection');
   const [selections, setSelections] = useState<Record<string, number>>({});
 
@@ -135,19 +137,19 @@ export const EventCheckoutWizard = ({
         <CheckCircle2 className='h-6 w-6 text-fm-gold' />
         <div>
           <h3 className='text-lg font-canela text-foreground'>
-            Order Confirmed
+            {t('checkoutWizard.orderConfirmed')}
           </h3>
           <p className='text-sm text-muted-foreground'>
-            Check your email for ticket details and receipt.
+            {t('checkoutWizard.checkEmail')}
           </p>
         </div>
       </div>
 
       <FmCommonCard variant='outline' className='space-y-4'>
         <div className='space-y-2'>
-          <h4 className='text-sm font-medium text-foreground'>Order Summary</h4>
+          <h4 className='text-sm font-medium text-foreground'>{t('checkout.orderSummary')}</h4>
           <p className='text-xs text-muted-foreground'>
-            Thank you for your purchase! Your tickets are confirmed.
+            {t('checkoutWizard.thankYou')}
           </p>
         </div>
 
@@ -172,7 +174,7 @@ export const EventCheckoutWizard = ({
 
         <div className='space-y-2 text-sm'>
           <div className='flex justify-between'>
-            <span className='text-muted-foreground'>Subtotal</span>
+            <span className='text-muted-foreground'>{t('checkout.subtotal')}</span>
             <span className='text-foreground'>
               ${orderSummary.subtotal.toFixed(2)}
             </span>
@@ -190,14 +192,14 @@ export const EventCheckoutWizard = ({
         </div>
 
         <div className='flex justify-between items-center text-base font-canela'>
-          <span>Total</span>
+          <span>{t('checkout.total')}</span>
           <span className='text-fm-gold'>${orderSummary.total.toFixed(2)}</span>
         </div>
       </FmCommonCard>
 
       <div className='flex justify-end'>
         <FmCommonButton variant='gold' onClick={handleClose}>
-          Done
+          {t('dialogs.done')}
         </FmCommonButton>
       </div>
     </div>
@@ -237,7 +239,7 @@ export const EventCheckoutWizard = ({
       <div className='flex items-start justify-between gap-4 flex-shrink-0'>
         <div className='space-y-1.5'>
           <p className='text-xs font-semibold uppercase tracking-[0.25em] text-muted-foreground'>
-            Checkout
+            {t('buttons.checkout')}
           </p>
         </div>
       </div>

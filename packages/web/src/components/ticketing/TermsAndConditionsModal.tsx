@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
 import { ScrollArea } from '@/components/common/shadcn/scroll-area';
 
@@ -10,219 +11,172 @@ export const TermsAndConditionsModal = ({
   isOpen,
   onClose,
 }: TermsAndConditionsModalProps) => {
+  const { t } = useTranslation('common');
+
   return (
     <FmCommonModal
       open={isOpen}
       onOpenChange={(open) => { if (!open) onClose(); }}
-      title='Terms and Conditions'
+      title={t('termsAndConditions.title')}
     >
       <ScrollArea className='h-[60vh] pr-4'>
         <div className='space-y-6 text-sm text-foreground'>
           <section>
             <h3 className='font-canela text-base mb-2'>
-              1. Acceptance of Terms
+              {t('termsAndConditions.section1.title')}
             </h3>
             <p className='text-muted-foreground'>
-              By purchasing tickets through Force Majeure, you agree to be bound
-              by these Terms and Conditions. Please read them carefully before
-              completing your purchase. If you do not agree to these terms, you
-              should not purchase tickets.
+              {t('termsAndConditions.section1.content')}
             </p>
           </section>
 
           <section>
             <h3 className='font-canela text-base mb-2'>
-              2. Ticket Purchase and Pricing
+              {t('termsAndConditions.section2.title')}
             </h3>
             <p className='text-muted-foreground mb-2'>
-              All ticket sales are final. Ticket prices are subject to service
-              fees, processing fees, and applicable taxes. The total price
-              displayed at checkout includes all mandatory fees and charges.
+              {t('termsAndConditions.section2.content1')}
             </p>
             <p className='text-muted-foreground'>
-              We reserve the right to cancel orders and refuse service to anyone
-              at any time for any reason, including suspected fraudulent
-              activity.
+              {t('termsAndConditions.section2.content2')}
             </p>
           </section>
 
           <section>
-            <h3 className='font-canela text-base mb-2'>3. Ticket Delivery</h3>
+            <h3 className='font-canela text-base mb-2'>{t('termsAndConditions.section3.title')}</h3>
             <p className='text-muted-foreground'>
-              Tickets will be delivered electronically to the email address
-              provided at checkout. It is your responsibility to ensure the
-              email address is accurate. Please check your spam folder if you do
-              not receive your tickets within 24 hours of purchase.
+              {t('termsAndConditions.section3.content')}
             </p>
           </section>
 
           <section>
             <h3 className='font-canela text-base mb-2'>
-              4. Refunds and Cancellations
+              {t('termsAndConditions.section4.title')}
             </h3>
             <p className='text-muted-foreground mb-2'>
-              All ticket sales are final and non-refundable except in the
-              following circumstances:
+              {t('termsAndConditions.section4.content1')}
             </p>
             <ul className='list-disc pl-6 space-y-1 text-muted-foreground'>
-              <li>The event is cancelled and not rescheduled</li>
-              <li>
-                The event is rescheduled and you cannot attend the new date
-              </li>
-              <li>
-                You purchased Ticket Protection and have a qualifying reason
-              </li>
+              <li>{t('termsAndConditions.section4.list1')}</li>
+              <li>{t('termsAndConditions.section4.list2')}</li>
+              <li>{t('termsAndConditions.section4.list3')}</li>
             </ul>
             <p className='text-muted-foreground mt-2'>
-              Refund requests must be submitted within the timeframes specified
-              in our refund policy. Processing fees are non-refundable.
+              {t('termsAndConditions.section4.content2')}
             </p>
           </section>
 
           <section>
-            <h3 className='font-canela text-base mb-2'>5. Event Changes</h3>
+            <h3 className='font-canela text-base mb-2'>{t('termsAndConditions.section5.title')}</h3>
             <p className='text-muted-foreground'>
-              Event date, time, location, and lineup are subject to change
-              without notice. We will notify ticket holders of any significant
-              changes via email. Minor changes to the event (such as supporting
-              acts) do not qualify for refunds.
+              {t('termsAndConditions.section5.content')}
             </p>
           </section>
 
           <section>
             <h3 className='font-canela text-base mb-2'>
-              6. Entry Requirements
+              {t('termsAndConditions.section6.title')}
             </h3>
             <p className='text-muted-foreground mb-2'>
-              You must comply with all venue rules and regulations. Entry
-              requirements may include:
+              {t('termsAndConditions.section6.content1')}
             </p>
             <ul className='list-disc pl-6 space-y-1 text-muted-foreground'>
-              <li>Valid government-issued photo ID</li>
-              <li>Age restrictions (18+ or 21+ events)</li>
-              <li>Security screening and bag checks</li>
-              <li>Health and safety requirements</li>
+              <li>{t('termsAndConditions.section6.list1')}</li>
+              <li>{t('termsAndConditions.section6.list2')}</li>
+              <li>{t('termsAndConditions.section6.list3')}</li>
+              <li>{t('termsAndConditions.section6.list4')}</li>
             </ul>
             <p className='text-muted-foreground mt-2'>
-              The venue and event organizers reserve the right to refuse entry
-              or remove anyone who does not comply with entry requirements or
-              behaves inappropriately.
+              {t('termsAndConditions.section6.content2')}
             </p>
           </section>
 
           <section>
             <h3 className='font-canela text-base mb-2'>
-              7. Ticket Validity and Transfer
+              {t('termsAndConditions.section7.title')}
             </h3>
             <p className='text-muted-foreground'>
-              Tickets are valid only for the specific event, date, and time
-              indicated. Tickets obtained from unauthorized sources may be
-              invalid. Resale of tickets for profit is prohibited unless through
-              our official resale platform. We reserve the right to cancel
-              tickets obtained through unauthorized channels without refund.
+              {t('termsAndConditions.section7.content')}
             </p>
           </section>
 
           <section>
             <h3 className='font-canela text-base mb-2'>
-              8. Limitation of Liability
+              {t('termsAndConditions.section8.title')}
             </h3>
             <p className='text-muted-foreground'>
-              Force Majeure, event organizers, and venues are not liable for any
-              injury, loss, or damage to persons or property occurring at the
-              event. Attendance is at your own risk. We are not responsible for
-              any costs incurred as a result of event cancellation,
-              postponement, or changes, including but not limited to travel,
-              accommodation, or other related expenses.
+              {t('termsAndConditions.section8.content')}
             </p>
           </section>
 
           <section>
-            <h3 className='font-canela text-base mb-2'>9. Force Majeure</h3>
+            <h3 className='font-canela text-base mb-2'>{t('termsAndConditions.section9.title')}</h3>
             <p className='text-muted-foreground'>
-              We are not liable for failure to perform our obligations due to
-              circumstances beyond our reasonable control, including but not
-              limited to acts of God, natural disasters, war, terrorism, riots,
-              civil unrest, strikes, government restrictions, or public health
-              emergencies.
+              {t('termsAndConditions.section9.content')}
             </p>
           </section>
 
           <section>
             <h3 className='font-canela text-base mb-2'>
-              10. Recording and Photography
+              {t('termsAndConditions.section10.title')}
             </h3>
             <p className='text-muted-foreground'>
-              Professional recording equipment and cameras may be prohibited at
-              events. By attending, you consent to being filmed, photographed,
-              or recorded, and grant us the right to use such recordings for
-              promotional purposes without compensation.
+              {t('termsAndConditions.section10.content')}
             </p>
           </section>
 
           <section>
             <h3 className='font-canela text-base mb-2'>
-              11. Privacy and Data Protection
+              {t('termsAndConditions.section11.title')}
             </h3>
             <p className='text-muted-foreground'>
-              Your personal information will be processed in accordance with our
-              Privacy Policy. By purchasing tickets, you consent to receiving
-              transactional emails related to your order and event updates. You
-              may opt out of marketing communications at any time.
+              {t('termsAndConditions.section11.content')}
             </p>
           </section>
 
           <section>
             <h3 className='font-canela text-base mb-2'>
-              12. Prohibited Items and Behavior
+              {t('termsAndConditions.section12.title')}
             </h3>
             <p className='text-muted-foreground mb-2'>
-              The following items and behaviors are prohibited at all events:
+              {t('termsAndConditions.section12.content1')}
             </p>
             <ul className='list-disc pl-6 space-y-1 text-muted-foreground'>
-              <li>Weapons of any kind</li>
-              <li>Illegal substances</li>
-              <li>Outside food and beverages (unless medically necessary)</li>
-              <li>Disruptive, aggressive, or threatening behavior</li>
-              <li>Discrimination or harassment of any kind</li>
+              <li>{t('termsAndConditions.section12.list1')}</li>
+              <li>{t('termsAndConditions.section12.list2')}</li>
+              <li>{t('termsAndConditions.section12.list3')}</li>
+              <li>{t('termsAndConditions.section12.list4')}</li>
+              <li>{t('termsAndConditions.section12.list5')}</li>
             </ul>
           </section>
 
           <section>
             <h3 className='font-canela text-base mb-2'>
-              13. Dispute Resolution
+              {t('termsAndConditions.section13.title')}
             </h3>
             <p className='text-muted-foreground'>
-              Any disputes arising from these Terms and Conditions or your
-              ticket purchase will be resolved through binding arbitration in
-              accordance with the laws of the jurisdiction where Force Majeure
-              operates. You waive your right to participate in class action
-              lawsuits.
+              {t('termsAndConditions.section13.content')}
             </p>
           </section>
 
           <section>
-            <h3 className='font-canela text-base mb-2'>14. Changes to Terms</h3>
+            <h3 className='font-canela text-base mb-2'>{t('termsAndConditions.section14.title')}</h3>
             <p className='text-muted-foreground'>
-              We reserve the right to modify these Terms and Conditions at any
-              time. Changes will be effective immediately upon posting to our
-              website. Your continued use of our services constitutes acceptance
-              of any changes.
+              {t('termsAndConditions.section14.content')}
             </p>
           </section>
 
           <section>
             <h3 className='font-canela text-base mb-2'>
-              15. Contact Information
+              {t('termsAndConditions.section15.title')}
             </h3>
             <p className='text-muted-foreground'>
-              For questions about these Terms and Conditions or your ticket
-              purchase, please contact us at support@forcemajeure.com.
+              {t('termsAndConditions.section15.content')}
             </p>
           </section>
 
           <p className='text-xs text-muted-foreground mt-8 pt-4 border-t border-border'>
-            Last updated: November 5, 2025
+            {t('termsAndConditions.lastUpdated')}
           </p>
         </div>
       </ScrollArea>

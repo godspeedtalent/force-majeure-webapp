@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link2, Search, AlertCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common/shadcn/dialog';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
@@ -24,6 +25,7 @@ interface SpotifyArtistImportProps {
 const DEBOUNCE_MS = 400;
 
 export function SpotifyArtistImport({ open, onClose, onImport }: SpotifyArtistImportProps) {
+  const { t } = useTranslation('common');
   const [artistUrl, setArtistUrl] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -59,7 +61,7 @@ export function SpotifyArtistImport({ open, onClose, onImport }: SpotifyArtistIm
     const artistId = extractSpotifyArtistId(artistUrl);
     if (!artistId) {
       if (artistUrl.includes('spotify')) {
-        setUrlError('Invalid Spotify artist URL');
+        setUrlError(t('spotify.invalidUrl'));
       }
       setUrlArtist(null);
       return;
@@ -75,7 +77,7 @@ export function SpotifyArtistImport({ open, onClose, onImport }: SpotifyArtistIm
       })
       .catch(error => {
         logger.error('Failed to fetch artist from URL', { error, artistId });
-        setUrlError('Could not find artist. Please check the URL.');
+        setUrlError(t('spotify.couldNotFetch'));
         setUrlArtist(null);
       })
       .finally(() => {
@@ -113,7 +115,7 @@ export function SpotifyArtistImport({ open, onClose, onImport }: SpotifyArtistIm
           error: error instanceof Error ? error.message : 'Unknown',
           source: 'SpotifyArtistImport',
         });
-        toast.error('Failed to search Spotify');
+        toast.error(t('spotify.searchFailed'));
       } finally {
         setIsSearching(false);
       }
@@ -137,7 +139,7 @@ export function SpotifyArtistImport({ open, onClose, onImport }: SpotifyArtistIm
         <DialogHeader>
           <DialogTitle className='flex items-center gap-[10px]'>
             <SpotifyIcon className='h-5 w-5 text-[#1DB954]' />
-            Import from Spotify
+            {t('spotify.importTitle')}
           </DialogTitle>
         </DialogHeader>
 
@@ -145,17 +147,17 @@ export function SpotifyArtistImport({ open, onClose, onImport }: SpotifyArtistIm
           {/* URL Input */}
           <div className='space-y-[10px]'>
             <FmCommonTextField
-              label='Spotify Artist URL'
+              label={t('spotify.artistUrlLabel')}
               value={artistUrl}
               onChange={e => setArtistUrl(e.target.value)}
-              placeholder='https://open.spotify.com/artist/...'
+              placeholder={t('placeholders.exampleSpotifyArtistUrl')}
             />
 
             {/* URL Loading */}
             {isLoadingUrl && (
               <div className='flex items-center gap-[10px] text-muted-foreground'>
                 <FmCommonLoadingSpinner size='sm' />
-                <span className='text-sm'>Fetching artist...</span>
+                <span className='text-sm'>{t('spotify.fetchingArtist')}</span>
               </div>
             )}
 
@@ -181,10 +183,10 @@ export function SpotifyArtistImport({ open, onClose, onImport }: SpotifyArtistIm
                   <div className='flex-1 min-w-0'>
                     <h3 className='font-semibold text-sm sm:text-base truncate'>{urlArtist.name}</h3>
                     <p className='text-xs sm:text-sm text-muted-foreground truncate'>
-                      {urlArtist.genres.slice(0, 3).join(', ') || 'No genres listed'}
+                      {urlArtist.genres.slice(0, 3).join(', ') || t('spotify.noGenres')}
                     </p>
                     <p className='text-xs text-muted-foreground'>
-                      {urlArtist.followers.total.toLocaleString()} followers
+                      {t('spotify.followers', { count: urlArtist.followers.total.toLocaleString() })}
                     </p>
                   </div>
                 </div>
@@ -193,7 +195,7 @@ export function SpotifyArtistImport({ open, onClose, onImport }: SpotifyArtistIm
                   icon={Link2}
                   className='w-full sm:w-auto flex-shrink-0'
                 >
-                  Import
+                  {t('spotify.import')}
                 </FmCommonButton>
               </div>
             )}
@@ -202,17 +204,17 @@ export function SpotifyArtistImport({ open, onClose, onImport }: SpotifyArtistIm
           {/* Divider */}
           <div className='flex items-center gap-[20px]'>
             <div className='flex-1 h-[1px] bg-white/20' />
-            <span className='text-xs text-muted-foreground uppercase'>or search</span>
+            <span className='text-xs text-muted-foreground uppercase'>{t('spotify.orSearch')}</span>
             <div className='flex-1 h-[1px] bg-white/20' />
           </div>
 
           {/* Search Input */}
           <div className='space-y-[10px]'>
             <FmCommonTextField
-              label='Search Artists'
+              label={t('spotify.searchArtists')}
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              placeholder='Search for an artist...'
+              placeholder={t('placeholders.searchArtist')}
             />
           </div>
 
@@ -220,7 +222,7 @@ export function SpotifyArtistImport({ open, onClose, onImport }: SpotifyArtistIm
           {isSearching && (
             <div className='flex items-center justify-center py-[20px]'>
               <FmCommonLoadingSpinner size='md' />
-              <span className='ml-[10px] text-muted-foreground'>Searching...</span>
+              <span className='ml-[10px] text-muted-foreground'>{t('spotify.searching')}</span>
             </div>
           )}
 
@@ -243,10 +245,10 @@ export function SpotifyArtistImport({ open, onClose, onImport }: SpotifyArtistIm
                   <div className='flex-1 min-w-0'>
                     <h3 className='font-semibold text-sm sm:text-base truncate'>{artist.name}</h3>
                     <p className='text-xs sm:text-sm text-muted-foreground truncate'>
-                      {artist.genres.slice(0, 3).join(', ') || 'No genres listed'}
+                      {artist.genres.slice(0, 3).join(', ') || t('spotify.noGenres')}
                     </p>
                     <p className='text-xs text-muted-foreground'>
-                      {artist.followers.total.toLocaleString()} followers
+                      {t('spotify.followers', { count: artist.followers.total.toLocaleString() })}
                     </p>
                   </div>
                   <Search className='h-4 w-4 text-muted-foreground flex-shrink-0' />
@@ -258,7 +260,7 @@ export function SpotifyArtistImport({ open, onClose, onImport }: SpotifyArtistIm
           {/* No Results */}
           {!isSearching && results.length === 0 && hasSearched && (
             <div className='text-center py-[40px] text-muted-foreground'>
-              No results found. Try a different search.
+              {t('spotify.noResults')}
             </div>
           )}
         </div>

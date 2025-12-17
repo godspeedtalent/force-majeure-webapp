@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useClickAnalytics } from './hooks/useLinkClicks';
 import { Card } from '@/components/common/shadcn/card';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -12,6 +13,7 @@ interface TrackingAnalyticsProps {
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--accent))', '#8884d8', '#82ca9d', '#ffc658'];
 
 export function TrackingAnalytics({ eventId }: TrackingAnalyticsProps) {
+  const { t } = useTranslation('common');
   const { data, isLoading } = useClickAnalytics(eventId);
 
   const analytics = useMemo(() => {
@@ -70,11 +72,11 @@ export function TrackingAnalytics({ eventId }: TrackingAnalyticsProps) {
   }, [data]);
 
   if (isLoading) {
-    return <div>Loading analytics...</div>;
+    return <div>{t('analytics.loading')}</div>;
   }
 
   if (!analytics) {
-    return <div>No analytics data available</div>;
+    return <div>{t('analytics.noData')}</div>;
   }
 
   return (
@@ -87,7 +89,7 @@ export function TrackingAnalytics({ eventId }: TrackingAnalyticsProps) {
               <Link2 className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Total Links</p>
+              <p className="text-sm text-muted-foreground">{t('analytics.totalLinks')}</p>
               <p className="text-2xl font-bold">{analytics.totalLinks}</p>
             </div>
           </div>
@@ -99,7 +101,7 @@ export function TrackingAnalytics({ eventId }: TrackingAnalyticsProps) {
               <MousePointerClick className="h-6 w-6 text-secondary" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Total Clicks</p>
+              <p className="text-sm text-muted-foreground">{t('analytics.totalClicks')}</p>
               <p className="text-2xl font-bold">{analytics.totalClicks}</p>
             </div>
           </div>
@@ -111,7 +113,7 @@ export function TrackingAnalytics({ eventId }: TrackingAnalyticsProps) {
               <TrendingUp className="h-6 w-6 text-accent" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Avg. Clicks/Link</p>
+              <p className="text-sm text-muted-foreground">{t('analytics.avgClicksPerLink')}</p>
               <p className="text-2xl font-bold">{analytics.avgClicksPerLink}</p>
             </div>
           </div>
@@ -120,7 +122,7 @@ export function TrackingAnalytics({ eventId }: TrackingAnalyticsProps) {
 
       {/* Clicks Over Time */}
       <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Clicks Over Time (Last 7 Days)</h3>
+        <h3 className="text-lg font-semibold mb-4">{t('analytics.clicksOverTime')}</h3>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={analytics.clicksByDay}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -141,7 +143,7 @@ export function TrackingAnalytics({ eventId }: TrackingAnalyticsProps) {
       {/* Top 5 Links & Source Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Top 5 Performing Links</h3>
+          <h3 className="text-lg font-semibold mb-4">{t('analytics.topPerformingLinks')}</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={analytics.topLinks} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -160,7 +162,7 @@ export function TrackingAnalytics({ eventId }: TrackingAnalyticsProps) {
         </Card>
 
         <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Clicks by Source</h3>
+          <h3 className="text-lg font-semibold mb-4">{t('analytics.clicksBySource')}</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie

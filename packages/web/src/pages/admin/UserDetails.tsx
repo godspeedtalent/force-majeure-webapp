@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@force-majeure/shared';
 import { ArrowLeft, User, Mail, Calendar, Shield, Building2 } from 'lucide-react';
@@ -32,6 +33,8 @@ interface UserDetails {
 }
 
 export default function UserDetails() {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -80,13 +83,13 @@ export default function UserDetails() {
   }
 
   if (error || !user) {
-    toast.error('Failed to load user');
+    toast.error(tToast('admin.userNotFound'));
     return (
       <Layout>
         <div className='text-center py-12'>
-          <p className='text-muted-foreground'>User not found</p>
+          <p className='text-muted-foreground'>{t('empty.noResults')}</p>
           <Button onClick={() => navigate(-1)} className='mt-4'>
-            Go Back
+            {t('buttons.goBack')}
           </Button>
         </div>
       </Layout>
@@ -106,14 +109,14 @@ export default function UserDetails() {
             className='border-white/20 hover:bg-white/10'
           >
             <ArrowLeft className='h-4 w-4 mr-2' />
-            Back
+            {t('buttons.back')}
           </Button>
           <div>
             <h1 className='text-3xl font-bold flex items-center gap-3'>
               <User className='h-8 w-8 text-fm-gold' />
               {user.display_name}
             </h1>
-            <p className='text-muted-foreground mt-1'>User Details</p>
+            <p className='text-muted-foreground mt-1'>{t('pageTitles.userDetails')}</p>
           </div>
         </div>
       </div>
@@ -127,7 +130,7 @@ export default function UserDetails() {
           {/* Basic Information */}
           <Card>
             <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
+              <CardTitle>{t('sections.basicInformation')}</CardTitle>
             </CardHeader>
             <CardContent className='space-y-4'>
               {user.avatar_url && (
@@ -141,13 +144,13 @@ export default function UserDetails() {
               )}
 
               <div>
-                <label className='text-sm text-muted-foreground'>Username</label>
+                <label className='text-sm text-muted-foreground'>{t('labels.username')}</label>
                 <p className='text-lg font-medium'>{user.display_name}</p>
               </div>
 
               {user.full_name && (
                 <div>
-                  <label className='text-sm text-muted-foreground'>Full Name</label>
+                  <label className='text-sm text-muted-foreground'>{t('labels.fullName')}</label>
                   <p>{user.full_name}</p>
                 </div>
               )}
@@ -155,14 +158,14 @@ export default function UserDetails() {
               <div>
                 <label className='text-sm text-muted-foreground flex items-center gap-2'>
                   <Mail className='h-4 w-4' />
-                  Email
+                  {t('labels.email')}
                 </label>
                 <p className='font-mono'>{user.email}</p>
               </div>
 
               <div>
-                <label className='text-sm text-muted-foreground'>Show on Leaderboard</label>
-                <p>{user.show_on_leaderboard ? 'Yes' : 'No'}</p>
+                <label className='text-sm text-muted-foreground'>{t('labels.showOnLeaderboard')}</label>
+                <p>{user.show_on_leaderboard ? t('labels.yes') : t('labels.no')}</p>
               </div>
             </CardContent>
           </Card>
@@ -173,7 +176,7 @@ export default function UserDetails() {
               <CardHeader>
                 <CardTitle className='flex items-center gap-2'>
                   <Building2 className='h-5 w-5' />
-                  Organization
+                  {t('sections.organization')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -184,7 +187,7 @@ export default function UserDetails() {
                   onClick={() => navigate(`/admin/organizations/${user.organization?.id}`)}
                   className='border-white/20 hover:bg-white/10'
                 >
-                  View Organization Details
+                  {t('buttons.viewOrganizationDetails')}
                 </Button>
               </CardContent>
             </Card>
@@ -196,7 +199,7 @@ export default function UserDetails() {
               <CardHeader>
                 <CardTitle className='flex items-center gap-2'>
                   <Shield className='h-5 w-5' />
-                  Roles & Permissions
+                  {t('sections.rolesAndPermissions')}
                 </CardTitle>
               </CardHeader>
               <CardContent className='space-y-4'>
@@ -206,14 +209,16 @@ export default function UserDetails() {
                       {role.display_name}
                     </Badge>
                     <div className='ml-4 text-sm text-muted-foreground'>
-                      {role.permissions.length} permission{role.permissions.length !== 1 ? 's' : ''}
+                      {role.permissions.length === 1
+                        ? t('sections.permissionCount', { count: role.permissions.length })
+                        : t('sections.permissionCountPlural', { count: role.permissions.length })}
                       {role.permissions.length > 0 && (
                         <ul className='mt-2 space-y-1'>
                           {role.permissions.slice(0, 5).map((perm, idx) => (
                             <li key={idx}>• {perm}</li>
                           ))}
                           {role.permissions.length > 5 && (
-                            <li>• ... and {role.permissions.length - 5} more</li>
+                            <li>{t('sections.andMore', { count: role.permissions.length - 5 })}</li>
                           )}
                         </ul>
                       )}
@@ -229,18 +234,18 @@ export default function UserDetails() {
         <div className='space-y-6'>
           <Card>
             <CardHeader>
-              <CardTitle>Metadata</CardTitle>
+              <CardTitle>{t('sections.metadata')}</CardTitle>
             </CardHeader>
             <CardContent className='space-y-3'>
               <div>
-                <label className='text-sm text-muted-foreground'>User ID</label>
+                <label className='text-sm text-muted-foreground'>{t('labels.userId')}</label>
                 <p className='font-mono text-sm'>{user.id}</p>
               </div>
 
               <div>
                 <label className='text-sm text-muted-foreground flex items-center gap-2'>
                   <Calendar className='h-4 w-4' />
-                  Created
+                  {t('labels.created')}
                 </label>
                 <p className='text-sm'>
                   {format(new Date(user.created_at), 'PPP')}
@@ -251,7 +256,7 @@ export default function UserDetails() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Actions</CardTitle>
+              <CardTitle>{t('sections.actions')}</CardTitle>
             </CardHeader>
             <CardContent className='space-y-2'>
               <Button
@@ -259,7 +264,7 @@ export default function UserDetails() {
                 className='w-full border-white/20 hover:bg-white/10'
                 onClick={() => navigate(`/admin/users`)}
               >
-                Back to Users List
+                {t('buttons.backToUsersList')}
               </Button>
             </CardContent>
           </Card>

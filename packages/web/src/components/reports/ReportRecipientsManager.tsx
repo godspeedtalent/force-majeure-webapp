@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/common/shadcn/button';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
@@ -14,6 +15,8 @@ interface ReportRecipientsManagerProps {
 }
 
 export const ReportRecipientsManager = ({ configId }: ReportRecipientsManagerProps) => {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const [newEmail, setNewEmail] = useState('');
   const [newName, setNewName] = useState('');
   const queryClient = useQueryClient();
@@ -50,10 +53,10 @@ export const ReportRecipientsManager = ({ configId }: ReportRecipientsManagerPro
       queryClient.invalidateQueries({ queryKey: ['report-recipients', configId] });
       setNewEmail('');
       setNewName('');
-      toast.success('Recipient added');
+      toast.success(tToast('reports.recipientAdded'));
     },
     onError: (error: Error) => {
-      toast.error('Failed to add recipient: ' + error.message);
+      toast.error(tToast('reports.recipientAddFailed') + ': ' + error.message);
     },
   });
 
@@ -68,10 +71,10 @@ export const ReportRecipientsManager = ({ configId }: ReportRecipientsManagerPro
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['report-recipients', configId] });
-      toast.success('Recipient removed');
+      toast.success(tToast('reports.recipientRemoved'));
     },
     onError: (error: Error) => {
-      toast.error('Failed to remove recipient: ' + error.message);
+      toast.error(tToast('reports.recipientRemoveFailed') + ': ' + error.message);
     },
   });
 
@@ -79,18 +82,18 @@ export const ReportRecipientsManager = ({ configId }: ReportRecipientsManagerPro
     <div className="space-y-4">
       <div className="flex gap-2">
         <div className="flex-1 space-y-2">
-          <Label>Email</Label>
+          <Label>{t('labels.email')}</Label>
           <Input
             type="email"
-            placeholder="email@example.com"
+            placeholder={t('placeholders.email')}
             value={newEmail}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewEmail(e.target.value)}
           />
         </div>
         <div className="flex-1 space-y-2">
-          <Label>Name (optional)</Label>
+          <Label>{t('reports.recipients.nameOptional')}</Label>
           <Input
-            placeholder="John Doe"
+            placeholder={t('placeholders.fullName')}
             value={newName}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewName(e.target.value)}
           />
@@ -98,7 +101,7 @@ export const ReportRecipientsManager = ({ configId }: ReportRecipientsManagerPro
         <div className="flex items-end">
           <Button onClick={() => addRecipientMutation.mutate()}>
             <Plus className="w-4 h-4 mr-2" />
-            Add
+            {t('reports.recipients.add')}
           </Button>
         </div>
       </div>
@@ -107,20 +110,20 @@ export const ReportRecipientsManager = ({ configId }: ReportRecipientsManagerPro
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Email</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead className="w-[100px]">Actions</TableHead>
+              <TableHead>{t('labels.email')}</TableHead>
+              <TableHead>{t('labels.name')}</TableHead>
+              <TableHead className="w-[100px]">{t('table.actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={3} className="text-center">Loading...</TableCell>
+                <TableCell colSpan={3} className="text-center">{t('status.loading')}</TableCell>
               </TableRow>
             ) : recipients?.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={3} className="text-center text-muted-foreground">
-                  No recipients added yet
+                  {t('reports.recipients.noRecipientsYet')}
                 </TableCell>
               </TableRow>
             ) : (
