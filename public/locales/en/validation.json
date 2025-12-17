@@ -1,0 +1,77 @@
+{
+  "required": "This field is required",
+  "email": {
+    "invalid": "Please enter a valid email address",
+    "required": "Email is required"
+  },
+  "password": {
+    "required": "Password is required",
+    "minLength": "Password must be at least {{min}} characters",
+    "maxLength": "Password must be less than {{max}} characters",
+    "mismatch": "Passwords do not match",
+    "weak": "Password is too weak",
+    "requirements": "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+  },
+  "name": {
+    "required": "Name is required",
+    "minLength": "Name must be at least {{min}} characters",
+    "maxLength": "Name must be less than {{max}} characters"
+  },
+  "phone": {
+    "invalid": "Please enter a valid phone number",
+    "required": "Phone number is required"
+  },
+  "url": {
+    "invalid": "Please enter a valid URL"
+  },
+  "date": {
+    "invalid": "Please enter a valid date",
+    "future": "Date must be in the future",
+    "past": "Date must be in the past"
+  },
+  "number": {
+    "invalid": "Please enter a valid number",
+    "positive": "Number must be positive",
+    "integer": "Number must be a whole number",
+    "min": "Number must be at least {{min}}",
+    "max": "Number must be at most {{max}}"
+  },
+  "string": {
+    "minLength": "Must be at least {{min}} characters",
+    "maxLength": "Must be less than {{max}} characters",
+    "pattern": "Invalid format"
+  },
+  "file": {
+    "required": "Please select a file",
+    "tooLarge": "File is too large. Maximum size is {{max}}",
+    "invalidType": "Invalid file type. Allowed types: {{types}}"
+  },
+  "quantity": {
+    "min": "Quantity must be at least {{min}}",
+    "max": "Maximum quantity is {{max}}",
+    "invalid": "Please enter a valid quantity"
+  },
+  "promoCode": {
+    "invalid": "Invalid promo code",
+    "expired": "This promo code has expired",
+    "alreadyUsed": "This promo code has already been used"
+  },
+  "terms": {
+    "required": "You must accept the terms and conditions"
+  },
+  "age": {
+    "required": "You must confirm you meet the age requirement"
+  },
+  "eventTitleRequired": "Please provide an event title",
+  "headlinerRequired": "Please select a headliner",
+  "eventDateRequired": "Please select an event date",
+  "startTimeRequired": "Please select a start time",
+  "endTimeOrAfterHoursRequired": "Please select an end time or mark as after hours event",
+  "venueRequired": "Please select a venue",
+  "ticketTierRequired": "Please add at least one ticket tier",
+  "totalTicketsExceedsCapacity": "Total tickets ({{totalTickets}}) exceeds venue capacity ({{venueCapacity}})",
+  "tierNameRequired": "Ticket tier {{tierNumber}} must have a name",
+  "tierPriceRequired": "Ticket tier \"{{tierName}}\" must have a price (use 0 for free)",
+  "tierNegativePrice": "Ticket tier \"{{tierName}}\" cannot have a negative price",
+  "tierQuantityRequired": "Ticket tier \"{{tierName}}\" must have at least 1 ticket"
+}

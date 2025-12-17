@@ -14,143 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      activity_logs: {
-        Row: {
-          category: Database["public"]["Enums"]["activity_category"]
-          created_at: string
-          description: string
-          event_type: Database["public"]["Enums"]["activity_event_type"]
-          id: string
-          ip_address: unknown
-          metadata: Json | null
-          target_resource_id: string | null
-          target_resource_name: string | null
-          target_resource_type: string | null
-          timestamp: string
-          user_agent: string | null
-          user_id: string | null
-        }
-        Insert: {
-          category: Database["public"]["Enums"]["activity_category"]
-          created_at?: string
-          description: string
-          event_type: Database["public"]["Enums"]["activity_event_type"]
-          id?: string
-          ip_address?: unknown
-          metadata?: Json | null
-          target_resource_id?: string | null
-          target_resource_name?: string | null
-          target_resource_type?: string | null
-          timestamp?: string
-          user_agent?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          category?: Database["public"]["Enums"]["activity_category"]
-          created_at?: string
-          description?: string
-          event_type?: Database["public"]["Enums"]["activity_event_type"]
-          id?: string
-          ip_address?: unknown
-          metadata?: Json | null
-          target_resource_id?: string | null
-          target_resource_name?: string | null
-          target_resource_type?: string | null
-          timestamp?: string
-          user_agent?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      activity_logs_archive: {
-        Row: {
-          archived_at: string
-          category: Database["public"]["Enums"]["activity_category"]
-          created_at: string
-          description: string
-          event_type: Database["public"]["Enums"]["activity_event_type"]
-          id: string
-          ip_address: unknown
-          metadata: Json | null
-          target_resource_id: string | null
-          target_resource_name: string | null
-          target_resource_type: string | null
-          timestamp: string
-          user_agent: string | null
-          user_id: string | null
-        }
-        Insert: {
-          archived_at?: string
-          category: Database["public"]["Enums"]["activity_category"]
-          created_at: string
-          description: string
-          event_type: Database["public"]["Enums"]["activity_event_type"]
-          id: string
-          ip_address?: unknown
-          metadata?: Json | null
-          target_resource_id?: string | null
-          target_resource_name?: string | null
-          target_resource_type?: string | null
-          timestamp: string
-          user_agent?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          archived_at?: string
-          category?: Database["public"]["Enums"]["activity_category"]
-          created_at?: string
-          description?: string
-          event_type?: Database["public"]["Enums"]["activity_event_type"]
-          id?: string
-          ip_address?: unknown
-          metadata?: Json | null
-          target_resource_id?: string | null
-          target_resource_name?: string | null
-          target_resource_type?: string | null
-          timestamp?: string
-          user_agent?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      app_settings: {
-        Row: {
-          created_at: string
-          description: string | null
-          environment_id: string
-          id: string
-          setting_key: string
-          setting_value: Json
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          environment_id: string
-          id?: string
-          setting_key: string
-          setting_value?: Json
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          environment_id?: string
-          id?: string
-          setting_key?: string
-          setting_value?: Json
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "app_settings_environment_id_fkey"
-            columns: ["environment_id"]
-            isOneToOne: false
-            referencedRelation: "environments"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       artist_genres: {
         Row: {
           artist_id: string
@@ -190,57 +53,12 @@ export type Database = {
           },
         ]
       }
-      artist_recordings: {
-        Row: {
-          artist_id: string
-          cover_art: string | null
-          created_at: string | null
-          duration: string | null
-          id: string
-          name: string
-          platform: string
-          updated_at: string | null
-          url: string
-        }
-        Insert: {
-          artist_id: string
-          cover_art?: string | null
-          created_at?: string | null
-          duration?: string | null
-          id?: string
-          name: string
-          platform: string
-          updated_at?: string | null
-          url: string
-        }
-        Update: {
-          artist_id?: string
-          cover_art?: string | null
-          created_at?: string | null
-          duration?: string | null
-          id?: string
-          name?: string
-          platform?: string
-          updated_at?: string | null
-          url?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "artist_recordings_artist_id_fkey"
-            columns: ["artist_id"]
-            isOneToOne: false
-            referencedRelation: "artists"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       artist_registrations: {
         Row: {
           artist_name: string
           availability: string | null
           bio: string
           city: string
-          city_id: string | null
           created_at: string
           email: string
           equipment: string | null
@@ -266,7 +84,6 @@ export type Database = {
           availability?: string | null
           bio: string
           city: string
-          city_id?: string | null
           created_at?: string
           email: string
           equipment?: string | null
@@ -292,7 +109,6 @@ export type Database = {
           availability?: string | null
           bio?: string
           city?: string
-          city_id?: string | null
           created_at?: string
           email?: string
           equipment?: string | null
@@ -313,20 +129,11 @@ export type Database = {
           updated_at?: string
           user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "artist_registrations_city_id_fkey"
-            columns: ["city_id"]
-            isOneToOne: false
-            referencedRelation: "cities"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       artists: {
         Row: {
           bio: string | null
-          city_id: string | null
           created_at: string | null
           genre: string | null
           id: string
@@ -336,12 +143,10 @@ export type Database = {
           spotify_id: string | null
           test_data: boolean
           updated_at: string | null
-          user_id: string | null
           website: string | null
         }
         Insert: {
           bio?: string | null
-          city_id?: string | null
           created_at?: string | null
           genre?: string | null
           id?: string
@@ -351,12 +156,10 @@ export type Database = {
           spotify_id?: string | null
           test_data?: boolean
           updated_at?: string | null
-          user_id?: string | null
           website?: string | null
         }
         Update: {
           bio?: string | null
-          city_id?: string | null
           created_at?: string | null
           genre?: string | null
           id?: string
@@ -366,18 +169,9 @@ export type Database = {
           spotify_id?: string | null
           test_data?: boolean
           updated_at?: string | null
-          user_id?: string | null
           website?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "artists_city_id_fkey"
-            columns: ["city_id"]
-            isOneToOne: false
-            referencedRelation: "cities"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       cities: {
         Row: {
@@ -553,24 +347,18 @@ export type Database = {
           created_at: string | null
           event_id: string
           id: string
-          set_order: number | null
-          set_time: string | null
         }
         Insert: {
           artist_id: string
           created_at?: string | null
           event_id: string
           id?: string
-          set_order?: number | null
-          set_time?: string | null
         }
         Update: {
           artist_id?: string
           created_at?: string | null
           event_id?: string
           id?: string
-          set_order?: number | null
-          set_time?: string | null
         }
         Relationships: [
           {
@@ -909,97 +697,6 @@ export type Database = {
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "genres"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      group_members: {
-        Row: {
-          group_id: string
-          id: string
-          invited_by: string | null
-          joined_at: string | null
-          user_id: string
-        }
-        Insert: {
-          group_id: string
-          id?: string
-          invited_by?: string | null
-          joined_at?: string | null
-          user_id: string
-        }
-        Update: {
-          group_id?: string
-          id?: string
-          invited_by?: string | null
-          joined_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "group_members_group_id_fkey"
-            columns: ["group_id"]
-            isOneToOne: false
-            referencedRelation: "groups"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "group_members_invited_by_fkey"
-            columns: ["invited_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "group_members_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      groups: {
-        Row: {
-          created_at: string | null
-          creator_id: string
-          event_id: string | null
-          id: string
-          is_active: boolean | null
-          max_members: number | null
-          name: string
-        }
-        Insert: {
-          created_at?: string | null
-          creator_id: string
-          event_id?: string | null
-          id?: string
-          is_active?: boolean | null
-          max_members?: number | null
-          name: string
-        }
-        Update: {
-          created_at?: string | null
-          creator_id?: string
-          event_id?: string | null
-          id?: string
-          is_active?: boolean | null
-          max_members?: number | null
-          name?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "groups_creator_id_fkey"
-            columns: ["creator_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "groups_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "events"
             referencedColumns: ["id"]
           },
         ]
@@ -1477,48 +1174,6 @@ export type Database = {
           },
         ]
       }
-      rave_family: {
-        Row: {
-          connected_at: string | null
-          connection_method: string | null
-          created_at: string | null
-          family_member_id: string
-          id: string
-          user_id: string
-        }
-        Insert: {
-          connected_at?: string | null
-          connection_method?: string | null
-          created_at?: string | null
-          family_member_id: string
-          id?: string
-          user_id: string
-        }
-        Update: {
-          connected_at?: string | null
-          connection_method?: string | null
-          created_at?: string | null
-          family_member_id?: string
-          id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "rave_family_family_member_id_fkey"
-            columns: ["family_member_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "rave_family_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       report_configurations: {
         Row: {
           created_at: string
@@ -1893,103 +1548,6 @@ export type Database = {
           },
         ]
       }
-      ticket_scan_events: {
-        Row: {
-          created_at: string
-          device_info: Json | null
-          event_id: string
-          id: string
-          scan_location: Json | null
-          scan_result: string
-          scanned_by: string | null
-          ticket_id: string
-        }
-        Insert: {
-          created_at?: string
-          device_info?: Json | null
-          event_id: string
-          id?: string
-          scan_location?: Json | null
-          scan_result: string
-          scanned_by?: string | null
-          ticket_id: string
-        }
-        Update: {
-          created_at?: string
-          device_info?: Json | null
-          event_id?: string
-          id?: string
-          scan_location?: Json | null
-          scan_result?: string
-          scanned_by?: string | null
-          ticket_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "ticket_scan_events_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "events"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ticket_scan_events_ticket_id_fkey"
-            columns: ["ticket_id"]
-            isOneToOne: false
-            referencedRelation: "tickets"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      ticket_scans: {
-        Row: {
-          event_id: string
-          id: string
-          scan_method: string | null
-          scanned_at: string | null
-          scanned_by: string | null
-          ticket_id: string
-        }
-        Insert: {
-          event_id: string
-          id?: string
-          scan_method?: string | null
-          scanned_at?: string | null
-          scanned_by?: string | null
-          ticket_id: string
-        }
-        Update: {
-          event_id?: string
-          id?: string
-          scan_method?: string | null
-          scanned_at?: string | null
-          scanned_by?: string | null
-          ticket_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "ticket_scans_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "events"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ticket_scans_scanned_by_fkey"
-            columns: ["scanned_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ticket_scans_ticket_id_fkey"
-            columns: ["ticket_id"]
-            isOneToOne: false
-            referencedRelation: "order_items"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       ticket_tiers: {
         Row: {
           available_inventory: number
@@ -2295,64 +1853,6 @@ export type Database = {
           },
         ]
       }
-      undercard_requests: {
-        Row: {
-          artist_registration_id: string
-          created_at: string
-          event_id: string
-          id: string
-          reviewed_at: string | null
-          reviewed_by: string | null
-          reviewer_notes: string | null
-          status: string
-          updated_at: string
-        }
-        Insert: {
-          artist_registration_id: string
-          created_at?: string
-          event_id: string
-          id?: string
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          reviewer_notes?: string | null
-          status?: string
-          updated_at?: string
-        }
-        Update: {
-          artist_registration_id?: string
-          created_at?: string
-          event_id?: string
-          id?: string
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          reviewer_notes?: string | null
-          status?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "undercard_requests_artist_registration_id_fkey"
-            columns: ["artist_registration_id"]
-            isOneToOne: false
-            referencedRelation: "artist_registrations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "undercard_requests_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "events"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "undercard_requests_reviewed_by_fkey"
-            columns: ["reviewed_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       user_event_interests: {
         Row: {
           created_at: string
@@ -2381,45 +1881,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      user_requests: {
-        Row: {
-          created_at: string
-          denial_reason: string | null
-          id: string
-          parameters: Json | null
-          request_type: string
-          resolved_at: string | null
-          resolved_by: string | null
-          status: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          denial_reason?: string | null
-          id?: string
-          parameters?: Json | null
-          request_type: string
-          resolved_at?: string | null
-          resolved_by?: string | null
-          status?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          denial_reason?: string | null
-          id?: string
-          parameters?: Json | null
-          request_type?: string
-          resolved_at?: string | null
-          resolved_by?: string | null
-          status?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
       }
       user_roles: {
         Row: {
@@ -2535,29 +1996,6 @@ export type Database = {
       }
     }
     Views: {
-      daily_scan_statistics: {
-        Row: {
-          duplicate_scans: number | null
-          event_id: string | null
-          first_scan: string | null
-          invalid_scans: number | null
-          last_scan: string | null
-          rejected_scans: number | null
-          scan_date: string | null
-          successful_scans: number | null
-          total_scans: number | null
-          unique_tickets_scanned: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "ticket_scan_events_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "events"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       users_complete: {
         Row: {
           auth_created_at: string | null
@@ -2579,10 +2017,6 @@ export type Database = {
       }
     }
     Functions: {
-      archive_old_activity_logs: {
-        Args: { p_retention_days?: number }
-        Returns: number
-      }
       cleanup_old_ticketing_sessions: { Args: never; Returns: undefined }
       convert_hold_to_sale: { Args: { p_hold_id: string }; Returns: boolean }
       create_event_with_tiers: {
@@ -2600,16 +2034,6 @@ export type Database = {
         Returns: {
           expires_at: string
           hold_id: string
-        }[]
-      }
-      get_activity_log_archive_status: {
-        Args: never
-        Returns: {
-          active: boolean
-          job_name: string
-          last_run: string
-          next_run: string
-          schedule: string
         }[]
       }
       get_all_users: {
@@ -2751,21 +2175,6 @@ export type Database = {
         Args: { p_event_id: string; p_user_id: string }
         Returns: boolean
       }
-      log_activity: {
-        Args: {
-          p_category: Database["public"]["Enums"]["activity_category"]
-          p_description: string
-          p_event_type: Database["public"]["Enums"]["activity_event_type"]
-          p_ip_address?: unknown
-          p_metadata?: Json
-          p_target_resource_id?: string
-          p_target_resource_name?: string
-          p_target_resource_type?: string
-          p_user_agent?: string
-          p_user_id?: string
-        }
-        Returns: string
-      }
       record_event_view: {
         Args: {
           p_event_id: string
@@ -2778,33 +2187,8 @@ export type Database = {
       refresh_all_table_metadata: { Args: never; Returns: Json }
       refresh_table_metadata: { Args: { p_table_name: string }; Returns: Json }
       release_ticket_hold: { Args: { p_hold_id: string }; Returns: boolean }
-      trigger_activity_log_archive: {
-        Args: { p_retention_days?: number }
-        Returns: Json
-      }
     }
     Enums: {
-      activity_category:
-        | "account"
-        | "event"
-        | "artist"
-        | "venue"
-        | "recording"
-        | "ticket_tier"
-        | "ticket"
-        | "system"
-      activity_event_type:
-        | "account_created"
-        | "role_assigned"
-        | "role_removed"
-        | "permission_changed"
-        | "resource_created"
-        | "resource_updated"
-        | "resource_deleted"
-        | "ticket_sold"
-        | "ticket_scanned"
-        | "ticket_refunded"
-        | "ticket_cancelled"
       app_role: "user" | "admin" | "developer" | "org_admin" | "org_staff"
     }
     CompositeTypes: {
@@ -2933,29 +2317,6 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      activity_category: [
-        "account",
-        "event",
-        "artist",
-        "venue",
-        "recording",
-        "ticket_tier",
-        "ticket",
-        "system",
-      ],
-      activity_event_type: [
-        "account_created",
-        "role_assigned",
-        "role_removed",
-        "permission_changed",
-        "resource_created",
-        "resource_updated",
-        "resource_deleted",
-        "ticket_sold",
-        "ticket_scanned",
-        "ticket_refunded",
-        "ticket_cancelled",
-      ],
       app_role: ["user", "admin", "developer", "org_admin", "org_staff"],
     },
   },

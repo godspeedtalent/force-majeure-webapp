@@ -1,0 +1,77 @@
+{
+  "required": "Este campo es requerido",
+  "email": {
+    "invalid": "Por favor ingresa un correo electrónico válido",
+    "required": "El correo electrónico es requerido"
+  },
+  "password": {
+    "required": "La contraseña es requerida",
+    "minLength": "La contraseña debe tener al menos {{min}} caracteres",
+    "maxLength": "La contraseña debe tener menos de {{max}} caracteres",
+    "mismatch": "Las contraseñas no coinciden",
+    "weak": "La contraseña es muy débil",
+    "requirements": "La contraseña debe contener al menos una letra mayúscula, una minúscula y un número"
+  },
+  "name": {
+    "required": "El nombre es requerido",
+    "minLength": "El nombre debe tener al menos {{min}} caracteres",
+    "maxLength": "El nombre debe tener menos de {{max}} caracteres"
+  },
+  "phone": {
+    "invalid": "Por favor ingresa un número de teléfono válido",
+    "required": "El número de teléfono es requerido"
+  },
+  "url": {
+    "invalid": "Por favor ingresa una URL válida"
+  },
+  "date": {
+    "invalid": "Por favor ingresa una fecha válida",
+    "future": "La fecha debe ser en el futuro",
+    "past": "La fecha debe ser en el pasado"
+  },
+  "number": {
+    "invalid": "Por favor ingresa un número válido",
+    "positive": "El número debe ser positivo",
+    "integer": "El número debe ser entero",
+    "min": "El número debe ser al menos {{min}}",
+    "max": "El número debe ser como máximo {{max}}"
+  },
+  "string": {
+    "minLength": "Debe tener al menos {{min}} caracteres",
+    "maxLength": "Debe tener menos de {{max}} caracteres",
+    "pattern": "Formato inválido"
+  },
+  "file": {
+    "required": "Por favor selecciona un archivo",
+    "tooLarge": "El archivo es muy grande. Tamaño máximo: {{max}}",
+    "invalidType": "Tipo de archivo inválido. Tipos permitidos: {{types}}"
+  },
+  "quantity": {
+    "min": "La cantidad debe ser al menos {{min}}",
+    "max": "La cantidad máxima es {{max}}",
+    "invalid": "Por favor ingresa una cantidad válida"
+  },
+  "promoCode": {
+    "invalid": "Código promocional inválido",
+    "expired": "Este código promocional ha expirado",
+    "alreadyUsed": "Este código promocional ya ha sido usado"
+  },
+  "terms": {
+    "required": "Debes aceptar los términos y condiciones"
+  },
+  "age": {
+    "required": "Debes confirmar que cumples con el requisito de edad"
+  },
+  "eventTitleRequired": "Por favor proporciona un título para el evento",
+  "headlinerRequired": "Por favor selecciona un artista principal",
+  "eventDateRequired": "Por favor selecciona una fecha de evento",
+  "startTimeRequired": "Por favor selecciona una hora de inicio",
+  "endTimeOrAfterHoursRequired": "Por favor selecciona una hora de fin o marca como evento after hours",
+  "venueRequired": "Por favor selecciona un lugar",
+  "ticketTierRequired": "Por favor añade al menos un nivel de entradas",
+  "totalTicketsExceedsCapacity": "Total de entradas ({{totalTickets}}) excede la capacidad del lugar ({{venueCapacity}})",
+  "tierNameRequired": "El nivel de entradas {{tierNumber}} debe tener un nombre",
+  "tierPriceRequired": "El nivel de entradas \"{{tierName}}\" debe tener un precio (usa 0 para gratis)",
+  "tierNegativePrice": "El nivel de entradas \"{{tierName}}\" no puede tener un precio negativo",
+  "tierQuantityRequired": "El nivel de entradas \"{{tierName}}\" debe tener al menos 1 entrada"
+}

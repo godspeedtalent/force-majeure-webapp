@@ -18,12 +18,10 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
-      "@/*": ["./packages/web/src/*"],
-      "@force-majeure/shared": ["./packages/shared/src"],
-      "@force-majeure/shared/*": ["./packages/shared/src/*"]
+      "@/*": ["./src/*"]
     },
     "baseUrl": "."
   },
-  "include": ["packages/web/src", "packages/shared/src"],
-  "exclude": ["node_modules", "packages/mobile"]
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }
