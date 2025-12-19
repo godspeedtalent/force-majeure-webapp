@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, Gift, LogIn, Tag, Ticket } from 'lucide-react';
 
@@ -54,6 +55,7 @@ export const TicketingPanel = ({
   isLoading = false,
   initialSelections,
 }: TicketingPanelProps) => {
+  const { t } = useTranslation('common');
   const [selections, setSelections] = useState<Record<string, number>>(
     () => initialSelections ?? {}
   );
@@ -78,7 +80,7 @@ export const TicketingPanel = ({
     return (
       <div className='flex flex-col items-center justify-center gap-[10px] py-16 text-muted-foreground'>
         <div className='h-8 w-8 animate-spin rounded-none border-2 border-fm-gold border-t-transparent' />
-        <p className='text-sm'>Loading available tickets…</p>
+        <p className='text-sm'>{t('ticketingPanel.loadingTickets')}</p>
       </div>
     );
   }
@@ -181,7 +183,7 @@ export const TicketingPanel = ({
   const getPriceBreakdown = (basePrice: number) => {
     const baseFees = calculateFees(basePrice);
     const breakdown = [
-      { label: 'Base Price', amount: basePrice },
+      { label: t('ticketingPanel.basePrice'), amount: basePrice },
       ...baseFees.map(fee => ({
         label: fee.name
           .replace(/_/g, ' ')
@@ -229,14 +231,14 @@ export const TicketingPanel = ({
       <div>
         <h3 className='flex items-center gap-[10px] text-foreground font-canela text-xl mb-1'>
           <Ticket className='h-5 w-5 text-fm-gold' />
-          {formatHeader('Select Your Tickets')}
+          {formatHeader(t('ticketingPanel.selectYourTickets'))}
         </h3>
         <p className='text-sm text-muted-foreground'>
-          Choose quantity for each tier
+          {t('ticketingPanel.chooseQuantity')}
         </p>
         <div className='mt-2 px-[10px] py-[10px] bg-fm-gold/10 border border-fm-gold/30 rounded-none'>
           <p className='text-xs text-fm-gold'>
-            All ticket prices shown include service fees and taxes
+            {t('ticketingPanel.pricesIncludeFees')}
           </p>
         </div>
       </div>
@@ -244,7 +246,7 @@ export const TicketingPanel = ({
       <div className='space-y-4'>
         {sortedTiers.length === 0 ? (
           <div className='text-center py-8 text-muted-foreground'>
-            No ticket tiers available for this event
+            {t('ticketingPanel.noTiersAvailable')}
           </div>
         ) : (
           Object.entries(tiersGrouped).map(([groupName, groupTiers]) => (
@@ -296,7 +298,7 @@ export const TicketingPanel = ({
                               )}
                               {soldOut && (
                                 <span className='text-[10px] bg-destructive/20 text-destructive px-1.5 py-0.5 rounded font-medium inline-block'>
-                                  SOLD OUT
+                                  {t('status.soldOut').toUpperCase()}
                                 </span>
                               )}
                             </div>
@@ -310,7 +312,7 @@ export const TicketingPanel = ({
                                 </span>
                                 <div className='absolute right-0 bottom-full mb-2 hidden group-hover/price:block bg-popover text-popover-foreground px-[10px] py-[10px] rounded-none border border-border shadow-lg whitespace-nowrap z-50 min-w-[200px]'>
                                   <div className='text-xs font-medium mb-2 text-foreground'>
-                                    Price Breakdown
+                                    {t('ticketingPanel.priceBreakdown')}
                                   </div>
                                   <div className='space-y-1'>
                                   {getPriceBreakdown(
@@ -331,7 +333,7 @@ export const TicketingPanel = ({
                                     <div className='border-t border-border pt-1 mt-1'>
                                       <div className='flex justify-between text-xs font-medium'>
                                         <span className='text-foreground'>
-                                          Total:
+                                          {t('labels.total')}:
                                         </span>
                                         <span className='text-fm-gold'>
                                           $
@@ -349,7 +351,7 @@ export const TicketingPanel = ({
                                   htmlFor={`qty-${tier.id}`}
                                   className='text-xs uppercase text-muted-foreground'
                                 >
-                                  Qty:
+                                  {t('ticketingPanel.qty')}:
                                 </Label>
                                 <Select
                                   value={selections[tier.id]?.toString() || '0'}
@@ -410,18 +412,18 @@ export const TicketingPanel = ({
         <div className='grid grid-cols-2 gap-[10px]'>
           <FmInfoCard
             icon={Tag}
-            title='Promo Code'
-            description='Have a promo code?'
+            title={t('ticketingPanel.promoCode')}
+            description={t('ticketingPanel.havePromoCode')}
             className='p-[20px]'
           >
             <FmPromoCodeInput onPromoCodeApplied={handlePromoCodeApplied} />
           </FmInfoCard>
 
-          <FmInfoCard icon={Gift} title='Member Rewards' className='p-[20px]'>
+          <FmInfoCard icon={Gift} title={t('ticketingPanel.memberRewards')} className='p-[20px]'>
             {!user ? (
               <div className='flex flex-col items-center justify-center text-center space-y-2'>
                 <div className='text-xs text-muted-foreground'>
-                  Sign in to see your rewards
+                  {t('ticketingPanel.signInToSeeRewards')}
                 </div>
                 <Button
                   variant='outline'
@@ -430,12 +432,12 @@ export const TicketingPanel = ({
                   className='text-xs h-8 border-fm-gold text-fm-gold hover:bg-fm-gold/10'
                 >
                   <LogIn className='h-3 w-3 mr-1' />
-                  Sign In
+                  {t('nav.signIn')}
                 </Button>
               </div>
             ) : (
               <div className='text-xs text-foreground'>
-                No rewards available
+                {t('ticketingPanel.noRewardsAvailable')}
               </div>
             )}
           </FmInfoCard>
@@ -445,7 +447,7 @@ export const TicketingPanel = ({
 
         <div className='space-y-3 bg-muted/20 rounded-none p-[20px]'>
           <h4 className='text-sm text-foreground mb-2'>
-            {formatHeader('Order Summary')}
+            {formatHeader(t('checkout.orderSummary'))}
           </h4>
 
           {hasSelections && (
@@ -456,13 +458,13 @@ export const TicketingPanel = ({
           )}
 
           <div className='flex justify-between text-xs'>
-            <span className='text-muted-foreground'>Subtotal</span>
+            <span className='text-muted-foreground'>{t('checkout.subtotal')}</span>
             <span className='text-foreground'>${subtotal.toFixed(2)}</span>
           </div>
 
           {promoCode && promoDiscount > 0 && (
             <div className='flex justify-between text-xs text-green-600'>
-              <span>Promo ({promoCode.code})</span>
+              <span>{t('ticketingPanel.promo')} ({promoCode.code})</span>
               <span>-${promoDiscount.toFixed(2)}</span>
             </div>
           )}
@@ -499,7 +501,7 @@ export const TicketingPanel = ({
           <Separator className='mt-3' />
 
           <div className='flex justify-between items-center pt-1'>
-            <span className='font-canela text-base text-foreground'>Total</span>
+            <span className='font-canela text-base text-foreground'>{t('checkout.total')}</span>
             <span className='font-canela text-xl text-fm-gold'>
               ${grandTotal.toFixed(2)}
             </span>
@@ -511,7 +513,7 @@ export const TicketingPanel = ({
           disabled={!hasSelections}
           isLoading={isLoading}
         >
-          Continue to Checkout
+          {t('ticketingPanel.continueToCheckout')}
         </FmBigButton>
       </div>
     </div>

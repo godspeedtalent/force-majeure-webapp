@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { MapPin, Calendar, Settings, Users, ArrowLeft } from 'lucide-react';
 import { supabase, ROLES, PERMISSIONS } from '@force-majeure/shared';
@@ -24,6 +25,7 @@ interface VenueEventCard {
 }
 
 export default function VenueDetails() {
+  const { t } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { hasAnyRole, hasPermission } = useUserPermissions();
@@ -74,9 +76,9 @@ export default function VenueDetails() {
     return (
       <Layout>
         <div className='text-center py-12'>
-          <h1 className='text-2xl font-canela mb-4'>Venue not found.</h1>
+          <h1 className='text-2xl font-canela mb-4'>{t('venueDetails.notFound')}</h1>
           <FmCommonButton onClick={() => navigate('/')}>
-            Go Home
+            {t('venueDetails.goHome')}
           </FmCommonButton>
         </div>
       </Layout>
@@ -95,7 +97,7 @@ export default function VenueDetails() {
             onClick={() => navigate(-1)}
             className='bg-white/10 text-white hover:bg-white/20 border border-white/30'
           >
-            Back
+            {t('buttons.back')}
           </FmCommonButton>
           {canManageVenue && (
             <FmCommonButton
@@ -105,7 +107,7 @@ export default function VenueDetails() {
               onClick={() => navigate(`/venues/${id}/manage`)}
               className='bg-white/10 text-white hover:bg-white/20 border border-white/30'
             >
-              Manage
+              {t('venueDetails.manage')}
             </FmCommonButton>
           )}
         </div>
@@ -148,7 +150,7 @@ export default function VenueDetails() {
               <div className='flex items-center gap-3 text-muted-foreground'>
                 <Users className='h-5 w-5 text-fm-gold flex-shrink-0' />
                 <span className='text-lg'>
-                  Capacity: {venue.capacity.toLocaleString()}
+                  {t('venueDetails.capacity', { count: venue.capacity.toLocaleString() })}
                 </span>
               </div>
             )}
@@ -159,7 +161,7 @@ export default function VenueDetails() {
             <div>
               <h2 className='text-3xl font-canela font-medium mb-6 flex items-center gap-3'>
                 <Calendar className='h-7 w-7 text-fm-gold' />
-                Upcoming events.
+                {t('venueDetails.upcomingEvents')}
               </h2>
               <div className='grid gap-4'>
                 {upcomingEvents.map((event: VenueEventCard) => (

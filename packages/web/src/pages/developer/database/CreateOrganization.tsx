@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Building2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { FmCommonCreateForm } from '@/components/common/forms/FmCommonCreateForm';
@@ -10,6 +11,8 @@ import { logger } from '@force-majeure/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
 
 const DeveloperCreateOrganizationPage = () => {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const navigate = useNavigate();
   const { session } = useAuth();
   const [formData, setFormData] = useState({
@@ -20,12 +23,12 @@ const DeveloperCreateOrganizationPage = () => {
 
   const handleSubmit = async () => {
     if (!formData.name.trim()) {
-      toast.error('Organization name is required');
+      toast.error(tToast('validation.organizationNameRequired'));
       return;
     }
 
     if (!session?.user?.id) {
-      toast.error('You must be logged in to create an organization');
+      toast.error(tToast('auth.loginRequired'));
       return;
     }
 
@@ -59,7 +62,7 @@ const DeveloperCreateOrganizationPage = () => {
         }
       }
 
-      toast.success('Organization created successfully');
+      toast.success(tToast('success.created'));
       setFormData({
         name: '',
         profile_picture: '',
@@ -69,7 +72,7 @@ const DeveloperCreateOrganizationPage = () => {
       logger.error('Error creating organization:', {
         error: error instanceof Error ? error.message : 'Unknown',
       });
-      toast.error('Failed to create organization');
+      toast.error(tToast('error.create'));
     } finally {
       setIsSubmitting(false);
     }
@@ -85,27 +88,27 @@ const DeveloperCreateOrganizationPage = () => {
 
   return (
     <FmCommonCreateForm
-      title='Create Organization'
-      description='Register a new organization for event management.'
+      title={t('createForms.organization.title')}
+      description={t('createForms.organization.description')}
       icon={Building2}
-      helperText='Create a new organization profile for managing events and staff.'
+      helperText={t('createForms.organization.helperText')}
       isSubmitting={isSubmitting}
       onSubmit={handleSubmit}
       onCancel={handleCancel}
-      submitText='Create Organization'
+      submitText={t('createForms.organization.submitText')}
       returnPath='/developer/database'
       returnQuery='table=organizations'
     >
       <FmCommonTextField
-        label='Organization Name'
+        label={t('labels.organizationName')}
         required
         value={formData.name}
         onChange={e => setFormData({ ...formData, name: e.target.value })}
-        placeholder='Enter organization name'
+        placeholder={t('placeholders.enterOrganizationName')}
       />
 
       <FmFlexibleImageUpload
-        label='Organization Logo'
+        label={t('labels.organizationLogo')}
         value={formData.profile_picture}
         onChange={url => setFormData({ ...formData, profile_picture: url })}
         bucket='organization-images'

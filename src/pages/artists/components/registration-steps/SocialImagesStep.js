@@ -1,0 +1,25 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useTranslation } from 'react-i18next';
+import { Instagram as InstagramIcon, Music, ChevronLeft } from 'lucide-react';
+import { SiSoundcloud, SiSpotify, SiTiktok } from 'react-icons/si';
+import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { cn } from '@/shared';
+import { useIsMobile } from '@/shared';
+import { SocialImagesGridMobile } from './SocialImagesGridMobile';
+import { SocialImagesGridDesktop } from './SocialImagesGridDesktop';
+import { FmI18nCommon } from '@/components/common/i18n';
+export function SocialImagesStep({ formData, onInputChange, onNext, onPrevious, }) {
+    const { t } = useTranslation('common');
+    const isMobile = useIsMobile();
+    const handleImageUpload = (field, label) => {
+        const url = prompt(`Enter image URL for ${label}:`);
+        if (url)
+            onInputChange(field, url);
+    };
+    return (_jsxs("div", { className: 'h-full flex flex-col p-[20px]', children: [_jsx("div", { className: 'flex-1 overflow-y-auto pr-[10px]', children: _jsx("div", { className: 'flex justify-center items-start', children: _jsxs("div", { className: 'w-[85vw] sm:w-[80%] lg:w-[60%] space-y-[20px] bg-black/60 backdrop-blur-sm border border-white/10 p-[30px] sm:p-[40px]', children: [_jsxs("div", { children: [_jsx(FmI18nCommon, { i18nKey: 'artistRegistration.socialImagesTitle', as: 'h2', className: 'font-canela text-3xl mb-[10px]' }), _jsx(FmI18nCommon, { i18nKey: 'artistRegistration.socialImagesDescription', as: 'p', className: 'font-canela text-sm text-muted-foreground' })] }), _jsx("div", { className: 'w-full h-[1px] bg-gradient-to-r from-fm-gold via-white/30 to-transparent' }), _jsxs("div", { className: 'space-y-[10px]', children: [_jsx(FmI18nCommon, { i18nKey: 'sections.profileImages', as: 'h3', className: 'font-canela text-lg' }), isMobile ? (_jsx(SocialImagesGridMobile, { formData: formData, onImageUpload: handleImageUpload })) : (_jsx(SocialImagesGridDesktop, { formData: formData, onImageUpload: handleImageUpload }))] }), _jsx("div", { className: 'w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent' }), _jsxs("div", { className: 'space-y-[10px]', children: [_jsx(FmI18nCommon, { i18nKey: 'sections.socialMedia', as: 'h3', className: 'font-canela text-lg' }), _jsxs("div", { className: 'flex items-center gap-[10px]', children: [_jsx(InstagramIcon, { className: 'h-5 w-5 text-fm-gold flex-shrink-0' }), _jsx(FmCommonTextField, { label: t('labels.instagramHandle'), required: true, value: formData.instagramHandle, onChange: e => onInputChange('instagramHandle', e.target.value), placeholder: t('placeholders.socialUsername'), className: 'flex-1' })] }), _jsxs("div", { className: cn('bg-black/40 backdrop-blur-sm border rounded-none p-[15px] transition-colors', !formData.soundcloudUrl && !formData.spotifyUrl
+                                            ? 'border-fm-danger/50'
+                                            : 'border-white/20'), children: [_jsxs("p", { className: 'font-canela text-xs mb-[10px] flex items-center gap-[5px]', children: [_jsx(Music, { className: 'h-3 w-3' }), _jsx("span", { className: cn('transition-colors', !formData.soundcloudUrl && !formData.spotifyUrl
+                                                            ? 'text-fm-danger'
+                                                            : 'text-muted-foreground'), children: t('artistRegistration.musicPlatformRequired') })] }), _jsxs("div", { className: 'space-y-[10px]', children: [_jsxs("div", { className: 'flex items-center gap-[10px]', children: [_jsx(SiSoundcloud, { className: 'h-5 w-5 text-[#ff5500] flex-shrink-0' }), _jsx(FmCommonTextField, { label: t('labels.soundcloudUrl'), value: formData.soundcloudUrl, onChange: e => onInputChange('soundcloudUrl', e.target.value), placeholder: t('placeholders.exampleSoundcloudUrl'), className: 'flex-1' })] }), _jsxs("div", { className: 'flex items-center gap-[10px]', children: [_jsx(SiSpotify, { className: 'h-5 w-5 text-[#1DB954] flex-shrink-0' }), _jsx(FmCommonTextField, { label: t('labels.spotifyArtistUrl'), value: formData.spotifyUrl, onChange: e => onInputChange('spotifyUrl', e.target.value), placeholder: t('placeholders.exampleSpotifyArtistUrl'), className: 'flex-1' })] })] })] }), _jsxs("div", { className: 'flex items-center gap-[10px]', children: [_jsx(SiTiktok, { className: 'h-5 w-5 flex-shrink-0' }), _jsx(FmCommonTextField, { label: t('labels.tiktokHandle'), value: formData.tiktokHandle, onChange: e => onInputChange('tiktokHandle', e.target.value), placeholder: t('placeholders.socialUsername'), className: 'flex-1' })] })] })] }) }) }), _jsxs("div", { className: 'flex justify-between pt-[20px] border-t border-white/10 flex-shrink-0', children: [_jsxs(FmCommonButton, { onClick: onPrevious, variant: 'secondary', children: [_jsx(ChevronLeft, { className: 'h-4 w-4 mr-[10px]' }), t('buttons.previous')] }), _jsx(FmCommonButton, { onClick: onNext, variant: 'default', children: t('buttons.next') })] })] }));
+}

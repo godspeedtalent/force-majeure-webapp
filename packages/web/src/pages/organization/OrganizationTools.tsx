@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Building2, Users, TrendingUp, Settings } from 'lucide-react';
 
@@ -18,6 +19,7 @@ import { PERMISSIONS } from '@force-majeure/shared';
  * - Organization profile
  */
 const OrganizationTools = () => {
+  const { t } = useTranslation('common');
   const { hasAnyPermission, roles } = useUserPermissions();
   const navigate = useNavigate();
   const isLoading = !roles;
@@ -36,9 +38,9 @@ const OrganizationTools = () => {
 
   if (isLoading) {
     return (
-      <FmCommonPageLayout title='Org Dashboard'>
+      <FmCommonPageLayout title={t('organization.dashboard.title')}>
         <div className='flex items-center justify-center min-h-[400px]'>
-          <p className='text-muted-foreground'>Loading...</p>
+          <p className='text-muted-foreground'>{t('status.loading')}</p>
         </div>
       </FmCommonPageLayout>
     );
@@ -50,8 +52,8 @@ const OrganizationTools = () => {
 
   return (
     <FmCommonPageLayout
-      title='Org Dashboard'
-      subtitle='Manage your organization, staff, and view analytics'
+      title={t('organization.dashboard.title')}
+      subtitle={t('organization.dashboard.subtitle')}
     >
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         {/* Sales Reports Card */}
@@ -61,16 +63,16 @@ const OrganizationTools = () => {
               <TrendingUp className='h-6 w-6 text-fm-gold' />
             </div>
             <div className='flex-1'>
-              <h3 className='text-lg font-canela mb-2'>Sales Reports</h3>
+              <h3 className='text-lg font-canela mb-2'>{t('organization.dashboard.salesReports')}</h3>
               <p className='text-sm text-muted-foreground mb-4'>
-                View event sales, revenue analytics, and ticket performance
+                {t('organization.dashboard.salesReportsDescription')}
               </p>
               <FmCommonButton
                 variant='secondary'
                 size='sm'
                 onClick={() => navigate('/organization/sales')}
               >
-                View Reports
+                {t('organization.dashboard.viewReports')}
               </FmCommonButton>
             </div>
           </div>
@@ -83,16 +85,16 @@ const OrganizationTools = () => {
               <Building2 className='h-6 w-6 text-fm-gold' />
             </div>
             <div className='flex-1'>
-              <h3 className='text-lg font-canela mb-2'>Venue Information</h3>
+              <h3 className='text-lg font-canela mb-2'>{t('organization.dashboard.venueInfo')}</h3>
               <p className='text-sm text-muted-foreground mb-4'>
-                Update venue details, capacity, and location information
+                {t('organization.dashboard.venueInfoDescription')}
               </p>
               <FmCommonButton
                 variant='secondary'
                 size='sm'
                 onClick={() => navigate('/organization/venue')}
               >
-                Manage Venue
+                {t('organization.dashboard.manageVenue')}
               </FmCommonButton>
             </div>
           </div>
@@ -105,16 +107,16 @@ const OrganizationTools = () => {
               <Users className='h-6 w-6 text-fm-gold' />
             </div>
             <div className='flex-1'>
-              <h3 className='text-lg font-canela mb-2'>Staff Management</h3>
+              <h3 className='text-lg font-canela mb-2'>{t('organization.dashboard.staffManagement')}</h3>
               <p className='text-sm text-muted-foreground mb-4'>
-                Add, remove, and manage your organization's staff members
+                {t('organization.dashboard.staffManagementDescription')}
               </p>
               <FmCommonButton
                 variant='secondary'
                 size='sm'
                 onClick={() => navigate('/organization/staff')}
               >
-                Manage Staff
+                {t('organization.dashboard.manageStaff')}
               </FmCommonButton>
             </div>
           </div>
@@ -127,16 +129,16 @@ const OrganizationTools = () => {
               <Settings className='h-6 w-6 text-fm-gold' />
             </div>
             <div className='flex-1'>
-              <h3 className='text-lg font-canela mb-2'>Organization Profile</h3>
+              <h3 className='text-lg font-canela mb-2'>{t('organization.dashboard.organizationProfile')}</h3>
               <p className='text-sm text-muted-foreground mb-4'>
-                Edit your organization's public profile and settings
+                {t('organization.dashboard.organizationProfileDescription')}
               </p>
               <FmCommonButton
                 variant='secondary'
                 size='sm'
                 onClick={() => navigate('/organization/profile')}
               >
-                Edit Profile
+                {t('organization.dashboard.editProfile')}
               </FmCommonButton>
             </div>
           </div>

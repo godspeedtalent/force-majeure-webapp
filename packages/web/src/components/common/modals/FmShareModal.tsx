@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Copy, Check, Share2, Eye, MapPin, Calendar, Music } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -38,13 +39,15 @@ export const FmShareModal = ({
   dateTime,
   undercardArtists = [],
 }: FmShareModalProps) => {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const [copied, setCopied] = useState(false);
 
   const handleCopyUrl = async () => {
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
-      toast.success('Link copied to clipboard!');
+      toast.success(tToast('success.copied'));
 
       // Call onShare callback to track the share
       if (onShare) {
@@ -56,7 +59,7 @@ export const FmShareModal = ({
         setCopied(false);
       }, 2000);
     } catch (error) {
-      toast.error('Failed to copy link');
+      toast.error(tToast('share.copyFailed'));
     }
   };
 
@@ -66,7 +69,7 @@ export const FmShareModal = ({
         <DialogHeader>
           <DialogTitle className='font-canela text-2xl flex items-center gap-3'>
             <Share2 className='h-5 w-5 text-fm-gold' />
-            Share event
+            {t('share.shareEvent')}
           </DialogTitle>
         </DialogHeader>
 
@@ -86,7 +89,7 @@ export const FmShareModal = ({
           <div className='flex-1 space-y-6'>
             {/* Event Title with Stats */}
             <div>
-              <p className='text-sm text-muted-foreground mb-2'>Sharing:</p>
+              <p className='text-sm text-muted-foreground mb-2'>{t('share.sharing')}:</p>
               <div className='flex items-start justify-between gap-4'>
                 <div className='flex-1'>
                   <p className='font-canela text-lg text-foreground mb-3'>{title}</p>
@@ -117,13 +120,13 @@ export const FmShareModal = ({
                   {shareCount > 0 && (
                     <div className='flex items-center gap-2'>
                       <Share2 className='h-4 w-4' />
-                      <span>{shareCount.toLocaleString()} share{shareCount === 1 ? '' : 's'}</span>
+                      <span>{t('share.shareCount', { count: shareCount })}</span>
                     </div>
                   )}
                   {viewCount > 0 && (
                     <div className='flex items-center gap-2'>
                       <Eye className='h-4 w-4' />
-                      <span>{viewCount.toLocaleString()} view{viewCount === 1 ? '' : 's'}</span>
+                      <span>{t('share.viewCount', { count: viewCount })}</span>
                     </div>
                   )}
                 </div>
@@ -133,7 +136,7 @@ export const FmShareModal = ({
             {/* URL Display and Copy */}
             <div className='max-w-[40vw]'>
               <label className='text-xs uppercase text-muted-foreground mb-2 block'>
-                Event URL
+                {t('share.eventUrl')}
               </label>
               <div
                 className={cn(
@@ -159,7 +162,7 @@ export const FmShareModal = ({
                 </div>
               </div>
               <p className='text-xs text-muted-foreground mt-2'>
-                Click to copy link to clipboard
+                {t('share.clickToCopy')}
               </p>
             </div>
 
@@ -169,7 +172,7 @@ export const FmShareModal = ({
                 variant='secondary'
                 onClick={() => onOpenChange(false)}
               >
-                Close
+                {t('buttons.close')}
               </FmCommonButton>
             </div>
           </div>

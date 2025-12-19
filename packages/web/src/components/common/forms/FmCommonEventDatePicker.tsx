@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { cn } from '@force-majeure/shared';
@@ -35,9 +36,11 @@ interface EventOnDate {
 export function FmCommonEventDatePicker({
   value,
   onChange,
-  placeholder = 'Pick a date and time',
+  placeholder,
   disabled = false,
 }: FmCommonEventDatePickerProps) {
+  const { t } = useTranslation('common');
+  const resolvedPlaceholder = placeholder ?? t('datePicker.pickDateTime');
   const {
     tempDate,
     tempTime,
@@ -123,7 +126,7 @@ export function FmCommonEventDatePicker({
           >
             <div className='space-y-1'>
               <p className='font-semibold text-fm-gold text-xs'>
-                {events.length} scheduled event{events.length > 1 ? 's' : ''}
+                {t('datePicker.scheduledEvents', { count: events.length })}
               </p>
               <ul className='space-y-0.5 text-xs'>
                 {events.map(event => (
@@ -153,7 +156,7 @@ export function FmCommonEventDatePicker({
           )}
         >
           <CalendarIcon className='mr-2 h-4 w-4' />
-          {value ? format(value, 'PPP p') : <span>{placeholder}</span>}
+          {value ? format(value, 'PPP p') : <span>{resolvedPlaceholder}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -180,7 +183,7 @@ export function FmCommonEventDatePicker({
           }}
         />
         <div className='p-3 border-t border-white/10'>
-          <label className='text-sm text-white/70 mb-2 block'>Time</label>
+          <label className='text-sm text-white/70 mb-2 block'>{t('labels.time')}</label>
           <Input
             type='time'
             value={tempTime}
@@ -194,13 +197,13 @@ export function FmCommonEventDatePicker({
             variant='outline'
             className='flex-1 border-white/20 hover:bg-white/10 text-white'
           >
-            Cancel
+            {t('buttons.cancel')}
           </Button>
           <Button
             onClick={handleConfirm}
             className='flex-1 bg-fm-gold hover:bg-fm-gold/90 text-black'
           >
-            Confirm
+            {t('buttons.confirm')}
           </Button>
         </div>
       </PopoverContent>

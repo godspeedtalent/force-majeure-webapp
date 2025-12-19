@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Users } from 'lucide-react';
 import { supabase } from '@force-majeure/shared';
@@ -24,6 +25,8 @@ interface GuestListSettings {
 }
 
 export function GuestListSettings({ eventId }: GuestListSettingsProps) {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const queryClient = useQueryClient();
   const [isSaving, setIsSaving] = useState(false);
   
@@ -119,13 +122,13 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
 
       if (eventError) throw eventError;
 
-      toast.success('Social settings saved successfully');
+      toast.success(tToast('guestList.saved'));
       queryClient.invalidateQueries({ queryKey: ['guest-list-settings', eventId] });
       queryClient.invalidateQueries({ queryKey: ['event-social-settings', eventId] });
     } catch (error) {
       await handleError(error, {
-        title: 'Failed to Save Social Settings',
-        description: 'Could not save social settings',
+        title: tToast('guestList.saveFailed'),
+        description: t('guestList.saveError'),
         endpoint: 'GuestListSettings',
         method: settings?.id ? 'UPDATE' : 'INSERT',
       });
@@ -137,7 +140,7 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <p className="text-muted-foreground">Loading guest list settings...</p>
+        <p className="text-muted-foreground">{t('guestList.loading')}</p>
       </div>
     );
   }
@@ -148,10 +151,10 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold text-foreground mb-2">
-              Social Settings
+              {t('guestList.title')}
             </h2>
             <p className="text-muted-foreground">
-              Configure guest list visibility and view count display
+              {t('guestList.description')}
             </p>
           </div>
           <FmCommonButton
@@ -159,7 +162,7 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
             loading={isSaving}
             icon={Users}
           >
-            Save Settings
+            {t('guestList.saveSettings')}
           </FmCommonButton>
         </div>
 
@@ -167,10 +170,10 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
         <div className="flex items-center justify-between p-4 border border-border rounded-none bg-muted/20">
           <div className="space-y-1">
             <Label htmlFor="guest-list-enabled" className="text-base font-semibold">
-              Enable Guest List
+              {t('guestList.enableGuestList')}
             </Label>
             <p className="text-sm text-muted-foreground">
-              Show guest list section on the event details page
+              {t('guestList.enableGuestListDescription')}
             </p>
           </div>
           <Switch
@@ -183,16 +186,16 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
         {/* Minimum Thresholds */}
         <div className="space-y-4">
           <div>
-            <h3 className="text-lg font-semibold mb-2">Minimum Guest Thresholds</h3>
+            <h3 className="text-lg font-semibold mb-2">{t('guestList.minimumThresholds')}</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              Set the minimum number of guests required before the guest list becomes visible for each type
+              {t('guestList.minimumThresholdsDescription')}
             </p>
           </div>
 
           {/* Interested Guests */}
           <div className="space-y-2">
             <Label htmlFor="min-interested">
-              Minimum Interested Guests
+              {t('guestList.minInterestedGuests')}
             </Label>
             <Input
               id="min-interested"
@@ -203,14 +206,14 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
               placeholder="0"
             />
             <p className="text-xs text-muted-foreground">
-              Guests who marked themselves as "interested" in the event
+              {t('guestList.minInterestedDescription')}
             </p>
           </div>
 
           {/* Private Guests */}
           <div className="space-y-2">
             <Label htmlFor="min-private">
-              Minimum Private Guests
+              {t('guestList.minPrivateGuests')}
             </Label>
             <Input
               id="min-private"
@@ -221,14 +224,14 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
               placeholder="0"
             />
             <p className="text-xs text-muted-foreground">
-              Guests on the private guest list (invite-only)
+              {t('guestList.minPrivateDescription')}
             </p>
           </div>
 
           {/* Public Guests */}
           <div className="space-y-2">
             <Label htmlFor="min-public">
-              Minimum Public Guests
+              {t('guestList.minPublicGuests')}
             </Label>
             <Input
               id="min-public"
@@ -239,7 +242,7 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
               placeholder="0"
             />
             <p className="text-xs text-muted-foreground">
-              Guests who purchased public tickets
+              {t('guestList.minPublicDescription')}
             </p>
           </div>
         </div>
@@ -248,10 +251,10 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
         <div className="flex items-center justify-between p-4 border border-border rounded-none bg-muted/20">
           <div className="space-y-1">
             <Label htmlFor="view-count-enabled" className="text-base font-semibold">
-              Display View Count
+              {t('guestList.displayViewCount')}
             </Label>
             <p className="text-sm text-muted-foreground">
-              Show page view count on the event details page
+              {t('guestList.displayViewCountDescription')}
             </p>
           </div>
           <Switch
@@ -265,7 +268,7 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
         {isEnabled && (
           <div className="p-4 border border-fm-gold/30 rounded-none bg-fm-gold/5">
             <p className="text-sm text-foreground">
-              <strong>Note:</strong> The guest list will only be visible on the event page if the feature flag is enabled globally and this event has the guest list enabled with thresholds met. View count will display alongside share buttons if guest list is off, or within the guest list section if enabled.
+              <strong>{t('guestList.noteLabel')}:</strong> {t('guestList.noteText')}
             </p>
           </div>
         )}

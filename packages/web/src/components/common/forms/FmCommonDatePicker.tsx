@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { cn } from '@force-majeure/shared';
 import { Button } from '@/components/common/shadcn/button';
@@ -20,10 +21,12 @@ interface FmCommonDatePickerProps {
 export function FmCommonDatePicker({
   value,
   onChange,
-  placeholder = 'Pick a date',
+  placeholder,
   disabled = false,
   disablePastDates = true,
 }: FmCommonDatePickerProps) {
+  const { t } = useTranslation('common');
+  const resolvedPlaceholder = placeholder ?? t('datePicker.pickDate');
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -41,7 +44,7 @@ export function FmCommonDatePicker({
           )}
         >
           <CalendarIcon className='mr-2 h-4 w-4' />
-          {value ? format(value, 'PPP') : <span>{placeholder}</span>}
+          {value ? format(value, 'PPP') : <span>{resolvedPlaceholder}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent

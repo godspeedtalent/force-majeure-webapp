@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { logger } from '@force-majeure/shared';
 import { Layout } from '@/components/layout/Layout';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
@@ -8,6 +9,7 @@ import { supabase } from '@force-majeure/shared';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 
 export default function Statistics() {
+  const { t } = useTranslation('common');
   const [userCount, setUserCount] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -40,10 +42,10 @@ export default function Statistics() {
         <div className='max-w-7xl mx-auto'>
           <div className='flex items-center gap-3 mb-2'>
             <BarChart3 className='h-6 w-6 text-fm-gold' />
-            <h1 className='text-3xl font-canela'>Statistics</h1>
+            <h1 className='text-3xl font-canela'>{t('statisticsPage.title')}</h1>
           </div>
           <p className='text-muted-foreground mb-6'>
-            Application metrics and analytics
+            {t('statisticsPage.description')}
           </p>
 
           <DecorativeDivider
@@ -57,13 +59,13 @@ export default function Statistics() {
             <Card className='p-6 bg-black/40 border-white/20'>
               <div className='space-y-2'>
                 <p className='text-sm text-white/60 uppercase tracking-wide'>
-                  Registered Users
+                  {t('statisticsPage.registeredUsers')}
                 </p>
                 <p className='text-4xl font-canela text-fm-gold'>
                   {userCount?.toLocaleString() || '0'}
                 </p>
                 <p className='text-xs text-white/50'>
-                  Total number of user accounts
+                  {t('statisticsPage.totalUserAccounts')}
                 </p>
               </div>
             </Card>

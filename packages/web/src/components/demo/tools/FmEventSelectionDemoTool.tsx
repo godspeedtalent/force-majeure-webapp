@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { FileEdit, Dices, Shuffle, Plus } from 'lucide-react';
 import { Label } from '@/components/common/shadcn/label';
@@ -21,6 +22,7 @@ export const FmEventSelectionDemoTool = ({
   onEventChange,
   onEventUpdated,
 }: FmEventSelectionDemoToolProps): FmCommonDemoTool => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [isCreatingRandomEvent, setIsCreatingRandomEvent] = useState(false);
   const [isSelectingRandom, setIsSelectingRandom] = useState(false);
@@ -32,19 +34,19 @@ export const FmEventSelectionDemoTool = ({
       const testService = new TestEventDataService();
       const eventId = await testService.createTestEvent();
 
-      toast.success('Random test event created!', {
-        description: 'Event has been generated with randomized data',
+      toast.success(t('demoTools.randomEventCreated'), {
+        description: t('demoTools.randomEventDescription'),
       });
 
       onEventChange(eventId);
       onEventUpdated?.();
     } catch (error) {
       logger.error('Error creating random event:', { error: error instanceof Error ? error.message : 'Unknown' });
-      toast.error('Failed to create random event', {
+      toast.error(t('demoTools.randomEventFailed'), {
         description:
           error instanceof Error
             ? error.message
-            : 'An unexpected error occurred',
+            : t('errors.genericError'),
       });
     } finally {
       setIsCreatingRandomEvent(false);
@@ -65,13 +67,13 @@ export const FmEventSelectionDemoTool = ({
       if (data && data.length > 0) {
         const randomEvent = data[Math.floor(Math.random() * data.length)];
         onEventChange(randomEvent.id);
-        toast.success('Random event selected');
+        toast.success(t('demoTools.randomEventSelected'));
       } else {
-        toast.error('No events found in database');
+        toast.error(t('demoTools.noEventsFound'));
       }
     } catch (error) {
       logger.error('Error selecting random event:', { error: error instanceof Error ? error.message : 'Unknown' });
-      toast.error('Failed to select random event');
+      toast.error(t('demoTools.selectRandomFailed'));
     } finally {
       setIsSelectingRandom(false);
     }
@@ -79,19 +81,19 @@ export const FmEventSelectionDemoTool = ({
 
   return {
     id: 'event-selection',
-    label: 'Event Selection',
+    label: t('demoTools.eventSelection'),
     render: () => (
       <div className='space-y-6'>
         <div className='space-y-3'>
           <Label htmlFor='event-select' className='text-white'>
-            Select Event
+            {t('demoTools.selectEvent')}
           </Label>
           <div className='flex gap-2'>
             <div className='flex-1'>
               <FmEventSearchDropdown
                 value={selectedEventId}
                 onChange={onEventChange}
-                placeholder='Search for an event...'
+                placeholder={t('placeholders.searchEvent')}
               />
             </div>
             <Button
@@ -101,13 +103,13 @@ export const FmEventSelectionDemoTool = ({
               className='flex-shrink-0'
             >
               <Shuffle className='h-4 w-4 mr-2' />
-              {isSelectingRandom ? 'Selecting...' : 'Select Random Event'}
+              {isSelectingRandom ? t('status.selecting') : t('demoTools.selectRandomEvent')}
             </Button>
           </div>
         </div>
 
         <div className='space-y-3'>
-          <Label className='text-white'>Quick Actions</Label>
+          <Label className='text-white'>{t('demoTools.quickActions')}</Label>
           <div className='flex gap-2'>
             <Button
               variant='outline'
@@ -116,7 +118,7 @@ export const FmEventSelectionDemoTool = ({
               disabled={isCreatingRandomEvent}
             >
               <Dices className='h-4 w-4 mr-2' />
-              {isCreatingRandomEvent ? 'Creating...' : 'Create Random Event'}
+              {isCreatingRandomEvent ? t('status.creating') : t('demoTools.createRandomEvent')}
             </Button>
             <Button
               variant='outline'
@@ -124,7 +126,7 @@ export const FmEventSelectionDemoTool = ({
               onClick={() => navigate('/events/create')}
             >
               <Plus className='h-4 w-4 mr-2' />
-              Create Event
+              {t('demoTools.createEvent')}
             </Button>
             {selectedEventId && (
               <Button
@@ -133,7 +135,7 @@ export const FmEventSelectionDemoTool = ({
                 onClick={() => navigate(`/event/${selectedEventId}/manage`)}
               >
                 <FileEdit className='h-4 w-4 mr-2' />
-                Manage Event
+                {t('demoTools.manageEvent')}
               </Button>
             )}
           </div>

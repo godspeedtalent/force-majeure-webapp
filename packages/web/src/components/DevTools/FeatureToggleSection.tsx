@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
 import { Button } from '@/components/common/shadcn/button';
 import {
@@ -36,6 +37,7 @@ interface FeatureFlag {
 }
 
 export const FeatureToggleSection = () => {
+  const { t } = useTranslation('common');
   const [flags, setFlags] = useState<FeatureFlag[]>([]);
   const [localFlags, setLocalFlags] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -48,7 +50,7 @@ export const FeatureToggleSection = () => {
       const currentEnv = await environmentService.getCurrentEnvironment();
 
       if (!currentEnv) {
-        toast.error('Could not determine current environment');
+        toast.error(t('devTools.featureToggles.envError'));
         return;
       }
 
@@ -87,7 +89,7 @@ export const FeatureToggleSection = () => {
       setLocalFlags(initialLocal);
     } catch (error) {
       logger.error('Failed to fetch feature flags:', { error: error instanceof Error ? error.message : 'Unknown' });
-      toast.error('Failed to load feature flags');
+      toast.error(t('devTools.featureToggles.loadError'));
     } finally {
       setIsLoading(false);
     }
@@ -117,18 +119,16 @@ export const FeatureToggleSection = () => {
         );
 
       if (updates.length === 0) {
-        toast.info('No changes to apply');
+        toast.info(t('devTools.featureToggles.noChanges'));
         return;
       }
 
       await Promise.all(updates);
-      toast.success(
-        `Applied ${updates.length} feature flag change${updates.length > 1 ? 's' : ''}`
-      );
+      toast.success(t('devTools.featureToggles.applied', { count: updates.length }));
       await fetchFlags();
     } catch (error) {
       logger.error('Failed to update feature flags:', { error: error instanceof Error ? error.message : 'Unknown' });
-      toast.error('Failed to update feature flags');
+      toast.error(t('devTools.featureToggles.updateError'));
     }
   };
 
@@ -141,17 +141,17 @@ export const FeatureToggleSection = () => {
   );
 
   if (isLoading) {
-    return <div className='text-white/50 text-sm'>Loading...</div>;
+    return <div className='text-white/50 text-sm'>{t('status.loading')}</div>;
   }
 
   return (
     <>
       <div className='mb-4 pb-3 border-b border-white/10'>
         <p className='text-xs text-white/50 mb-2'>
-          Enable or disable features across the application per environment
+          {t('devTools.featureToggles.description')}
         </p>
         <div className='flex items-center gap-2'>
-          <span className='text-xs text-white/50'>Current Environment:</span>
+          <span className='text-xs text-white/50'>{t('labels.currentEnvironment')}</span>
           <span className='text-xs font-medium text-fm-gold uppercase'>
             {currentEnvName}
           </span>
@@ -204,7 +204,7 @@ export const FeatureToggleSection = () => {
             disabled={!hasChanges}
             className='w-full bg-fm-gold hover:bg-fm-gold/90 text-black disabled:opacity-50 disabled:cursor-not-allowed'
           >
-            Apply Changes
+            {t('devTools.featureToggles.applyChanges')}
           </Button>
         </div>
       </div>
@@ -214,23 +214,21 @@ export const FeatureToggleSection = () => {
         <AlertDialogContent className='bg-black/90 backdrop-blur-md border border-white/20 text-white z-[200]'>
           <AlertDialogHeader>
             <AlertDialogTitle className='font-canela text-white'>
-              Confirm Feature Flag Changes
+              {t('devTools.featureToggles.confirmTitle')}
             </AlertDialogTitle>
             <AlertDialogDescription className='text-white/70'>
-              This will update feature flags in the database for the{' '}
-              <span className='font-semibold text-fm-gold'>{currentEnvName}</span>{' '}
-              environment, and not just mock them to this session. Continue?
+              {t('devTools.featureToggles.confirmDescription', { environment: currentEnvName })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className='bg-white/5 border-white/20 hover:bg-white/10 text-white'>
-              Cancel
+              {t('buttons.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleApply}
               className='bg-fm-gold hover:bg-fm-gold/90 text-black'
             >
-              Apply Changes
+              {t('devTools.featureToggles.applyChanges')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

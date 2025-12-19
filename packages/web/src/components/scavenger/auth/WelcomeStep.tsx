@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ExternalLink } from 'lucide-react';
 
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
@@ -33,39 +34,40 @@ interface NoCheckpointPanelProps {
 
 // Dumb component: Success state for users who have already claimed
 export function ClaimSuccessPanel({ userFullName }: ClaimSuccessPanelProps) {
+  const { t } = useTranslation('common');
   return (
     <MessagePanel
-      title='Congratulations!'
+      title={t('scavenger.claimSuccess.title')}
       description=''
       action={
         <>
           <p className='text-m text-white mb-6'>
-            You&apos;ve been added to the <br />
+            {t('scavenger.claimSuccess.addedToGuestlist')} <br />
             <span className='text-fm-gold font-semibold'>
               LF SYSTEM @ Kingdom | Sat 10.18
             </span>{' '}
             <br />
-            guestlist. See you there.
+            {t('scavenger.claimSuccess.seeYouThere')}
           </p>
           <DecorativeDivider />
           <p className='text-sm text-muted-foreground mb-6'>
-            Check into the host stand as usual and give them your full name.
+            {t('scavenger.claimSuccess.checkInInstructions')}
           </p>
           <p className='text-sm text-white mb-6'>
             {' '}
-            Your name will be listed as{' '}
+            {t('scavenger.claimSuccess.nameListedAs')}{' '}
             <span className='text-fm-gold font-medium'>{userFullName}</span>.
           </p>
           <p className='text-sm text-muted-foreground mb-6'>
-            in the guestlist. If this is incorrect, please reach out to{' '}
-            <span className='text-fm-gold'>@force.majeure.events</span> on
-            Instagram to correct it.
+            {t('scavenger.claimSuccess.incorrectNameHelp')}{' '}
+            <span className='text-fm-gold'>@force.majeure.events</span>{' '}
+            {t('scavenger.claimSuccess.onInstagram')}
           </p>
           <DecorativeDivider />
           <p className='text-base text-white mb-6'>
-            Need more tickets for friends? Use code{' '}
-            <span className='text-fm-gold font-bold'>{PROMO_CODE}</span> for 20%
-            off!
+            {t('scavenger.claimSuccess.needMoreTickets')}{' '}
+            <span className='text-fm-gold font-bold'>{PROMO_CODE}</span>{' '}
+            {t('scavenger.claimSuccess.discountOff')}
           </p>
           <Button
             size='lg'
@@ -73,7 +75,7 @@ export function ClaimSuccessPanel({ userFullName }: ClaimSuccessPanelProps) {
             onClick={() => window.open(LF_SYSTEM_TICKET_URL, '_blank')}
           >
             <ExternalLink className='mr-2 h-4 w-4' />
-            Buy Tickets
+            {t('buttons.buyTickets')}
           </Button>
         </>
       }
@@ -87,6 +89,7 @@ export function CheckpointClaimPanel({
   onClaimClick,
   isLoading,
 }: CheckpointClaimPanelProps) {
+  const { t } = useTranslation('common');
   return (
     <MessagePanel
       title=''
@@ -94,12 +97,12 @@ export function CheckpointClaimPanel({
       action={
         <>
           <h1 className='font-display text-5xl md:text-6xl mb-4'>
-            Welcome to the <span className='text-fm-gold'>{locationName}</span>{' '}
-            Checkpoint
+            {t('scavenger.checkpoint.welcomeTo')}{' '}
+            <span className='text-fm-gold'>{locationName}</span>{' '}
+            {t('scavenger.checkpoint.checkpoint')}
           </h1>
           <p className='text-base text-muted-foreground'>
-            As promised, let&apos;s get your name on that guestlist for LF
-            SYSTEM at Kingdom, Sat Oct 18th.
+            {t('scavenger.checkpoint.getOnGuestlist')}
           </p>
           <DecorativeDivider />
           <Button
@@ -111,10 +114,10 @@ export function CheckpointClaimPanel({
             {isLoading ? (
               <>
                 <div className='mr-2 h-4 w-4 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
-                Adding to Guestlist...
+                {t('scavenger.checkpoint.addingToGuestlist')}
               </>
             ) : (
-              'Join Guestlist'
+              t('scavenger.checkpoint.joinGuestlist')
             )}
           </Button>
         </>
@@ -129,6 +132,7 @@ export function CheckpointWelcomePanel({
   onJoinClick,
   onSignInClick,
 }: CheckpointWelcomePanelProps) {
+  const { t } = useTranslation('common');
   return (
     <MessagePanel
       title=''
@@ -136,12 +140,12 @@ export function CheckpointWelcomePanel({
       action={
         <>
           <h1 className='font-display text-5xl md:text-6xl mb-4'>
-            Welcome to the <span className='text-fm-gold'>{locationName}</span>{' '}
-            Checkpoint
+            {t('scavenger.checkpoint.welcomeTo')}{' '}
+            <span className='text-fm-gold'>{locationName}</span>{' '}
+            {t('scavenger.checkpoint.checkpoint')}
           </h1>
           <p className='text-base text-muted-foreground mb-4'>
-            Sign up for an account with us, and we&apos;ll get you on the
-            guestlist for LF SYSTEM at Kingdom on Saturday, October 18th.
+            {t('scavenger.checkpoint.signUpPrompt')}
           </p>
           <DecorativeDivider />
           <Button
@@ -149,14 +153,14 @@ export function CheckpointWelcomePanel({
             className='w-full max-w-xs mx-auto bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]'
             onClick={onJoinClick}
           >
-            Join
+            {t('scavenger.buttons.join')}
           </Button>
           <Button
             size='lg'
             className='w-full max-w-xs mx-auto mt-4 bg-transparent border-2 border-white text-white hover:bg-white hover:text-black font-semibold transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]'
             onClick={onSignInClick}
           >
-            Sign In
+            {t('auth.signIn')}
           </Button>
         </>
       }
@@ -169,33 +173,33 @@ export function NoCheckpointPanel({
   onJoinClick,
   onSignInClick,
 }: NoCheckpointPanelProps) {
+  const { t } = useTranslation('common');
   return (
     <MessagePanel
-      title='No Checkpoint Scanned.'
-      description='But the free tickets are still out there. Keep searching!'
+      title={t('scavenger.noCheckpoint.title')}
+      description={t('scavenger.noCheckpoint.description')}
       action={
         <>
           <DecorativeDivider />
           <h2 className='font-display text-2xl md:text-3xl text-fm-gold'>
-            Register with Force Majeure
+            {t('scavenger.noCheckpoint.registerTitle')}
           </h2>
           <p className='text-base text-muted-foreground'>
-            You&apos;ll need to register with us to join the guestlist once you
-            find a checklist. You can take care of that now if you&apos;d like.
+            {t('scavenger.noCheckpoint.registerDescription')}
           </p>
           <Button
             size='lg'
             className='w-full max-w-xs mx-auto bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]'
             onClick={onJoinClick}
           >
-            Join
+            {t('scavenger.buttons.join')}
           </Button>
           <Button
             size='lg'
             className='w-full max-w-xs mx-auto mt-4 bg-transparent border-2 border-white text-white hover:bg-white hover:text-black font-semibold transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]'
             onClick={onSignInClick}
           >
-            Sign In
+            {t('auth.signIn')}
           </Button>
         </>
       }

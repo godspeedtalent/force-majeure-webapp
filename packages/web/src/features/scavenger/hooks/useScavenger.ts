@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAuth } from '@/features/auth/services/AuthContext';
@@ -8,6 +9,7 @@ import { toast } from 'sonner';
 
 // Hook for URL parameter handling and redirection logic
 export function useScavengerNavigation() {
+  const { t } = useTranslation('common');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const locationId = searchParams.get('locationId');
@@ -22,8 +24,8 @@ export function useScavengerNavigation() {
       setShowInvalidToken(true);
 
       // Show toast with the invalid token (for debugging)
-      toast.error('Invalid Token', {
-        description: token || '(no token provided)',
+      toast.error(t('scavenger.invalidToken'), {
+        description: token || t('scavenger.noTokenProvided'),
       });
 
       // Clear error param from URL after setting state
@@ -32,13 +34,13 @@ export function useScavengerNavigation() {
       const token = searchParams.get('token');
 
       // Show toast for other errors
-      toast.error(`Error: ${errorParam}`, {
-        description: token || '(no token provided)',
+      toast.error(t('scavenger.error', { error: errorParam }), {
+        description: token || t('scavenger.noTokenProvided'),
       });
 
       navigate('/scavenger', { replace: true });
     }
-  }, [errorParam, navigate, searchParams]);
+  }, [errorParam, navigate, searchParams, t]);
 
   return {
     locationId,

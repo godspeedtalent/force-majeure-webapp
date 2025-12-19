@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { logger } from '@force-majeure/shared';
 import { FmQueryInput } from '../forms/FmQueryInput';
 import { supabase } from '@force-majeure/shared';
@@ -22,6 +23,7 @@ export const FmPromoCodeInput = ({
   onPromoCodeApplied,
   className,
 }: FmPromoCodeInputProps) => {
+  const { t } = useTranslation('common');
   const [validationState, setValidationState] = useState<
     'idle' | 'valid' | 'invalid'
   >('idle');
@@ -48,14 +50,14 @@ export const FmPromoCodeInput = ({
       } else {
         setValidationState('invalid');
         setAppliedPromo(null);
-        setErrorMessage('Invalid promo code');
+        setErrorMessage(t('promoCode.invalidCode'));
         onPromoCodeApplied?.(null);
       }
     } catch (error) {
       logger.error('Error validating promo code:', { error: error instanceof Error ? error.message : 'Unknown' });
       setValidationState('invalid');
       setAppliedPromo(null);
-      setErrorMessage('Error validating code');
+      setErrorMessage(t('promoCode.errorValidating'));
       onPromoCodeApplied?.(null);
     }
   };
@@ -64,9 +66,9 @@ export const FmPromoCodeInput = ({
     if (!appliedPromo) return '';
 
     if (appliedPromo.discount_type === 'percentage') {
-      return `${appliedPromo.discount_value}% off`;
+      return t('promoCode.percentOff', { percent: appliedPromo.discount_value });
     } else {
-      return `$${appliedPromo.discount_value} off`;
+      return t('promoCode.amountOff', { amount: appliedPromo.discount_value });
     }
   };
 
@@ -80,13 +82,13 @@ export const FmPromoCodeInput = ({
   return (
     <div className={cn('space-y-2', className)}>
       {validationState !== 'valid' ? (
-        <FmQueryInput placeholder='Enter promo code' onQuery={handleQuery} />
+        <FmQueryInput placeholder={t('promoCode.enterCode')} onQuery={handleQuery} />
       ) : (
         <div className='flex items-center gap-2'>
           <div className='flex-1 flex items-center gap-1.5 text-xs text-green-600 bg-green-600/10 px-3 py-2 rounded-md'>
             <CheckCircle2 className='h-3 w-3' />
             <span>
-              {appliedPromo?.code} applied: {getDiscountText()}
+              {t('promoCode.applied', { code: appliedPromo?.code, discount: getDiscountText() })}
             </span>
           </div>
           <Button

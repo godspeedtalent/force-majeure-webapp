@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { MessagePanel } from '@/components/feedback/MessagePanel';
 import { Button } from '@/components/common/shadcn/button';
@@ -6,21 +7,22 @@ import { ExternalLink } from 'lucide-react';
 import { LF_SYSTEM_TICKET_URL } from '@force-majeure/shared';
 
 export function InvalidTokenView() {
+  const { t } = useTranslation('common');
+
   return (
     <>
       <MessagePanel
-        title='Invalid Code'
-        description="This QR code doesn't seem to be valid. Please try scanning it again."
+        title={t('scavenger.views.invalidCode')}
+        description={t('scavenger.views.invalidCodeDescription')}
         className='mb-4'
         action={
           <>
             <DecorativeDivider />
             <p className='text-muted-foreground font-canela'>
-              If you keep having issues, take a photo of the poster with your
-              hand holding up 3 fingers next to it.
+              {t('scavenger.views.photoInstructions')}
             </p>
             <p className='text-foreground font-canela'>
-              Send that photo in a DM to{' '}
+              {t('scavenger.views.sendPhotoTo')}{' '}
               <a
                 href='https://www.instagram.com/force.majeure.events/'
                 target='_blank'
@@ -29,11 +31,11 @@ export function InvalidTokenView() {
               >
                 @force.majeure.events
               </a>{' '}
-              on Instagram.
+              {t('scavenger.views.onInstagram')}
             </p>
             <DecorativeDivider />
             <p className='text-white font-canela'>
-              Wanna jump straight to buying tickets?
+              {t('scavenger.views.jumpToTickets')}
             </p>
             <Button
               size='lg'
@@ -41,7 +43,7 @@ export function InvalidTokenView() {
               onClick={() => window.open(LF_SYSTEM_TICKET_URL, '_blank')}
             >
               <ExternalLink className='mr-2 h-4 w-4' />
-              Buy Tickets
+              {t('buttons.buyTickets')}
             </Button>
           </>
         }

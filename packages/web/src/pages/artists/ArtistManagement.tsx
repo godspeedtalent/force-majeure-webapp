@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   FileText,
@@ -72,6 +73,8 @@ interface ArtistMetadata {
 }
 
 export default function ArtistManagement() {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<ArtistTab>('overview');
@@ -141,7 +144,7 @@ export default function ArtistManagement() {
 
       if (error) throw error;
 
-      toast.success('Changes saved automatically');
+      toast.success(tToast('artists.autoSaved'));
       queryClient.invalidateQueries({ queryKey: ['artist', id] });
     } catch (error) {
       await handleError(error, {
@@ -284,7 +287,7 @@ export default function ArtistManagement() {
         },
       });
     }
-    toast.success(`Added "${newTrack.name}" to recordings`);
+    toast.success(tToast('artists.recordingAdded', { trackName: newTrack.name }));
   };
 
   // Handle updating a track
@@ -313,7 +316,7 @@ export default function ArtistManagement() {
         },
       });
     }
-    toast.success('Recording updated');
+    toast.success(tToast('artists.recordingUpdated'));
   };
 
   // Handle click tracking for recordings
@@ -347,33 +350,33 @@ export default function ArtistManagement() {
 
   const navigationGroups: FmCommonSideNavGroup<ArtistTab>[] = [
     {
-      label: 'Artist Details',
+      label: t('artistNav.artistDetails'),
       icon: Music,
       items: [
         {
           id: 'view',
-          label: 'View Artist',
+          label: t('artistNav.viewArtist'),
           icon: Eye,
-          description: 'View artist details page',
+          description: t('artistNav.viewArtistDescription'),
           isExternal: true,
         },
         {
           id: 'overview',
-          label: 'Overview',
+          label: t('artistNav.overview'),
           icon: FileText,
-          description: 'Basic artist information',
+          description: t('artistNav.overviewDescription'),
         },
         {
           id: 'music',
-          label: 'Music',
+          label: t('artistNav.music'),
           icon: Headphones,
-          description: 'Artist recordings',
+          description: t('artistNav.musicDescription'),
         },
         {
           id: 'social',
-          label: 'Social Media',
+          label: t('artistNav.socialMedia'),
           icon: Share2,
-          description: 'Social media profiles',
+          description: t('artistNav.socialMediaDescription'),
         },
       ],
     },
@@ -401,7 +404,7 @@ export default function ArtistManagement() {
 
       if (error) throw error;
 
-      toast.success('Artist updated successfully');
+      toast.success(tToast('artists.updated'));
       queryClient.invalidateQueries({ queryKey: ['artist', id] });
     } catch (error) {
       handleError(error, { title: 'Failed to update artist' });
@@ -411,7 +414,7 @@ export default function ArtistManagement() {
   };
 
   const handleDelete = async () => {
-    if (!id || !confirm('Are you sure you want to delete this artist?')) return;
+    if (!id || !confirm(t('dialogs.deleteArtistConfirm'))) return;
 
     setIsDeleting(true);
     try {
@@ -419,7 +422,7 @@ export default function ArtistManagement() {
 
       if (error) throw error;
 
-      toast.success('Artist deleted successfully');
+      toast.success(tToast('artists.deleted'));
       navigate('/developer/database?table=artists');
     } catch (error) {
       handleError(error, { title: 'Failed to delete artist' });
@@ -431,22 +434,22 @@ export default function ArtistManagement() {
   const renderOverviewTab = () => (
     <div className='space-y-6'>
       <FmCommonCard size='lg' hoverable={false}>
-        <h2 className='text-xl font-semibold mb-6'>Basic Information</h2>
+        <h2 className='text-xl font-semibold mb-6'>{t('sections.basicInformation')}</h2>
 
         <div className='space-y-4'>
           <FmCommonTextField
-            label='Artist Name'
+            label={t('labels.artistName')}
             required
             value={name}
             onChange={(e) => {
               setName(e.target.value);
               triggerAutoSave();
             }}
-            placeholder='Enter artist name'
+            placeholder={t('forms.artists.namePlaceholder')}
           />
 
           <div className='space-y-1'>
-            <span className='text-xs text-muted-foreground'>Artist Image</span>
+            <span className='text-xs text-muted-foreground'>{t('labels.artistImage')}</span>
             <FmImageUpload
               currentImageUrl={imageUrl}
               onUploadComplete={(url) => {
@@ -461,12 +464,12 @@ export default function ArtistManagement() {
               selectedGenres={selectedGenres}
               onChange={handleGenreChange}
               maxGenres={5}
-              label='Genres'
+              label={t('labels.genres')}
             />
           </div>
 
           <FmCommonTextField
-            label='Bio'
+            label={t('labels.bio')}
             multiline
             rows={5}
             value={bio}
@@ -474,17 +477,17 @@ export default function ArtistManagement() {
               setBio(e.target.value);
               triggerAutoSave();
             }}
-            placeholder='Artist biography...'
+            placeholder={t('forms.artists.bioPlaceholder')}
           />
 
           <FmCommonTextField
-            label='Website'
+            label={t('labels.website')}
             value={website}
             onChange={(e) => {
               setWebsite(e.target.value);
               triggerAutoSave();
             }}
-            placeholder='https://...'
+            placeholder={t('forms.artists.websitePlaceholder')}
           />
         </div>
       </FmCommonCard>
@@ -496,7 +499,7 @@ export default function ArtistManagement() {
           onClick={handleDelete}
           disabled={isDeleting}
         >
-          {isDeleting ? 'Deleting...' : 'Delete Artist'}
+          {isDeleting ? t('buttons.deleting') : t('buttons.deleteArtist')}
         </FmCommonButton>
 
         <FmCommonButton
@@ -504,7 +507,7 @@ export default function ArtistManagement() {
           onClick={handleSave}
           disabled={isSaving || !name}
         >
-          {isSaving ? 'Saving...' : 'Save Changes'}
+          {isSaving ? t('buttons.saving') : t('buttons.saveChanges')}
         </FmCommonButton>
       </div>
     </div>
@@ -515,9 +518,9 @@ export default function ArtistManagement() {
       <FmCommonCard size='lg' hoverable={false}>
         <div className='flex items-center justify-between mb-6'>
           <div>
-            <h2 className='text-xl font-semibold'>Recordings</h2>
+            <h2 className='text-xl font-semibold'>{t('sections.recordings')}</h2>
             <p className='text-muted-foreground text-sm mt-1'>
-              Add tracks from Spotify or SoundCloud
+              {t('sections.recordingsDescription')}
             </p>
           </div>
         </div>
@@ -563,12 +566,12 @@ export default function ArtistManagement() {
                     {track.recordingType === 'dj_set' ? (
                       <>
                         <Radio className='h-3 w-3' />
-                        DJ Set
+                        {t('labels.djSet')}
                       </>
                     ) : (
                       <>
                         <Disc className='h-3 w-3' />
-                        Track
+                        {t('labels.track')}
                       </>
                     )}
                   </span>
@@ -609,7 +612,7 @@ export default function ArtistManagement() {
                     )}
                     {track.clickCount !== undefined && track.clickCount > 0 && (
                       <span className='text-fm-gold'>
-                        {track.clickCount} clicks
+                        {t('labels.clicks', { count: track.clickCount })}
                       </span>
                     )}
                   </div>
@@ -621,7 +624,7 @@ export default function ArtistManagement() {
                     className='flex items-center gap-1 hover:text-fm-gold transition-colors'
                   >
                     <ExternalLink className='h-3 w-3' />
-                    <span>Listen</span>
+                    <span>{t('labels.listen')}</span>
                   </a>
                 </div>
               </div>
@@ -637,7 +640,7 @@ export default function ArtistManagement() {
               <Plus className='h-6 w-6 text-muted-foreground group-hover:text-fm-gold' />
             </div>
             <span className='text-sm text-muted-foreground group-hover:text-fm-gold font-medium'>
-              Add Recording
+              {t('labels.addRecording')}
             </span>
           </button>
         </div>
@@ -718,58 +721,58 @@ export default function ArtistManagement() {
   const renderSocialTab = () => (
     <div className='space-y-6'>
       <FmCommonCard size='lg' hoverable={false}>
-        <h2 className='text-xl font-semibold mb-6'>Social Media</h2>
+        <h2 className='text-xl font-semibold mb-6'>{t('sections.socialMedia')}</h2>
         <p className='text-muted-foreground mb-6'>
-          Enter usernames for each platform.
+          {t('sections.socialMediaDescription')}
         </p>
 
         <div className='space-y-4'>
           <SocialInput
             icon={FaInstagram}
-            label='Instagram'
+            label={t('labels.instagram')}
             value={instagram}
             onChange={setInstagram}
-            placeholder='username'
+            placeholder={t('placeholders.username')}
             iconColor='text-[#E4405F]'
             urlBuilder={socialUrlBuilders.instagram}
           />
 
           <SocialInput
             icon={FaXTwitter}
-            label='Twitter / X'
+            label={t('labels.twitterX')}
             value={twitter}
             onChange={setTwitter}
-            placeholder='username'
+            placeholder={t('placeholders.username')}
             iconColor='text-white'
             urlBuilder={socialUrlBuilders.twitter}
           />
 
           <SocialInput
             icon={FaFacebook}
-            label='Facebook'
+            label={t('labels.facebook')}
             value={facebook}
             onChange={setFacebook}
-            placeholder='username or page name'
+            placeholder={t('placeholders.usernameOrPage')}
             iconColor='text-[#1877F2]'
             urlBuilder={socialUrlBuilders.facebook}
           />
 
           <SocialInput
             icon={FaTiktok}
-            label='TikTok'
+            label={t('labels.tiktok')}
             value={tiktok}
             onChange={setTiktok}
-            placeholder='username'
+            placeholder={t('placeholders.username')}
             iconColor='text-white'
             urlBuilder={socialUrlBuilders.tiktok}
           />
 
           <SocialInput
             icon={FaYoutube}
-            label='YouTube'
+            label={t('labels.youtube')}
             value={youtube}
             onChange={setYoutube}
-            placeholder='channel handle'
+            placeholder={t('placeholders.channelHandle')}
             iconColor='text-[#FF0000]'
             urlBuilder={socialUrlBuilders.youtube}
           />

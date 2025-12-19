@@ -73,7 +73,7 @@ export const Navigation = () => {
                     target='_blank'
                     rel='noopener noreferrer'
                     className='text-foreground hover:text-fm-gold transition-colors duration-200'
-                    aria-label='Follow us on Instagram'
+                    aria-label={t('nav.followOnInstagram')}
                   >
                     <Instagram className='h-5 w-5' />
                   </a>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Save } from 'lucide-react';
 import { format } from 'date-fns';
 import { Card } from '@/components/common/shadcn/card';
@@ -39,6 +40,7 @@ export const EventOverviewTab = ({
   onSave,
   isSaving,
 }: EventOverviewTabProps) => {
+  const { t } = useTranslation('common');
   const {
     headlinerId,
     venueId,
@@ -107,14 +109,14 @@ export const EventOverviewTab = ({
         <div className='flex items-center justify-between'>
           <div>
             <h2 className='text-2xl font-bold text-foreground mb-2'>
-              Event Overview
+              {t('eventOverview.title')}
             </h2>
             <p className='text-muted-foreground'>
-              Basic event information and details
+              {t('eventOverview.description')}
             </p>
           </div>
           <FmCommonButton onClick={onSave} loading={isSaving} icon={Save}>
-            Save Changes
+            {t('buttons.saveChanges')}
           </FmCommonButton>
         </div>
 
@@ -122,58 +124,58 @@ export const EventOverviewTab = ({
           {/* Headliner */}
           <div className='space-y-2'>
             <Label htmlFor='headliner'>
-              Headliner <span className='text-destructive'>*</span>
+              {t('eventOverview.headliner')} <span className='text-destructive'>*</span>
             </Label>
             <FmArtistSearchDropdown
               value={headlinerId}
               onChange={handleHeadlinerChange}
-              placeholder='Select headliner'
+              placeholder={t('eventOverview.selectHeadliner')}
             />
           </div>
 
           {/* Venue */}
           <div className='space-y-2'>
             <Label htmlFor='venue'>
-              Venue <span className='text-destructive'>*</span>
+              {t('labels.venue')} <span className='text-destructive'>*</span>
             </Label>
             <FmVenueSearchDropdown
               value={venueId}
               onChange={handleVenueChange}
-              placeholder='Select venue'
+              placeholder={t('eventOverview.selectVenue')}
             />
           </div>
 
           {/* Event Title & Subtitle */}
           <div className='space-y-2'>
             <Label htmlFor='event-title'>
-              Event Title <span className='text-destructive'>*</span>
+              {t('eventOverview.eventTitle')} <span className='text-destructive'>*</span>
             </Label>
             <Input
               id='event-title'
               value={customTitle}
               onChange={e => handleTitleChange(e.target.value)}
-              placeholder='Enter event title'
+              placeholder={t('eventOverview.enterEventTitle')}
             />
           </div>
 
           <div className='space-y-2'>
-            <Label htmlFor='event-subtitle'>Subtitle (Optional)</Label>
+            <Label htmlFor='event-subtitle'>{t('eventOverview.subtitleOptional')}</Label>
             <Input
               id='event-subtitle'
               value={eventSubtitle}
               onChange={e => handleSubtitleChange(e.target.value)}
-              placeholder='Enter event subtitle'
+              placeholder={t('eventOverview.enterEventSubtitle')}
             />
           </div>
 
           {/* About This Event Description */}
           <div className='space-y-2 md:col-span-2'>
-            <Label htmlFor='about-event'>About This Event (Optional)</Label>
+            <Label htmlFor='about-event'>{t('eventOverview.aboutEventOptional')}</Label>
             <textarea
               id='about-event'
               value={aboutEvent}
               onChange={e => handleAboutChange(e.target.value)}
-              placeholder='Enter event description...'
+              placeholder={t('eventOverview.enterEventDescription')}
               className='w-full min-h-[120px] p-3 rounded-md border border-input bg-background text-foreground resize-y'
               rows={5}
             />
@@ -182,7 +184,7 @@ export const EventOverviewTab = ({
           {/* Date & Time */}
           <div className='space-y-2'>
             <Label>
-              Event Date & Time <span className='text-destructive'>*</span>
+              {t('eventOverview.eventDateTime')} <span className='text-destructive'>*</span>
             </Label>
             <div className='flex gap-2'>
               <FmCommonDatePicker value={eventDate} onChange={handleDateChange} />
@@ -195,7 +197,7 @@ export const EventOverviewTab = ({
 
           {/* End Time */}
           <div className='space-y-2'>
-            <Label>End Time</Label>
+            <Label>{t('eventOverview.endTime')}</Label>
             <div className='flex items-center gap-4'>
               <FmCommonTimePicker
                 value={endTime}
@@ -209,7 +211,7 @@ export const EventOverviewTab = ({
                   onCheckedChange={checked => handleAfterHoursChange(!!checked)}
                 />
                 <Label htmlFor='after-hours' className='cursor-pointer'>
-                  After hours
+                  {t('eventCard.afterHours')}
                 </Label>
               </div>
             </div>
@@ -217,7 +219,7 @@ export const EventOverviewTab = ({
 
           {/* Hero Image */}
           <div className='space-y-2 md:col-span-2'>
-            <Label>Hero Image</Label>
+            <Label>{t('eventOverview.heroImage')}</Label>
             <FmImageUpload
               value={heroImage}
               onUpload={handleHeroImageChange}

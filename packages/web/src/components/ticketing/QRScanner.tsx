@@ -12,6 +12,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Html5Qrcode, Html5QrcodeScanner } from 'html5-qrcode';
 import { X, Camera } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -44,6 +45,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({
   onClose,
   onError,
 }) => {
+  const { t } = useTranslation('common');
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
@@ -70,7 +72,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({
       const devices = await Html5Qrcode.getCameras();
 
       if (!devices || devices.length === 0) {
-        throw new Error('No cameras found on device');
+        throw new Error(t('qrScanner.noCamerasFound'));
       }
 
       // Prefer rear camera (environment-facing)
@@ -170,7 +172,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({
             className='bg-black/60 backdrop-blur-sm'
           >
             <X className='h-4 w-4 mr-2' />
-            Close
+            {t('buttons.close')}
           </FmCommonButton>
         </div>
 
@@ -181,11 +183,11 @@ export const QRScanner: React.FC<QRScannerProps> = ({
             <div className='flex items-center gap-2'>
               <Camera className='h-5 w-5 text-fm-gold' />
               <h3 className='text-lg font-canela text-fm-gold'>
-                Scan QR Code
+                {t('qrScanner.scanQRCode')}
               </h3>
             </div>
             <p className='text-sm text-muted-foreground mt-1'>
-              Position the QR code within the frame
+              {t('qrScanner.positionQRCode')}
             </p>
           </div>
 
@@ -216,14 +218,14 @@ export const QRScanner: React.FC<QRScannerProps> = ({
                   size='sm'
                   onClick={startScanner}
                 >
-                  Try Again
+                  {t('buttons.retry')}
                 </FmCommonButton>
                 <FmCommonButton
                   variant='secondary'
                   size='sm'
                   onClick={handleClose}
                 >
-                  Cancel
+                  {t('buttons.cancel')}
                 </FmCommonButton>
               </div>
             </div>
@@ -233,7 +235,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({
           {isScanning && !error && (
             <div className='p-4 bg-black/60 backdrop-blur-sm border-t border-fm-gold/30'>
               <p className='text-xs text-center text-muted-foreground'>
-                Point your camera at the QR code on the ticket
+                {t('qrScanner.pointCamera')}
               </p>
             </div>
           )}

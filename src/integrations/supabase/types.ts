@@ -242,22 +242,27 @@ export type Database = {
           city: string
           city_id: string | null
           created_at: string
+          crowd_sources: string | null
           email: string
           equipment: string | null
           genre: string
           id: string
           instagram_handle: string | null
+          paid_show_count_group: string | null
           phone: string
           previous_venues: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           reviewer_notes: string | null
           set_length: string | null
+          soundcloud_id: string | null
           soundcloud_url: string | null
+          spotify_id: string | null
           spotify_url: string | null
           state: string
           status: string
           submitted_at: string
+          talent_differentiator: string | null
           updated_at: string
           user_id: string | null
         }
@@ -268,22 +273,27 @@ export type Database = {
           city: string
           city_id?: string | null
           created_at?: string
+          crowd_sources?: string | null
           email: string
           equipment?: string | null
           genre: string
           id?: string
           instagram_handle?: string | null
+          paid_show_count_group?: string | null
           phone: string
           previous_venues?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           reviewer_notes?: string | null
           set_length?: string | null
+          soundcloud_id?: string | null
           soundcloud_url?: string | null
+          spotify_id?: string | null
           spotify_url?: string | null
           state: string
           status?: string
           submitted_at?: string
+          talent_differentiator?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -294,22 +304,27 @@ export type Database = {
           city?: string
           city_id?: string | null
           created_at?: string
+          crowd_sources?: string | null
           email?: string
           equipment?: string | null
           genre?: string
           id?: string
           instagram_handle?: string | null
+          paid_show_count_group?: string | null
           phone?: string
           previous_venues?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           reviewer_notes?: string | null
           set_length?: string | null
+          soundcloud_id?: string | null
           soundcloud_url?: string | null
+          spotify_id?: string | null
           spotify_url?: string | null
           state?: string
           status?: string
           submitted_at?: string
+          talent_differentiator?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -332,6 +347,7 @@ export type Database = {
           id: string
           image_url: string | null
           name: string
+          soundcloud_id: string | null
           spotify_data: Json | null
           spotify_id: string | null
           test_data: boolean
@@ -347,6 +363,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           name: string
+          soundcloud_id?: string | null
           spotify_data?: Json | null
           spotify_id?: string | null
           test_data?: boolean
@@ -362,6 +379,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           name?: string
+          soundcloud_id?: string | null
           spotify_data?: Json | null
           spotify_id?: string | null
           test_data?: boolean
@@ -849,6 +867,7 @@ export type Database = {
           description: string | null
           environment_id: string
           flag_name: string
+          group_name: string | null
           id: string
           is_enabled: boolean
           updated_at: string | null
@@ -858,6 +877,7 @@ export type Database = {
           description?: string | null
           environment_id: string
           flag_name: string
+          group_name?: string | null
           id?: string
           is_enabled?: boolean
           updated_at?: string | null
@@ -867,6 +887,7 @@ export type Database = {
           description?: string | null
           environment_id?: string
           flag_name?: string
+          group_name?: string | null
           id?: string
           is_enabled?: boolean
           updated_at?: string | null

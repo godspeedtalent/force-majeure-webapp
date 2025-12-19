@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Music2, ExternalLink, Settings, Link2, Unlink, Trash2, Clock, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -48,6 +49,8 @@ interface UserRequest {
 }
 
 export function UserArtistTab() {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -129,14 +132,14 @@ export function UserArtistTab() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('Link request submitted. An admin will review your request.');
+      toast.success(tToast('userArtist.linkRequestSubmitted'));
       queryClient.invalidateQueries({ queryKey: ['user-requests', user?.id] });
       setShowLinkModal(false);
       setSelectedArtistToLink(null);
     },
     onError: (error) => {
       logger.error('Failed to create link request', { error });
-      toast.error('Failed to submit link request. Please try again.');
+      toast.error(tToast('userArtist.linkRequestFailed'));
     },
   });
 
@@ -155,13 +158,13 @@ export function UserArtistTab() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('Artist account unlinked successfully.');
+      toast.success(tToast('userArtist.unlinkSuccess'));
       queryClient.invalidateQueries({ queryKey: ['user-linked-artist', user?.id] });
       setShowUnlinkConfirm(false);
     },
     onError: (error) => {
       logger.error('Failed to unlink artist', { error });
-      toast.error('Failed to unlink artist. Please try again.');
+      toast.error(tToast('userArtist.unlinkFailed'));
     },
   });
 
@@ -182,13 +185,13 @@ export function UserArtistTab() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('Data deletion request submitted. An admin will process your request within a few days.');
+      toast.success(tToast('userArtist.deleteRequestSubmitted'));
       queryClient.invalidateQueries({ queryKey: ['user-requests', user?.id] });
       setShowDeleteConfirm(false);
     },
     onError: (error) => {
       logger.error('Failed to create delete request', { error });
-      toast.error('Failed to submit deletion request. Please try again.');
+      toast.error(tToast('userArtist.deleteRequestFailed'));
     },
   });
 
@@ -198,7 +201,7 @@ export function UserArtistTab() {
     return (
       <div className='flex items-center justify-center gap-3 py-12'>
         <Loader2 className='h-5 w-5 animate-spin text-fm-gold' />
-        <span className='text-muted-foreground'>Loading artist information...</span>
+        <span className='text-muted-foreground'>{t('userArtist.loading')}</span>
       </div>
     );
   }
@@ -215,13 +218,13 @@ export function UserArtistTab() {
               </div>
               <div className='flex-1'>
                 <h3 className='font-canela text-lg font-medium text-fm-danger mb-2'>
-                  Pending Data Deletion
+                  {t('userArtist.pendingDeletion')}
                 </h3>
                 <p className='text-muted-foreground text-sm mb-4'>
-                  Your data deletion request is being reviewed by an admin. Your artist data will be removed within a few business days.
+                  {t('userArtist.pendingDeletionDescription')}
                 </p>
                 <p className='text-xs text-muted-foreground'>
-                  Requested on {new Date(pendingDeleteRequest.created_at).toLocaleDateString()}
+                  {t('userArtist.requestedOn', { date: new Date(pendingDeleteRequest.created_at).toLocaleDateString() })}
                 </p>
               </div>
             </div>
@@ -276,7 +279,7 @@ export function UserArtistTab() {
             icon={ExternalLink}
             onClick={() => navigate(`/artists/${linkedArtist.id}`)}
           >
-            View Artist Page
+            {t('userArtist.viewArtistPage')}
           </FmCommonButton>
 
           <FmCommonButton
@@ -285,7 +288,7 @@ export function UserArtistTab() {
             icon={Settings}
             onClick={() => navigate(`/artists/${linkedArtist.id}/manage`)}
           >
-            Manage Artist
+            {t('userArtist.manageArtist')}
           </FmCommonButton>
 
           <FmCommonButton
@@ -294,7 +297,7 @@ export function UserArtistTab() {
             icon={Unlink}
             onClick={() => setShowUnlinkConfirm(true)}
           >
-            Unlink Account
+            {t('userArtist.unlinkAccount')}
           </FmCommonButton>
 
           <FmCommonButton
@@ -303,7 +306,7 @@ export function UserArtistTab() {
             icon={Trash2}
             onClick={() => setShowDeleteConfirm(true)}
           >
-            Request Data Deletion
+            {t('userArtist.requestDataDeletion')}
           </FmCommonButton>
         </div>
 
@@ -311,19 +314,18 @@ export function UserArtistTab() {
         <AlertDialog open={showUnlinkConfirm} onOpenChange={setShowUnlinkConfirm}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Unlink Artist Account?</AlertDialogTitle>
+              <AlertDialogTitle>{t('userArtist.unlinkConfirmTitle')}</AlertDialogTitle>
               <AlertDialogDescription>
-                This will disconnect your user account from the artist profile "{linkedArtist.name}".
-                Your artist data will remain intact and can be re-linked later.
+                {t('userArtist.unlinkConfirmDescription', { name: linkedArtist.name })}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>{t('buttons.cancel')}</AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => unlinkArtistMutation.mutate()}
                 disabled={unlinkArtistMutation.isPending}
               >
-                {unlinkArtistMutation.isPending ? 'Unlinking...' : 'Unlink'}
+                {unlinkArtistMutation.isPending ? t('userArtist.unlinking') : t('userArtist.unlink')}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -333,25 +335,24 @@ export function UserArtistTab() {
         <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle className='text-fm-danger'>Request Data Deletion?</AlertDialogTitle>
+              <AlertDialogTitle className='text-fm-danger'>{t('userArtist.deleteConfirmTitle')}</AlertDialogTitle>
               <AlertDialogDescription className='space-y-2'>
                 <p>
-                  This will submit a request to permanently delete your artist profile and all associated data.
-                  This action cannot be undone.
+                  {t('userArtist.deleteConfirmDescription')}
                 </p>
                 <p className='text-muted-foreground'>
-                  An admin will review your request and process the deletion within a few business days.
+                  {t('userArtist.deleteConfirmNote')}
                 </p>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>{t('buttons.cancel')}</AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => deleteDataMutation.mutate()}
                 disabled={deleteDataMutation.isPending}
                 className='bg-fm-danger hover:bg-fm-danger/90'
               >
-                {deleteDataMutation.isPending ? 'Submitting...' : 'Request Deletion'}
+                {deleteDataMutation.isPending ? t('status.submitting') : t('userArtist.requestDeletion')}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -370,9 +371,9 @@ export function UserArtistTab() {
             <div className='flex items-center gap-3'>
               <Clock className='h-5 w-5 text-fm-gold' />
               <div>
-                <p className='text-sm font-medium'>Link Request Pending</p>
+                <p className='text-sm font-medium'>{t('userArtist.linkRequestPending')}</p>
                 <p className='text-xs text-muted-foreground'>
-                  Your request to link an artist account is being reviewed by an admin.
+                  {t('userArtist.linkRequestPendingDescription')}
                 </p>
               </div>
             </div>
@@ -383,7 +384,7 @@ export function UserArtistTab() {
       {/* Recent Request History */}
       {pendingRequests.filter(r => r.status !== 'pending').length > 0 && (
         <div className='space-y-2'>
-          <h4 className='text-sm font-medium text-muted-foreground'>Recent Requests</h4>
+          <h4 className='text-sm font-medium text-muted-foreground'>{t('userArtist.recentRequests')}</h4>
           {pendingRequests
             .filter(r => r.status !== 'pending')
             .slice(0, 3)
@@ -398,18 +399,18 @@ export function UserArtistTab() {
                         <AlertCircle className='h-4 w-4 text-fm-danger' />
                       )}
                       <span className='text-sm'>
-                        {request.request_type === 'link_artist' && 'Artist Link Request'}
-                        {request.request_type === 'unlink_artist' && 'Artist Unlink Request'}
-                        {request.request_type === 'delete_data' && 'Data Deletion Request'}
+                        {request.request_type === 'link_artist' && t('userArtist.requestTypes.linkArtist')}
+                        {request.request_type === 'unlink_artist' && t('userArtist.requestTypes.unlinkArtist')}
+                        {request.request_type === 'delete_data' && t('userArtist.requestTypes.deleteData')}
                       </span>
                     </div>
                     <span className={`text-xs ${request.status === 'approved' ? 'text-green-500' : 'text-fm-danger'}`}>
-                      {request.status === 'approved' ? 'Approved' : 'Denied'}
+                      {request.status === 'approved' ? t('status.approved') : t('status.denied')}
                     </span>
                   </div>
                   {request.denial_reason && (
                     <p className='text-xs text-muted-foreground mt-1 ml-6'>
-                      Reason: {request.denial_reason}
+                      {t('userArtist.reason')}: {request.denial_reason}
                     </p>
                   )}
                 </CardContent>
@@ -422,10 +423,9 @@ export function UserArtistTab() {
       <Card className='border-border/30 bg-card/10 backdrop-blur-sm'>
         <CardContent className='p-12 text-center'>
           <Music2 className='h-12 w-12 text-muted-foreground mx-auto mb-4' />
-          <h3 className='font-canela text-xl font-medium mb-2'>No Artist Account Linked</h3>
+          <h3 className='font-canela text-xl font-medium mb-2'>{t('userArtist.noLinkedArtist')}</h3>
           <p className='text-muted-foreground text-sm mb-6 max-w-md mx-auto'>
-            Link your user account to an existing artist profile to manage your artist page,
-            view analytics, and more.
+            {t('userArtist.noLinkedArtistDescription')}
           </p>
 
           <FmCommonButton
@@ -434,7 +434,7 @@ export function UserArtistTab() {
             onClick={() => setShowLinkModal(true)}
             disabled={!!pendingLinkRequest}
           >
-            {pendingLinkRequest ? 'Request Pending' : 'Link Artist Account'}
+            {pendingLinkRequest ? t('userArtist.requestPending') : t('userArtist.linkArtistAccount')}
           </FmCommonButton>
         </CardContent>
       </Card>
@@ -443,10 +443,9 @@ export function UserArtistTab() {
       <Dialog open={showLinkModal} onOpenChange={setShowLinkModal}>
         <DialogContent className='max-w-md'>
           <DialogHeader>
-            <DialogTitle>Link Artist Account</DialogTitle>
+            <DialogTitle>{t('userArtist.linkArtistModalTitle')}</DialogTitle>
             <DialogDescription>
-              Search for your artist profile and submit a request to link it to your account.
-              An admin will review and approve your request.
+              {t('userArtist.linkArtistModalDescription')}
             </DialogDescription>
           </DialogHeader>
 
@@ -460,7 +459,7 @@ export function UserArtistTab() {
                   setSelectedArtistToLink(null);
                 }
               }}
-              placeholder='Search for your artist profile...'
+              placeholder={t('userArtist.searchArtistPlaceholder')}
               // Filter to only show artists without a user_id
               additionalFilters={[{ column: 'user_id', operator: 'is', value: null }]}
             />
@@ -468,7 +467,7 @@ export function UserArtistTab() {
             {selectedArtistToLink && (
               <div className='mt-4 p-3 bg-fm-gold/10 border border-fm-gold/20 rounded-none'>
                 <p className='text-sm'>
-                  You're requesting to link: <strong>{selectedArtistToLink.name}</strong>
+                  {t('userArtist.requestingToLink')}: <strong>{selectedArtistToLink.name}</strong>
                 </p>
               </div>
             )}
@@ -476,14 +475,14 @@ export function UserArtistTab() {
 
           <DialogFooter>
             <Button variant='outline' onClick={() => setShowLinkModal(false)}>
-              Cancel
+              {t('buttons.cancel')}
             </Button>
             <Button
               variant='outline'
               onClick={() => selectedArtistToLink && linkArtistMutation.mutate(selectedArtistToLink.id)}
               disabled={!selectedArtistToLink || linkArtistMutation.isPending}
             >
-              {linkArtistMutation.isPending ? 'Submitting...' : 'Submit Request'}
+              {linkArtistMutation.isPending ? t('status.submitting') : t('buttons.submitRequest')}
             </Button>
           </DialogFooter>
         </DialogContent>

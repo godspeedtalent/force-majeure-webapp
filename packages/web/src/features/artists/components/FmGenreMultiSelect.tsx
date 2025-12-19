@@ -6,6 +6,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, X } from 'lucide-react';
 import { cn } from '@force-majeure/shared';
 import { searchGenres } from '../services/genreService';
@@ -58,6 +59,7 @@ export const FmGenreMultiSelect = ({
   required = false,
   className,
 }: FmGenreMultiSelectProps) => {
+  const { t } = useTranslation('common');
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [options, setOptions] = useState<Genre[]>([]);
@@ -159,7 +161,7 @@ export const FmGenreMultiSelect = ({
               disabled={disabled}
               className='px-[15px] py-[8px] text-xs text-muted-foreground hover:text-foreground border border-white/10 hover:border-white/20 rounded-none transition-all duration-200 font-canela uppercase tracking-wider'
             >
-              Clear All
+              {t('genreMultiSelect.clearAll')}
             </button>
           )}
         </div>
@@ -168,9 +170,9 @@ export const FmGenreMultiSelect = ({
       {/* Genre Count Indicator */}
       <div className='flex items-center justify-between text-xs text-muted-foreground font-canela'>
         <span>
-          {selectedGenres.length} / {maxGenres} selected
+          {t('genreMultiSelect.selectedCount', { count: selectedGenres.length, max: maxGenres })}
         </span>
-        {!canAddMore && <span className='text-fm-gold'>Maximum reached</span>}
+        {!canAddMore && <span className='text-fm-gold'>{t('genreMultiSelect.maximumReached')}</span>}
       </div>
 
       {/* Search Dropdown */}
@@ -193,7 +195,7 @@ export const FmGenreMultiSelect = ({
             >
               <Search className='h-4 w-4 text-muted-foreground' />
               <span className='text-muted-foreground'>
-                {open ? 'Search genres...' : 'Add genre'}
+                {open ? t('genreMultiSelect.searchGenres') : t('genreMultiSelect.addGenre')}
               </span>
             </button>
           </PopoverTrigger>
@@ -211,7 +213,7 @@ export const FmGenreMultiSelect = ({
                   type='text'
                   value={query}
                   onChange={e => setQuery(e.target.value)}
-                  placeholder='Search genres...'
+                  placeholder={t('genreMultiSelect.searchGenres')}
                   className='flex-1 bg-transparent border-none outline-none font-canela text-sm text-foreground placeholder:text-muted-foreground'
                   autoFocus
                 />
@@ -224,13 +226,13 @@ export const FmGenreMultiSelect = ({
               {query.length === 0 ? (
                 <div className='p-[20px] text-center'>
                   <p className='font-canela text-sm text-muted-foreground'>
-                    Start typing to search genres
+                    {t('genreMultiSelect.startTyping')}
                   </p>
                 </div>
               ) : options.length === 0 && !loading ? (
                 <div className='p-[20px] text-center'>
                   <p className='font-canela text-sm text-muted-foreground'>
-                    No genres found for "{query}"
+                    {t('genreMultiSelect.noGenresFound', { query })}
                   </p>
                 </div>
               ) : (

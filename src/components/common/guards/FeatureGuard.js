@@ -1,0 +1,65 @@
+import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+import { useFeatureFlagHelpers } from '@/shared';
+/**
+ * Guard component that shows children only if required feature flags are enabled
+ *
+ * @example
+ * // Show content only if merch store is enabled
+ * <FeatureGuard feature={FEATURE_FLAGS.MERCH_STORE}>
+ *   <MerchStore />
+ * </FeatureGuard>
+ *
+ * @example
+ * // Show content if ANY of the features are enabled
+ * <FeatureGuard feature={[FEATURE_FLAGS.MUSIC_PLAYER, FEATURE_FLAGS.SPOTIFY_INTEGRATION]}>
+ *   <MusicSection />
+ * </FeatureGuard>
+ *
+ * @example
+ * // Show content only if ALL features are enabled
+ * <FeatureGuard
+ *   feature={[FEATURE_FLAGS.SCAVENGER_HUNT, FEATURE_FLAGS.SCAVENGER_HUNT_ACTIVE]}
+ *   requireAll
+ * >
+ *   <ActiveScavengerHunt />
+ * </FeatureGuard>
+ *
+ * @example
+ * // Show fallback when feature is disabled
+ * <FeatureGuard
+ *   feature={FEATURE_FLAGS.MEMBER_PROFILES}
+ *   fallback={<p>Member profiles coming soon!</p>}
+ * >
+ *   <MemberProfilesList />
+ * </FeatureGuard>
+ *
+ * @example
+ * // Show content when feature is DISABLED (inverted logic)
+ * <FeatureGuard feature={FEATURE_FLAGS.COMING_SOON_MODE} invert>
+ *   <MainContent />
+ * </FeatureGuard>
+ */
+export const FeatureGuard = ({ children, feature, requireAll = false, fallback = null, invert = false, }) => {
+    const { isFeatureEnabled, isAnyFeatureEnabled, areAllFeaturesEnabled, isLoading, } = useFeatureFlagHelpers();
+    // While loading, don't show anything (or show fallback if provided)
+    if (isLoading) {
+        return _jsx(_Fragment, { children: fallback });
+    }
+    // If no feature specified, always show (useful for optional feature guarding)
+    if (!feature) {
+        return _jsx(_Fragment, { children: children });
+    }
+    let isEnabled = false;
+    // Check features
+    if (Array.isArray(feature)) {
+        isEnabled = requireAll
+            ? areAllFeaturesEnabled(...feature)
+            : isAnyFeatureEnabled(...feature);
+    }
+    else {
+        isEnabled = isFeatureEnabled(feature);
+    }
+    // Apply inversion if needed
+    const shouldShow = invert ? !isEnabled : isEnabled;
+    return shouldShow ? _jsx(_Fragment, { children: children }) : _jsx(_Fragment, { children: fallback });
+};

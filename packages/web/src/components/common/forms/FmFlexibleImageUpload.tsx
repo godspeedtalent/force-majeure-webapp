@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Upload, X, ImageIcon, Link as LinkIcon } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
@@ -58,13 +59,14 @@ export const FmFlexibleImageUpload = ({
   className,
   onUploadStateChange,
 }: FmFlexibleImageUploadProps) => {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const [uploadState, setUploadState] = useState<UploadState>('idle');
   const [dragActive, setDragActive] = useState(false);
   const [mode, setMode] = useState<'upload' | 'url'>('upload');
   const [urlInput, setUrlInput] = useState(value || '');
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
   const { data: userRole } = useUserRole();
 
   // Check if user is developer or admin for detailed error messages
@@ -90,11 +92,9 @@ export const FmFlexibleImageUpload = ({
       'image/gif',
     ];
     if (!validTypes.includes(file.type)) {
-      const error = new Error(
-        'Invalid file type. Please upload a JPEG, PNG, WebP, or GIF image.'
-      );
+      const error = new Error(t('upload.invalidFileTypeMessage'));
       showErrorToast({
-        title: 'Invalid File Type',
+        title: t('upload.invalidFileType'),
         description: error.message,
         error,
         isDeveloper,
@@ -129,21 +129,20 @@ export const FmFlexibleImageUpload = ({
 
       onChange(result.publicUrl);
       setUrlInput(result.publicUrl);
-      toast({
-        title: 'Upload Successful',
+      toast.success(tToast('upload.success'), {
         description: file.size > 5 * 1024 * 1024
-          ? 'Image compressed and uploaded successfully.'
-          : 'Image uploaded successfully.',
+          ? t('upload.compressedAndUploaded')
+          : t('upload.uploadedSuccessfully'),
       });
     } catch (error) {
       // Clean up preview URL on error
       URL.revokeObjectURL(filePreviewUrl);
       setPreviewUrl(null);
 
-      const err = error instanceof Error ? error : new Error('Upload failed');
+      const err = error instanceof Error ? error : new Error(t('upload.uploadFailed'));
       showErrorToast({
-        title: 'Upload Failed',
-        description: 'Image failed to upload.',
+        title: t('upload.uploadFailed'),
+        description: t('upload.imageFailed'),
         error: err,
         isDeveloper,
       });
@@ -199,9 +198,8 @@ export const FmFlexibleImageUpload = ({
   const handleUrlSubmit = () => {
     if (urlInput.trim()) {
       onChange(urlInput.trim());
-      toast({
-        title: 'URL Set',
-        description: 'Image URL has been set.',
+      toast.success(t('upload.urlSet'), {
+        description: t('upload.urlSetDescription'),
       });
     }
   };
@@ -210,7 +208,7 @@ export const FmFlexibleImageUpload = ({
     <div className={cn('space-y-4', className)}>
       {/* Mode Toggle */}
       <div className='flex items-center gap-2 text-sm'>
-        <span className='text-muted-foreground'>Image source:</span>
+        <span className='text-muted-foreground'>{t('upload.imageSource')}:</span>
         <button
           type='button'
           onClick={() => setMode('upload')}
@@ -221,7 +219,7 @@ export const FmFlexibleImageUpload = ({
               : 'bg-white/5 text-white/70 hover:bg-white/10'
           )}
         >
-          Upload File
+          {t('upload.uploadFile')}
         </button>
         <button
           type='button'
@@ -233,7 +231,7 @@ export const FmFlexibleImageUpload = ({
               : 'bg-white/5 text-white/70 hover:bg-white/10'
           )}
         >
-          External URL
+          {t('upload.externalUrl')}
         </button>
       </div>
 
@@ -244,8 +242,8 @@ export const FmFlexibleImageUpload = ({
             label={`${label} URL`}
             value={urlInput}
             onChange={e => setUrlInput(e.target.value)}
-            placeholder='https://example.com/image.jpg'
-            description='Enter a direct URL to an external image'
+            placeholder={t('placeholders.exampleImageUrl')}
+            description={t('upload.enterDirectUrl')}
           />
           <FmCommonButton
             variant='secondary'
@@ -254,7 +252,7 @@ export const FmFlexibleImageUpload = ({
             className='w-full'
           >
             <LinkIcon className='mr-2 h-4 w-4' />
-            Set Image URL
+            {t('upload.setImageUrl')}
           </FmCommonButton>
         </div>
       ) : (
@@ -274,7 +272,7 @@ export const FmFlexibleImageUpload = ({
               <div className='relative aspect-video w-full overflow-hidden rounded-none bg-muted'>
                 <img
                   src={previewUrl || value}
-                  alt='Preview'
+                  alt={t('upload.imagePreview')}
                   className={cn(
                     'h-full w-full object-cover transition-opacity',
                     isUploading && 'opacity-60'
@@ -286,8 +284,8 @@ export const FmFlexibleImageUpload = ({
                     <div className='mb-3 h-12 w-12 animate-spin rounded-full border-4 border-fm-gold border-b-transparent' />
                     <p className='text-sm font-medium text-white'>
                       {uploadState === 'compressing'
-                        ? 'Compressing image...'
-                        : 'Uploading...'}
+                        ? t('upload.compressing')
+                        : t('upload.uploading')}
                     </p>
                   </div>
                 )}
@@ -309,7 +307,7 @@ export const FmFlexibleImageUpload = ({
                   className='w-full'
                 >
                   <Upload className='mr-2 h-4 w-4' />
-                  Replace Image
+                  {t('upload.replaceImage')}
                 </FmCommonButton>
               )}
             </div>
@@ -329,17 +327,17 @@ export const FmFlexibleImageUpload = ({
             >
               <ImageIcon className='mb-4 h-12 w-12 text-muted-foreground' />
               <p className='mb-2 text-sm font-medium'>
-                Drop your image here, or{' '}
+                {t('upload.dropImageOr')}{' '}
                 <button
                   type='button'
                   onClick={handleButtonClick}
                   className='text-fm-gold hover:underline'
                 >
-                  browse
+                  {t('upload.browse')}
                 </button>
               </p>
               <p className='text-xs text-muted-foreground'>
-                JPEG, PNG, WebP, or GIF (large images compressed automatically)
+                {t('upload.supportedFormats')}
               </p>
             </div>
           )}
@@ -351,11 +349,11 @@ export const FmFlexibleImageUpload = ({
         <div className='relative aspect-video w-full overflow-hidden rounded-none bg-muted border border-white/20'>
           <img
             src={value}
-            alt='Preview'
+            alt={t('upload.imagePreview')}
             className='h-full w-full object-cover'
             onError={(e) => {
               e.currentTarget.src = '';
-              e.currentTarget.alt = 'Failed to load image';
+              e.currentTarget.alt = t('upload.failedToLoad');
               e.currentTarget.className = 'h-full w-full flex items-center justify-center text-muted-foreground';
             }}
           />

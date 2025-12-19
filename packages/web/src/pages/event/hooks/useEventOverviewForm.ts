@@ -1,4 +1,5 @@
 import { useReducer, useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { supabase } from '@force-majeure/shared';
 import { handleError } from '@/shared/services/errorHandler';
@@ -82,6 +83,7 @@ export interface UseEventOverviewFormReturn extends EventOverviewFormState {
 }
 
 export function useEventOverviewForm(initialEvent?: any): UseEventOverviewFormReturn {
+  const { t } = useTranslation('common');
   const [state, dispatch] = useReducer(formReducer, initialState);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -103,23 +105,23 @@ export function useEventOverviewForm(initialEvent?: any): UseEventOverviewFormRe
     const errors: string[] = [];
 
     if (!state.customTitle.trim()) {
-      errors.push('Event title is required');
+      errors.push(t('eventForm.validation.titleRequired'));
     }
 
     if (!state.headlinerId) {
-      errors.push('Headliner is required');
+      errors.push(t('eventForm.validation.headlinerRequired'));
     }
 
     if (!state.venueId) {
-      errors.push('Venue is required');
+      errors.push(t('eventForm.validation.venueRequired'));
     }
 
     if (!state.eventDate) {
-      errors.push('Event date is required');
+      errors.push(t('eventForm.validation.dateRequired'));
     }
 
     return errors;
-  }, [state]);
+  }, [state, t]);
 
   const save = useCallback(async (eventId: string, onSuccess?: () => void): Promise<boolean> => {
     const errors = validate();
@@ -150,7 +152,7 @@ export function useEventOverviewForm(initialEvent?: any): UseEventOverviewFormRe
       if (error) throw error;
 
       dispatch({ type: 'MARK_CLEAN' });
-      toast.success('Overview updated successfully');
+      toast.success(t('eventForm.overviewUpdated'));
 
       if (onSuccess) {
         onSuccess();
@@ -159,8 +161,8 @@ export function useEventOverviewForm(initialEvent?: any): UseEventOverviewFormRe
       return true;
     } catch (error) {
       await handleError(error, {
-        title: 'Failed to Update Overview',
-        description: 'Could not save event overview changes',
+        title: t('eventForm.updateFailed'),
+        description: t('eventForm.updateFailedDescription'),
         endpoint: 'EventManagement/overview',
         method: 'UPDATE',
       });
@@ -185,20 +187,20 @@ export function useEventOverviewForm(initialEvent?: any): UseEventOverviewFormRe
 
       if (error) throw error;
 
-      toast.success('Hero image saved');
+      toast.success(t('eventForm.heroImageSaved'));
 
       if (onSuccess) {
         onSuccess();
       }
     } catch (error) {
       await handleError(error, {
-        title: 'Failed to Save Hero Image',
-        description: 'The image was uploaded but could not be linked to this event.',
+        title: t('eventForm.heroImageFailed'),
+        description: t('eventForm.heroImageFailedDescription'),
         endpoint: 'EventManagement/hero-image',
         method: 'UPDATE',
       });
     }
-  }, [updateField]);
+  }, [updateField, t]);
 
   const reset = useCallback(() => {
     dispatch({ type: 'RESET' });

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { logger } from '@force-majeure/shared';
 import { supabase } from '@force-majeure/shared';
 import { toast } from 'sonner';
@@ -23,13 +24,14 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
   const { mode, eventId, onSuccess, onError, onValidationError } = options;
   const [isLoading, setIsLoading] = useState(false);
   const { validateForm } = useEventFormValidation();
+  const { t } = useTranslation('toasts');
 
   const submitEvent = async (state: EventFormState) => {
     // Validate form
     const validationError = validateForm(state);
     if (validationError) {
       onValidationError?.(validationError);
-      toast.error('Validation Error', {
+      toast.error(t('events.validationError'), {
         description: validationError,
       });
       return;
@@ -136,9 +138,7 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
         // Create ticket tiers
         await createTicketTiers(resultEventId, state.ticketTiers);
 
-        toast.success('Event Created', {
-          description: `${eventTitle} has been successfully created!`,
-        });
+        toast.success(t('events.created', { eventTitle }));
       } else {
         // Update existing event
         if (!eventId) throw new Error('Event ID is required for update');
@@ -156,9 +156,7 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
         // Update ticket tiers
         await updateTicketTiers(eventId, state.ticketTiers);
 
-        toast.success('Event Updated', {
-          description: `${eventTitle} has been successfully updated!`,
-        });
+        toast.success(t('events.updated'));
       }
 
       setIsLoading(false);
@@ -187,7 +185,7 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
 
       // Show more helpful error message to user
       const userMessage = (error as { hint?: string })?.hint || (error as { details?: string })?.details || err.message;
-      toast.error(`Failed to ${mode === 'create' ? 'create' : 'update'} event`, {
+      toast.error(mode === 'create' ? t('events.createFailed') : t('events.updateFailed'), {
         description: userMessage,
         duration: 8000, // Show longer for error messages
       });

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ArrowRight, Mail, Trophy } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +21,7 @@ export const ClaimSuccessModal = ({
   promoCode,
   onClose,
 }: ClaimSuccessModalProps) => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [confettiVisible, setConfettiVisible] = useState(false);
 
@@ -31,13 +33,13 @@ export const ClaimSuccessModal = ({
   }, [open]);
 
   const getPositionText = (position: number) => {
-    if (position === 1) return '1st';
-    if (position === 2) return '2nd';
-    if (position === 3) return '3rd';
-    return `${position}th`;
+    if (position === 1) return t('scavenger.claimSuccess.ordinal1');
+    if (position === 2) return t('scavenger.claimSuccess.ordinal2');
+    if (position === 3) return t('scavenger.claimSuccess.ordinal3');
+    return t('scavenger.claimSuccess.ordinalN', { position });
   };
 
-  const rewardDisplay = '� Exclusive Reward';
+  const rewardDisplay = t('scavenger.claimSuccess.exclusiveReward');
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -58,29 +60,29 @@ export const ClaimSuccessModal = ({
           </div>
 
           <h2 className='font-display text-4xl mb-4 text-foreground'>
-            Congratulations!
+            {t('scavenger.claimSuccess.title')}
           </h2>
 
           <p className='text-lg text-muted-foreground mb-2'>
-            You&apos;re the{' '}
+            {t('scavenger.claimSuccess.youreThe')}{' '}
             <span className='font-bold text-fm-gold'>
               {getPositionText(claimPosition)}
             </span>{' '}
-            person
+            {t('scavenger.claimSuccess.person')}
           </p>
           <p className='text-lg text-muted-foreground mb-6'>
-            to find <span className='font-semibold'>{locationName}</span>!
+            {t('scavenger.claimSuccess.toFind')} <span className='font-semibold'>{locationName}</span>!
           </p>
 
           {/* Reward card */}
           <div className='bg-muted/30 border border-border rounded-lg p-6 mb-6'>
             <div className='text-sm text-muted-foreground mb-2'>
-              Your Reward
+              {t('scavenger.claimSuccess.yourReward')}
             </div>
             <div className='text-3xl font-display mb-3'>{rewardDisplay}</div>
             <div className='bg-background border-2 border-fm-gold rounded-lg p-4'>
               <div className='text-xs text-muted-foreground mb-1'>
-                Promo Code
+                {t('ticketingPanel.promoCode')}
               </div>
               <div className='text-2xl font-mono font-bold tracking-wider text-fm-gold'>
                 {promoCode}
@@ -91,7 +93,7 @@ export const ClaimSuccessModal = ({
           {/* Email notice */}
           <div className='flex items-center justify-center gap-2 text-sm text-muted-foreground mb-8'>
             <Mail className='w-4 h-4' />
-            <span>Check your email for details</span>
+            <span>{t('scavenger.claimSuccess.checkEmail')}</span>
           </div>
 
           {/* Action button */}
@@ -102,7 +104,7 @@ export const ClaimSuccessModal = ({
             }}
             className='w-full bg-gradient-gold hover:opacity-90 text-primary-foreground font-display text-lg py-6'
           >
-            Continue
+            {t('buttons.continue')}
             <ArrowRight className='ml-2 w-5 h-5' />
           </Button>
         </div>

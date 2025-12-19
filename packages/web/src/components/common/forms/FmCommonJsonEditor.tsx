@@ -6,6 +6,7 @@
  */
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Plus, Trash2 } from 'lucide-react';
 import { cn } from '@force-majeure/shared';
 import { FmCommonTextField } from './FmCommonTextField';
@@ -56,12 +57,16 @@ export const FmCommonJsonEditor = ({
   onChange,
   label,
   required = false,
-  keyPlaceholder = 'Key',
-  valuePlaceholder = 'Value',
+  keyPlaceholder,
+  valuePlaceholder,
   className,
   disabled = false,
 }: FmCommonJsonEditorProps) => {
+  const { t } = useTranslation('common');
   const [isFocused, setIsFocused] = useState(false);
+
+  const resolvedKeyPlaceholder = keyPlaceholder || t('jsonEditor.key');
+  const resolvedValuePlaceholder = valuePlaceholder || t('jsonEditor.value');
 
   // Convert object to array of key-value pairs
   const pairs: KeyValuePair[] = Object.entries(value).map(([key, val]) => ({
@@ -120,7 +125,7 @@ export const FmCommonJsonEditor = ({
         {pairs.length === 0 ? (
           <div className='text-center py-[40px] border border-white/20 rounded-none bg-black/20'>
             <p className='text-sm text-muted-foreground font-canela mb-[20px]'>
-              No entries yet.
+              {t('jsonEditor.noEntriesYet')}
             </p>
             <FmCommonButton
               type='button'
@@ -131,7 +136,7 @@ export const FmCommonJsonEditor = ({
               disabled={disabled}
               size='sm'
             >
-              Add Entry
+              {t('jsonEditor.addEntry')}
             </FmCommonButton>
           </div>
         ) : (
@@ -148,7 +153,7 @@ export const FmCommonJsonEditor = ({
                   <FmCommonTextField
                     value={key}
                     onChange={e => handleKeyChange(key, e.target.value)}
-                    placeholder={keyPlaceholder}
+                    placeholder={resolvedKeyPlaceholder}
                     disabled={disabled}
                   />
                 </div>
@@ -158,7 +163,7 @@ export const FmCommonJsonEditor = ({
                   <FmCommonTextField
                     value={val}
                     onChange={e => handleValueChange(key, e.target.value)}
-                    placeholder={valuePlaceholder}
+                    placeholder={resolvedValuePlaceholder}
                     disabled={disabled}
                   />
                 </div>
@@ -190,7 +195,7 @@ export const FmCommonJsonEditor = ({
               disabled={disabled}
               className='w-full'
             >
-              Add Entry
+              {t('jsonEditor.addEntry')}
             </FmCommonButton>
           </>
         )}
@@ -199,7 +204,7 @@ export const FmCommonJsonEditor = ({
       {/* Helper Text */}
       {pairs.length > 0 && (
         <p className='text-xs text-muted-foreground font-canela'>
-          {pairs.length} {pairs.length === 1 ? 'entry' : 'entries'}
+          {t('jsonEditor.entryCount', { count: pairs.length })}
         </p>
       )}
     </div>

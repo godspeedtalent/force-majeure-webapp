@@ -7,6 +7,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link2, Music, ExternalLink, AlertCircle, Disc, Radio } from 'lucide-react';
 import { FaSpotify, FaSoundcloud } from 'react-icons/fa6';
 import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
@@ -121,6 +122,7 @@ async function fetchSoundCloudMetadata(url: string): Promise<TrackMetadata | nul
 }
 
 export function AddTrackModal({ open, onOpenChange, onAddTrack }: AddTrackModalProps) {
+  const { t } = useTranslation('common');
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -150,7 +152,7 @@ export function AddTrackModal({ open, onOpenChange, onAddTrack }: AddTrackModalP
 
       const platform = detectPlatform(url);
       if (!platform) {
-        setError('Please enter a valid Spotify or SoundCloud URL');
+        setError(t('formMessages.invalidTrackUrl'));
         setTrackData(null);
         return;
       }
@@ -171,11 +173,11 @@ export function AddTrackModal({ open, onOpenChange, onAddTrack }: AddTrackModalP
           setTrackData(metadata);
           setError(null);
         } else {
-          setError('Could not fetch track information. Please check the URL.');
+          setError(t('formMessages.couldNotFetchTrack'));
           setTrackData(null);
         }
       } catch {
-        setError('Failed to fetch track metadata');
+        setError(t('formMessages.failedToFetchTrack'));
         setTrackData(null);
       } finally {
         setIsLoading(false);
@@ -214,17 +216,17 @@ export function AddTrackModal({ open, onOpenChange, onAddTrack }: AddTrackModalP
     <FmCommonModal
       open={open}
       onOpenChange={onOpenChange}
-      title="Add Recording"
-      description="Paste a Spotify or SoundCloud URL to link it to this artist."
+      title={t('dialogs.addRecording')}
+      description={t('dialogs.addRecordingDescription')}
     >
       <div className="space-y-6">
         {/* URL Input */}
         <div className="space-y-2">
           <FmCommonTextField
-            label="Track URL"
+            label={t('forms.tracks.urlLabel')}
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder="https://open.spotify.com/track/... or https://soundcloud.com/..."
+            placeholder={t('forms.tracks.urlPlaceholder')}
           />
 
           {/* Platform indicators */}
@@ -243,7 +245,7 @@ export function AddTrackModal({ open, onOpenChange, onAddTrack }: AddTrackModalP
         {/* Recording Type Selector */}
         {trackData && !isLoading && (
           <div className="space-y-2">
-            <label className="text-xs uppercase text-muted-foreground">Recording Type</label>
+            <label className="text-xs uppercase text-muted-foreground">{t('formLabels.recordingType')}</label>
             <div className="flex gap-2">
               <button
                 type="button"
@@ -256,7 +258,7 @@ export function AddTrackModal({ open, onOpenChange, onAddTrack }: AddTrackModalP
                 )}
               >
                 <Disc className="h-4 w-4" />
-                <span className="font-medium">Track</span>
+                <span className="font-medium">{t('formLabels.track')}</span>
               </button>
               <button
                 type="button"
@@ -269,7 +271,7 @@ export function AddTrackModal({ open, onOpenChange, onAddTrack }: AddTrackModalP
                 )}
               >
                 <Radio className="h-4 w-4" />
-                <span className="font-medium">DJ Set</span>
+                <span className="font-medium">{t('formLabels.djSet')}</span>
               </button>
             </div>
           </div>
@@ -279,7 +281,7 @@ export function AddTrackModal({ open, onOpenChange, onAddTrack }: AddTrackModalP
         {isLoading && (
           <div className="flex items-center justify-center py-8">
             <FmCommonLoadingSpinner size="md" />
-            <span className="ml-3 text-muted-foreground">Fetching track info...</span>
+            <span className="ml-3 text-muted-foreground">{t('formMessages.fetchingTrackInfo')}</span>
           </div>
         )}
 
@@ -336,7 +338,7 @@ export function AddTrackModal({ open, onOpenChange, onAddTrack }: AddTrackModalP
                     className="flex items-center gap-1 hover:text-fm-gold transition-colors"
                   >
                     <ExternalLink className="h-3 w-3" />
-                    Preview
+                    {t('forms.tracks.preview')}
                   </a>
                 </div>
               </div>
@@ -350,14 +352,14 @@ export function AddTrackModal({ open, onOpenChange, onAddTrack }: AddTrackModalP
             variant="secondary"
             onClick={() => onOpenChange(false)}
           >
-            Cancel
+            {t('buttons.cancel')}
           </FmCommonButton>
           <FmCommonButton
             icon={Link2}
             onClick={handleLink}
             disabled={!trackData || isLoading || isLinking}
           >
-            {isLinking ? 'Linking...' : 'Link Track'}
+            {isLinking ? t('formActions.linking') : t('formActions.linkTrack')}
           </FmCommonButton>
         </div>
       </div>

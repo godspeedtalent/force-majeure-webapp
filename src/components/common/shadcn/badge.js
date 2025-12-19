@@ -1,0 +1,20 @@
+import { jsx as _jsx } from "react/jsx-runtime";
+import { cva } from 'class-variance-authority';
+import { cn } from '@/shared';
+const badgeVariants = cva('inline-flex items-center rounded-none border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 backdrop-blur-sm bg-background/70', {
+    variants: {
+        variant: {
+            default: 'border-white/20 text-foreground',
+            secondary: 'border-white/20 text-foreground',
+            destructive: 'border-destructive/40 text-destructive-foreground',
+            outline: 'border-white/20 text-foreground',
+        },
+    },
+    defaultVariants: {
+        variant: 'default',
+    },
+});
+function Badge({ className, variant, ...props }) {
+    return (_jsx("div", { className: cn(badgeVariants({ variant }), className), ...props }));
+}
+export { Badge, badgeVariants };

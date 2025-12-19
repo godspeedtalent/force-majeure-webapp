@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Plus, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
 import { Card, CardContent } from '@/components/common/shadcn/card';
@@ -20,6 +21,7 @@ export function GroupNavigation({
   onViewChange,
   onAddGroup,
 }: GroupNavigationProps) {
+  const { t } = useTranslation('common');
   return (
     <div className='w-64 flex-shrink-0'>
       <Card className='sticky top-4'>
@@ -36,7 +38,7 @@ export function GroupNavigation({
               )}
             >
               <BarChart3 className='h-4 w-4' />
-              Overview
+              {t('ticketGroupManager.overview')}
             </button>
 
             <Separator className='my-3' />
@@ -65,7 +67,7 @@ export function GroupNavigation({
                       )}
                     />
                     <span className='flex-1 text-left truncate'>
-                      {group.name || `Group ${index + 1}`}
+                      {group.name || t('ticketGroupManager.defaultGroupName', { number: index + 1 })}
                     </span>
                     <Badge variant='outline' className='text-xs'>
                       {group.tiers.length}
@@ -85,7 +87,7 @@ export function GroupNavigation({
               className='w-full border-dashed hover:border-fm-gold hover:text-fm-gold'
             >
               <Plus className='h-4 w-4 mr-2' />
-              New Group
+              {t('ticketGroupManager.newGroup')}
             </Button>
           </div>
         </CardContent>

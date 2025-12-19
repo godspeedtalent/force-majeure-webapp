@@ -1,0 +1,13 @@
+import { jsx as _jsx } from "react/jsx-runtime";
+import * as React from 'react';
+import { Tabs, TabsList, TabsTrigger, TabsContent, } from '@/components/common/shadcn/tabs';
+import { cn } from '@/shared';
+const FmCommonTabs = React.forwardRef(({ className, ...props }, ref) => (_jsx(Tabs, { ref: ref, className: cn('', className), ...props })));
+FmCommonTabs.displayName = 'FmCommonTabs';
+const FmCommonTabsList = React.forwardRef(({ className, ...props }, ref) => (_jsx(TabsList, { ref: ref, className: cn('bg-muted/50 backdrop-blur-sm', className), ...props })));
+FmCommonTabsList.displayName = 'FmCommonTabsList';
+const FmCommonTabsTrigger = React.forwardRef(({ className, ...props }, ref) => (_jsx(TabsTrigger, { ref: ref, className: cn('transition-all duration-300', 'data-[state=active]:text-fm-gold', 'data-[state=active]:border-b-2 data-[state=active]:border-fm-gold', 'hover:text-fm-gold/70', className), ...props })));
+FmCommonTabsTrigger.displayName = 'FmCommonTabsTrigger';
+const FmCommonTabsContent = React.forwardRef(({ className, ...props }, ref) => (_jsx(TabsContent, { ref: ref, className: cn('', className), ...props })));
+FmCommonTabsContent.displayName = 'FmCommonTabsContent';
+export { FmCommonTabs, FmCommonTabsList, FmCommonTabsTrigger, FmCommonTabsContent, };

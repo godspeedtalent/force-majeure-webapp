@@ -48,6 +48,8 @@ import { useEventOverviewForm } from './event/hooks/useEventOverviewForm';
 type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'reports' | 'tracking' | 'social' | 'ux_display' | 'admin' | 'view';
 
 export default function EventManagement() {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { hasRole } = useUserPermissions();
@@ -104,95 +106,95 @@ export default function EventManagement() {
   // Navigation groups configuration
   const navigationGroups: FmCommonSideNavGroup<EventTab>[] = [
     {
-      label: 'Event Details',
+      label: t('eventNav.eventDetails'),
       icon: Calendar,
       items: [
         {
           id: 'view',
-          label: 'View Event',
+          label: t('eventNav.viewEvent'),
           icon: Eye,
-          description: 'View event details page',
+          description: t('eventNav.viewEventDescription'),
         },
         {
           id: 'overview',
-          label: 'Overview',
+          label: t('eventNav.overview'),
           icon: FileText,
-          description: 'Basic event information',
+          description: t('eventNav.overviewDescription'),
         },
         {
           id: 'artists',
-          label: 'Artists',
+          label: t('eventNav.artists'),
           icon: Users,
-          description: 'Manage lineup and scheduling',
+          description: t('eventNav.artistsDescription'),
         },
         {
           id: 'social',
-          label: 'Social',
+          label: t('eventNav.social'),
           icon: Share2,
-          description: 'Guest list and social settings',
+          description: t('eventNav.socialDescription'),
         },
         {
           id: 'ux_display',
-          label: 'UX Display',
+          label: t('eventNav.uxDisplay'),
           icon: Palette,
-          description: 'Homepage card display settings',
+          description: t('eventNav.uxDisplayDescription'),
         },
       ],
     },
     {
-      label: 'Ticketing',
+      label: t('eventNav.ticketing'),
       icon: Ticket,
       items: [
         {
           id: 'tiers',
-          label: 'Ticket Tiers',
+          label: t('eventNav.ticketTiers'),
           icon: Ticket,
-          description: 'Manage ticket pricing and inventory',
+          description: t('eventNav.ticketTiersDescription'),
         },
         {
           id: 'orders',
-          label: 'Orders',
+          label: t('eventNav.orders'),
           icon: ShoppingBag,
-          description: 'View and manage ticket orders',
+          description: t('eventNav.ordersDescription'),
         },
         {
           id: 'tracking',
-          label: 'Tracking Links',
+          label: t('eventNav.trackingLinks'),
           icon: Link2,
-          description: 'Marketing links and campaign tracking',
+          description: t('eventNav.trackingLinksDescription'),
         },
       ],
     },
     {
-      label: 'Analytics',
+      label: t('eventNav.analytics'),
       icon: BarChart3,
       items: [
         {
           id: 'sales',
-          label: 'Sales Summary',
+          label: t('eventNav.salesSummary'),
           icon: DollarSign,
-          description: 'Revenue and sales analytics',
+          description: t('eventNav.salesSummaryDescription'),
         },
         {
           id: 'reports',
-          label: 'Reports',
+          label: t('eventNav.reports'),
           icon: FileText,
-          description: 'Scheduled reports and email delivery',
+          description: t('eventNav.reportsDescription'),
         },
       ],
     },
     ...(isAdmin
       ? [
           {
-            label: 'Admin',
+            label: t('eventNav.admin'),
             icon: Shield,
             items: [
               {
                 id: 'admin' as EventTab,
-                label: 'Admin Controls',
+                label: t('eventNav.adminControls'),
                 icon: Shield,
-                description: 'Advanced event controls (Admin only)',
-                badge: <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />,
+                description: t('eventNav.adminControlsDescription'),
+                badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.adminOnly')} />,
               },
             ],
           },
@@ -202,24 +204,24 @@ export default function EventManagement() {
 
   // Mobile bottom tabs configuration
   const mobileTabs: MobileBottomTab[] = [
-    { id: 'view', label: 'View', icon: Eye },
-    { id: 'overview', label: 'Overview', icon: FileText },
-    { id: 'artists', label: 'Artists', icon: Users },
-    { id: 'social', label: 'Social', icon: Share2 },
-    { id: 'ux_display', label: 'UX', icon: Palette },
-    { id: 'tiers', label: 'Tiers', icon: Ticket },
-    { id: 'orders', label: 'Orders', icon: ShoppingBag },
-    { id: 'tracking', label: 'Links', icon: Link2 },
-    { id: 'sales', label: 'Sales', icon: DollarSign },
-    { id: 'reports', label: 'Reports', icon: FileText },
-    ...(isAdmin ? [{ id: 'admin' as EventTab, label: 'Admin', icon: Shield }] : []),
+    { id: 'view', label: t('eventNav.viewEvent'), icon: Eye },
+    { id: 'overview', label: t('eventNav.overview'), icon: FileText },
+    { id: 'artists', label: t('eventNav.artists'), icon: Users },
+    { id: 'social', label: t('eventNav.social'), icon: Share2 },
+    { id: 'ux_display', label: t('eventNav.uxDisplay'), icon: Palette },
+    { id: 'tiers', label: t('eventNav.ticketTiers'), icon: Ticket },
+    { id: 'orders', label: t('eventNav.orders'), icon: ShoppingBag },
+    { id: 'tracking', label: t('eventNav.trackingLinks'), icon: Link2 },
+    { id: 'sales', label: t('eventNav.salesSummary'), icon: DollarSign },
+    { id: 'reports', label: t('eventNav.reports'), icon: FileText },
+    ...(isAdmin ? [{ id: 'admin' as EventTab, label: t('eventNav.adminControls'), icon: Shield }] : []),
   ];
 
   const handleDeleteEvent = async () => {
     if (!id || !event) return;
 
     const confirmed = window.confirm(
-      `Are you sure you want to delete "${event.title}"?\n\nThis action cannot be undone. All ticket tiers and orders associated with this event will also be deleted.`
+      t('eventManagement.deleteEventConfirm', { title: event.title })
     );
 
     if (!confirmed) return;
@@ -242,7 +244,7 @@ export default function EventManagement() {
 
       if (eventError) throw eventError;
 
-      toast.success('Event deleted successfully');
+      toast.success(tToast('events.deleted'));
 
       // Navigate back to admin or home
       navigate('/admin');
@@ -270,7 +272,7 @@ export default function EventManagement() {
 
       if (error) throw error;
 
-      toast.success('UX Display settings updated successfully');
+      toast.success(tToast('events.uxSettingsUpdated'));
       queryClient.invalidateQueries({ queryKey: ['event', id] });
     } catch (error) {
       await handleError(error, {
@@ -289,7 +291,7 @@ export default function EventManagement() {
 
     try {
       await eventService.updateEventStatus(id, 'published');
-      toast.success('Event published successfully!');
+      toast.success(tToast('events.published'));
       queryClient.invalidateQueries({ queryKey: ['event', id] });
     } catch (error) {
       await handleError(error, {
@@ -320,7 +322,7 @@ export default function EventManagement() {
   if (isLoading) {
     return (
       <div className='flex items-center justify-center min-h-screen'>
-        <p className='text-muted-foreground'>Loading event...</p>
+        <p className='text-muted-foreground'>{t('eventManagement.loadingEvent')}</p>
       </div>
     );
   }
@@ -328,7 +330,7 @@ export default function EventManagement() {
   if (!event) {
     return (
       <div className='flex items-center justify-center min-h-screen'>
-        <p className='text-muted-foreground'>Event not found</p>
+        <p className='text-muted-foreground'>{t('eventManagement.eventNotFound')}</p>
       </div>
     );
   }
@@ -365,7 +367,7 @@ export default function EventManagement() {
           <FmBackButton
             position='inline'
             onClick={() => navigate(`/event/${id}`)}
-            label='Event Details'
+            label={t('eventNav.eventDetails')}
           />
           <div className='flex items-center gap-2'>
             <EventStatusBadge status={(event as any).status || 'draft'} />
@@ -413,7 +415,7 @@ export default function EventManagement() {
 
                     if (error) throw error;
 
-                    toast.success(checked ? 'Looking for undercard enabled' : 'Looking for undercard disabled');
+                    toast.success(checked ? t('eventManagement.lookingForUndercardEnabled') : t('eventManagement.lookingForUndercardDisabled'));
                     queryClient.invalidateQueries({ queryKey: ['event', id] });
                   } catch (error) {
                     await handleError(error, {
@@ -459,7 +461,7 @@ export default function EventManagement() {
                       if (insertError) throw insertError;
                     }
 
-                    toast.success('Artists updated successfully');
+                    toast.success(tToast('events.artistsUpdated'));
                     queryClient.invalidateQueries({ queryKey: ['event', id] });
                   } catch (error) {
                     await handleError(error, {
@@ -508,10 +510,10 @@ export default function EventManagement() {
                 <div className='flex items-center justify-between'>
                   <div>
                     <h2 className='text-2xl font-bold text-foreground mb-2'>
-                      UX Display Settings
+                      {t('eventManagement.uxDisplaySettings')}
                     </h2>
                     <p className='text-muted-foreground'>
-                      Customize how this event appears on the homepage
+                      {t('eventManagement.uxDisplayDescription')}
                     </p>
                   </div>
                   <FmCommonButton
@@ -519,7 +521,7 @@ export default function EventManagement() {
                     loading={isSaving}
                     icon={Save}
                   >
-                    Save Changes
+                    {t('buttons.saveChanges')}
                   </FmCommonButton>
                 </div>
               </div>
@@ -528,10 +530,10 @@ export default function EventManagement() {
                   {/* Homepage Event Card Section */}
                   <div className='space-y-4'>
                     <h3 className='text-lg font-semibold text-foreground'>
-                      Homepage Event Card
+                      {t('eventManagement.homepageEventCard')}
                     </h3>
                     <p className='text-sm text-muted-foreground'>
-                      Control how your event card is displayed on the homepage.
+                      {t('eventManagement.homepageEventCardDescription')}
                     </p>
 
                     <div className='flex items-center gap-3 p-4 rounded-none border border-border bg-card'>
@@ -542,10 +544,10 @@ export default function EventManagement() {
                       />
                       <div className='flex-1'>
                         <Label htmlFor='display-subtitle' className='cursor-pointer font-medium'>
-                          Display Subtitle
+                          {t('eventManagement.displaySubtitle')}
                         </Label>
                         <p className='text-xs text-muted-foreground mt-1'>
-                          Show the event subtitle on the homepage event card
+                          {t('eventManagement.displaySubtitleDescription')}
                         </p>
                       </div>
                     </div>
@@ -566,29 +568,40 @@ export default function EventManagement() {
                   </p>
                 </div>
 
-                <div className='space-y-4'>
-                  <div className='rounded-none border border-destructive/50 bg-destructive/5 p-6'>
-                    <div className='flex items-start gap-4'>
-                      <div className='p-3 rounded-none bg-destructive/10'>
-                        <Trash2 className='h-6 w-6 text-destructive' />
-                      </div>
-                      <div className='flex-1'>
-                        <h3 className='text-lg font-semibold text-foreground mb-2'>
-                          Delete Event
-                        </h3>
-                        <p className='text-sm text-muted-foreground mb-4'>
-                          Permanently delete this event and all associated data
-                          including ticket tiers and orders. This action cannot
-                          be undone.
-                        </p>
-                        <FmCommonButton
-                          variant='destructive'
-                          icon={Trash2}
-                          onClick={handleDeleteEvent}
-                          loading={isDeleting}
-                        >
-                          {isDeleting ? 'Deleting...' : 'Delete Event'}
-                        </FmCommonButton>
+              {/* Delete Event Card */}
+              <Card className='p-8'>
+                <div className='space-y-6'>
+                  <div>
+                    <h2 className='text-2xl font-bold text-foreground mb-2'>
+                      {t('eventManagement.dangerZone')}
+                    </h2>
+                    <p className='text-muted-foreground'>
+                      {t('eventManagement.irreversibleActions')}
+                    </p>
+                  </div>
+
+                  <div className='space-y-4'>
+                    <div className='rounded-none border border-destructive/50 bg-destructive/5 p-6'>
+                      <div className='flex items-start gap-4'>
+                        <div className='p-3 rounded-none bg-destructive/10'>
+                          <Trash2 className='h-6 w-6 text-destructive' />
+                        </div>
+                        <div className='flex-1'>
+                          <h3 className='text-lg font-semibold text-foreground mb-2'>
+                            {t('eventManagement.deleteEvent')}
+                          </h3>
+                          <p className='text-sm text-muted-foreground mb-4'>
+                            {t('eventManagement.deleteEventDescription')}
+                          </p>
+                          <FmCommonButton
+                            variant='destructive'
+                            icon={Trash2}
+                            onClick={handleDeleteEvent}
+                            loading={isDeleting}
+                          >
+                            {isDeleting ? t('buttons.deleting') : t('eventManagement.deleteEvent')}
+                          </FmCommonButton>
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { logger } from '@force-majeure/shared';
 import {
   Dialog,
@@ -29,6 +30,7 @@ export function FmBulkEditDialog<T = any>({
   selectedRows,
   onApply,
 }: FmBulkEditDialogProps<T>) {
+  const { t } = useTranslation('common');
   const [editValues, setEditValues] = useState<Record<string, any>>({});
   const [editEnabled, setEditEnabled] = useState<Record<string, boolean>>({});
   const [isApplying, setIsApplying] = useState(false);
@@ -94,18 +96,16 @@ export function FmBulkEditDialog<T = any>({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='max-w-2xl max-h-[85vh] overflow-y-auto'>
         <DialogHeader>
-          <DialogTitle>Bulk Edit Rows</DialogTitle>
+          <DialogTitle>{t('dialogs.bulkEdit')}</DialogTitle>
           <DialogDescription>
-            Edit common fields for {selectedRows.length} selected row
-            {selectedRows.length !== 1 ? 's' : ''}. Enable fields you want to update
-            and set their new values.
+            {t('dialogs.bulkEditDescription', { count: selectedRows.length })}
           </DialogDescription>
         </DialogHeader>
 
         <div className='space-y-4 py-4'>
           {editableColumns.length === 0 ? (
             <div className='text-center py-8 text-muted-foreground'>
-              No editable fields available for bulk edit
+              {t('dialogs.noEditableFields')}
             </div>
           ) : (
             <>
@@ -142,16 +142,16 @@ export function FmBulkEditDialog<T = any>({
             onClick={() => onOpenChange(false)}
             disabled={isApplying}
           >
-            Cancel
+            {t('buttons.cancel')}
           </Button>
           <Button onClick={handleApply} disabled={!canApply}>
             {isApplying ? (
               <>
                 <div className='h-4 w-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent' />
-                Applying...
+                {t('dialogs.applying')}
               </>
             ) : (
-              `Apply to ${selectedRows.length} row${selectedRows.length !== 1 ? 's' : ''}`
+              t('buttons.apply')
             )}
           </Button>
         </DialogFooter>

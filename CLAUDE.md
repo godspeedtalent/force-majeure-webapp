@@ -54,7 +54,7 @@ Force Majeure is a company website and web application for electronic music even
 
 ## Monorepo Architecture
 
-This project uses **pnpm workspaces** + **Turborepo** to manage three packages:
+This project uses **npm workspaces** + **Turborepo** to manage three packages:
 
 - `@force-majeure/shared` - Platform-agnostic business logic, types, API client
 - `@force-majeure/web` - React web application (Vite)
@@ -547,25 +547,25 @@ const isAdminUser = isAdmin(); // Check if user has admin role
 **Web Application:**
 
 ```bash
-pnpm web:dev         # Start web dev server (localhost:8080)
-pnpm web:build       # Build web for production
+npm run web:dev         # Start web dev server (localhost:8080)
+npm run web:build       # Build web for production
 ```
 
 **Mobile Application:**
 
 ```bash
-pnpm mobile:dev      # Start Expo dev server
-pnpm mobile:android  # Run on Android device/emulator
-pnpm mobile:ios      # Run on iOS simulator
+npm run mobile:dev      # Start Expo dev server
+npm run mobile:android  # Run on Android device/emulator
+npm run mobile:ios      # Run on iOS simulator
 ```
 
 **Both Platforms:**
 
 ```bash
-pnpm dev             # Run both web and mobile concurrently
-pnpm build           # Build all packages
-pnpm type-check      # Type check all packages
-pnpm lint            # Lint all packages
+npm run dev             # Run both web and mobile concurrently
+npm run build           # Build all packages
+npm run type-check      # Type check all packages
+npm run lint            # Lint all packages
 ```
 
 ### Feature Flags
@@ -690,10 +690,10 @@ pnpm lint            # Lint all packages
 
 ```bash
 # After creating/modifying migrations
-pnpm supabase:db:reset
+npm run supabase:db:reset
 
 # Generate TypeScript types
-pnpm supabase:gen-types
+npm run supabase:gen-types
 # This outputs to packages/shared/src/api/supabase/types.ts
 ```
 
@@ -701,15 +701,15 @@ pnpm supabase:gen-types
 
 **Install dependency in specific package:**
 ```bash
-pnpm --filter @force-majeure/web add react-router-dom
-pnpm --filter @force-majeure/mobile add @react-navigation/native
-pnpm --filter @force-majeure/shared add zod
+npm install react-router-dom --workspace=@force-majeure/web
+npm install @react-navigation/native --workspace=@force-majeure/mobile
+npm install zod --workspace=@force-majeure/shared
 ```
 
 **Run commands in specific package:**
 ```bash
-pnpm --filter @force-majeure/web type-check
-pnpm --filter @force-majeure/mobile dev
+npm run type-check --workspace=@force-majeure/web
+npm run dev --workspace=@force-majeure/mobile
 ```
 
 **Add shared code:**
@@ -994,7 +994,42 @@ pnpm --filter @force-majeure/mobile dev
       - Typography: `font-medium` for labels
       - Transitions: `transition-all duration-300` for smooth interactions
 
-12. **Reference documentation**: When in doubt, check `docs/architecture/DESIGN_SYSTEM.md`
+13. **Portal Tooltips** (`FmPortalTooltip`):
+    - **CRITICAL**: Use `FmPortalTooltip` instead of the shadcn `Tooltip` in any component inside:
+      - `FmToolbar` and its tab contents
+      - Modals and dialogs with `overflow: hidden/auto`
+      - Sidebars and drawers
+      - Any scrollable container
+    - The shadcn Tooltip gets clipped by parent `overflow` properties. `FmPortalTooltip` renders to `document.body` via a portal to avoid clipping.
+    - **Usage**:
+
+      ```tsx
+      import { FmPortalTooltip } from '@/components/common/feedback/FmPortalTooltip';
+
+      // Simple usage
+      <FmPortalTooltip content="Tooltip text" side="top">
+        <Button>Hover me</Button>
+      </FmPortalTooltip>
+
+      // With options
+      <FmPortalTooltip
+        content={<span>Rich content</span>}
+        side="left"
+        sideOffset={10}
+        delayDuration={500}
+      >
+        <IconButton />
+      </FmPortalTooltip>
+      ```
+
+    - **Props**:
+      - `content`: Tooltip content (string or ReactNode)
+      - `side`: 'top' | 'right' | 'bottom' | 'left' (default: 'top')
+      - `sideOffset`: Distance from trigger (default: 5)
+      - `delayDuration`: Hover delay in ms (default: 300)
+      - `className`: Additional classes for tooltip content
+
+14. **Reference documentation**: When in doubt, check `docs/architecture/DESIGN_SYSTEM.md`
 
 ### Design System Enforcement Tools
 

@@ -6,6 +6,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link2, AlertCircle, User } from 'lucide-react';
 import { FaSoundcloud } from 'react-icons/fa6';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/common/shadcn/dialog';
@@ -31,6 +32,7 @@ interface SoundCloudUserImportProps {
 }
 
 export function SoundCloudUserImport({ open, onClose, onImport }: SoundCloudUserImportProps) {
+  const { t } = useTranslation('common');
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +58,7 @@ export function SoundCloudUserImport({ open, onClose, onImport }: SoundCloudUser
       }
 
       if (!url.includes('soundcloud.com')) {
-        setError('Please enter a valid SoundCloud URL');
+        setError(t('soundcloud.invalidUrl'));
         setUserData(null);
         return;
       }
@@ -71,12 +73,12 @@ export function SoundCloudUserImport({ open, onClose, onImport }: SoundCloudUser
           setUserData(data);
           setError(null);
         } else {
-          setError('Could not fetch profile information. Please check the URL.');
+          setError(t('soundcloud.couldNotFetch'));
           setUserData(null);
         }
       } catch (err) {
         logger.error('Error fetching SoundCloud user', { error: err instanceof Error ? err.message : 'Unknown' });
-        setError('Failed to fetch profile data');
+        setError(t('soundcloud.fetchFailed'));
         setUserData(null);
       } finally {
         setIsLoading(false);
@@ -90,7 +92,7 @@ export function SoundCloudUserImport({ open, onClose, onImport }: SoundCloudUser
   const handleImport = () => {
     if (!userData) return;
     onImport(userData);
-    toast.success('Profile imported from SoundCloud');
+    toast.success(t('soundcloud.importSuccess'));
     onClose();
   };
 
@@ -100,7 +102,7 @@ export function SoundCloudUserImport({ open, onClose, onImport }: SoundCloudUser
         <DialogHeader>
           <DialogTitle className='flex items-center gap-[10px]'>
             <FaSoundcloud className='h-5 w-5 text-[#FF5500]' />
-            Import from SoundCloud
+            {t('soundcloud.importTitle')}
           </DialogTitle>
         </DialogHeader>
 
@@ -108,13 +110,13 @@ export function SoundCloudUserImport({ open, onClose, onImport }: SoundCloudUser
           {/* URL Input */}
           <div className='space-y-[10px]'>
             <FmCommonTextField
-              label='SoundCloud Profile URL'
+              label={t('soundcloud.profileUrlLabel')}
               value={url}
               onChange={e => setUrl(e.target.value)}
               placeholder='https://soundcloud.com/your-profile'
             />
             <p className='font-canela text-xs text-muted-foreground'>
-              Paste your SoundCloud profile URL to import your name and avatar
+              {t('soundcloud.profileUrlHint')}
             </p>
           </div>
 
@@ -122,7 +124,7 @@ export function SoundCloudUserImport({ open, onClose, onImport }: SoundCloudUser
           {isLoading && (
             <div className='flex items-center justify-center py-[40px]'>
               <FmCommonLoadingSpinner size='md' />
-              <span className='ml-[10px] text-muted-foreground'>Fetching profile...</span>
+              <span className='ml-[10px] text-muted-foreground'>{t('soundcloud.fetchingProfile')}</span>
             </div>
           )}
 
@@ -172,7 +174,7 @@ export function SoundCloudUserImport({ open, onClose, onImport }: SoundCloudUser
                     rel='noopener noreferrer'
                     className='text-xs text-[#FF5500] hover:underline mt-[5px] inline-block'
                   >
-                    View on SoundCloud
+                    {t('soundcloud.viewOnSoundCloud')}
                   </a>
                 </div>
               </div>
@@ -182,7 +184,7 @@ export function SoundCloudUserImport({ open, onClose, onImport }: SoundCloudUser
           {/* Action Buttons */}
           <div className='flex flex-col-reverse sm:flex-row justify-end gap-[10px]'>
             <FmCommonButton variant='secondary' onClick={onClose} className='w-full sm:w-auto'>
-              Cancel
+              {t('buttons.cancel')}
             </FmCommonButton>
             <FmCommonButton
               icon={Link2}
@@ -190,7 +192,7 @@ export function SoundCloudUserImport({ open, onClose, onImport }: SoundCloudUser
               disabled={!userData || isLoading}
               className='w-full sm:w-auto'
             >
-              Import Profile
+              {t('soundcloud.importProfile')}
             </FmCommonButton>
           </div>
         </div>

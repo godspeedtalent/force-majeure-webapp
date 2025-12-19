@@ -1,6 +1,7 @@
 import { GlobalResourceSearch } from '@/components/admin/GlobalResourceSearch';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Database, Music } from 'lucide-react';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
@@ -14,6 +15,7 @@ type DatabaseManagerTab = 'overview' | 'genres';
  * Database Manager page with tabbed navigation for managing database resources
  */
 export function DatabaseManager() {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const isMobile = useIsMobile();
@@ -28,40 +30,40 @@ export function DatabaseManager() {
   const navigationGroups: FmCommonSideNavGroup<DatabaseManagerTab>[] = useMemo(
     () => [
       {
-        label: 'Overview',
+        label: t('databaseManager.overview'),
         icon: Database,
         items: [
           {
             id: 'overview' as const,
-            label: 'Dashboard',
+            label: t('databaseManager.dashboard'),
             icon: Database,
-            description: 'Database overview and search',
+            description: t('databaseManager.dashboardDescription'),
           },
         ],
       },
       {
-        label: 'Tables',
+        label: t('databaseManager.tables'),
         icon: Database,
         items: [
           {
             id: 'genres' as const,
-            label: 'Genres',
+            label: t('databaseManager.genres'),
             icon: Music,
-            description: 'Manage music genres',
+            description: t('databaseManager.genresDescription'),
           },
         ],
       },
     ],
-    []
+    [t]
   );
 
   // Mobile horizontal tabs configuration
   const mobileTabs: MobileHorizontalTab[] = useMemo(
     () => [
-      { id: 'overview', label: 'Overview', icon: Database },
-      { id: 'genres', label: 'Genres', icon: Music },
+      { id: 'overview', label: t('databaseManager.overview'), icon: Database },
+      { id: 'genres', label: t('databaseManager.genres'), icon: Music },
     ],
-    []
+    [t]
   );
 
   // Handler to change tabs and update URL
@@ -88,12 +90,11 @@ export function DatabaseManager() {
           <div className='space-y-8'>
             <div className={isMobile ? 'text-center' : ''}>
               <h1 className={`font-canela font-bold ${isMobile ? 'text-xl' : 'text-3xl mb-2'}`}>
-                Database Manager
+                {t('databaseManager.title')}
               </h1>
               {!isMobile && (
                 <p className='text-muted-foreground'>
-                  Search across all resources - users, artists, venues, events,
-                  and organizations
+                  {t('databaseManager.description')}
                 </p>
               )}
             </div>
@@ -106,21 +107,21 @@ export function DatabaseManager() {
             {/* Quick Actions */}
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
               <div className='p-6 border rounded-none'>
-                <h3 className='font-semibold mb-2'>Quick Stats</h3>
+                <h3 className='font-semibold mb-2'>{t('databaseManager.quickStats')}</h3>
                 <p className='text-sm text-muted-foreground'>
-                  View analytics and statistics for your database
+                  {t('databaseManager.quickStatsDescription')}
                 </p>
               </div>
               <div className='p-6 border rounded-none'>
-                <h3 className='font-semibold mb-2'>Recent Changes</h3>
+                <h3 className='font-semibold mb-2'>{t('databaseManager.recentChanges')}</h3>
                 <p className='text-sm text-muted-foreground'>
-                  Track recent updates and modifications
+                  {t('databaseManager.recentChangesDescription')}
                 </p>
               </div>
               <div className='p-6 border rounded-none'>
-                <h3 className='font-semibold mb-2'>Batch Operations</h3>
+                <h3 className='font-semibold mb-2'>{t('databaseManager.batchOperations')}</h3>
                 <p className='text-sm text-muted-foreground'>
-                  Perform bulk actions on resources
+                  {t('databaseManager.batchOperationsDescription')}
                 </p>
               </div>
             </div>

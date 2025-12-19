@@ -6,6 +6,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Check, ChevronsUpDown, MapPin } from 'lucide-react';
 import { logger } from '@force-majeure/shared';
 import {
@@ -85,11 +86,13 @@ export const FmCitySearchDropdown = ({
   value = '',
   onChange,
   label,
-  placeholder = 'Search for a city...',
+  placeholder,
   description,
   error,
   className,
 }: FmCitySearchDropdownProps) => {
+  const { t } = useTranslation('common');
+  const resolvedPlaceholder = placeholder ?? t('citySearch.searchForCity');
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [cities, setCities] = useState<City[]>([]);
@@ -145,7 +148,7 @@ export const FmCitySearchDropdown = ({
                   <span className='truncate'>{value}</span>
                 </>
               ) : (
-                <span>{placeholder}</span>
+                <span>{resolvedPlaceholder}</span>
               )}
             </div>
             <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
@@ -154,7 +157,7 @@ export const FmCitySearchDropdown = ({
         <PopoverContent className='w-full p-0' align='start'>
           <Command shouldFilter={false}>
             <CommandInput
-              placeholder='Type to search cities...'
+              placeholder={t('citySearch.typeToSearch')}
               value={searchQuery}
               onValueChange={setSearchQuery}
             />
@@ -164,9 +167,9 @@ export const FmCitySearchDropdown = ({
                   <div className='h-4 w-4 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
                 </div>
               ) : cities.length === 0 && searchQuery.length >= 2 ? (
-                <CommandEmpty>No cities found.</CommandEmpty>
+                <CommandEmpty>{t('citySearch.noCitiesFound')}</CommandEmpty>
               ) : cities.length === 0 ? (
-                <CommandEmpty>Start typing to search cities...</CommandEmpty>
+                <CommandEmpty>{t('citySearch.startTyping')}</CommandEmpty>
               ) : (
                 <CommandGroup>
                   {cities.map(city => (

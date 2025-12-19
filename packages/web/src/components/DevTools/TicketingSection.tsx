@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DollarSign, Percent } from 'lucide-react';
 import { FmCommonToggleHeader } from '@/components/common/forms/FmCommonToggleHeader';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
@@ -29,13 +30,8 @@ interface Fee {
   updated_at: string;
 }
 
-const feeLabels: Record<string, string> = {
-  sales_tax: 'Sales Tax',
-  processing_fee: 'Processing Fee',
-  platform_fee: 'Platform Fee',
-};
-
 export const TicketingSection = () => {
+  const { t } = useTranslation('common');
   const [fees, setFees] = useState<Fee[]>([]);
   const [localFees, setLocalFees] = useState<
     Record<string, { type: 'flat' | 'percentage'; value: string }>
@@ -43,6 +39,12 @@ export const TicketingSection = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const environment = 'dev'; // Currently always dev
+
+  const feeLabels: Record<string, string> = {
+    sales_tax: t('devTools.ticketing.salesTax'),
+    processing_fee: t('devTools.ticketing.processingFee'),
+    platform_fee: t('devTools.ticketing.platformFee'),
+  };
 
   const fetchFees = async () => {
     try {
@@ -70,7 +72,7 @@ export const TicketingSection = () => {
       setLocalFees(initialLocal);
     } catch (error) {
       logger.error('Failed to fetch fees:', { error: error instanceof Error ? error.message : 'Unknown' });
-      toast.error('Failed to load ticketing fees');
+      toast.error(t('devTools.ticketing.loadError'));
     } finally {
       setIsLoading(false);
     }
@@ -118,11 +120,11 @@ export const TicketingSection = () => {
       });
 
       await Promise.all(updates);
-      toast.success('Ticketing fees updated successfully');
+      toast.success(t('devTools.ticketing.updateSuccess'));
       await fetchFees();
     } catch (error) {
       logger.error('Failed to update fees:', { error: error instanceof Error ? error.message : 'Unknown' });
-      toast.error('Failed to update ticketing fees');
+      toast.error(t('devTools.ticketing.updateError'));
     }
   };
 
@@ -135,16 +137,16 @@ export const TicketingSection = () => {
   });
 
   if (isLoading) {
-    return <div className='text-white/50 text-sm'>Loading...</div>;
+    return <div className='text-white/50 text-sm'>{t('status.loading')}</div>;
   }
 
   return (
     <div className='space-y-6'>
       <p className='text-xs text-white/50'>
-        Configure site-wide fees and taxes applied to all ticket purchases
+        {t('devTools.ticketing.description')}
       </p>
 
-      <FmCommonToggleHeader title='Taxes and Fees'>
+      <FmCommonToggleHeader title={t('devTools.ticketing.taxesAndFees')}>
         <div className='space-y-4'>
           {fees.map(fee => {
             const local = localFees[fee.fee_name];
@@ -169,7 +171,7 @@ export const TicketingSection = () => {
                       )}
                     >
                       <DollarSign className='h-3 w-3 mr-1' />
-                      Flat
+                      {t('devTools.ticketing.flat')}
                     </Button>
                     <Button
                       size='sm'
@@ -188,7 +190,7 @@ export const TicketingSection = () => {
                 </div>
                 <FmCommonTextField
                   label={
-                    local.type === 'flat' ? 'Amount ($)' : 'Percentage (%)'
+                    local.type === 'flat' ? t('devTools.ticketing.amountDollar') : t('devTools.ticketing.amountPercent')
                   }
                   type='number'
                   value={local.value}
@@ -210,7 +212,7 @@ export const TicketingSection = () => {
           disabled={!hasChanges}
           className='w-full bg-fm-gold hover:bg-fm-gold/90 text-black disabled:opacity-50 disabled:cursor-not-allowed'
         >
-          Save Fees
+          {t('devTools.ticketing.saveFees')}
         </Button>
       </div>
 
@@ -219,24 +221,21 @@ export const TicketingSection = () => {
         <AlertDialogContent className='bg-black/90 backdrop-blur-md border border-white/20 text-white z-[200]'>
           <AlertDialogHeader>
             <AlertDialogTitle className='font-canela text-white'>
-              Confirm Fee Changes
+              {t('devTools.ticketing.confirmTitle')}
             </AlertDialogTitle>
             <AlertDialogDescription className='text-white/70'>
-              This will update ticketing fees in the database for the{' '}
-              <span className='font-semibold text-fm-gold'>{environment}</span>{' '}
-              environment. These changes will affect all future ticket
-              purchases. Continue?
+              {t('devTools.ticketing.confirmDescription', { environment })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className='bg-white/5 border-white/20 hover:bg-white/10 text-white'>
-              Cancel
+              {t('buttons.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleSave}
               className='bg-fm-gold hover:bg-fm-gold/90 text-black'
             >
-              Save Changes
+              {t('devTools.ticketing.saveChanges')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

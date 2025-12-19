@@ -1,0 +1,17 @@
+import { jsx as _jsx } from "react/jsx-runtime";
+import * as React from 'react';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, } from '@/components/common/shadcn/card';
+import { cn } from '@/shared';
+const FmCommonCard = React.forwardRef(({ className, variant = 'default', hoverable = false, ...props }, ref) => (_jsx(Card, { ref: ref, variant: variant, className: cn('transition-all duration-300', hoverable && 'hover:border-fm-gold/50 hover:shadow-[0_0_12px_rgba(212,175,55,0.15)]', className), ...props })));
+FmCommonCard.displayName = 'FmCommonCard';
+const FmCommonCardHeader = React.forwardRef(({ className, ...props }, ref) => (_jsx(CardHeader, { ref: ref, className: cn('', className), ...props })));
+FmCommonCardHeader.displayName = 'FmCommonCardHeader';
+const FmCommonCardTitle = React.forwardRef(({ className, ...props }, ref) => (_jsx(CardTitle, { ref: ref, className: cn('', className), ...props })));
+FmCommonCardTitle.displayName = 'FmCommonCardTitle';
+const FmCommonCardDescription = React.forwardRef(({ className, ...props }, ref) => (_jsx(CardDescription, { ref: ref, className: cn('', className), ...props })));
+FmCommonCardDescription.displayName = 'FmCommonCardDescription';
+const FmCommonCardContent = React.forwardRef(({ className, ...props }, ref) => (_jsx(CardContent, { ref: ref, className: cn('', className), ...props })));
+FmCommonCardContent.displayName = 'FmCommonCardContent';
+const FmCommonCardFooter = React.forwardRef(({ className, ...props }, ref) => (_jsx(CardFooter, { ref: ref, className: cn('', className), ...props })));
+FmCommonCardFooter.displayName = 'FmCommonCardFooter';
+export { FmCommonCard, FmCommonCardHeader, FmCommonCardTitle, FmCommonCardDescription, FmCommonCardContent, FmCommonCardFooter, };

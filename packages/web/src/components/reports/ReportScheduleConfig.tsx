@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Label } from '@/components/common/shadcn/label';
 import { Switch } from '@/components/common/shadcn/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/common/shadcn/select';
@@ -14,6 +15,8 @@ interface ReportScheduleConfigProps {
 }
 
 export const ReportScheduleConfig = ({ configId }: ReportScheduleConfigProps) => {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const queryClient = useQueryClient();
 
   const { data: config } = useQuery<ReportConfiguration>({
@@ -59,10 +62,10 @@ export const ReportScheduleConfig = ({ configId }: ReportScheduleConfigProps) =>
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['report-schedule', configId] });
-      toast.success('Schedule updated successfully');
+      toast.success(tToast('reports.scheduleUpdated'));
     },
     onError: (error: Error) => {
-      toast.error('Failed to update schedule: ' + error.message);
+      toast.error(tToast('reports.scheduleUpdateFailed') + ': ' + error.message);
     },
   });
 
@@ -70,29 +73,29 @@ export const ReportScheduleConfig = ({ configId }: ReportScheduleConfigProps) =>
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <Switch checked={isScheduled} onCheckedChange={setIsScheduled} />
-        <Label>Enable Scheduled Sending</Label>
+        <Label>{t('reports.schedule.enableScheduledSending')}</Label>
       </div>
 
       {isScheduled && (
         <>
           <div className="space-y-2">
-            <Label>Schedule Type</Label>
+            <Label>{t('reports.schedule.scheduleType')}</Label>
             <Select value={scheduleType} onValueChange={setScheduleType}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="daily">Daily</SelectItem>
-                <SelectItem value="weekly">Weekly</SelectItem>
-                <SelectItem value="monthly">Monthly</SelectItem>
-                <SelectItem value="weekly_day">Weekly (Specific Day)</SelectItem>
-                <SelectItem value="monthly_day">Monthly (Specific Day)</SelectItem>
+                <SelectItem value="daily">{t('reports.schedule.daily')}</SelectItem>
+                <SelectItem value="weekly">{t('reports.schedule.weekly')}</SelectItem>
+                <SelectItem value="monthly">{t('reports.schedule.monthly')}</SelectItem>
+                <SelectItem value="weekly_day">{t('reports.schedule.weeklySpecificDay')}</SelectItem>
+                <SelectItem value="monthly_day">{t('reports.schedule.monthlySpecificDay')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label>Time (CDT)</Label>
+            <Label>{t('reports.schedule.timeCDT')}</Label>
             <Input
               type="time"
               value={scheduleTime}
@@ -102,19 +105,19 @@ export const ReportScheduleConfig = ({ configId }: ReportScheduleConfigProps) =>
 
           {scheduleType === 'weekly_day' && (
             <div className="space-y-2">
-              <Label>Day of Week</Label>
+              <Label>{t('reports.schedule.dayOfWeek')}</Label>
               <Select value={dayOfWeek} onValueChange={setDayOfWeek}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="0">Sunday</SelectItem>
-                  <SelectItem value="1">Monday</SelectItem>
-                  <SelectItem value="2">Tuesday</SelectItem>
-                  <SelectItem value="3">Wednesday</SelectItem>
-                  <SelectItem value="4">Thursday</SelectItem>
-                  <SelectItem value="5">Friday</SelectItem>
-                  <SelectItem value="6">Saturday</SelectItem>
+                  <SelectItem value="0">{t('reports.schedule.days.sunday')}</SelectItem>
+                  <SelectItem value="1">{t('reports.schedule.days.monday')}</SelectItem>
+                  <SelectItem value="2">{t('reports.schedule.days.tuesday')}</SelectItem>
+                  <SelectItem value="3">{t('reports.schedule.days.wednesday')}</SelectItem>
+                  <SelectItem value="4">{t('reports.schedule.days.thursday')}</SelectItem>
+                  <SelectItem value="5">{t('reports.schedule.days.friday')}</SelectItem>
+                  <SelectItem value="6">{t('reports.schedule.days.saturday')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -122,7 +125,7 @@ export const ReportScheduleConfig = ({ configId }: ReportScheduleConfigProps) =>
 
           {scheduleType === 'monthly_day' && (
             <div className="space-y-2">
-              <Label>Day of Month</Label>
+              <Label>{t('reports.schedule.dayOfMonth')}</Label>
               <Input
                 type="number"
                 min="1"
@@ -136,7 +139,7 @@ export const ReportScheduleConfig = ({ configId }: ReportScheduleConfigProps) =>
       )}
 
       <Button onClick={() => updateScheduleMutation.mutate()}>
-        Save Schedule
+        {t('reports.schedule.saveSchedule')}
       </Button>
     </div>
   );

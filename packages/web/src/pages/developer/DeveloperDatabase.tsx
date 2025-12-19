@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { logger } from '@force-majeure/shared';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { DataGridAction, FmConfigurableDataGrid } from '@/features/data-grid';
@@ -40,6 +41,7 @@ type DatabaseTab =
   | 'venues';
 
 export default function DeveloperDatabase() {
+  const { t } = useTranslation('common');
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -296,10 +298,10 @@ export default function DeveloperDatabase() {
         }
       );
 
-      toast.success('Artist updated');
+      toast.success(t('devTools.database.artistUpdated'));
     } catch (error) {
       logger.error('Error updating artist:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'DeveloperDatabase.tsx' });
-      toast.error('Failed to update artist');
+      toast.error(t('devTools.database.artistUpdateFailed'));
       throw error;
     }
   };
@@ -330,17 +332,17 @@ export default function DeveloperDatabase() {
       const { error } = await supabase.from('artists').insert(payload);
       if (error) throw error;
 
-      toast.success('Artist created');
+      toast.success(t('devTools.database.artistCreated'));
       await queryClient.invalidateQueries({ queryKey: ['admin-artists'] });
     } catch (error) {
       logger.error('Error creating artist:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'DeveloperDatabase.tsx' });
-      toast.error('Failed to create artist');
+      toast.error(t('devTools.database.artistCreateFailed'));
       throw error;
     }
   };
 
   const handleDeleteArtist = async (artist: any) => {
-    if (!confirm(`Are you sure you want to delete "${artist.name}"?`)) {
+    if (!confirm(t('devTools.database.confirmDeleteArtist', { name: artist.name }))) {
       return;
     }
 
@@ -352,11 +354,11 @@ export default function DeveloperDatabase() {
 
       if (error) throw error;
 
-      toast.success('Artist deleted');
+      toast.success(t('devTools.database.artistDeleted'));
       queryClient.invalidateQueries({ queryKey: ['admin-artists'] });
     } catch (error) {
       logger.error('Error deleting artist:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'DeveloperDatabase.tsx' });
-      toast.error('Failed to delete artist');
+      toast.error(t('devTools.database.artistDeleteFailed'));
     }
   };
 
@@ -408,7 +410,7 @@ export default function DeveloperDatabase() {
 
 
   const handleDeleteVenue = async (venue: any) => {
-    if (!confirm(`Are you sure you want to delete "${venue.name}"?`)) {
+    if (!confirm(t('devTools.database.confirmDeleteVenue', { name: venue.name }))) {
       return;
     }
 
@@ -420,11 +422,11 @@ export default function DeveloperDatabase() {
 
       if (error) throw error;
 
-      toast.success('Venue deleted successfully');
+      toast.success(t('devTools.database.venueDeleted'));
       queryClient.invalidateQueries({ queryKey: ['admin-venues'] });
     } catch (error) {
       logger.error('Error deleting venue:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'DeveloperDatabase.tsx' });
-      toast.error('Failed to delete venue');
+      toast.error(t('devTools.database.venueDeleteFailed'));
     }
   };
 
@@ -474,16 +476,16 @@ export default function DeveloperDatabase() {
         }
       );
 
-      toast.success('Recording updated');
+      toast.success(t('devTools.database.recordingUpdated'));
     } catch (error) {
       logger.error('Error updating recording:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'DeveloperDatabase.tsx' });
-      toast.error('Failed to update recording');
+      toast.error(t('devTools.database.recordingUpdateFailed'));
       throw error;
     }
   };
 
   const handleDeleteRecording = async (recording: any) => {
-    if (!confirm(`Are you sure you want to delete "${recording.name}"?`)) {
+    if (!confirm(t('devTools.database.confirmDeleteRecording', { name: recording.name }))) {
       return;
     }
 
@@ -495,11 +497,11 @@ export default function DeveloperDatabase() {
 
       if (error) throw error;
 
-      toast.success('Recording deleted');
+      toast.success(t('devTools.database.recordingDeleted'));
       queryClient.invalidateQueries({ queryKey: ['admin-recordings'] });
     } catch (error) {
       logger.error('Error deleting recording:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'DeveloperDatabase.tsx' });
-      toast.error('Failed to delete recording');
+      toast.error(t('devTools.database.recordingDeleteFailed'));
     }
   };
 
@@ -552,9 +554,9 @@ export default function DeveloperDatabase() {
     try {
       const result = await refreshAllTableSchemas();
       if (result.success) {
-        toast.success(`Schema refreshed successfully! ${result.tablesRefreshed} tables updated.`);
+        toast.success(t('devTools.database.schemaRefreshSuccess', { count: result.tablesRefreshed }));
       } else {
-        toast.error(result.error || 'Failed to refresh schema');
+        toast.error(result.error || t('devTools.database.schemaRefreshFailed'));
       }
     } catch (error) {
       logger.error('Error refreshing schema', {
@@ -562,7 +564,7 @@ export default function DeveloperDatabase() {
         source: 'DeveloperDatabase',
         details: {},
       });
-      toast.error('Failed to refresh schema');
+      toast.error(t('devTools.database.schemaRefreshFailed'));
     } finally {
       setIsRefreshingSchema(false);
     }

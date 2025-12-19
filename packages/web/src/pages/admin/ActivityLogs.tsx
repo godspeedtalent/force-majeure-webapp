@@ -6,6 +6,7 @@
  */
 
 import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   RefreshCw,
@@ -52,6 +53,7 @@ import {
 type SidebarItem = 'all' | 'account' | 'event' | 'ticket';
 
 export default function ActivityLogs() {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [activeSidebarItem, setActiveSidebarItem] =
     useState<SidebarItem>('all');
@@ -127,31 +129,31 @@ export default function ActivityLogs() {
   // Sidebar navigation for quick category filters
   const navigationGroups: FmCommonSideNavGroup<SidebarItem>[] = [
     {
-      label: 'Quick Filters',
+      label: t('activityLogsPage.quickFilters'),
       items: [
         {
           id: 'all',
-          label: 'All Logs',
+          label: t('activityLogsPage.allLogs'),
           icon: Activity,
-          description: 'View all activity logs',
+          description: t('activityLogsPage.allLogsDescription'),
         },
         {
           id: 'account',
-          label: 'Account Activity',
+          label: t('activityLogsPage.accountActivity'),
           icon: Activity,
-          description: 'User accounts & roles',
+          description: t('activityLogsPage.accountActivityDescription'),
         },
         {
           id: 'event',
-          label: 'Event Activity',
+          label: t('activityLogsPage.eventActivity'),
           icon: Activity,
-          description: 'Event changes',
+          description: t('activityLogsPage.eventActivityDescription'),
         },
         {
           id: 'ticket',
-          label: 'Ticket Activity',
+          label: t('activityLogsPage.ticketActivity'),
           icon: Activity,
-          description: 'Sales & scans',
+          description: t('activityLogsPage.ticketActivityDescription'),
         },
       ],
     },
@@ -174,7 +176,7 @@ export default function ActivityLogs() {
       onItemChange={handleSidebarItemChange}
       showBackButton
       onBack={handleBackToAdmin}
-      backButtonLabel="Admin"
+      backButtonLabel={t('nav.admin')}
     >
       <div className="max-w-full">
         {/* Header */}
@@ -183,7 +185,7 @@ export default function ActivityLogs() {
             <div className="flex items-center gap-[10px]">
               <Activity className="h-6 w-6 text-fm-gold" />
               <h1 className="text-3xl font-canela">
-                {formatHeader('Activity logs')}
+                {formatHeader(t('activityLogsPage.title'))}
               </h1>
             </div>
 
@@ -198,7 +200,7 @@ export default function ActivityLogs() {
                     className="border-white/20 hover:border-fm-gold"
                   >
                     <SlidersHorizontal className="h-4 w-4 mr-2" />
-                    Filters
+                    {t('buttons.filter')}
                     {hasActiveFilters && (
                       <span className="ml-2 w-2 h-2 rounded-full bg-fm-gold" />
                     )}
@@ -211,7 +213,7 @@ export default function ActivityLogs() {
                   <SheetHeader>
                     <SheetTitle className="text-white flex items-center gap-2">
                       <Filter className="h-5 w-5 text-fm-gold" />
-                      Filter Logs
+                      {t('activityLogsPage.filterLogs')}
                     </SheetTitle>
                   </SheetHeader>
                   <div className="mt-4">
@@ -241,7 +243,7 @@ export default function ActivityLogs() {
                 <RefreshCw
                   className={`h-4 w-4 mr-2 ${isFetching ? 'animate-spin' : ''}`}
                 />
-                Refresh
+                {t('buttons.refresh')}
               </Button>
 
               <DropdownMenu>
@@ -253,7 +255,7 @@ export default function ActivityLogs() {
                     className="border-white/20 hover:border-fm-gold"
                   >
                     <Download className="h-4 w-4 mr-2" />
-                    Export
+                    {t('table.export')}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
@@ -262,11 +264,11 @@ export default function ActivityLogs() {
                 >
                   <DropdownMenuItem onClick={() => handleExport('json')}>
                     <FileJson className="h-4 w-4 mr-2" />
-                    Export as JSON
+                    {t('activityLogsPage.exportAsJson')}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => handleExport('csv')}>
                     <FileSpreadsheet className="h-4 w-4 mr-2" />
-                    Export as CSV
+                    {t('activityLogsPage.exportAsCsv')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -274,7 +276,7 @@ export default function ActivityLogs() {
           </div>
 
           <p className="text-muted-foreground text-sm mt-2">
-            Track administrative actions and system events
+            {t('activityLogsPage.description')}
           </p>
         </div>
 
@@ -303,7 +305,7 @@ export default function ActivityLogs() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs text-muted-foreground uppercase">
-                  Active filters:
+                  {t('activityLogsPage.activeFilters')}
                 </span>
                 {filters.categories?.map(cat => (
                   <span
@@ -315,17 +317,17 @@ export default function ActivityLogs() {
                 ))}
                 {filters.dateFrom && (
                   <span className="text-xs px-2 py-1 bg-white/10 text-white rounded">
-                    From: {new Date(filters.dateFrom).toLocaleDateString()}
+                    {t('activityLogsPage.from')}: {new Date(filters.dateFrom).toLocaleDateString()}
                   </span>
                 )}
                 {filters.dateTo && (
                   <span className="text-xs px-2 py-1 bg-white/10 text-white rounded">
-                    To: {new Date(filters.dateTo).toLocaleDateString()}
+                    {t('activityLogsPage.to')}: {new Date(filters.dateTo).toLocaleDateString()}
                   </span>
                 )}
                 {filters.search && (
                   <span className="text-xs px-2 py-1 bg-white/10 text-white rounded">
-                    Search: "{filters.search}"
+                    {t('activityLogsPage.search')}: "{filters.search}"
                   </span>
                 )}
               </div>
@@ -335,7 +337,7 @@ export default function ActivityLogs() {
                 onClick={handleClearFilters}
                 className="text-xs text-muted-foreground hover:text-white"
               >
-                Clear all
+                {t('activityLogsPage.clearAll')}
               </Button>
             </div>
           </div>
@@ -344,7 +346,7 @@ export default function ActivityLogs() {
         {/* Results count */}
         {logsData && (
           <div className="mb-4 text-sm text-muted-foreground">
-            Showing {allLogs.length} of {logsData.totalCount} logs
+            {t('activityLogsPage.showingLogs', { showing: allLogs.length, total: logsData.totalCount })}
           </div>
         )}
 

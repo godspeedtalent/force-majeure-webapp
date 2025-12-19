@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/common/shadcn/card';
 import { Button } from '@/components/common/shadcn/button';
 import { Switch } from '@/components/common/shadcn/switch';
@@ -19,6 +20,8 @@ interface SalesReportConfigProps {
 }
 
 export const SalesReportConfig = ({ eventId }: SalesReportConfigProps) => {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const [showPreview, setShowPreview] = useState(false);
   const queryClient = useQueryClient();
 
@@ -59,10 +62,10 @@ export const SalesReportConfig = ({ eventId }: SalesReportConfigProps) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['report-config', eventId, 'sales'] });
-      toast.success('Report configuration created');
+      toast.success(tToast('reports.configCreated'));
     },
     onError: (error: Error) => {
-      toast.error('Failed to create configuration: ' + error.message);
+      toast.error(tToast('reports.configCreateFailed') + ': ' + error.message);
     },
   });
 
@@ -80,10 +83,10 @@ export const SalesReportConfig = ({ eventId }: SalesReportConfigProps) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['report-config', eventId, 'sales'] });
-      toast.success(config?.is_active ? 'Report disabled' : 'Report enabled');
+      toast.success(config?.is_active ? tToast('reports.disabled') : tToast('reports.enabled'));
     },
     onError: (error: Error) => {
-      toast.error('Failed to update: ' + error.message);
+      toast.error(tToast('reports.updateFailed') + ': ' + error.message);
     },
   });
 
@@ -103,30 +106,30 @@ export const SalesReportConfig = ({ eventId }: SalesReportConfigProps) => {
       return data;
     },
     onSuccess: () => {
-      toast.success('Test report sent successfully');
+      toast.success(tToast('reports.testSent'));
       queryClient.invalidateQueries({ queryKey: ['report-history', config?.id] });
     },
     onError: (error: Error) => {
-      toast.error('Failed to send test report: ' + error.message);
+      toast.error(tToast('reports.testSendFailed') + ': ' + error.message);
     },
   });
 
   if (isLoading) {
-    return <Card className="p-6"><p>Loading...</p></Card>;
+    return <Card className="p-6"><p>{t('status.loading')}</p></Card>;
   }
 
   if (!config) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Daily Sales Report</CardTitle>
+          <CardTitle>{t('reports.dailySalesReport')}</CardTitle>
           <CardDescription>
-            Get automated daily sales reports with comprehensive order data and analytics
+            {t('reports.dailySalesDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Button onClick={() => createConfigMutation.mutate()}>
-            Enable Daily Sales Report
+            {t('reports.enableDailySalesReport')}
           </Button>
         </CardContent>
       </Card>
@@ -139,9 +142,9 @@ export const SalesReportConfig = ({ eventId }: SalesReportConfigProps) => {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Daily Sales Report</CardTitle>
+              <CardTitle>{t('reports.dailySalesReport')}</CardTitle>
               <CardDescription>
-                Automated Excel report with summary, orders, and detailed analysis
+                {t('reports.automatedExcelDescription')}
               </CardDescription>
             </div>
             <div className="flex items-center gap-4">
@@ -150,7 +153,7 @@ export const SalesReportConfig = ({ eventId }: SalesReportConfigProps) => {
                   checked={config.is_active}
                   onCheckedChange={(checked: boolean) => toggleActiveMutation.mutate(checked)}
                 />
-                <Label>{config.is_active ? 'Enabled' : 'Disabled'}</Label>
+                <Label>{config.is_active ? t('status.on') : t('status.off')}</Label>
               </div>
             </div>
           </div>
@@ -158,9 +161,9 @@ export const SalesReportConfig = ({ eventId }: SalesReportConfigProps) => {
         <CardContent>
           <Tabs defaultValue="schedule">
             <TabsList>
-              <TabsTrigger value="schedule">Schedule</TabsTrigger>
-              <TabsTrigger value="recipients">Recipients</TabsTrigger>
-              <TabsTrigger value="history">History</TabsTrigger>
+              <TabsTrigger value="schedule">{t('reports.tabs.schedule')}</TabsTrigger>
+              <TabsTrigger value="recipients">{t('reports.tabs.recipients')}</TabsTrigger>
+              <TabsTrigger value="history">{t('reports.tabs.history')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="schedule" className="space-y-4">
@@ -171,14 +174,14 @@ export const SalesReportConfig = ({ eventId }: SalesReportConfigProps) => {
                   onClick={() => setShowPreview(true)}
                 >
                   <Eye className="w-4 h-4 mr-2" />
-                  Preview Report
+                  {t('reports.previewReport')}
                 </Button>
                 <Button
                   onClick={() => sendTestMutation.mutate()}
                   disabled={sendTestMutation.isPending}
                 >
                   <Send className="w-4 h-4 mr-2" />
-                  Send Test Report
+                  {t('reports.sendTestReport')}
                 </Button>
               </div>
             </TabsContent>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -52,6 +53,8 @@ export function RoleManagementModal({
   currentRoles,
   onRolesUpdated,
 }: RoleManagementModalProps) {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const [availableRoles, setAvailableRoles] = useState<AvailableRole[]>([]);
   const [loading, setLoading] = useState(false);
   const [togglingRole, setTogglingRole] = useState<string | null>(null);
@@ -77,7 +80,7 @@ export function RoleManagementModal({
       );
     } catch (error: any) {
       logger.error('Error fetching available roles:', error);
-      toast.error('Failed to load available roles', {
+      toast.error(tToast('admin.rolesLoadFailed'), {
         description: error.message,
       });
     } finally {
@@ -90,20 +93,20 @@ export function RoleManagementModal({
     try {
       if (shouldAdd) {
         await RoleManagementService.addRole(userId, roleName);
-        toast.success('Role added', {
-          description: `Added ${roleName} to ${userEmail}`,
+        toast.success(tToast('admin.roleAdded'), {
+          description: tToast('admin.roleAddedDescription', { roleName, userEmail }),
         });
       } else {
         await RoleManagementService.removeRole(userId, roleName);
-        toast.success('Role removed', {
-          description: `Removed ${roleName} from ${userEmail}`,
+        toast.success(tToast('admin.roleRemoved'), {
+          description: tToast('admin.roleRemovedDescription', { roleName, userEmail }),
         });
       }
 
       onRolesUpdated();
     } catch (error: any) {
       logger.error('Error toggling role:', error);
-      toast.error(`Failed to ${shouldAdd ? 'add' : 'remove'} role`, {
+      toast.error(shouldAdd ? tToast('admin.roleAddFailed') : tToast('admin.roleRemoveFailed'), {
         description: error.message,
       });
     } finally {
@@ -122,24 +125,21 @@ export function RoleManagementModal({
         <DialogHeader>
           <DialogTitle className='flex items-center gap-2'>
             <Shield className='h-5 w-5 text-fm-gold' />
-            Manage Roles
+            {t('dialogs.manageRoles')}
           </DialogTitle>
           <DialogDescription>
-            Manage roles for{' '}
-            <span className='font-mono font-medium text-foreground'>
-              {userEmail}
-            </span>
+            {t('dialogs.manageRolesFor', { email: userEmail })}
           </DialogDescription>
         </DialogHeader>
 
         <div className='space-y-6 py-4'>
           {/* Available Roles */}
           <div className='space-y-3'>
-            <Label className='text-base font-medium'>Roles</Label>
+            <Label className='text-base font-medium'>{t('labels.roles')}</Label>
             {loading ? (
               <div className='flex items-center gap-2 p-4 border border-dashed bg-muted/50 text-muted-foreground'>
                 <AlertCircle className='h-4 w-4' />
-                <span className='text-sm'>Loading roles...</span>
+                <span className='text-sm'>{t('dialogs.loadingRoles')}</span>
               </div>
             ) : availableRoles.length > 0 ? (
               <div className='space-y-2'>
@@ -163,7 +163,7 @@ export function RoleManagementModal({
             ) : (
               <div className='flex items-center gap-2 p-4 border border-dashed bg-muted/50 text-muted-foreground'>
                 <AlertCircle className='h-4 w-4' />
-                <span className='text-sm'>No roles available</span>
+                <span className='text-sm'>{t('dialogs.noRolesAvailable')}</span>
               </div>
             )}
           </div>
@@ -175,7 +175,7 @@ export function RoleManagementModal({
             variant='secondary'
             onClick={() => onOpenChange(false)}
           >
-            Done
+            {t('dialogs.done')}
           </FmCommonButton>
         </div>
       </DialogContent>

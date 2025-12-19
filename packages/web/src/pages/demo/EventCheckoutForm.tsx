@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
   CreditCard,
@@ -133,6 +134,8 @@ export default function EventCheckoutForm({
   orderSummary,
   onBack,
 }: CheckoutFormProps) {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [isGuestMode, setIsGuestMode] = useState(false);
@@ -198,9 +201,8 @@ export default function EventCheckoutForm({
   };
 
   const handleTimerExpire = () => {
-    toast.error('Time expired', {
-      description:
-        'Your ticket reservation has expired. Please select tickets again.',
+    toast.error(tToast('checkout.timeExpired'), {
+      description: tToast('checkout.reservationExpired'),
     });
     onBack();
   };
@@ -221,13 +223,13 @@ export default function EventCheckoutForm({
     e.preventDefault();
 
     if (!isFormValid) {
-      toast.error('Please fix all form errors before continuing');
+      toast.error(tToast('checkout.fixFormErrors'));
       return;
     }
 
     // Simulate successful checkout
-    toast.success('Order successful!', {
-      description: 'Redirecting to confirmation...',
+    toast.success(tToast('checkout.orderSuccess'), {
+      description: tToast('checkout.redirectingToConfirmation'),
     });
 
     setTimeout(() => {
@@ -239,13 +241,13 @@ export default function EventCheckoutForm({
 
   const handleGuestContinue = () => {
     setIsGuestMode(true);
-    toast.info('Continuing as guest', {
-      description: 'You can create an account after purchase.',
+    toast.info(tToast('checkout.continuingAsGuest'), {
+      description: tToast('checkout.createAccountAfterPurchase'),
     });
   };
 
   const handleAuthSuccess = () => {
-    toast.success('Authentication successful');
+    toast.success(tToast('auth.authenticationSuccessful'));
   };
 
   // Redirect if not authenticated
@@ -254,7 +256,7 @@ export default function EventCheckoutForm({
       <div className='flex items-center justify-center min-h-screen'>
         <div className='text-center'>
           <div className='animate-spin rounded-none h-8 w-8 border-b-2 border-fm-gold mx-auto mb-2'></div>
-          <p className='text-sm text-muted-foreground'>Loading checkout...</p>
+          <p className='text-sm text-muted-foreground'>{t('checkout.loadingCheckout')}</p>
         </div>
       </div>
     );
@@ -272,7 +274,7 @@ export default function EventCheckoutForm({
               {formatHeader('complete your purchase')}
             </h1>
             <p className='text-sm text-muted-foreground'>
-              Sign in or continue as guest
+              {t('checkout.signInOrContinueAsGuest')}
             </p>
           </div>
         </div>
@@ -283,8 +285,8 @@ export default function EventCheckoutForm({
             showGuestOption={true}
             onGuestContinue={handleGuestContinue}
             onAuthSuccess={handleAuthSuccess}
-            title='Sign in to continue'
-            description='Create an account or sign in to complete your ticket purchase'
+            title={t('checkout.signInToContinue')}
+            description={t('checkout.createAccountOrSignIn')}
           />
         </div>
       </div>
@@ -305,7 +307,7 @@ export default function EventCheckoutForm({
             {formatHeader('complete your purchase')}
           </h1>
           <p className='text-sm text-muted-foreground'>
-            Secure checkout powered by Stripe
+            {t('checkout.secureCheckoutPoweredByStripe')}
           </p>
         </div>
       </div>
@@ -325,7 +327,7 @@ export default function EventCheckoutForm({
               <div className='space-y-[20px]'>
                 <div>
                   <Label htmlFor='fullName' className='text-xs uppercase'>
-                    FULL NAME *
+                    {t('labels.fullName')} *
                   </Label>
                   <Input
                     id='fullName'
@@ -344,7 +346,7 @@ export default function EventCheckoutForm({
                 </div>
                 <div>
                   <Label htmlFor='email' className='text-xs uppercase'>
-                    EMAIL ADDRESS *
+                    {t('labels.emailAddress')} *
                   </Label>
                   <Input
                     id='email'
@@ -362,7 +364,7 @@ export default function EventCheckoutForm({
                 </div>
                 <div>
                   <Label htmlFor='phone' className='text-xs uppercase'>
-                    PHONE NUMBER *
+                    {t('labels.phoneNumber')} *
                   </Label>
                   <PhoneInput
                     id='phone'
@@ -390,7 +392,7 @@ export default function EventCheckoutForm({
               <div className='space-y-[20px]'>
                 <div>
                   <Label htmlFor='billingAddress' className='text-xs uppercase'>
-                    ADDRESS LINE 1 *
+                    {t('labels.addressLine1')} *
                   </Label>
                   <Input
                     id='billingAddress'
@@ -412,7 +414,7 @@ export default function EventCheckoutForm({
                     htmlFor='billingAddress2'
                     className='text-xs uppercase'
                   >
-                    ADDRESS LINE 2
+                    {t('labels.addressLine2')}
                   </Label>
                   <Input
                     id='billingAddress2'
@@ -432,7 +434,7 @@ export default function EventCheckoutForm({
                 <div className='grid grid-cols-2 gap-[20px]'>
                   <div>
                     <Label htmlFor='city' className='text-xs uppercase'>
-                      CITY *
+                      {t('labels.city')} *
                     </Label>
                     <Input
                       id='city'
@@ -449,7 +451,7 @@ export default function EventCheckoutForm({
                   </div>
                   <div>
                     <Label htmlFor='state' className='text-xs uppercase'>
-                      STATE *
+                      {t('labels.state')} *
                     </Label>
                     <Select
                       value={formData.state}
@@ -459,7 +461,7 @@ export default function EventCheckoutForm({
                         id='state'
                         onBlur={() => handleBlur('state')}
                       >
-                        <SelectValue placeholder='Select state' />
+                        <SelectValue placeholder={t('placeholders.selectState')} />
                       </SelectTrigger>
                       <SelectContent>
                         {US_STATES.map(state => (
@@ -478,7 +480,7 @@ export default function EventCheckoutForm({
                 </div>
                 <div>
                   <Label htmlFor='zipCode' className='text-xs uppercase'>
-                    ZIP CODE *
+                    {t('labels.zipCode')} *
                   </Label>
                   <Input
                     id='zipCode'
@@ -500,8 +502,8 @@ export default function EventCheckoutForm({
             {isGuestMode && (
               <FmInfoCard
                 icon={UserPlus}
-                title='Create an Account'
-                description="We'll save your information for next time, making checkout faster and easier."
+                title={t('checkout.createAnAccount')}
+                description={t('checkout.saveInfoForNextTime')}
               >
                 <Button
                   type='button'
@@ -510,7 +512,7 @@ export default function EventCheckoutForm({
                   onClick={() => setShowSignUpModal(true)}
                   className='border-fm-gold text-fm-gold hover:bg-fm-gold/10'
                 >
-                  Sign Up Now
+                  {t('buttons.signUpNow')}
                 </Button>
               </FmInfoCard>
             )}
@@ -518,8 +520,8 @@ export default function EventCheckoutForm({
             {/* Secure Payment */}
             <FmInfoCard
               icon={Lock}
-              title='Secure Payment'
-              description="You'll be redirected to Stripe's secure checkout page to complete your payment. Your payment information is never stored on our servers."
+              title={t('checkout.securePayment')}
+              description={t('checkout.redirectedToStripe')}
             />
 
             {/* Ticket Protection */}
@@ -527,11 +529,10 @@ export default function EventCheckoutForm({
               <div className='flex items-start justify-between mb-2'>
                 <div>
                   <h3 className='font-medium text-sm mb-1'>
-                    Ticket Protection
+                    {t('checkout.ticketProtection')}
                   </h3>
                   <p className='text-xs text-muted-foreground mb-3'>
-                    Get a full refund if you can't attend due to illness,
-                    weather, or other covered reasons. Adds 15% of ticket price.
+                    {t('checkout.ticketProtectionDescription')}
                   </p>
                 </div>
                 <span className='text-sm font-medium text-fm-gold ml-4'>
@@ -542,7 +543,7 @@ export default function EventCheckoutForm({
                 id='ticketProtection'
                 checked={ticketProtection}
                 onCheckedChange={setTicketProtection}
-                label='Add ticket protection to my order'
+                label={t('checkout.addTicketProtection')}
               />
             </FmInfoCard>
 
@@ -553,7 +554,7 @@ export default function EventCheckoutForm({
               onCheckedChange={checked =>
                 handleInputChange('smsConsent', checked)
               }
-              label='Sign up for SMS and email updates about upcoming events and special offers'
+              label={t('checkout.smsConsent')}
             />
 
             {/* Terms and Conditions */}
@@ -565,21 +566,21 @@ export default function EventCheckoutForm({
               }
               label={
                 <>
-                  I agree to the{' '}
+                  {t('checkout.agreeToThe')}{' '}
                   <a
                     href='/terms'
                     className='text-fm-gold hover:underline'
                     target='_blank'
                   >
-                    Terms and Conditions
+                    {t('checkout.termsAndConditions')}
                   </a>{' '}
-                  and{' '}
+                  {t('checkout.and')}{' '}
                   <a
                     href='/privacy'
                     className='text-fm-gold hover:underline'
                     target='_blank'
                   >
-                    Privacy Policy
+                    {t('checkout.privacyPolicy')}
                   </a>
                 </>
               }
@@ -588,14 +589,14 @@ export default function EventCheckoutForm({
 
             {/* Order Summary Before Submit */}
             <Card className='p-6 bg-muted/10'>
-              <h3 className='text-lg font-canela mb-4'>Order Summary</h3>
+              <h3 className='text-lg font-canela mb-4'>{t('checkout.orderSummary')}</h3>
               <div className='space-y-3'>
                 {orderSummary.tickets.map((ticket, idx) => (
                   <div key={idx} className='flex justify-between text-sm'>
                     <div>
                       <div className='font-medium'>{ticket.name}</div>
                       <div className='text-xs text-muted-foreground'>
-                        Qty: {ticket.quantity}
+                        {t('checkout.qty')}: {ticket.quantity}
                       </div>
                     </div>
                     <div className='font-medium'>
@@ -607,38 +608,38 @@ export default function EventCheckoutForm({
                 <Separator />
 
                 <div className='flex justify-between text-sm'>
-                  <span className='text-muted-foreground'>Subtotal</span>
+                  <span className='text-muted-foreground'>{t('checkout.subtotal')}</span>
                   <span>${orderSummary.subtotal.toFixed(2)}</span>
                 </div>
 
                 {ticketProtection && (
                   <div className='flex justify-between text-sm'>
                     <span className='text-muted-foreground'>
-                      Ticket Protection
+                      {t('checkout.ticketProtection')}
                     </span>
                     <span>${ticketProtectionFee.toFixed(2)}</span>
                   </div>
                 )}
 
                 <div className='flex justify-between text-sm'>
-                  <span className='text-muted-foreground'>Service Fee</span>
+                  <span className='text-muted-foreground'>{t('checkout.serviceFee')}</span>
                   <span>${serviceFee.toFixed(2)}</span>
                 </div>
 
                 <div className='flex justify-between text-sm'>
-                  <span className='text-muted-foreground'>Processing Fee</span>
+                  <span className='text-muted-foreground'>{t('checkout.processingFee')}</span>
                   <span>${processingFee.toFixed(2)}</span>
                 </div>
 
                 <div className='flex justify-between text-sm'>
-                  <span className='text-muted-foreground'>Tax</span>
+                  <span className='text-muted-foreground'>{t('checkout.tax')}</span>
                   <span>${tax.toFixed(2)}</span>
                 </div>
 
                 <Separator />
 
                 <div className='flex justify-between items-center pt-2'>
-                  <span className='font-canela text-lg'>Total</span>
+                  <span className='font-canela text-lg'>{t('checkout.total')}</span>
                   <span className='font-canela text-2xl text-fm-gold'>
                     ${finalTotal.toFixed(2)}
                   </span>
@@ -654,7 +655,7 @@ export default function EventCheckoutForm({
               disabled={!isFormValid}
             >
               <Lock className='h-4 w-4 mr-2' />
-              Purchase Tickets
+              {t('buttons.purchaseTickets')}
             </Button>
           </form>
         </div>
@@ -665,17 +666,17 @@ export default function EventCheckoutForm({
         <DialogContent className='max-w-md'>
           <DialogHeader>
             <DialogTitle className='font-canela text-2xl'>
-              Create Your Account
+              {t('checkout.createYourAccount')}
             </DialogTitle>
           </DialogHeader>
           <AuthPanel
             onAuthSuccess={() => {
               setShowSignUpModal(false);
               setIsGuestMode(false);
-              toast.success('Account created successfully!');
+              toast.success(tToast('auth.accountCreatedSuccessfully'));
             }}
             title=''
-            description='Save your information for faster checkout next time'
+            description={t('checkout.saveInfoForFasterCheckout')}
           />
         </DialogContent>
       </Dialog>

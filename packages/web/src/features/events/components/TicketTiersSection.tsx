@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Label } from '@/components/common/shadcn/label';
 import { Input } from '@/components/common/shadcn/input';
 import { Checkbox } from '@/components/common/shadcn/checkbox';
@@ -26,6 +27,8 @@ export const TicketTiersSection = ({
   formState,
   setFormState,
 }: TicketTiersSectionProps) => {
+  const { t } = useTranslation('common');
+
   const handleAdd = () => {
     setFormState(prev => ({
       ...prev,
@@ -68,12 +71,12 @@ export const TicketTiersSection = ({
   const getTicketStatusMessage = () => {
     if (!formState.venueCapacity) return '';
     if (ticketsOverCapacity) {
-      return `Over capacity by ${totalTickets - formState.venueCapacity} tickets`;
+      return t('ticketTiersSection.overCapacity', { count: totalTickets - formState.venueCapacity });
     }
     if (ticketsUnderCapacity) {
-      return `${formState.venueCapacity - totalTickets} tickets remaining`;
+      return t('ticketTiersSection.ticketsRemaining', { count: formState.venueCapacity - totalTickets });
     }
-    return 'All tickets allocated';
+    return t('ticketTiersSection.allTicketsAllocated');
   };
 
   return (
@@ -82,25 +85,25 @@ export const TicketTiersSection = ({
         items={formState.ticketTiers}
         onAdd={handleAdd}
         onRemove={handleRemove}
-        addLabel='Add Ticket Tier'
+        addLabel={t('ticketTiersSection.addTicketTier')}
         minItems={1}
         maxItems={5}
         renderRow={(tier, index) => (
           <div className='space-y-3 p-4 rounded-md bg-white/5 border border-white/10'>
             <div className='grid grid-cols-3 gap-3'>
               <div className='space-y-1'>
-                <Label className='text-white/70 text-xs'>Name</Label>
+                <Label className='text-white/70 text-xs'>{t('ticketTiersSection.name')}</Label>
                 <Input
                   value={tier.name}
                   onChange={e =>
                     handleTierChange(index, 'name', e.target.value)
                   }
-                  placeholder='e.g., General Admission'
+                  placeholder={t('ticketTiersSection.namePlaceholder')}
                   className='bg-black/40 border-white/20 text-white'
                 />
               </div>
               <div className='space-y-1'>
-                <Label className='text-white/70 text-xs'>Price ($)</Label>
+                <Label className='text-white/70 text-xs'>{t('ticketTiersSection.price')}</Label>
                 <Input
                   type='number'
                   min='0'
@@ -125,7 +128,7 @@ export const TicketTiersSection = ({
                 />
               </div>
               <div className='space-y-1'>
-                <Label className='text-white/70 text-xs'>Quantity</Label>
+                <Label className='text-white/70 text-xs'>{t('ticketTiersSection.quantity')}</Label>
                 <Input
                   type='number'
                   min='1'
@@ -144,14 +147,14 @@ export const TicketTiersSection = ({
             </div>
             <div className='space-y-1'>
               <Label className='text-white/70 text-xs'>
-                Description (Optional)
+                {t('ticketTiersSection.descriptionOptional')}
               </Label>
               <Input
                 value={tier.description || ''}
                 onChange={e =>
                   handleTierChange(index, 'description', e.target.value)
                 }
-                placeholder='e.g., Includes coat check and one drink'
+                placeholder={t('ticketTiersSection.descriptionPlaceholder')}
                 className='bg-black/40 border-white/20 text-white'
               />
             </div>
@@ -171,7 +174,7 @@ export const TicketTiersSection = ({
                 htmlFor={`tier-${index}-hide`}
                 className='text-white/70 text-sm cursor-pointer'
               >
-                Hide until previous tier sold out
+                {t('ticketTiersSection.hideUntilSoldOut')}
               </Label>
             </div>
           </div>

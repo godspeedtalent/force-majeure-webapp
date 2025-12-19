@@ -1,5 +1,6 @@
 import { Clock, MapPin, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ExternalLinkDialog } from '@/components/business/ExternalLinkDialog';
 import { FmBadge } from '@/components/common/display/FmBadge';
@@ -35,6 +36,7 @@ interface EventRowProps {
 }
 
 export const EventRow = ({ event }: EventRowProps) => {
+  const { t } = useTranslation('common');
   const [showTicketDialog, setShowTicketDialog] = useState(false);
 
   const formatDate = (dateString: string) => {
@@ -106,7 +108,7 @@ export const EventRow = ({ event }: EventRowProps) => {
               </div>
               {isAfterHours && (
                 <FmBadge
-                  label='After Hours'
+                  label={t('eventCard.afterHours')}
                   variant='primary'
                   className='ml-2 flex-shrink-0'
                 />
@@ -137,7 +139,7 @@ export const EventRow = ({ event }: EventRowProps) => {
                 className='shimmer-on-hover bg-accent hover:bg-accent/90 text-accent-foreground font-medium'
                 icon={ExternalLink}
               >
-                Get Tickets
+                {t('eventCard.getTickets')}
               </FmCommonButton>
             </div>
           )}
@@ -158,9 +160,9 @@ export const EventRow = ({ event }: EventRowProps) => {
           open={showTicketDialog}
           onOpenChange={setShowTicketDialog}
           url={event.ticketUrl}
-          title='External Link'
-          description="You're about to visit an external ticketing site. This will open in a new tab."
-          continueText='Continue to Tickets'
+          title={t('eventCard.externalLink')}
+          description={t('eventCard.externalLinkDescription')}
+          continueText={t('eventCard.continueToTickets')}
         />
       )}
     </>

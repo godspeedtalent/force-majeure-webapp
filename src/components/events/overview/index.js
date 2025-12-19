@@ -1,0 +1,1 @@
+export { HeroImageFocalPoint } from './HeroImageFocalPoint';

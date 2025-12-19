@@ -1,0 +1,35 @@
+import { jsx as _jsx } from "react/jsx-runtime";
+import { useEffect, useState } from 'react';
+import { ChevronDown } from 'lucide-react';
+import { cn } from '@/shared';
+import { useIsMobile } from '@/shared';
+import { useScrollPosition } from '@/shared';
+import { SCROLL_THRESHOLDS } from '@/shared';
+/**
+ * Visual cue indicating more content below on mobile
+ * Bouncing down arrow that auto-hides after delay or on scroll
+ */
+export const MobileScrollCue = ({ show = true, autoHide = true, autoHideDelay = SCROLL_THRESHOLDS.SCROLL_CUE_DELAY, className, }) => {
+    const isMobile = useIsMobile();
+    const scrollY = useScrollPosition();
+    const [isVisible, setIsVisible] = useState(show);
+    useEffect(() => {
+        if (!autoHide || !show)
+            return;
+        // Auto-hide after delay
+        const timer = setTimeout(() => {
+            setIsVisible(false);
+        }, autoHideDelay);
+        return () => clearTimeout(timer);
+    }, [autoHide, autoHideDelay, show]);
+    useEffect(() => {
+        // Hide on scroll
+        if (scrollY > 50) {
+            setIsVisible(false);
+        }
+    }, [scrollY]);
+    // Don't render on desktop or if not visible
+    if (!isMobile || !isVisible)
+        return null;
+    return (_jsx("div", { className: cn('fixed bottom-[100px] left-1/2 -translate-x-1/2 z-30', 'flex flex-col items-center', 'text-fm-gold', 'animate-scroll-cue-bounce', 'md:hidden', 'pointer-events-none', className), children: _jsx(ChevronDown, { className: 'w-[40px] h-[40px]', strokeWidth: 1.5 }) }));
+};

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { MessagePanel } from '@/components/feedback/MessagePanel';
 
 interface AlreadyClaimedViewProps {
@@ -5,16 +6,18 @@ interface AlreadyClaimedViewProps {
 }
 
 export function AlreadyClaimedView({ locationName }: AlreadyClaimedViewProps) {
+  const { t } = useTranslation('common');
+
   return (
     <>
       <MessagePanel
-        title='Already Claimed!'
-        description={`You've already claimed a reward from ${locationName}. You can only claim one reward per location!`}
+        title={t('scavenger.views.alreadyClaimed')}
+        description={t('scavenger.views.alreadyClaimedDescription', { locationName })}
         className='mb-4'
       />
       <div className='text-center'>
         <p className='text-foreground font-canela text-sm lg:text-lg'>
-          But you can share this secret location with your friends! 🎉
+          {t('scavenger.views.shareWithFriends')}
         </p>
       </div>
     </>

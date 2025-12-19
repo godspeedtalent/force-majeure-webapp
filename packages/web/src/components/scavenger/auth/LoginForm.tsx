@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
@@ -16,13 +17,18 @@ interface LoginFormProps {
 export function LoginForm({
   onSuccess,
   onBack,
-  title = 'Welcome Back',
-  description = 'Sign in to continue',
+  title,
+  description,
 }: LoginFormProps) {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberDevice, setRememberDevice] = useState(false);
   const [isLogging, setIsLogging] = useState(false);
+
+  const displayTitle = title ?? t('auth.welcomeBack');
+  const displayDescription = description ?? t('auth.signInToContinue');
 
   // Check if device should be remembered on component mount
   useEffect(() => {
@@ -44,10 +50,10 @@ export function LoginForm({
       // Set session persistence preference
       sessionPersistence.setRememberDevice(rememberDevice);
 
-      toast.success('Successfully logged in!');
+      toast.success(tToast('auth.signInSuccess'));
       onSuccess?.();
     } catch (error: any) {
-      toast.error(error.message || 'Failed to login');
+      toast.error(error.message || tToast('auth.signInError'));
     } finally {
       setIsLogging(false);
     }
@@ -60,22 +66,22 @@ export function LoginForm({
           onClick={onBack}
           className='mb-4 text-muted-foreground hover:text-foreground bg-transparent hover:bg-white/5 px-3 py-2 rounded transition-colors'
         >
-          ← Back
+          ← {t('buttons.back')}
         </button>
       )}
 
       <div className='bg-background/60 backdrop-blur-md border-2 border-border/40 p-6 lg:p-8 w-full shadow-2xl'>
         <div className='mb-4 text-center'>
-          <h1 className='font-display text-2xl md:text-3xl mb-2'>{title}</h1>
-          <p className='text-muted-foreground text-sm'>{description}</p>
+          <h1 className='font-display text-2xl md:text-3xl mb-2'>{displayTitle}</h1>
+          <p className='text-muted-foreground text-sm'>{displayDescription}</p>
         </div>
 
         <form onSubmit={handleSubmit} className='space-y-4'>
           <FmCommonTextField
-            label='Email *'
+            label={`${t('labels.email')} *`}
             id='loginEmail'
             type='email'
-            placeholder='your@email.com'
+            placeholder={t('placeholders.email')}
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
@@ -83,10 +89,10 @@ export function LoginForm({
           />
 
           <FmCommonTextField
-            label='Password *'
+            label={`${t('labels.password')} *`}
             id='loginPassword'
             password
-            placeholder='Enter your password'
+            placeholder={t('placeholders.password')}
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
@@ -96,7 +102,7 @@ export function LoginForm({
           <div className='pt-2'>
             <FmCommonToggle
               id='rememberDevice'
-              label='Remember this device for 30 days'
+              label={t('auth.rememberDevice')}
               checked={rememberDevice}
               onCheckedChange={checked => setRememberDevice(checked as boolean)}
               className='text-xs'
@@ -108,7 +114,7 @@ export function LoginForm({
             className='w-full bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] h-9 mt-6 rounded-md disabled:opacity-50 disabled:cursor-not-allowed'
             disabled={isLogging}
           >
-            {isLogging ? 'Signing In...' : 'Sign In'}
+            {isLogging ? t('auth.signingIn') : t('auth.signIn')}
           </button>
         </form>
       </div>

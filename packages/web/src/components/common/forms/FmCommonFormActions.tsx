@@ -5,6 +5,7 @@
  * Provides consistent layout and states for form actions
  */
 
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/common/shadcn/button';
 import { cn } from '@force-majeure/shared';
 
@@ -61,8 +62,8 @@ const alignClasses = {
  * ```
  */
 export const FmCommonFormActions = ({
-  submitText = 'Submit',
-  cancelText = 'Cancel',
+  submitText,
+  cancelText,
   showCancel = false,
   onCancel,
   showReset = false,
@@ -72,6 +73,8 @@ export const FmCommonFormActions = ({
   align = 'right',
   className,
 }: FmCommonFormActionsProps) => {
+  const { t } = useTranslation('common');
+
   return (
     <div
       className={cn('flex items-center gap-3', alignClasses[align], className)}
@@ -83,7 +86,7 @@ export const FmCommonFormActions = ({
           onClick={onReset}
           disabled={isSubmitting || disabled}
         >
-          Reset
+          {t('buttons.reset')}
         </Button>
       )}
 
@@ -94,13 +97,13 @@ export const FmCommonFormActions = ({
           onClick={onCancel}
           disabled={isSubmitting}
         >
-          {cancelText}
+          {cancelText || t('buttons.cancel')}
         </Button>
       )}
 
       <Button type='submit' disabled={isSubmitting || disabled}>
         {isSubmitting && <div className='w-4 h-4 mr-2 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />}
-        {submitText}
+        {submitText || t('buttons.submit')}
       </Button>
     </div>
   );

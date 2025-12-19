@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { logger } from '@force-majeure/shared';
 import { supabase } from '@force-majeure/shared';
 import { toast } from 'sonner';
@@ -9,6 +10,7 @@ export interface TicketSelection {
 }
 
 export const useCheckout = () => {
+  const { t } = useTranslation('toasts');
   const [isLoading, setIsLoading] = useState(false);
 
   const initiateCheckout = async (
@@ -41,11 +43,11 @@ export const useCheckout = () => {
         error: error instanceof Error ? error.message : 'Unknown error',
         source: 'useCheckout.initiateCheckout'
       });
-      toast.error('Checkout Failed', {
+      toast.error(t('checkout.checkoutFailed'), {
         description:
           error instanceof Error
             ? error.message
-            : 'Failed to create checkout session',
+            : t('checkout.paymentError'),
       });
       setIsLoading(false);
     }

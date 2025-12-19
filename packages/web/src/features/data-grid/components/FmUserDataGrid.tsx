@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FmDataGrid, DataGridColumn, DataGridAction } from './FmDataGrid';
 import { supabase } from '@force-majeure/shared';
 import { Badge } from '@/components/common/shadcn/badge';
@@ -28,6 +29,8 @@ interface UserData {
 }
 
 export function FmUserDataGrid() {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const [users, setUsers] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(true);
   const [roleModalOpen, setRoleModalOpen] = useState(false);
@@ -58,7 +61,7 @@ export function FmUserDataGrid() {
       setUsers(data.users || []);
     } catch (error: any) {
       logger.error('Error fetching users:', error);
-      toast.error('Failed to load users', {
+      toast.error(tToast('admin.userLoadFailed'), {
         description: error.message,
       });
     } finally {
@@ -84,7 +87,7 @@ export function FmUserDataGrid() {
   const columns: DataGridColumn<UserData>[] = [
     {
       key: 'email',
-      label: 'Email',
+      label: t('dataGrid.columns.email'),
       sortable: true,
       filterable: true,
       editable: true,
@@ -98,7 +101,7 @@ export function FmUserDataGrid() {
     },
     {
       key: 'display_name',
-      label: 'Username',
+      label: t('dataGrid.columns.username'),
       sortable: true,
       filterable: true,
       editable: true,
@@ -106,7 +109,7 @@ export function FmUserDataGrid() {
     },
     {
       key: 'full_name',
-      label: 'Full Name',
+      label: t('dataGrid.columns.fullName'),
       sortable: true,
       filterable: true,
       editable: true,
@@ -114,7 +117,7 @@ export function FmUserDataGrid() {
     },
     {
       key: 'organization_id',
-      label: 'Organization',
+      label: t('dataGrid.columns.organization'),
       sortable: false,
       filterable: true,
       editable: true,
@@ -125,12 +128,12 @@ export function FmUserDataGrid() {
             <span>{row.organization.name}</span>
           </div>
         ) : (
-          <span className='text-muted-foreground text-sm'>No organization</span>
+          <span className='text-muted-foreground text-sm'>{t('dataGrid.placeholders.noOrganization')}</span>
         ),
     },
     {
       key: 'roles',
-      label: 'Roles',
+      label: t('dataGrid.columns.roles'),
       sortable: false,
       filterable: true,
       editable: false, // Special implementation via modal
@@ -138,7 +141,7 @@ export function FmUserDataGrid() {
         <div
           className='flex flex-wrap gap-1 cursor-pointer hover:opacity-80 transition-opacity'
           onClick={() => handleOpenRoleModal(row)}
-          title='Click to manage roles'
+          title={t('dataGrid.placeholders.clickToManageRoles')}
         >
           {Array.isArray(value) && value.length > 0 ? (
             value.map((role, idx) => (
@@ -156,14 +159,14 @@ export function FmUserDataGrid() {
               </Badge>
             ))
           ) : (
-            <span className='text-muted-foreground'>No roles</span>
+            <span className='text-muted-foreground'>{t('dataGrid.placeholders.noRoles')}</span>
           )}
         </div>
       ),
     },
     {
       key: 'created_at',
-      label: 'Joined',
+      label: t('dataGrid.columns.joined'),
       sortable: true,
       editable: false,
       type: 'date',
@@ -177,27 +180,27 @@ export function FmUserDataGrid() {
 
   const actions: DataGridAction<UserData>[] = [
     {
-      label: 'Edit User',
+      label: t('dataGrid.actions.editUser'),
       icon: <Edit className='h-4 w-4' />,
       onClick: user => {
-        toast.info('Edit User', {
-          description: `Editing ${user.email}`,
+        toast.info(t('dataGrid.actions.editUser'), {
+          description: `${user.email}`,
         });
       },
     },
     {
-      label: 'Manage Roles',
+      label: t('dataGrid.actions.manageRoles'),
       icon: <UserCog className='h-4 w-4' />,
       onClick: user => {
         handleOpenRoleModal(user);
       },
     },
     {
-      label: 'Delete User',
+      label: t('dataGrid.actions.deleteUser'),
       icon: <Trash2 className='h-4 w-4' />,
       onClick: user => {
-        toast.error('Delete User', {
-          description: `This would delete ${user.email}`,
+        toast.error(t('dataGrid.actions.deleteUser'), {
+          description: `${user.email}`,
         });
       },
       variant: 'destructive',
@@ -206,11 +209,11 @@ export function FmUserDataGrid() {
 
   const contextMenuActions: DataGridAction<UserData>[] = [
     {
-      label: 'Copy Email',
+      label: t('dataGrid.actions.copyEmail'),
       icon: <Mail className='h-4 w-4' />,
       onClick: user => {
         navigator.clipboard.writeText(user.email);
-        toast.success('Email copied to clipboard', {
+        toast.success(tToast('success.copied'), {
           duration: 2000,
         });
       },
@@ -240,12 +243,12 @@ export function FmUserDataGrid() {
         )
       );
 
-      toast.success('User updated', {
-        description: `${columnKey} updated successfully`,
+      toast.success(tToast('admin.userUpdated'), {
+        description: `${columnKey}`,
       });
     } catch (error: any) {
       logger.error('Error updating user:', error);
-      toast.error('Update failed', {
+      toast.error(tToast('admin.userUpdateFailed'), {
         description: error.message,
       });
       throw error; // Re-throw so the grid knows the update failed

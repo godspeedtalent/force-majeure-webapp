@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Ticket, BarChart3, ChevronRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/common/shadcn/card';
 import { cn } from '@force-majeure/shared';
@@ -19,6 +20,7 @@ interface OverviewViewProps {
 }
 
 export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
+  const { t } = useTranslation('common');
   const totalTickets = calculateTotalTickets(groups);
   const totalRevenue = calculateTotalRevenue(groups);
   const totalGroups = calculateTotalGroups(groups);
@@ -27,9 +29,9 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
   return (
     <div className='space-y-6'>
       <div>
-        <h3 className='text-2xl font-semibold mb-2'>Ticketing Overview</h3>
+        <h3 className='text-2xl font-semibold mb-2'>{t('ticketGroupManager.ticketingOverview')}</h3>
         <p className='text-muted-foreground'>
-          Summary of all ticket groups and tiers for this event
+          {t('ticketGroupManager.ticketingOverviewDescription')}
         </p>
       </div>
 
@@ -42,7 +44,7 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
               <div className='text-2xl font-bold'>
                 {totalTickets.toLocaleString()}
               </div>
-              <div className='text-xs text-muted-foreground'>Total Tickets</div>
+              <div className='text-xs text-muted-foreground'>{t('ticketGroupManager.totalTickets')}</div>
             </div>
           </CardContent>
         </Card>
@@ -54,7 +56,7 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
                 {formatPrice(totalRevenue)}
               </div>
               <div className='text-xs text-muted-foreground'>
-                Potential Revenue
+                {t('ticketGroupManager.potentialRevenue')}
               </div>
             </div>
           </CardContent>
@@ -68,7 +70,7 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
                 </span>
               </div>
               <div className='text-2xl font-bold'>{totalGroups}</div>
-              <div className='text-xs text-muted-foreground'>Ticket Groups</div>
+              <div className='text-xs text-muted-foreground'>{t('ticketGroupManager.ticketGroups')}</div>
             </div>
           </CardContent>
         </Card>
@@ -81,7 +83,7 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
                 </span>
               </div>
               <div className='text-2xl font-bold'>{totalTiers}</div>
-              <div className='text-xs text-muted-foreground'>Total Tiers</div>
+              <div className='text-xs text-muted-foreground'>{t('ticketGroupManager.totalTiers')}</div>
             </div>
           </CardContent>
         </Card>
@@ -89,7 +91,7 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
 
       {/* Group Summaries */}
       <div>
-        <h4 className='text-lg font-semibold mb-4'>Group Summaries</h4>
+        <h4 className='text-lg font-semibold mb-4'>{t('ticketGroupManager.groupSummaries')}</h4>
         <div className='space-y-3'>
           {groups.map((group, index) => {
             const groupTickets = getTotalTicketsInGroup(group);
@@ -118,7 +120,7 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
                           )}
                         />
                         <h5 className='font-semibold'>
-                          {group.name || `Group ${index + 1}`}
+                          {group.name || t('ticketGroupManager.defaultGroupName', { number: index + 1 })}
                         </h5>
                         {group.description && (
                           <span className='text-sm text-muted-foreground'>
@@ -128,11 +130,10 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
                       </div>
                       <div className='flex items-center gap-6 text-sm text-muted-foreground ml-6'>
                         <span>
-                          {group.tiers.length} tier
-                          {group.tiers.length !== 1 && 's'}
+                          {t('ticketGroupManager.tiersCount', { count: group.tiers.length })}
                         </span>
                         <span>•</span>
-                        <span>{groupTickets.toLocaleString()} tickets</span>
+                        <span>{t('ticketGroupManager.ticketsCount', { count: groupTickets.toLocaleString() })}</span>
                         <span>•</span>
                         <span className='text-fm-gold font-semibold'>
                           {formatPrice(groupRevenue)}
@@ -148,7 +149,7 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
           {groups.length === 0 && (
             <div className='text-center py-12 text-muted-foreground'>
               <Ticket className='h-12 w-12 mx-auto mb-3 opacity-50' />
-              <p>No ticket groups yet. Create one to get started!</p>
+              <p>{t('ticketGroupManager.noGroupsYet')}</p>
             </div>
           )}
         </div>
