@@ -114,12 +114,21 @@ const AppRoutes = () => {
       <Route path='/proxy-token' element={<ProxyToken />} />
 
       {/* Artist Registration Routes - Always accessible even in coming soon mode */}
-      <Route path='/artists/signup' element={<ArtistSignup />} />
+      <Route
+        path='/artists/signup'
+        element={
+          <Suspense fallback={<LazyLoadFallback />}>
+            <ArtistSignup />
+          </Suspense>
+        }
+      />
       <Route
         path='/artists/register'
         element={
           <ProtectedRoute>
-            <ArtistRegister />
+            <Suspense fallback={<LazyLoadFallback />}>
+              <ArtistRegister />
+            </Suspense>
           </ProtectedRoute>
         }
       />
