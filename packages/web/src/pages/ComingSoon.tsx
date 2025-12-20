@@ -62,16 +62,16 @@ export default function ComingSoon() {
 
           {/* Looking for Artists Box */}
           <div
-            className={`p-2.5 md:p-4 bg-black/60 backdrop-blur-sm border border-fm-gold/20 mb-3 md:mb-4 max-w-sm mx-auto ${fontsLoaded ? 'animate-fade-in' : ''}`}
+            className={`p-4 md:p-6 bg-black/60 backdrop-blur-sm border border-fm-gold/20 mb-3 md:mb-4 max-w-xs mx-auto ${fontsLoaded ? 'animate-fade-in' : ''}`}
             style={{ animationDelay: fontsLoaded ? '0.3s' : '0s' }}
           >
-            <div className='flex items-start gap-2 md:gap-3 mb-2 md:mb-3'>
-              <Music className='h-3.5 w-3.5 text-fm-gold mt-0.5 flex-shrink-0' />
-              <div className='text-left space-y-1.5 md:space-y-2'>
-                <h2 className='font-canela text-xs md:text-sm text-fm-gold'>
+            <div className='flex items-start gap-3 md:gap-4 mb-3 md:mb-4'>
+              <Music className='h-4 w-4 text-fm-gold mt-0.5 flex-shrink-0' />
+              <div className='text-left space-y-2 md:space-y-3'>
+                <h2 className='font-canela text-sm md:text-base text-fm-gold leading-relaxed'>
                   Looking for 2026 Undercard Artists
                 </h2>
-                <p className='text-[10px] md:text-xs text-muted-foreground leading-relaxed'>
+                <p className='text-[11px] md:text-sm text-muted-foreground leading-loose'>
                   We're looking for local artists to open up for our 2026 events. If you're a DJ, producer, or performer, we'd love to hear from you.
                 </p>
               </div>
