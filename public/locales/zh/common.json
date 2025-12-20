@@ -1600,7 +1600,7 @@
     "searching": "搜索中...",
     "noResults": "未找到结果，请尝试其他搜索。"
   },
-  "artistRegistration": {
+  "artistRegistrationErrors": {
     "artistAlreadyExists": "已存在同名艺人。如果这是您本人，请发送邮件至 management@forcemajeure.vip 以获取关联个人资料的帮助。",
     "registrationPending": "已有同名艺人注册正在审核中。如果这是您本人，请发送邮件至 management@forcemajeure.vip 以获取帮助。",
     "submitFailed": "提交注册失败，请重试。",

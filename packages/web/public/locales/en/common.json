@@ -1539,7 +1539,7 @@
     "searching": "Searching...",
     "noResults": "No results found. Try a different search."
   },
-  "artistRegistration": {
+  "artistRegistrationErrors": {
     "artistAlreadyExists": "An artist with this name already exists. If this is you, please email management@forcemajeure.vip for help linking your profile.",
     "registrationPending": "A registration with this artist name is already pending review. If this is you, please email management@forcemajeure.vip for help.",
     "submitFailed": "Failed to submit registration. Please try again.",
