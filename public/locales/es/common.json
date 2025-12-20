@@ -1600,7 +1600,7 @@
     "searching": "Buscando...",
     "noResults": "No se encontraron resultados. Intenta una búsqueda diferente."
   },
-  "artistRegistration": {
+  "artistRegistrationErrors": {
     "artistAlreadyExists": "Ya existe un artista con este nombre. Si eres tú, envía un email a management@forcemajeure.vip para ayuda vinculando tu perfil.",
     "registrationPending": "Ya hay un registro con este nombre de artista pendiente de revisión. Si eres tú, envía un email a management@forcemajeure.vip para ayuda.",
     "submitFailed": "Error al enviar el registro. Por favor intenta de nuevo.",
