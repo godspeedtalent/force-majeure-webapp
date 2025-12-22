@@ -116,6 +116,12 @@
     "passwordLabel": "密码",
     "confirmPasswordLabel": "确认密码",
     "passwordsDoNotMatch": "密码不匹配",
+    "passwordRequirements": {
+      "minLength": "至少8个字符",
+      "uppercase": "至少一个大写字母",
+      "lowercase": "至少一个小写字母",
+      "number": "至少一个数字"
+    },
     "signIn": {
       "title": "欢迎回来。",
       "subtitle": "登录您的账户",
@@ -146,14 +152,21 @@
       "sendLink": "发送重置链接",
       "backToSignIn": "返回登录",
       "checkEmail": "检查您的邮箱",
-      "emailSent": "我们已向您的邮箱发送了密码重置链接"
+      "emailSent": "我们已向您的邮箱发送了密码重置链接",
+      "checkSpam": "如果您没有看到邮件，请检查垃圾邮件文件夹。"
     },
     "resetPassword": {
       "title": "创建新密码。",
       "subtitle": "在下方输入您的新密码",
       "newPassword": "新密码",
       "confirmNewPassword": "确认新密码",
-      "resetPassword": "重置密码"
+      "resetPassword": "重置密码",
+      "invalidLink": "无效的重置链接",
+      "linkExpired": "此密码重置链接无效或已过期。",
+      "requestNewLink": "请求新链接",
+      "success": "密码已更新！",
+      "successDescription": "您的密码已成功更改。",
+      "continue": "继续"
     },
     "verifyEmail": {
       "title": "验证您的邮箱。",
@@ -213,6 +226,19 @@
     "female": "女",
     "nonBinary": "非二元",
     "other": "其他",
+    "changePasswordDescription": "更新您的密码以确保账户安全",
+    "currentPassword": "当前密码",
+    "newPassword": "新密码",
+    "confirmNewPassword": "确认新密码",
+    "updatePassword": "更新密码",
+    "deleteAccountDescription": "永久删除您的账户和所有相关数据",
+    "deleteAccountWarning": "此操作无法撤销。您的账户将被安排永久删除。如果您改变主意，您有30天时间联系客服。",
+    "deleteAccountButton": "删除我的账户",
+    "deleteAccountConfirmTitle": "您确定要删除您的账户吗？",
+    "deleteAccountConfirmDescription": "这将永久删除您的账户和所有相关数据。此操作无法撤销。",
+    "deleteAccountConfirmButton": "是的，删除我的账户",
+    "deleteAccountFailed": "删除账户失败。请重试。",
+    "accountDeleted": "您的账户已安排删除。",
     "artistProfile": "艺术家资料",
     "artistProfileDescription": "关联和管理您的艺术家账户",
     "artist": "艺术家",
@@ -371,6 +397,15 @@
     "artistSignedUp": "您已注册！",
     "artistSignedUpDescription": "请关注发布的活动，您可以在那里表达加入演出阵容的意向。",
     "loading": "加载中..."
+  },
+  "artistSignup": {
+    "heroTitle": "来和我们一起演出吧。",
+    "valueProposition1": "FM一直以来都是一个通过照顾艺术家来提升奥斯汀当地电子音乐场景的团体。",
+    "valueProposition2": "我们自豪地确保活动暖场阵容代表着来自各种风格的多元化新星。",
+    "valueProposition3": "所以请点击下面的按钮，让我们开始吧。",
+    "closingLine": "迫不及待想让你成为我们锐舞大家庭的一员。",
+    "registerButton": "立即注册",
+    "photoCredit": "照片由 Force Majeure 提供"
   },
   "ticketScanning": {
     "title": "扫描门票",

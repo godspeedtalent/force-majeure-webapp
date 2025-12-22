@@ -14,6 +14,7 @@ interface DevNote {
   message: string;
   type: NoteType;
   status: NoteStatus;
+  priority: number;
 }
 
 interface CreateNoteData {
@@ -31,6 +32,8 @@ export interface UseDevNotesActionsReturn {
   loadNotes: (sortOrder: 'asc' | 'desc') => Promise<DevNote[]>;
   createNote: (data: CreateNoteData) => Promise<void>;
   updateStatus: (noteId: string, newStatus: NoteStatus) => Promise<void>;
+  updateType: (noteId: string, newType: NoteType) => Promise<void>;
+  updatePriority: (noteId: string, newPriority: number) => Promise<void>;
   updateMessage: (noteId: string, newMessage: string) => Promise<void>;
   deleteNote: (noteId: string) => Promise<void>;
 }
@@ -112,6 +115,50 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
   };
 
   /**
+   * Update the type of a dev note
+   */
+  const updateType = async (
+    noteId: string,
+    newType: NoteType
+  ): Promise<void> => {
+    try {
+      const { error } = await supabase
+        .from('dev_notes')
+        .update({ type: newType })
+        .eq('id', noteId);
+
+      if (error) throw error;
+      toast.success(t('devNotes.typeUpdated'));
+    } catch (error) {
+      logger.error('Failed to update dev note type:', error instanceof Error ? { error: error.message } : {});
+      toast.error(t('devNotes.typeUpdateFailed'));
+      throw error;
+    }
+  };
+
+  /**
+   * Update the priority of a dev note
+   */
+  const updatePriority = async (
+    noteId: string,
+    newPriority: number
+  ): Promise<void> => {
+    try {
+      const { error } = await supabase
+        .from('dev_notes')
+        .update({ priority: newPriority })
+        .eq('id', noteId);
+
+      if (error) throw error;
+      toast.success(t('devNotes.priorityUpdated'));
+    } catch (error) {
+      logger.error('Failed to update dev note priority:', error instanceof Error ? { error: error.message } : {});
+      toast.error(t('devNotes.priorityUpdateFailed'));
+      throw error;
+    }
+  };
+
+  /**
    * Update the message of a dev note
    */
   const updateMessage = async (
@@ -160,6 +207,8 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
     loadNotes,
     createNote,
     updateStatus,
+    updateType,
+    updatePriority,
     updateMessage,
     deleteNote,
   };

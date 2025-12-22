@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Share2, Heart } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmTextLink } from '@/components/common/display/FmTextLink';
@@ -24,6 +25,8 @@ export function EventStickyHeader({
   onShare,
   onVenueClick,
 }: EventStickyHeaderProps) {
+  const { t } = useTranslation('common');
+
   return (
     <div className='flex items-center justify-between gap-3'>
       <div className='flex items-center gap-3 min-w-0'>
@@ -46,7 +49,7 @@ export function EventStickyHeader({
       </div>
       <div className='flex items-center gap-2'>
         <FmCommonButton
-          aria-label='Share event'
+          aria-label={t('eventActions.shareEvent')}
           variant='secondary'
           size='icon'
           onClick={onShare}
@@ -55,7 +58,7 @@ export function EventStickyHeader({
           <Share2 className='h-4 w-4' />
         </FmCommonButton>
         <FmCommonButton
-          aria-label='Save event'
+          aria-label={t('eventActions.saveEvent')}
           variant='secondary'
           size='icon'
           className='bg-white/5 text-muted-foreground transition-colors duration-200 hover:bg-white/10 hover:text-foreground'

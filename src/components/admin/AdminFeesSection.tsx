@@ -156,7 +156,7 @@ export const AdminFeesSection = () => {
   });
 
   if (isLoading) {
-    return <div className='text-muted-foreground text-sm'>Loading...</div>;
+    return <div className='text-muted-foreground text-sm'>{t('status.loading')}</div>;
   }
 
   return (

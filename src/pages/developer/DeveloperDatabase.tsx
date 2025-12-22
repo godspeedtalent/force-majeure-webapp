@@ -30,6 +30,7 @@ import { ROLES } from '@/shared';
 import { AdminLockIndicator } from '@/components/common/indicators';
 import { refreshAllTableSchemas } from '@/features/data-grid/services/schemaRefresh';
 import { FmCommonButton } from '@/components/common/buttons';
+import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 
 type DatabaseTab =
   | 'overview'
@@ -49,6 +50,14 @@ export default function DeveloperDatabase() {
   const { hasRole } = useUserPermissions();
   const isAdmin = hasRole(ROLES.ADMIN);
   const [isRefreshingSchema, setIsRefreshingSchema] = useState(false);
+
+  // Delete confirmation state
+  const [artistToDelete, setArtistToDelete] = useState<any>(null);
+  const [showDeleteArtistConfirm, setShowDeleteArtistConfirm] = useState(false);
+  const [venueToDelete, setVenueToDelete] = useState<any>(null);
+  const [showDeleteVenueConfirm, setShowDeleteVenueConfirm] = useState(false);
+  const [recordingToDelete, setRecordingToDelete] = useState<any>(null);
+  const [showDeleteRecordingConfirm, setShowDeleteRecordingConfirm] = useState(false);
 
   // Get active tab from URL query string, fallback to 'overview'
   const tabFromUrl = searchParams.get('table') as DatabaseTab | null;
@@ -343,12 +352,16 @@ export default function DeveloperDatabase() {
     }
   };
 
-  const handleDeleteArtist = async (artist: any) => {
-    if (!confirm(t('devTools.database.confirmDeleteArtist', { name: artist.name }))) {
-      return;
-    }
+  const handleDeleteArtistClick = (artist: any) => {
+    setArtistToDelete(artist);
+    setShowDeleteArtistConfirm(true);
+  };
+
+  const handleDeleteArtist = async () => {
+    if (!artistToDelete) return;
 
     try {
+      const artist = artistToDelete;
       const { error } = await supabase
         .from('artists')
         .delete()
@@ -358,6 +371,8 @@ export default function DeveloperDatabase() {
 
       toast.success(t('devTools.database.artistDeleted'));
       queryClient.invalidateQueries({ queryKey: ['admin-artists'] });
+      setShowDeleteArtistConfirm(false);
+      setArtistToDelete(null);
     } catch (error) {
       logger.error('Error deleting artist:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'DeveloperDatabase.tsx' });
       toast.error(t('devTools.database.artistDeleteFailed'));
@@ -368,7 +383,7 @@ export default function DeveloperDatabase() {
     {
       label: 'Delete Artist',
       icon: <Trash2 className='h-4 w-4' />,
-      onClick: handleDeleteArtist,
+      onClick: handleDeleteArtistClick,
       variant: 'destructive',
     },
   ];
@@ -411,21 +426,26 @@ export default function DeveloperDatabase() {
   };
 
 
-  const handleDeleteVenue = async (venue: any) => {
-    if (!confirm(t('devTools.database.confirmDeleteVenue', { name: venue.name }))) {
-      return;
-    }
+  const handleDeleteVenueClick = (venue: any) => {
+    setVenueToDelete(venue);
+    setShowDeleteVenueConfirm(true);
+  };
+
+  const handleDeleteVenue = async () => {
+    if (!venueToDelete) return;
 
     try {
       const { error } = await (supabase as any)
         .from('venues')
         .delete()
-        .eq('id', venue.id);
+        .eq('id', venueToDelete.id);
 
       if (error) throw error;
 
       toast.success(t('devTools.database.venueDeleted'));
       queryClient.invalidateQueries({ queryKey: ['admin-venues'] });
+      setShowDeleteVenueConfirm(false);
+      setVenueToDelete(null);
     } catch (error) {
       logger.error('Error deleting venue:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'DeveloperDatabase.tsx' });
       toast.error(t('devTools.database.venueDeleteFailed'));
@@ -437,7 +457,7 @@ export default function DeveloperDatabase() {
     {
       label: 'Delete Venue',
       icon: <Trash2 className='h-4 w-4' />,
-      onClick: handleDeleteVenue,
+      onClick: handleDeleteVenueClick,
       variant: 'destructive',
     },
   ];
@@ -487,22 +507,27 @@ export default function DeveloperDatabase() {
     }
   };
 
-  const handleDeleteRecording = async (recording: any) => {
-    if (!confirm(t('devTools.database.confirmDeleteRecording', { name: recording.name }))) {
-      return;
-    }
+  const handleDeleteRecordingClick = (recording: any) => {
+    setRecordingToDelete(recording);
+    setShowDeleteRecordingConfirm(true);
+  };
+
+  const handleDeleteRecording = async () => {
+    if (!recordingToDelete) return;
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error } = await (supabase as any)
         .from('artist_recordings')
         .delete()
-        .eq('id', recording.id);
+        .eq('id', recordingToDelete.id);
 
       if (error) throw error;
 
       toast.success(t('devTools.database.recordingDeleted'));
       queryClient.invalidateQueries({ queryKey: ['admin-recordings'] });
+      setShowDeleteRecordingConfirm(false);
+      setRecordingToDelete(null);
     } catch (error) {
       logger.error('Error deleting recording:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'DeveloperDatabase.tsx' });
       toast.error(t('devTools.database.recordingDeleteFailed'));
@@ -513,7 +538,7 @@ export default function DeveloperDatabase() {
     {
       label: 'Delete Recording',
       icon: <Trash2 className='h-4 w-4' />,
-      onClick: handleDeleteRecording,
+      onClick: handleDeleteRecordingClick,
       variant: 'destructive',
     },
   ];
@@ -743,6 +768,37 @@ export default function DeveloperDatabase() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Dialogs */}
+      <FmCommonConfirmDialog
+        open={showDeleteArtistConfirm}
+        onOpenChange={setShowDeleteArtistConfirm}
+        title={t('devTools.database.deleteArtist')}
+        description={t('devTools.database.confirmDeleteArtist', { name: artistToDelete?.name })}
+        confirmText={t('buttons.delete')}
+        onConfirm={handleDeleteArtist}
+        variant="destructive"
+      />
+
+      <FmCommonConfirmDialog
+        open={showDeleteVenueConfirm}
+        onOpenChange={setShowDeleteVenueConfirm}
+        title={t('devTools.database.deleteVenue')}
+        description={t('devTools.database.confirmDeleteVenue', { name: venueToDelete?.name })}
+        confirmText={t('buttons.delete')}
+        onConfirm={handleDeleteVenue}
+        variant="destructive"
+      />
+
+      <FmCommonConfirmDialog
+        open={showDeleteRecordingConfirm}
+        onOpenChange={setShowDeleteRecordingConfirm}
+        title={t('devTools.database.deleteRecording')}
+        description={t('devTools.database.confirmDeleteRecording', { name: recordingToDelete?.name })}
+        confirmText={t('buttons.delete')}
+        onConfirm={handleDeleteRecording}
+        variant="destructive"
+      />
     </SideNavbarLayout>
   );
 }

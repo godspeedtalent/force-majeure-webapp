@@ -12,6 +12,7 @@ import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmImageUpload } from '@/components/common/forms/FmImageUpload';
+import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { FmI18nCommon } from '@/components/common/i18n';
 import { toast } from 'sonner';
 import { handleError } from '@/shared/services/errorHandler';
@@ -30,6 +31,7 @@ export default function ArtistManagement() {
     const queryClient = useQueryClient();
     const [isDeleting, setIsDeleting] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     // Form state - Overview
     const [name, setName] = useState('');
     const [bio, setBio] = useState('');
@@ -85,8 +87,8 @@ export default function ArtistManagement() {
         }
         catch (error) {
             await handleError(error, {
-                title: 'Auto-save Failed',
-                description: 'Could not save changes automatically',
+                title: tToast('artists.autoSaveFailed'),
+                description: tToast('artists.autoSaveFailedDescription'),
                 endpoint: 'ArtistManagement',
                 method: 'UPDATE',
             });
@@ -325,14 +327,17 @@ export default function ArtistManagement() {
             queryClient.invalidateQueries({ queryKey: ['artist', id] });
         }
         catch (error) {
-            handleError(error, { title: 'Failed to update artist' });
+            handleError(error, { title: tToast('artists.updateFailed') });
         }
         finally {
             setIsSaving(false);
         }
     };
+    const handleDeleteClick = () => {
+        setShowDeleteConfirm(true);
+    };
     const handleDelete = async () => {
-        if (!id || !confirm(t('dialogs.deleteArtistConfirm')))
+        if (!id)
             return;
         setIsDeleting(true);
         try {
@@ -340,10 +345,11 @@ export default function ArtistManagement() {
             if (error)
                 throw error;
             toast.success(tToast('artists.deleted'));
+            setShowDeleteConfirm(false);
             navigate('/developer/database?table=artists');
         }
         catch (error) {
-            handleError(error, { title: 'Failed to delete artist' });
+            handleError(error, { title: tToast('artists.deleteFailed') });
         }
         finally {
             setIsDeleting(false);
@@ -361,7 +367,7 @@ export default function ArtistManagement() {
                                 }, placeholder: t('forms.artists.bioPlaceholder') }), _jsx(FmCommonTextField, { label: t('labels.website'), value: website, onChange: (e) => {
                                     setWebsite(e.target.value);
                                     triggerAutoSave();
-                                }, placeholder: t('forms.artists.websitePlaceholder') })] })] }), _jsxs("div", { className: 'flex justify-between', children: [_jsx(FmCommonButton, { variant: 'destructive', icon: Trash2, onClick: handleDelete, disabled: isDeleting, children: isDeleting ? t('buttons.deleting') : t('buttons.deleteArtist') }), _jsx(FmCommonButton, { icon: Save, onClick: handleSave, disabled: isSaving || !name, children: isSaving ? t('buttons.saving') : t('buttons.saveChanges') })] })] }));
+                                }, placeholder: t('forms.artists.websitePlaceholder') })] })] }), _jsxs("div", { className: 'flex justify-between', children: [_jsx(FmCommonButton, { variant: 'destructive', icon: Trash2, onClick: handleDeleteClick, disabled: isDeleting, children: isDeleting ? t('buttons.deleting') : t('buttons.deleteArtist') }), _jsx(FmCommonButton, { icon: Save, onClick: handleSave, disabled: isSaving || !name, children: isSaving ? t('buttons.saving') : t('buttons.saveChanges') })] })] }));
     const renderMusicTab = () => (_jsx("div", { className: 'space-y-6', children: _jsxs(FmCommonCard, { size: 'lg', hoverable: false, children: [_jsx("div", { className: 'flex items-center justify-between mb-6', children: _jsxs("div", { children: [_jsx(FmI18nCommon, { i18nKey: 'sections.recordings', as: 'h2', className: 'text-xl font-semibold' }), _jsx(FmI18nCommon, { i18nKey: 'sections.recordingsDescription', as: 'p', className: 'text-muted-foreground text-sm mt-1' })] }) }), _jsxs("div", { className: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4', children: [tracks.map((track) => (_jsxs(FmCommonCard, { size: 'sm', variant: 'outline', className: 'group relative overflow-hidden p-0', children: [_jsxs("div", { className: 'aspect-square relative overflow-hidden', children: [track.coverArt ? (_jsx("img", { src: track.coverArt, alt: track.name, className: 'w-full h-full object-cover' })) : (_jsx("div", { className: 'w-full h-full bg-gradient-to-br from-fm-gold/20 to-fm-gold/5 flex items-center justify-center', children: _jsx(Music, { className: 'h-12 w-12 text-fm-gold/50' }) })), _jsx("div", { className: 'absolute top-2 right-2', children: _jsx("span", { className: cn('px-2 py-1 text-xs font-medium uppercase tracking-wider', track.platform === 'spotify'
                                                     ? 'bg-[#1DB954]/90 text-white'
                                                     : 'bg-[#FF5500]/90 text-white'), children: track.platform }) }), _jsx("div", { className: 'absolute bottom-2 left-2', children: _jsx("span", { className: 'flex items-center gap-1 px-2 py-1 text-xs font-medium bg-black/70 text-white', children: track.recordingType === 'dj_set' ? (_jsxs(_Fragment, { children: [_jsx(Radio, { className: 'h-3 w-3' }), t('labels.djSet')] })) : (_jsxs(_Fragment, { children: [_jsx(Disc, { className: 'h-3 w-3' }), t('labels.track')] })) }) }), _jsxs("div", { className: 'absolute top-2 left-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200', children: [_jsx("button", { onClick: () => setEditingTrack(track), className: 'p-1.5 bg-black/60 hover:bg-fm-gold text-white transition-colors', children: _jsx(Pencil, { className: 'h-4 w-4' }) }), _jsx("button", { onClick: () => handleDeleteTrack(track.id), className: 'p-1.5 bg-black/60 hover:bg-red-600 text-white transition-colors', children: _jsx(Trash2, { className: 'h-4 w-4' }) })] })] }), _jsxs("div", { className: 'p-4', children: [_jsx("h3", { className: 'font-semibold text-sm line-clamp-1 mb-2', children: track.name }), _jsxs("div", { className: 'flex items-center justify-between text-muted-foreground text-xs', children: [_jsxs("div", { className: 'flex items-center gap-3', children: [track.addedAt && (_jsxs("span", { className: 'flex items-center gap-1', children: [_jsx(Calendar, { className: 'h-3 w-3' }), new Date(track.addedAt).toLocaleDateString('en-US', {
@@ -395,5 +401,5 @@ export default function ArtistManagement() {
             else {
                 setActiveTab(tabId);
             }
-        }, children: [activeTab === 'overview' && renderOverviewTab(), activeTab === 'music' && renderMusicTab(), activeTab === 'social' && renderSocialTab()] }));
+        }, children: [activeTab === 'overview' && renderOverviewTab(), activeTab === 'music' && renderMusicTab(), activeTab === 'social' && renderSocialTab(), _jsx(FmCommonConfirmDialog, { open: showDeleteConfirm, onOpenChange: setShowDeleteConfirm, title: t('buttons.deleteArtist'), description: t('dialogs.deleteArtistConfirm'), confirmText: t('buttons.delete'), onConfirm: handleDelete, variant: "destructive", isLoading: isDeleting })] }));
 }

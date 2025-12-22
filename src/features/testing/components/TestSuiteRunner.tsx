@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '@/shared';
 
 
@@ -29,6 +30,7 @@ export function TestSuiteRunner({
   icon,
   options,
 }: TestSuiteRunnerProps) {
+  const { t } = useTranslation('common');
   const {
     status,
     activeThreads,
@@ -69,14 +71,14 @@ export function TestSuiteRunner({
           if (status === 'running') {
             pauseTests();
             toast({
-              title: 'Tests Paused',
-              description: 'Press Space to resume',
+              title: t('testSuiteRunner.toasts.testsPaused'),
+              description: t('testSuiteRunner.toasts.pressSpaceToResume'),
             });
           } else if (status === 'paused') {
             resumeTests();
             toast({
-              title: 'Tests Resumed',
-              description: 'Press Space to pause',
+              title: t('testSuiteRunner.toasts.testsResumed'),
+              description: t('testSuiteRunner.toasts.pressSpaceToPause'),
             });
           }
           break;
@@ -84,8 +86,8 @@ export function TestSuiteRunner({
           if (status === 'running' || status === 'paused') {
             stopTests();
             toast({
-              title: 'Tests Stopped',
-              description: 'Test execution has been stopped',
+              title: t('testSuiteRunner.toasts.testsStopped'),
+              description: t('testSuiteRunner.toasts.executionStopped'),
               variant: 'destructive',
             });
           }
@@ -100,8 +102,8 @@ export function TestSuiteRunner({
             e.preventDefault();
             handleRunTests();
             toast({
-              title: 'Tests Started',
-              description: `Running ${suite.testCases.length} tests`,
+              title: t('testSuiteRunner.toasts.testsStarted'),
+              description: t('testSuiteRunner.toasts.runningTests', { count: suite.testCases.length }),
             });
           }
           break;
@@ -126,11 +128,11 @@ export function TestSuiteRunner({
 
   const getStatusBadge = () => {
     const statusConfig: Record<string, { label: string; variant: any }> = {
-      idle: { label: 'Ready', variant: 'outline' },
-      running: { label: 'Running', variant: 'default' },
-      paused: { label: 'Paused', variant: 'secondary' },
-      completed: { label: 'Completed', variant: 'default' },
-      stopped: { label: 'Stopped', variant: 'destructive' },
+      idle: { label: t('testSuiteRunner.status.ready'), variant: 'outline' },
+      running: { label: t('testSuiteRunner.status.running'), variant: 'default' },
+      paused: { label: t('testSuiteRunner.status.paused'), variant: 'secondary' },
+      completed: { label: t('testSuiteRunner.status.completed'), variant: 'default' },
+      stopped: { label: t('testSuiteRunner.status.stopped'), variant: 'destructive' },
     };
 
     const config = statusConfig[status] || statusConfig.idle;
@@ -149,7 +151,7 @@ export function TestSuiteRunner({
         {(status === 'idle' || status === 'stopped') && (
           <div className='p-6 bg-card border border-border rounded-lg'>
             <h3 className='font-canela text-xl mb-4 flex items-center gap-2'>
-              📋 Test Suite Overview
+              {t('testSuiteRunner.suiteOverview')}
             </h3>
             <div className='space-y-4'>
               {suite.testCases.map((testCase, index) => (
@@ -179,11 +181,7 @@ export function TestSuiteRunner({
               ))}
             </div>
             <div className='mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg'>
-              <p className='text-sm text-blue-300'>
-                💡 <strong>Tip:</strong> Open your browser console (F12 →
-                Console tab) to see detailed real-time logging of every
-                simulated user's purchase journey.
-              </p>
+              <p className='text-sm text-blue-300' dangerouslySetInnerHTML={{ __html: t('testSuiteRunner.consoleTip') }} />
             </div>
           </div>
         )}
@@ -192,7 +190,7 @@ export function TestSuiteRunner({
         <div className='flex flex-wrap items-center gap-4 p-4 bg-card border border-border rounded-lg'>
           <div className='flex items-center gap-2'>
             {getStatusBadge()}
-            <Badge variant='outline'>{suite.testCases.length} tests</Badge>
+            <Badge variant='outline'>{t('testSuiteRunner.testsCount', { count: suite.testCases.length })}</Badge>
           </div>
 
           <div className='flex gap-2 ml-auto'>
@@ -201,28 +199,28 @@ export function TestSuiteRunner({
             status === 'stopped' ? (
               <Button onClick={handleRunTests} size='sm'>
                 <Play className='h-4 w-4 mr-2' />
-                Run Tests
+                {t('testSuiteRunner.runTests')}
               </Button>
             ) : null}
 
             {status === 'running' && (
               <Button onClick={pauseTests} variant='outline' size='sm'>
                 <Pause className='h-4 w-4 mr-2' />
-                Pause
+                {t('testSuiteRunner.pause')}
               </Button>
             )}
 
             {status === 'paused' && (
               <Button onClick={resumeTests} size='sm'>
                 <Play className='h-4 w-4 mr-2' />
-                Resume
+                {t('testSuiteRunner.resume')}
               </Button>
             )}
 
             {(status === 'running' || status === 'paused') && (
               <Button onClick={stopTests} variant='destructive' size='sm'>
                 <Square className='h-4 w-4 mr-2' />
-                Stop
+                {t('testSuiteRunner.stop')}
               </Button>
             )}
 
@@ -230,7 +228,7 @@ export function TestSuiteRunner({
               results.length > 0 && (
                 <Button onClick={resetTests} variant='outline' size='sm'>
                   <RotateCcw className='h-4 w-4 mr-2' />
-                  Reset
+                  {t('testSuiteRunner.reset')}
                 </Button>
               )}
 
@@ -238,7 +236,7 @@ export function TestSuiteRunner({
               variant='ghost'
               size='sm'
               onClick={() => setShowKeyboardHelp(!showKeyboardHelp)}
-              title='Keyboard shortcuts (?)'
+              title={t('testSuiteRunner.keyboardShortcuts')}
             >
               <Keyboard className='h-4 w-4' />
             </Button>
@@ -252,14 +250,13 @@ export function TestSuiteRunner({
               <XCircle className='h-5 w-5 text-red-500 mt-0.5 flex-shrink-0' />
               <div className='flex-1 min-w-0'>
                 <h4 className='font-semibold text-red-500 mb-2'>
-                  Test Suite Error
+                  {t('testSuiteRunner.testSuiteError')}
                 </h4>
                 <p className='text-sm text-red-300 whitespace-pre-wrap break-words'>
                   {error}
                 </p>
                 <p className='text-xs text-red-400 mt-3'>
-                  💡 Check the browser console (F12) for full error details and
-                  stack trace.
+                  {t('testSuiteRunner.checkConsoleForDetails')}
                 </p>
               </div>
             </div>
@@ -271,7 +268,7 @@ export function TestSuiteRunner({
           <div className='mt-4 p-4 bg-muted/50 rounded-lg border border-border'>
             <h4 className='font-semibold mb-3 flex items-center gap-2'>
               <Keyboard className='h-4 w-4' />
-              Keyboard Shortcuts
+              {t('testSuiteRunner.keyboardShortcutsTitle')}
             </h4>
             <div className='grid grid-cols-2 gap-2 text-sm'>
               <div className='flex items-center gap-2'>
@@ -279,26 +276,26 @@ export function TestSuiteRunner({
                   Space
                 </kbd>
                 <span className='text-muted-foreground'>
-                  Pause/Resume tests
+                  {t('testSuiteRunner.pauseResumeTests')}
                 </span>
               </div>
               <div className='flex items-center gap-2'>
                 <kbd className='px-2 py-1 bg-background border rounded text-xs'>
                   Esc
                 </kbd>
-                <span className='text-muted-foreground'>Stop tests</span>
+                <span className='text-muted-foreground'>{t('testSuiteRunner.stopTests')}</span>
               </div>
               <div className='flex items-center gap-2'>
                 <kbd className='px-2 py-1 bg-background border rounded text-xs'>
                   Ctrl+R
                 </kbd>
-                <span className='text-muted-foreground'>Run tests</span>
+                <span className='text-muted-foreground'>{t('testSuiteRunner.runTestsShortcut')}</span>
               </div>
               <div className='flex items-center gap-2'>
                 <kbd className='px-2 py-1 bg-background border rounded text-xs'>
                   ?
                 </kbd>
-                <span className='text-muted-foreground'>Toggle this help</span>
+                <span className='text-muted-foreground'>{t('testSuiteRunner.toggleHelp')}</span>
               </div>
             </div>
           </div>
@@ -309,7 +306,7 @@ export function TestSuiteRunner({
           <div className='space-y-2'>
             <div className='flex items-center justify-between text-sm'>
               <span className='text-muted-foreground'>
-                Progress: {results.length} / {suite.testCases.length} tests
+                {t('testSuiteRunner.progress', { completed: results.length, total: suite.testCases.length })}
               </span>
               <span className='text-muted-foreground'>
                 {Math.round((results.length / suite.testCases.length) * 100)}%
@@ -329,7 +326,7 @@ export function TestSuiteRunner({
         {/* Thread Monitor */}
         {(status === 'running' || status === 'paused') && (
           <div className='p-4 bg-card border border-border rounded-lg'>
-            <h3 className='font-canela text-lg mb-4'>Thread Monitor</h3>
+            <h3 className='font-canela text-lg mb-4'>{t('testSuiteRunner.threadMonitor')}</h3>
             <TestThreadMonitor
               activeThreads={activeThreads}
               maxConcurrency={options?.maxConcurrency || 3}
@@ -340,7 +337,7 @@ export function TestSuiteRunner({
 
         {/* Results Panel */}
         <div className='p-4 bg-card border border-border rounded-lg'>
-          <h3 className='font-canela text-lg mb-4'>Test Results</h3>
+          <h3 className='font-canela text-lg mb-4'>{t('testSuiteRunner.testResults')}</h3>
           <TestResultsPanel results={results} />
         </div>
       </div>

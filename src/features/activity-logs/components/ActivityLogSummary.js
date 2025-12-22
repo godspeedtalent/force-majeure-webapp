@@ -4,6 +4,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  *
  * Displays summary cards showing activity counts by category.
  */
+import { useTranslation } from 'react-i18next';
 import { User, Calendar, Music, MapPin, Disc, Tag, Ticket, Settings, } from 'lucide-react';
 import { cn } from '@/shared';
 import { CATEGORY_CONFIG, } from '../types';
@@ -27,6 +28,7 @@ function SkeletonCard() {
     return (_jsxs("div", { className: "flex items-center gap-3 p-4 bg-black/40 border border-white/10 animate-pulse", children: [_jsx("div", { className: "w-10 h-10 rounded bg-white/10" }), _jsxs("div", { className: "flex-1", children: [_jsx("div", { className: "h-8 w-16 bg-white/10 rounded mb-1" }), _jsx("div", { className: "h-4 w-20 bg-white/10 rounded" })] })] }));
 }
 export function ActivityLogSummary({ summary, isLoading, onCategoryClick, }) {
+    const { t } = useTranslation('common');
     // Create a map for easy lookup
     const countByCategory = summary.reduce((acc, item) => {
         acc[item.category] = item.count;
@@ -44,5 +46,5 @@ export function ActivityLogSummary({ summary, isLoading, onCategoryClick, }) {
     if (isLoading) {
         return (_jsx("div", { className: "grid grid-cols-2 lg:grid-cols-4 gap-4", children: [1, 2, 3, 4].map(i => (_jsx(SkeletonCard, {}, i))) }));
     }
-    return (_jsxs("div", { className: "space-y-4", children: [_jsx("div", { className: "grid grid-cols-2 lg:grid-cols-4 gap-4", children: displayCategories.map(category => (_jsx(SummaryCard, { category: category, count: countByCategory[category] || 0, onClick: () => onCategoryClick?.(category) }, category))) }), _jsxs("div", { className: "flex items-center justify-between p-4 bg-black/20 border border-white/5 rounded-none", children: [_jsx("span", { className: "text-sm text-muted-foreground", children: "Total events logged" }), _jsx("span", { className: "text-lg font-medium text-fm-gold", children: totalCount.toLocaleString() })] })] }));
+    return (_jsxs("div", { className: "space-y-4", children: [_jsx("div", { className: "grid grid-cols-2 lg:grid-cols-4 gap-4", children: displayCategories.map(category => (_jsx(SummaryCard, { category: category, count: countByCategory[category] || 0, onClick: () => onCategoryClick?.(category) }, category))) }), _jsxs("div", { className: "flex items-center justify-between p-4 bg-black/20 border border-white/5 rounded-none", children: [_jsx("span", { className: "text-sm text-muted-foreground", children: t('activityLogs.totalEventsLogged') }), _jsx("span", { className: "text-lg font-medium text-fm-gold", children: totalCount.toLocaleString() })] })] }));
 }

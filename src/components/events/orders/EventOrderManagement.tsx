@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FmConfigurableDataGrid } from '@/features/data-grid';
+import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { useEventOrders, type EventOrder } from './hooks/useEventOrders';
 import { Badge } from '@/components/common/shadcn/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/shadcn/avatar';
@@ -8,16 +9,26 @@ import { Eye, XCircle, RefreshCw, Mail } from 'lucide-react';
 import { OrderDetailModal } from './OrderDetailModal';
 import { DataGridColumns } from '@/features/data-grid/utils';
 import { formatCurrency } from '@/lib/utils/currency';
+import { logger } from '@/shared/services/logger';
+import { EmailService } from '@/services/email/EmailService';
+import { toast } from 'sonner';
 import type { DataGridColumn, DataGridAction } from '@/features/data-grid/types';
 
 interface EventOrderManagementProps {
   eventId: string;
 }
 
+type ConfirmAction = 'cancel' | 'refund' | null;
+
 export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => {
   const { t } = useTranslation('common');
   const { orders, isLoading, cancelOrder, refundOrder } = useEventOrders(eventId);
   const [selectedOrder, setSelectedOrder] = useState<EventOrder | null>(null);
+  const [orderForAction, setOrderForAction] = useState<EventOrder | null>(null);
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isResending, setIsResending] = useState<string | null>(null);
+  const { t: tToast } = useTranslation('toasts');
 
   const columns: DataGridColumn<EventOrder>[] = [
     {
@@ -119,6 +130,67 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
     },
   ];
 
+  const handleCancelClick = (order: EventOrder) => {
+    setOrderForAction(order);
+    setConfirmAction('cancel');
+  };
+
+  const handleRefundClick = (order: EventOrder) => {
+    setOrderForAction(order);
+    setConfirmAction('refund');
+  };
+
+  const handleConfirmAction = async () => {
+    if (!orderForAction || !confirmAction) return;
+
+    setIsProcessing(true);
+    try {
+      if (confirmAction === 'cancel') {
+        await cancelOrder(orderForAction.id);
+      } else if (confirmAction === 'refund') {
+        await refundOrder(orderForAction.id);
+      }
+      setConfirmAction(null);
+      setOrderForAction(null);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleResendConfirmation = async (order: EventOrder) => {
+    if (isResending) return; // Prevent multiple simultaneous resends
+
+    setIsResending(order.id);
+    try {
+      // Convert order to email data format
+      const emailData = EmailService.convertOrderToEmailData(order, {
+        fullName: order.profile?.full_name || order.profile?.display_name || 'Customer',
+        email: order.profile?.email || '',
+      });
+
+      const result = await EmailService.sendOrderReceipt(emailData);
+
+      if (result.success) {
+        toast.success(tToast('orders.confirmationResent'));
+        logger.info('Order confirmation email resent', { orderId: order.id });
+      } else {
+        toast.error(tToast('orders.resendFailed'));
+        logger.error('Failed to resend order confirmation', {
+          orderId: order.id,
+          error: result.error,
+        });
+      }
+    } catch (error) {
+      toast.error(tToast('orders.resendFailed'));
+      logger.error('Error resending order confirmation', {
+        orderId: order.id,
+        error: error instanceof Error ? error.message : 'Unknown',
+      });
+    } finally {
+      setIsResending(null);
+    }
+  };
+
   const actions: DataGridAction<EventOrder>[] = [
     {
       label: t('orderManagement.viewDetails'),
@@ -128,28 +200,18 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
     {
       label: t('orderManagement.cancelOrder'),
       icon: <XCircle className="w-4 h-4" />,
-      onClick: (order) => {
-        if (confirm(t('orderManagement.confirmCancel'))) {
-          cancelOrder(order.id);
-        }
-      },
+      onClick: handleCancelClick,
     },
     {
       label: t('orderManagement.refundOrder'),
       icon: <RefreshCw className="w-4 h-4" />,
-      onClick: (order) => {
-        if (confirm(t('orderManagement.confirmRefund'))) {
-          refundOrder(order.id);
-        }
-      },
+      onClick: handleRefundClick,
     },
     {
       label: t('orderManagement.resendConfirmation'),
       icon: <Mail className="w-4 h-4" />,
-      onClick: (order) => {
-        // TODO: Implement email resend
-        console.log('Resend confirmation for', order.id);
-      },
+      onClick: handleResendConfirmation,
+      disabled: isResending !== null,
     },
   ];
 
@@ -176,6 +238,28 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
           onClose={() => setSelectedOrder(null)}
         />
       )}
+
+      <FmCommonConfirmDialog
+        open={confirmAction === 'cancel'}
+        onOpenChange={(open) => !open && setConfirmAction(null)}
+        title={t('orderManagement.cancelOrder')}
+        description={t('orderManagement.confirmCancel')}
+        confirmText={t('buttons.cancel')}
+        onConfirm={handleConfirmAction}
+        variant="destructive"
+        isLoading={isProcessing}
+      />
+
+      <FmCommonConfirmDialog
+        open={confirmAction === 'refund'}
+        onOpenChange={(open) => !open && setConfirmAction(null)}
+        title={t('orderManagement.refundOrder')}
+        description={t('orderManagement.confirmRefund')}
+        confirmText={t('buttons.refund')}
+        onConfirm={handleConfirmAction}
+        variant="destructive"
+        isLoading={isProcessing}
+      />
     </div>
   );
 };

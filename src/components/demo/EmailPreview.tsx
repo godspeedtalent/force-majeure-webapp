@@ -5,12 +5,13 @@ import { Button } from '@/components/common/shadcn/button';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { Separator } from '@/components/common/shadcn/separator';
-import { Mail, Copy, Send, Eye } from 'lucide-react';
+import { Mail, Copy, Send, Eye, FileDown, Loader2 } from 'lucide-react';
 import { OrderReceiptEmailData } from '@/types/email';
 import { generateOrderReceiptEmailHTML } from '@/services/email/templates/OrderReceiptEmail';
 import { useSendTestEmail } from '@/shared/hooks/useEmailReceipt';
 import { toast } from 'sonner';
 import { formatHeader } from '@/shared';
+import { TicketPDFGenerator, TicketPDFData } from '@/services/pdf/TicketPDFGenerator';
 
 /**
  * EmailPreview - Developer tool for previewing and testing email templates
@@ -27,6 +28,7 @@ export const EmailPreview = () => {
   const { sendTestEmail, isSending } = useSendTestEmail();
   const [testEmail, setTestEmail] = useState('');
   const [showPreview, setShowPreview] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   // Sample data for preview
   const sampleData: OrderReceiptEmailData = {
@@ -78,6 +80,49 @@ export const EmailPreview = () => {
     const html = generateOrderReceiptEmailHTML(sampleData);
     navigator.clipboard.writeText(html);
     toast.success(t('emailPreview.htmlCopied'));
+  };
+
+  const handleDownloadPDF = async () => {
+    setIsGeneratingPDF(true);
+    try {
+      // Create sample ticket data for PDF generation
+      const sampleTicketData: TicketPDFData[] = sampleData.orderSummary.items.map((item, index) => ({
+        ticketId: `TKT-${Date.now()}-${index}`,
+        qrCodeData: `https://forcemajeure.com/ticket/${sampleData.orderId}/${index}`,
+        eventName: sampleData.event.title,
+        eventDate: new Date(sampleData.event.date).toLocaleDateString('en-US', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        }),
+        eventTime: sampleData.event.time,
+        venueName: sampleData.event.venue.name,
+        venueAddress: `${sampleData.event.venue.address}, ${sampleData.event.venue.city}`,
+        ticketTierName: item.ticketTierName,
+        attendeeName: sampleData.purchaser.fullName,
+        attendeeEmail: sampleData.purchaser.email,
+        orderNumber: sampleData.orderId,
+        purchaserName: sampleData.purchaser.fullName,
+      }));
+
+      // Generate PDF with all tickets (one per page)
+      const pdfBase64 = await TicketPDFGenerator.generateMultipleTickets(sampleTicketData);
+
+      // Download the PDF
+      const link = document.createElement('a');
+      link.href = `data:application/pdf;base64,${pdfBase64}`;
+      link.download = `tickets-${sampleData.orderId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success('PDF ticket generated and downloaded!');
+    } catch (error) {
+      toast.error(`Failed to generate PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
 
   const handleSendTest = async () => {
@@ -155,6 +200,19 @@ export const EmailPreview = () => {
             >
               <Copy className='h-4 w-4 mr-2' />
               {t('emailPreview.copyHtml')}
+            </Button>
+            <Button
+              onClick={handleDownloadPDF}
+              variant='outline'
+              className='flex-1'
+              disabled={isGeneratingPDF}
+            >
+              {isGeneratingPDF ? (
+                <Loader2 className='h-4 w-4 mr-2 animate-spin' />
+              ) : (
+                <FileDown className='h-4 w-4 mr-2' />
+              )}
+              {isGeneratingPDF ? 'Generating...' : 'Download PDF'}
             </Button>
           </div>
         </div>

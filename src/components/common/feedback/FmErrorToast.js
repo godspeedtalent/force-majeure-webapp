@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/shared';
 import { FmErrorOverlay } from './FmErrorOverlay';
+import { useTranslation } from 'react-i18next';
 /**
  * FmErrorToast Component
  *
@@ -26,6 +27,7 @@ import { FmErrorOverlay } from './FmErrorOverlay';
  * ```
  */
 export const FmErrorToast = ({ title, description, error, isDeveloper = false, context, endpoint, method, }) => {
+    const { t } = useTranslation('common');
     const [copied, setCopied] = useState(false);
     const [showOverlay, setShowOverlay] = useState(false);
     const handleCopy = async () => {
@@ -49,8 +51,8 @@ export const FmErrorToast = ({ title, description, error, isDeveloper = false, c
     // For non-developers, show generic message
     const displayDescription = isDeveloper
         ? description
-        : 'An error occurred. Please try again.';
-    return (_jsxs("div", { className: 'flex items-start gap-3', children: [_jsx(AlertCircle, { className: 'h-5 w-5 text-fm-crimson flex-shrink-0 mt-0.5' }), _jsxs("div", { className: 'flex-1 min-w-0 max-w-[400px]', children: [_jsx("div", { className: 'font-semibold text-fm-crimson', children: title }), displayDescription && (_jsx("div", { className: 'text-sm text-muted-foreground mt-1 whitespace-pre-wrap break-words', children: displayDescription })), isDeveloper && error && (_jsx("div", { className: 'text-xs text-muted-foreground/70 mt-1 font-mono break-words', children: error.message }))] }), isDeveloper && (_jsxs("div", { className: 'flex items-center gap-1', children: [_jsx("button", { onClick: () => setShowOverlay(true), className: 'flex-shrink-0 p-1.5 rounded hover:bg-white/10 transition-colors', title: 'View details', children: _jsx(FileText, { className: 'h-4 w-4 text-muted-foreground' }) }), _jsx("button", { onClick: handleCopy, className: cn('flex-shrink-0 p-1.5 rounded hover:bg-white/10 transition-colors', copied && 'bg-white/10'), title: 'Copy error details', children: copied ? (_jsx(Check, { className: 'h-4 w-4 text-fm-gold' })) : (_jsx(Copy, { className: 'h-4 w-4 text-muted-foreground' })) })] })), error && (_jsx(FmErrorOverlay, { error: error, title: title, description: description, context: context, endpoint: endpoint, method: method, isOpen: showOverlay, onClose: () => setShowOverlay(false) }))] }));
+        : t('errors.genericError');
+    return (_jsxs("div", { className: 'flex items-start gap-3', children: [_jsx(AlertCircle, { className: 'h-5 w-5 text-fm-crimson flex-shrink-0 mt-0.5' }), _jsxs("div", { className: 'flex-1 min-w-0 max-w-[400px]', children: [_jsx("div", { className: 'font-semibold text-fm-crimson', children: title }), displayDescription && (_jsx("div", { className: 'text-sm text-muted-foreground mt-1 whitespace-pre-wrap break-words', children: displayDescription })), isDeveloper && error && (_jsx("div", { className: 'text-xs text-muted-foreground/70 mt-1 font-mono break-words', children: error.message }))] }), isDeveloper && (_jsxs("div", { className: 'flex items-center gap-1', children: [_jsx("button", { onClick: () => setShowOverlay(true), className: 'flex-shrink-0 p-1.5 rounded hover:bg-white/10 transition-colors', title: t('errors.viewDetails'), children: _jsx(FileText, { className: 'h-4 w-4 text-muted-foreground' }) }), _jsx("button", { onClick: handleCopy, className: cn('flex-shrink-0 p-1.5 rounded hover:bg-white/10 transition-colors', copied && 'bg-white/10'), title: t('errors.copyErrorDetails'), children: copied ? (_jsx(Check, { className: 'h-4 w-4 text-fm-gold' })) : (_jsx(Copy, { className: 'h-4 w-4 text-muted-foreground' })) })] })), error && (_jsx(FmErrorOverlay, { error: error, title: title, description: description, context: context, endpoint: endpoint, method: method, isOpen: showOverlay, onClose: () => setShowOverlay(false) }))] }));
 };
 /**
  * Helper function to show error toast

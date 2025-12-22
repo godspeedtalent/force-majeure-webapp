@@ -1,7 +1,8 @@
-import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React, { useCallback, useEffect, useMemo, useRef, useState, } from 'react';
 import { Database, Compass, ShoppingCart, ToggleLeft, ClipboardList, X, Building2, Scan, } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/shared';
 import { FmCommonTab } from '@/components/common/data/FmCommonTab';
 import { Button } from '@/components/common/shadcn/button';
@@ -17,6 +18,7 @@ import { FeatureTogglesTabContent } from './tabs/FeatureTogglesTab';
 import { DevNotesTabContent } from './tabs/DevNotesTab';
 import { DevNavigationTabContent } from './tabs/DevNavigationTab';
 export const FmToolbar = ({ className, anchorOffset = 96 }) => {
+    const { t } = useTranslation('common');
     const [isDragging, setIsDragging] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
     const [dragOffset, setDragOffset] = useState(0);
@@ -62,10 +64,10 @@ export const FmToolbar = ({ className, anchorOffset = 96 }) => {
     const tabs = useMemo(() => [
         {
             id: 'cart',
-            label: 'Shopping Cart',
+            label: t('toolbar.shoppingCart'),
             icon: ShoppingCart,
             content: _jsx(CartTabContent, {}),
-            title: 'Shopping Cart',
+            title: t('toolbar.shoppingCart'),
             visible: Boolean(user) && hasCartItems,
             group: 'user',
             groupOrder: 1,
@@ -73,81 +75,81 @@ export const FmToolbar = ({ className, anchorOffset = 96 }) => {
         },
         {
             id: 'org-dashboard',
-            label: 'Org Dashboard',
+            label: t('toolbar.orgDashboard'),
             icon: Building2,
             content: _jsx(OrgDashboardTabContent, { onNavigate: handleNavigate }),
-            title: 'Org Dashboard',
+            title: t('toolbar.orgDashboard'),
             visible: Boolean(hasOrganizationAccess),
             group: 'organization',
             groupOrder: 2,
             alignment: 'top',
-            groupLabel: 'Organization',
+            groupLabel: t('toolbar.groups.organization'),
         },
         {
             id: 'scan-tickets',
-            label: 'Scan Tickets',
+            label: t('toolbar.scanTickets'),
             icon: Scan,
             content: _jsx(ScanTicketsTabContent, { onNavigate: handleNavigate }),
-            title: 'Scan Tickets',
+            title: t('toolbar.scanTickets'),
             visible: Boolean(hasOrganizationAccess),
             group: 'organization',
             groupOrder: 2,
             alignment: 'top',
-            groupLabel: 'Organization',
+            groupLabel: t('toolbar.groups.organization'),
         },
         {
             id: 'tools',
-            label: 'Dev Navigation',
+            label: t('toolbar.devNavigation'),
             icon: Compass,
             content: _jsx(DevNavigationTabContent, { onNavigate: handleNavigate, isAdmin: isAdmin }),
-            title: 'Dev Navigation',
+            title: t('toolbar.devNavigation'),
             visible: isDeveloperOrAdmin,
             group: 'developer',
             groupOrder: 2,
             alignment: 'bottom',
-            groupLabel: 'Developer Tools',
+            groupLabel: t('toolbar.groups.developerTools'),
         },
         {
             id: 'database',
-            label: 'Database',
+            label: t('toolbar.database'),
             icon: Database,
             content: _jsx(DatabaseTabContent, {}),
             footer: _jsx(DatabaseTabFooter, { onNavigate: handleNavigate }),
-            title: 'Database Manager',
+            title: t('toolbar.databaseManager'),
             visible: isDeveloperOrAdmin,
             group: 'developer',
             groupOrder: 2,
             alignment: 'bottom',
-            groupLabel: 'Developer Tools',
+            groupLabel: t('toolbar.groups.developerTools'),
             resizable: true,
         },
         {
             id: 'features',
-            label: 'Feature Toggles',
+            label: t('toolbar.featureToggles'),
             icon: ToggleLeft,
             content: _jsx(FeatureTogglesTabContent, {}),
-            title: 'Feature Toggles',
+            title: t('toolbar.featureToggles'),
             visible: isDeveloperOrAdmin,
             group: 'developer',
             groupOrder: 2,
             alignment: 'bottom',
-            groupLabel: 'Developer Tools',
+            groupLabel: t('toolbar.groups.developerTools'),
         },
         {
             id: 'notes',
-            label: 'TODO Notes',
+            label: t('toolbar.todoNotes'),
             icon: ClipboardList,
             content: _jsx(DevNotesTabContent, {}),
-            title: 'Dev Notes',
+            title: t('toolbar.devNotes'),
             visible: isDeveloperOrAdmin,
             group: 'developer',
             groupOrder: 2,
             alignment: 'bottom',
-            groupLabel: 'Developer Tools',
+            groupLabel: t('toolbar.groups.developerTools'),
             resizable: true,
             maxWidth: Math.floor(window.innerWidth * 0.4), // 40vw
         },
-    ], [isDeveloperOrAdmin, isAdmin, user, profile, hasOrganizationAccess, navigate]);
+    ], [isDeveloperOrAdmin, isAdmin, user, profile, hasOrganizationAccess, navigate, t]);
     const visibleTabs = useMemo(() => {
         const filtered = tabs.filter(tab => tab.visible !== false);
         // Sort by groupOrder first, then by order in array
@@ -327,7 +329,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }) => {
     }
     return (_jsxs("div", { className: cn('fixed bottom-0 right-0 z-[100]', 'hidden md:block', !isResizing && 'transition-all duration-300 ease-in-out', className), style: {
             width: isOpen ? `${drawerWidth}px` : '0px',
-        }, children: [isOpen && activeTabData?.resizable && (_jsx("div", { className: cn('absolute inset-y-0 left-0 w-1 cursor-ew-resize z-10', 'hover:bg-fm-gold/50 transition-colors', isResizing && 'bg-fm-gold'), onMouseDown: handleResizeStart, title: 'Drag to resize' })), _jsx("div", { className: 'absolute bottom-0 right-full h-full bg-black/80 backdrop-blur-md border-l border-white/20 transition-all duration-300', style: {
+        }, children: [isOpen && activeTabData?.resizable && (_jsx("div", { className: cn('absolute inset-y-0 left-0 w-1 cursor-ew-resize z-10', 'hover:bg-fm-gold/50 transition-colors', isResizing && 'bg-fm-gold'), onMouseDown: handleResizeStart, title: t('toolbar.dragToResize') })), _jsx("div", { className: 'absolute bottom-0 right-full h-full bg-black/80 backdrop-blur-md border-l border-white/20 transition-all duration-300', style: {
                     width: isTabHovered ? (isOpen ? '0px' : '6px') : '2px',
                 } }), topGroups.length > 0 && (_jsx("div", { className: 'absolute top-0 right-full flex flex-col pl-1 transition-all duration-300', style: {
                     transform: `translateX(${isTabHovered ? (isOpen ? '2px' : '-4px') : '0px'})`,
@@ -364,7 +366,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }) => {
                                                 handleTabClick(tab.id);
                                             }
                                         }, variant: 'vertical' }, tab.id)))] })] }, group.group));
-                }) })), _jsx("div", { className: cn('h-screen bg-black/90 backdrop-blur-md border-l border-white/20 overflow-y-auto transition-opacity duration-300 ease-in-out pointer-events-auto', isOpen ? 'opacity-100' : 'opacity-0 w-0'), style: {
+                }) })), _jsx("div", { className: cn('h-screen bg-black/90 backdrop-blur-md border-l border-white/20 transition-opacity duration-300 ease-in-out pointer-events-auto', isOpen ? 'opacity-100' : 'opacity-0 w-0'), style: {
                     width: isOpen ? `${drawerWidth}px` : '0px',
-                }, children: isOpen && (_jsxs("div", { className: 'pt-8 px-6 pointer-events-auto h-full flex flex-col', children: [_jsx(Button, { variant: 'ghost', size: 'icon', onClick: () => setIsOpen(false), className: 'absolute top-4 right-4 h-8 w-8 text-white/50 hover:text-white hover:bg-white/10', children: _jsx(X, { className: 'h-4 w-4' }) }), activeTabData && (_jsxs(_Fragment, { children: [_jsx("h2", { className: 'font-canela text-2xl text-white mb-6', children: activeTabData.title || activeTabData.label }), _jsx("div", { className: 'space-y-6 flex-1', children: activeTabData.content }), activeTabData.footer && (_jsx("div", { className: 'mt-auto pt-4 border-t border-white/10', children: activeTabData.footer }))] }))] })) })] }));
+                }, children: isOpen && (_jsxs("div", { className: 'pointer-events-auto h-full flex flex-col', children: [_jsxs("div", { className: 'sticky top-0 z-10 bg-black/90 backdrop-blur-md pt-8 px-6 pb-4 border-b border-white/10', children: [_jsx(Button, { variant: 'ghost', size: 'icon', onClick: () => setIsOpen(false), className: 'absolute top-4 right-4 h-8 w-8 text-white/50 hover:text-white hover:bg-white/10', children: _jsx(X, { className: 'h-4 w-4' }) }), activeTabData && (_jsx("h2", { className: 'font-canela text-2xl text-white', children: activeTabData.title || activeTabData.label }))] }), activeTabData && (_jsx("div", { className: 'flex-1 overflow-y-auto px-6 py-4', children: _jsx("div", { className: 'space-y-6', children: activeTabData.content }) })), activeTabData?.footer && (_jsx("div", { className: 'sticky bottom-0 bg-black/90 backdrop-blur-md px-6 py-4 border-t border-white/10', children: activeTabData.footer }))] })) })] }));
 };

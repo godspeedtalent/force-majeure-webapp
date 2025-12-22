@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 
 import { DataGridColumn } from '../FmDataGrid';
 
@@ -12,22 +13,22 @@ export function FmBulkEditSummary({
   enabledFields,
   editableColumns,
 }: FmBulkEditSummaryProps) {
+  const { t } = useTranslation('common');
   const enabledFieldCount = Object.values(enabledFields).filter(Boolean).length;
 
   return (
     <div className='rounded-none bg-muted/30 p-4 space-y-2'>
-      <div className='text-sm font-medium'>Summary</div>
+      <div className='text-sm font-medium'>{t('bulkEdit.summary')}</div>
       <div className='text-sm text-muted-foreground space-y-1'>
         <div>
-          • {selectedRowCount} row{selectedRowCount !== 1 ? 's' : ''} selected
+          • {t('bulkEdit.rowsSelected', { count: selectedRowCount })}
         </div>
         <div>
-          • {enabledFieldCount} field{enabledFieldCount !== 1 ? 's' : ''} will be
-          updated
+          • {t('bulkEdit.fieldsToBeUpdated', { count: enabledFieldCount })}
         </div>
         {enabledFieldCount > 0 && (
           <div className='text-foreground font-medium mt-2'>
-            Fields to update:{' '}
+            {t('bulkEdit.fieldsToUpdate')}{' '}
             {Object.keys(enabledFields)
               .filter(k => enabledFields[k])
               .map(k => editableColumns.find(c => c.key === k)?.label)

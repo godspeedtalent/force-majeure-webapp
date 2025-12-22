@@ -4,6 +4,7 @@ import { Timer, Users, Clock, Info, RotateCcw } from 'lucide-react';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { FmI18nCommon } from '@/components/common/i18n';
 import { Card } from '@/components/common/shadcn/card';
 import {
@@ -33,6 +34,7 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
   const [config, setConfig] = useState<QueueConfiguration | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   // Local form state
   const [enableQueue, setEnableQueue] = useState(true);
@@ -109,16 +111,15 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
     }
   };
 
-  const handleResetToDefaults = async () => {
+  const handleResetClick = () => {
     if (!hasCustomConfig) {
       toast.info(tToast('queue.alreadyDefault'));
       return;
     }
+    setShowResetConfirm(true);
+  };
 
-    const confirmed = window.confirm(t('queue.resetConfirm'));
-
-    if (!confirmed) return;
-
+  const handleResetToDefaults = async () => {
     setIsSaving(true);
     try {
       await deleteQueueConfiguration(eventId);
@@ -131,6 +132,7 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
       setMaxConcurrentUsers(defaultConfig.max_concurrent_users.toString());
       setCheckoutTimeoutMinutes(''); // Clear to show placeholder
       setSessionTimeoutMinutes(defaultConfig.session_timeout_minutes.toString());
+      setShowResetConfirm(false);
     } catch (error) {
       logger.error('Failed to reset queue configuration', {
         error: error instanceof Error ? error.message : 'Unknown',
@@ -165,7 +167,7 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
             variant='secondary'
             size='sm'
             icon={RotateCcw}
-            onClick={handleResetToDefaults}
+            onClick={handleResetClick}
             disabled={isSaving}
           >
             {t('queue.resetToDefaults')}
@@ -300,6 +302,17 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
           {t('queue.saveConfiguration')}
         </FmCommonButton>
       </div>
+
+      <FmCommonConfirmDialog
+        open={showResetConfirm}
+        onOpenChange={setShowResetConfirm}
+        title={t('queue.resetToDefaults')}
+        description={t('queue.resetConfirmDescription')}
+        confirmText={t('queue.resetToDefaults')}
+        onConfirm={handleResetToDefaults}
+        variant="destructive"
+        isLoading={isSaving}
+      />
     </Card>
   );
 };

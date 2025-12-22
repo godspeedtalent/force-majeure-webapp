@@ -8,7 +8,7 @@
  */
 
 import jsPDF from 'jspdf';
-import QRCode from 'qrcode';
+import * as QRCode from 'qrcode';
 import { logger } from '@/shared';
 
 const pdfLogger = logger.createNamespace('TicketPDFGenerator');

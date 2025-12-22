@@ -18,6 +18,7 @@ import {
   Scan,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/shared';
 import { FmCommonTab } from '@/components/common/data/FmCommonTab';
@@ -57,6 +58,7 @@ interface FmToolbarProps {
 }
 
 export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
+  const { t } = useTranslation('common');
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
@@ -112,10 +114,10 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
     () => [
       {
         id: 'cart',
-        label: 'Shopping Cart',
+        label: t('toolbar.shoppingCart'),
         icon: ShoppingCart,
         content: <CartTabContent />,
-        title: 'Shopping Cart',
+        title: t('toolbar.shoppingCart'),
         visible: Boolean(user) && hasCartItems,
         group: 'user',
         groupOrder: 1,
@@ -123,82 +125,82 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
       },
       {
         id: 'org-dashboard',
-        label: 'Org Dashboard',
+        label: t('toolbar.orgDashboard'),
         icon: Building2,
         content: <OrgDashboardTabContent onNavigate={handleNavigate} />,
-        title: 'Org Dashboard',
+        title: t('toolbar.orgDashboard'),
         visible: Boolean(hasOrganizationAccess),
         group: 'organization',
         groupOrder: 2,
         alignment: 'top',
-        groupLabel: 'Organization',
+        groupLabel: t('toolbar.groups.organization'),
       },
       {
         id: 'scan-tickets',
-        label: 'Scan Tickets',
+        label: t('toolbar.scanTickets'),
         icon: Scan,
         content: <ScanTicketsTabContent onNavigate={handleNavigate} />,
-        title: 'Scan Tickets',
+        title: t('toolbar.scanTickets'),
         visible: Boolean(hasOrganizationAccess),
         group: 'organization',
         groupOrder: 2,
         alignment: 'top',
-        groupLabel: 'Organization',
+        groupLabel: t('toolbar.groups.organization'),
       },
       {
         id: 'tools',
-        label: 'Dev Navigation',
+        label: t('toolbar.devNavigation'),
         icon: Compass,
         content: <DevNavigationTabContent onNavigate={handleNavigate} isAdmin={isAdmin} />,
-        title: 'Dev Navigation',
+        title: t('toolbar.devNavigation'),
         visible: isDeveloperOrAdmin,
         group: 'developer',
         groupOrder: 2,
         alignment: 'bottom',
-        groupLabel: 'Developer Tools',
+        groupLabel: t('toolbar.groups.developerTools'),
       },
       {
         id: 'database',
-        label: 'Database',
+        label: t('toolbar.database'),
         icon: Database,
         content: <DatabaseTabContent />,
         footer: <DatabaseTabFooter onNavigate={handleNavigate} />,
-        title: 'Database Manager',
+        title: t('toolbar.databaseManager'),
         visible: isDeveloperOrAdmin,
         group: 'developer',
         groupOrder: 2,
         alignment: 'bottom',
-        groupLabel: 'Developer Tools',
+        groupLabel: t('toolbar.groups.developerTools'),
         resizable: true,
       },
       {
         id: 'features',
-        label: 'Feature Toggles',
+        label: t('toolbar.featureToggles'),
         icon: ToggleLeft,
         content: <FeatureTogglesTabContent />,
-        title: 'Feature Toggles',
+        title: t('toolbar.featureToggles'),
         visible: isDeveloperOrAdmin,
         group: 'developer',
         groupOrder: 2,
         alignment: 'bottom',
-        groupLabel: 'Developer Tools',
+        groupLabel: t('toolbar.groups.developerTools'),
       },
       {
         id: 'notes',
-        label: 'TODO Notes',
+        label: t('toolbar.todoNotes'),
         icon: ClipboardList,
         content: <DevNotesTabContent />,
-        title: 'Dev Notes',
+        title: t('toolbar.devNotes'),
         visible: isDeveloperOrAdmin,
         group: 'developer',
         groupOrder: 2,
         alignment: 'bottom',
-        groupLabel: 'Developer Tools',
+        groupLabel: t('toolbar.groups.developerTools'),
         resizable: true,
         maxWidth: Math.floor(window.innerWidth * 0.4), // 40vw
       },
     ],
-    [isDeveloperOrAdmin, isAdmin, user, profile, hasOrganizationAccess, navigate]
+    [isDeveloperOrAdmin, isAdmin, user, profile, hasOrganizationAccess, navigate, t]
   );
 
   const visibleTabs = useMemo(() => {
@@ -447,7 +449,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
             isResizing && 'bg-fm-gold'
           )}
           onMouseDown={handleResizeStart}
-          title='Drag to resize'
+          title={t('toolbar.dragToResize')}
         />
       )}
 
@@ -642,7 +644,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
 
       <div
         className={cn(
-          'h-screen bg-black/90 backdrop-blur-md border-l border-white/20 overflow-y-auto transition-opacity duration-300 ease-in-out pointer-events-auto',
+          'h-screen bg-black/90 backdrop-blur-md border-l border-white/20 transition-opacity duration-300 ease-in-out pointer-events-auto',
           isOpen ? 'opacity-100' : 'opacity-0 w-0'
         )}
         style={{
@@ -650,28 +652,37 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         }}
       >
         {isOpen && (
-          <div className='pt-8 px-6 pointer-events-auto h-full flex flex-col'>
-            <Button
-              variant='ghost'
-              size='icon'
-              onClick={() => setIsOpen(false)}
-              className='absolute top-4 right-4 h-8 w-8 text-white/50 hover:text-white hover:bg-white/10'
-            >
-              <X className='h-4 w-4' />
-            </Button>
+          <div className='pointer-events-auto h-full flex flex-col'>
+            {/* Sticky Header */}
+            <div className='sticky top-0 z-10 bg-black/90 backdrop-blur-md pt-8 px-6 pb-4 border-b border-white/10'>
+              <Button
+                variant='ghost'
+                size='icon'
+                onClick={() => setIsOpen(false)}
+                className='absolute top-4 right-4 h-8 w-8 text-white/50 hover:text-white hover:bg-white/10'
+              >
+                <X className='h-4 w-4' />
+              </Button>
 
-            {activeTabData && (
-              <>
-                <h2 className='font-canela text-2xl text-white mb-6'>
+              {activeTabData && (
+                <h2 className='font-canela text-2xl text-white'>
                   {activeTabData.title || activeTabData.label}
                 </h2>
-                <div className='space-y-6 flex-1'>{activeTabData.content}</div>
-                {activeTabData.footer && (
-                  <div className='mt-auto pt-4 border-t border-white/10'>
-                    {activeTabData.footer}
-                  </div>
-                )}
-              </>
+              )}
+            </div>
+
+            {/* Scrollable Content */}
+            {activeTabData && (
+              <div className='flex-1 overflow-y-auto px-6 py-4'>
+                <div className='space-y-6'>{activeTabData.content}</div>
+              </div>
+            )}
+
+            {/* Sticky Footer */}
+            {activeTabData?.footer && (
+              <div className='sticky bottom-0 bg-black/90 backdrop-blur-md px-6 py-4 border-t border-white/10'>
+                {activeTabData.footer}
+              </div>
             )}
           </div>
         )}

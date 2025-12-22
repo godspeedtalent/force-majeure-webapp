@@ -7,6 +7,7 @@
 
 import { LucideIcon } from 'lucide-react';
 import { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/shared';
 
@@ -48,13 +49,15 @@ const sizeConfig = {
 
 export const FmCommonEmptyState = ({
   icon: Icon,
-  title = 'No items found',
+  title,
   description,
   action,
   size = 'md',
   className,
 }: FmCommonEmptyStateProps) => {
+  const { t } = useTranslation('common');
   const config = sizeConfig[size];
+  const displayTitle = title || t('empty.noItemsFound');
 
   return (
     <div className={cn('text-center', config.container, className)}>
@@ -64,7 +67,7 @@ export const FmCommonEmptyState = ({
         />
       )}
       <h3 className={cn(config.title, 'font-medium text-foreground mb-2')}>
-        {title}
+        {displayTitle}
       </h3>
       {description && (
         <p className={cn(config.description, 'text-muted-foreground mb-4')}>

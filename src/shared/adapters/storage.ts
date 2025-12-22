@@ -1,3 +1,5 @@
+import { logger } from '@/shared/services/logger';
+
 /**
  * Storage Adapter Interface
  *
@@ -93,7 +95,7 @@ export const webStorage: StorageAdapter = {
       localStorage.setItem(key, value);
     } catch {
       // localStorage may throw when quota is exceeded
-      console.warn(`Failed to save "${key}" to localStorage`);
+      logger.warn(`Failed to save "${key}" to localStorage`, { source: 'storage' });
     }
   },
 

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/common/shadcn/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
 import { SalesReportConfig } from '@/components/reports/SalesReportConfig';
@@ -9,13 +10,14 @@ interface ReportsProps {
 }
 
 const Reports = ({ eventId }: ReportsProps) => {
+  const { t } = useTranslation('common');
   const [activeTab, setActiveTab] = useState('sales');
 
   if (!eventId) {
     return (
       <div className="container mx-auto p-6">
         <Card className="p-6">
-          <p className="text-muted-foreground">Event ID is required to view reports.</p>
+          <p className="text-muted-foreground">{t('reports.eventIdRequired')}</p>
         </Card>
       </div>
     );
@@ -24,16 +26,16 @@ const Reports = ({ eventId }: ReportsProps) => {
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Reports</h1>
+        <h1 className="text-3xl font-bold">{t('reports.pageTitle')}</h1>
         <p className="text-muted-foreground mt-2">
-          Configure and schedule automated reports for your event
+          {t('reports.pageDescription')}
         </p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="sales">Daily Sales Report</TabsTrigger>
-          <TabsTrigger value="attendance">Attendance & Check-in</TabsTrigger>
+          <TabsTrigger value="sales">{t('reports.dailySalesReport')}</TabsTrigger>
+          <TabsTrigger value="attendance">{t('reports.attendance.title')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="sales" className="mt-6">

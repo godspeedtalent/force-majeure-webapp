@@ -117,7 +117,7 @@ export const AdminFeesSection = () => {
         return (local.type !== fee.fee_type || parseFloat(local.value) !== fee.fee_value);
     });
     if (isLoading) {
-        return _jsx("div", { className: 'text-muted-foreground text-sm', children: "Loading..." });
+        return _jsx("div", { className: 'text-muted-foreground text-sm', children: t('status.loading') });
     }
     return (_jsxs("div", { className: 'space-y-6 max-w-2xl', children: [_jsxs("div", { className: 'pb-3 border-b border-border', children: [_jsx("p", { className: 'text-xs text-muted-foreground mb-2', children: t('pageTitles.ticketingFeesDescription') }), _jsxs("div", { className: 'flex items-center gap-2', children: [_jsxs("span", { className: 'text-xs text-muted-foreground', children: [t('labels.currentEnvironment'), ":"] }), _jsx("span", { className: 'text-xs font-medium text-fm-gold uppercase', children: currentEnvName }), _jsx("span", { className: 'text-xs text-muted-foreground', children: t('formMessages.editingAllEnvironments') })] })] }), _jsx("div", { className: 'grid gap-6', children: fees.map(fee => {
                     const local = localFees[fee.fee_name];

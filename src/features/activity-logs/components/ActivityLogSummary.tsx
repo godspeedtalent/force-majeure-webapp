@@ -4,6 +4,7 @@
  * Displays summary cards showing activity counts by category.
  */
 
+import { useTranslation } from 'react-i18next';
 import {
   User,
   Calendar,
@@ -95,6 +96,8 @@ export function ActivityLogSummary({
   isLoading,
   onCategoryClick,
 }: ActivityLogSummaryProps) {
+  const { t } = useTranslation('common');
+
   // Create a map for easy lookup
   const countByCategory = summary.reduce(
     (acc, item) => {
@@ -141,7 +144,7 @@ export function ActivityLogSummary({
 
       {/* Total count */}
       <div className="flex items-center justify-between p-4 bg-black/20 border border-white/5 rounded-none">
-        <span className="text-sm text-muted-foreground">Total events logged</span>
+        <span className="text-sm text-muted-foreground">{t('activityLogs.totalEventsLogged')}</span>
         <span className="text-lg font-medium text-fm-gold">
           {totalCount.toLocaleString()}
         </span>

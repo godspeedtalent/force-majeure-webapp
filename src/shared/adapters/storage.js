@@ -1,21 +1,4 @@
-/**
- * Storage Adapter Interface
- *
- * Platform-agnostic storage interface for cross-platform compatibility.
- * This allows the same code to work on both web (localStorage) and
- * mobile (AsyncStorage/SecureStore) platforms.
- *
- * Usage:
- * ```typescript
- * // Web implementation
- * import { webStorage } from '@/shared';
- * await webStorage.setItem('key', 'value');
- *
- * // Mobile implementation (in mobile app)
- * import AsyncStorage from '@react-native-async-storage/async-storage';
- * const mobileStorage: StorageAdapter = AsyncStorage;
- * ```
- */
+import { logger } from '@/shared/services/logger';
 /**
  * Web implementation of StorageAdapter using localStorage.
  * This wraps synchronous localStorage methods in async wrappers
@@ -37,7 +20,7 @@ export const webStorage = {
         }
         catch {
             // localStorage may throw when quota is exceeded
-            console.warn(`Failed to save "${key}" to localStorage`);
+            logger.warn(`Failed to save "${key}" to localStorage`, { source: 'storage' });
         }
     },
     async removeItem(key) {

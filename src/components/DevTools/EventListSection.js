@@ -1,5 +1,6 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Search } from 'lucide-react';
 import { format, isPast, parseISO } from 'date-fns';
@@ -9,6 +10,7 @@ import { Label } from '@/components/common/shadcn/label';
 import { Switch } from '@/components/common/shadcn/switch';
 import { useEvents } from '@/features/events/hooks/useEvents';
 export const EventListSection = () => {
+    const { t } = useTranslation('common');
     const { data: events, isLoading } = useEvents();
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
@@ -43,12 +45,12 @@ export const EventListSection = () => {
     const columns = [
         {
             key: 'headliner',
-            label: 'Headliner',
+            label: t('eventList.headliner'),
             render: (_, item) => (_jsx("div", { className: 'font-medium text-white', children: item.headliner?.name || item.title || '-' })),
         },
         {
             key: 'start_time',
-            label: 'Date',
+            label: t('eventList.date'),
             render: value => {
                 if (!value)
                     return _jsx("span", { className: 'text-muted-foreground', children: "-" });
@@ -64,7 +66,7 @@ export const EventListSection = () => {
         },
         {
             key: 'venue',
-            label: 'Venue',
+            label: t('eventList.venue'),
             render: (_, item) => (_jsx("span", { className: 'text-muted-foreground text-xs', children: item.venue?.name || '-' })),
         },
     ];
@@ -73,11 +75,14 @@ export const EventListSection = () => {
         navigate(`/event/${item.id}/manage`);
     };
     if (isLoading) {
-        return (_jsx("div", { className: 'space-y-4', children: _jsx("div", { className: 'text-center py-8 text-muted-foreground', children: "Loading events..." }) }));
+        return (_jsx("div", { className: 'space-y-4', children: _jsx("div", { className: 'text-center py-8 text-muted-foreground', children: t('eventList.loading') }) }));
     }
-    return (_jsxs("div", { className: 'space-y-4', children: [_jsxs("div", { className: 'space-y-2', children: [_jsx(Label, { htmlFor: 'event-search', className: 'text-white/70 text-xs', children: "Search Events" }), _jsxs("div", { className: 'relative', children: [_jsx(Search, { className: 'absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' }), _jsx(Input, { id: 'event-search', type: 'text', placeholder: 'Search by title, venue, or artist...', value: searchQuery, onChange: e => setSearchQuery(e.target.value), className: 'pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/30' })] })] }), _jsxs("div", { className: 'flex items-center justify-between py-2', children: [_jsx(Label, { htmlFor: 'include-past', className: 'text-white/70 text-sm cursor-pointer', children: "Include past events" }), _jsx(Switch, { id: 'include-past', checked: includePastEvents, onCheckedChange: setIncludePastEvents })] }), _jsxs("div", { className: 'space-y-2', children: [_jsxs("div", { className: 'text-white/50 text-xs mb-2', children: [filteredEvents.length, " event", filteredEvents.length !== 1 ? 's' : '', ' ', "found"] }), _jsx(FmCommonList, { items: filteredEvents, columns: columns, striped: true, dense: true, emptyMessage: searchQuery
-                            ? 'No events match your search'
-                            : includePastEvents
-                                ? 'No events found'
-                                : 'No upcoming events', rowClassName: 'hover:bg-fm-gold/10 transition-colors border-b border-white/5', className: 'max-h-[500px] overflow-y-auto', onRowClick: handleRowClick })] })] }));
+    const getEmptyMessage = () => {
+        if (searchQuery)
+            return t('eventList.noMatchingEvents');
+        if (includePastEvents)
+            return t('eventList.noEventsFound');
+        return t('eventList.noUpcomingEvents');
+    };
+    return (_jsxs("div", { className: 'space-y-4', children: [_jsxs("div", { className: 'space-y-2', children: [_jsx(Label, { htmlFor: 'event-search', className: 'text-white/70 text-xs', children: t('eventList.searchEvents') }), _jsxs("div", { className: 'relative', children: [_jsx(Search, { className: 'absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' }), _jsx(Input, { id: 'event-search', type: 'text', placeholder: t('eventList.searchPlaceholder'), value: searchQuery, onChange: e => setSearchQuery(e.target.value), className: 'pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/30' })] })] }), _jsxs("div", { className: 'flex items-center justify-between py-2', children: [_jsx(Label, { htmlFor: 'include-past', className: 'text-white/70 text-sm cursor-pointer', children: t('eventList.includePastEvents') }), _jsx(Switch, { id: 'include-past', checked: includePastEvents, onCheckedChange: setIncludePastEvents })] }), _jsxs("div", { className: 'space-y-2', children: [_jsx("div", { className: 'text-white/50 text-xs mb-2', children: t('eventList.eventsFound', { count: filteredEvents.length }) }), _jsx(FmCommonList, { items: filteredEvents, columns: columns, striped: true, dense: true, emptyMessage: getEmptyMessage(), rowClassName: 'hover:bg-fm-gold/10 transition-colors border-b border-white/5', className: 'max-h-[500px] overflow-y-auto', onRowClick: handleRowClick })] })] }));
 };

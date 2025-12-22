@@ -1,5 +1,6 @@
 import { ArrowLeft, LucideIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/common/shadcn/button';
 import { cn } from '@/shared';
 
@@ -22,7 +23,7 @@ interface FmCommonBackButtonProps {
  * Can navigate to a specific path or use browser history
  */
 export function FmCommonBackButton({
-  text = 'Back',
+  text,
   icon: Icon = ArrowLeft,
   to,
   onClick,
@@ -30,6 +31,8 @@ export function FmCommonBackButton({
   className,
 }: FmCommonBackButtonProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation('common');
+  const resolvedText = text || t('buttons.back');
 
   const handleClick = () => {
     if (onClick) {
@@ -48,7 +51,7 @@ export function FmCommonBackButton({
       className={cn('gap-2', className)}
     >
       <Icon className='h-4 w-4' />
-      {text}
+      {resolvedText}
     </Button>
   );
 }

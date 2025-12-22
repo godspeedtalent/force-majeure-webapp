@@ -111,8 +111,8 @@ export const EventOverviewForm = ({ eventId, event, orderCount, onMakeInvisible,
         }
         catch (error) {
             await handleError(error, {
-                title: 'Auto-save Failed',
-                description: 'Could not save changes automatically',
+                title: tToast('events.autoSaveFailed'),
+                description: tToast('events.autoSaveFailedDescription'),
                 endpoint: 'EventOverviewForm',
                 method: 'UPDATE',
             });
@@ -156,8 +156,8 @@ export const EventOverviewForm = ({ eventId, event, orderCount, onMakeInvisible,
         }
         catch (error) {
             await handleError(error, {
-                title: 'Failed to Update Overview',
-                description: 'Could not save event overview changes',
+                title: tToast('events.updateOverviewFailed'),
+                description: tToast('events.updateOverviewFailedDescription'),
                 endpoint: 'EventOverviewForm',
                 method: 'UPDATE',
             });
@@ -180,8 +180,8 @@ export const EventOverviewForm = ({ eventId, event, orderCount, onMakeInvisible,
         }
         catch (error) {
             await handleError(error, {
-                title: 'Failed to Save Hero Image',
-                description: 'The image was uploaded but could not be linked to this event.',
+                title: tToast('events.heroImageSaveFailed'),
+                description: tToast('events.heroImageSaveFailedDescription'),
                 endpoint: 'EventOverviewForm/hero-image',
                 method: 'UPDATE',
             });

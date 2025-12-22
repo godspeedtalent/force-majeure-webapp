@@ -1,4 +1,4 @@
-
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/common/shadcn/button';
 import { X } from 'lucide-react';
 import { FilterPreset } from '../FmAdvancedFilterDialog';
@@ -14,13 +14,15 @@ export function FmFilterPresets({
   onLoadPreset,
   onDeletePreset,
 }: FmFilterPresetsProps) {
+  const { t } = useTranslation('common');
+
   if (presets.length === 0) {
     return null;
   }
 
   return (
     <div className='space-y-2 pt-4 border-t'>
-      <div className='text-sm font-medium'>Saved Filters</div>
+      <div className='text-sm font-medium'>{t('dataGrid.savedFilters')}</div>
       <div className='flex flex-wrap gap-2'>
         {presets.map(preset => (
           <div

@@ -1,4 +1,5 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useTranslation } from 'react-i18next';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, } from '@/components/common/shadcn/drawer';
 import { Compass, Database, ToggleLeft, Settings2, ClipboardList, } from 'lucide-react';
 import { cn } from '@/shared';
@@ -46,30 +47,31 @@ function ToolCard({ label, icon, badge, onClick }) {
  * Uses Vaul drawer for native mobile bottom sheet behavior
  */
 export function FmMobileDevDrawer({ open, onOpenChange, onToolSelect, badges, }) {
+    const { t } = useTranslation('common');
     const tools = [
         {
             id: 'navigation',
-            label: 'Navigation',
+            label: t('mobileDevTools.tools.navigation'),
             icon: _jsx(Compass, { className: "h-[24px] w-[24px]", strokeWidth: 2 }),
         },
         {
             id: 'database',
-            label: 'Database',
+            label: t('mobileDevTools.tools.database'),
             icon: _jsx(Database, { className: "h-[24px] w-[24px]", strokeWidth: 2 }),
         },
         {
             id: 'features',
-            label: 'Features',
+            label: t('mobileDevTools.tools.features'),
             icon: _jsx(ToggleLeft, { className: "h-[24px] w-[24px]", strokeWidth: 2 }),
         },
         {
             id: 'session',
-            label: 'Session',
+            label: t('mobileDevTools.tools.session'),
             icon: _jsx(Settings2, { className: "h-[24px] w-[24px]", strokeWidth: 2 }),
         },
         {
             id: 'notes',
-            label: 'Notes',
+            label: t('mobileDevTools.tools.notes'),
             icon: _jsx(ClipboardList, { className: "h-[24px] w-[24px]", strokeWidth: 2 }),
         },
     ];
@@ -83,7 +85,7 @@ export function FmMobileDevDrawer({ open, onOpenChange, onToolSelect, badges, })
             // Max height - 70vh to show content behind
             'max-h-[70vh]', 
             // z-index - above FAB
-            'z-[70]'), children: [_jsxs(DrawerHeader, { className: "pb-[10px]", children: [_jsx("div", { className: "mx-auto h-[4px] w-[100px] rounded-full bg-fm-gold/50 mb-[20px]" }), _jsx(DrawerTitle, { className: "text-center font-canela uppercase text-fm-gold text-lg", children: "Developer Tools" })] }), _jsx("div", { className: "p-[20px] pt-0", children: _jsx("div", { className: cn(
+            'z-[70]'), children: [_jsxs(DrawerHeader, { className: "pb-[10px]", children: [_jsx("div", { className: "mx-auto h-[4px] w-[100px] rounded-full bg-fm-gold/50 mb-[20px]" }), _jsx(DrawerTitle, { className: "text-center font-canela uppercase text-fm-gold text-lg", children: t('mobileDevTools.title') })] }), _jsx("div", { className: "p-[20px] pt-0", children: _jsx("div", { className: cn(
                         // Responsive grid - 2 cols on small, 3 cols on larger mobile
                         'grid grid-cols-2 sm:grid-cols-3', 
                         // Gap - SM spacing

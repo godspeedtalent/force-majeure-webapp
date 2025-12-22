@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
 import { cn } from '@/shared';
 import {
@@ -52,6 +53,7 @@ export function ArtistRegisterMobile({
   previewExpanded,
   setPreviewExpanded,
 }: ArtistRegisterMobileProps) {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
 
   return (
@@ -68,11 +70,11 @@ export function ArtistRegisterMobile({
             className='text-white/70 hover:text-fm-gold transition-colors duration-300 flex items-center gap-[10px] font-canela text-sm'
           >
             <ArrowLeft className='h-4 w-4' />
-            Back
+            {t('buttons.back')}
           </button>
           <div className='flex flex-col items-end'>
             <span className='font-canela text-sm text-muted-foreground'>
-              Step {currentStep + 1} of 5
+              {t('artistRegistration.stepOf', { current: currentStep + 1, total: 5 })}
             </span>
             <span className='font-canela text-xs text-muted-foreground/70'>
               {stepTitles[currentStep]}

@@ -7,6 +7,7 @@
  */
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase, logger } from '@/shared';
 import { FmCommonSelect, type SelectOption } from './FmCommonSelect';
 
@@ -34,7 +35,7 @@ export function FmCityDropdown({
   value,
   onChange,
   label,
-  placeholder = 'Select a city',
+  placeholder,
   description,
   error,
   required = false,
@@ -42,8 +43,10 @@ export function FmCityDropdown({
   disabled = false,
   stateFilter,
 }: FmCityDropdownProps) {
+  const { t } = useTranslation('common');
   const [cities, setCities] = useState<City[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const resolvedPlaceholder = placeholder || t('cityDropdown.selectCity');
 
   useEffect(() => {
     const fetchCities = async () => {
@@ -87,7 +90,7 @@ export function FmCityDropdown({
       value={value || ''}
       onChange={onChange}
       options={options}
-      placeholder={isLoading ? 'Loading cities...' : placeholder}
+      placeholder={isLoading ? t('cityDropdown.loadingCities') : resolvedPlaceholder}
       description={description}
       error={error}
       required={required}

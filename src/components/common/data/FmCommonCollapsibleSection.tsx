@@ -1,4 +1,5 @@
 import { ReactNode, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
 import { cn } from '@/shared';
@@ -32,6 +33,7 @@ export const FmCommonCollapsibleSection = ({
   defaultExpanded = true,
   className = '',
 }: FmCommonCollapsibleSectionProps) => {
+  const { t } = useTranslation('common');
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
   return (
@@ -47,12 +49,12 @@ export const FmCommonCollapsibleSection = ({
           {isExpanded ? (
             <>
               <ChevronUp className='h-4 w-4 mr-1' />
-              Collapse
+              {t('collapsible.collapse')}
             </>
           ) : (
             <>
               <ChevronDown className='h-4 w-4 mr-1' />
-              Expand
+              {t('collapsible.expand')}
             </>
           )}
         </Button>

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/shadcn/card';
 import { LucideIcon } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils/currency';
@@ -22,6 +23,8 @@ export const AnalyticsStatCard = ({
   subtitle,
   trend,
 }: AnalyticsStatCardProps) => {
+  const { t } = useTranslation('common');
+
   const formatValue = () => {
     switch (format) {
       case 'currency':
@@ -46,7 +49,7 @@ export const AnalyticsStatCard = ({
         )}
         {trend && (
           <p className={`text-xs mt-1 ${trend.isPositive ? 'text-green-600' : 'text-red-600'}`}>
-            {trend.isPositive ? '+' : ''}{trend.value.toFixed(1)}% from previous period
+            {trend.isPositive ? '+' : ''}{trend.value.toFixed(1)}% {t('analytics.fromPreviousPeriod')}
           </p>
         )}
       </CardContent>

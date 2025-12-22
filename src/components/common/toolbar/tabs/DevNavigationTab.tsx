@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Home, Shield, Database, Mail } from 'lucide-react';
 import { Separator } from '@/components/common/shadcn/separator';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -15,6 +16,8 @@ interface DevNavigationTabContentProps {
 }
 
 export function DevNavigationTabContent({ onNavigate, isAdmin }: DevNavigationTabContentProps) {
+  const { t } = useTranslation('common');
+
   return (
     <div className='space-y-4'>
       <Separator className='bg-white/10' />
@@ -32,7 +35,7 @@ export function DevNavigationTabContent({ onNavigate, isAdmin }: DevNavigationTa
                     onClick={() => onNavigate('/admin/controls')}
                     className='w-full justify-start'
                   >
-                    Admin Controls
+                    {t('devNavigation.adminControls')}
                   </FmCommonButton>
                 </div>
               </ContextMenuTrigger>
@@ -41,7 +44,7 @@ export function DevNavigationTabContent({ onNavigate, isAdmin }: DevNavigationTa
                   onClick={() => onNavigate('/admin/controls')}
                   className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
                 >
-                  Go to
+                  {t('devNavigation.goTo')}
                 </ContextMenuItem>
               </ContextMenuContent>
             </ContextMenu>
@@ -56,7 +59,7 @@ export function DevNavigationTabContent({ onNavigate, isAdmin }: DevNavigationTa
                   onClick={() => onNavigate('/developer')}
                   className='w-full justify-start'
                 >
-                  Developer Home
+                  {t('devNavigation.developerHome')}
                 </FmCommonButton>
               </div>
             </ContextMenuTrigger>
@@ -65,14 +68,14 @@ export function DevNavigationTabContent({ onNavigate, isAdmin }: DevNavigationTa
                 onClick={() => onNavigate('/developer')}
                 className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
               >
-                Go to
+                {t('devNavigation.goTo')}
               </ContextMenuItem>
             </ContextMenuContent>
           </ContextMenu>
         </div>
 
         {/* Supabase Links Section */}
-        <FmCommonCollapsibleSection title='Supabase' defaultExpanded={true}>
+        <FmCommonCollapsibleSection title={t('devNavigation.supabase')} defaultExpanded={true}>
           <div className='flex flex-col gap-2'>
             <ContextMenu>
               <ContextMenuTrigger asChild>
@@ -98,7 +101,7 @@ export function DevNavigationTabContent({ onNavigate, isAdmin }: DevNavigationTa
                     }}
                     className='w-full justify-start'
                   >
-                    Supabase Dashboard
+                    {t('devNavigation.supabaseDashboard')}
                   </FmCommonButton>
                 </div>
               </ContextMenuTrigger>
@@ -121,7 +124,7 @@ export function DevNavigationTabContent({ onNavigate, isAdmin }: DevNavigationTa
                   }}
                   className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
                 >
-                  Open
+                  {t('devNavigation.open')}
                 </ContextMenuItem>
               </ContextMenuContent>
             </ContextMenu>
@@ -137,7 +140,7 @@ export function DevNavigationTabContent({ onNavigate, isAdmin }: DevNavigationTa
                 }}
                 className='w-full justify-start'
               >
-                Mailpit (Local Email)
+                {t('devNavigation.mailpit')}
               </FmCommonButton>
             )}
           </div>

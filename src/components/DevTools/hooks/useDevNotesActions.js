@@ -75,6 +75,44 @@ export function useDevNotesActions() {
         }
     };
     /**
+     * Update the type of a dev note
+     */
+    const updateType = async (noteId, newType) => {
+        try {
+            const { error } = await supabase
+                .from('dev_notes')
+                .update({ type: newType })
+                .eq('id', noteId);
+            if (error)
+                throw error;
+            toast.success(t('devNotes.typeUpdated'));
+        }
+        catch (error) {
+            logger.error('Failed to update dev note type:', error instanceof Error ? { error: error.message } : {});
+            toast.error(t('devNotes.typeUpdateFailed'));
+            throw error;
+        }
+    };
+    /**
+     * Update the priority of a dev note
+     */
+    const updatePriority = async (noteId, newPriority) => {
+        try {
+            const { error } = await supabase
+                .from('dev_notes')
+                .update({ priority: newPriority })
+                .eq('id', noteId);
+            if (error)
+                throw error;
+            toast.success(t('devNotes.priorityUpdated'));
+        }
+        catch (error) {
+            logger.error('Failed to update dev note priority:', error instanceof Error ? { error: error.message } : {});
+            toast.error(t('devNotes.priorityUpdateFailed'));
+            throw error;
+        }
+    };
+    /**
      * Update the message of a dev note
      */
     const updateMessage = async (noteId, newMessage) => {
@@ -119,6 +157,8 @@ export function useDevNotesActions() {
         loadNotes,
         createNote,
         updateStatus,
+        updateType,
+        updatePriority,
         updateMessage,
         deleteNote,
     };

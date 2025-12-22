@@ -1,8 +1,10 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/shared';
 import { FmConfigurableDataGrid } from '@/features/data-grid';
+import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { userColumns } from './config/adminGridColumns';
 import { Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -11,6 +13,9 @@ export const UserManagement = () => {
     const { t } = useTranslation('common');
     const { t: tToast } = useTranslation('toasts');
     const queryClient = useQueryClient();
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [userToDelete, setUserToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
     // Fetch users with their auth email
     const { data: users = [], isLoading } = useQuery({
         queryKey: ['admin-users'],
@@ -74,33 +79,41 @@ export const UserManagement = () => {
             throw error;
         }
     };
-    const handleDeleteUser = async (user) => {
-        const userName = user.display_name || user.full_name || 'this user';
-        if (!confirm(t('dialogs.deleteUserConfirm', { userName }))) {
+    const handleDeleteUserClick = (user) => {
+        setUserToDelete(user);
+        setShowDeleteConfirm(true);
+    };
+    const handleDeleteUser = async () => {
+        if (!userToDelete)
             return;
-        }
+        setIsDeleting(true);
         try {
             // Delete from auth
-            const { error: authError } = await supabase.auth.admin.deleteUser(user.id);
+            const { error: authError } = await supabase.auth.admin.deleteUser(userToDelete.id);
             if (authError) {
-                logger.error('Auth deletion error:', authError);
+                logger.error('Auth deletion error:', { error: authError.message, source: 'UserManagement' });
                 toast.error(tToast('admin.userAuthDeleteFailed'));
                 return;
             }
             // Profile will be deleted via CASCADE
             toast.success(tToast('admin.userDeleted'));
             queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+            setShowDeleteConfirm(false);
+            setUserToDelete(null);
         }
         catch (error) {
-            logger.error('Error deleting user:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'UserManagement.tsx' });
+            logger.error('Error deleting user:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'UserManagement' });
             toast.error(tToast('admin.userDeleteFailed'));
+        }
+        finally {
+            setIsDeleting(false);
         }
     };
     const userContextActions = [
         {
             label: t('dialogs.deleteUser'),
             icon: _jsx(Trash2, { className: 'h-4 w-4' }),
-            onClick: handleDeleteUser,
+            onClick: handleDeleteUserClick,
             variant: 'destructive',
         },
     ];
@@ -114,5 +127,7 @@ export const UserManagement = () => {
         }
         return col;
     });
-    return (_jsxs("div", { className: 'space-y-6', children: [_jsxs("div", { children: [_jsx("h1", { className: 'text-3xl font-canela font-bold text-foreground mb-2', children: t('pageTitles.usersManagement') }), _jsx("p", { className: 'text-muted-foreground', children: t('pageTitles.usersManagementDescription') })] }), _jsx(FmConfigurableDataGrid, { gridId: 'admin-users', data: users, columns: userColumnsWithHandlers, contextMenuActions: userContextActions, loading: isLoading, pageSize: 15, onUpdate: handleUserUpdate, resourceName: 'User' })] }));
+    return (_jsxs("div", { className: 'space-y-6', children: [_jsxs("div", { children: [_jsx("h1", { className: 'text-3xl font-canela font-bold text-foreground mb-2', children: t('pageTitles.usersManagement') }), _jsx("p", { className: 'text-muted-foreground', children: t('pageTitles.usersManagementDescription') })] }), _jsx(FmConfigurableDataGrid, { gridId: 'admin-users', data: users, columns: userColumnsWithHandlers, contextMenuActions: userContextActions, loading: isLoading, pageSize: 15, onUpdate: handleUserUpdate, resourceName: 'User' }), _jsx(FmCommonConfirmDialog, { open: showDeleteConfirm, onOpenChange: setShowDeleteConfirm, title: t('dialogs.deleteUser'), description: t('dialogs.deleteUserConfirm', {
+                    userName: userToDelete?.display_name || userToDelete?.full_name || 'this user'
+                }), confirmText: t('buttons.delete'), onConfirm: handleDeleteUser, variant: "destructive", isLoading: isDeleting })] }));
 };

@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/shared';
 
 export interface FmCommonListColumn<T> {
@@ -27,13 +28,16 @@ export function FmCommonList<T extends Record<string, any>>({
   dense = false,
   className,
   rowClassName,
-  emptyMessage = 'No items to display',
+  emptyMessage,
   onRowClick,
 }: FmCommonListProps<T>) {
+  const { t } = useTranslation('common');
+  const resolvedEmptyMessage = emptyMessage || t('list.noItemsToDisplay');
+
   if (items.length === 0) {
     return (
       <div className='text-center py-6 text-muted-foreground text-sm'>
-        {emptyMessage}
+        {resolvedEmptyMessage}
       </div>
     );
   }

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Music2, Users, LucideIcon, Heart, Sparkles, PartyPopper } from 'lucide-react';
 import { ArtistRegistrationLayout } from '@/components/layout/ArtistRegistrationLayout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -46,6 +47,7 @@ const PAST_SHOW_IMAGES: ShowcaseImage[] = [
 
 const ArtistSignup = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation('pages');
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [isHoveringCarousel, setIsHoveringCarousel] = useState(false);
 
@@ -67,7 +69,7 @@ const ArtistSignup = () => {
   return (
     <ArtistRegistrationLayout>
 
-      <div className='relative overflow-hidden z-10' style={{ height: 'calc(100vh - 80px)' }}>
+      <div className='relative overflow-hidden z-10 h-full'>
         {/* Image carousel - full screen background on mobile, right 65% on desktop */}
         <div
           className='absolute inset-0 lg:left-[35%] w-full lg:w-[65%] h-full'
@@ -137,10 +139,10 @@ const ArtistSignup = () => {
                       )}
 
                       {/* Photo credit on hover */}
-                      {!image.placeholder && image.credit && isHoveringCarousel && (
+                      {!image.placeholder && isHoveringCarousel && (
                         <div className='absolute bottom-[20px] right-[20px] bg-black/70 backdrop-blur-md px-[15px] py-[8px] border border-white/10 animate-in fade-in slide-in-from-bottom-2 duration-300'>
                           <p className='font-canela text-xs text-muted-foreground'>
-                            {image.credit}
+                            {t('artistSignup.photoCredit')}
                           </p>
                         </div>
                       )}
@@ -165,26 +167,26 @@ const ArtistSignup = () => {
 
               <div className='space-y-3 lg:space-y-[1.5vh]'>
                 <h1 className='font-canela text-3xl sm:text-4xl lg:text-[clamp(1.5rem,2.5vw,2rem)] leading-[1.1] tracking-tight text-center lg:text-left'>
-                  Come spin with us.
+                  {t('artistSignup.heroTitle')}
                 </h1>
                 <div className='font-canela text-sm lg:text-[clamp(0.75rem,0.9vw,0.875rem)] text-white leading-relaxed space-y-4 lg:space-y-3 text-center lg:text-left'>
                   <div className='flex items-start gap-2 justify-center lg:justify-start'>
                     <Heart className='w-3.5 h-3.5 text-fm-gold/70 flex-shrink-0 mt-0.5' />
                     <p>
-                      FM has, and always will be, a group that elevates the local Austin electronic scene by taking care of our artists.
+                      {t('artistSignup.valueProposition1')}
                     </p>
                   </div>
                   <div className='flex items-start gap-2 justify-center lg:justify-start'>
                     <Sparkles className='w-3.5 h-3.5 text-fm-gold/70 flex-shrink-0 mt-0.5' />
                     <p>
-                      We proudly make sure our event undercards represent a diverse selection of rising stars from an expansive pantheon of genre.
+                      {t('artistSignup.valueProposition2')}
                     </p>
                   </div>
                   <div className='flex items-start gap-2 justify-center lg:justify-start'>
                     <PartyPopper className='w-3.5 h-3.5 text-fm-gold/70 flex-shrink-0 mt-0.5' />
                     <p>
-                      So go ahead and click that button below and let's get rolling.
-                      <span className='block mt-1 text-fm-gold'>Can't wait to make you a part of our rave fam.</span>
+                      {t('artistSignup.valueProposition3')}
+                      <span className='block mt-1 text-fm-gold'>{t('artistSignup.closingLine')}</span>
                     </p>
                   </div>
                 </div>
@@ -196,7 +198,7 @@ const ArtistSignup = () => {
                   variant='default'
                   className='w-full text-sm lg:text-[clamp(0.6875rem,0.9vw,0.8125rem)] py-3 lg:py-[clamp(0.375rem,0.75vh,0.5rem)] font-canela'
                 >
-                  Register with us now
+                  {t('artistSignup.registerButton')}
                 </FmCommonButton>
               </div>
             </div>

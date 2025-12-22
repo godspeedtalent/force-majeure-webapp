@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Calendar, Mic2, Ticket } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/common/shadcn/button';
@@ -12,6 +13,7 @@ import { UndercardArtistsFormSection } from '@/features/events/components/Underc
 import { TicketTiersFormSection } from '@/features/events/components/TicketTiersFormSection';
 
 const DeveloperCreateEventPage = () => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [isImageUploading, setIsImageUploading] = useState(false);
 
@@ -41,21 +43,21 @@ const DeveloperCreateEventPage = () => {
 
   return (
     <>
-      {isLoading && <FmCommonLoadingOverlay message='Creating event...' />}
+      {isLoading && <FmCommonLoadingOverlay message={t('developerPages.createEvent.loading')} />}
       <DemoLayout
-        title='Create Event'
-        description='Configure a new event with headliners, ticket tiers, and venue details.'
+        title={t('developerPages.createEvent.title')}
+        description={t('developerPages.createEvent.description')}
         icon={Calendar}
         condensed
       >
         <div className='space-y-6'>
           <p className='text-sm text-muted-foreground'>
-            Complete the form to add a new event to the database.
+            {t('developerPages.createEvent.formDescription')}
           </p>
 
           <div className='space-y-6'>
             <FmFormFieldGroup
-              title='Event Details'
+              title={t('developerPages.createEvent.sections.eventDetails')}
               icon={Calendar}
               layout='stack'
             >
@@ -67,7 +69,7 @@ const DeveloperCreateEventPage = () => {
             </FmFormFieldGroup>
 
             <FmFormFieldGroup
-              title='Undercard Artists'
+              title={t('developerPages.createEvent.sections.undercardArtists')}
               icon={Mic2}
               layout='stack'
             >
@@ -75,7 +77,7 @@ const DeveloperCreateEventPage = () => {
             </FmFormFieldGroup>
 
             <FmFormFieldGroup
-              title='Ticket Tiers'
+              title={t('developerPages.createEvent.sections.ticketTiers')}
               icon={Ticket}
               layout='stack'
             >
@@ -91,7 +93,7 @@ const DeveloperCreateEventPage = () => {
               disabled={isLoading}
               className='bg-white/5 border-white/20 hover:bg-white/10'
             >
-              Cancel
+              {t('buttons.cancel')}
             </Button>
             <Button
               variant='outline'
@@ -99,7 +101,7 @@ const DeveloperCreateEventPage = () => {
               disabled={isLoading || isImageUploading}
               className='border-white/20 hover:bg-white/10'
             >
-              {isLoading ? 'Creating...' : isImageUploading ? 'Uploading Image...' : 'Create Event'}
+              {isLoading ? t('developerPages.createEvent.creating') : isImageUploading ? t('developerPages.createEvent.uploadingImage') : t('developerPages.createEvent.createButton')}
             </Button>
           </div>
         </div>

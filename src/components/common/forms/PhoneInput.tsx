@@ -1,4 +1,5 @@
 import { forwardRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/common/shadcn/input';
 
 interface PhoneInputProps
@@ -9,6 +10,8 @@ interface PhoneInputProps
 
 export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
   ({ value, onChange, ...props }, ref) => {
+    const { t } = useTranslation('common');
+
     const formatPhoneNumber = (input: string): string => {
       // Remove all non-numeric characters
       const cleaned = input.replace(/\D/g, '');
@@ -34,7 +37,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
         type='tel'
         value={value}
         onChange={handleChange}
-        placeholder='(555) 123-4567'
+        placeholder={t('placeholders.phoneNumber')}
         maxLength={14}
         {...props}
       />

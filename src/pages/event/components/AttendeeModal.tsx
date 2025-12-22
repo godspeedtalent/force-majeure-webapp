@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -19,6 +20,7 @@ export function AttendeeModal({
   onOpenChange,
   attendeeList,
 }: AttendeeModalProps) {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
 
   return (
@@ -26,14 +28,14 @@ export function AttendeeModal({
       <DialogContent className='max-w-md bg-background/95 backdrop-blur border border-border/60 max-h-[85vh] flex flex-col p-0 overflow-hidden'>
         <DialogHeader className='flex-shrink-0 px-6 pt-6 pb-4'>
           <DialogTitle className='font-canela text-lg'>
-            Guest list
+            {t('guestList.guestListTitle')}
           </DialogTitle>
         </DialogHeader>
 
         <div className='flex-1 overflow-y-auto px-6 pb-6'>
           {/* Have Tickets Section */}
           <FmCommonCollapsibleSection
-            title='Have Tickets'
+            title={t('guestList.haveTickets')}
             defaultExpanded={true}
             className='mb-4'
           >
@@ -62,7 +64,7 @@ export function AttendeeModal({
           {/* Private Users Section */}
           {attendeeList.length > ATTENDEE_PLACEHOLDERS.length && (
             <FmCommonCollapsibleSection
-              title='Private Guests'
+              title={t('guestList.privateGuests')}
               defaultExpanded={false}
               className='mb-4'
             >
@@ -74,7 +76,7 @@ export function AttendeeModal({
                     ATTENDEE_PLACEHOLDERS.length -
                     4
                   ).toLocaleString()}{' '}
-                  more
+                  {t('guestList.more')}
                 </span>
               </div>
               <div className='grid grid-cols-4 gap-3'>
@@ -102,7 +104,7 @@ export function AttendeeModal({
 
           {/* Interested Section */}
           <FmCommonCollapsibleSection
-            title='Interested'
+            title={t('guestList.interested')}
             defaultExpanded={true}
             className='mb-4'
           >
@@ -110,7 +112,7 @@ export function AttendeeModal({
               {attendeeList.length > 8 && (
                 <span className='text-[10px] font-light text-muted-foreground/70'>
                   +{Math.max(0, attendeeList.length - 8).toLocaleString()}{' '}
-                  more
+                  {t('guestList.more')}
                 </span>
               )}
             </div>

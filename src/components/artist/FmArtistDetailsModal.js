@@ -1,8 +1,9 @@
 import { jsx as _jsx } from "react/jsx-runtime";
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FmResourceDetailsModal } from '@/components/common/modals/FmResourceDetailsModal';
-const DEFAULT_DESCRIPTION = 'More information about this artist will be available soon. Check back closer to the event for set times, featured tracks, and exclusive interviews.';
 export const FmArtistDetailsModal = ({ artist, open, onOpenChange, canManage = false, onManage, }) => {
+    const { t } = useTranslation('common');
     const badges = useMemo(() => {
         if (!artist?.genre)
             return [];
@@ -20,5 +21,5 @@ export const FmArtistDetailsModal = ({ artist, open, onOpenChange, canManage = f
             onManage(artist.id);
         }
     };
-    return (_jsx(FmResourceDetailsModal, { open: open, onOpenChange: onOpenChange, title: artist?.name ?? 'Artist', eyebrow: 'Artist Spotlight', imageUrl: artist?.image, layout: 'side-by-side', badges: badges, canManage: canManage && !!artist?.id, onManage: handleManage, children: artist?.description ?? DEFAULT_DESCRIPTION }));
+    return (_jsx(FmResourceDetailsModal, { open: open, onOpenChange: onOpenChange, title: artist?.name ?? t('artistDetails.defaultTitle'), eyebrow: t('artistDetails.spotlight'), imageUrl: artist?.image, layout: 'side-by-side', badges: badges, canManage: canManage && !!artist?.id, onManage: handleManage, children: artist?.description ?? t('artistDetails.defaultDescription') }));
 };

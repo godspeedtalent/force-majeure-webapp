@@ -1,9 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { getCorsHeaders, handleCorsPreflightRequest, isOriginAllowed, createForbiddenResponse } from '../_shared/cors.ts';
 
 // Token management
 let accessToken: string | null = null;
@@ -46,9 +42,17 @@ async function getAccessToken(): Promise<string> {
 }
 
 serve(async (req) => {
+  const origin = req.headers.get('origin');
+  const corsHeaders = getCorsHeaders(origin);
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return handleCorsPreflightRequest(origin);
+  }
+
+  // Check origin for non-preflight requests
+  if (!isOriginAllowed(origin)) {
+    return createForbiddenResponse();
   }
 
   try {
@@ -63,11 +67,28 @@ serve(async (req) => {
     switch (action) {
       case 'search': {
         const query = url.searchParams.get('q');
-        const limit = url.searchParams.get('limit') || '10';
-        
+        const limitParam = url.searchParams.get('limit') || '10';
+
         if (!query) {
           return new Response(
             JSON.stringify({ error: 'Query parameter "q" is required' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        // Validate query length (max 200 characters to prevent abuse)
+        if (query.length > 200) {
+          return new Response(
+            JSON.stringify({ error: 'Query too long. Maximum 200 characters allowed.' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        // Validate limit parameter (Spotify API accepts 1-50)
+        const limit = parseInt(limitParam, 10);
+        if (isNaN(limit) || limit < 1 || limit > 50) {
+          return new Response(
+            JSON.stringify({ error: 'Invalid limit. Must be a number between 1 and 50.' }),
             { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }

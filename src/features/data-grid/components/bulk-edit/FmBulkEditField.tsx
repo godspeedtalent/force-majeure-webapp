@@ -1,4 +1,4 @@
-
+import { useTranslation } from 'react-i18next';
 import { Label } from '@/components/common/shadcn/label';
 import { Input } from '@/components/common/shadcn/input';
 import { Switch } from '@/components/common/shadcn/switch';
@@ -29,6 +29,7 @@ export function FmBulkEditField({
   onToggle,
   onValueChange,
 }: FmBulkEditFieldProps) {
+  const { t } = useTranslation('common');
   const renderInput = () => {
     switch (column.type) {
       case 'boolean':
@@ -54,7 +55,7 @@ export function FmBulkEditField({
                 disabled={!enabled}
               >
                 <CalendarIcon className='mr-2 h-4 w-4' />
-                {value ? formatDate(new Date(value), 'PPP') : 'Pick a date'}
+                {value ? formatDate(new Date(value), 'PPP') : t('bulkEdit.pickADate')}
               </Button>
             </PopoverTrigger>
             <PopoverContent className='w-auto p-0' align='start'>
@@ -75,7 +76,7 @@ export function FmBulkEditField({
             value={value ?? ''}
             onChange={e => onValueChange(parseFloat(e.target.value))}
             disabled={!enabled}
-            placeholder='Enter number...'
+            placeholder={t('bulkEdit.enterNumber')}
           />
         );
 
@@ -86,7 +87,7 @@ export function FmBulkEditField({
             value={value ?? ''}
             onChange={e => onValueChange(e.target.value)}
             disabled={!enabled}
-            placeholder='Enter email...'
+            placeholder={t('bulkEdit.enterEmail')}
           />
         );
 
@@ -97,7 +98,7 @@ export function FmBulkEditField({
             value={value ?? ''}
             onChange={e => onValueChange(e.target.value)}
             disabled={!enabled}
-            placeholder='Enter URL...'
+            placeholder={t('bulkEdit.enterUrl')}
           />
         );
 
@@ -108,7 +109,7 @@ export function FmBulkEditField({
             value={value ?? ''}
             onChange={e => onValueChange(e.target.value)}
             disabled={!enabled}
-            placeholder='Enter value...'
+            placeholder={t('bulkEdit.enterValue')}
           />
         );
     }
@@ -131,7 +132,7 @@ export function FmBulkEditField({
         <div className='flex items-center justify-between'>
           <Label className='text-base font-medium'>{column.label}</Label>
           {column.required && (
-            <span className='text-xs text-muted-foreground'>(Required)</span>
+            <span className='text-xs text-muted-foreground'>({t('labels.required')})</span>
           )}
         </div>
         {renderInput()}

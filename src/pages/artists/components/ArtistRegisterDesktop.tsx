@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
 import { cn } from '@/shared';
 import {
@@ -47,10 +48,11 @@ export function ArtistRegisterDesktop({
   genreBadges,
   setCurrentStep,
 }: ArtistRegisterSharedProps) {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
 
   return (
-    <div className='fixed inset-0 top-[80px] flex'>
+    <div className='fixed inset-0 top-[64px] flex'>
       {/* Left Column - Form Carousel (50% width) */}
       <div className='w-1/2 relative flex flex-col border-r border-white/10 z-10 overflow-hidden'>
         {/* Frosted Glass Background */}
@@ -63,11 +65,11 @@ export function ArtistRegisterDesktop({
             className='text-white/70 hover:text-fm-gold transition-colors duration-300 flex items-center gap-[10px] font-canela text-sm'
           >
             <ArrowLeft className='h-4 w-4' />
-            Back
+            {t('buttons.back')}
           </button>
           <div className='flex flex-col items-end'>
             <span className='font-canela text-sm text-muted-foreground'>
-              Step {currentStep + 1} of 5
+              {t('artistRegistration.stepOf', { current: currentStep + 1, total: 5 })}
             </span>
             <span className='font-canela text-xs text-muted-foreground/70'>
               {stepTitles[currentStep]}
@@ -161,9 +163,9 @@ export function ArtistRegisterDesktop({
       <div className='w-1/2 relative flex flex-col overflow-hidden z-10'>
         {/* Preview Header */}
         <div className='flex-shrink-0 flex items-center justify-between h-[60px] px-[20px] border-b border-white/10 bg-black/30 backdrop-blur-sm'>
-          <h3 className='font-canela text-lg text-white'>Profile Preview</h3>
+          <h3 className='font-canela text-lg text-white'>{t('nav.profilePreview')}</h3>
           <p className='font-canela text-xs text-muted-foreground'>
-            This is how your profile will look to others
+            {t('nav.profilePreviewDescription')}
           </p>
         </div>
 

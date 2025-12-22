@@ -8,6 +8,7 @@
  */
 
 import { LucideIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/shared';
 
 export interface FmFormFieldGroupProps {
@@ -118,38 +119,50 @@ export const FmFormFieldGroup = ({
 export const FmContactFieldGroup = ({
   children,
   ...props
-}: Omit<FmFormFieldGroupProps, 'title'>) => (
-  <FmFormFieldGroup title='Contact Information' layout='grid-2' {...props}>
-    {children}
-  </FmFormFieldGroup>
-);
+}: Omit<FmFormFieldGroupProps, 'title'>) => {
+  const { t } = useTranslation('common');
+  return (
+    <FmFormFieldGroup title={t('formFieldGroup.contactInformation')} layout='grid-2' {...props}>
+      {children}
+    </FmFormFieldGroup>
+  );
+};
 
 /** Address fields group */
 export const FmAddressFieldGroup = ({
   children,
   ...props
-}: Omit<FmFormFieldGroupProps, 'title'>) => (
-  <FmFormFieldGroup title='Address' layout='grid-2' {...props}>
-    {children}
-  </FmFormFieldGroup>
-);
+}: Omit<FmFormFieldGroupProps, 'title'>) => {
+  const { t } = useTranslation('common');
+  return (
+    <FmFormFieldGroup title={t('formFieldGroup.address')} layout='grid-2' {...props}>
+      {children}
+    </FmFormFieldGroup>
+  );
+};
 
 /** Account/credentials group (password, etc.) */
 export const FmAccountFieldGroup = ({
   children,
   ...props
-}: Omit<FmFormFieldGroupProps, 'title'>) => (
-  <FmFormFieldGroup title='Account Security' layout='stack' {...props}>
-    {children}
-  </FmFormFieldGroup>
-);
+}: Omit<FmFormFieldGroupProps, 'title'>) => {
+  const { t } = useTranslation('common');
+  return (
+    <FmFormFieldGroup title={t('formFieldGroup.accountSecurity')} layout='stack' {...props}>
+      {children}
+    </FmFormFieldGroup>
+  );
+};
 
 /** Social media links group */
 export const FmSocialLinksFieldGroup = ({
   children,
   ...props
-}: Omit<FmFormFieldGroupProps, 'title'>) => (
-  <FmFormFieldGroup title='Social Media' layout='grid-2' {...props}>
-    {children}
-  </FmFormFieldGroup>
-);
+}: Omit<FmFormFieldGroupProps, 'title'>) => {
+  const { t } = useTranslation('common');
+  return (
+    <FmFormFieldGroup title={t('formFieldGroup.socialMedia')} layout='grid-2' {...props}>
+      {children}
+    </FmFormFieldGroup>
+  );
+};

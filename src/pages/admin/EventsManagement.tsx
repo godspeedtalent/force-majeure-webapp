@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FmConfigurableDataGrid } from '@/features/data-grid/components/FmConfigurableDataGrid';
@@ -6,6 +7,7 @@ import {
   DataGridAction,
   DataGridColumns,
 } from '@/features/data-grid';
+import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { useEvents } from '@/features/events/hooks/useEvents';
 import { useQueryClient } from '@tanstack/react-query';
 import { Edit, Trash2 } from 'lucide-react';
@@ -13,30 +15,32 @@ import { supabase } from '@/shared';
 import { toast } from 'sonner';
 import { logger } from '@/shared';
 
+interface EventRow {
+  id: string;
+  title: string;
+  [key: string]: unknown;
+}
+
 export const EventsManagement = () => {
   const { t } = useTranslation('common');
   const { t: tToast } = useTranslation('toasts');
   const { data: events, isLoading } = useEvents();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [eventsToDelete, setEventsToDelete] = useState<EventRow[]>([]);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleDelete = async (eventOrEvents: any) => {
-    // Check if we're dealing with an array of events (multi-select) or single event
-    const eventsToDelete = Array.isArray(eventOrEvents)
-      ? eventOrEvents
-      : [eventOrEvents];
-    const eventCount = eventsToDelete.length;
+  const handleDeleteClick = (eventOrEvents: EventRow | EventRow[]) => {
+    const events = Array.isArray(eventOrEvents) ? eventOrEvents : [eventOrEvents];
+    setEventsToDelete(events);
+    setShowDeleteConfirm(true);
+  };
 
-    // Confirm deletion
-    const confirmMessage =
-      eventCount === 1
-        ? t('dialogs.deleteEventConfirm', { eventTitle: eventsToDelete[0].title })
-        : t('dialogs.deleteEventsConfirm', { count: eventCount });
+  const handleDelete = async () => {
+    if (eventsToDelete.length === 0) return;
 
-    if (!confirm(confirmMessage)) {
-      return;
-    }
-
+    setIsDeleting(true);
     try {
       // Delete all selected events
       const deletePromises = eventsToDelete.map(event =>
@@ -52,16 +56,27 @@ export const EventsManagement = () => {
       }
 
       const successMessage =
-        eventCount === 1
+        eventsToDelete.length === 1
           ? tToast('events.deleted')
-          : tToast('events.deletedMultiple', { count: eventCount });
+          : tToast('events.deletedMultiple', { count: eventsToDelete.length });
 
       toast.success(successMessage);
       queryClient.invalidateQueries({ queryKey: ['events'] });
+      setShowDeleteConfirm(false);
+      setEventsToDelete([]);
     } catch (error) {
-      logger.error('Error deleting event(s):', { error: error instanceof Error ? error.message : 'Unknown error', source: 'EventsManagement.tsx' });
+      logger.error('Error deleting event(s):', { error: error instanceof Error ? error.message : 'Unknown error', source: 'EventsManagement' });
       toast.error(tToast('admin.deleteEventsFailed'));
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const getDeleteConfirmMessage = () => {
+    if (eventsToDelete.length === 1) {
+      return t('dialogs.deleteEventConfirm', { eventTitle: eventsToDelete[0].title });
+    }
+    return t('dialogs.deleteEventsConfirm', { count: eventsToDelete.length });
   };
 
   const handleUpdate = async (row: any, columnKey: string, newValue: any) => {
@@ -137,7 +152,7 @@ export const EventsManagement = () => {
     {
       label: t('table.deleteEvent'),
       icon: <Trash2 className='h-4 w-4' />,
-      onClick: handleDelete,
+      onClick: handleDeleteClick,
       variant: 'destructive',
     },
   ];
@@ -167,6 +182,17 @@ export const EventsManagement = () => {
         resourceName='Event'
         onCreateButtonClick={handleCreateClick}
         onUpdate={handleUpdate}
+      />
+
+      <FmCommonConfirmDialog
+        open={showDeleteConfirm}
+        onOpenChange={setShowDeleteConfirm}
+        title={t('table.deleteEvent')}
+        description={getDeleteConfirmMessage()}
+        confirmText={t('buttons.delete')}
+        onConfirm={handleDelete}
+        variant="destructive"
+        isLoading={isDeleting}
       />
     </div>
   );

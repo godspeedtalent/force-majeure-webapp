@@ -77,21 +77,21 @@ async function updateVenueImage(row: any, newImageUrl: string) {
 export const artistColumns: DataGridColumn[] = [
   DataGridColumns.text({
     key: 'name',
-    label: 'Name',
+    label: t('adminGrid.columns.name'),
     sortable: true,
     filterable: true,
     editable: true,
   }),
   DataGridColumns.text({
     key: 'genre',
-    label: 'Genre',
+    label: t('adminGrid.columns.genre'),
     sortable: true,
     filterable: true,
     editable: true,
   }),
   DataGridColumns.image({
     key: 'image_url',
-    label: 'Image',
+    label: t('adminGrid.columns.image'),
     shape: 'circle',
     entityType: 'artist',
     editable: true,
@@ -101,7 +101,7 @@ export const artistColumns: DataGridColumn[] = [
   }),
   {
     key: 'bio',
-    label: 'Bio',
+    label: t('adminGrid.columns.bio'),
     filterable: true,
     editable: true,
     render: value => {
@@ -124,28 +124,28 @@ export const artistColumns: DataGridColumn[] = [
 export const userColumns: DataGridColumn[] = [
   DataGridColumns.text({
     key: 'display_name',
-    label: 'Username',
+    label: t('adminGrid.columns.username'),
     sortable: true,
     filterable: true,
     editable: true,
   }),
   DataGridColumns.text({
     key: 'full_name',
-    label: 'Full Name',
+    label: t('adminGrid.columns.fullName'),
     sortable: true,
     filterable: true,
     editable: true,
   }),
   DataGridColumns.text({
     key: 'email',
-    label: 'Email',
+    label: t('adminGrid.columns.email'),
     sortable: true,
     filterable: true,
     editable: true,
   }),
   DataGridColumns.image({
     key: 'avatar_url',
-    label: 'Avatar',
+    label: t('adminGrid.columns.avatar'),
     shape: 'circle',
     entityType: 'user',
     editable: true,
@@ -155,19 +155,19 @@ export const userColumns: DataGridColumn[] = [
   }),
   DataGridColumns.relation({
     key: 'organization_id',
-    label: 'Organization',
+    label: t('adminGrid.columns.organization'),
     sortable: true,
     getLabel: (row: any) => row.organization_name || '—',
     getHref: (row: any) => row.organization_id ? `/organization/${row.organization_id}` : '#',
   }),
   {
     key: 'roles',
-    label: 'Roles',
+    label: t('adminGrid.columns.roles'),
     filterable: false,
     readonly: true,
     render: (value: any) => {
       if (!value || !Array.isArray(value) || value.length === 0) {
-        return <BadgeListCell items={[]} emptyText='No roles' />;
+        return <BadgeListCell items={[]} emptyText={t('adminGrid.columns.noRoles')} />;
       }
 
       const roleLabels = value.map((role: any) =>
@@ -179,7 +179,7 @@ export const userColumns: DataGridColumn[] = [
   },
   DataGridColumns.date({
     key: 'created_at',
-    label: 'Joined',
+    label: t('adminGrid.columns.joined'),
     format: 'short',
     sortable: true,
   }),
@@ -191,14 +191,14 @@ export const userColumns: DataGridColumn[] = [
 export const venueColumns: DataGridColumn[] = [
   DataGridColumns.text({
     key: 'name',
-    label: 'Name',
+    label: t('adminGrid.columns.name'),
     sortable: true,
     filterable: true,
     editable: true,
   }),
   DataGridColumns.image({
     key: 'image_url',
-    label: 'Image',
+    label: t('adminGrid.columns.image'),
     shape: 'square',
     entityType: 'venue',
     editable: true,
@@ -208,7 +208,7 @@ export const venueColumns: DataGridColumn[] = [
   }),
   DataGridColumns.relation({
     key: 'city_id',
-    label: 'City',
+    label: t('adminGrid.columns.city'),
     sortable: true,
     getLabel: (row: any) => row.city || '—',
   }),
@@ -220,19 +220,19 @@ export const venueColumns: DataGridColumn[] = [
       state: 'state',
       zipCode: 'zip_code',
     },
-    label: 'Address',
+    label: t('adminGrid.columns.address'),
     sortable: true,
   }),
   {
     key: 'capacity',
-    label: 'Capacity',
+    label: t('adminGrid.columns.capacity'),
     sortable: true,
     editable: true,
     render: (value: any) => (value ? value.toLocaleString() : '—'),
   },
   DataGridColumns.date({
     key: 'created_at',
-    label: 'Created',
+    label: t('adminGrid.columns.created'),
     format: 'short',
     sortable: true,
   }),
@@ -244,28 +244,28 @@ export const venueColumns: DataGridColumn[] = [
 export const recordingColumns: DataGridColumn[] = [
   DataGridColumns.image({
     key: 'cover_art',
-    label: 'Cover',
+    label: t('adminGrid.columns.cover'),
     shape: 'square',
     entityType: 'recording',
     editable: false,
   }),
   DataGridColumns.text({
     key: 'name',
-    label: 'Track Name',
+    label: t('adminGrid.columns.trackName'),
     sortable: true,
     filterable: true,
     editable: true,
   }),
   DataGridColumns.relation({
     key: 'artist_id',
-    label: 'Artist',
+    label: t('adminGrid.columns.artist'),
     sortable: true,
     getLabel: (row: any) => row.artist_name || '—',
     getHref: (row: any) => row.artist_id ? `/artists/${row.artist_id}` : '#',
   }),
   {
     key: 'platform',
-    label: 'Platform',
+    label: t('adminGrid.columns.platform'),
     sortable: true,
     filterable: true,
     render: (value: any) => {
@@ -280,7 +280,7 @@ export const recordingColumns: DataGridColumn[] = [
   },
   {
     key: 'recording_type',
-    label: 'Type',
+    label: t('adminGrid.columns.type'),
     sortable: true,
     filterable: true,
     editable: true,
@@ -289,14 +289,14 @@ export const recordingColumns: DataGridColumn[] = [
       const isTrack = value === 'track';
       return (
         <span className={`px-2 py-0.5 text-xs font-medium uppercase ${isTrack ? 'bg-fm-gold/20 text-fm-gold' : 'bg-fm-navy/20 text-fm-navy'}`}>
-          {isTrack ? 'Track' : 'DJ Set'}
+          {isTrack ? t('adminGrid.columns.track') : t('adminGrid.columns.djSet')}
         </span>
       );
     },
   },
   {
     key: 'click_count',
-    label: 'Clicks',
+    label: t('adminGrid.columns.clicks'),
     sortable: true,
     render: (value: any) => (
       <span className='text-xs text-muted-foreground'>
@@ -306,7 +306,7 @@ export const recordingColumns: DataGridColumn[] = [
   },
   {
     key: 'url',
-    label: 'Link',
+    label: t('adminGrid.columns.link'),
     render: (value: any) => {
       if (!value) return <span className='text-muted-foreground'>—</span>;
       return (
@@ -316,14 +316,14 @@ export const recordingColumns: DataGridColumn[] = [
           rel='noopener noreferrer'
           className='text-fm-gold hover:underline text-xs'
         >
-          Open →
+          {t('adminGrid.columns.openLink')}
         </a>
       );
     },
   },
   DataGridColumns.date({
     key: 'created_at',
-    label: 'Added',
+    label: t('adminGrid.columns.added'),
     format: 'short',
     sortable: true,
   }),
@@ -335,20 +335,20 @@ export const recordingColumns: DataGridColumn[] = [
 export const genreColumns: DataGridColumn[] = [
   DataGridColumns.text({
     key: 'name',
-    label: 'Name',
+    label: t('adminGrid.columns.name'),
     sortable: true,
     filterable: true,
     editable: true,
   }),
   DataGridColumns.relation({
     key: 'parent_id',
-    label: 'Parent Genre',
+    label: t('adminGrid.columns.parentGenre'),
     sortable: true,
     getLabel: (row: any) => row.parent_name || '—',
   }),
   {
     key: 'children_count',
-    label: 'Subgenres',
+    label: t('adminGrid.columns.subgenres'),
     sortable: true,
     render: (value: any) => (
       <span className='text-xs text-muted-foreground'>
@@ -358,7 +358,7 @@ export const genreColumns: DataGridColumn[] = [
   },
   {
     key: 'artists_count',
-    label: 'Artists',
+    label: t('adminGrid.columns.artists'),
     sortable: true,
     render: (value: any) => (
       <span className='text-xs text-muted-foreground'>
@@ -368,7 +368,7 @@ export const genreColumns: DataGridColumn[] = [
   },
   DataGridColumns.date({
     key: 'created_at',
-    label: 'Created',
+    label: t('adminGrid.columns.created'),
     format: 'short',
     sortable: true,
   }),

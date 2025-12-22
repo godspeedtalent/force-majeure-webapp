@@ -20,6 +20,7 @@ import { ROLES } from '@/shared';
 import { AdminLockIndicator } from '@/components/common/indicators';
 import { refreshAllTableSchemas } from '@/features/data-grid/services/schemaRefresh';
 import { FmCommonButton } from '@/components/common/buttons';
+import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 export default function DeveloperDatabase() {
     const { t } = useTranslation('common');
     const location = useLocation();
@@ -29,6 +30,13 @@ export default function DeveloperDatabase() {
     const { hasRole } = useUserPermissions();
     const isAdmin = hasRole(ROLES.ADMIN);
     const [isRefreshingSchema, setIsRefreshingSchema] = useState(false);
+    // Delete confirmation state
+    const [artistToDelete, setArtistToDelete] = useState(null);
+    const [showDeleteArtistConfirm, setShowDeleteArtistConfirm] = useState(false);
+    const [venueToDelete, setVenueToDelete] = useState(null);
+    const [showDeleteVenueConfirm, setShowDeleteVenueConfirm] = useState(false);
+    const [recordingToDelete, setRecordingToDelete] = useState(null);
+    const [showDeleteRecordingConfirm, setShowDeleteRecordingConfirm] = useState(false);
     // Get active tab from URL query string, fallback to 'overview'
     const tabFromUrl = searchParams.get('table');
     const validTabs = ['overview', 'artists', 'events', 'organizations', 'recordings', 'users', 'venues'];
@@ -270,11 +278,15 @@ export default function DeveloperDatabase() {
             throw error;
         }
     };
-    const handleDeleteArtist = async (artist) => {
-        if (!confirm(t('devTools.database.confirmDeleteArtist', { name: artist.name }))) {
+    const handleDeleteArtistClick = (artist) => {
+        setArtistToDelete(artist);
+        setShowDeleteArtistConfirm(true);
+    };
+    const handleDeleteArtist = async () => {
+        if (!artistToDelete)
             return;
-        }
         try {
+            const artist = artistToDelete;
             const { error } = await supabase
                 .from('artists')
                 .delete()
@@ -283,6 +295,8 @@ export default function DeveloperDatabase() {
                 throw error;
             toast.success(t('devTools.database.artistDeleted'));
             queryClient.invalidateQueries({ queryKey: ['admin-artists'] });
+            setShowDeleteArtistConfirm(false);
+            setArtistToDelete(null);
         }
         catch (error) {
             logger.error('Error deleting artist:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'DeveloperDatabase.tsx' });
@@ -293,7 +307,7 @@ export default function DeveloperDatabase() {
         {
             label: 'Delete Artist',
             icon: _jsx(Trash2, { className: 'h-4 w-4' }),
-            onClick: handleDeleteArtist,
+            onClick: handleDeleteArtistClick,
             variant: 'destructive',
         },
     ];
@@ -326,19 +340,24 @@ export default function DeveloperDatabase() {
                 : venue);
         });
     };
-    const handleDeleteVenue = async (venue) => {
-        if (!confirm(t('devTools.database.confirmDeleteVenue', { name: venue.name }))) {
+    const handleDeleteVenueClick = (venue) => {
+        setVenueToDelete(venue);
+        setShowDeleteVenueConfirm(true);
+    };
+    const handleDeleteVenue = async () => {
+        if (!venueToDelete)
             return;
-        }
         try {
             const { error } = await supabase
                 .from('venues')
                 .delete()
-                .eq('id', venue.id);
+                .eq('id', venueToDelete.id);
             if (error)
                 throw error;
             toast.success(t('devTools.database.venueDeleted'));
             queryClient.invalidateQueries({ queryKey: ['admin-venues'] });
+            setShowDeleteVenueConfirm(false);
+            setVenueToDelete(null);
         }
         catch (error) {
             logger.error('Error deleting venue:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'DeveloperDatabase.tsx' });
@@ -350,7 +369,7 @@ export default function DeveloperDatabase() {
         {
             label: 'Delete Venue',
             icon: _jsx(Trash2, { className: 'h-4 w-4' }),
-            onClick: handleDeleteVenue,
+            onClick: handleDeleteVenueClick,
             variant: 'destructive',
         },
     ];
@@ -387,20 +406,25 @@ export default function DeveloperDatabase() {
             throw error;
         }
     };
-    const handleDeleteRecording = async (recording) => {
-        if (!confirm(t('devTools.database.confirmDeleteRecording', { name: recording.name }))) {
+    const handleDeleteRecordingClick = (recording) => {
+        setRecordingToDelete(recording);
+        setShowDeleteRecordingConfirm(true);
+    };
+    const handleDeleteRecording = async () => {
+        if (!recordingToDelete)
             return;
-        }
         try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const { error } = await supabase
                 .from('artist_recordings')
                 .delete()
-                .eq('id', recording.id);
+                .eq('id', recordingToDelete.id);
             if (error)
                 throw error;
             toast.success(t('devTools.database.recordingDeleted'));
             queryClient.invalidateQueries({ queryKey: ['admin-recordings'] });
+            setShowDeleteRecordingConfirm(false);
+            setRecordingToDelete(null);
         }
         catch (error) {
             logger.error('Error deleting recording:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'DeveloperDatabase.tsx' });
@@ -411,7 +435,7 @@ export default function DeveloperDatabase() {
         {
             label: 'Delete Recording',
             icon: _jsx(Trash2, { className: 'h-4 w-4' }),
-            onClick: handleDeleteRecording,
+            onClick: handleDeleteRecordingClick,
             variant: 'destructive',
         },
     ];
@@ -474,5 +498,5 @@ export default function DeveloperDatabase() {
             setIsRefreshingSchema(false);
         }
     };
-    return (_jsxs(SideNavbarLayout, { navigationGroups: navigationGroups, activeItem: activeTab, onItemChange: handleTabChange, children: [_jsx(MobileHorizontalTabs, { tabs: mobileTabs, activeTab: activeTab, onTabChange: tab => handleTabChange(tab) }), _jsxs("div", { className: 'max-w-full', children: [activeTab === 'overview' && (_jsxs("div", { className: 'flex flex-col items-center justify-center min-h-[60vh]', children: [_jsx("div", { className: 'w-full max-w-4xl mb-6 flex justify-end', children: _jsx(FmCommonButton, { onClick: handleSchemaRefresh, disabled: isRefreshingSchema, variant: "secondary", size: "sm", icon: RefreshCw, className: isRefreshingSchema ? '[&_svg]:animate-spin' : '', children: isRefreshingSchema ? 'Refreshing Schema...' : 'Refresh Schema' }) }), _jsx("div", { className: 'w-full max-w-5xl mb-12', children: _jsxs("div", { className: 'grid grid-cols-2 md:grid-cols-5 gap-4', children: [_jsxs("div", { className: 'bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]', children: [_jsx("div", { className: 'text-xs text-muted-foreground mb-1', children: "Artists" }), _jsx("div", { className: 'text-2xl font-bold text-foreground', children: artists.length })] }), _jsxs("div", { className: 'bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]', children: [_jsx("div", { className: 'text-xs text-muted-foreground mb-1', children: "Venues" }), _jsx("div", { className: 'text-2xl font-bold text-foreground', children: venues.length })] }), _jsxs("div", { className: 'bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]', children: [_jsx("div", { className: 'text-xs text-muted-foreground mb-1', children: "Events" }), _jsx("div", { className: 'text-2xl font-bold text-foreground', children: eventsCount })] }), _jsxs("div", { className: 'bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]', children: [_jsx("div", { className: 'text-xs text-muted-foreground mb-1', children: "Recordings" }), _jsx("div", { className: 'text-2xl font-bold text-foreground', children: recordingsCount })] }), _jsxs("div", { className: 'bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]', children: [_jsx("div", { className: 'text-xs text-muted-foreground mb-1', children: "Complete Data" }), _jsxs("div", { className: 'text-2xl font-bold text-foreground', children: [completeness, "%"] })] })] }) }), _jsx("div", { className: 'w-full max-w-2xl', children: _jsx(DatabaseNavigatorSearch, {}) })] })), activeTab === 'artists' && (_jsxs("div", { className: 'space-y-6', children: [_jsxs("div", { children: [_jsx("h1", { className: 'text-3xl font-canela font-bold text-foreground mb-2', children: "Artists Management" }), _jsx("p", { className: 'text-muted-foreground', children: "Manage artist profiles, genres, and metadata." })] }), _jsx(FmConfigurableDataGrid, { gridId: 'dev-artists', data: artists, columns: artistColumns, contextMenuActions: artistContextActions, loading: artistsLoading, pageSize: 15, onUpdate: handleArtistUpdate, onCreate: handleArtistCreate, resourceName: 'Artist', createButtonLabel: 'Add Artist', onCreateButtonClick: () => navigate('/artists/create') })] })), activeTab === 'organizations' && _jsx(OrganizationsManagement, {}), activeTab === 'users' && _jsx(UserManagement, {}), activeTab === 'venues' && (_jsxs("div", { className: 'space-y-6', children: [_jsxs("div", { children: [_jsx("h1", { className: 'text-3xl font-canela font-bold text-foreground mb-2', children: "Venues Management" }), _jsx("p", { className: 'text-muted-foreground', children: "Manage venue locations, capacities, and details." })] }), _jsx(FmConfigurableDataGrid, { gridId: 'dev-venues', data: venues, columns: venueColumns, contextMenuActions: venueContextActions, loading: venuesLoading, pageSize: 15, onUpdate: handleVenueUpdate, resourceName: 'Venue', createButtonLabel: 'Add Venue', onCreateButtonClick: () => navigate('/venues/create') })] })), activeTab === 'events' && (_jsx(EventsManagement, {})), activeTab === 'recordings' && (_jsxs("div", { className: 'space-y-6', children: [_jsxs("div", { children: [_jsx("h1", { className: 'text-3xl font-canela font-bold text-foreground mb-2', children: "Recordings Management" }), _jsx("p", { className: 'text-muted-foreground', children: "Manage artist recordings from Spotify and SoundCloud." })] }), _jsx(FmConfigurableDataGrid, { gridId: 'dev-recordings', data: recordings, columns: recordingColumns, contextMenuActions: recordingContextActions, loading: recordingsLoading, pageSize: 15, onUpdate: handleRecordingUpdate, resourceName: 'Recording' })] }))] })] }));
+    return (_jsxs(SideNavbarLayout, { navigationGroups: navigationGroups, activeItem: activeTab, onItemChange: handleTabChange, children: [_jsx(MobileHorizontalTabs, { tabs: mobileTabs, activeTab: activeTab, onTabChange: tab => handleTabChange(tab) }), _jsxs("div", { className: 'max-w-full', children: [activeTab === 'overview' && (_jsxs("div", { className: 'flex flex-col items-center justify-center min-h-[60vh]', children: [_jsx("div", { className: 'w-full max-w-4xl mb-6 flex justify-end', children: _jsx(FmCommonButton, { onClick: handleSchemaRefresh, disabled: isRefreshingSchema, variant: "secondary", size: "sm", icon: RefreshCw, className: isRefreshingSchema ? '[&_svg]:animate-spin' : '', children: isRefreshingSchema ? 'Refreshing Schema...' : 'Refresh Schema' }) }), _jsx("div", { className: 'w-full max-w-5xl mb-12', children: _jsxs("div", { className: 'grid grid-cols-2 md:grid-cols-5 gap-4', children: [_jsxs("div", { className: 'bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]', children: [_jsx("div", { className: 'text-xs text-muted-foreground mb-1', children: "Artists" }), _jsx("div", { className: 'text-2xl font-bold text-foreground', children: artists.length })] }), _jsxs("div", { className: 'bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]', children: [_jsx("div", { className: 'text-xs text-muted-foreground mb-1', children: "Venues" }), _jsx("div", { className: 'text-2xl font-bold text-foreground', children: venues.length })] }), _jsxs("div", { className: 'bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]', children: [_jsx("div", { className: 'text-xs text-muted-foreground mb-1', children: "Events" }), _jsx("div", { className: 'text-2xl font-bold text-foreground', children: eventsCount })] }), _jsxs("div", { className: 'bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]', children: [_jsx("div", { className: 'text-xs text-muted-foreground mb-1', children: "Recordings" }), _jsx("div", { className: 'text-2xl font-bold text-foreground', children: recordingsCount })] }), _jsxs("div", { className: 'bg-muted/30 border border-border rounded-none px-[20px] py-[15px] transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)] hover:scale-[1.02]', children: [_jsx("div", { className: 'text-xs text-muted-foreground mb-1', children: "Complete Data" }), _jsxs("div", { className: 'text-2xl font-bold text-foreground', children: [completeness, "%"] })] })] }) }), _jsx("div", { className: 'w-full max-w-2xl', children: _jsx(DatabaseNavigatorSearch, {}) })] })), activeTab === 'artists' && (_jsxs("div", { className: 'space-y-6', children: [_jsxs("div", { children: [_jsx("h1", { className: 'text-3xl font-canela font-bold text-foreground mb-2', children: "Artists Management" }), _jsx("p", { className: 'text-muted-foreground', children: "Manage artist profiles, genres, and metadata." })] }), _jsx(FmConfigurableDataGrid, { gridId: 'dev-artists', data: artists, columns: artistColumns, contextMenuActions: artistContextActions, loading: artistsLoading, pageSize: 15, onUpdate: handleArtistUpdate, onCreate: handleArtistCreate, resourceName: 'Artist', createButtonLabel: 'Add Artist', onCreateButtonClick: () => navigate('/artists/create') })] })), activeTab === 'organizations' && _jsx(OrganizationsManagement, {}), activeTab === 'users' && _jsx(UserManagement, {}), activeTab === 'venues' && (_jsxs("div", { className: 'space-y-6', children: [_jsxs("div", { children: [_jsx("h1", { className: 'text-3xl font-canela font-bold text-foreground mb-2', children: "Venues Management" }), _jsx("p", { className: 'text-muted-foreground', children: "Manage venue locations, capacities, and details." })] }), _jsx(FmConfigurableDataGrid, { gridId: 'dev-venues', data: venues, columns: venueColumns, contextMenuActions: venueContextActions, loading: venuesLoading, pageSize: 15, onUpdate: handleVenueUpdate, resourceName: 'Venue', createButtonLabel: 'Add Venue', onCreateButtonClick: () => navigate('/venues/create') })] })), activeTab === 'events' && (_jsx(EventsManagement, {})), activeTab === 'recordings' && (_jsxs("div", { className: 'space-y-6', children: [_jsxs("div", { children: [_jsx("h1", { className: 'text-3xl font-canela font-bold text-foreground mb-2', children: "Recordings Management" }), _jsx("p", { className: 'text-muted-foreground', children: "Manage artist recordings from Spotify and SoundCloud." })] }), _jsx(FmConfigurableDataGrid, { gridId: 'dev-recordings', data: recordings, columns: recordingColumns, contextMenuActions: recordingContextActions, loading: recordingsLoading, pageSize: 15, onUpdate: handleRecordingUpdate, resourceName: 'Recording' })] }))] }), _jsx(FmCommonConfirmDialog, { open: showDeleteArtistConfirm, onOpenChange: setShowDeleteArtistConfirm, title: t('devTools.database.deleteArtist'), description: t('devTools.database.confirmDeleteArtist', { name: artistToDelete?.name }), confirmText: t('buttons.delete'), onConfirm: handleDeleteArtist, variant: "destructive" }), _jsx(FmCommonConfirmDialog, { open: showDeleteVenueConfirm, onOpenChange: setShowDeleteVenueConfirm, title: t('devTools.database.deleteVenue'), description: t('devTools.database.confirmDeleteVenue', { name: venueToDelete?.name }), confirmText: t('buttons.delete'), onConfirm: handleDeleteVenue, variant: "destructive" }), _jsx(FmCommonConfirmDialog, { open: showDeleteRecordingConfirm, onOpenChange: setShowDeleteRecordingConfirm, title: t('devTools.database.deleteRecording'), description: t('devTools.database.confirmDeleteRecording', { name: recordingToDelete?.name }), confirmText: t('buttons.delete'), onConfirm: handleDeleteRecording, variant: "destructive" })] }));
 }

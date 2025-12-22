@@ -2,6 +2,7 @@ import { jsxs as _jsxs, jsx as _jsx } from "react/jsx-runtime";
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FmConfigurableDataGrid } from '@/features/data-grid';
+import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { useEventOrders } from './hooks/useEventOrders';
 import { Badge } from '@/components/common/shadcn/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/shadcn/avatar';
@@ -9,10 +10,18 @@ import { Eye, XCircle, RefreshCw, Mail } from 'lucide-react';
 import { OrderDetailModal } from './OrderDetailModal';
 import { DataGridColumns } from '@/features/data-grid/utils';
 import { formatCurrency } from '@/lib/utils/currency';
+import { logger } from '@/shared/services/logger';
+import { EmailService } from '@/services/email/EmailService';
+import { toast } from 'sonner';
 export const EventOrderManagement = ({ eventId }) => {
     const { t } = useTranslation('common');
     const { orders, isLoading, cancelOrder, refundOrder } = useEventOrders(eventId);
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [orderForAction, setOrderForAction] = useState(null);
+    const [confirmAction, setConfirmAction] = useState(null);
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [isResending, setIsResending] = useState(null);
+    const { t: tToast } = useTranslation('toasts');
     const columns = [
         {
             key: 'id',
@@ -83,6 +92,66 @@ export const EventOrderManagement = ({ eventId }) => {
             },
         },
     ];
+    const handleCancelClick = (order) => {
+        setOrderForAction(order);
+        setConfirmAction('cancel');
+    };
+    const handleRefundClick = (order) => {
+        setOrderForAction(order);
+        setConfirmAction('refund');
+    };
+    const handleConfirmAction = async () => {
+        if (!orderForAction || !confirmAction)
+            return;
+        setIsProcessing(true);
+        try {
+            if (confirmAction === 'cancel') {
+                await cancelOrder(orderForAction.id);
+            }
+            else if (confirmAction === 'refund') {
+                await refundOrder(orderForAction.id);
+            }
+            setConfirmAction(null);
+            setOrderForAction(null);
+        }
+        finally {
+            setIsProcessing(false);
+        }
+    };
+    const handleResendConfirmation = async (order) => {
+        if (isResending)
+            return; // Prevent multiple simultaneous resends
+        setIsResending(order.id);
+        try {
+            // Convert order to email data format
+            const emailData = EmailService.convertOrderToEmailData(order, {
+                fullName: order.profile?.full_name || order.profile?.display_name || 'Customer',
+                email: order.profile?.email || '',
+            });
+            const result = await EmailService.sendOrderReceipt(emailData);
+            if (result.success) {
+                toast.success(tToast('orders.confirmationResent'));
+                logger.info('Order confirmation email resent', { orderId: order.id });
+            }
+            else {
+                toast.error(tToast('orders.resendFailed'));
+                logger.error('Failed to resend order confirmation', {
+                    orderId: order.id,
+                    error: result.error,
+                });
+            }
+        }
+        catch (error) {
+            toast.error(tToast('orders.resendFailed'));
+            logger.error('Error resending order confirmation', {
+                orderId: order.id,
+                error: error instanceof Error ? error.message : 'Unknown',
+            });
+        }
+        finally {
+            setIsResending(null);
+        }
+    };
     const actions = [
         {
             label: t('orderManagement.viewDetails'),
@@ -92,29 +161,19 @@ export const EventOrderManagement = ({ eventId }) => {
         {
             label: t('orderManagement.cancelOrder'),
             icon: _jsx(XCircle, { className: "w-4 h-4" }),
-            onClick: (order) => {
-                if (confirm(t('orderManagement.confirmCancel'))) {
-                    cancelOrder(order.id);
-                }
-            },
+            onClick: handleCancelClick,
         },
         {
             label: t('orderManagement.refundOrder'),
             icon: _jsx(RefreshCw, { className: "w-4 h-4" }),
-            onClick: (order) => {
-                if (confirm(t('orderManagement.confirmRefund'))) {
-                    refundOrder(order.id);
-                }
-            },
+            onClick: handleRefundClick,
         },
         {
             label: t('orderManagement.resendConfirmation'),
             icon: _jsx(Mail, { className: "w-4 h-4" }),
-            onClick: (order) => {
-                // TODO: Implement email resend
-                console.log('Resend confirmation for', order.id);
-            },
+            onClick: handleResendConfirmation,
+            disabled: isResending !== null,
         },
     ];
-    return (_jsxs("div", { className: "space-y-4", children: [_jsxs("div", { children: [_jsx("h2", { className: "text-2xl font-bold", children: t('orderManagement.title') }), _jsx("p", { className: "text-muted-foreground", children: t('orderManagement.description') })] }), _jsx(FmConfigurableDataGrid, { data: orders, columns: columns, actions: actions, loading: isLoading, gridId: `event-orders-${eventId}` }), selectedOrder && (_jsx(OrderDetailModal, { order: selectedOrder, onClose: () => setSelectedOrder(null) }))] }));
+    return (_jsxs("div", { className: "space-y-4", children: [_jsxs("div", { children: [_jsx("h2", { className: "text-2xl font-bold", children: t('orderManagement.title') }), _jsx("p", { className: "text-muted-foreground", children: t('orderManagement.description') })] }), _jsx(FmConfigurableDataGrid, { data: orders, columns: columns, actions: actions, loading: isLoading, gridId: `event-orders-${eventId}` }), selectedOrder && (_jsx(OrderDetailModal, { order: selectedOrder, onClose: () => setSelectedOrder(null) })), _jsx(FmCommonConfirmDialog, { open: confirmAction === 'cancel', onOpenChange: (open) => !open && setConfirmAction(null), title: t('orderManagement.cancelOrder'), description: t('orderManagement.confirmCancel'), confirmText: t('buttons.cancel'), onConfirm: handleConfirmAction, variant: "destructive", isLoading: isProcessing }), _jsx(FmCommonConfirmDialog, { open: confirmAction === 'refund', onOpenChange: (open) => !open && setConfirmAction(null), title: t('orderManagement.refundOrder'), description: t('orderManagement.confirmRefund'), confirmText: t('buttons.refund'), onConfirm: handleConfirmAction, variant: "destructive", isLoading: isProcessing })] }));
 };

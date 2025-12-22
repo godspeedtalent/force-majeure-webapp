@@ -175,6 +175,7 @@
     "available": "可用",
     "unavailable": "不可用",
     "loading": "加载中...",
+    "processingQRCode": "正在处理二维码...",
     "on": "开启",
     "off": "关闭",
     "resolved": "已解决",
@@ -189,6 +190,9 @@
     "none": "无",
     "selecting": "选择中..."
   },
+  "analytics": {
+    "fromPreviousPeriod": "与上期相比"
+  },
   "time": {
     "today": "今天",
     "tomorrow": "明天",
@@ -200,6 +204,38 @@
     "now": "现在",
     "soon": "即将",
     "never": "从不"
+  },
+  "venueModal": {
+    "capacity": "容量：{{value}}",
+    "locatedIn": "位于{{city}}",
+    "venueInformation": "场地信息"
+  },
+  "toolbar": {
+    "shoppingCart": "购物车",
+    "orgDashboard": "组织面板",
+    "scanTickets": "扫描门票",
+    "devNavigation": "开发导航",
+    "database": "数据库",
+    "databaseManager": "数据库管理器",
+    "featureToggles": "功能开关",
+    "todoNotes": "待办笔记",
+    "devNotes": "开发笔记",
+    "dragToResize": "拖动调整大小",
+    "groups": {
+      "organization": "组织",
+      "developerTools": "开发者工具"
+    }
+  },
+  "searchDropdown": {
+    "placeholder": "搜索...",
+    "createNew": "新建",
+    "searching": "搜索中...",
+    "recent": "最近",
+    "clearSearch": "清除搜索"
+  },
+  "cityDropdown": {
+    "selectCity": "选择城市",
+    "loadingCities": "加载城市中..."
   },
   "errors": {
     "genericError": "出错了，请重试。",
@@ -219,7 +255,9 @@
     "contactUsMessage": "我们已通知开发人员。如需即时帮助，请通过Instagram联系我们",
     "onInstagram": "。",
     "reloadPage": "重新加载页面",
-    "goBack": "返回"
+    "goBack": "返回",
+    "viewDetails": "查看详情",
+    "copyErrorDetails": "复制错误详情"
   },
   "errorOverlay": {
     "errorMessage": "错误消息",
@@ -232,7 +270,25 @@
   "empty": {
     "noResults": "未找到结果",
     "noData": "暂无数据",
-    "noItems": "无项目"
+    "noItems": "无项目",
+    "noItemsFound": "未找到任何项目",
+    "noItemsToDisplay": "暂无可显示的项目"
+  },
+  "list": {
+    "noItemsToDisplay": "暂无可显示的项目"
+  },
+  "formSelect": {
+    "selectAnOption": "请选择一个选项"
+  },
+  "formFieldGroup": {
+    "contactInformation": "联系信息",
+    "address": "地址",
+    "accountSecurity": "账户安全",
+    "socialMedia": "社交媒体"
+  },
+  "collapsible": {
+    "expand": "展开",
+    "collapse": "收起"
   },
   "settings": {
     "language": "语言",
@@ -327,7 +383,12 @@
     "alreadyHaveAccount": "已有账户？",
     "dontHaveAccount": "没有账户？",
     "forgotPassword": "忘记密码？",
-    "resetPassword": "重置密码"
+    "resetPassword": "重置密码",
+    "emailVerification": {
+      "title": "验证您的电子邮箱地址。",
+      "description": "您必须验证电子邮箱地址才能编辑您的个人资料。请查看您的收件箱，我们已将验证链接发送至",
+      "resendButton": "重新发送验证邮件"
+    }
   },
   "forms": {
     "events": {
@@ -416,6 +477,11 @@
       "helperText": "创建新的组织档案来管理活动和员工。",
       "submitText": "创建组织"
     }
+  },
+  "artistDetails": {
+    "defaultTitle": "艺术家",
+    "spotlight": "艺术家聚焦",
+    "defaultDescription": "关于这位艺术家的更多信息即将推出。请在活动临近时回来查看演出时间、精选曲目和独家采访。"
   },
   "scavenger": {
     "registration": {
@@ -742,7 +808,20 @@
     "reportsDescription": "定时报告和邮件发送",
     "admin": "管理",
     "adminControls": "管理员控制",
-    "adminControlsDescription": "高级活动控制（仅管理员）"
+    "adminControlsDescription": "高级活动控制（仅管理员）",
+    "mobile": {
+      "view": "查看",
+      "overview": "信息",
+      "artists": "艺术家",
+      "social": "社交",
+      "ux": "显示",
+      "tiers": "票种",
+      "orders": "订单",
+      "links": "链接",
+      "sales": "销售",
+      "reports": "报告",
+      "admin": "管理"
+    }
   },
   "eventManagement": {
     "loadingEvent": "加载活动中...",
@@ -879,6 +958,8 @@
     "loadingConfig": "正在加载配置...",
     "schemaLoadFailed": "加载表架构失败",
     "reorder": "重新排序",
+    "reorderColumns": "重新排序列",
+    "reorderColumnsDescription": "拖放列以重新排序",
     "columns": "列",
     "confirmBatchDelete": "确认批量删除",
     "batchDeleteConfirmation": "确定要删除 {{count}} 个{{resourceName}}吗？此操作无法撤销。",
@@ -902,7 +983,28 @@
     "bulkEditSuccessful": "批量编辑成功",
     "bulkEditFailed": "批量编辑失败",
     "loading": "加载中...",
-    "noDataFound": "未找到数据"
+    "noDataFound": "未找到数据",
+    "savedFilters": "已保存的筛选",
+    "presetNamePlaceholder": "预设名称...",
+    "saveAsPreset": "另存为预设",
+    "toggleColumns": "切换列显示",
+    "resetToDefault": "重置为默认",
+    "clearFiltersAndSort": "清除筛选和排序",
+    "valuePlaceholder": "值..."
+  },
+  "filterOperators": {
+    "equals": "等于",
+    "notEquals": "不等于",
+    "contains": "包含",
+    "notContains": "不包含",
+    "startsWith": "开头是",
+    "endsWith": "结尾是",
+    "greaterThan": "大于",
+    "lessThan": "小于",
+    "greaterOrEqual": "大于或等于",
+    "lessOrEqual": "小于或等于",
+    "isEmpty": "为空",
+    "isNotEmpty": "不为空"
   },
   "share": {
     "shareEvent": "分享活动",
@@ -964,6 +1066,12 @@
     "total": "总计",
     "createYourAccount": "创建您的账户",
     "saveInfoForFasterCheckout": "保存您的信息以便下次更快结账"
+  },
+  "savedCards": {
+    "title": "已保存的卡",
+    "expires": "有效期 {{month}}/{{year}}",
+    "removeCard": "删除卡片",
+    "useDifferentCard": "+ 使用其他卡"
   },
   "checkoutWizard": {
     "orderConfirmed": "订单已确认",
@@ -1260,9 +1368,21 @@
     "displayViewCount": "显示浏览次数",
     "displayViewCountDescription": "在活动页面上显示活动浏览次数",
     "noteLabel": "注意",
-    "noteText": "宾客名单设置控制用户如何公开显示对此活动的兴趣。阈值有助于防止新活动显示空的宾客名单。"
+    "noteText": "宾客名单设置控制用户如何公开显示对此活动的兴趣。阈值有助于防止新活动显示空的宾客名单。",
+    "guestListTitle": "宾客名单",
+    "haveTickets": "已购票",
+    "privateGuests": "私人宾客",
+    "interested": "感兴趣",
+    "more": "更多",
+    "othersCount": "+ {{count}} 位其他宾客",
+    "clickToSeeFullList": "点击查看完整名单",
+    "logInToSeeFullList": "登录查看完整名单",
+    "pageViews": "{{count}} 次页面浏览"
   },
   "reports": {
+    "pageTitle": "报告",
+    "pageDescription": "为您的活动配置和安排自动报告",
+    "eventIdRequired": "需要活动ID才能查看报告。",
     "dailySalesReport": "每日销售报告",
     "dailySalesDescription": "获取自动生成的每日销售报告，包含完整的订单数据和分析",
     "enableDailySalesReport": "启用每日销售报告",
@@ -1502,7 +1622,18 @@
       "applyError": "应用功能标志更改失败",
       "confirmTitle": "确认功能标志更改",
       "confirmDescription": "这将更新{{environment}}环境数据库中的功能标志。继续？",
-      "applyChanges": "应用更改"
+      "applyChanges": "应用更改",
+      "overrideCount": "{{count}} 个覆盖",
+      "sessionOverrideActive": "会话覆盖已激活",
+      "addSessionOverride": "添加会话覆盖",
+      "clearOverride": "清除覆盖",
+      "databaseValue": "数据库值",
+      "sessionOverride": "会话覆盖",
+      "on": "开启",
+      "off": "关闭",
+      "none": "无",
+      "overrideTo": "覆盖为{{value}}",
+      "togglesDescription": "切换会修改您的会话。使用应用保存到数据库。"
     },
     "sessionOverrides": {
       "description": "覆盖此浏览器会话的功能标志（不影响数据库）",
@@ -1522,6 +1653,7 @@
     }
   },
   "imageUpload": {
+    "profile": "头像",
     "uploadImageFor": "上传{{entityName}}的图片",
     "currentImage": "当前图片：",
     "dropOrBrowse": "拖拽图片到此处或点击浏览",
@@ -1536,7 +1668,19 @@
     "uploadedSuccessfully": "图片上传成功。",
     "uploadFailed": "上传失败",
     "failedToUpload": "上传图片失败。",
-    "uploading": "上传中..."
+    "pleaseUploadImage": "请上传图片文件。",
+    "fileTooLarge": "文件过大",
+    "fileTooLargeDescription": "请上传小于5MB的图片。",
+    "uploading": "上传中...",
+    "pressPhoto": "宣传照片 {{number}}"
+  },
+  "profilePicture": {
+    "title": "头像",
+    "description": "上传头像以个性化您的账户",
+    "uploadPhoto": "上传照片",
+    "formatSpecs": "JPG、PNG或GIF。最大5MB。",
+    "updated": "头像已更新",
+    "updatedDescription": "您的头像已成功更新。"
   },
   "emailPreview": {
     "title": "邮件模板预览",
@@ -1641,7 +1785,39 @@
     "userAvatarUpdated": "用户头像已更新",
     "userAvatarUpdateFailed": "更新用户头像失败",
     "venueImageUpdated": "场地图片已更新",
-    "venueImageUpdateFailed": "更新场地图片失败"
+    "venueImageUpdateFailed": "更新场地图片失败",
+    "columns": {
+      "name": "名称",
+      "genre": "流派",
+      "image": "图片",
+      "bio": "简介",
+      "username": "用户名",
+      "fullName": "全名",
+      "email": "邮箱",
+      "avatar": "头像",
+      "organization": "组织",
+      "roles": "角色",
+      "noRoles": "无角色",
+      "joined": "加入时间",
+      "city": "城市",
+      "address": "地址",
+      "capacity": "容量",
+      "created": "创建时间",
+      "cover": "封面",
+      "trackName": "曲目名称",
+      "artist": "艺人",
+      "platform": "平台",
+      "type": "类型",
+      "track": "曲目",
+      "djSet": "DJ Set",
+      "clicks": "点击量",
+      "link": "链接",
+      "openLink": "打开 →",
+      "added": "添加时间",
+      "parentGenre": "父流派",
+      "subgenres": "子流派",
+      "artists": "艺人"
+    }
   },
   "undercardRequests": {
     "sectionTitle": "艺人申请",
@@ -1689,12 +1865,45 @@
     "exportSuccess": "活动日志已导出为 {{format}}",
     "exportFailed": "导出日志失败：{{error}}",
     "archiveSuccess": "已归档 {{count}} 条活动日志",
-    "archiveFailed": "归档日志失败：{{error}}"
+    "archiveFailed": "归档日志失败：{{error}}",
+    "noLogsFound": "未找到活动日志",
+    "tryAdjustingFilters": "尝试调整筛选条件或稍后再查看",
+    "loadMore": "加载更多",
+    "unknownUser": "未知用户",
+    "eventCount": "{{count}} 个事件",
+    "totalEventsLogged": "已记录事件总数"
+  },
+  "bulkEdit": {
+    "summary": "摘要",
+    "rowsSelected": "已选择 {{count}} 行",
+    "fieldsToBeUpdated": "{{count}} 个字段将被更新",
+    "fieldsToUpdate": "要更新的字段：",
+    "howItWorks": "批量编辑的工作原理：",
+    "instructions": {
+      "toggleFields": "开启您要更新的字段",
+      "setNewValue": "为每个启用的字段设置新值",
+      "allRowsUpdated": "所有选中的行将被更新为相同的值",
+      "disabledFieldsUnchanged": "禁用的字段将保持不变"
+    },
+    "pickADate": "选择日期",
+    "enterNumber": "输入数字...",
+    "enterEmail": "输入邮箱...",
+    "enterUrl": "输入网址...",
+    "enterValue": "输入值..."
   },
   "scavenger": {
     "invalidToken": "无效令牌",
     "noTokenProvided": "(未提供令牌)",
     "error": "错误：{{error}}",
+    "layout": {
+      "title": "<gold>LF System</gold> 寻宝游戏",
+      "titleBrand": "LF System",
+      "titleSuffix": "寻宝游戏",
+      "subtitle": "找到所有5个位置来完成寻宝！",
+      "yourProgress": "您的进度",
+      "foundLocations": "您已找到 {{count}} / 5 个位置！",
+      "position": "第 {{position}} 名"
+    },
     "wizard": {
       "welcomeBack": "欢迎回来",
       "signInToClaimReward": "登录以领取您的奖励",
@@ -1818,6 +2027,12 @@
     "afterHours": "After Hours",
     "venue": "场地",
     "venueTBA": "场地待定"
+  },
+  "eventActions": {
+    "removeInterest": "取消关注",
+    "markAsInterested": "标记为感兴趣",
+    "shareEvent": "分享活动",
+    "saveEvent": "保存活动"
   },
   "focalPoint": {
     "label": "水平渲染焦点",
@@ -1949,6 +2164,44 @@
     "exportAsJson": "导出为 JSON",
     "exportAsCsv": "导出为 CSV",
     "noMatchingTests": "没有符合筛选条件的测试"
+  },
+  "testSuiteRunner": {
+    "suiteOverview": "📋 测试套件概览",
+    "consoleTip": "💡 <strong>提示：</strong>打开浏览器控制台（F12 → 控制台标签）查看每个模拟用户购买过程的详细实时日志。",
+    "testsCount": "{{count}} 个测试",
+    "runTests": "运行测试",
+    "pause": "暂停",
+    "resume": "继续",
+    "stop": "停止",
+    "reset": "重置",
+    "keyboardShortcuts": "键盘快捷键 (?)",
+    "testSuiteError": "测试套件错误",
+    "checkConsoleForDetails": "💡 查看浏览器控制台（F12）获取完整的错误详情和堆栈跟踪。",
+    "keyboardShortcutsTitle": "键盘快捷键",
+    "pauseResumeTests": "暂停/继续测试",
+    "stopTests": "停止测试",
+    "runTestsShortcut": "运行测试",
+    "toggleHelp": "切换此帮助",
+    "progress": "进度：{{completed}} / {{total}} 个测试",
+    "threadMonitor": "线程监控",
+    "testResults": "测试结果",
+    "toasts": {
+      "testsPaused": "测试已暂停",
+      "pressSpaceToResume": "按空格键继续",
+      "testsResumed": "测试已继续",
+      "pressSpaceToPause": "按空格键暂停",
+      "testsStopped": "测试已停止",
+      "executionStopped": "测试执行已停止",
+      "testsStarted": "测试已开始",
+      "runningTests": "正在运行 {{count}} 个测试"
+    },
+    "status": {
+      "ready": "就绪",
+      "running": "运行中",
+      "paused": "已暂停",
+      "completed": "已完成",
+      "stopped": "已停止"
+    }
   },
   "venueDetails": {
     "notFound": "未找到场地。",
@@ -2100,6 +2353,18 @@
     "addUndercardArtist": "添加暖场艺人",
     "searchPlaceholder": "搜索暖场艺人..."
   },
+  "undercardApplication": {
+    "callTimes": "演出时间表",
+    "acceptingApplications": "正在接受暖场艺人申请",
+    "modalTitle": "我们正在寻找本地人才。",
+    "modalDescription": "我们正在寻找本地艺人为本次活动开场。如果您是DJ、制作人或表演者，我们很乐意听到您的消息。",
+    "howToApply": "如何申请",
+    "step1": "在 Force Majeure 创建艺人档案",
+    "step2": "提交展示您风格的混音或小样",
+    "step3": "我们会审核提交内容，如果合适会与您联系",
+    "signUpAsArtist": "注册成为艺人",
+    "alreadyHaveProfile": "已有档案？我们会自动匹配您的账户。"
+  },
   "artistProfile": {
     "yourArtistName": "您的艺人名称",
     "artistName": "艺人名称",
@@ -2111,6 +2376,23 @@
     "genres": "流派",
     "connect": "联系",
     "website": "网站"
+  },
+  "artistPreview": {
+    "spotlight": "艺人聚焦",
+    "yourName": "您的名字",
+    "clickToMakeMainImage": "点击设为主图"
+  },
+  "mobilePreview": {
+    "preview": "预览",
+    "tapToPreview": "点击预览",
+    "closePreview": "关闭预览",
+    "profileLookDescription": "这是您的档案在其他人眼中的样子"
+  },
+  "memberHome": {
+    "title": "会员档案",
+    "subtitle": "管理您的档案和偏好设置",
+    "comingSoonTitle": "会员档案即将推出",
+    "comingSoonDescription": "此功能正在开发中，请稍后再来查看！"
   },
   "genreMultiSelect": {
     "clearAll": "清除全部",
@@ -2160,5 +2442,281 @@
     "claimedOf": "{{claimed}} / {{total}} 已领取",
     "allClaimed": "全部领取！🎉",
     "tokensLeft": "剩余 {{count}} 个"
+  },
+  "profileInfo": {
+    "title": "个人资料",
+    "description": "更新您的个人信息和偏好设置",
+    "email": "电子邮箱",
+    "emailCannotChange": "电子邮箱无法更改",
+    "username": "用户名",
+    "usernamePlaceholder": "您希望被如何称呼",
+    "usernameDescription": "其他人将看到这个名字",
+    "firstName": "名",
+    "firstNamePlaceholder": "输入您的名",
+    "lastName": "姓",
+    "lastNamePlaceholder": "输入您的姓",
+    "gender": "性别",
+    "genderPlaceholder": "选择您的性别",
+    "genderOptions": {
+      "preferNotToSay": "不愿透露",
+      "male": "男",
+      "female": "女",
+      "nonBinary": "非二元",
+      "other": "其他"
+    },
+    "updateProfile": "更新个人资料"
+  },
+  "billingAddress": {
+    "title": "账单地址",
+    "description": "保存您的账单信息以加快结账速度",
+    "streetAddress": "街道地址",
+    "streetAddressPlaceholder": "中山路123号",
+    "city": "城市",
+    "cityPlaceholder": "上海",
+    "state": "省/州",
+    "statePlaceholder": "上海市",
+    "zipCode": "邮政编码",
+    "zipCodePlaceholder": "200000",
+    "updateButton": "更新账单地址"
+  },
+  "eventList": {
+    "headliner": "主打艺人",
+    "date": "日期",
+    "venue": "场地",
+    "loading": "加载活动中...",
+    "searchEvents": "搜索活动",
+    "searchPlaceholder": "按标题、场地或艺人搜索...",
+    "includePastEvents": "包含过去的活动",
+    "eventsFound": "找到 {{count}} 个活动",
+    "noMatchingEvents": "没有匹配的活动",
+    "noEventsFound": "未找到活动",
+    "noUpcomingEvents": "没有即将举行的活动"
+  },
+  "devNotes": {
+    "searchPlaceholder": "搜索笔记...",
+    "newNote": "新建笔记",
+    "filter": "筛选",
+    "filterLabels": {
+      "type": "类型",
+      "status": "状态",
+      "author": "作者"
+    },
+    "sortBy": "排序方式",
+    "ascending": "升序",
+    "descending": "降序",
+    "notesCount": "{{count}} 条笔记",
+    "loading": "加载笔记中...",
+    "noMatchingNotes": "没有匹配的笔记",
+    "noNotesYet": "还没有笔记。创建一个开始吧！",
+    "priority": "优先级",
+    "clickToEdit": "点击编辑...",
+    "author": "作者",
+    "toSave": "保存",
+    "types": {
+      "todo": "待办",
+      "info": "信息",
+      "bug": "错误",
+      "question": "问题"
+    },
+    "statuses": {
+      "todo": "待办",
+      "inProgress": "进行中",
+      "resolved": "已解决",
+      "archived": "已归档",
+      "cancelled": "已取消"
+    },
+    "inspect": "查看详情",
+    "setStatus": "设置状态"
+  },
+  "roleSelect": {
+    "title": "角色切换",
+    "description": "切换当前角色以测试不同的权限级别。",
+    "quickNavigation": "快速导航",
+    "quickNavigationDescription": "跳转到开发者和管理员工具。",
+    "nav": {
+      "developerTools": "开发者工具",
+      "developerToolsDescription": "数据库工具、文档和测试数据。",
+      "testingDashboard": "测试面板",
+      "testingDashboardDescription": "运行集成测试并查看结果。",
+      "statistics": "统计数据",
+      "statisticsDescription": "查看平台分析和指标。",
+      "adminControls": "管理员控制",
+      "adminControlsDescription": "管理用户、角色和系统设置。"
+    },
+    "roles": {
+      "unauthenticated": "未认证",
+      "fan": "粉丝",
+      "developer": "开发者",
+      "admin": "管理员"
+    }
+  },
+  "globalSearch": {
+    "placeholder": "搜索活动、艺术家、场地、用户...",
+    "closeSearch": "关闭搜索",
+    "searching": "搜索中...",
+    "noResults": "未找到\"{{query}}\"的结果",
+    "unknownUser": "未知用户",
+    "searchFailed": "搜索失败",
+    "searchFailedDescription": "无法搜索数据库资源",
+    "sections": {
+      "organizations": "组织",
+      "users": "用户",
+      "artists": "艺术家",
+      "venues": "场地",
+      "events": "活动"
+    }
+  },
+  "databaseTab": {
+    "goToManager": "前往数据库管理器"
+  },
+  "organizationTab": {
+    "goToOrgDashboard": "前往组织仪表板",
+    "goToTicketScanner": "前往票务扫描器"
+  },
+  "mobileDevTools": {
+    "title": "开发者工具",
+    "toolNotFound": "未找到工具",
+    "tools": {
+      "navigation": "导航",
+      "database": "数据库",
+      "features": "功能",
+      "session": "会话",
+      "notes": "笔记"
+    },
+    "toolLabels": {
+      "navigation": "导航",
+      "database": "数据库",
+      "features": "功能开关",
+      "session": "会话覆盖",
+      "notes": "开发者笔记"
+    },
+    "fab": {
+      "open": "打开开发者工具",
+      "openWithNotifications": "打开开发者工具（{{count}} 条通知）",
+      "notifications": "{{count}} 条通知"
+    }
+  },
+  "devNavigation": {
+    "adminControls": "管理员控制",
+    "developerHome": "开发者主页",
+    "supabase": "Supabase",
+    "supabaseDashboard": "Supabase 控制面板",
+    "mailpit": "Mailpit（本地邮件）",
+    "goTo": "前往",
+    "open": "打开"
+  },
+  "devToolsManagement": {
+    "title": "开发环境控制",
+    "description": "这些设置控制屏幕底部开发工具栏中显示的部分。更改需要刷新页面才能生效。开发工具栏仅在开发模式下显示。",
+    "keyboardShortcut": "快捷键：Ctrl+Shift+D（Mac 上为 Cmd+Shift+D）切换开发工具栏",
+    "sections": {
+      "database": {
+        "label": "数据库工具",
+        "description": "访问开发工具栏中的数据库选项卡和数据库管理器页面"
+      },
+      "features": {
+        "label": "功能标志",
+        "description": "切换功能标志以进行测试"
+      }
+    },
+    "toast": {
+      "enabled": "已启用 {{section}}",
+      "disabled": "已禁用 {{section}}",
+      "refreshRequired": "更改将在下次页面加载时生效"
+    }
+  },
+  "databaseSearch": {
+    "description": "搜索所有数据库资源",
+    "placeholder": "搜索用户、艺术家、活动...",
+    "recentRecords": "最近记录",
+    "unknownUser": "未知用户",
+    "tba": "待定",
+    "noResults": "未找到\"{{query}}\"的结果",
+    "sections": {
+      "organizations": "组织",
+      "users": "用户",
+      "artists": "艺术家",
+      "venues": "场地",
+      "events": "活动"
+    },
+    "contextMenu": {
+      "goToDetails": "查看详情",
+      "edit": "编辑{{entity}}",
+      "delete": "删除{{entity}}"
+    },
+    "entityTypes": {
+      "organization": "组织",
+      "user": "用户",
+      "artist": "艺术家",
+      "venue": "场地",
+      "event": "活动"
+    },
+    "entityDisplayNames": {
+      "organization": "组织",
+      "user": "用户",
+      "artist": "艺术家",
+      "venue": "场地",
+      "event": "活动"
+    },
+    "toasts": {
+      "deleted": "{{entity}}已删除",
+      "deletedDescription": "\"{{name}}\"已被永久删除。",
+      "deleteFailed": "删除{{entity}}失败"
+    },
+    "deleteDialog": {
+      "title": "删除{{entity}}？",
+      "description": "确定要删除\"{{name}}\"吗？此操作无法撤消。"
+    }
+  },
+  "developerPages": {
+    "createEvent": {
+      "title": "创建活动",
+      "description": "配置新活动，包括主演、票档和场地详情。",
+      "formDescription": "填写表单以将新活动添加到数据库。",
+      "loading": "正在创建活动...",
+      "creating": "创建中...",
+      "uploadingImage": "正在上传图片...",
+      "createButton": "创建活动",
+      "sections": {
+        "eventDetails": "活动详情",
+        "undercardArtists": "暖场艺术家",
+        "ticketTiers": "票档"
+      }
+    },
+    "createVenue": {
+      "title": "创建场地",
+      "description": "添加新场地，包括位置和容量详情。",
+      "formDescription": "填写表单以将新场地添加到数据库。",
+      "loading": "正在创建场地...",
+      "creating": "创建中...",
+      "createButton": "创建场地",
+      "sections": {
+        "venueDetails": "场地详情",
+        "location": "位置"
+      }
+    },
+    "createArtist": {
+      "title": "创建艺术家",
+      "description": "添加新艺术家资料，包括简介和社交链接。",
+      "formDescription": "填写表单以将新艺术家添加到数据库。",
+      "loading": "正在创建艺术家...",
+      "creating": "创建中...",
+      "createButton": "创建艺术家",
+      "sections": {
+        "artistDetails": "艺术家详情",
+        "socialLinks": "社交链接"
+      }
+    },
+    "createOrganization": {
+      "title": "创建组织",
+      "description": "设置新组织以进行活动管理。",
+      "formDescription": "填写表单以将新组织添加到数据库。",
+      "loading": "正在创建组织...",
+      "creating": "创建中...",
+      "createButton": "创建组织",
+      "sections": {
+        "organizationDetails": "组织详情"
+      }
+    }
   }
 }

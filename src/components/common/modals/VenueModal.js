@@ -1,5 +1,6 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { logger } from '@/shared';
 import { MapPin, Users } from 'lucide-react';
 import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
@@ -15,6 +16,7 @@ import { venueService } from '@/features/venues/services/venueService';
  * - Consistent styling with Force Majeure design system
  */
 export const VenueModal = ({ venueId, open, onOpenChange, }) => {
+    const { t } = useTranslation('common');
     const [venue, setVenue] = useState(null);
     const [loading, setLoading] = useState(false);
     useEffect(() => {
@@ -38,10 +40,10 @@ export const VenueModal = ({ venueId, open, onOpenChange, }) => {
         }
     };
     if (loading) {
-        return (_jsx(FmCommonModal, { open: open, onOpenChange: onOpenChange, title: 'Loading...', children: _jsx("div", { className: 'flex items-center justify-center py-8', children: _jsx("div", { className: 'animate-spin rounded-full h-8 w-8 border-b-2 border-fm-gold' }) }) }));
+        return (_jsx(FmCommonModal, { open: open, onOpenChange: onOpenChange, title: t('status.loading'), children: _jsx("div", { className: 'flex items-center justify-center py-8', children: _jsx("div", { className: 'animate-spin rounded-full h-8 w-8 border-b-2 border-fm-gold' }) }) }));
     }
     if (!venue) {
         return null;
     }
-    return (_jsx(FmCommonModal, { open: open, onOpenChange: onOpenChange, title: venue.name, className: 'max-w-3xl', children: _jsxs("div", { className: 'space-y-6', children: [_jsxs("div", { className: 'space-y-4', children: [venue.address_line_1 && (_jsx(FmInfoChip, { icon: MapPin, label: `${venue.address_line_1}${venue.city ? `, ${venue.city}` : ''}` })), venue.capacity && (_jsx(FmInfoChip, { icon: Users, label: `Capacity: ${venue.capacity.toLocaleString()}` }))] }), _jsx("div", { className: 'pt-4 border-t border-white/10', children: _jsx("p", { className: 'text-sm text-white/70', children: venue.city ? `Located in ${venue.city}` : 'Venue information' }) })] }) }));
+    return (_jsx(FmCommonModal, { open: open, onOpenChange: onOpenChange, title: venue.name, className: 'max-w-3xl', children: _jsxs("div", { className: 'space-y-6', children: [_jsxs("div", { className: 'space-y-4', children: [venue.address_line_1 && (_jsx(FmInfoChip, { icon: MapPin, label: `${venue.address_line_1}${venue.city ? `, ${venue.city}` : ''}` })), venue.capacity && (_jsx(FmInfoChip, { icon: Users, label: t('venueModal.capacity', { value: venue.capacity.toLocaleString() }) }))] }), _jsx("div", { className: 'pt-4 border-t border-white/10', children: _jsx("p", { className: 'text-sm text-white/70', children: venue.city ? t('venueModal.locatedIn', { city: venue.city }) : t('venueModal.venueInformation') }) })] }) }));
 };

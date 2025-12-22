@@ -48,6 +48,10 @@ export function useDevNotesFilter({ notes, sortField = 'created_at', sortOrder =
         return [...filtered].sort((a, b) => {
             let comparison = 0;
             switch (sortField) {
+                case 'priority':
+                    // Sort by user-defined priority (1 is highest/urgent, 5 is lowest)
+                    comparison = a.priority - b.priority;
+                    break;
                 case 'type':
                     // Sort by type priority (BUG > TODO > QUESTION > INFO)
                     comparison =

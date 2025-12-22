@@ -175,6 +175,7 @@
     "available": "Available",
     "unavailable": "Unavailable",
     "loading": "Loading...",
+    "processingQRCode": "Processing QR code...",
     "on": "ON",
     "off": "OFF",
     "resolved": "Resolved",
@@ -189,6 +190,9 @@
     "none": "None",
     "selecting": "Selecting..."
   },
+  "analytics": {
+    "fromPreviousPeriod": "from previous period"
+  },
   "time": {
     "today": "Today",
     "tomorrow": "Tomorrow",
@@ -200,6 +204,38 @@
     "now": "Now",
     "soon": "Soon",
     "never": "Never"
+  },
+  "venueModal": {
+    "capacity": "Capacity: {{value}}",
+    "locatedIn": "Located in {{city}}",
+    "venueInformation": "Venue information"
+  },
+  "toolbar": {
+    "shoppingCart": "Shopping Cart",
+    "orgDashboard": "Org Dashboard",
+    "scanTickets": "Scan Tickets",
+    "devNavigation": "Dev Navigation",
+    "database": "Database",
+    "databaseManager": "Database Manager",
+    "featureToggles": "Feature Toggles",
+    "todoNotes": "TODO Notes",
+    "devNotes": "Dev Notes",
+    "dragToResize": "Drag to resize",
+    "groups": {
+      "organization": "Organization",
+      "developerTools": "Developer Tools"
+    }
+  },
+  "searchDropdown": {
+    "placeholder": "Search...",
+    "createNew": "Create New",
+    "searching": "Searching...",
+    "recent": "Recent",
+    "clearSearch": "Clear search"
+  },
+  "cityDropdown": {
+    "selectCity": "Select a city",
+    "loadingCities": "Loading cities..."
   },
   "errors": {
     "genericError": "Something went wrong. Please try again.",
@@ -219,7 +255,9 @@
     "contactUsMessage": "We've let our developers know. If you need immediate help, please contact us at",
     "onInstagram": "on Instagram.",
     "reloadPage": "Reload Page",
-    "goBack": "Go Back"
+    "goBack": "Go Back",
+    "viewDetails": "View details",
+    "copyErrorDetails": "Copy error details"
   },
   "errorOverlay": {
     "errorMessage": "Error Message",
@@ -232,7 +270,25 @@
   "empty": {
     "noResults": "No results found",
     "noData": "No data available",
-    "noItems": "No items"
+    "noItems": "No items",
+    "noItemsFound": "No items found",
+    "noItemsToDisplay": "No items to display"
+  },
+  "list": {
+    "noItemsToDisplay": "No items to display"
+  },
+  "formSelect": {
+    "selectAnOption": "Select an option"
+  },
+  "formFieldGroup": {
+    "contactInformation": "Contact Information",
+    "address": "Address",
+    "accountSecurity": "Account Security",
+    "socialMedia": "Social Media"
+  },
+  "collapsible": {
+    "expand": "Expand",
+    "collapse": "Collapse"
   },
   "settings": {
     "language": "Language",
@@ -328,7 +384,12 @@
     "alreadyHaveAccount": "Already have an account?",
     "dontHaveAccount": "Don't have an account?",
     "forgotPassword": "Forgot password?",
-    "resetPassword": "Reset Password"
+    "resetPassword": "Reset Password",
+    "emailVerification": {
+      "title": "Verify your email address.",
+      "description": "You must verify your email address before you can edit your profile. Check your inbox for the verification link we sent to",
+      "resendButton": "Resend verification email"
+    }
   },
   "forms": {
     "events": {
@@ -418,6 +479,11 @@
       "helperText": "Create a new organization profile for managing events and staff.",
       "submitText": "Create Organization"
     }
+  },
+  "artistDetails": {
+    "defaultTitle": "Artist",
+    "spotlight": "Artist Spotlight",
+    "defaultDescription": "More information about this artist will be available soon. Check back closer to the event for set times, featured tracks, and exclusive interviews."
   },
   "scavenger": {
     "registration": {
@@ -756,7 +822,20 @@
     "reportsDescription": "Scheduled reports and email delivery",
     "admin": "Admin",
     "adminControls": "Admin Controls",
-    "adminControlsDescription": "Advanced event controls (Admin only)"
+    "adminControlsDescription": "Advanced event controls (Admin only)",
+    "mobile": {
+      "view": "View",
+      "overview": "Info",
+      "artists": "Artists",
+      "social": "Social",
+      "ux": "Display",
+      "tiers": "Tiers",
+      "orders": "Orders",
+      "links": "Links",
+      "sales": "Sales",
+      "reports": "Reports",
+      "admin": "Admin"
+    }
   },
   "eventManagement": {
     "loadingEvent": "Loading event...",
@@ -893,6 +972,8 @@
     "loadingConfig": "Loading configuration...",
     "schemaLoadFailed": "Failed to load table schema",
     "reorder": "Reorder",
+    "reorderColumns": "Reorder Columns",
+    "reorderColumnsDescription": "Drag and drop columns to reorder them",
     "columns": "Columns",
     "confirmBatchDelete": "Confirm Batch Delete",
     "batchDeleteConfirmation": "Are you sure you want to delete {{count}} {{resourceName}}? This action cannot be undone.",
@@ -916,7 +997,28 @@
     "bulkEditSuccessful": "Bulk edit successful",
     "bulkEditFailed": "Bulk edit failed",
     "loading": "Loading...",
-    "noDataFound": "No data found"
+    "noDataFound": "No data found",
+    "savedFilters": "Saved Filters",
+    "presetNamePlaceholder": "Preset name...",
+    "saveAsPreset": "Save as Preset",
+    "toggleColumns": "Toggle Columns",
+    "resetToDefault": "Reset to Default",
+    "clearFiltersAndSort": "Clear Filters & Sort",
+    "valuePlaceholder": "Value..."
+  },
+  "filterOperators": {
+    "equals": "Equals",
+    "notEquals": "Not Equals",
+    "contains": "Contains",
+    "notContains": "Not Contains",
+    "startsWith": "Starts With",
+    "endsWith": "Ends With",
+    "greaterThan": "Greater Than",
+    "lessThan": "Less Than",
+    "greaterOrEqual": "Greater or Equal",
+    "lessOrEqual": "Less or Equal",
+    "isEmpty": "Is Empty",
+    "isNotEmpty": "Is Not Empty"
   },
   "share": {
     "shareEvent": "Share event",
@@ -955,6 +1057,12 @@
     "total": "Total",
     "createYourAccount": "Create Your Account",
     "saveInfoForFasterCheckout": "Save your information for faster checkout next time"
+  },
+  "savedCards": {
+    "title": "Saved Cards",
+    "expires": "Expires {{month}}/{{year}}",
+    "removeCard": "Remove card",
+    "useDifferentCard": "+ Use a different card"
   },
   "checkoutWizard": {
     "orderConfirmed": "Order Confirmed",
@@ -1274,9 +1382,21 @@
     "displayViewCount": "Display View Count",
     "displayViewCountDescription": "Show page view count on the event details page",
     "noteLabel": "Note",
-    "noteText": "The guest list will only be visible on the event page if the feature flag is enabled globally and this event has the guest list enabled with thresholds met. View count will display alongside share buttons if guest list is off, or within the guest list section if enabled."
+    "noteText": "The guest list will only be visible on the event page if the feature flag is enabled globally and this event has the guest list enabled with thresholds met. View count will display alongside share buttons if guest list is off, or within the guest list section if enabled.",
+    "guestListTitle": "Guest list",
+    "haveTickets": "Have Tickets",
+    "privateGuests": "Private Guests",
+    "interested": "Interested",
+    "more": "more",
+    "othersCount": "+ {{count}} others",
+    "clickToSeeFullList": "Click to see full list",
+    "logInToSeeFullList": "Log in to see the full list",
+    "pageViews": "{{count}} page views"
   },
   "reports": {
+    "pageTitle": "Reports",
+    "pageDescription": "Configure and schedule automated reports for your event",
+    "eventIdRequired": "Event ID is required to view reports.",
     "dailySalesReport": "Daily Sales Report",
     "dailySalesDescription": "Get automated daily sales reports with comprehensive order data and analytics",
     "enableDailySalesReport": "Enable Daily Sales Report",
@@ -1516,7 +1636,18 @@
       "updateError": "Failed to update feature flags",
       "applyChanges": "Apply Changes",
       "confirmTitle": "Confirm Feature Flag Changes",
-      "confirmDescription": "This will update feature flags in the database for the {{environment}} environment, and not just mock them to this session. Continue?"
+      "confirmDescription": "This will update feature flags in the database for the {{environment}} environment, and not just mock them to this session. Continue?",
+      "overrideCount": "{{count}} override(s)",
+      "sessionOverrideActive": "Session override active",
+      "addSessionOverride": "Add session override",
+      "clearOverride": "Clear override",
+      "databaseValue": "Database value",
+      "sessionOverride": "Session override",
+      "on": "ON",
+      "off": "OFF",
+      "none": "None",
+      "overrideTo": "Override to {{value}}",
+      "togglesDescription": "Toggles modify your session. Use Apply to persist to database."
     },
     "sessionOverrides": {
       "description": "Session-based overrides for this browser session only. These override database values and .env settings.",
@@ -1536,12 +1667,16 @@
     }
   },
   "imageUpload": {
+    "profile": "Profile",
     "uploadImageFor": "Upload Image for {{entityName}}",
     "currentImage": "Current Image:",
     "dropOrBrowse": "Drop image here or click to browse",
     "formatSpecs": "JPEG, PNG, or WebP • Max 5MB • Will be resized to 500x500px",
     "invalidFileType": "Invalid file type",
     "invalidFileTypeDescription": "Please upload a JPEG, PNG, or WebP image.",
+    "pleaseUploadImage": "Please upload an image file.",
+    "fileTooLarge": "File too large",
+    "fileTooLargeDescription": "Please upload an image smaller than 5MB.",
     "processingFailed": "Failed to process image",
     "tryDifferentImage": "Please try a different image.",
     "noFileSelected": "No file selected",
@@ -1550,7 +1685,16 @@
     "uploadedSuccessfully": "Image uploaded successfully.",
     "uploadFailed": "Upload failed",
     "failedToUpload": "Failed to upload image.",
-    "uploading": "Uploading..."
+    "uploading": "Uploading...",
+    "pressPhoto": "Press Photo {{number}}"
+  },
+  "profilePicture": {
+    "title": "Profile Picture",
+    "description": "Upload a profile picture to personalize your account",
+    "uploadPhoto": "Upload Photo",
+    "formatSpecs": "JPG, PNG or GIF. Max size 5MB.",
+    "updated": "Profile picture updated",
+    "updatedDescription": "Your profile picture has been updated successfully."
   },
   "emailPreview": {
     "title": "Email Template Preview",
@@ -1655,7 +1799,39 @@
     "userAvatarUpdated": "User avatar updated",
     "userAvatarUpdateFailed": "Failed to update user avatar",
     "venueImageUpdated": "Venue image updated",
-    "venueImageUpdateFailed": "Failed to update venue image"
+    "venueImageUpdateFailed": "Failed to update venue image",
+    "columns": {
+      "name": "Name",
+      "genre": "Genre",
+      "image": "Image",
+      "bio": "Bio",
+      "username": "Username",
+      "fullName": "Full Name",
+      "email": "Email",
+      "avatar": "Avatar",
+      "organization": "Organization",
+      "roles": "Roles",
+      "noRoles": "No roles",
+      "joined": "Joined",
+      "city": "City",
+      "address": "Address",
+      "capacity": "Capacity",
+      "created": "Created",
+      "cover": "Cover",
+      "trackName": "Track Name",
+      "artist": "Artist",
+      "platform": "Platform",
+      "type": "Type",
+      "track": "Track",
+      "djSet": "DJ Set",
+      "clicks": "Clicks",
+      "link": "Link",
+      "openLink": "Open →",
+      "added": "Added",
+      "parentGenre": "Parent Genre",
+      "subgenres": "Subgenres",
+      "artists": "Artists"
+    }
   },
   "undercardRequests": {
     "sectionTitle": "Artist Requests",
@@ -1703,12 +1879,45 @@
     "exportSuccess": "Activity logs exported as {{format}}",
     "exportFailed": "Failed to export logs: {{error}}",
     "archiveSuccess": "Archived {{count}} activity log(s)",
-    "archiveFailed": "Failed to archive logs: {{error}}"
+    "archiveFailed": "Failed to archive logs: {{error}}",
+    "noLogsFound": "No activity logs found",
+    "tryAdjustingFilters": "Try adjusting your filters or check back later",
+    "loadMore": "Load more",
+    "unknownUser": "Unknown user",
+    "eventCount": "{{count}} events",
+    "totalEventsLogged": "Total events logged"
+  },
+  "bulkEdit": {
+    "summary": "Summary",
+    "rowsSelected": "{{count}} row(s) selected",
+    "fieldsToBeUpdated": "{{count}} field(s) will be updated",
+    "fieldsToUpdate": "Fields to update:",
+    "howItWorks": "How bulk edit works:",
+    "instructions": {
+      "toggleFields": "Toggle on the fields you want to update",
+      "setNewValue": "Set the new value for each enabled field",
+      "allRowsUpdated": "All selected rows will be updated with the same values",
+      "disabledFieldsUnchanged": "Disabled fields will remain unchanged"
+    },
+    "pickADate": "Pick a date",
+    "enterNumber": "Enter number...",
+    "enterEmail": "Enter email...",
+    "enterUrl": "Enter URL...",
+    "enterValue": "Enter value..."
   },
   "scavenger": {
     "invalidToken": "Invalid Token",
     "noTokenProvided": "(no token provided)",
     "error": "Error: {{error}}",
+    "layout": {
+      "title": "<gold>LF System</gold> Scavenger Hunt",
+      "titleBrand": "LF System",
+      "titleSuffix": "Scavenger Hunt",
+      "subtitle": "Find all 5 locations to complete the hunt!",
+      "yourProgress": "Your Progress",
+      "foundLocations": "You've found {{count}} of 5 locations!",
+      "position": "Position #{{position}}"
+    },
     "wizard": {
       "welcomeBack": "Welcome Back",
       "signInToClaimReward": "Sign in to claim your reward",
@@ -1832,6 +2041,12 @@
     "afterHours": "After Hours",
     "venue": "Venue",
     "venueTBA": "Venue TBA"
+  },
+  "eventActions": {
+    "removeInterest": "Remove interest",
+    "markAsInterested": "Mark as interested",
+    "shareEvent": "Share event",
+    "saveEvent": "Save event"
   },
   "focalPoint": {
     "label": "Horizontal rendering focal point",
@@ -1963,6 +2178,44 @@
     "exportAsJson": "Export as JSON",
     "exportAsCsv": "Export as CSV",
     "noMatchingTests": "No tests match your filters"
+  },
+  "testSuiteRunner": {
+    "suiteOverview": "📋 Test Suite Overview",
+    "consoleTip": "💡 <strong>Tip:</strong> Open your browser console (F12 → Console tab) to see detailed real-time logging of every simulated user's purchase journey.",
+    "testsCount": "{{count}} tests",
+    "runTests": "Run Tests",
+    "pause": "Pause",
+    "resume": "Resume",
+    "stop": "Stop",
+    "reset": "Reset",
+    "keyboardShortcuts": "Keyboard shortcuts (?)",
+    "testSuiteError": "Test Suite Error",
+    "checkConsoleForDetails": "💡 Check the browser console (F12) for full error details and stack trace.",
+    "keyboardShortcutsTitle": "Keyboard Shortcuts",
+    "pauseResumeTests": "Pause/Resume tests",
+    "stopTests": "Stop tests",
+    "runTestsShortcut": "Run tests",
+    "toggleHelp": "Toggle this help",
+    "progress": "Progress: {{completed}} / {{total}} tests",
+    "threadMonitor": "Thread Monitor",
+    "testResults": "Test Results",
+    "toasts": {
+      "testsPaused": "Tests Paused",
+      "pressSpaceToResume": "Press Space to resume",
+      "testsResumed": "Tests Resumed",
+      "pressSpaceToPause": "Press Space to pause",
+      "testsStopped": "Tests Stopped",
+      "executionStopped": "Test execution has been stopped",
+      "testsStarted": "Tests Started",
+      "runningTests": "Running {{count}} tests"
+    },
+    "status": {
+      "ready": "Ready",
+      "running": "Running",
+      "paused": "Paused",
+      "completed": "Completed",
+      "stopped": "Stopped"
+    }
   },
   "venueDetails": {
     "notFound": "Venue not found.",
@@ -2114,6 +2367,18 @@
     "addUndercardArtist": "Add Undercard Artist",
     "searchPlaceholder": "Search for undercard artist..."
   },
+  "undercardApplication": {
+    "callTimes": "Call times",
+    "acceptingApplications": "Accepting Artist Undercard Applications",
+    "modalTitle": "We're looking for local talent.",
+    "modalDescription": "We're looking for local artists to open up for this event. If you're a DJ, producer, or performer, we'd love to hear from you.",
+    "howToApply": "How to apply",
+    "step1": "Create an artist profile on Force Majeure",
+    "step2": "Submit a mix or demo showcasing your style",
+    "step3": "We'll review submissions and reach out if it's a fit",
+    "signUpAsArtist": "Sign up as an artist",
+    "alreadyHaveProfile": "Already have a profile? We'll match your account automatically."
+  },
   "artistProfile": {
     "yourArtistName": "Your artist name",
     "artistName": "Artist Name",
@@ -2125,6 +2390,23 @@
     "genres": "Genres",
     "connect": "Connect",
     "website": "Website"
+  },
+  "artistPreview": {
+    "spotlight": "Artist Spotlight",
+    "yourName": "Your Name",
+    "clickToMakeMainImage": "Click to make this the main image"
+  },
+  "mobilePreview": {
+    "preview": "Preview",
+    "tapToPreview": "Tap to preview",
+    "closePreview": "Close preview",
+    "profileLookDescription": "This is how your profile will look to others"
+  },
+  "memberHome": {
+    "title": "Member Profile",
+    "subtitle": "Manage your profile and preferences",
+    "comingSoonTitle": "Member Profiles Coming Soon",
+    "comingSoonDescription": "This feature is currently under development. Check back soon!"
   },
   "genreMultiSelect": {
     "clearAll": "Clear All",
@@ -2174,5 +2456,281 @@
     "claimedOf": "{{claimed}} of {{total}} claimed",
     "allClaimed": "All claimed! 🎉",
     "tokensLeft": "{{count}} left"
+  },
+  "profileInfo": {
+    "title": "Profile Information",
+    "description": "Update your personal information and preferences",
+    "email": "Email",
+    "emailCannotChange": "Email cannot be changed",
+    "username": "Username",
+    "usernamePlaceholder": "How you want to be known",
+    "usernameDescription": "This is how others will see you",
+    "firstName": "First Name",
+    "firstNamePlaceholder": "Enter your first name",
+    "lastName": "Last Name",
+    "lastNamePlaceholder": "Enter your last name",
+    "gender": "Gender",
+    "genderPlaceholder": "Select your gender",
+    "genderOptions": {
+      "preferNotToSay": "Prefer not to say",
+      "male": "Male",
+      "female": "Female",
+      "nonBinary": "Non-binary",
+      "other": "Other"
+    },
+    "updateProfile": "Update Profile"
+  },
+  "billingAddress": {
+    "title": "Billing Address",
+    "description": "Save your billing information for faster checkout",
+    "streetAddress": "Street Address",
+    "streetAddressPlaceholder": "123 Main St",
+    "city": "City",
+    "cityPlaceholder": "San Francisco",
+    "state": "State",
+    "statePlaceholder": "CA",
+    "zipCode": "ZIP Code",
+    "zipCodePlaceholder": "94102",
+    "updateButton": "Update Billing Address"
+  },
+  "eventList": {
+    "headliner": "Headliner",
+    "date": "Date",
+    "venue": "Venue",
+    "loading": "Loading events...",
+    "searchEvents": "Search Events",
+    "searchPlaceholder": "Search by title, venue, or artist...",
+    "includePastEvents": "Include past events",
+    "eventsFound": "{{count}} event(s) found",
+    "noMatchingEvents": "No events match your search",
+    "noEventsFound": "No events found",
+    "noUpcomingEvents": "No upcoming events"
+  },
+  "devNotes": {
+    "searchPlaceholder": "Search notes...",
+    "newNote": "New Note",
+    "filter": "Filter",
+    "filterLabels": {
+      "type": "Type",
+      "status": "Status",
+      "author": "Author"
+    },
+    "sortBy": "Sort by",
+    "ascending": "Ascending",
+    "descending": "Descending",
+    "notesCount": "{{count}} notes",
+    "loading": "Loading notes...",
+    "noMatchingNotes": "No notes match your filters",
+    "noNotesYet": "No notes yet. Create one to get started!",
+    "priority": "Priority",
+    "clickToEdit": "Click to edit...",
+    "author": "Author",
+    "toSave": "to save",
+    "types": {
+      "todo": "TODO",
+      "info": "INFO",
+      "bug": "BUG",
+      "question": "QUESTION"
+    },
+    "statuses": {
+      "todo": "TODO",
+      "inProgress": "IN PROGRESS",
+      "resolved": "RESOLVED",
+      "archived": "ARCHIVED",
+      "cancelled": "CANCELLED"
+    },
+    "inspect": "Inspect",
+    "setStatus": "Set Status"
+  },
+  "roleSelect": {
+    "title": "Role Override",
+    "description": "Override your current role for testing different permission levels.",
+    "quickNavigation": "Quick Navigation",
+    "quickNavigationDescription": "Jump to developer and admin tools.",
+    "nav": {
+      "developerTools": "Developer Tools",
+      "developerToolsDescription": "Database tools, documentation, and test data.",
+      "testingDashboard": "Testing Dashboard",
+      "testingDashboardDescription": "Run integration tests and view results.",
+      "statistics": "Statistics",
+      "statisticsDescription": "View platform analytics and metrics.",
+      "adminControls": "Admin Controls",
+      "adminControlsDescription": "Manage users, roles, and system settings."
+    },
+    "roles": {
+      "unauthenticated": "Unauthenticated",
+      "fan": "Fan",
+      "developer": "Developer",
+      "admin": "Admin"
+    }
+  },
+  "globalSearch": {
+    "placeholder": "Search events, artists, venues, users...",
+    "closeSearch": "Close search",
+    "searching": "Searching...",
+    "noResults": "No results found for \"{{query}}\"",
+    "unknownUser": "Unknown User",
+    "searchFailed": "Search Failed",
+    "searchFailedDescription": "Could not search database resources",
+    "sections": {
+      "organizations": "Organizations",
+      "users": "Users",
+      "artists": "Artists",
+      "venues": "Venues",
+      "events": "Events"
+    }
+  },
+  "databaseTab": {
+    "goToManager": "Go to Database Manager"
+  },
+  "organizationTab": {
+    "goToOrgDashboard": "Go to Org Dashboard",
+    "goToTicketScanner": "Go to Ticket Scanner"
+  },
+  "mobileDevTools": {
+    "title": "Developer Tools",
+    "toolNotFound": "Tool not found",
+    "tools": {
+      "navigation": "Navigation",
+      "database": "Database",
+      "features": "Features",
+      "session": "Session",
+      "notes": "Notes"
+    },
+    "toolLabels": {
+      "navigation": "Navigation",
+      "database": "Database",
+      "features": "Feature Toggles",
+      "session": "Session Overrides",
+      "notes": "Developer Notes"
+    },
+    "fab": {
+      "open": "Open developer tools",
+      "openWithNotifications": "Open developer tools ({{count}} notifications)",
+      "notifications": "{{count}} notifications"
+    }
+  },
+  "devNavigation": {
+    "adminControls": "Admin Controls",
+    "developerHome": "Developer Home",
+    "supabase": "Supabase",
+    "supabaseDashboard": "Supabase Dashboard",
+    "mailpit": "Mailpit (Local Email)",
+    "goTo": "Go to",
+    "open": "Open"
+  },
+  "devToolsManagement": {
+    "title": "Development Environment Controls",
+    "description": "These settings control which sections appear in the dev toolbar at the bottom of the screen. Changes require a page refresh to take effect. The dev toolbar only appears in development mode.",
+    "keyboardShortcut": "Keyboard shortcut: Ctrl+Shift+D (Cmd+Shift+D on Mac) to toggle dev toolbar",
+    "sections": {
+      "database": {
+        "label": "Database Tools",
+        "description": "Access to Database tab in developer toolbar and database manager page"
+      },
+      "features": {
+        "label": "Feature Flags",
+        "description": "Toggle feature flags for testing"
+      }
+    },
+    "toast": {
+      "enabled": "Enabled {{section}}",
+      "disabled": "Disabled {{section}}",
+      "refreshRequired": "Changes will take effect on next page load"
+    }
+  },
+  "databaseSearch": {
+    "description": "Search across all database resources",
+    "placeholder": "Search users, artists, events...",
+    "recentRecords": "Recent records",
+    "unknownUser": "Unknown User",
+    "tba": "TBA",
+    "noResults": "No results found for \"{{query}}\"",
+    "sections": {
+      "organizations": "Organizations",
+      "users": "Users",
+      "artists": "Artists",
+      "venues": "Venues",
+      "events": "Events"
+    },
+    "contextMenu": {
+      "goToDetails": "Go to details",
+      "edit": "Edit {{entity}}",
+      "delete": "Delete {{entity}}"
+    },
+    "entityTypes": {
+      "organization": "organization",
+      "user": "user",
+      "artist": "artist",
+      "venue": "venue",
+      "event": "event"
+    },
+    "entityDisplayNames": {
+      "organization": "Organization",
+      "user": "User",
+      "artist": "Artist",
+      "venue": "Venue",
+      "event": "Event"
+    },
+    "toasts": {
+      "deleted": "{{entity}} deleted",
+      "deletedDescription": "\"{{name}}\" has been permanently deleted.",
+      "deleteFailed": "Failed to delete {{entity}}"
+    },
+    "deleteDialog": {
+      "title": "Delete {{entity}}?",
+      "description": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+    }
+  },
+  "developerPages": {
+    "createEvent": {
+      "title": "Create Event",
+      "description": "Configure a new event with headliners, ticket tiers, and venue details.",
+      "formDescription": "Complete the form to add a new event to the database.",
+      "loading": "Creating event...",
+      "creating": "Creating...",
+      "uploadingImage": "Uploading Image...",
+      "createButton": "Create Event",
+      "sections": {
+        "eventDetails": "Event Details",
+        "undercardArtists": "Undercard Artists",
+        "ticketTiers": "Ticket Tiers"
+      }
+    },
+    "createVenue": {
+      "title": "Create Venue",
+      "description": "Add a new venue with location and capacity details.",
+      "formDescription": "Complete the form to add a new venue to the database.",
+      "loading": "Creating venue...",
+      "creating": "Creating...",
+      "createButton": "Create Venue",
+      "sections": {
+        "venueDetails": "Venue Details",
+        "location": "Location"
+      }
+    },
+    "createArtist": {
+      "title": "Create Artist",
+      "description": "Add a new artist profile with bio and social links.",
+      "formDescription": "Complete the form to add a new artist to the database.",
+      "loading": "Creating artist...",
+      "creating": "Creating...",
+      "createButton": "Create Artist",
+      "sections": {
+        "artistDetails": "Artist Details",
+        "socialLinks": "Social Links"
+      }
+    },
+    "createOrganization": {
+      "title": "Create Organization",
+      "description": "Set up a new organization for event management.",
+      "formDescription": "Complete the form to add a new organization to the database.",
+      "loading": "Creating organization...",
+      "creating": "Creating...",
+      "createButton": "Create Organization",
+      "sections": {
+        "organizationDetails": "Organization Details"
+      }
+    }
   }
 }

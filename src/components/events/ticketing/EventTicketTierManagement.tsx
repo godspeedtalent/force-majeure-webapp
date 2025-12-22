@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/common/shadcn/button';
 import { Save } from 'lucide-react';
 import { TicketGroupManager } from './TicketGroupManager';
@@ -10,6 +11,7 @@ interface EventTicketTierManagementProps {
 }
 
 export const EventTicketTierManagement = ({ eventId }: EventTicketTierManagementProps) => {
+  const { t } = useTranslation('common');
   const { groups, isLoading, saveGroups, isSaving } = useEventTicketTiers(eventId);
   const [localGroups, setLocalGroups] = useState<TicketGroup[]>([]);
 
@@ -25,7 +27,7 @@ export const EventTicketTierManagement = ({ eventId }: EventTicketTierManagement
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-muted-foreground">Loading ticket tiers...</div>
+        <div className="text-muted-foreground">{t('eventManagement.loadingTicketTiers')}</div>
       </div>
     );
   }
@@ -34,14 +36,14 @@ export const EventTicketTierManagement = ({ eventId }: EventTicketTierManagement
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Ticket Tier Management</h2>
+          <h2 className="text-2xl font-bold">{t('eventManagement.ticketTierManagement')}</h2>
           <p className="text-muted-foreground">
-            Organize your ticket tiers into groups and configure pricing
+            {t('eventManagement.ticketTierDescription')}
           </p>
         </div>
         <Button onClick={handleSave} disabled={isSaving}>
           <Save className="w-4 h-4 mr-2" />
-          {isSaving ? 'Saving...' : 'Save Changes'}
+          {isSaving ? t('buttons.saving') : t('buttons.saveChanges')}
         </Button>
       </div>
 

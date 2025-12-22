@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Database } from 'lucide-react';
 import { Separator } from '@/components/common/shadcn/separator';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -15,6 +16,8 @@ export function DatabaseTabContent() {
 }
 
 export function DatabaseTabFooter({ onNavigate }: { onNavigate: (path: string) => void }) {
+  const { t } = useTranslation('common');
+
   return (
     <div className='pb-4'>
       <FmCommonButton
@@ -24,7 +27,7 @@ export function DatabaseTabFooter({ onNavigate }: { onNavigate: (path: string) =
         onClick={() => onNavigate('/developer/database')}
         className='w-full justify-start'
       >
-        Go to Database Manager
+        {t('databaseTab.goToManager')}
       </FmCommonButton>
     </div>
   );

@@ -5,6 +5,10 @@ import {
   Mail,
   AlertCircle,
   Mic2,
+  Check,
+  X,
+  Lock,
+  Trash2,
 } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -14,6 +18,17 @@ import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
 import { Card, CardContent } from '@/components/common/shadcn/card';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/common/shadcn/alert-dialog';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
@@ -35,8 +50,14 @@ interface LocationState {
   activeTab?: ProfileSection;
 }
 
+interface PasswordRequirement {
+  key: string;
+  label: string;
+  test: (password: string) => boolean;
+}
+
 const ProfileEdit = () => {
-  const { user, profile, updateProfile, resendVerificationEmail } = useAuth();
+  const { user, profile, updateProfile, resendVerificationEmail, updatePassword, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation('pages');
@@ -66,6 +87,42 @@ const ProfileEdit = () => {
   );
   const [billingZip, setBillingZip] = useState(profile?.billing_zip_code || '');
   const [activeSection, setActiveSection] = useState<ProfileSection>(initialSection);
+
+  // Password change state
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+
+  // Password requirements
+  const passwordRequirements: PasswordRequirement[] = [
+    {
+      key: 'minLength',
+      label: t('auth.passwordRequirements.minLength'),
+      test: (password: string) => password.length >= 8,
+    },
+    {
+      key: 'uppercase',
+      label: t('auth.passwordRequirements.uppercase'),
+      test: (password: string) => /[A-Z]/.test(password),
+    },
+    {
+      key: 'lowercase',
+      label: t('auth.passwordRequirements.lowercase'),
+      test: (password: string) => /[a-z]/.test(password),
+    },
+    {
+      key: 'number',
+      label: t('auth.passwordRequirements.number'),
+      test: (password: string) => /\d/.test(password),
+    },
+  ];
+
+  const allPasswordRequirementsMet = passwordRequirements.every(req => req.test(newPassword));
+
+  // Account deletion state
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   useEffect(() => {
     if (profile) {
@@ -114,6 +171,71 @@ const ProfileEdit = () => {
     setIsSendingVerification(true);
     await resendVerificationEmail();
     setIsSendingVerification(false);
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError(t('auth.passwordsDoNotMatch'));
+      return;
+    }
+
+    if (!allPasswordRequirementsMet) {
+      return;
+    }
+
+    setPasswordError('');
+    setIsChangingPassword(true);
+
+    const { error } = await updatePassword(newPassword);
+
+    if (!error) {
+      // Clear the form on success
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    }
+
+    setIsChangingPassword(false);
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+
+    setIsDeletingAccount(true);
+
+    try {
+      // Soft delete: set deleted_at timestamp on profile
+      // Note: deleted_at column added in migration 20251221000000_add_deleted_at_to_profiles.sql
+      const { error } = await supabase
+        .from('profiles')
+        .update({ deleted_at: new Date().toISOString() } as Record<string, unknown>)
+        .eq('id', user.id);
+
+      if (error) {
+        logger.error('Failed to delete account', {
+          error: error.message,
+          source: 'ProfileEdit.tsx',
+        });
+        toast.error(t('profile.deleteAccountFailed'));
+        setIsDeletingAccount(false);
+        return;
+      }
+
+      toast.success(t('profile.accountDeleted'));
+
+      // Sign out and redirect to home
+      await signOut();
+      navigate('/');
+    } catch (error) {
+      logger.error('Unexpected error deleting account', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        source: 'ProfileEdit.tsx',
+      });
+      toast.error(t('profile.deleteAccountFailed'));
+      setIsDeletingAccount(false);
+    }
   };
 
   const handleImageUpload = async (
@@ -525,6 +647,152 @@ const ProfileEdit = () => {
                     }}
                   />
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Password Change Card */}
+            <Card className='border-border/30 bg-card/20 backdrop-blur-lg'>
+              <CardContent className='p-8 space-y-6'>
+                <div>
+                  <h2 className='text-xl font-canela font-medium text-foreground mb-2'>
+                    {t('profile.changePassword')}
+                  </h2>
+                  <p className='text-sm text-muted-foreground'>
+                    {t('profile.changePasswordDescription')}
+                  </p>
+                </div>
+
+                <form onSubmit={handleChangePassword} className='space-y-6'>
+                  <div className='grid grid-cols-1 gap-6 max-w-md'>
+                    <FmCommonTextField
+                      label={t('profile.currentPassword')}
+                      id='currentPassword'
+                      password
+                      placeholder='••••••••'
+                      value={currentPassword}
+                      onChange={e => setCurrentPassword(e.target.value)}
+                      disabled={!user.email_confirmed_at}
+                    />
+
+                    <div>
+                      <FmCommonTextField
+                        label={t('profile.newPassword')}
+                        id='newPassword'
+                        password
+                        placeholder='••••••••'
+                        value={newPassword}
+                        onChange={e => {
+                          setNewPassword(e.target.value);
+                          if (passwordError) setPasswordError('');
+                        }}
+                        disabled={!user.email_confirmed_at}
+                      />
+                      {/* Password Requirements */}
+                      {newPassword && (
+                        <div className='mt-2 space-y-1'>
+                          {passwordRequirements.map((req) => {
+                            const isMet = req.test(newPassword);
+                            return (
+                              <div
+                                key={req.key}
+                                className={`flex items-center gap-2 text-xs transition-colors ${
+                                  isMet ? 'text-green-500' : 'text-muted-foreground'
+                                }`}
+                              >
+                                {isMet ? (
+                                  <Check className='h-3 w-3' />
+                                ) : (
+                                  <X className='h-3 w-3' />
+                                )}
+                                <span className='font-canela'>{req.label}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+
+                    <FmCommonTextField
+                      label={t('profile.confirmNewPassword')}
+                      id='confirmNewPassword'
+                      password
+                      placeholder='••••••••'
+                      value={confirmPassword}
+                      onChange={e => {
+                        setConfirmPassword(e.target.value);
+                        if (passwordError) setPasswordError('');
+                      }}
+                      error={passwordError}
+                      disabled={!user.email_confirmed_at}
+                    />
+                  </div>
+
+                  <div className='h-px bg-border/50' />
+
+                  <FmCommonButton
+                    type='submit'
+                    variant='secondary'
+                    icon={Lock}
+                    loading={isChangingPassword}
+                    disabled={!user.email_confirmed_at || isChangingPassword || !allPasswordRequirementsMet || !currentPassword}
+                  >
+                    {t('profile.updatePassword')}
+                  </FmCommonButton>
+                </form>
+              </CardContent>
+            </Card>
+
+            {/* Delete Account Card */}
+            <Card className='border-fm-danger/30 bg-card/20 backdrop-blur-lg'>
+              <CardContent className='p-8 space-y-6'>
+                <div>
+                  <h2 className='text-xl font-canela font-medium text-fm-danger mb-2'>
+                    {t('profile.deleteAccount')}
+                  </h2>
+                  <p className='text-sm text-muted-foreground'>
+                    {t('profile.deleteAccountDescription')}
+                  </p>
+                </div>
+
+                <div className='p-4 bg-fm-danger/10 border border-fm-danger/20'>
+                  <p className='text-sm text-muted-foreground'>
+                    {t('profile.deleteAccountWarning')}
+                  </p>
+                </div>
+
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <FmCommonButton
+                      variant='destructive'
+                      icon={Trash2}
+                      disabled={!user.email_confirmed_at || isDeletingAccount}
+                      loading={isDeletingAccount}
+                    >
+                      {t('profile.deleteAccountButton')}
+                    </FmCommonButton>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className='bg-background border-border'>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle className='text-fm-danger'>
+                        {t('profile.deleteAccountConfirmTitle')}
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {t('profile.deleteAccountConfirmDescription')}
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>
+                        {tCommon('actions.cancel')}
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleDeleteAccount}
+                        className='bg-fm-danger hover:bg-fm-danger/90'
+                      >
+                        {t('profile.deleteAccountConfirmButton')}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </CardContent>
             </Card>
           </>

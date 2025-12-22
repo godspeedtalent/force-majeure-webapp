@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Copy, Edit, Trash2, Power, Plus } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { FmConfigurableDataGrid, DataGridAction } from '@/features/data-grid';
 import { useTrackingLinks } from './hooks/useTrackingLinks';
 import { TrackingLink } from '@/types/tracking';
@@ -21,6 +22,8 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
   const { links, isLoading, toggleActive, deleteLink } = useTrackingLinks(eventId);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingLink, setEditingLink] = useState<TrackingLink | null>(null);
+  const [linkToDelete, setLinkToDelete] = useState<TrackingLink | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const copyToClipboard = (code: string) => {
     const url = `https://orgxcrnnecblhuxjfruy.supabase.co/functions/v1/track-link?code=${code}`;
@@ -131,13 +134,20 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
       label: t('buttons.delete'),
       icon: <Trash2 className="h-4 w-4" />,
       onClick: (row) => {
-        if (confirm(t('tracking.deleteConfirm', { name: row.name }))) {
-          deleteLink.mutate(row.id);
-        }
+        setLinkToDelete(row);
+        setShowDeleteConfirm(true);
       },
       variant: 'destructive' as const,
     },
   ];
+
+  const handleDeleteConfirm = () => {
+    if (linkToDelete) {
+      deleteLink.mutate(linkToDelete.id);
+      setShowDeleteConfirm(false);
+      setLinkToDelete(null);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -184,6 +194,16 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
           if (!open) setEditingLink(null);
         }}
         editingLink={editingLink}
+      />
+
+      <FmCommonConfirmDialog
+        open={showDeleteConfirm}
+        onOpenChange={setShowDeleteConfirm}
+        title={t('buttons.delete')}
+        description={t('tracking.deleteConfirm', { name: linkToDelete?.name })}
+        confirmText={t('buttons.delete')}
+        onConfirm={handleDeleteConfirm}
+        variant="destructive"
       />
     </div>
   );

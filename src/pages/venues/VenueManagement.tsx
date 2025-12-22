@@ -7,6 +7,7 @@ import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmImageUpload } from '@/components/common/forms/FmImageUpload';
+import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { Card } from '@/components/common/shadcn/card';
@@ -27,6 +28,7 @@ export default function VenueManagement() {
   const queryClient = useQueryClient();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Form state
   const [name, setName] = useState('');
@@ -53,8 +55,8 @@ export default function VenueManagement() {
       queryClient.invalidateQueries({ queryKey: venueKeys.detail(id) });
     } catch (error) {
       await handleError(error, {
-        title: 'Auto-save Failed',
-        description: 'Could not save changes automatically',
+        title: tToast('venues.autoSaveFailed'),
+        description: tToast('venues.autoSaveFailedDescription'),
         endpoint: 'VenueManagement',
         method: 'UPDATE',
       });
@@ -142,13 +144,18 @@ export default function VenueManagement() {
     }
   };
 
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true);
+  };
+
   const handleDelete = async () => {
-    if (!id || !confirm(t('venueManagement.deleteVenueConfirm'))) return;
+    if (!id) return;
 
     setIsDeleting(true);
     try {
       await venueService.deleteVenue(id);
       toast.success(tToast('venues.deleted'));
+      setShowDeleteConfirm(false);
       navigate('/developer/database?table=venues');
     } catch (error) {
       handleError(error, { title: tToast('venues.deleteFailed') });
@@ -242,7 +249,7 @@ export default function VenueManagement() {
         <FmCommonButton
           variant='destructive'
           icon={Trash2}
-          onClick={handleDelete}
+          onClick={handleDeleteClick}
           disabled={isDeleting}
         >
           {isDeleting ? t('buttons.deleting') : t('venueManagement.deleteVenue')}
@@ -280,6 +287,17 @@ export default function VenueManagement() {
       }}
     >
       {activeTab === 'overview' && renderOverviewTab()}
+
+      <FmCommonConfirmDialog
+        open={showDeleteConfirm}
+        onOpenChange={setShowDeleteConfirm}
+        title={t('venueManagement.deleteVenue')}
+        description={t('venueManagement.deleteVenueConfirm')}
+        confirmText={t('buttons.delete')}
+        onConfirm={handleDelete}
+        variant="destructive"
+        isLoading={isDeleting}
+      />
     </SideNavbarLayout>
   );
 }

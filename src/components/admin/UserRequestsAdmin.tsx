@@ -252,7 +252,7 @@ export function UserRequestsAdmin() {
               {/* User Info */}
               <div className='flex items-center gap-2 text-sm text-muted-foreground'>
                 <User className='h-3 w-3' />
-                <span>{request.user?.display_name || request.user?.email || 'Unknown User'}</span>
+                <span>{request.user?.display_name || request.user?.email || t('globalSearch.unknownUser')}</span>
               </div>
 
               {/* Artist Info (for link requests) */}

@@ -7,6 +7,7 @@ import { FileText, MapPin, Save, Trash2, Eye } from 'lucide-react';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmImageUpload } from '@/components/common/forms/FmImageUpload';
+import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { Card } from '@/components/common/shadcn/card';
@@ -24,6 +25,7 @@ export default function VenueManagement() {
     const queryClient = useQueryClient();
     const [isDeleting, setIsDeleting] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     // Form state
     const [name, setName] = useState('');
     const [addressLine1, setAddressLine1] = useState('');
@@ -42,8 +44,8 @@ export default function VenueManagement() {
         }
         catch (error) {
             await handleError(error, {
-                title: 'Auto-save Failed',
-                description: 'Could not save changes automatically',
+                title: tToast('venues.autoSaveFailed'),
+                description: tToast('venues.autoSaveFailedDescription'),
                 endpoint: 'VenueManagement',
                 method: 'UPDATE',
             });
@@ -123,13 +125,17 @@ export default function VenueManagement() {
             setIsSaving(false);
         }
     };
+    const handleDeleteClick = () => {
+        setShowDeleteConfirm(true);
+    };
     const handleDelete = async () => {
-        if (!id || !confirm(t('venueManagement.deleteVenueConfirm')))
+        if (!id)
             return;
         setIsDeleting(true);
         try {
             await venueService.deleteVenue(id);
             toast.success(tToast('venues.deleted'));
+            setShowDeleteConfirm(false);
             navigate('/developer/database?table=venues');
         }
         catch (error) {
@@ -157,16 +163,16 @@ export default function VenueManagement() {
                                                 }, placeholder: t('venueManagement.state') })] })] }), _jsxs("div", { children: [_jsx(Label, { children: t('venueManagement.capacity') }), _jsx(Input, { type: 'number', value: capacity, onChange: (e) => {
                                             setCapacity(Number(e.target.value));
                                             triggerAutoSave();
-                                        }, placeholder: t('venueManagement.capacity') })] })] })] }), _jsxs("div", { className: 'flex justify-between', children: [_jsx(FmCommonButton, { variant: 'destructive', icon: Trash2, onClick: handleDelete, disabled: isDeleting, children: isDeleting ? t('buttons.deleting') : t('venueManagement.deleteVenue') }), _jsx(FmCommonButton, { icon: Save, onClick: handleSave, disabled: isSaving || !name, children: isSaving ? t('buttons.saving') : t('buttons.saveChanges') })] })] }));
+                                        }, placeholder: t('venueManagement.capacity') })] })] })] }), _jsxs("div", { className: 'flex justify-between', children: [_jsx(FmCommonButton, { variant: 'destructive', icon: Trash2, onClick: handleDeleteClick, disabled: isDeleting, children: isDeleting ? t('buttons.deleting') : t('venueManagement.deleteVenue') }), _jsx(FmCommonButton, { icon: Save, onClick: handleSave, disabled: isSaving || !name, children: isSaving ? t('buttons.saving') : t('buttons.saveChanges') })] })] }));
     if (isLoading) {
         return (_jsx("div", { className: 'min-h-screen flex items-center justify-center bg-background', children: _jsx("div", { className: 'animate-spin rounded-full h-8 w-8 border-[3px] border-fm-gold border-b-transparent' }) }));
     }
-    return (_jsx(SideNavbarLayout, { navigationGroups: navigationGroups, activeItem: activeTab, onItemChange: (id) => {
+    return (_jsxs(SideNavbarLayout, { navigationGroups: navigationGroups, activeItem: activeTab, onItemChange: (id) => {
             if (id === 'view') {
                 navigate(`/venues/${venue?.id}`);
             }
             else {
                 setActiveTab(id);
             }
-        }, children: activeTab === 'overview' && renderOverviewTab() }));
+        }, children: [activeTab === 'overview' && renderOverviewTab(), _jsx(FmCommonConfirmDialog, { open: showDeleteConfirm, onOpenChange: setShowDeleteConfirm, title: t('venueManagement.deleteVenue'), description: t('venueManagement.deleteVenueConfirm'), confirmText: t('buttons.delete'), onConfirm: handleDelete, variant: "destructive", isLoading: isDeleting })] }));
 }

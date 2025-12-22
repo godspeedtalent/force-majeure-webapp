@@ -25,9 +25,9 @@ export const ArtistRegistrationLayout = ({ children }: ArtistRegistrationLayoutP
       <Navigation />
 
       {/* Main Content */}
-      <div className='relative z-10' style={{ minHeight: 'calc(100vh - 80px)' }}>
+      <main className='relative z-10 flex-1'>
         {children}
-      </div>
+      </main>
     </div>
   );
 };

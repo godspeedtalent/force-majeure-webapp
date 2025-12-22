@@ -6,11 +6,12 @@ import { Button } from '@/components/common/shadcn/button';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { Separator } from '@/components/common/shadcn/separator';
-import { Mail, Copy, Send, Eye } from 'lucide-react';
+import { Mail, Copy, Send, Eye, FileDown, Loader2 } from 'lucide-react';
 import { generateOrderReceiptEmailHTML } from '@/services/email/templates/OrderReceiptEmail';
 import { useSendTestEmail } from '@/shared/hooks/useEmailReceipt';
 import { toast } from 'sonner';
 import { formatHeader } from '@/shared';
+import { TicketPDFGenerator } from '@/services/pdf/TicketPDFGenerator';
 /**
  * EmailPreview - Developer tool for previewing and testing email templates
  *
@@ -25,6 +26,7 @@ export const EmailPreview = () => {
     const { sendTestEmail, isSending } = useSendTestEmail();
     const [testEmail, setTestEmail] = useState('');
     const [showPreview, setShowPreview] = useState(false);
+    const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
     // Sample data for preview
     const sampleData = {
         orderId: 'ORD-' + Date.now(),
@@ -74,6 +76,47 @@ export const EmailPreview = () => {
         navigator.clipboard.writeText(html);
         toast.success(t('emailPreview.htmlCopied'));
     };
+    const handleDownloadPDF = async () => {
+        setIsGeneratingPDF(true);
+        try {
+            // Create sample ticket data for PDF generation
+            const sampleTicketData = sampleData.orderSummary.items.map((item, index) => ({
+                ticketId: `TKT-${Date.now()}-${index}`,
+                qrCodeData: `https://forcemajeure.com/ticket/${sampleData.orderId}/${index}`,
+                eventName: sampleData.event.title,
+                eventDate: new Date(sampleData.event.date).toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                }),
+                eventTime: sampleData.event.time,
+                venueName: sampleData.event.venue.name,
+                venueAddress: `${sampleData.event.venue.address}, ${sampleData.event.venue.city}`,
+                ticketTierName: item.ticketTierName,
+                attendeeName: sampleData.purchaser.fullName,
+                attendeeEmail: sampleData.purchaser.email,
+                orderNumber: sampleData.orderId,
+                purchaserName: sampleData.purchaser.fullName,
+            }));
+            // Generate PDF with all tickets (one per page)
+            const pdfBase64 = await TicketPDFGenerator.generateMultipleTickets(sampleTicketData);
+            // Download the PDF
+            const link = document.createElement('a');
+            link.href = `data:application/pdf;base64,${pdfBase64}`;
+            link.download = `tickets-${sampleData.orderId}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            toast.success('PDF ticket generated and downloaded!');
+        }
+        catch (error) {
+            toast.error(`Failed to generate PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+        finally {
+            setIsGeneratingPDF(false);
+        }
+    };
     const handleSendTest = async () => {
         if (!testEmail) {
             toast.error(t('emailPreview.enterEmailAddress'));
@@ -88,7 +131,7 @@ export const EmailPreview = () => {
         await sendTestEmail(testEmail);
     };
     const htmlContent = generateOrderReceiptEmailHTML(sampleData);
-    return (_jsxs("div", { className: 'space-y-6', children: [_jsxs(Card, { className: 'p-[20px]', children: [_jsxs("div", { className: 'flex items-center gap-[10px] mb-[20px]', children: [_jsx(Mail, { className: 'h-5 w-5 text-fm-gold' }), _jsx("h3", { className: 'text-lg font-canela', children: formatHeader(t('emailPreview.title')) })] }), _jsxs("div", { className: 'space-y-4', children: [_jsxs("div", { children: [_jsx(Label, { htmlFor: 'test-email', className: 'text-xs uppercase', children: t('emailPreview.testEmailAddress') }), _jsxs("div", { className: 'flex gap-[10px] mt-2', children: [_jsx(Input, { id: 'test-email', type: 'email', placeholder: t('placeholders.email'), value: testEmail, onChange: e => setTestEmail(e.target.value), className: 'flex-1' }), _jsxs(Button, { onClick: handleSendTest, disabled: isSending || !testEmail, className: 'bg-fm-gold hover:bg-fm-gold/90 text-black', children: [_jsx(Send, { className: 'h-4 w-4 mr-2' }), isSending ? t('emailPreview.sending') : t('emailPreview.sendTest')] })] }), _jsx("p", { className: 'text-xs text-muted-foreground mt-2', children: t('emailPreview.sendTestHint') })] }), _jsx(Separator, {}), _jsxs("div", { className: 'flex gap-[10px]', children: [_jsxs(Button, { onClick: () => setShowPreview(!showPreview), variant: 'outline', className: 'flex-1', children: [_jsx(Eye, { className: 'h-4 w-4 mr-2' }), showPreview ? t('emailPreview.hidePreview') : t('emailPreview.showPreview')] }), _jsxs(Button, { onClick: handleCopyHTML, variant: 'outline', className: 'flex-1', children: [_jsx(Copy, { className: 'h-4 w-4 mr-2' }), t('emailPreview.copyHtml')] })] })] })] }), showPreview && (_jsxs(Card, { className: 'p-[20px]', children: [_jsx("h4", { className: 'text-md font-canela mb-[20px]', children: formatHeader(t('emailPreview.previewTitle')) }), _jsx("div", { className: 'border border-border rounded-none overflow-hidden bg-white', children: _jsx("iframe", { title: t('emailPreview.previewTitle'), srcDoc: htmlContent, style: {
+    return (_jsxs("div", { className: 'space-y-6', children: [_jsxs(Card, { className: 'p-[20px]', children: [_jsxs("div", { className: 'flex items-center gap-[10px] mb-[20px]', children: [_jsx(Mail, { className: 'h-5 w-5 text-fm-gold' }), _jsx("h3", { className: 'text-lg font-canela', children: formatHeader(t('emailPreview.title')) })] }), _jsxs("div", { className: 'space-y-4', children: [_jsxs("div", { children: [_jsx(Label, { htmlFor: 'test-email', className: 'text-xs uppercase', children: t('emailPreview.testEmailAddress') }), _jsxs("div", { className: 'flex gap-[10px] mt-2', children: [_jsx(Input, { id: 'test-email', type: 'email', placeholder: t('placeholders.email'), value: testEmail, onChange: e => setTestEmail(e.target.value), className: 'flex-1' }), _jsxs(Button, { onClick: handleSendTest, disabled: isSending || !testEmail, className: 'bg-fm-gold hover:bg-fm-gold/90 text-black', children: [_jsx(Send, { className: 'h-4 w-4 mr-2' }), isSending ? t('emailPreview.sending') : t('emailPreview.sendTest')] })] }), _jsx("p", { className: 'text-xs text-muted-foreground mt-2', children: t('emailPreview.sendTestHint') })] }), _jsx(Separator, {}), _jsxs("div", { className: 'flex gap-[10px]', children: [_jsxs(Button, { onClick: () => setShowPreview(!showPreview), variant: 'outline', className: 'flex-1', children: [_jsx(Eye, { className: 'h-4 w-4 mr-2' }), showPreview ? t('emailPreview.hidePreview') : t('emailPreview.showPreview')] }), _jsxs(Button, { onClick: handleCopyHTML, variant: 'outline', className: 'flex-1', children: [_jsx(Copy, { className: 'h-4 w-4 mr-2' }), t('emailPreview.copyHtml')] }), _jsxs(Button, { onClick: handleDownloadPDF, variant: 'outline', className: 'flex-1', disabled: isGeneratingPDF, children: [isGeneratingPDF ? (_jsx(Loader2, { className: 'h-4 w-4 mr-2 animate-spin' })) : (_jsx(FileDown, { className: 'h-4 w-4 mr-2' })), isGeneratingPDF ? 'Generating...' : 'Download PDF'] })] })] })] }), showPreview && (_jsxs(Card, { className: 'p-[20px]', children: [_jsx("h4", { className: 'text-md font-canela mb-[20px]', children: formatHeader(t('emailPreview.previewTitle')) }), _jsx("div", { className: 'border border-border rounded-none overflow-hidden bg-white', children: _jsx("iframe", { title: t('emailPreview.previewTitle'), srcDoc: htmlContent, style: {
                                 width: '100%',
                                 height: '800px',
                                 border: 'none',

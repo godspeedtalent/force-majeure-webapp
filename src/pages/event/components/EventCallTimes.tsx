@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Music, ArrowRight } from 'lucide-react';
 import { FmCommonCollapsibleSection } from '@/components/common/data/FmCommonCollapsibleSection';
 import { FmCommonStackLayout } from '@/components/common/layout';
@@ -43,6 +44,7 @@ export const EventCallTimes = ({
   eventId,
   className = 'lg:col-span-2',
 }: EventCallTimesProps) => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -62,7 +64,7 @@ export const EventCallTimes = ({
   return (
     <>
       <FmCommonCollapsibleSection
-        title='Call times'
+        title={t('undercardApplication.callTimes')}
         defaultExpanded={true}
         className={className}
       >
@@ -87,7 +89,7 @@ export const EventCallTimes = ({
                 onClick={() => setIsModalOpen(true)}
                 className='w-full py-1.5 px-4 border border-fm-gold bg-transparent text-white hover:text-fm-gold hover:bg-fm-gold/10 text-xs transition-all duration-300'
               >
-                Accepting Artist Undercard Applications
+                {t('undercardApplication.acceptingApplications')}
               </Button>
             </div>
           )}
@@ -100,21 +102,21 @@ export const EventCallTimes = ({
           <DialogHeader className='px-6 pt-6 pb-4'>
             <DialogTitle className='font-canela text-xl flex items-center gap-2'>
               <Music className='h-5 w-5 text-fm-gold' />
-              We're looking for local talent.
+              {t('undercardApplication.modalTitle')}
             </DialogTitle>
           </DialogHeader>
 
           <div className='px-6 pb-6 space-y-4'>
             <p className='text-muted-foreground leading-relaxed'>
-              We're looking for local artists to open up for this event. If you're a DJ, producer, or performer, we'd love to hear from you.
+              {t('undercardApplication.modalDescription')}
             </p>
 
             <div className='p-4 bg-fm-gold/10 border border-fm-gold/20 rounded-none'>
-              <h4 className='font-semibold text-fm-gold mb-2'>How to apply</h4>
+              <h4 className='font-semibold text-fm-gold mb-2'>{t('undercardApplication.howToApply')}</h4>
               <ol className='text-sm text-muted-foreground space-y-2 list-decimal list-inside'>
-                <li>Create an artist profile on Force Majeure</li>
-                <li>Submit a mix or demo showcasing your style</li>
-                <li>We'll review submissions and reach out if it's a fit</li>
+                <li>{t('undercardApplication.step1')}</li>
+                <li>{t('undercardApplication.step2')}</li>
+                <li>{t('undercardApplication.step3')}</li>
               </ol>
             </div>
 
@@ -123,12 +125,12 @@ export const EventCallTimes = ({
               onClick={handleSignUp}
               className='w-full border-fm-gold bg-transparent text-white hover:text-fm-gold hover:bg-fm-gold/10'
             >
-              Sign up as an artist
+              {t('undercardApplication.signUpAsArtist')}
               <ArrowRight className='ml-2 h-4 w-4' />
             </Button>
 
             <p className='text-xs text-center text-muted-foreground/70'>
-              Already have a profile? We'll match your account automatically.
+              {t('undercardApplication.alreadyHaveProfile')}
             </p>
           </div>
         </DialogContent>

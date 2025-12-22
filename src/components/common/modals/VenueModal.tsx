@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { logger } from '@/shared';
 import { MapPin, Users } from 'lucide-react';
 import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
@@ -26,6 +27,7 @@ export const VenueModal = ({
   open,
   onOpenChange,
 }: VenueModalProps) => {
+  const { t } = useTranslation('common');
   const [venue, setVenue] = useState<Venue | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -51,7 +53,7 @@ export const VenueModal = ({
 
   if (loading) {
     return (
-      <FmCommonModal open={open} onOpenChange={onOpenChange} title='Loading...'>
+      <FmCommonModal open={open} onOpenChange={onOpenChange} title={t('status.loading')}>
         <div className='flex items-center justify-center py-8'>
           <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-fm-gold'></div>
         </div>
@@ -86,7 +88,7 @@ export const VenueModal = ({
           {venue.capacity && (
             <FmInfoChip
               icon={Users}
-              label={`Capacity: ${venue.capacity.toLocaleString()}`}
+              label={t('venueModal.capacity', { value: venue.capacity.toLocaleString() })}
             />
           )}
         </div>
@@ -94,7 +96,7 @@ export const VenueModal = ({
         {/* Additional Info Section */}
         <div className='pt-4 border-t border-white/10'>
           <p className='text-sm text-white/70'>
-            {venue.city ? `Located in ${venue.city}` : 'Venue information'}
+            {venue.city ? t('venueModal.locatedIn', { city: venue.city }) : t('venueModal.venueInformation')}
           </p>
         </div>
       </div>

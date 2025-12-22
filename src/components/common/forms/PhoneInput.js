@@ -1,7 +1,9 @@
 import { jsx as _jsx } from "react/jsx-runtime";
 import { forwardRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/common/shadcn/input';
 export const PhoneInput = forwardRef(({ value, onChange, ...props }, ref) => {
+    const { t } = useTranslation('common');
     const formatPhoneNumber = (input) => {
         // Remove all non-numeric characters
         const cleaned = input.replace(/\D/g, '');
@@ -20,6 +22,6 @@ export const PhoneInput = forwardRef(({ value, onChange, ...props }, ref) => {
         const formatted = formatPhoneNumber(e.target.value);
         onChange(formatted);
     };
-    return (_jsx(Input, { ref: ref, type: 'tel', value: value, onChange: handleChange, placeholder: '(555) 123-4567', maxLength: 14, ...props }));
+    return (_jsx(Input, { ref: ref, type: 'tel', value: value, onChange: handleChange, placeholder: t('placeholders.phoneNumber'), maxLength: 14, ...props }));
 });
 PhoneInput.displayName = 'PhoneInput';

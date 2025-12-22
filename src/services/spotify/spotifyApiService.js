@@ -2,58 +2,24 @@
  * Spotify API Service
  *
  * Handles Spotify Web API calls for artist search and data fetching.
- * Uses Client Credentials flow for server-to-server requests.
+ * Uses an edge function to securely access Spotify API with credentials stored in Supabase.
  */
 import { logger } from '@/shared';
-// Token management
-let accessToken = null;
-let tokenExpiry = null;
+import { supabase } from '@/integrations/supabase/client';
+// Edge function base URL
+const EDGE_FUNCTION_URL = 'https://orgxcrnnecblhuxjfruy.supabase.co/functions/v1/spotify-api';
 /**
- * Get Spotify API credentials from environment
+ * Call the Spotify edge function
  */
-function getCredentials() {
-    const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
-    const clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
-    if (!clientId || !clientSecret) {
-        throw new Error('Spotify API credentials not configured. Please set VITE_SPOTIFY_CLIENT_ID and VITE_SPOTIFY_CLIENT_SECRET in .env');
-    }
-    return { clientId, clientSecret };
-}
-/**
- * Get access token using Client Credentials flow
- */
-async function getAccessToken() {
-    // Return cached token if still valid
-    if (accessToken && tokenExpiry && Date.now() < tokenExpiry) {
-        return accessToken;
-    }
-    const { clientId, clientSecret } = getCredentials();
-    try {
-        logger.info('Fetching Spotify access token');
-        const response = await fetch('https://accounts.spotify.com/api/token', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                Authorization: `Basic ${btoa(`${clientId}:${clientSecret}`)}`,
-            },
-            body: 'grant_type=client_credentials',
-        });
-        if (!response.ok) {
-            const error = await response.text();
-            logger.error('Failed to fetch Spotify access token', { error, status: response.status });
-            throw new Error(`Spotify authentication failed: ${response.status}`);
-        }
-        const data = await response.json();
-        accessToken = data.access_token;
-        // Set expiry to 5 minutes before actual expiry for safety
-        tokenExpiry = Date.now() + (data.expires_in - 300) * 1000;
-        logger.info('Spotify access token obtained successfully');
-        return accessToken || '';
-    }
-    catch (error) {
-        logger.error('Error getting Spotify access token', { error });
-        throw error;
-    }
+async function callSpotifyFunction(params) {
+    const { data: { session } } = await supabase.auth.getSession();
+    const response = await fetch(`${EDGE_FUNCTION_URL}?${params.toString()}`, {
+        headers: {
+            'Content-Type': 'application/json',
+            ...(session?.access_token && { 'Authorization': `Bearer ${session.access_token}` }),
+        },
+    });
+    return response;
 }
 /**
  * Search for artists on Spotify
@@ -63,18 +29,17 @@ export async function searchSpotifyArtists(query, limit = 10) {
         return [];
     }
     try {
-        const token = await getAccessToken();
-        const encodedQuery = encodeURIComponent(query);
         logger.info('Searching Spotify artists', { query, limit });
-        const response = await fetch(`https://api.spotify.com/v1/search?q=${encodedQuery}&type=artist&limit=${limit}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+        const params = new URLSearchParams({
+            action: 'search',
+            q: query,
+            limit: limit.toString(),
         });
+        const response = await callSpotifyFunction(params);
         if (!response.ok) {
-            const error = await response.text();
+            const error = await response.json();
             logger.error('Spotify artist search failed', { error, status: response.status });
-            throw new Error(`Spotify search failed: ${response.status}`);
+            throw new Error(error.error || `Spotify search failed: ${response.status}`);
         }
         const data = await response.json();
         logger.info('Spotify artist search successful', { resultCount: data.artists.items.length });
@@ -90,17 +55,16 @@ export async function searchSpotifyArtists(query, limit = 10) {
  */
 export async function getSpotifyArtist(artistId) {
     try {
-        const token = await getAccessToken();
         logger.info('Fetching Spotify artist details', { artistId });
-        const response = await fetch(`https://api.spotify.com/v1/artists/${artistId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+        const params = new URLSearchParams({
+            action: 'artist',
+            id: artistId,
         });
+        const response = await callSpotifyFunction(params);
         if (!response.ok) {
-            const error = await response.text();
+            const error = await response.json();
             logger.error('Failed to fetch Spotify artist', { error, status: response.status, artistId });
-            throw new Error(`Failed to fetch Spotify artist: ${response.status}`);
+            throw new Error(error.error || `Failed to fetch Spotify artist: ${response.status}`);
         }
         const artist = await response.json();
         logger.info('Spotify artist fetched successfully', { artistId, name: artist.name });
@@ -113,27 +77,18 @@ export async function getSpotifyArtist(artistId) {
 }
 /**
  * Get multiple artists by their Spotify IDs
+ * Note: This currently fetches artists one by one since the edge function doesn't support batch requests yet
  */
 export async function getSpotifyArtists(artistIds) {
     if (artistIds.length === 0) {
         return [];
     }
     try {
-        const token = await getAccessToken();
-        const ids = artistIds.slice(0, 50).join(','); // Spotify API allows max 50 IDs
         logger.info('Fetching multiple Spotify artists', { count: artistIds.length });
-        const response = await fetch(`https://api.spotify.com/v1/artists?ids=${ids}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        if (!response.ok) {
-            const error = await response.text();
-            logger.error('Failed to fetch Spotify artists', { error, status: response.status });
-            throw new Error(`Failed to fetch Spotify artists: ${response.status}`);
-        }
-        const data = await response.json();
-        return data.artists;
+        // Fetch artists in parallel (limit to first 50 like Spotify API)
+        const limitedIds = artistIds.slice(0, 50);
+        const artists = await Promise.all(limitedIds.map(id => getSpotifyArtist(id).catch(() => null)));
+        return artists.filter((artist) => artist !== null);
     }
     catch (error) {
         logger.error('Error fetching Spotify artists', { error });
@@ -172,17 +127,17 @@ export function isSpotifyArtistUrl(input) {
  */
 export async function getArtistTopTracks(artistId, market = 'US') {
     try {
-        const token = await getAccessToken();
         logger.info('Fetching Spotify artist top tracks', { artistId, market });
-        const response = await fetch(`https://api.spotify.com/v1/artists/${artistId}/top-tracks?market=${market}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+        const params = new URLSearchParams({
+            action: 'top-tracks',
+            id: artistId,
+            market,
         });
+        const response = await callSpotifyFunction(params);
         if (!response.ok) {
-            const error = await response.text();
+            const error = await response.json();
             logger.error('Failed to fetch artist top tracks', { error, status: response.status, artistId });
-            throw new Error(`Failed to fetch artist top tracks: ${response.status}`);
+            throw new Error(error.error || `Failed to fetch artist top tracks: ${response.status}`);
         }
         const data = await response.json();
         logger.info('Spotify artist top tracks fetched', { artistId, trackCount: data.tracks?.length || 0 });
@@ -194,10 +149,8 @@ export async function getArtistTopTracks(artistId, market = 'US') {
     }
 }
 /**
- * Clear cached access token (useful for testing or error recovery)
+ * Clear cached access token (no-op now since tokens are managed by edge function)
  */
 export function clearSpotifyToken() {
-    accessToken = null;
-    tokenExpiry = null;
-    logger.info('Spotify access token cleared');
+    logger.info('Spotify token management is now handled by edge function');
 }

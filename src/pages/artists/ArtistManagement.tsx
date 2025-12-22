@@ -32,6 +32,7 @@ import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmImageUpload } from '@/components/common/forms/FmImageUpload';
+import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { FmI18nCommon } from '@/components/common/i18n';
 import { toast } from 'sonner';
 import { handleError } from '@/shared/services/errorHandler';
@@ -82,6 +83,7 @@ export default function ArtistManagement() {
   const queryClient = useQueryClient();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Form state - Overview
   const [name, setName] = useState('');
@@ -150,8 +152,8 @@ export default function ArtistManagement() {
       queryClient.invalidateQueries({ queryKey: ['artist', id] });
     } catch (error) {
       await handleError(error, {
-        title: 'Auto-save Failed',
-        description: 'Could not save changes automatically',
+        title: tToast('artists.autoSaveFailed'),
+        description: tToast('artists.autoSaveFailedDescription'),
         endpoint: 'ArtistManagement',
         method: 'UPDATE',
       });
@@ -410,14 +412,18 @@ export default function ArtistManagement() {
       toast.success(tToast('artists.updated'));
       queryClient.invalidateQueries({ queryKey: ['artist', id] });
     } catch (error) {
-      handleError(error, { title: 'Failed to update artist' });
+      handleError(error, { title: tToast('artists.updateFailed') });
     } finally {
       setIsSaving(false);
     }
   };
 
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true);
+  };
+
   const handleDelete = async () => {
-    if (!id || !confirm(t('dialogs.deleteArtistConfirm'))) return;
+    if (!id) return;
 
     setIsDeleting(true);
     try {
@@ -426,9 +432,10 @@ export default function ArtistManagement() {
       if (error) throw error;
 
       toast.success(tToast('artists.deleted'));
+      setShowDeleteConfirm(false);
       navigate('/developer/database?table=artists');
     } catch (error) {
-      handleError(error, { title: 'Failed to delete artist' });
+      handleError(error, { title: tToast('artists.deleteFailed') });
     } finally {
       setIsDeleting(false);
     }
@@ -499,7 +506,7 @@ export default function ArtistManagement() {
         <FmCommonButton
           variant='destructive'
           icon={Trash2}
-          onClick={handleDelete}
+          onClick={handleDeleteClick}
           disabled={isDeleting}
         >
           {isDeleting ? t('buttons.deleting') : t('buttons.deleteArtist')}
@@ -803,6 +810,17 @@ export default function ArtistManagement() {
       {activeTab === 'overview' && renderOverviewTab()}
       {activeTab === 'music' && renderMusicTab()}
       {activeTab === 'social' && renderSocialTab()}
+
+      <FmCommonConfirmDialog
+        open={showDeleteConfirm}
+        onOpenChange={setShowDeleteConfirm}
+        title={t('buttons.deleteArtist')}
+        description={t('dialogs.deleteArtistConfirm')}
+        confirmText={t('buttons.delete')}
+        onConfirm={handleDelete}
+        variant="destructive"
+        isLoading={isDeleting}
+      />
     </SideNavbarLayout>
   );
 }

@@ -1,6 +1,7 @@
-import { UserX } from 'lucide-react';
-import React, { useState } from 'react';
+import { UserX, Check, X } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -31,6 +32,70 @@ interface AuthPanelProps {
   description?: string;
 }
 
+// Password requirements validation
+interface PasswordRequirement {
+  key: string;
+  label: string;
+  test: (password: string) => boolean;
+}
+
+const getPasswordRequirements = (t: (key: string) => string): PasswordRequirement[] => [
+  {
+    key: 'minLength',
+    label: t('auth.passwordRequirements.minLength'),
+    test: (password: string) => password.length >= 8,
+  },
+  {
+    key: 'uppercase',
+    label: t('auth.passwordRequirements.uppercase'),
+    test: (password: string) => /[A-Z]/.test(password),
+  },
+  {
+    key: 'lowercase',
+    label: t('auth.passwordRequirements.lowercase'),
+    test: (password: string) => /[a-z]/.test(password),
+  },
+  {
+    key: 'number',
+    label: t('auth.passwordRequirements.number'),
+    test: (password: string) => /\d/.test(password),
+  },
+];
+
+// Password requirements display component
+const PasswordRequirements = ({
+  password,
+  requirements
+}: {
+  password: string;
+  requirements: PasswordRequirement[]
+}) => {
+  if (!password) return null;
+
+  return (
+    <div className='mt-2 space-y-1'>
+      {requirements.map((req) => {
+        const isMet = req.test(password);
+        return (
+          <div
+            key={req.key}
+            className={`flex items-center gap-2 text-xs transition-colors ${
+              isMet ? 'text-green-500' : 'text-muted-foreground'
+            }`}
+          >
+            {isMet ? (
+              <Check className='h-3 w-3' />
+            ) : (
+              <X className='h-3 w-3' />
+            )}
+            <span className='font-canela'>{req.label}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 export const AuthPanel = ({
   showGuestOption = false,
   onGuestContinue,
@@ -53,6 +118,9 @@ export const AuthPanel = ({
   const [passwordError, setPasswordError] = useState('');
 
   const { signIn, signUp, loading } = useAuth();
+
+  // Password requirements with translations
+  const passwordRequirements = useMemo(() => getPasswordRequirements(t), [t]);
 
   // Use translated defaults if no custom title/description provided
   const displayTitle = title ?? t('auth.panelTitle');
@@ -172,18 +240,26 @@ export const AuthPanel = ({
                 required
               />
 
-              <div className='flex items-center space-x-2'>
-                <FmCommonCheckbox
-                  id='remember-me'
-                  checked={rememberMe}
-                  onCheckedChange={setRememberMe}
-                />
-                <Label
-                  htmlFor='remember-me'
-                  className='text-sm font-normal text-muted-foreground cursor-pointer'
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center space-x-2'>
+                  <FmCommonCheckbox
+                    id='remember-me'
+                    checked={rememberMe}
+                    onCheckedChange={setRememberMe}
+                  />
+                  <Label
+                    htmlFor='remember-me'
+                    className='text-sm font-normal text-muted-foreground cursor-pointer'
+                  >
+                    {t('auth.rememberMeDays')}
+                  </Label>
+                </div>
+                <Link
+                  to='/forgot-password'
+                  className='text-sm text-fm-gold hover:underline font-canela'
                 >
-                  {t('auth.rememberMeDays')}
-                </Label>
+                  {t('auth.signIn.forgotPassword')}
+                </Link>
               </div>
 
               <FmCommonButton
@@ -268,22 +344,28 @@ export const AuthPanel = ({
                 required
               />
 
-              <FmCommonTextField
-                label={t('auth.passwordLabel')}
-                id='signup-password'
-                password
-                placeholder={t('auth.signUp.passwordPlaceholder')}
-                value={signUpForm.password}
-                onChange={e => {
-                  setSignUpForm({
-                    ...signUpForm,
-                    password: e.target.value,
-                  });
-                  // Clear error when user types
-                  if (passwordError) setPasswordError('');
-                }}
-                required
-              />
+              <div>
+                <FmCommonTextField
+                  label={t('auth.passwordLabel')}
+                  id='signup-password'
+                  password
+                  placeholder={t('auth.signUp.passwordPlaceholder')}
+                  value={signUpForm.password}
+                  onChange={e => {
+                    setSignUpForm({
+                      ...signUpForm,
+                      password: e.target.value,
+                    });
+                    // Clear error when user types
+                    if (passwordError) setPasswordError('');
+                  }}
+                  required
+                />
+                <PasswordRequirements
+                  password={signUpForm.password}
+                  requirements={passwordRequirements}
+                />
+              </div>
 
               <FmCommonTextField
                 label={t('auth.confirmPasswordLabel')}

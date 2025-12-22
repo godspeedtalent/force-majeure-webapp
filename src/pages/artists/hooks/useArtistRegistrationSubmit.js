@@ -6,6 +6,7 @@ import { supabase } from '@/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { logApiError } from '@/shared';
 import { logger } from '@/shared';
+import { EmailService } from '@/services/email/EmailService';
 const ARTIST_EXISTS_ERROR_MESSAGE = 'An artist with this name already exists in the database. Contact FM staff at management@forcemajeure.vip to request access.';
 const SPOTIFY_EXISTS_ERROR_MESSAGE = 'An artist with this Spotify profile already exists in the database. Contact FM staff at management@forcemajeure.vip to request access.';
 const SOUNDCLOUD_EXISTS_ERROR_MESSAGE = 'An artist with this SoundCloud profile already exists in the database. Contact FM staff at management@forcemajeure.vip to request access.';
@@ -116,6 +117,42 @@ export function useArtistRegistrationSubmit() {
             }
             logger.info('Artist registration submitted successfully', { data });
             toast.success(t('artistRegistration.submitSuccess'), { duration: 6000 });
+            // Send confirmation email
+            if (user?.email) {
+                EmailService.sendArtistRegistrationConfirmation({
+                    artistName: formData.stageName,
+                    email: user.email,
+                    city: formData.cityId || 'Not specified',
+                    genres: formData.genres.map(g => g.name),
+                    registrationDate: new Date().toISOString(),
+                }).catch((err) => {
+                    // Log but don't fail the registration if email fails
+                    logger.error('Failed to send artist registration confirmation email', { error: err });
+                });
+            }
+            // Log to activity log system for admin visibility
+            const registrationId = data?.[0]?.id;
+            supabase.rpc('log_activity', {
+                p_event_type: 'resource_created',
+                p_category: 'artist',
+                p_description: `Artist registration submitted: ${formData.stageName}`,
+                p_user_id: user?.id ?? undefined,
+                p_target_resource_type: 'artist_registration',
+                p_target_resource_id: registrationId ?? undefined,
+                p_target_resource_name: formData.stageName,
+                p_metadata: {
+                    cityId: formData.cityId,
+                    genres: formData.genres.map(g => g.name),
+                    has_spotify: !!formData.spotifyArtistId,
+                    has_soundcloud: !!formData.soundcloudUsername,
+                },
+                p_ip_address: undefined,
+                p_user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+            }).then(({ error }) => {
+                if (error) {
+                    logger.error('Failed to log artist registration activity', { error: error.message });
+                }
+            });
             setTimeout(() => {
                 navigate('/profile/edit', { state: { activeTab: 'artist' } });
             }, 1000);

@@ -1,6 +1,7 @@
 import { supabase } from '@/shared';
 import { logger } from '@/shared';
 import { handleError } from '@/shared/services/errorHandler';
+import i18n from '@/i18n';
 
 const roleLogger = logger.createNamespace('RoleManagement');
 
@@ -61,8 +62,8 @@ export class RoleManagementService {
     } catch (error) {
       roleLogger.error('Error in addRole', { userId, roleName, error });
       await handleError(error, {
-        title: 'Failed to Add Role',
-        description: `Could not assign role "${roleName}" to user`,
+        title: i18n.t('admin.roleAddFailed', { ns: 'toasts' }),
+        description: i18n.t('admin.roleAddFailedDescription', { ns: 'toasts', roleName }),
         endpoint: 'user_roles',
         method: 'INSERT',
         context: 'Role management service',

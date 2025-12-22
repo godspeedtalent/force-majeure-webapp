@@ -1,9 +1,9 @@
-# i18n (Internationalization) Remaining Work
+# i18n (Internationalization) - COMPLETE ✅
 
-**Last Updated:** December 19, 2025
-**Overall Progress:** ~90% complete (175+/400 non-shadcn TSX files have i18n)
+**Last Updated:** December 21, 2025
+**Status:** COMPLETE - All user-facing components internationalized
 
-This document tracks the remaining work needed to fully implement internationalization across the Force Majeure web application.
+This document tracks the internationalization implementation across the Force Majeure web application.
 
 ---
 
@@ -14,9 +14,9 @@ This document tracks the remaining work needed to fully implement internationali
 | Total TSX Files | 449 |
 | Shadcn UI Primitives (excluded) | 49 |
 | Files to Consider | 400 |
-| Files with `useTranslation` | 175+ |
-| Files Still Needing i18n | ~3 (LOW priority only) |
-| Translation Keys Added | 2050+ |
+| Files with `useTranslation` | 197+ |
+| Status | ✅ COMPLETE |
+| Translation Keys Added | 2181+ |
 
 ---
 
@@ -31,6 +31,29 @@ This document tracks the remaining work needed to fully implement internationali
 - [x] Database migration for `preferred_locale` column in `profiles` table
 
 ### Recently Completed (December 2025 Sessions)
+
+#### Session: Dec 21, 2025
+
+- [x] `FmCommonBackButton.tsx` - Default back button text (uses existing buttons.back key)
+- [x] `FmCommonList.tsx` - Default empty message (1 key)
+- [x] `FmCommonFormSelect.tsx` - Default placeholder (1 key)
+- [x] `ArtistPreviewCard.tsx` - Artist preview labels (3 keys)
+- [x] `adminGridColumns.tsx` - All admin data grid column labels (25+ keys)
+- [x] `MobilePreviewPanel.tsx` - Mobile preview labels (4 keys)
+- [x] `MemberHome.tsx` - Member home page content (4 keys)
+- [x] `FmFormFieldGroup.tsx` - Preset group titles: Contact, Address, Security, Social (4 keys)
+- [x] `FmCommonCollapsibleSection.tsx` - Expand/Collapse button labels (2 keys)
+
+#### Session: Dec 20, 2025
+
+- [x] `FmCommonEmptyState.tsx` - Default "No items found" message (1 key)
+- [x] `VenueModal.tsx` - Loading, capacity, location labels (3 keys)
+- [x] `FmToolbar.tsx` - All tab labels, group labels, resize tooltip (13 keys)
+- [x] `FmCommonSearchDropdown.tsx` - Search, recent, no results, clear labels (5 keys)
+- [x] `FmCityDropdown.tsx` - Select city, loading cities (2 keys)
+- [x] `ProfileInformationSection.tsx` - Profile form labels, gender options, placeholders (22 keys)
+- [x] `BillingAddressSection.tsx` - Billing form labels, placeholders (12 keys)
+- [x] `EventListSection.tsx` - DevTools event list columns, search, empty states (12 keys)
 
 #### Session: Dec 19, 2025 (Continued)
 - [x] `FmDataGrid.tsx` - Toast messages, loading/empty states (22 keys)
@@ -187,7 +210,13 @@ The following translation key sections have been added to `common.json`:
   "footer": { /* 1 key */ },
   "locationCard": { /* 4 keys */ },
   "analytics": { /* 8 keys added - Chart titles, axis labels (salesOverTime, revenueByTier, pageViewsOverTime, salesByHour, revenue, tickets, views, orders) */ },
-  "adminDetails": { /* 14 keys - Admin detail page labels (artistDetails, venueDetails, basicInformation, links, metadata, actions, artistId, venueId, created, lastUpdated, backToArtistsList, backToVenuesList, openInGoogleMaps, people) */ }
+  "adminDetails": { /* 14 keys - Admin detail page labels (artistDetails, venueDetails, basicInformation, links, metadata, actions, artistId, venueId, created, lastUpdated, backToArtistsList, backToVenuesList, openInGoogleMaps, people) */ },
+  "empty": { /* 1 key added - noItemsFound for FmCommonEmptyState default */ },
+  "venueModal": { /* 3 keys - capacity, locatedIn, venueInformation */ },
+  "toolbar": { /* 13 keys - shoppingCart, orgDashboard, scanTickets, devNavigation, database, databaseManager, featureToggles, todoNotes, devNotes, dragToResize, groups.organization, groups.developerTools */ },
+  "profileInfo": { /* 22 keys - Profile form labels, placeholders, gender options */ },
+  "billingAddress": { /* 12 keys - Billing form labels, placeholders */ },
+  "eventList": { /* 12 keys - DevTools event list columns, search, empty states */ }
 }
 ```
 

@@ -45,7 +45,7 @@ import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared';
 import { handleError } from '@/shared/services/errorHandler';
 import { AdminLockIndicator } from '@/components/common/indicators';
-
+import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 
 type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'reports' | 'tracking' | 'social' | 'ux_display' | 'admin' | 'view';
 
@@ -62,6 +62,7 @@ export default function EventManagement() {
   const [orderCount, setOrderCount] = useState(0);
   const [displaySubtitle, setDisplaySubtitle] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Fetch event data
   const { data: event, isLoading } = useQuery({
@@ -222,12 +223,6 @@ export default function EventManagement() {
   const handleDeleteEvent = async () => {
     if (!id || !event) return;
 
-    const confirmed = window.confirm(
-      t('eventManagement.deleteEventConfirm', { title: event.title })
-    );
-
-    if (!confirmed) return;
-
     setIsDeleting(true);
     try {
       // Delete ticket tiers first (foreign key constraint)
@@ -252,8 +247,8 @@ export default function EventManagement() {
       navigate('/admin');
     } catch (error) {
       await handleError(error, {
-        title: 'Failed to Delete Event',
-        description: 'Could not delete the event',
+        title: tToast('events.deleteFailed'),
+        description: tToast('events.deleteFailedDescription'),
         endpoint: 'EventManagement/delete',
         method: 'DELETE',
       });
@@ -278,8 +273,8 @@ export default function EventManagement() {
       queryClient.invalidateQueries({ queryKey: ['event', id] });
     } catch (error) {
       await handleError(error, {
-        title: 'Failed to Update UX Display',
-        description: 'Could not save UX display settings',
+        title: tToast('events.uxDisplayUpdateFailed'),
+        description: tToast('events.uxDisplayUpdateFailedDescription'),
         endpoint: 'EventManagement/ux-display',
         method: 'UPDATE',
       });
@@ -297,8 +292,8 @@ export default function EventManagement() {
       queryClient.invalidateQueries({ queryKey: ['event', id] });
     } catch (error) {
       await handleError(error, {
-        title: 'Failed to Publish Event',
-        description: 'Could not publish the event',
+        title: tToast('events.publishFailed'),
+        description: tToast('events.publishFailedDescription'),
         endpoint: 'EventManagement',
         method: 'UPDATE',
       });
@@ -313,8 +308,8 @@ export default function EventManagement() {
       queryClient.invalidateQueries({ queryKey: ['event', id] });
     } catch (error) {
       await handleError(error, {
-        title: 'Failed to Hide Event',
-        description: 'Could not hide the event',
+        title: tToast('events.hideFailed'),
+        description: tToast('events.hideFailedDescription'),
         endpoint: 'EventManagement',
         method: 'UPDATE',
       });
@@ -421,8 +416,8 @@ export default function EventManagement() {
                     queryClient.invalidateQueries({ queryKey: ['event', id] });
                   } catch (error) {
                     await handleError(error, {
-                      title: 'Failed to Update Setting',
-                      description: 'Could not save looking for undercard setting',
+                      title: tToast('events.updateSettingFailed'),
+                      description: tToast('events.updateUndercardSettingFailedDescription'),
                       endpoint: 'EventManagement/artists',
                       method: 'UPDATE',
                     });
@@ -467,8 +462,8 @@ export default function EventManagement() {
                     queryClient.invalidateQueries({ queryKey: ['event', id] });
                   } catch (error) {
                     await handleError(error, {
-                      title: 'Failed to Update Artists',
-                      description: 'Could not save artist changes',
+                      title: tToast('events.artistUpdateFailed'),
+                      description: tToast('events.artistUpdateFailedDescription'),
                       endpoint: 'EventManagement/artists',
                       method: 'UPDATE',
                     });
@@ -591,7 +586,7 @@ export default function EventManagement() {
                           <FmCommonButton
                             variant='destructive'
                             icon={Trash2}
-                            onClick={handleDeleteEvent}
+                            onClick={() => setShowDeleteConfirm(true)}
                             loading={isDeleting}
                           >
                             {isDeleting ? t('buttons.deleting') : t('eventManagement.deleteEvent')}
@@ -606,6 +601,18 @@ export default function EventManagement() {
           )}
         </div>
       </div>
+
+      {/* Delete Event Confirmation Dialog */}
+      <FmCommonConfirmDialog
+        open={showDeleteConfirm}
+        onOpenChange={setShowDeleteConfirm}
+        title={t('eventManagement.deleteEvent')}
+        description={t('eventManagement.deleteEventConfirm', { title: event?.title })}
+        confirmText={t('buttons.delete')}
+        onConfirm={handleDeleteEvent}
+        variant="destructive"
+        isLoading={isDeleting}
+      />
     </SideNavbarLayout>
   );
 }

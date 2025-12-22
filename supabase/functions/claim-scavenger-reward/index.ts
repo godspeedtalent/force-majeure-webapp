@@ -9,8 +9,10 @@ const corsHeaders = {
 };
 
 // Secret key for decryption (must match proxy-token function)
-const SECRET_KEY =
-  Deno.env.get('PROXY_SECRET_KEY') || 'force-majeure-scavenger-2024';
+const SECRET_KEY = Deno.env.get('PROXY_SECRET_KEY');
+if (!SECRET_KEY) {
+  throw new Error('PROXY_SECRET_KEY environment variable is required');
+}
 const CODE_EXPIRY_MS = 60000; // 1 minute
 
 async function decryptPayload(

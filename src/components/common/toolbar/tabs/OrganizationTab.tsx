@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Building2, Scan } from 'lucide-react';
 import { Separator } from '@/components/common/shadcn/separator';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -7,6 +8,8 @@ interface OrganizationTabContentProps {
 }
 
 export function OrgDashboardTabContent({ onNavigate }: OrganizationTabContentProps) {
+  const { t } = useTranslation('common');
+
   return (
     <div className='space-y-4'>
       <Separator className='bg-white/10' />
@@ -18,7 +21,7 @@ export function OrgDashboardTabContent({ onNavigate }: OrganizationTabContentPro
           onClick={() => onNavigate('/organization/tools')}
           className='w-full justify-start'
         >
-          Go to Org Dashboard
+          {t('organizationTab.goToOrgDashboard')}
         </FmCommonButton>
       </div>
     </div>
@@ -26,6 +29,8 @@ export function OrgDashboardTabContent({ onNavigate }: OrganizationTabContentPro
 }
 
 export function ScanTicketsTabContent({ onNavigate }: OrganizationTabContentProps) {
+  const { t } = useTranslation('common');
+
   return (
     <div className='space-y-4'>
       <Separator className='bg-white/10' />
@@ -37,7 +42,7 @@ export function ScanTicketsTabContent({ onNavigate }: OrganizationTabContentProp
           onClick={() => onNavigate('/organization/scanning')}
           className='w-full justify-start'
         >
-          Go to Ticket Scanner
+          {t('organizationTab.goToTicketScanner')}
         </FmCommonButton>
       </div>
     </div>

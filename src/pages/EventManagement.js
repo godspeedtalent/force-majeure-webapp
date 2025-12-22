@@ -29,6 +29,7 @@ import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared';
 import { handleError } from '@/shared/services/errorHandler';
 import { AdminLockIndicator } from '@/components/common/indicators';
+import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 export default function EventManagement() {
     const { t } = useTranslation('common');
     const { t: tToast } = useTranslation('toasts');
@@ -42,6 +43,7 @@ export default function EventManagement() {
     const [orderCount, setOrderCount] = useState(0);
     const [displaySubtitle, setDisplaySubtitle] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     // Fetch event data
     const { data: event, isLoading } = useQuery({
         queryKey: ['event', id],
@@ -194,9 +196,6 @@ export default function EventManagement() {
     const handleDeleteEvent = async () => {
         if (!id || !event)
             return;
-        const confirmed = window.confirm(t('eventManagement.deleteEventConfirm', { title: event.title }));
-        if (!confirmed)
-            return;
         setIsDeleting(true);
         try {
             // Delete ticket tiers first (foreign key constraint)
@@ -219,8 +218,8 @@ export default function EventManagement() {
         }
         catch (error) {
             await handleError(error, {
-                title: 'Failed to Delete Event',
-                description: 'Could not delete the event',
+                title: tToast('events.deleteFailed'),
+                description: tToast('events.deleteFailedDescription'),
                 endpoint: 'EventManagement/delete',
                 method: 'DELETE',
             });
@@ -245,8 +244,8 @@ export default function EventManagement() {
         }
         catch (error) {
             await handleError(error, {
-                title: 'Failed to Update UX Display',
-                description: 'Could not save UX display settings',
+                title: tToast('events.uxDisplayUpdateFailed'),
+                description: tToast('events.uxDisplayUpdateFailedDescription'),
                 endpoint: 'EventManagement/ux-display',
                 method: 'UPDATE',
             });
@@ -265,8 +264,8 @@ export default function EventManagement() {
         }
         catch (error) {
             await handleError(error, {
-                title: 'Failed to Publish Event',
-                description: 'Could not publish the event',
+                title: tToast('events.publishFailed'),
+                description: tToast('events.publishFailedDescription'),
                 endpoint: 'EventManagement',
                 method: 'UPDATE',
             });
@@ -281,8 +280,8 @@ export default function EventManagement() {
         }
         catch (error) {
             await handleError(error, {
-                title: 'Failed to Hide Event',
-                description: 'Could not hide the event',
+                title: tToast('events.hideFailed'),
+                description: tToast('events.hideFailedDescription'),
                 endpoint: 'EventManagement',
                 method: 'UPDATE',
             });
@@ -294,7 +293,7 @@ export default function EventManagement() {
     if (!event) {
         return (_jsx("div", { className: 'flex items-center justify-center min-h-screen', children: _jsx("p", { className: 'text-muted-foreground', children: t('eventManagement.eventNotFound') }) }));
     }
-    return (_jsx(SideNavbarLayout, { navigationGroups: navigationGroups, activeItem: activeTab, onItemChange: (tab) => {
+    return (_jsxs(SideNavbarLayout, { navigationGroups: navigationGroups, activeItem: activeTab, onItemChange: (tab) => {
             if (tab === 'view') {
                 navigate(`/event/${id}`);
             }
@@ -308,68 +307,68 @@ export default function EventManagement() {
                 else {
                     setActiveTab(tab);
                 }
-            } }), children: _jsxs("div", { className: 'max-w-full', children: [_jsxs("div", { className: 'flex items-center justify-between mb-4', children: [_jsx(FmBackButton, { position: 'inline', onClick: () => navigate(`/event/${id}`), label: t('eventNav.eventDetails') }), _jsxs("div", { className: 'flex items-center gap-2', children: [_jsx(EventStatusBadge, { status: event.status || 'draft' }), (event.status === 'draft' || event.status === 'invisible') && (_jsx(PublishEventButton, { currentStatus: event.status || 'draft', onPublish: handlePublishEvent }))] })] }), _jsx("div", { className: 'mb-6', children: _jsx("h1", { className: 'text-3xl font-bold text-foreground', children: event.title }) }), _jsxs("div", { className: 'space-y-6', children: [activeTab === 'overview' && id && (_jsx(EventOverviewForm, { eventId: id, event: event, orderCount: orderCount, onMakeInvisible: handleMakeInvisible })), activeTab === 'artists' && (_jsxs("div", { className: 'space-y-8', children: [_jsx(EventArtistManagement, { headlinerId: event.headliner_id || '', undercardIds: [], lookingForUndercard: event.looking_for_undercard ?? false, onLookingForUndercardChange: async (checked) => {
-                                        try {
-                                            if (!id)
-                                                throw new Error('Event ID is required');
-                                            const { error } = await supabase
-                                                .from('events')
-                                                .update({ looking_for_undercard: checked })
-                                                .eq('id', id);
-                                            if (error)
-                                                throw error;
-                                            toast.success(checked ? t('eventManagement.lookingForUndercardEnabled') : t('eventManagement.lookingForUndercardDisabled'));
-                                            queryClient.invalidateQueries({ queryKey: ['event', id] });
-                                        }
-                                        catch (error) {
-                                            await handleError(error, {
-                                                title: 'Failed to Update Setting',
-                                                description: 'Could not save looking for undercard setting',
-                                                endpoint: 'EventManagement/artists',
-                                                method: 'UPDATE',
-                                            });
-                                        }
-                                    }, onChange: async (data) => {
-                                        try {
-                                            if (!id)
-                                                throw new Error('Event ID is required');
-                                            // Update the headliner in the events table
-                                            const { error: eventError } = await supabase
-                                                .from('events')
-                                                .update({ headliner_id: data.headlinerId })
-                                                .eq('id', id);
-                                            if (eventError)
-                                                throw eventError;
-                                            // Update undercard artists in event_artists junction table
-                                            // First, delete existing undercard artists
-                                            const { error: deleteError } = await supabase
-                                                .from('event_artists')
-                                                .delete()
-                                                .eq('event_id', id);
-                                            if (deleteError)
-                                                throw deleteError;
-                                            // Then insert new undercard artists
-                                            if (data.undercardIds.length > 0) {
-                                                const undercardRecords = data.undercardIds.map(artistId => ({
-                                                    event_id: id,
-                                                    artist_id: artistId,
-                                                }));
-                                                const { error: insertError } = await supabase
-                                                    .from('event_artists')
-                                                    .insert(undercardRecords);
-                                                if (insertError)
-                                                    throw insertError;
+            } }), children: [_jsxs("div", { className: 'max-w-full', children: [_jsxs("div", { className: 'flex items-center justify-between mb-4', children: [_jsx(FmBackButton, { position: 'inline', onClick: () => navigate(`/event/${id}`), label: t('eventNav.eventDetails') }), _jsxs("div", { className: 'flex items-center gap-2', children: [_jsx(EventStatusBadge, { status: event.status || 'draft' }), (event.status === 'draft' || event.status === 'invisible') && (_jsx(PublishEventButton, { currentStatus: event.status || 'draft', onPublish: handlePublishEvent }))] })] }), _jsx("div", { className: 'mb-6', children: _jsx("h1", { className: 'text-3xl font-bold text-foreground', children: event.title }) }), _jsxs("div", { className: 'space-y-6', children: [activeTab === 'overview' && id && (_jsx(EventOverviewForm, { eventId: id, event: event, orderCount: orderCount, onMakeInvisible: handleMakeInvisible })), activeTab === 'artists' && (_jsxs("div", { className: 'space-y-8', children: [_jsx(EventArtistManagement, { headlinerId: event.headliner_id || '', undercardIds: [], lookingForUndercard: event.looking_for_undercard ?? false, onLookingForUndercardChange: async (checked) => {
+                                            try {
+                                                if (!id)
+                                                    throw new Error('Event ID is required');
+                                                const { error } = await supabase
+                                                    .from('events')
+                                                    .update({ looking_for_undercard: checked })
+                                                    .eq('id', id);
+                                                if (error)
+                                                    throw error;
+                                                toast.success(checked ? t('eventManagement.lookingForUndercardEnabled') : t('eventManagement.lookingForUndercardDisabled'));
+                                                queryClient.invalidateQueries({ queryKey: ['event', id] });
                                             }
-                                            toast.success(tToast('events.artistsUpdated'));
-                                            queryClient.invalidateQueries({ queryKey: ['event', id] });
-                                        }
-                                        catch (error) {
-                                            await handleError(error, {
-                                                title: 'Failed to Update Artists',
-                                                description: 'Could not save artist changes',
-                                                endpoint: 'EventManagement/artists',
-                                                method: 'UPDATE',
-                                            });
-                                        }
-                                    } }), id && _jsx(UndercardRequestsList, { eventId: id })] })), activeTab === 'tiers' && id && (_jsx(EventTicketTierManagement, { eventId: id })), activeTab === 'orders' && id && (_jsx(EventOrderManagement, { eventId: id })), activeTab === 'sales' && id && (_jsx(EventAnalytics, { eventId: id })), activeTab === 'reports' && id && (_jsx(Reports, { eventId: id })), activeTab === 'tracking' && id && (_jsx(TrackingLinksManagement, { eventId: id })), activeTab === 'social' && id && (_jsx(GuestListSettings, { eventId: id })), activeTab === 'ux_display' && (_jsxs(Card, { className: 'p-8 relative', children: [_jsx("div", { className: 'sticky top-0 z-10 -mx-8 -mt-8 px-8 pt-8 pb-6 bg-card border-b border-border mb-6', children: _jsxs("div", { className: 'flex items-center justify-between', children: [_jsxs("div", { children: [_jsx("h2", { className: 'text-2xl font-bold text-foreground mb-2', children: t('eventManagement.uxDisplaySettings') }), _jsx("p", { className: 'text-muted-foreground', children: t('eventManagement.uxDisplayDescription') })] }), _jsx(FmCommonButton, { onClick: handleSaveUXDisplay, loading: isSaving, icon: Save, children: t('buttons.saveChanges') })] }) }), _jsx("div", { className: 'space-y-6', children: _jsxs("div", { className: 'space-y-4', children: [_jsx("h3", { className: 'text-lg font-semibold text-foreground', children: t('eventManagement.homepageEventCard') }), _jsx("p", { className: 'text-sm text-muted-foreground', children: t('eventManagement.homepageEventCardDescription') }), _jsxs("div", { className: 'flex items-center gap-3 p-4 rounded-none border border-border bg-card', children: [_jsx(Checkbox, { id: 'display-subtitle', checked: displaySubtitle, onCheckedChange: checked => setDisplaySubtitle(!!checked) }), _jsxs("div", { className: 'flex-1', children: [_jsx(Label, { htmlFor: 'display-subtitle', className: 'cursor-pointer font-medium', children: t('eventManagement.displaySubtitle') }), _jsx("p", { className: 'text-xs text-muted-foreground mt-1', children: t('eventManagement.displaySubtitleDescription') })] })] })] }) })] })), activeTab === 'admin' && isAdmin && (_jsxs("div", { className: 'space-y-6', children: [id && _jsx(EventQueueConfigForm, { eventId: id }), _jsx(Card, { className: 'p-8', children: _jsxs("div", { className: 'space-y-6', children: [_jsxs("div", { children: [_jsx("h2", { className: 'text-2xl font-bold text-foreground mb-2', children: t('eventManagement.dangerZone') }), _jsx("p", { className: 'text-muted-foreground', children: t('eventManagement.irreversibleActions') })] }), _jsx("div", { className: 'space-y-4', children: _jsx("div", { className: 'rounded-none border border-destructive/50 bg-destructive/5 p-6', children: _jsxs("div", { className: 'flex items-start gap-4', children: [_jsx("div", { className: 'p-3 rounded-none bg-destructive/10', children: _jsx(Trash2, { className: 'h-6 w-6 text-destructive' }) }), _jsxs("div", { className: 'flex-1', children: [_jsx("h3", { className: 'text-lg font-semibold text-foreground mb-2', children: t('eventManagement.deleteEvent') }), _jsx("p", { className: 'text-sm text-muted-foreground mb-4', children: t('eventManagement.deleteEventDescription') }), _jsx(FmCommonButton, { variant: 'destructive', icon: Trash2, onClick: handleDeleteEvent, loading: isDeleting, children: isDeleting ? t('buttons.deleting') : t('eventManagement.deleteEvent') })] })] }) }) })] }) })] }))] })] }) }));
+                                            catch (error) {
+                                                await handleError(error, {
+                                                    title: tToast('events.updateSettingFailed'),
+                                                    description: tToast('events.updateUndercardSettingFailedDescription'),
+                                                    endpoint: 'EventManagement/artists',
+                                                    method: 'UPDATE',
+                                                });
+                                            }
+                                        }, onChange: async (data) => {
+                                            try {
+                                                if (!id)
+                                                    throw new Error('Event ID is required');
+                                                // Update the headliner in the events table
+                                                const { error: eventError } = await supabase
+                                                    .from('events')
+                                                    .update({ headliner_id: data.headlinerId })
+                                                    .eq('id', id);
+                                                if (eventError)
+                                                    throw eventError;
+                                                // Update undercard artists in event_artists junction table
+                                                // First, delete existing undercard artists
+                                                const { error: deleteError } = await supabase
+                                                    .from('event_artists')
+                                                    .delete()
+                                                    .eq('event_id', id);
+                                                if (deleteError)
+                                                    throw deleteError;
+                                                // Then insert new undercard artists
+                                                if (data.undercardIds.length > 0) {
+                                                    const undercardRecords = data.undercardIds.map(artistId => ({
+                                                        event_id: id,
+                                                        artist_id: artistId,
+                                                    }));
+                                                    const { error: insertError } = await supabase
+                                                        .from('event_artists')
+                                                        .insert(undercardRecords);
+                                                    if (insertError)
+                                                        throw insertError;
+                                                }
+                                                toast.success(tToast('events.artistsUpdated'));
+                                                queryClient.invalidateQueries({ queryKey: ['event', id] });
+                                            }
+                                            catch (error) {
+                                                await handleError(error, {
+                                                    title: tToast('events.artistUpdateFailed'),
+                                                    description: tToast('events.artistUpdateFailedDescription'),
+                                                    endpoint: 'EventManagement/artists',
+                                                    method: 'UPDATE',
+                                                });
+                                            }
+                                        } }), id && _jsx(UndercardRequestsList, { eventId: id })] })), activeTab === 'tiers' && id && (_jsx(EventTicketTierManagement, { eventId: id })), activeTab === 'orders' && id && (_jsx(EventOrderManagement, { eventId: id })), activeTab === 'sales' && id && (_jsx(EventAnalytics, { eventId: id })), activeTab === 'reports' && id && (_jsx(Reports, { eventId: id })), activeTab === 'tracking' && id && (_jsx(TrackingLinksManagement, { eventId: id })), activeTab === 'social' && id && (_jsx(GuestListSettings, { eventId: id })), activeTab === 'ux_display' && (_jsxs(Card, { className: 'p-8 relative', children: [_jsx("div", { className: 'sticky top-0 z-10 -mx-8 -mt-8 px-8 pt-8 pb-6 bg-card border-b border-border mb-6', children: _jsxs("div", { className: 'flex items-center justify-between', children: [_jsxs("div", { children: [_jsx("h2", { className: 'text-2xl font-bold text-foreground mb-2', children: t('eventManagement.uxDisplaySettings') }), _jsx("p", { className: 'text-muted-foreground', children: t('eventManagement.uxDisplayDescription') })] }), _jsx(FmCommonButton, { onClick: handleSaveUXDisplay, loading: isSaving, icon: Save, children: t('buttons.saveChanges') })] }) }), _jsx("div", { className: 'space-y-6', children: _jsxs("div", { className: 'space-y-4', children: [_jsx("h3", { className: 'text-lg font-semibold text-foreground', children: t('eventManagement.homepageEventCard') }), _jsx("p", { className: 'text-sm text-muted-foreground', children: t('eventManagement.homepageEventCardDescription') }), _jsxs("div", { className: 'flex items-center gap-3 p-4 rounded-none border border-border bg-card', children: [_jsx(Checkbox, { id: 'display-subtitle', checked: displaySubtitle, onCheckedChange: checked => setDisplaySubtitle(!!checked) }), _jsxs("div", { className: 'flex-1', children: [_jsx(Label, { htmlFor: 'display-subtitle', className: 'cursor-pointer font-medium', children: t('eventManagement.displaySubtitle') }), _jsx("p", { className: 'text-xs text-muted-foreground mt-1', children: t('eventManagement.displaySubtitleDescription') })] })] })] }) })] })), activeTab === 'admin' && isAdmin && (_jsxs("div", { className: 'space-y-6', children: [id && _jsx(EventQueueConfigForm, { eventId: id }), _jsx(Card, { className: 'p-8', children: _jsxs("div", { className: 'space-y-6', children: [_jsxs("div", { children: [_jsx("h2", { className: 'text-2xl font-bold text-foreground mb-2', children: t('eventManagement.dangerZone') }), _jsx("p", { className: 'text-muted-foreground', children: t('eventManagement.irreversibleActions') })] }), _jsx("div", { className: 'space-y-4', children: _jsx("div", { className: 'rounded-none border border-destructive/50 bg-destructive/5 p-6', children: _jsxs("div", { className: 'flex items-start gap-4', children: [_jsx("div", { className: 'p-3 rounded-none bg-destructive/10', children: _jsx(Trash2, { className: 'h-6 w-6 text-destructive' }) }), _jsxs("div", { className: 'flex-1', children: [_jsx("h3", { className: 'text-lg font-semibold text-foreground mb-2', children: t('eventManagement.deleteEvent') }), _jsx("p", { className: 'text-sm text-muted-foreground mb-4', children: t('eventManagement.deleteEventDescription') }), _jsx(FmCommonButton, { variant: 'destructive', icon: Trash2, onClick: () => setShowDeleteConfirm(true), loading: isDeleting, children: isDeleting ? t('buttons.deleting') : t('eventManagement.deleteEvent') })] })] }) }) })] }) })] }))] })] }), _jsx(FmCommonConfirmDialog, { open: showDeleteConfirm, onOpenChange: setShowDeleteConfirm, title: t('eventManagement.deleteEvent'), description: t('eventManagement.deleteEventConfirm', { title: event?.title }), confirmText: t('buttons.delete'), onConfirm: handleDeleteEvent, variant: "destructive", isLoading: isDeleting })] }));
 }

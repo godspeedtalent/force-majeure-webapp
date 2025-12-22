@@ -1,4 +1,5 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/shared';
 const layoutClasses = {
     stack: 'space-y-[20px]',
@@ -30,10 +31,22 @@ export const FmFormFieldGroup = ({ title, description, icon: Icon, children, lay
  * Preset variants for common use cases
  */
 /** Contact information group (name, email, phone) */
-export const FmContactFieldGroup = ({ children, ...props }) => (_jsx(FmFormFieldGroup, { title: 'Contact Information', layout: 'grid-2', ...props, children: children }));
+export const FmContactFieldGroup = ({ children, ...props }) => {
+    const { t } = useTranslation('common');
+    return (_jsx(FmFormFieldGroup, { title: t('formFieldGroup.contactInformation'), layout: 'grid-2', ...props, children: children }));
+};
 /** Address fields group */
-export const FmAddressFieldGroup = ({ children, ...props }) => (_jsx(FmFormFieldGroup, { title: 'Address', layout: 'grid-2', ...props, children: children }));
+export const FmAddressFieldGroup = ({ children, ...props }) => {
+    const { t } = useTranslation('common');
+    return (_jsx(FmFormFieldGroup, { title: t('formFieldGroup.address'), layout: 'grid-2', ...props, children: children }));
+};
 /** Account/credentials group (password, etc.) */
-export const FmAccountFieldGroup = ({ children, ...props }) => (_jsx(FmFormFieldGroup, { title: 'Account Security', layout: 'stack', ...props, children: children }));
+export const FmAccountFieldGroup = ({ children, ...props }) => {
+    const { t } = useTranslation('common');
+    return (_jsx(FmFormFieldGroup, { title: t('formFieldGroup.accountSecurity'), layout: 'stack', ...props, children: children }));
+};
 /** Social media links group */
-export const FmSocialLinksFieldGroup = ({ children, ...props }) => (_jsx(FmFormFieldGroup, { title: 'Social Media', layout: 'grid-2', ...props, children: children }));
+export const FmSocialLinksFieldGroup = ({ children, ...props }) => {
+    const { t } = useTranslation('common');
+    return (_jsx(FmFormFieldGroup, { title: t('formFieldGroup.socialMedia'), layout: 'grid-2', ...props, children: children }));
+};

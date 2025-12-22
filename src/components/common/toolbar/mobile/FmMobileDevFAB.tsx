@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Wrench } from 'lucide-react';
 import { cn } from '@/shared';
 
@@ -17,6 +18,7 @@ export function FmMobileDevFAB({
   badgeCount = 0,
   className,
 }: FmMobileDevFABProps) {
+  const { t } = useTranslation('common');
   const hasBadge = badgeCount > 0;
 
   return (
@@ -46,7 +48,7 @@ export function FmMobileDevFAB({
         'focus:outline-none focus:ring-2 focus:ring-fm-gold/50 focus:ring-offset-2 focus:ring-offset-black',
         className
       )}
-      aria-label={`Open developer tools${hasBadge ? ` (${badgeCount} notifications)` : ''}`}
+      aria-label={hasBadge ? t('mobileDevTools.fab.openWithNotifications', { count: badgeCount }) : t('mobileDevTools.fab.open')}
       type="button"
     >
       {/* Wrench Icon */}
@@ -75,7 +77,7 @@ export function FmMobileDevFAB({
             // Shadow
             'shadow-sm'
           )}
-          aria-label={`${badgeCount} notifications`}
+          aria-label={t('mobileDevTools.fab.notifications', { count: badgeCount })}
         >
           {badgeCount > 99 ? '99+' : badgeCount}
         </span>

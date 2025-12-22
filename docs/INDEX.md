@@ -110,8 +110,11 @@ Completed work preserved for historical reference:
 |----------|-------------|
 | [PHASE_3_COMPLETE.md](./archive/PHASE_3_COMPLETE.md) | DataGrid Phase 3 completion summary (Nov 2025) |
 | [REFACTORING_COMPLETE_SUMMARY.md](./archive/REFACTORING_COMPLETE_SUMMARY.md) | Component refactoring completion summary |
-| [REFACTORING_SUMMARY.md](./archive/REFACTORING_SUMMARY.md) | Original refactoring progress summary |
 | [ROLE_SYSTEM_CLEANUP.md](./archive/ROLE_SYSTEM_CLEANUP.md) | Role system DB migration guide (completed) |
+| [PRODUCTS_IMPLEMENTATION_SUMMARY.md](./archive/PRODUCTS_IMPLEMENTATION_SUMMARY.md) | Products table implementation (completed) |
+| [TICKETING_IMPLEMENTATION_SUMMARY.md](./archive/TICKETING_IMPLEMENTATION_SUMMARY.md) | Physical ticketing system (completed) |
+| [MIGRATION_COMPLETE.md](./archive/MIGRATION_COMPLETE.md) | Feature structure migration (completed Nov 2025) |
+| [MIGRATION-CONSOLIDATION.md](./archive/MIGRATION-CONSOLIDATION.md) | Database consolidation (completed Nov 2025) |
 
 ---
 
@@ -121,10 +124,10 @@ Located within their respective source directories:
 
 | Document | Description |
 |----------|-------------|
-| [src/features/payments/README.md](../src/features/payments/README.md) | Payments feature documentation |
-| [src/services/email/README.md](../src/services/email/README.md) | Email service documentation |
-| [src/config/tailwind/README.md](../src/config/tailwind/README.md) | Tailwind configuration |
-| [src/components/scavenger/ARCHITECTURE_REFACTOR.md](../src/components/scavenger/ARCHITECTURE_REFACTOR.md) | Scavenger hunt architecture |
+| [packages/web/src/features/payments/README.md](../packages/web/src/features/payments/README.md) | Payments feature documentation |
+| [packages/web/src/services/email/README.md](../packages/web/src/services/email/README.md) | Email service documentation |
+| [packages/web/src/config/tailwind/README.md](../packages/web/src/config/tailwind/README.md) | Tailwind configuration |
+| [packages/web/src/components/scavenger/ARCHITECTURE_REFACTOR.md](../packages/web/src/components/scavenger/ARCHITECTURE_REFACTOR.md) | Scavenger hunt architecture |
 
 ---
 
@@ -136,13 +139,13 @@ docs/
 ├── AI_INSTRUCTIONS.md       # AI assistant standards
 ├── LOVABLE.md               # Lovable AI notes
 ├── architecture/            # System design docs (4)
-├── backend/                 # Infrastructure docs (6)
+├── backend/                 # Infrastructure docs (8)
 ├── error-handling/          # Error handling docs (3)
-├── features/                # Feature-specific docs (8)
-├── refactoring/             # Active refactoring plans (4)
+├── features/                # Feature-specific docs (10)
+├── refactoring/             # Active refactoring plans (5)
 ├── security/                # Auth & permissions (2)
 ├── testing/                 # Testing docs (1)
-└── archive/                 # Completed/historical (4)
+└── archive/                 # Completed/historical (7)
 ```
 
 ---
@@ -176,4 +179,4 @@ docs/
 
 ---
 
-*Last updated: December 2025*
+*Last updated: December 21, 2025*

@@ -3,6 +3,8 @@
  * These overrides are stored in sessionStorage and only affect the current browser session
  */
 
+import { logger } from '@/shared/services/logger';
+
 const OVERRIDE_KEY_PREFIX = 'ff_override_';
 
 /**
@@ -16,7 +18,7 @@ export const setFeatureFlagOverride = (flagName: string, value: boolean): void =
   try {
     sessionStorage.setItem(`${OVERRIDE_KEY_PREFIX}${flagName}`, JSON.stringify(value));
   } catch (error) {
-    console.error('Failed to set feature flag override:', error);
+    logger.error('Failed to set feature flag override', { error: error instanceof Error ? error.message : 'Unknown', source: 'featureFlagOverrides' });
   }
 };
 
@@ -33,7 +35,7 @@ export const getFeatureFlagOverride = (flagName: string): boolean | null => {
     if (value === null) return null;
     return JSON.parse(value);
   } catch (error) {
-    console.error('Failed to get feature flag override:', error);
+    logger.error('Failed to get feature flag override', { error: error instanceof Error ? error.message : 'Unknown', source: 'featureFlagOverrides' });
     return null;
   }
 };
@@ -47,7 +49,7 @@ export const clearFeatureFlagOverride = (flagName: string): void => {
   try {
     sessionStorage.removeItem(`${OVERRIDE_KEY_PREFIX}${flagName}`);
   } catch (error) {
-    console.error('Failed to clear feature flag override:', error);
+    logger.error('Failed to clear feature flag override', { error: error instanceof Error ? error.message : 'Unknown', source: 'featureFlagOverrides' });
   }
 };
 
@@ -73,7 +75,7 @@ export const clearAllFeatureFlagOverrides = (): void => {
       }
     });
   } catch (error) {
-    console.error('Failed to clear all feature flag overrides:', error);
+    logger.error('Failed to clear all feature flag overrides', { error: error instanceof Error ? error.message : 'Unknown', source: 'featureFlagOverrides' });
   }
 };
 
@@ -96,7 +98,7 @@ export const getAllFeatureFlagOverrides = (): Record<string, boolean> => {
       }
     });
   } catch (error) {
-    console.error('Failed to get all feature flag overrides:', error);
+    logger.error('Failed to get all feature flag overrides', { error: error instanceof Error ? error.message : 'Unknown', source: 'featureFlagOverrides' });
   }
   return overrides;
 };

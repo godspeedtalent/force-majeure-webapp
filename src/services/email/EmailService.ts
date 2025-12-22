@@ -1,8 +1,17 @@
 import { supabase } from '@/shared';
 import { OrderReceiptEmailData, EmailSendResult } from '@/types/email';
 import { generateOrderReceiptEmailHTML } from './templates/OrderReceiptEmail';
+import { generateArtistRegistrationEmailHTML } from './templates/ArtistRegistrationEmail';
 import { logger } from '@/shared';
-// import { TicketPDFService } from './TicketPDFService'; // TODO: Re-enable when PDF generation is implemented
+import { TicketPDFService } from './TicketPDFService';
+
+export interface ArtistRegistrationEmailData {
+  artistName: string;
+  email: string;
+  city: string;
+  genres: string[];
+  registrationDate: string;
+}
 
 /**
  * EmailService - Handles sending emails via Supabase Edge Functions
@@ -24,14 +33,23 @@ export class EmailService {
     data: OrderReceiptEmailData
   ): Promise<EmailSendResult> {
     try {
-      // Generate PDF ticket (stubbed for now)
+      // Generate PDF ticket
       let pdfAttachment: string | undefined;
       if (data.pdfTicketAttachment) {
         pdfAttachment = data.pdfTicketAttachment;
       } else {
-        // TODO: Generate PDF when TicketPDFService is implemented
-        // pdfAttachment = await TicketPDFService.generateTicketPDF(data);
-        logger.debug('PDF ticket generation not yet implemented, skipping attachment');
+        try {
+          pdfAttachment = await TicketPDFService.generateTicketPDF(data);
+          if (pdfAttachment) {
+            logger.info('PDF ticket generated successfully', { orderId: data.orderId });
+          }
+        } catch (pdfError) {
+          // Log error but continue sending email without PDF attachment
+          logger.warn('Failed to generate PDF ticket, sending email without attachment', {
+            orderId: data.orderId,
+            error: pdfError instanceof Error ? pdfError.message : 'Unknown',
+          });
+        }
       }
 
       // Generate HTML email
@@ -186,5 +204,53 @@ export class EmailService {
         currency: order.currency || 'USD',
       },
     };
+  }
+
+  /**
+   * Send artist registration confirmation email
+   */
+  static async sendArtistRegistrationConfirmation(
+    data: ArtistRegistrationEmailData
+  ): Promise<EmailSendResult> {
+    try {
+      // Generate HTML email
+      const htmlContent = generateArtistRegistrationEmailHTML(data);
+
+      // Call Supabase Edge Function to send email
+      const { data: response, error } = await supabase.functions.invoke(
+        'send-email',
+        {
+          body: {
+            to: data.email,
+            subject: `Artist Registration Received - Force Majeure`,
+            html: htmlContent,
+          },
+        }
+      );
+
+      if (error) {
+        logger.error('Error sending artist registration email:', error);
+        return {
+          success: false,
+          error: error.message,
+        };
+      }
+
+      logger.info('Artist registration confirmation email sent', {
+        artistName: data.artistName,
+        email: data.email,
+      });
+
+      return {
+        success: true,
+        messageId: response?.messageId,
+      };
+    } catch (error) {
+      logger.error('Unexpected error sending artist registration email:', { error });
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
   }
 }

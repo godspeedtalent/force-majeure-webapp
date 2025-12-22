@@ -1,4 +1,4 @@
-
+import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/common/shadcn/input';
 import {
   Select,
@@ -14,21 +14,21 @@ import { FilterRule, FilterOperator } from '../FmAdvancedFilterDialog';
 
 const OPERATORS: {
   value: FilterOperator;
-  label: string;
+  labelKey: string;
   requiresValue: boolean;
 }[] = [
-  { value: 'equals', label: 'Equals', requiresValue: true },
-  { value: 'not_equals', label: 'Not Equals', requiresValue: true },
-  { value: 'contains', label: 'Contains', requiresValue: true },
-  { value: 'not_contains', label: 'Not Contains', requiresValue: true },
-  { value: 'starts_with', label: 'Starts With', requiresValue: true },
-  { value: 'ends_with', label: 'Ends With', requiresValue: true },
-  { value: 'greater_than', label: 'Greater Than', requiresValue: true },
-  { value: 'less_than', label: 'Less Than', requiresValue: true },
-  { value: 'greater_or_equal', label: 'Greater or Equal', requiresValue: true },
-  { value: 'less_or_equal', label: 'Less or Equal', requiresValue: true },
-  { value: 'is_empty', label: 'Is Empty', requiresValue: false },
-  { value: 'is_not_empty', label: 'Is Not Empty', requiresValue: false },
+  { value: 'equals', labelKey: 'filterOperators.equals', requiresValue: true },
+  { value: 'not_equals', labelKey: 'filterOperators.notEquals', requiresValue: true },
+  { value: 'contains', labelKey: 'filterOperators.contains', requiresValue: true },
+  { value: 'not_contains', labelKey: 'filterOperators.notContains', requiresValue: true },
+  { value: 'starts_with', labelKey: 'filterOperators.startsWith', requiresValue: true },
+  { value: 'ends_with', labelKey: 'filterOperators.endsWith', requiresValue: true },
+  { value: 'greater_than', labelKey: 'filterOperators.greaterThan', requiresValue: true },
+  { value: 'less_than', labelKey: 'filterOperators.lessThan', requiresValue: true },
+  { value: 'greater_or_equal', labelKey: 'filterOperators.greaterOrEqual', requiresValue: true },
+  { value: 'less_or_equal', labelKey: 'filterOperators.lessOrEqual', requiresValue: true },
+  { value: 'is_empty', labelKey: 'filterOperators.isEmpty', requiresValue: false },
+  { value: 'is_not_empty', labelKey: 'filterOperators.isNotEmpty', requiresValue: false },
 ];
 
 export interface FmFilterRuleRowProps {
@@ -46,6 +46,7 @@ export function FmFilterRuleRow({
   onUpdate,
   onRemove,
 }: FmFilterRuleRowProps) {
+  const { t } = useTranslation('common');
   const operator = OPERATORS.find(op => op.value === rule.operator);
   const requiresValue = operator?.requiresValue ?? true;
 
@@ -78,7 +79,7 @@ export function FmFilterRuleRow({
         <SelectContent>
           {OPERATORS.map(op => (
             <SelectItem key={op.value} value={op.value}>
-              {op.label}
+              {t(op.labelKey)}
             </SelectItem>
           ))}
         </SelectContent>
@@ -87,7 +88,7 @@ export function FmFilterRuleRow({
       {/* Value */}
       {requiresValue && (
         <Input
-          placeholder='Value...'
+          placeholder={t('dataGrid.valuePlaceholder')}
           value={rule.value}
           onChange={e => onUpdate(rule.id, { value: e.target.value })}
           className='flex-1'

@@ -27,6 +27,8 @@ interface Profile {
   spotify_token_expires_at?: string | null;
   spotify_connected: boolean | null;
   preferred_locale?: string | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  notification_settings?: any;
   created_at: string;
   updated_at: string;
 }
@@ -52,6 +54,8 @@ interface AuthContextType {
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: any }>;
   refreshProfile: () => Promise<void>;
   resendVerificationEmail: () => Promise<{ error: any }>;
+  resetPasswordRequest: (email: string) => Promise<{ error: any }>;
+  updatePassword: (password: string) => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -199,8 +203,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       authLogger.error('Sign up exception', { error });
       // Use centralized error handler for network/connection errors
       await handleError(error, {
-        title: 'Sign up failed',
-        description: 'Unable to create your account',
+        title: i18n.t('auth.signUpError', { ns: 'toasts' }),
+        description: i18n.t('auth.signUpErrorDescription', { ns: 'toasts' }),
         context: 'User registration',
         endpoint: '/auth/signup',
         method: 'POST',
@@ -231,8 +235,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     } catch (error: any) {
       // Use centralized error handler for network/connection errors
       await handleError(error, {
-        title: 'Sign in failed',
-        description: 'Unable to sign in to your account',
+        title: i18n.t('auth.signInError', { ns: 'toasts' }),
+        description: i18n.t('auth.signInErrorDescription', { ns: 'toasts' }),
         context: 'User authentication',
         endpoint: '/auth/signin',
         method: 'POST',
@@ -309,6 +313,64 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const resetPasswordRequest = async (email: string) => {
+    try {
+      const redirectUrl = `${window.location.origin}/reset-password`;
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
+      });
+
+      if (error) {
+        authLogger.error('Password reset request error', { error: error.message });
+        toast.error(error.message);
+      } else {
+        authLogger.info('Password reset email sent', { email });
+        toast.success(i18n.t('auth.passwordResetEmailSent', { ns: 'toasts' }));
+      }
+
+      return { error };
+    } catch (error: any) {
+      authLogger.error('Password reset request exception', { error });
+      await handleError(error, {
+        title: i18n.t('auth.passwordResetError', { ns: 'toasts' }),
+        description: i18n.t('auth.passwordResetErrorDescription', { ns: 'toasts' }),
+        context: 'Password reset request',
+        endpoint: '/auth/reset-password',
+        method: 'POST',
+      });
+      return { error };
+    }
+  };
+
+  const updatePassword = async (password: string) => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password,
+      });
+
+      if (error) {
+        authLogger.error('Password update error', { error: error.message });
+        toast.error(error.message);
+      } else {
+        authLogger.info('Password updated successfully');
+        toast.success(i18n.t('auth.passwordUpdateSuccess', { ns: 'toasts' }));
+      }
+
+      return { error };
+    } catch (error: any) {
+      authLogger.error('Password update exception', { error });
+      await handleError(error, {
+        title: i18n.t('auth.passwordUpdateError', { ns: 'toasts' }),
+        description: i18n.t('auth.passwordUpdateErrorDescription', { ns: 'toasts' }),
+        context: 'Password update',
+        endpoint: '/auth/update-password',
+        method: 'POST',
+      });
+      return { error };
+    }
+  };
+
   const value = {
     user,
     session,
@@ -320,6 +382,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     updateProfile,
     refreshProfile,
     resendVerificationEmail,
+    resetPasswordRequest,
+    updatePassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

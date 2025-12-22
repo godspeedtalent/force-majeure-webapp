@@ -2,6 +2,7 @@ import { cn } from '@/shared';
 import { FmCommonBadgeGroup } from '@/components/common/display/FmCommonBadgeGroup';
 import { Instagram as InstagramIcon } from 'lucide-react';
 import { SiSoundcloud, SiSpotify, SiTiktok } from 'react-icons/si';
+import { useTranslation } from 'react-i18next';
 import type { ArtistRegistrationFormData } from '../types/registration';
 
 interface BadgeItem {
@@ -18,15 +19,13 @@ interface ArtistPreviewCardProps {
   onInputChange?: (field: keyof ArtistRegistrationFormData, value: string | null) => void;
 }
 
-const DEFAULT_BIO =
-  'Your bio will appear here. Tell your story, describe your sound, and share what makes you unique.';
-
 export function ArtistPreviewCard({
   formData,
   genreBadges,
   className,
   onInputChange,
 }: ArtistPreviewCardProps) {
+  const { t } = useTranslation('common');
   const pressImageFields: PressImageField[] = ['pressImage1Url', 'pressImage2Url', 'pressImage3Url'];
 
   const handleImageSwap = (clickedIndex: number) => {
@@ -89,7 +88,7 @@ export function ArtistPreviewCard({
                         imageUrl && onInputChange && 'cursor-pointer hover:border-fm-gold/50 hover:scale-105 hover:shadow-lg hover:shadow-fm-gold/20',
                         (!imageUrl || !onInputChange) && 'cursor-default'
                       )}
-                      aria-label={imageUrl ? `Click to make this the main image` : undefined}
+                      aria-label={imageUrl ? t('artistPreview.clickToMakeMainImage') : undefined}
                     >
                       {imageUrl ? (
                         <img
@@ -113,10 +112,10 @@ export function ArtistPreviewCard({
         <div className='flex-1 flex flex-col gap-4 sm:min-h-[280px]'>
           <div className='space-y-2'>
             <p className='text-[10px] uppercase tracking-[0.35em] text-white/50 font-canela'>
-              Artist Spotlight
+              {t('artistPreview.spotlight')}
             </p>
             <h2 className='text-2xl font-canela font-semibold text-white leading-tight'>
-              {formData.stageName || 'Your Name'}
+              {formData.stageName || t('artistPreview.yourName')}
             </h2>
             <div className='w-full h-[1px] bg-white/30' />
           </div>
@@ -127,7 +126,7 @@ export function ArtistPreviewCard({
               !formData.bio && 'italic text-white/60'
             )}
           >
-            {formData.bio || DEFAULT_BIO}
+            {formData.bio || t('artistProfile.bioPreviewPlaceholder')}
           </div>
 
           {genreBadges.length > 0 && (

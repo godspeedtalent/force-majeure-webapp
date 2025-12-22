@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, } from 
 import { Button } from '@/components/common/shadcn/button';
 import { FmCommonTextField } from '@/components/common/forms';
 import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
+import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 export const GenresManagement = () => {
     const { t } = useTranslation('common');
     const { t: tToast } = useTranslation('toasts');
@@ -22,6 +23,9 @@ export const GenresManagement = () => {
         parentId: null,
     });
     const [isCreating, setIsCreating] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [genresToDelete, setGenresToDelete] = useState([]);
+    const [isDeleting, setIsDeleting] = useState(false);
     // Fetch genres with parent info and counts
     const { data: genres = [], isLoading } = useQuery({
         queryKey: ['admin-genres'],
@@ -90,29 +94,27 @@ export const GenresManagement = () => {
             label: genre.name,
         })),
     ];
-    const handleDelete = async (genreOrGenres) => {
-        const genresToDelete = Array.isArray(genreOrGenres)
-            ? genreOrGenres
-            : [genreOrGenres];
-        const genreCount = genresToDelete.length;
+    const handleDeleteClick = (genreOrGenres) => {
+        const genres = Array.isArray(genreOrGenres) ? genreOrGenres : [genreOrGenres];
         // Check if any genres have children
-        const genresWithChildren = genresToDelete.filter(g => g.children_count > 0);
+        const genresWithChildren = genres.filter(g => g.children_count > 0);
         if (genresWithChildren.length > 0) {
             toast.error(t('dialogs.cannotDeleteWithSubgenres'));
             return;
         }
         // Check if any genres are assigned to artists
-        const genresWithArtists = genresToDelete.filter(g => g.artists_count > 0);
+        const genresWithArtists = genres.filter(g => g.artists_count > 0);
         if (genresWithArtists.length > 0) {
             toast.error(t('dialogs.cannotDeleteWithArtists'));
             return;
         }
-        const confirmMessage = genreCount === 1
-            ? t('dialogs.deleteGenreConfirm', { genreName: genresToDelete[0].name })
-            : t('dialogs.deleteGenresConfirm', { count: genreCount });
-        if (!confirm(confirmMessage)) {
+        setGenresToDelete(genres);
+        setShowDeleteConfirm(true);
+    };
+    const handleDelete = async () => {
+        if (genresToDelete.length === 0)
             return;
-        }
+        setIsDeleting(true);
         try {
             const deletePromises = genresToDelete.map(genre => supabase.from('genres').delete().eq('id', genre.id));
             const results = await Promise.all(deletePromises);
@@ -120,19 +122,24 @@ export const GenresManagement = () => {
             if (errors.length > 0) {
                 throw new Error(`Failed to delete ${errors.length} genre(s)`);
             }
-            const successMessage = genreCount === 1
+            const successMessage = genresToDelete.length === 1
                 ? tToast('genres.deleted')
-                : tToast('genres.deletedMultiple', { count: genreCount });
+                : tToast('genres.deletedMultiple', { count: genresToDelete.length });
             toast.success(successMessage);
             queryClient.invalidateQueries({ queryKey: ['admin-genres'] });
+            setShowDeleteConfirm(false);
+            setGenresToDelete([]);
         }
         catch (error) {
             logger.error('Error deleting genre(s)', {
                 error: error instanceof Error ? error.message : 'Unknown error',
                 source: 'GenresManagement',
-                details: { genreCount },
+                details: { genreCount: genresToDelete.length },
             });
             toast.error(tToast('genres.deleteFailed'));
+        }
+        finally {
+            setIsDeleting(false);
         }
     };
     const handleUpdate = async (row, columnKey, newValue) => {
@@ -204,12 +211,18 @@ export const GenresManagement = () => {
         {
             label: t('table.deleteGenre'),
             icon: _jsx(Trash2, { className: 'h-4 w-4' }),
-            onClick: handleDelete,
+            onClick: handleDeleteClick,
             variant: 'destructive',
         },
     ];
+    const getDeleteConfirmMessage = () => {
+        if (genresToDelete.length === 1) {
+            return t('dialogs.deleteGenreConfirm', { genreName: genresToDelete[0].name });
+        }
+        return t('dialogs.deleteGenresConfirm', { count: genresToDelete.length });
+    };
     return (_jsxs("div", { className: 'space-y-6', children: [_jsxs("div", { children: [_jsx("h1", { className: 'text-3xl font-canela font-bold text-foreground mb-2', children: t('pageTitles.genresManagement') }), _jsx("p", { className: 'text-muted-foreground', children: t('pageTitles.genresManagementDescription') })] }), _jsx(FmConfigurableDataGrid, { gridId: 'admin-genres', data: genres, columns: genreColumns, contextMenuActions: contextActions, loading: isLoading, pageSize: 20, onUpdate: handleUpdate, resourceName: 'Genre', createButtonLabel: t('table.addGenre'), onCreateButtonClick: () => setIsCreateDialogOpen(true) }), _jsx(Dialog, { open: isCreateDialogOpen, onOpenChange: setIsCreateDialogOpen, children: _jsxs(DialogContent, { className: 'sm:max-w-[425px]', children: [_jsx(DialogHeader, { children: _jsx(DialogTitle, { children: t('dialogs.createGenre') }) }), _jsxs("div", { className: 'space-y-4 py-4', children: [_jsx(FmCommonTextField, { label: t('labels.genreName'), value: createFormData.name, onChange: (e) => setCreateFormData(prev => ({ ...prev, name: e.target.value })), placeholder: t('forms.genres.namePlaceholder'), required: true }), _jsx(FmCommonSelect, { label: t('labels.parentGenre'), value: createFormData.parentId || '', onChange: value => setCreateFormData(prev => ({
                                         ...prev,
                                         parentId: value || null,
-                                    })), options: parentOptions, placeholder: t('placeholders.selectParentGenre') })] }), _jsxs(DialogFooter, { children: [_jsx(Button, { variant: 'outline', onClick: () => setIsCreateDialogOpen(false), children: t('buttons.cancel') }), _jsx(Button, { variant: 'outline', onClick: handleCreate, disabled: isCreating || !createFormData.name.trim(), className: 'border-white/20 hover:bg-white/10', children: isCreating ? t('dialogs.creating') : t('buttons.createGenre') })] })] }) })] }));
+                                    })), options: parentOptions, placeholder: t('placeholders.selectParentGenre') })] }), _jsxs(DialogFooter, { children: [_jsx(Button, { variant: 'outline', onClick: () => setIsCreateDialogOpen(false), children: t('buttons.cancel') }), _jsx(Button, { variant: 'outline', onClick: handleCreate, disabled: isCreating || !createFormData.name.trim(), className: 'border-white/20 hover:bg-white/10', children: isCreating ? t('dialogs.creating') : t('buttons.createGenre') })] })] }) }), _jsx(FmCommonConfirmDialog, { open: showDeleteConfirm, onOpenChange: setShowDeleteConfirm, title: t('table.deleteGenre'), description: getDeleteConfirmMessage(), confirmText: t('buttons.delete'), onConfirm: handleDelete, variant: "destructive", isLoading: isDeleting })] }));
 };

@@ -1,5 +1,6 @@
 import { Eye, Users } from 'lucide-react';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
+import { useTranslation } from 'react-i18next';
 
 interface GuestListSectionProps {
   attendeePreview: Array<{ name: string; avatar: string }>;
@@ -18,13 +19,15 @@ export function GuestListSection({
   onClick,
   onLoginPrompt,
 }: GuestListSectionProps) {
+  const { t } = useTranslation('common');
+
   return (
     <FmCommonCard
       variant='outline'
       onClick={isLoggedIn ? onClick : undefined}
       className='relative overflow-hidden'
     >
-      <h3 className='text-lg mb-4 font-canela'>Guest list</h3>
+      <h3 className='text-lg mb-4 font-canela'>{t('guestList.guestListTitle')}</h3>
 
       <div className='flex items-center gap-3 mb-4'>
         <div className='flex -space-x-2'>
@@ -43,7 +46,7 @@ export function GuestListSection({
         <div className='flex items-center gap-2'>
           <Users className='w-4 h-4 text-fm-gold' />
           <span className='text-xs font-normal text-muted-foreground'>
-            + {ticketCount.toLocaleString()} others
+            {t('guestList.othersCount', { count: ticketCount })}
           </span>
         </div>
       </div>
@@ -52,7 +55,7 @@ export function GuestListSection({
         <div className='flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground'>
           {isLoggedIn ? (
             <span className='font-normal text-muted-foreground'>
-              Click to see full list
+              {t('guestList.clickToSeeFullList')}
             </span>
           ) : (
             <button
@@ -63,12 +66,12 @@ export function GuestListSection({
               }}
               className='text-xs font-semibold text-fm-gold hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-fm-gold/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
             >
-              Log in to see the full list
+              {t('guestList.logInToSeeFullList')}
             </button>
           )}
           <div className='flex items-center gap-2'>
             <Eye className='w-4 h-4' />
-            <span>{viewCount.toLocaleString()} page views</span>
+            <span>{t('guestList.pageViews', { count: viewCount })}</span>
           </div>
         </div>
       </div>

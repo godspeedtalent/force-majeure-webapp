@@ -6,6 +6,7 @@
  */
 
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { formatDistanceToNow, format, differenceInMinutes } from 'date-fns';
 import {
   ChevronDown,
@@ -114,6 +115,7 @@ function ActivityLogItem({
   log: ActivityLog;
   isGroupChild?: boolean;
 }) {
+  const { t } = useTranslation('common');
   const categoryConfig = CATEGORY_CONFIG[log.category];
   const Icon = CATEGORY_ICONS[log.category];
   const eventConfig = EVENT_TYPE_CONFIG[log.event_type];
@@ -170,7 +172,7 @@ function ActivityLogItem({
         {log.user && (
           <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
             <User className="h-3 w-3" />
-            <span>{log.user.display_name || log.user.email || 'Unknown user'}</span>
+            <span>{log.user.display_name || log.user.email || t('activityLogs.unknownUser')}</span>
           </div>
         )}
 
@@ -187,6 +189,7 @@ function ActivityLogItem({
 }
 
 function GroupedActivityLogItem({ group }: { group: GroupedActivityLog }) {
+  const { t } = useTranslation('common');
   const [isExpanded, setIsExpanded] = useState(false);
   const categoryConfig = CATEGORY_CONFIG[group.representativeLog.category];
 
@@ -231,7 +234,7 @@ function GroupedActivityLogItem({ group }: { group: GroupedActivityLog }) {
                 >
                   {categoryConfig.label}
                 </span>
-                <span className="text-xs text-fm-gold">{group.count} events</span>
+                <span className="text-xs text-fm-gold">{t('activityLogs.eventCount', { count: group.count })}</span>
               </div>
             </div>
             <div className="text-right flex-shrink-0">
@@ -264,6 +267,7 @@ export function ActivityLogList({
   onLoadMore,
   hasMore,
 }: ActivityLogListProps) {
+  const { t } = useTranslation('common');
   const groupedLogs = useMemo(() => groupLogs(logs), [logs]);
 
   if (isLoading && logs.length === 0) {
@@ -278,9 +282,9 @@ export function ActivityLogList({
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
         <Settings className="h-12 w-12 text-muted-foreground/40 mb-4" />
-        <p className="text-muted-foreground">No activity logs found</p>
+        <p className="text-muted-foreground">{t('activityLogs.noLogsFound')}</p>
         <p className="text-sm text-muted-foreground/60 mt-1">
-          Try adjusting your filters or check back later
+          {t('activityLogs.tryAdjustingFilters')}
         </p>
       </div>
     );
@@ -301,7 +305,7 @@ export function ActivityLogList({
             disabled={isLoading}
             className="border-white/20 hover:border-fm-gold"
           >
-            {isLoading ? 'Loading...' : 'Load more'}
+            {isLoading ? t('buttons.loading') : t('activityLogs.loadMore')}
           </Button>
         </div>
       )}

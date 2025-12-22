@@ -4,6 +4,7 @@ import { ChevronLeft, Instagram as InstagramIcon, ExternalLink } from 'lucide-re
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import type { ArtistRegistrationFormData } from '../../types/registration';
 import { FmI18nCommon } from '@/components/common/i18n';
+import { SOCIAL_LINKS } from '@/shared';
 
 interface TermsStepProps {
   formData: ArtistRegistrationFormData;
@@ -245,7 +246,7 @@ export function TermsStep({
               <FmI18nCommon i18nKey='sections.supportForceMajeure' as='h3' className='font-canela text-base mb-[10px] text-fm-gold' />
               <FmI18nCommon i18nKey='sections.supportDescription' as='p' className='font-canela text-sm text-muted-foreground mb-[15px]' />
               <a
-                href='https://instagram.com/forcemajeureevents'
+                href={SOCIAL_LINKS.instagram}
                 target='_blank'
                 rel='noopener noreferrer'
                 className='inline-flex items-center gap-[10px] px-[20px] py-[12px] bg-fm-gold/20 hover:bg-fm-gold/30 border border-fm-gold/50 rounded-none transition-all duration-300 font-canela text-sm'

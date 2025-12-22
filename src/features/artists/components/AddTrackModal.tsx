@@ -9,6 +9,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link2, Music, ExternalLink, AlertCircle, Disc, Radio } from 'lucide-react';
+import { logger } from '@/shared/services/logger';
 import { FaSpotify, FaSoundcloud } from 'react-icons/fa6';
 import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
@@ -80,7 +81,10 @@ async function fetchSpotifyMetadata(url: string): Promise<TrackMetadata | null> 
       url: `https://open.spotify.com/track/${trackId}`,
     };
   } catch (error) {
-    console.error('Error fetching Spotify metadata:', error);
+    logger.error('Error fetching Spotify metadata', {
+      error: error instanceof Error ? error.message : 'Unknown',
+      source: 'AddTrackModal'
+    });
     return null;
   }
 }
@@ -116,7 +120,10 @@ async function fetchSoundCloudMetadata(url: string): Promise<TrackMetadata | nul
       url,
     };
   } catch (error) {
-    console.error('Error fetching SoundCloud metadata:', error);
+    logger.error('Error fetching SoundCloud metadata', {
+      error: error instanceof Error ? error.message : 'Unknown',
+      source: 'AddTrackModal'
+    });
     return null;
   }
 }

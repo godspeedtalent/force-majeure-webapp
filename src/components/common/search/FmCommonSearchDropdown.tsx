@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { logger } from '@/shared';
 import { Search, X } from 'lucide-react';
 import {
@@ -49,13 +50,16 @@ export function FmCommonSearchDropdown({
   onSearch,
   onGetRecentOptions,
   onCreateNew,
-  placeholder = 'Search...',
-  createNewLabel = 'Create New',
+  placeholder,
+  createNewLabel,
   selectedLabel,
   disabled = false,
   typeIcon,
   typeTooltip,
 }: FmCommonSearchDropdownProps) {
+  const { t } = useTranslation('common');
+  const resolvedPlaceholder = placeholder || t('searchDropdown.placeholder');
+  const resolvedCreateNewLabel = createNewLabel || t('searchDropdown.createNew');
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState('');
   const [options, setOptions] = React.useState<SearchDropdownOption[]>([]);
@@ -163,7 +167,7 @@ export function FmCommonSearchDropdown({
         'flex-1 truncate font-light',
         selectedLabel ? 'text-white' : 'text-white/40 text-sm'
       )}>
-        {selectedLabel || placeholder}
+        {selectedLabel || resolvedPlaceholder}
       </span>
     </button>
   );
@@ -184,7 +188,7 @@ export function FmCommonSearchDropdown({
         <div className='p-2 border-b border-white/10 relative'>
           <Input
             ref={inputRef}
-            placeholder={placeholder}
+            placeholder={resolvedPlaceholder}
             value={query}
             onChange={e => setQuery(e.target.value)}
             onFocus={() => setIsFocused(true)}
@@ -201,7 +205,7 @@ export function FmCommonSearchDropdown({
               onClick={handleClear}
               onMouseDown={e => e.preventDefault()} // Prevent blur on click
               className='absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-fm-gold transition-colors'
-              aria-label='Clear search'
+              aria-label={t('searchDropdown.clearSearch')}
             >
               <X className='h-4 w-4' />
             </button>
@@ -211,12 +215,12 @@ export function FmCommonSearchDropdown({
           {loading ? (
             <div className='p-4 flex flex-col items-center gap-2'>
               <FmCommonLoadingSpinner size='md' />
-              <span className='text-white/50 text-sm'>Searching...</span>
+              <span className='text-white/50 text-sm'>{t('searchDropdown.searching')}</span>
             </div>
           ) : query.length === 0 && recentOptions.length > 0 ? (
             <div>
               <div className='px-3 py-2 text-xs text-white/50 font-semibold uppercase'>
-                Recent
+                {t('searchDropdown.recent')}
               </div>
               {recentOptions.map(option => (
                 <button
@@ -231,7 +235,7 @@ export function FmCommonSearchDropdown({
             </div>
           ) : options.length === 0 && query.length > 0 ? (
             <div className='p-4 text-center text-white/50'>
-              No results found
+              {t('empty.noResults')}
             </div>
           ) : (
             options.map(option => (
@@ -252,7 +256,7 @@ export function FmCommonSearchDropdown({
               onClick={handleCreateNew}
               className='w-full flex items-center gap-2 px-3 py-2 hover:bg-fm-gold/10 transition-colors text-fm-gold font-medium text-sm'
             >
-              <span>{createNewLabel}</span>
+              <span>{resolvedCreateNewLabel}</span>
             </button>
           </div>
         )}

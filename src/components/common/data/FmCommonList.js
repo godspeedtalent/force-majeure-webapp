@@ -1,8 +1,11 @@
 import { jsx as _jsx } from "react/jsx-runtime";
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/shared';
-export function FmCommonList({ items, columns, striped = true, dense = false, className, rowClassName, emptyMessage = 'No items to display', onRowClick, }) {
+export function FmCommonList({ items, columns, striped = true, dense = false, className, rowClassName, emptyMessage, onRowClick, }) {
+    const { t } = useTranslation('common');
+    const resolvedEmptyMessage = emptyMessage || t('list.noItemsToDisplay');
     if (items.length === 0) {
-        return (_jsx("div", { className: 'text-center py-6 text-muted-foreground text-sm', children: emptyMessage }));
+        return (_jsx("div", { className: 'text-center py-6 text-muted-foreground text-sm', children: resolvedEmptyMessage }));
     }
     const getAlignment = (align) => {
         switch (align) {

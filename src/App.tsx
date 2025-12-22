@@ -78,6 +78,8 @@ import ProxyToken from './pages/ProxyToken';
 import Scavenger from './pages/Scavenger';
 import ArtistSignup from './pages/artists/ArtistSignup';
 import ArtistRegister from './pages/artists/ArtistRegister';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 const queryClient = new QueryClient();
 
@@ -110,6 +112,8 @@ const AppRoutes = () => {
     <Routes>
       {/* Always-accessible routes - highest priority */}
       <Route path='/auth' element={<Auth />} />
+      <Route path='/forgot-password' element={<ForgotPassword />} />
+      <Route path='/reset-password' element={<ResetPassword />} />
       <Route path='/scavenger' element={<Scavenger />} />
       <Route path='/proxy-token' element={<ProxyToken />} />
 

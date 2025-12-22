@@ -116,6 +116,12 @@
     "passwordLabel": "Password",
     "confirmPasswordLabel": "Confirm Password",
     "passwordsDoNotMatch": "Passwords do not match",
+    "passwordRequirements": {
+      "minLength": "At least 8 characters",
+      "uppercase": "At least one uppercase letter",
+      "lowercase": "At least one lowercase letter",
+      "number": "At least one number"
+    },
     "signIn": {
       "title": "Welcome back.",
       "subtitle": "Sign in to your account",
@@ -146,14 +152,21 @@
       "sendLink": "Send Reset Link",
       "backToSignIn": "Back to sign in",
       "checkEmail": "Check your email",
-      "emailSent": "We've sent a password reset link to your email"
+      "emailSent": "We've sent a password reset link to your email",
+      "checkSpam": "If you don't see the email, check your spam folder."
     },
     "resetPassword": {
       "title": "Create new password.",
       "subtitle": "Enter your new password below",
       "newPassword": "New Password",
       "confirmNewPassword": "Confirm New Password",
-      "resetPassword": "Reset Password"
+      "resetPassword": "Reset Password",
+      "invalidLink": "Invalid reset link",
+      "linkExpired": "This password reset link is invalid or has expired.",
+      "requestNewLink": "Request a new link",
+      "success": "Password updated!",
+      "successDescription": "Your password has been successfully changed.",
+      "continue": "Continue"
     },
     "verifyEmail": {
       "title": "Verify your email.",
@@ -213,6 +226,19 @@
     "female": "Female",
     "nonBinary": "Non-binary",
     "other": "Other",
+    "changePasswordDescription": "Update your password to keep your account secure",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmNewPassword": "Confirm new password",
+    "updatePassword": "Update Password",
+    "deleteAccountDescription": "Permanently delete your account and all associated data",
+    "deleteAccountWarning": "This action cannot be undone. Your account will be scheduled for permanent deletion. You will have 30 days to contact support if you change your mind.",
+    "deleteAccountButton": "Delete My Account",
+    "deleteAccountConfirmTitle": "Are you sure you want to delete your account?",
+    "deleteAccountConfirmDescription": "This will permanently delete your account and all associated data. This action cannot be undone.",
+    "deleteAccountConfirmButton": "Yes, Delete My Account",
+    "deleteAccountFailed": "Failed to delete account. Please try again.",
+    "accountDeleted": "Your account has been scheduled for deletion.",
     "artistProfile": "Artist Profile",
     "artistProfileDescription": "Link and manage your artist account",
     "artist": "Artist",
@@ -405,6 +431,15 @@
     "artistSignedUp": "You're signed up!",
     "artistSignedUpDescription": "Keep an eye out for posted events where you can express interest in joining the lineup.",
     "loading": "Loading..."
+  },
+  "artistSignup": {
+    "heroTitle": "Come spin with us.",
+    "valueProposition1": "FM has, and always will be, a group that elevates the local Austin electronic scene by taking care of our artists.",
+    "valueProposition2": "We proudly make sure our event undercards represent a diverse selection of rising stars from an expansive pantheon of genre.",
+    "valueProposition3": "So go ahead and click that button below and let's get rolling.",
+    "closingLine": "Can't wait to make you a part of our rave fam.",
+    "registerButton": "Register with us now",
+    "photoCredit": "Photo by Force Majeure"
   },
   "errors": {
     "404": {

@@ -1,4 +1,5 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useTranslation } from 'react-i18next';
 import { Wrench } from 'lucide-react';
 import { cn } from '@/shared';
 /**
@@ -7,6 +8,7 @@ import { cn } from '@/shared';
  * Only visible on mobile (< 768px)
  */
 export function FmMobileDevFAB({ onClick, badgeCount = 0, className, }) {
+    const { t } = useTranslation('common');
     const hasBadge = badgeCount > 0;
     return (_jsxs("button", { onClick: onClick, className: cn(
         // Base positioning - bottom-right with safe area support
@@ -28,7 +30,7 @@ export function FmMobileDevFAB({ onClick, badgeCount = 0, className, }) {
         // Visibility - mobile only
         'block md:hidden', 
         // Focus states
-        'focus:outline-none focus:ring-2 focus:ring-fm-gold/50 focus:ring-offset-2 focus:ring-offset-black', className), "aria-label": `Open developer tools${hasBadge ? ` (${badgeCount} notifications)` : ''}`, type: "button", children: [_jsx(Wrench, { className: "h-[26px] w-[26px]", strokeWidth: 2.5 }), hasBadge && (_jsx("span", { className: cn(
+        'focus:outline-none focus:ring-2 focus:ring-fm-gold/50 focus:ring-offset-2 focus:ring-offset-black', className), "aria-label": hasBadge ? t('mobileDevTools.fab.openWithNotifications', { count: badgeCount }) : t('mobileDevTools.fab.open'), type: "button", children: [_jsx(Wrench, { className: "h-[26px] w-[26px]", strokeWidth: 2.5 }), hasBadge && (_jsx("span", { className: cn(
                 // Position - top-right of FAB
                 'absolute -top-[4px] -right-[4px]', 
                 // Size - minimum 20px for readability
@@ -46,5 +48,5 @@ export function FmMobileDevFAB({ onClick, badgeCount = 0, className, }) {
                 // Border for contrast
                 'border-2 border-black', 
                 // Shadow
-                'shadow-sm'), "aria-label": `${badgeCount} notifications`, children: badgeCount > 99 ? '99+' : badgeCount }))] }));
+                'shadow-sm'), "aria-label": t('mobileDevTools.fab.notifications', { count: badgeCount }), children: badgeCount > 99 ? '99+' : badgeCount }))] }));
 }

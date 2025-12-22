@@ -6,6 +6,7 @@
  */
 
 import { FieldValues, Path, UseFormReturn } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import {
   FormControl,
@@ -76,11 +77,14 @@ export function FmCommonFormSelect<T extends FieldValues>({
   label,
   description,
   options,
-  placeholder = 'Select an option',
+  placeholder,
   required = false,
   disabled = false,
   className,
 }: FmCommonFormSelectProps<T>) {
+  const { t } = useTranslation('common');
+  const resolvedPlaceholder = placeholder || t('formSelect.selectAnOption');
+
   return (
     <FormField
       control={form.control}
@@ -98,7 +102,7 @@ export function FmCommonFormSelect<T extends FieldValues>({
           >
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder={placeholder} />
+                <SelectValue placeholder={resolvedPlaceholder} />
               </SelectTrigger>
             </FormControl>
             <SelectContent>

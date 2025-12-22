@@ -63,8 +63,25 @@ export const NOTE_STATUS_INDICATOR_CONFIG = {
  */
 export const SORT_FIELD_LABELS = {
     created_at: 'Date',
-    type: 'Priority (Type)',
-    status: 'Priority (Status)',
+    priority: 'Priority',
+    type: 'Type',
+    status: 'Status',
+};
+/**
+ * Priority level configuration
+ */
+export const PRIORITY_CONFIG = {
+    1: { label: 'Urgent', color: 'text-red-400' },
+    2: { label: 'High', color: 'text-orange-400' },
+    3: { label: 'Medium', color: 'text-yellow-400' },
+    4: { label: 'Low', color: 'text-blue-400' },
+    5: { label: 'Lowest', color: 'text-gray-400' },
+};
+/**
+ * Get priority display name
+ */
+export const getPriorityDisplayName = (priority) => {
+    return PRIORITY_CONFIG[priority]?.label || 'Medium';
 };
 /**
  * Get user-friendly display name for a status
@@ -78,6 +95,18 @@ export const getStatusDisplayName = (status) => {
         CANCELLED: 'Cancelled',
     };
     return statusNames[status];
+};
+/**
+ * Get user-friendly display name for a type
+ */
+export const getTypeDisplayName = (type) => {
+    const typeNames = {
+        BUG: 'Bug',
+        TODO: 'To Do',
+        QUESTION: 'Question',
+        INFO: 'Info',
+    };
+    return typeNames[type];
 };
 /**
  * Get the next logical status in the workflow

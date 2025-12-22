@@ -1,4 +1,4 @@
-
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -47,6 +47,7 @@ export function FmColumnReorderDialog({
   recentlyMovedKey,
   onDragEnd,
 }: FmColumnReorderDialogProps) {
+  const { t } = useTranslation('common');
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -58,9 +59,9 @@ export function FmColumnReorderDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='max-w-md'>
         <DialogHeader>
-          <DialogTitle>Reorder Columns</DialogTitle>
+          <DialogTitle>{t('dataGrid.reorderColumns')}</DialogTitle>
           <DialogDescription>
-            Drag and drop columns to reorder them
+            {t('dataGrid.reorderColumnsDescription')}
           </DialogDescription>
         </DialogHeader>
         <DndContext

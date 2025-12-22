@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Copy, Edit, Trash2, Power, Plus } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { FmConfigurableDataGrid } from '@/features/data-grid';
 import { useTrackingLinks } from './hooks/useTrackingLinks';
 import { CreateLinkDialog } from './CreateLinkDialog';
@@ -16,6 +17,8 @@ export function TrackingLinksManagement({ eventId }) {
     const { links, isLoading, toggleActive, deleteLink } = useTrackingLinks(eventId);
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
     const [editingLink, setEditingLink] = useState(null);
+    const [linkToDelete, setLinkToDelete] = useState(null);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const copyToClipboard = (code) => {
         const url = `https://orgxcrnnecblhuxjfruy.supabase.co/functions/v1/track-link?code=${code}`;
         navigator.clipboard.writeText(url);
@@ -96,13 +99,19 @@ export function TrackingLinksManagement({ eventId }) {
             label: t('buttons.delete'),
             icon: _jsx(Trash2, { className: "h-4 w-4" }),
             onClick: (row) => {
-                if (confirm(t('tracking.deleteConfirm', { name: row.name }))) {
-                    deleteLink.mutate(row.id);
-                }
+                setLinkToDelete(row);
+                setShowDeleteConfirm(true);
             },
             variant: 'destructive',
         },
     ];
+    const handleDeleteConfirm = () => {
+        if (linkToDelete) {
+            deleteLink.mutate(linkToDelete.id);
+            setShowDeleteConfirm(false);
+            setLinkToDelete(null);
+        }
+    };
     return (_jsxs("div", { className: "space-y-6", children: [_jsxs(Tabs, { defaultValue: "links", className: "w-full", children: [_jsxs("div", { className: "flex items-center justify-between mb-4", children: [_jsxs(TabsList, { children: [_jsx(TabsTrigger, { value: "links", children: t('tracking.tabs.links') }), _jsx(TabsTrigger, { value: "analytics", children: t('tracking.tabs.analytics') })] }), _jsx(FmCommonButton, { variant: "default", onClick: () => {
                                     setEditingLink(null);
                                     setIsCreateDialogOpen(true);
@@ -110,5 +119,5 @@ export function TrackingLinksManagement({ eventId }) {
                     setIsCreateDialogOpen(open);
                     if (!open)
                         setEditingLink(null);
-                }, editingLink: editingLink })] }));
+                }, editingLink: editingLink }), _jsx(FmCommonConfirmDialog, { open: showDeleteConfirm, onOpenChange: setShowDeleteConfirm, title: t('buttons.delete'), description: t('tracking.deleteConfirm', { name: linkToDelete?.name }), confirmText: t('buttons.delete'), onConfirm: handleDeleteConfirm, variant: "destructive" })] }));
 }

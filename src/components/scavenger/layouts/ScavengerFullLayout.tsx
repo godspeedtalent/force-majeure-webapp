@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { LocationCard } from '../shared';
 
@@ -20,6 +21,8 @@ export function ScavengerFullLayout({
   userClaims = [],
   children,
 }: ScavengerFullLayoutProps) {
+  const { t } = useTranslation('common');
+
   return (
     <>
       <ScavengerNavigation showShoppingCart={showShoppingCart} />
@@ -36,10 +39,10 @@ export function ScavengerFullLayout({
             {/* Header */}
             <div className='text-center mb-8'>
               <h1 className='font-display text-3xl md:text-4xl mb-4'>
-                <span className='text-fm-gold'>LF System</span> Scavenger Hunt
+                <span className='text-fm-gold'>{t('scavenger.layout.titleBrand')}</span> {t('scavenger.layout.titleSuffix')}
               </h1>
               <p className='text-lg text-muted-foreground'>
-                Find all 5 locations to complete the hunt!
+                {t('scavenger.layout.subtitle')}
               </p>
             </div>
 
@@ -58,12 +61,10 @@ export function ScavengerFullLayout({
               {/* User's stats */}
               {userClaims && userClaims.length > 0 && (
                 <Card className='p-4 bg-gradient-gold border-none text-primary-foreground'>
-                  <h3 className='font-display text-xl mb-3'>Your Progress</h3>
+                  <h3 className='font-display text-xl mb-3'>{t('scavenger.layout.yourProgress')}</h3>
                   <div className='space-y-2'>
                     <p className='text-base'>
-                      You&apos;ve found{' '}
-                      <span className='font-bold'>{userClaims.length}</span> of
-                      5 locations!
+                      {t('scavenger.layout.foundLocations', { count: userClaims.length })}
                     </p>
                     <div className='space-y-1'>
                       {userClaims.map(claim => (
@@ -75,7 +76,7 @@ export function ScavengerFullLayout({
                             {(claim.scavenger_locations as any).location_name}
                           </span>
                           <span className='text-xs'>
-                            Position #{claim.claim_position}
+                            {t('scavenger.layout.position', { position: claim.claim_position })}
                           </span>
                         </div>
                       ))}

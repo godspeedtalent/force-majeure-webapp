@@ -1,4 +1,5 @@
 import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-runtime";
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Drawer, DrawerContent, DrawerHeader, } from '@/components/common/shadcn/drawer';
@@ -9,20 +10,21 @@ import { FeatureTogglesTabContent } from '../tabs/FeatureTogglesTab';
 import { SessionOverridesTabContent } from '../tabs/SessionOverridesTab';
 import { DevNotesTabContent } from '../tabs/DevNotesTab';
 import { Button } from '@/components/common/shadcn/button';
-const toolLabels = {
-    navigation: 'Navigation',
-    database: 'Database',
-    features: 'Feature Toggles',
-    session: 'Session Overrides',
-    notes: 'Developer Notes',
-};
 /**
  * Nested drawer for displaying individual developer tool content
  * Full-screen (90vh) overlay with header (back/close buttons) and scrollable content
  * Reuses existing desktop tab content components
  */
 export function FmMobileDevToolContent({ toolId, open, onClose, isAdmin, }) {
+    const { t } = useTranslation('common');
     const navigate = useNavigate();
+    const toolLabels = {
+        navigation: t('mobileDevTools.toolLabels.navigation'),
+        database: t('mobileDevTools.toolLabels.database'),
+        features: t('mobileDevTools.toolLabels.features'),
+        session: t('mobileDevTools.toolLabels.session'),
+        notes: t('mobileDevTools.toolLabels.notes'),
+    };
     if (!toolId)
         return null;
     const handleNavigate = (path) => {
@@ -42,7 +44,7 @@ export function FmMobileDevToolContent({ toolId, open, onClose, isAdmin, }) {
             case 'notes':
                 return _jsx(DevNotesTabContent, {});
             default:
-                return _jsx("div", { className: "text-white/50 text-center", children: "Tool not found" });
+                return _jsx("div", { className: "text-white/50 text-center", children: t('mobileDevTools.toolNotFound') });
         }
     };
     return (_jsx(Drawer, { open: open, onOpenChange: onClose, children: _jsxs(DrawerContent, { className: cn(
@@ -65,7 +67,7 @@ export function FmMobileDevToolContent({ toolId, open, onClose, isAdmin, }) {
                     // Flex row for back | title | close layout
                     'flex flex-row items-center justify-between', 
                     // Shrink to fit content
-                    'flex-shrink-0'), children: [_jsx(Button, { variant: "ghost", size: "sm", onClick: onClose, className: cn('p-[10px]', 'hover:bg-white/10', 'text-white', 'transition-all duration-200'), "aria-label": "Go back", children: _jsx(ArrowLeft, { className: "h-[20px] w-[20px]", strokeWidth: 2 }) }), _jsx("h2", { className: "font-canela uppercase text-fm-gold text-base font-medium", children: toolLabels[toolId] }), _jsx(Button, { variant: "ghost", size: "sm", onClick: onClose, className: cn('p-[10px]', 'hover:bg-white/10', 'text-white', 'transition-all duration-200'), "aria-label": "Close", children: _jsx(X, { className: "h-[20px] w-[20px]", strokeWidth: 2 }) })] }), _jsx("div", { className: cn(
+                    'flex-shrink-0'), children: [_jsx(Button, { variant: "ghost", size: "sm", onClick: onClose, className: cn('p-[10px]', 'hover:bg-white/10', 'text-white', 'transition-all duration-200'), "aria-label": t('buttons.goBack'), children: _jsx(ArrowLeft, { className: "h-[20px] w-[20px]", strokeWidth: 2 }) }), _jsx("h2", { className: "font-canela uppercase text-fm-gold text-base font-medium", children: toolLabels[toolId] }), _jsx(Button, { variant: "ghost", size: "sm", onClick: onClose, className: cn('p-[10px]', 'hover:bg-white/10', 'text-white', 'transition-all duration-200'), "aria-label": t('buttons.close'), children: _jsx(X, { className: "h-[20px] w-[20px]", strokeWidth: 2 }) })] }), _jsx("div", { className: cn(
                     // Scrolling
                     'overflow-y-auto overflow-x-hidden', 
                     // Padding

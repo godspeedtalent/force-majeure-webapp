@@ -1,12 +1,8 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { Resend } from 'npm:resend@2.0.0';
+import { getCorsHeaders, handleCorsPreflightRequest, isOriginAllowed, createForbiddenResponse } from '../_shared/cors.ts';
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
 
 interface EmailRequest {
   to: string[];
@@ -19,8 +15,16 @@ interface EmailRequest {
 }
 
 serve(async (req) => {
+  const origin = req.headers.get('origin');
+  const corsHeaders = getCorsHeaders(origin);
+
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return handleCorsPreflightRequest(origin);
+  }
+
+  // Check origin for non-preflight requests
+  if (!isOriginAllowed(origin)) {
+    return createForbiddenResponse();
   }
 
   try {
@@ -29,12 +33,18 @@ serve(async (req) => {
       throw new Error('RESEND_API_KEY is not configured');
     }
 
+    // Get email sender from environment variable
+    const emailFrom = Deno.env.get('EMAIL_FROM');
+    if (!emailFrom) {
+      throw new Error('EMAIL_FROM is not configured. Set to your verified Resend domain (e.g., "Force Majeure <noreply@forcemajeure.com>")');
+    }
+
     const { to, subject, html, attachments }: EmailRequest = await req.json();
 
     console.log('Sending email via Resend:', { to, subject, hasAttachments: !!attachments });
 
     const emailResponse = await resend.emails.send({
-      from: 'Event Platform <noreply@yourdomain.com>', // TODO: Configure your verified domain
+      from: emailFrom,
       to,
       subject,
       html,

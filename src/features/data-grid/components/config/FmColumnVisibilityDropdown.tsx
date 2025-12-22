@@ -1,4 +1,4 @@
-
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/common/shadcn/button';
 import {
   DropdownMenu,
@@ -33,16 +33,18 @@ export function FmColumnVisibilityDropdown({
   onResetConfiguration,
   onClearFiltersAndSort,
 }: FmColumnVisibilityDropdownProps) {
+  const { t } = useTranslation('common');
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant='outline' size='sm' className='gap-2'>
           <Settings2 className='h-4 w-4' />
-          Columns
+          {t('dataGrid.columns')}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-64'>
-        <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
+        <DropdownMenuLabel>{t('dataGrid.toggleColumns')}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <div className='max-h-[400px] overflow-y-auto px-2 py-1 space-y-1'>
           {baseColumns.map(col => {
@@ -70,7 +72,7 @@ export function FmColumnVisibilityDropdown({
           className='w-full justify-start text-xs'
         >
           <RotateCcw className='h-4 w-4 mr-2' />
-          Reset to Default
+          {t('dataGrid.resetToDefault')}
         </Button>
         <Button
           variant='ghost'
@@ -79,7 +81,7 @@ export function FmColumnVisibilityDropdown({
           className='w-full justify-start text-xs'
         >
           <RotateCcw className='h-4 w-4 mr-2' />
-          Clear Filters & Sort
+          {t('dataGrid.clearFiltersAndSort')}
         </Button>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -1,4 +1,5 @@
 import { ChevronUp, ChevronDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/shared';
 import { ArtistPreviewCard } from './ArtistPreviewCard';
 import type { ArtistRegistrationFormData } from '../types/registration';
@@ -23,6 +24,8 @@ export function MobilePreviewPanel({
   onToggle,
   onInputChange,
 }: MobilePreviewPanelProps) {
+  const { t } = useTranslation('common');
+
   return (
     <>
       {/* Backdrop overlay when expanded */}
@@ -78,10 +81,10 @@ export function MobilePreviewPanel({
             {/* Name */}
             <div className='flex flex-col items-start'>
               <span className='font-canela text-sm text-white truncate max-w-[150px]'>
-                {formData.stageName || 'Your Name'}
+                {formData.stageName || t('artistPreview.yourName')}
               </span>
               <span className='font-canela text-xs text-muted-foreground'>
-                {isExpanded ? 'Close preview' : 'Tap to preview'}
+                {isExpanded ? t('mobilePreview.closePreview') : t('mobilePreview.tapToPreview')}
               </span>
             </div>
           </div>
@@ -89,7 +92,7 @@ export function MobilePreviewPanel({
           {/* Chevron */}
           <div className='flex items-center gap-[5px] text-fm-gold'>
             <span className='font-canela text-xs uppercase tracking-wider'>
-              Preview
+              {t('mobilePreview.preview')}
             </span>
             {isExpanded ? (
               <ChevronDown className='h-5 w-5' />
@@ -104,7 +107,7 @@ export function MobilePreviewPanel({
           <div className='flex-1 overflow-y-auto p-[20px] h-[calc(70vh-60px)]'>
             <div className='max-w-lg mx-auto'>
               <p className='font-canela text-xs text-muted-foreground text-center mb-[20px]'>
-                This is how your profile will look to others
+                {t('mobilePreview.profileLookDescription')}
               </p>
               <ArtistPreviewCard
                 formData={formData}

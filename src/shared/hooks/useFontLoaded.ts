@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { logger } from '@/shared/services/logger';
 
 /**
  * Hook to detect when a specific font has finished loading.
@@ -32,7 +33,10 @@ export const useFontLoaded = (
         setIsLoaded(true);
       } catch (error) {
         // If font check fails, fallback to assuming it's loaded
-        console.warn(`Font loading check failed for "${fontFamily}":`, error);
+        logger.warn(`Font loading check failed for "${fontFamily}"`, {
+          error: error instanceof Error ? error.message : 'Unknown',
+          source: 'useFontLoaded'
+        });
         setIsLoaded(true);
       }
     };
@@ -43,9 +47,11 @@ export const useFontLoaded = (
     // Also set a fallback timeout in case font never loads
     const fallbackTimer = setTimeout(() => {
       if (!isLoaded) {
-        console.warn(
-          `Font "${fontFamily}" did not load within ${fallbackTimeout}ms, showing content anyway`
-        );
+        logger.warn(`Font "${fontFamily}" did not load within ${fallbackTimeout}ms, showing content anyway`, {
+          source: 'useFontLoaded',
+          fontFamily,
+          timeout: fallbackTimeout
+        });
         setIsLoaded(true);
       }
     }, fallbackTimeout);

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -70,6 +71,7 @@ export function GlobalResourceSearch({
   isOpen: boolean;
   onClose: () => void;
 }) {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -210,8 +212,8 @@ export function GlobalResourceSearch({
       });
     } catch (error) {
       await handleError(error, {
-        title: 'Search Failed',
-        description: 'Could not search database resources',
+        title: t('globalSearch.searchFailed'),
+        description: t('globalSearch.searchFailedDescription'),
         endpoint: 'GlobalResourceSearch',
         method: 'SEARCH',
       });
@@ -288,7 +290,7 @@ export function GlobalResourceSearch({
           <button
             onClick={onClose}
             className='absolute top-4 right-4 p-2 rounded-none hover:bg-muted transition-colors z-10'
-            aria-label='Close search'
+            aria-label={t('globalSearch.closeSearch')}
           >
             <X className='h-5 w-5 text-muted-foreground' />
           </button>
@@ -299,7 +301,7 @@ export function GlobalResourceSearch({
             <Input
               ref={inputRef}
               type='text'
-              placeholder='Search events, artists, venues, users...'
+              placeholder={t('globalSearch.placeholder')}
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               className={cn(
@@ -319,7 +321,7 @@ export function GlobalResourceSearch({
             <div className='max-h-[60vh] overflow-y-auto p-2'>
               {isSearching ? (
                 <div className='py-8 text-center text-muted-foreground'>
-                  Searching...
+                  {t('globalSearch.searching')}
                 </div>
               ) : hasResults ? (
                 <div className='space-y-0'>
@@ -327,7 +329,7 @@ export function GlobalResourceSearch({
                   {results.organizations.length > 0 && (
                     <div>
                       <div className='px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10'>
-                        Organizations
+                        {t('globalSearch.sections.organizations')}
                       </div>
                       {results.organizations.map(org => (
                         <button
@@ -360,7 +362,7 @@ export function GlobalResourceSearch({
                   {results.users.length > 0 && (
                     <div>
                       <div className='px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10'>
-                        Users
+                        {t('globalSearch.sections.users')}
                       </div>
                       {results.users.map(user => (
                         <button
@@ -381,7 +383,7 @@ export function GlobalResourceSearch({
                           </div>
                           <div className='flex-1 min-w-0'>
                             <p className='text-sm font-medium truncate'>
-                              {user.display_name || user.full_name || 'Unknown User'}
+                              {user.display_name || user.full_name || t('globalSearch.unknownUser')}
                             </p>
                             {user.email && (
                               <p className='text-xs text-muted-foreground truncate'>
@@ -398,7 +400,7 @@ export function GlobalResourceSearch({
                   {results.artists.length > 0 && (
                     <div>
                       <div className='px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10'>
-                        Artists
+                        {t('globalSearch.sections.artists')}
                       </div>
                       {results.artists.map(artist => (
                         <button
@@ -431,7 +433,7 @@ export function GlobalResourceSearch({
                   {results.venues.length > 0 && (
                     <div>
                       <div className='px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10'>
-                        Venues
+                        {t('globalSearch.sections.venues')}
                       </div>
                       {results.venues.map(venue => (
                         <button
@@ -464,7 +466,7 @@ export function GlobalResourceSearch({
                   {results.events.length > 0 && (
                     <div>
                       <div className='px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10'>
-                        Events
+                        {t('globalSearch.sections.events')}
                       </div>
                       {results.events.map(event => (
                         <button
@@ -499,7 +501,7 @@ export function GlobalResourceSearch({
                 </div>
               ) : (
                 <div className='py-8 text-center text-muted-foreground'>
-                  No results found for "{searchQuery}"
+                  {t('globalSearch.noResults', { query: searchQuery })}
                 </div>
               )}
             </div>

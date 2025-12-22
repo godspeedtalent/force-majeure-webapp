@@ -1,11 +1,12 @@
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
-import { User, Settings, Upload, Mail, AlertCircle, Mic2, } from 'lucide-react';
+import { User, Settings, Upload, Mail, AlertCircle, Mic2, Check, X, Lock, Trash2, } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { MobileBottomTabBar } from '@/components/mobile';
 import { Card, CardContent } from '@/components/common/shadcn/card';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, } from '@/components/common/shadcn/alert-dialog';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
@@ -20,7 +21,7 @@ import { UserArtistTab } from '@/components/profile/UserArtistTab';
 import { LanguageSelector } from '@/components/common/i18n/LanguageSelector';
 import { useLocaleSync } from '@/hooks/useLocaleSync';
 const ProfileEdit = () => {
-    const { user, profile, updateProfile, resendVerificationEmail } = useAuth();
+    const { user, profile, updateProfile, resendVerificationEmail, updatePassword, signOut } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation('pages');
@@ -43,6 +44,38 @@ const ProfileEdit = () => {
     const [billingState, setBillingState] = useState(profile?.billing_state || '');
     const [billingZip, setBillingZip] = useState(profile?.billing_zip_code || '');
     const [activeSection, setActiveSection] = useState(initialSection);
+    // Password change state
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [isChangingPassword, setIsChangingPassword] = useState(false);
+    const [passwordError, setPasswordError] = useState('');
+    // Password requirements
+    const passwordRequirements = [
+        {
+            key: 'minLength',
+            label: t('auth.passwordRequirements.minLength'),
+            test: (password) => password.length >= 8,
+        },
+        {
+            key: 'uppercase',
+            label: t('auth.passwordRequirements.uppercase'),
+            test: (password) => /[A-Z]/.test(password),
+        },
+        {
+            key: 'lowercase',
+            label: t('auth.passwordRequirements.lowercase'),
+            test: (password) => /[a-z]/.test(password),
+        },
+        {
+            key: 'number',
+            label: t('auth.passwordRequirements.number'),
+            test: (password) => /\d/.test(password),
+        },
+    ];
+    const allPasswordRequirementsMet = passwordRequirements.every(req => req.test(newPassword));
+    // Account deletion state
+    const [isDeletingAccount, setIsDeletingAccount] = useState(false);
     useEffect(() => {
         if (profile) {
             // Split full_name into first and last name
@@ -84,6 +117,60 @@ const ProfileEdit = () => {
         setIsSendingVerification(true);
         await resendVerificationEmail();
         setIsSendingVerification(false);
+    };
+    const handleChangePassword = async (e) => {
+        e.preventDefault();
+        if (newPassword !== confirmPassword) {
+            setPasswordError(t('auth.passwordsDoNotMatch'));
+            return;
+        }
+        if (!allPasswordRequirementsMet) {
+            return;
+        }
+        setPasswordError('');
+        setIsChangingPassword(true);
+        const { error } = await updatePassword(newPassword);
+        if (!error) {
+            // Clear the form on success
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+        }
+        setIsChangingPassword(false);
+    };
+    const handleDeleteAccount = async () => {
+        if (!user)
+            return;
+        setIsDeletingAccount(true);
+        try {
+            // Soft delete: set deleted_at timestamp on profile
+            // Note: deleted_at column added in migration 20251221000000_add_deleted_at_to_profiles.sql
+            const { error } = await supabase
+                .from('profiles')
+                .update({ deleted_at: new Date().toISOString() })
+                .eq('id', user.id);
+            if (error) {
+                logger.error('Failed to delete account', {
+                    error: error.message,
+                    source: 'ProfileEdit.tsx',
+                });
+                toast.error(t('profile.deleteAccountFailed'));
+                setIsDeletingAccount(false);
+                return;
+            }
+            toast.success(t('profile.accountDeleted'));
+            // Sign out and redirect to home
+            await signOut();
+            navigate('/');
+        }
+        catch (error) {
+            logger.error('Unexpected error deleting account', {
+                error: error instanceof Error ? error.message : 'Unknown error',
+                source: 'ProfileEdit.tsx',
+            });
+            toast.error(t('profile.deleteAccountFailed'));
+            setIsDeletingAccount(false);
+        }
     };
     const handleImageUpload = async (event) => {
         const file = event.target.files?.[0];
@@ -178,6 +265,17 @@ const ProfileEdit = () => {
                                                 await changeLocale(locale);
                                                 // Toast will now use the new locale since i18n has been updated
                                                 toast.success(t('profile.languageSaved'));
-                                            } }) })] }) })] })), activeSection === 'artist' && (_jsxs(_Fragment, { children: [_jsx(FmCommonPageHeader, { title: t('profile.artistProfile'), description: t('profile.artistProfileDescription'), showDivider: true }), _jsx(UserArtistTab, {})] }))] }) }));
+                                            } }) })] }) }), _jsx(Card, { className: 'border-border/30 bg-card/20 backdrop-blur-lg', children: _jsxs(CardContent, { className: 'p-8 space-y-6', children: [_jsxs("div", { children: [_jsx("h2", { className: 'text-xl font-canela font-medium text-foreground mb-2', children: t('profile.changePassword') }), _jsx("p", { className: 'text-sm text-muted-foreground', children: t('profile.changePasswordDescription') })] }), _jsxs("form", { onSubmit: handleChangePassword, className: 'space-y-6', children: [_jsxs("div", { className: 'grid grid-cols-1 gap-6 max-w-md', children: [_jsx(FmCommonTextField, { label: t('profile.currentPassword'), id: 'currentPassword', password: true, placeholder: '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022', value: currentPassword, onChange: e => setCurrentPassword(e.target.value), disabled: !user.email_confirmed_at }), _jsxs("div", { children: [_jsx(FmCommonTextField, { label: t('profile.newPassword'), id: 'newPassword', password: true, placeholder: '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022', value: newPassword, onChange: e => {
+                                                                    setNewPassword(e.target.value);
+                                                                    if (passwordError)
+                                                                        setPasswordError('');
+                                                                }, disabled: !user.email_confirmed_at }), newPassword && (_jsx("div", { className: 'mt-2 space-y-1', children: passwordRequirements.map((req) => {
+                                                                    const isMet = req.test(newPassword);
+                                                                    return (_jsxs("div", { className: `flex items-center gap-2 text-xs transition-colors ${isMet ? 'text-green-500' : 'text-muted-foreground'}`, children: [isMet ? (_jsx(Check, { className: 'h-3 w-3' })) : (_jsx(X, { className: 'h-3 w-3' })), _jsx("span", { className: 'font-canela', children: req.label })] }, req.key));
+                                                                }) }))] }), _jsx(FmCommonTextField, { label: t('profile.confirmNewPassword'), id: 'confirmNewPassword', password: true, placeholder: '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022', value: confirmPassword, onChange: e => {
+                                                            setConfirmPassword(e.target.value);
+                                                            if (passwordError)
+                                                                setPasswordError('');
+                                                        }, error: passwordError, disabled: !user.email_confirmed_at })] }), _jsx("div", { className: 'h-px bg-border/50' }), _jsx(FmCommonButton, { type: 'submit', variant: 'secondary', icon: Lock, loading: isChangingPassword, disabled: !user.email_confirmed_at || isChangingPassword || !allPasswordRequirementsMet || !currentPassword, children: t('profile.updatePassword') })] })] }) }), _jsx(Card, { className: 'border-fm-danger/30 bg-card/20 backdrop-blur-lg', children: _jsxs(CardContent, { className: 'p-8 space-y-6', children: [_jsxs("div", { children: [_jsx("h2", { className: 'text-xl font-canela font-medium text-fm-danger mb-2', children: t('profile.deleteAccount') }), _jsx("p", { className: 'text-sm text-muted-foreground', children: t('profile.deleteAccountDescription') })] }), _jsx("div", { className: 'p-4 bg-fm-danger/10 border border-fm-danger/20', children: _jsx("p", { className: 'text-sm text-muted-foreground', children: t('profile.deleteAccountWarning') }) }), _jsxs(AlertDialog, { children: [_jsx(AlertDialogTrigger, { asChild: true, children: _jsx(FmCommonButton, { variant: 'destructive', icon: Trash2, disabled: !user.email_confirmed_at || isDeletingAccount, loading: isDeletingAccount, children: t('profile.deleteAccountButton') }) }), _jsxs(AlertDialogContent, { className: 'bg-background border-border', children: [_jsxs(AlertDialogHeader, { children: [_jsx(AlertDialogTitle, { className: 'text-fm-danger', children: t('profile.deleteAccountConfirmTitle') }), _jsx(AlertDialogDescription, { children: t('profile.deleteAccountConfirmDescription') })] }), _jsxs(AlertDialogFooter, { children: [_jsx(AlertDialogCancel, { children: tCommon('actions.cancel') }), _jsx(AlertDialogAction, { onClick: handleDeleteAccount, className: 'bg-fm-danger hover:bg-fm-danger/90', children: t('profile.deleteAccountConfirmButton') })] })] })] })] }) })] })), activeSection === 'artist' && (_jsxs(_Fragment, { children: [_jsx(FmCommonPageHeader, { title: t('profile.artistProfile'), description: t('profile.artistProfileDescription'), showDivider: true }), _jsx(UserArtistTab, {})] }))] }) }));
 };
 export default ProfileEdit;

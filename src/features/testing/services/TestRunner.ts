@@ -98,7 +98,7 @@ export class TestRunner {
     testCase: TestCase,
     onProgress?: (activeThreads: ThreadInfo[], results: TestResult[]) => void
   ): Promise<void> {
-    const threadId = `thread-${Date.now()}-${Math.random()}`;
+    const threadId = `thread-${crypto.randomUUID()}`;
     const logger = new TestLogger(testCase.id);
     const startTime = Date.now();
 

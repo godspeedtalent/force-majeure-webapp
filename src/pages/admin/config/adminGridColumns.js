@@ -76,21 +76,21 @@ async function updateVenueImage(row, newImageUrl) {
 export const artistColumns = [
     DataGridColumns.text({
         key: 'name',
-        label: 'Name',
+        label: t('adminGrid.columns.name'),
         sortable: true,
         filterable: true,
         editable: true,
     }),
     DataGridColumns.text({
         key: 'genre',
-        label: 'Genre',
+        label: t('adminGrid.columns.genre'),
         sortable: true,
         filterable: true,
         editable: true,
     }),
     DataGridColumns.image({
         key: 'image_url',
-        label: 'Image',
+        label: t('adminGrid.columns.image'),
         shape: 'circle',
         entityType: 'artist',
         editable: true,
@@ -100,7 +100,7 @@ export const artistColumns = [
     }),
     {
         key: 'bio',
-        label: 'Bio',
+        label: t('adminGrid.columns.bio'),
         filterable: true,
         editable: true,
         render: value => {
@@ -118,28 +118,28 @@ export const artistColumns = [
 export const userColumns = [
     DataGridColumns.text({
         key: 'display_name',
-        label: 'Username',
+        label: t('adminGrid.columns.username'),
         sortable: true,
         filterable: true,
         editable: true,
     }),
     DataGridColumns.text({
         key: 'full_name',
-        label: 'Full Name',
+        label: t('adminGrid.columns.fullName'),
         sortable: true,
         filterable: true,
         editable: true,
     }),
     DataGridColumns.text({
         key: 'email',
-        label: 'Email',
+        label: t('adminGrid.columns.email'),
         sortable: true,
         filterable: true,
         editable: true,
     }),
     DataGridColumns.image({
         key: 'avatar_url',
-        label: 'Avatar',
+        label: t('adminGrid.columns.avatar'),
         shape: 'circle',
         entityType: 'user',
         editable: true,
@@ -149,19 +149,19 @@ export const userColumns = [
     }),
     DataGridColumns.relation({
         key: 'organization_id',
-        label: 'Organization',
+        label: t('adminGrid.columns.organization'),
         sortable: true,
         getLabel: (row) => row.organization_name || '—',
         getHref: (row) => row.organization_id ? `/organization/${row.organization_id}` : '#',
     }),
     {
         key: 'roles',
-        label: 'Roles',
+        label: t('adminGrid.columns.roles'),
         filterable: false,
         readonly: true,
         render: (value) => {
             if (!value || !Array.isArray(value) || value.length === 0) {
-                return _jsx(BadgeListCell, { items: [], emptyText: 'No roles' });
+                return _jsx(BadgeListCell, { items: [], emptyText: t('adminGrid.columns.noRoles') });
             }
             const roleLabels = value.map((role) => role.display_name || role.role_name);
             return _jsx(BadgeListCell, { items: roleLabels, variant: 'gold' });
@@ -169,7 +169,7 @@ export const userColumns = [
     },
     DataGridColumns.date({
         key: 'created_at',
-        label: 'Joined',
+        label: t('adminGrid.columns.joined'),
         format: 'short',
         sortable: true,
     }),
@@ -180,14 +180,14 @@ export const userColumns = [
 export const venueColumns = [
     DataGridColumns.text({
         key: 'name',
-        label: 'Name',
+        label: t('adminGrid.columns.name'),
         sortable: true,
         filterable: true,
         editable: true,
     }),
     DataGridColumns.image({
         key: 'image_url',
-        label: 'Image',
+        label: t('adminGrid.columns.image'),
         shape: 'square',
         entityType: 'venue',
         editable: true,
@@ -197,7 +197,7 @@ export const venueColumns = [
     }),
     DataGridColumns.relation({
         key: 'city_id',
-        label: 'City',
+        label: t('adminGrid.columns.city'),
         sortable: true,
         getLabel: (row) => row.city || '—',
     }),
@@ -209,19 +209,19 @@ export const venueColumns = [
             state: 'state',
             zipCode: 'zip_code',
         },
-        label: 'Address',
+        label: t('adminGrid.columns.address'),
         sortable: true,
     }),
     {
         key: 'capacity',
-        label: 'Capacity',
+        label: t('adminGrid.columns.capacity'),
         sortable: true,
         editable: true,
         render: (value) => (value ? value.toLocaleString() : '—'),
     },
     DataGridColumns.date({
         key: 'created_at',
-        label: 'Created',
+        label: t('adminGrid.columns.created'),
         format: 'short',
         sortable: true,
     }),
@@ -232,28 +232,28 @@ export const venueColumns = [
 export const recordingColumns = [
     DataGridColumns.image({
         key: 'cover_art',
-        label: 'Cover',
+        label: t('adminGrid.columns.cover'),
         shape: 'square',
         entityType: 'recording',
         editable: false,
     }),
     DataGridColumns.text({
         key: 'name',
-        label: 'Track Name',
+        label: t('adminGrid.columns.trackName'),
         sortable: true,
         filterable: true,
         editable: true,
     }),
     DataGridColumns.relation({
         key: 'artist_id',
-        label: 'Artist',
+        label: t('adminGrid.columns.artist'),
         sortable: true,
         getLabel: (row) => row.artist_name || '—',
         getHref: (row) => row.artist_id ? `/artists/${row.artist_id}` : '#',
     }),
     {
         key: 'platform',
-        label: 'Platform',
+        label: t('adminGrid.columns.platform'),
         sortable: true,
         filterable: true,
         render: (value) => {
@@ -265,7 +265,7 @@ export const recordingColumns = [
     },
     {
         key: 'recording_type',
-        label: 'Type',
+        label: t('adminGrid.columns.type'),
         sortable: true,
         filterable: true,
         editable: true,
@@ -273,27 +273,27 @@ export const recordingColumns = [
             if (!value)
                 return _jsx("span", { className: 'text-muted-foreground', children: "\u2014" });
             const isTrack = value === 'track';
-            return (_jsx("span", { className: `px-2 py-0.5 text-xs font-medium uppercase ${isTrack ? 'bg-fm-gold/20 text-fm-gold' : 'bg-fm-navy/20 text-fm-navy'}`, children: isTrack ? 'Track' : 'DJ Set' }));
+            return (_jsx("span", { className: `px-2 py-0.5 text-xs font-medium uppercase ${isTrack ? 'bg-fm-gold/20 text-fm-gold' : 'bg-fm-navy/20 text-fm-navy'}`, children: isTrack ? t('adminGrid.columns.track') : t('adminGrid.columns.djSet') }));
         },
     },
     {
         key: 'click_count',
-        label: 'Clicks',
+        label: t('adminGrid.columns.clicks'),
         sortable: true,
         render: (value) => (_jsx("span", { className: 'text-xs text-muted-foreground', children: value || 0 })),
     },
     {
         key: 'url',
-        label: 'Link',
+        label: t('adminGrid.columns.link'),
         render: (value) => {
             if (!value)
                 return _jsx("span", { className: 'text-muted-foreground', children: "\u2014" });
-            return (_jsx("a", { href: value, target: '_blank', rel: 'noopener noreferrer', className: 'text-fm-gold hover:underline text-xs', children: "Open \u2192" }));
+            return (_jsx("a", { href: value, target: '_blank', rel: 'noopener noreferrer', className: 'text-fm-gold hover:underline text-xs', children: t('adminGrid.columns.openLink') }));
         },
     },
     DataGridColumns.date({
         key: 'created_at',
-        label: 'Added',
+        label: t('adminGrid.columns.added'),
         format: 'short',
         sortable: true,
     }),
@@ -304,32 +304,32 @@ export const recordingColumns = [
 export const genreColumns = [
     DataGridColumns.text({
         key: 'name',
-        label: 'Name',
+        label: t('adminGrid.columns.name'),
         sortable: true,
         filterable: true,
         editable: true,
     }),
     DataGridColumns.relation({
         key: 'parent_id',
-        label: 'Parent Genre',
+        label: t('adminGrid.columns.parentGenre'),
         sortable: true,
         getLabel: (row) => row.parent_name || '—',
     }),
     {
         key: 'children_count',
-        label: 'Subgenres',
+        label: t('adminGrid.columns.subgenres'),
         sortable: true,
         render: (value) => (_jsx("span", { className: 'text-xs text-muted-foreground', children: value || 0 })),
     },
     {
         key: 'artists_count',
-        label: 'Artists',
+        label: t('adminGrid.columns.artists'),
         sortable: true,
         render: (value) => (_jsx("span", { className: 'text-xs text-muted-foreground', children: value || 0 })),
     },
     DataGridColumns.date({
         key: 'created_at',
-        label: 'Created',
+        label: t('adminGrid.columns.created'),
         format: 'short',
         sortable: true,
     }),

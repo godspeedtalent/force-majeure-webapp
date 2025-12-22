@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/shared';
 import { FmErrorOverlay } from './FmErrorOverlay';
+import { useTranslation } from 'react-i18next';
 
 interface FmErrorToastProps {
   title: string;
@@ -44,6 +45,7 @@ export const FmErrorToast = ({
   endpoint,
   method,
 }: FmErrorToastProps) => {
+  const { t } = useTranslation('common');
   const [copied, setCopied] = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
 
@@ -69,7 +71,7 @@ export const FmErrorToast = ({
   // For non-developers, show generic message
   const displayDescription = isDeveloper
     ? description
-    : 'An error occurred. Please try again.';
+    : t('errors.genericError');
 
   return (
     <div className='flex items-start gap-3'>
@@ -92,7 +94,7 @@ export const FmErrorToast = ({
           <button
             onClick={() => setShowOverlay(true)}
             className='flex-shrink-0 p-1.5 rounded hover:bg-white/10 transition-colors'
-            title='View details'
+            title={t('errors.viewDetails')}
           >
             <FileText className='h-4 w-4 text-muted-foreground' />
           </button>
@@ -102,7 +104,7 @@ export const FmErrorToast = ({
               'flex-shrink-0 p-1.5 rounded hover:bg-white/10 transition-colors',
               copied && 'bg-white/10'
             )}
-            title='Copy error details'
+            title={t('errors.copyErrorDetails')}
           >
             {copied ? (
               <Check className='h-4 w-4 text-fm-gold' />

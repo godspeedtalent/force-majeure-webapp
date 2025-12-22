@@ -509,6 +509,7 @@ export type Database = {
           created_at: string | null
           id: string
           message: string
+          priority: number
           status: string
           type: string
           updated_at: string | null
@@ -519,6 +520,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           message: string
+          priority?: number
           status?: string
           type: string
           updated_at?: string | null
@@ -529,6 +531,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           message?: string
+          priority?: number
           status?: string
           type?: string
           updated_at?: string | null
@@ -1356,6 +1359,7 @@ export type Database = {
           home_city: string | null
           id: string
           instagram_handle: string | null
+          notification_settings: Json | null
           organization_id: string | null
           phone_number: string | null
           preferred_locale: string | null
@@ -1381,6 +1385,7 @@ export type Database = {
           home_city?: string | null
           id: string
           instagram_handle?: string | null
+          notification_settings?: Json | null
           organization_id?: string | null
           phone_number?: string | null
           preferred_locale?: string | null
@@ -1406,6 +1411,7 @@ export type Database = {
           home_city?: string | null
           id?: string
           instagram_handle?: string | null
+          notification_settings?: Json | null
           organization_id?: string | null
           phone_number?: string | null
           preferred_locale?: string | null

@@ -116,6 +116,12 @@
     "passwordLabel": "Contraseña",
     "confirmPasswordLabel": "Confirmar Contraseña",
     "passwordsDoNotMatch": "Las contraseñas no coinciden",
+    "passwordRequirements": {
+      "minLength": "Al menos 8 caracteres",
+      "uppercase": "Al menos una letra mayúscula",
+      "lowercase": "Al menos una letra minúscula",
+      "number": "Al menos un número"
+    },
     "signIn": {
       "title": "Bienvenido de nuevo.",
       "subtitle": "Inicia sesión en tu cuenta",
@@ -146,14 +152,21 @@
       "sendLink": "Enviar Enlace",
       "backToSignIn": "Volver a iniciar sesión",
       "checkEmail": "Revisa tu correo",
-      "emailSent": "Hemos enviado un enlace para restablecer tu contraseña"
+      "emailSent": "Hemos enviado un enlace para restablecer tu contraseña",
+      "checkSpam": "Si no ves el correo, revisa tu carpeta de spam."
     },
     "resetPassword": {
       "title": "Crea una nueva contraseña.",
       "subtitle": "Ingresa tu nueva contraseña abajo",
       "newPassword": "Nueva Contraseña",
       "confirmNewPassword": "Confirmar Nueva Contraseña",
-      "resetPassword": "Restablecer Contraseña"
+      "resetPassword": "Restablecer Contraseña",
+      "invalidLink": "Enlace inválido",
+      "linkExpired": "Este enlace para restablecer contraseña es inválido o ha expirado.",
+      "requestNewLink": "Solicitar un nuevo enlace",
+      "success": "¡Contraseña actualizada!",
+      "successDescription": "Tu contraseña ha sido cambiada exitosamente.",
+      "continue": "Continuar"
     },
     "verifyEmail": {
       "title": "Verifica tu correo.",
@@ -213,6 +226,19 @@
     "female": "Femenino",
     "nonBinary": "No binario",
     "other": "Otro",
+    "changePasswordDescription": "Actualiza tu contraseña para mantener tu cuenta segura",
+    "currentPassword": "Contraseña actual",
+    "newPassword": "Nueva contraseña",
+    "confirmNewPassword": "Confirmar nueva contraseña",
+    "updatePassword": "Actualizar Contraseña",
+    "deleteAccountDescription": "Eliminar permanentemente tu cuenta y todos los datos asociados",
+    "deleteAccountWarning": "Esta acción no se puede deshacer. Tu cuenta será programada para eliminación permanente. Tendrás 30 días para contactar al soporte si cambias de opinión.",
+    "deleteAccountButton": "Eliminar Mi Cuenta",
+    "deleteAccountConfirmTitle": "¿Estás seguro de que quieres eliminar tu cuenta?",
+    "deleteAccountConfirmDescription": "Esto eliminará permanentemente tu cuenta y todos los datos asociados. Esta acción no se puede deshacer.",
+    "deleteAccountConfirmButton": "Sí, Eliminar Mi Cuenta",
+    "deleteAccountFailed": "Error al eliminar la cuenta. Por favor, inténtalo de nuevo.",
+    "accountDeleted": "Tu cuenta ha sido programada para eliminación.",
     "artistProfile": "Perfil de Artista",
     "artistProfileDescription": "Vincula y administra tu cuenta de artista",
     "artist": "Artista",
@@ -405,6 +431,15 @@
     "artistSignedUp": "¡Ya estás registrado!",
     "artistSignedUpDescription": "Mantente atento a los eventos publicados donde podrás expresar tu interés en unirte al lineup.",
     "loading": "Cargando..."
+  },
+  "artistSignup": {
+    "heroTitle": "Ven a tocar con nosotros.",
+    "valueProposition1": "FM ha sido, y siempre será, un grupo que eleva la escena electrónica local de Austin cuidando a nuestros artistas.",
+    "valueProposition2": "Nos aseguramos con orgullo de que nuestros undercards representen una selección diversa de estrellas emergentes de un amplio panteón de géneros.",
+    "valueProposition3": "Así que adelante, haz clic en ese botón y empecemos.",
+    "closingLine": "No podemos esperar a que seas parte de nuestra familia rave.",
+    "registerButton": "Regístrate con nosotros ahora",
+    "photoCredit": "Foto por Force Majeure"
   },
   "errors": {
     "404": {

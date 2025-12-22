@@ -1,9 +1,12 @@
 import { User } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/layout/Layout';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { formatHeader } from '@/shared';
 
 export default function MemberHome() {
+  const { t } = useTranslation('common');
+
   return (
     <Layout>
       <div className='container mx-auto pt-8 pb-8 px-4'>
@@ -13,11 +16,11 @@ export default function MemberHome() {
             <div className='flex items-center gap-[10px] mb-2'>
               <User className='h-6 w-6 text-fm-gold' />
               <h1 className='text-3xl font-canela'>
-                {formatHeader('Member Profile')}
+                {formatHeader(t('memberHome.title'))}
               </h1>
             </div>
             <p className='text-muted-foreground'>
-              Manage your profile and preferences
+              {t('memberHome.subtitle')}
             </p>
           </div>
 
@@ -33,10 +36,10 @@ export default function MemberHome() {
             <div className='text-center space-y-4'>
               <User className='h-16 w-16 mx-auto text-fm-gold/50' />
               <h2 className='text-2xl font-canela'>
-                {formatHeader('Member Profiles Coming Soon')}
+                {formatHeader(t('memberHome.comingSoonTitle'))}
               </h2>
               <p className='text-white/60'>
-                This feature is currently under development. Check back soon!
+                {t('memberHome.comingSoonDescription')}
               </p>
             </div>
           </div>

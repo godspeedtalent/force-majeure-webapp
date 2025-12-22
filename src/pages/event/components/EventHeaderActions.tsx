@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Eye, Share2, Star } from 'lucide-react';
 
 interface EventHeaderActionsProps {
@@ -32,12 +33,14 @@ export const EventHeaderActions = ({
   onInterestClick,
   onShareClick,
 }: EventHeaderActionsProps) => {
+  const { t } = useTranslation('common');
+
   return (
     <div className='flex items-center gap-2'>
       {/* Interest Button - with count inside */}
       <button
         type='button'
-        aria-label={isInterested ? 'Remove interest' : 'Mark as interested'}
+        aria-label={isInterested ? t('eventActions.removeInterest') : t('eventActions.markAsInterested')}
         onClick={onInterestClick}
         disabled={isInterestLoading}
         className='h-10 px-3 rounded-none flex items-center justify-center gap-2 bg-white/5 text-muted-foreground border border-transparent transition-all duration-200 hover:bg-white/10 hover:text-fm-gold hover:border-fm-gold hover:scale-105 active:scale-95 relative overflow-hidden cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
@@ -60,7 +63,7 @@ export const EventHeaderActions = ({
       <div className='flex items-center gap-1'>
         <button
           type='button'
-          aria-label='Share event'
+          aria-label={t('eventActions.shareEvent')}
           onClick={onShareClick}
           className='h-10 w-10 rounded-none flex items-center justify-center bg-white/5 text-muted-foreground border border-transparent transition-all duration-200 hover:bg-white/10 hover:text-fm-gold hover:border-fm-gold hover:scale-105 active:scale-95 relative overflow-hidden cursor-pointer'
         >

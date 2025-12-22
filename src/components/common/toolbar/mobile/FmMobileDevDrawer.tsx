@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Drawer,
   DrawerContent,
@@ -105,6 +106,8 @@ export function FmMobileDevDrawer({
   onToolSelect,
   badges,
 }: FmMobileDevDrawerProps) {
+  const { t } = useTranslation('common');
+
   const tools: Array<{
     id: MobileDevToolId;
     label: string;
@@ -112,27 +115,27 @@ export function FmMobileDevDrawer({
   }> = [
     {
       id: 'navigation',
-      label: 'Navigation',
+      label: t('mobileDevTools.tools.navigation'),
       icon: <Compass className="h-[24px] w-[24px]" strokeWidth={2} />,
     },
     {
       id: 'database',
-      label: 'Database',
+      label: t('mobileDevTools.tools.database'),
       icon: <Database className="h-[24px] w-[24px]" strokeWidth={2} />,
     },
     {
       id: 'features',
-      label: 'Features',
+      label: t('mobileDevTools.tools.features'),
       icon: <ToggleLeft className="h-[24px] w-[24px]" strokeWidth={2} />,
     },
     {
       id: 'session',
-      label: 'Session',
+      label: t('mobileDevTools.tools.session'),
       icon: <Settings2 className="h-[24px] w-[24px]" strokeWidth={2} />,
     },
     {
       id: 'notes',
-      label: 'Notes',
+      label: t('mobileDevTools.tools.notes'),
       icon: <ClipboardList className="h-[24px] w-[24px]" strokeWidth={2} />,
     },
   ];
@@ -159,7 +162,7 @@ export function FmMobileDevDrawer({
           <div className="mx-auto h-[4px] w-[100px] rounded-full bg-fm-gold/50 mb-[20px]" />
 
           <DrawerTitle className="text-center font-canela uppercase text-fm-gold text-lg">
-            Developer Tools
+            {t('mobileDevTools.title')}
           </DrawerTitle>
         </DrawerHeader>
 

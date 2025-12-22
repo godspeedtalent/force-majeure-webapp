@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/common/shadcn/input';
 import { Button } from '@/components/common/shadcn/button';
 import { Save } from 'lucide-react';
@@ -9,6 +10,7 @@ export interface FmFilterPresetSaveProps {
 }
 
 export function FmFilterPresetSave({ onSave, disabled = false }: FmFilterPresetSaveProps) {
+  const { t } = useTranslation('common');
   const [presetName, setPresetName] = useState('');
   const [showInput, setShowInput] = useState(false);
 
@@ -24,7 +26,7 @@ export function FmFilterPresetSave({ onSave, disabled = false }: FmFilterPresetS
     return (
       <div className='flex gap-2'>
         <Input
-          placeholder='Preset name...'
+          placeholder={t('dataGrid.presetNamePlaceholder')}
           value={presetName}
           onChange={e => setPresetName(e.target.value)}
           onKeyDown={e => {
@@ -35,10 +37,10 @@ export function FmFilterPresetSave({ onSave, disabled = false }: FmFilterPresetS
         />
         <Button onClick={handleSave} size='sm'>
           <Save className='h-4 w-4 mr-2' />
-          Save
+          {t('buttons.save')}
         </Button>
         <Button variant='ghost' onClick={() => setShowInput(false)} size='sm'>
-          Cancel
+          {t('buttons.cancel')}
         </Button>
       </div>
     );
@@ -53,7 +55,7 @@ export function FmFilterPresetSave({ onSave, disabled = false }: FmFilterPresetS
       disabled={disabled}
     >
       <Save className='h-4 w-4 mr-2' />
-      Save as Preset
+      {t('dataGrid.saveAsPreset')}
     </Button>
   );
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Search, Building2, Music, MapPin, Calendar, User, Eye, Pencil, Trash2, X, Clock } from 'lucide-react';
 import { Input } from '@/components/common/shadcn/input';
@@ -160,6 +161,8 @@ interface SearchResultItem {
  * Designed to be embedded within the Database Manager toolbar
  */
 export function DatabaseNavigatorSearch() {
+  const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -324,7 +327,7 @@ export function DatabaseNavigatorSearch() {
       });
     } catch (error) {
       handleError(error, {
-        title: 'Search Failed',
+        title: tToast('admin.databaseSearchFailed'),
         context: `Searching database resources for: ${query}`,
       });
     } finally {
@@ -413,12 +416,12 @@ export function DatabaseNavigatorSearch() {
         };
       });
 
-      toast.success(`${config.displayName} deleted`, {
-        description: `"${name}" has been permanently deleted.`,
+      toast.success(t('databaseSearch.toasts.deleted', { entity: t(`databaseSearch.entityDisplayNames.${type}`) }), {
+        description: t('databaseSearch.toasts.deletedDescription', { name }),
       });
     } catch (error) {
       handleError(error, {
-        title: `Failed to delete ${config.displayName.toLowerCase()}`,
+        title: t('databaseSearch.toasts.deleteFailed', { entity: t(`databaseSearch.entityTypes.${type}`) }),
         context: `Deleting ${name}`,
       });
     } finally {
@@ -428,29 +431,27 @@ export function DatabaseNavigatorSearch() {
 
   // Build context menu actions for a search result item
   const getContextMenuActions = useCallback((item: SearchResultItem): ContextMenuAction<SearchResultItem>[] => {
-    const config = ENTITY_CONFIG[item.type];
-
     return [
       {
-        label: 'Go to details',
+        label: t('databaseSearch.contextMenu.goToDetails'),
         icon: <Eye className='h-4 w-4' />,
         onClick: () => handleNavigateToDetails(item),
       },
       {
-        label: `Edit ${config.displayName.toLowerCase()}`,
+        label: t('databaseSearch.contextMenu.edit', { entity: t(`databaseSearch.entityTypes.${item.type}`) }),
         icon: <Pencil className='h-4 w-4' />,
         onClick: () => handleNavigateToEdit(item),
         separator: true,
       },
       {
-        label: `Delete ${config.displayName.toLowerCase()}`,
+        label: t('databaseSearch.contextMenu.delete', { entity: t(`databaseSearch.entityTypes.${item.type}`) }),
         icon: <Trash2 className='h-4 w-4' />,
         onClick: () => handleDeleteClick(item),
         variant: 'destructive',
         separator: true,
       },
       {
-        label: 'Cancel',
+        label: t('buttons.cancel'),
         icon: <X className='h-4 w-4' />,
         onClick: () => {},
       },
@@ -505,7 +506,7 @@ export function DatabaseNavigatorSearch() {
       {/* Description */}
       <div className='mb-3'>
         <p className='text-sm text-muted-foreground'>
-          Search across all database resources
+          {t('databaseSearch.description')}
         </p>
       </div>
 
@@ -514,7 +515,7 @@ export function DatabaseNavigatorSearch() {
         <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
         <Input
           type='text'
-          placeholder='Search users, artists, events...'
+          placeholder={t('databaseSearch.placeholder')}
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
           className='pl-9 pr-4'
@@ -532,7 +533,7 @@ export function DatabaseNavigatorSearch() {
           <div className='p-2'>
             <h3 className='text-xs font-semibold text-muted-foreground uppercase mb-2 px-2 flex items-center gap-2'>
               <Clock className='h-3 w-3' />
-              Recent records
+              {t('databaseSearch.recentRecords')}
             </h3>
             {recentRecords.map(record =>
               renderResultItem(
@@ -543,7 +544,7 @@ export function DatabaseNavigatorSearch() {
                   imageUrl: record.imageUrl,
                 },
                 record.imageUrl,
-                ENTITY_CONFIG[record.type].displayName
+                t(`databaseSearch.entityDisplayNames.${record.type}`)
               )
             )}
           </div>
@@ -557,7 +558,7 @@ export function DatabaseNavigatorSearch() {
           {results.organizations.length > 0 && (
             <div className='p-2 border-b'>
               <h3 className='text-xs font-semibold text-muted-foreground uppercase mb-2 px-2'>
-                Organizations
+                {t('databaseSearch.sections.organizations')}
               </h3>
               {results.organizations.map(org =>
                 renderResultItem(
@@ -572,14 +573,14 @@ export function DatabaseNavigatorSearch() {
           {results.users.length > 0 && (
             <div className='p-2 border-b'>
               <h3 className='text-xs font-semibold text-muted-foreground uppercase mb-2 px-2'>
-                Users
+                {t('databaseSearch.sections.users')}
               </h3>
               {results.users.map(user =>
                 renderResultItem(
                   {
                     id: user.id,
                     type: 'user',
-                    name: user.display_name || user.full_name || 'Unknown User',
+                    name: user.display_name || user.full_name || t('databaseSearch.unknownUser'),
                     imageUrl: user.avatar_url,
                   },
                   user.avatar_url,
@@ -593,7 +594,7 @@ export function DatabaseNavigatorSearch() {
           {results.artists.length > 0 && (
             <div className='p-2 border-b'>
               <h3 className='text-xs font-semibold text-muted-foreground uppercase mb-2 px-2'>
-                Artists
+                {t('databaseSearch.sections.artists')}
               </h3>
               {results.artists.map(artist =>
                 renderResultItem(
@@ -608,7 +609,7 @@ export function DatabaseNavigatorSearch() {
           {results.venues.length > 0 && (
             <div className='p-2 border-b'>
               <h3 className='text-xs font-semibold text-muted-foreground uppercase mb-2 px-2'>
-                Venues
+                {t('databaseSearch.sections.venues')}
               </h3>
               {results.venues.map(venue =>
                 renderResultItem(
@@ -623,13 +624,13 @@ export function DatabaseNavigatorSearch() {
           {results.events.length > 0 && (
             <div className='p-2'>
               <h3 className='text-xs font-semibold text-muted-foreground uppercase mb-2 px-2'>
-                Events
+                {t('databaseSearch.sections.events')}
               </h3>
               {results.events.map(event =>
                 renderResultItem(
                   { id: event.id, type: 'event', name: event.title, imageUrl: event.hero_image },
                   event.hero_image,
-                  `${event.date ? new Date(event.date).toLocaleDateString() : 'TBA'} • ${event.venue_name || 'TBA'}`
+                  `${event.date ? new Date(event.date).toLocaleDateString() : t('databaseSearch.tba')} • ${event.venue_name || t('databaseSearch.tba')}`
                 )
               )}
             </div>
@@ -641,7 +642,7 @@ export function DatabaseNavigatorSearch() {
       {searchQuery.trim().length >= 2 && !hasResults && !isSearching && (
         <div className='border rounded-md p-4 bg-background/50'>
           <p className='text-sm text-muted-foreground text-center'>
-            No results found for "{searchQuery}"
+            {t('databaseSearch.noResults', { query: searchQuery })}
           </p>
         </div>
       )}
@@ -654,14 +655,17 @@ export function DatabaseNavigatorSearch() {
             setDeleteConfirm({ open: false, item: null, isDeleting: false });
           }
         }}
-        title={`Delete ${deleteConfirm.item ? ENTITY_CONFIG[deleteConfirm.item.type].displayName.toLowerCase() : ''}?`}
+        title={deleteConfirm.item
+          ? t('databaseSearch.deleteDialog.title', { entity: t(`databaseSearch.entityTypes.${deleteConfirm.item.type}`) })
+          : ''
+        }
         description={
           deleteConfirm.item
-            ? `Are you sure you want to delete "${deleteConfirm.item.name}"? This action cannot be undone.`
+            ? t('databaseSearch.deleteDialog.description', { name: deleteConfirm.item.name })
             : ''
         }
-        confirmText='Delete'
-        cancelText='Cancel'
+        confirmText={t('actions.delete')}
+        cancelText={t('buttons.cancel')}
         onConfirm={handleConfirmDelete}
         variant='destructive'
         isLoading={deleteConfirm.isDeleting}

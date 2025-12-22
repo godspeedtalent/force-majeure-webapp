@@ -7,11 +7,14 @@ import { jsx as _jsx } from "react/jsx-runtime";
  * For larger datasets with search functionality, use FmCitySearchDropdown instead.
  */
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase, logger } from '@/shared';
 import { FmCommonSelect } from './FmCommonSelect';
-export function FmCityDropdown({ value, onChange, label, placeholder = 'Select a city', description, error, required = false, className, disabled = false, stateFilter, }) {
+export function FmCityDropdown({ value, onChange, label, placeholder, description, error, required = false, className, disabled = false, stateFilter, }) {
+    const { t } = useTranslation('common');
     const [cities, setCities] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const resolvedPlaceholder = placeholder || t('cityDropdown.selectCity');
     useEffect(() => {
         const fetchCities = async () => {
             setIsLoading(true);
@@ -43,5 +46,5 @@ export function FmCityDropdown({ value, onChange, label, placeholder = 'Select a
         value: city.id,
         label: `${city.name}, ${city.state}`,
     }));
-    return (_jsx(FmCommonSelect, { label: label, value: value || '', onChange: onChange, options: options, placeholder: isLoading ? 'Loading cities...' : placeholder, description: description, error: error, required: required, className: className, disabled: disabled || isLoading }));
+    return (_jsx(FmCommonSelect, { label: label, value: value || '', onChange: onChange, options: options, placeholder: isLoading ? t('cityDropdown.loadingCities') : resolvedPlaceholder, description: description, error: error, required: required, className: className, disabled: disabled || isLoading }));
 }

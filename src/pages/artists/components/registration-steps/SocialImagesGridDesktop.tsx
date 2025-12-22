@@ -55,7 +55,7 @@ export function SocialImagesGridDesktop({ formData, onImageUpload }: SocialImage
           ) : (
             <div className='absolute inset-0 flex flex-col items-center justify-center text-white/50 group-hover:text-fm-gold transition-colors'>
               <Upload className='h-6 w-6 mb-[5px]' />
-              <FmI18nCommon i18nKey='imageUpload.pressPhoto' as='span' className='text-xs font-canela' />
+              <FmI18nCommon i18nKey='imageUpload.pressPhoto' values={{ number: 1 }} as='span' className='text-xs font-canela' />
             </div>
           )}
         </div>
@@ -77,7 +77,7 @@ export function SocialImagesGridDesktop({ formData, onImageUpload }: SocialImage
             ) : (
               <div className='absolute inset-0 flex flex-col items-center justify-center text-white/50 group-hover:text-fm-gold transition-colors'>
                 <Upload className='h-6 w-6 mb-[5px]' />
-                <FmI18nCommon i18nKey='imageUpload.pressPhoto' as='span' className='text-xs font-canela' />
+                <FmI18nCommon i18nKey='imageUpload.pressPhoto' values={{ number: 2 }} as='span' className='text-xs font-canela' />
               </div>
             )}
           </div>
@@ -100,7 +100,7 @@ export function SocialImagesGridDesktop({ formData, onImageUpload }: SocialImage
             ) : (
               <div className='absolute inset-0 flex flex-col items-center justify-center text-white/50 group-hover:text-fm-gold transition-colors'>
                 <Upload className='h-6 w-6 mb-[5px]' />
-                <FmI18nCommon i18nKey='imageUpload.pressPhoto' as='span' className='text-xs font-canela' />
+                <FmI18nCommon i18nKey='imageUpload.pressPhoto' values={{ number: 3 }} as='span' className='text-xs font-canela' />
               </div>
             )}
           </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/common/shadcn/card';
 import { Label } from '@/components/common/shadcn/label';
 import { Switch } from '@/components/common/shadcn/switch';
@@ -7,23 +8,22 @@ import { toast } from 'sonner';
 
 interface DevToolSection {
   id: string;
-  label: string;
-  description: string;
+  labelKey: string;
+  descriptionKey: string;
   icon: React.ReactNode;
 }
 
 const DEV_TOOL_SECTIONS: DevToolSection[] = [
   {
     id: 'database',
-    label: 'Database Tools',
-    description:
-      'Access to Database tab in developer toolbar and database manager page',
+    labelKey: 'devToolsManagement.sections.database.label',
+    descriptionKey: 'devToolsManagement.sections.database.description',
     icon: <Database className='h-4 w-4' />,
   },
   {
     id: 'features',
-    label: 'Feature Flags',
-    description: 'Toggle feature flags for testing',
+    labelKey: 'devToolsManagement.sections.features.label',
+    descriptionKey: 'devToolsManagement.sections.features.description',
     icon: <ToggleLeft className='h-4 w-4' />,
   },
 ];
@@ -31,6 +31,7 @@ const DEV_TOOL_SECTIONS: DevToolSection[] = [
 const STORAGE_KEY = 'dev_tools_visibility';
 
 export const DevToolsManagement = () => {
+  const { t } = useTranslation('common');
   const [visibleSections, setVisibleSections] = useState<
     Record<string, boolean>
   >(() => {
@@ -60,12 +61,14 @@ export const DevToolsManagement = () => {
     setVisibleSections(prev => {
       const newState = { ...prev, [sectionId]: !prev[sectionId] };
       const isEnabled = newState[sectionId];
+      const section = DEV_TOOL_SECTIONS.find(s => s.id === sectionId);
+      const sectionLabel = section ? t(section.labelKey) : '';
 
       toast.success(
         isEnabled
-          ? `Enabled ${DEV_TOOL_SECTIONS.find(s => s.id === sectionId)?.label}`
-          : `Disabled ${DEV_TOOL_SECTIONS.find(s => s.id === sectionId)?.label}`,
-        { description: 'Changes will take effect on next page load' }
+          ? t('devToolsManagement.toast.enabled', { section: sectionLabel })
+          : t('devToolsManagement.toast.disabled', { section: sectionLabel }),
+        { description: t('devToolsManagement.toast.refreshRequired') }
       );
 
       return newState;
@@ -78,12 +81,10 @@ export const DevToolsManagement = () => {
         <Info className='h-5 w-5 text-fm-gold mt-0.5' />
         <div className='space-y-1'>
           <p className='text-sm font-medium text-foreground'>
-            Development Environment Controls
+            {t('devToolsManagement.title')}
           </p>
           <p className='text-sm text-muted-foreground'>
-            These settings control which sections appear in the dev toolbar at
-            the bottom of the screen. Changes require a page refresh to take
-            effect. The dev toolbar only appears in development mode.
+            {t('devToolsManagement.description')}
           </p>
         </div>
       </div>
@@ -101,10 +102,10 @@ export const DevToolsManagement = () => {
                     htmlFor={`toggle-${section.id}`}
                     className='text-sm font-medium cursor-pointer'
                   >
-                    {section.label}
+                    {t(section.labelKey)}
                   </Label>
                   <p className='text-xs text-muted-foreground'>
-                    {section.description}
+                    {t(section.descriptionKey)}
                   </p>
                 </div>
               </div>
@@ -121,8 +122,7 @@ export const DevToolsManagement = () => {
       <div className='flex items-center gap-2 text-xs text-muted-foreground'>
         <Code className='h-3 w-3' />
         <span>
-          Keyboard shortcut: Ctrl+Shift+D (Cmd+Shift+D on Mac) to toggle dev
-          toolbar
+          {t('devToolsManagement.keyboardShortcut')}
         </span>
       </div>
     </div>

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   User,
   UserCog,
@@ -23,70 +24,74 @@ interface RoleSelectSectionProps {
   onRoleChange: (role: DevRole) => void;
 }
 
-const roleConfig: Record<DevRole, { label: string; icon: typeof User }> = {
-  unauthenticated: { label: 'Unauthenticated', icon: UserX },
-  fan: { label: 'Fan (User)', icon: User },
-  developer: { label: 'Developer', icon: UserCog },
-  admin: { label: 'Admin', icon: Shield },
+const roleIcons: Record<DevRole, typeof User> = {
+  unauthenticated: UserX,
+  fan: User,
+  developer: UserCog,
+  admin: Shield,
 };
 
 export const RoleSelectSection = ({
   currentRole,
   onRoleChange,
 }: RoleSelectSectionProps) => {
-  const roleItems: DropdownItem[] = (Object.keys(roleConfig) as DevRole[]).map(
+  const { t } = useTranslation('common');
+
+  const getRoleLabel = (role: DevRole) => t(`roleSelect.roles.${role}`);
+
+  const roleItems: DropdownItem[] = (Object.keys(roleIcons) as DevRole[]).map(
     role => ({
-      label: roleConfig[role].label,
+      label: getRoleLabel(role),
       onClick: () => onRoleChange(role),
-      icon: roleConfig[role].icon,
+      icon: roleIcons[role],
     })
   );
 
   const effectiveRole = currentRole || 'fan';
-  const CurrentIcon = roleConfig[effectiveRole].icon;
+  const CurrentIcon = roleIcons[effectiveRole];
 
   return (
     <div className='space-y-6'>
-      <FmCommonToggleHeader title='Quick Navigation' defaultOpen={true}>
+      <FmCommonToggleHeader title={t('roleSelect.quickNavigation')} defaultOpen={true}>
         <div className='space-y-2'>
           <p className='text-xs text-white/50 mb-3'>
-            Quick navigation to developer-only pages and tools
+            {t('roleSelect.quickNavigationDescription')}
           </p>
           <FmCommonNavigationButton
             to='/developer'
-            label='Developer Tools'
+            label={t('roleSelect.nav.developerTools')}
             icon={Package}
-            description='Component catalog and developer resources'
+            description={t('roleSelect.nav.developerToolsDescription')}
             variant='outline'
           />
           <FmCommonNavigationButton
             to='/testing'
-            label='Testing Dashboard'
+            label={t('roleSelect.nav.testingDashboard')}
             icon={FlaskConical}
-            description='Run smoke tests and validations'
+            description={t('roleSelect.nav.testingDashboardDescription')}
             variant='outline'
           />
           <FmCommonNavigationButton
             to='/admin/statistics'
-            label='Statistics'
+            label={t('roleSelect.nav.statistics')}
             icon={BarChart3}
-            description='View application metrics'
+            description={t('roleSelect.nav.statisticsDescription')}
             variant='outline'
           />
           <FmCommonNavigationButton
             to='/admin/controls'
-            label='Admin Controls'
+            label={t('roleSelect.nav.adminControls')}
             icon={Settings}
-            description='Manage users and settings'
+            description={t('roleSelect.nav.adminControlsDescription')}
             variant='outline'
           />
         </div>
       </FmCommonToggleHeader>
 
-      <FmCommonToggleHeader title='Role Select' defaultOpen={true}>
+      <FmCommonToggleHeader title={t('roleSelect.title')} defaultOpen={true}>
         <div>
           <p className='text-xs text-white/50 mb-3'>
-            Simulate different user roles to test permissions and access control
+            {t('roleSelect.description')}
           </p>
           <FmCommonDropdown
             trigger={
@@ -96,7 +101,7 @@ export const RoleSelectSection = ({
               >
                 <span className='flex items-center gap-2'>
                   <CurrentIcon className='h-4 w-4' />
-                  {roleConfig[effectiveRole].label}
+                  {getRoleLabel(effectiveRole)}
                 </span>
               </Button>
             }

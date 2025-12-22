@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Instagram as InstagramIcon, Music, ChevronLeft } from 'lucide-react';
 import { SiSoundcloud, SiSpotify, SiTiktok } from 'react-icons/si';
@@ -7,6 +8,7 @@ import { cn } from '@/shared';
 import { useIsMobile } from '@/shared';
 import { SocialImagesGridMobile } from './SocialImagesGridMobile';
 import { SocialImagesGridDesktop } from './SocialImagesGridDesktop';
+import { ArtistImageUploadModal } from './ArtistImageUploadModal';
 import type { ArtistRegistrationFormData } from '../../types/registration';
 import { FmI18nCommon } from '@/components/common/i18n';
 
@@ -15,6 +17,13 @@ interface SocialImagesStepProps {
   onInputChange: (field: keyof ArtistRegistrationFormData, value: any) => void;
   onNext: () => void;
   onPrevious: () => void;
+}
+
+// Image field configuration for the upload modal
+interface ImageUploadConfig {
+  field: keyof ArtistRegistrationFormData;
+  label: string;
+  isPrimary: boolean;
 }
 
 export function SocialImagesStep({
@@ -26,9 +35,20 @@ export function SocialImagesStep({
   const { t } = useTranslation('common');
   const isMobile = useIsMobile();
 
+  // State for image upload modal
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [currentUploadConfig, setCurrentUploadConfig] = useState<ImageUploadConfig | null>(null);
+
   const handleImageUpload = (field: keyof ArtistRegistrationFormData, label: string) => {
-    const url = prompt(`Enter image URL for ${label}:`);
-    if (url) onInputChange(field, url);
+    const isPrimary = field === 'profileImageUrl';
+    setCurrentUploadConfig({ field, label, isPrimary });
+    setUploadModalOpen(true);
+  };
+
+  const handleImageUploaded = (url: string) => {
+    if (currentUploadConfig) {
+      onInputChange(currentUploadConfig.field, url);
+    }
   };
 
   return (
@@ -140,6 +160,16 @@ export function SocialImagesStep({
           {t('buttons.next')}
         </FmCommonButton>
       </div>
+
+      {/* Image Upload Modal */}
+      <ArtistImageUploadModal
+        open={uploadModalOpen}
+        onOpenChange={setUploadModalOpen}
+        label={currentUploadConfig?.label || ''}
+        value={currentUploadConfig ? (formData[currentUploadConfig.field] as string) || '' : ''}
+        onUpload={handleImageUploaded}
+        isPrimary={currentUploadConfig?.isPrimary || false}
+      />
     </div>
   );
 }

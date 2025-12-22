@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Search } from 'lucide-react';
 import { format, isPast, parseISO } from 'date-fns';
@@ -21,6 +22,7 @@ interface EventListItem {
 }
 
 export const EventListSection = () => {
+  const { t } = useTranslation('common');
   const { data: events, isLoading } = useEvents();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
@@ -63,7 +65,7 @@ export const EventListSection = () => {
   const columns: FmCommonListColumn<EventListItem>[] = [
     {
       key: 'headliner',
-      label: 'Headliner',
+      label: t('eventList.headliner'),
       render: (_, item) => (
         <div className='font-medium text-white'>
           {(item as any).headliner?.name || item.title || '-'}
@@ -72,7 +74,7 @@ export const EventListSection = () => {
     },
     {
       key: 'start_time',
-      label: 'Date',
+      label: t('eventList.date'),
       render: value => {
         if (!value) return <span className='text-muted-foreground'>-</span>;
         try {
@@ -95,7 +97,7 @@ export const EventListSection = () => {
     },
     {
       key: 'venue',
-      label: 'Venue',
+      label: t('eventList.venue'),
       render: (_, item) => (
         <span className='text-muted-foreground text-xs'>
           {(item as any).venue?.name || '-'}
@@ -113,25 +115,31 @@ export const EventListSection = () => {
     return (
       <div className='space-y-4'>
         <div className='text-center py-8 text-muted-foreground'>
-          Loading events...
+          {t('eventList.loading')}
         </div>
       </div>
     );
   }
+
+  const getEmptyMessage = () => {
+    if (searchQuery) return t('eventList.noMatchingEvents');
+    if (includePastEvents) return t('eventList.noEventsFound');
+    return t('eventList.noUpcomingEvents');
+  };
 
   return (
     <div className='space-y-4'>
       {/* Search Input */}
       <div className='space-y-2'>
         <Label htmlFor='event-search' className='text-white/70 text-xs'>
-          Search Events
+          {t('eventList.searchEvents')}
         </Label>
         <div className='relative'>
           <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
           <Input
             id='event-search'
             type='text'
-            placeholder='Search by title, venue, or artist...'
+            placeholder={t('eventList.searchPlaceholder')}
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className='pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/30'
@@ -145,7 +153,7 @@ export const EventListSection = () => {
           htmlFor='include-past'
           className='text-white/70 text-sm cursor-pointer'
         >
-          Include past events
+          {t('eventList.includePastEvents')}
         </Label>
         <Switch
           id='include-past'
@@ -157,21 +165,14 @@ export const EventListSection = () => {
       {/* Event List */}
       <div className='space-y-2'>
         <div className='text-white/50 text-xs mb-2'>
-          {filteredEvents.length} event{filteredEvents.length !== 1 ? 's' : ''}{' '}
-          found
+          {t('eventList.eventsFound', { count: filteredEvents.length })}
         </div>
         <FmCommonList
           items={filteredEvents}
           columns={columns}
           striped
           dense
-          emptyMessage={
-            searchQuery
-              ? 'No events match your search'
-              : includePastEvents
-                ? 'No events found'
-                : 'No upcoming events'
-          }
+          emptyMessage={getEmptyMessage()}
           rowClassName='hover:bg-fm-gold/10 transition-colors border-b border-white/5'
           className='max-h-[500px] overflow-y-auto'
           onRowClick={handleRowClick}

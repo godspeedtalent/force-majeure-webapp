@@ -1,4 +1,5 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useTranslation } from 'react-i18next';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, } from '@/components/common/shadcn/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@/components/common/shadcn/select';
 import { cn } from '@/shared';
@@ -21,6 +22,8 @@ import { cn } from '@/shared';
  * />
  * ```
  */
-export function FmCommonFormSelect({ form, name, label, description, options, placeholder = 'Select an option', required = false, disabled = false, className, }) {
-    return (_jsx(FormField, { control: form.control, name: name, render: ({ field }) => (_jsxs(FormItem, { className: cn(className), children: [_jsxs(FormLabel, { children: [label, required && _jsx("span", { className: 'text-destructive ml-1', children: "*" })] }), _jsxs(Select, { onValueChange: field.onChange, defaultValue: field.value, disabled: disabled, children: [_jsx(FormControl, { children: _jsx(SelectTrigger, { children: _jsx(SelectValue, { placeholder: placeholder }) }) }), _jsx(SelectContent, { children: options.map(option => (_jsx(SelectItem, { value: option.value, disabled: option.disabled, children: option.label }, option.value))) })] }), description && _jsx(FormDescription, { children: description }), _jsx(FormMessage, {})] })) }));
+export function FmCommonFormSelect({ form, name, label, description, options, placeholder, required = false, disabled = false, className, }) {
+    const { t } = useTranslation('common');
+    const resolvedPlaceholder = placeholder || t('formSelect.selectAnOption');
+    return (_jsx(FormField, { control: form.control, name: name, render: ({ field }) => (_jsxs(FormItem, { className: cn(className), children: [_jsxs(FormLabel, { children: [label, required && _jsx("span", { className: 'text-destructive ml-1', children: "*" })] }), _jsxs(Select, { onValueChange: field.onChange, defaultValue: field.value, disabled: disabled, children: [_jsx(FormControl, { children: _jsx(SelectTrigger, { children: _jsx(SelectValue, { placeholder: resolvedPlaceholder }) }) }), _jsx(SelectContent, { children: options.map(option => (_jsx(SelectItem, { value: option.value, disabled: option.disabled, children: option.label }, option.value))) })] }), description && _jsx(FormDescription, { children: description }), _jsx(FormMessage, {})] })) }));
 }

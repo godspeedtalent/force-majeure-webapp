@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { FmCommonCollapsibleSection } from '@/components/common/data/FmCommonCollapsibleSection';
 import { FmCommonStackLayout } from '@/components/common/layout';
 import {
@@ -16,13 +17,15 @@ export function CallTimesSection({
   hasDescription,
   onArtistSelect,
 }: CallTimesSectionProps) {
+  const { t } = useTranslation('common');
+
   if (callTimeLineup.length === 0) {
     return null;
   }
 
   return (
     <FmCommonCollapsibleSection
-      title='Call times'
+      title={t('undercardApplication.callTimes')}
       defaultExpanded={true}
       className={!hasDescription ? 'lg:col-span-2' : ''}
     >

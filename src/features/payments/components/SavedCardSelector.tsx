@@ -1,4 +1,5 @@
 import { CreditCard, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/shared';
 import type { SavedCard } from '../types';
 
@@ -24,6 +25,8 @@ export const SavedCardSelector = ({
   onUseNewCard,
   loading = false,
 }: SavedCardSelectorProps) => {
+  const { t } = useTranslation('common');
+
   if (cards.length === 0) {
     return null;
   }
@@ -35,7 +38,7 @@ export const SavedCardSelector = ({
 
   return (
     <div className='space-y-3'>
-      <p className='text-sm font-medium text-foreground'>Saved Cards</p>
+      <p className='text-sm font-medium text-foreground'>{t('savedCards.title')}</p>
 
       <div className='space-y-2'>
         {cards.map(card => (
@@ -68,7 +71,7 @@ export const SavedCardSelector = ({
                     </span>
                   </div>
                   <span className='text-xs text-muted-foreground'>
-                    Expires {card.exp_month}/{card.exp_year}
+                    {t('savedCards.expires', { month: card.exp_month, year: card.exp_year })}
                   </span>
                 </div>
               </div>
@@ -85,7 +88,7 @@ export const SavedCardSelector = ({
                     'opacity-0 group-hover:opacity-100 transition-opacity',
                     'p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive'
                   )}
-                  title='Remove card'
+                  title={t('savedCards.removeCard')}
                 >
                   <Trash2 className='h-4 w-4' />
                 </button>
@@ -102,7 +105,7 @@ export const SavedCardSelector = ({
           disabled={loading}
           className='text-sm text-fm-gold hover:underline transition-all disabled:opacity-50'
         >
-          + Use a different card
+          {t('savedCards.useDifferentCard')}
         </button>
       )}
     </div>

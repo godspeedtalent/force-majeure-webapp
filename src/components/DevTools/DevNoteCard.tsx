@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { MoreVertical } from 'lucide-react';
 import { Card, CardContent, CardFooter } from '@/components/common/shadcn/card';
 import { Separator } from '@/components/common/shadcn/separator';
@@ -20,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/common/shadcn/dropdown-menu';
 import { cn } from '@/shared';
+import { PRIORITY_CONFIG } from './config/devNotesConfig';
 
 type NoteType = 'TODO' | 'INFO' | 'BUG' | 'QUESTION';
 type NoteStatus =
@@ -37,6 +39,7 @@ interface DevNote {
   author_name: string;
   author_id: string;
   created_at: string;
+  priority: number;
 }
 
 interface DevNoteCardProps {
@@ -75,6 +78,7 @@ export const DevNoteCard = ({
   formatDate,
   getStatusDisplayName,
 }: DevNoteCardProps) => {
+  const { t } = useTranslation('common');
   const TypeIcon = typeConfig.icon;
 
   return (
@@ -128,13 +132,13 @@ export const DevNoteCard = ({
                       onSelect={onInspect}
                       className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
                     >
-                      Inspect
+                      {t('devNotes.inspect')}
                     </DropdownMenuItem>
                     {canEdit && (
                       <>
                         <DropdownMenuSub>
                           <DropdownMenuSubTrigger className='text-white hover:bg-muted focus:bg-muted cursor-pointer'>
-                            Set Status
+                            {t('devNotes.setStatus')}
                           </DropdownMenuSubTrigger>
                           <DropdownMenuSubContent className='bg-card border-border rounded-none w-40'>
                             <DropdownMenuItem
@@ -173,7 +177,7 @@ export const DevNoteCard = ({
                           onSelect={onDelete}
                           className='text-red-400 hover:bg-muted focus:bg-muted cursor-pointer'
                         >
-                          Delete
+                          {t('actions.delete')}
                         </DropdownMenuItem>
                       </>
                     )}
@@ -182,7 +186,7 @@ export const DevNoteCard = ({
               </div>
 
               {/* Message */}
-              <p className='text-xs text-white leading-snug line-clamp-3 px-2'>
+              <p className='text-xs text-white leading-snug line-clamp-3 px-2 whitespace-pre-wrap'>
                 {note.message}
               </p>
             </CardContent>
@@ -190,9 +194,15 @@ export const DevNoteCard = ({
             <Separator className='bg-border/50' />
 
             <CardFooter className='p-[8px] pl-[32px] pt-[6px] flex items-center justify-between text-[10px] text-muted-foreground'>
-              <span className='font-medium text-fm-gold'>
-                {note.author_name}
-              </span>
+              <div className='flex items-center gap-2'>
+                <span className='font-medium text-fm-gold'>
+                  {note.author_name}
+                </span>
+                {/* Priority indicator */}
+                <span className={cn('text-[9px] font-medium', PRIORITY_CONFIG[note.priority || 3]?.color)}>
+                  P{note.priority || 3}
+                </span>
+              </div>
               <span>{formatDate(note.created_at)}</span>
             </CardFooter>
         </Card>
@@ -203,13 +213,13 @@ export const DevNoteCard = ({
           onSelect={onInspect}
           className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
         >
-          Inspect
+          {t('devNotes.inspect')}
         </ContextMenuItem>
         {canEdit && (
           <>
             <ContextMenuSub>
               <ContextMenuSubTrigger className='text-white hover:bg-muted focus:bg-muted cursor-pointer'>
-                Set Status
+                {t('devNotes.setStatus')}
               </ContextMenuSubTrigger>
               <ContextMenuSubContent className='bg-card border-border rounded-none w-40'>
                 <ContextMenuItem
@@ -248,7 +258,7 @@ export const DevNoteCard = ({
               onSelect={onDelete}
               className='text-red-400 hover:bg-muted focus:bg-muted cursor-pointer'
             >
-              Delete
+              {t('actions.delete')}
             </ContextMenuItem>
           </>
         )}

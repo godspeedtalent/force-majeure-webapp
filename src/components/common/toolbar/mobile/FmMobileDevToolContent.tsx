@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -24,14 +25,6 @@ interface FmMobileDevToolContentProps {
   isAdmin: boolean;
 }
 
-const toolLabels: Record<MobileDevToolId, string> = {
-  navigation: 'Navigation',
-  database: 'Database',
-  features: 'Feature Toggles',
-  session: 'Session Overrides',
-  notes: 'Developer Notes',
-};
-
 /**
  * Nested drawer for displaying individual developer tool content
  * Full-screen (90vh) overlay with header (back/close buttons) and scrollable content
@@ -43,7 +36,16 @@ export function FmMobileDevToolContent({
   onClose,
   isAdmin,
 }: FmMobileDevToolContentProps) {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
+
+  const toolLabels: Record<MobileDevToolId, string> = {
+    navigation: t('mobileDevTools.toolLabels.navigation'),
+    database: t('mobileDevTools.toolLabels.database'),
+    features: t('mobileDevTools.toolLabels.features'),
+    session: t('mobileDevTools.toolLabels.session'),
+    notes: t('mobileDevTools.toolLabels.notes'),
+  };
 
   if (!toolId) return null;
 
@@ -77,7 +79,7 @@ export function FmMobileDevToolContent({
       case 'notes':
         return <DevNotesTabContent />;
       default:
-        return <div className="text-white/50 text-center">Tool not found</div>;
+        return <div className="text-white/50 text-center">{t('mobileDevTools.toolNotFound')}</div>;
     }
   };
 
@@ -123,7 +125,7 @@ export function FmMobileDevToolContent({
               'text-white',
               'transition-all duration-200'
             )}
-            aria-label="Go back"
+            aria-label={t('buttons.goBack')}
           >
             <ArrowLeft className="h-[20px] w-[20px]" strokeWidth={2} />
           </Button>
@@ -144,7 +146,7 @@ export function FmMobileDevToolContent({
               'text-white',
               'transition-all duration-200'
             )}
-            aria-label="Close"
+            aria-label={t('buttons.close')}
           >
             <X className="h-[20px] w-[20px]" strokeWidth={2} />
           </Button>

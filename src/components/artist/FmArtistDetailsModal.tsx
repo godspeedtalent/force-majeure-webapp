@@ -1,4 +1,5 @@
 import { type ReactNode, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { FmResourceDetailsModal } from '@/components/common/modals/FmResourceDetailsModal';
 
@@ -16,9 +17,6 @@ export interface FmArtistDetailsModalProps {
   onManage?: (artistId: string) => void;
 }
 
-const DEFAULT_DESCRIPTION =
-  'More information about this artist will be available soon. Check back closer to the event for set times, featured tracks, and exclusive interviews.';
-
 export const FmArtistDetailsModal = ({
   artist,
   open,
@@ -26,6 +24,7 @@ export const FmArtistDetailsModal = ({
   canManage = false,
   onManage,
 }: FmArtistDetailsModalProps) => {
+  const { t } = useTranslation('common');
   const badges = useMemo(() => {
     if (!artist?.genre) return [];
     return artist.genre
@@ -48,15 +47,15 @@ export const FmArtistDetailsModal = ({
     <FmResourceDetailsModal
       open={open}
       onOpenChange={onOpenChange}
-      title={artist?.name ?? 'Artist'}
-      eyebrow='Artist Spotlight'
+      title={artist?.name ?? t('artistDetails.defaultTitle')}
+      eyebrow={t('artistDetails.spotlight')}
       imageUrl={artist?.image}
       layout='side-by-side'
       badges={badges}
       canManage={canManage && !!artist?.id}
       onManage={handleManage}
     >
-      {artist?.description ?? DEFAULT_DESCRIPTION}
+      {artist?.description ?? t('artistDetails.defaultDescription')}
     </FmResourceDetailsModal>
   );
 };

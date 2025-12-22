@@ -277,7 +277,7 @@ export const FeatureToggleSection = () => {
           {hasAnyOverrides && (
             <div className='flex items-center gap-1.5'>
               <span className='text-[10px] text-white/50'>
-                {overrideCount} {overrideCount === 1 ? 'override' : 'overrides'}
+                {t('devTools.featureToggles.overrideCount', { count: overrideCount })}
               </span>
               <Button
                 variant='ghost'
@@ -339,7 +339,7 @@ export const FeatureToggleSection = () => {
                     <div className='flex items-center gap-1 px-1.5 py-1'>
                       {/* Override expand/collapse button */}
                       <FmPortalTooltip
-                        content={hasOverride ? 'Session override active' : 'Add session override'}
+                        content={hasOverride ? t('devTools.featureToggles.sessionOverrideActive') : t('devTools.featureToggles.addSessionOverride')}
                         side='top'
                       >
                         <Button
@@ -377,7 +377,7 @@ export const FeatureToggleSection = () => {
 
                       {/* Clear override button */}
                       {hasOverride && (
-                        <FmPortalTooltip content='Clear override' side='top'>
+                        <FmPortalTooltip content={t('devTools.featureToggles.clearOverride')} side='top'>
                           <Button
                             variant='ghost'
                             size='sm'
@@ -394,23 +394,23 @@ export const FeatureToggleSection = () => {
                     {isExpanded && (
                       <div className='mx-1.5 mb-1.5 px-2 py-1.5 border-t border-white/10 bg-black/20 space-y-1.5'>
                         <div className='flex items-center justify-between'>
-                          <span className='text-[10px] text-white/50'>Database value</span>
+                          <span className='text-[10px] text-white/50'>{t('devTools.featureToggles.databaseValue')}</span>
                           <span className={cn(
                             'text-[10px] font-medium',
                             databaseValue ? 'text-green-400' : 'text-white/30'
                           )}>
-                            {databaseValue ? 'ON' : 'OFF'}
+                            {databaseValue ? t('devTools.featureToggles.on') : t('devTools.featureToggles.off')}
                           </span>
                         </div>
                         <div className='flex items-center justify-between'>
-                          <span className='text-[10px] text-white/50'>Session override</span>
+                          <span className='text-[10px] text-white/50'>{t('devTools.featureToggles.sessionOverride')}</span>
                           {hasOverride ? (
                             <div className='flex items-center gap-1.5'>
                               <span className={cn(
                                 'text-[10px] font-medium',
                                 overrideValue ? 'text-fm-gold' : 'text-white/30'
                               )}>
-                                {overrideValue ? 'ON' : 'OFF'}
+                                {overrideValue ? t('devTools.featureToggles.on') : t('devTools.featureToggles.off')}
                               </span>
                               <Button
                                 variant='ghost'
@@ -418,11 +418,11 @@ export const FeatureToggleSection = () => {
                                 onClick={() => handleClearOverride(flag.flag_name)}
                                 className='h-4 px-1.5 text-[9px] text-white/50 hover:text-white hover:bg-white/10'
                               >
-                                Clear
+                                {t('buttons.clear')}
                               </Button>
                             </div>
                           ) : (
-                            <span className='text-[10px] text-white/30'>None</span>
+                            <span className='text-[10px] text-white/30'>{t('devTools.featureToggles.none')}</span>
                           )}
                         </div>
                         {!hasOverride && (
@@ -432,7 +432,7 @@ export const FeatureToggleSection = () => {
                             onClick={() => handleSessionOverrideToggle(flag.flag_name)}
                             className='w-full h-5 text-[10px] border-white/20 hover:bg-white/10 mt-0.5'
                           >
-                            Override to {databaseValue ? 'OFF' : 'ON'}
+                            {t('devTools.featureToggles.overrideTo', { value: databaseValue ? t('devTools.featureToggles.off') : t('devTools.featureToggles.on') })}
                           </Button>
                         )}
                       </div>
@@ -454,7 +454,7 @@ export const FeatureToggleSection = () => {
             {t('devTools.featureToggles.applyChanges')}
           </Button>
           <p className='text-[9px] text-white/30 mt-1.5 text-center'>
-            Toggles modify your session. Use Apply to persist to database.
+            {t('devTools.featureToggles.togglesDescription')}
           </p>
         </div>
       </div>
