@@ -1,1 +1,0 @@
-export { GuestListSettings } from './GuestListSettings';
