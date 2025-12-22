@@ -1,3 +1,3 @@
 // Shared API exports
-export { supabase } from './supabase/client';
+export { supabase } from '@/integrations/supabase/client';
 export type { Database } from './supabase/types';
