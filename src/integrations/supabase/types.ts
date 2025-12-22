@@ -239,30 +239,38 @@ export type Database = {
           artist_name: string
           availability: string | null
           bio: string
-          city: string
+          city: string | null
           city_id: string | null
           created_at: string
           crowd_sources: string | null
-          email: string
+          email: string | null
           equipment: string | null
-          genre: string
+          genre: string | null
+          genres: string[] | null
           id: string
           instagram_handle: string | null
+          link_personal_profile: boolean | null
+          notifications_opt_in: boolean | null
           paid_show_count_group: string | null
-          phone: string
+          phone: string | null
+          press_images: string[] | null
           previous_venues: string | null
+          profile_image_url: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           reviewer_notes: string | null
           set_length: string | null
           soundcloud_id: string | null
+          soundcloud_set_url: string | null
           soundcloud_url: string | null
           spotify_id: string | null
+          spotify_track_url: string | null
           spotify_url: string | null
-          state: string
+          state: string | null
           status: string
           submitted_at: string
           talent_differentiator: string | null
+          tiktok_handle: string | null
           updated_at: string
           user_id: string | null
         }
@@ -270,30 +278,38 @@ export type Database = {
           artist_name: string
           availability?: string | null
           bio: string
-          city: string
+          city?: string | null
           city_id?: string | null
           created_at?: string
           crowd_sources?: string | null
-          email: string
+          email?: string | null
           equipment?: string | null
-          genre: string
+          genre?: string | null
+          genres?: string[] | null
           id?: string
           instagram_handle?: string | null
+          link_personal_profile?: boolean | null
+          notifications_opt_in?: boolean | null
           paid_show_count_group?: string | null
-          phone: string
+          phone?: string | null
+          press_images?: string[] | null
           previous_venues?: string | null
+          profile_image_url?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           reviewer_notes?: string | null
           set_length?: string | null
           soundcloud_id?: string | null
+          soundcloud_set_url?: string | null
           soundcloud_url?: string | null
           spotify_id?: string | null
+          spotify_track_url?: string | null
           spotify_url?: string | null
-          state: string
+          state?: string | null
           status?: string
           submitted_at?: string
           talent_differentiator?: string | null
+          tiktok_handle?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -301,30 +317,38 @@ export type Database = {
           artist_name?: string
           availability?: string | null
           bio?: string
-          city?: string
+          city?: string | null
           city_id?: string | null
           created_at?: string
           crowd_sources?: string | null
-          email?: string
+          email?: string | null
           equipment?: string | null
-          genre?: string
+          genre?: string | null
+          genres?: string[] | null
           id?: string
           instagram_handle?: string | null
+          link_personal_profile?: boolean | null
+          notifications_opt_in?: boolean | null
           paid_show_count_group?: string | null
-          phone?: string
+          phone?: string | null
+          press_images?: string[] | null
           previous_venues?: string | null
+          profile_image_url?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           reviewer_notes?: string | null
           set_length?: string | null
           soundcloud_id?: string | null
+          soundcloud_set_url?: string | null
           soundcloud_url?: string | null
           spotify_id?: string | null
+          spotify_track_url?: string | null
           spotify_url?: string | null
-          state?: string
+          state?: string | null
           status?: string
           submitted_at?: string
           talent_differentiator?: string | null
+          tiktok_handle?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -509,6 +533,7 @@ export type Database = {
           created_at: string | null
           id: string
           message: string
+          priority: number
           status: string
           type: string
           updated_at: string | null
@@ -519,6 +544,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           message: string
+          priority?: number
           status?: string
           type: string
           updated_at?: string | null
@@ -529,6 +555,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           message?: string
+          priority?: number
           status?: string
           type?: string
           updated_at?: string | null
@@ -1356,6 +1383,7 @@ export type Database = {
           home_city: string | null
           id: string
           instagram_handle: string | null
+          notification_settings: Json | null
           organization_id: string | null
           phone_number: string | null
           preferred_locale: string | null
@@ -1381,6 +1409,7 @@ export type Database = {
           home_city?: string | null
           id: string
           instagram_handle?: string | null
+          notification_settings?: Json | null
           organization_id?: string | null
           phone_number?: string | null
           preferred_locale?: string | null
@@ -1406,6 +1435,7 @@ export type Database = {
           home_city?: string | null
           id?: string
           instagram_handle?: string | null
+          notification_settings?: Json | null
           organization_id?: string | null
           phone_number?: string | null
           preferred_locale?: string | null
