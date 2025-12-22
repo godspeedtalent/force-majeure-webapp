@@ -24,8 +24,8 @@ export const ArtistRegistrationLayout = ({ children }: ArtistRegistrationLayoutP
       {/* Navigation */}
       <Navigation />
 
-      {/* Main Content */}
-      <main className='relative z-10 flex-1'>
+      {/* Main Content - h-[calc(100vh-64px)] accounts for nav height */}
+      <main className='relative z-10 flex-1 h-[calc(100vh-64px)]'>
         {children}
       </main>
     </div>
