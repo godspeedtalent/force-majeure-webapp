@@ -12,7 +12,7 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonUserPhoto } from '@/components/common/display/FmCommonUserPhoto';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useToast } from '@/shared/hooks/use-toast';
-import { supabase } from '@/shared/api/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/shared/services/logger';
 
 export function ProfilePictureSection() {
