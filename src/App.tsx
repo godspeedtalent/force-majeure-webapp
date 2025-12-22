@@ -461,7 +461,9 @@ const App = () => {
                     <Sonner />
                     <BrowserRouter>
                       <CheckoutProvider>
-                        <AppRoutes />
+                        <Suspense fallback={<LazyLoadFallback />}>
+                          <AppRoutes />
+                        </Suspense>
                         <FmToolbar />
                         <FmMobileDevToolbar />
                         <GlobalSearchWrapper />
