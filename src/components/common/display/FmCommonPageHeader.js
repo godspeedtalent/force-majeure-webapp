@@ -1,6 +1,0 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
-import { cn } from '@/shared';
-export const FmCommonPageHeader = ({ title, icon: Icon, description, actions, stats, showDivider = true, className, }) => {
-    return (_jsxs("div", { className: cn('space-y-6', className), children: [_jsxs("div", { className: 'flex items-start justify-between gap-4', children: [_jsxs("div", { className: 'space-y-2', children: [_jsxs("div", { className: 'flex items-center gap-3', children: [Icon && (_jsx("div", { className: 'flex items-center justify-center w-10 h-10 rounded-lg bg-accent/10', children: _jsx(Icon, { className: 'w-5 h-5 text-accent' }) })), _jsx("h1", { className: 'text-3xl lg:text-4xl font-canela tracking-wide text-foreground', children: title })] }), description && (_jsx("p", { className: 'text-muted-foreground text-sm max-w-2xl', children: description }))] }), actions && _jsx("div", { className: 'flex items-center gap-2', children: actions })] }), stats && (_jsx("div", { className: 'grid gap-4 md:grid-cols-2 lg:grid-cols-4', children: stats })), showDivider && _jsx(DecorativeDivider, {})] }));
-};
