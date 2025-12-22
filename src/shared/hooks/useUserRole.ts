@@ -8,6 +8,7 @@ import {
   type Permission,
   type Role,
 } from '@/shared';
+import { useMockRoleSafe } from '@/shared/contexts/MockRoleContext';
 
 export interface UserRole {
   role_name: string;
@@ -50,9 +51,31 @@ export const useUserRole = () => {
 /**
  * Enhanced permission checking with type safety
  * Provides comprehensive methods for checking user permissions and roles
+ *
+ * Supports mock role simulation for development/testing:
+ * - When mock role is active, permission checks use the simulated role
+ * - Actual user roles are still available via `actualRoles` property
+ * - Use `isMockActive` to check if simulation is enabled
  */
 export const useUserPermissions = () => {
   const { data: roles } = useUserRole();
+  const { mockRole, isMockActive, getMockPermissions } = useMockRoleSafe();
+
+  /**
+   * Get effective roles considering mock mode
+   * When mock is active, returns simulated role data
+   */
+  const getEffectiveRoles = (): UserRole[] => {
+    if (isMockActive && mockRole !== 'disabled') {
+      const mockPermissions = getMockPermissions();
+      return [{
+        role_name: mockRole,
+        display_name: mockRole.charAt(0).toUpperCase() + mockRole.slice(1).replace('_', ' '),
+        permission_names: mockPermissions,
+      }];
+    }
+    return roles || [];
+  };
 
   /**
    * Check if user is an admin
@@ -60,8 +83,9 @@ export const useUserPermissions = () => {
    * @returns true if user has the admin role
    */
   const isAdmin = (): boolean => {
-    if (!roles) return false;
-    return roles.some(role => role.role_name === 'admin');
+    const effectiveRoles = getEffectiveRoles();
+    if (effectiveRoles.length === 0) return false;
+    return effectiveRoles.some(role => role.role_name === 'admin');
   };
 
   /**
@@ -70,10 +94,11 @@ export const useUserPermissions = () => {
    * @returns true if user is admin OR has the specific permission
    */
   const hasPermission = (permission: Permission): boolean => {
-    if (!roles) return false;
+    const effectiveRoles = getEffectiveRoles();
+    if (effectiveRoles.length === 0) return false;
     // Admin role automatically grants all permissions
     if (isAdmin()) return true;
-    return roles.some(
+    return effectiveRoles.some(
       role =>
         role.permission_names.includes(PERMISSIONS.ALL) ||
         role.permission_names.includes(permission)
@@ -105,10 +130,11 @@ export const useUserPermissions = () => {
    * @note Admins are automatically considered developers
    */
   const hasRole = (roleName: Role): boolean => {
-    if (!roles) return false;
+    const effectiveRoles = getEffectiveRoles();
+    if (effectiveRoles.length === 0) return false;
     // Admins are automatically considered developers
     if (roleName === 'developer' && isAdmin()) return true;
-    return roles.some(role => role.role_name === roleName);
+    return effectiveRoles.some(role => role.role_name === roleName);
   };
 
   /**
@@ -127,8 +153,8 @@ export const useUserPermissions = () => {
    * @returns Array of role names the user has
    */
   const getRoles = (): Role[] => {
-    if (!roles) return [];
-    return roles.map(role => role.role_name as Role);
+    const effectiveRoles = getEffectiveRoles();
+    return effectiveRoles.map(role => role.role_name as Role);
   };
 
   /**
@@ -136,14 +162,27 @@ export const useUserPermissions = () => {
    * @returns Array of all permissions the user has
    */
   const getPermissions = (): Permission[] => {
-    if (!roles) return [];
+    const effectiveRoles = getEffectiveRoles();
+    if (effectiveRoles.length === 0) return [];
     const allPermissions = new Set<Permission>();
-    roles.forEach(role => {
+    effectiveRoles.forEach(role => {
       role.permission_names.forEach(perm =>
         allPermissions.add(perm as Permission)
       );
     });
     return Array.from(allPermissions);
+  };
+
+  /**
+   * Check if the current user is actually an admin/developer
+   * This bypasses mock role to check real permissions
+   * Used for showing/hiding dev tools themselves
+   */
+  const isActuallyDeveloperOrAdmin = (): boolean => {
+    if (!roles) return false;
+    return roles.some(role =>
+      role.role_name === 'admin' || role.role_name === 'developer'
+    );
   };
 
   return {
@@ -156,5 +195,10 @@ export const useUserPermissions = () => {
     getRoles,
     getPermissions,
     roles,
+    // Mock role utilities
+    isMockActive,
+    mockRole,
+    actualRoles: roles,
+    isActuallyDeveloperOrAdmin,
   };
 };

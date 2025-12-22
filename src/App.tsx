@@ -64,6 +64,7 @@ import { ROLES } from '@/shared';
 import { FEATURE_FLAGS } from '@/shared';
 import { CheckoutProvider } from '@/contexts/CheckoutContext';
 import { ShoppingCartProvider } from '@/shared';
+import { MockRoleProvider } from '@/shared/contexts/MockRoleContext';
 import {
   GlobalSearchProvider,
   useGlobalSearch,
@@ -380,7 +381,6 @@ const AppRoutes = () => {
       {comingSoonMode ? (
         <>
           <Route path='/' element={<ComingSoon />} />
-          <Route path='*' element={<Navigate to='/' replace />} />
         </>
       ) : (
         <>
@@ -434,11 +434,11 @@ const AppRoutes = () => {
 
           {/* Artist Routes - signup and register are above, outside coming soon mode */}
           <Route path='/artists' element={<Navigate to='/' replace />} />
-
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path='*' element={<NotFound />} />
         </>
       )}
+
+      {/* Catch-all route - must be last */}
+      <Route path='*' element={comingSoonMode ? <Navigate to='/' replace /> : <NotFound />} />
     </Routes>
   );
 };
@@ -453,23 +453,25 @@ const App = () => {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <StripeProvider>
-            <ShoppingCartProvider>
-              <GlobalSearchProvider>
-                <TooltipProvider>
-                  <Sonner />
-                  <BrowserRouter>
-                    <CheckoutProvider>
-                      <AppRoutes />
-                      <FmToolbar />
-                      <FmMobileDevToolbar />
-                      <GlobalSearchWrapper />
-                    </CheckoutProvider>
-                  </BrowserRouter>
-                </TooltipProvider>
-              </GlobalSearchProvider>
-            </ShoppingCartProvider>
-          </StripeProvider>
+          <MockRoleProvider>
+            <StripeProvider>
+              <ShoppingCartProvider>
+                <GlobalSearchProvider>
+                  <TooltipProvider>
+                    <Sonner />
+                    <BrowserRouter>
+                      <CheckoutProvider>
+                        <AppRoutes />
+                        <FmToolbar />
+                        <FmMobileDevToolbar />
+                        <GlobalSearchWrapper />
+                      </CheckoutProvider>
+                    </BrowserRouter>
+                  </TooltipProvider>
+                </GlobalSearchProvider>
+              </ShoppingCartProvider>
+            </StripeProvider>
+          </MockRoleProvider>
         </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>

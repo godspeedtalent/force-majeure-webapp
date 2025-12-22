@@ -220,11 +220,26 @@
     "featureToggles": "Toggles de Funciones",
     "todoNotes": "Notas TODO",
     "devNotes": "Notas de Desarrollo",
+    "mockRole": "Rol Simulado",
+    "mockRoleSimulator": "Simulador de Roles",
     "dragToResize": "Arrastrar para redimensionar",
     "groups": {
       "organization": "Organización",
       "developerTools": "Herramientas de Desarrollador"
     }
+  },
+  "mockRole": {
+    "activeWarning": "Rol simulado activo",
+    "activeDescription": "Estás viendo la app como {{role}}. La UI y los permisos reflejan este rol simulado.",
+    "description": "Simula diferentes roles de usuario para probar la visibilidad de la UI y el comportamiento de permisos sin cerrar sesión.",
+    "yourActualRoles": "Tus roles reales",
+    "noRoles": "Sin roles asignados",
+    "noRolesAvailable": "No hay roles disponibles",
+    "simulateRole": "Selecciona un rol para simular",
+    "allPermissions": "Todos",
+    "permissionCount": "{{count}} permisos",
+    "permissionCount_one": "{{count}} permiso",
+    "clearSimulation": "Limpiar simulación"
   },
   "searchDropdown": {
     "placeholder": "Buscar...",

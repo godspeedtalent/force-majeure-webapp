@@ -9,3 +9,4 @@ export { EventInfoSection } from './EventInfoSection';
 export { EventHeaderActions } from './EventHeaderActions';
 export { EventCallTimes } from './EventCallTimes';
 export { EventGuestList } from './EventGuestList';
+export { AttendeeModal } from './AttendeeModal';

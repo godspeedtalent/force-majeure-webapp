@@ -4,6 +4,7 @@ import { logger } from '@/shared';
 export interface RouteConfig {
   label: string;
   showInBreadcrumb?: boolean;
+  skipParentInBreadcrumb?: boolean; // When true, skips parent segments (e.g., /artists/signup shows only "Register to perform", not "Artists > Register to perform")
   async?: boolean;
   resolver?: (params: Record<string, string>) => Promise<string> | string;
 }
@@ -143,6 +144,10 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
   // Artists
   '/artists': {
     label: 'Artists',
+  },
+  '/artists/signup': {
+    label: 'Register to perform',
+    skipParentInBreadcrumb: true,
   },
   '/artists/:id': {
     label: '',

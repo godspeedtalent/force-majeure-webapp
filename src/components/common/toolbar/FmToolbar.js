@@ -1,6 +1,6 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React, { useCallback, useEffect, useMemo, useRef, useState, } from 'react';
-import { Database, Compass, ShoppingCart, ToggleLeft, ClipboardList, X, Building2, Scan, } from 'lucide-react';
+import { Database, Compass, ShoppingCart, ToggleLeft, ClipboardList, X, Building2, Scan, UserCog, } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/shared';
@@ -17,6 +17,7 @@ import { DatabaseTabContent, DatabaseTabFooter } from './tabs/DatabaseTab';
 import { FeatureTogglesTabContent } from './tabs/FeatureTogglesTab';
 import { DevNotesTabContent } from './tabs/DevNotesTab';
 import { DevNavigationTabContent } from './tabs/DevNavigationTab';
+import { MockRoleTabContent } from './tabs/MockRoleTab';
 export const FmToolbar = ({ className, anchorOffset = 96 }) => {
     const { t } = useTranslation('common');
     const [isDragging, setIsDragging] = useState(false);
@@ -103,6 +104,18 @@ export const FmToolbar = ({ className, anchorOffset = 96 }) => {
             icon: Compass,
             content: _jsx(DevNavigationTabContent, { onNavigate: handleNavigate, isAdmin: isAdmin }),
             title: t('toolbar.devNavigation'),
+            visible: isDeveloperOrAdmin,
+            group: 'developer',
+            groupOrder: 2,
+            alignment: 'bottom',
+            groupLabel: t('toolbar.groups.developerTools'),
+        },
+        {
+            id: 'mock-role',
+            label: t('toolbar.mockRole'),
+            icon: UserCog,
+            content: _jsx(MockRoleTabContent, {}),
+            title: t('toolbar.mockRoleSimulator'),
             visible: isDeveloperOrAdmin,
             group: 'developer',
             groupOrder: 2,

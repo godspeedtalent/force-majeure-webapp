@@ -13,13 +13,21 @@ const ARTIST_EXISTS_ERROR_MESSAGE = 'An artist with this name already exists in 
 const SPOTIFY_EXISTS_ERROR_MESSAGE = 'An artist with this Spotify profile already exists in the database. Contact FM staff at management@forcemajeure.vip to request access.';
 const SOUNDCLOUD_EXISTS_ERROR_MESSAGE = 'An artist with this SoundCloud profile already exists in the database. Contact FM staff at management@forcemajeure.vip to request access.';
 
+interface SubmitOptions {
+  eventId?: string | null;
+}
+
 export function useArtistRegistrationSubmit() {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const submitRegistration = async (formData: ArtistRegistrationFormData) => {
+  const submitRegistration = async (
+    formData: ArtistRegistrationFormData,
+    options: SubmitOptions = {}
+  ) => {
+    const { eventId } = options;
     setIsSubmitting(true);
 
     try {
@@ -147,8 +155,33 @@ export function useArtistRegistrationSubmit() {
         });
       }
 
-      // Log to activity log system for admin visibility
       const registrationId = data?.[0]?.id;
+
+      // If coming from an event's "Looking for Artists" link, create an undercard request
+      if (eventId && registrationId) {
+        const { error: undercardError } = await supabase
+          .from('undercard_requests' as any)
+          .insert([
+            {
+              event_id: eventId,
+              artist_registration_id: registrationId,
+              status: 'pending',
+            },
+          ]);
+
+        if (undercardError) {
+          logger.error('Failed to create undercard request', {
+            error: undercardError,
+            eventId,
+            registrationId,
+          });
+          // Don't fail the whole registration - undercard request is secondary
+        } else {
+          logger.info('Undercard request created', { eventId, registrationId });
+        }
+      }
+
+      // Log to activity log system for admin visibility
       supabase.rpc('log_activity', {
         p_event_type: 'resource_created',
         p_category: 'artist',

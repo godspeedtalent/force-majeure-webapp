@@ -30,10 +30,20 @@ export const useBreadcrumbs = () => {
       setIsLoading(true);
       const items: BreadcrumbItem[] = [];
 
+      // Check if the full path has skipParentInBreadcrumb set
+      const fullPath = location.pathname;
+      const fullRouteMatch = findRouteConfig(fullPath);
+      const skipParents = fullRouteMatch?.config.skipParentInBreadcrumb === true;
+
       // Build breadcrumbs by walking through path segments
       for (let i = 0; i < pathSegments.length; i++) {
         const currentPath = '/' + pathSegments.slice(0, i + 1).join('/');
         const isLast = i === pathSegments.length - 1;
+
+        // Skip parent segments if the final route has skipParentInBreadcrumb
+        if (skipParents && !isLast) {
+          continue;
+        }
 
         // Find route config for this path
         const routeMatch = findRouteConfig(currentPath);

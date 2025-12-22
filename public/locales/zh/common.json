@@ -220,11 +220,26 @@
     "featureToggles": "功能开关",
     "todoNotes": "待办笔记",
     "devNotes": "开发笔记",
+    "mockRole": "模拟角色",
+    "mockRoleSimulator": "角色模拟器",
     "dragToResize": "拖动调整大小",
     "groups": {
       "organization": "组织",
       "developerTools": "开发者工具"
     }
+  },
+  "mockRole": {
+    "activeWarning": "模拟角色已激活",
+    "activeDescription": "您正在以{{role}}身份查看应用。界面和权限反映此模拟角色。",
+    "description": "模拟不同的用户角色以测试界面可见性和权限行为，无需退出登录。",
+    "yourActualRoles": "您的实际角色",
+    "noRoles": "未分配角色",
+    "noRolesAvailable": "无可用角色",
+    "simulateRole": "选择要模拟的角色",
+    "allPermissions": "全部",
+    "permissionCount": "{{count}}个权限",
+    "permissionCount_one": "{{count}}个权限",
+    "clearSimulation": "清除模拟"
   },
   "searchDropdown": {
     "placeholder": "搜索...",

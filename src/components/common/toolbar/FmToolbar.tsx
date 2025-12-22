@@ -16,6 +16,7 @@ import {
   X,
   Building2,
   Scan,
+  UserCog,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -35,6 +36,7 @@ import { DatabaseTabContent, DatabaseTabFooter } from './tabs/DatabaseTab';
 import { FeatureTogglesTabContent } from './tabs/FeatureTogglesTab';
 import { DevNotesTabContent } from './tabs/DevNotesTab';
 import { DevNavigationTabContent } from './tabs/DevNavigationTab';
+import { MockRoleTabContent } from './tabs/MockRoleTab';
 
 export interface ToolbarTab {
   id: string;
@@ -153,6 +155,18 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         icon: Compass,
         content: <DevNavigationTabContent onNavigate={handleNavigate} isAdmin={isAdmin} />,
         title: t('toolbar.devNavigation'),
+        visible: isDeveloperOrAdmin,
+        group: 'developer',
+        groupOrder: 2,
+        alignment: 'bottom',
+        groupLabel: t('toolbar.groups.developerTools'),
+      },
+      {
+        id: 'mock-role',
+        label: t('toolbar.mockRole'),
+        icon: UserCog,
+        content: <MockRoleTabContent />,
+        title: t('toolbar.mockRoleSimulator'),
         visible: isDeveloperOrAdmin,
         group: 'developer',
         groupOrder: 2,

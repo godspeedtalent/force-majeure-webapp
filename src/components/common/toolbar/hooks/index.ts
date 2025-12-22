@@ -6,3 +6,4 @@
 
 export { useToolbarDrag } from './useToolbarDrag';
 export { useToolbarResize } from './useToolbarResize';
+export { useGroupLabelHover } from './useGroupLabelHover';

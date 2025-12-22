@@ -13,6 +13,10 @@ export function useArtistRegistrationValidation() {
                     toast.error(t('validation.bioRequired'));
                     return false;
                 }
+                if (!formData.cityId) {
+                    toast.error(t('validation.cityRequired'));
+                    return false;
+                }
                 if (formData.genres.length === 0) {
                     toast.error(t('validation.genreRequired'));
                     return false;
