@@ -191,7 +191,43 @@
     "selecting": "选择中..."
   },
   "analytics": {
-    "fromPreviousPeriod": "与上期相比"
+    "fromPreviousPeriod": "与上期相比",
+    "eventAnalytics": "活动分析",
+    "trackPerformance": "跟踪性能和参与度指标",
+    "exportCSV": "导出CSV",
+    "loadingAnalytics": "正在加载分析数据...",
+    "noDataAvailable": "暂无分析数据",
+    "metric": "指标",
+    "value": "数值",
+    "totalRevenue": "总收入",
+    "excludingFees": "不含费用",
+    "ticketsSold": "门票销量",
+    "pageViews": "页面浏览量",
+    "uniqueVisitors": "独立访客",
+    "uniqueVisitorsCount": "{{count}}位独立访客",
+    "conversionRate": "转化率",
+    "viewsToPurchases": "浏览到购买",
+    "averageOrderValue": "平均订单金额",
+    "totalFeesCollected": "总费用收入",
+    "refundRate": "退款率",
+    "totalTicketsSold": "门票总销量",
+    "totalPageViews": "总页面浏览量",
+    "salesOverTime": "销售趋势",
+    "revenueByTier": "各票档收入",
+    "pageViewsOverTime": "页面浏览趋势",
+    "salesByHour": "按小时销售分布",
+    "revenue": "收入",
+    "tickets": "门票",
+    "views": "浏览量",
+    "orders": "订单",
+    "loading": "正在加载分析数据...",
+    "noData": "无可用分析数据",
+    "totalLinks": "链接总数",
+    "totalClicks": "点击总数",
+    "avgClicksPerLink": "平均点击/链接",
+    "clicksOverTime": "点击趋势（过去7天）",
+    "topPerformingLinks": "表现最佳的5个链接",
+    "clicksBySource": "按来源统计点击"
   },
   "time": {
     "today": "今天",
@@ -515,6 +551,98 @@
       "agreeToContact": "我同意通过电子邮件和短信接收活动更新 *",
       "registrationFailed": "注册失败",
       "unableToCreate": "无法创建您的账户"
+    },
+    "buttons": {
+      "join": "加入"
+    },
+    "claimReward": {
+      "title": "欢迎来到{{locationName}}检查点",
+      "description": "发现此检查点，让您和朋友加入宾客名单！",
+      "successMessage": "检查点已发现！您和朋友已加入名单。",
+      "errorMessage": "领取检查点失败",
+      "claiming": "正在领取...",
+      "claimButton": "领取检查点"
+    },
+    "claimSuccess": {
+      "title": "恭喜！",
+      "addedToGuestlist": "您已被添加到",
+      "seeYouThere": "宾客名单。届时见。",
+      "checkInInstructions": "像往常一样在接待处登记并告诉他们您的全名。",
+      "nameListedAs": "您的名字将显示为",
+      "incorrectNameHelp": "在宾客名单中。如有错误，请联系",
+      "onInstagram": "在Instagram上更正。",
+      "needMoreTickets": "需要更多门票给朋友？使用代码",
+      "discountOff": "享受20%折扣！",
+      "youreThe": "您是第",
+      "person": "位",
+      "toFind": "找到",
+      "yourReward": "您的奖励",
+      "checkEmail": "请查看邮箱了解详情",
+      "ordinal1": "1",
+      "ordinal2": "2",
+      "ordinal3": "3",
+      "ordinalN": "{{position}}",
+      "exclusiveReward": "🎁 专属奖励"
+    },
+    "checkpoint": {
+      "welcomeTo": "欢迎来到",
+      "checkpoint": "检查点",
+      "getOnGuestlist": "如约定，让我们把您的名字加入LF SYSTEM在Kingdom的宾客名单，10月18日周六。",
+      "addingToGuestlist": "正在添加到宾客名单...",
+      "joinGuestlist": "加入宾客名单",
+      "signUpPrompt": "注册我们的账户，我们会把您加入LF SYSTEM在Kingdom的宾客名单，10月18日周六。"
+    },
+    "noCheckpoint": {
+      "title": "未扫描检查点。",
+      "description": "但免费门票仍在外面。继续寻找！",
+      "registerTitle": "注册Force Majeure",
+      "registerDescription": "您需要先在我们这里注册，才能在找到检查点后加入宾客名单。您可以现在就完成注册。"
+    },
+    "promoCode": {
+      "spotsClaimed": "宾客名单名额已领取！",
+      "spotsClaimedDescription": "抱歉，此地点的两个宾客名单通行证已被领取。但您不会空手而归！注册即可获得20%折扣的优惠码。",
+      "locationsAvailable": "仍有",
+      "checkInstagram": "个地点有宾客通行证，查看",
+      "forHints": "Instagram上的提示视频。",
+      "yourPromoCode": "您的优惠码",
+      "buyTicketsNow": "立即购票"
+    },
+    "confirmation": {
+      "title": "查看您的邮箱",
+      "description": "我们已向{{email}}发送验证链接。点击链接验证您的账户并领取奖励！"
+    },
+    "invalidToken": "无效令牌",
+    "noTokenProvided": "(未提供令牌)",
+    "error": "错误：{{error}}",
+    "layout": {
+      "title": "<gold>LF System</gold> 寻宝游戏",
+      "titleBrand": "LF System",
+      "titleSuffix": "寻宝游戏",
+      "subtitle": "找到所有5个位置来完成寻宝！",
+      "yourProgress": "您的进度",
+      "foundLocations": "您已找到 {{count}} / 5 个位置！",
+      "position": "第 {{position}} 名"
+    },
+    "wizard": {
+      "welcomeBack": "欢迎回来",
+      "signInToClaimReward": "登录以领取您的奖励",
+      "signInToContinue": "登录以继续寻宝游戏",
+      "joinRaveFam": "加入派对大家庭",
+      "registerToClaimReward": "注册以领取您的奖励。",
+      "registerToClaimTickets": "注册以在找到时领取您的免费门票。"
+    },
+    "views": {
+      "allClaimed": "全部已领取！",
+      "allClaimedDescription": "{{locationName}}的所有奖励已被领取。试试找另一个位置吧！",
+      "alreadyClaimed": "已经领取过！",
+      "alreadyClaimedDescription": "您已经从{{locationName}}领取过奖励了。每个位置只能领取一次奖励！",
+      "shareWithFriends": "但您可以把这个秘密位置分享给朋友！",
+      "invalidCode": "无效代码",
+      "invalidCodeDescription": "这个二维码似乎无效。请尝试重新扫描。",
+      "photoInstructions": "如果问题持续存在，请拍一张您的手在海报旁边竖起3根手指的照片。",
+      "sendPhotoTo": "将照片发送私信给",
+      "onInstagram": "的Instagram账号。",
+      "jumpToTickets": "想直接购票吗？"
     }
   },
   "formLabels": {
@@ -563,7 +691,7 @@
     "couldNotFetchTrack": "无法获取曲目信息，请检查链接。",
     "failedToFetchTrack": "获取曲目元数据失败",
     "saveInfoForFasterCheckout": "保存您的信息以便下次更快结账",
-    "noFiltersAdded": "未添加筛选条件。点击"添加规则"开始。"
+    "noFiltersAdded": "未添加筛选条件。点击「添加规则」开始。"
   },
   "dialogs": {
     "leavingSite": "离开 Force Majeure",
@@ -608,9 +736,9 @@
     "confirmFeeChanges": "确认费用更改",
     "feeChangesDescription": "这将更新 {{env}} 环境中数据库的票务费用。这些更改将影响所有未来的购票。是否继续？",
     "deleteUser": "删除用户",
-    "deleteUserConfirm": "您确定要删除用户"{{userName}}"吗？这也将删除其认证账户。",
+    "deleteUserConfirm": "您确定要删除用户「{{userName}}」吗？这也将删除其认证账户。",
     "deleteEvent": "删除活动",
-    "deleteEventConfirm": "您确定要删除"{{eventTitle}}"吗？",
+    "deleteEventConfirm": "您确定要删除「{{eventTitle}}」吗？",
     "deleteEventsConfirm": "您确定要删除 {{count}} 个选中的活动吗？",
     "deleteArtist": "删除艺术家",
     "deleteArtistConfirm": "您确定要删除这位艺术家吗？",
@@ -623,7 +751,7 @@
     "eventVisibilityDescription": "从公开视图隐藏此活动，同时保持可通过直接链接访问。",
     "createGenre": "创建新风格",
     "deleteGenre": "删除风格",
-    "deleteGenreConfirm": "您确定要删除"{{genreName}}"吗？",
+    "deleteGenreConfirm": "您确定要删除「{{genreName}}」吗？",
     "deleteGenresConfirm": "您确定要删除 {{count}} 个选中的风格吗？",
     "cannotDeleteWithSubgenres": "无法删除有子风格的风格。请先删除子风格。",
     "cannotDeleteWithArtists": "无法删除已分配给艺术家的风格。请先解除艺术家的关联。",
@@ -858,7 +986,7 @@
     "setScheduling": "演出安排",
     "setSchedulingDescription": "启用以配置演出时间和时长",
     "lookingForUndercard": "招募暖场艺术家。",
-    "lookingForUndercardDescription": "在活动时间表中显示"招募艺术家"提示，邀请本地人才报名",
+    "lookingForUndercardDescription": "在活动时间表中显示「招募艺术家」提示，邀请本地人才报名",
     "lineupSummary": "阵容摘要",
     "headlinersCount": "主演",
     "undercardCount": "暖场",
@@ -876,7 +1004,7 @@
     "irreversibleActions": "不可逆操作",
     "deleteEvent": "删除活动",
     "deleteEventDescription": "永久删除此活动及所有相关数据，包括票种和订单。此操作无法撤销。",
-    "deleteEventConfirm": "确定要删除"{{title}}"吗？\n\n此操作无法撤销。与此活动相关的所有票种和订单也将被删除。",
+    "deleteEventConfirm": "确定要删除「{{title}}」吗？\n\n此操作无法撤销。与此活动相关的所有票种和订单也将被删除。",
     "lookingForUndercardEnabled": "已启用暖场艺术家招募",
     "lookingForUndercardDisabled": "已禁用暖场艺术家招募"
   },
@@ -925,23 +1053,7 @@
     "deleteVenueConfirm": "确定要删除此场馆吗？"
   },
   "dataGrid": {
-    "columns": {
-      "email": "邮箱",
-      "username": "用户名",
-      "fullName": "全名",
-      "organization": "组织",
-      "roles": "角色",
-      "joined": "加入时间",
-      "name": "名称",
-      "type": "类型",
-      "status": "状态",
-      "createdAt": "创建时间",
-      "updatedAt": "更新时间",
-      "organizationName": "组织名称",
-      "profilePicture": "头像",
-      "owner": "所有者",
-      "created": "创建时间"
-    },
+    "columns": "列",
     "actions": {
       "edit": "编辑",
       "editUser": "编辑用户",
@@ -975,7 +1087,6 @@
     "reorder": "重新排序",
     "reorderColumns": "重新排序列",
     "reorderColumnsDescription": "拖放列以重新排序",
-    "columns": "列",
     "confirmBatchDelete": "确认批量删除",
     "batchDeleteConfirmation": "确定要删除 {{count}} 个{{resourceName}}吗？此操作无法撤销。",
     "itemsToBeDeleted": "将被删除的项目：",
@@ -1193,36 +1304,6 @@
     "shareEvent": "分享活动",
     "saveEvent": "保存活动"
   },
-  "analytics": {
-    "eventAnalytics": "活动分析",
-    "trackPerformance": "跟踪性能和参与度指标",
-    "exportCSV": "导出CSV",
-    "loadingAnalytics": "正在加载分析数据...",
-    "noDataAvailable": "暂无分析数据",
-    "metric": "指标",
-    "value": "数值",
-    "totalRevenue": "总收入",
-    "excludingFees": "不含费用",
-    "ticketsSold": "门票销量",
-    "pageViews": "页面浏览量",
-    "uniqueVisitors": "独立访客",
-    "uniqueVisitorsCount": "{{count}}位独立访客",
-    "conversionRate": "转化率",
-    "viewsToPurchases": "浏览到购买",
-    "averageOrderValue": "平均订单金额",
-    "totalFeesCollected": "总费用收入",
-    "refundRate": "退款率",
-    "totalTicketsSold": "门票总销量",
-    "totalPageViews": "总页面浏览量",
-    "salesOverTime": "销售趋势",
-    "revenueByTier": "各票档收入",
-    "pageViewsOverTime": "页面浏览趋势",
-    "salesByHour": "按小时销售分布",
-    "revenue": "收入",
-    "tickets": "门票",
-    "views": "浏览量",
-    "orders": "订单"
-  },
   "adminDetails": {
     "artistDetails": "艺人详情",
     "venueDetails": "场地详情",
@@ -1375,11 +1456,11 @@
     "minimumThresholds": "最低阈值",
     "minimumThresholdsDescription": "设置最低宾客数量后才显示宾客名单",
     "minInterestedGuests": "最低感兴趣宾客数",
-    "minInterestedDescription": "显示"感兴趣"部分前需要的最低感兴趣宾客数",
+    "minInterestedDescription": "显示「感兴趣」部分前需要的最低感兴趣宾客数",
     "minPrivateGuests": "最低私人宾客数",
-    "minPrivateDescription": "显示"已购票"部分前需要的最低私人宾客数",
+    "minPrivateDescription": "显示「已购票」部分前需要的最低私人宾客数",
     "minPublicGuests": "最低公开宾客数",
-    "minPublicDescription": "显示"宾客名单"部分前需要的最低公开宾客数",
+    "minPublicDescription": "显示「宾客名单」部分前需要的最低公开宾客数",
     "displayViewCount": "显示浏览次数",
     "displayViewCountDescription": "在活动页面上显示活动浏览次数",
     "noteLabel": "注意",
@@ -1487,67 +1568,6 @@
     },
     "backToHome": "返回首页"
   },
-  "scavenger": {
-    "buttons": {
-      "join": "加入"
-    },
-    "claimReward": {
-      "title": "欢迎来到{{locationName}}检查点",
-      "description": "发现此检查点，让您和朋友加入宾客名单！",
-      "successMessage": "检查点已发现！您和朋友已加入名单。",
-      "errorMessage": "领取检查点失败",
-      "claiming": "正在领取...",
-      "claimButton": "领取检查点"
-    },
-    "claimSuccess": {
-      "title": "恭喜！",
-      "addedToGuestlist": "您已被添加到",
-      "seeYouThere": "宾客名单。届时见。",
-      "checkInInstructions": "像往常一样在接待处登记并告诉他们您的全名。",
-      "nameListedAs": "您的名字将显示为",
-      "incorrectNameHelp": "在宾客名单中。如有错误，请联系",
-      "onInstagram": "在Instagram上更正。",
-      "needMoreTickets": "需要更多门票给朋友？使用代码",
-      "discountOff": "享受20%折扣！",
-      "youreThe": "您是第",
-      "person": "位",
-      "toFind": "找到",
-      "yourReward": "您的奖励",
-      "checkEmail": "请查看邮箱了解详情",
-      "ordinal1": "1",
-      "ordinal2": "2",
-      "ordinal3": "3",
-      "ordinalN": "{{position}}",
-      "exclusiveReward": "🎁 专属奖励"
-    },
-    "checkpoint": {
-      "welcomeTo": "欢迎来到",
-      "checkpoint": "检查点",
-      "getOnGuestlist": "如约定，让我们把您的名字加入LF SYSTEM在Kingdom的宾客名单，10月18日周六。",
-      "addingToGuestlist": "正在添加到宾客名单...",
-      "joinGuestlist": "加入宾客名单",
-      "signUpPrompt": "注册我们的账户，我们会把您加入LF SYSTEM在Kingdom的宾客名单，10月18日周六。"
-    },
-    "noCheckpoint": {
-      "title": "未扫描检查点。",
-      "description": "但免费门票仍在外面。继续寻找！",
-      "registerTitle": "注册Force Majeure",
-      "registerDescription": "您需要先在我们这里注册，才能在找到检查点后加入宾客名单。您可以现在就完成注册。"
-    },
-    "promoCode": {
-      "spotsClaimed": "宾客名单名额已领取！",
-      "spotsClaimedDescription": "抱歉，此地点的两个宾客名单通行证已被领取。但您不会空手而归！注册即可获得20%折扣的优惠码。",
-      "locationsAvailable": "仍有",
-      "checkInstagram": "个地点有宾客通行证，查看",
-      "forHints": "Instagram上的提示视频。",
-      "yourPromoCode": "您的优惠码",
-      "buyTicketsNow": "立即购票"
-    },
-    "confirmation": {
-      "title": "查看您的邮箱",
-      "description": "我们已向{{email}}发送验证链接。点击链接验证您的账户并领取奖励！"
-    }
-  },
   "organization": {
     "dashboard": {
       "title": "组织面板",
@@ -1564,7 +1584,14 @@
       "organizationProfile": "组织资料",
       "organizationProfileDescription": "编辑您组织的公开资料和设置",
       "editProfile": "编辑资料"
-    }
+    },
+    "loadFailed": "加载组织失败",
+    "notFound": "未找到组织",
+    "details": "组织详情",
+    "basicInfo": "基本信息",
+    "metadata": "元数据",
+    "organizationId": "组织 ID",
+    "backToList": "返回组织列表"
   },
   "soundcloud": {
     "importTitle": "从SoundCloud导入",
@@ -1841,7 +1868,7 @@
     "pendingTitle": "待审核申请 ({{count}})",
     "reviewedTitle": "已审核 ({{count}})",
     "noPending": "没有待审核的艺人申请",
-    "noPendingDescription": "通过"寻找艺人"链接注册的艺人将显示在这里",
+    "noPendingDescription": "通过「寻找艺人」链接注册的艺人将显示在这里",
     "djSets": "DJ Sets ({{count}})",
     "approve": "批准",
     "reject": "拒绝",
@@ -1868,7 +1895,41 @@
     "updateSuccess": "笔记已更新",
     "updateFailed": "更新笔记失败",
     "deleteSuccess": "笔记已删除",
-    "deleteFailed": "删除笔记失败"
+    "deleteFailed": "删除笔记失败",
+    "searchPlaceholder": "搜索笔记...",
+    "newNote": "新建笔记",
+    "filter": "筛选",
+    "filterLabels": {
+      "type": "类型",
+      "status": "状态",
+      "author": "作者"
+    },
+    "sortBy": "排序方式",
+    "ascending": "升序",
+    "descending": "降序",
+    "notesCount": "{{count}} 条笔记",
+    "loading": "加载笔记中...",
+    "noMatchingNotes": "没有匹配的笔记",
+    "noNotesYet": "还没有笔记。创建一个开始吧！",
+    "priority": "优先级",
+    "clickToEdit": "点击编辑...",
+    "author": "作者",
+    "toSave": "保存",
+    "types": {
+      "todo": "待办",
+      "info": "信息",
+      "bug": "错误",
+      "question": "问题"
+    },
+    "statuses": {
+      "todo": "待办",
+      "inProgress": "进行中",
+      "resolved": "已解决",
+      "archived": "已归档",
+      "cancelled": "已取消"
+    },
+    "inspect": "查看详情",
+    "setStatus": "设置状态"
   },
   "email": {
     "receiptSent": "收据邮件发送成功",
@@ -1905,50 +1966,6 @@
     "enterEmail": "输入邮箱...",
     "enterUrl": "输入网址...",
     "enterValue": "输入值..."
-  },
-  "scavenger": {
-    "invalidToken": "无效令牌",
-    "noTokenProvided": "(未提供令牌)",
-    "error": "错误：{{error}}",
-    "layout": {
-      "title": "<gold>LF System</gold> 寻宝游戏",
-      "titleBrand": "LF System",
-      "titleSuffix": "寻宝游戏",
-      "subtitle": "找到所有5个位置来完成寻宝！",
-      "yourProgress": "您的进度",
-      "foundLocations": "您已找到 {{count}} / 5 个位置！",
-      "position": "第 {{position}} 名"
-    },
-    "wizard": {
-      "welcomeBack": "欢迎回来",
-      "signInToClaimReward": "登录以领取您的奖励",
-      "signInToContinue": "登录以继续寻宝游戏",
-      "joinRaveFam": "加入派对大家庭",
-      "registerToClaimReward": "注册以领取您的奖励。",
-      "registerToClaimTickets": "注册以在找到时领取您的免费门票。"
-    },
-    "views": {
-      "allClaimed": "全部已领取！",
-      "allClaimedDescription": "{{locationName}}的所有奖励已被领取。试试找另一个位置吧！",
-      "alreadyClaimed": "已经领取过！",
-      "alreadyClaimedDescription": "您已经从{{locationName}}领取过奖励了。每个位置只能领取一次奖励！",
-      "shareWithFriends": "但您可以把这个秘密位置分享给朋友！",
-      "invalidCode": "无效代码",
-      "invalidCodeDescription": "这个二维码似乎无效。请尝试重新扫描。",
-      "photoInstructions": "如果问题持续存在，请拍一张您的手在海报旁边竖起3根手指的照片。",
-      "sendPhotoTo": "将照片发送私信给",
-      "onInstagram": "的Instagram账号。",
-      "jumpToTickets": "想直接购票吗？"
-    }
-  },
-  "organization": {
-    "loadFailed": "加载组织失败",
-    "notFound": "未找到组织",
-    "details": "组织详情",
-    "basicInfo": "基本信息",
-    "metadata": "元数据",
-    "organizationId": "组织 ID",
-    "backToList": "返回组织列表"
   },
   "orderDetails": {
     "title": "订单详情",
@@ -1999,7 +2016,7 @@
     "setScheduling": "演出排程",
     "setSchedulingDescription": "启用以配置演出时间和时长",
     "lookingForUndercard": "寻找开场艺人。",
-    "lookingForUndercardDescription": "在活动时间表中显示"寻找艺人"提示，邀请本地人才报名",
+    "lookingForUndercardDescription": "在活动时间表中显示「寻找艺人」提示，邀请本地人才报名",
     "lineupSummary": "阵容摘要",
     "undercard": "开场",
     "totalArtists": "艺人总数"
@@ -2017,19 +2034,10 @@
     "extendTime": "延长时间",
     "remaining": "剩余 {{time}}"
   },
-  "analytics": {
-    "loading": "正在加载分析数据...",
-    "noData": "无可用分析数据",
-    "totalLinks": "链接总数",
-    "totalClicks": "点击总数",
-    "avgClicksPerLink": "平均点击/链接",
-    "clicksOverTime": "点击趋势（过去7天）",
-    "topPerformingLinks": "表现最佳的5个链接",
-    "clicksBySource": "按来源统计点击"
-  },
   "datePicker": {
     "pickDateTime": "选择日期和时间",
-    "scheduledEvents": "{{count}} 个已安排的活动"
+    "scheduledEvents": "{{count}} 个已安排的活动",
+    "pickDate": "选择日期"
   },
   "cart": {
     "empty": "您的购物车是空的",
@@ -2091,7 +2099,10 @@
   },
   "citySearch": {
     "searchForCity": "搜索城市...",
-    "createNewCity": "+ 创建新城市"
+    "createNewCity": "+ 创建新城市",
+    "typeToSearch": "输入以搜索城市...",
+    "noCitiesFound": "未找到城市。",
+    "startTyping": "开始输入以搜索城市..."
   },
   "databaseManager": {
     "title": "数据库管理器",
@@ -2139,11 +2150,6 @@
     "categoryCommunication": "通讯",
     "openDemo": "打开演示",
     "accessNote": "这些演示仅对管理员用户可用，在生产环境中不可见"
-  },
-  "datePicker": {
-    "pickDate": "选择日期",
-    "pickDateTime": "选择日期和时间",
-    "scheduledEvents": "{{count}} 个已安排的活动"
   },
   "timePicker": {
     "selectTime": "选择时间"
@@ -2225,12 +2231,6 @@
     "capacity": "容量：{{count}}",
     "upcomingEvents": "即将举行的活动"
   },
-  "citySearch": {
-    "searchForCity": "搜索城市...",
-    "typeToSearch": "输入以搜索城市...",
-    "noCitiesFound": "未找到城市。",
-    "startTyping": "开始输入以搜索城市..."
-  },
   "organizationsManagement": {
     "title": "组织管理",
     "description": "管理组织、其个人资料和所有者。"
@@ -2251,7 +2251,7 @@
     "noGroupsYet": "暂无票务分组。创建一个开始吧！",
     "dragToReorder": "拖动以重新排序分组",
     "groupNamePlaceholder": "分组名称",
-    "groupDescriptionPlaceholder": "分组描述（例如"普通入场"、"VIP"、"桌位"）",
+    "groupDescriptionPlaceholder": "分组描述（例如「普通入场」、「VIP」、「桌位」）",
     "revenue": "收入",
     "duplicateGroup": "复制分组",
     "deleteGroup": "删除分组",
@@ -2507,42 +2507,6 @@
     "noEventsFound": "未找到活动",
     "noUpcomingEvents": "没有即将举行的活动"
   },
-  "devNotes": {
-    "searchPlaceholder": "搜索笔记...",
-    "newNote": "新建笔记",
-    "filter": "筛选",
-    "filterLabels": {
-      "type": "类型",
-      "status": "状态",
-      "author": "作者"
-    },
-    "sortBy": "排序方式",
-    "ascending": "升序",
-    "descending": "降序",
-    "notesCount": "{{count}} 条笔记",
-    "loading": "加载笔记中...",
-    "noMatchingNotes": "没有匹配的笔记",
-    "noNotesYet": "还没有笔记。创建一个开始吧！",
-    "priority": "优先级",
-    "clickToEdit": "点击编辑...",
-    "author": "作者",
-    "toSave": "保存",
-    "types": {
-      "todo": "待办",
-      "info": "信息",
-      "bug": "错误",
-      "question": "问题"
-    },
-    "statuses": {
-      "todo": "待办",
-      "inProgress": "进行中",
-      "resolved": "已解决",
-      "archived": "已归档",
-      "cancelled": "已取消"
-    },
-    "inspect": "查看详情",
-    "setStatus": "设置状态"
-  },
   "roleSelect": {
     "title": "角色切换",
     "description": "切换当前角色以测试不同的权限级别。",
@@ -2612,8 +2576,12 @@
     }
   },
   "devNavigation": {
+    "core": "核心",
     "adminControls": "管理员控制",
     "developerHome": "开发者主页",
+    "subdomains": "子域名",
+    "sonicGauntlet": "Sonic Gauntlet",
+    "noSubdomains": "没有启用的子域名",
     "supabase": "Supabase",
     "supabaseDashboard": "Supabase 控制面板",
     "mailpit": "Mailpit（本地邮件）",

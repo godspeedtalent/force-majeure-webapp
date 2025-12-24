@@ -69,9 +69,9 @@ export function EditTrackModal({ track, onClose, onSave }: EditTrackModalProps) 
               {/* Platform badge */}
               <div className="absolute bottom-1 right-1">
                 {track.platform === 'spotify' ? (
-                  <FaSpotify className="h-4 w-4 text-[#1DB954] drop-shadow-lg" />
+                  <FaSpotify className="h-4 w-4 text-[#5aad7a] drop-shadow-lg" />
                 ) : (
-                  <FaSoundcloud className="h-4 w-4 text-[#FF5500] drop-shadow-lg" />
+                  <FaSoundcloud className="h-4 w-4 text-[#d48968] drop-shadow-lg" />
                 )}
               </div>
             </div>

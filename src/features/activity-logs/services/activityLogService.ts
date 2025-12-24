@@ -34,7 +34,7 @@ export async function getActivityLogs(
       .select(
         `
         *,
-        user:profiles!activity_logs_user_id_fkey(
+        user:profiles!activity_logs_user_id_profiles_fkey(
           email,
           display_name,
           avatar_url
@@ -277,7 +277,7 @@ export async function getActivityLogById(
       .select(
         `
         *,
-        user:profiles!activity_logs_user_id_fkey(
+        user:profiles!activity_logs_user_id_profiles_fkey(
           email,
           display_name,
           avatar_url
@@ -322,7 +322,7 @@ export async function getResourceActivity(
       .select(
         `
         *,
-        user:profiles!activity_logs_user_id_fkey(
+        user:profiles!activity_logs_user_id_profiles_fkey(
           email,
           display_name,
           avatar_url

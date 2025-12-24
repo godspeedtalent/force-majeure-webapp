@@ -53,7 +53,7 @@ export function SocialImagesStep({
 
   return (
     <div className='h-full flex flex-col p-[20px]'>
-      <div className='flex-1 overflow-y-auto pr-[10px]'>
+      <div className='flex-1 overflow-y-auto px-[5px] pr-[10px]'>
         <div className='flex justify-center items-start'>
           <div className='w-[85vw] sm:w-[80%] lg:w-[60%] space-y-[20px] bg-black/60 backdrop-blur-sm border border-white/10 p-[30px] sm:p-[40px]'>
             <div>
@@ -114,7 +114,7 @@ export function SocialImagesStep({
                 </p>
                 <div className='space-y-[10px]'>
                   <div className='flex items-center gap-[10px]'>
-                    <SiSoundcloud className='h-5 w-5 text-[#ff5500] flex-shrink-0' />
+                    <SiSoundcloud className='h-5 w-5 text-[#d48968] flex-shrink-0' />
                     <FmCommonTextField
                       label={t('labels.soundcloudUrl')}
                       value={formData.soundcloudUrl}
@@ -124,7 +124,7 @@ export function SocialImagesStep({
                     />
                   </div>
                   <div className='flex items-center gap-[10px]'>
-                    <SiSpotify className='h-5 w-5 text-[#1DB954] flex-shrink-0' />
+                    <SiSpotify className='h-5 w-5 text-[#5aad7a] flex-shrink-0' />
                     <FmCommonTextField
                       label={t('labels.spotifyArtistUrl')}
                       value={formData.spotifyUrl}

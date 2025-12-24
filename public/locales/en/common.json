@@ -191,7 +191,43 @@
     "selecting": "Selecting..."
   },
   "analytics": {
-    "fromPreviousPeriod": "from previous period"
+    "fromPreviousPeriod": "from previous period",
+    "eventAnalytics": "Event Analytics",
+    "trackPerformance": "Track performance and engagement metrics",
+    "exportCSV": "Export CSV",
+    "loadingAnalytics": "Loading analytics...",
+    "noDataAvailable": "No analytics data available",
+    "metric": "Metric",
+    "value": "Value",
+    "totalRevenue": "Total Revenue",
+    "excludingFees": "Excluding fees",
+    "ticketsSold": "Tickets Sold",
+    "pageViews": "Page Views",
+    "uniqueVisitors": "Unique Visitors",
+    "uniqueVisitorsCount": "{{count}} unique visitors",
+    "conversionRate": "Conversion Rate",
+    "viewsToPurchases": "Views to purchases",
+    "averageOrderValue": "Average Order Value",
+    "totalFeesCollected": "Total Fees Collected",
+    "refundRate": "Refund Rate",
+    "totalTicketsSold": "Total Tickets Sold",
+    "totalPageViews": "Total Page Views",
+    "salesOverTime": "Sales Over Time",
+    "revenueByTier": "Revenue by Ticket Tier",
+    "pageViewsOverTime": "Page Views Over Time",
+    "salesByHour": "Sales by Hour of Day",
+    "revenue": "Revenue",
+    "tickets": "Tickets",
+    "views": "Views",
+    "orders": "Orders",
+    "loading": "Loading analytics...",
+    "noData": "No analytics data available",
+    "totalLinks": "Total Links",
+    "totalClicks": "Total Clicks",
+    "avgClicksPerLink": "Avg. Clicks/Link",
+    "clicksOverTime": "Clicks Over Time (Last 7 Days)",
+    "topPerformingLinks": "Top 5 Performing Links",
+    "clicksBySource": "Clicks by Source"
   },
   "time": {
     "today": "Today",
@@ -222,6 +258,8 @@
     "devNotes": "Dev Notes",
     "mockRole": "Mock Role",
     "mockRoleSimulator": "Role Simulator",
+    "gallery": "Gallery",
+    "galleryManager": "Media Gallery",
     "dragToResize": "Drag to resize",
     "groups": {
       "organization": "Organization",
@@ -354,7 +392,7 @@
     "filterValue": "Value...",
     "exampleUrl": "https://example.com",
     "exampleImageUrl": "https://example.com/image.jpg",
-    "email": "your.email@example.com",
+    "email": "your@email.com",
     "exampleSpotifyUrl": "https://open.spotify.com/track/... or https://soundcloud.com/...",
     "exampleSpotifyArtistUrl": "https://open.spotify.com/artist/...",
     "exampleSoundcloudUrl": "https://soundcloud.com/your-profile",
@@ -364,7 +402,6 @@
     "channelHandle": "channel handle",
     "username": "username",
     "usernameOrPage": "username or page name",
-    "email": "your@email.com",
     "password": "Enter your password",
     "enterArtistName": "Enter artist name",
     "artistBiography": "Artist biography...",
@@ -517,6 +554,98 @@
       "agreeToContact": "I agree to receive event updates via email and SMS *",
       "registrationFailed": "Registration failed",
       "unableToCreate": "Unable to create your account"
+    },
+    "buttons": {
+      "join": "Join"
+    },
+    "claimReward": {
+      "title": "Welcome to the {{locationName}} Checkpoint",
+      "description": "Discover this checkpoint to get you and a friend on the guestlist!",
+      "successMessage": "Checkpoint discovered! You and a friend are on the list.",
+      "errorMessage": "Failed to claim checkpoint",
+      "claiming": "Claiming...",
+      "claimButton": "Claim Checkpoint"
+    },
+    "claimSuccess": {
+      "title": "Congratulations!",
+      "addedToGuestlist": "You've been added to the",
+      "seeYouThere": "guestlist. See you there.",
+      "checkInInstructions": "Check into the host stand as usual and give them your full name.",
+      "nameListedAs": "Your name will be listed as",
+      "incorrectNameHelp": "in the guestlist. If this is incorrect, please reach out to",
+      "onInstagram": "on Instagram to correct it.",
+      "needMoreTickets": "Need more tickets for friends? Use code",
+      "discountOff": "for 20% off!",
+      "youreThe": "You're the",
+      "person": "person",
+      "toFind": "to find",
+      "yourReward": "Your Reward",
+      "checkEmail": "Check your email for details",
+      "ordinal1": "1st",
+      "ordinal2": "2nd",
+      "ordinal3": "3rd",
+      "ordinalN": "{{position}}th",
+      "exclusiveReward": "🎁 Exclusive Reward"
+    },
+    "checkpoint": {
+      "welcomeTo": "Welcome to the",
+      "checkpoint": "Checkpoint",
+      "getOnGuestlist": "As promised, let's get your name on that guestlist for LF SYSTEM at Kingdom, Sat Oct 18th.",
+      "addingToGuestlist": "Adding to Guestlist...",
+      "joinGuestlist": "Join Guestlist",
+      "signUpPrompt": "Sign up for an account with us, and we'll get you on the guestlist for LF SYSTEM at Kingdom on Saturday, October 18th."
+    },
+    "noCheckpoint": {
+      "title": "No Checkpoint Scanned.",
+      "description": "But the free tickets are still out there. Keep searching!",
+      "registerTitle": "Register with Force Majeure",
+      "registerDescription": "You'll need to register with us to join the guestlist once you find a checklist. You can take care of that now if you'd like."
+    },
+    "promoCode": {
+      "spotsClaimed": "Guestlist Spots Claimed!",
+      "spotsClaimedDescription": "Sorry, both guestlist passes have been snagged at this location. But you're not leaving empty handed! Sign up to receive a promo code for 20% off tickets.",
+      "locationsAvailable": "There are still",
+      "checkInstagram": "locations that have guest passes available, check the reel at",
+      "forHints": "on Instagram for hints.",
+      "yourPromoCode": "Your Promo Code",
+      "buyTicketsNow": "Buy Tickets Now"
+    },
+    "confirmation": {
+      "title": "Check Your Email",
+      "description": "We've sent a verification link to {{email}}. Click the link to verify your account and claim your reward!"
+    },
+    "invalidToken": "Invalid Token",
+    "noTokenProvided": "(no token provided)",
+    "error": "Error: {{error}}",
+    "layout": {
+      "title": "<gold>LF System</gold> Scavenger Hunt",
+      "titleBrand": "LF System",
+      "titleSuffix": "Scavenger Hunt",
+      "subtitle": "Find all 5 locations to complete the hunt!",
+      "yourProgress": "Your Progress",
+      "foundLocations": "You've found {{count}} of 5 locations!",
+      "position": "Position #{{position}}"
+    },
+    "wizard": {
+      "welcomeBack": "Welcome Back",
+      "signInToClaimReward": "Sign in to claim your reward",
+      "signInToContinue": "Sign in to continue the scavenger hunt",
+      "joinRaveFam": "Join the Rave Fam",
+      "registerToClaimReward": "Register to claim your reward.",
+      "registerToClaimTickets": "Register to claim your free tickets when you find them."
+    },
+    "views": {
+      "allClaimed": "All Claimed!",
+      "allClaimedDescription": "All rewards from {{locationName}} have been claimed. Try finding another location!",
+      "alreadyClaimed": "Already Claimed!",
+      "alreadyClaimedDescription": "You've already claimed a reward from {{locationName}}. You can only claim one reward per location!",
+      "shareWithFriends": "But you can share this secret location with your friends!",
+      "invalidCode": "Invalid Code",
+      "invalidCodeDescription": "This QR code doesn't seem to be valid. Please try scanning it again.",
+      "photoInstructions": "If you keep having issues, take a photo of the poster with your hand holding up 3 fingers next to it.",
+      "sendPhotoTo": "Send that photo in a DM to",
+      "onInstagram": "on Instagram.",
+      "jumpToTickets": "Wanna jump straight to buying tickets?"
     }
   },
   "formLabels": {
@@ -939,23 +1068,7 @@
     "deleteVenueConfirm": "Are you sure you want to delete this venue?"
   },
   "dataGrid": {
-    "columns": {
-      "email": "Email",
-      "username": "Username",
-      "fullName": "Full Name",
-      "organization": "Organization",
-      "roles": "Roles",
-      "joined": "Joined",
-      "name": "Name",
-      "type": "Type",
-      "status": "Status",
-      "createdAt": "Created At",
-      "updatedAt": "Updated At",
-      "organizationName": "Organization Name",
-      "profilePicture": "Profile Picture",
-      "owner": "Owner",
-      "created": "Created"
-    },
+    "columns": "Columns",
     "actions": {
       "edit": "Edit",
       "editUser": "Edit User",
@@ -989,7 +1102,6 @@
     "reorder": "Reorder",
     "reorderColumns": "Reorder Columns",
     "reorderColumnsDescription": "Drag and drop columns to reorder them",
-    "columns": "Columns",
     "confirmBatchDelete": "Confirm Batch Delete",
     "batchDeleteConfirmation": "Are you sure you want to delete {{count}} {{resourceName}}? This action cannot be undone.",
     "itemsToBeDeleted": "Items to be deleted:",
@@ -1206,36 +1318,6 @@
     "venueTBA": "Venue TBA",
     "shareEvent": "Share event",
     "saveEvent": "Save event"
-  },
-  "analytics": {
-    "eventAnalytics": "Event Analytics",
-    "trackPerformance": "Track performance and engagement metrics",
-    "exportCSV": "Export CSV",
-    "loadingAnalytics": "Loading analytics...",
-    "noDataAvailable": "No analytics data available",
-    "metric": "Metric",
-    "value": "Value",
-    "totalRevenue": "Total Revenue",
-    "excludingFees": "Excluding fees",
-    "ticketsSold": "Tickets Sold",
-    "pageViews": "Page Views",
-    "uniqueVisitors": "Unique Visitors",
-    "uniqueVisitorsCount": "{{count}} unique visitors",
-    "conversionRate": "Conversion Rate",
-    "viewsToPurchases": "Views to purchases",
-    "averageOrderValue": "Average Order Value",
-    "totalFeesCollected": "Total Fees Collected",
-    "refundRate": "Refund Rate",
-    "totalTicketsSold": "Total Tickets Sold",
-    "totalPageViews": "Total Page Views",
-    "salesOverTime": "Sales Over Time",
-    "revenueByTier": "Revenue by Ticket Tier",
-    "pageViewsOverTime": "Page Views Over Time",
-    "salesByHour": "Sales by Hour of Day",
-    "revenue": "Revenue",
-    "tickets": "Tickets",
-    "views": "Views",
-    "orders": "Orders"
   },
   "adminDetails": {
     "artistDetails": "Artist Details",
@@ -1501,67 +1583,6 @@
     },
     "backToHome": "Back to Home"
   },
-  "scavenger": {
-    "buttons": {
-      "join": "Join"
-    },
-    "claimReward": {
-      "title": "Welcome to the {{locationName}} Checkpoint",
-      "description": "Discover this checkpoint to get you and a friend on the guestlist!",
-      "successMessage": "Checkpoint discovered! You and a friend are on the list.",
-      "errorMessage": "Failed to claim checkpoint",
-      "claiming": "Claiming...",
-      "claimButton": "Claim Checkpoint"
-    },
-    "claimSuccess": {
-      "title": "Congratulations!",
-      "addedToGuestlist": "You've been added to the",
-      "seeYouThere": "guestlist. See you there.",
-      "checkInInstructions": "Check into the host stand as usual and give them your full name.",
-      "nameListedAs": "Your name will be listed as",
-      "incorrectNameHelp": "in the guestlist. If this is incorrect, please reach out to",
-      "onInstagram": "on Instagram to correct it.",
-      "needMoreTickets": "Need more tickets for friends? Use code",
-      "discountOff": "for 20% off!",
-      "youreThe": "You're the",
-      "person": "person",
-      "toFind": "to find",
-      "yourReward": "Your Reward",
-      "checkEmail": "Check your email for details",
-      "ordinal1": "1st",
-      "ordinal2": "2nd",
-      "ordinal3": "3rd",
-      "ordinalN": "{{position}}th",
-      "exclusiveReward": "🎁 Exclusive Reward"
-    },
-    "checkpoint": {
-      "welcomeTo": "Welcome to the",
-      "checkpoint": "Checkpoint",
-      "getOnGuestlist": "As promised, let's get your name on that guestlist for LF SYSTEM at Kingdom, Sat Oct 18th.",
-      "addingToGuestlist": "Adding to Guestlist...",
-      "joinGuestlist": "Join Guestlist",
-      "signUpPrompt": "Sign up for an account with us, and we'll get you on the guestlist for LF SYSTEM at Kingdom on Saturday, October 18th."
-    },
-    "noCheckpoint": {
-      "title": "No Checkpoint Scanned.",
-      "description": "But the free tickets are still out there. Keep searching!",
-      "registerTitle": "Register with Force Majeure",
-      "registerDescription": "You'll need to register with us to join the guestlist once you find a checklist. You can take care of that now if you'd like."
-    },
-    "promoCode": {
-      "spotsClaimed": "Guestlist Spots Claimed!",
-      "spotsClaimedDescription": "Sorry, both guestlist passes have been snagged at this location. But you're not leaving empty handed! Sign up to receive a promo code for 20% off tickets.",
-      "locationsAvailable": "There are still",
-      "checkInstagram": "locations that have guest passes available, check the reel at",
-      "forHints": "on Instagram for hints.",
-      "yourPromoCode": "Your Promo Code",
-      "buyTicketsNow": "Buy Tickets Now"
-    },
-    "confirmation": {
-      "title": "Check Your Email",
-      "description": "We've sent a verification link to {{email}}. Click the link to verify your account and claim your reward!"
-    }
-  },
   "organization": {
     "dashboard": {
       "title": "Org Dashboard",
@@ -1578,7 +1599,14 @@
       "organizationProfile": "Organization Profile",
       "organizationProfileDescription": "Edit your organization's public profile and settings",
       "editProfile": "Edit Profile"
-    }
+    },
+    "loadFailed": "Failed to load organization",
+    "notFound": "Organization not found",
+    "details": "Organization Details",
+    "basicInfo": "Basic Information",
+    "metadata": "Metadata",
+    "organizationId": "Organization ID",
+    "backToList": "Back to Organizations List"
   },
   "soundcloud": {
     "importTitle": "Import from SoundCloud",
@@ -1882,7 +1910,41 @@
     "updateSuccess": "Note updated",
     "updateFailed": "Failed to update note",
     "deleteSuccess": "Note deleted",
-    "deleteFailed": "Failed to delete note"
+    "deleteFailed": "Failed to delete note",
+    "searchPlaceholder": "Search notes...",
+    "newNote": "New Note",
+    "filter": "Filter",
+    "filterLabels": {
+      "type": "Type",
+      "status": "Status",
+      "author": "Author"
+    },
+    "sortBy": "Sort by",
+    "ascending": "Ascending",
+    "descending": "Descending",
+    "notesCount": "{{count}} notes",
+    "loading": "Loading notes...",
+    "noMatchingNotes": "No notes match your filters",
+    "noNotesYet": "No notes yet. Create one to get started!",
+    "priority": "Priority",
+    "clickToEdit": "Click to edit...",
+    "author": "Author",
+    "toSave": "to save",
+    "types": {
+      "todo": "TODO",
+      "info": "INFO",
+      "bug": "BUG",
+      "question": "QUESTION"
+    },
+    "statuses": {
+      "todo": "TODO",
+      "inProgress": "IN PROGRESS",
+      "resolved": "RESOLVED",
+      "archived": "ARCHIVED",
+      "cancelled": "CANCELLED"
+    },
+    "inspect": "Inspect",
+    "setStatus": "Set Status"
   },
   "email": {
     "receiptSent": "Receipt email sent successfully",
@@ -1919,50 +1981,6 @@
     "enterEmail": "Enter email...",
     "enterUrl": "Enter URL...",
     "enterValue": "Enter value..."
-  },
-  "scavenger": {
-    "invalidToken": "Invalid Token",
-    "noTokenProvided": "(no token provided)",
-    "error": "Error: {{error}}",
-    "layout": {
-      "title": "<gold>LF System</gold> Scavenger Hunt",
-      "titleBrand": "LF System",
-      "titleSuffix": "Scavenger Hunt",
-      "subtitle": "Find all 5 locations to complete the hunt!",
-      "yourProgress": "Your Progress",
-      "foundLocations": "You've found {{count}} of 5 locations!",
-      "position": "Position #{{position}}"
-    },
-    "wizard": {
-      "welcomeBack": "Welcome Back",
-      "signInToClaimReward": "Sign in to claim your reward",
-      "signInToContinue": "Sign in to continue the scavenger hunt",
-      "joinRaveFam": "Join the Rave Fam",
-      "registerToClaimReward": "Register to claim your reward.",
-      "registerToClaimTickets": "Register to claim your free tickets when you find them."
-    },
-    "views": {
-      "allClaimed": "All Claimed!",
-      "allClaimedDescription": "All rewards from {{locationName}} have been claimed. Try finding another location!",
-      "alreadyClaimed": "Already Claimed!",
-      "alreadyClaimedDescription": "You've already claimed a reward from {{locationName}}. You can only claim one reward per location!",
-      "shareWithFriends": "But you can share this secret location with your friends!",
-      "invalidCode": "Invalid Code",
-      "invalidCodeDescription": "This QR code doesn't seem to be valid. Please try scanning it again.",
-      "photoInstructions": "If you keep having issues, take a photo of the poster with your hand holding up 3 fingers next to it.",
-      "sendPhotoTo": "Send that photo in a DM to",
-      "onInstagram": "on Instagram.",
-      "jumpToTickets": "Wanna jump straight to buying tickets?"
-    }
-  },
-  "organization": {
-    "loadFailed": "Failed to load organization",
-    "notFound": "Organization not found",
-    "details": "Organization Details",
-    "basicInfo": "Basic Information",
-    "metadata": "Metadata",
-    "organizationId": "Organization ID",
-    "backToList": "Back to Organizations List"
   },
   "orderDetails": {
     "title": "Order Details",
@@ -2031,19 +2049,10 @@
     "extendTime": "Extend Time",
     "remaining": "{{time}} remaining"
   },
-  "analytics": {
-    "loading": "Loading analytics...",
-    "noData": "No analytics data available",
-    "totalLinks": "Total Links",
-    "totalClicks": "Total Clicks",
-    "avgClicksPerLink": "Avg. Clicks/Link",
-    "clicksOverTime": "Clicks Over Time (Last 7 Days)",
-    "topPerformingLinks": "Top 5 Performing Links",
-    "clicksBySource": "Clicks by Source"
-  },
   "datePicker": {
     "pickDateTime": "Pick a date and time",
-    "scheduledEvents": "{{count}} scheduled event(s)"
+    "scheduledEvents": "{{count}} scheduled event(s)",
+    "pickDate": "Pick a date"
   },
   "cart": {
     "empty": "Your cart is empty",
@@ -2105,7 +2114,10 @@
   },
   "citySearch": {
     "searchForCity": "Search for a city...",
-    "createNewCity": "+ Create New City"
+    "createNewCity": "+ Create New City",
+    "typeToSearch": "Type to search cities...",
+    "noCitiesFound": "No cities found.",
+    "startTyping": "Start typing to search cities..."
   },
   "databaseManager": {
     "title": "Database Manager",
@@ -2153,11 +2165,6 @@
     "categoryCommunication": "Communication",
     "openDemo": "Open demo",
     "accessNote": "These demos are only accessible to admin users and are not visible in production"
-  },
-  "datePicker": {
-    "pickDate": "Pick a date",
-    "pickDateTime": "Pick a date and time",
-    "scheduledEvents": "{{count}} scheduled event(s)"
   },
   "timePicker": {
     "selectTime": "Select time"
@@ -2238,12 +2245,6 @@
     "manage": "Manage",
     "capacity": "Capacity: {{count}}",
     "upcomingEvents": "Upcoming events."
-  },
-  "citySearch": {
-    "searchForCity": "Search for a city...",
-    "typeToSearch": "Type to search cities...",
-    "noCitiesFound": "No cities found.",
-    "startTyping": "Start typing to search cities..."
   },
   "organizationsManagement": {
     "title": "Organizations Management",
@@ -2521,42 +2522,6 @@
     "noEventsFound": "No events found",
     "noUpcomingEvents": "No upcoming events"
   },
-  "devNotes": {
-    "searchPlaceholder": "Search notes...",
-    "newNote": "New Note",
-    "filter": "Filter",
-    "filterLabels": {
-      "type": "Type",
-      "status": "Status",
-      "author": "Author"
-    },
-    "sortBy": "Sort by",
-    "ascending": "Ascending",
-    "descending": "Descending",
-    "notesCount": "{{count}} notes",
-    "loading": "Loading notes...",
-    "noMatchingNotes": "No notes match your filters",
-    "noNotesYet": "No notes yet. Create one to get started!",
-    "priority": "Priority",
-    "clickToEdit": "Click to edit...",
-    "author": "Author",
-    "toSave": "to save",
-    "types": {
-      "todo": "TODO",
-      "info": "INFO",
-      "bug": "BUG",
-      "question": "QUESTION"
-    },
-    "statuses": {
-      "todo": "TODO",
-      "inProgress": "IN PROGRESS",
-      "resolved": "RESOLVED",
-      "archived": "ARCHIVED",
-      "cancelled": "CANCELLED"
-    },
-    "inspect": "Inspect",
-    "setStatus": "Set Status"
-  },
   "roleSelect": {
     "title": "Role Override",
     "description": "Override your current role for testing different permission levels.",
@@ -2626,8 +2591,12 @@
     }
   },
   "devNavigation": {
+    "core": "Core",
     "adminControls": "Admin Controls",
     "developerHome": "Developer Home",
+    "subdomains": "Subdomains",
+    "sonicGauntlet": "Sonic Gauntlet",
+    "noSubdomains": "No subdomains enabled",
     "supabase": "Supabase",
     "supabaseDashboard": "Supabase Dashboard",
     "mailpit": "Mailpit (Local Email)",

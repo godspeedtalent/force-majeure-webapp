@@ -265,11 +265,11 @@ export function TrackInputForm({
         {/* Platform indicators */}
         <div className="flex items-center gap-[20px] text-xs text-muted-foreground">
           <span className="flex items-center gap-[5px]">
-            <FaSpotify className={cn('h-4 w-4', platform === 'spotify' ? 'text-[#1DB954]' : 'opacity-30')} />
+            <FaSpotify className={cn('h-4 w-4', platform === 'spotify' ? 'text-[#5aad7a]' : 'opacity-30')} />
             Spotify
           </span>
           <span className="flex items-center gap-[5px]">
-            <FaSoundcloud className={cn('h-4 w-4', platform === 'soundcloud' ? 'text-[#FF5500]' : 'opacity-30')} />
+            <FaSoundcloud className={cn('h-4 w-4', platform === 'soundcloud' ? 'text-[#d48968]' : 'opacity-30')} />
             SoundCloud
           </span>
         </div>
@@ -346,9 +346,9 @@ export function TrackInputForm({
               {/* Platform badge */}
               <div className="absolute bottom-1 right-1">
                 {trackData.platform === 'spotify' ? (
-                  <FaSpotify className="h-5 w-5 text-[#1DB954] drop-shadow-lg" />
+                  <FaSpotify className="h-5 w-5 text-[#5aad7a] drop-shadow-lg" />
                 ) : (
-                  <FaSoundcloud className="h-5 w-5 text-[#FF5500] drop-shadow-lg" />
+                  <FaSoundcloud className="h-5 w-5 text-[#d48968] drop-shadow-lg" />
                 )}
               </div>
             </div>
@@ -449,9 +449,9 @@ export function TrackList({ tracks, onRemoveTrack, onEditTrack, editingTrackId }
                   {/* Platform badge */}
                   <div className="absolute bottom-0.5 right-0.5">
                     {track.platform === 'spotify' ? (
-                      <FaSpotify className="h-4 w-4 text-[#1DB954] drop-shadow-lg" />
+                      <FaSpotify className="h-4 w-4 text-[#5aad7a] drop-shadow-lg" />
                     ) : (
-                      <FaSoundcloud className="h-4 w-4 text-[#FF5500] drop-shadow-lg" />
+                      <FaSoundcloud className="h-4 w-4 text-[#d48968] drop-shadow-lg" />
                     )}
                   </div>
                 </div>

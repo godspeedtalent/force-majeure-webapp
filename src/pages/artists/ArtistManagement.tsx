@@ -561,8 +561,8 @@ export default function ArtistManagement() {
                     className={cn(
                       'px-2 py-1 text-xs font-medium uppercase tracking-wider',
                       track.platform === 'spotify'
-                        ? 'bg-[#1DB954]/90 text-white'
-                        : 'bg-[#FF5500]/90 text-white'
+                        ? 'bg-[#5aad7a]/90 text-white'
+                        : 'bg-[#d48968]/90 text-white'
                     )}
                   >
                     {track.platform}

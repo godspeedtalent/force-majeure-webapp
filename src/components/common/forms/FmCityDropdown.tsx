@@ -29,6 +29,8 @@ interface FmCityDropdownProps {
   disabled?: boolean;
   /** Optional filter by state (e.g., 'TX') */
   stateFilter?: string;
+  /** Optional filter by specific city names (e.g., ['Austin', 'Houston']) */
+  cityNames?: string[];
 }
 
 export function FmCityDropdown({
@@ -42,6 +44,7 @@ export function FmCityDropdown({
   className,
   disabled = false,
   stateFilter,
+  cityNames,
 }: FmCityDropdownProps) {
   const { t } = useTranslation('common');
   const [cities, setCities] = useState<City[]>([]);
@@ -61,6 +64,10 @@ export function FmCityDropdown({
           query = query.eq('state', stateFilter);
         }
 
+        if (cityNames && cityNames.length > 0) {
+          query = query.in('name', cityNames);
+        }
+
         const { data, error: fetchError } = await query;
 
         if (fetchError) {
@@ -77,7 +84,7 @@ export function FmCityDropdown({
     };
 
     fetchCities();
-  }, [stateFilter]);
+  }, [stateFilter, cityNames]);
 
   const options: SelectOption[] = cities.map(city => ({
     value: city.id,

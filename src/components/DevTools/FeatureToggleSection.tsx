@@ -31,8 +31,9 @@ import {
   clearAllFeatureFlagOverrides,
 } from '@/shared/utils/featureFlagOverrides';
 import { useQueryClient } from '@tanstack/react-query';
-import { RefreshCw, X, Settings2, ChevronDown } from 'lucide-react';
+import { RefreshCw, X, Settings2 } from 'lucide-react';
 import { cn } from '@/shared';
+import { FmCollapsibleGroupHeader } from '@/components/common/data/FmCollapsibleGroupHeader';
 
 interface FeatureFlagData {
   flag_name: string;
@@ -197,17 +198,6 @@ export const FeatureToggleSection = () => {
     });
   };
 
-  const toggleGroupCollapsed = (groupName: string) => {
-    setCollapsedGroups(prev => {
-      const next = new Set(prev);
-      if (next.has(groupName)) {
-        next.delete(groupName);
-      } else {
-        next.add(groupName);
-      }
-      return next;
-    });
-  };
 
   const handleApply = async () => {
     setShowConfirmDialog(false);
@@ -302,29 +292,25 @@ export const FeatureToggleSection = () => {
           const isGroupCollapsed = collapsedGroups.has(groupName);
 
           return (
-            <div key={groupName} className='space-y-1.5'>
-              {/* Group Header - Collapsible */}
-              <button
-                onClick={() => toggleGroupCollapsed(groupName)}
-                className='flex items-center gap-2 py-1 w-full group hover:bg-white/5 transition-colors rounded-sm'
-              >
-                <ChevronDown
-                  className={cn(
-                    'h-3 w-3 text-white/50 transition-transform duration-200',
-                    isGroupCollapsed && '-rotate-90'
-                  )}
-                />
-                <span className='text-[10px] font-medium text-white/70 uppercase tracking-wider group-hover:text-white/90 transition-colors'>
-                  {formatGroupName(groupName)}
-                </span>
-                <span className='text-[9px] text-white/30'>
-                  ({groupFlags.length})
-                </span>
-                <div className='flex-1 h-[1px] bg-white/10' />
-              </button>
-
-              {/* Flags in group - collapsible */}
-              {!isGroupCollapsed && groupFlags.map(flag => {
+            <FmCollapsibleGroupHeader
+              key={groupName}
+              title={formatGroupName(groupName)}
+              count={groupFlags.length}
+              expanded={!isGroupCollapsed}
+              onExpandedChange={(expanded) => {
+                if (!expanded) {
+                  setCollapsedGroups(prev => new Set([...prev, groupName]));
+                } else {
+                  setCollapsedGroups(prev => {
+                    const next = new Set(prev);
+                    next.delete(groupName);
+                    return next;
+                  });
+                }
+              }}
+            >
+              {/* Flags in group */}
+              {groupFlags.map(flag => {
                 const Icon = getFlagIcon(flag.flag_name);
                 const description = flag.description || getFlagDescription(flag.flag_name);
                 const hasOverride = sessionOverrides[flag.flag_name] !== undefined;
@@ -440,7 +426,7 @@ export const FeatureToggleSection = () => {
                   </div>
                 );
               })}
-            </div>
+            </FmCollapsibleGroupHeader>
           );
         })}
 

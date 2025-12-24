@@ -25,6 +25,9 @@ export const FEATURE_FLAGS = {
 
   // Search features
   GLOBAL_SEARCH: 'global_search',
+
+  // Competition features
+  SONIC_GAUNTLET: 'sonic_gauntlet',
 } as const;
 
 export type FeatureFlag = (typeof FEATURE_FLAGS)[keyof typeof FEATURE_FLAGS];
@@ -79,6 +82,10 @@ export const FEATURE_FLAG_METADATA: Record<
   [FEATURE_FLAGS.GLOBAL_SEARCH]: {
     displayName: 'Global Search',
     description: 'Enables global search functionality',
+  },
+  [FEATURE_FLAGS.SONIC_GAUNTLET]: {
+    displayName: 'Sonic Gauntlet',
+    description: 'Enables the Sonic Gauntlet DJ competition landing page',
   },
 };
 

@@ -153,12 +153,12 @@ export function SpotifyArtistImport({ open, onClose, onImport }: SpotifyArtistIm
       <DialogContent className='w-[90vw] h-[90vh] sm:h-auto sm:max-h-[80vh] max-w-2xl overflow-hidden flex flex-col'>
         <DialogHeader className='flex-shrink-0'>
           <DialogTitle className='flex items-center gap-[10px]'>
-            <SpotifyIcon className='h-5 w-5 text-[#1DB954]' />
+            <SpotifyIcon className='h-5 w-5 text-[#5aad7a]' />
             {t('spotify.importTitle')}
           </DialogTitle>
         </DialogHeader>
 
-        <div className='space-y-[20px] overflow-y-auto flex-1 pb-[10px]'>
+        <div className='space-y-[20px] overflow-y-auto flex-1 pb-[10px] px-[5px]'>
           {/* URL Input */}
           <div className='space-y-[10px]'>
             <FmCommonTextField
@@ -186,7 +186,7 @@ export function SpotifyArtistImport({ open, onClose, onImport }: SpotifyArtistIm
 
             {/* URL Artist Preview */}
             {urlArtist && !isLoadingUrl && (
-              <div className='flex flex-col sm:flex-row items-start sm:items-center gap-[10px] sm:gap-[20px] p-[15px] sm:p-[20px] border border-[#1DB954]/30 bg-[#1DB954]/5'>
+              <div className='flex flex-col sm:flex-row items-start sm:items-center gap-[10px] sm:gap-[20px] p-[15px] sm:p-[20px] border border-[#5aad7a]/30 bg-[#5aad7a]/5'>
                 <div className='flex items-center gap-[10px] sm:gap-[20px] w-full sm:w-auto'>
                   {urlArtist.images[0] && (
                     <img

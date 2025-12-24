@@ -1,4 +1,0 @@
-/**
- * Organization type definitions
- */
-export {};

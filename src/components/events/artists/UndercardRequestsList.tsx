@@ -342,7 +342,7 @@ function RequestCard({
                 href={registration.spotify_url}
                 target='_blank'
                 rel='noopener noreferrer'
-                className='text-[#1DB954] hover:opacity-80 transition-opacity'
+                className='text-[#5aad7a] hover:opacity-80 transition-opacity'
               >
                 <FaSpotify className='h-5 w-5' />
               </a>
@@ -352,7 +352,7 @@ function RequestCard({
                 href={registration.soundcloud_url}
                 target='_blank'
                 rel='noopener noreferrer'
-                className='text-[#FF5500] hover:opacity-80 transition-opacity'
+                className='text-[#d48968] hover:opacity-80 transition-opacity'
               >
                 <FaSoundcloud className='h-5 w-5' />
               </a>

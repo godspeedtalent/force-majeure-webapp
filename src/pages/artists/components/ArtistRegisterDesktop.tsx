@@ -32,7 +32,7 @@ export interface ArtistRegisterSharedProps {
   handleSubmit: () => void;
   isSubmitting: boolean;
   genreBadges: BadgeItem[];
-  setCurrentStep: (step: number) => void;
+  handleStepClick: (step: number) => void;
 }
 
 export function ArtistRegisterDesktop({
@@ -46,7 +46,7 @@ export function ArtistRegisterDesktop({
   handleSubmit,
   isSubmitting,
   genreBadges,
-  setCurrentStep,
+  handleStepClick,
 }: ArtistRegisterSharedProps) {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
@@ -146,7 +146,7 @@ export function ArtistRegisterDesktop({
           {[0, 1, 2, 3, 4].map(step => (
             <button
               key={step}
-              onClick={() => setCurrentStep(step)}
+              onClick={() => handleStepClick(step)}
               className={cn(
                 'h-2 transition-all duration-300 rounded-none',
                 currentStep === step
@@ -163,9 +163,9 @@ export function ArtistRegisterDesktop({
       <div className='w-1/2 relative flex flex-col overflow-hidden z-10'>
         {/* Preview Header */}
         <div className='flex-shrink-0 flex items-center justify-between h-[60px] px-[20px] border-b border-white/10 bg-black/30 backdrop-blur-sm'>
-          <h3 className='font-canela text-lg text-white'>{t('nav.profilePreview')}</h3>
+          <h3 className='font-canela text-lg text-white'>{t('pageTitles.profilePreview')}</h3>
           <p className='font-canela text-xs text-muted-foreground'>
-            {t('nav.profilePreviewDescription')}
+            {t('pageTitles.profilePreviewDescription')}
           </p>
         </div>
 

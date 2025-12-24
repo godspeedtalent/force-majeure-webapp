@@ -1,14 +1,16 @@
 import { useTranslation } from 'react-i18next';
-import { Home, Shield, Database, Mail } from 'lucide-react';
+import { Home, Shield, Database, Mail, Music } from 'lucide-react';
 import { Separator } from '@/components/common/shadcn/separator';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { FmCommonCollapsibleSection } from '@/components/common/data/FmCommonCollapsibleSection';
+import { FmCollapsibleGroupHeader } from '@/components/common/data/FmCollapsibleGroupHeader';
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/common/shadcn/context-menu';
+import { useFeatureFlagHelpers } from '@/shared';
+import { FEATURE_FLAGS } from '@/shared';
 
 interface DevNavigationTabContentProps {
   onNavigate: (path: string) => void;
@@ -17,65 +19,107 @@ interface DevNavigationTabContentProps {
 
 export function DevNavigationTabContent({ onNavigate, isAdmin }: DevNavigationTabContentProps) {
   const { t } = useTranslation('common');
+  const { isFeatureEnabled } = useFeatureFlagHelpers();
 
   return (
     <div className='space-y-4'>
       <Separator className='bg-white/10' />
       <div className='flex flex-col gap-4'>
-        {/* App Links Section */}
-        <div className='flex flex-col gap-2'>
-          {isAdmin && (
+        {/* Core Section */}
+        <FmCollapsibleGroupHeader title={t('devNavigation.core')} count={isAdmin ? 2 : 1}>
+          <div className='flex flex-col gap-2'>
+            {isAdmin && (
+              <ContextMenu>
+                <ContextMenuTrigger asChild>
+                  <div>
+                    <FmCommonButton
+                      variant='default'
+                      icon={Shield}
+                      iconPosition='left'
+                      onClick={() => onNavigate('/admin/controls')}
+                      className='w-full justify-start'
+                    >
+                      {t('devNavigation.adminControls')}
+                    </FmCommonButton>
+                  </div>
+                </ContextMenuTrigger>
+                <ContextMenuContent className='bg-card border-border rounded-none w-40'>
+                  <ContextMenuItem
+                    onClick={() => onNavigate('/admin/controls')}
+                    className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
+                  >
+                    {t('devNavigation.goTo')}
+                  </ContextMenuItem>
+                </ContextMenuContent>
+              </ContextMenu>
+            )}
             <ContextMenu>
               <ContextMenuTrigger asChild>
                 <div>
                   <FmCommonButton
                     variant='default'
-                    icon={Shield}
+                    icon={Home}
                     iconPosition='left'
-                    onClick={() => onNavigate('/admin/controls')}
+                    onClick={() => onNavigate('/developer')}
                     className='w-full justify-start'
                   >
-                    {t('devNavigation.adminControls')}
+                    {t('devNavigation.developerHome')}
                   </FmCommonButton>
                 </div>
               </ContextMenuTrigger>
               <ContextMenuContent className='bg-card border-border rounded-none w-40'>
                 <ContextMenuItem
-                  onClick={() => onNavigate('/admin/controls')}
+                  onClick={() => onNavigate('/developer')}
                   className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
                 >
                   {t('devNavigation.goTo')}
                 </ContextMenuItem>
               </ContextMenuContent>
             </ContextMenu>
-          )}
-          <ContextMenu>
-            <ContextMenuTrigger asChild>
-              <div>
-                <FmCommonButton
-                  variant='default'
-                  icon={Home}
-                  iconPosition='left'
-                  onClick={() => onNavigate('/developer')}
-                  className='w-full justify-start'
-                >
-                  {t('devNavigation.developerHome')}
-                </FmCommonButton>
-              </div>
-            </ContextMenuTrigger>
-            <ContextMenuContent className='bg-card border-border rounded-none w-40'>
-              <ContextMenuItem
-                onClick={() => onNavigate('/developer')}
-                className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-              >
-                {t('devNavigation.goTo')}
-              </ContextMenuItem>
-            </ContextMenuContent>
-          </ContextMenu>
-        </div>
+          </div>
+        </FmCollapsibleGroupHeader>
+
+        {/* Subdomains Section */}
+        <FmCollapsibleGroupHeader
+          title={t('devNavigation.subdomains')}
+          count={isFeatureEnabled(FEATURE_FLAGS.SONIC_GAUNTLET) ? 1 : 0}
+        >
+          <div className='flex flex-col gap-2'>
+            {isFeatureEnabled(FEATURE_FLAGS.SONIC_GAUNTLET) && (
+              <ContextMenu>
+                <ContextMenuTrigger asChild>
+                  <div>
+                    <FmCommonButton
+                      variant='default'
+                      icon={Music}
+                      iconPosition='left'
+                      onClick={() => onNavigate('/sonic-gauntlet')}
+                      className='w-full justify-start'
+                    >
+                      {t('devNavigation.sonicGauntlet')}
+                    </FmCommonButton>
+                  </div>
+                </ContextMenuTrigger>
+                <ContextMenuContent className='bg-card border-border rounded-none w-40'>
+                  <ContextMenuItem
+                    onClick={() => onNavigate('/sonic-gauntlet')}
+                    className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
+                  >
+                    {t('devNavigation.goTo')}
+                  </ContextMenuItem>
+                </ContextMenuContent>
+              </ContextMenu>
+            )}
+            {!isFeatureEnabled(FEATURE_FLAGS.SONIC_GAUNTLET) && (
+              <p className='text-[10px] text-white/30 px-2'>
+                {t('devNavigation.noSubdomains')}
+              </p>
+            )}
+          </div>
+        </FmCollapsibleGroupHeader>
 
         {/* Supabase Links Section */}
-        <FmCommonCollapsibleSection title={t('devNavigation.supabase')} defaultExpanded={true}>
+        <FmCollapsibleGroupHeader title={t('devNavigation.supabase')}>
           <div className='flex flex-col gap-2'>
             <ContextMenu>
               <ContextMenuTrigger asChild>
@@ -144,7 +188,7 @@ export function DevNavigationTabContent({ onNavigate, isAdmin }: DevNavigationTa
               </FmCommonButton>
             )}
           </div>
-        </FmCommonCollapsibleSection>
+        </FmCollapsibleGroupHeader>
       </div>
     </div>
   );

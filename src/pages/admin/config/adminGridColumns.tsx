@@ -272,7 +272,7 @@ export const recordingColumns: DataGridColumn[] = [
       if (!value) return <span className='text-muted-foreground'>—</span>;
       const isSpotify = value === 'spotify';
       return (
-        <span className={`px-2 py-0.5 text-xs font-medium uppercase ${isSpotify ? 'bg-[#1DB954]/20 text-[#1DB954]' : 'bg-[#FF5500]/20 text-[#FF5500]'}`}>
+        <span className={`px-2 py-0.5 text-xs font-medium uppercase ${isSpotify ? 'bg-[#5aad7a]/20 text-[#5aad7a]' : 'bg-[#d48968]/20 text-[#d48968]'}`}>
           {value}
         </span>
       );

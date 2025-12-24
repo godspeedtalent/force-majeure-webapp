@@ -16,6 +16,8 @@ import {
   Users,
   RefreshCw,
   Disc3,
+  HardDrive,
+  Images,
 } from 'lucide-react';
 import { supabase } from '@/shared';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -31,11 +33,13 @@ import { AdminLockIndicator } from '@/components/common/indicators';
 import { refreshAllTableSchemas } from '@/features/data-grid/services/schemaRefresh';
 import { FmCommonButton } from '@/components/common/buttons';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
+import { GalleryManagementSection } from '@/components/DevTools/GalleryManagementSection';
 
 type DatabaseTab =
   | 'overview'
   | 'artists'
   | 'events'
+  | 'galleries'
   | 'organizations'
   | 'recordings'
   | 'users'
@@ -61,7 +65,7 @@ export default function DeveloperDatabase() {
 
   // Get active tab from URL query string, fallback to 'overview'
   const tabFromUrl = searchParams.get('table') as DatabaseTab | null;
-  const validTabs: DatabaseTab[] = ['overview', 'artists', 'events', 'organizations', 'recordings', 'users', 'venues'];
+  const validTabs: DatabaseTab[] = ['overview', 'artists', 'events', 'galleries', 'organizations', 'recordings', 'users', 'venues'];
   const activeTab: DatabaseTab = tabFromUrl && validTabs.includes(tabFromUrl) ? tabFromUrl : 'overview';
 
   // Navigation groups configuration - conditionally include admin-only tabs
@@ -139,6 +143,18 @@ export default function DeveloperDatabase() {
         label: 'Tables',
         icon: Database,
         items: tables,
+      },
+      {
+        label: 'Storage',
+        icon: HardDrive,
+        items: [
+          {
+            id: 'galleries' as const,
+            label: 'Galleries',
+            icon: Images,
+            description: 'Media gallery management',
+          },
+        ],
       },
     ];
   }, [isAdmin]);
@@ -765,6 +781,21 @@ export default function DeveloperDatabase() {
               onUpdate={handleRecordingUpdate}
               resourceName='Recording'
             />
+          </div>
+        )}
+
+        {activeTab === 'galleries' && (
+          <div className='space-y-6'>
+            <div>
+              <h1 className='text-3xl font-canela font-bold text-foreground mb-2'>
+                Media Galleries
+              </h1>
+              <p className='text-muted-foreground'>
+                Manage image galleries and media collections for the site.
+              </p>
+            </div>
+
+            <GalleryManagementSection />
           </div>
         )}
       </div>

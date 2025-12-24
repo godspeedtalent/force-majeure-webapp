@@ -164,10 +164,10 @@ export function ArtistPreviewCard({
                 href={formData.soundcloudUrl}
                 target='_blank'
                 rel='noopener noreferrer'
-                className='p-[10px] rounded-none border border-white/20 bg-white/5 hover:bg-white/10 hover:border-[#FF5500]/50 transition-all duration-300'
+                className='p-[10px] rounded-none border border-white/20 bg-white/5 hover:bg-white/10 hover:border-[#d48968]/50 transition-all duration-300'
                 aria-label='SoundCloud'
               >
-                <SiSoundcloud className='h-5 w-5 text-white/70 hover:text-[#FF5500]' />
+                <SiSoundcloud className='h-5 w-5 text-white/70 hover:text-[#d48968]' />
               </a>
             )}
             {formData.spotifyUrl && (
@@ -175,10 +175,10 @@ export function ArtistPreviewCard({
                 href={formData.spotifyUrl}
                 target='_blank'
                 rel='noopener noreferrer'
-                className='p-[10px] rounded-none border border-white/20 bg-white/5 hover:bg-white/10 hover:border-[#1DB954]/50 transition-all duration-300'
+                className='p-[10px] rounded-none border border-white/20 bg-white/5 hover:bg-white/10 hover:border-[#5aad7a]/50 transition-all duration-300'
                 aria-label='Spotify'
               >
-                <SiSpotify className='h-5 w-5 text-white/70 hover:text-[#1DB954]' />
+                <SiSpotify className='h-5 w-5 text-white/70 hover:text-[#5aad7a]' />
               </a>
             )}
             {formData.tiktokHandle && (

@@ -103,6 +103,27 @@ const ArtistRegister = () => {
     t('artistRegistration.termsConditions'),
   ];
 
+  // Handle validated step navigation (for step indicators)
+  const handleStepClick = (targetStep: number) => {
+    // Always allow going backward
+    if (targetStep <= currentStep) {
+      setCurrentStep(targetStep);
+      return;
+    }
+
+    // When going forward, validate all steps up to the target
+    for (let step = currentStep; step < targetStep; step++) {
+      if (!validateStep(step, formData)) {
+        // Stop at the first invalid step
+        setCurrentStep(step);
+        return;
+      }
+    }
+
+    // All steps valid, navigate to target
+    setCurrentStep(targetStep);
+  };
+
   // Shared props for both desktop and mobile layouts
   const sharedProps = {
     formData,
@@ -115,7 +136,7 @@ const ArtistRegister = () => {
     handleSubmit,
     isSubmitting,
     genreBadges,
-    setCurrentStep,
+    handleStepClick,
   };
 
   return (

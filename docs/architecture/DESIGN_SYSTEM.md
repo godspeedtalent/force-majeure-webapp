@@ -383,6 +383,63 @@ All reusable components should be in `/src/components/common/` or similar `FmCom
 4. **FmCheckbox** - Checkbox inputs
 5. **FmDateBox** - Date picker component
 6. **FmDataGrid** - Data table/grid component
+7. **FmCollapsibleGroupHeader** - Primary toggleable section header
+
+#### FmCollapsibleGroupHeader (Primary Toggleable Header)
+
+**This is the PRIMARY component for collapsible/toggleable section headers.** Use this component whenever you need to group items with an expandable/collapsible header in toolbars, sidebars, panels, and settings pages.
+
+**Location:** `/src/components/common/data/FmCollapsibleGroupHeader.tsx`
+
+**Features:**
+
+- Compact design with rotating chevron indicator
+- Optional item count badge
+- Optional horizontal line divider
+- Smooth CSS transitions
+- Supports both controlled and uncontrolled modes
+
+**Usage:**
+
+```tsx
+import { FmCollapsibleGroupHeader } from '@/components/common/data/FmCollapsibleGroupHeader';
+
+// Uncontrolled (manages own state)
+<FmCollapsibleGroupHeader title="Core" count={3} defaultExpanded={true}>
+  <YourContent />
+</FmCollapsibleGroupHeader>
+
+// Controlled (parent manages state)
+<FmCollapsibleGroupHeader
+  title="Settings"
+  count={5}
+  expanded={isExpanded}
+  onExpandedChange={setIsExpanded}
+>
+  <YourContent />
+</FmCollapsibleGroupHeader>
+```
+
+**Props:**
+
+| Prop              | Type                           | Default     | Description                          |
+| ----------------- | ------------------------------ | ----------- | ------------------------------------ |
+| `title`           | `string`                       | required    | The group header title               |
+| `count`           | `number`                       | undefined   | Optional count badge                 |
+| `defaultExpanded` | `boolean`                      | `true`      | Initial expanded state (uncontrolled)|
+| `expanded`        | `boolean`                      | undefined   | Controlled expanded state            |
+| `onExpandedChange`| `(expanded: boolean) => void`  | undefined   | Callback when state changes          |
+| `showDivider`     | `boolean`                      | `true`      | Show horizontal line divider         |
+| `className`       | `string`                       | undefined   | Additional CSS classes               |
+
+**When to use:**
+
+- Feature flag grouping (see `FeatureToggleSection`)
+- Navigation sections (see `DevNavigationTab`)
+- Settings panels
+- Any grouped list content in toolbars/sidebars
+
+**Note:** Prefer this over `FmCommonCollapsibleSection` for toolbar/panel contexts as it has a more compact design suited for dense UIs.
 
 ### Naming Convention
 

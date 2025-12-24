@@ -131,7 +131,7 @@ const DeveloperCreateArtistPage = () => {
           variant='default'
           onClick={() => setShowSpotifyImport(true)}
           disabled={isSubmitting}
-          className='text-[#1DB954]'
+          className='text-[#5aad7a]'
           icon={<SpotifyIcon className='h-4 w-4' />}
         >
           {t('createForms.artist.importFromSpotify')}

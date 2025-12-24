@@ -80,7 +80,7 @@ export function MusicStep({
 
   return (
     <div className='h-full flex flex-col p-[20px]'>
-      <div className='flex-1 overflow-y-auto pr-[10px]'>
+      <div className='flex-1 overflow-y-auto px-[5px] pr-[10px]'>
         <div className='flex justify-center items-start'>
           <div className='w-[85vw] sm:w-[80%] space-y-[20px] bg-black/60 backdrop-blur-sm border border-white/10 p-[30px] sm:p-[40px]'>
             <div>

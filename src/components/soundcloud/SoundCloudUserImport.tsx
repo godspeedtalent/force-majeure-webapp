@@ -120,12 +120,12 @@ export function SoundCloudUserImport({ open, onClose, onImport }: SoundCloudUser
       <DialogContent className='w-[90vw] h-[90vh] sm:h-auto sm:max-h-[80vh] max-w-xl overflow-y-auto'>
         <DialogHeader>
           <DialogTitle className='flex items-center gap-[10px]'>
-            <FaSoundcloud className='h-5 w-5 text-[#FF5500]' />
+            <FaSoundcloud className='h-5 w-5 text-[#d48968]' />
             {t('soundcloud.importTitle')}
           </DialogTitle>
         </DialogHeader>
 
-        <div className='space-y-[20px]'>
+        <div className='space-y-[20px] px-[5px]'>
           {/* URL Input */}
           <div className='space-y-[10px]'>
             <FmCommonTextField
@@ -168,12 +168,12 @@ export function SoundCloudUserImport({ open, onClose, onImport }: SoundCloudUser
                       className='w-full h-full object-cover'
                     />
                   ) : (
-                    <div className='w-full h-full bg-gradient-to-br from-[#FF5500]/20 to-[#FF5500]/5 flex items-center justify-center'>
-                      <User className='h-6 w-6 sm:h-8 sm:w-8 text-[#FF5500]/50' />
+                    <div className='w-full h-full bg-gradient-to-br from-[#d48968]/20 to-[#d48968]/5 flex items-center justify-center'>
+                      <User className='h-6 w-6 sm:h-8 sm:w-8 text-[#d48968]/50' />
                     </div>
                   )}
                   <div className='absolute bottom-1 right-1'>
-                    <FaSoundcloud className='h-4 w-4 sm:h-5 sm:w-5 text-[#FF5500] drop-shadow-lg' />
+                    <FaSoundcloud className='h-4 w-4 sm:h-5 sm:w-5 text-[#d48968] drop-shadow-lg' />
                   </div>
                 </div>
 
@@ -191,7 +191,7 @@ export function SoundCloudUserImport({ open, onClose, onImport }: SoundCloudUser
                     href={userData.profileUrl}
                     target='_blank'
                     rel='noopener noreferrer'
-                    className='text-xs text-[#FF5500] hover:underline mt-[5px] inline-block'
+                    className='text-xs text-[#d48968] hover:underline mt-[5px] inline-block'
                   >
                     {t('soundcloud.viewOnSoundCloud')}
                   </a>

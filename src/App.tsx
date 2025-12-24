@@ -49,6 +49,9 @@ const ArtistManagement = lazy(() => import('./pages/artists/ArtistManagement'));
 const TestingIndex = lazy(() => import('./pages/testing/TestingIndex'));
 const CheckoutFlowTests = lazy(() => import('./pages/testing/CheckoutFlowTests'));
 
+// Lazy load special pages
+const SonicGauntlet = lazy(() => import('./pages/SonicGauntlet'));
+
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary';
 import { DemoProtectedRoute } from '@/components/routing/DemoProtectedRoute';
 import { ProtectedRoute } from '@/components/routing/ProtectedRoute';
@@ -418,6 +421,18 @@ const AppRoutes = () => {
           {/* Conditionally render member profiles route based on feature flag */}
           {isFeatureEnabled(FEATURE_FLAGS.MEMBER_PROFILES) && (
             <Route path='/members/home' element={<MemberHome />} />
+          )}
+
+          {/* Conditionally render Sonic Gauntlet route based on feature flag */}
+          {isFeatureEnabled(FEATURE_FLAGS.SONIC_GAUNTLET) && (
+            <Route
+              path='/sonic-gauntlet'
+              element={
+                <Suspense fallback={<LazyLoadFallback />}>
+                  <SonicGauntlet />
+                </Suspense>
+              }
+            />
           )}
 
           {/* Profile routes are now defined above, outside coming soon mode */}

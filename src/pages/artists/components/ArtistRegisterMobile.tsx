@@ -33,7 +33,7 @@ export interface ArtistRegisterMobileProps {
   handleSubmit: () => void;
   isSubmitting: boolean;
   genreBadges: BadgeItem[];
-  setCurrentStep: (step: number) => void;
+  handleStepClick: (step: number) => void;
   previewExpanded: boolean;
   setPreviewExpanded: (expanded: boolean) => void;
 }
@@ -49,7 +49,7 @@ export function ArtistRegisterMobile({
   handleSubmit,
   isSubmitting,
   genreBadges,
-  setCurrentStep,
+  handleStepClick,
   previewExpanded,
   setPreviewExpanded,
 }: ArtistRegisterMobileProps) {
@@ -154,7 +154,7 @@ export function ArtistRegisterMobile({
           {[0, 1, 2, 3, 4].map(step => (
             <button
               key={step}
-              onClick={() => setCurrentStep(step)}
+              onClick={() => handleStepClick(step)}
               className={cn(
                 'h-2 transition-all duration-300 rounded-none',
                 currentStep === step

@@ -148,7 +148,7 @@ export function BasicDetailsStep({
 
   return (
     <div className='h-full flex flex-col p-[20px]'>
-      <div className='flex-1 overflow-y-auto pr-[10px]'>
+      <div className='flex-1 overflow-y-auto px-[5px] pr-[10px] pb-[20px]'>
         <div className='flex justify-center items-start'>
           <div className='w-[85vw] sm:w-[80%] space-y-[20px] bg-black/60 backdrop-blur-sm border border-white/10 p-[30px] sm:p-[40px]'>
             <div>
@@ -161,7 +161,7 @@ export function BasicDetailsStep({
               <button
                 type='button'
                 onClick={() => setShowSpotifyImport(true)}
-                className='flex items-center justify-center gap-[10px] px-[20px] py-[12px] bg-transparent hover:bg-[#1DB954]/10 border-2 border-[#1DB954] text-[#1DB954] font-canela text-sm font-medium transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]'
+                className='flex items-center justify-center gap-[10px] px-[20px] py-[12px] bg-transparent hover:bg-[#5aad7a]/10 border-2 border-[#5aad7a] text-[#5aad7a] font-canela text-sm font-medium transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]'
               >
                 <FaSpotify className='h-5 w-5' />
                 {t('buttons.continueWithSpotify')}
@@ -169,7 +169,7 @@ export function BasicDetailsStep({
               <button
                 type='button'
                 onClick={() => setShowSoundCloudImport(true)}
-                className='flex items-center justify-center gap-[10px] px-[20px] py-[12px] bg-transparent hover:bg-[#FF5500]/10 border-2 border-[#FF5500] text-[#FF5500] font-canela text-sm font-medium transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]'
+                className='flex items-center justify-center gap-[10px] px-[20px] py-[12px] bg-transparent hover:bg-[#d48968]/10 border-2 border-[#d48968] text-[#d48968] font-canela text-sm font-medium transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]'
               >
                 <FaSoundcloud className='h-5 w-5' />
                 {t('buttons.continueWithSoundcloud')}
@@ -205,6 +205,7 @@ export function BasicDetailsStep({
                 value={formData.cityId}
                 onChange={cityId => onInputChange('cityId', cityId)}
                 placeholder={t('forms.artists.selectCity')}
+                cityNames={['Austin', 'Houston', 'San Marcos']}
               />
 
               <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent' />

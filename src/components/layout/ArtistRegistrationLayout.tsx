@@ -15,7 +15,7 @@ interface ArtistRegistrationLayoutProps {
 
 export const ArtistRegistrationLayout = ({ children }: ArtistRegistrationLayoutProps) => {
   return (
-    <div className='min-h-screen bg-background flex flex-col relative overflow-hidden'>
+    <div className='h-screen bg-background flex flex-col relative'>
       {/* Topography Background */}
       <div className='fixed inset-0 z-0'>
         <TopographicBackground opacity={0.35} />
@@ -24,8 +24,8 @@ export const ArtistRegistrationLayout = ({ children }: ArtistRegistrationLayoutP
       {/* Navigation */}
       <Navigation />
 
-      {/* Main Content - h-[calc(100vh-64px)] accounts for nav height */}
-      <main className='relative z-10 flex-1 h-[calc(100vh-64px)]'>
+      {/* Main Content */}
+      <main className='relative z-10 flex-1 min-h-0'>
         {children}
       </main>
     </div>
