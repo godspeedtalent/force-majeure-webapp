@@ -38,7 +38,7 @@ import {
   FmMultiCheckboxOption,
 } from '@/components/common/forms/FmMultiCheckboxInput';
 import { ScrollArea } from '@/components/common/shadcn/scroll-area';
-import { cn } from '@/shared';
+import { cn, useModalState } from '@/shared';
 import * as React from 'react';
 
 interface DevNote {
@@ -57,7 +57,7 @@ export const DevNotesSection = () => {
   const { t } = useTranslation('common');
   const { user } = useAuth();
   const [notes, setNotes] = useState<DevNote[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const createModal = useModalState();
   const [expandedNote, setExpandedNote] = useState<DevNote | null>(null);
   const [focusedNoteId, setFocusedNoteId] = useState<string | null>(null);
   const [sortField, setSortField] = useState<SortField>('created_at');
@@ -269,7 +269,7 @@ export const DevNotesSection = () => {
         <FmCommonButton
           variant='default'
           size='sm'
-          onClick={() => setIsModalOpen(true)}
+          onClick={createModal.open}
           className='h-9 w-9 p-0 border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-white'
           title={t('devNotes.newNote')}
         >
@@ -430,8 +430,8 @@ export const DevNotesSection = () => {
 
       {/* Create Note Modal */}
       <CreateDevNoteModal
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
+        open={createModal.isOpen}
+        onOpenChange={createModal.setOpen}
         onNoteCreated={handleLoadNotes}
       />
 

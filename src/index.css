@@ -330,6 +330,12 @@ All colors MUST be HSL.
     border-color: hsl(var(--border));
   }
 
+  /* Prevent overscroll bounce effect on macOS/iOS */
+  html,
+  body {
+    overscroll-behavior: none;
+  }
+
   body {
     @apply bg-background text-foreground font-canela;
   }

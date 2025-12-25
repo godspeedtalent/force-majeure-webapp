@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FmConfigurableDataGrid } from '@/features/data-grid/components/FmConfigurableDataGrid';
@@ -11,9 +10,7 @@ import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfir
 import { useEvents } from '@/features/events/hooks/useEvents';
 import { useQueryClient } from '@tanstack/react-query';
 import { Edit, Trash2 } from 'lucide-react';
-import { supabase } from '@/shared';
-import { toast } from 'sonner';
-import { logger } from '@/shared';
+import { supabase, logger, useDeleteConfirmation } from '@/shared';
 
 interface EventRow {
   id: string;
@@ -27,50 +24,25 @@ export const EventsManagement = () => {
   const { data: events, isLoading } = useEvents();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [eventsToDelete, setEventsToDelete] = useState<EventRow[]>([]);
-  const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleDeleteClick = (eventOrEvents: EventRow | EventRow[]) => {
-    const events = Array.isArray(eventOrEvents) ? eventOrEvents : [eventOrEvents];
-    setEventsToDelete(events);
-    setShowDeleteConfirm(true);
-  };
-
-  const handleDelete = async () => {
-    if (eventsToDelete.length === 0) return;
-
-    setIsDeleting(true);
-    try {
-      // Delete all selected events
-      const deletePromises = eventsToDelete.map(event =>
-        supabase.from('events').delete().eq('id', event.id)
-      );
-
-      const results = await Promise.all(deletePromises);
-
-      // Check if any deletions failed
-      const errors = results.filter(r => r.error);
-      if (errors.length > 0) {
-        throw new Error(`Failed to delete ${errors.length} event(s)`);
-      }
-
-      const successMessage =
-        eventsToDelete.length === 1
-          ? tToast('events.deleted')
-          : tToast('events.deletedMultiple', { count: eventsToDelete.length });
-
-      toast.success(successMessage);
-      queryClient.invalidateQueries({ queryKey: ['events'] });
-      setShowDeleteConfirm(false);
-      setEventsToDelete([]);
-    } catch (error) {
-      logger.error('Error deleting event(s):', { error: error instanceof Error ? error.message : 'Unknown error', source: 'EventsManagement' });
-      toast.error(tToast('admin.deleteEventsFailed'));
-    } finally {
-      setIsDeleting(false);
-    }
-  };
+  // Delete confirmation hook
+  const {
+    showConfirm: showDeleteConfirm,
+    itemsToDelete: eventsToDelete,
+    isDeleting,
+    openConfirm: handleDeleteClick,
+    confirmDelete: handleDelete,
+    setShowConfirm: setShowDeleteConfirm,
+  } = useDeleteConfirmation<EventRow>({
+    table: 'events',
+    queryKey: ['events'],
+    messages: {
+      successSingle: tToast('events.deleted'),
+      successMultiple: (count) => tToast('events.deletedMultiple', { count }),
+      error: tToast('admin.deleteEventsFailed'),
+    },
+    source: 'EventsManagement',
+  });
 
   const getDeleteConfirmMessage = () => {
     if (eventsToDelete.length === 1) {

@@ -33,3 +33,15 @@ export { useAsyncAction } from './useAsyncAction';
 export type { UseAsyncActionOptions } from './useAsyncAction';
 export { useAsyncOperation } from './useAsyncOperation';
 export type { UseAsyncOperationReturn } from './useAsyncOperation';
+export { useDeleteConfirmation } from './useDeleteConfirmation';
+export type {
+  UseDeleteConfirmationOptions,
+  UseDeleteConfirmationReturn,
+} from './useDeleteConfirmation';
+export { useSequentialFadeOut } from './useSequentialFadeOut';
+export type {
+  FadeOutElement,
+  ElementState,
+  UseSequentialFadeOutOptions,
+  UseSequentialFadeOutResult,
+} from './useSequentialFadeOut';

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Save } from 'lucide-react';
 import { format } from 'date-fns';
-import { Card } from '@/components/common/shadcn/card';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { Checkbox } from '@/components/common/shadcn/checkbox';
@@ -103,7 +103,7 @@ export const EventOverviewTab = ({
   };
 
   return (
-    <Card className='p-8'>
+    <FmCommonCard className='p-8'>
       <div className='space-y-6'>
         <div className='flex items-center justify-between'>
           <div>
@@ -235,6 +235,6 @@ export const EventOverviewTab = ({
           </div>
         </div>
       </div>
-    </Card>
+    </FmCommonCard>
   );
 };

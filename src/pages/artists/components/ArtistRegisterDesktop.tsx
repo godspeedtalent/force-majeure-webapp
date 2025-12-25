@@ -61,7 +61,7 @@ export function ArtistRegisterDesktop({
         {/* Header */}
         <div className='relative z-10 flex items-center justify-between h-[60px] px-[20px] border-b border-white/10 flex-shrink-0'>
           <button
-            onClick={() => navigate('/artists/signup')}
+            onClick={() => navigate(-1)}
             className='text-white/70 hover:text-fm-gold transition-colors duration-300 flex items-center gap-[10px] font-canela text-sm'
           >
             <ArrowLeft className='h-4 w-4' />

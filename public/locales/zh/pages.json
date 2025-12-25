@@ -364,9 +364,20 @@
     "subtitle": "我们很乐意听取您的意见。请通过以下任何渠道与我们联系。",
     "email": "邮箱",
     "instagram": "Instagram",
-    "location": "位置",
-    "locationValue": "美国加利福尼亚州洛杉矶",
-    "bookingNote": "如有预订咨询，请通过邮箱或Instagram私信与我们联系。"
+    "directContact": "或直接联系我们",
+    "bookingNote": "如有预订咨询，请通过邮箱或Instagram私信与我们联系。",
+    "form": {
+      "title": "给我们留言",
+      "namePlaceholder": "您的姓名",
+      "emailPlaceholder": "your@email.com",
+      "subjectLabel": "主题",
+      "subjectPlaceholder": "您想咨询什么？",
+      "messageLabel": "留言",
+      "messagePlaceholder": "告诉我们您的想法...",
+      "requiredFields": "请填写所有必填项",
+      "successMessage": "消息已发送！我们会尽快回复您。",
+      "errorMessage": "发送失败，请重试或直接发送邮件给我们。"
+    }
   },
   "merch": {
     "title": "Force Majeure 周边商品",
@@ -440,6 +451,26 @@
     "unableToValidate": "无法验证门票，请重试。",
     "failedToValidate": "门票验证失败，请重试。",
     "scannerError": "扫描器错误"
+  },
+  "artistSignupDemo": {
+    "title": "艺术家注册演示",
+    "subtitle": "使用自动填充数据测试艺术家注册流程",
+    "selectMode": "选择填充模式",
+    "manualMode": "手动输入",
+    "manualModeDescription": "从空白表单开始，手动填写所有字段",
+    "spotifyMode": "Spotify 艺术家",
+    "spotifyModeDescription": "选择一个 Spotify 艺术家并自动填充表单其余部分",
+    "soundcloudMode": "SoundCloud 艺术家",
+    "soundcloudModeDescription": "选择一个 SoundCloud 艺术家并自动填充表单其余部分",
+    "configuration": "配置",
+    "autoAgreeTerms": "自动同意条款",
+    "trackCount": "曲目数量",
+    "includeDJSet": "包含 DJ Set",
+    "generateData": "生成数据",
+    "generatedData": "生成的数据",
+    "launchDemo": "启动演示",
+    "previewNote": "将在注册表单中填充的数据预览",
+    "noDataGenerated": "尚未生成数据。请选择一个模式并点击生成数据。"
   },
   "errors": {
     "404": {

@@ -13,23 +13,36 @@ import { cn } from '@/shared';
 // FmCommonCard - Force Majeure branded Card wrapper
 // ============================================================
 // Wraps shadcn Card with FM branding:
-// - Gold border glow on hover
+// - Frosted glass background by default
+// - Subtle gold glow + brightness increase on hover
 // - Consistent spacing and transitions
-// - Frosted glass variant support
+//
+// Usage:
+//   <FmCommonCard>Content</FmCommonCard>  // frosted with hover effects
+//   <FmCommonCard variant="outline">...</FmCommonCard>  // transparent with border
+//   <FmCommonCard hoverable={false}>...</FmCommonCard>  // disable hover effects
 
-interface FmCommonCardProps extends React.ComponentPropsWithoutRef<typeof Card> {
-  variant?: 'default' | 'frosted';
+interface FmCommonCardProps extends Omit<React.ComponentPropsWithoutRef<typeof Card>, 'variant'> {
+  /** Card background style. Defaults to 'frosted' (glass effect) */
+  variant?: 'frosted' | 'outline';
+  /** Enable hover effects (border glow, brightness). Defaults to true */
   hoverable?: boolean;
 }
 
 const FmCommonCard = React.forwardRef<HTMLDivElement, FmCommonCardProps>(
-  ({ className, variant = 'default', hoverable = false, ...props }, ref) => (
+  ({ className, variant = 'frosted', hoverable = true, ...props }, ref) => (
     <Card
       ref={ref}
-      variant={variant}
       className={cn(
+        // Base styles
         'transition-all duration-300',
-        hoverable && 'hover:border-fm-gold/50 hover:shadow-[0_0_12px_rgba(212,175,55,0.15)]',
+        // Variant styles
+        variant === 'frosted' &&
+          'bg-background/60 backdrop-blur-md border-border',
+        variant === 'outline' && 'bg-transparent border border-white/20',
+        // Hover effects (when enabled)
+        hoverable &&
+          'hover:border-white/30 hover:shadow-[0_0_8px_rgba(223,186,125,0.08)] hover:bg-background/55 hover:brightness-[1.02]',
         className
       )}
       {...props}

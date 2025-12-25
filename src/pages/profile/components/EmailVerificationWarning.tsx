@@ -7,7 +7,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, Mail } from 'lucide-react';
-import { Card, CardContent } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { useAuth } from '@/features/auth/services/AuthContext';
 
@@ -26,8 +26,8 @@ export function EmailVerificationWarning() {
   if (!user || user.email_confirmed_at) return null;
 
   return (
-    <Card className='border-fm-gold/50 bg-fm-gold/10 backdrop-blur-lg'>
-      <CardContent className='p-6'>
+    <FmCommonCard className='border-fm-gold/50 bg-fm-gold/10'>
+      <FmCommonCardContent className='p-6'>
         <div className='flex items-start gap-4'>
           <AlertCircle className='h-6 w-6 text-fm-gold flex-shrink-0 mt-0.5' />
           <div className='flex-1'>
@@ -50,7 +50,7 @@ export function EmailVerificationWarning() {
             </FmCommonButton>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </FmCommonCardContent>
+    </FmCommonCard>
   );
 }

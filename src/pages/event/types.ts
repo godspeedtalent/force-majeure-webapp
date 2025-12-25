@@ -19,6 +19,8 @@ export interface VenueDetails {
   googleMapsUrl?: string | null;
 }
 
+export type EventStatus = 'draft' | 'published' | 'invisible';
+
 export interface EventDetailsRecord {
   id: string;
   title: string | null;
@@ -34,4 +36,5 @@ export interface EventDetailsRecord {
   venueDetails: VenueDetails | null;
   heroImage: string;
   description: string | null;
+  status: EventStatus;
 }

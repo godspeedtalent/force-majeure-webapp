@@ -1,6 +1,6 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircle2 } from 'lucide-react';
-import { Card } from '@/components/common/shadcn/card';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { Button } from '@/components/common/shadcn/button';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { Separator } from '@/components/common/shadcn/separator';
@@ -19,7 +19,7 @@ export default function EventCheckoutConfirmation() {
       <TopographicBackground opacity={0.25} />
       <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
 
-      <Card className='w-full max-w-2xl relative z-10 p-8'>
+      <FmCommonCard className='w-full max-w-2xl relative z-10 p-8'>
         {/* Success Icon */}
         <div className='flex flex-col items-center text-center mb-8'>
           <div className='mb-6 w-20 h-20 rounded-full bg-fm-gold/10 flex items-center justify-center'>
@@ -81,7 +81,7 @@ export default function EventCheckoutConfirmation() {
         >
           Back to Event
         </Button>
-      </Card>
+      </FmCommonCard>
     </div>
   );
 }

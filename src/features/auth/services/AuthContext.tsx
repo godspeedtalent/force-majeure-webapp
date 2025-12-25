@@ -68,6 +68,15 @@ export const useAuth = () => {
   return context;
 };
 
+/**
+ * Safe version of useAuth that returns null values instead of throwing
+ * Use this in components that may render outside AuthProvider (e.g., toolbars during HMR)
+ */
+export const useAuthSafe = (): AuthContextType | null => {
+  const context = useContext(AuthContext);
+  return context ?? null;
+};
+
 interface AuthProviderProps {
   children: ReactNode;
 }

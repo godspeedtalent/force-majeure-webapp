@@ -398,9 +398,20 @@
     "subtitle": "Nos encantaría saber de ti. Comunícate a través de cualquiera de los canales a continuación.",
     "email": "Correo",
     "instagram": "Instagram",
-    "location": "Ubicación",
-    "locationValue": "Los Ángeles, California",
-    "bookingNote": "Para consultas de reservas, contáctanos por correo o DM en Instagram."
+    "directContact": "O contáctanos directamente",
+    "bookingNote": "Para consultas de reservas, contáctanos por correo o DM en Instagram.",
+    "form": {
+      "title": "Envíanos un mensaje",
+      "namePlaceholder": "Tu nombre",
+      "emailPlaceholder": "tu@email.com",
+      "subjectLabel": "Asunto",
+      "subjectPlaceholder": "¿De qué se trata?",
+      "messageLabel": "Mensaje",
+      "messagePlaceholder": "Cuéntanos lo que tienes en mente...",
+      "requiredFields": "Por favor completa todos los campos requeridos",
+      "successMessage": "¡Mensaje enviado! Te responderemos pronto.",
+      "errorMessage": "Error al enviar mensaje. Por favor intenta de nuevo o envíanos un correo directamente."
+    }
   },
   "merch": {
     "title": "Mercancía Force Majeure",
@@ -440,6 +451,26 @@
     "closingLine": "No podemos esperar a que seas parte de nuestra familia rave.",
     "registerButton": "Regístrate con nosotros ahora",
     "photoCredit": "Foto por Force Majeure"
+  },
+  "artistSignupDemo": {
+    "title": "Demo de Registro de Artista",
+    "subtitle": "Prueba el flujo de registro de artista con datos prellenados",
+    "selectMode": "Seleccionar modo de población",
+    "manualMode": "Entrada Manual",
+    "manualModeDescription": "Comienza con un formulario vacío y completa todos los campos manualmente",
+    "spotifyMode": "Artista de Spotify",
+    "spotifyModeDescription": "Selecciona un artista de Spotify y autocompleta el resto del formulario",
+    "soundcloudMode": "Artista de SoundCloud",
+    "soundcloudModeDescription": "Selecciona un artista de SoundCloud y autocompleta el resto del formulario",
+    "configuration": "Configuración",
+    "autoAgreeTerms": "Aceptar términos automáticamente",
+    "trackCount": "Número de pistas",
+    "includeDJSet": "Incluir DJ set",
+    "generateData": "Generar Datos",
+    "generatedData": "Datos Generados",
+    "launchDemo": "Iniciar Demo",
+    "previewNote": "Vista previa de los datos que se poblarán en el formulario de registro",
+    "noDataGenerated": "Aún no se han generado datos. Selecciona un modo y haz clic en Generar Datos."
   },
   "errors": {
     "404": {

@@ -1,7 +1,8 @@
 import { cn } from '@/shared';
 import { FmCommonBadgeGroup } from '@/components/common/display/FmCommonBadgeGroup';
-import { Instagram as InstagramIcon } from 'lucide-react';
-import { SiSoundcloud, SiSpotify, SiTiktok } from 'react-icons/si';
+import { FmSocialLinks } from '@/components/common/display/FmSocialLinks';
+import { Disc3 } from 'lucide-react';
+import { SiSoundcloud, SiSpotify } from 'react-icons/si';
 import { useTranslation } from 'react-i18next';
 import type { ArtistRegistrationFormData } from '../types/registration';
 
@@ -57,7 +58,7 @@ export function ArtistPreviewCard({
           {/* Desktop: Main image with additional photos below */}
           <div className='flex flex-row gap-[10px] sm:flex-col'>
             {/* Main Profile Image */}
-            <div className='flex-1 sm:flex-none overflow-hidden rounded-xl border border-white/15 bg-white/5 shadow-inner'>
+            <div className='flex-1 sm:flex-none overflow-hidden rounded-none border border-white/15 bg-white/5 shadow-inner'>
               {formData.profileImageUrl ? (
                 <img
                   src={formData.profileImageUrl}
@@ -83,7 +84,7 @@ export function ArtistPreviewCard({
                       onClick={() => handleImageSwap(index)}
                       disabled={!imageUrl || !onInputChange}
                       className={cn(
-                        'aspect-square flex-1 overflow-hidden rounded-lg border border-white/15 bg-white/5',
+                        'aspect-square flex-1 overflow-hidden rounded-none border border-white/15 bg-white/5',
                         'transition-all duration-200',
                         imageUrl && onInputChange && 'cursor-pointer hover:border-fm-gold/50 hover:scale-105 hover:shadow-lg hover:shadow-fm-gold/20',
                         (!imageUrl || !onInputChange) && 'cursor-default'
@@ -140,58 +141,52 @@ export function ArtistPreviewCard({
         </div>
       </div>
 
-      {/* Social Media Links */}
+      {/* Social Media Links and DJ Sets */}
       {(formData.instagramHandle ||
         formData.soundcloudUrl ||
         formData.spotifyUrl ||
-        formData.tiktokHandle) && (
+        formData.tiktokHandle ||
+        formData.tracks.some(track => track.recordingType === 'dj_set')) && (
         <>
           <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent mt-[20px]' />
-          <div className='flex items-center justify-center gap-[15px] mt-[15px]'>
-            {formData.instagramHandle && (
-              <a
-                href={`https://instagram.com/${formData.instagramHandle.replace('@', '')}`}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='p-[10px] rounded-none border border-white/20 bg-white/5 hover:bg-white/10 hover:border-fm-gold/50 transition-all duration-300'
-                aria-label='Instagram'
-              >
-                <InstagramIcon className='h-5 w-5 text-white/70 hover:text-fm-gold' />
-              </a>
-            )}
-            {formData.soundcloudUrl && (
-              <a
-                href={formData.soundcloudUrl}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='p-[10px] rounded-none border border-white/20 bg-white/5 hover:bg-white/10 hover:border-[#d48968]/50 transition-all duration-300'
-                aria-label='SoundCloud'
-              >
-                <SiSoundcloud className='h-5 w-5 text-white/70 hover:text-[#d48968]' />
-              </a>
-            )}
-            {formData.spotifyUrl && (
-              <a
-                href={formData.spotifyUrl}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='p-[10px] rounded-none border border-white/20 bg-white/5 hover:bg-white/10 hover:border-[#5aad7a]/50 transition-all duration-300'
-                aria-label='Spotify'
-              >
-                <SiSpotify className='h-5 w-5 text-white/70 hover:text-[#5aad7a]' />
-              </a>
-            )}
-            {formData.tiktokHandle && (
-              <a
-                href={`https://tiktok.com/@${formData.tiktokHandle.replace('@', '')}`}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='p-[10px] rounded-none border border-white/20 bg-white/5 hover:bg-white/10 hover:border-white/50 transition-all duration-300'
-                aria-label='TikTok'
-              >
-                <SiTiktok className='h-5 w-5 text-white/70 hover:text-white' />
-              </a>
-            )}
+          <div className='flex items-center justify-between mt-[15px]'>
+            {/* Social Media Column */}
+            <FmSocialLinks
+              instagram={formData.instagramHandle}
+              soundcloud={formData.soundcloudUrl}
+              spotify={formData.spotifyUrl}
+              tiktok={formData.tiktokHandle}
+              size='md'
+              gap='md'
+            />
+
+            {/* Primary DJ Set - Show only the primary set, or first DJ set if none marked */}
+            {(() => {
+              const djSets = formData.tracks.filter(track => track.recordingType === 'dj_set');
+              const primarySet = djSets.find(track => track.isPrimaryDjSet) || djSets[0];
+              if (!primarySet) return null;
+
+              return (
+                <a
+                  href={primarySet.url}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='flex items-center gap-[8px] px-[12px] py-[8px] rounded-none border border-white/20 bg-white/5 hover:bg-white/10 hover:border-fm-gold/50 transition-all duration-300'
+                  aria-label={t('artistPreview.djSet')}
+                >
+                  <Disc3 className='h-4 w-4 text-fm-gold' />
+                  <span className='text-xs font-canela text-white/80 hover:text-fm-gold'>
+                    {t('artistPreview.djSet')}
+                  </span>
+                  {primarySet.platform === 'soundcloud' && (
+                    <SiSoundcloud className='h-3 w-3 text-[#d48968]' />
+                  )}
+                  {primarySet.platform === 'spotify' && (
+                    <SiSpotify className='h-3 w-3 text-[#5aad7a]' />
+                  )}
+                </a>
+              );
+            })()}
           </div>
         </>
       )}

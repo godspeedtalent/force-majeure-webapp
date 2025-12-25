@@ -9,10 +9,6 @@ import { logger } from '@/shared';
 import { EmailService } from '@/services/email/EmailService';
 import type { ArtistRegistrationFormData } from '../types/registration';
 
-const ARTIST_EXISTS_ERROR_MESSAGE = 'An artist with this name already exists in the database. Contact FM staff at management@forcemajeure.vip to request access.';
-const SPOTIFY_EXISTS_ERROR_MESSAGE = 'An artist with this Spotify profile already exists in the database. Contact FM staff at management@forcemajeure.vip to request access.';
-const SOUNDCLOUD_EXISTS_ERROR_MESSAGE = 'An artist with this SoundCloud profile already exists in the database. Contact FM staff at management@forcemajeure.vip to request access.';
-
 interface SubmitOptions {
   eventId?: string | null;
 }
@@ -40,7 +36,7 @@ export function useArtistRegistrationSubmit() {
         .maybeSingle();
 
       if (existingArtist) {
-        toast.error(ARTIST_EXISTS_ERROR_MESSAGE, { duration: 8000 });
+        toast.error(t('artistRegistrationErrors.artistAlreadyExists'), { duration: 8000 });
         setIsSubmitting(false);
         return false;
       }
@@ -55,7 +51,7 @@ export function useArtistRegistrationSubmit() {
           .maybeSingle();
 
         if (existingSpotify) {
-          toast.error(SPOTIFY_EXISTS_ERROR_MESSAGE, { duration: 8000 });
+          toast.error(t('artistRegistrationErrors.spotifyAlreadyExists'), { duration: 8000 });
           setIsSubmitting(false);
           return false;
         }
@@ -71,7 +67,7 @@ export function useArtistRegistrationSubmit() {
           .maybeSingle();
 
         if (existingSoundcloud) {
-          toast.error(SOUNDCLOUD_EXISTS_ERROR_MESSAGE, { duration: 8000 });
+          toast.error(t('artistRegistrationErrors.soundcloudAlreadyExists'), { duration: 8000 });
           setIsSubmitting(false);
           return false;
         }
@@ -87,7 +83,7 @@ export function useArtistRegistrationSubmit() {
         .maybeSingle();
 
       if (pendingRegistration) {
-        toast.error(t('artistRegistration.registrationPending'), { duration: 8000 });
+        toast.error(t('artistRegistrationErrors.registrationPending'), { duration: 8000 });
         setIsSubmitting(false);
         return false;
       }
@@ -133,13 +129,13 @@ export function useArtistRegistrationSubmit() {
           message: 'Error submitting artist registration',
           details: error,
         });
-        toast.error(t('artistRegistration.submitFailed'));
+        toast.error(t('artistRegistrationErrors.submitFailed'));
         setIsSubmitting(false);
         return false;
       }
 
       logger.info('Artist registration submitted successfully', { data });
-      toast.success(t('artistRegistration.submitSuccess'), { duration: 6000 });
+      toast.success(t('artistRegistrationErrors.submitSuccess'), { duration: 6000 });
 
       // Send confirmation email
       if (user?.email) {

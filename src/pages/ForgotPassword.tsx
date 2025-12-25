@@ -8,12 +8,12 @@ import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/common/shadcn/card';
+  FmCommonCard,
+  FmCommonCardContent,
+  FmCommonCardDescription,
+  FmCommonCardHeader,
+  FmCommonCardTitle,
+} from '@/components/common/display/FmCommonCard';
 import { useAuth } from '@/features/auth/services/AuthContext';
 
 const ForgotPassword = () => {
@@ -41,22 +41,22 @@ const ForgotPassword = () => {
     return (
       <ForceMajeureRootLayout>
         <div className='flex items-center justify-center min-h-full px-4 py-12'>
-          <Card className='w-full max-w-md border border-white/20 bg-black/70 backdrop-blur-md shadow-2xl rounded-none animate-fade-in'>
-            <CardHeader className='text-center pb-6'>
+          <FmCommonCard className='w-full max-w-md border border-white/20 shadow-2xl animate-fade-in'>
+            <FmCommonCardHeader className='text-center pb-6'>
               <div className='flex justify-center mb-4'>
                 <div className='w-16 h-16 rounded-none bg-fm-gold/10 border border-fm-gold/20 flex items-center justify-center'>
                   <CheckCircle className='w-8 h-8 text-fm-gold' />
                 </div>
               </div>
-              <CardTitle className='text-2xl font-canela font-medium text-foreground'>
+              <FmCommonCardTitle className='text-2xl font-canela font-medium text-foreground'>
                 {t('auth.forgotPassword.checkEmail')}
-              </CardTitle>
-              <CardDescription className='text-muted-foreground'>
+              </FmCommonCardTitle>
+              <FmCommonCardDescription className='text-muted-foreground'>
                 {t('auth.forgotPassword.emailSent')}
-              </CardDescription>
-            </CardHeader>
+              </FmCommonCardDescription>
+            </FmCommonCardHeader>
 
-            <CardContent className='space-y-4'>
+            <FmCommonCardContent className='space-y-4'>
               <p className='text-sm text-muted-foreground text-center'>
                 {t('auth.forgotPassword.checkSpam')}
               </p>
@@ -68,8 +68,8 @@ const ForgotPassword = () => {
                 <ArrowLeft className='w-4 h-4' />
                 {t('auth.forgotPassword.backToSignIn')}
               </Link>
-            </CardContent>
-          </Card>
+            </FmCommonCardContent>
+          </FmCommonCard>
         </div>
       </ForceMajeureRootLayout>
     );
@@ -78,20 +78,20 @@ const ForgotPassword = () => {
   return (
     <ForceMajeureRootLayout>
       <div className='flex items-center justify-center min-h-full px-4 py-12'>
-        <Card className='w-full max-w-md border border-white/20 bg-black/70 backdrop-blur-md shadow-2xl rounded-none animate-fade-in'>
-          <CardHeader className='text-center pb-6'>
+        <FmCommonCard className='w-full max-w-md border border-white/20 shadow-2xl animate-fade-in'>
+          <FmCommonCardHeader className='text-center pb-6'>
             <div className='flex justify-center mb-4'>
               <ForceMajeureLogo className='w-16 h-16' />
             </div>
-            <CardTitle className='text-2xl font-canela font-medium text-foreground'>
+            <FmCommonCardTitle className='text-2xl font-canela font-medium text-foreground'>
               {t('auth.forgotPassword.title')}
-            </CardTitle>
-            <CardDescription className='text-muted-foreground'>
+            </FmCommonCardTitle>
+            <FmCommonCardDescription className='text-muted-foreground'>
               {t('auth.forgotPassword.subtitle')}
-            </CardDescription>
-          </CardHeader>
+            </FmCommonCardDescription>
+          </FmCommonCardHeader>
 
-          <CardContent>
+          <FmCommonCardContent>
             <form onSubmit={handleSubmit} className='space-y-6'>
               <FmCommonTextField
                 label={t('auth.emailLabel')}
@@ -119,8 +119,8 @@ const ForgotPassword = () => {
                 {t('auth.forgotPassword.backToSignIn')}
               </Link>
             </form>
-          </CardContent>
-        </Card>
+          </FmCommonCardContent>
+        </FmCommonCard>
       </div>
     </ForceMajeureRootLayout>
   );

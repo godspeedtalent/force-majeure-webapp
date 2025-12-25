@@ -398,9 +398,20 @@
     "subtitle": "We'd love to hear from you. Reach out through any of the channels below.",
     "email": "Email",
     "instagram": "Instagram",
-    "location": "Location",
-    "locationValue": "Los Angeles, California",
-    "bookingNote": "For booking inquiries, please contact us via email or DM on Instagram."
+    "directContact": "Or reach us directly",
+    "bookingNote": "For booking inquiries, please contact us via email or DM on Instagram.",
+    "form": {
+      "title": "Send us a message",
+      "namePlaceholder": "Your name",
+      "emailPlaceholder": "your@email.com",
+      "subjectLabel": "Subject",
+      "subjectPlaceholder": "What's this about?",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Tell us what's on your mind...",
+      "requiredFields": "Please fill in all required fields",
+      "successMessage": "Message sent! We'll get back to you soon.",
+      "errorMessage": "Failed to send message. Please try again or email us directly."
+    }
   },
   "merch": {
     "title": "Force Majeure Merchandise",
@@ -440,6 +451,26 @@
     "closingLine": "Can't wait to make you a part of our rave fam.",
     "registerButton": "Register with us now",
     "photoCredit": "Photo by Force Majeure"
+  },
+  "artistSignupDemo": {
+    "title": "Artist Signup Demo",
+    "subtitle": "Test the artist registration flow with auto-populated data",
+    "selectMode": "Select population mode",
+    "manualMode": "Manual Input",
+    "manualModeDescription": "Start with an empty form and fill in all fields manually",
+    "spotifyMode": "Spotify Artist",
+    "spotifyModeDescription": "Select a Spotify artist and auto-fill the rest of the form",
+    "soundcloudMode": "SoundCloud Artist",
+    "soundcloudModeDescription": "Select a SoundCloud artist and auto-fill the rest of the form",
+    "configuration": "Configuration",
+    "autoAgreeTerms": "Auto-agree to terms",
+    "trackCount": "Number of tracks",
+    "includeDJSet": "Include DJ set",
+    "generateData": "Generate Data",
+    "generatedData": "Generated Data",
+    "launchDemo": "Launch Demo",
+    "previewNote": "Preview of the data that will be populated in the registration form",
+    "noDataGenerated": "No data generated yet. Select a mode and click Generate Data."
   },
   "errors": {
     "404": {

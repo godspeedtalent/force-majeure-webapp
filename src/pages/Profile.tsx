@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Layout } from '@/components/layout/Layout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { Card, CardContent } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { supabase, logger } from '@/shared';
 import { handleError } from '@/shared/services/errorHandler';
@@ -124,14 +124,14 @@ const Profile = () => {
     return (
       <Layout>
         <div className='max-w-4xl mx-auto px-4 py-12'>
-          <Card className='border-border/30 bg-card/20 backdrop-blur-lg'>
-            <CardContent className='p-12 text-center'>
+          <FmCommonCard>
+            <FmCommonCardContent className='p-12 text-center'>
               <FmI18nPages i18nKey='profile.signInToView' as='p' className='text-muted-foreground mb-6' />
               <FmCommonButton variant='gold' onClick={() => navigate('/auth')}>
                 <FmI18nPages i18nKey='auth.signInTab' />
               </FmCommonButton>
-            </CardContent>
-          </Card>
+            </FmCommonCardContent>
+          </FmCommonCard>
         </div>
       </Layout>
     );

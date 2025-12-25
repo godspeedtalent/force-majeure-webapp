@@ -8,7 +8,7 @@
 
 import { LucideIcon } from 'lucide-react';
 
-import { Card, CardContent } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { cn } from '@/shared';
 
 interface FmCommonInfoCardProps {
@@ -61,7 +61,7 @@ export const FmCommonInfoCard = ({
   const config = sizeConfig[size];
 
   return (
-    <Card
+    <FmCommonCard
       className={cn(
         'border-border',
         'transition-all duration-300',
@@ -71,7 +71,7 @@ export const FmCommonInfoCard = ({
         className
       )}
     >
-      <CardContent
+      <FmCommonCardContent
         className={cn(
           'flex gap-3',
           config.container,
@@ -94,7 +94,7 @@ export const FmCommonInfoCard = ({
             {value}
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </FmCommonCardContent>
+    </FmCommonCard>
   );
 };

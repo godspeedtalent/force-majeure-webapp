@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { MoreVertical } from 'lucide-react';
-import { Card, CardContent, CardFooter } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent, FmCommonCardFooter } from '@/components/common/display/FmCommonCard';
 import { Separator } from '@/components/common/shadcn/separator';
 import {
   ContextMenu,
@@ -84,9 +84,9 @@ export const DevNoteCard = ({
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>
-        <Card
+        <FmCommonCard
           className={cn(
-            'bg-muted border-l-[4px] border-t-[1px] cursor-pointer transition-all duration-200 relative text-xs',
+            'border-l-[4px] border-t-[1px] cursor-pointer transition-all duration-200 relative text-xs',
             'hover:bg-[#1a1612]',
             isFocused
               ? 'border-fm-gold'
@@ -115,7 +115,7 @@ export const DevNoteCard = ({
               title={statusConfig.label}
             />
 
-            <CardContent className='p-[8px] pl-[32px] space-y-[8px]'>
+            <FmCommonCardContent className='p-[8px] pl-[32px] space-y-[8px]'>
               {/* Three Dots Dropdown Menu */}
               <div className='flex items-start justify-end -mt-1'>
                 <DropdownMenu>
@@ -189,11 +189,11 @@ export const DevNoteCard = ({
               <p className='text-xs text-white leading-snug line-clamp-3 px-2 whitespace-pre-wrap'>
                 {note.message}
               </p>
-            </CardContent>
+            </FmCommonCardContent>
 
             <Separator className='bg-border/50' />
 
-            <CardFooter className='p-[8px] pl-[32px] pt-[6px] flex items-center justify-between text-[10px] text-muted-foreground'>
+            <FmCommonCardFooter className='p-[8px] pl-[32px] pt-[6px] flex items-center justify-between text-[10px] text-muted-foreground'>
               <div className='flex items-center gap-2'>
                 <span className='font-medium text-fm-gold'>
                   {note.author_name}
@@ -204,8 +204,8 @@ export const DevNoteCard = ({
                 </span>
               </div>
               <span>{formatDate(note.created_at)}</span>
-            </CardFooter>
-        </Card>
+            </FmCommonCardFooter>
+        </FmCommonCard>
       </ContextMenuTrigger>
 
       <ContextMenuContent className='bg-card border-border rounded-none w-48'>

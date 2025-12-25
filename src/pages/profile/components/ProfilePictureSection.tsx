@@ -7,7 +7,7 @@
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Upload } from 'lucide-react';
-import { Card, CardContent } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonUserPhoto } from '@/components/common/display/FmCommonUserPhoto';
 import { useAuth } from '@/features/auth/services/AuthContext';
@@ -101,8 +101,8 @@ export function ProfilePictureSection() {
   if (!user) return null;
 
   return (
-    <Card className='border-border/30 bg-card/20 backdrop-blur-lg'>
-      <CardContent className='p-8 space-y-6'>
+    <FmCommonCard>
+      <FmCommonCardContent className='p-8 space-y-6'>
         <div>
           <h2 className='text-xl font-canela font-medium text-foreground mb-2'>
             {t('profilePicture.title')}
@@ -143,7 +143,7 @@ export function ProfilePictureSection() {
             </p>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </FmCommonCardContent>
+    </FmCommonCard>
   );
 }

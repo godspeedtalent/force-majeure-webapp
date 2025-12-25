@@ -8,12 +8,12 @@ import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/common/shadcn/card';
+  FmCommonCard,
+  FmCommonCardContent,
+  FmCommonCardDescription,
+  FmCommonCardHeader,
+  FmCommonCardTitle,
+} from '@/components/common/display/FmCommonCard';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { supabase } from '@/shared';
 
@@ -171,30 +171,30 @@ const ResetPassword = () => {
     return (
       <ForceMajeureRootLayout>
         <div className='flex items-center justify-center min-h-full px-4 py-12'>
-          <Card className='w-full max-w-md border border-white/20 bg-black/70 backdrop-blur-md shadow-2xl rounded-none animate-fade-in'>
-            <CardHeader className='text-center pb-6'>
+          <FmCommonCard className='w-full max-w-md border border-white/20 shadow-2xl animate-fade-in'>
+            <FmCommonCardHeader className='text-center pb-6'>
               <div className='flex justify-center mb-4'>
                 <div className='w-16 h-16 rounded-none bg-fm-danger/10 border border-fm-danger/20 flex items-center justify-center'>
                   <AlertCircle className='w-8 h-8 text-fm-danger' />
                 </div>
               </div>
-              <CardTitle className='text-2xl font-canela font-medium text-foreground'>
+              <FmCommonCardTitle className='text-2xl font-canela font-medium text-foreground'>
                 {t('auth.resetPassword.invalidLink')}
-              </CardTitle>
-              <CardDescription className='text-muted-foreground'>
+              </FmCommonCardTitle>
+              <FmCommonCardDescription className='text-muted-foreground'>
                 {t('auth.resetPassword.linkExpired')}
-              </CardDescription>
-            </CardHeader>
+              </FmCommonCardDescription>
+            </FmCommonCardHeader>
 
-            <CardContent>
+            <FmCommonCardContent>
               <FmCommonButton
                 onClick={() => navigate('/forgot-password')}
                 className='w-full'
               >
                 {t('auth.resetPassword.requestNewLink')}
               </FmCommonButton>
-            </CardContent>
-          </Card>
+            </FmCommonCardContent>
+          </FmCommonCard>
         </div>
       </ForceMajeureRootLayout>
     );
@@ -205,30 +205,30 @@ const ResetPassword = () => {
     return (
       <ForceMajeureRootLayout>
         <div className='flex items-center justify-center min-h-full px-4 py-12'>
-          <Card className='w-full max-w-md border border-white/20 bg-black/70 backdrop-blur-md shadow-2xl rounded-none animate-fade-in'>
-            <CardHeader className='text-center pb-6'>
+          <FmCommonCard className='w-full max-w-md border border-white/20 shadow-2xl animate-fade-in'>
+            <FmCommonCardHeader className='text-center pb-6'>
               <div className='flex justify-center mb-4'>
                 <div className='w-16 h-16 rounded-none bg-fm-gold/10 border border-fm-gold/20 flex items-center justify-center'>
                   <CheckCircle className='w-8 h-8 text-fm-gold' />
                 </div>
               </div>
-              <CardTitle className='text-2xl font-canela font-medium text-foreground'>
+              <FmCommonCardTitle className='text-2xl font-canela font-medium text-foreground'>
                 {t('auth.resetPassword.success')}
-              </CardTitle>
-              <CardDescription className='text-muted-foreground'>
+              </FmCommonCardTitle>
+              <FmCommonCardDescription className='text-muted-foreground'>
                 {t('auth.resetPassword.successDescription')}
-              </CardDescription>
-            </CardHeader>
+              </FmCommonCardDescription>
+            </FmCommonCardHeader>
 
-            <CardContent>
+            <FmCommonCardContent>
               <FmCommonButton
                 onClick={() => navigate('/')}
                 className='w-full'
               >
                 {t('auth.resetPassword.continue')}
               </FmCommonButton>
-            </CardContent>
-          </Card>
+            </FmCommonCardContent>
+          </FmCommonCard>
         </div>
       </ForceMajeureRootLayout>
     );
@@ -237,20 +237,20 @@ const ResetPassword = () => {
   return (
     <ForceMajeureRootLayout>
       <div className='flex items-center justify-center min-h-full px-4 py-12'>
-        <Card className='w-full max-w-md border border-white/20 bg-black/70 backdrop-blur-md shadow-2xl rounded-none animate-fade-in'>
-          <CardHeader className='text-center pb-6'>
+        <FmCommonCard className='w-full max-w-md border border-white/20 shadow-2xl animate-fade-in'>
+          <FmCommonCardHeader className='text-center pb-6'>
             <div className='flex justify-center mb-4'>
               <ForceMajeureLogo className='w-16 h-16' />
             </div>
-            <CardTitle className='text-2xl font-canela font-medium text-foreground'>
+            <FmCommonCardTitle className='text-2xl font-canela font-medium text-foreground'>
               {t('auth.resetPassword.title')}
-            </CardTitle>
-            <CardDescription className='text-muted-foreground'>
+            </FmCommonCardTitle>
+            <FmCommonCardDescription className='text-muted-foreground'>
               {t('auth.resetPassword.subtitle')}
-            </CardDescription>
-          </CardHeader>
+            </FmCommonCardDescription>
+          </FmCommonCardHeader>
 
-          <CardContent>
+          <FmCommonCardContent>
             <form onSubmit={handleSubmit} className='space-y-6'>
               <div>
                 <FmCommonTextField
@@ -294,8 +294,8 @@ const ResetPassword = () => {
                 {t('auth.resetPassword.resetPassword')}
               </FmCommonButton>
             </form>
-          </CardContent>
-        </Card>
+          </FmCommonCardContent>
+        </FmCommonCard>
       </div>
     </ForceMajeureRootLayout>
   );

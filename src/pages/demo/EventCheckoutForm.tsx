@@ -16,7 +16,7 @@ import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { FmCommonFormCheckbox } from '@/components/common/forms/FmCommonFormCheckbox';
 import { Separator } from '@/components/common/shadcn/separator';
-import { Card } from '@/components/common/shadcn/card';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import {
   Select,
   SelectContent,
@@ -317,7 +317,7 @@ export default function EventCheckoutForm({
         <div className='space-y-6'>
           <form onSubmit={handleSubmit} className='space-y-6'>
             {/* Customer Information */}
-            <Card className='p-[20px]'>
+            <FmCommonCard className='p-[20px]'>
               <div className='flex items-center gap-[10px] mb-[20px]'>
                 <User className='h-5 w-5 text-fm-gold' />
                 <h2 className='text-lg font-canela'>
@@ -379,10 +379,10 @@ export default function EventCheckoutForm({
                   )}
                 </div>
               </div>
-            </Card>
+            </FmCommonCard>
 
             {/* Billing Information */}
-            <Card className='p-[20px]'>
+            <FmCommonCard className='p-[20px]'>
               <div className='flex items-center gap-[10px] mb-[20px]'>
                 <CreditCard className='h-5 w-5 text-fm-gold' />
                 <h2 className='text-lg font-canela'>
@@ -496,7 +496,7 @@ export default function EventCheckoutForm({
                   )}
                 </div>
               </div>
-            </Card>
+            </FmCommonCard>
 
             {/* Guest Sign-Up Prompt */}
             {isGuestMode && (
@@ -588,7 +588,7 @@ export default function EventCheckoutForm({
             />
 
             {/* Order Summary Before Submit */}
-            <Card className='p-6 bg-muted/10'>
+            <FmCommonCard className='p-6 bg-muted/10'>
               <h3 className='text-lg font-canela mb-4'>{t('checkout.orderSummary')}</h3>
               <div className='space-y-3'>
                 {orderSummary.tickets.map((ticket, idx) => (
@@ -645,7 +645,7 @@ export default function EventCheckoutForm({
                   </span>
                 </div>
               </div>
-            </Card>
+            </FmCommonCard>
 
             {/* Submit Button */}
             <Button

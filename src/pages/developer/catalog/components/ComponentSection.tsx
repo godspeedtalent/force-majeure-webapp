@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight, AlertCircle } from 'lucide-react';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/common/shadcn/card';
+  FmCommonCard,
+  FmCommonCardContent,
+  FmCommonCardDescription,
+  FmCommonCardHeader,
+  FmCommonCardTitle,
+} from '@/components/common/display/FmCommonCard';
 
 interface ComponentSectionProps {
   name: string;
@@ -28,8 +28,8 @@ export function ComponentSection({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <Card className='border-border' id={id}>
-      <CardHeader
+    <FmCommonCard className='border-border' id={id}>
+      <FmCommonCardHeader
         className='cursor-pointer hover:bg-accent/5 transition-colors'
         onClick={() => setIsOpen(!isOpen)}
       >
@@ -41,9 +41,9 @@ export function ComponentSection({
               ) : (
                 <ChevronRight className='h-5 w-5 text-muted-foreground' />
               )}
-              <CardTitle className='font-mono text-lg'>{name}</CardTitle>
+              <FmCommonCardTitle className='font-mono text-lg'>{name}</FmCommonCardTitle>
             </div>
-            <CardDescription>{description}</CardDescription>
+            <FmCommonCardDescription>{description}</FmCommonCardDescription>
             {caveats && caveats.length > 0 && (
               <div className='flex items-start gap-2 text-sm text-yellow-500/80'>
                 <AlertCircle className='h-4 w-4 mt-0.5 flex-shrink-0' />
@@ -56,8 +56,8 @@ export function ComponentSection({
             )}
           </div>
         </div>
-      </CardHeader>
-      {isOpen && <CardContent className='pt-6 space-y-6'>{children}</CardContent>}
-    </Card>
+      </FmCommonCardHeader>
+      {isOpen && <FmCommonCardContent className='pt-6 space-y-6'>{children}</FmCommonCardContent>}
+    </FmCommonCard>
   );
 }

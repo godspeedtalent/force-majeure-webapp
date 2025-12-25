@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card } from '@/components/common/shadcn/card';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { Button } from '@/components/common/shadcn/button';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
@@ -146,7 +146,7 @@ export const EmailPreview = () => {
   return (
     <div className='space-y-6'>
       {/* Controls */}
-      <Card className='p-[20px]'>
+      <FmCommonCard className='p-[20px]'>
         <div className='flex items-center gap-[10px] mb-[20px]'>
           <Mail className='h-5 w-5 text-fm-gold' />
           <h3 className='text-lg font-canela'>
@@ -216,11 +216,11 @@ export const EmailPreview = () => {
             </Button>
           </div>
         </div>
-      </Card>
+      </FmCommonCard>
 
       {/* Preview */}
       {showPreview && (
-        <Card className='p-[20px]'>
+        <FmCommonCard className='p-[20px]'>
           <h4 className='text-md font-canela mb-[20px]'>
             {formatHeader(t('emailPreview.previewTitle'))}
           </h4>
@@ -238,11 +238,11 @@ export const EmailPreview = () => {
           <p className='text-xs text-muted-foreground mt-4'>
             {t('emailPreview.previewNote')}
           </p>
-        </Card>
+        </FmCommonCard>
       )}
 
       {/* Sample Data Display */}
-      <Card className='p-[20px]'>
+      <FmCommonCard className='p-[20px]'>
         <h4 className='text-md font-canela mb-[20px]'>
           {formatHeader(t('emailPreview.sampleData'))}
         </h4>
@@ -252,10 +252,10 @@ export const EmailPreview = () => {
         <p className='text-xs text-muted-foreground mt-4'>
           {t('emailPreview.sampleDataNote')}
         </p>
-      </Card>
+      </FmCommonCard>
 
       {/* Implementation Notes */}
-      <Card className='p-[20px] bg-muted/20 border-fm-gold/30'>
+      <FmCommonCard className='p-[20px] bg-muted/20 border-fm-gold/30'>
         <h4 className='text-md font-canela mb-[20px]'>
           {formatHeader(t('emailPreview.implementationNotes'))}
         </h4>
@@ -297,7 +297,7 @@ export const EmailPreview = () => {
             <li>{t('emailPreview.pdfStep4')}</li>
           </ol>
         </div>
-      </Card>
+      </FmCommonCard>
     </div>
   );
 };

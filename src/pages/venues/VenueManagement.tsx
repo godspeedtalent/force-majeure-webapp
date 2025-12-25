@@ -10,7 +10,7 @@ import { FmImageUpload } from '@/components/common/forms/FmImageUpload';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
-import { Card } from '@/components/common/shadcn/card';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { toast } from 'sonner';
 import { handleError } from '@/shared/services/errorHandler';
 import { useDebouncedSave } from '@/shared/hooks/useDebouncedSave';
@@ -166,7 +166,7 @@ export default function VenueManagement() {
 
   const renderOverviewTab = () => (
     <div className='space-y-6'>
-      <Card className='p-6'>
+      <FmCommonCard className='p-6'>
         <h2 className='text-xl font-semibold mb-6'>{t('venueManagement.basicInformation')}</h2>
 
         <div className='space-y-4'>
@@ -243,7 +243,7 @@ export default function VenueManagement() {
             />
           </div>
         </div>
-      </Card>
+      </FmCommonCard>
 
       <div className='flex justify-between'>
         <FmCommonButton

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent, FmCommonCardHeader, FmCommonCardTitle } from '@/components/common/display/FmCommonCard';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { format } from 'date-fns';
 
@@ -15,40 +15,40 @@ export const ViewsOverTimeChart = ({ data }: ViewsOverTimeChartProps) => {
   }));
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t('analytics.pageViewsOverTime')}</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <FmCommonCard>
+      <FmCommonCardHeader>
+        <FmCommonCardTitle>{t('analytics.pageViewsOverTime')}</FmCommonCardTitle>
+      </FmCommonCardHeader>
+      <FmCommonCardContent>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-            <XAxis 
-              dataKey="date" 
+            <XAxis
+              dataKey="date"
               className="text-xs"
               stroke="hsl(var(--muted-foreground))"
             />
-            <YAxis 
+            <YAxis
               className="text-xs"
               stroke="hsl(var(--muted-foreground))"
             />
-            <Tooltip 
-              contentStyle={{ 
+            <Tooltip
+              contentStyle={{
                 backgroundColor: 'hsl(var(--background))',
                 border: '1px solid hsl(var(--border))',
                 borderRadius: '6px',
               }}
             />
-            <Line 
-              type="monotone" 
-              dataKey="views" 
-              stroke="hsl(var(--primary))" 
+            <Line
+              type="monotone"
+              dataKey="views"
+              stroke="hsl(var(--primary))"
               strokeWidth={2}
               name={t('analytics.views')}
             />
           </LineChart>
         </ResponsiveContainer>
-      </CardContent>
-    </Card>
+      </FmCommonCardContent>
+    </FmCommonCard>
   );
 };

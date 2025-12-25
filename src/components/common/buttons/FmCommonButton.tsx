@@ -123,7 +123,7 @@ export const FmCommonButton = forwardRef<
               </span>
             ) : null
           )}
-          <span className='relative z-10 whitespace-nowrap'>{children}</span>
+          <span className='relative z-10 whitespace-nowrap inline-flex items-center'>{children}</span>
           {!loading && Icon && iconPosition === 'right' && (
             isReactComponent(Icon) ? (
               <Icon className='w-4 h-4 ml-2 transition-transform duration-200 group-hover:scale-110 flex-shrink-0' />

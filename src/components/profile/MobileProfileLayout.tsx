@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { FmCommonUserPhoto } from '@/components/common/display/FmCommonUserPhoto';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonInfoCard } from '@/components/common/display/FmCommonInfoCard';
-import { Card, CardContent } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import {
   Tabs,
   TabsContent,
@@ -145,12 +145,12 @@ export const MobileProfileLayout = ({
                   );
 
                   return (
-                    <Card
+                    <FmCommonCard
                       key={event.id}
-                      className='border-border/30 bg-card/10 backdrop-blur-sm hover:bg-card/20 transition-colors cursor-pointer'
+                      className='border-border/30 backdrop-blur-sm hover:bg-card/20 transition-colors cursor-pointer'
                       onClick={() => navigate(`/events/${event.id}`)}
                     >
-                      <CardContent className='p-3'>
+                      <FmCommonCardContent className='p-3'>
                         <div className='flex gap-3'>
                           {/* Event Image */}
                           <div className='w-16 h-16 rounded-md overflow-hidden bg-muted flex-shrink-0'>
@@ -194,8 +194,8 @@ export const MobileProfileLayout = ({
                             </Badge>
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
+                      </FmCommonCardContent>
+                    </FmCommonCard>
                   );
                 })}
               </div>

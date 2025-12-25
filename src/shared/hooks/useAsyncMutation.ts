@@ -3,13 +3,20 @@ import { useQueryClient, QueryKey } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 /**
- * useAsyncMutation
+ * useAsyncMutation - The canonical async mutation hook
  *
- * Unified hook for async operations with loading states, toast notifications,
- * and optional React Query cache invalidation.
+ * This is the recommended hook for all async mutation operations in the codebase.
+ * It provides:
+ * - Loading state management
+ * - Error handling with optional toast notifications
+ * - Success toast notifications
+ * - Optional React Query cache invalidation
+ * - Callbacks for success/error handling
  *
- * This hook consolidates the functionality of useAsyncAction and useMutationWithToast
- * into a single, consistent API.
+ * Related hooks (for reference):
+ * - `useAsyncOperation` - Use for simple async ops without toast (e.g., data fetching)
+ * - `useMutationWithToast` - @deprecated, use this hook instead
+ * - `useAsyncAction` - @deprecated, use this hook with `throwOnError: true` instead
  *
  * @example Basic usage (replaces useAsyncAction)
  * ```tsx

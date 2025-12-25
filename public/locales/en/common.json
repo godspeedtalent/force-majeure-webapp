@@ -16,6 +16,7 @@
     "orgTools": "Org Tools",
     "scanning": "Scanning",
     "developer": "Developer",
+    "developerHome": "Developer Home",
     "database": "Database",
     "adminPanel": "Admin Panel",
     "site": "Site",
@@ -58,6 +59,8 @@
     "upload": "Upload",
     "download": "Download",
     "share": "Share",
+    "send": "Send Message",
+    "sending": "Sending...",
     "copy": "Copy",
     "goBack": "Go Back",
     "viewOrganizationDetails": "View Organization Details",
@@ -148,6 +151,7 @@
     "editingRecording": "Editing Recording",
     "djSet": "DJ Set",
     "track": "Track",
+    "primary": "Primary",
     "venueName": "Venue Name",
     "venueImage": "Venue Image",
     "capacity": "Capacity",
@@ -498,7 +502,8 @@
       "adding": "Adding...",
       "saving": "Saving...",
       "preview": "Preview",
-      "addedRecordings": "Added Recordings ({{count}})"
+      "addedRecordings": "Added Recordings ({{count}})",
+      "setAsPrimary": "Set as primary"
     }
   },
   "formGroups": {
@@ -886,6 +891,7 @@
     "closeModal": "Close modal",
     "editTrack": "Edit track",
     "removeTrack": "Remove track",
+    "setAsPrimary": "Set as primary DJ set",
     "followOnInstagram": "Follow Force Majeure Events on Instagram",
     "goToStep": "Go to step {{step}}: {{title}}"
   },
@@ -906,6 +912,8 @@
     "musicPlatformRequired": "At least one music platform is required:",
     "djSetRequirementMet": "DJ Set requirement met ({{djSets}} DJ Set{{djSetsPlural}}{{tracks}})",
     "djSetRequired": "You need to add at least one DJ Set recording",
+    "trackCount": ", {{count}} Track",
+    "trackCount_other": ", {{count}} Tracks",
     "artistTermsTitle": "Artist Submission Terms & Conditions",
     "artistTermsSubtitle": "For Mix Submission and Consideration for Opening Slots",
     "scrollToBottom": "Please scroll to the bottom of the terms to continue.",
@@ -1739,6 +1747,24 @@
     "updated": "Profile picture updated",
     "updatedDescription": "Your profile picture has been updated successfully."
   },
+  "profile": {
+    "backToEvents": "Back to Events",
+    "editProfile": "Edit Profile",
+    "defaultName": "User",
+    "upcomingShows": "Upcoming Shows",
+    "artist": "Artist",
+    "account": "Account",
+    "browseEvents": "Browse Events",
+    "ticketCount": "{{count}} ticket",
+    "ticketCount_other": "{{count}} tickets",
+    "memberSince": "Member Since",
+    "back": "Back",
+    "edit": "Edit",
+    "shows": "Shows",
+    "memberTitle": "Member",
+    "loadingShows": "Loading shows...",
+    "noUpcomingShows": "No upcoming shows"
+  },
   "emailPreview": {
     "title": "Email Template Preview",
     "testEmailAddress": "Test Email Address",
@@ -1803,6 +1829,8 @@
   },
   "artistRegistrationErrors": {
     "artistAlreadyExists": "An artist with this name already exists. If this is you, please email management@forcemajeure.vip for help linking your profile.",
+    "spotifyAlreadyExists": "An artist with this Spotify profile already exists. If this is you, please email management@forcemajeure.vip for help linking your profile.",
+    "soundcloudAlreadyExists": "An artist with this SoundCloud profile already exists. If this is you, please email management@forcemajeure.vip for help linking your profile.",
     "registrationPending": "A registration with this artist name is already pending review. If this is you, please email management@forcemajeure.vip for help.",
     "submitFailed": "Failed to submit registration. Please try again.",
     "submitSuccess": "Thank you for registering! If your sound is a good fit for a future event, we'll reach out to you!"
@@ -2161,8 +2189,11 @@
     "eventCheckoutDescription": "Complete ticket purchasing flow with Stripe checkout integration, inventory management, and order tracking",
     "emailTemplate": "Email Template Preview",
     "emailTemplateDescription": "Preview and test order receipt email templates with configurable data and live sending capabilities",
+    "artistSignup": "Artist Signup",
+    "artistSignupDescription": "Test the artist registration flow with auto-populated Spotify or SoundCloud data, configurable options, and form pre-filling",
     "categoryEcommerce": "E-Commerce",
     "categoryCommunication": "Communication",
+    "categoryArtistManagement": "Artist Management",
     "openDemo": "Open demo",
     "accessNote": "These demos are only accessible to admin users and are not visible in production"
   },
@@ -2410,7 +2441,8 @@
   "artistPreview": {
     "spotlight": "Artist Spotlight",
     "yourName": "Your Name",
-    "clickToMakeMainImage": "Click to make this the main image"
+    "clickToMakeMainImage": "Click to make this the main image",
+    "djSet": "DJ Set"
   },
   "mobilePreview": {
     "preview": "Preview",

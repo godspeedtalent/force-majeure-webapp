@@ -1,10 +1,10 @@
-import { Card, CardContent } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { Skeleton } from '@/components/common/shadcn/skeleton';
 
 // A skeleton placeholder that mirrors the EventCard/CommonCard layout
 export const EventCardSkeleton = () => {
   return (
-    <Card className='overflow-hidden bg-card border-0 border-l-[3px] border-l-fm-crimson dark:border-l-fm-gold'>
+    <FmCommonCard className='overflow-hidden border-0 border-l-[3px] border-l-fm-crimson dark:border-l-fm-gold' hoverable={false}>
       {/* Image area */}
       <div className='relative aspect-[4/5] overflow-hidden max-h-[400px]'>
         <Skeleton className='absolute inset-0' />
@@ -24,11 +24,11 @@ export const EventCardSkeleton = () => {
       </div>
 
       {/* Footer content to mimic EventCard details */}
-      <CardContent className='p-4'>
+      <FmCommonCardContent className='p-4'>
         <Skeleton className='h-4 w-[85%] mb-3' />
         <Skeleton className='h-4 w-32 mb-2' />
         <Skeleton className='h-4 w-48' />
-      </CardContent>
-    </Card>
+      </FmCommonCardContent>
+    </FmCommonCard>
   );
 };

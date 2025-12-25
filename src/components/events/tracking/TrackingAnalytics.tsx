@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useClickAnalytics } from './hooks/useLinkClicks';
-import { Card } from '@/components/common/shadcn/card';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { format, startOfDay, eachDayOfInterval, subDays } from 'date-fns';
 import { Link2, MousePointerClick, TrendingUp } from 'lucide-react';
@@ -83,7 +83,7 @@ export function TrackingAnalytics({ eventId }: TrackingAnalyticsProps) {
     <div className="space-y-6">
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="p-6">
+        <FmCommonCard className="p-6">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-primary/10 rounded-lg">
               <Link2 className="h-6 w-6 text-primary" />
@@ -93,9 +93,9 @@ export function TrackingAnalytics({ eventId }: TrackingAnalyticsProps) {
               <p className="text-2xl font-bold">{analytics.totalLinks}</p>
             </div>
           </div>
-        </Card>
+        </FmCommonCard>
 
-        <Card className="p-6">
+        <FmCommonCard className="p-6">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-secondary/10 rounded-lg">
               <MousePointerClick className="h-6 w-6 text-secondary" />
@@ -105,9 +105,9 @@ export function TrackingAnalytics({ eventId }: TrackingAnalyticsProps) {
               <p className="text-2xl font-bold">{analytics.totalClicks}</p>
             </div>
           </div>
-        </Card>
+        </FmCommonCard>
 
-        <Card className="p-6">
+        <FmCommonCard className="p-6">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-accent/10 rounded-lg">
               <TrendingUp className="h-6 w-6 text-accent" />
@@ -117,11 +117,11 @@ export function TrackingAnalytics({ eventId }: TrackingAnalyticsProps) {
               <p className="text-2xl font-bold">{analytics.avgClicksPerLink}</p>
             </div>
           </div>
-        </Card>
+        </FmCommonCard>
       </div>
 
       {/* Clicks Over Time */}
-      <Card className="p-6">
+      <FmCommonCard className="p-6">
         <h3 className="text-lg font-semibold mb-4">{t('analytics.clicksOverTime')}</h3>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={analytics.clicksByDay}>
@@ -138,11 +138,11 @@ export function TrackingAnalytics({ eventId }: TrackingAnalyticsProps) {
             <Line type="monotone" dataKey="clicks" stroke="hsl(var(--primary))" strokeWidth={2} />
           </LineChart>
         </ResponsiveContainer>
-      </Card>
+      </FmCommonCard>
 
       {/* Top 5 Links & Source Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="p-6">
+        <FmCommonCard className="p-6">
           <h3 className="text-lg font-semibold mb-4">{t('analytics.topPerformingLinks')}</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={analytics.topLinks} layout="vertical">
@@ -159,9 +159,9 @@ export function TrackingAnalytics({ eventId }: TrackingAnalyticsProps) {
               <Bar dataKey="clicks" fill="hsl(var(--primary))" />
             </BarChart>
           </ResponsiveContainer>
-        </Card>
+        </FmCommonCard>
 
-        <Card className="p-6">
+        <FmCommonCard className="p-6">
           <h3 className="text-lg font-semibold mb-4">{t('analytics.clicksBySource')}</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
@@ -182,7 +182,7 @@ export function TrackingAnalytics({ eventId }: TrackingAnalyticsProps) {
               <Tooltip />
             </PieChart>
           </ResponsiveContainer>
-        </Card>
+        </FmCommonCard>
       </div>
     </div>
   );

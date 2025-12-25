@@ -6,7 +6,7 @@ import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { FmI18nCommon } from '@/components/common/i18n';
-import { Card } from '@/components/common/shadcn/card';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import {
   Tooltip,
   TooltipContent,
@@ -146,14 +146,14 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
 
   if (isLoading) {
     return (
-      <Card className='p-6'>
+      <FmCommonCard className='p-6'>
         <FmI18nCommon i18nKey='queue.loading' as='div' className='text-muted-foreground text-sm' />
-      </Card>
+      </FmCommonCard>
     );
   }
 
   return (
-    <Card className='p-6 space-y-6'>
+    <FmCommonCard className='p-6 space-y-6'>
       <div className='flex items-start justify-between'>
         <div className='flex items-center gap-2'>
           <Timer className='h-5 w-5 text-fm-gold' />
@@ -313,6 +313,6 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
         variant="destructive"
         isLoading={isSaving}
       />
-    </Card>
+    </FmCommonCard>
   );
 };

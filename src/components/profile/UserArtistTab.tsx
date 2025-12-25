@@ -9,7 +9,7 @@ import { useAuth } from '@/features/auth/services/AuthContext';
 import { logger } from '@/shared';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmI18nCommon } from '@/components/common/i18n';
-import { Card, CardContent } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { Button } from '@/components/common/shadcn/button';
 import {
   Dialog,
@@ -215,8 +215,8 @@ export function UserArtistTab() {
   if (pendingDeleteRequest) {
     return (
       <div className='space-y-6'>
-        <Card className='border-fm-danger/30 bg-fm-danger/5'>
-          <CardContent className='p-6'>
+        <FmCommonCard className='border-fm-danger/30 bg-fm-danger/5'>
+          <FmCommonCardContent className='p-6'>
             <div className='flex items-start gap-4'>
               <div className='p-3 bg-fm-danger/10 rounded-none'>
                 <Clock className='h-6 w-6 text-fm-danger' />
@@ -229,8 +229,8 @@ export function UserArtistTab() {
                 </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </FmCommonCardContent>
+        </FmCommonCard>
       </div>
     );
   }
@@ -240,8 +240,8 @@ export function UserArtistTab() {
     return (
       <div className='space-y-6'>
         {/* Artist Card */}
-        <Card className='border-border/30 bg-card/10 backdrop-blur-sm overflow-hidden'>
-          <CardContent className='p-0'>
+        <FmCommonCard className='border-border/30 backdrop-blur-sm overflow-hidden'>
+          <FmCommonCardContent className='p-0'>
             <div className='flex gap-6'>
               {/* Artist Image */}
               <div className='w-32 h-32 flex-shrink-0'>
@@ -269,8 +269,8 @@ export function UserArtistTab() {
                 )}
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </FmCommonCardContent>
+        </FmCommonCard>
 
         {/* Action Buttons */}
         <div className='flex flex-wrap gap-3'>
@@ -367,8 +367,8 @@ export function UserArtistTab() {
     <div className='space-y-6'>
       {/* Pending Link Request Banner */}
       {pendingLinkRequest && (
-        <Card className='border-fm-gold/30 bg-fm-gold/5'>
-          <CardContent className='p-4'>
+        <FmCommonCard className='border-fm-gold/30 bg-fm-gold/5'>
+          <FmCommonCardContent className='p-4'>
             <div className='flex items-center gap-3'>
               <Clock className='h-5 w-5 text-fm-gold' />
               <div>
@@ -378,8 +378,8 @@ export function UserArtistTab() {
                 </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </FmCommonCardContent>
+        </FmCommonCard>
       )}
 
       {/* Recent Request History */}
@@ -390,8 +390,8 @@ export function UserArtistTab() {
             .filter(r => r.status !== 'pending')
             .slice(0, 3)
             .map(request => (
-              <Card key={request.id} className='border-border/20 bg-card/5'>
-                <CardContent className='p-3'>
+              <FmCommonCard key={request.id} className='border-border/20 bg-card/5'>
+                <FmCommonCardContent className='p-3'>
                   <div className='flex items-center justify-between'>
                     <div className='flex items-center gap-2'>
                       {request.status === 'approved' ? (
@@ -414,15 +414,15 @@ export function UserArtistTab() {
                       {t('userArtist.reason')}: {request.denial_reason}
                     </p>
                   )}
-                </CardContent>
-              </Card>
+                </FmCommonCardContent>
+              </FmCommonCard>
             ))}
         </div>
       )}
 
       {/* Empty State */}
-      <Card className='border-border/30 bg-card/10 backdrop-blur-sm'>
-        <CardContent className='p-12 text-center'>
+      <FmCommonCard className='border-border/30 backdrop-blur-sm'>
+        <FmCommonCardContent className='p-12 text-center'>
           <Music2 className='h-12 w-12 text-muted-foreground mx-auto mb-4' />
           <FmI18nCommon i18nKey='userArtist.noLinkedArtist' as='h3' className='font-canela text-xl font-medium mb-2' />
           <FmI18nCommon i18nKey='userArtist.noLinkedArtistDescription' as='p' className='text-muted-foreground text-sm mb-6 max-w-md mx-auto' />
@@ -435,8 +435,8 @@ export function UserArtistTab() {
           >
             {pendingLinkRequest ? t('userArtist.requestPending') : t('userArtist.linkArtistAccount')}
           </FmCommonButton>
-        </CardContent>
-      </Card>
+        </FmCommonCardContent>
+      </FmCommonCard>
 
       {/* Link Artist Modal */}
       <Dialog open={showLinkModal} onOpenChange={setShowLinkModal}>

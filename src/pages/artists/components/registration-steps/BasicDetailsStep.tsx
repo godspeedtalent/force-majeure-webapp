@@ -16,8 +16,8 @@ import type { ArtistRegistrationFormData, RegistrationTrack } from '../../types/
 import type { Genre } from '@/features/artists/types';
 import { FmI18nCommon } from '@/components/common/i18n';
 
-const ARTIST_EXISTS_ERROR_MESSAGE = 'An artist with this name already exists in the database. Contact FM staff at management@forcemajeure.vip to request access.';
 const DEBOUNCE_MS = 500;
+const SUPPORTED_CITIES = ['Austin', 'Houston', 'San Marcos'] as const;
 
 interface BasicDetailsStepProps {
   formData: ArtistRegistrationFormData;
@@ -54,8 +54,9 @@ export function BasicDetailsStep({
       try {
         const result = await checkArtistExistsByName(stageName);
         if (result.exists) {
-          onInputChange('stageNameError', ARTIST_EXISTS_ERROR_MESSAGE);
-          toast.error(ARTIST_EXISTS_ERROR_MESSAGE, { duration: 8000 });
+          const errorMessage = t('artistRegistrationErrors.artistAlreadyExists');
+          onInputChange('stageNameError', errorMessage);
+          toast.error(errorMessage, { duration: 8000 });
         } else {
           onInputChange('stageNameError', null);
         }
@@ -205,7 +206,7 @@ export function BasicDetailsStep({
                 value={formData.cityId}
                 onChange={cityId => onInputChange('cityId', cityId)}
                 placeholder={t('forms.artists.selectCity')}
-                cityNames={['Austin', 'Houston', 'San Marcos']}
+                cityNames={SUPPORTED_CITIES as unknown as string[]}
               />
 
               <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent' />

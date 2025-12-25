@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { logger } from '@/shared';
-import { Card, CardContent } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { Button } from '@/components/common/shadcn/button';
 import { Badge } from '@/components/common/shadcn/badge';
 import {
@@ -219,8 +219,8 @@ export function UserRequestsAdmin() {
   };
 
   const renderRequestCard = (request: UserRequest, showActions: boolean = true) => (
-    <Card key={request.id} className='border-border/30 bg-card/10 backdrop-blur-sm'>
-      <CardContent className='p-4'>
+    <FmCommonCard key={request.id} className='border-border/30 backdrop-blur-sm'>
+      <FmCommonCardContent className='p-4'>
         <div className='flex items-start justify-between'>
           <div className='flex items-start gap-4'>
             {/* Type Icon */}
@@ -330,8 +330,8 @@ export function UserRequestsAdmin() {
             </div>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </FmCommonCardContent>
+    </FmCommonCard>
   );
 
   if (isLoading) {
@@ -366,12 +366,12 @@ export function UserRequestsAdmin() {
 
         <TabsContent value='pending' className='space-y-4 mt-4'>
           {pendingRequests.length === 0 ? (
-            <Card className='border-border/30 bg-card/10'>
-              <CardContent className='p-8 text-center'>
+            <FmCommonCard className='border-border/30'>
+              <FmCommonCardContent className='p-8 text-center'>
                 <CheckCircle2 className='h-12 w-12 text-green-500 mx-auto mb-4' />
                 <p className='text-muted-foreground'>{t('admin.requests.noPendingRequests')}</p>
-              </CardContent>
-            </Card>
+              </FmCommonCardContent>
+            </FmCommonCard>
           ) : (
             pendingRequests.map(request => renderRequestCard(request))
           )}
@@ -379,12 +379,12 @@ export function UserRequestsAdmin() {
 
         <TabsContent value='resolved' className='space-y-4 mt-4'>
           {resolvedRequests.length === 0 ? (
-            <Card className='border-border/30 bg-card/10'>
-              <CardContent className='p-8 text-center'>
+            <FmCommonCard className='border-border/30'>
+              <FmCommonCardContent className='p-8 text-center'>
                 <AlertCircle className='h-12 w-12 text-muted-foreground mx-auto mb-4' />
                 <p className='text-muted-foreground'>{t('admin.requests.noResolvedRequests')}</p>
-              </CardContent>
-            </Card>
+              </FmCommonCardContent>
+            </FmCommonCard>
           ) : (
             resolvedRequests.map(request => renderRequestCard(request, false))
           )}

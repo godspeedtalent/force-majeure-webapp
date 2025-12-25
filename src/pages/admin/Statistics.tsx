@@ -4,7 +4,7 @@ import { logger } from '@/shared';
 import { Layout } from '@/components/layout/Layout';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { BarChart3 } from 'lucide-react';
-import { Card } from '@/components/common/shadcn/card';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { supabase } from '@/shared';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 
@@ -56,7 +56,7 @@ export default function Statistics() {
           />
 
           <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
-            <Card className='p-6 bg-black/40 border-white/20'>
+            <FmCommonCard className='p-6 border-white/20'>
               <div className='space-y-2'>
                 <p className='text-sm text-white/60 uppercase tracking-wide'>
                   {t('statisticsPage.registeredUsers')}
@@ -68,7 +68,7 @@ export default function Statistics() {
                   {t('statisticsPage.totalUserAccounts')}
                 </p>
               </div>
-            </Card>
+            </FmCommonCard>
           </div>
         </div>
       </div>

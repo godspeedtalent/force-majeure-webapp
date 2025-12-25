@@ -5,7 +5,7 @@
  */
 
 import { useTranslation } from 'react-i18next';
-import { Card, CardContent } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { LanguageSelector } from '@/components/common/i18n/LanguageSelector';
 import { useLocaleSync } from '@/hooks/useLocaleSync';
 import { useToast } from '@/shared/hooks/use-toast';
@@ -18,8 +18,8 @@ export function PreferencesSection() {
   const { currentLocale, changeLocale } = useLocaleSync();
 
   return (
-    <Card className='border-border/30 bg-card/20 backdrop-blur-lg'>
-      <CardContent className='p-8 space-y-6'>
+    <FmCommonCard>
+      <FmCommonCardContent className='p-8 space-y-6'>
         <div>
           <h2 className='text-xl font-canela font-medium text-foreground mb-2'>
             {t('profile.preferences')}
@@ -41,7 +41,7 @@ export function PreferencesSection() {
             }}
           />
         </div>
-      </CardContent>
-    </Card>
+      </FmCommonCardContent>
+    </FmCommonCard>
   );
 }

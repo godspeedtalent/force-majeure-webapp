@@ -31,6 +31,7 @@ const DeveloperCreateArtistPage = lazy(() => import('./pages/developer/database/
 const DeveloperCreateVenuePage = lazy(() => import('./pages/developer/database/CreateVenue'));
 const DeveloperCreateOrganizationPage = lazy(() => import('./pages/developer/database/CreateOrganization'));
 const DeveloperIndex = lazy(() => import('./pages/developer/DeveloperIndex'));
+const ArtistSignupDemo = lazy(() => import('./pages/developer/ArtistSignupDemo'));
 
 // Lazy load admin pages
 const Statistics = lazy(() => import('./pages/admin/Statistics'));
@@ -38,6 +39,7 @@ const AdminControls = lazy(() => import('./pages/admin/AdminControls'));
 const ActivityLogs = lazy(() => import('./pages/admin/ActivityLogs'));
 const OrganizationDetails = lazy(() => import('./pages/admin/OrganizationDetails'));
 const UserDetails = lazy(() => import('./pages/admin/UserDetails'));
+const GalleryManagement = lazy(() => import('./pages/admin/GalleryManagement'));
 
 // Lazy load venue and artist pages
 const VenueDetails = lazy(() => import('./pages/venues/VenueDetails'));
@@ -63,11 +65,13 @@ import { AuthProvider } from '@/features/auth/services/AuthContext';
 import { useFeatureFlagHelpers } from '@/shared';
 import { FmToolbar } from '@/components/common/toolbar/FmToolbar';
 import { FmMobileDevToolbar } from '@/components/common/toolbar/mobile/FmMobileDevToolbar';
+import { FmMockRoleExitButton } from '@/components/common/buttons/FmMockRoleExitButton';
 import { ROLES } from '@/shared';
 import { FEATURE_FLAGS } from '@/shared';
 import { CheckoutProvider } from '@/contexts/CheckoutContext';
 import { ShoppingCartProvider } from '@/shared';
 import { MockRoleProvider } from '@/shared/contexts/MockRoleContext';
+import { FmToolbarProvider } from '@/shared/contexts/FmToolbarContext';
 import {
   GlobalSearchProvider,
   useGlobalSearch,
@@ -120,6 +124,7 @@ const AppRoutes = () => {
       <Route path='/reset-password' element={<ResetPassword />} />
       <Route path='/scavenger' element={<Scavenger />} />
       <Route path='/proxy-token' element={<ProxyToken />} />
+      <Route path='/contact' element={<Contact />} />
 
       {/* Artist Registration Routes - Always accessible even in coming soon mode */}
       <Route path='/artists/signup' element={<ArtistSignup />} />
@@ -237,6 +242,16 @@ const AppRoutes = () => {
           </DemoProtectedRoute>
         }
       />
+      <Route
+        path='/developer/demo/artist-signup'
+        element={
+          <DemoProtectedRoute>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <ArtistSignupDemo />
+            </Suspense>
+          </DemoProtectedRoute>
+        }
+      />
 
       {/* Testing Routes - Protected by developer/admin roles */}
       <Route
@@ -307,6 +322,16 @@ const AppRoutes = () => {
           <ProtectedRoute role={ROLES.ADMIN}>
             <Suspense fallback={<LazyLoadFallback />}>
               <ActivityLogs />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/admin/galleries/:slug'
+        element={
+          <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <GalleryManagement />
             </Suspense>
           </ProtectedRoute>
         }
@@ -437,7 +462,6 @@ const AppRoutes = () => {
 
           {/* Profile routes are now defined above, outside coming soon mode */}
           <Route path='/orders' element={<Orders />} />
-          <Route path='/contact' element={<Contact />} />
 
           {/* Checkout Routes */}
           <Route path='/checkout/success' element={<CheckoutSuccess />} />
@@ -469,25 +493,28 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <MockRoleProvider>
-            <StripeProvider>
-              <ShoppingCartProvider>
-                <GlobalSearchProvider>
-                  <TooltipProvider>
-                    <Sonner />
-                    <BrowserRouter>
-                      <CheckoutProvider>
-                        <Suspense fallback={<LazyLoadFallback />}>
-                          <AppRoutes />
-                        </Suspense>
-                        <FmToolbar />
-                        <FmMobileDevToolbar />
-                        <GlobalSearchWrapper />
-                      </CheckoutProvider>
-                    </BrowserRouter>
-                  </TooltipProvider>
-                </GlobalSearchProvider>
-              </ShoppingCartProvider>
-            </StripeProvider>
+            <FmToolbarProvider>
+              <StripeProvider>
+                <ShoppingCartProvider>
+                  <GlobalSearchProvider>
+                    <TooltipProvider>
+                      <Sonner />
+                      <BrowserRouter>
+                        <CheckoutProvider>
+                          <Suspense fallback={<LazyLoadFallback />}>
+                            <AppRoutes />
+                          </Suspense>
+                          <FmToolbar />
+                          <FmMobileDevToolbar />
+                          <FmMockRoleExitButton />
+                          <GlobalSearchWrapper />
+                        </CheckoutProvider>
+                      </BrowserRouter>
+                    </TooltipProvider>
+                  </GlobalSearchProvider>
+                </ShoppingCartProvider>
+              </StripeProvider>
+            </FmToolbarProvider>
           </MockRoleProvider>
         </AuthProvider>
       </QueryClientProvider>

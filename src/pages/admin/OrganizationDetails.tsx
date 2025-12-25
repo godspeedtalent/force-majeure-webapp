@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '@/shared';
 import { ArrowLeft, Building2, Calendar } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent, FmCommonCardHeader, FmCommonCardTitle } from '@/components/common/display/FmCommonCard';
 
 import { Separator } from '@/components/common/shadcn/separator';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
@@ -100,11 +100,11 @@ export default function OrganizationDetails() {
         {/* Left Column - Main Info */}
         <div className='md:col-span-2 space-y-6'>
           {/* Basic Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('organization.basicInfo')}</CardTitle>
-            </CardHeader>
-            <CardContent className='space-y-4'>
+          <FmCommonCard>
+            <FmCommonCardHeader>
+              <FmCommonCardTitle>{t('organization.basicInfo')}</FmCommonCardTitle>
+            </FmCommonCardHeader>
+            <FmCommonCardContent className='space-y-4'>
               {organization.profile_picture && (
                 <div>
                   <img
@@ -119,17 +119,17 @@ export default function OrganizationDetails() {
                 <label className='text-sm text-muted-foreground'>{t('labels.name')}</label>
                 <p className='text-lg font-medium'>{organization.name}</p>
               </div>
-            </CardContent>
-          </Card>
+            </FmCommonCardContent>
+          </FmCommonCard>
         </div>
 
         {/* Right Column - Metadata */}
         <div className='space-y-6'>
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('organization.metadata')}</CardTitle>
-            </CardHeader>
-            <CardContent className='space-y-3'>
+          <FmCommonCard>
+            <FmCommonCardHeader>
+              <FmCommonCardTitle>{t('organization.metadata')}</FmCommonCardTitle>
+            </FmCommonCardHeader>
+            <FmCommonCardContent className='space-y-3'>
               <div>
                 <label className='text-sm text-muted-foreground'>{t('organization.organizationId')}</label>
                 <p className='font-mono text-sm'>{organization.id}</p>
@@ -154,14 +154,14 @@ export default function OrganizationDetails() {
                   {format(new Date(organization.updated_at), 'PPP')}
                 </p>
               </div>
-            </CardContent>
-          </Card>
+            </FmCommonCardContent>
+          </FmCommonCard>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('labels.actions')}</CardTitle>
-            </CardHeader>
-            <CardContent className='space-y-2'>
+          <FmCommonCard>
+            <FmCommonCardHeader>
+              <FmCommonCardTitle>{t('labels.actions')}</FmCommonCardTitle>
+            </FmCommonCardHeader>
+            <FmCommonCardContent className='space-y-2'>
               <Button
                 variant='outline'
                 className='w-full border-white/20 hover:bg-white/10'
@@ -169,8 +169,8 @@ export default function OrganizationDetails() {
               >
                 {t('organization.backToList')}
               </Button>
-            </CardContent>
-          </Card>
+            </FmCommonCardContent>
+          </FmCommonCard>
         </div>
       </div>
     </div>

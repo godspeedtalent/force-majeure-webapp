@@ -2,6 +2,37 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 /**
+ * @deprecated Use `useAsyncMutation` instead. This hook will be removed in a future version.
+ *
+ * Migration guide:
+ * ```tsx
+ * // Before:
+ * const { execute, isLoading } = useAsyncAction(
+ *   eventService.updateEvent,
+ *   {
+ *     successMessage: 'Event updated',
+ *     errorMessage: 'Failed to update',
+ *     onSuccess: () => navigate('/events'),
+ *   }
+ * );
+ * await execute(eventId, data);
+ *
+ * // After:
+ * const { execute, isLoading } = useAsyncMutation({
+ *   mutationFn: ({ eventId, data }) => eventService.updateEvent(eventId, data),
+ *   successMessage: 'Event updated',
+ *   errorMessage: 'Failed to update',
+ *   onSuccess: () => navigate('/events'),
+ *   throwOnError: true, // Matches old behavior of throwing on error
+ * });
+ * await execute({ eventId, data });
+ * ```
+ *
+ * Key differences:
+ * - `useAsyncMutation` takes a single variables object instead of spread args
+ * - Add `throwOnError: true` if you need the old error-throwing behavior
+ * - `useAsyncMutation` has additional features like React Query invalidation
+ *
  * useAsyncAction Hook
  *
  * Generic hook for handling async actions with loading states and error handling.

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent, FmCommonCardHeader, FmCommonCardTitle } from '@/components/common/display/FmCommonCard';
 import { LucideIcon } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils/currency';
 
@@ -37,12 +37,12 @@ export const AnalyticsStatCard = ({
   };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+    <FmCommonCard>
+      <FmCommonCardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <FmCommonCardTitle className="text-sm font-medium">{title}</FmCommonCardTitle>
         <Icon className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
+      </FmCommonCardHeader>
+      <FmCommonCardContent>
         <div className="text-2xl font-bold">{formatValue()}</div>
         {subtitle && (
           <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
@@ -52,7 +52,7 @@ export const AnalyticsStatCard = ({
             {trend.isPositive ? '+' : ''}{trend.value.toFixed(1)}% {t('analytics.fromPreviousPeriod')}
           </p>
         )}
-      </CardContent>
-    </Card>
+      </FmCommonCardContent>
+    </FmCommonCard>
   );
 };

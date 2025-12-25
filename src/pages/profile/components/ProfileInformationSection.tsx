@@ -6,7 +6,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, CardContent } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
@@ -50,8 +50,8 @@ export function ProfileInformationSection() {
   if (!user) return null;
 
   return (
-    <Card className='border-border/30 bg-card/20 backdrop-blur-lg'>
-      <CardContent className='p-8 space-y-6'>
+    <FmCommonCard>
+      <FmCommonCardContent className='p-8 space-y-6'>
         <div>
           <h2 className='text-xl font-canela font-medium text-foreground mb-2'>
             {t('profileInfo.title')}
@@ -133,7 +133,7 @@ export function ProfileInformationSection() {
             {t('profileInfo.updateProfile')}
           </FmCommonButton>
         </form>
-      </CardContent>
-    </Card>
+      </FmCommonCardContent>
+    </FmCommonCard>
   );
 }

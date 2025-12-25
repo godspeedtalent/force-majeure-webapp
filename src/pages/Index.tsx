@@ -32,6 +32,34 @@ interface EventData {
   display_subtitle?: boolean;
 }
 
+/** Raw event row from Supabase query with relations */
+interface EventRow {
+  id: string;
+  title: string;
+  description: string | null;
+  start_time: string | null;
+  hero_image: string | null;
+  is_tba: boolean | null;
+  display_subtitle: boolean | null;
+  headliner_artist: {
+    id: string;
+    name: string;
+    genre: string | null;
+    image_url: string | null;
+  } | null;
+  event_artists: Array<{
+    artist: {
+      id: string;
+      name: string;
+      genre: string | null;
+      image_url: string | null;
+    };
+  }> | null;
+  venues: {
+    name: string;
+  } | null;
+}
+
 const Index = () => {
   const [upcomingEvents, setUpcomingEvents] = useState<EventData[]>([]);
   const [pastEvents, setPastEvents] = useState<EventData[]>([]);
@@ -141,8 +169,8 @@ const Index = () => {
         }
 
         // Transform function for reusability
-        const transformEvent = (event: any): EventData => {
-          const undercard = event.event_artists?.map((ea: any) => ({
+        const transformEvent = (event: EventRow): EventData => {
+          const undercard = event.event_artists?.map((ea) => ({
             name: ea.artist.name,
             genre: ea.artist.genre || 'Electronic',
             image: ea.artist.image_url || null,
@@ -150,7 +178,7 @@ const Index = () => {
 
           return {
             id: event.id,
-            title: (event as any).title,
+            title: event.title,
             headliner: event.headliner_artist
               ? {
                   name: event.headliner_artist.name,
@@ -166,16 +194,17 @@ const Index = () => {
             date: event.start_time ? new Date(event.start_time).toISOString().split('T')[0] : '',
             time: event.start_time ? new Date(event.start_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '',
             venue: event.venues?.name || 'TBA',
-            heroImage: (event as any).hero_image ? getImageUrl((event as any).hero_image) : getImageUrl(null),
+            heroImage: event.hero_image ? getImageUrl(event.hero_image) : getImageUrl(null),
             description: event.description || null,
             ticketUrl: null,
-            is_tba: (event as any).is_tba ?? false,
-            display_subtitle: (event as any).display_subtitle ?? true,
+            is_tba: event.is_tba ?? false,
+            display_subtitle: event.display_subtitle ?? true,
           };
         };
 
-        setUpcomingEvents(upcomingData.map(transformEvent));
-        setPastEvents(pastData.map(transformEvent));
+        // Type assertion needed because Supabase's auto-generated types don't match our query shape
+        setUpcomingEvents((upcomingData as unknown as EventRow[]).map(transformEvent));
+        setPastEvents((pastData as unknown as EventRow[]).map(transformEvent));
       } catch (error) {
         await handleFetchError('in initialization', error);
       } finally {

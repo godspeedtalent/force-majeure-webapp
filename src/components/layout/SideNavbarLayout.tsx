@@ -70,13 +70,19 @@ export const SideNavbarLayout = <T extends string>({
 }: SideNavbarLayoutProps<T>) => {
   const isMobile = useIsMobile();
 
+  // Nav height is h-16 (64px) - content below nav should account for this
+  const NAV_HEIGHT = '64px';
+
   return (
-    <>
+    <div className='min-h-screen flex flex-col bg-background'>
       <Navigation />
       {/* Mobile horizontal tabs - rendered at layout level for full width */}
       {mobileHorizontalTabs}
       <SidebarProvider defaultOpen={defaultOpen}>
-        <div className='flex min-h-screen w-full'>
+        <div
+          className='flex flex-1 w-full'
+          style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})` }}
+        >
           {/* Desktop sidebar - hidden on mobile when mobile tab bar is provided */}
           <div className={cn(mobileTabBar && isMobile ? 'hidden' : 'block')}>
             <FmCommonSideNav
@@ -125,6 +131,6 @@ export const SideNavbarLayout = <T extends string>({
 
       {/* Mobile bottom tab bar */}
       {mobileTabBar}
-    </>
+    </div>
   );
 };

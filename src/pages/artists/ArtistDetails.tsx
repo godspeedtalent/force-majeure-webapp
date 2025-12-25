@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Music, Calendar, ArrowLeft } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { Card } from '@/components/common/shadcn/card';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { useArtistById, useArtistEvents } from '@/shared/api/queries/artistQueries';
 import { DetailPageWrapper } from '@/components/layout/DetailPageWrapper';
 
@@ -90,7 +90,7 @@ export default function ArtistDetails() {
                     </h2>
                     <div className='grid gap-4'>
                       {upcomingEvents.map((event: any) => (
-                        <Card
+                        <FmCommonCard
                           key={event.id}
                           className='p-4 cursor-pointer hover:bg-muted/50 transition-colors'
                           onClick={() => navigate(`/event/${event.id}`)}
@@ -122,7 +122,7 @@ export default function ArtistDetails() {
                               </p>
                             </div>
                           </div>
-                        </Card>
+                        </FmCommonCard>
                       ))}
                     </div>
                   </div>

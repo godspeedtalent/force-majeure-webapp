@@ -29,6 +29,26 @@ const ArtistRegister = () => {
   // Check if coming from an event's "Looking for Artists" link
   const eventId = searchParams.get('event_id');
 
+  // Check if coming from demo mode with pre-filled data
+  const isDemo = searchParams.get('demo') === 'true';
+
+  // Load demo data from sessionStorage if available
+  useEffect(() => {
+    if (isDemo) {
+      const storedData = sessionStorage.getItem('artistRegistrationDemoData');
+      if (storedData) {
+        try {
+          const parsedData = JSON.parse(storedData) as ArtistRegistrationFormData;
+          setFormData(parsedData);
+          // Clear the stored data after loading
+          sessionStorage.removeItem('artistRegistrationDemoData');
+        } catch (e) {
+          console.error('Failed to parse demo data:', e);
+        }
+      }
+    }
+  }, [isDemo]);
+
   // Sync carousel with current step
   useEffect(() => {
     if (carouselApi) {

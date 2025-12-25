@@ -66,6 +66,7 @@
 |----------|-------------|
 | [EDGE_FUNCTIONS.md](./backend/EDGE_FUNCTIONS.md) | Supabase Edge Functions API documentation |
 | [DATABASE_MIGRATION_STRATEGY.md](./backend/DATABASE_MIGRATION_STRATEGY.md) | Database migration approach and strategy |
+| [RLS_AND_GRANTS_GUIDE.md](./backend/RLS_AND_GRANTS_GUIDE.md) | **CRITICAL**: RLS policies AND GRANTs for table access |
 | [ENVIRONMENT_SYSTEM.md](./backend/ENVIRONMENT_SYSTEM.md) | Environment configuration system |
 | [EVENT_VIEWS_SETUP.md](./backend/EVENT_VIEWS_SETUP.md) | Event views database setup |
 | [IMAGE_UPLOAD_SETUP.md](./backend/IMAGE_UPLOAD_SETUP.md) | Image upload configuration guide |

@@ -16,6 +16,7 @@
     "orgTools": "组织工具",
     "scanning": "扫描",
     "developer": "开发者",
+    "developerHome": "开发者首页",
     "database": "数据库",
     "adminPanel": "管理面板",
     "site": "网站",
@@ -58,6 +59,8 @@
     "upload": "上传",
     "download": "下载",
     "share": "分享",
+    "send": "发送消息",
+    "sending": "发送中...",
     "copy": "复制",
     "goBack": "返回",
     "viewOrganizationDetails": "查看组织详情",
@@ -148,6 +151,7 @@
     "editingRecording": "编辑录音",
     "djSet": "DJ Set",
     "track": "曲目",
+    "primary": "主要",
     "venueName": "场地名称",
     "venueImage": "场地图片",
     "capacity": "容量",
@@ -495,7 +499,8 @@
       "adding": "添加中...",
       "saving": "保存中...",
       "preview": "预览",
-      "addedRecordings": "已添加录音 ({{count}})"
+      "addedRecordings": "已添加录音 ({{count}})",
+      "setAsPrimary": "设为主要"
     }
   },
   "formGroups": {
@@ -871,6 +876,7 @@
     "closeModal": "关闭弹窗",
     "editTrack": "编辑曲目",
     "removeTrack": "移除曲目",
+    "setAsPrimary": "设为主要DJ Set",
     "followOnInstagram": "在 Instagram 上关注 Force Majeure Events",
     "goToStep": "前往步骤 {{step}}：{{title}}"
   },
@@ -891,6 +897,8 @@
     "musicPlatformRequired": "至少需要一个音乐平台：",
     "djSetRequirementMet": "DJ Set 要求已满足（{{djSets}} 个 DJ Set{{djSetsPlural}}{{tracks}}）",
     "djSetRequired": "你需要添加至少一个 DJ Set 录音",
+    "trackCount": "，{{count}} 首曲目",
+    "trackCount_other": "，{{count}} 首曲目",
     "artistTermsTitle": "艺术家提交条款和条件",
     "artistTermsSubtitle": "用于混音提交和开场表演考虑",
     "scrollToBottom": "请滚动到条款底部以继续。",
@@ -1682,7 +1690,7 @@
       "activeOverrides": "活跃覆盖：",
       "overrideComingSoon": "覆盖即将上线模式",
       "comingSoonTooltip": "启用后，将显示\"即将上线\"页面而不是主内容。用于维护或预发布模式。",
-      "overrideActive": "覆盖活跃：",
+      "overrideActive": "覆盖活���：",
       "usingDatabase": "使用数据库：",
       "usingDatabaseValue": "使用数据库值",
       "clearAll": "清除所有覆盖",
@@ -1723,6 +1731,24 @@
     "formatSpecs": "JPG、PNG或GIF。最大5MB。",
     "updated": "头像已更新",
     "updatedDescription": "您的头像已成功更新。"
+  },
+  "profile": {
+    "backToEvents": "返回活动",
+    "editProfile": "编辑资料",
+    "defaultName": "用户",
+    "upcomingShows": "即将演出",
+    "artist": "艺人",
+    "account": "账户",
+    "browseEvents": "浏览活动",
+    "ticketCount": "{{count}} 张票",
+    "ticketCount_other": "{{count}} 张票",
+    "memberSince": "注册于",
+    "back": "返回",
+    "edit": "编辑",
+    "shows": "演出",
+    "memberTitle": "会员",
+    "loadingShows": "加载演出中...",
+    "noUpcomingShows": "暂无即将举行的演出"
   },
   "emailPreview": {
     "title": "邮件模板预览",
@@ -1788,6 +1814,8 @@
   },
   "artistRegistrationErrors": {
     "artistAlreadyExists": "已存在同名艺人。如果这是您本人，请发送邮件至 management@forcemajeure.vip 以获取关联个人资料的帮助。",
+    "spotifyAlreadyExists": "已存在使用此Spotify资料的艺人。如果这是您本人，请发送邮件至 management@forcemajeure.vip 以获取关联个人资料的帮助。",
+    "soundcloudAlreadyExists": "已存在使用此SoundCloud资料的艺人。如果这是您本人，请发送邮件至 management@forcemajeure.vip 以获取关联个人资料的帮助。",
     "registrationPending": "已有同名艺人注册正在审核中。如果这是您本人，请发送邮件至 management@forcemajeure.vip 以获取帮助。",
     "submitFailed": "提交注册失败，请重试。",
     "submitSuccess": "感谢您的注册！如果您的音乐风格适合未来的活动，我们会与您联系！"
@@ -2146,8 +2174,11 @@
     "eventCheckoutDescription": "完整的门票购买流程，包含 Stripe 结账集成、库存管理和订单跟踪",
     "emailTemplate": "邮件模板预览",
     "emailTemplateDescription": "使用可配置数据和实时发送功能预览和测试订单收据邮件模板",
+    "artistSignup": "艺术家注册",
+    "artistSignupDescription": "使用 Spotify 或 SoundCloud 自动填充数据、可配置选项和表单预填功能测试艺术家注册流程",
     "categoryEcommerce": "电子商务",
     "categoryCommunication": "通讯",
+    "categoryArtistManagement": "艺术家管理",
     "openDemo": "打开演示",
     "accessNote": "这些演示仅对管理员用户可用，在生产环境中不可见"
   },
@@ -2395,7 +2426,8 @@
   "artistPreview": {
     "spotlight": "艺人聚焦",
     "yourName": "您的名字",
-    "clickToMakeMainImage": "点击设为主图"
+    "clickToMakeMainImage": "点击设为主图",
+    "djSet": "DJ Set"
   },
   "mobilePreview": {
     "preview": "预览",

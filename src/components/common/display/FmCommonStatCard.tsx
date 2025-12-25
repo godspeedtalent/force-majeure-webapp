@@ -8,7 +8,7 @@
 import { LucideIcon } from 'lucide-react';
 
 import { Badge } from '@/components/common/shadcn/badge';
-import { Card, CardContent, CardHeader } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent, FmCommonCardHeader } from '@/components/common/display/FmCommonCard';
 import { cn } from '@/shared';
 
 interface FmCommonStatCardProps {
@@ -67,7 +67,7 @@ export const FmCommonStatCard = ({
   const config = sizeConfig[size];
 
   return (
-    <Card
+    <FmCommonCard
       className={cn(
         'border-border transition-all duration-300',
         'hover:bg-white/5 hover:shadow-[0_0_0_2px_rgba(212,175,55,0.3)]',
@@ -75,7 +75,7 @@ export const FmCommonStatCard = ({
         className
       )}
     >
-      <CardHeader className='pb-2'>
+      <FmCommonCardHeader className='pb-2'>
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-2'>
             {Icon && (
@@ -91,8 +91,8 @@ export const FmCommonStatCard = ({
             <Badge variant={badge.variant || 'secondary'}>{badge.label}</Badge>
           )}
         </div>
-      </CardHeader>
-      <CardContent className={config.padding}>
+      </FmCommonCardHeader>
+      <FmCommonCardContent className={config.padding}>
         <div className='flex items-baseline gap-2'>
           <p className={cn(config.value, 'font-bold text-foreground')}>
             {value}
@@ -111,7 +111,7 @@ export const FmCommonStatCard = ({
         {description && (
           <p className='text-xs text-muted-foreground mt-1'>{description}</p>
         )}
-      </CardContent>
-    </Card>
+      </FmCommonCardContent>
+    </FmCommonCard>
   );
 };

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent, FmCommonCardDescription, FmCommonCardHeader, FmCommonCardTitle } from '@/components/common/display/FmCommonCard';
 import { Button } from '@/components/common/shadcn/button';
 import { Switch } from '@/components/common/shadcn/switch';
 import { Label } from '@/components/common/shadcn/label';
@@ -115,37 +115,37 @@ export const SalesReportConfig = ({ eventId }: SalesReportConfigProps) => {
   });
 
   if (isLoading) {
-    return <Card className="p-6"><p>{t('status.loading')}</p></Card>;
+    return <FmCommonCard className="p-6"><p>{t('status.loading')}</p></FmCommonCard>;
   }
 
   if (!config) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('reports.dailySalesReport')}</CardTitle>
-          <CardDescription>
+      <FmCommonCard>
+        <FmCommonCardHeader>
+          <FmCommonCardTitle>{t('reports.dailySalesReport')}</FmCommonCardTitle>
+          <FmCommonCardDescription>
             {t('reports.dailySalesDescription')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </FmCommonCardDescription>
+        </FmCommonCardHeader>
+        <FmCommonCardContent>
           <Button onClick={() => createConfigMutation.mutate()}>
             {t('reports.enableDailySalesReport')}
           </Button>
-        </CardContent>
-      </Card>
+        </FmCommonCardContent>
+      </FmCommonCard>
     );
   }
 
   return (
     <>
-      <Card>
-        <CardHeader>
+      <FmCommonCard>
+        <FmCommonCardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>{t('reports.dailySalesReport')}</CardTitle>
-              <CardDescription>
+              <FmCommonCardTitle>{t('reports.dailySalesReport')}</FmCommonCardTitle>
+              <FmCommonCardDescription>
                 {t('reports.automatedExcelDescription')}
-              </CardDescription>
+              </FmCommonCardDescription>
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
@@ -157,8 +157,8 @@ export const SalesReportConfig = ({ eventId }: SalesReportConfigProps) => {
               </div>
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
+        </FmCommonCardHeader>
+        <FmCommonCardContent>
           <Tabs defaultValue="schedule">
             <TabsList>
               <TabsTrigger value="schedule">{t('reports.tabs.schedule')}</TabsTrigger>
@@ -194,8 +194,8 @@ export const SalesReportConfig = ({ eventId }: SalesReportConfigProps) => {
               <ReportHistoryTable configId={config.id} />
             </TabsContent>
           </Tabs>
-        </CardContent>
-      </Card>
+        </FmCommonCardContent>
+      </FmCommonCard>
 
       <ReportPreviewModal
         open={showPreview}

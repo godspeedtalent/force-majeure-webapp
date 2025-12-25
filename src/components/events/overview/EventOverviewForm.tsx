@@ -1,8 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Save, Eye } from 'lucide-react';
-import { supabase } from '@/shared';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmVenueSearchDropdown } from '@/components/common/search/FmVenueSearchDropdown';
 import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
@@ -13,13 +10,10 @@ import { FmI18nCommon } from '@/components/common/i18n';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { Checkbox } from '@/components/common/shadcn/checkbox';
-import { Card } from '@/components/common/shadcn/card';
-import { format } from 'date-fns';
-import { toast } from 'sonner';
-import { handleError } from '@/shared/services/errorHandler';
-import { useDebouncedSave } from '@/shared/hooks/useDebouncedSave';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { useFeatureFlagHelpers, FEATURE_FLAGS } from '@/shared';
 import { HeroImageFocalPoint } from '@/components/events/overview/HeroImageFocalPoint';
+import { useEventOverviewForm } from '@/features/events/hooks';
 
 interface EventOverviewFormProps {
   eventId: string;
@@ -41,21 +35,6 @@ interface EventOverviewFormProps {
   onMakeInvisible: () => Promise<void>;
 }
 
-interface OverviewData {
-  title: string;
-  description: string | null;
-  about_event: string | null;
-  headliner_id: string;
-  venue_id: string;
-  start_time: string;
-  end_time: string | null;
-  is_after_hours: boolean;
-  hero_image: string | null;
-  hero_image_focal_x: number;
-  hero_image_focal_y: number;
-  display_subtitle: boolean;
-}
-
 export const EventOverviewForm = ({
   eventId,
   event,
@@ -63,190 +42,44 @@ export const EventOverviewForm = ({
   onMakeInvisible,
 }: EventOverviewFormProps) => {
   const { t } = useTranslation('common');
-  const { t: tToast } = useTranslation('toasts');
-  const queryClient = useQueryClient();
   const { isFeatureEnabled } = useFeatureFlagHelpers();
 
-  // Form state
-  const [headlinerId, setHeadlinerId] = useState<string>('');
-  const [venueId, setVenueId] = useState<string>('');
-  const [eventDate, setEventDate] = useState<Date>();
-  const [endTime, setEndTime] = useState<string>('02:00');
-  const [isAfterHours, setIsAfterHours] = useState(false);
-  const [heroImage, setHeroImage] = useState<string>('');
-  const [heroImageFocalY, setHeroImageFocalY] = useState<number>(50);
-  const [isSaving, setIsSaving] = useState(false);
-  const [customTitle, setCustomTitle] = useState<string>('');
-  const [eventSubtitle, setEventSubtitle] = useState<string>('');
-  const [aboutEvent, setAboutEvent] = useState<string>('');
-  const [displaySubtitle, setDisplaySubtitle] = useState<boolean>(true);
+  const {
+    formState,
+    setHeadlinerId,
+    setVenueId,
+    setEventDate,
+    setEndTime,
+    setIsAfterHours,
+    setHeroImageFocalY,
+    setCustomTitle,
+    setEventSubtitle,
+    setAboutEvent,
+    isSaving,
+    handleSave,
+    triggerAutoSave,
+    handleHeroImageUpload,
+    formattedStartTime,
+  } = useEventOverviewForm({
+    eventId,
+    initialData: event,
+  });
 
-  // Populate form when event data loads
-  useEffect(() => {
-    if (event) {
-      setHeadlinerId(event.headliner_id || '');
-      setVenueId(event.venue_id || '');
-      setIsAfterHours(event.is_after_hours || false);
-
-      // Parse end_time if it exists (it's stored as ISO timestamp)
-      if (event.end_time) {
-        const endDate = new Date(event.end_time);
-        const hours = endDate.getHours().toString().padStart(2, '0');
-        const minutes = endDate.getMinutes().toString().padStart(2, '0');
-        setEndTime(`${hours}:${minutes}`);
-      } else {
-        setEndTime('02:00');
-      }
-
-      setHeroImage(event.hero_image || '');
-      setHeroImageFocalY(event.hero_image_focal_y ?? 50);
-
-      // Set title, subtitle, and description
-      setCustomTitle(event.title || '');
-      setEventSubtitle(event.description || '');
-      setAboutEvent(event.about_event || '');
-      setDisplaySubtitle(event.display_subtitle ?? true);
-
-      // Parse date and time from start_time
-      if (event.start_time) {
-        const parsedDate = new Date(event.start_time);
-        setEventDate(parsedDate);
-      }
-    }
-  }, [event]);
-
-  // Helper to gather overview data for saving
-  const getOverviewData = (): OverviewData => {
-    // Convert end time to ISO timestamp if not after hours
-    let endTimeISO = null;
-    if (!isAfterHours && endTime && eventDate) {
-      const [hours, minutes] = endTime.split(':');
-      const endDate = new Date(eventDate);
-      endDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-      endTimeISO = endDate.toISOString();
-    }
-
-    return {
-      title: customTitle.trim(),
-      description: eventSubtitle.trim() || null,
-      about_event: aboutEvent.trim() || null,
-      headliner_id: headlinerId,
-      venue_id: venueId,
-      start_time: eventDate ? eventDate.toISOString() : new Date().toISOString(),
-      end_time: endTimeISO,
-      is_after_hours: isAfterHours,
-      hero_image: heroImage || null,
-      hero_image_focal_x: 50,
-      hero_image_focal_y: heroImageFocalY,
-      display_subtitle: displaySubtitle,
-    };
-  };
-
-  // Debounced auto-save for overview changes
-  const saveOverviewData = async (data: OverviewData) => {
-    try {
-      const { error } = await supabase
-        .from('events')
-        .update({
-          ...data,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', eventId);
-
-      if (error) throw error;
-
-      toast.success(tToast('events.autoSaved'));
-      queryClient.invalidateQueries({ queryKey: ['event', eventId] });
-    } catch (error) {
-      await handleError(error, {
-        title: tToast('events.autoSaveFailed'),
-        description: tToast('events.autoSaveFailedDescription'),
-        endpoint: 'EventOverviewForm',
-        method: 'UPDATE',
-      });
-    }
-  };
-
-  const { triggerSave: triggerOverviewSave, flushSave: flushOverviewSave } =
-    useDebouncedSave({
-      saveFn: saveOverviewData,
-      delay: 5000,
-    });
-
-  // Trigger debounced save whenever form data changes
-  const triggerAutoSave = () => {
-    if (customTitle.trim() && headlinerId && venueId && eventDate) {
-      triggerOverviewSave(getOverviewData());
-    }
-  };
-
-  const handleSaveOverview = async () => {
-    if (!customTitle.trim()) {
-      toast.error(tToast('events.titleRequired'));
-      return;
-    }
-
-    if (!headlinerId || !venueId || !eventDate) {
-      toast.error(tToast('events.requiredFieldsMissing'));
-      return;
-    }
-
-    setIsSaving(true);
-    try {
-      // Flush any pending debounced save first
-      await flushOverviewSave();
-
-      const data = getOverviewData();
-
-      const { error } = await supabase
-        .from('events')
-        .update({
-          ...data,
-          updated_at: new Date().toISOString(),
-        } as any)
-        .eq('id', eventId);
-
-      if (error) throw error;
-
-      toast.success(tToast('success.saved'));
-      queryClient.invalidateQueries({ queryKey: ['event', eventId] });
-    } catch (error) {
-      await handleError(error, {
-        title: tToast('events.updateOverviewFailed'),
-        description: tToast('events.updateOverviewFailedDescription'),
-        endpoint: 'EventOverviewForm',
-        method: 'UPDATE',
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleHeroImageUpload = async (publicUrl: string) => {
-    setHeroImage(publicUrl);
-
-    try {
-      const { error } = await supabase
-        .from('events' as any)
-        .update({ hero_image: publicUrl } as any)
-        .eq('id', eventId);
-
-      if (error) throw error;
-
-      toast.success(tToast('events.heroImageSaved'));
-      queryClient.invalidateQueries({ queryKey: ['event', eventId] });
-    } catch (error) {
-      await handleError(error, {
-        title: tToast('events.heroImageSaveFailed'),
-        description: tToast('events.heroImageSaveFailedDescription'),
-        endpoint: 'EventOverviewForm/hero-image',
-        method: 'UPDATE',
-      });
-    }
-  };
+  const {
+    headlinerId,
+    venueId,
+    eventDate,
+    endTime,
+    isAfterHours,
+    heroImage,
+    heroImageFocalY,
+    customTitle,
+    eventSubtitle,
+    aboutEvent,
+  } = formState;
 
   return (
-    <Card className='p-8 relative'>
+    <FmCommonCard className='p-8 relative'>
       {/* Sticky Save Button */}
       <div className='sticky top-0 z-10 -mx-8 -mt-8 px-8 pt-8 pb-6 bg-card border-b border-border mb-6'>
         <div className='flex items-center justify-between'>
@@ -255,7 +88,7 @@ export const EventOverviewForm = ({
             <FmI18nCommon i18nKey='eventOverview.basicEventInfo' as='p' className='text-muted-foreground' />
           </div>
           <FmCommonButton
-            onClick={handleSaveOverview}
+            onClick={handleSave}
             loading={isSaving}
             icon={Save}
           >
@@ -359,7 +192,7 @@ export const EventOverviewForm = ({
               }}
             />
             <FmCommonTimePicker
-              value={eventDate ? format(eventDate, 'HH:mm') : '20:00'}
+              value={formattedStartTime}
               onChange={(time: string) => {
                 if (eventDate) {
                   const [hours, minutes] = time.split(':');
@@ -455,6 +288,6 @@ export const EventOverviewForm = ({
           </div>
         )}
       </div>
-    </Card>
+    </FmCommonCard>
   );
 };

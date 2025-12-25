@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card } from '@/components/common/shadcn/card';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
 import { SalesReportConfig } from '@/components/reports/SalesReportConfig';
 import { AttendanceReportConfig } from '@/components/reports/AttendanceReportConfig';
@@ -16,9 +16,9 @@ const Reports = ({ eventId }: ReportsProps) => {
   if (!eventId) {
     return (
       <div className="container mx-auto p-6">
-        <Card className="p-6">
+        <FmCommonCard className="p-6">
           <p className="text-muted-foreground">{t('reports.eventIdRequired')}</p>
-        </Card>
+        </FmCommonCard>
       </div>
     );
   }

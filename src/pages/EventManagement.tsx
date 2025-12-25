@@ -38,7 +38,7 @@ import { EventOverviewForm } from '@/components/events/overview/EventOverviewFor
 import { EventQueueConfigForm } from '@/components/events/queue';
 
 import { toast } from 'sonner';
-import { Card } from '@/components/common/shadcn/card';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { Checkbox } from '@/components/common/shadcn/checkbox';
 import { Label } from '@/components/common/shadcn/label';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
@@ -501,7 +501,7 @@ export default function EventManagement() {
           )}
 
           {activeTab === 'ux_display' && (
-            <Card className='p-8 relative'>
+            <FmCommonCard className='p-8 relative'>
               {/* Sticky Save Button */}
               <div className='sticky top-0 z-10 -mx-8 -mt-8 px-8 pt-8 pb-6 bg-card border-b border-border mb-6'>
                 <div className='flex items-center justify-between'>
@@ -550,7 +550,7 @@ export default function EventManagement() {
                     </div>
                   </div>
                 </div>
-            </Card>
+            </FmCommonCard>
           )}
 
           {activeTab === 'admin' && isAdmin && (
@@ -559,7 +559,7 @@ export default function EventManagement() {
               {id && <EventQueueConfigForm eventId={id} />}
 
               {/* Delete Event Card */}
-              <Card className='p-8'>
+              <FmCommonCard className='p-8'>
                 <div className='space-y-6'>
                   <div>
                     <h2 className='text-2xl font-bold text-foreground mb-2'>
@@ -596,7 +596,7 @@ export default function EventManagement() {
                     </div>
                   </div>
                 </div>
-              </Card>
+              </FmCommonCard>
             </div>
           )}
         </div>

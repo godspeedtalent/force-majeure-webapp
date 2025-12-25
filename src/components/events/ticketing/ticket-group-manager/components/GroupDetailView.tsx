@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Plus, GripVertical, Copy, Trash2, Ticket } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
 import { Input } from '@/components/common/shadcn/input';
-import { Card, CardHeader } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardHeader } from '@/components/common/display/FmCommonCard';
 import { Badge } from '@/components/common/shadcn/badge';
 import { FmI18nCommon } from '@/components/common/i18n';
 import {
@@ -60,8 +60,8 @@ export function GroupDetailView({
   return (
     <div className='space-y-6'>
       {/* Group Header */}
-      <Card className={cn('border-2', colorConfig.value)}>
-        <CardHeader>
+      <FmCommonCard className={cn('border-2', colorConfig.value)}>
+        <FmCommonCardHeader>
           <div className='flex items-start justify-between gap-4'>
             <div className='flex items-start gap-3 flex-1'>
               <TooltipProvider>
@@ -174,8 +174,8 @@ export function GroupDetailView({
               </TooltipProvider>
             </div>
           </div>
-        </CardHeader>
-      </Card>
+        </FmCommonCardHeader>
+      </FmCommonCard>
 
       {/* Tiers */}
       <div className='space-y-4'>

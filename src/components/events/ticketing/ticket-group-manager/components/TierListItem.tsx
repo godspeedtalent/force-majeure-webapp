@@ -4,7 +4,7 @@ import { Button } from '@/components/common/shadcn/button';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { Switch } from '@/components/common/shadcn/switch';
-import { Card, CardContent } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmI18nCommon } from '@/components/common/i18n';
 import {
@@ -40,8 +40,8 @@ export function TierListItem({
   const { t } = useTranslation('common');
 
   return (
-    <Card className='bg-background/50 border-border/50'>
-      <CardContent className='pt-4 space-y-4'>
+    <FmCommonCard className='bg-background/50 border-border/50'>
+      <FmCommonCardContent className='pt-4 space-y-4'>
         <div className='flex items-start gap-3'>
           <button className='mt-2 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors'>
             <GripVertical className='h-4 w-4' />
@@ -183,7 +183,7 @@ export function TierListItem({
             </TooltipProvider>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </FmCommonCardContent>
+    </FmCommonCard>
   );
 }

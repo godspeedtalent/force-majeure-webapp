@@ -7,12 +7,12 @@ import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/common/shadcn/card';
+  FmCommonCard,
+  FmCommonCardContent,
+  FmCommonCardDescription,
+  FmCommonCardHeader,
+  FmCommonCardTitle,
+} from '@/components/common/display/FmCommonCard';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import {
   Tabs,
@@ -172,29 +172,29 @@ export const AuthPanel = ({
 
   if (loading) {
     return (
-      <Card className='w-full max-w-md border border-white/20 bg-black/70 backdrop-blur-md shadow-2xl rounded-none'>
-        <CardContent className='flex items-center justify-center py-12'>
+      <FmCommonCard className='w-full max-w-md border border-white/20 shadow-2xl'>
+        <FmCommonCardContent className='flex items-center justify-center py-12'>
           <div className='w-8 h-8 animate-spin rounded-full border-[3px] border-fm-gold border-b-transparent' />
-        </CardContent>
-      </Card>
+        </FmCommonCardContent>
+      </FmCommonCard>
     );
   }
 
   return (
-    <Card className='w-full max-w-md border border-white/20 bg-black/70 backdrop-blur-md shadow-2xl rounded-none animate-fade-in'>
-      <CardHeader className='text-center pb-6'>
+    <FmCommonCard className='w-full max-w-md border border-white/20 shadow-2xl animate-fade-in'>
+      <FmCommonCardHeader className='text-center pb-6'>
         <div className='flex justify-center mb-4'>
           <ForceMajeureLogo className='w-16 h-16' />
         </div>
-        <CardTitle className='text-2xl font-canela font-medium text-foreground'>
+        <FmCommonCardTitle className='text-2xl font-canela font-medium text-foreground'>
           {displayTitle}
-        </CardTitle>
-        <CardDescription className='text-muted-foreground'>
+        </FmCommonCardTitle>
+        <FmCommonCardDescription className='text-muted-foreground'>
           {displayDescription}
-        </CardDescription>
-      </CardHeader>
+        </FmCommonCardDescription>
+      </FmCommonCardHeader>
 
-      <CardContent>
+      <FmCommonCardContent>
         <Tabs defaultValue='signin' className='w-full'>
           <TabsList className='grid w-full grid-cols-2 bg-black/40 border border-white/10 rounded-none p-1'>
             <TabsTrigger
@@ -407,7 +407,7 @@ export const AuthPanel = ({
             )}
           </TabsContent>
         </Tabs>
-      </CardContent>
-    </Card>
+      </FmCommonCardContent>
+    </FmCommonCard>
   );
 };

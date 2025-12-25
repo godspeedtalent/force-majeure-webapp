@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 
 import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
 import { Badge } from '@/components/common/shadcn/badge';
-import { Card, CardContent } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 
 interface FmImageCardProps {
   image: string;
@@ -46,7 +46,7 @@ export const FmImageCard = ({
     subtitleSize === 'lg' ? 'px-4 py-1.5 text-base' : 'px-3 py-1 text-sm';
 
   return (
-    <Card
+    <FmCommonCard
       className={`group cursor-pointer overflow-hidden bg-card/20 backdrop-blur-sm hover:bg-white/30 hover:backdrop-blur-md hover:shadow-elegant transition-all duration-300 border-0 border-t-0 border-r-0 border-b-0 border-l-[3px] border-l-fm-crimson dark:border-l-fm-gold hover:border-l-white hover:border-l-[6px] hover:animate-border-shimmer ${showHoverEffect ? 'hover:scale-[1.02]' : ''} ${className}`}
       onClick={onClick}
     >
@@ -76,7 +76,7 @@ export const FmImageCard = ({
       </div>
 
       {children && (
-        <CardContent className='p-4'>
+        <FmCommonCardContent className='p-4'>
           {/* Move title badge to card body */}
           {badgeInline ? (
             <div className='flex items-center gap-2 mb-3'>
@@ -116,8 +116,8 @@ export const FmImageCard = ({
             </>
           )}
           {children}
-        </CardContent>
+        </FmCommonCardContent>
       )}
-    </Card>
+    </FmCommonCard>
   );
 };

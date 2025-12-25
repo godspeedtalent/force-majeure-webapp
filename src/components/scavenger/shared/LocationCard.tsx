@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { MapPin, Tag } from 'lucide-react';
 
-import { Card } from '@/components/common/shadcn/card';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { Progress } from '@/components/common/shadcn/progress';
 
 interface LocationCardProps {
@@ -24,11 +24,11 @@ export const LocationCard = ({
   const rewardText = t('locationCard.exclusiveReward');
 
   return (
-    <Card
+    <FmCommonCard
       className={`p-6 transition-all duration-300 ${
         isFullyClaimed
           ? 'bg-muted/50 border-muted'
-          : 'bg-card hover:shadow-gold border-border'
+          : 'hover:shadow-gold border-border'
       }`}
     >
       <div className='flex items-start gap-4 mb-4'>
@@ -83,6 +83,6 @@ export const LocationCard = ({
           )}
         </div>
       </div>
-    </Card>
+    </FmCommonCard>
   );
 };

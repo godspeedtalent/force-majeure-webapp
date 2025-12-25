@@ -9,7 +9,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Mail, Calendar, Users } from 'lucide-react';
-import { Card, CardContent } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { FmCommonSwitch } from '@/components/common/forms/FmCommonSwitch';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { useAuth } from '@/features/auth/services/AuthContext';
@@ -74,8 +74,8 @@ export function NotificationsSection() {
   return (
     <div className='space-y-6'>
       {/* Master Toggle Card */}
-      <Card className='border-border/30 bg-card/20 backdrop-blur-lg'>
-        <CardContent className='p-8 space-y-6'>
+      <FmCommonCard>
+        <FmCommonCardContent className='p-8 space-y-6'>
           <div className='flex items-start gap-4'>
             <Mail className='h-6 w-6 text-fm-gold flex-shrink-0 mt-1' />
             <div className='flex-1'>
@@ -95,16 +95,14 @@ export function NotificationsSection() {
             onCheckedChange={handleMasterToggle}
             disabled={!isEmailVerified}
           />
-        </CardContent>
-      </Card>
+        </FmCommonCardContent>
+      </FmCommonCard>
 
       {/* Event Notifications Card */}
-      <Card
-        className={`border-border/30 bg-card/20 backdrop-blur-lg ${
-          !preferences.email_enabled ? 'opacity-50' : ''
-        }`}
+      <FmCommonCard
+        className={!preferences.email_enabled ? 'opacity-50' : ''}
       >
-        <CardContent className='p-8 space-y-6'>
+        <FmCommonCardContent className='p-8 space-y-6'>
           <div className='flex items-start gap-4'>
             <Calendar className='h-5 w-5 text-fm-gold flex-shrink-0 mt-1' />
             <div>
@@ -166,16 +164,14 @@ export function NotificationsSection() {
               disabled={!preferences.email_enabled || !isEmailVerified}
             />
           </div>
-        </CardContent>
-      </Card>
+        </FmCommonCardContent>
+      </FmCommonCard>
 
       {/* Social Notifications Card */}
-      <Card
-        className={`border-border/30 bg-card/20 backdrop-blur-lg ${
-          !preferences.email_enabled ? 'opacity-50' : ''
-        }`}
+      <FmCommonCard
+        className={!preferences.email_enabled ? 'opacity-50' : ''}
       >
-        <CardContent className='p-8 space-y-6'>
+        <FmCommonCardContent className='p-8 space-y-6'>
           <div className='flex items-start gap-4'>
             <Users className='h-5 w-5 text-fm-gold flex-shrink-0 mt-1' />
             <div>
@@ -230,8 +226,8 @@ export function NotificationsSection() {
               disabled={!preferences.email_enabled || !isEmailVerified}
             />
           </div>
-        </CardContent>
-      </Card>
+        </FmCommonCardContent>
+      </FmCommonCard>
 
       {/* Save Button */}
       <div className='flex justify-end'>

@@ -9,6 +9,8 @@ export interface RegistrationTrack {
   coverArt?: string;
   platform: 'spotify' | 'soundcloud';
   recordingType: RecordingType;
+  /** Whether this is the primary/featured DJ set for the artist */
+  isPrimaryDjSet?: boolean;
 }
 
 export interface ArtistRegistrationFormData {

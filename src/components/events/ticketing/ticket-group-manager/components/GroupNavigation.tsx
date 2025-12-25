@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Plus, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
-import { Card, CardContent } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { Badge } from '@/components/common/shadcn/badge';
 import { Separator } from '@/components/common/shadcn/separator';
 import { FmI18nCommon } from '@/components/common/i18n';
@@ -25,8 +25,8 @@ export function GroupNavigation({
   const { t } = useTranslation('common');
   return (
     <div className='w-64 flex-shrink-0'>
-      <Card className='sticky top-4'>
-        <CardContent className='p-4'>
+      <FmCommonCard className='sticky top-4'>
+        <FmCommonCardContent className='p-4'>
           <div className='space-y-2'>
             {/* Overview Button */}
             <button
@@ -91,8 +91,8 @@ export function GroupNavigation({
               <FmI18nCommon i18nKey='ticketGroupManager.newGroup' />
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </FmCommonCardContent>
+      </FmCommonCard>
     </div>
   );
 }

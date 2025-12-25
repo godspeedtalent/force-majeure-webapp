@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { LogOut, User as UserIcon, Building2, Scan, Database, Shield, Mail } from 'lucide-react';
+import { LogOut, User as UserIcon, Building2, Scan, Database, Shield, Mail, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -112,6 +112,12 @@ export function UserMenuDropdown() {
             label: t('nav.developer'),
             items: [
               {
+                label: t('nav.developerHome'),
+                icon: Home,
+                onClick: () => navigate('/developer'),
+                badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.developerOnly')} />,
+              },
+              {
                 label: t('nav.database'),
                 icon: Database,
                 onClick: () => navigate('/developer/database'),
@@ -204,6 +210,12 @@ export function UserMenuDropdown() {
           {
             label: t('nav.developer'),
             items: [
+              {
+                label: t('nav.developerHome'),
+                icon: Home,
+                onClick: () => handleNavigate('/developer'),
+                badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.developerOnly')} />,
+              },
               {
                 label: t('nav.database'),
                 icon: Database,

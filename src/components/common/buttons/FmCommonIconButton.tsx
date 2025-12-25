@@ -1,4 +1,4 @@
-import { forwardRef, useState, useCallback } from 'react';
+import { forwardRef, useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/common/shadcn/button';
 import { cn } from '@/shared';
 import { LucideIcon, Plus } from 'lucide-react';
@@ -9,8 +9,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/common/shadcn/tooltip';
+import {
+  FmCommonContextMenu,
+  ContextMenuAction,
+} from '@/components/common/modals/FmCommonContextMenu';
 
-interface FmCommonIconButtonProps
+export interface FmCommonIconButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'default' | 'secondary' | 'destructive' | 'gold' | 'create';
   size?: 'default' | 'sm' | 'lg';
@@ -18,12 +22,17 @@ interface FmCommonIconButtonProps
   loading?: boolean;
   tooltip?: string;
   asChild?: boolean;
+  /** Context menu actions (shown on right-click or press-and-hold) */
+  contextMenuActions?: ContextMenuAction<void>[];
+  /** Press-and-hold delay in ms (default: 500) */
+  pressHoldDelay?: number;
 }
 
 /**
  * Icon-only button component with optional floating + indicator for create actions
  * Enhanced with click ripple effect and scale animation
  * Automatically wraps in tooltip if tooltip prop is provided
+ * Supports press-and-hold / right-click context menu when contextMenuActions provided
  */
 export const FmCommonIconButton = forwardRef<
   HTMLButtonElement,
@@ -40,24 +49,70 @@ export const FmCommonIconButton = forwardRef<
       disabled,
       asChild,
       onClick,
+      contextMenuActions = [],
+      pressHoldDelay = 500,
       ...props
     },
     ref
   ) => {
     const [isPressed, setIsPressed] = useState(false);
+    const [isLongPressing, setIsLongPressing] = useState(false);
+    const [contextMenuOpen, setContextMenuOpen] = useState(false);
+    const pressTimerRef = useRef<NodeJS.Timeout | null>(null);
     const { ripples, createRipple } = useRipple();
     const isDisabled = disabled || loading;
 
+    // Cleanup timer on unmount
+    useEffect(() => {
+      return () => {
+        if (pressTimerRef.current) {
+          clearTimeout(pressTimerRef.current);
+        }
+      };
+    }, []);
+
+    // Handle press-and-hold for context menu
+    const handleMouseDown = useCallback(
+      (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (contextMenuActions.length === 0 || isDisabled) return;
+        if (e.button !== 0) return; // Only left click
+
+        setIsLongPressing(true);
+        pressTimerRef.current = setTimeout(() => {
+          setContextMenuOpen(true);
+          setIsLongPressing(false);
+        }, pressHoldDelay);
+      },
+      [contextMenuActions.length, pressHoldDelay, isDisabled]
+    );
+
+    const handleMouseUp = useCallback(() => {
+      if (pressTimerRef.current) {
+        clearTimeout(pressTimerRef.current);
+        pressTimerRef.current = null;
+      }
+      setIsLongPressing(false);
+    }, []);
+
+    const handleMouseLeave = useCallback(() => {
+      if (pressTimerRef.current) {
+        clearTimeout(pressTimerRef.current);
+        pressTimerRef.current = null;
+      }
+      setIsLongPressing(false);
+    }, []);
+
     const handleClick = useCallback(
       (e: React.MouseEvent<HTMLButtonElement>) => {
-        if (!isDisabled) {
+        // Don't fire click if we were long pressing or context menu is open
+        if (!isDisabled && !isLongPressing && !contextMenuOpen) {
           setIsPressed(true);
           setTimeout(() => setIsPressed(false), 150);
           createRipple(e);
           onClick?.(e);
         }
       },
-      [isDisabled, onClick, createRipple]
+      [isDisabled, isLongPressing, contextMenuOpen, onClick, createRipple]
     );
 
     const isCreateVariant = variant === 'create';
@@ -100,6 +155,9 @@ export const FmCommonIconButton = forwardRef<
         }
         disabled={isDisabled}
         onClick={handleClick}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
         className={cn(
           'relative overflow-hidden p-0 group',
           sizeClasses[size],
@@ -109,6 +167,7 @@ export const FmCommonIconButton = forwardRef<
           variant === 'secondary' && variantStyles.secondary,
           variant === 'destructive' && variantStyles.destructive,
           isPressed && 'scale-95',
+          isLongPressing && 'scale-95 transition-transform duration-100',
           className
         )}
         asChild={asChild}
@@ -148,20 +207,34 @@ export const FmCommonIconButton = forwardRef<
       </Button>
     );
 
-    if (tooltip) {
+    // Wrap with tooltip if provided
+    const buttonWithTooltip = tooltip ? (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>{button}</TooltipTrigger>
+          <TooltipContent>
+            <p>{tooltip}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    ) : (
+      button
+    );
+
+    // Wrap with context menu if actions provided
+    if (contextMenuActions.length > 0) {
       return (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>{button}</TooltipTrigger>
-            <TooltipContent>
-              <p>{tooltip}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <FmCommonContextMenu
+          actions={contextMenuActions}
+          data={undefined}
+          onOpenChange={setContextMenuOpen}
+        >
+          {buttonWithTooltip}
+        </FmCommonContextMenu>
       );
     }
 
-    return button;
+    return buttonWithTooltip;
   }
 );
 

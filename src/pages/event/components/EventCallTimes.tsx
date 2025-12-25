@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Music, ArrowRight } from 'lucide-react';
@@ -12,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/common/shadcn/dialog';
+import { useModalState } from '@/shared';
 
 interface CallTimeArtist {
   id?: string;
@@ -46,14 +46,14 @@ export const EventCallTimes = ({
 }: EventCallTimesProps) => {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const applyModal = useModalState();
 
   if (callTimeLineup.length === 0 && !lookingForUndercard) {
     return null;
   }
 
   const handleSignUp = () => {
-    setIsModalOpen(false);
+    applyModal.close();
     // Pass event_id so the registration can create an undercard request
     const url = eventId
       ? `/artists/register?event_id=${eventId}`
@@ -86,7 +86,7 @@ export const EventCallTimes = ({
             <div className='flex justify-center mt-4'>
               <Button
                 variant='outline'
-                onClick={() => setIsModalOpen(true)}
+                onClick={applyModal.open}
                 className='w-full py-1.5 px-4 border border-fm-gold bg-transparent text-white hover:text-fm-gold hover:bg-fm-gold/10 text-xs transition-all duration-300'
               >
                 {t('undercardApplication.acceptingApplications')}
@@ -97,7 +97,7 @@ export const EventCallTimes = ({
       </FmCommonCollapsibleSection>
 
       {/* Looking for Artists Modal */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+      <Dialog open={applyModal.isOpen} onOpenChange={applyModal.setOpen}>
         <DialogContent className='max-w-md bg-background/95 backdrop-blur border border-border/60 p-0 overflow-hidden'>
           <DialogHeader className='px-6 pt-6 pb-4'>
             <DialogTitle className='font-canela text-xl flex items-center gap-2'>

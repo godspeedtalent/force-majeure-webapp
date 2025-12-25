@@ -6,7 +6,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, CardContent } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { useAuth } from '@/features/auth/services/AuthContext';
@@ -47,8 +47,8 @@ export function BillingAddressSection() {
   if (!user) return null;
 
   return (
-    <Card className='border-border/30 bg-card/20 backdrop-blur-lg'>
-      <CardContent className='p-8 space-y-6'>
+    <FmCommonCard>
+      <FmCommonCardContent className='p-8 space-y-6'>
         <div>
           <h2 className='text-xl font-canela font-medium text-foreground mb-2'>
             {t('billingAddress.title')}
@@ -116,7 +116,7 @@ export function BillingAddressSection() {
             {t('billingAddress.updateButton')}
           </FmCommonButton>
         </form>
-      </CardContent>
-    </Card>
+      </FmCommonCardContent>
+    </FmCommonCard>
   );
 }

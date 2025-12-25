@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/common/shadcn/badge';
-import { Code, ShoppingCart, Mail, ArrowRight } from 'lucide-react';
+import { Code, ShoppingCart, Mail, Music, ArrowRight } from 'lucide-react';
 import { DemoLayout } from '@/components/demo/DemoLayout';
 
 export default function DemoIndex() {
@@ -22,6 +22,14 @@ export default function DemoIndex() {
       path: '/demo/email-template',
       icon: Mail,
       category: t('demoIndex.categoryCommunication'),
+      status: 'Active',
+    },
+    {
+      title: t('demoIndex.artistSignup'),
+      description: t('demoIndex.artistSignupDescription'),
+      path: '/developer/demo/artist-signup',
+      icon: Music,
+      category: t('demoIndex.categoryArtistManagement'),
       status: 'Active',
     },
   ];

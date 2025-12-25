@@ -1,11 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/common/shadcn/card';
+  FmCommonCard,
+  FmCommonCardContent,
+  FmCommonCardDescription,
+  FmCommonCardHeader,
+  FmCommonCardTitle,
+} from '@/components/common/display/FmCommonCard';
 import { Badge } from '@/components/common/shadcn/badge';
 import { Separator } from '@/components/common/shadcn/separator';
 import { useOrders } from '@/features/events/hooks/useOrders';
@@ -65,14 +65,14 @@ export default function Orders() {
         ) : (
           <div className='space-y-4'>
             {orders.map(order => (
-              <Card key={order.id}>
-                <CardHeader>
+              <FmCommonCard key={order.id}>
+                <FmCommonCardHeader>
                   <div className='flex items-start justify-between'>
                     <div className='flex-1'>
-                      <CardTitle className='font-canela'>
+                      <FmCommonCardTitle className='font-canela'>
                         {order.event?.title || t('orders.event')}
-                      </CardTitle>
-                      <CardDescription className='flex items-center gap-4 mt-2'>
+                      </FmCommonCardTitle>
+                      <FmCommonCardDescription className='flex items-center gap-4 mt-2'>
                         <span className='flex items-center gap-1'>
                           <Calendar className='h-4 w-4' />
                           {order.event?.date &&
@@ -81,14 +81,14 @@ export default function Orders() {
                         {order.event?.time && (
                           <span>{t('orders.at')} {order.event.time}</span>
                         )}
-                      </CardDescription>
+                      </FmCommonCardDescription>
                     </div>
                     <Badge className={getStatusColor(order.status)}>
                       {order.status.toUpperCase()}
                     </Badge>
                   </div>
-                </CardHeader>
-                <CardContent className='space-y-4'>
+                </FmCommonCardHeader>
+                <FmCommonCardContent className='space-y-4'>
                   <Separator />
 
                   {/* Order Items */}
@@ -136,8 +136,8 @@ export default function Orders() {
                     {t('orders.orderPlaced')}{' '}
                     {format(new Date(order.created_at), 'MMM d, yyyy h:mm a')}
                   </div>
-                </CardContent>
-              </Card>
+                </FmCommonCardContent>
+              </FmCommonCard>
             ))}
           </div>
         )}

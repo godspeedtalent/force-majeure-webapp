@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { logger } from '@/shared';
 
-import { useAuth } from '@/features/auth/services/AuthContext';
+import { useAuthSafe } from '@/features/auth/services/AuthContext';
 import { supabase } from '@/shared';
 import {
   PERMISSIONS,
@@ -17,7 +17,8 @@ export interface UserRole {
 }
 
 export const useUserRole = () => {
-  const { user } = useAuth();
+  const auth = useAuthSafe();
+  const user = auth?.user ?? null;
 
   return useQuery({
     queryKey: ['user-role', user?.id],

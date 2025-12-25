@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card } from '@/components/common/shadcn/card';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { Label } from '@/components/common/shadcn/label';
 import { Switch } from '@/components/common/shadcn/switch';
 import { Code, Database, ToggleLeft, Info } from 'lucide-react';
@@ -91,7 +91,7 @@ export const DevToolsManagement = () => {
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         {DEV_TOOL_SECTIONS.map(section => (
-          <Card key={section.id} className='p-6'>
+          <FmCommonCard key={section.id} className='p-6'>
             <div className='flex items-start justify-between gap-4'>
               <div className='flex items-start gap-3 flex-1'>
                 <div className='p-2 rounded-lg bg-muted/50 text-fm-gold'>
@@ -115,7 +115,7 @@ export const DevToolsManagement = () => {
                 onCheckedChange={() => handleToggle(section.id)}
               />
             </div>
-          </Card>
+          </FmCommonCard>
         ))}
       </div>
 

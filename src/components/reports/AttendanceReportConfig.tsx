@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent, FmCommonCardDescription, FmCommonCardHeader, FmCommonCardTitle } from '@/components/common/display/FmCommonCard';
 import { Button } from '@/components/common/shadcn/button';
 
 interface AttendanceReportConfigProps {
@@ -9,14 +9,14 @@ interface AttendanceReportConfigProps {
 export const AttendanceReportConfig = ({ eventId: _eventId }: AttendanceReportConfigProps) => {
   const { t } = useTranslation('common');
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t('reports.attendance.title')}</CardTitle>
-        <CardDescription>
+    <FmCommonCard>
+      <FmCommonCardHeader>
+        <FmCommonCardTitle>{t('reports.attendance.title')}</FmCommonCardTitle>
+        <FmCommonCardDescription>
           {t('reports.attendance.description')}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </FmCommonCardDescription>
+      </FmCommonCardHeader>
+      <FmCommonCardContent>
         <p className="text-muted-foreground mb-4">
           {t('reports.attendance.comingSoonText')}
         </p>
@@ -27,7 +27,7 @@ export const AttendanceReportConfig = ({ eventId: _eventId }: AttendanceReportCo
           <li>{t('reports.attendance.tierBreakdown')}</li>
         </ul>
         <Button disabled>{t('reports.attendance.comingSoon')}</Button>
-      </CardContent>
-    </Card>
+      </FmCommonCardContent>
+    </FmCommonCard>
   );
 };

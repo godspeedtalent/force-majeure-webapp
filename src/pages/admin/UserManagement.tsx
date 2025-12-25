@@ -1,13 +1,11 @@
-import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@/shared';
+import { supabase, logger, useDeleteConfirmation } from '@/shared';
 import { FmConfigurableDataGrid, DataGridAction } from '@/features/data-grid';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { userColumns } from './config/adminGridColumns';
 import { Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { logger } from '@/shared';
 
 interface UserRole {
   role_name: string;
@@ -29,9 +27,37 @@ export const UserManagement = () => {
   const { t } = useTranslation('common');
   const { t: tToast } = useTranslation('toasts');
   const queryClient = useQueryClient();
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [userToDelete, setUserToDelete] = useState<AdminUser | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Delete confirmation with custom auth deletion handler
+  const {
+    showConfirm: showDeleteConfirm,
+    itemsToDelete,
+    isDeleting,
+    openConfirm: handleDeleteUserClick,
+    confirmDelete: handleDeleteUser,
+    setShowConfirm: setShowDeleteConfirm,
+  } = useDeleteConfirmation<AdminUser>({
+    table: 'profiles', // Not used since we have custom onDelete
+    queryKey: ['admin-users'],
+    messages: {
+      successSingle: tToast('admin.userDeleted'),
+      error: tToast('admin.userDeleteFailed'),
+    },
+    onDelete: async (users: AdminUser[]) => {
+      // Users require special auth deletion
+      for (const user of users) {
+        const { error: authError } = await supabase.auth.admin.deleteUser(user.id);
+        if (authError) {
+          logger.error('Auth deletion error:', { error: authError.message, source: 'UserManagement' });
+          throw new Error(tToast('admin.userAuthDeleteFailed'));
+        }
+      }
+      // Profile will be deleted via CASCADE
+    },
+    source: 'UserManagement',
+  });
+
+  const userToDelete = itemsToDelete[0] ?? null;
 
   // Fetch users with their auth email
   const { data: users = [], isLoading } = useQuery({
@@ -114,39 +140,6 @@ export const UserManagement = () => {
     }
   };
 
-
-  const handleDeleteUserClick = (user: AdminUser) => {
-    setUserToDelete(user);
-    setShowDeleteConfirm(true);
-  };
-
-  const handleDeleteUser = async () => {
-    if (!userToDelete) return;
-
-    setIsDeleting(true);
-    try {
-      // Delete from auth
-      const { error: authError } = await supabase.auth.admin.deleteUser(
-        userToDelete.id
-      );
-      if (authError) {
-        logger.error('Auth deletion error:', { error: authError.message, source: 'UserManagement' });
-        toast.error(tToast('admin.userAuthDeleteFailed'));
-        return;
-      }
-
-      // Profile will be deleted via CASCADE
-      toast.success(tToast('admin.userDeleted'));
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
-      setShowDeleteConfirm(false);
-      setUserToDelete(null);
-    } catch (error) {
-      logger.error('Error deleting user:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'UserManagement' });
-      toast.error(tToast('admin.userDeleteFailed'));
-    } finally {
-      setIsDeleting(false);
-    }
-  };
 
   const userContextActions: DataGridAction[] = [
     {

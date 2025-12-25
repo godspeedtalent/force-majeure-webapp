@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent, FmCommonCardHeader, FmCommonCardTitle } from '@/components/common/display/FmCommonCard';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface HourlyDistributionChartProps {
@@ -14,40 +14,40 @@ export const HourlyDistributionChart = ({ data }: HourlyDistributionChartProps) 
   }));
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t('analytics.salesByHour')}</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <FmCommonCard>
+      <FmCommonCardHeader>
+        <FmCommonCardTitle>{t('analytics.salesByHour')}</FmCommonCardTitle>
+      </FmCommonCardHeader>
+      <FmCommonCardContent>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-            <XAxis 
-              dataKey="hour" 
+            <XAxis
+              dataKey="hour"
               className="text-xs"
               stroke="hsl(var(--muted-foreground))"
               interval={2}
             />
-            <YAxis 
+            <YAxis
               className="text-xs"
               stroke="hsl(var(--muted-foreground))"
             />
-            <Tooltip 
-              contentStyle={{ 
+            <Tooltip
+              contentStyle={{
                 backgroundColor: 'hsl(var(--background))',
                 border: '1px solid hsl(var(--border))',
                 borderRadius: '6px',
               }}
               formatter={(value: any) => [value, t('analytics.orders')]}
             />
-            <Bar 
-              dataKey="orders" 
-              fill="hsl(var(--primary))" 
+            <Bar
+              dataKey="orders"
+              fill="hsl(var(--primary))"
               radius={[8, 8, 0, 0]}
             />
           </BarChart>
         </ResponsiveContainer>
-      </CardContent>
-    </Card>
+      </FmCommonCardContent>
+    </FmCommonCard>
   );
 };

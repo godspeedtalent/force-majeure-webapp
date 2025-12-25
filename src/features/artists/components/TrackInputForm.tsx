@@ -8,7 +8,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link2, Music, ExternalLink, AlertCircle, Disc, Radio, Trash2, Pencil, X } from 'lucide-react';
+import { Link2, Music, ExternalLink, AlertCircle, Disc, Radio, Trash2, Pencil, X, Star } from 'lucide-react';
 import { logger } from '@/shared/services/logger';
 import { FaSpotify, FaSoundcloud } from 'react-icons/fa6';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
@@ -34,6 +34,8 @@ export interface TrackFormData {
   coverArt?: string;
   platform: 'spotify' | 'soundcloud';
   recordingType: RecordingType;
+  /** Whether this is the primary/featured DJ set for the artist */
+  isPrimaryDjSet?: boolean;
 }
 
 interface TrackInputFormProps {
@@ -409,13 +411,18 @@ interface TrackListProps {
   tracks: TrackFormData[];
   onRemoveTrack: (trackId: string) => void;
   onEditTrack?: (track: TrackFormData) => void;
+  onSetPrimaryDjSet?: (trackId: string) => void;
   editingTrackId?: string | null;
 }
 
-export function TrackList({ tracks, onRemoveTrack, onEditTrack, editingTrackId }: TrackListProps) {
+export function TrackList({ tracks, onRemoveTrack, onEditTrack, onSetPrimaryDjSet, editingTrackId }: TrackListProps) {
   const { t } = useTranslation('common');
 
   if (tracks.length === 0) return null;
+
+  // Check if there are multiple DJ sets (only show primary selection if more than one)
+  const djSetCount = tracks.filter(t => t.recordingType === 'dj_set').length;
+  const showPrimaryOption = djSetCount > 1 && !!onSetPrimaryDjSet;
 
   return (
     <div className="space-y-[10px]">
@@ -423,13 +430,17 @@ export function TrackList({ tracks, onRemoveTrack, onEditTrack, editingTrackId }
       <div className="space-y-[10px]">
         {tracks.map((track) => {
           const isEditing = editingTrackId === track.id;
+          const isDjSet = track.recordingType === 'dj_set';
+          const isPrimary = track.isPrimaryDjSet;
+
           return (
             <FmCommonCard
               key={track.id}
               variant="outline"
               className={cn(
                 "p-0 overflow-hidden transition-all duration-200",
-                isEditing && "border-fm-gold/50 bg-fm-gold/5"
+                isEditing && "border-fm-gold/50 bg-fm-gold/5",
+                isPrimary && isDjSet && "border-fm-gold/30 bg-fm-gold/5"
               )}
             >
               <div className="flex gap-[10px] items-center">
@@ -454,18 +465,42 @@ export function TrackList({ tracks, onRemoveTrack, onEditTrack, editingTrackId }
                       <FaSoundcloud className="h-4 w-4 text-[#d48968] drop-shadow-lg" />
                     )}
                   </div>
+                  {/* Primary badge */}
+                  {isPrimary && isDjSet && (
+                    <div className="absolute top-0.5 left-0.5">
+                      <Star className="h-4 w-4 text-fm-gold fill-fm-gold drop-shadow-lg" />
+                    </div>
+                  )}
                 </div>
 
                 {/* Track Info */}
                 <div className="flex-1 py-[10px]">
-                  <h4 className="font-medium text-sm line-clamp-1">{track.name}</h4>
+                  <div className="flex items-center gap-[5px]">
+                    <h4 className="font-medium text-sm line-clamp-1">{track.name}</h4>
+                    {isPrimary && isDjSet && (
+                      <span className="text-[10px] uppercase text-fm-gold font-medium px-[5px] py-[1px] bg-fm-gold/10 border border-fm-gold/30">
+                        {t('formLabels.primary')}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs text-muted-foreground">
-                    {track.recordingType === 'dj_set' ? t('formLabels.djSet') : t('formLabels.track')}
+                    {isDjSet ? t('formLabels.djSet') : t('formLabels.track')}
                   </p>
                 </div>
 
                 {/* Action Buttons */}
                 <div className="flex items-center gap-[5px] mr-[10px]">
+                  {/* Set as Primary button - only for DJ sets when there are multiple */}
+                  {showPrimaryOption && isDjSet && !isPrimary && (
+                    <button
+                      onClick={() => onSetPrimaryDjSet(track.id)}
+                      className="p-[10px] text-muted-foreground hover:text-fm-gold transition-colors"
+                      aria-label={t('aria.setAsPrimary')}
+                      title={t('forms.tracks.setAsPrimary')}
+                    >
+                      <Star className="h-4 w-4" />
+                    </button>
+                  )}
                   {onEditTrack && (
                     <button
                       onClick={() => onEditTrack(track)}

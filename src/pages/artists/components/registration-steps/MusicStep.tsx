@@ -29,6 +29,9 @@ export function MusicStep({
   const trackCount = formData.tracks.filter(t => t.recordingType === 'track').length;
 
   const handleAddTrack = (track: TrackFormData) => {
+    const djSets = formData.tracks.filter(t => t.recordingType === 'dj_set');
+    const isFirstDjSet = track.recordingType === 'dj_set' && djSets.length === 0;
+
     const newTrack: RegistrationTrack = {
       id: track.id,
       name: track.name,
@@ -36,8 +39,19 @@ export function MusicStep({
       coverArt: track.coverArt,
       platform: track.platform,
       recordingType: track.recordingType,
+      // Auto-set first DJ set as primary
+      isPrimaryDjSet: isFirstDjSet ? true : undefined,
     };
     onInputChange('tracks', [...formData.tracks, newTrack]);
+  };
+
+  const handleSetPrimaryDjSet = (trackId: string) => {
+    const updatedTracks = formData.tracks.map(t => ({
+      ...t,
+      // Clear primary from all DJ sets, then set the selected one
+      isPrimaryDjSet: t.recordingType === 'dj_set' ? t.id === trackId : undefined,
+    }));
+    onInputChange('tracks', updatedTracks);
   };
 
   const handleRemoveTrack = (trackId: string) => {
@@ -67,6 +81,8 @@ export function MusicStep({
             coverArt: updatedTrack.coverArt,
             platform: updatedTrack.platform,
             recordingType: updatedTrack.recordingType,
+            // Preserve isPrimaryDjSet status
+            isPrimaryDjSet: t.isPrimaryDjSet,
           }
         : t
     );
@@ -105,7 +121,7 @@ export function MusicStep({
                   ? t('artistRegistration.djSetRequirementMet', {
                       djSets: djSetCount,
                       djSetsPlural: djSetCount > 1 ? 's' : '',
-                      tracks: trackCount > 0 ? `, ${trackCount} Track${trackCount > 1 ? 's' : ''}` : ''
+                      tracks: trackCount > 0 ? t('artistRegistration.trackCount', { count: trackCount }) : ''
                     })
                   : t('artistRegistration.djSetRequired')}
               </span>
@@ -118,6 +134,7 @@ export function MusicStep({
               tracks={formData.tracks}
               onRemoveTrack={handleRemoveTrack}
               onEditTrack={handleEditTrack}
+              onSetPrimaryDjSet={handleSetPrimaryDjSet}
               editingTrackId={editingTrack?.id}
             />
 

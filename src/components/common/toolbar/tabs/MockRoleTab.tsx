@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   User,
@@ -10,6 +11,8 @@ import {
   AlertTriangle,
   LucideIcon,
   Loader2,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { useMockRole, type MockRoleMode } from '@/shared/contexts/MockRoleContext';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
@@ -40,6 +43,7 @@ export const MockRoleTabContent = () => {
   const { mockRole, setMockRole, isMockActive, clearMockRole } = useMockRole();
   const { actualRoles } = useUserPermissions();
   const { roles: availableRoles, loading: rolesLoading, loaded: rolesLoaded } = useRoles();
+  const [expandedRoles, setExpandedRoles] = useState<Set<string>>(new Set());
 
   const handleRoleSelect = (roleName: string) => {
     if (roleName === mockRole) {
@@ -49,9 +53,26 @@ export const MockRoleTabContent = () => {
     }
   };
 
+  const toggleRoleExpanded = (roleId: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering role selection
+    setExpandedRoles(prev => {
+      const next = new Set(prev);
+      if (next.has(roleId)) {
+        next.delete(roleId);
+      } else {
+        next.add(roleId);
+      }
+      return next;
+    });
+  };
+
   const getPermissionCount = (role: RoleRecord): number => {
     const permissions = role.permissions || [];
     return permissions.includes('*') ? Infinity : permissions.length;
+  };
+
+  const getPermissions = (role: RoleRecord): string[] => {
+    return role.permissions || [];
   };
 
   // Get the display name for the current mock role
@@ -140,53 +161,106 @@ export const MockRoleTabContent = () => {
               const Icon = getIconForRole(role.name);
               const isSelected = mockRole === role.name;
               const permissionCount = getPermissionCount(role);
+              const permissions = getPermissions(role);
+              const isExpanded = expandedRoles.has(role.id);
+              const hasPermissions = permissions.length > 0;
 
               return (
-                <button
-                  key={role.id}
-                  onClick={() => handleRoleSelect(role.name)}
-                  className={cn(
-                    'w-full flex items-start gap-3 p-3 text-left transition-all duration-200',
-                    'border hover:scale-[1.01]',
-                    isSelected
-                      ? 'bg-fm-gold/20 border-fm-gold/50 shadow-[0_0_12px_rgba(223,186,125,0.2)]'
-                      : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
-                  )}
-                >
-                  <div
+                <div key={role.id} className='space-y-0'>
+                  <button
+                    onClick={() => handleRoleSelect(role.name)}
                     className={cn(
-                      'p-2 flex-shrink-0 transition-colors',
-                      isSelected ? 'bg-fm-gold/30' : 'bg-white/10'
+                      'w-full flex items-start gap-3 p-3 text-left transition-all duration-200',
+                      'border hover:scale-[1.01]',
+                      isSelected
+                        ? 'bg-fm-gold/20 border-fm-gold/50 shadow-[0_0_12px_rgba(223,186,125,0.2)]'
+                        : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20',
+                      isExpanded && 'border-b-0'
                     )}
                   >
-                    <Icon
+                    <div
                       className={cn(
-                        'h-4 w-4',
-                        isSelected ? 'text-fm-gold' : 'text-white/70'
+                        'p-2 flex-shrink-0 transition-colors',
+                        isSelected ? 'bg-fm-gold/30' : 'bg-white/10'
                       )}
-                    />
-                  </div>
-                  <div className='flex-1 min-w-0'>
-                    <div className='flex items-center justify-between gap-2'>
-                      <span
+                    >
+                      <Icon
                         className={cn(
-                          'font-medium text-sm',
-                          isSelected ? 'text-fm-gold' : 'text-white'
+                          'h-4 w-4',
+                          isSelected ? 'text-fm-gold' : 'text-white/70'
                         )}
-                      >
-                        {role.display_name}
-                      </span>
-                      <span className='text-[10px] text-white/40'>
-                        {permissionCount === Infinity
-                          ? t('mockRole.allPermissions')
-                          : t('mockRole.permissionCount', { count: permissionCount })}
-                      </span>
+                      />
                     </div>
-                    {role.description && (
-                      <p className='text-xs text-white/50 mt-0.5'>{role.description}</p>
-                    )}
-                  </div>
-                </button>
+                    <div className='flex-1 min-w-0'>
+                      <div className='flex items-center justify-between gap-2'>
+                        <span
+                          className={cn(
+                            'font-medium text-sm',
+                            isSelected ? 'text-fm-gold' : 'text-white'
+                          )}
+                        >
+                          {role.display_name}
+                        </span>
+                        {hasPermissions && (
+                          <button
+                            onClick={(e) => toggleRoleExpanded(role.id, e)}
+                            className={cn(
+                              'flex items-center gap-1 text-[10px] transition-colors',
+                              isExpanded ? 'text-fm-gold' : 'text-white/40 hover:text-white/60'
+                            )}
+                          >
+                            {permissionCount === Infinity
+                              ? t('mockRole.allPermissions')
+                              : t('mockRole.permissionCount', { count: permissionCount })}
+                            {isExpanded ? (
+                              <ChevronUp className='h-3 w-3' />
+                            ) : (
+                              <ChevronDown className='h-3 w-3' />
+                            )}
+                          </button>
+                        )}
+                        {!hasPermissions && (
+                          <span className='text-[10px] text-white/40'>
+                            {t('mockRole.permissionCount', { count: 0 })}
+                          </span>
+                        )}
+                      </div>
+                      {role.description && (
+                        <p className='text-xs text-white/50 mt-0.5'>{role.description}</p>
+                      )}
+                    </div>
+                  </button>
+
+                  {/* Expandable Permissions List */}
+                  {isExpanded && hasPermissions && (
+                    <div
+                      className={cn(
+                        'px-3 pb-3 pt-2 border border-t-0 transition-all duration-200',
+                        isSelected
+                          ? 'bg-fm-gold/10 border-fm-gold/50'
+                          : 'bg-white/5 border-white/10'
+                      )}
+                    >
+                      <div className='flex flex-wrap gap-1.5'>
+                        {permissions.map((permission, idx) => (
+                          <span
+                            key={idx}
+                            className={cn(
+                              'px-2 py-0.5 text-[10px] font-mono',
+                              permission === '*'
+                                ? 'bg-fm-gold/30 text-fm-gold border border-fm-gold/50'
+                                : isSelected
+                                  ? 'bg-fm-gold/20 text-fm-gold/80 border border-fm-gold/30'
+                                  : 'bg-white/10 text-white/70 border border-white/20'
+                            )}
+                          >
+                            {permission === '*' ? 'ALL (*)' : permission}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>

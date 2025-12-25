@@ -269,12 +269,18 @@ export {
 } from './hooks/useEnvironment';
 export { useAsyncAction, type UseAsyncActionOptions } from './hooks/useAsyncAction';
 export { useAsyncOperation, type UseAsyncOperationReturn } from './hooks/useAsyncOperation';
+export {
+  useDeleteConfirmation,
+  type UseDeleteConfirmationOptions,
+  type UseDeleteConfirmationReturn,
+} from './hooks/useDeleteConfirmation';
 export { useDateTimePicker } from './hooks/useDateTimePicker';
 export { useScrollPosition } from './hooks/useScrollPosition';
 export { useScrollSnap } from './hooks/useScrollSnap';
 export { useRecentSelections } from './hooks/useRecentSelections';
 export { useEventViews } from './hooks/useEventViews';
 export { useCreateEntityNavigation } from './hooks/useCreatedEntityReturn';
+export { useModalState, type UseModalStateReturn } from './hooks/useModalState';
 
 // Shopping Cart
 export { ShoppingCartProvider, useShoppingCart } from './hooks/useShoppingCart';

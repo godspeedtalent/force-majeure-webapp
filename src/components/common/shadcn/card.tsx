@@ -4,12 +4,13 @@ import * as React from 'react';
 import { cn } from '@/shared';
 
 const cardVariants = cva(
-  'rounded-none border bg-card text-card-foreground shadow-sm',
+  'rounded-none border bg-card text-card-foreground shadow-sm transition-all duration-300',
   {
     variants: {
       variant: {
         default: '',
-        frosted: 'bg-background/60 backdrop-blur-md border-border',
+        frosted:
+          'bg-background/60 backdrop-blur-md border-border hover:border-white/30 hover:shadow-[0_0_8px_rgba(223,186,125,0.08)] hover:bg-background/55 hover:brightness-[1.02]',
       },
     },
     defaultVariants: {

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Ticket, BarChart3, ChevronRight } from 'lucide-react';
-import { Card, CardContent } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { FmI18nCommon } from '@/components/common/i18n';
 import { cn } from '@/shared';
 import type { TicketGroup } from '../types';
@@ -36,8 +36,8 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
 
       {/* Overall Stats */}
       <div className='grid grid-cols-4 gap-4'>
-        <Card>
-          <CardContent className='pt-6'>
+        <FmCommonCard>
+          <FmCommonCardContent className='pt-6'>
             <div className='text-center'>
               <Ticket className='h-8 w-8 mx-auto mb-2 text-fm-gold' />
               <div className='text-2xl font-bold'>
@@ -45,10 +45,10 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
               </div>
               <FmI18nCommon i18nKey='ticketGroupManager.totalTickets' as='div' className='text-xs text-muted-foreground' />
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className='pt-6'>
+          </FmCommonCardContent>
+        </FmCommonCard>
+        <FmCommonCard>
+          <FmCommonCardContent className='pt-6'>
             <div className='text-center'>
               <BarChart3 className='h-8 w-8 mx-auto mb-2 text-fm-gold' />
               <div className='text-2xl font-bold'>
@@ -56,10 +56,10 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
               </div>
               <FmI18nCommon i18nKey='ticketGroupManager.potentialRevenue' as='div' className='text-xs text-muted-foreground' />
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className='pt-6'>
+          </FmCommonCardContent>
+        </FmCommonCard>
+        <FmCommonCard>
+          <FmCommonCardContent className='pt-6'>
             <div className='text-center'>
               <div className='h-8 w-8 mx-auto mb-2 rounded-full bg-fm-gold/20 flex items-center justify-center'>
                 <span className='text-lg font-bold text-fm-gold'>
@@ -69,10 +69,10 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
               <div className='text-2xl font-bold'>{totalGroups}</div>
               <FmI18nCommon i18nKey='ticketGroupManager.ticketGroups' as='div' className='text-xs text-muted-foreground' />
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className='pt-6'>
+          </FmCommonCardContent>
+        </FmCommonCard>
+        <FmCommonCard>
+          <FmCommonCardContent className='pt-6'>
             <div className='text-center'>
               <div className='h-8 w-8 mx-auto mb-2 rounded-full bg-fm-gold/20 flex items-center justify-center'>
                 <span className='text-lg font-bold text-fm-gold'>
@@ -82,8 +82,8 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
               <div className='text-2xl font-bold'>{totalTiers}</div>
               <FmI18nCommon i18nKey='ticketGroupManager.totalTiers' as='div' className='text-xs text-muted-foreground' />
             </div>
-          </CardContent>
-        </Card>
+          </FmCommonCardContent>
+        </FmCommonCard>
       </div>
 
       {/* Group Summaries */}
@@ -98,7 +98,7 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
               GROUP_COLORS[0];
 
             return (
-              <Card
+              <FmCommonCard
                 key={group.id}
                 className={cn(
                   'border-2 cursor-pointer hover:shadow-md transition-all',
@@ -106,7 +106,7 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
                 )}
                 onClick={() => onGroupClick(group.id)}
               >
-                <CardContent className='p-4'>
+                <FmCommonCardContent className='p-4'>
                   <div className='flex items-center justify-between'>
                     <div className='flex-1'>
                       <div className='flex items-center gap-3 mb-2'>
@@ -139,8 +139,8 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
                     </div>
                     <ChevronRight className='h-5 w-5 text-muted-foreground' />
                   </div>
-                </CardContent>
-              </Card>
+                </FmCommonCardContent>
+              </FmCommonCard>
             );
           })}
           {groups.length === 0 && (

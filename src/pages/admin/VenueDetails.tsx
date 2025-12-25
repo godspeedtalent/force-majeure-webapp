@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, MapPin, Calendar, ExternalLink, Users } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent, FmCommonCardHeader, FmCommonCardTitle } from '@/components/common/display/FmCommonCard';
 import { Separator } from '@/components/common/shadcn/separator';
 import { format } from 'date-fns';
 import { useVenueById } from '@/shared';
@@ -59,11 +59,11 @@ export default function VenueDetails() {
               {/* Left Column - Main Info */}
               <div className='md:col-span-2 space-y-6'>
                 {/* Basic Information */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{t('adminDetails.basicInformation')}</CardTitle>
-                  </CardHeader>
-                  <CardContent className='space-y-4'>
+                <FmCommonCard>
+                  <FmCommonCardHeader>
+                    <FmCommonCardTitle>{t('adminDetails.basicInformation')}</FmCommonCardTitle>
+                  </FmCommonCardHeader>
+                  <FmCommonCardContent className='space-y-4'>
                     {venue.image_url && (
                       <div>
                         <img
@@ -111,17 +111,17 @@ export default function VenueDetails() {
                         </p>
                       </div>
                     )}
-                  </CardContent>
-                </Card>
+                  </FmCommonCardContent>
+                </FmCommonCard>
               </div>
 
               {/* Right Column - Metadata */}
               <div className='space-y-6'>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{t('adminDetails.metadata')}</CardTitle>
-                  </CardHeader>
-                  <CardContent className='space-y-3'>
+                <FmCommonCard>
+                  <FmCommonCardHeader>
+                    <FmCommonCardTitle>{t('adminDetails.metadata')}</FmCommonCardTitle>
+                  </FmCommonCardHeader>
+                  <FmCommonCardContent className='space-y-3'>
                     <div>
                       <label className='text-sm text-muted-foreground'>{t('adminDetails.venueId')}</label>
                       <p className='font-mono text-sm'>{venue.id}</p>
@@ -150,14 +150,14 @@ export default function VenueDetails() {
                         </p>
                       </div>
                     )}
-                  </CardContent>
-                </Card>
+                  </FmCommonCardContent>
+                </FmCommonCard>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{t('adminDetails.actions')}</CardTitle>
-                  </CardHeader>
-                  <CardContent className='space-y-2'>
+                <FmCommonCard>
+                  <FmCommonCardHeader>
+                    <FmCommonCardTitle>{t('adminDetails.actions')}</FmCommonCardTitle>
+                  </FmCommonCardHeader>
+                  <FmCommonCardContent className='space-y-2'>
                     <Button
                       variant='outline'
                       className='w-full border-white/20 hover:bg-white/10'
@@ -165,8 +165,8 @@ export default function VenueDetails() {
                     >
                       {t('adminDetails.backToVenuesList')}
                     </Button>
-                  </CardContent>
-                </Card>
+                  </FmCommonCardContent>
+                </FmCommonCard>
               </div>
             </div>
           </div>

@@ -17,6 +17,8 @@ export interface ArtistTrack {
   coverArt?: string;
   platform: 'spotify' | 'soundcloud';
   recordingType: RecordingType;
+  /** Whether this is the primary/featured DJ set for the artist */
+  isPrimaryDjSet?: boolean;
   addedAt?: string;
   clickCount?: number;
 }

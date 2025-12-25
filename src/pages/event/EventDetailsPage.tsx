@@ -24,7 +24,7 @@ export const EventDetailsPage = () => {
 
   // Check if user can view non-published events
   const canViewDraft = hasAnyRole(ROLES.ADMIN, ROLES.DEVELOPER);
-  const eventStatus = (event as any)?.status || 'published';
+  const eventStatus = event?.status ?? 'published';
   const isPublished = eventStatus === 'published';
 
   // Check if user can manage events

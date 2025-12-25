@@ -5,7 +5,7 @@ import { LocationCard } from '../shared';
 
 import { Footer } from '@/components/navigation/Footer';
 import { ScavengerNavigation } from '@/components/navigation/ScavengerNavigation';
-import { Card } from '@/components/common/shadcn/card';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 
 interface ScavengerFullLayoutProps {
@@ -60,7 +60,7 @@ export function ScavengerFullLayout({
 
               {/* User's stats */}
               {userClaims && userClaims.length > 0 && (
-                <Card className='p-4 bg-gradient-gold border-none text-primary-foreground'>
+                <FmCommonCard className='p-4 bg-gradient-gold border-none text-primary-foreground'>
                   <h3 className='font-display text-xl mb-3'>{t('scavenger.layout.yourProgress')}</h3>
                   <div className='space-y-2'>
                     <p className='text-base'>
@@ -82,7 +82,7 @@ export function ScavengerFullLayout({
                       ))}
                     </div>
                   </div>
-                </Card>
+                </FmCommonCard>
               )}
 
               {children}

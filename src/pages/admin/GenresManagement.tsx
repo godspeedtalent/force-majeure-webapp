@@ -3,9 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { FmConfigurableDataGrid, DataGridAction } from '@/features/data-grid';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Trash2 } from 'lucide-react';
-import { supabase } from '@/shared';
+import { supabase, logger, useDeleteConfirmation } from '@/shared';
 import { toast } from 'sonner';
-import { logger } from '@/shared';
 import { genreColumns } from './config/adminGridColumns';
 import {
   Dialog,
@@ -45,9 +44,38 @@ export const GenresManagement = () => {
     parentId: null,
   });
   const [isCreating, setIsCreating] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [genresToDelete, setGenresToDelete] = useState<GenreRow[]>([]);
-  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Delete confirmation hook with validation
+  const {
+    showConfirm: showDeleteConfirm,
+    itemsToDelete: genresToDelete,
+    isDeleting,
+    openConfirm: handleDeleteClick,
+    confirmDelete: handleDelete,
+    setShowConfirm: setShowDeleteConfirm,
+  } = useDeleteConfirmation<GenreRow>({
+    table: 'genres',
+    queryKey: ['admin-genres'],
+    messages: {
+      successSingle: tToast('genres.deleted'),
+      successMultiple: (count) => tToast('genres.deletedMultiple', { count }),
+      error: tToast('genres.deleteFailed'),
+    },
+    validate: (genres: GenreRow[]) => {
+      // Check if any genres have children
+      const genresWithChildren = genres.filter(g => g.children_count > 0);
+      if (genresWithChildren.length > 0) {
+        return t('dialogs.cannotDeleteWithSubgenres');
+      }
+      // Check if any genres are assigned to artists
+      const genresWithArtists = genres.filter(g => g.artists_count > 0);
+      if (genresWithArtists.length > 0) {
+        return t('dialogs.cannotDeleteWithArtists');
+      }
+      return undefined;
+    },
+    source: 'GenresManagement',
+  });
 
   // Fetch genres with parent info and counts
   const { data: genres = [], isLoading } = useQuery({
@@ -125,64 +153,6 @@ export const GenresManagement = () => {
       label: genre.name,
     })),
   ];
-
-  const handleDeleteClick = (genreOrGenres: GenreRow | GenreRow[]) => {
-    const genres = Array.isArray(genreOrGenres) ? genreOrGenres : [genreOrGenres];
-
-    // Check if any genres have children
-    const genresWithChildren = genres.filter(g => g.children_count > 0);
-    if (genresWithChildren.length > 0) {
-      toast.error(t('dialogs.cannotDeleteWithSubgenres'));
-      return;
-    }
-
-    // Check if any genres are assigned to artists
-    const genresWithArtists = genres.filter(g => g.artists_count > 0);
-    if (genresWithArtists.length > 0) {
-      toast.error(t('dialogs.cannotDeleteWithArtists'));
-      return;
-    }
-
-    setGenresToDelete(genres);
-    setShowDeleteConfirm(true);
-  };
-
-  const handleDelete = async () => {
-    if (genresToDelete.length === 0) return;
-
-    setIsDeleting(true);
-    try {
-      const deletePromises = genresToDelete.map(genre =>
-        supabase.from('genres').delete().eq('id', genre.id)
-      );
-
-      const results = await Promise.all(deletePromises);
-      const errors = results.filter(r => r.error);
-
-      if (errors.length > 0) {
-        throw new Error(`Failed to delete ${errors.length} genre(s)`);
-      }
-
-      const successMessage =
-        genresToDelete.length === 1
-          ? tToast('genres.deleted')
-          : tToast('genres.deletedMultiple', { count: genresToDelete.length });
-
-      toast.success(successMessage);
-      queryClient.invalidateQueries({ queryKey: ['admin-genres'] });
-      setShowDeleteConfirm(false);
-      setGenresToDelete([]);
-    } catch (error) {
-      logger.error('Error deleting genre(s)', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        source: 'GenresManagement',
-        details: { genreCount: genresToDelete.length },
-      });
-      toast.error(tToast('genres.deleteFailed'));
-    } finally {
-      setIsDeleting(false);
-    }
-  };
 
   const handleUpdate = async (row: any, columnKey: string, newValue: any) => {
     try {

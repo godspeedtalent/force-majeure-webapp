@@ -53,7 +53,7 @@ export const ImageWithSkeleton = ({
         src={hasError ? '/placeholder.svg' : src}
         alt={alt}
         className={cn(
-          'transition-opacity duration-300',
+          'absolute inset-0 transition-opacity duration-300',
           objectPositionClass,
           isLoaded ? 'opacity-100' : 'opacity-0',
           className

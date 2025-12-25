@@ -28,6 +28,7 @@ import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared';
 import { useShoppingCart } from '@/shared';
+import { useFmToolbarSafe } from '@/shared/contexts/FmToolbarContext';
 
 // Import tab components
 import { CartTabContent } from './tabs/CartTab';
@@ -71,8 +72,25 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
   });
   const [isTabHovered, setIsTabHovered] = useState(false);
   const [showGroupLabel, setShowGroupLabel] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<string | null>(null);
+
+  // Use context for state if available, otherwise use local state
+  const toolbarContext = useFmToolbarSafe();
+  const [localIsOpen, setLocalIsOpen] = useState(false);
+  const [localActiveTab, setLocalActiveTab] = useState<string | null>(null);
+
+  // Sync context state with local state (context takes precedence)
+  const isOpen = toolbarContext.isOpen || localIsOpen;
+  const activeTab = toolbarContext.activeTab || localActiveTab;
+
+  const setIsOpen = useCallback((open: boolean) => {
+    setLocalIsOpen(open);
+    toolbarContext.setIsOpen(open);
+  }, [toolbarContext]);
+
+  const setActiveTab = useCallback((tab: string | null) => {
+    setLocalActiveTab(tab);
+    toolbarContext.setActiveTab(tab);
+  }, [toolbarContext]);
 
   const { user, profile } = useAuth();
   const { hasAnyRole } = useUserPermissions();

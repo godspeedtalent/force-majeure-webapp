@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { FmCommonUserPhoto } from '@/components/common/display/FmCommonUserPhoto';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonInfoCard } from '@/components/common/display/FmCommonInfoCard';
-import { Card, CardContent } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import {
   Tabs,
   TabsContent,
@@ -53,8 +53,8 @@ export const DesktopProfileLayout = ({
       </div>
 
       {/* Profile Card */}
-      <Card className='border-border/30 bg-card/20 backdrop-blur-lg relative'>
-        <CardContent className='p-0'>
+      <FmCommonCard className='border-border/30 backdrop-blur-lg relative'>
+        <FmCommonCardContent className='p-0'>
           <div className='grid grid-cols-[400px_1fr] gap-0'>
             {/* Left Column - Avatar */}
             <div className='relative h-full min-h-[600px]'>
@@ -152,12 +152,12 @@ export const DesktopProfileLayout = ({
                         );
 
                         return (
-                          <Card
+                          <FmCommonCard
                             key={event.id}
-                            className='border-border/30 bg-card/10 backdrop-blur-sm hover:bg-card/20 transition-colors cursor-pointer'
+                            className='border-border/30 backdrop-blur-sm hover:bg-card/20 transition-colors cursor-pointer'
                             onClick={() => navigate(`/events/${event.id}`)}
                           >
-                            <CardContent className='p-4'>
+                            <FmCommonCardContent className='p-4'>
                               <div className='flex gap-4'>
                                 {/* Event Image */}
                                 <div className='w-20 h-20 rounded-md overflow-hidden bg-muted flex-shrink-0'>
@@ -203,8 +203,8 @@ export const DesktopProfileLayout = ({
                                   </div>
                                 </div>
                               </div>
-                            </CardContent>
-                          </Card>
+                            </FmCommonCardContent>
+                          </FmCommonCard>
                         );
                       })}
                     </div>
@@ -226,8 +226,8 @@ export const DesktopProfileLayout = ({
               </Tabs>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </FmCommonCardContent>
+      </FmCommonCard>
     </div>
   );
 };

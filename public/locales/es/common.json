@@ -16,6 +16,7 @@
     "orgTools": "Herramientas de Org",
     "scanning": "Escaneo",
     "developer": "Desarrollador",
+    "developerHome": "Inicio de Desarrollador",
     "database": "Base de Datos",
     "adminPanel": "Panel de Admin",
     "site": "Sitio",
@@ -58,6 +59,8 @@
     "upload": "Subir",
     "download": "Descargar",
     "share": "Compartir",
+    "send": "Enviar Mensaje",
+    "sending": "Enviando...",
     "copy": "Copiar",
     "goBack": "Volver",
     "viewOrganizationDetails": "Ver Detalles de la Organización",
@@ -148,6 +151,7 @@
     "editingRecording": "Editando Grabación",
     "djSet": "DJ Set",
     "track": "Pista",
+    "primary": "Principal",
     "venueName": "Nombre del Lugar",
     "venueImage": "Imagen del Lugar",
     "capacity": "Capacidad",
@@ -497,7 +501,8 @@
       "adding": "Añadiendo...",
       "saving": "Guardando...",
       "preview": "Vista previa",
-      "addedRecordings": "Grabaciones Añadidas ({{count}})"
+      "addedRecordings": "Grabaciones Añadidas ({{count}})",
+      "setAsPrimary": "Establecer como principal"
     }
   },
   "formGroups": {
@@ -873,6 +878,7 @@
     "closeModal": "Cerrar modal",
     "editTrack": "Editar pista",
     "removeTrack": "Eliminar pista",
+    "setAsPrimary": "Establecer como DJ Set principal",
     "followOnInstagram": "Seguir a Force Majeure Events en Instagram",
     "goToStep": "Ir al paso {{step}}: {{title}}"
   },
@@ -893,6 +899,8 @@
     "musicPlatformRequired": "Se requiere al menos una plataforma de música:",
     "djSetRequirementMet": "Requisito de DJ Set cumplido ({{djSets}} DJ Set{{djSetsPlural}}{{tracks}})",
     "djSetRequired": "Necesitas añadir al menos una grabación de DJ Set",
+    "trackCount": ", {{count}} Pista",
+    "trackCount_other": ", {{count}} Pistas",
     "artistTermsTitle": "Términos y Condiciones de Envío de Artista",
     "artistTermsSubtitle": "Para Envío de Mix y Consideración para Espacios de Apertura",
     "scrollToBottom": "Por favor desplázate hasta el final de los términos para continuar.",
@@ -1726,6 +1734,24 @@
     "updated": "Foto de perfil actualizada",
     "updatedDescription": "Tu foto de perfil ha sido actualizada exitosamente."
   },
+  "profile": {
+    "backToEvents": "Volver a Eventos",
+    "editProfile": "Editar Perfil",
+    "defaultName": "Usuario",
+    "upcomingShows": "Próximos Shows",
+    "artist": "Artista",
+    "account": "Cuenta",
+    "browseEvents": "Ver Eventos",
+    "ticketCount": "{{count}} entrada",
+    "ticketCount_other": "{{count}} entradas",
+    "memberSince": "Miembro Desde",
+    "back": "Atrás",
+    "edit": "Editar",
+    "shows": "Shows",
+    "memberTitle": "Miembro",
+    "loadingShows": "Cargando shows...",
+    "noUpcomingShows": "Sin shows próximos"
+  },
   "emailPreview": {
     "title": "Vista Previa de Plantilla de Email",
     "testEmailAddress": "Dirección de Email de Prueba",
@@ -1790,6 +1816,8 @@
   },
   "artistRegistrationErrors": {
     "artistAlreadyExists": "Ya existe un artista con este nombre. Si eres tú, envía un email a management@forcemajeure.vip para ayuda vinculando tu perfil.",
+    "spotifyAlreadyExists": "Ya existe un artista con este perfil de Spotify. Si eres tú, envía un email a management@forcemajeure.vip para ayuda vinculando tu perfil.",
+    "soundcloudAlreadyExists": "Ya existe un artista con este perfil de SoundCloud. Si eres tú, envía un email a management@forcemajeure.vip para ayuda vinculando tu perfil.",
     "registrationPending": "Ya hay un registro con este nombre de artista pendiente de revisión. Si eres tú, envía un email a management@forcemajeure.vip para ayuda.",
     "submitFailed": "Error al enviar el registro. Por favor intenta de nuevo.",
     "submitSuccess": "¡Gracias por registrarte! Si tu sonido encaja con un evento futuro, ¡nos pondremos en contacto contigo!"
@@ -2148,8 +2176,11 @@
     "eventCheckoutDescription": "Flujo completo de compra de entradas con integración de Stripe, gestión de inventario y seguimiento de pedidos",
     "emailTemplate": "Vista Previa de Plantilla de Email",
     "emailTemplateDescription": "Previsualizar y probar plantillas de email de recibo con datos configurables y capacidades de envío en vivo",
+    "artistSignup": "Registro de Artista",
+    "artistSignupDescription": "Probar el flujo de registro de artista con datos pre-poblados de Spotify o SoundCloud, opciones configurables y pre-llenado de formulario",
     "categoryEcommerce": "E-Commerce",
     "categoryCommunication": "Comunicación",
+    "categoryArtistManagement": "Gestión de Artistas",
     "openDemo": "Abrir demo",
     "accessNote": "Estas demos solo son accesibles para usuarios admin y no son visibles en producción"
   },
@@ -2397,7 +2428,8 @@
   "artistPreview": {
     "spotlight": "Artista Destacado",
     "yourName": "Tu Nombre",
-    "clickToMakeMainImage": "Haz clic para establecer como imagen principal"
+    "clickToMakeMainImage": "Haz clic para establecer como imagen principal",
+    "djSet": "DJ Set"
   },
   "mobilePreview": {
     "preview": "Vista previa",

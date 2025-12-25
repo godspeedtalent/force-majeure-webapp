@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/shared';
 import { getImageUrl } from '@/shared';
 
-import { ArtistSummary, EventDetailsRecord, VenueDetails } from '../types';
+import { ArtistSummary, EventDetailsRecord, EventStatus, VenueDetails } from '../types';
 
 interface VenueRow {
   id: string;
@@ -28,6 +28,7 @@ interface EventRow {
   venue_id?: string | null;
   description: string | null;
   hero_image?: string | null;
+  status?: EventStatus | null;
   venue?: VenueRow | null;
   headliner_artist: {
     id: string;
@@ -140,6 +141,7 @@ const transformEvent = (row: EventRow): EventDetailsRecord => {
     venueDetails: transformVenue(row.venue ?? null),
     heroImage: getImageUrl(row.hero_image ?? row.headliner_artist?.image_url ?? null),
     description: row.description ?? null,
+    status: row.status ?? 'published',
   };
 };
 
@@ -160,6 +162,7 @@ const fetchEventDetails = async (
       venue_id,
       description,
       hero_image,
+      status,
       venue:venues(id, name, address_line_1, address_line_2, city, state, zip_code, image_url, website),
       headliner_artist:artists!events_headliner_id_fkey(id, name, genre, image_url),
       event_artists!left(

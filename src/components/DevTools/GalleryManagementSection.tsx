@@ -10,24 +10,17 @@ import {
   ImagePlus,
   Trash2,
   Edit,
-  FolderPlus,
-  ChevronDown,
   Upload,
   Image as ImageIcon,
   Video,
   Music,
-  Check,
 } from 'lucide-react';
 import { useGalleryManagement } from '@/features/media/hooks/useGalleryManagement';
+import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/common/shadcn/dropdown-menu';
+import { FmGallerySelectDropdown } from '@/components/common/forms/FmGallerySelectDropdown';
 import {
   Dialog,
   DialogContent,
@@ -58,13 +51,10 @@ export const GalleryManagementSection = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
-    galleries,
-    galleriesLoading,
     selectedGallery,
     setSelectedGallery,
     items,
     itemsLoading,
-    createGallery,
     deleteGallery,
     createMediaItem,
     updateMediaItem,
@@ -73,7 +63,6 @@ export const GalleryManagementSection = () => {
   } = useGalleryManagement();
 
   // UI State
-  const [showCreateGallery, setShowCreateGallery] = useState(false);
   const [showEditItem, setShowEditItem] = useState(false);
   const [editingItem, setEditingItem] = useState<ResolvedMediaItem | null>(
     null
@@ -84,11 +73,8 @@ export const GalleryManagementSection = () => {
     name: string;
   } | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadingCount, setUploadingCount] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-
-  // Form state
-  const [newGalleryName, setNewGalleryName] = useState('');
-  const [newGallerySlug, setNewGallerySlug] = useState('');
 
   // Edit form state
   const [editForm, setEditForm] = useState({
@@ -104,9 +90,12 @@ export const GalleryManagementSection = () => {
     async (files: FileList | null) => {
       if (!files || !selectedGallery) return;
 
+      const fileArray = Array.from(files);
       setUploading(true);
+      setUploadingCount(fileArray.length);
+
       try {
-        for (const file of Array.from(files)) {
+        for (const file of fileArray) {
           const filePath = await uploadFile(file, selectedGallery.id);
           if (filePath) {
             await createMediaItem({
@@ -120,9 +109,12 @@ export const GalleryManagementSection = () => {
               title: file.name.replace(/\.[^/.]+$/, ''),
             });
           }
+          // Decrement count after each file completes
+          setUploadingCount(prev => Math.max(0, prev - 1));
         }
       } finally {
         setUploading(false);
+        setUploadingCount(0);
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
@@ -150,26 +142,6 @@ export const GalleryManagementSection = () => {
     e.preventDefault();
     setIsDragging(false);
   }, []);
-
-  // Create gallery
-  const handleCreateGallery = async () => {
-    if (!newGalleryName || !newGallerySlug) return;
-
-    const gallery = await createGallery({
-      name: newGalleryName,
-      slug: newGallerySlug
-        .toLowerCase()
-        .replace(/[^a-z0-9-]/g, '-')
-        .replace(/-+/g, '-'),
-    });
-
-    if (gallery) {
-      setShowCreateGallery(false);
-      setNewGalleryName('');
-      setNewGallerySlug('');
-      setSelectedGallery(gallery);
-    }
-  };
 
   // Open edit modal
   const openEditModal = (item: ResolvedMediaItem) => {
@@ -218,49 +190,12 @@ export const GalleryManagementSection = () => {
     <div className='space-y-4'>
       {/* Header with gallery selector */}
       <div className='flex items-center gap-2'>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className='flex-1 flex items-center justify-between px-3 py-2 bg-white/5 border border-white/10 hover:border-white/20 transition-colors text-left'>
-              <span className='font-canela text-sm truncate'>
-                {selectedGallery?.name || 'Select gallery'}
-              </span>
-              <ChevronDown className='w-4 h-4 text-muted-foreground ml-2 flex-shrink-0' />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='start' className='w-56'>
-            {galleriesLoading ? (
-              <div className='p-2 text-center'>
-                <FmCommonLoadingSpinner size='sm' />
-              </div>
-            ) : galleries.length === 0 ? (
-              <div className='p-2 text-sm text-muted-foreground text-center'>
-                No galleries
-              </div>
-            ) : (
-              galleries.map(gallery => (
-                <DropdownMenuItem
-                  key={gallery.id}
-                  onClick={() => setSelectedGallery(gallery)}
-                  className='flex items-center justify-between'
-                >
-                  <span>{gallery.name}</span>
-                  {selectedGallery?.id === gallery.id && (
-                    <Check className='w-4 h-4 text-fm-gold' />
-                  )}
-                </DropdownMenuItem>
-              ))
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <FmCommonButton
-          variant='secondary'
-          size='sm'
-          onClick={() => setShowCreateGallery(true)}
-          className='flex-shrink-0'
-        >
-          <FolderPlus className='w-4 h-4' />
-        </FmCommonButton>
+        <FmGallerySelectDropdown
+          value={selectedGallery}
+          onChange={setSelectedGallery}
+          showCreateOption={true}
+          className='flex-1'
+        />
 
         {selectedGallery && (
           <FmCommonButton
@@ -367,6 +302,19 @@ export const GalleryManagementSection = () => {
 
               {/* Media grid */}
               <div className='grid grid-cols-3 gap-2'>
+                {/* Upload placeholders */}
+                {uploadingCount > 0 &&
+                  Array.from({ length: uploadingCount }).map((_, index) => (
+                    <div
+                      key={`uploading-${index}`}
+                      className='relative aspect-square bg-black/40 border border-fm-gold/30 overflow-hidden flex items-center justify-center'
+                    >
+                      <div className='flex flex-col items-center gap-2'>
+                        <FmCommonLoadingSpinner size='md' />
+                        <span className='text-xs text-muted-foreground'>Uploading...</span>
+                      </div>
+                    </div>
+                  ))}
                 {items.map(item => {
                   const TypeIcon = MEDIA_TYPE_ICONS[item.media_type];
                   return (
@@ -376,10 +324,11 @@ export const GalleryManagementSection = () => {
                     >
                       {/* Thumbnail */}
                       {item.media_type === 'image' ? (
-                        <img
+                        <ImageWithSkeleton
                           src={item.url}
                           alt={item.alt_text || ''}
                           className='w-full h-full object-cover'
+                          skeletonClassName='bg-black/60'
                         />
                       ) : (
                         <div className='w-full h-full flex items-center justify-center bg-black/60'>
@@ -433,63 +382,13 @@ export const GalleryManagementSection = () => {
         </div>
       )}
 
-      {/* Create Gallery Dialog */}
-      <Dialog open={showCreateGallery} onOpenChange={setShowCreateGallery}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Create gallery</DialogTitle>
-          </DialogHeader>
-          <div className='space-y-4 py-4'>
-            <FmCommonTextField
-              label='Name'
-              value={newGalleryName}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                setNewGalleryName(e.target.value);
-                // Auto-generate slug from name
-                setNewGallerySlug(
-                  e.target.value
-                    .toLowerCase()
-                    .replace(/[^a-z0-9-]/g, '-')
-                    .replace(/-+/g, '-')
-                );
-              }}
-              placeholder='Artist Signup Carousel'
-            />
-            <FmCommonTextField
-              label='Slug'
-              value={newGallerySlug}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setNewGallerySlug(e.target.value)
-              }
-              placeholder='artist-signup-carousel'
-              description='URL-safe identifier used in code'
-            />
-          </div>
-          <DialogFooter>
-            <FmCommonButton
-              variant='secondary'
-              onClick={() => setShowCreateGallery(false)}
-            >
-              Cancel
-            </FmCommonButton>
-            <FmCommonButton
-              variant='gold'
-              onClick={handleCreateGallery}
-              disabled={!newGalleryName || !newGallerySlug}
-            >
-              Create
-            </FmCommonButton>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
       {/* Edit Item Dialog */}
       <Dialog open={showEditItem} onOpenChange={setShowEditItem}>
-        <DialogContent>
+        <DialogContent className='max-h-[90vh] flex flex-col'>
           <DialogHeader>
             <DialogTitle>Edit media</DialogTitle>
           </DialogHeader>
-          <div className='space-y-4 py-4'>
+          <div className='space-y-4 py-4 overflow-y-auto flex-1'>
             {editingItem && editingItem.media_type === 'image' && (
               <div className='aspect-video bg-black/40 overflow-hidden mb-4'>
                 <img

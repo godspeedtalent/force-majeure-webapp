@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import { FmCommonCard, FmCommonCardContent, FmCommonCardHeader, FmCommonCardTitle } from '@/components/common/display/FmCommonCard';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface RevenueByTierChartProps {
@@ -15,33 +15,33 @@ export const RevenueByTierChart = ({ data }: RevenueByTierChartProps) => {
   }));
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t('analytics.revenueByTier')}</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <FmCommonCard>
+      <FmCommonCardHeader>
+        <FmCommonCardTitle>{t('analytics.revenueByTier')}</FmCommonCardTitle>
+      </FmCommonCardHeader>
+      <FmCommonCardContent>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-            <XAxis 
-              dataKey="tier" 
+            <XAxis
+              dataKey="tier"
               className="text-xs"
               stroke="hsl(var(--muted-foreground))"
             />
-            <YAxis 
+            <YAxis
               yAxisId="left"
               className="text-xs"
               stroke="hsl(var(--muted-foreground))"
               tickFormatter={(value) => `$${value}`}
             />
-            <YAxis 
-              yAxisId="right" 
+            <YAxis
+              yAxisId="right"
               orientation="right"
               className="text-xs"
               stroke="hsl(var(--muted-foreground))"
             />
-            <Tooltip 
-              contentStyle={{ 
+            <Tooltip
+              contentStyle={{
                 backgroundColor: 'hsl(var(--background))',
                 border: '1px solid hsl(var(--border))',
                 borderRadius: '6px',
@@ -52,23 +52,23 @@ export const RevenueByTierChart = ({ data }: RevenueByTierChartProps) => {
               }}
             />
             <Legend />
-            <Bar 
+            <Bar
               yAxisId="left"
-              dataKey="revenue" 
-              fill="hsl(var(--primary))" 
+              dataKey="revenue"
+              fill="hsl(var(--primary))"
               name={t('analytics.revenue')}
               radius={[8, 8, 0, 0]}
             />
-            <Bar 
+            <Bar
               yAxisId="right"
-              dataKey="tickets" 
-              fill="hsl(var(--secondary))" 
+              dataKey="tickets"
+              fill="hsl(var(--secondary))"
               name={t('analytics.ticketsSold')}
               radius={[8, 8, 0, 0]}
             />
           </BarChart>
         </ResponsiveContainer>
-      </CardContent>
-    </Card>
+      </FmCommonCardContent>
+    </FmCommonCard>
   );
 };

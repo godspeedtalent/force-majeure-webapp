@@ -3,6 +3,27 @@ import { useQueryClient, QueryKey } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 /**
+ * @deprecated Use `useAsyncMutation` instead. This hook will be removed in a future version.
+ *
+ * Migration guide:
+ * ```tsx
+ * // Before:
+ * const { mutate, isLoading } = useMutationWithToast({
+ *   mutationFn: (data) => api.updateUser(data),
+ *   successMessage: 'User updated',
+ *   errorTitle: 'Failed to update',
+ *   invalidateKeys: [['users']],
+ * });
+ *
+ * // After:
+ * const { mutate, isLoading } = useAsyncMutation({
+ *   mutationFn: (data) => api.updateUser(data),
+ *   successMessage: 'User updated',
+ *   errorMessage: 'Failed to update', // Note: renamed from errorTitle
+ *   invalidateKeys: [['users']],
+ * });
+ * ```
+ *
  * useMutationWithToast
  *
  * A hook that wraps async mutation operations with automatic toast notifications

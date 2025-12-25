@@ -32,6 +32,7 @@ CLAUDE.md (you are here)
 | Working with data grids | `docs/features/DATA_GRID_DOCUMENTATION.md` |
 | Calling Edge Functions | `docs/backend/EDGE_FUNCTIONS.md` |
 | Database migrations | `docs/backend/DATABASE_MIGRATION_STRATEGY.md` |
+| **Creating new tables** | `docs/backend/RLS_AND_GRANTS_GUIDE.md` (**CRITICAL**: Both GRANTs AND RLS required) |
 | Component refactoring | `docs/refactoring/COMPONENT_REFACTORING_GUIDE.md` |
 | Adding user-facing text/labels | See "Internationalization (i18n)" section below |
 | i18n remaining work | `docs/refactoring/I18N_REMAINING_WORK.md` |
@@ -977,10 +978,20 @@ public/locales/
 - ❌ Hardcode English strings in components
 - ❌ Add translation keys to only one language file
 - ❌ Use template literals for user-facing text without i18n
+- ❌ Add new strings without providing translations for ALL supported languages
 
 **DO:**
 
-- ✅ Add translation keys to all three language files
+- ✅ Add translation keys to all three language files (en, es, zh) simultaneously
 - ✅ Use `t()` function for all user-facing text
 - ✅ Follow existing key naming patterns (camelCase, nested by feature)
+- ✅ Provide actual translations, not just English text copied to other locales
 - ✅ Check `docs/refactoring/I18N_REMAINING_WORK.md` for remaining i18n work
+
+**CRITICAL: When adding ANY new user-facing text, you MUST:**
+
+1. Add the key with English text to `public/locales/en/[namespace].json`
+2. Add the key with Spanish translation to `public/locales/es/[namespace].json`
+3. Add the key with Chinese translation to `public/locales/zh/[namespace].json`
+
+All three files must be updated in the same change. Never add strings to just one locale file.

@@ -1,6 +1,6 @@
 import { LucideIcon } from 'lucide-react';
 import { ReactNode } from 'react';
-import { Card } from '@/components/common/shadcn/card';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { cn } from '@/shared';
 
 interface FmInfoCardProps {
@@ -42,7 +42,7 @@ export const FmInfoCard = ({
   iconClassName,
 }: FmInfoCardProps) => {
   return (
-    <Card className={cn('p-6 bg-muted/20 border-fm-gold/30 hover:bg-white/5 transition-colors duration-300', className)}>
+    <FmCommonCard className={cn('p-6 bg-muted/20 border-fm-gold/30 hover:bg-white/5 transition-colors duration-300', className)}>
       <div className='flex items-start gap-3'>
         {Icon && (
           <Icon
@@ -67,6 +67,6 @@ export const FmInfoCard = ({
           {children}
         </div>
       </div>
-    </Card>
+    </FmCommonCard>
   );
 };

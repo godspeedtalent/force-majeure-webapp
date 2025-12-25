@@ -140,6 +140,50 @@ Supabase provides built-in migration management:
    supabase migration list
    ```
 
+## New Table Checklist
+
+**CRITICAL**: When creating a new table that needs Supabase client access, you must configure BOTH GRANTs AND RLS policies. Missing either one causes 403 errors.
+
+See [RLS_AND_GRANTS_GUIDE.md](./RLS_AND_GRANTS_GUIDE.md) for complete documentation.
+
+### Quick Checklist
+
+```sql
+-- 1. Create the table
+CREATE TABLE my_table (...);
+
+-- 2. Enable RLS
+ALTER TABLE my_table ENABLE ROW LEVEL SECURITY;
+
+-- 3. Grant permissions (REQUIRED - often forgotten!)
+GRANT SELECT, INSERT, UPDATE, DELETE ON my_table TO authenticated;
+GRANT SELECT ON my_table TO anon;  -- if public read needed
+
+-- 4. Create RLS policies
+CREATE POLICY "..." ON my_table FOR SELECT USING (...);
+CREATE POLICY "..." ON my_table FOR INSERT WITH CHECK (...);
+-- etc.
+```
+
+### Common Mistake: Missing GRANTs
+
+❌ **Wrong** - Only RLS policies, no GRANTs:
+```sql
+ALTER TABLE my_table ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read" ON my_table FOR SELECT USING (true);
+-- Result: 403 Forbidden because authenticated/anon roles can't access table
+```
+
+✅ **Correct** - Both GRANTs and RLS policies:
+```sql
+ALTER TABLE my_table ENABLE ROW LEVEL SECURITY;
+GRANT SELECT ON my_table TO authenticated, anon;
+CREATE POLICY "Public read" ON my_table FOR SELECT USING (true);
+-- Result: Works correctly
+```
+
+---
+
 ## Migration Best Practices
 
 ### 1. **Always Test Migrations Locally First**

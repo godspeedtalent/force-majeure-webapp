@@ -8,6 +8,9 @@ const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY |
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
+// Extract project ref from URL for consistent storage key
+const projectRef = SUPABASE_URL.match(/https:\/\/([^.]+)/)?.[1] || 'force-majeure';
+
 export const supabase = createClient<Database>(
   SUPABASE_URL,
   SUPABASE_PUBLISHABLE_KEY,
@@ -16,6 +19,7 @@ export const supabase = createClient<Database>(
       storage: localStorage,
       persistSession: true,
       autoRefreshToken: true,
+      storageKey: `sb-${projectRef}-auth-token`,
     },
   }
 );
