@@ -18,6 +18,7 @@ import {
   Disc3,
   HardDrive,
   Images,
+  UserPlus,
 } from 'lucide-react';
 import { supabase } from '@/shared';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -34,6 +35,7 @@ import { refreshAllTableSchemas } from '@/features/data-grid/services/schemaRefr
 import { FmCommonButton } from '@/components/common/buttons';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { GalleryManagementSection } from '@/components/DevTools/GalleryManagementSection';
+import { ArtistRegistrationsManagement } from '../admin/ArtistRegistrationsManagement';
 
 type DatabaseTab =
   | 'overview'
@@ -42,6 +44,7 @@ type DatabaseTab =
   | 'galleries'
   | 'organizations'
   | 'recordings'
+  | 'registrations'
   | 'users'
   | 'venues';
 
@@ -65,8 +68,22 @@ export default function DeveloperDatabase() {
 
   // Get active tab from URL query string, fallback to 'overview'
   const tabFromUrl = searchParams.get('table') as DatabaseTab | null;
-  const validTabs: DatabaseTab[] = ['overview', 'artists', 'events', 'galleries', 'organizations', 'recordings', 'users', 'venues'];
+  const validTabs: DatabaseTab[] = ['overview', 'artists', 'events', 'galleries', 'organizations', 'recordings', 'registrations', 'users', 'venues'];
   const activeTab: DatabaseTab = tabFromUrl && validTabs.includes(tabFromUrl) ? tabFromUrl : 'overview';
+
+  // Fetch pending registrations count for badge (needs to be before navigationGroups useMemo)
+  const { data: pendingRegistrationsCount = 0 } = useQuery({
+    queryKey: ['artist-registrations-pending-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('artist_registrations')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'pending');
+
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
 
   // Navigation groups configuration - conditionally include admin-only tabs
   const navigationGroups: FmCommonSideNavGroup<DatabaseTab>[] = useMemo(() => {
@@ -114,6 +131,17 @@ export default function DeveloperDatabase() {
           badge: <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />,
         },
         {
+          id: 'registrations',
+          label: t('artistRegistrations.navLabel'),
+          icon: UserPlus,
+          description: t('artistRegistrations.navDescription'),
+          badge: pendingRegistrationsCount > 0 ? (
+            <span className="ml-1 px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
+              {pendingRegistrationsCount}
+            </span>
+          ) : undefined,
+        },
+        {
           id: 'users',
           label: 'Users',
           icon: Users,
@@ -157,7 +185,7 @@ export default function DeveloperDatabase() {
         ],
       },
     ];
-  }, [isAdmin]);
+  }, [isAdmin, t, pendingRegistrationsCount]);
 
   // Mobile horizontal tabs configuration
   const mobileTabs: MobileHorizontalTab[] = useMemo(() => {
@@ -170,6 +198,7 @@ export default function DeveloperDatabase() {
     if (isAdmin) {
       baseTabs.push(
         { id: 'organizations', label: 'Orgs', icon: Building2 },
+        { id: 'registrations', label: 'Regs', icon: UserPlus },
         { id: 'users', label: 'Users', icon: Users }
       );
     }
@@ -798,6 +827,8 @@ export default function DeveloperDatabase() {
             <GalleryManagementSection />
           </div>
         )}
+
+        {activeTab === 'registrations' && <ArtistRegistrationsManagement />}
       </div>
 
       {/* Delete Confirmation Dialogs */}

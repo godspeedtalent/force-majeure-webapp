@@ -1453,7 +1453,23 @@
     "linkArtistModalTitle": "Vincular Cuenta de Artista",
     "linkArtistModalDescription": "Busca tu perfil de artista y envía una solicitud para vincularlo a tu cuenta. Un administrador revisará y aprobará tu solicitud.",
     "searchArtistPlaceholder": "Buscar tu perfil de artista...",
-    "requestingToLink": "Estás solicitando vincular"
+    "requestingToLink": "Estás solicitando vincular",
+    "registration": {
+      "pendingTitle": "Registro en Revisión",
+      "pendingDescription": "Tu registro de artista está siendo revisado por nuestro equipo. Te notificaremos cuando se tome una decisión.",
+      "approvedTitle": "Registro Aprobado",
+      "approvedDescription": "¡Felicidades! Tu registro de artista ha sido aprobado. Tu perfil de artista está siendo creado.",
+      "deniedTitle": "Registro Rechazado",
+      "deniedDescription": "Lamentablemente, tu registro de artista no fue aprobado en este momento. Por favor revisa los comentarios a continuación.",
+      "reviewerNotes": "Comentarios del revisor",
+      "submittedOn": "Enviado el {{date}}",
+      "submitNewApplication": "Enviar Nueva Solicitud",
+      "waitingPeriodMessage": "Puedes enviar una nueva solicitud después de un período de espera de 3 meses.",
+      "canReapplyIn": "Puedes volver a solicitar en {{time}}.",
+      "monthsRemaining": "{{count}} meses",
+      "daysRemaining": "{{count}} días",
+      "dayRemaining": "1 día"
+    }
   },
   "guestList": {
     "loading": "Cargando configuración de lista de invitados...",
@@ -1820,7 +1836,10 @@
     "soundcloudAlreadyExists": "Ya existe un artista con este perfil de SoundCloud. Si eres tú, envía un email a management@forcemajeure.vip para ayuda vinculando tu perfil.",
     "registrationPending": "Ya hay un registro con este nombre de artista pendiente de revisión. Si eres tú, envía un email a management@forcemajeure.vip para ayuda.",
     "submitFailed": "Error al enviar el registro. Por favor intenta de nuevo.",
-    "submitSuccess": "¡Gracias por registrarte! Si tu sonido encaja con un evento futuro, ¡nos pondremos en contacto contigo!"
+    "submitSuccess": "¡Gracias por registrarte! Si tu sonido encaja con un evento futuro, ¡nos pondremos en contacto contigo!",
+    "userAlreadyHasArtist": "Ya tienes un perfil de artista vinculado a tu cuenta. Puedes gestionarlo desde la configuración de tu perfil.",
+    "userHasPendingRegistration": "Ya tienes un registro de artista pendiente. Por favor espera a que sea revisado antes de enviar otro.",
+    "deniedWaitingPeriod": "Tu registro anterior fue rechazado. Puedes enviar una nueva solicitud en {{time}}."
   },
   "orders": {
     "cancelSuccess": "Pedido cancelado exitosamente",
@@ -1888,8 +1907,57 @@
       "added": "Añadido",
       "parentGenre": "Género Principal",
       "subgenres": "Subgéneros",
-      "artists": "Artistas"
+      "artists": "Artistas",
+      "genres": "Géneros",
+      "status": "Estado",
+      "socials": "Redes Sociales"
     }
+  },
+  "artistRegistrations": {
+    "title": "Registros de Artistas",
+    "description": "Revisar y gestionar solicitudes de registro de artistas.",
+    "navLabel": "Registros",
+    "navDescription": "Solicitudes de registro de artistas",
+    "viewDetails": "Ver Detalles",
+    "approve": "Aprobar",
+    "deny": "Rechazar",
+    "approveSuccess": "{{name}} ha sido aprobado",
+    "approveFailed": "Error al aprobar el registro",
+    "denySuccess": "{{name}} ha sido rechazado",
+    "denyFailed": "Error al rechazar el registro",
+    "confirmApprove": "Aprobar Registro",
+    "confirmApproveDescription": "¿Estás seguro de que quieres aprobar el registro de {{name}}? Esto creará un perfil de artista.",
+    "confirmDeny": "Rechazar Registro",
+    "confirmDenyDescription": "¿Estás seguro de que quieres rechazar el registro de {{name}}? Puedes agregar notas explicando el motivo.",
+    "reviewerNotes": "Notas del Revisor",
+    "notesPlaceholder": "Agregar notas sobre esta aprobación...",
+    "denyNotesPlaceholder": "Agregar notas explicando el motivo del rechazo...",
+    "submittedAt": "Enviado",
+    "performanceHistory": "Historial de Presentaciones",
+    "paidShows": "Shows Pagados",
+    "talentDifferentiator": "Qué Te Hace Único",
+    "crowdSources": "Fuentes de Público",
+    "pressImages": "Imágenes de Prensa",
+    "filter": {
+      "all": "Todos",
+      "pending": "Pendientes",
+      "approved": "Aprobados",
+      "denied": "Rechazados"
+    },
+    "status": {
+      "pending": "Pendiente",
+      "approved": "Aprobado",
+      "denied": "Rechazado"
+    },
+    "delete": "Eliminar",
+    "deleteSuccess": "El registro de {{name}} ha sido eliminado",
+    "deleteFailed": "Error al eliminar el registro",
+    "confirmDelete": "Eliminar Registro",
+    "confirmDeleteDescription": "¿Estás seguro de que quieres eliminar permanentemente el registro de {{name}}?",
+    "deletePermanently": "Eliminar Permanentemente",
+    "deleteVsDenyTitle": "¿Cuál es la diferencia?",
+    "denyExplanation": "Mantiene el registro en el sistema con estado \"rechazado\". El usuario puede ver que su solicitud fue revisada y rechazada. Útil para mantener un historial.",
+    "deleteExplanation": "Elimina permanentemente el registro del sistema. El usuario podrá enviar un nuevo registro. Usar para spam, duplicados o datos de prueba."
   },
   "undercardRequests": {
     "sectionTitle": "Solicitudes de Artistas",

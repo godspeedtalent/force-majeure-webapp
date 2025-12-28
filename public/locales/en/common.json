@@ -1466,7 +1466,23 @@
     "linkArtistModalTitle": "Link Artist Account",
     "linkArtistModalDescription": "Search for your artist profile and submit a request to link it to your account. An admin will review and approve your request.",
     "searchArtistPlaceholder": "Search for your artist profile...",
-    "requestingToLink": "You're requesting to link"
+    "requestingToLink": "You're requesting to link",
+    "registration": {
+      "pendingTitle": "Registration Under Review",
+      "pendingDescription": "Your artist registration is currently being reviewed by our team. We'll notify you once a decision has been made.",
+      "approvedTitle": "Registration Approved",
+      "approvedDescription": "Congratulations! Your artist registration has been approved. Your artist profile is being created.",
+      "deniedTitle": "Registration Denied",
+      "deniedDescription": "Unfortunately, your artist registration was not approved at this time. Please see the feedback below.",
+      "reviewerNotes": "Reviewer feedback",
+      "submittedOn": "Submitted on {{date}}",
+      "submitNewApplication": "Submit New Application",
+      "waitingPeriodMessage": "You may submit a new application after a 3-month waiting period.",
+      "canReapplyIn": "You can reapply in {{time}}.",
+      "monthsRemaining": "{{count}} months",
+      "daysRemaining": "{{count}} days",
+      "dayRemaining": "1 day"
+    }
   },
   "guestList": {
     "loading": "Loading guest list settings...",
@@ -1833,7 +1849,10 @@
     "soundcloudAlreadyExists": "An artist with this SoundCloud profile already exists. If this is you, please email management@forcemajeure.vip for help linking your profile.",
     "registrationPending": "A registration with this artist name is already pending review. If this is you, please email management@forcemajeure.vip for help.",
     "submitFailed": "Failed to submit registration. Please try again.",
-    "submitSuccess": "Thank you for registering! If your sound is a good fit for a future event, we'll reach out to you!"
+    "submitSuccess": "Thank you for registering! If your sound is a good fit for a future event, we'll reach out to you!",
+    "userAlreadyHasArtist": "You already have an artist profile linked to your account. You can manage it from your profile settings.",
+    "userHasPendingRegistration": "You already have a pending artist registration. Please wait for it to be reviewed before submitting another.",
+    "deniedWaitingPeriod": "Your previous registration was denied. You can submit a new application in {{time}}."
   },
   "orders": {
     "cancelSuccess": "Order cancelled successfully",
@@ -1901,8 +1920,57 @@
       "added": "Added",
       "parentGenre": "Parent Genre",
       "subgenres": "Subgenres",
-      "artists": "Artists"
+      "artists": "Artists",
+      "genres": "Genres",
+      "status": "Status",
+      "socials": "Socials"
     }
+  },
+  "artistRegistrations": {
+    "title": "Artist Registrations",
+    "description": "Review and manage artist registration requests.",
+    "navLabel": "Registrations",
+    "navDescription": "Artist registration requests",
+    "viewDetails": "View Details",
+    "approve": "Approve",
+    "deny": "Deny",
+    "approveSuccess": "{{name}} has been approved",
+    "approveFailed": "Failed to approve registration",
+    "denySuccess": "{{name}} has been denied",
+    "denyFailed": "Failed to deny registration",
+    "confirmApprove": "Approve Registration",
+    "confirmApproveDescription": "Are you sure you want to approve {{name}}'s registration? This will create an artist profile for them.",
+    "confirmDeny": "Deny Registration",
+    "confirmDenyDescription": "Are you sure you want to deny {{name}}'s registration? You can add notes explaining the reason.",
+    "reviewerNotes": "Reviewer Notes",
+    "notesPlaceholder": "Add any notes about this approval...",
+    "denyNotesPlaceholder": "Add notes explaining the reason for denial...",
+    "submittedAt": "Submitted",
+    "performanceHistory": "Performance History",
+    "paidShows": "Paid Shows",
+    "talentDifferentiator": "What Makes You Unique",
+    "crowdSources": "Crowd Sources",
+    "pressImages": "Press Images",
+    "filter": {
+      "all": "All",
+      "pending": "Pending",
+      "approved": "Approved",
+      "denied": "Denied"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "denied": "Denied"
+    },
+    "delete": "Delete",
+    "deleteSuccess": "{{name}}'s registration has been deleted",
+    "deleteFailed": "Failed to delete registration",
+    "confirmDelete": "Delete Registration",
+    "confirmDeleteDescription": "Are you sure you want to permanently delete {{name}}'s registration?",
+    "deletePermanently": "Delete Permanently",
+    "deleteVsDenyTitle": "What's the difference?",
+    "denyExplanation": "Keeps the registration in the system with a \"denied\" status. The user can see their request was reviewed and denied. Useful for audit trail.",
+    "deleteExplanation": "Permanently removes the registration from the system. The user will be able to submit a new registration. Use for spam, duplicates, or test data."
   },
   "undercardRequests": {
     "sectionTitle": "Artist Requests",

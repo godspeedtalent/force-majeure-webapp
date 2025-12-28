@@ -63,7 +63,7 @@ export class EmailService {
         'send-email',
         {
           body: {
-            to: data.purchaser.email,
+            to: [data.purchaser.email],
             subject: `Order Confirmation - ${data.event.title}`,
             html: htmlContent,
             attachments: pdfAttachment
@@ -221,7 +221,7 @@ export class EmailService {
         'send-email',
         {
           body: {
-            to: data.email,
+            to: [data.email],
             subject: `Artist Registration Received - Force Majeure`,
             html: htmlContent,
           },

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Music2, ExternalLink, Settings, Link2, Unlink, Trash2, Clock, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
+import { Music2, ExternalLink, Settings, Link2, Unlink, Trash2, Clock, AlertCircle, CheckCircle2, XCircle, Loader2, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
@@ -10,6 +10,8 @@ import { logger } from '@/shared';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmI18nCommon } from '@/components/common/i18n';
 import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
+import { ArtistPreviewCard } from '@/pages/artists/components/ArtistPreviewCard';
+import type { ArtistRegistrationFormData } from '@/pages/artists/types/registration';
 import { Button } from '@/components/common/shadcn/button';
 import {
   Dialog,
@@ -49,6 +51,86 @@ interface UserRequest {
   resolved_at: string | null;
 }
 
+interface PendingArtistRegistration {
+  id: string;
+  artist_name: string;
+  bio: string;
+  profile_image_url: string | null;
+  press_images: string[] | null;
+  genres: string[] | null;
+  instagram_handle: string | null;
+  spotify_url: string | null;
+  soundcloud_url: string | null;
+  tiktok_handle: string | null;
+  spotify_track_url: string | null;
+  soundcloud_set_url: string | null;
+  status: 'pending' | 'approved' | 'denied';
+  submitted_at: string;
+  reviewed_at: string | null;
+  reviewer_notes: string | null;
+}
+
+// Helper to convert registration data to form data format for ArtistPreviewCard
+function convertRegistrationToFormData(
+  registration: PendingArtistRegistration & { genreNames: string[] }
+): ArtistRegistrationFormData {
+  const pressImages = registration.press_images || [];
+
+  // Build tracks array from stored URLs
+  const tracks: ArtistRegistrationFormData['tracks'] = [];
+  if (registration.spotify_track_url) {
+    tracks.push({
+      id: 'spotify-track',
+      name: 'Spotify Track',
+      url: registration.spotify_track_url,
+      platform: 'spotify',
+      recordingType: 'track',
+      isPrimaryDjSet: false,
+    });
+  }
+  if (registration.soundcloud_set_url) {
+    tracks.push({
+      id: 'soundcloud-set',
+      name: 'DJ Set',
+      url: registration.soundcloud_set_url,
+      platform: 'soundcloud',
+      recordingType: 'dj_set',
+      isPrimaryDjSet: true,
+    });
+  }
+
+  return {
+    stageName: registration.artist_name,
+    bio: registration.bio || '',
+    genres: registration.genreNames?.map((name, i) => ({
+      id: registration.genres?.[i] || name,
+      name,
+      parentId: null,
+      createdAt: null,
+      updatedAt: null,
+    })) || [],
+    profileImageUrl: registration.profile_image_url || '',
+    pressImage1Url: pressImages[0] || '',
+    pressImage2Url: pressImages[1] || '',
+    pressImage3Url: pressImages[2] || '',
+    instagramHandle: registration.instagram_handle || '',
+    soundcloudUrl: registration.soundcloud_url || '',
+    spotifyUrl: registration.spotify_url || '',
+    tiktokHandle: registration.tiktok_handle || '',
+    tracks,
+    spotifyArtistId: null,
+    soundcloudUsername: null,
+    cityId: null,
+    notificationsOptIn: false,
+    paidShowCountGroup: '',
+    talentDifferentiator: '',
+    crowdSources: '',
+    agreeToTerms: false,
+    followOnInstagram: false,
+    stageNameError: null,
+  };
+}
+
 export function UserArtistTab() {
   const { t } = useTranslation('common');
   const { t: tToast } = useTranslation('toasts');
@@ -80,6 +162,52 @@ export function UserArtistTab() {
       }
 
       return data as LinkedArtist | null;
+    },
+    enabled: !!user?.id,
+  });
+
+  // Fetch artist registration (pending, approved, or denied)
+  const { data: artistRegistration, isLoading: loadingRegistration } = useQuery({
+    queryKey: ['user-artist-registration', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+
+      const { data, error } = await supabase
+        .from('artist_registrations')
+        .select('id, artist_name, bio, profile_image_url, press_images, genres, instagram_handle, spotify_url, soundcloud_url, tiktok_handle, spotify_track_url, soundcloud_set_url, status, submitted_at, reviewed_at, reviewer_notes')
+        .eq('user_id', user.id)
+        .order('submitted_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+        logger.error('Failed to fetch artist registration', { error: error.message, userId: user.id });
+        throw error;
+      }
+
+      if (!data) return null;
+
+      // Fetch genre names if genre IDs are present
+      let genreNames: string[] = [];
+      if (data.genres && data.genres.length > 0) {
+        const { data: genresData } = await supabase
+          .from('genres')
+          .select('id, name')
+          .in('id', data.genres);
+
+        if (genresData) {
+          // Map IDs to names in the same order as the original genres array
+          const genreMap = new Map(genresData.map(g => [g.id, g.name]));
+          genreNames = data.genres
+            .map(id => genreMap.get(id))
+            .filter((name): name is string => !!name);
+        }
+      }
+
+      return {
+        ...data,
+        genreNames, // Add resolved genre names
+      } as PendingArtistRegistration & { genreNames: string[] };
     },
     enabled: !!user?.id,
   });
@@ -200,7 +328,7 @@ export function UserArtistTab() {
     },
   });
 
-  const isLoading = loadingArtist || loadingRequests;
+  const isLoading = loadingArtist || loadingRequests || loadingRegistration;
 
   if (isLoading) {
     return (
@@ -233,6 +361,128 @@ export function UserArtistTab() {
         </FmCommonCard>
       </div>
     );
+  }
+
+  // Show artist registration status (pending or denied only - approved shows editable view)
+  if (artistRegistration && !linkedArtist) {
+    const isPending = artistRegistration.status === 'pending';
+    const isDenied = artistRegistration.status === 'denied';
+
+    // For pending or denied, show status card
+    if (isPending || isDenied) {
+      // Get the status-specific styling
+      const statusConfig = {
+        pending: {
+          borderClass: 'border-fm-gold/30',
+          bgClass: 'bg-fm-gold/5',
+          iconBgClass: 'bg-fm-gold/10',
+          iconClass: 'text-fm-gold',
+          Icon: Clock,
+        },
+        denied: {
+          borderClass: 'border-fm-danger/30',
+          bgClass: 'bg-fm-danger/5',
+          iconBgClass: 'bg-fm-danger/10',
+          iconClass: 'text-fm-danger',
+          Icon: XCircle,
+        },
+      };
+
+      const config = statusConfig[artistRegistration.status as keyof typeof statusConfig] || statusConfig.pending;
+      const StatusIcon = config.Icon;
+
+      return (
+        <div className='space-y-6'>
+          {/* Registration Status Card */}
+          <FmCommonCard className={`${config.borderClass} ${config.bgClass}`}>
+            <FmCommonCardContent className='p-6'>
+              <div className='flex items-start gap-4'>
+                <div className={`p-3 ${config.iconBgClass} rounded-none`}>
+                  <StatusIcon className={`h-6 w-6 ${config.iconClass}`} />
+                </div>
+                <div className='flex-1'>
+                  <h3 className={`font-canela text-lg font-medium mb-1 ${isPending ? 'text-fm-gold' : 'text-fm-danger'}`}>
+                    {isPending && t('userArtist.registration.pendingTitle')}
+                    {isDenied && t('userArtist.registration.deniedTitle')}
+                  </h3>
+                  <p className='text-muted-foreground text-sm mb-3'>
+                    {isPending && t('userArtist.registration.pendingDescription')}
+                    {isDenied && t('userArtist.registration.deniedDescription')}
+                  </p>
+                  {isDenied && artistRegistration.reviewer_notes && (
+                    <div className='p-3 bg-white/5 border border-white/10 mb-3'>
+                      <p className='text-xs text-muted-foreground mb-1'>{t('userArtist.registration.reviewerNotes')}:</p>
+                      <p className='text-sm'>{artistRegistration.reviewer_notes}</p>
+                    </div>
+                  )}
+                  <p className='text-xs text-muted-foreground'>
+                    {t('userArtist.registration.submittedOn', { date: new Date(artistRegistration.submitted_at).toLocaleDateString() })}
+                  </p>
+                </div>
+              </div>
+            </FmCommonCardContent>
+          </FmCommonCard>
+
+          {/* Artist Preview Card */}
+          <ArtistPreviewCard
+            formData={convertRegistrationToFormData(artistRegistration)}
+            genreBadges={artistRegistration.genreNames?.map(name => ({ label: name })) || []}
+          />
+
+          {/* Action for denied registrations */}
+          {isDenied && (() => {
+          // Calculate if 3 months have passed since denial
+          const denialDate = artistRegistration.reviewed_at
+            ? new Date(artistRegistration.reviewed_at)
+            : new Date(artistRegistration.submitted_at);
+          const threeMonthsLater = new Date(denialDate);
+          threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+          const now = new Date();
+          const canReapply = now >= threeMonthsLater;
+
+          if (canReapply) {
+            return (
+              <div className='text-center'>
+                <FmCommonButton
+                  variant='secondary'
+                  icon={FileText}
+                  onClick={() => navigate('/artists/register')}
+                >
+                  {t('userArtist.registration.submitNewApplication')}
+                </FmCommonButton>
+              </div>
+            );
+          }
+
+          // Calculate remaining wait time
+          const msRemaining = threeMonthsLater.getTime() - now.getTime();
+          const daysRemaining = Math.ceil(msRemaining / (1000 * 60 * 60 * 24));
+          const monthsRemaining = Math.ceil(daysRemaining / 30);
+          const waitTimeText = monthsRemaining > 1
+            ? t('userArtist.registration.monthsRemaining', { count: monthsRemaining })
+            : daysRemaining > 1
+              ? t('userArtist.registration.daysRemaining', { count: daysRemaining })
+              : t('userArtist.registration.dayRemaining');
+
+          return (
+            <FmCommonCard className='border-white/10 bg-white/5'>
+              <FmCommonCardContent className='p-4 text-center'>
+                <Clock className='h-5 w-5 text-muted-foreground mx-auto mb-2' />
+                <p className='text-sm text-muted-foreground mb-1'>
+                  {t('userArtist.registration.waitingPeriodMessage')}
+                </p>
+                <p className='text-xs text-muted-foreground'>
+                  {t('userArtist.registration.canReapplyIn', { time: waitTimeText })}
+                </p>
+              </FmCommonCardContent>
+            </FmCommonCard>
+          );
+        })()}
+      </div>
+    );
+    }
+    // If status is approved but no linked artist yet, this is a transitional state
+    // The user should see their linked artist once the artist record is created
   }
 
   // Show linked artist

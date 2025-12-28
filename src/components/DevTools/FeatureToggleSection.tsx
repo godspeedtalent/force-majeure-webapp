@@ -53,6 +53,7 @@ export const FeatureToggleSection = () => {
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [allEnvId, setAllEnvId] = useState<string | null>(null);
   const currentEnvName = useEnvironmentName();
 
   // Load session overrides from storage
@@ -83,6 +84,7 @@ export const FeatureToggleSection = () => {
       const environmentIds = [currentEnv.id];
       if (allEnvData) {
         environmentIds.push(allEnvData.id);
+        setAllEnvId(allEnvData.id);
       }
 
       const { data, error } = await (supabase as any)
@@ -115,11 +117,33 @@ export const FeatureToggleSection = () => {
     fetchFlags();
   }, []);
 
-  // Group flags by group_name from database
+  // Deduplicate and group flags by group_name from database
+  // When same flag exists for multiple environments, prefer current env over 'all'
   const { groupedFlags, groupOrder } = useMemo(() => {
+    // First, deduplicate flags - prefer current environment over 'all' environment
+    const flagMap = new Map<string, FeatureFlagData>();
+
+    // Process all flags, preferring current environment over 'all' environment
+    flags.forEach(flag => {
+      const existing = flagMap.get(flag.flag_name);
+      if (!existing) {
+        // First time seeing this flag, add it
+        flagMap.set(flag.flag_name, flag);
+      } else if (allEnvId) {
+        // We have a duplicate - prefer the current environment's value
+        // If existing is from 'all' env and new one is not, replace it
+        if (existing.environment_id === allEnvId && flag.environment_id !== allEnvId) {
+          flagMap.set(flag.flag_name, flag);
+        }
+        // Otherwise keep the existing one (it's from current env or we saw it first)
+      }
+    });
+
+    const deduplicatedFlags = Array.from(flagMap.values());
+
     const grouped: Record<string, FeatureFlagData[]> = {};
 
-    flags.forEach(flag => {
+    deduplicatedFlags.forEach(flag => {
       const groupName = flag.group_name || 'general';
       if (!grouped[groupName]) {
         grouped[groupName] = [];
@@ -142,7 +166,7 @@ export const FeatureToggleSection = () => {
     });
 
     return { groupedFlags: grouped, groupOrder: order };
-  }, [flags]);
+  }, [flags, allEnvId]);
 
   const handleSessionOverrideToggle = (flagName: string) => {
     const currentOverride = sessionOverrides[flagName];
@@ -321,7 +345,7 @@ export const FeatureToggleSection = () => {
                 const isExpanded = expandedFlags.has(flag.flag_name);
 
                 return (
-                  <div key={flag.flag_name} className='rounded-sm bg-white/5 backdrop-blur-sm border border-white/5'>
+                  <div key={`${flag.flag_name}-${flag.environment_id}`} className='rounded-sm bg-white/5 backdrop-blur-sm border border-white/5'>
                     <div className='flex items-center gap-1 px-1.5 py-1'>
                       {/* Override expand/collapse button */}
                       <FmPortalTooltip

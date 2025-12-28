@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ArtistRegistrationLayout } from '@/components/layout/ArtistRegistrationLayout';
 import { useIsMobile } from '@/shared';
 import { CarouselApi } from '@/components/common/shadcn/carousel';
+import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 
 // Import centralized types and layout components
 import { DEFAULT_FORM_DATA } from './types/registration';
@@ -12,6 +13,7 @@ import { ArtistRegisterDesktop } from './components/ArtistRegisterDesktop';
 import { ArtistRegisterMobile } from './components/ArtistRegisterMobile';
 import { useArtistRegistrationValidation } from './hooks/useArtistRegistrationValidation';
 import { useArtistRegistrationSubmit } from './hooks/useArtistRegistrationSubmit';
+import { useExistingArtistCheck } from './hooks/useExistingArtistCheck';
 
 const ArtistRegister = () => {
   const { t } = useTranslation('common');
@@ -21,6 +23,10 @@ const ArtistRegister = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<ArtistRegistrationFormData>(DEFAULT_FORM_DATA);
   const [previewExpanded, setPreviewExpanded] = useState(false);
+
+  // Check if user already has an artist account or pending registration
+  // This will automatically redirect them with a toast if found
+  const { isLoading: checkingExistingArtist } = useExistingArtistCheck({ redirectOnFound: true });
 
   // Use extracted hooks for validation and submission
   const { validateStep, validateAllSteps } = useArtistRegistrationValidation();
@@ -158,6 +164,17 @@ const ArtistRegister = () => {
     genreBadges,
     handleStepClick,
   };
+
+  // Show loading while checking for existing artist/registration
+  if (checkingExistingArtist) {
+    return (
+      <ArtistRegistrationLayout>
+        <div className='flex items-center justify-center min-h-[50vh]'>
+          <FmCommonLoadingSpinner size='lg' />
+        </div>
+      </ArtistRegistrationLayout>
+    );
+  }
 
   return (
     <ArtistRegistrationLayout>

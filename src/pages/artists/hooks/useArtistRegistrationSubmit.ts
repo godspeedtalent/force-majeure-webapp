@@ -8,6 +8,7 @@ import { logApiError } from '@/shared';
 import { logger } from '@/shared';
 import { EmailService } from '@/services/email/EmailService';
 import type { ArtistRegistrationFormData } from '../types/registration';
+import { checkUserCanRegister } from './useExistingArtistCheck';
 
 interface SubmitOptions {
   eventId?: string | null;
@@ -27,6 +28,27 @@ export function useArtistRegistrationSubmit() {
     setIsSubmitting(true);
 
     try {
+      // Check if user already has an artist account, pending registration, or denied in waiting period
+      const { canRegister, reason, waitingPeriodRemainingDays } = await checkUserCanRegister(user?.id);
+      if (!canRegister) {
+        if (reason === 'linked_artist') {
+          toast.error(t('artistRegistrationErrors.userAlreadyHasArtist'), { duration: 6000 });
+        } else if (reason === 'pending_registration') {
+          toast.error(t('artistRegistrationErrors.userHasPendingRegistration'), { duration: 6000 });
+        } else if (reason === 'denied_waiting_period' && waitingPeriodRemainingDays !== null) {
+          const monthsRemaining = Math.ceil(waitingPeriodRemainingDays / 30);
+          const timeText = monthsRemaining > 1
+            ? t('userArtist.registration.monthsRemaining', { count: monthsRemaining })
+            : waitingPeriodRemainingDays > 1
+              ? t('userArtist.registration.daysRemaining', { count: waitingPeriodRemainingDays })
+              : t('userArtist.registration.dayRemaining');
+          toast.error(t('artistRegistrationErrors.deniedWaitingPeriod', { time: timeText }), { duration: 6000 });
+        }
+        navigate('/artists/signup', { replace: true });
+        setIsSubmitting(false);
+        return false;
+      }
+
       // Check for duplicate artist name in existing artists
       const { data: existingArtist } = await supabase
         .from('artists')

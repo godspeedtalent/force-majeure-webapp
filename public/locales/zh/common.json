@@ -1451,7 +1451,23 @@
     "linkArtistModalTitle": "关联艺术家账户",
     "linkArtistModalDescription": "搜索您的艺术家资料并提交关联请求。管理员将审核并批准您的请求。",
     "searchArtistPlaceholder": "搜索您的艺术家资料...",
-    "requestingToLink": "您正在请求关联"
+    "requestingToLink": "您正在请求关联",
+    "registration": {
+      "pendingTitle": "注册审核中",
+      "pendingDescription": "您的艺人注册正在由我们的团队审核。我们会在做出决定后通知您。",
+      "approvedTitle": "注册已批准",
+      "approvedDescription": "恭喜！您的艺人注册已获批准。您的艺人资料正在创建中。",
+      "deniedTitle": "注册被拒绝",
+      "deniedDescription": "很遗憾，您的艺人注册目前未获批准。请查看以下反馈。",
+      "reviewerNotes": "审核反馈",
+      "submittedOn": "提交于{{date}}",
+      "submitNewApplication": "提交新申请",
+      "waitingPeriodMessage": "您可以在3个月等待期后提交新申请。",
+      "canReapplyIn": "您可以在{{time}}后重新申请。",
+      "monthsRemaining": "{{count}}个月",
+      "daysRemaining": "{{count}}天",
+      "dayRemaining": "1天"
+    }
   },
   "guestList": {
     "title": "宾客名单设置",
@@ -1818,7 +1834,10 @@
     "soundcloudAlreadyExists": "已存在使用此SoundCloud资料的艺人。如果这是您本人，请发送邮件至 management@forcemajeure.vip 以获取关联个人资料的帮助。",
     "registrationPending": "已有同名艺人注册正在审核中。如果这是您本人，请发送邮件至 management@forcemajeure.vip 以获取帮助。",
     "submitFailed": "提交注册失败，请重试。",
-    "submitSuccess": "感谢您的注册！如果您的音乐风格适合未来的活动，我们会与您联系！"
+    "submitSuccess": "感谢您的注册！如果您的音乐风格适合未来的活动，我们会与您联系！",
+    "userAlreadyHasArtist": "您的账户已关联艺人资料。您可以在个人设置中管理它。",
+    "userHasPendingRegistration": "您已有一个待审核的艺人注册申请。请等待审核完成后再提交新申请。",
+    "deniedWaitingPeriod": "您之前的申请已被拒绝。您可以在{{time}}后提交新申请。"
   },
   "orders": {
     "cancelSuccess": "订单取消成功",
@@ -1886,8 +1905,57 @@
       "added": "添加时间",
       "parentGenre": "父流派",
       "subgenres": "子流派",
-      "artists": "艺人"
+      "artists": "艺人",
+      "genres": "流派",
+      "status": "状态",
+      "socials": "社交媒体"
     }
+  },
+  "artistRegistrations": {
+    "title": "艺人注册",
+    "description": "审核和管理艺人注册申请。",
+    "navLabel": "注册申请",
+    "navDescription": "艺人注册申请",
+    "viewDetails": "查看详情",
+    "approve": "批准",
+    "deny": "拒绝",
+    "approveSuccess": "{{name}} 已被批准",
+    "approveFailed": "批准注册失败",
+    "denySuccess": "{{name}} 已被拒绝",
+    "denyFailed": "拒绝注册失败",
+    "confirmApprove": "批准注册",
+    "confirmApproveDescription": "确定要批准 {{name}} 的注册吗？这将为他们创建艺人资料。",
+    "confirmDeny": "拒绝注册",
+    "confirmDenyDescription": "确定要拒绝 {{name}} 的注册吗？您可以添加说明拒绝原因的备注。",
+    "reviewerNotes": "审核备注",
+    "notesPlaceholder": "添加关于此批准的备注...",
+    "denyNotesPlaceholder": "添加说明拒绝原因的备注...",
+    "submittedAt": "提交时间",
+    "performanceHistory": "演出历史",
+    "paidShows": "付费演出",
+    "talentDifferentiator": "您的独特之处",
+    "crowdSources": "观众来源",
+    "pressImages": "宣传图片",
+    "filter": {
+      "all": "全部",
+      "pending": "待审核",
+      "approved": "已批准",
+      "denied": "已拒绝"
+    },
+    "status": {
+      "pending": "待审核",
+      "approved": "已批准",
+      "denied": "已拒绝"
+    },
+    "delete": "删除",
+    "deleteSuccess": "{{name}} 的注册已被删除",
+    "deleteFailed": "删除注册失败",
+    "confirmDelete": "删除注册",
+    "confirmDeleteDescription": "确定要永久删除 {{name}} 的注册吗？",
+    "deletePermanently": "永久删除",
+    "deleteVsDenyTitle": "有什么区别？",
+    "denyExplanation": "将注册保留在系统中，状态为「已拒绝」。用户可以看到他们的申请已被审核并拒绝。便于保留审核记录。",
+    "deleteExplanation": "从系统中永久删除注册。用户将能够提交新的注册。用于垃圾信息、重复提交或测试数据。"
   },
   "undercardRequests": {
     "sectionTitle": "艺人申请",
