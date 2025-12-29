@@ -91,7 +91,7 @@ export function DeleteAccountSection({ disabled = false }: DeleteAccountSectionP
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <FmCommonButton
-              variant='destructive'
+              variant='destructive-outline'
               icon={Trash2}
               disabled={disabled || isDeletingAccount}
               loading={isDeletingAccount}

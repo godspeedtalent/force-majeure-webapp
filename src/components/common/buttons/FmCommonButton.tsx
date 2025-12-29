@@ -19,7 +19,7 @@ const isReactComponent = (component: unknown): component is React.ComponentType<
 
 interface FmCommonButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'default' | 'secondary' | 'destructive' | 'gold';
+  variant?: 'default' | 'secondary' | 'destructive' | 'destructive-outline' | 'gold';
   size?: 'default' | 'sm' | 'lg' | 'icon';
   icon?: LucideIcon | React.ReactNode;
   iconPosition?: 'left' | 'right';
@@ -83,6 +83,8 @@ export const FmCommonButton = forwardRef<
         'hover:bg-fm-gold/10 hover:border-fm-gold hover:text-fm-gold transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]',
       destructive:
         'transition-all duration-200 hover:scale-105 active:scale-95',
+      'destructive-outline':
+        'bg-transparent border border-destructive text-destructive hover:bg-destructive/10 hover:border-destructive transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_hsl(var(--destructive)/0.3)]',
     };
 
     return (
@@ -91,7 +93,7 @@ export const FmCommonButton = forwardRef<
         variant={
           variant === 'gold'
             ? 'default'
-            : variant === 'default'
+            : variant === 'default' || variant === 'destructive-outline'
               ? 'outline'
               : variant === 'secondary'
                 ? 'ghost'
@@ -106,6 +108,7 @@ export const FmCommonButton = forwardRef<
           variant === 'default' && variantStyles.default,
           variant === 'secondary' && variantStyles.secondary,
           variant === 'destructive' && variantStyles.destructive,
+          variant === 'destructive-outline' && variantStyles['destructive-outline'],
           isPressed && 'scale-95',
           className
         )}
