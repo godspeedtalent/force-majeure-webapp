@@ -1259,7 +1259,7 @@
       "noResolvedRequests": "No resolved requests",
       "approveRequest": "Approve Request?",
       "approveDescLinkArtist": "This will link the artist \"{{artistName}}\" to the user's account. They will be able to manage this artist profile.",
-      "approveDescDeleteData": "This will mark the request as approved. You will need to manually delete the user's data. Make sure to remove all artist data, recordings, and other associated information.",
+      "approveDescDeleteData": "This will permanently delete the artist profile and all associated data including recordings, genre associations, and event appearances. This action cannot be undone.",
       "approveDescUnlinkArtist": "This will unlink the artist from the user's account. The artist profile will remain but won't be associated with this user.",
       "denyRequest": "Deny Request",
       "denyDescription": "Please provide a reason for denying this request. This will be visible to the user."
