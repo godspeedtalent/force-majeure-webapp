@@ -1179,7 +1179,10 @@
     "setImageUrl": "设置图片链接",
     "urlSet": "链接已设置",
     "urlSetDescription": "图片链接已设置。",
-    "failedToLoad": "加载图片失败"
+    "failedToLoad": "加载图片失败",
+    "invalidUrl": "无效链接",
+    "localFileNotAllowed": "不允许使用本地文件路径。请改为上传文件。",
+    "enterValidUrl": "请输入以 http:// 或 https:// 开头的有效链接"
   },
   "checkout": {
     "loadingCheckout": "加载结账中...",

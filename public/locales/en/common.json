@@ -1312,7 +1312,10 @@
     "setImageUrl": "Set Image URL",
     "urlSet": "URL Set",
     "urlSetDescription": "Image URL has been set.",
-    "failedToLoad": "Failed to load image"
+    "failedToLoad": "Failed to load image",
+    "invalidUrl": "Invalid URL",
+    "localFileNotAllowed": "Local file paths are not allowed. Please upload the file instead.",
+    "enterValidUrl": "Please enter a valid URL starting with http:// or https://"
   },
   "events": {
     "publish": {

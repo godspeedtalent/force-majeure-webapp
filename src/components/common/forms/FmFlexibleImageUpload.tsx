@@ -196,12 +196,41 @@ export const FmFlexibleImageUpload = ({
   };
 
   const handleUrlSubmit = () => {
-    if (urlInput.trim()) {
-      onChange(urlInput.trim());
-      toast.success(t('upload.urlSet'), {
-        description: t('upload.urlSetDescription'),
+    const trimmedUrl = urlInput.trim();
+    
+    if (!trimmedUrl) return;
+    
+    // Validate that the URL is a proper web URL (http/https), not a local file path
+    if (trimmedUrl.startsWith('file://') || trimmedUrl.startsWith('/')) {
+      showErrorToast({
+        title: t('upload.invalidUrl'),
+        description: t('upload.localFileNotAllowed'),
+        error: new Error('Local file paths are not allowed. Please upload the file instead.'),
+        isDeveloper,
       });
+      return;
     }
+    
+    // Validate URL format
+    try {
+      const url = new URL(trimmedUrl);
+      if (!['http:', 'https:'].includes(url.protocol)) {
+        throw new Error('Invalid protocol');
+      }
+    } catch {
+      showErrorToast({
+        title: t('upload.invalidUrl'),
+        description: t('upload.enterValidUrl'),
+        error: new Error('Please enter a valid URL starting with http:// or https://'),
+        isDeveloper,
+      });
+      return;
+    }
+    
+    onChange(trimmedUrl);
+    toast.success(t('upload.urlSet'), {
+      description: t('upload.urlSetDescription'),
+    });
   };
 
   return (

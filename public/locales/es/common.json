@@ -1181,7 +1181,10 @@
     "setImageUrl": "Establecer URL de Imagen",
     "urlSet": "URL Establecida",
     "urlSetDescription": "La URL de la imagen ha sido establecida.",
-    "failedToLoad": "Error al cargar imagen"
+    "failedToLoad": "Error al cargar imagen",
+    "invalidUrl": "URL Inválida",
+    "localFileNotAllowed": "No se permiten rutas de archivos locales. Por favor, sube el archivo en su lugar.",
+    "enterValidUrl": "Por favor, ingresa una URL válida que comience con http:// o https://"
   },
   "checkout": {
     "loadingCheckout": "Cargando pago...",
