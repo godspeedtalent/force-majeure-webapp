@@ -6,7 +6,6 @@ import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSid
 import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
 import {
   Sliders,
-  Settings,
   Code,
   Shield,
   DollarSign,
@@ -14,17 +13,15 @@ import {
   Database,
   Building2,
   Activity,
-  ClipboardList,
 } from 'lucide-react';
 import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
 import { AdminTicketingSection } from '@/components/admin/AdminTicketingSection';
 import { DevToolsManagement } from '@/components/admin/DevToolsManagement';
 import { UserManagement } from './UserManagement';
 import { OrganizationsManagement } from './OrganizationsManagement';
-import { UserRequestsAdmin } from '@/components/admin/UserRequestsAdmin';
 import { formatHeader } from '@/shared';
 
-type AdminTab = 'devtools' | 'ticketing' | 'settings' | 'users' | 'organizations' | 'requests' | 'logs';
+type AdminTab = 'devtools' | 'ticketing' | 'settings' | 'users' | 'organizations' | 'logs';
 
 export default function AdminControls() {
   const navigate = useNavigate();
@@ -76,12 +73,6 @@ export default function AdminControls() {
           description: 'Manage organizations',
         },
         {
-          id: 'requests',
-          label: 'User Requests',
-          icon: ClipboardList,
-          description: 'Review user requests',
-        },
-        {
           id: 'users',
           label: 'Users',
           icon: Users,
@@ -110,7 +101,6 @@ export default function AdminControls() {
     { id: 'ticketing', label: 'Ticketing', icon: DollarSign },
     { id: 'settings', label: 'Settings', icon: Sliders },
     { id: 'organizations', label: 'Orgs', icon: Building2 },
-    { id: 'requests', label: 'Requests', icon: ClipboardList },
     { id: 'users', label: 'Users', icon: Users },
   ];
 
@@ -120,7 +110,6 @@ export default function AdminControls() {
     if (activeTab === 'ticketing') return 'Ticketing';
     if (activeTab === 'users') return 'Users';
     if (activeTab === 'organizations') return 'Organizations';
-    if (activeTab === 'requests') return 'User Requests';
     return 'Admin Controls';
   };
 
@@ -140,7 +129,7 @@ export default function AdminControls() {
       <div className='max-w-full'>
         <div className='mb-[20px]'>
           <div className='flex items-center gap-[10px] mb-[20px]'>
-            <Settings className='h-6 w-6 text-fm-gold' />
+            <Sliders className='h-6 w-6 text-fm-gold' />
             <h1 className='text-3xl font-canela'>
               {formatHeader(getTabTitle())}
             </h1>
@@ -201,16 +190,6 @@ export default function AdminControls() {
           </div>
         )}
 
-        {activeTab === 'requests' && (
-          <div className='space-y-6'>
-            <div>
-              <p className='text-muted-foreground text-sm mb-4'>
-                Review and manage user requests for artist linking, data deletion, and more.
-              </p>
-              <UserRequestsAdmin />
-            </div>
-          </div>
-        )}
 
         {activeTab === 'devtools' && (
           <div className='space-y-6'>

@@ -90,6 +90,20 @@ export default function DeveloperDatabase() {
     },
   });
 
+  // Fetch pending user requests count for badge
+  const { data: pendingUserRequestsCount = 0 } = useQuery({
+    queryKey: ['user-requests-pending-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('user_requests')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'pending');
+
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
   // Navigation groups configuration - conditionally include admin-only tabs
   const navigationGroups: FmCommonSideNavGroup<DatabaseTab>[] = useMemo(() => {
     const tables: Array<{
@@ -175,6 +189,11 @@ export default function DeveloperDatabase() {
           label: 'User Requests',
           icon: FileQuestion,
           description: 'Manage user requests',
+          badge: pendingUserRequestsCount > 0 ? (
+            <span className="ml-1 px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
+              {pendingUserRequestsCount}
+            </span>
+          ) : undefined,
         }
       );
     }
@@ -221,7 +240,7 @@ export default function DeveloperDatabase() {
     }
 
     return groups;
-  }, [isAdmin, t, pendingRegistrationsCount]);
+  }, [isAdmin, t, pendingRegistrationsCount, pendingUserRequestsCount]);
 
   // Mobile horizontal tabs configuration
   const mobileTabs: MobileHorizontalTab[] = useMemo(() => {
