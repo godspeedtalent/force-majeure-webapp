@@ -21,7 +21,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { cn } from '@/shared';
+import { cn, useLocalStorage } from '@/shared';
 import { FmCommonTab } from '@/components/common/data/FmCommonTab';
 import { Button } from '@/components/common/shadcn/button';
 import { useAuth } from '@/features/auth/services/AuthContext';
@@ -29,6 +29,11 @@ import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared';
 import { useShoppingCart } from '@/shared';
 import { useFmToolbarSafe } from '@/shared/contexts/FmToolbarContext';
+
+// Toolbar constants
+const TOOLBAR_STORAGE_KEY = 'fm-toolbar-width';
+const DEFAULT_DRAWER_WIDTH = 384;
+const MIN_DRAWER_WIDTH = 320;
 
 // Import tab components
 import { CartTabContent } from './tabs/CartTab';
@@ -65,11 +70,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
-  const [drawerWidth, setDrawerWidth] = useState(() => {
-    // Load saved width from localStorage, default to 384px (20% wider than 320px)
-    const saved = localStorage.getItem('fm-toolbar-width');
-    return saved ? parseInt(saved, 10) : 384;
-  });
+  const [drawerWidth, setDrawerWidth] = useLocalStorage(TOOLBAR_STORAGE_KEY, DEFAULT_DRAWER_WIDTH);
   const [isTabHovered, setIsTabHovered] = useState(false);
   const [showGroupLabel, setShowGroupLabel] = useState<string | null>(null);
 
@@ -105,8 +106,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
   const dragStartTimeRef = useRef<number>(0);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Constraints for drawer width
-  const MIN_WIDTH = 320;
+  // Use the constant defined at module level
 
   // Check if user has actual developer or admin role
   const isDeveloperOrAdmin = hasAnyRole(ROLES.DEVELOPER, ROLES.ADMIN);
@@ -305,9 +305,8 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
 
     // If switching to a non-resizable tab, snap back to default width
     const newTab = visibleTabs.find(tab => tab.id === tabId);
-    if (newTab && !newTab.resizable && drawerWidth > 384) {
-      setDrawerWidth(384);
-      localStorage.setItem('fm-toolbar-width', '384');
+    if (newTab && !newTab.resizable && drawerWidth > DEFAULT_DRAWER_WIDTH) {
+      setDrawerWidth(DEFAULT_DRAWER_WIDTH);
     }
   };
 
@@ -353,19 +352,18 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
       const deltaX = startXRef.current - event.clientX; // Reversed: dragging left increases width
       const maxWidth = getMaxWidth();
       const newWidth = Math.max(
-        MIN_WIDTH,
+        MIN_DRAWER_WIDTH,
         Math.min(maxWidth, initialWidthRef.current + deltaX)
       );
       setDrawerWidth(newWidth);
     },
-    [MIN_WIDTH, getMaxWidth]
+    [getMaxWidth, setDrawerWidth]
   );
 
   const handleResizeEnd = useCallback(() => {
     setIsResizing(false);
-    // Save to localStorage
-    localStorage.setItem('fm-toolbar-width', drawerWidth.toString());
-  }, [drawerWidth]);
+    // localStorage is handled by useLocalStorage hook
+  }, []);
 
   const handleMouseMove = useCallback(
     (event: MouseEvent) => {

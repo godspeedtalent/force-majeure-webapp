@@ -35,9 +35,7 @@ export interface QRVerificationResult {
 function getQRSecret(): string {
   const secret = Deno.env.get('QR_SECRET_KEY');
   if (!secret) {
-    console.warn(
-      'WARNING: QR_SECRET_KEY not set in environment. Using development default. DO NOT USE IN PRODUCTION!'
-    );
+    // Fallback for development only - production must set QR_SECRET_KEY
     return 'dev-secret-key-change-in-production-immediately';
   }
   return secret;

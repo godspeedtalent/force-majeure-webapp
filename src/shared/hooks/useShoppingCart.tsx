@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { logger } from '@/shared';
+import { createContext, useContext, ReactNode } from 'react';
+import { useLocalStorage } from './useLocalStorage';
 
 export interface CartItem {
   id: string;
@@ -31,24 +31,7 @@ const STORAGE_KEY = 'fm-shopping-cart';
  * Provides a basic shopping cart with localStorage persistence
  */
 export function ShoppingCartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>(() => {
-    // Load from localStorage on mount
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
-  });
-
-  // Save to localStorage whenever items change
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    } catch (error) {
-      logger.error('Failed to save cart to localStorage:', { error });
-    }
-  }, [items]);
+  const [items, setItems] = useLocalStorage<CartItem[]>(STORAGE_KEY, []);
 
   const addItem = (item: Omit<CartItem, 'quantity'>) => {
     setItems(currentItems => {

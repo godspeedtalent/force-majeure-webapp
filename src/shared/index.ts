@@ -281,6 +281,7 @@ export { useRecentSelections } from './hooks/useRecentSelections';
 export { useEventViews } from './hooks/useEventViews';
 export { useCreateEntityNavigation } from './hooks/useCreatedEntityReturn';
 export { useModalState, type UseModalStateReturn } from './hooks/useModalState';
+export { useLocalStorage } from './hooks/useLocalStorage';
 
 // Shopping Cart
 export { ShoppingCartProvider, useShoppingCart } from './hooks/useShoppingCart';
