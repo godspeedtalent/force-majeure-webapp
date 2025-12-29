@@ -104,6 +104,24 @@ export function ArtistRegistrationsManagement() {
     },
   });
 
+  // Fetch all genres for name lookup
+  const { data: genresMap = new Map() } = useQuery({
+    queryKey: ['genres-map'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('genres')
+        .select('id, name');
+
+      if (error) {
+        logger.error('Failed to fetch genres', { error: error.message });
+        return new Map<string, string>();
+      }
+
+      return new Map(data.map(g => [g.id, g.name]));
+    },
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+
   // Fetch pending count for badge
   const { data: pendingCount = 0 } = useQuery({
     queryKey: ['artist-registrations-pending-count'],
@@ -387,14 +405,17 @@ export function ArtistRegistrationsManagement() {
         }
         return (
           <div className='flex flex-wrap gap-1'>
-            {value.slice(0, 3).map((genre, i) => (
-              <span
-                key={i}
-                className='px-2 py-0.5 text-[10px] uppercase bg-fm-gold/10 text-fm-gold border border-fm-gold/30'
-              >
-                {genre}
-              </span>
-            ))}
+            {value.slice(0, 3).map((genreId, i) => {
+              const genreName = genresMap.get(genreId) || genreId;
+              return (
+                <span
+                  key={i}
+                  className='px-2 py-0.5 text-[10px] uppercase bg-fm-gold/10 text-fm-gold border border-fm-gold/30'
+                >
+                  {genreName}
+                </span>
+              );
+            })}
             {value.length > 3 && (
               <span className='text-xs text-muted-foreground'>+{value.length - 3}</span>
             )}
