@@ -16,7 +16,6 @@ import {
   Radio,
   Pencil,
   Trash2,
-  Image as ImageIcon,
 } from 'lucide-react';
 import {
   FaInstagram,
@@ -42,7 +41,7 @@ import { FmGenreMultiSelect } from '@/features/artists/components/FmGenreMultiSe
 import { AddTrackModal } from '@/features/artists/components/AddTrackModal';
 import { EditTrackModal } from '@/features/artists/components/EditTrackModal';
 import { useArtistGenres, useUpdateArtistGenres } from '@/features/artists/hooks/useArtistGenres';
-import { ArtistManageGalleryTab } from './components/manage';
+
 import type { Genre } from '@/features/artists/types';
 import { cn } from '@/shared';
 
