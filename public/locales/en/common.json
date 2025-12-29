@@ -1694,6 +1694,8 @@
       "confirmDeleteArtist": "Are you sure you want to delete \"{{name}}\"?",
       "artistDeleted": "Artist deleted",
       "artistDeleteFailed": "Failed to delete artist",
+      "editVenue": "Edit Venue",
+      "deleteVenue": "Delete Venue",
       "confirmDeleteVenue": "Are you sure you want to delete \"{{name}}\"?",
       "venueDeleted": "Venue deleted successfully",
       "venueDeleteFailed": "Failed to delete venue",

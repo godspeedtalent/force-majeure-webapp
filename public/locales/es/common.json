@@ -1681,6 +1681,8 @@
       "confirmDeleteArtist": "¿Estás seguro de que quieres eliminar \"{{name}}\"?",
       "artistDeleted": "Artista eliminado",
       "artistDeleteFailed": "Error al eliminar artista",
+      "editVenue": "Editar Local",
+      "deleteVenue": "Eliminar Local",
       "confirmDeleteVenue": "¿Estás seguro de que quieres eliminar \"{{name}}\"?",
       "venueDeleted": "Local eliminado exitosamente",
       "venueDeleteFailed": "Error al eliminar local",

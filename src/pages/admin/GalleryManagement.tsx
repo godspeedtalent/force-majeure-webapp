@@ -8,7 +8,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Images, Trash2, Upload, Edit, ImagePlus, Image as ImageIcon, Video, Music } from 'lucide-react';
+import { ArrowLeft, Images, Trash2, Upload, Edit, ImagePlus, Image as ImageIcon, Video, Music, Download } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { Button } from '@/components/common/shadcn/button';
@@ -395,9 +395,20 @@ export default function GalleryManagement() {
                           <button
                             onClick={() => openEditModal(item)}
                             className='p-2 bg-white/10 hover:bg-white/20 transition-colors'
+                            title={t('buttons.edit')}
                           >
                             <Edit className='w-5 h-5' />
                           </button>
+                          <a
+                            href={item.url}
+                            download={item.title || item.file_path?.split('/').pop() || 'download'}
+                            className='p-2 bg-white/10 hover:bg-white/20 transition-colors'
+                            title={t('buttons.download')}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                          >
+                            <Download className='w-5 h-5' />
+                          </a>
                           <button
                             onClick={() =>
                               setDeleteConfirm({
@@ -407,6 +418,7 @@ export default function GalleryManagement() {
                               })
                             }
                             className='p-2 bg-white/10 hover:bg-fm-danger/50 transition-colors'
+                            title={t('buttons.delete')}
                           >
                             <Trash2 className='w-5 h-5' />
                           </button>

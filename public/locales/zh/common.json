@@ -1679,6 +1679,8 @@
       "confirmDeleteArtist": "确定要删除\"{{name}}\"吗？",
       "artistDeleted": "艺人已删除",
       "artistDeleteFailed": "删除艺人失败",
+      "editVenue": "编辑场馆",
+      "deleteVenue": "删除场馆",
       "confirmDeleteVenue": "确定要删除\"{{name}}\"吗？",
       "venueDeleted": "场馆删除成功",
       "venueDeleteFailed": "删除场馆失败",
