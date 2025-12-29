@@ -154,6 +154,8 @@ export function ArtistRegistrationsManagement() {
           user_id: registrationToAction.user_id || null,
           soundcloud_id: registrationToAction.soundcloud_id || null,
           spotify_id: registrationToAction.spotify_id || null,
+          instagram_handle: registrationToAction.instagram_handle || null,
+          tiktok_handle: registrationToAction.tiktok_handle || null,
           // Take first genre as the legacy single genre field
           genre: registrationToAction.genres?.[0] || null,
         })
