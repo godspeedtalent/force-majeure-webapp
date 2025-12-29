@@ -123,7 +123,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Set up auth state listener FIRST
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      authLogger.debug('Auth state change', { event, hasSession: !!session });
+
+      // Handle token refresh errors - clear invalid session
+      if (event === 'TOKEN_REFRESHED' && !session) {
+        authLogger.warn('Token refresh failed, clearing session');
+        setSession(null);
+        setUser(null);
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
+
+      // Handle sign out events
+      if (event === 'SIGNED_OUT') {
+        setSession(null);
+        setUser(null);
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
+
       setSession(session);
       setUser(session?.user ?? null);
 
@@ -142,7 +163,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // THEN check for existing session
     supabase.auth
       .getSession()
-      .then(({ data: { session } }) => {
+      .then(({ data: { session }, error }) => {
+        // Handle case where stored session has invalid refresh token
+        if (error) {
+          authLogger.warn('Session retrieval error, clearing invalid session', {
+            error: error.message,
+          });
+          // Clear the invalid session from storage
+          supabase.auth.signOut({ scope: 'local' }).catch(() => {
+            // Ignore signOut errors during cleanup
+          });
+          setSession(null);
+          setUser(null);
+          setProfile(null);
+          setLoading(false);
+          return;
+        }
+
         setSession(session);
         setUser(session?.user ?? null);
 
@@ -155,10 +192,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setLoading(false);
       })
       .catch(error => {
-        logger.error('Error getting session:', {
-          error: error instanceof Error ? error.message : String(error),
-          source: 'AuthContext.onAuthStateChange',
-        });
+        // Handle AuthApiError for invalid refresh tokens
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        const isRefreshTokenError = errorMessage.includes('Refresh Token');
+
+        if (isRefreshTokenError) {
+          authLogger.warn('Invalid refresh token detected, clearing session', {
+            error: errorMessage,
+          });
+          // Clear the corrupted session from localStorage
+          supabase.auth.signOut({ scope: 'local' }).catch(() => {
+            // Ignore signOut errors during cleanup
+          });
+        } else {
+          logger.error('Error getting session:', {
+            error: errorMessage,
+            source: 'AuthContext.getSession',
+          });
+        }
+
+        setSession(null);
+        setUser(null);
+        setProfile(null);
         setLoading(false);
       });
 
