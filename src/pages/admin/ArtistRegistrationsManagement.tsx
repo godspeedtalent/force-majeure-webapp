@@ -38,8 +38,10 @@ interface ArtistRegistration {
   instagram_handle: string | null;
   soundcloud_url: string | null;
   soundcloud_id: string | null;
+  soundcloud_set_url: string | null;
   spotify_url: string | null;
   spotify_id: string | null;
+  spotify_track_url: string | null;
   tiktok_handle: string | null;
   profile_image_url: string | null;
   press_images: string[] | null;
@@ -199,7 +201,76 @@ export function ArtistRegistrationsManagement() {
         throw updateError;
       }
 
-      // Step 3: Assign artist role to the user (if they have a user_id)
+      // Step 3: Create artist recordings from registration URLs
+      const recordingsToCreate: Array<{
+        artist_id: string;
+        name: string;
+        url: string;
+        platform: string;
+        is_primary_dj_set: boolean;
+      }> = [];
+
+      // Add SoundCloud recordings
+      if (registrationToAction.soundcloud_url) {
+        recordingsToCreate.push({
+          artist_id: newArtist.id,
+          name: `${registrationToAction.artist_name} - SoundCloud Profile`,
+          url: registrationToAction.soundcloud_url,
+          platform: 'soundcloud',
+          is_primary_dj_set: false,
+        });
+      }
+      if (registrationToAction.soundcloud_set_url) {
+        recordingsToCreate.push({
+          artist_id: newArtist.id,
+          name: `${registrationToAction.artist_name} - DJ Set`,
+          url: registrationToAction.soundcloud_set_url,
+          platform: 'soundcloud',
+          is_primary_dj_set: true,
+        });
+      }
+
+      // Add Spotify recordings
+      if (registrationToAction.spotify_url) {
+        recordingsToCreate.push({
+          artist_id: newArtist.id,
+          name: `${registrationToAction.artist_name} - Spotify Profile`,
+          url: registrationToAction.spotify_url,
+          platform: 'spotify',
+          is_primary_dj_set: false,
+        });
+      }
+      if (registrationToAction.spotify_track_url) {
+        recordingsToCreate.push({
+          artist_id: newArtist.id,
+          name: `${registrationToAction.artist_name} - Featured Track`,
+          url: registrationToAction.spotify_track_url,
+          platform: 'spotify',
+          is_primary_dj_set: false,
+        });
+      }
+
+      if (recordingsToCreate.length > 0) {
+        const { error: recordingsError } = await supabase
+          .from('artist_recordings')
+          .insert(recordingsToCreate);
+
+        if (recordingsError) {
+          // Log but don't fail - artist was created successfully
+          logger.warn('Failed to create artist recordings from registration', {
+            error: recordingsError.message,
+            source: 'ArtistRegistrationsManagement',
+            details: { artistId: newArtist.id, registrationId: registrationToAction.id },
+          });
+        } else {
+          logger.info('Artist recordings created from registration', {
+            source: 'ArtistRegistrationsManagement',
+            details: { artistId: newArtist.id, count: recordingsToCreate.length },
+          });
+        }
+      }
+
+      // Step 4: Assign artist role to the user (if they have a user_id)
       if (registrationToAction.user_id) {
         try {
           await RoleManagementService.addRole(registrationToAction.user_id, ROLES.ARTIST);
@@ -221,6 +292,7 @@ export function ArtistRegistrationsManagement() {
       queryClient.invalidateQueries({ queryKey: ['artist-registrations'] });
       queryClient.invalidateQueries({ queryKey: ['artist-registrations-pending-count'] });
       queryClient.invalidateQueries({ queryKey: ['artists'] });
+      queryClient.invalidateQueries({ queryKey: ['artist-recordings'] });
       setShowApproveConfirm(false);
       setRegistrationToAction(null);
       setReviewerNotes('');
