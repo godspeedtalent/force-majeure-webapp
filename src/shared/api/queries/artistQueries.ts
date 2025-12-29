@@ -3,6 +3,13 @@ import { supabase } from '@/shared';
 import { logger } from '@/shared';
 import type { Artist } from '@/features/events/types';
 
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function isUuid(value: string | undefined) {
+  return Boolean(value && UUID_REGEX.test(value));
+}
+
 /**
  * Artist Queries
  *
@@ -81,7 +88,7 @@ export function useArtistById(artistId: string | undefined) {
   return useQuery<ArtistWithDetails | null, Error>({
     queryKey: artistKeys.detail(artistId || ''),
     queryFn: async () => {
-      if (!artistId) throw new Error('Artist ID is required');
+      if (!isUuid(artistId)) return null;
 
       const { data, error } = await supabase
         .from('artists')
@@ -113,7 +120,7 @@ export function useArtistById(artistId: string | undefined) {
 
       return data as ArtistWithDetails;
     },
-    enabled: Boolean(artistId),
+    enabled: isUuid(artistId),
   });
 }
 
@@ -216,7 +223,7 @@ export function useArtistEvents(artistId: string | undefined) {
   return useQuery({
     queryKey: artistKeys.events(artistId || ''),
     queryFn: async () => {
-      if (!artistId) return [];
+      if (!isUuid(artistId)) return [];
 
       const { data, error } = await supabase
         .from('events')
@@ -244,7 +251,7 @@ export function useArtistEvents(artistId: string | undefined) {
 
       return data || [];
     },
-    enabled: Boolean(artistId),
+    enabled: isUuid(artistId),
   });
 }
 
