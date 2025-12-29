@@ -1665,6 +1665,7 @@
       "createButton": "Crear Nota"
     },
     "database": {
+      "viewArtist": "Ver Detalles del Artista",
       "editArtist": "Editar Artista",
       "deleteArtist": "Eliminar Artista",
       "artistUpdated": "Artista actualizado",
