@@ -67,7 +67,17 @@ export function useArtistById(artistId: string | undefined) {
 
       const { data, error } = await supabase
         .from('artists')
-        .select('*')
+        .select(`
+          *,
+          artist_genres(
+            genre_id,
+            is_primary,
+            genres:genres(id, name)
+          ),
+          artist_recordings(
+            id, name, url, cover_art, platform, is_primary_dj_set
+          )
+        `)
         .eq('id', artistId)
         .single();
 

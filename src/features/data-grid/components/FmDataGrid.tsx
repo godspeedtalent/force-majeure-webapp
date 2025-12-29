@@ -50,6 +50,8 @@ export interface DataGridColumn<T = any> {
   isRelation?: boolean;
   cellClassName?: string; // Custom className for TableCell (e.g., p-0 for images)
   frozen?: boolean; // Pin column to left side (sticky)
+  multiline?: boolean; // Use textarea for multiline text editing
+  rows?: number; // Number of rows for multiline textarea (default: 3)
   type?:
     | 'text'
     | 'number'

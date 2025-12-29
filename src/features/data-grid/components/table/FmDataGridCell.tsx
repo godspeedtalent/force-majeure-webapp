@@ -1,6 +1,7 @@
 
 import { TableCell } from '@/components/common/shadcn/table';
 import { Input } from '@/components/common/shadcn/input';
+import { Textarea } from '@/components/common/shadcn/textarea';
 import { Switch } from '@/components/common/shadcn/switch';
 import { Button } from '@/components/common/shadcn/button';
 import { Calendar } from '@/components/common/shadcn/calendar';
@@ -173,6 +174,24 @@ export function FmDataGridCell<T extends Record<string, any>>({
               />
             </PopoverContent>
           </Popover>
+        ) : column.multiline ? (
+          <Textarea
+            value={editValue}
+            onChange={e => onEditValueChange(e.target.value)}
+            onBlur={() => onSaveEdit()}
+            onKeyDown={e => {
+              // For multiline, use Ctrl+Enter or Cmd+Enter to save
+              if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                onSaveEdit();
+              } else if (e.key === 'Escape') {
+                onCancelEdit();
+              }
+            }}
+            autoFocus
+            rows={column.rows || 3}
+            className='min-h-[80px] bg-background/50 border-fm-gold/50 text-sm'
+          />
         ) : (
           <Input
             type={column.type || 'text'}
