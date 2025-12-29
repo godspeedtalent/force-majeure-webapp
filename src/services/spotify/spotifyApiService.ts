@@ -238,3 +238,54 @@ export async function getArtistTopTracks(
 export function clearSpotifyToken() {
   logger.info('Spotify token management is now handled by edge function');
 }
+
+/**
+ * Extract Spotify track ID from a URL
+ * Handles URLs like:
+ * - https://open.spotify.com/track/4Z8W4fKeB5YxbusRsdQVPb
+ * - https://open.spotify.com/track/4Z8W4fKeB5YxbusRsdQVPb?si=xxx
+ * - spotify:track:4Z8W4fKeB5YxbusRsdQVPb
+ */
+export function extractSpotifyTrackId(url: string): string | null {
+  // Handle spotify URLs
+  const urlMatch = url.match(/spotify\.com\/track\/([a-zA-Z0-9]+)/);
+  if (urlMatch) return urlMatch[1];
+
+  // Handle spotify URIs
+  const uriMatch = url.match(/spotify:track:([a-zA-Z0-9]+)/);
+  if (uriMatch) return uriMatch[1];
+
+  return null;
+}
+
+/**
+ * Get a track's details from Spotify
+ * @param trackId - The Spotify track ID
+ * @returns Track details including name, album art, etc.
+ */
+export async function getSpotifyTrack(trackId: string): Promise<SpotifyTrack> {
+  try {
+    logger.info('Fetching Spotify track details', { trackId });
+
+    const params = new URLSearchParams({
+      action: 'track',
+      id: trackId,
+    });
+
+    const response = await callSpotifyFunction(params);
+
+    if (!response.ok) {
+      const error = await response.json();
+      logger.error('Failed to fetch Spotify track', { error, status: response.status, trackId });
+      throw new Error(error.error || `Failed to fetch Spotify track: ${response.status}`);
+    }
+
+    const track: SpotifyTrack = await response.json();
+    logger.info('Spotify track fetched successfully', { trackId, name: track.name });
+
+    return track;
+  } catch (error) {
+    logger.error('Error fetching Spotify track', { error, trackId });
+    throw error;
+  }
+}
