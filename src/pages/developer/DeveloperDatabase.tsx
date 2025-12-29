@@ -225,24 +225,28 @@ export default function DeveloperDatabase() {
         label: 'Artists',
         icon: Mic2,
         description: 'Artist Management',
+        badge: <span className="text-[10px] text-muted-foreground">{artistsCount}</span>,
       },
       {
         id: 'events',
         label: 'Events',
         icon: Calendar,
         description: 'Event Management',
+        badge: <span className="text-[10px] text-muted-foreground">{eventsCount}</span>,
       },
       {
         id: 'recordings',
         label: 'Recordings',
         icon: Disc3,
         description: 'Music Recordings',
+        badge: <span className="text-[10px] text-muted-foreground">{recordingsCount}</span>,
       },
       {
         id: 'venues',
         label: 'Venues',
         icon: MapPin,
         description: 'Venue Management',
+        badge: <span className="text-[10px] text-muted-foreground">{venuesCount}</span>,
       },
     ];
 
@@ -254,14 +258,24 @@ export default function DeveloperDatabase() {
           label: 'Organizations',
           icon: Building2,
           description: 'Organization Management',
-          badge: <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />,
+          badge: (
+            <span className="flex items-center gap-1">
+              <span className="text-[10px] text-muted-foreground">{organizationsCount}</span>
+              <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />
+            </span>
+          ),
         },
         {
           id: 'users',
           label: 'Users',
           icon: Users,
           description: 'User Management',
-          badge: <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />,
+          badge: (
+            <span className="flex items-center gap-1">
+              <span className="text-[10px] text-muted-foreground">{usersCount}</span>
+              <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />
+            </span>
+          ),
         }
       );
     }
