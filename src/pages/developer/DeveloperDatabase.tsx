@@ -21,6 +21,7 @@ import {
   UserPlus,
   MessageSquare,
   Eye,
+  FileQuestion,
 } from 'lucide-react';
 import { supabase } from '@/shared';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -38,6 +39,7 @@ import { FmCommonButton } from '@/components/common/buttons';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { GalleryManagementSection } from '@/components/DevTools/GalleryManagementSection';
 import { ArtistRegistrationsManagement } from '../admin/ArtistRegistrationsManagement';
+import { UserRequestsAdmin } from '@/components/admin/UserRequestsAdmin';
 
 type DatabaseTab =
   | 'overview'
@@ -47,6 +49,7 @@ type DatabaseTab =
   | 'organizations'
   | 'recordings'
   | 'registrations'
+  | 'user_requests'
   | 'users'
   | 'venues';
 
@@ -70,7 +73,7 @@ export default function DeveloperDatabase() {
 
   // Get active tab from URL query string, fallback to 'overview'
   const tabFromUrl = searchParams.get('table') as DatabaseTab | null;
-  const validTabs: DatabaseTab[] = ['overview', 'artists', 'events', 'galleries', 'organizations', 'recordings', 'registrations', 'users', 'venues'];
+  const validTabs: DatabaseTab[] = ['overview', 'artists', 'events', 'galleries', 'organizations', 'recordings', 'registrations', 'user_requests', 'users', 'venues'];
   const activeTab: DatabaseTab = tabFromUrl && validTabs.includes(tabFromUrl) ? tabFromUrl : 'overview';
 
   // Fetch pending registrations count for badge (needs to be before navigationGroups useMemo)
@@ -155,17 +158,25 @@ export default function DeveloperDatabase() {
     }> = [];
 
     if (isAdmin) {
-      messagesItems.push({
-        id: 'registrations',
-        label: t('artistRegistrations.navLabel'),
-        icon: UserPlus,
-        description: t('artistRegistrations.navDescription'),
-        badge: pendingRegistrationsCount > 0 ? (
-          <span className="ml-1 px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
-            {pendingRegistrationsCount}
-          </span>
-        ) : undefined,
-      });
+      messagesItems.push(
+        {
+          id: 'registrations',
+          label: t('artistRegistrations.navLabel'),
+          icon: UserPlus,
+          description: t('artistRegistrations.navDescription'),
+          badge: pendingRegistrationsCount > 0 ? (
+            <span className="ml-1 px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
+              {pendingRegistrationsCount}
+            </span>
+          ) : undefined,
+        },
+        {
+          id: 'user_requests',
+          label: 'User Requests',
+          icon: FileQuestion,
+          description: 'Manage user requests',
+        }
+      );
     }
 
     const groups: FmCommonSideNavGroup<DatabaseTab>[] = [
@@ -891,6 +902,20 @@ export default function DeveloperDatabase() {
         )}
 
         {activeTab === 'registrations' && <ArtistRegistrationsManagement />}
+
+        {activeTab === 'user_requests' && (
+          <div className='space-y-6'>
+            <div>
+              <h1 className='text-3xl font-canela font-bold text-foreground mb-2'>
+                User Requests
+              </h1>
+              <p className='text-muted-foreground'>
+                Review and manage user requests for artist linking, data deletion, and more.
+              </p>
+            </div>
+            <UserRequestsAdmin />
+          </div>
+        )}
       </div>
 
       {/* Delete Confirmation Dialogs */}
