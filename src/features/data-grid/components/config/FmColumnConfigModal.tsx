@@ -55,7 +55,8 @@ interface ColumnConfig {
     | 'url'
     | 'date'
     | 'boolean'
-    | 'created_date';
+    | 'created_date'
+    | 'select';
 }
 
 export interface FmColumnConfigModalProps {

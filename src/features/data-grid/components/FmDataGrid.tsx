@@ -35,6 +35,14 @@ import { FmDataGridPagination } from './table/FmDataGridPagination';
 import { FmDataGridBatchDeleteDialog } from './table/FmDataGridDialogs';
 import { ContextMenuAction } from '@/components/common/modals/FmCommonContextMenu';
 
+/**
+ * Option for select-type columns
+ */
+export interface SelectOption {
+  value: string;
+  label: string;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface DataGridColumn<T = any> {
   key: string;
@@ -59,7 +67,9 @@ export interface DataGridColumn<T = any> {
     | 'url'
     | 'date'
     | 'boolean'
-    | 'created_date';
+    | 'created_date'
+    | 'select';
+  options?: SelectOption[]; // Options for select type columns
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
