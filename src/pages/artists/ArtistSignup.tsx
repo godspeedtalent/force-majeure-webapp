@@ -5,6 +5,7 @@ import { ArtistRegistrationLayout } from '@/components/layout/ArtistRegistration
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import { FmGalleryCarousel, GALLERY_SLUGS } from '@/features/media';
+import { SEOHead } from '@/components/common/seo/SEOHead';
 
 const ArtistSignup = () => {
   const navigate = useNavigate();
@@ -15,7 +16,13 @@ const ArtistSignup = () => {
   };
 
   return (
-    <ArtistRegistrationLayout>
+    <>
+      <SEOHead
+        title="Join Our Artist Roster"
+        description="Submit your artist profile and get discovered by Austin's most engaged electronic music community. Book shows, connect with fans, and grow your career."
+        url="/artists/signup"
+      />
+      <ArtistRegistrationLayout>
       <div className='relative overflow-hidden z-10 h-full'>
         {/* Image carousel - full screen background on mobile, right 65% on desktop */}
         <div className='absolute inset-0 lg:left-[35%] w-full lg:w-[65%] h-full'>
@@ -77,7 +84,8 @@ const ArtistSignup = () => {
           </div>
         </div>
       </div>
-    </ArtistRegistrationLayout>
+      </ArtistRegistrationLayout>
+    </>
   );
 };
 

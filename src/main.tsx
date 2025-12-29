@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
+import { HelmetProvider } from 'react-helmet-async';
 
 // Initialize Supabase
 import './lib/supabase';
@@ -18,7 +19,9 @@ const TranslationLoader = () => (
 );
 
 createRoot(document.getElementById('root')!).render(
-  <Suspense fallback={<TranslationLoader />}>
-    <App />
-  </Suspense>
+  <HelmetProvider>
+    <Suspense fallback={<TranslationLoader />}>
+      <App />
+    </Suspense>
+  </HelmetProvider>
 );
