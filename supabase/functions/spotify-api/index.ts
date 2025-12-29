@@ -133,9 +133,26 @@ serve(async (req) => {
         break;
       }
 
+      case 'track': {
+        const trackId = url.searchParams.get('id');
+        
+        if (!trackId) {
+          return new Response(
+            JSON.stringify({ error: 'Track ID is required' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        spotifyResponse = await fetch(
+          `https://api.spotify.com/v1/tracks/${trackId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        break;
+      }
+
       default:
         return new Response(
-          JSON.stringify({ error: 'Invalid action. Supported: search, artist, top-tracks' }),
+          JSON.stringify({ error: 'Invalid action. Supported: search, artist, top-tracks, track' }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
     }

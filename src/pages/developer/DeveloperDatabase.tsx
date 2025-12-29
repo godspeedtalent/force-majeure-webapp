@@ -40,6 +40,8 @@ import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfir
 import { GalleryManagementSection } from '@/components/DevTools/GalleryManagementSection';
 import { ArtistRegistrationsManagement } from '../admin/ArtistRegistrationsManagement';
 import { UserRequestsAdmin } from '@/components/admin/UserRequestsAdmin';
+import { extractSpotifyTrackId, getSpotifyTrack } from '@/services/spotify/spotifyApiService';
+import { getSoundCloudTrackFromUrl } from '@/services/soundcloud/soundcloudApiService';
 
 type DatabaseTab =
   | 'overview'
@@ -774,7 +776,87 @@ export default function DeveloperDatabase() {
     }
   };
 
+  // Handle refreshing recording details from Spotify/SoundCloud
+  const handleRefreshRecordingDetails = async (recording: any) => {
+    const url = recording.url;
+    if (!url) {
+      toast.error('No URL found for this recording');
+      return;
+    }
+
+    const loadingToast = toast.loading('Fetching recording details...');
+
+    try {
+      let updateData: Record<string, any> = {};
+
+      if (url.includes('spotify.com')) {
+        // Extract track ID from Spotify URL
+        const trackId = extractSpotifyTrackId(url);
+        if (!trackId) {
+          toast.dismiss(loadingToast);
+          toast.error('Could not extract Spotify track ID from URL');
+          return;
+        }
+
+        const track = await getSpotifyTrack(trackId);
+        updateData = {
+          name: track.name,
+          cover_art: track.album.images[0]?.url || null,
+          platform: 'spotify',
+        };
+      } else if (url.includes('soundcloud.com')) {
+        // Use SoundCloud oEmbed API
+        const trackData = await getSoundCloudTrackFromUrl(url);
+        if (!trackData) {
+          toast.dismiss(loadingToast);
+          toast.error('Could not fetch SoundCloud track details');
+          return;
+        }
+
+        updateData = {
+          name: trackData.name,
+          cover_art: trackData.coverArt || null,
+          platform: 'soundcloud',
+        };
+      } else {
+        toast.dismiss(loadingToast);
+        toast.error('Unknown platform. Only Spotify and SoundCloud URLs are supported.');
+        return;
+      }
+
+      // Update the recording in the database
+      const { error } = await (supabase as any)
+        .from('artist_recordings')
+        .update(updateData)
+        .eq('id', recording.id);
+
+      if (error) throw error;
+
+      // Update local cache
+      queryClient.setQueryData(['admin-recordings'], (oldData: any[] | undefined) => {
+        if (!oldData) return oldData;
+        return oldData.map(rec =>
+          rec.id === recording.id
+            ? { ...rec, ...updateData, updated_at: new Date().toISOString() }
+            : rec
+        );
+      });
+
+      toast.dismiss(loadingToast);
+      toast.success(`Updated "${updateData.name}" successfully`);
+    } catch (error) {
+      toast.dismiss(loadingToast);
+      logger.error('Error refreshing recording details:', { error: error instanceof Error ? error.message : 'Unknown error', source: 'DeveloperDatabase.tsx' });
+      toast.error('Failed to refresh recording details');
+    }
+  };
+
   const recordingContextActions: DataGridAction[] = [
+    {
+      label: 'Refresh Details',
+      icon: <RefreshCw className='h-4 w-4' />,
+      onClick: handleRefreshRecordingDetails,
+    },
     {
       label: 'Delete Recording',
       icon: <Trash2 className='h-4 w-4' />,
