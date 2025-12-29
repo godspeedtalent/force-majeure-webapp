@@ -495,7 +495,7 @@ export default function DeveloperDatabase() {
       const { data, error } = await (supabase as any)
         .from('artist_recordings')
         .select(`
-          id, artist_id, name, duration, url, cover_art, platform, created_at, updated_at,
+          id, artist_id, name, duration, url, cover_art, platform, is_primary_dj_set, created_at, updated_at,
           artists!artist_id(name)
         `)
         .order('created_at', { ascending: false });
@@ -739,8 +739,14 @@ export default function DeveloperDatabase() {
     columnKey: string,
     newValue: any
   ) => {
-    const normalizedValue =
+    let normalizedValue: any =
       typeof newValue === 'string' ? newValue.trim() : newValue;
+    
+    // Convert string 'true'/'false' to boolean for is_primary_dj_set
+    if (columnKey === 'is_primary_dj_set') {
+      normalizedValue = normalizedValue === 'true' || normalizedValue === true;
+    }
+    
     const updateData: Record<string, any> = {
       [columnKey]: normalizedValue === '' ? null : normalizedValue,
     };
