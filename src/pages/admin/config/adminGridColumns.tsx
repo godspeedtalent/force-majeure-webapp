@@ -144,6 +144,122 @@ export const artistColumns: DataGridColumn[] = [
       );
     },
   },
+  // Social links
+  {
+    key: 'instagram_handle',
+    label: 'Instagram',
+    sortable: true,
+    filterable: true,
+    editable: true,
+    render: (value: string | null) => {
+      if (!value) return <span className='text-muted-foreground'>—</span>;
+      return (
+        <a
+          href={`https://instagram.com/${value.replace('@', '')}`}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='text-fm-gold hover:underline text-xs'
+          onClick={e => e.stopPropagation()}
+        >
+          @{value.replace('@', '')}
+        </a>
+      );
+    },
+  },
+  {
+    key: 'tiktok_handle',
+    label: 'TikTok',
+    sortable: true,
+    filterable: true,
+    editable: true,
+    render: (value: string | null) => {
+      if (!value) return <span className='text-muted-foreground'>—</span>;
+      return (
+        <a
+          href={`https://tiktok.com/@${value.replace('@', '')}`}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='text-fm-gold hover:underline text-xs'
+          onClick={e => e.stopPropagation()}
+        >
+          @{value.replace('@', '')}
+        </a>
+      );
+    },
+  },
+  {
+    key: 'soundcloud_id',
+    label: 'SoundCloud',
+    sortable: true,
+    filterable: true,
+    editable: true,
+    render: (value: string | null) => {
+      if (!value) return <span className='text-muted-foreground'>—</span>;
+      return (
+        <a
+          href={`https://soundcloud.com/${value}`}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='text-fm-gold hover:underline text-xs'
+          onClick={e => e.stopPropagation()}
+        >
+          {value}
+        </a>
+      );
+    },
+  },
+  {
+    key: 'spotify_id',
+    label: 'Spotify',
+    sortable: true,
+    filterable: true,
+    editable: true,
+    render: (value: string | null) => {
+      if (!value) return <span className='text-muted-foreground'>—</span>;
+      return (
+        <a
+          href={`https://open.spotify.com/artist/${value}`}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='text-fm-gold hover:underline text-xs'
+          onClick={e => e.stopPropagation()}
+        >
+          {value.slice(0, 12)}...
+        </a>
+      );
+    },
+  },
+  {
+    key: 'website',
+    label: 'Website',
+    sortable: true,
+    filterable: true,
+    editable: true,
+    render: (value: string | null) => {
+      if (!value) return <span className='text-muted-foreground'>—</span>;
+      return (
+        <a
+          href={value.startsWith('http') ? value : `https://${value}`}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='text-fm-gold hover:underline text-xs'
+          onClick={e => e.stopPropagation()}
+        >
+          {value.replace(/^https?:\/\//, '').slice(0, 20)}
+        </a>
+      );
+    },
+  },
+  DataGridColumns.date({
+    key: 'created_at',
+    label: t('adminGrid.columns.created'),
+    sortable: true,
+  }),
+  DataGridColumns.date({
+    key: 'updated_at',
+    label: 'Updated',
+    sortable: true,
+  }),
 ];
 
 /**
