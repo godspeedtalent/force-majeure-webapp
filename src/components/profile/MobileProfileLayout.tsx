@@ -118,7 +118,7 @@ export const MobileProfileLayout = ({
                 <Music2 className='h-10 w-10 text-muted-foreground mx-auto mb-3' />
                 <FmI18nCommon i18nKey='profile.noUpcomingShows' as='p' className='text-muted-foreground text-sm mb-3' />
                 <FmCommonButton
-                  variant='gold'
+                  variant='default'
                   size='sm'
                   onClick={() => navigate('/')}
                 >

@@ -124,7 +124,7 @@ export const DesktopProfileLayout = ({
                       <Music2 className='h-12 w-12 text-muted-foreground mx-auto mb-4' />
                       <FmI18nCommon i18nKey='profile.noUpcomingShows' as='p' className='text-muted-foreground mb-4' />
                       <FmCommonButton
-                        variant='gold'
+                        variant='default'
                         size='sm'
                         onClick={() => navigate('/')}
                       >
