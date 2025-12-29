@@ -60,7 +60,15 @@ export type Database = {
           user_agent?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "activity_logs_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       activity_logs_archive: {
         Row: {
@@ -197,6 +205,7 @@ export type Database = {
           created_at: string | null
           duration: string | null
           id: string
+          is_primary_dj_set: boolean
           name: string
           platform: string
           updated_at: string | null
@@ -208,6 +217,7 @@ export type Database = {
           created_at?: string | null
           duration?: string | null
           id?: string
+          is_primary_dj_set?: boolean
           name: string
           platform: string
           updated_at?: string | null
@@ -219,6 +229,7 @@ export type Database = {
           created_at?: string | null
           duration?: string | null
           id?: string
+          is_primary_dj_set?: boolean
           name?: string
           platform?: string
           updated_at?: string | null
@@ -367,6 +378,7 @@ export type Database = {
           bio: string | null
           city_id: string | null
           created_at: string | null
+          gallery_id: string | null
           genre: string | null
           id: string
           image_url: string | null
@@ -383,6 +395,7 @@ export type Database = {
           bio?: string | null
           city_id?: string | null
           created_at?: string | null
+          gallery_id?: string | null
           genre?: string | null
           id?: string
           image_url?: string | null
@@ -399,6 +412,7 @@ export type Database = {
           bio?: string | null
           city_id?: string | null
           created_at?: string | null
+          gallery_id?: string | null
           genre?: string | null
           id?: string
           image_url?: string | null
@@ -417,6 +431,13 @@ export type Database = {
             columns: ["city_id"]
             isOneToOne: false
             referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artists_gallery_id_fkey"
+            columns: ["gallery_id"]
+            isOneToOne: false
+            referencedRelation: "media_galleries"
             referencedColumns: ["id"]
           },
         ]
@@ -1140,6 +1161,116 @@ export type Database = {
           },
         ]
       }
+      media_galleries: {
+        Row: {
+          allowed_types: Database["public"]["Enums"]["media_type"][] | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          allowed_types?: Database["public"]["Enums"]["media_type"][] | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          allowed_types?: Database["public"]["Enums"]["media_type"][] | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      media_items: {
+        Row: {
+          alt_text: string | null
+          created_at: string | null
+          creator: string | null
+          description: string | null
+          display_order: number | null
+          duration_seconds: number | null
+          file_path: string
+          file_size_bytes: number | null
+          gallery_id: string | null
+          height: number | null
+          id: string
+          is_active: boolean | null
+          media_type: Database["public"]["Enums"]["media_type"]
+          mime_type: string | null
+          tags: string[] | null
+          thumbnail_path: string | null
+          title: string | null
+          updated_at: string | null
+          width: number | null
+          year: number | null
+        }
+        Insert: {
+          alt_text?: string | null
+          created_at?: string | null
+          creator?: string | null
+          description?: string | null
+          display_order?: number | null
+          duration_seconds?: number | null
+          file_path: string
+          file_size_bytes?: number | null
+          gallery_id?: string | null
+          height?: number | null
+          id?: string
+          is_active?: boolean | null
+          media_type?: Database["public"]["Enums"]["media_type"]
+          mime_type?: string | null
+          tags?: string[] | null
+          thumbnail_path?: string | null
+          title?: string | null
+          updated_at?: string | null
+          width?: number | null
+          year?: number | null
+        }
+        Update: {
+          alt_text?: string | null
+          created_at?: string | null
+          creator?: string | null
+          description?: string | null
+          display_order?: number | null
+          duration_seconds?: number | null
+          file_path?: string
+          file_size_bytes?: number | null
+          gallery_id?: string | null
+          height?: number | null
+          id?: string
+          is_active?: boolean | null
+          media_type?: Database["public"]["Enums"]["media_type"]
+          mime_type?: string | null
+          tags?: string[] | null
+          thumbnail_path?: string | null
+          title?: string | null
+          updated_at?: string | null
+          width?: number | null
+          year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "media_items_gallery_id_fkey"
+            columns: ["gallery_id"]
+            isOneToOne: false
+            referencedRelation: "media_galleries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_items: {
         Row: {
           created_at: string
@@ -1376,6 +1507,7 @@ export type Database = {
           billing_state: string | null
           billing_zip_code: string | null
           created_at: string
+          deleted_at: string | null
           display_name: string | null
           email: string | null
           full_name: string | null
@@ -1402,6 +1534,7 @@ export type Database = {
           billing_state?: string | null
           billing_zip_code?: string | null
           created_at?: string
+          deleted_at?: string | null
           display_name?: string | null
           email?: string | null
           full_name?: string | null
@@ -1428,6 +1561,7 @@ export type Database = {
           billing_state?: string | null
           billing_zip_code?: string | null
           created_at?: string
+          deleted_at?: string | null
           display_name?: string | null
           email?: string | null
           full_name?: string | null
@@ -2636,6 +2770,10 @@ export type Database = {
       }
       cleanup_old_ticketing_sessions: { Args: never; Returns: undefined }
       convert_hold_to_sale: { Args: { p_hold_id: string }; Returns: boolean }
+      create_artist_gallery: {
+        Args: { p_artist_id: string; p_artist_name: string }
+        Returns: string
+      }
       create_event_with_tiers: {
         Args: { p_event_data: Json; p_ticket_tiers: Json }
         Returns: Json
@@ -2857,6 +2995,7 @@ export type Database = {
         | "ticket_refunded"
         | "ticket_cancelled"
       app_role: "user" | "admin" | "developer" | "org_admin" | "org_staff"
+      media_type: "image" | "video" | "audio"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -3008,6 +3147,7 @@ export const Constants = {
         "ticket_cancelled",
       ],
       app_role: ["user", "admin", "developer", "org_admin", "org_staff"],
+      media_type: ["image", "video", "audio"],
     },
   },
 } as const
