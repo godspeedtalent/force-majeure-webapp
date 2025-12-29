@@ -289,6 +289,7 @@ export type Database = {
           submitted_at: string
           talent_differentiator: string | null
           tiktok_handle: string | null
+          tracks_metadata: Json | null
           updated_at: string
           user_id: string | null
         }
@@ -328,6 +329,7 @@ export type Database = {
           submitted_at?: string
           talent_differentiator?: string | null
           tiktok_handle?: string | null
+          tracks_metadata?: Json | null
           updated_at?: string
           user_id?: string | null
         }
@@ -367,6 +369,7 @@ export type Database = {
           submitted_at?: string
           talent_differentiator?: string | null
           tiktok_handle?: string | null
+          tracks_metadata?: Json | null
           updated_at?: string
           user_id?: string | null
         }

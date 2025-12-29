@@ -203,56 +203,26 @@ export function ArtistRegistrationsManagement() {
         throw updateError;
       }
 
-      // Step 3: Create artist recordings from registration URLs
-      const recordingsToCreate: Array<{
-        artist_id: string;
+      // Step 3: Create artist recordings from tracks_metadata (not profile URLs)
+      // Only create recordings from actual track/set URLs, not profile links
+      const tracksMetadata = (registrationToAction as any).tracks_metadata as Array<{
         name: string;
         url: string;
+        coverArt: string | null;
         platform: string;
-        is_primary_dj_set: boolean;
-      }> = [];
+        recordingType: 'track' | 'dj_set';
+      }> | null;
 
-      // Add SoundCloud recordings
-      if (registrationToAction.soundcloud_url) {
-        recordingsToCreate.push({
+      if (tracksMetadata && tracksMetadata.length > 0) {
+        const recordingsToCreate = tracksMetadata.map((track, index) => ({
           artist_id: newArtist.id,
-          name: `${registrationToAction.artist_name} - SoundCloud Profile`,
-          url: registrationToAction.soundcloud_url,
-          platform: 'soundcloud',
-          is_primary_dj_set: false,
-        });
-      }
-      if (registrationToAction.soundcloud_set_url) {
-        recordingsToCreate.push({
-          artist_id: newArtist.id,
-          name: `${registrationToAction.artist_name} - DJ Set`,
-          url: registrationToAction.soundcloud_set_url,
-          platform: 'soundcloud',
-          is_primary_dj_set: true,
-        });
-      }
+          name: track.name || `${registrationToAction.artist_name} - Recording ${index + 1}`,
+          url: track.url,
+          platform: track.platform,
+          cover_art: track.coverArt || null,
+          is_primary_dj_set: track.recordingType === 'dj_set' && index === 0,
+        }));
 
-      // Add Spotify recordings
-      if (registrationToAction.spotify_url) {
-        recordingsToCreate.push({
-          artist_id: newArtist.id,
-          name: `${registrationToAction.artist_name} - Spotify Profile`,
-          url: registrationToAction.spotify_url,
-          platform: 'spotify',
-          is_primary_dj_set: false,
-        });
-      }
-      if (registrationToAction.spotify_track_url) {
-        recordingsToCreate.push({
-          artist_id: newArtist.id,
-          name: `${registrationToAction.artist_name} - Featured Track`,
-          url: registrationToAction.spotify_track_url,
-          platform: 'spotify',
-          is_primary_dj_set: false,
-        });
-      }
-
-      if (recordingsToCreate.length > 0) {
         const { error: recordingsError } = await supabase
           .from('artist_recordings')
           .insert(recordingsToCreate);
@@ -269,6 +239,53 @@ export function ArtistRegistrationsManagement() {
             source: 'ArtistRegistrationsManagement',
             details: { artistId: newArtist.id, count: recordingsToCreate.length },
           });
+        }
+      } else {
+        // Fallback: Use legacy URL fields if tracks_metadata is empty
+        // Only use the specific track/set URLs, NOT profile URLs
+        const legacyRecordings: Array<{
+          artist_id: string;
+          name: string;
+          url: string;
+          platform: string;
+          is_primary_dj_set: boolean;
+        }> = [];
+
+        if (registrationToAction.soundcloud_set_url) {
+          legacyRecordings.push({
+            artist_id: newArtist.id,
+            name: `${registrationToAction.artist_name} - DJ Set`,
+            url: registrationToAction.soundcloud_set_url,
+            platform: 'soundcloud',
+            is_primary_dj_set: true,
+          });
+        }
+        if (registrationToAction.spotify_track_url) {
+          legacyRecordings.push({
+            artist_id: newArtist.id,
+            name: `${registrationToAction.artist_name} - Track`,
+            url: registrationToAction.spotify_track_url,
+            platform: 'spotify',
+            is_primary_dj_set: false,
+          });
+        }
+
+        if (legacyRecordings.length > 0) {
+          const { error: recordingsError } = await supabase
+            .from('artist_recordings')
+            .insert(legacyRecordings);
+
+          if (recordingsError) {
+            logger.warn('Failed to create legacy artist recordings', {
+              error: recordingsError.message,
+              source: 'ArtistRegistrationsManagement',
+            });
+          } else {
+            logger.info('Legacy artist recordings created', {
+              source: 'ArtistRegistrationsManagement',
+              details: { artistId: newArtist.id, count: legacyRecordings.length },
+            });
+          }
         }
       }
 
