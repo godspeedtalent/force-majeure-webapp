@@ -39,7 +39,7 @@ export class RoleManagementService {
         throw new Error(`Role "${roleName}" not found`);
       }
 
-      // Insert the user_role relationship
+      // Insert the user_role relationship (upsert to handle duplicates gracefully)
       const payload = {
         user_id: userId,
         role_id: roleData.id,
@@ -47,9 +47,13 @@ export class RoleManagementService {
 
       const { error: insertError } = await supabase
         .from('user_roles')
-        .insert([payload] as any);
+        .upsert([payload] as any, { 
+          onConflict: 'user_id,role_id',
+          ignoreDuplicates: true 
+        });
 
       if (insertError) {
+        // Only throw if it's not a duplicate key error (409 is handled by upsert)
         roleLogger.error('Failed to add role to user', {
           userId,
           roleName,
