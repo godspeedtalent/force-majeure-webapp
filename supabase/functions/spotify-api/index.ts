@@ -1,5 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { getCorsHeaders, handleCorsPreflightRequest, isOriginAllowed, createForbiddenResponse } from '../_shared/cors.ts';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+};
 
 // Token management
 let accessToken: string | null = null;
@@ -42,18 +47,11 @@ async function getAccessToken(): Promise<string> {
 }
 
 serve(async (req) => {
-  const origin = req.headers.get('origin');
-  const corsHeaders = getCorsHeaders(origin);
-
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    return handleCorsPreflightRequest(origin);
+    return new Response(null, { headers: corsHeaders });
   }
 
-  // Check origin for non-preflight requests
-  if (!isOriginAllowed(origin)) {
-    return createForbiddenResponse();
-  }
 
   try {
     const url = new URL(req.url);
