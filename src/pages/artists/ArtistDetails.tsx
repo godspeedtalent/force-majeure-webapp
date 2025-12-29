@@ -287,7 +287,7 @@ function RecordingsGrid({ recordings }: { recordings: any[] }) {
       </div>
 
       {/* Recordings Grid */}
-      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+      <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center'>
         {sortedRecordings.map((recording) => (
           <a
             key={recording.id}
@@ -295,7 +295,7 @@ function RecordingsGrid({ recordings }: { recordings: any[] }) {
             target='_blank'
             rel='noopener noreferrer'
             className={cn(
-              'group relative flex flex-col p-4 rounded-none border bg-black/40 backdrop-blur-sm transition-all duration-300',
+              'group relative flex flex-col p-3 rounded-none border bg-black/40 backdrop-blur-sm transition-all duration-300 w-full max-w-[180px]',
               'hover:bg-white/10 hover:border-fm-gold/50',
               recording.is_primary_dj_set
                 ? 'border-fm-gold/40 ring-1 ring-fm-gold/20'
@@ -310,12 +310,12 @@ function RecordingsGrid({ recordings }: { recordings: any[] }) {
             )}
 
             {/* Cover art or placeholder */}
-            <div className='w-full aspect-square mb-3 rounded-sm overflow-hidden bg-white/5 border border-white/10'>
+            <div className='w-full aspect-square mb-2 rounded-sm overflow-hidden bg-white/5 border border-white/10'>
               {recording.cover_art ? (
                 <img
                   src={recording.cover_art}
                   alt={recording.name}
-                  className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
+                  className='w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300'
                 />
               ) : (
                 <div className='w-full h-full flex items-center justify-center'>
