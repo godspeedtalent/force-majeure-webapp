@@ -853,6 +853,11 @@ export default function DeveloperDatabase() {
 
   const recordingContextActions: DataGridAction[] = [
     {
+      label: 'View Recording Details',
+      icon: <Eye className='h-4 w-4' />,
+      onClick: (recording: any) => navigate(`/recordings/${recording.id}`),
+    },
+    {
       label: 'Refresh Details',
       icon: <RefreshCw className='h-4 w-4' />,
       onClick: handleRefreshRecordingDetails,

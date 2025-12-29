@@ -185,6 +185,30 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
     label: 'Manage',
   },
 
+  // Recordings
+  '/recordings/:id': {
+    label: '',
+    async: true,
+    resolver: async params => {
+      if (!isUuid(params.id)) return 'Recording';
+
+      try {
+        const { data, error } = await (supabase as any)
+          .from('artist_recordings')
+          .select('name')
+          .eq('id', params.id)
+          .maybeSingle();
+
+        if (error || !data) {
+          return 'Recording';
+        }
+        return data.name || 'Recording';
+      } catch {
+        return 'Recording';
+      }
+    },
+  },
+
   // Admin Routes
   '/admin/controls': {
     label: 'Admin Controls',

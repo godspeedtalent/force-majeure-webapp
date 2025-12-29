@@ -319,14 +319,14 @@ export const recordingColumns: DataGridColumn[] = [
     },
   },
   {
-    key: 'recording_type',
+    key: 'is_primary_dj_set',
     label: t('adminGrid.columns.type'),
     sortable: true,
     filterable: true,
     editable: true,
+    type: 'boolean',
     render: (value: any) => {
-      if (!value) return <span className='text-muted-foreground'>—</span>;
-      const isTrack = value === 'track';
+      const isTrack = value === false;
       return (
         <span className={`px-2 py-0.5 text-xs font-medium uppercase ${isTrack ? 'bg-fm-gold/20 text-fm-gold' : 'bg-fm-navy/20 text-fm-navy'}`}>
           {isTrack ? t('adminGrid.columns.track') : t('adminGrid.columns.djSet')}
