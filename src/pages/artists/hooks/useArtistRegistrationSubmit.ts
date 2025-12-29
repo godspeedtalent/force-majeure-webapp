@@ -133,6 +133,7 @@ export function useArtistRegistrationSubmit() {
             artist_name: formData.stageName,
             bio: formData.bio,
             genres: formData.genres.map(g => g.id),
+            city_id: formData.cityId || null,
             profile_image_url: formData.profileImageUrl,
             press_images: [
               formData.pressImage1Url,
