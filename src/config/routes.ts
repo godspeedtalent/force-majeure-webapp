@@ -150,6 +150,10 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
   '/artists': {
     label: 'Artists',
   },
+  '/artists/register': {
+    label: 'Register to perform',
+    skipParentInBreadcrumb: true,
+  },
   '/artists/signup': {
     label: 'Register to perform',
     skipParentInBreadcrumb: true,

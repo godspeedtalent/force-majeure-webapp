@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next';
-import { X } from 'lucide-react';
 import { FmFlexibleImageUpload } from '@/components/common/forms/FmFlexibleImageUpload';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/common/shadcn/dialog';
@@ -43,32 +43,23 @@ export function ArtistImageUploadModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='sm:max-w-[500px] bg-background/95 backdrop-blur-xl border-white/20'>
         <DialogHeader>
-          <DialogTitle className='font-canela text-xl flex items-center justify-between'>
+          <DialogTitle className='font-canela text-xl'>
             {label}
-            <button
-              type='button'
-              onClick={() => onOpenChange(false)}
-              className='rounded-none p-1 hover:bg-white/10 transition-colors'
-            >
-              <X className='h-4 w-4' />
-            </button>
           </DialogTitle>
+          <DialogDescription className='text-muted-foreground'>
+            {t('upload.supportedFormats')}
+          </DialogDescription>
         </DialogHeader>
 
         <div className='py-4'>
           <FmFlexibleImageUpload
             value={value}
             onChange={handleImageChange}
-            label={label}
             bucket='artist-images'
             pathPrefix='registrations'
             isPrimary={isPrimary}
           />
         </div>
-
-        <p className='text-xs text-muted-foreground font-canela'>
-          {t('upload.supportedFormats')}
-        </p>
       </DialogContent>
     </Dialog>
   );
