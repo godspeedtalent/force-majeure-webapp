@@ -564,6 +564,10 @@ export default function DeveloperDatabase() {
         typeof newRow.bio === 'string' && newRow.bio.trim() !== ''
           ? newRow.bio.trim()
           : null,
+      city_id:
+        typeof newRow.city_id === 'string' && newRow.city_id.trim() !== ''
+          ? newRow.city_id.trim()
+          : null,
     };
 
     try {

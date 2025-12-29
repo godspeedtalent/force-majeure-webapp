@@ -17,6 +17,8 @@ export interface DataGridFiltersActions {
 export interface UseDataGridFiltersOptions<T> {
   data: T[];
   columns: DataGridColumn[];
+  sortColumn?: string | null;
+  sortDirection?: 'asc' | 'desc';
 }
 
 export interface UseDataGridFiltersReturn<T>
@@ -28,19 +30,21 @@ export interface UseDataGridFiltersReturn<T>
 }
 
 /**
- * Hook to manage search and filtering logic for the DataGrid
- * Applies universal search and per-column filters
+ * Hook to manage search, filtering, and sorting logic for the DataGrid
+ * Applies universal search, per-column filters, and column sorting
  */
 export function useDataGridFilters<T extends Record<string, any>>({
   data,
   columns,
+  sortColumn,
+  sortDirection = 'asc',
 }: UseDataGridFiltersOptions<T>): UseDataGridFiltersReturn<T> {
   const [searchQuery, setSearchQuery] = useState('');
   const [columnFilters, setColumnFilters] = useState<Record<string, string>>(
     {}
   );
 
-  // Apply all filters to data
+  // Apply all filters and sorting to data
   const filteredData = useMemo(() => {
     let filtered = [...data];
 
@@ -66,8 +70,46 @@ export function useDataGridFilters<T extends Record<string, any>>({
       }
     });
 
+    // Apply sorting
+    if (sortColumn) {
+      filtered.sort((a, b) => {
+        const aVal = a[sortColumn];
+        const bVal = b[sortColumn];
+
+        // Handle null/undefined values
+        if (aVal == null && bVal == null) return 0;
+        if (aVal == null) return sortDirection === 'asc' ? 1 : -1;
+        if (bVal == null) return sortDirection === 'asc' ? -1 : 1;
+
+        // Handle different types
+        if (typeof aVal === 'number' && typeof bVal === 'number') {
+          return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+        }
+
+        if (aVal instanceof Date && bVal instanceof Date) {
+          return sortDirection === 'asc'
+            ? aVal.getTime() - bVal.getTime()
+            : bVal.getTime() - aVal.getTime();
+        }
+
+        // Handle date strings
+        const aDate = Date.parse(aVal);
+        const bDate = Date.parse(bVal);
+        if (!isNaN(aDate) && !isNaN(bDate)) {
+          return sortDirection === 'asc' ? aDate - bDate : bDate - aDate;
+        }
+
+        // Default string comparison
+        const aStr = String(aVal).toLowerCase();
+        const bStr = String(bVal).toLowerCase();
+        if (aStr < bStr) return sortDirection === 'asc' ? -1 : 1;
+        if (aStr > bStr) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
     return filtered;
-  }, [data, searchQuery, columns, columnFilters]);
+  }, [data, searchQuery, columns, columnFilters, sortColumn, sortDirection]);
 
   // Count active filters
   const activeFilterCount = useMemo(() => {

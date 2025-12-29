@@ -117,6 +117,15 @@ export const artistColumns: DataGridColumn[] = [
     onImageUpdate: (row, newImageUrl) => updateArtistImage(row, newImageUrl),
   }),
   {
+    ...DataGridColumns.relation({
+      key: 'city_id',
+      label: t('adminGrid.columns.city'),
+      sortable: true,
+      getLabel: (row: any) => row.city || '—',
+    }),
+    editable: true,
+  },
+  {
     key: 'bio',
     label: t('adminGrid.columns.bio'),
     filterable: true,

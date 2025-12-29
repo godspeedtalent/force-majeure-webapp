@@ -118,7 +118,12 @@ export function FmDataGrid<T extends Record<string, any>>({
   // Custom hooks for state management
   const gridState = useDataGridState({ dataLength: data.length });
   const selection = useDataGridSelection();
-  const filters = useDataGridFilters({ data, columns });
+  const filters = useDataGridFilters({
+    data,
+    columns,
+    sortColumn: gridState.sortColumn,
+    sortDirection: gridState.sortDirection,
+  });
   const ui = useDataGridUI();
 
   // Column Resize State
