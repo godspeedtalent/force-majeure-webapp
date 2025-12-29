@@ -126,7 +126,7 @@ export function ProfileInformationSection() {
 
           <FmCommonButton
             type='submit'
-            variant='secondary'
+            variant='default'
             loading={isLoading}
             disabled={!user.email_confirmed_at || isLoading}
           >
