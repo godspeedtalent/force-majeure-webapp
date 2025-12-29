@@ -146,11 +146,19 @@ export function useArtistRegistrationSubmit() {
             // Store platform IDs for duplicate detection
             spotify_id: formData.spotifyArtistId || null,
             soundcloud_id: formData.soundcloudUsername || null,
-            // Extract first track URL by platform from tracks array
+            // Extract first track URL by platform from tracks array (for backwards compatibility)
             spotify_track_url:
               formData.tracks.find(t => t.platform === 'spotify')?.url || null,
             soundcloud_set_url:
               formData.tracks.find(t => t.platform === 'soundcloud')?.url || null,
+            // Store complete track metadata (name, coverArt, platform, recordingType)
+            tracks_metadata: formData.tracks.map(track => ({
+              name: track.name,
+              url: track.url,
+              coverArt: track.coverArt || null,
+              platform: track.platform,
+              recordingType: track.recordingType,
+            })),
             link_personal_profile: false,
             notifications_opt_in: formData.notificationsOptIn,
             status: 'pending',
