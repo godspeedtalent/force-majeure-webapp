@@ -144,11 +144,18 @@ export default function ArtistDetails() {
                 </div>
 
                 {/* Social Links */}
-                {artist.website && (
+                {(artist.instagram_handle || artist.soundcloud_id || artist.spotify_id || artist.tiktok_handle || artist.website) && (
                   <>
                     <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent mt-[20px]' />
                     <div className='flex items-center mt-[15px]'>
-                      <FmSocialLinks size='md' gap='md' />
+                      <FmSocialLinks 
+                        instagram={artist.instagram_handle}
+                        soundcloud={artist.soundcloud_id ? `https://soundcloud.com/${artist.soundcloud_id}` : undefined}
+                        spotify={artist.spotify_id ? `https://open.spotify.com/artist/${artist.spotify_id}` : undefined}
+                        tiktok={artist.tiktok_handle}
+                        size='md' 
+                        gap='md' 
+                      />
                     </div>
                   </>
                 )}

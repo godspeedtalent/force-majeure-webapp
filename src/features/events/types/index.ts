@@ -74,6 +74,10 @@ export interface Artist {
   website?: string | null;    // Database column name
   genre?: string | null;      // Artist genre
   image?: string | null;      // Alias for image_url
+  // Social media fields
+  instagram_handle?: string | null;
+  tiktok_handle?: string | null;
+  soundcloud_id?: string | null;
 }
 
 export interface Event {
