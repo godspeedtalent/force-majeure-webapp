@@ -14,6 +14,7 @@ import {
   Tag,
   Ticket,
   Settings,
+  Mail,
 } from 'lucide-react';
 import { cn } from '@/shared';
 import {
@@ -38,6 +39,7 @@ const CATEGORY_ICONS: Record<ActivityCategory, typeof User> = {
   ticket_tier: Tag,
   ticket: Ticket,
   system: Settings,
+  contact: Mail,
 };
 
 function SummaryCard({

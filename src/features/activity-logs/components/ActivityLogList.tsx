@@ -20,6 +20,7 @@ import {
   Ticket,
   Settings,
   ExternalLink,
+  Mail,
 } from 'lucide-react';
 import { cn } from '@/shared';
 import { Button } from '@/components/common/shadcn/button';
@@ -48,6 +49,7 @@ const CATEGORY_ICONS: Record<ActivityCategory, typeof User> = {
   ticket_tier: Tag,
   ticket: Ticket,
   system: Settings,
+  contact: Mail,
 };
 
 /**

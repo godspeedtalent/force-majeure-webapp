@@ -2213,6 +2213,8 @@
     "eventActivityDescription": "Event changes",
     "ticketActivity": "Ticket Activity",
     "ticketActivityDescription": "Sales & scans",
+    "contactActivity": "Contact Submissions",
+    "contactActivityDescription": "Contact form messages",
     "filterLogs": "Filter Logs",
     "exportAsJson": "Export as JSON",
     "exportAsCsv": "Export as CSV",

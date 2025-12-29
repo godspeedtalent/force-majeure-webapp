@@ -2195,6 +2195,8 @@
     "eventActivityDescription": "活动更改",
     "ticketActivity": "门票活动",
     "ticketActivityDescription": "销售和扫描",
+    "contactActivity": "联系表单",
+    "contactActivityDescription": "联系表单消息",
     "filterLogs": "筛选日志",
     "exportAsJson": "导出为 JSON",
     "exportAsCsv": "导出为 CSV",

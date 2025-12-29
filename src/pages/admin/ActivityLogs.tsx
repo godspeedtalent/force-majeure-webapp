@@ -16,6 +16,7 @@ import {
   Activity,
   Filter,
   SlidersHorizontal,
+  Mail,
 } from 'lucide-react';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
@@ -50,7 +51,7 @@ import {
 } from '@/features/activity-logs/types';
 
 // Sidebar navigation type
-type SidebarItem = 'all' | 'account' | 'event' | 'ticket';
+type SidebarItem = 'all' | 'account' | 'event' | 'ticket' | 'contact';
 
 export default function ActivityLogs() {
   const { t } = useTranslation('common');
@@ -154,6 +155,12 @@ export default function ActivityLogs() {
           label: t('activityLogsPage.ticketActivity'),
           icon: Activity,
           description: t('activityLogsPage.ticketActivityDescription'),
+        },
+        {
+          id: 'contact',
+          label: t('activityLogsPage.contactActivity'),
+          icon: Mail,
+          description: t('activityLogsPage.contactActivityDescription'),
         },
       ],
     },

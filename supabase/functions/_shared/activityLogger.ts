@@ -20,7 +20,8 @@ export type ActivityCategory =
   | 'recording'
   | 'ticket_tier'
   | 'ticket'
-  | 'system';
+  | 'system'
+  | 'contact';
 
 /**
  * Activity event types matching the database enum
@@ -39,7 +40,9 @@ export type ActivityEventType =
   | 'ticket_sold'
   | 'ticket_scanned'
   | 'ticket_refunded'
-  | 'ticket_cancelled';
+  | 'ticket_cancelled'
+  // Contact events
+  | 'contact_submission';
 
 /**
  * Parameters for logging an activity event
@@ -224,6 +227,31 @@ export function createTicketScanLog(params: {
       attendee_name: params.attendeeName,
       scan_result: params.scanResult,
       scanned_at: new Date().toISOString(),
+    },
+  };
+}
+
+/**
+ * Helper to create a contact form submission activity log
+ */
+export function createContactSubmissionLog(params: {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}): Omit<LogActivityParams, 'ipAddress' | 'userAgent'> {
+  return {
+    eventType: 'contact_submission',
+    category: 'contact',
+    description: `Contact form submission from ${params.name} (${params.email}): ${params.subject}`,
+    targetResourceType: 'contact_form',
+    targetResourceName: params.subject || 'No subject',
+    metadata: {
+      name: params.name,
+      email: params.email,
+      subject: params.subject,
+      message: params.message,
+      submitted_at: new Date().toISOString(),
     },
   };
 }

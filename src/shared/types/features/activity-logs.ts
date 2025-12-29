@@ -16,7 +16,8 @@ export type ActivityCategory =
   | 'recording'
   | 'ticket_tier'
   | 'ticket'
-  | 'system';
+  | 'system'
+  | 'contact';
 
 /**
  * Activity event types matching the database enum
@@ -35,7 +36,9 @@ export type ActivityEventType =
   | 'ticket_sold'
   | 'ticket_scanned'
   | 'ticket_refunded'
-  | 'ticket_cancelled';
+  | 'ticket_cancelled'
+  // Contact events
+  | 'contact_submission';
 
 /**
  * Activity log entry from the database
@@ -144,6 +147,7 @@ export const CATEGORY_CONFIG: Record<
   ticket_tier: { label: 'Ticket Tier', color: 'text-yellow-400', icon: 'Tag' },
   ticket: { label: 'Ticket', color: 'text-fm-gold', icon: 'Ticket' },
   system: { label: 'System', color: 'text-gray-400', icon: 'Settings' },
+  contact: { label: 'Contact', color: 'text-cyan-400', icon: 'Mail' },
 };
 
 /**
@@ -164,6 +168,7 @@ export const EVENT_TYPE_CONFIG: Record<
   ticket_scanned: { label: 'Ticket Scanned', verb: 'scanned' },
   ticket_refunded: { label: 'Ticket Refunded', verb: 'refunded' },
   ticket_cancelled: { label: 'Ticket Cancelled', verb: 'cancelled' },
+  contact_submission: { label: 'Contact Submission', verb: 'submitted' },
 };
 
 /**
@@ -178,6 +183,7 @@ export const ALL_CATEGORIES: ActivityCategory[] = [
   'ticket_tier',
   'ticket',
   'system',
+  'contact',
 ];
 
 /**
@@ -195,4 +201,5 @@ export const ALL_EVENT_TYPES: ActivityEventType[] = [
   'ticket_scanned',
   'ticket_refunded',
   'ticket_cancelled',
+  'contact_submission',
 ];

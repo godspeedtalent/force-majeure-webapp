@@ -2197,6 +2197,8 @@
     "eventActivityDescription": "Cambios en eventos",
     "ticketActivity": "Actividad de Entradas",
     "ticketActivityDescription": "Ventas y escaneos",
+    "contactActivity": "Mensajes de Contacto",
+    "contactActivityDescription": "Mensajes del formulario de contacto",
     "filterLogs": "Filtrar Registros",
     "exportAsJson": "Exportar como JSON",
     "exportAsCsv": "Exportar como CSV",
