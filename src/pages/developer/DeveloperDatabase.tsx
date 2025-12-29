@@ -535,7 +535,12 @@ export default function DeveloperDatabase() {
   // Context menu actions for venues
   const venueContextActions: DataGridAction[] = [
     {
-      label: 'Delete Venue',
+      label: t('devTools.database.editVenue'),
+      icon: <MapPin className='h-4 w-4' />,
+      onClick: (venue: any) => navigate(`/venues/${venue.id}/manage`),
+    },
+    {
+      label: t('devTools.database.deleteVenue'),
       icon: <Trash2 className='h-4 w-4' />,
       onClick: handleDeleteVenueClick,
       variant: 'destructive',
