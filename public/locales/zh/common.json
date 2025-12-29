@@ -1063,7 +1063,13 @@
     "deleteVenueConfirm": "确定要删除此场馆吗？"
   },
   "dataGrid": {
-    "columns": "列",
+    "columnsLabel": "列",
+    "columns": {
+      "organizationName": "组织名称",
+      "profilePicture": "头像",
+      "owner": "所有者",
+      "created": "创建时间"
+    },
     "actions": {
       "edit": "编辑",
       "editUser": "编辑用户",
