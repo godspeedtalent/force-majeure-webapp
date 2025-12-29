@@ -1938,7 +1938,10 @@
       "artists": "Artists",
       "genres": "Genres",
       "status": "Status",
-      "socials": "Socials"
+      "socials": "Socials",
+      "verified": "Verified",
+      "verifiedLabel": "Verified",
+      "unverifiedLabel": "Unverified"
     }
   },
   "artistRegistrations": {
