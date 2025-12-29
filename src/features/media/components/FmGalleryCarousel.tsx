@@ -8,9 +8,9 @@
  * fades in as the cursor approaches, allowing quick access to gallery management.
  */
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Music2, Pencil, Database } from 'lucide-react';
+import { Music2, Pencil, Database, Pause, Play } from 'lucide-react';
 import { useGallery } from '../hooks/useGallery';
 import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
 import { ImageAnchor, ROLES } from '@/shared';
@@ -61,6 +61,12 @@ export interface FmGalleryCarouselProps {
   editButtonFadeRadius?: string;
   /** Owner user ID - if provided, this user can also edit the gallery */
   ownerUserId?: string;
+  /** Whether clicking pauses/resumes the carousel (default: true) */
+  clickToPause?: boolean;
+  /** Whether to show the pause/play indicator briefly on click (default: true) */
+  showPauseIndicator?: boolean;
+  /** Whether to show detailed captions with all available info (default: false) */
+  showDetailedCaptions?: boolean;
 }
 
 export const FmGalleryCarousel = ({
@@ -80,10 +86,15 @@ export const FmGalleryCarousel = ({
   showEditButton = true,
   editButtonFadeRadius = '90vh',
   ownerUserId,
+  clickToPause = true,
+  showPauseIndicator = true,
+  showDetailedCaptions = false,
 }: FmGalleryCarouselProps) => {
   const navigate = useNavigate();
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [isHovering, setIsHovering] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [showPauseIcon, setShowPauseIcon] = useState(false);
 
   const { items, isLoading } = useGallery(gallerySlug);
   const { hasAnyRole } = useUserPermissions();
@@ -128,6 +139,19 @@ export const FmGalleryCarousel = ({
     navigate(`/admin/galleries/${gallerySlug}`);
   };
 
+  // Handle carousel click to toggle pause
+  const handleCarouselClick = useCallback(() => {
+    if (!clickToPause) return;
+
+    setIsPaused(prev => !prev);
+
+    // Show pause/play indicator briefly
+    if (showPauseIndicator) {
+      setShowPauseIcon(true);
+      setTimeout(() => setShowPauseIcon(false), 800);
+    }
+  }, [clickToPause, showPauseIndicator]);
+
   // Debug log gallery items and URLs
   useEffect(() => {
     if (items.length > 0) {
@@ -144,16 +168,16 @@ export const FmGalleryCarousel = ({
     }
   }, [items, gallerySlug]);
 
-  // Set up auto-scroll
+  // Set up auto-scroll (pauses when isPaused is true)
   useEffect(() => {
-    if (!carouselApi || autoScrollInterval <= 0) return;
+    if (!carouselApi || autoScrollInterval <= 0 || isPaused) return;
 
     const interval = setInterval(() => {
       carouselApi.scrollNext();
     }, autoScrollInterval);
 
     return () => clearInterval(interval);
-  }, [carouselApi, autoScrollInterval]);
+  }, [carouselApi, autoScrollInterval, isPaused]);
 
   // Notify parent when API is ready
   useEffect(() => {
@@ -201,10 +225,24 @@ export const FmGalleryCarousel = ({
 
   return (
     <div
-      className={cn('h-full w-full relative', className)}
+      className={cn('h-full w-full relative', clickToPause && 'cursor-pointer', className)}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
+      onClick={handleCarouselClick}
     >
+      {/* Pause/Play indicator on click */}
+      {showPauseIcon && (
+        <div className='absolute inset-0 flex items-center justify-center z-20 pointer-events-none'>
+          <div className='bg-black/70 backdrop-blur-md p-[20px] border border-white/20 animate-in fade-in zoom-in-95 duration-200'>
+            {isPaused ? (
+              <Pause className='h-12 w-12 text-fm-gold' />
+            ) : (
+              <Play className='h-12 w-12 text-fm-gold' />
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Proximity edit button for authorized users */}
       {canEditGallery && (
         <FmProximityIconButton
@@ -252,8 +290,63 @@ export const FmGalleryCarousel = ({
                 {/* Gradient overlays */}
                 {showGradients && (gradientOverlays || defaultGradientOverlays)}
 
-                {/* Photo credit on hover */}
-                {showCredits && isHovering && item.creator && (
+                {/* Detailed caption on hover - shows all available info */}
+                {showDetailedCaptions && isHovering && (item.title || item.description || item.creator || item.year || item.tags?.length) && (
+                  <div className='absolute bottom-[20px] right-[20px] max-w-[320px] bg-black/80 backdrop-blur-lg border border-white/10 animate-in fade-in slide-in-from-bottom-2 duration-300'>
+                    <div className='px-[15px] py-[10px] space-y-[6px]'>
+                      {/* Title row */}
+                      {item.title && (
+                        <h4 className='font-canela text-sm text-white font-medium truncate'>
+                          {item.title}
+                        </h4>
+                      )}
+
+                      {/* Description - max 2 lines */}
+                      {item.description && (
+                        <p className='font-canela text-xs text-white/70 line-clamp-2'>
+                          {item.description}
+                        </p>
+                      )}
+
+                      {/* Metadata row: creator • year */}
+                      {(item.creator || item.year) && (
+                        <p className='font-canela text-xs text-muted-foreground flex items-center gap-[6px]'>
+                          {item.creator && (
+                            <span>{creditPrefix} {item.creator}</span>
+                          )}
+                          {item.creator && item.year && (
+                            <span className='text-white/30'>•</span>
+                          )}
+                          {item.year && (
+                            <span>{item.year}</span>
+                          )}
+                        </p>
+                      )}
+
+                      {/* Tags row */}
+                      {item.tags && item.tags.length > 0 && (
+                        <div className='flex flex-wrap gap-[5px] pt-[4px]'>
+                          {item.tags.slice(0, 4).map((tag, idx) => (
+                            <span
+                              key={idx}
+                              className='font-canela text-[10px] uppercase tracking-wider text-fm-gold/80 bg-fm-gold/10 px-[6px] py-[2px] border border-fm-gold/20'
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                          {item.tags.length > 4 && (
+                            <span className='font-canela text-[10px] text-muted-foreground'>
+                              +{item.tags.length - 4}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Simple photo credit on hover (when detailed captions are off) */}
+                {showCredits && !showDetailedCaptions && isHovering && item.creator && (
                   <div className='absolute bottom-[20px] right-[20px] bg-black/70 backdrop-blur-md px-[15px] py-[8px] border border-white/10 animate-in fade-in slide-in-from-bottom-2 duration-300'>
                     <p className='font-canela text-xs text-muted-foreground'>
                       {creditPrefix} {item.creator}

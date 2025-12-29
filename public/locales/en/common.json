@@ -281,7 +281,9 @@
     "allPermissions": "All",
     "permissionCount": "{{count}} permissions",
     "permissionCount_one": "{{count}} permission",
-    "clearSimulation": "Clear simulation"
+    "clearSimulation": "Clear simulation",
+    "unauthenticated": "Unauthenticated",
+    "unauthenticatedDescription": "Simulate a logged-out user with no roles or permissions"
   },
   "searchDropdown": {
     "placeholder": "Search...",
@@ -1779,7 +1781,8 @@
     "shows": "Shows",
     "memberTitle": "Member",
     "loadingShows": "Loading shows...",
-    "noUpcomingShows": "No upcoming shows"
+    "noUpcomingShows": "No upcoming shows",
+    "linkedArtist": "Linked Artist"
   },
   "emailPreview": {
     "title": "Email Template Preview",
@@ -2641,7 +2644,8 @@
       "unauthenticated": "Unauthenticated",
       "fan": "Fan",
       "developer": "Developer",
-      "admin": "Admin"
+      "admin": "Admin",
+      "artist": "Artist"
     }
   },
   "globalSearch": {

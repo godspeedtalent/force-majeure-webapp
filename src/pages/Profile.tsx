@@ -21,7 +21,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const [upcomingShows, setUpcomingShows] = useState<UpcomingEvent[]>([]);
   const [loadingShows, setLoadingShows] = useState(true);
-  const { hasLinkedArtist, isLoading: loadingArtist } = useUserLinkedArtist();
+  const { hasLinkedArtist, linkedArtist, isLoading: loadingArtist } = useUserLinkedArtist();
 
   // Fetch upcoming shows
   useEffect(() => {
@@ -152,6 +152,7 @@ const Profile = () => {
     upcomingShows,
     loadingShows,
     hasLinkedArtist,
+    linkedArtistName: linkedArtist?.name,
     loadingArtist,
     createdAt,
   };

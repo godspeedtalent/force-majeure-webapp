@@ -34,6 +34,7 @@ export const ROLES = {
   ORG_ADMIN: 'org_admin',
   ORG_STAFF: 'org_staff',
   VENUE_ADMIN: 'venue_admin',
+  ARTIST: 'artist',
   USER: 'user',
 } as const;
 
@@ -61,5 +62,6 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   ],
   [ROLES.ORG_STAFF]: [PERMISSIONS.VIEW_ORGANIZATION, PERMISSIONS.SCAN_TICKETS],
   [ROLES.VENUE_ADMIN]: [PERMISSIONS.MANAGE_VENUES],
+  [ROLES.ARTIST]: [], // Artist role - no additional permissions for now
   [ROLES.USER]: [],
 };

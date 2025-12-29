@@ -13,8 +13,9 @@ import {
   Loader2,
   ChevronDown,
   ChevronUp,
+  UserX,
 } from 'lucide-react';
-import { useMockRole, type MockRoleMode } from '@/shared/contexts/MockRoleContext';
+import { useMockRole, type MockRoleMode, MOCK_ROLE_UNAUTHENTICATED } from '@/shared/contexts/MockRoleContext';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { useRoles } from '@/shared/hooks/useRoles';
 import { cn } from '@/shared';
@@ -78,9 +79,20 @@ export const MockRoleTabContent = () => {
   // Get the display name for the current mock role
   const getMockRoleDisplayName = (): string => {
     if (mockRole === 'disabled') return '';
+    if (mockRole === MOCK_ROLE_UNAUTHENTICATED) return t('mockRole.unauthenticated');
     const role = availableRoles.find(r => r.name === mockRole);
     return role?.display_name || mockRole;
   };
+
+  const handleUnauthenticatedSelect = () => {
+    if (mockRole === MOCK_ROLE_UNAUTHENTICATED) {
+      clearMockRole();
+    } else {
+      setMockRole(MOCK_ROLE_UNAUTHENTICATED);
+    }
+  };
+
+  const isUnauthenticatedSelected = mockRole === MOCK_ROLE_UNAUTHENTICATED;
 
   return (
     <div className='space-y-6'>
@@ -157,6 +169,54 @@ export const MockRoleTabContent = () => {
           </div>
         ) : (
           <div className='space-y-2'>
+            {/* Unauthenticated Option - Special case at top */}
+            <button
+              onClick={handleUnauthenticatedSelect}
+              className={cn(
+                'w-full flex items-start gap-3 p-3 text-left transition-all duration-200',
+                'border hover:scale-[1.01]',
+                isUnauthenticatedSelected
+                  ? 'bg-fm-gold/20 border-fm-gold/50 shadow-[0_0_12px_rgba(223,186,125,0.2)]'
+                  : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
+              )}
+            >
+              <div
+                className={cn(
+                  'p-2 flex-shrink-0 transition-colors',
+                  isUnauthenticatedSelected ? 'bg-fm-gold/30' : 'bg-white/10'
+                )}
+              >
+                <UserX
+                  className={cn(
+                    'h-4 w-4',
+                    isUnauthenticatedSelected ? 'text-fm-gold' : 'text-white/70'
+                  )}
+                />
+              </div>
+              <div className='flex-1 min-w-0'>
+                <div className='flex items-center justify-between gap-2'>
+                  <span
+                    className={cn(
+                      'font-medium text-sm',
+                      isUnauthenticatedSelected ? 'text-fm-gold' : 'text-white'
+                    )}
+                  >
+                    {t('mockRole.unauthenticated')}
+                  </span>
+                  <span className='text-[10px] text-white/40'>
+                    {t('mockRole.permissionCount', { count: 0 })}
+                  </span>
+                </div>
+                <p className='text-xs text-white/50 mt-0.5'>
+                  {t('mockRole.unauthenticatedDescription')}
+                </p>
+              </div>
+            </button>
+
+            {/* Divider */}
+            <div className='border-t border-white/10 my-2' />
+
+            {/* Database Roles */}
             {availableRoles.map(role => {
               const Icon = getIconForRole(role.name);
               const isSelected = mockRole === role.name;

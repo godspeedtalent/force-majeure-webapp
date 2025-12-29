@@ -31,6 +31,7 @@ export const MobileProfileLayout = ({
   upcomingShows,
   loadingShows,
   hasLinkedArtist,
+  linkedArtistName,
   loadingArtist,
   createdAt,
 }: ProfileLayoutProps) => {
@@ -69,9 +70,9 @@ export const MobileProfileLayout = ({
           <FmCommonUserPhoto
             src={profile?.avatar_url}
             name={profile?.display_name || user.email}
-            size='xl'
+            size='square'
             useAnimatedGradient={!profile?.avatar_url}
-            className='flex-shrink-0'
+            className='flex-shrink-0 w-24 h-24'
           />
           <div className='min-w-0'>
             <h2 className='text-xl font-canela font-medium text-foreground truncate'>
@@ -211,6 +212,15 @@ export const MobileProfileLayout = ({
               size='sm'
               iconClassName='text-fm-gold'
             />
+            {hasLinkedArtist && linkedArtistName && (
+              <FmCommonInfoCard
+                icon={Mic2}
+                label={t('profile.linkedArtist')}
+                value={linkedArtistName}
+                size='sm'
+                iconClassName='text-fm-gold'
+              />
+            )}
           </TabsContent>
         </div>
       </Tabs>

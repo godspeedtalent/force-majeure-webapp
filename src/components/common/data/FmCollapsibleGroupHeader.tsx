@@ -81,10 +81,11 @@ export const FmCollapsibleGroupHeader = ({
   return (
     <div className={cn('space-y-1.5', className)}>
       {/* Group Header - Clickable */}
+      {/* Using group/header to isolate hover state from other group contexts */}
       <button
         onClick={handleToggle}
         className={cn(
-          'flex items-center gap-2 py-1.5 px-1 w-full group transition-all duration-300 rounded-sm',
+          'flex items-center gap-2 py-1.5 px-1 w-full group/header transition-all duration-300 rounded-sm',
           'hover:bg-fm-gold/5 hover:shadow-[0_0_12px_rgba(223,186,125,0.1)]',
           'active:scale-[0.99] active:bg-fm-gold/10'
         )}
@@ -93,18 +94,18 @@ export const FmCollapsibleGroupHeader = ({
         <ChevronDown
           className={cn(
             'h-3 w-3 transition-all duration-300',
-            'text-white/40 group-hover:text-fm-gold',
+            'text-white/40 group-hover/header:text-fm-gold',
             !isExpanded && '-rotate-90'
           )}
         />
         <span className={cn(
           'text-[10px] font-medium uppercase tracking-wider transition-all duration-300',
-          'text-white/60 group-hover:text-fm-gold group-hover:tracking-widest'
+          'text-white/60 group-hover/header:text-fm-gold group-hover/header:tracking-widest'
         )}>
           {title}
         </span>
         {count !== undefined && (
-          <span className="text-[9px] text-white/30 group-hover:text-fm-gold/50 transition-colors duration-300">
+          <span className="text-[9px] text-white/30 group-hover/header:text-fm-gold/50 transition-colors duration-300">
             ({count})
           </span>
         )}
@@ -112,7 +113,7 @@ export const FmCollapsibleGroupHeader = ({
           <div className={cn(
             'flex-1 h-[1px] transition-all duration-300',
             'bg-gradient-to-r from-white/10 to-transparent',
-            'group-hover:from-fm-gold/30 group-hover:to-fm-gold/5'
+            'group-hover/header:from-fm-gold/30 group-hover/header:to-fm-gold/5'
           )} />
         )}
       </button>

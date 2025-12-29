@@ -20,6 +20,7 @@ export interface ProfileLayoutProps {
   upcomingShows: UpcomingEvent[];
   loadingShows: boolean;
   hasLinkedArtist: boolean;
+  linkedArtistName?: string | null;
   loadingArtist: boolean;
   createdAt: string;
 }

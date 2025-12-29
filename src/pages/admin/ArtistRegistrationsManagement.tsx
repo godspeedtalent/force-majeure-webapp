@@ -13,6 +13,8 @@ import { Check, X, Eye, Clock, CheckCircle2, XCircle, Trash2 } from 'lucide-reac
 import { toast } from 'sonner';
 import { supabase, logger, cn } from '@/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
+import { RoleManagementService } from '@/shared/services/roleManagementService';
+import { ROLES } from '@/shared/auth/permissions';
 import { FmConfigurableDataGrid, DataGridAction, DataGridColumn, DataGridColumns } from '@/features/data-grid';
 import { FmCommonButton } from '@/components/common/buttons';
 import {
@@ -177,6 +179,24 @@ export function ArtistRegistrationsManagement() {
           details: { registrationId: registrationToAction.id, artistId: newArtist.id },
         });
         throw updateError;
+      }
+
+      // Step 3: Assign artist role to the user (if they have a user_id)
+      if (registrationToAction.user_id) {
+        try {
+          await RoleManagementService.addRole(registrationToAction.user_id, ROLES.ARTIST);
+          logger.info('Artist role assigned to user', {
+            source: 'ArtistRegistrationsManagement',
+            details: { userId: registrationToAction.user_id, artistId: newArtist.id },
+          });
+        } catch (roleError) {
+          // Log but don't fail the approval - the artist was created successfully
+          logger.warn('Failed to assign artist role to user', {
+            error: roleError instanceof Error ? roleError.message : 'Unknown error',
+            source: 'ArtistRegistrationsManagement',
+            details: { userId: registrationToAction.user_id, artistId: newArtist.id },
+          });
+        }
       }
 
       toast.success(t('artistRegistrations.approveSuccess', { name: registrationToAction.artist_name }));

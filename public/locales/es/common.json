@@ -281,7 +281,9 @@
     "allPermissions": "Todos",
     "permissionCount": "{{count}} permisos",
     "permissionCount_one": "{{count}} permiso",
-    "clearSimulation": "Limpiar simulación"
+    "clearSimulation": "Limpiar simulación",
+    "unauthenticated": "No autenticado",
+    "unauthenticatedDescription": "Simular un usuario sin sesión iniciada, sin roles ni permisos"
   },
   "searchDropdown": {
     "placeholder": "Buscar...",
@@ -1766,7 +1768,8 @@
     "shows": "Shows",
     "memberTitle": "Miembro",
     "loadingShows": "Cargando shows...",
-    "noUpcomingShows": "Sin shows próximos"
+    "noUpcomingShows": "Sin shows próximos",
+    "linkedArtist": "Artista Vinculado"
   },
   "emailPreview": {
     "title": "Vista Previa de Plantilla de Email",
@@ -2628,7 +2631,8 @@
       "unauthenticated": "No Autenticado",
       "fan": "Fan",
       "developer": "Desarrollador",
-      "admin": "Administrador"
+      "admin": "Administrador",
+      "artist": "Artista"
     }
   },
   "globalSearch": {

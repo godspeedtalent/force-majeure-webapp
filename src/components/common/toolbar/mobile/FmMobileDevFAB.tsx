@@ -27,23 +27,26 @@ export function FmMobileDevFAB({
       className={cn(
         // Base positioning - bottom-right with safe area support
         'fixed bottom-[80px] right-[16px] z-[60]',
-        // Size - Material Design standard FAB
-        'h-[56px] w-[56px]',
-        // Styling - semi-transparent gold background with black text
-        'bg-fm-gold/60 text-black backdrop-blur-sm',
-        // Shape - full circle (exception to sharp corners)
-        'rounded-full',
-        // Shadow - gold glow
-        'shadow-lg shadow-fm-gold/30',
+        // Size - icon button standard
+        'h-10 w-10',
+        // Styling - matches icon button pattern (bg-white/5 with hover states)
+        'bg-white/10 text-muted-foreground backdrop-blur-sm',
+        'hover:bg-white/20 hover:text-foreground',
+        // Shape - sharp corners (design system standard)
+        'rounded-none',
+        // Border - subtle outline
+        'border border-white/20',
+        // Shadow
+        'shadow-lg shadow-black/30',
         // Typography
         'font-canela',
         // Transitions and animations
         'transition-all duration-200',
-        'hover:scale-110 active:scale-95',
+        'hover:scale-105 active:scale-95',
         // Flex for icon centering
         'flex items-center justify-center',
-        // Visibility - mobile only
-        'block md:hidden',
+        // Visibility - mobile only (flex on mobile, hidden on md+)
+        'md:hidden',
         // Focus states
         'focus:outline-none focus:ring-2 focus:ring-fm-gold/50 focus:ring-offset-2 focus:ring-offset-black',
         className
@@ -52,28 +55,28 @@ export function FmMobileDevFAB({
       type="button"
     >
       {/* Wrench Icon */}
-      <Wrench className="h-[26px] w-[26px]" strokeWidth={2.5} />
+      <Wrench className="h-5 w-5" strokeWidth={2} />
 
       {/* Notification Badge */}
       {hasBadge && (
         <span
           className={cn(
-            // Position - top-right of FAB
-            'absolute -top-[4px] -right-[4px]',
-            // Size - minimum 20px for readability
-            'min-w-[20px] h-[20px]',
+            // Position - top-right of button
+            'absolute -top-[6px] -right-[6px]',
+            // Size - minimum for readability
+            'min-w-[16px] h-[16px]',
             // Styling - red background with white text
             'bg-fm-danger text-white',
             // Shape - circle for single digit, pill for multiple
             'rounded-full',
             // Typography - small and bold
-            'text-[10px] font-bold',
+            'text-[9px] font-bold',
             // Layout - center content
             'flex items-center justify-center',
             // Padding for multi-digit numbers
-            'px-[5px]',
+            'px-1',
             // Border for contrast
-            'border-2 border-black',
+            'border border-black',
             // Shadow
             'shadow-sm'
           )}

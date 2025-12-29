@@ -462,6 +462,13 @@ INSERT INTO roles (name, display_name, description, permissions, is_system_role)
     true
   ),
   (
+    'artist',
+    'Artist',
+    'Approved artist with artist-specific features',
+    '[]'::jsonb,
+    true
+  ),
+  (
     'user',
     'User',
     'Standard user with basic access',

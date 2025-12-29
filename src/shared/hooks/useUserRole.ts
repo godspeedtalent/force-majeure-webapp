@@ -8,7 +8,7 @@ import {
   type Permission,
   type Role,
 } from '@/shared';
-import { useMockRoleSafe } from '@/shared/contexts/MockRoleContext';
+import { useMockRoleSafe, MOCK_ROLE_UNAUTHENTICATED } from '@/shared/contexts/MockRoleContext';
 
 export interface UserRole {
   role_name: string;
@@ -65,9 +65,14 @@ export const useUserPermissions = () => {
   /**
    * Get effective roles considering mock mode
    * When mock is active, returns simulated role data
+   * When simulating unauthenticated, returns empty array (no roles)
    */
   const getEffectiveRoles = (): UserRole[] => {
     if (isMockActive && mockRole !== 'disabled') {
+      // Unauthenticated simulation - return empty roles (logged out user)
+      if (mockRole === MOCK_ROLE_UNAUTHENTICATED) {
+        return [];
+      }
       const mockPermissions = getMockPermissions();
       return [{
         role_name: mockRole,
@@ -77,6 +82,11 @@ export const useUserPermissions = () => {
     }
     return roles || [];
   };
+
+  /**
+   * Check if simulating unauthenticated user
+   */
+  const isSimulatingUnauthenticated = isMockActive && mockRole === MOCK_ROLE_UNAUTHENTICATED;
 
   /**
    * Check if user is an admin
@@ -201,5 +211,6 @@ export const useUserPermissions = () => {
     mockRole,
     actualRoles: roles,
     isActuallyDeveloperOrAdmin,
+    isSimulatingUnauthenticated,
   };
 };

@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { useIsMobile } from '@/shared';
 import { ROLES } from '@/shared';
@@ -37,6 +39,17 @@ export function FmMobileDevToolbar() {
     badges,
     totalBadges,
   } = useMobileDevTools();
+
+  const location = useLocation();
+  const prevLocationRef = useRef(location.pathname);
+
+  // Close drawer on navigation
+  useEffect(() => {
+    if (prevLocationRef.current !== location.pathname) {
+      closeMainDrawer();
+      prevLocationRef.current = location.pathname;
+    }
+  }, [location.pathname, closeMainDrawer]);
 
   // Only show to admin/developer roles
   const canAccessDevTools =

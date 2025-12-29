@@ -1,12 +1,21 @@
 import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
 import { rolesStore } from '@/shared/stores/rolesStore';
 
-export type MockRoleMode = 'disabled' | string;
+/**
+ * Special mock role modes:
+ * - 'disabled': Use actual user roles (no simulation)
+ * - 'unauthenticated': Simulate a logged-out user (no roles, no permissions)
+ * - Any other string: Simulate that specific role name
+ */
+export type MockRoleMode = 'disabled' | 'unauthenticated' | string;
+
+export const MOCK_ROLE_UNAUTHENTICATED = 'unauthenticated' as const;
 
 interface MockRoleContextValue {
   /**
    * Current mock role mode
    * - 'disabled': Use actual user roles (no simulation)
+   * - 'unauthenticated': Simulate a logged-out user (no roles, no permissions)
    * - Role name string: Simulate that specific role
    */
   mockRole: MockRoleMode;

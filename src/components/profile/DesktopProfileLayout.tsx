@@ -31,6 +31,7 @@ export const DesktopProfileLayout = ({
   upcomingShows,
   loadingShows,
   hasLinkedArtist,
+  linkedArtistName,
   loadingArtist,
   createdAt,
 }: ProfileLayoutProps) => {
@@ -221,6 +222,15 @@ export const DesktopProfileLayout = ({
                       size='sm'
                       iconClassName='text-fm-gold'
                     />
+                    {hasLinkedArtist && linkedArtistName && (
+                      <FmCommonInfoCard
+                        icon={Mic2}
+                        label={t('profile.linkedArtist')}
+                        value={linkedArtistName}
+                        size='sm'
+                        iconClassName='text-fm-gold'
+                      />
+                    )}
                   </div>
                 </TabsContent>
               </Tabs>

@@ -279,7 +279,9 @@
     "allPermissions": "全部",
     "permissionCount": "{{count}}个权限",
     "permissionCount_one": "{{count}}个权限",
-    "clearSimulation": "清除模拟"
+    "clearSimulation": "清除模拟",
+    "unauthenticated": "未认证",
+    "unauthenticatedDescription": "模拟未登录用户，无角色和权限"
   },
   "searchDropdown": {
     "placeholder": "搜索...",
@@ -1764,7 +1766,8 @@
     "shows": "演出",
     "memberTitle": "会员",
     "loadingShows": "加载演出中...",
-    "noUpcomingShows": "暂无即将举行的演出"
+    "noUpcomingShows": "暂无即将举行的演出",
+    "linkedArtist": "关联艺人"
   },
   "emailPreview": {
     "title": "邮件模板预览",
@@ -2626,7 +2629,8 @@
       "unauthenticated": "未认证",
       "fan": "粉丝",
       "developer": "开发者",
-      "admin": "管理员"
+      "admin": "管理员",
+      "artist": "艺术家"
     }
   },
   "globalSearch": {

@@ -19,6 +19,7 @@ import {
   HardDrive,
   Images,
   UserPlus,
+  MessageSquare,
 } from 'lucide-react';
 import { supabase } from '@/shared';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -120,7 +121,7 @@ export default function DeveloperDatabase() {
       },
     ];
 
-    // Add admin-only tabs (alphabetically)
+    // Add admin-only tabs to tables (alphabetically)
     if (isAdmin) {
       tables.push(
         {
@@ -129,17 +130,6 @@ export default function DeveloperDatabase() {
           icon: Building2,
           description: 'Organization Management',
           badge: <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />,
-        },
-        {
-          id: 'registrations',
-          label: t('artistRegistrations.navLabel'),
-          icon: UserPlus,
-          description: t('artistRegistrations.navDescription'),
-          badge: pendingRegistrationsCount > 0 ? (
-            <span className="ml-1 px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
-              {pendingRegistrationsCount}
-            </span>
-          ) : undefined,
         },
         {
           id: 'users',
@@ -154,7 +144,30 @@ export default function DeveloperDatabase() {
     // Sort all tables alphabetically by label
     tables.sort((a, b) => a.label.localeCompare(b.label));
 
-    return [
+    // Messages group items (admin only)
+    const messagesItems: Array<{
+      id: DatabaseTab;
+      label: string;
+      icon: any;
+      description: string;
+      badge?: React.ReactNode;
+    }> = [];
+
+    if (isAdmin) {
+      messagesItems.push({
+        id: 'registrations',
+        label: t('artistRegistrations.navLabel'),
+        icon: UserPlus,
+        description: t('artistRegistrations.navDescription'),
+        badge: pendingRegistrationsCount > 0 ? (
+          <span className="ml-1 px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
+            {pendingRegistrationsCount}
+          </span>
+        ) : undefined,
+      });
+    }
+
+    const groups: FmCommonSideNavGroup<DatabaseTab>[] = [
       {
         label: 'Overview',
         icon: Database,
@@ -185,6 +198,17 @@ export default function DeveloperDatabase() {
         ],
       },
     ];
+
+    // Add Messages group only if there are items (admin only)
+    if (messagesItems.length > 0) {
+      groups.push({
+        label: 'Messages',
+        icon: MessageSquare,
+        items: messagesItems,
+      });
+    }
+
+    return groups;
   }, [isAdmin, t, pendingRegistrationsCount]);
 
   // Mobile horizontal tabs configuration
