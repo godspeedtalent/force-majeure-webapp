@@ -450,7 +450,12 @@ export default function DeveloperDatabase() {
 
   const artistContextActions: DataGridAction[] = [
     {
-      label: 'Delete Artist',
+      label: t('devTools.database.editArtist'),
+      icon: <Mic2 className='h-4 w-4' />,
+      onClick: (artist: any) => navigate(`/artists/${artist.id}/manage`),
+    },
+    {
+      label: t('devTools.database.deleteArtist'),
       icon: <Trash2 className='h-4 w-4' />,
       onClick: handleDeleteArtistClick,
       variant: 'destructive',

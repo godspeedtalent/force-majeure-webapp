@@ -1665,6 +1665,8 @@
       "createButton": "Crear Nota"
     },
     "database": {
+      "editArtist": "Editar Artista",
+      "deleteArtist": "Eliminar Artista",
       "artistUpdated": "Artista actualizado",
       "artistUpdateFailed": "Error al actualizar artista",
       "artistCreated": "Artista creado",

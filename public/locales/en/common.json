@@ -1678,6 +1678,8 @@
       "createButton": "Create Note"
     },
     "database": {
+      "editArtist": "Edit Artist",
+      "deleteArtist": "Delete Artist",
       "artistUpdated": "Artist updated",
       "artistUpdateFailed": "Failed to update artist",
       "artistCreated": "Artist created",
