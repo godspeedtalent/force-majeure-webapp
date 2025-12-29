@@ -2608,7 +2608,12 @@
       "nonBinary": "Non-binary",
       "other": "Other"
     },
-    "updateProfile": "Update Profile"
+    "updateProfile": "Update Profile",
+    "usernameTooShort": "Username must be at least 3 characters",
+    "usernameTooLong": "Username must be less than 30 characters",
+    "usernameInvalidChars": "Username can only contain letters, numbers, and underscores",
+    "usernameTaken": "This username is already taken",
+    "usernameCheckError": "Error checking username availability"
   },
   "billingAddress": {
     "title": "Billing Address",
