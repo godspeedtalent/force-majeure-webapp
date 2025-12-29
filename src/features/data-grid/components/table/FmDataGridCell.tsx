@@ -6,6 +6,13 @@ import { Switch } from '@/components/common/shadcn/switch';
 import { Button } from '@/components/common/shadcn/button';
 import { Calendar } from '@/components/common/shadcn/calendar';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/common/shadcn/select';
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -174,6 +181,27 @@ export function FmDataGridCell<T extends Record<string, any>>({
               />
             </PopoverContent>
           </Popover>
+        ) : column.type === 'select' && column.options ? (
+          <div onClick={e => e.stopPropagation()} data-no-select>
+            <Select
+              value={editValue}
+              onValueChange={value => {
+                onEditValueChange(value);
+                onSaveEdit(value);
+              }}
+            >
+              <SelectTrigger className='h-8 bg-background border-fm-gold/50'>
+                <SelectValue placeholder='Select...' />
+              </SelectTrigger>
+              <SelectContent className='z-50 bg-background border-border'>
+                {column.options.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         ) : column.multiline ? (
           <Textarea
             value={editValue}

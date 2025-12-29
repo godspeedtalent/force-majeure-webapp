@@ -433,6 +433,12 @@ export const recordingColumns: DataGridColumn[] = [
     label: t('adminGrid.columns.platform'),
     sortable: true,
     filterable: true,
+    editable: true,
+    type: 'select',
+    options: [
+      { value: 'spotify', label: 'Spotify' },
+      { value: 'soundcloud', label: 'SoundCloud' },
+    ],
     render: (value: any) => {
       if (!value) return <span className='text-muted-foreground'>—</span>;
       const isSpotify = value === 'spotify';
@@ -449,7 +455,11 @@ export const recordingColumns: DataGridColumn[] = [
     sortable: true,
     filterable: true,
     editable: true,
-    type: 'boolean',
+    type: 'select',
+    options: [
+      { value: 'false', label: 'Track' },
+      { value: 'true', label: 'DJ Set' },
+    ],
     render: (value: any) => {
       const isTrack = value === false;
       return (

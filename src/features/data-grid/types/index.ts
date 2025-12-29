@@ -3,6 +3,14 @@ import { ContextMenuAction } from '@/components/common/modals/FmCommonContextMen
 /**
  * Represents a column configuration for the data grid
  */
+/**
+ * Option for select-type columns
+ */
+export interface SelectOption {
+  value: string;
+  label: string;
+}
+
 export interface DataGridColumn<T = any> {
   key: string;
   label: string;
@@ -23,7 +31,9 @@ export interface DataGridColumn<T = any> {
     | 'url'
     | 'date'
     | 'boolean'
-    | 'created_date'; // Input type for editing
+    | 'created_date'
+    | 'select'; // Input type for editing
+  options?: SelectOption[]; // Options for select type columns
 }
 
 /**
@@ -110,7 +120,8 @@ export interface ColumnConfig {
     | 'url'
     | 'date'
     | 'boolean'
-    | 'created_date';
+    | 'created_date'
+    | 'select';
 }
 
 /**
