@@ -21,10 +21,28 @@ import type { Artist } from '@/features/events/types';
 // Types
 // ============================================================================
 
+export interface ArtistGenreRelation {
+  genre_id: string;
+  is_primary: boolean | null;
+  genres: { id: string; name: string } | null;
+}
+
+export interface ArtistRecording {
+  id: string;
+  name: string;
+  url: string;
+  cover_art: string | null;
+  platform: string;
+  is_primary_dj_set: boolean;
+}
+
 export interface ArtistWithDetails extends Artist {
   test_data?: boolean;
   created_at: string;
   updated_at: string;
+  user_id?: string | null;
+  artist_genres?: ArtistGenreRelation[];
+  artist_recordings?: ArtistRecording[];
 }
 
 export interface CreateArtistData {
