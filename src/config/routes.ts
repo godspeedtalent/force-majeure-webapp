@@ -1,6 +1,11 @@
 import { supabase } from '@/shared';
 import { logger } from '@/shared';
 
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const isUuid = (v: string | undefined): v is string =>
+  Boolean(v && UUID_REGEX.test(v));
+
 export interface RouteConfig {
   label: string;
   showInBreadcrumb?: boolean;
@@ -153,6 +158,9 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
     label: '',
     async: true,
     resolver: async params => {
+      // Skip DB query for non-UUID ids (e.g., "register", "signup")
+      if (!isUuid(params.id)) return 'Artist';
+
       try {
         const { data, error } = await supabase
           .from('artists')
@@ -161,12 +169,10 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
           .maybeSingle();
 
         if (error || !data) {
-          logger.error('Failed to fetch artist for breadcrumb:', { context: error });
           return 'Artist';
         }
         return data.name || 'Artist';
-      } catch (error) {
-        logger.error('Failed to fetch artist for breadcrumb:', { context: error });
+      } catch {
         return 'Artist';
       }
     },
