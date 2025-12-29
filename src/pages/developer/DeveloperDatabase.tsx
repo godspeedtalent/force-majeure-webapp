@@ -254,17 +254,39 @@ export default function DeveloperDatabase() {
   };
 
   // Fetch artists data
-  const { data: artists = [], isLoading: artistsLoading } = useQuery({
-    queryKey: ['admin-artists'],
+  // Fetch all genres first for the map
+  const { data: allGenres = [] } = useQuery({
+    queryKey: ['all-genres'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('artists')
-        .select('id, name, genre, image_url, bio, created_at, updated_at')
-        .order('created_at', { ascending: false });
-
+      const { data, error } = await supabase.from('genres').select('id, name');
       if (error) throw error;
       return data ?? [];
     },
+  });
+
+  const { data: artists = [], isLoading: artistsLoading } = useQuery({
+    queryKey: ['admin-artists', allGenres],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('artists')
+        .select(`
+          id, name, genre, image_url, bio, created_at, updated_at,
+          artist_genres(genre_id, is_primary)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      
+      // Transform to include genre_names array for column display
+      return (data ?? []).map(artist => ({
+        ...artist,
+        genre_names: artist.artist_genres?.map((ag: any) => {
+          const genreData = allGenres.find(g => g.id === ag.genre_id);
+          return genreData?.name || ag.genre_id;
+        }) || [],
+      }));
+    },
+    enabled: allGenres.length > 0 || true, // Run even if no genres, but prefer after genres load
   });
 
   // Fetch venues data with city join
