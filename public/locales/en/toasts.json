@@ -23,6 +23,7 @@
     "signInError": "Invalid email or password",
     "signInErrorDescription": "Unable to sign in to your account",
     "signUpSuccess": "Account created! Please check your email to verify.",
+    "signUpSuccessDescription": "If you don't see it, check your spam folder.",
     "signUpError": "Failed to create account. Please try again.",
     "signUpErrorDescription": "Unable to create your account",
     "signOutSuccess": "You have been signed out",
