@@ -215,7 +215,8 @@ export default function DeveloperDatabase() {
   const navigationGroups: FmCommonSideNavGroup<DatabaseTab>[] = useMemo(() => {
     const tables: Array<{
       id: DatabaseTab;
-      label: string;
+      label: React.ReactNode;
+      sortKey: string;
       icon: any;
       description: string;
       badge?: React.ReactNode;
@@ -223,6 +224,7 @@ export default function DeveloperDatabase() {
       {
         id: 'artists',
         label: 'Artists',
+        sortKey: 'Artists',
         icon: Mic2,
         description: 'Artist Management',
         badge: <span className="text-[10px] text-muted-foreground">{artistsCount}</span>,
@@ -230,6 +232,7 @@ export default function DeveloperDatabase() {
       {
         id: 'events',
         label: 'Events',
+        sortKey: 'Events',
         icon: Calendar,
         description: 'Event Management',
         badge: <span className="text-[10px] text-muted-foreground">{eventsCount}</span>,
@@ -237,6 +240,7 @@ export default function DeveloperDatabase() {
       {
         id: 'recordings',
         label: 'Recordings',
+        sortKey: 'Recordings',
         icon: Disc3,
         description: 'Music Recordings',
         badge: <span className="text-[10px] text-muted-foreground">{recordingsCount}</span>,
@@ -244,6 +248,7 @@ export default function DeveloperDatabase() {
       {
         id: 'venues',
         label: 'Venues',
+        sortKey: 'Venues',
         icon: MapPin,
         description: 'Venue Management',
         badge: <span className="text-[10px] text-muted-foreground">{venuesCount}</span>,
@@ -255,33 +260,35 @@ export default function DeveloperDatabase() {
       tables.push(
         {
           id: 'organizations',
-          label: 'Organizations',
-          icon: Building2,
-          description: 'Organization Management',
-          badge: (
-            <span className="flex items-center gap-1">
-              <span className="text-[10px] text-muted-foreground">{organizationsCount}</span>
+          label: (
+            <span className="flex items-center gap-1.5">
+              Organizations
               <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />
             </span>
           ),
+          sortKey: 'Organizations',
+          icon: Building2,
+          description: 'Organization Management',
+          badge: <span className="text-[10px] text-muted-foreground">{organizationsCount}</span>,
         },
         {
           id: 'users',
-          label: 'Users',
-          icon: Users,
-          description: 'User Management',
-          badge: (
-            <span className="flex items-center gap-1">
-              <span className="text-[10px] text-muted-foreground">{usersCount}</span>
+          label: (
+            <span className="flex items-center gap-1.5">
+              Users
               <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />
             </span>
           ),
+          sortKey: 'Users',
+          icon: Users,
+          description: 'User Management',
+          badge: <span className="text-[10px] text-muted-foreground">{usersCount}</span>,
         }
       );
     }
 
-    // Sort all tables alphabetically by label
-    tables.sort((a, b) => a.label.localeCompare(b.label));
+    // Sort all tables alphabetically by sortKey
+    tables.sort((a, b) => a.sortKey.localeCompare(b.sortKey));
 
     // Messages group items (admin only)
     const messagesItems: Array<{

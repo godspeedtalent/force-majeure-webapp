@@ -16,7 +16,7 @@ import { FmCollapsibleGroupHeader } from '@/components/common/data/FmCollapsible
 
 export interface FmCommonSideNavItem<T = string> {
   id: T;
-  label: string;
+  label: React.ReactNode;
   icon: LucideIcon;
   description?: string;
   badge?: React.ReactNode;
@@ -125,7 +125,7 @@ export function FmCommonSideNav<T extends string = string>({
                 // Previous item fade out
                 isPrevious && 'bg-fm-gold/20 animate-fade-out'
               )}
-              tooltip={item.description || item.label}
+              tooltip={item.description || (typeof item.label === 'string' ? item.label : undefined)}
             >
               {/* Icon with subtle animation */}
               <item.icon
