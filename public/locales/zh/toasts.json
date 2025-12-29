@@ -229,6 +229,7 @@
   },
   "auth": {
     "authenticationSuccessful": "认证成功",
+    "authSuccess": "登录成功！",
     "accountCreatedSuccessfully": "账户创建成功！"
   },
   "share": {

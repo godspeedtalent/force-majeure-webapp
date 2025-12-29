@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Upload, X, ImageIcon, Link as LinkIcon } from 'lucide-react';
+import { Upload, X, ImageIcon } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
-import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { imageUploadService } from '@/shared';
 import { toast } from 'sonner';
 import { useUserRole } from '@/shared/hooks/useUserRole';
@@ -13,9 +12,9 @@ import { cn } from '@/shared';
 type UploadState = 'idle' | 'compressing' | 'uploading';
 
 interface FmFlexibleImageUploadProps {
-  /** Current image URL (can be external or internal) */
+  /** Current image URL */
   value?: string;
-  /** Callback when image URL changes (from upload or manual URL input) */
+  /** Callback when image URL changes */
   onChange: (url: string) => void;
   /** Label for the upload section */
   label?: string;
@@ -36,22 +35,17 @@ interface FmFlexibleImageUploadProps {
 /**
  * FmFlexibleImageUpload Component
  *
- * A flexible image upload component that supports both:
- * 1. Direct file upload to Supabase Storage
- * 2. Manual URL input for external images
+ * An image upload component for uploading files to Supabase Storage.
  *
  * Features:
  * - Drag and drop support
  * - File type validation (JPEG, PNG, WebP, GIF)
- * - 5MB size limit
- * - Image preview
- * - Manual URL input option
- * - Toggle between upload and URL input modes
+ * - Automatic compression for large images
+ * - Image preview with upload progress
  */
 export const FmFlexibleImageUpload = ({
   value,
   onChange,
-  label = 'Image',
   bucket = 'event-images',
   pathPrefix,
   entityId,
@@ -63,8 +57,6 @@ export const FmFlexibleImageUpload = ({
   const { t: tToast } = useTranslation('toasts');
   const [uploadState, setUploadState] = useState<UploadState>('idle');
   const [dragActive, setDragActive] = useState(false);
-  const [mode, setMode] = useState<'upload' | 'url'>('upload');
-  const [urlInput, setUrlInput] = useState(value || '');
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { data: userRole } = useUserRole();
@@ -128,7 +120,6 @@ export const FmFlexibleImageUpload = ({
       setPreviewUrl(null);
 
       onChange(result.publicUrl);
-      setUrlInput(result.publicUrl);
       toast.success(tToast('upload.success'), {
         description: file.size > 5 * 1024 * 1024
           ? t('upload.compressedAndUploaded')
@@ -189,212 +180,95 @@ export const FmFlexibleImageUpload = ({
       setPreviewUrl(null);
     }
     onChange('');
-    setUrlInput('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
 
-  const handleUrlSubmit = () => {
-    const trimmedUrl = urlInput.trim();
-    
-    if (!trimmedUrl) return;
-    
-    // Validate that the URL is a proper web URL (http/https), not a local file path
-    if (trimmedUrl.startsWith('file://') || trimmedUrl.startsWith('/')) {
-      showErrorToast({
-        title: t('upload.invalidUrl'),
-        description: t('upload.localFileNotAllowed'),
-        error: new Error('Local file paths are not allowed. Please upload the file instead.'),
-        isDeveloper,
-      });
-      return;
-    }
-    
-    // Validate URL format
-    try {
-      const url = new URL(trimmedUrl);
-      if (!['http:', 'https:'].includes(url.protocol)) {
-        throw new Error('Invalid protocol');
-      }
-    } catch {
-      showErrorToast({
-        title: t('upload.invalidUrl'),
-        description: t('upload.enterValidUrl'),
-        error: new Error('Please enter a valid URL starting with http:// or https://'),
-        isDeveloper,
-      });
-      return;
-    }
-    
-    onChange(trimmedUrl);
-    toast.success(t('upload.urlSet'), {
-      description: t('upload.urlSetDescription'),
-    });
-  };
-
   return (
     <div className={cn('space-y-4', className)}>
-      {/* Mode Toggle */}
-      <div className='flex items-center gap-2 text-sm'>
-        <span className='text-muted-foreground'>{t('upload.imageSource')}:</span>
-        <button
-          type='button'
-          onClick={() => setMode('upload')}
-          className={cn(
-            'px-3 py-1 rounded-none transition-colors',
-            mode === 'upload'
-              ? 'bg-fm-gold text-black'
-              : 'bg-white/5 text-white/70 hover:bg-white/10'
-          )}
-        >
-          {t('upload.uploadFile')}
-        </button>
-        <button
-          type='button'
-          onClick={() => setMode('url')}
-          className={cn(
-            'px-3 py-1 rounded-none transition-colors',
-            mode === 'url'
-              ? 'bg-fm-gold text-black'
-              : 'bg-white/5 text-white/70 hover:bg-white/10'
-          )}
-        >
-          {t('upload.externalUrl')}
-        </button>
-      </div>
+      <FmCommonCard variant='outline' className='p-6'>
+        <input
+          ref={fileInputRef}
+          type='file'
+          accept='image/jpeg,image/jpg,image/png,image/webp,image/gif'
+          onChange={handleChange}
+          className='hidden'
+        />
 
-      {mode === 'url' ? (
-        /* URL Input Mode */
-        <div className='space-y-4'>
-          <FmCommonTextField
-            label={`${label} URL`}
-            value={urlInput}
-            onChange={e => setUrlInput(e.target.value)}
-            placeholder={t('placeholders.exampleImageUrl')}
-            description={t('upload.enterDirectUrl')}
-          />
-          <FmCommonButton
-            variant='secondary'
-            onClick={handleUrlSubmit}
-            disabled={!urlInput.trim()}
-            className='w-full'
-          >
-            <LinkIcon className='mr-2 h-4 w-4' />
-            {t('upload.setImageUrl')}
-          </FmCommonButton>
-        </div>
-      ) : (
-        /* File Upload Mode */
-        <FmCommonCard variant='outline' className='p-6'>
-          <input
-            ref={fileInputRef}
-            type='file'
-            accept='image/jpeg,image/jpg,image/png,image/webp,image/gif'
-            onChange={handleChange}
-            className='hidden'
-          />
-
-          {value || previewUrl ? (
-            /* Preview uploaded or uploading image */
-            <div className='space-y-4'>
-              <div className='relative aspect-video w-full overflow-hidden rounded-none bg-muted'>
-                <img
-                  src={previewUrl || value}
-                  alt={t('upload.imagePreview')}
-                  className={cn(
-                    'h-full w-full object-cover transition-opacity',
-                    isUploading && 'opacity-60'
-                  )}
-                />
-                {/* Upload progress overlay */}
-                {isUploading && (
-                  <div className='absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm'>
-                    <div className='mb-3 h-12 w-12 animate-spin rounded-full border-4 border-fm-gold border-b-transparent' />
-                    <p className='text-sm font-medium text-white'>
-                      {uploadState === 'compressing'
-                        ? t('upload.compressing')
-                        : t('upload.uploading')}
-                    </p>
-                  </div>
+        {value || previewUrl ? (
+          /* Preview uploaded or uploading image */
+          <div className='space-y-4'>
+            <div className='relative aspect-video w-full overflow-hidden rounded-none bg-muted'>
+              <img
+                src={previewUrl || value}
+                alt={t('upload.imagePreview')}
+                className={cn(
+                  'h-full w-full object-cover transition-opacity',
+                  isUploading && 'opacity-60'
                 )}
-                {/* Remove button (disabled during upload) */}
-                {!isUploading && (
-                  <button
-                    type='button'
-                    onClick={handleRemove}
-                    className='absolute top-2 right-2 rounded-full bg-black/60 p-2 text-white transition-colors hover:bg-black/80'
-                  >
-                    <X className='h-4 w-4' />
-                  </button>
-                )}
-              </div>
+              />
+              {/* Upload progress overlay */}
+              {isUploading && (
+                <div className='absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm'>
+                  <div className='mb-3 h-12 w-12 animate-spin rounded-full border-4 border-fm-gold border-b-transparent' />
+                  <p className='text-sm font-medium text-white'>
+                    {uploadState === 'compressing'
+                      ? t('upload.compressing')
+                      : t('upload.uploading')}
+                  </p>
+                </div>
+              )}
+              {/* Remove button (disabled during upload) */}
               {!isUploading && (
-                <FmCommonButton
-                  variant='secondary'
-                  onClick={handleButtonClick}
-                  className='w-full'
-                >
-                  <Upload className='mr-2 h-4 w-4' />
-                  {t('upload.replaceImage')}
-                </FmCommonButton>
-              )}
-            </div>
-          ) : (
-            /* Upload dropzone */
-            <div
-              onDragEnter={handleDrag}
-              onDragLeave={handleDrag}
-              onDragOver={handleDrag}
-              onDrop={handleDrop}
-              className={cn(
-                'flex flex-col items-center justify-center rounded-none border-2 border-dashed p-12 transition-colors',
-                dragActive
-                  ? 'border-fm-gold bg-fm-gold/10'
-                  : 'border-border bg-card hover:border-fm-gold/50 hover:bg-muted/50'
-              )}
-            >
-              <ImageIcon className='mb-4 h-12 w-12 text-muted-foreground' />
-              <p className='mb-2 text-sm font-medium'>
-                {t('upload.dropImageOr')}{' '}
                 <button
                   type='button'
-                  onClick={handleButtonClick}
-                  className='text-fm-gold hover:underline'
+                  onClick={handleRemove}
+                  className='absolute top-2 right-2 rounded-full bg-black/60 p-2 text-white transition-colors hover:bg-black/80'
                 >
-                  {t('upload.browse')}
+                  <X className='h-4 w-4' />
                 </button>
-              </p>
-              <p className='text-xs text-muted-foreground'>
-                {t('upload.supportedFormats')}
-              </p>
+              )}
             </div>
-          )}
-        </FmCommonCard>
-      )}
-
-      {/* Current image preview if URL is set */}
-      {value && mode === 'url' && (
-        <div className='relative aspect-video w-full overflow-hidden rounded-none bg-muted border border-white/20'>
-          <img
-            src={value}
-            alt={t('upload.imagePreview')}
-            className='h-full w-full object-cover'
-            onError={(e) => {
-              e.currentTarget.src = '';
-              e.currentTarget.alt = t('upload.failedToLoad');
-              e.currentTarget.className = 'h-full w-full flex items-center justify-center text-muted-foreground';
-            }}
-          />
-          <button
-            type='button'
-            onClick={handleRemove}
-            className='absolute top-2 right-2 rounded-full bg-black/60 p-2 text-white transition-colors hover:bg-black/80'
+            {!isUploading && (
+              <FmCommonButton
+                variant='secondary'
+                onClick={handleButtonClick}
+                className='w-full'
+              >
+                <Upload className='mr-2 h-4 w-4' />
+                {t('upload.replaceImage')}
+              </FmCommonButton>
+            )}
+          </div>
+        ) : (
+          /* Upload dropzone */
+          <div
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+            onClick={handleButtonClick}
+            className={cn(
+              'flex flex-col items-center justify-center rounded-none border-2 border-dashed p-12 transition-colors cursor-pointer',
+              dragActive
+                ? 'border-fm-gold bg-fm-gold/10'
+                : 'border-border bg-card hover:border-fm-gold/50 hover:bg-muted/50'
+            )}
           >
-            <X className='h-4 w-4' />
-          </button>
-        </div>
-      )}
+            <ImageIcon className='mb-4 h-12 w-12 text-muted-foreground' />
+            <p className='mb-2 text-sm font-medium'>
+              {t('upload.dropImageOr')}{' '}
+              <span className='text-fm-gold hover:underline'>
+                {t('upload.browse')}
+              </span>
+            </p>
+            <p className='text-xs text-muted-foreground'>
+              {t('upload.supportedFormats')}
+            </p>
+          </div>
+        )}
+      </FmCommonCard>
     </div>
   );
 };

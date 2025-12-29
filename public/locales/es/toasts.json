@@ -229,6 +229,7 @@
   },
   "auth": {
     "authenticationSuccessful": "Autenticación exitosa",
+    "authSuccess": "¡Sesión iniciada exitosamente!",
     "accountCreatedSuccessfully": "¡Cuenta creada exitosamente!"
   },
   "share": {
