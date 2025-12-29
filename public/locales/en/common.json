@@ -1490,7 +1490,8 @@
       "monthsRemaining": "{{count}} months",
       "daysRemaining": "{{count}} days",
       "dayRemaining": "1 day"
-    }
+    },
+    "signUpAsArtist": "Sign Up as Artist"
   },
   "guestList": {
     "loading": "Loading guest list settings...",

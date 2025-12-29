@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Music2, ExternalLink, Settings, Link2, Unlink, Trash2, Clock, AlertCircle, CheckCircle2, XCircle, Loader2, FileText } from 'lucide-react';
+import { Music2, ExternalLink, Settings, Link2, Unlink, Trash2, Clock, AlertCircle, CheckCircle2, XCircle, Loader2, FileText, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
@@ -677,14 +677,24 @@ export function UserArtistTab() {
           <FmI18nCommon i18nKey='userArtist.noLinkedArtist' as='h3' className='font-canela text-xl font-medium mb-2' />
           <FmI18nCommon i18nKey='userArtist.noLinkedArtistDescription' as='p' className='text-muted-foreground text-sm mb-6 max-w-md mx-auto' />
 
-          <FmCommonButton
-            variant='secondary'
-            icon={Link2}
-            onClick={() => setShowLinkModal(true)}
-            disabled={!!pendingLinkRequest}
-          >
-            {pendingLinkRequest ? t('userArtist.requestPending') : t('userArtist.linkArtistAccount')}
-          </FmCommonButton>
+          <div className='flex flex-col sm:flex-row items-center justify-center gap-3'>
+            <FmCommonButton
+              variant='gold'
+              icon={UserPlus}
+              onClick={() => navigate('/artists/register')}
+            >
+              {t('userArtist.signUpAsArtist')}
+            </FmCommonButton>
+            
+            <FmCommonButton
+              variant='secondary'
+              icon={Link2}
+              onClick={() => setShowLinkModal(true)}
+              disabled={!!pendingLinkRequest}
+            >
+              {pendingLinkRequest ? t('userArtist.requestPending') : t('userArtist.linkArtistAccount')}
+            </FmCommonButton>
+          </div>
         </FmCommonCardContent>
       </FmCommonCard>
 
