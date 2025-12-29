@@ -1078,7 +1078,13 @@
     "deleteVenueConfirm": "Are you sure you want to delete this venue?"
   },
   "dataGrid": {
-    "columns": "Columns",
+    "columnsLabel": "Columns",
+    "columns": {
+      "organizationName": "Organization Name",
+      "profilePicture": "Profile Picture",
+      "owner": "Owner",
+      "created": "Created"
+    },
     "actions": {
       "edit": "Edit",
       "editUser": "Edit User",

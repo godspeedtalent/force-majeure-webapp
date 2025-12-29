@@ -1065,7 +1065,13 @@
     "deleteVenueConfirm": "¿Estás seguro de que deseas eliminar este local?"
   },
   "dataGrid": {
-    "columns": "Columnas",
+    "columnsLabel": "Columnas",
+    "columns": {
+      "organizationName": "Nombre de la Organización",
+      "profilePicture": "Foto de Perfil",
+      "owner": "Propietario",
+      "created": "Creado"
+    },
     "actions": {
       "edit": "Editar",
       "editUser": "Editar Usuario",
