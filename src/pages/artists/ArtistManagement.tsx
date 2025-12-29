@@ -6,7 +6,6 @@ import {
   FileText,
   Music,
   Save,
-  Trash2,
   Eye,
   Share2,
   Headphones,
@@ -16,6 +15,8 @@ import {
   Disc,
   Radio,
   Pencil,
+  Trash2,
+  Image as ImageIcon,
 } from 'lucide-react';
 import {
   FaInstagram,
@@ -41,10 +42,11 @@ import { FmGenreMultiSelect } from '@/features/artists/components/FmGenreMultiSe
 import { AddTrackModal } from '@/features/artists/components/AddTrackModal';
 import { EditTrackModal } from '@/features/artists/components/EditTrackModal';
 import { useArtistGenres, useUpdateArtistGenres } from '@/features/artists/hooks/useArtistGenres';
+import { ArtistManageGalleryTab } from './components/manage';
 import type { Genre } from '@/features/artists/types';
 import { cn } from '@/shared';
 
-type ArtistTab = 'overview' | 'music' | 'social' | 'view';
+type ArtistTab = 'overview' | 'music' | 'social' | 'gallery' | 'view';
 
 // Types for social and music links (stored in spotify_data JSON field)
 interface SocialLinks {
