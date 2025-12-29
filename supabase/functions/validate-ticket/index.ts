@@ -209,6 +209,10 @@ Deno.serve(async req => {
       .eq('id', ticketId)
       .single();
 
+    // Type the nested relations as single objects (not arrays)
+    const ticketTier = ticket?.ticket_tiers as { name: string } | null;
+    const ticketEvent = ticket?.events as { id: string; title: string; start_time: string; venue_id: string; venues: { name: string } | null } | null;
+
     if (ticketError || !ticket) {
       // Log failed scan attempt
       await supabase.from('ticket_scan_events').insert({
@@ -277,12 +281,12 @@ Deno.serve(async req => {
           ticket: {
             id: ticket.id,
             event_id: ticket.event_id,
-            ticket_tier_name: ticket.ticket_tiers?.name || 'Unknown',
+            ticket_tier_name: ticketTier?.name || 'Unknown',
             attendee_name: ticket.attendee_name,
             attendee_email: ticket.attendee_email,
-            event_name: ticket.events?.title || 'Unknown Event',
-            event_start_time: ticket.events?.start_time || '',
-            venue_name: ticket.events?.venues?.name || 'Unknown Venue',
+            event_name: ticketEvent?.title || 'Unknown Event',
+            event_start_time: ticketEvent?.start_time || '',
+            venue_name: ticketEvent?.venues?.name || 'Unknown Venue',
             checked_in_at: ticket.checked_in_at || '',
           },
         } as ValidateTicketResponse),
@@ -370,12 +374,12 @@ Deno.serve(async req => {
     // Step 7: Log to activity logs
     try {
       const activityLogParams = createTicketScanLog({
-        ticketId,
-        eventId,
-        eventName: ticket.events?.title || 'Unknown Event',
+        ticketId: ticketId || '',
+        eventId: eventId || '',
+        eventName: ticketEvent?.title || 'Unknown Event',
         scannerId: user.id,
         scannerEmail: user.email || undefined,
-        ticketTierName: ticket.ticket_tiers?.name || 'Unknown',
+        ticketTierName: ticketTier?.name || 'Unknown',
         attendeeName: ticket.attendee_name || undefined,
       });
 
@@ -395,12 +399,12 @@ Deno.serve(async req => {
         ticket: {
           id: ticket.id,
           event_id: ticket.event_id,
-          ticket_tier_name: ticket.ticket_tiers?.name || 'Unknown',
+          ticket_tier_name: ticketTier?.name || 'Unknown',
           attendee_name: ticket.attendee_name,
           attendee_email: ticket.attendee_email,
-          event_name: ticket.events?.title || 'Unknown Event',
-          event_start_time: ticket.events?.start_time || '',
-          venue_name: ticket.events?.venues?.name || 'Unknown Venue',
+          event_name: ticketEvent?.title || 'Unknown Event',
+          event_start_time: ticketEvent?.start_time || '',
+          venue_name: ticketEvent?.venues?.name || 'Unknown Venue',
           checked_in_at: now,
         },
       } as ValidateTicketResponse),
