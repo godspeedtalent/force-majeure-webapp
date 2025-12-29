@@ -125,9 +125,10 @@ Deno.serve(async req => {
       );
     }
 
-    // Get recipient email
-    const recipientEmail = order.profiles?.email;
-    const recipientName = order.profiles?.full_name || 'Valued Customer';
+    // Get recipient email - profiles is a single object from the join
+    const profile = order.profiles as { email: string; full_name: string } | null;
+    const recipientEmail = profile?.email;
+    const recipientName = profile?.full_name || 'Valued Customer';
 
     if (!recipientEmail) {
       console.error('No email address found for order:', order_id);
@@ -142,14 +143,17 @@ Deno.serve(async req => {
 
     console.log('Generating email content for:', recipientEmail);
 
+    // events is a single object from the join
+    const event = order.events as { id: string; title: string; start_time: string; venues: { name: string; address: string } | null } | null;
+
     // Generate HTML email content
     const emailHTML = generateEmailHTML({
       orderId: order.id,
       orderDate: order.created_at,
       purchaserName: recipientName,
-      eventTitle: order.events?.title || 'Event',
-      eventDate: order.events?.start_time || new Date().toISOString(),
-      venueName: order.events?.venues?.name || 'Venue',
+      eventTitle: event?.title || 'Event',
+      eventDate: event?.start_time || new Date().toISOString(),
+      venueName: event?.venues?.name || 'Venue',
       items: order.order_items.map((item: any) => ({
         name: item.ticket_tiers?.name || 'Ticket',
         quantity: item.quantity,
@@ -179,7 +183,7 @@ Deno.serve(async req => {
           key: mailchimpApiKey,
           message: {
             html: emailHTML,
-            subject: `Your tickets for ${order.events?.title || 'your event'}`,
+            subject: `Your tickets for ${event?.title || 'your event'}`,
             from_email: 'tickets@forcemajeure.com',
             from_name: 'Force Majeure',
             to: [

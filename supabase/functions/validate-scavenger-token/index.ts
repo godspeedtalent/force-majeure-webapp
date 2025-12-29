@@ -8,7 +8,7 @@ const corsHeaders = {
 };
 
 // Secret key for decryption (must match proxy-token function)
-const SECRET_KEY = Deno.env.get('PROXY_SECRET_KEY');
+const SECRET_KEY = Deno.env.get('PROXY_SECRET_KEY') || '';
 if (!SECRET_KEY) {
   throw new Error('PROXY_SECRET_KEY environment variable is required');
 }
