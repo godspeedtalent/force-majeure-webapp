@@ -22,6 +22,7 @@ import {
   MessageSquare,
   Eye,
   FileQuestion,
+  ExternalLink,
 } from 'lucide-react';
 import { supabase } from '@/shared';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -568,6 +569,22 @@ export default function DeveloperDatabase() {
         typeof newRow.city_id === 'string' && newRow.city_id.trim() !== ''
           ? newRow.city_id.trim()
           : null,
+      instagram_handle:
+        typeof newRow.instagram_handle === 'string' && newRow.instagram_handle.trim() !== ''
+          ? newRow.instagram_handle.trim()
+          : null,
+      tiktok_handle:
+        typeof newRow.tiktok_handle === 'string' && newRow.tiktok_handle.trim() !== ''
+          ? newRow.tiktok_handle.trim()
+          : null,
+      soundcloud_id:
+        typeof newRow.soundcloud_id === 'string' && newRow.soundcloud_id.trim() !== ''
+          ? newRow.soundcloud_id.trim()
+          : null,
+      spotify_id:
+        typeof newRow.spotify_id === 'string' && newRow.spotify_id.trim() !== ''
+          ? newRow.spotify_id.trim()
+          : null,
     };
 
     try {
@@ -860,6 +877,26 @@ export default function DeveloperDatabase() {
       label: 'View Recording Details',
       icon: <Eye className='h-4 w-4' />,
       onClick: (recording: any) => navigate(`/recordings/${recording.id}`),
+    },
+    {
+      label: 'Go to Spotify',
+      icon: <ExternalLink className='h-4 w-4' />,
+      onClick: (recording: any) => {
+        if (recording.url) {
+          window.open(recording.url, '_blank', 'noopener,noreferrer');
+        }
+      },
+      hidden: (recording: any) => recording.platform?.toLowerCase() !== 'spotify' || !recording.url,
+    },
+    {
+      label: 'Go to SoundCloud',
+      icon: <ExternalLink className='h-4 w-4' />,
+      onClick: (recording: any) => {
+        if (recording.url) {
+          window.open(recording.url, '_blank', 'noopener,noreferrer');
+        }
+      },
+      hidden: (recording: any) => recording.platform?.toLowerCase() !== 'soundcloud' || !recording.url,
     },
     {
       label: 'Refresh Details',
