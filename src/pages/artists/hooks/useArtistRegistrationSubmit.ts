@@ -28,8 +28,16 @@ export function useArtistRegistrationSubmit() {
     setIsSubmitting(true);
 
     try {
+      // Must be authenticated to submit (prevents RLS violations from null user_id)
+      if (!user?.id) {
+        toast.error('Please sign in to submit an artist registration.');
+        navigate('/auth', { replace: true });
+        setIsSubmitting(false);
+        return false;
+      }
+
       // Check if user already has an artist account, pending registration, or denied in waiting period
-      const { canRegister, reason, waitingPeriodRemainingDays } = await checkUserCanRegister(user?.id);
+      const { canRegister, reason, waitingPeriodRemainingDays } = await checkUserCanRegister(user.id);
       if (!canRegister) {
         if (reason === 'linked_artist') {
           toast.error(t('artistRegistrationErrors.userAlreadyHasArtist'), { duration: 6000 });
@@ -37,12 +45,17 @@ export function useArtistRegistrationSubmit() {
           toast.error(t('artistRegistrationErrors.userHasPendingRegistration'), { duration: 6000 });
         } else if (reason === 'denied_waiting_period' && waitingPeriodRemainingDays !== null) {
           const monthsRemaining = Math.ceil(waitingPeriodRemainingDays / 30);
-          const timeText = monthsRemaining > 1
-            ? t('userArtist.registration.monthsRemaining', { count: monthsRemaining })
-            : waitingPeriodRemainingDays > 1
-              ? t('userArtist.registration.daysRemaining', { count: waitingPeriodRemainingDays })
-              : t('userArtist.registration.dayRemaining');
-          toast.error(t('artistRegistrationErrors.deniedWaitingPeriod', { time: timeText }), { duration: 6000 });
+          const timeText =
+            monthsRemaining > 1
+              ? t('userArtist.registration.monthsRemaining', { count: monthsRemaining })
+              : waitingPeriodRemainingDays > 1
+                ? t('userArtist.registration.daysRemaining', {
+                    count: waitingPeriodRemainingDays,
+                  })
+                : t('userArtist.registration.dayRemaining');
+          toast.error(t('artistRegistrationErrors.deniedWaitingPeriod', { time: timeText }), {
+            duration: 6000,
+          });
         }
         navigate('/artists/signup', { replace: true });
         setIsSubmitting(false);
@@ -116,7 +129,7 @@ export function useArtistRegistrationSubmit() {
         .from('artist_registrations') as any)
         .insert([
           {
-            user_id: user?.id || null,
+            user_id: user.id,
             artist_name: formData.stageName,
             bio: formData.bio,
             genres: formData.genres.map(g => g.id),
@@ -134,8 +147,10 @@ export function useArtistRegistrationSubmit() {
             spotify_id: formData.spotifyArtistId || null,
             soundcloud_id: formData.soundcloudUsername || null,
             // Extract first track URL by platform from tracks array
-            spotify_track_url: formData.tracks.find(t => t.platform === 'spotify')?.url || null,
-            soundcloud_set_url: formData.tracks.find(t => t.platform === 'soundcloud')?.url || null,
+            spotify_track_url:
+              formData.tracks.find(t => t.platform === 'spotify')?.url || null,
+            soundcloud_set_url:
+              formData.tracks.find(t => t.platform === 'soundcloud')?.url || null,
             link_personal_profile: false,
             notifications_opt_in: formData.notificationsOptIn,
             status: 'pending',
