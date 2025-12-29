@@ -1164,6 +1164,7 @@ export type Database = {
       media_galleries: {
         Row: {
           allowed_types: Database["public"]["Enums"]["media_type"][] | null
+          cover_required: boolean
           created_at: string | null
           description: string | null
           id: string
@@ -1174,6 +1175,7 @@ export type Database = {
         }
         Insert: {
           allowed_types?: Database["public"]["Enums"]["media_type"][] | null
+          cover_required?: boolean
           created_at?: string | null
           description?: string | null
           id?: string
@@ -1184,6 +1186,7 @@ export type Database = {
         }
         Update: {
           allowed_types?: Database["public"]["Enums"]["media_type"][] | null
+          cover_required?: boolean
           created_at?: string | null
           description?: string | null
           id?: string
@@ -1208,6 +1211,7 @@ export type Database = {
           height: number | null
           id: string
           is_active: boolean | null
+          is_cover: boolean
           media_type: Database["public"]["Enums"]["media_type"]
           mime_type: string | null
           tags: string[] | null
@@ -1230,6 +1234,7 @@ export type Database = {
           height?: number | null
           id?: string
           is_active?: boolean | null
+          is_cover?: boolean
           media_type?: Database["public"]["Enums"]["media_type"]
           mime_type?: string | null
           tags?: string[] | null
@@ -1252,6 +1257,7 @@ export type Database = {
           height?: number | null
           id?: string
           is_active?: boolean | null
+          is_cover?: boolean
           media_type?: Database["public"]["Enums"]["media_type"]
           mime_type?: string | null
           tags?: string[] | null
