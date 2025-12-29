@@ -1,10 +1,11 @@
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { supabase, logger, useDeleteConfirmation } from '@/shared';
 import { FmConfigurableDataGrid, DataGridAction } from '@/features/data-grid';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { userColumns } from './config/adminGridColumns';
-import { Trash2 } from 'lucide-react';
+import { Trash2, User } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface UserRole {
@@ -27,6 +28,7 @@ export const UserManagement = () => {
   const { t } = useTranslation('common');
   const { t: tToast } = useTranslation('toasts');
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   // Delete confirmation with custom auth deletion handler
   const {
@@ -142,6 +144,11 @@ export const UserManagement = () => {
 
 
   const userContextActions: DataGridAction[] = [
+    {
+      label: t('contextMenu.viewProfile'),
+      icon: <User className='h-4 w-4' />,
+      onClick: (user: AdminUser) => navigate(`/admin/users/${user.id}`),
+    },
     {
       label: t('dialogs.deleteUser'),
       icon: <Trash2 className='h-4 w-4' />,

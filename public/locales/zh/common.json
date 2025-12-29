@@ -2746,7 +2746,8 @@
     "contextMenu": {
       "goToDetails": "查看详情",
       "edit": "编辑{{entity}}",
-      "delete": "删除{{entity}}"
+      "delete": "删除{{entity}}",
+      "viewProfile": "查看资料"
     },
     "entityTypes": {
       "organization": "组织",

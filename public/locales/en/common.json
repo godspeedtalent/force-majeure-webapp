@@ -2761,7 +2761,8 @@
     "contextMenu": {
       "goToDetails": "Go to details",
       "edit": "Edit {{entity}}",
-      "delete": "Delete {{entity}}"
+      "delete": "Delete {{entity}}",
+      "viewProfile": "View Profile"
     },
     "entityTypes": {
       "organization": "organization",
