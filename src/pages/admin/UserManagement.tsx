@@ -46,11 +46,31 @@ export const UserManagement = () => {
       error: tToast('admin.userDeleteFailed'),
     },
     onDelete: async (users: AdminUser[]) => {
-      // Users require special auth deletion
+      // Get current session for auth token
+      const { data: session } = await supabase.auth.getSession();
+      const token = session?.session?.access_token;
+
+      if (!token) {
+        throw new Error('No authentication token available');
+      }
+
+      // Users require special auth deletion via edge function
       for (const user of users) {
-        const { error: authError } = await supabase.auth.admin.deleteUser(user.id);
-        if (authError) {
-          logger.error('Auth deletion error:', { error: authError.message, source: 'UserManagement' });
+        const response = await fetch(
+          `https://orgxcrnnecblhuxjfruy.supabase.co/functions/v1/delete-user`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userId: user.id }),
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          logger.error('Auth deletion error:', { error: errorData.error, source: 'UserManagement' });
           throw new Error(tToast('admin.userAuthDeleteFailed'));
         }
       }
