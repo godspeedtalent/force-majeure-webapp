@@ -90,6 +90,19 @@ export default function DeveloperDatabase() {
     },
   });
 
+  // Fetch total registrations count
+  const { data: totalRegistrationsCount = 0 } = useQuery({
+    queryKey: ['artist-registrations-total-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('artist_registrations')
+        .select('*', { count: 'exact', head: true });
+
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
   // Fetch pending user requests count for badge
   const { data: pendingUserRequestsCount = 0 } = useQuery({
     queryKey: ['user-requests-pending-count'],
@@ -98,6 +111,97 @@ export default function DeveloperDatabase() {
         .from('user_requests')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'pending');
+
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
+  // Fetch total user requests count
+  const { data: totalUserRequestsCount = 0 } = useQuery({
+    queryKey: ['user-requests-total-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('user_requests')
+        .select('*', { count: 'exact', head: true });
+
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
+  // Fetch venues count
+  const { data: venuesCount = 0 } = useQuery({
+    queryKey: ['venues-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('venues')
+        .select('*', { count: 'exact', head: true });
+
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
+  // Fetch organizations count
+  const { data: organizationsCount = 0 } = useQuery({
+    queryKey: ['organizations-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('organizations')
+        .select('*', { count: 'exact', head: true });
+
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
+  // Fetch users count
+  const { data: usersCount = 0 } = useQuery({
+    queryKey: ['users-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true });
+
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
+  // Fetch artists count
+  const { data: artistsCount = 0 } = useQuery({
+    queryKey: ['artists-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('artists')
+        .select('*', { count: 'exact', head: true });
+
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
+  // Fetch events count for dashboard (moved up for useMemo dependency)
+  const { data: eventsCount = 0 } = useQuery({
+    queryKey: ['events-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('events')
+        .select('*', { count: 'exact', head: true });
+
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
+  // Fetch recordings count for dashboard (moved up for useMemo dependency)
+  const { data: recordingsCount = 0 } = useQuery({
+    queryKey: ['recordings-count'],
+    queryFn: async () => {
+      const { count, error } = await (supabase as any)
+        .from('artist_recordings')
+        .select('*', { count: 'exact', head: true });
 
       if (error) throw error;
       return count ?? 0;
@@ -118,24 +222,28 @@ export default function DeveloperDatabase() {
         label: 'Artists',
         icon: Mic2,
         description: 'Artist Management',
+        badge: <span className="ml-auto text-[10px] text-muted-foreground">{artistsCount}</span>,
       },
       {
         id: 'events',
         label: 'Events',
         icon: Calendar,
         description: 'Event Management',
+        badge: <span className="ml-auto text-[10px] text-muted-foreground">{eventsCount}</span>,
       },
       {
         id: 'recordings',
         label: 'Recordings',
         icon: Disc3,
         description: 'Music Recordings',
+        badge: <span className="ml-auto text-[10px] text-muted-foreground">{recordingsCount}</span>,
       },
       {
         id: 'venues',
         label: 'Venues',
         icon: MapPin,
         description: 'Venue Management',
+        badge: <span className="ml-auto text-[10px] text-muted-foreground">{venuesCount}</span>,
       },
     ];
 
@@ -147,14 +255,24 @@ export default function DeveloperDatabase() {
           label: 'Organizations',
           icon: Building2,
           description: 'Organization Management',
-          badge: <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />,
+          badge: (
+            <span className="ml-auto flex items-center gap-1">
+              <span className="text-[10px] text-muted-foreground">{organizationsCount}</span>
+              <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />
+            </span>
+          ),
         },
         {
           id: 'users',
           label: 'Users',
           icon: Users,
           description: 'User Management',
-          badge: <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />,
+          badge: (
+            <span className="ml-auto flex items-center gap-1">
+              <span className="text-[10px] text-muted-foreground">{usersCount}</span>
+              <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />
+            </span>
+          ),
         }
       );
     }
@@ -178,22 +296,32 @@ export default function DeveloperDatabase() {
           label: t('artistRegistrations.navLabel'),
           icon: UserPlus,
           description: t('artistRegistrations.navDescription'),
-          badge: pendingRegistrationsCount > 0 ? (
-            <span className="ml-1 px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
-              {pendingRegistrationsCount}
+          badge: (
+            <span className="ml-auto flex items-center gap-1">
+              <span className="text-[10px] text-muted-foreground">{totalRegistrationsCount}</span>
+              {pendingRegistrationsCount > 0 && (
+                <span className="px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
+                  {pendingRegistrationsCount}
+                </span>
+              )}
             </span>
-          ) : undefined,
+          ),
         },
         {
           id: 'user_requests',
           label: 'User Requests',
           icon: FileQuestion,
           description: 'Manage user requests',
-          badge: pendingUserRequestsCount > 0 ? (
-            <span className="ml-1 px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
-              {pendingUserRequestsCount}
+          badge: (
+            <span className="ml-auto flex items-center gap-1">
+              <span className="text-[10px] text-muted-foreground">{totalUserRequestsCount}</span>
+              {pendingUserRequestsCount > 0 && (
+                <span className="px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
+                  {pendingUserRequestsCount}
+                </span>
+              )}
             </span>
-          ) : undefined,
+          ),
         }
       );
     }
@@ -240,7 +368,7 @@ export default function DeveloperDatabase() {
     }
 
     return groups;
-  }, [isAdmin, t, pendingRegistrationsCount, pendingUserRequestsCount]);
+  }, [isAdmin, t, pendingRegistrationsCount, pendingUserRequestsCount, totalRegistrationsCount, totalUserRequestsCount, artistsCount, eventsCount, recordingsCount, venuesCount, organizationsCount, usersCount]);
 
   // Mobile horizontal tabs configuration
   const mobileTabs: MobileHorizontalTab[] = useMemo(() => {
@@ -346,32 +474,7 @@ export default function DeveloperDatabase() {
     },
   });
 
-  // Fetch events count for dashboard
-  const { data: eventsCount = 0 } = useQuery({
-    queryKey: ['events-count'],
-    queryFn: async () => {
-      const { count, error } = await supabase
-        .from('events')
-        .select('*', { count: 'exact', head: true });
-
-      if (error) throw error;
-      return count ?? 0;
-    },
-  });
-
-  // Fetch recordings count for dashboard
-  const { data: recordingsCount = 0 } = useQuery({
-    queryKey: ['recordings-count'],
-    queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { count, error } = await (supabase as any)
-        .from('artist_recordings')
-        .select('*', { count: 'exact', head: true });
-
-      if (error) throw error;
-      return count ?? 0;
-    },
-  });
+  // Note: eventsCount and recordingsCount queries moved above navigationGroups useMemo
 
   // Fetch recordings data with artist join
   const { data: recordings = [], isLoading: recordingsLoading } = useQuery({

@@ -403,11 +403,13 @@ export type Database = {
           genre: string | null
           id: string
           image_url: string | null
+          instagram_handle: string | null
           name: string
           soundcloud_id: string | null
           spotify_data: Json | null
           spotify_id: string | null
           test_data: boolean
+          tiktok_handle: string | null
           updated_at: string | null
           user_id: string | null
           website: string | null
@@ -420,11 +422,13 @@ export type Database = {
           genre?: string | null
           id?: string
           image_url?: string | null
+          instagram_handle?: string | null
           name: string
           soundcloud_id?: string | null
           spotify_data?: Json | null
           spotify_id?: string | null
           test_data?: boolean
+          tiktok_handle?: string | null
           updated_at?: string | null
           user_id?: string | null
           website?: string | null
@@ -437,11 +441,13 @@ export type Database = {
           genre?: string | null
           id?: string
           image_url?: string | null
+          instagram_handle?: string | null
           name?: string
           soundcloud_id?: string | null
           spotify_data?: Json | null
           spotify_id?: string | null
           test_data?: boolean
+          tiktok_handle?: string | null
           updated_at?: string | null
           user_id?: string | null
           website?: string | null
