@@ -1,5 +1,6 @@
 import { useTheme } from 'next-themes';
 import { Toaster as Sonner, toast } from 'sonner';
+import { Info } from 'lucide-react';
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
@@ -10,10 +11,14 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={theme as ToasterProps['theme']}
       className='toaster group'
+      icons={{
+        info: <Info className='h-4 w-4 text-fm-gold' />,
+      }}
       toastOptions={{
         classNames: {
           toast:
             'group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg cursor-pointer',
+          info: 'group-[.toaster]:border-fm-gold group-[.toaster]:border-2',
           description: 'group-[.toast]:text-muted-foreground',
           actionButton:
             'group-[.toast]:bg-primary group-[.toast]:text-primary-foreground',

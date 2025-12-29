@@ -291,54 +291,29 @@ export const FmGalleryCarousel = ({
                 {showGradients && (gradientOverlays || defaultGradientOverlays)}
 
                 {/* Detailed caption on hover - shows all available info */}
-                {showDetailedCaptions && isHovering && (item.title || item.description || item.creator || item.year || item.tags?.length) && (
-                  <div className='absolute bottom-[20px] right-[20px] max-w-[320px] bg-black/80 backdrop-blur-lg border border-white/10 animate-in fade-in slide-in-from-bottom-2 duration-300'>
-                    <div className='px-[15px] py-[10px] space-y-[6px]'>
-                      {/* Title row */}
+                {showDetailedCaptions && isHovering && (item.title || item.description || item.creator || item.year) && (
+                  <div className='absolute bottom-[20px] right-[20px] max-w-[320px] bg-black/80 backdrop-blur-lg border border-fm-gold/20 shadow-[0_4px_20px_rgba(0,0,0,0.5)] animate-in fade-in slide-in-from-bottom-2 duration-300'>
+                    <div className='px-[20px] py-[10px]'>
+                      {/* Title */}
                       {item.title && (
-                        <h4 className='font-canela text-sm text-white font-medium truncate'>
-                          {item.title}
+                        <h4 className='font-canela text-sm text-white font-medium'>
+                          {item.title}.
                         </h4>
                       )}
 
-                      {/* Description - max 2 lines */}
+                      {/* Description - footnote sized */}
                       {item.description && (
-                        <p className='font-canela text-xs text-white/70 line-clamp-2'>
+                        <p className='font-canela text-[10px] text-white/60 line-clamp-2 mt-[5px]'>
                           {item.description}
                         </p>
                       )}
 
-                      {/* Metadata row: creator • year */}
+                      {/* Divider line */}
                       {(item.creator || item.year) && (
-                        <p className='font-canela text-xs text-muted-foreground flex items-center gap-[6px]'>
-                          {item.creator && (
-                            <span>{creditPrefix} {item.creator}</span>
-                          )}
-                          {item.creator && item.year && (
-                            <span className='text-white/30'>•</span>
-                          )}
-                          {item.year && (
-                            <span>{item.year}</span>
-                          )}
-                        </p>
-                      )}
-
-                      {/* Tags row */}
-                      {item.tags && item.tags.length > 0 && (
-                        <div className='flex flex-wrap gap-[5px] pt-[4px]'>
-                          {item.tags.slice(0, 4).map((tag, idx) => (
-                            <span
-                              key={idx}
-                              className='font-canela text-[10px] uppercase tracking-wider text-fm-gold/80 bg-fm-gold/10 px-[6px] py-[2px] border border-fm-gold/20'
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                          {item.tags.length > 4 && (
-                            <span className='font-canela text-[10px] text-muted-foreground'>
-                              +{item.tags.length - 4}
-                            </span>
-                          )}
+                        <div className='border-t border-white/20 mt-[10px] pt-[10px]'>
+                          <p className='font-canela text-[10px] text-white/50'>
+                            {creditPrefix} {item.creator}{item.year && ` ${item.year}`}
+                          </p>
                         </div>
                       )}
                     </div>
@@ -346,10 +321,10 @@ export const FmGalleryCarousel = ({
                 )}
 
                 {/* Simple photo credit on hover (when detailed captions are off) */}
-                {showCredits && !showDetailedCaptions && isHovering && item.creator && (
-                  <div className='absolute bottom-[20px] right-[20px] bg-black/70 backdrop-blur-md px-[15px] py-[8px] border border-white/10 animate-in fade-in slide-in-from-bottom-2 duration-300'>
-                    <p className='font-canela text-xs text-muted-foreground'>
-                      {creditPrefix} {item.creator}
+                {showCredits && !showDetailedCaptions && isHovering && (
+                  <div className='absolute bottom-[20px] right-[20px] bg-black/80 backdrop-blur-lg px-[20px] py-[10px] border border-fm-gold/20 shadow-[0_4px_20px_rgba(0,0,0,0.5)] animate-in fade-in slide-in-from-bottom-2 duration-300'>
+                    <p className='font-canela text-[10px] text-white/50'>
+                      {creditPrefix} {item.creator || 'Force Majeure'}
                     </p>
                   </div>
                 )}

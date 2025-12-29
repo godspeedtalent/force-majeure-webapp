@@ -55,14 +55,13 @@ const ArtistSignup = () => {
                   </div>
                   <div className='flex items-start gap-3 justify-center lg:justify-start'>
                     <PartyPopper className='w-3.5 h-3.5 text-fm-gold/70 flex-shrink-0 mt-0.5' />
-                    <p>
-                      {t('artistSignup.valueProposition3')}
-                      <span className='block mt-2 text-fm-gold'>
-                        {t('artistSignup.closingLine')}
-                      </span>
-                    </p>
+                    <p>{t('artistSignup.valueProposition3')}</p>
                   </div>
                 </div>
+
+                <p className='text-fm-gold text-center font-canela text-sm lg:text-[clamp(0.75rem,0.9vw,0.875rem)]'>
+                  {t('artistSignup.closingLine')}
+                </p>
               </div>
 
               <div className='mt-4 lg:mt-2'>
