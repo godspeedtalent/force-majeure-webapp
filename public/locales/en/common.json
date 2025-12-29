@@ -2879,7 +2879,9 @@
       "added": "Added",
       "parentGenre": "Parent Genre",
       "subgenres": "Subgenres",
-      "artists": "Artists"
+      "artists": "Artists",
+      "status": "Status",
+      "socials": "Socials"
     },
     "artistImageUpdated": "Artist image updated",
     "artistImageUpdateFailed": "Failed to update artist image",
