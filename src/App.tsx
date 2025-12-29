@@ -46,6 +46,7 @@ const VenueDetails = lazy(() => import('./pages/venues/VenueDetails'));
 const VenueManagement = lazy(() => import('./pages/venues/VenueManagement'));
 const ArtistDetails = lazy(() => import('./pages/artists/ArtistDetails'));
 const ArtistManagement = lazy(() => import('./pages/artists/ArtistManagement'));
+const RecordingDetails = lazy(() => import('./pages/recordings/RecordingDetails'));
 
 // Lazy load testing pages
 const TestingIndex = lazy(() => import('./pages/testing/TestingIndex'));
@@ -434,6 +435,16 @@ const AppRoutes = () => {
             element={
               <Suspense fallback={<LazyLoadFallback />}>
                 <ArtistDetails />
+              </Suspense>
+            }
+          />
+
+          {/* Recording Routes (public) */}
+          <Route
+            path='/recordings/:id'
+            element={
+              <Suspense fallback={<LazyLoadFallback />}>
+                <RecordingDetails />
               </Suspense>
             }
           />
