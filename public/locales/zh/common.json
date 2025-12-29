@@ -1475,7 +1475,8 @@
       "monthsRemaining": "{{count}}个月",
       "daysRemaining": "{{count}}天",
       "dayRemaining": "1天"
-    }
+    },
+    "signUpAsArtist": "注册成为艺术家"
   },
   "guestList": {
     "title": "宾客名单设置",
