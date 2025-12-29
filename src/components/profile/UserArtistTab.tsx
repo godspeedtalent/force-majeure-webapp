@@ -633,11 +633,11 @@ export function UserArtistTab() {
       )}
 
       {/* Recent Request History */}
-      {pendingRequests.filter(r => r.status !== 'pending').length > 0 && (
+      {pendingRequests.filter(r => r.status !== 'pending' && !(r.request_type === 'link_artist' && r.status === 'approved')).length > 0 && (
         <div className='space-y-2'>
           <FmI18nCommon i18nKey='userArtist.recentRequests' as='h4' className='text-sm font-medium text-muted-foreground' />
           {pendingRequests
-            .filter(r => r.status !== 'pending')
+            .filter(r => r.status !== 'pending' && !(r.request_type === 'link_artist' && r.status === 'approved'))
             .slice(0, 3)
             .map(request => (
               <FmCommonCard key={request.id} className='border-border/20 bg-card/5'>

@@ -140,7 +140,7 @@ export function PasswordChangeSection({ disabled = false }: PasswordChangeSectio
 
           <FmCommonButton
             type='submit'
-            variant='secondary'
+            variant='default'
             icon={Lock}
             loading={isChangingPassword}
             disabled={disabled || isChangingPassword || !canSubmit}
