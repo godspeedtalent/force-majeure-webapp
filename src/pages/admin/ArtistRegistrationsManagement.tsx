@@ -291,8 +291,12 @@ export function ArtistRegistrationsManagement() {
       toast.success(t('artistRegistrations.approveSuccess', { name: registrationToAction.artist_name }));
       queryClient.invalidateQueries({ queryKey: ['artist-registrations'] });
       queryClient.invalidateQueries({ queryKey: ['artist-registrations-pending-count'] });
+      // Refresh dev/admin data grids that show newly created artists/recordings
+      queryClient.invalidateQueries({ queryKey: ['admin-artists'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-recordings'] });
+      queryClient.invalidateQueries({ queryKey: ['recordings-count'] });
+      // Keep legacy invalidation for any other consumers
       queryClient.invalidateQueries({ queryKey: ['artists'] });
-      queryClient.invalidateQueries({ queryKey: ['artist-recordings'] });
       setShowApproveConfirm(false);
       setRegistrationToAction(null);
       setReviewerNotes('');
