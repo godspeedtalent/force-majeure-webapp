@@ -620,6 +620,44 @@ export function ArtistRegistrationsManagement() {
       format: 'short',
       sortable: true,
     }),
+    // Individual social columns for visibility/filtering
+    DataGridColumns.text({
+      key: 'instagram_handle',
+      label: 'Instagram',
+      sortable: true,
+      filterable: true,
+    }),
+    DataGridColumns.text({
+      key: 'tiktok_handle',
+      label: 'TikTok',
+      sortable: true,
+      filterable: true,
+    }),
+    DataGridColumns.text({
+      key: 'soundcloud_url',
+      label: 'SoundCloud URL',
+      sortable: true,
+      filterable: true,
+    }),
+    DataGridColumns.text({
+      key: 'spotify_url',
+      label: 'Spotify URL',
+      sortable: true,
+      filterable: true,
+    }),
+    DataGridColumns.text({
+      key: 'soundcloud_id',
+      label: 'SoundCloud ID',
+      sortable: true,
+      filterable: true,
+    }),
+    DataGridColumns.text({
+      key: 'spotify_id',
+      label: 'Spotify ID',
+      sortable: true,
+      filterable: true,
+    }),
+    // Combined socials summary column
     {
       key: 'socials',
       label: t('adminGrid.columns.socials'),
