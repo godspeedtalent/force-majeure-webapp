@@ -137,7 +137,7 @@ export default function ArtistDetails() {
                   <>
                     <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent mt-[20px]' />
                     <div className='flex items-center justify-between mt-[15px]'>
-                      <FmSocialLinks website={artist.website} size='md' gap='md' />
+                      <FmSocialLinks size='md' gap='md' />
 
                       {primarySet && (
                         <a
