@@ -22,6 +22,7 @@ import {
   MessageSquare,
   Eye,
   FileQuestion,
+  ExternalLink,
 } from 'lucide-react';
 import { supabase } from '@/shared';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -214,7 +215,8 @@ export default function DeveloperDatabase() {
   const navigationGroups: FmCommonSideNavGroup<DatabaseTab>[] = useMemo(() => {
     const tables: Array<{
       id: DatabaseTab;
-      label: string;
+      label: React.ReactNode;
+      sortKey: string;
       icon: any;
       description: string;
       badge?: React.ReactNode;
@@ -222,30 +224,34 @@ export default function DeveloperDatabase() {
       {
         id: 'artists',
         label: 'Artists',
+        sortKey: 'Artists',
         icon: Mic2,
         description: 'Artist Management',
-        badge: <span className="ml-auto text-[10px] text-muted-foreground">{artistsCount}</span>,
+        badge: <span className="text-[10px] text-muted-foreground">{artistsCount}</span>,
       },
       {
         id: 'events',
         label: 'Events',
+        sortKey: 'Events',
         icon: Calendar,
         description: 'Event Management',
-        badge: <span className="ml-auto text-[10px] text-muted-foreground">{eventsCount}</span>,
+        badge: <span className="text-[10px] text-muted-foreground">{eventsCount}</span>,
       },
       {
         id: 'recordings',
         label: 'Recordings',
+        sortKey: 'Recordings',
         icon: Disc3,
         description: 'Music Recordings',
-        badge: <span className="ml-auto text-[10px] text-muted-foreground">{recordingsCount}</span>,
+        badge: <span className="text-[10px] text-muted-foreground">{recordingsCount}</span>,
       },
       {
         id: 'venues',
         label: 'Venues',
+        sortKey: 'Venues',
         icon: MapPin,
         description: 'Venue Management',
-        badge: <span className="ml-auto text-[10px] text-muted-foreground">{venuesCount}</span>,
+        badge: <span className="text-[10px] text-muted-foreground">{venuesCount}</span>,
       },
     ];
 
@@ -254,33 +260,35 @@ export default function DeveloperDatabase() {
       tables.push(
         {
           id: 'organizations',
-          label: 'Organizations',
-          icon: Building2,
-          description: 'Organization Management',
-          badge: (
-            <span className="ml-auto flex items-center gap-1">
-              <span className="text-[10px] text-muted-foreground">{organizationsCount}</span>
+          label: (
+            <span className="flex items-center gap-1.5">
+              Organizations
               <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />
             </span>
           ),
+          sortKey: 'Organizations',
+          icon: Building2,
+          description: 'Organization Management',
+          badge: <span className="text-[10px] text-muted-foreground">{organizationsCount}</span>,
         },
         {
           id: 'users',
-          label: 'Users',
-          icon: Users,
-          description: 'User Management',
-          badge: (
-            <span className="ml-auto flex items-center gap-1">
-              <span className="text-[10px] text-muted-foreground">{usersCount}</span>
+          label: (
+            <span className="flex items-center gap-1.5">
+              Users
               <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />
             </span>
           ),
+          sortKey: 'Users',
+          icon: Users,
+          description: 'User Management',
+          badge: <span className="text-[10px] text-muted-foreground">{usersCount}</span>,
         }
       );
     }
 
-    // Sort all tables alphabetically by label
-    tables.sort((a, b) => a.label.localeCompare(b.label));
+    // Sort all tables alphabetically by sortKey
+    tables.sort((a, b) => a.sortKey.localeCompare(b.sortKey));
 
     // Messages group items (admin only)
     const messagesItems: Array<{
@@ -298,32 +306,22 @@ export default function DeveloperDatabase() {
           label: t('artistRegistrations.navLabel'),
           icon: UserPlus,
           description: t('artistRegistrations.navDescription'),
-          badge: (
-            <span className="ml-auto flex items-center gap-1">
-              <span className="text-[10px] text-muted-foreground">{totalRegistrationsCount}</span>
-              {pendingRegistrationsCount > 0 && (
-                <span className="px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
-                  {pendingRegistrationsCount}
-                </span>
-              )}
+          badge: pendingRegistrationsCount > 0 ? (
+            <span className="px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
+              {pendingRegistrationsCount}
             </span>
-          ),
+          ) : undefined,
         },
         {
           id: 'user_requests',
           label: 'User Requests',
           icon: FileQuestion,
           description: 'Manage user requests',
-          badge: (
-            <span className="ml-auto flex items-center gap-1">
-              <span className="text-[10px] text-muted-foreground">{totalUserRequestsCount}</span>
-              {pendingUserRequestsCount > 0 && (
-                <span className="px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
-                  {pendingUserRequestsCount}
-                </span>
-              )}
+          badge: pendingUserRequestsCount > 0 ? (
+            <span className="px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
+              {pendingUserRequestsCount}
             </span>
-          ),
+          ) : undefined,
         }
       );
     }
@@ -563,6 +561,26 @@ export default function DeveloperDatabase() {
       bio:
         typeof newRow.bio === 'string' && newRow.bio.trim() !== ''
           ? newRow.bio.trim()
+          : null,
+      city_id:
+        typeof newRow.city_id === 'string' && newRow.city_id.trim() !== ''
+          ? newRow.city_id.trim()
+          : null,
+      instagram_handle:
+        typeof newRow.instagram_handle === 'string' && newRow.instagram_handle.trim() !== ''
+          ? newRow.instagram_handle.trim()
+          : null,
+      tiktok_handle:
+        typeof newRow.tiktok_handle === 'string' && newRow.tiktok_handle.trim() !== ''
+          ? newRow.tiktok_handle.trim()
+          : null,
+      soundcloud_id:
+        typeof newRow.soundcloud_id === 'string' && newRow.soundcloud_id.trim() !== ''
+          ? newRow.soundcloud_id.trim()
+          : null,
+      spotify_id:
+        typeof newRow.spotify_id === 'string' && newRow.spotify_id.trim() !== ''
+          ? newRow.spotify_id.trim()
           : null,
     };
 
@@ -856,6 +874,26 @@ export default function DeveloperDatabase() {
       label: 'View Recording Details',
       icon: <Eye className='h-4 w-4' />,
       onClick: (recording: any) => navigate(`/recordings/${recording.id}`),
+    },
+    {
+      label: 'Go to Spotify',
+      icon: <ExternalLink className='h-4 w-4' />,
+      onClick: (recording: any) => {
+        if (recording.url) {
+          window.open(recording.url, '_blank', 'noopener,noreferrer');
+        }
+      },
+      hidden: (recording: any) => recording.platform?.toLowerCase() !== 'spotify' || !recording.url,
+    },
+    {
+      label: 'Go to SoundCloud',
+      icon: <ExternalLink className='h-4 w-4' />,
+      onClick: (recording: any) => {
+        if (recording.url) {
+          window.open(recording.url, '_blank', 'noopener,noreferrer');
+        }
+      },
+      hidden: (recording: any) => recording.platform?.toLowerCase() !== 'soundcloud' || !recording.url,
     },
     {
       label: 'Refresh Details',

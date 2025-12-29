@@ -257,8 +257,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         if (data.user?.email_confirmed_at) {
           toast.success(i18n.t('auth.signUpSuccess', { ns: 'toasts' }));
         } else {
-          // User needs to verify email
-          toast.success(i18n.t('auth.signUpSuccess', { ns: 'toasts' }));
+          // User needs to verify email - include spam folder reminder
+          toast.success(i18n.t('auth.signUpSuccess', { ns: 'toasts' }), {
+            description: i18n.t('auth.signUpSuccessDescription', { ns: 'toasts' }),
+          });
         }
       }
 
