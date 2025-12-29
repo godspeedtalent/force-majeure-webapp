@@ -1,6 +1,7 @@
+import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Music2, Calendar, ArrowLeft, Pencil, Disc3 } from 'lucide-react';
+import { Music2, Calendar, ArrowLeft, Pencil, Disc3, ArrowUpDown, Clock, Star } from 'lucide-react';
 import { SiSoundcloud, SiSpotify } from 'react-icons/si';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/display/FmCommonCard';
@@ -11,8 +12,11 @@ import { DetailPageWrapper } from '@/components/layout/DetailPageWrapper';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { cn } from '@/shared';
+import { FmCommonButton as Button } from '@/components/common/buttons/FmCommonButton';
 
 const ARTIST_PLACEHOLDER_IMAGE = '/images/artist-showcase/DSC02275.jpg';
+
+type SortOption = 'name' | 'date' | 'primary';
 
 export default function ArtistDetails() {
   const { id } = useParams<{ id: string }>();
@@ -43,9 +47,8 @@ export default function ArtistDetails() {
     className: 'border-fm-gold/60 bg-fm-gold/10 text-fm-gold',
   }));
 
-  // Get primary DJ set
+  // Get all recordings
   const djSets = artist?.artist_recordings?.filter((r: any) => r.platform) || [];
-  const primarySet = djSets.find((r: any) => r.is_primary_dj_set) || djSets[0];
 
   return (
     <DetailPageWrapper
@@ -140,32 +143,19 @@ export default function ArtistDetails() {
                   </div>
                 </div>
 
-                {/* Social Links & DJ Set */}
-                {(artist.website || primarySet) && (
+                {/* Social Links */}
+                {artist.website && (
                   <>
                     <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent mt-[20px]' />
-                    <div className='flex items-center justify-between mt-[15px]'>
+                    <div className='flex items-center mt-[15px]'>
                       <FmSocialLinks size='md' gap='md' />
-
-                      {primarySet && (
-                        <a
-                          href={primarySet.url}
-                          target='_blank'
-                          rel='noopener noreferrer'
-                          className='flex items-center gap-[8px] px-[12px] py-[8px] rounded-none border border-white/20 bg-white/5 hover:bg-white/10 hover:border-fm-gold/50 transition-all duration-300'
-                        >
-                          <Disc3 className='h-4 w-4 text-fm-gold' />
-                          <span className='text-xs font-canela text-white/80'>
-                            {tCommon('artistPreview.djSet')}
-                          </span>
-                          {primarySet.platform === 'soundcloud' && <SiSoundcloud className='h-3 w-3 text-[#d48968]' />}
-                          {primarySet.platform === 'spotify' && <SiSpotify className='h-3 w-3 text-[#5aad7a]' />}
-                        </a>
-                      )}
                     </div>
                   </>
                 )}
               </div>
+
+              {/* Recordings Grid */}
+              <RecordingsGrid recordings={djSets} />
 
               {/* Upcoming Events */}
               {upcomingEvents && upcomingEvents.length > 0 && (
@@ -214,5 +204,145 @@ export default function ArtistDetails() {
         );
       }}
     </DetailPageWrapper>
+  );
+}
+
+// Recordings Grid Component
+function RecordingsGrid({ recordings }: { recordings: any[] }) {
+  const [sortBy, setSortBy] = useState<SortOption>('primary');
+
+  const sortedRecordings = useMemo(() => {
+    if (!recordings || recordings.length === 0) return [];
+    
+    return [...recordings].sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return (a.name || '').localeCompare(b.name || '');
+        case 'date':
+          return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+        case 'primary':
+        default:
+          // Primary first, then by name
+          if (a.is_primary_dj_set && !b.is_primary_dj_set) return -1;
+          if (!a.is_primary_dj_set && b.is_primary_dj_set) return 1;
+          return (a.name || '').localeCompare(b.name || '');
+      }
+    });
+  }, [recordings, sortBy]);
+
+  if (!recordings || recordings.length === 0) {
+    return null;
+  }
+
+  const getPlatformIcon = (platform: string) => {
+    switch (platform?.toLowerCase()) {
+      case 'soundcloud':
+        return <SiSoundcloud className='h-4 w-4 text-[#d48968]' />;
+      case 'spotify':
+        return <SiSpotify className='h-4 w-4 text-[#5aad7a]' />;
+      default:
+        return <Disc3 className='h-4 w-4 text-fm-gold' />;
+    }
+  };
+
+  return (
+    <div className='mt-8'>
+      {/* Header with sorting */}
+      <div className='flex items-center justify-between mb-4'>
+        <h2 className='text-2xl font-canela flex items-center gap-2'>
+          <Disc3 className='h-6 w-6 text-fm-gold' />
+          Recordings
+        </h2>
+        
+        <div className='flex items-center gap-2'>
+          <span className='text-xs text-white/50 mr-2'>Sort by:</span>
+          <Button
+            variant={sortBy === 'primary' ? 'default' : 'secondary'}
+            size='sm'
+            onClick={() => setSortBy('primary')}
+            className='h-7 text-xs gap-1'
+            icon={Star}
+          >
+            Featured
+          </Button>
+          <Button
+            variant={sortBy === 'name' ? 'default' : 'secondary'}
+            size='sm'
+            onClick={() => setSortBy('name')}
+            className='h-7 text-xs gap-1'
+            icon={ArrowUpDown}
+          >
+            Name
+          </Button>
+          <Button
+            variant={sortBy === 'date' ? 'default' : 'secondary'}
+            size='sm'
+            onClick={() => setSortBy('date')}
+            className='h-7 text-xs gap-1'
+            icon={Clock}
+          >
+            Recent
+          </Button>
+        </div>
+      </div>
+
+      {/* Recordings Grid */}
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+        {sortedRecordings.map((recording) => (
+          <a
+            key={recording.id}
+            href={recording.url}
+            target='_blank'
+            rel='noopener noreferrer'
+            className={cn(
+              'group relative flex flex-col p-4 rounded-none border bg-black/40 backdrop-blur-sm transition-all duration-300',
+              'hover:bg-white/10 hover:border-fm-gold/50',
+              recording.is_primary_dj_set
+                ? 'border-fm-gold/40 ring-1 ring-fm-gold/20'
+                : 'border-white/20'
+            )}
+          >
+            {/* Primary badge */}
+            {recording.is_primary_dj_set && (
+              <div className='absolute -top-2 -right-2 bg-fm-gold text-black text-[10px] font-bold px-2 py-0.5 rounded-sm'>
+                PRIMARY
+              </div>
+            )}
+
+            {/* Cover art or placeholder */}
+            <div className='w-full aspect-square mb-3 rounded-sm overflow-hidden bg-white/5 border border-white/10'>
+              {recording.cover_art ? (
+                <img
+                  src={recording.cover_art}
+                  alt={recording.name}
+                  className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
+                />
+              ) : (
+                <div className='w-full h-full flex items-center justify-center'>
+                  {getPlatformIcon(recording.platform)}
+                </div>
+              )}
+            </div>
+
+            {/* Recording info */}
+            <div className='flex-1 min-w-0'>
+              <h3 className='font-canela text-sm text-white truncate group-hover:text-fm-gold transition-colors'>
+                {recording.name}
+              </h3>
+              <div className='flex items-center gap-2 mt-1'>
+                {getPlatformIcon(recording.platform)}
+                <span className='text-xs text-white/50 capitalize'>{recording.platform}</span>
+                {recording.duration && (
+                  <>
+                    <span className='text-white/30'>•</span>
+                    <span className='text-xs text-white/50'>{recording.duration}</span>
+                  </>
+                )}
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
   );
 }
