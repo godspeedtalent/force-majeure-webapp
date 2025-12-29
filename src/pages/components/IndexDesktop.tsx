@@ -1,8 +1,7 @@
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
-import { FmInfoCard } from '@/components/common/data/FmInfoCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmArtistUndercardCard } from '@/components/common/display/FmArtistUndercardCard';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import { EventCard } from '@/features/events/components/EventCard';
@@ -57,7 +56,6 @@ export function IndexDesktop({
   fadeOpacity,
   contentReady,
 }: IndexDesktopProps) {
-  const navigate = useNavigate();
   const { t } = useTranslation('pages');
 
   if (!contentReady) {
@@ -120,20 +118,7 @@ export function IndexDesktop({
                 )
               ) : (
                 <div className='flex justify-center'>
-                  <FmInfoCard className='max-w-2xl text-center'>
-                    <h2 className='text-lg lg:text-xl text-fm-gold mb-[20px]'>
-                      {t('home.lineupComingSoon')}
-                    </h2>
-                    <p className='text-sm text-muted-foreground mb-[10px]'>
-                      {t('home.artistQuestion')}
-                    </p>
-                    <p className='text-sm text-muted-foreground mb-[20px]'>
-                      {t('home.registerBelow')}
-                    </p>
-                    <FmCommonButton onClick={() => navigate('/artists/signup')}>
-                      {t('home.artistRegistration')}
-                    </FmCommonButton>
-                  </FmInfoCard>
+                  <FmArtistUndercardCard />
                 </div>
               )}
             </div>
@@ -209,20 +194,7 @@ export function IndexDesktop({
             )
           ) : (
             <div className='col-span-full flex justify-center'>
-              <FmInfoCard className='max-w-2xl text-center'>
-                <h2 className='text-lg lg:text-xl text-fm-gold mb-[20px]'>
-                  {t('home.lineupComingSoon')}
-                </h2>
-                <p className='text-sm text-muted-foreground mb-[10px]'>
-                  {t('home.artistQuestion')}
-                </p>
-                <p className='text-sm text-muted-foreground mb-[20px]'>
-                  {t('home.registerBelow')}
-                </p>
-                <FmCommonButton onClick={() => navigate('/artists/signup')}>
-                  {t('home.artistRegistration')}
-                </FmCommonButton>
-              </FmInfoCard>
+              <FmArtistUndercardCard />
             </div>
           )}
         </div>

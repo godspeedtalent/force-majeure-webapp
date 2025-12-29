@@ -1,8 +1,7 @@
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
-import { FmInfoCard } from '@/components/common/data/FmInfoCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmArtistUndercardCard } from '@/components/common/display/FmArtistUndercardCard';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import { ParallaxLayerManager } from '@/components/layout/ParallaxLayerManager';
@@ -59,7 +58,6 @@ export function IndexMobile({
   scrollToSection,
   contentReady,
 }: IndexMobileProps) {
-  const navigate = useNavigate();
   const { t } = useTranslation('pages');
 
   if (!contentReady) {
@@ -127,20 +125,7 @@ export function IndexMobile({
               )
             )
           ) : (
-            <FmInfoCard className='max-w-2xl text-center'>
-              <h2 className='text-lg lg:text-xl text-fm-gold mb-[20px]'>
-                {t('home.lineupComingSoon')}
-              </h2>
-              <p className='text-sm text-muted-foreground mb-[10px]'>
-                {t('home.artistQuestion')}
-              </p>
-              <p className='text-sm text-muted-foreground mb-[20px]'>
-                {t('home.registerBelow')}
-              </p>
-              <FmCommonButton onClick={() => navigate('/artists/signup')}>
-                {t('home.artistRegistration')}
-              </FmCommonButton>
-            </FmInfoCard>
+            <FmArtistUndercardCard />
           )}
         </div>
 
