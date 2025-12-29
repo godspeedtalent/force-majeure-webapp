@@ -2841,5 +2841,48 @@
         "organizationDetails": "Organization Details"
       }
     }
+  },
+  "adminGrid": {
+    "columns": {
+      "name": "Name",
+      "genres": "Genres",
+      "image": "Image",
+      "bio": "Bio",
+      "username": "Username",
+      "fullName": "Full Name",
+      "email": "Email",
+      "verified": "Verified",
+      "verifiedLabel": "Verified",
+      "unverifiedLabel": "Unverified",
+      "avatar": "Avatar",
+      "organization": "Organization",
+      "roles": "Roles",
+      "noRoles": "No roles",
+      "joined": "Joined",
+      "city": "City",
+      "address": "Address",
+      "capacity": "Capacity",
+      "created": "Created",
+      "cover": "Cover",
+      "trackName": "Track Name",
+      "artist": "Artist",
+      "platform": "Platform",
+      "type": "Type",
+      "track": "Track",
+      "djSet": "DJ Set",
+      "clicks": "Clicks",
+      "link": "Link",
+      "openLink": "Open Link",
+      "added": "Added",
+      "parentGenre": "Parent Genre",
+      "subgenres": "Subgenres",
+      "artists": "Artists"
+    },
+    "artistImageUpdated": "Artist image updated",
+    "artistImageUpdateFailed": "Failed to update artist image",
+    "userAvatarUpdated": "User avatar updated",
+    "userAvatarUpdateFailed": "Failed to update user avatar",
+    "venueImageUpdated": "Venue image updated",
+    "venueImageUpdateFailed": "Failed to update venue image"
   }
 }
