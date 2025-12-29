@@ -25,6 +25,14 @@ export default function ArtistDetails() {
   const { data: artist, isLoading, error } = useArtistById(id);
   const { data: upcomingEvents } = useArtistEvents(id);
 
+  // Smart back navigation - go back if there's history, otherwise go to artists list
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/artists');
+    }
+  };
   // Check if current user can edit this artist
   const canEdit = isAdmin() || hasRole('developer') || (artist?.user_id && artist.user_id === user?.id);
 
@@ -45,7 +53,7 @@ export default function ArtistDetails() {
       isLoading={isLoading}
       error={error}
       entityName={t('artistDetails.entityName')}
-      onBack={() => navigate(-1)}
+      onBack={handleBack}
       notFoundMessage={t('artistDetails.notFound')}
       useLayout={true}
     >
@@ -62,7 +70,7 @@ export default function ArtistDetails() {
                     variant='secondary'
                     size='sm'
                     icon={ArrowLeft}
-                    onClick={() => navigate(-1)}
+                    onClick={handleBack}
                   >
                     {t('artistDetails.back')}
                   </FmCommonButton>
