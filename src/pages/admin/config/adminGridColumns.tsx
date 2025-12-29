@@ -162,6 +162,27 @@ export const userColumns: DataGridColumn[] = [
     filterable: true,
     editable: true,
   }),
+  {
+    key: 'is_verified',
+    label: t('adminGrid.columns.verified'),
+    sortable: true,
+    filterable: true,
+    readonly: true,
+    render: (value: boolean) => {
+      if (value) {
+        return (
+          <span className='inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30 rounded'>
+            ✓ {t('adminGrid.columns.verifiedLabel')}
+          </span>
+        );
+      }
+      return (
+        <span className='inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-muted text-muted-foreground border border-border rounded'>
+          {t('adminGrid.columns.unverifiedLabel')}
+        </span>
+      );
+    },
+  },
   DataGridColumns.image({
     key: 'avatar_url',
     label: t('adminGrid.columns.avatar'),

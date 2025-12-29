@@ -85,6 +85,7 @@ serve(async req => {
             }
           : null,
         roles: rolesArray,
+        is_verified: user.is_verified || false,
         is_public: false, // Not in view, default to false
         show_on_leaderboard: false, // Not in view, default to false
         last_sign_in: user.last_sign_in_at,
