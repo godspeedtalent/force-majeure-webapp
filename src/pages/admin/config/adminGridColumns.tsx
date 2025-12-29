@@ -121,6 +121,8 @@ export const artistColumns: DataGridColumn[] = [
     label: t('adminGrid.columns.bio'),
     filterable: true,
     editable: true,
+    multiline: true,
+    rows: 4,
     render: value => {
       if (!value) {
         return <span className='text-xs text-muted-foreground'>—</span>;
