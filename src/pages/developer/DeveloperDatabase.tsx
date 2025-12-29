@@ -20,6 +20,7 @@ import {
   Images,
   UserPlus,
   MessageSquare,
+  Eye,
 } from 'lucide-react';
 import { supabase } from '@/shared';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -449,6 +450,11 @@ export default function DeveloperDatabase() {
   };
 
   const artistContextActions: DataGridAction[] = [
+    {
+      label: t('devTools.database.viewArtist'),
+      icon: <Eye className='h-4 w-4' />,
+      onClick: (artist: any) => navigate(`/artists/${artist.id}`),
+    },
     {
       label: t('devTools.database.editArtist'),
       icon: <Mic2 className='h-4 w-4' />,

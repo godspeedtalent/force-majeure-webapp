@@ -1663,6 +1663,7 @@
       "createButton": "创建笔记"
     },
     "database": {
+      "viewArtist": "查看艺人详情",
       "editArtist": "编辑艺人",
       "deleteArtist": "删除艺人",
       "artistUpdated": "艺人已更新",
