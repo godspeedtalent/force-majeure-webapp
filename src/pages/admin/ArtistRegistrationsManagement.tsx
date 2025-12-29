@@ -156,8 +156,7 @@ export function ArtistRegistrationsManagement() {
           spotify_id: registrationToAction.spotify_id || null,
           instagram_handle: registrationToAction.instagram_handle || null,
           tiktok_handle: registrationToAction.tiktok_handle || null,
-          // Take first genre as the legacy single genre field
-          genre: registrationToAction.genres?.[0] || null,
+          // Legacy genre field is deprecated - we use artist_genres junction table now
         })
         .select('id')
         .single();
@@ -180,6 +179,34 @@ export function ArtistRegistrationsManagement() {
         source: 'ArtistRegistrationsManagement',
         details: { artistId: newArtist.id, registrationId: registrationToAction.id },
       });
+
+      // Step 2: Create artist_genres entries for the new artist
+      const genreIds = registrationToAction.genres;
+      if (genreIds && genreIds.length > 0) {
+        const genreEntries = genreIds.map((genreId: string, index: number) => ({
+          artist_id: newArtist.id,
+          genre_id: genreId,
+          is_primary: index === 0, // First genre is primary
+        }));
+
+        const { error: genresError } = await supabase
+          .from('artist_genres')
+          .insert(genreEntries);
+
+        if (genresError) {
+          // Log but don't fail - artist was created successfully
+          logger.warn('Failed to create artist genres from registration', {
+            error: genresError.message,
+            source: 'ArtistRegistrationsManagement',
+            details: { artistId: newArtist.id, registrationId: registrationToAction.id, genreIds },
+          });
+        } else {
+          logger.info('Artist genres created from registration', {
+            source: 'ArtistRegistrationsManagement',
+            details: { artistId: newArtist.id, count: genreEntries.length },
+          });
+        }
+      }
 
       // Step 2: Update the registration status to approved
       const { error: updateError } = await supabase

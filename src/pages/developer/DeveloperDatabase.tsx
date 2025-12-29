@@ -225,28 +225,24 @@ export default function DeveloperDatabase() {
         label: 'Artists',
         icon: Mic2,
         description: 'Artist Management',
-        badge: <span className="ml-auto text-[10px] text-muted-foreground">{artistsCount}</span>,
       },
       {
         id: 'events',
         label: 'Events',
         icon: Calendar,
         description: 'Event Management',
-        badge: <span className="ml-auto text-[10px] text-muted-foreground">{eventsCount}</span>,
       },
       {
         id: 'recordings',
         label: 'Recordings',
         icon: Disc3,
         description: 'Music Recordings',
-        badge: <span className="ml-auto text-[10px] text-muted-foreground">{recordingsCount}</span>,
       },
       {
         id: 'venues',
         label: 'Venues',
         icon: MapPin,
         description: 'Venue Management',
-        badge: <span className="ml-auto text-[10px] text-muted-foreground">{venuesCount}</span>,
       },
     ];
 
@@ -258,24 +254,14 @@ export default function DeveloperDatabase() {
           label: 'Organizations',
           icon: Building2,
           description: 'Organization Management',
-          badge: (
-            <span className="ml-auto flex items-center gap-1">
-              <span className="text-[10px] text-muted-foreground">{organizationsCount}</span>
-              <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />
-            </span>
-          ),
+          badge: <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />,
         },
         {
           id: 'users',
           label: 'Users',
           icon: Users,
           description: 'User Management',
-          badge: (
-            <span className="ml-auto flex items-center gap-1">
-              <span className="text-[10px] text-muted-foreground">{usersCount}</span>
-              <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />
-            </span>
-          ),
+          badge: <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />,
         }
       );
     }
@@ -299,32 +285,22 @@ export default function DeveloperDatabase() {
           label: t('artistRegistrations.navLabel'),
           icon: UserPlus,
           description: t('artistRegistrations.navDescription'),
-          badge: (
-            <span className="ml-auto flex items-center gap-1">
-              <span className="text-[10px] text-muted-foreground">{totalRegistrationsCount}</span>
-              {pendingRegistrationsCount > 0 && (
-                <span className="px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
-                  {pendingRegistrationsCount}
-                </span>
-              )}
+          badge: pendingRegistrationsCount > 0 ? (
+            <span className="px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
+              {pendingRegistrationsCount}
             </span>
-          ),
+          ) : undefined,
         },
         {
           id: 'user_requests',
           label: 'User Requests',
           icon: FileQuestion,
           description: 'Manage user requests',
-          badge: (
-            <span className="ml-auto flex items-center gap-1">
-              <span className="text-[10px] text-muted-foreground">{totalUserRequestsCount}</span>
-              {pendingUserRequestsCount > 0 && (
-                <span className="px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
-                  {pendingUserRequestsCount}
-                </span>
-              )}
+          badge: pendingUserRequestsCount > 0 ? (
+            <span className="px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
+              {pendingUserRequestsCount}
             </span>
-          ),
+          ) : undefined,
         }
       );
     }
