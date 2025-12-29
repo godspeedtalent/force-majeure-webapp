@@ -143,19 +143,45 @@ export function ArtistRegistrationsManagement() {
     if (!registrationToAction) return;
 
     try {
+      // Step 0: Re-fetch the registration fresh to avoid stale data
+      const { data: freshRegistration, error: fetchError } = await supabase
+        .from('artist_registrations')
+        .select('*')
+        .eq('id', registrationToAction.id)
+        .single();
+
+      if (fetchError || !freshRegistration) {
+        logger.error('Failed to fetch fresh registration data', {
+          error: fetchError?.message,
+          source: 'ArtistRegistrationsManagement',
+          details: { registrationId: registrationToAction.id },
+        });
+        throw fetchError || new Error('Registration not found');
+      }
+
+      // Use fresh data for all subsequent operations
+      const reg = freshRegistration;
+
       // Step 1: Create the artist record from registration data
+      // For socials: trim whitespace and use URL as fallback for ID fields
+      const instagramHandle = reg.instagram_handle?.trim() || null;
+      const tiktokHandle = reg.tiktok_handle?.trim() || null;
+      // For soundcloud/spotify: prefer ID, fallback to URL
+      const soundcloudId = reg.soundcloud_id?.trim() || reg.soundcloud_url?.trim() || null;
+      const spotifyId = reg.spotify_id?.trim() || reg.spotify_url?.trim() || null;
+
       const { data: newArtist, error: artistError } = await supabase
         .from('artists')
         .insert({
-          name: registrationToAction.artist_name,
-          bio: registrationToAction.bio || null,
-          image_url: registrationToAction.profile_image_url || null,
-          city_id: registrationToAction.city_id || null,
-          user_id: registrationToAction.user_id || null,
-          soundcloud_id: registrationToAction.soundcloud_id || null,
-          spotify_id: registrationToAction.spotify_id || null,
-          instagram_handle: registrationToAction.instagram_handle || null,
-          tiktok_handle: registrationToAction.tiktok_handle || null,
+          name: reg.artist_name,
+          bio: reg.bio || null,
+          image_url: reg.profile_image_url || null,
+          city_id: reg.city_id || null,
+          user_id: reg.user_id || null,
+          soundcloud_id: soundcloudId,
+          spotify_id: spotifyId,
+          instagram_handle: instagramHandle,
+          tiktok_handle: tiktokHandle,
           // Legacy genre field is deprecated - we use artist_genres junction table now
         })
         .select('id')
@@ -166,7 +192,7 @@ export function ArtistRegistrationsManagement() {
           error: artistError.message,
           source: 'ArtistRegistrationsManagement',
           details: {
-            registrationId: registrationToAction.id,
+            registrationId: reg.id,
             pgDetails: artistError.details,
             pgHint: artistError.hint,
             pgCode: artistError.code,
@@ -177,11 +203,11 @@ export function ArtistRegistrationsManagement() {
 
       logger.info('Artist created from registration', {
         source: 'ArtistRegistrationsManagement',
-        details: { artistId: newArtist.id, registrationId: registrationToAction.id },
+        details: { artistId: newArtist.id, registrationId: reg.id },
       });
 
       // Step 2: Create artist_genres entries for the new artist
-      const genreIds = registrationToAction.genres;
+      const genreIds = reg.genres;
       if (genreIds && genreIds.length > 0) {
         const genreEntries = genreIds.map((genreId: string, index: number) => ({
           artist_id: newArtist.id,
@@ -198,7 +224,7 @@ export function ArtistRegistrationsManagement() {
           logger.warn('Failed to create artist genres from registration', {
             error: genresError.message,
             source: 'ArtistRegistrationsManagement',
-            details: { artistId: newArtist.id, registrationId: registrationToAction.id, genreIds },
+            details: { artistId: newArtist.id, registrationId: reg.id, genreIds },
           });
         } else {
           logger.info('Artist genres created from registration', {
@@ -208,7 +234,7 @@ export function ArtistRegistrationsManagement() {
         }
       }
 
-      // Step 2: Update the registration status to approved
+      // Step 3: Update the registration status to approved
       const { error: updateError } = await supabase
         .from('artist_registrations')
         .update({
@@ -217,7 +243,7 @@ export function ArtistRegistrationsManagement() {
           reviewed_by: user?.id || null,
           reviewer_notes: reviewerNotes || null,
         })
-        .eq('id', registrationToAction.id);
+        .eq('id', reg.id);
 
       if (updateError) {
         // If registration update fails, we should ideally rollback the artist creation
@@ -225,14 +251,14 @@ export function ArtistRegistrationsManagement() {
         logger.error('Failed to update registration status after artist creation', {
           error: updateError.message,
           source: 'ArtistRegistrationsManagement',
-          details: { registrationId: registrationToAction.id, artistId: newArtist.id },
+          details: { registrationId: reg.id, artistId: newArtist.id },
         });
         throw updateError;
       }
 
-      // Step 3: Create artist recordings from tracks_metadata (not profile URLs)
+      // Step 4: Create artist recordings from tracks_metadata (not profile URLs)
       // Only create recordings from actual track/set URLs, not profile links
-      const tracksMetadata = (registrationToAction as any).tracks_metadata as Array<{
+      const tracksMetadata = reg.tracks_metadata as Array<{
         name: string;
         url: string;
         coverArt: string | null;
@@ -243,7 +269,7 @@ export function ArtistRegistrationsManagement() {
       if (tracksMetadata && tracksMetadata.length > 0) {
         const recordingsToCreate = tracksMetadata.map((track, index) => ({
           artist_id: newArtist.id,
-          name: track.name || `${registrationToAction.artist_name} - Recording ${index + 1}`,
+          name: track.name || `${reg.artist_name} - Recording ${index + 1}`,
           url: track.url,
           platform: track.platform,
           cover_art: track.coverArt || null,
@@ -259,7 +285,7 @@ export function ArtistRegistrationsManagement() {
           logger.warn('Failed to create artist recordings from registration', {
             error: recordingsError.message,
             source: 'ArtistRegistrationsManagement',
-            details: { artistId: newArtist.id, registrationId: registrationToAction.id },
+            details: { artistId: newArtist.id, registrationId: reg.id },
           });
         } else {
           logger.info('Artist recordings created from registration', {
@@ -278,20 +304,20 @@ export function ArtistRegistrationsManagement() {
           is_primary_dj_set: boolean;
         }> = [];
 
-        if (registrationToAction.soundcloud_set_url) {
+        if (reg.soundcloud_set_url) {
           legacyRecordings.push({
             artist_id: newArtist.id,
-            name: `${registrationToAction.artist_name} - DJ Set`,
-            url: registrationToAction.soundcloud_set_url,
+            name: `${reg.artist_name} - DJ Set`,
+            url: reg.soundcloud_set_url,
             platform: 'soundcloud',
             is_primary_dj_set: true,
           });
         }
-        if (registrationToAction.spotify_track_url) {
+        if (reg.spotify_track_url) {
           legacyRecordings.push({
             artist_id: newArtist.id,
-            name: `${registrationToAction.artist_name} - Track`,
-            url: registrationToAction.spotify_track_url,
+            name: `${reg.artist_name} - Track`,
+            url: reg.spotify_track_url,
             platform: 'spotify',
             is_primary_dj_set: false,
           });
@@ -316,25 +342,25 @@ export function ArtistRegistrationsManagement() {
         }
       }
 
-      // Step 4: Assign artist role to the user (if they have a user_id)
-      if (registrationToAction.user_id) {
+      // Step 5: Assign artist role to the user (if they have a user_id)
+      if (reg.user_id) {
         try {
-          await RoleManagementService.addRole(registrationToAction.user_id, ROLES.ARTIST);
+          await RoleManagementService.addRole(reg.user_id, ROLES.ARTIST);
           logger.info('Artist role assigned to user', {
             source: 'ArtistRegistrationsManagement',
-            details: { userId: registrationToAction.user_id, artistId: newArtist.id },
+            details: { userId: reg.user_id, artistId: newArtist.id },
           });
         } catch (roleError) {
           // Log but don't fail the approval - the artist was created successfully
           logger.warn('Failed to assign artist role to user', {
             error: roleError instanceof Error ? roleError.message : 'Unknown error',
             source: 'ArtistRegistrationsManagement',
-            details: { userId: registrationToAction.user_id, artistId: newArtist.id },
+            details: { userId: reg.user_id, artistId: newArtist.id },
           });
         }
       }
 
-      toast.success(t('artistRegistrations.approveSuccess', { name: registrationToAction.artist_name }));
+      toast.success(t('artistRegistrations.approveSuccess', { name: reg.artist_name }));
       queryClient.invalidateQueries({ queryKey: ['artist-registrations'] });
       queryClient.invalidateQueries({ queryKey: ['artist-registrations-pending-count'] });
       // Refresh dev/admin data grids that show newly created artists/recordings
@@ -352,7 +378,7 @@ export function ArtistRegistrationsManagement() {
         error: pgError.message || 'Unknown error',
         source: 'ArtistRegistrationsManagement',
         details: {
-          registrationId: registrationToAction.id,
+          registrationId: registrationToAction?.id,
           pgDetails: pgError.details,
           pgHint: pgError.hint,
           pgCode: pgError.code,
