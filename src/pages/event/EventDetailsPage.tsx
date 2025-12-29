@@ -8,6 +8,7 @@ import { EventDetailsLayout } from '@/components/layout/EventDetailsLayout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import { SEOHead } from '@/components/common/seo/SEOHead';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES, PERMISSIONS } from '@/shared';
 
@@ -115,8 +116,19 @@ export const EventDetailsPage = () => {
 
   const displayTitle = event.headliner.name;
 
+  // Build SEO description from event details
+  const seoDescription = event.venue && event.date
+    ? `${event.headliner.name} live at ${event.venue} on ${event.date}. ${event.undercard.length > 0 ? `With ${event.undercard.map(a => a.name).join(', ')}.` : ''} Get tickets now.`
+    : `${event.headliner.name} - Electronic music event in Austin, TX. Get tickets now.`;
+
   return (
     <>
+      <SEOHead
+        title={displayTitle}
+        description={seoDescription}
+        image={event.heroImage}
+        url={`/event/${id}`}
+      />
       <Navigation />
       <PageTransition>
         <EventDetailsLayout
