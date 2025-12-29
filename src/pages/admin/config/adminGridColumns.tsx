@@ -82,13 +82,30 @@ export const artistColumns: DataGridColumn[] = [
     filterable: true,
     editable: true,
   }),
-  DataGridColumns.text({
-    key: 'genre',
-    label: t('adminGrid.columns.genre'),
-    sortable: true,
-    filterable: true,
-    editable: true,
-  }),
+  {
+    key: 'genre_names',
+    label: t('adminGrid.columns.genres'),
+    render: (value: string[] | null) => {
+      if (!value || value.length === 0) {
+        return <span className='text-muted-foreground'>—</span>;
+      }
+      return (
+        <div className='flex flex-wrap gap-1'>
+          {value.slice(0, 3).map((genreName, i) => (
+            <span
+              key={i}
+              className='px-2 py-0.5 text-[10px] uppercase bg-fm-gold/10 text-fm-gold border border-fm-gold/30'
+            >
+              {genreName}
+            </span>
+          ))}
+          {value.length > 3 && (
+            <span className='text-xs text-muted-foreground'>+{value.length - 3}</span>
+          )}
+        </div>
+      );
+    },
+  },
   DataGridColumns.image({
     key: 'image_url',
     label: t('adminGrid.columns.image'),

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Mic2, User, Music, Share2 } from 'lucide-react';
+import { FaSoundcloud } from 'react-icons/fa6';
 import { useNavigate } from 'react-router-dom';
 import { useCreateEntityNavigation } from '@/shared';
 import { FmCommonCreateForm } from '@/components/common/forms/FmCommonCreateForm';
@@ -12,6 +13,7 @@ import { FmGenreMultiSelect } from '@/features/artists/components/FmGenreMultiSe
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { SpotifyIcon } from '@/components/common/icons/SpotifyIcon';
 import { SpotifyArtistImport } from '@/components/spotify/SpotifyArtistImport';
+import { SoundCloudUserImport, SoundCloudUserData } from '@/components/soundcloud/SoundCloudUserImport';
 import { supabase } from '@/shared';
 import { toast } from 'sonner';
 import { logger } from '@/shared';
@@ -32,6 +34,7 @@ const DeveloperCreateArtistPage = () => {
   const [socialLinks, setSocialLinks] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSpotifyImport, setShowSpotifyImport] = useState(false);
+  const [showSoundCloudImport, setShowSoundCloudImport] = useState(false);
 
   const handleSpotifyImport = (artist: SpotifyArtist) => {
     setFormData({
@@ -40,6 +43,15 @@ const DeveloperCreateArtistPage = () => {
       bio: `${artist.name} - ${artist.genres.slice(0, 3).join(', ')}`,
     });
     toast.success(tToast('artists.importedFromSpotify'));
+  };
+
+  const handleSoundCloudImport = (user: SoundCloudUserData) => {
+    setFormData({
+      name: user.name,
+      image_url: user.avatarUrl || '',
+      bio: user.description || '',
+    });
+    toast.success(tToast('artists.importedFromSoundCloud'));
   };
 
   const handleSubmit = async () => {
@@ -124,8 +136,8 @@ const DeveloperCreateArtistPage = () => {
       onCancel={handleCancel}
       submitText={t('createForms.artist.submitText')}
     >
-      {/* Spotify Import Button */}
-      <div className='flex justify-center py-[20px]'>
+      {/* Import Buttons */}
+      <div className='flex justify-center gap-3 py-[20px]'>
         <FmCommonButton
           type='button'
           variant='default'
@@ -135,6 +147,16 @@ const DeveloperCreateArtistPage = () => {
           icon={<SpotifyIcon className='h-4 w-4' />}
         >
           {t('createForms.artist.importFromSpotify')}
+        </FmCommonButton>
+        <FmCommonButton
+          type='button'
+          variant='default'
+          onClick={() => setShowSoundCloudImport(true)}
+          disabled={isSubmitting}
+          className='text-[#d48968]'
+          icon={<FaSoundcloud className='h-4 w-4' />}
+        >
+          {t('createForms.artist.importFromSoundCloud')}
         </FmCommonButton>
       </div>
 
@@ -214,6 +236,13 @@ const DeveloperCreateArtistPage = () => {
         open={showSpotifyImport}
         onClose={() => setShowSpotifyImport(false)}
         onImport={handleSpotifyImport}
+      />
+
+      {/* SoundCloud Import Modal */}
+      <SoundCloudUserImport
+        open={showSoundCloudImport}
+        onClose={() => setShowSoundCloudImport(false)}
+        onImport={handleSoundCloudImport}
       />
     </>
   );
