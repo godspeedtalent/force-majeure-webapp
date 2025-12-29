@@ -130,11 +130,14 @@ export function DevNavigationTabContent({ onNavigate, isAdmin }: DevNavigationTa
                     iconPosition='left'
                     onClick={() => {
                       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+                      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
                       if (supabaseUrl) {
                         const isLocal = supabaseUrl.includes('localhost') || supabaseUrl.includes('127.0.0.1');
 
                         if (isLocal) {
                           window.open('http://localhost:54323', '_blank');
+                        } else if (projectId) {
+                          window.open(`https://supabase.com/dashboard/project/${projectId}`, '_blank');
                         } else {
                           const projectRef = supabaseUrl.split('//')[1]?.split('.')[0];
                           if (projectRef) {
@@ -153,11 +156,14 @@ export function DevNavigationTabContent({ onNavigate, isAdmin }: DevNavigationTa
                 <ContextMenuItem
                   onClick={() => {
                     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+                    const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
                     if (supabaseUrl) {
                       const isLocal = supabaseUrl.includes('localhost') || supabaseUrl.includes('127.0.0.1');
 
                       if (isLocal) {
                         window.open('http://localhost:54323', '_blank');
+                      } else if (projectId) {
+                        window.open(`https://supabase.com/dashboard/project/${projectId}`, '_blank');
                       } else {
                         const projectRef = supabaseUrl.split('//')[1]?.split('.')[0];
                         if (projectRef) {

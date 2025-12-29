@@ -244,7 +244,15 @@
     "artist": "Artista",
     "manageArtistProfile": "Administra tu perfil de artista",
     "loadUpcomingShowsFailed": "Error al Cargar Próximos Shows",
-    "couldNotRetrieveEvents": "No se pudieron obtener tus próximos eventos"
+    "couldNotRetrieveEvents": "No se pudieron obtener tus próximos eventos",
+    "notifications": "Notificaciones",
+    "notificationsDescription": "Administra tus preferencias de notificaciones por correo",
+    "notificationsPageDescription": "Controla qué actualizaciones y alertas recibes por correo electrónico",
+    "emailNotifications": "Actualizaciones por correo",
+    "emailNotificationsDescription": "Recibe noticias sobre eventos, artistas y ofertas especiales",
+    "notificationsEnabled": "Notificaciones por correo activadas.",
+    "notificationsDisabled": "Notificaciones por correo desactivadas.",
+    "notificationUpdateFailed": "Error al actualizar la configuración de notificaciones. Por favor, inténtalo de nuevo."
   },
   "ticketing": {
     "yourTurn": "¡Tu turno!",
@@ -471,6 +479,44 @@
     "launchDemo": "Iniciar Demo",
     "previewNote": "Vista previa de los datos que se poblarán en el formulario de registro",
     "noDataGenerated": "Aún no se han generado datos. Selecciona un modo y haz clic en Generar Datos."
+  },
+  "recordingRatings": {
+    "title": "Calificaciones de Grabaciones",
+    "internalRatings": "Calificaciones Internas",
+    "yourRating": "Tu calificación",
+    "editRating": "Editar tu calificación",
+    "addRating": "Calificar esta grabación",
+    "selectScore": "Por favor selecciona una puntuación",
+    "ratingSaved": "Calificación guardada",
+    "ratingUpdated": "Calificación actualizada",
+    "saveFailed": "Error al guardar la calificación",
+    "notes": "Notas",
+    "notesPlaceholder": "Añade notas sobre la calidad de mezcla, selección de pistas, energía...",
+    "lastUpdated": "Última actualización",
+    "poor": "Pobre",
+    "excellent": "Excelente",
+    "noRatings": "Sin calificaciones aún",
+    "beFirstToRate": "Sé el primero en calificar esta grabación",
+    "avgScore": "Puntuación Promedio",
+    "totalRatings": "Calificaciones",
+    "min": "Mín",
+    "max": "Máx",
+    "distribution": "Distribución de Puntuaciones",
+    "allRatings": "Todas las Calificaciones"
+  },
+  "recordingAnalytics": {
+    "title": "Calificaciones de Grabaciones",
+    "description": "Analiza calificaciones para encontrar artistas para tus eventos"
+  },
+  "developerDashboards": {
+    "analytics": "Analíticas",
+    "monitoring": "Monitoreo",
+    "recordingRatings": "Calificaciones de Grabaciones",
+    "recordingRatingsDesc": "Califica y analiza grabaciones de artistas",
+    "activityLog": "Registro de Actividad",
+    "activityLogDesc": "Ver actividad reciente del sistema",
+    "userMetrics": "Métricas de Usuarios",
+    "userMetricsDesc": "Analíticas de participación de usuarios"
   },
   "errors": {
     "404": {

@@ -244,7 +244,15 @@
     "artist": "艺术家",
     "manageArtistProfile": "管理您的艺术家资料",
     "loadUpcomingShowsFailed": "加载即将到来的演出失败",
-    "couldNotRetrieveEvents": "无法获取您即将到来的活动"
+    "couldNotRetrieveEvents": "无法获取您即将到来的活动",
+    "notifications": "通知",
+    "notificationsDescription": "管理您的电子邮件通知偏好设置",
+    "notificationsPageDescription": "控制您通过电子邮件接收的更新和提醒",
+    "emailNotifications": "邮件更新",
+    "emailNotificationsDescription": "接收有关活动、艺术家和特别优惠的消息",
+    "notificationsEnabled": "邮件通知已启用。",
+    "notificationsDisabled": "邮件通知已禁用。",
+    "notificationUpdateFailed": "更新通知设置失败。请重试。"
   },
   "ticketing": {
     "yourTurn": "轮到你了！",
@@ -471,6 +479,44 @@
     "launchDemo": "启动演示",
     "previewNote": "将在注册表单中填充的数据预览",
     "noDataGenerated": "尚未生成数据。请选择一个模式并点击生成数据。"
+  },
+  "recordingRatings": {
+    "title": "录音评分",
+    "internalRatings": "内部评分",
+    "yourRating": "您的评分",
+    "editRating": "编辑您的评分",
+    "addRating": "评价此录音",
+    "selectScore": "请选择一个分数",
+    "ratingSaved": "评分已保存",
+    "ratingUpdated": "评分已更新",
+    "saveFailed": "保存评分失败",
+    "notes": "备注",
+    "notesPlaceholder": "添加关于混音质量、曲目选择、能量等方面的备注...",
+    "lastUpdated": "最后更新",
+    "poor": "差",
+    "excellent": "优秀",
+    "noRatings": "暂无评分",
+    "beFirstToRate": "成为第一个评价此录音的人",
+    "avgScore": "平均分",
+    "totalRatings": "评分数",
+    "min": "最低",
+    "max": "最高",
+    "distribution": "分数分布",
+    "allRatings": "所有评分"
+  },
+  "recordingAnalytics": {
+    "title": "录音评分",
+    "description": "分析评分以寻找活动艺术家"
+  },
+  "developerDashboards": {
+    "analytics": "分析",
+    "monitoring": "监控",
+    "recordingRatings": "录音评分",
+    "recordingRatingsDesc": "评价和分析艺术家录音",
+    "activityLog": "活动日志",
+    "activityLogDesc": "查看最近系统活动",
+    "userMetrics": "用户指标",
+    "userMetricsDesc": "用户参与度分析"
   },
   "errors": {
     "404": {

@@ -28,6 +28,9 @@ export const FEATURE_FLAGS = {
 
   // Competition features
   SONIC_GAUNTLET: 'sonic_gauntlet',
+
+  // Organization features
+  ORGANIZATION_TOOLS: 'organization_tools',
 } as const;
 
 export type FeatureFlag = (typeof FEATURE_FLAGS)[keyof typeof FEATURE_FLAGS];
@@ -86,6 +89,10 @@ export const FEATURE_FLAG_METADATA: Record<
   [FEATURE_FLAGS.SONIC_GAUNTLET]: {
     displayName: 'Sonic Gauntlet',
     description: 'Enables the Sonic Gauntlet DJ competition landing page',
+  },
+  [FEATURE_FLAGS.ORGANIZATION_TOOLS]: {
+    displayName: 'Organization Tools',
+    description: 'Enables organization management tools and routes',
   },
 };
 

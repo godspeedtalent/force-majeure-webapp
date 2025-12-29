@@ -26,7 +26,8 @@
     "requiresScanningPermissions": "Requires scanning permissions",
     "developerOnly": "Developer only",
     "adminOnly": "Admin only",
-    "followOnInstagram": "Follow us on Instagram"
+    "followOnInstagram": "Follow us on Instagram",
+    "accountSettings": "Account Settings"
   },
   "buttons": {
     "save": "Save",
@@ -80,7 +81,9 @@
     "approve": "Approve",
     "deny": "Deny",
     "create": "Create",
-    "submitRequest": "Submit Request"
+    "submitRequest": "Submit Request",
+    "showArchived": "Archived ({{count}})",
+    "hideArchived": "Hide Archived"
   },
   "labels": {
     "email": "Email",
@@ -1944,8 +1947,17 @@
       "socials": "Socials",
       "verified": "Verified",
       "verifiedLabel": "Verified",
-      "unverifiedLabel": "Unverified"
-    }
+      "unverifiedLabel": "Unverified",
+      "category": "Category",
+      "price": "Price",
+      "stock": "Stock",
+      "quantity": "Quantity",
+      "trackInventory": "Track Inventory",
+      "active": "Active",
+      "sortOrder": "Sort Order"
+    },
+    "productImageUpdated": "Product image updated",
+    "productImageUpdateFailed": "Failed to update product image"
   },
   "artistRegistrations": {
     "title": "Artist Registrations",
@@ -2174,7 +2186,18 @@
   "cart": {
     "empty": "Your cart is empty",
     "whyNot": "Why not",
-    "checkOutMerch": "check out our merch"
+    "checkOutMerch": "check out our merch",
+    "each": "each",
+    "total": "Total",
+    "clear": "Clear",
+    "checkout": "Checkout"
+  },
+  "stock": {
+    "inStock": "In Stock",
+    "lowStock": "Low Stock",
+    "outOfStock": "Out of Stock",
+    "unlimited": "Available",
+    "left": "left"
   },
   "eventInfo": {
     "title": "Event Information",

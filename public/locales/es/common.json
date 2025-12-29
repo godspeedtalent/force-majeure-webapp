@@ -26,7 +26,8 @@
     "requiresScanningPermissions": "Requiere permisos de escaneo",
     "developerOnly": "Solo desarrolladores",
     "adminOnly": "Solo administradores",
-    "followOnInstagram": "Síguenos en Instagram"
+    "followOnInstagram": "Síguenos en Instagram",
+    "accountSettings": "Configuración de cuenta"
   },
   "buttons": {
     "save": "Guardar",
@@ -80,7 +81,9 @@
     "approve": "Aprobar",
     "deny": "Denegar",
     "create": "Crear",
-    "submitRequest": "Enviar Solicitud"
+    "submitRequest": "Enviar Solicitud",
+    "showArchived": "Archivados ({{count}})",
+    "hideArchived": "Ocultar Archivados"
   },
   "labels": {
     "email": "Correo Electrónico",
@@ -2158,7 +2161,18 @@
   "cart": {
     "empty": "Tu carrito está vacío",
     "whyNot": "¿Por qué no",
-    "checkOutMerch": "ves nuestra mercancía"
+    "checkOutMerch": "ves nuestra mercancía",
+    "each": "c/u",
+    "total": "Total",
+    "clear": "Vaciar",
+    "checkout": "Pagar"
+  },
+  "stock": {
+    "inStock": "En Stock",
+    "lowStock": "Poco Stock",
+    "outOfStock": "Agotado",
+    "unlimited": "Disponible",
+    "left": "restantes"
   },
   "eventInfo": {
     "title": "Información del Evento",

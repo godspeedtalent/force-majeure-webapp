@@ -31,7 +31,7 @@ import {
   clearAllFeatureFlagOverrides,
 } from '@/shared/utils/featureFlagOverrides';
 import { useQueryClient } from '@tanstack/react-query';
-import { RefreshCw, X, Settings2 } from 'lucide-react';
+import { RefreshCw, X, Settings2, Archive } from 'lucide-react';
 import { cn } from '@/shared';
 import { FmCollapsibleGroupHeader } from '@/components/common/data/FmCollapsibleGroupHeader';
 
@@ -41,6 +41,7 @@ interface FeatureFlagData {
   description: string | null;
   environment_id: string;
   group_name: string | null;
+  is_archived: boolean;
 }
 
 export const FeatureToggleSection = () => {
@@ -51,6 +52,7 @@ export const FeatureToggleSection = () => {
   const [sessionOverrides, setSessionOverrides] = useState<Record<string, boolean>>({});
   const [expandedFlags, setExpandedFlags] = useState<Set<string>>(new Set());
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
+  const [showArchived, setShowArchived] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [allEnvId, setAllEnvId] = useState<string | null>(null);
@@ -89,7 +91,7 @@ export const FeatureToggleSection = () => {
 
       const { data, error } = await (supabase as any)
         .from('feature_flags')
-        .select('flag_name, is_enabled, description, environment_id, group_name')
+        .select('flag_name, is_enabled, description, environment_id, group_name, is_archived')
         .in('environment_id', environmentIds)
         .order('group_name', { ascending: true, nullsFirst: false })
         .order('flag_name', { ascending: true });
@@ -119,7 +121,7 @@ export const FeatureToggleSection = () => {
 
   // Deduplicate and group flags by group_name from database
   // When same flag exists for multiple environments, prefer current env over 'all'
-  const { groupedFlags, groupOrder } = useMemo(() => {
+  const { groupedFlags, groupOrder, archivedCount } = useMemo(() => {
     // First, deduplicate flags - prefer current environment over 'all' environment
     const flagMap = new Map<string, FeatureFlagData>();
 
@@ -141,9 +143,17 @@ export const FeatureToggleSection = () => {
 
     const deduplicatedFlags = Array.from(flagMap.values());
 
+    // Count archived flags
+    const archived = deduplicatedFlags.filter(f => f.is_archived).length;
+
+    // Filter out archived flags unless showArchived is true
+    const filteredFlags = showArchived
+      ? deduplicatedFlags
+      : deduplicatedFlags.filter(f => !f.is_archived);
+
     const grouped: Record<string, FeatureFlagData[]> = {};
 
-    deduplicatedFlags.forEach(flag => {
+    filteredFlags.forEach(flag => {
       const groupName = flag.group_name || 'general';
       if (!grouped[groupName]) {
         grouped[groupName] = [];
@@ -158,15 +168,17 @@ export const FeatureToggleSection = () => {
       );
     });
 
-    // Get unique group names in order they appear, with 'general' last
+    // Get unique group names in order they appear, with 'archived' last, then 'general' second to last
     const order = Object.keys(grouped).sort((a, b) => {
+      if (a === 'archived') return 1;
+      if (b === 'archived') return -1;
       if (a === 'general') return 1;
       if (b === 'general') return -1;
       return a.localeCompare(b);
     });
 
-    return { groupedFlags: grouped, groupOrder: order };
-  }, [flags, allEnvId]);
+    return { groupedFlags: grouped, groupOrder: order, archivedCount: archived };
+  }, [flags, allEnvId, showArchived]);
 
   const handleSessionOverrideToggle = (flagName: string) => {
     const currentOverride = sessionOverrides[flagName];
@@ -288,6 +300,7 @@ export const FeatureToggleSection = () => {
               {currentEnvName}
             </span>
           </div>
+          <div className='flex items-center gap-2'>
           {hasAnyOverrides && (
             <div className='flex items-center gap-1.5'>
               <span className='text-[10px] text-white/50'>
@@ -304,6 +317,23 @@ export const FeatureToggleSection = () => {
               </Button>
             </div>
           )}
+          {archivedCount > 0 && (
+            <Button
+              variant='ghost'
+              size='sm'
+              onClick={() => setShowArchived(!showArchived)}
+              className={cn(
+                'h-5 px-1.5 text-[10px]',
+                showArchived
+                  ? 'text-fm-gold hover:text-fm-gold hover:bg-fm-gold/10'
+                  : 'text-white/50 hover:text-white hover:bg-white/10'
+              )}
+            >
+              <Archive className='h-2.5 w-2.5 mr-1' />
+              {showArchived ? t('buttons.hideArchived') : t('buttons.showArchived', { count: archivedCount })}
+            </Button>
+          )}
+        </div>
         </div>
       </div>
 

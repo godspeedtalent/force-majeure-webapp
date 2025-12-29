@@ -26,7 +26,8 @@
     "requiresScanningPermissions": "需要扫描权限",
     "developerOnly": "仅限开发者",
     "adminOnly": "仅限管理员",
-    "followOnInstagram": "在Instagram上关注我们"
+    "followOnInstagram": "在Instagram上关注我们",
+    "accountSettings": "账户设置"
   },
   "buttons": {
     "save": "保存",
@@ -80,7 +81,9 @@
     "approve": "批准",
     "deny": "拒绝",
     "create": "创建",
-    "submitRequest": "提交请求"
+    "submitRequest": "提交请求",
+    "showArchived": "已归档 ({{count}})",
+    "hideArchived": "隐藏已归档"
   },
   "labels": {
     "email": "邮箱",
@@ -2156,7 +2159,18 @@
   "cart": {
     "empty": "您的购物车是空的",
     "whyNot": "何不",
-    "checkOutMerch": "看看我们的周边商品"
+    "checkOutMerch": "看看我们的周边商品",
+    "each": "每件",
+    "total": "总计",
+    "clear": "清空",
+    "checkout": "结账"
+  },
+  "stock": {
+    "inStock": "有货",
+    "lowStock": "库存不多",
+    "outOfStock": "缺货",
+    "unlimited": "可购买",
+    "left": "剩余"
   },
   "eventInfo": {
     "title": "活动信息",

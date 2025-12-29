@@ -40,7 +40,7 @@ export function FmColumnVisibilityDropdown({
       <DropdownMenuTrigger asChild>
         <Button variant='outline' size='sm' className='gap-2'>
           <Settings2 className='h-4 w-4' />
-          {t('dataGrid.columns')}
+          {t('dataGrid.columnsLabel')}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-64'>

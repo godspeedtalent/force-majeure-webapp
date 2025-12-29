@@ -5,6 +5,7 @@ import {
   Mail,
   AlertCircle,
   Mic2,
+  Bell,
 } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -15,7 +16,7 @@ import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSid
 import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
 import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { PasswordChangeSection, DeleteAccountSection } from '@/pages/profile/sections';
+import { PasswordChangeSection, DeleteAccountSection, NotificationSettingsSection } from '@/pages/profile/sections';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
 import { FmCommonPageHeader } from '@/components/common/display/FmCommonPageHeader';
@@ -29,7 +30,7 @@ import { LanguageSelector } from '@/components/common/i18n/LanguageSelector';
 import { useLocaleSync } from '@/hooks/useLocaleSync';
 import type { SupportedLocale } from '@/i18n';
 
-type ProfileSection = 'profile' | 'artist';
+type ProfileSection = 'profile' | 'notifications' | 'artist';
 
 interface LocationState {
   activeTab?: ProfileSection;
@@ -193,6 +194,12 @@ const ProfileEdit = () => {
           description: t('profile.personalInfoDescription'),
         },
         {
+          id: 'notifications',
+          label: t('profile.notifications'),
+          icon: Bell,
+          description: t('profile.notificationsDescription'),
+        },
+        {
           id: 'artist',
           label: t('profile.artist'),
           icon: Mic2,
@@ -205,6 +212,7 @@ const ProfileEdit = () => {
   // Mobile bottom tabs configuration
   const mobileTabs: MobileBottomTab[] = [
     { id: 'profile', label: t('profile.title'), icon: User },
+    { id: 'notifications', label: t('profile.notifications'), icon: Bell },
     { id: 'artist', label: t('profile.artist'), icon: Mic2 },
   ];
 
@@ -533,6 +541,19 @@ const ProfileEdit = () => {
 
             {/* Delete Account Section */}
             <DeleteAccountSection disabled={!user.email_confirmed_at} />
+          </>
+        )}
+
+        {/* Notifications Section */}
+        {activeSection === 'notifications' && (
+          <>
+            <FmCommonPageHeader
+              title={t('profile.notifications')}
+              description={t('profile.notificationsPageDescription')}
+              showDivider={true}
+            />
+
+            <NotificationSettingsSection disabled={!user.email_confirmed_at} />
           </>
         )}
 

@@ -28,3 +28,6 @@ export * from './ticketTierQueries';
 
 // Artist queries
 export * from './artistQueries';
+
+// Product queries
+export * from './productQueries';

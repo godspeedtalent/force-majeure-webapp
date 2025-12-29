@@ -447,7 +447,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
               onClick={() => setIsColumnConfigOpen(true)}
             >
               <Settings2 className='h-4 w-4' />
-              {t('dataGrid.columns')}
+              {t('dataGrid.columnsLabel')}
             </Button>
 
             <FmColumnConfigModal

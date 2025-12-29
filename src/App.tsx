@@ -32,6 +32,7 @@ const DeveloperCreateVenuePage = lazy(() => import('./pages/developer/database/C
 const DeveloperCreateOrganizationPage = lazy(() => import('./pages/developer/database/CreateOrganization'));
 const DeveloperIndex = lazy(() => import('./pages/developer/DeveloperIndex'));
 const ArtistSignupDemo = lazy(() => import('./pages/developer/ArtistSignupDemo'));
+const DeveloperDashboards = lazy(() => import('./pages/developer/DeveloperDashboards'));
 
 // Lazy load admin pages
 const Statistics = lazy(() => import('./pages/admin/Statistics'));
@@ -40,6 +41,7 @@ const ActivityLogs = lazy(() => import('./pages/admin/ActivityLogs'));
 const OrganizationDetails = lazy(() => import('./pages/admin/OrganizationDetails'));
 const UserDetails = lazy(() => import('./pages/admin/UserDetails'));
 const GalleryManagement = lazy(() => import('./pages/admin/GalleryManagement'));
+const ProductsManagement = lazy(() => import('./pages/admin/ProductsManagement'));
 
 // Lazy load venue and artist pages
 const VenueDetails = lazy(() => import('./pages/venues/VenueDetails'));
@@ -201,6 +203,21 @@ const AppRoutes = () => {
           </DemoProtectedRoute>
         }
       />
+      <Route
+        path='/developer/dashboards'
+        element={
+          <DemoProtectedRoute>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <DeveloperDashboards />
+            </Suspense>
+          </DemoProtectedRoute>
+        }
+      />
+      {/* Redirect old route to new dashboards */}
+      <Route
+        path='/developer/recording-analytics'
+        element={<Navigate to='/developer/dashboards?tab=recording-ratings' replace />}
+      />
 
       {/* Demo Routes - Protected by developer/admin roles */}
       <Route
@@ -333,6 +350,16 @@ const AppRoutes = () => {
           <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
             <Suspense fallback={<LazyLoadFallback />}>
               <GalleryManagement />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/admin/products'
+        element={
+          <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <ProductsManagement />
             </Suspense>
           </ProtectedRoute>
         }
@@ -478,9 +505,13 @@ const AppRoutes = () => {
           <Route path='/checkout/success' element={<CheckoutSuccess />} />
           <Route path='/checkout/cancel' element={<CheckoutCancel />} />
 
-          {/* Organization Routes */}
-          <Route path='/organization/tools' element={<OrganizationTools />} />
-          <Route path='/organization/scanning' element={<TicketScanning />} />
+          {/* Organization Routes - gated by feature flag */}
+          {isFeatureEnabled(FEATURE_FLAGS.ORGANIZATION_TOOLS) && (
+            <>
+              <Route path='/organization/tools' element={<OrganizationTools />} />
+              <Route path='/organization/scanning' element={<TicketScanning />} />
+            </>
+          )}
 
           {/* Artist Routes - signup and register are above, outside coming soon mode */}
           <Route path='/artists' element={<Navigate to='/' replace />} />

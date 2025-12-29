@@ -1,16 +1,23 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, ExternalLink, Music2, User, Calendar, RefreshCw } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Music2, User, Calendar, RefreshCw, Star } from 'lucide-react';
 import { SiSoundcloud, SiSpotify } from 'react-icons/si';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmRecordingLink } from '@/components/common/links/FmRecordingLink';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, logger } from '@/shared';
 import { DetailPageWrapper } from '@/components/layout/DetailPageWrapper';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { ROLES } from '@/shared/auth/permissions';
 import { toast } from 'sonner';
 import { extractSpotifyTrackId, getSpotifyTrack } from '@/services/spotify/spotifyApiService';
 import { getSoundCloudTrackFromUrl } from '@/services/soundcloud/soundcloudApiService';
 import { useState } from 'react';
+import {
+  FmRecordingRatingInput,
+  FmRecordingRatingsBreakdown,
+} from '@/components/recordings';
+import { useRecordingRatingStats } from '@/shared/api/queries/recordingRatingQueries';
 
 const PLACEHOLDER_COVER = '/placeholder.svg';
 
@@ -18,9 +25,15 @@ export default function RecordingDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation('common');
-  const { isAdmin, hasRole } = useUserPermissions();
+  const { isAdmin, hasRole, hasAnyRole } = useUserPermissions();
   const queryClient = useQueryClient();
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Check if user can view/add ratings
+  const canViewRatings = hasAnyRole(ROLES.ADMIN, ROLES.DEVELOPER);
+
+  // Fetch rating stats for the header badge
+  const { data: ratingStats } = useRecordingRatingStats(id);
 
   const { data: recording, isLoading, error } = useQuery({
     queryKey: ['recording', id],
@@ -219,16 +232,31 @@ export default function RecordingDetails() {
                     </button>
                   )}
 
-                  {/* Type Badge */}
-                  <div className='flex items-center gap-2'>
-                    <Music2 className='h-4 w-4 text-fm-gold' />
-                    <span className={`px-3 py-1 text-sm font-medium uppercase ${
-                      recording.is_primary_dj_set 
-                        ? 'bg-fm-navy/20 text-fm-navy border border-fm-navy/30' 
-                        : 'bg-fm-gold/20 text-fm-gold border border-fm-gold/30'
-                    }`}>
-                      {recording.is_primary_dj_set ? 'DJ Set' : 'Track'}
-                    </span>
+                  {/* Type Badge and Rating Badge */}
+                  <div className='flex items-center gap-3 flex-wrap'>
+                    <div className='flex items-center gap-2'>
+                      <Music2 className='h-4 w-4 text-fm-gold' />
+                      <span className={`px-3 py-1 text-sm font-medium uppercase ${
+                        recording.is_primary_dj_set
+                          ? 'bg-fm-navy/20 text-fm-navy border border-fm-navy/30'
+                          : 'bg-fm-gold/20 text-fm-gold border border-fm-gold/30'
+                      }`}>
+                        {recording.is_primary_dj_set ? 'DJ Set' : 'Track'}
+                      </span>
+                    </div>
+
+                    {/* Rating Badge - Only visible to admins/developers */}
+                    {canViewRatings && ratingStats && (
+                      <div className='flex items-center gap-1.5 px-3 py-1 bg-fm-gold/20 border border-fm-gold/30'>
+                        <Star className='h-4 w-4 fill-fm-gold text-fm-gold' />
+                        <span className='text-sm font-medium text-fm-gold'>
+                          {ratingStats.average_score.toFixed(1)}
+                        </span>
+                        <span className='text-xs text-muted-foreground'>
+                          ({ratingStats.rating_count})
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Duration if available */}
@@ -255,10 +283,9 @@ export default function RecordingDetails() {
                 <>
                   <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent mt-6' />
                   <div className='mt-4'>
-                    <a
-                      href={recording.url}
-                      target='_blank'
-                      rel='noopener noreferrer'
+                    <FmRecordingLink
+                      recordingId={recording.id}
+                      url={recording.url}
                       className={`inline-flex items-center gap-2 px-6 py-3 font-medium transition-all duration-300 ${
                         recording.platform === 'spotify'
                           ? 'bg-[#1DB954] hover:bg-[#1ed760] text-black'
@@ -268,11 +295,23 @@ export default function RecordingDetails() {
                       <PlatformIcon className='h-5 w-5' />
                       Listen on {recording.platform === 'spotify' ? 'Spotify' : 'SoundCloud'}
                       <ExternalLink className='h-4 w-4' />
-                    </a>
+                    </FmRecordingLink>
                   </div>
                 </>
               )}
             </div>
+
+            {/* Rating Section - Admin/Developer Only */}
+            {canViewRatings && (
+              <div className='mt-8 space-y-6'>
+                <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent' />
+                <h2 className='text-lg font-medium uppercase tracking-wide text-muted-foreground'>
+                  {t('recordingRatings.internalRatings', 'Internal Ratings')}
+                </h2>
+                <FmRecordingRatingInput recordingId={recording.id} />
+                <FmRecordingRatingsBreakdown recordingId={recording.id} />
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -7,6 +7,7 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { FmCommonBadgeGroup } from '@/components/common/display/FmCommonBadgeGroup';
 import { FmSocialLinks } from '@/components/common/display/FmSocialLinks';
+import { FmRecordingLink } from '@/components/common/links/FmRecordingLink';
 import { useArtistById, useArtistEvents } from '@/shared/api/queries/artistQueries';
 import { DetailPageWrapper } from '@/components/layout/DetailPageWrapper';
 import { useAuth } from '@/features/auth/services/AuthContext';
@@ -296,11 +297,10 @@ function RecordingsGrid({ recordings }: { recordings: any[] }) {
       {/* Recordings Grid */}
       <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center'>
         {sortedRecordings.map((recording) => (
-          <a
+          <FmRecordingLink
             key={recording.id}
-            href={recording.url}
-            target='_blank'
-            rel='noopener noreferrer'
+            recordingId={recording.id}
+            url={recording.url}
             className={cn(
               'group relative flex flex-col p-3 rounded-none border bg-black/40 backdrop-blur-sm transition-all duration-300 w-full max-w-[180px]',
               'hover:bg-white/10 hover:border-fm-gold/50',
@@ -351,7 +351,7 @@ function RecordingsGrid({ recordings }: { recordings: any[] }) {
                 )}
               </div>
             </div>
-          </a>
+          </FmRecordingLink>
         ))}
       </div>
     </div>

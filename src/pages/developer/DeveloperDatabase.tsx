@@ -23,6 +23,8 @@ import {
   Eye,
   FileQuestion,
   ExternalLink,
+  Star,
+  BarChart3,
 } from 'lucide-react';
 import { supabase } from '@/shared';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -51,6 +53,7 @@ type DatabaseTab =
   | 'galleries'
   | 'organizations'
   | 'recordings'
+  | 'dashboards'
   | 'registrations'
   | 'user_requests'
   | 'users'
@@ -76,7 +79,7 @@ export default function DeveloperDatabase() {
 
   // Get active tab from URL query string, fallback to 'overview'
   const tabFromUrl = searchParams.get('table') as DatabaseTab | null;
-  const validTabs: DatabaseTab[] = ['overview', 'artists', 'events', 'galleries', 'organizations', 'recordings', 'registrations', 'user_requests', 'users', 'venues'];
+  const validTabs: DatabaseTab[] = ['overview', 'artists', 'events', 'galleries', 'organizations', 'recordings', 'dashboards', 'registrations', 'user_requests', 'users', 'venues'];
   const activeTab: DatabaseTab = tabFromUrl && validTabs.includes(tabFromUrl) ? tabFromUrl : 'overview';
 
   // Fetch pending registrations count for badge (needs to be before navigationGroups useMemo)
@@ -356,6 +359,18 @@ export default function DeveloperDatabase() {
           },
         ],
       },
+      {
+        label: 'Analytics',
+        icon: BarChart3,
+        items: [
+          {
+            id: 'dashboards' as const,
+            label: 'Dashboards',
+            icon: BarChart3,
+            description: 'Analytics dashboards',
+          },
+        ],
+      },
     ];
 
     // Add Messages group only if there are items (admin only)
@@ -408,6 +423,11 @@ export default function DeveloperDatabase() {
 
   // Handler to change tabs and update URL
   const handleTabChange = (tab: DatabaseTab) => {
+    // Navigate to separate page for dashboards
+    if (tab === 'dashboards') {
+      navigate('/developer/dashboards');
+      return;
+    }
     navigate(`?table=${tab}`);
   };
 
@@ -891,6 +911,11 @@ export default function DeveloperDatabase() {
       label: 'View Recording Details',
       icon: <Eye className='h-4 w-4' />,
       onClick: (recording: any) => navigate(`/recordings/${recording.id}`),
+    },
+    {
+      label: 'Rate Recording',
+      icon: <Star className='h-4 w-4' />,
+      onClick: (recording: any) => navigate(`/recordings/${recording.id}#ratings`),
     },
     {
       label: 'Go to Spotify',

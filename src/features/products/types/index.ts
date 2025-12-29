@@ -11,6 +11,24 @@ export type ProductType =
   | 'service_fee'
   | 'other';
 
+/**
+ * Merch-specific category type
+ */
+export type MerchCategory =
+  | 'apparel'
+  | 'prints'
+  | 'stickers'
+  | 'accessories'
+  | 'vinyl'
+  | 'digital'
+  | 'collectibles'
+  | 'other';
+
+/**
+ * Stock status for inventory display
+ */
+export type StockStatus = 'in_stock' | 'low_stock' | 'out_of_stock' | 'unlimited';
+
 export interface Product {
   id: string;
   name: string;
@@ -18,9 +36,26 @@ export interface Product {
   type: ProductType;
   price_cents: number;
   is_active: boolean;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: string;
   updated_at: string;
+}
+
+/**
+ * Extended Product interface for merch store items
+ * Includes inventory tracking and merch-specific fields
+ */
+export interface MerchProduct extends Product {
+  // Inventory tracking
+  stock_quantity: number | null;
+  track_inventory: boolean;
+  low_stock_threshold: number;
+  allow_backorder: boolean;
+  // Merch-specific fields
+  image_url: string | null;
+  category: MerchCategory | null;
+  sku: string | null;
+  sort_order: number;
 }
 
 export interface ProductInsert {
@@ -30,7 +65,18 @@ export interface ProductInsert {
   type: ProductType;
   price_cents: number;
   is_active?: boolean;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
+}
+
+export interface MerchProductInsert extends ProductInsert {
+  stock_quantity?: number | null;
+  track_inventory?: boolean;
+  low_stock_threshold?: number;
+  allow_backorder?: boolean;
+  image_url?: string | null;
+  category?: MerchCategory | null;
+  sku?: string | null;
+  sort_order?: number;
 }
 
 export interface ProductUpdate {
@@ -39,8 +85,60 @@ export interface ProductUpdate {
   type?: ProductType;
   price_cents?: number;
   is_active?: boolean;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
+
+export interface MerchProductUpdate extends ProductUpdate {
+  stock_quantity?: number | null;
+  track_inventory?: boolean;
+  low_stock_threshold?: number;
+  allow_backorder?: boolean;
+  image_url?: string | null;
+  category?: MerchCategory | null;
+  sku?: string | null;
+  sort_order?: number;
+}
+
+/**
+ * Get stock status for a merch product
+ */
+export function getStockStatus(product: MerchProduct): StockStatus {
+  if (!product.track_inventory) return 'unlimited';
+  if (product.stock_quantity === null || product.stock_quantity <= 0) return 'out_of_stock';
+  if (product.stock_quantity <= product.low_stock_threshold) return 'low_stock';
+  return 'in_stock';
+}
+
+/**
+ * Check if a product can be purchased
+ */
+export function canPurchase(product: MerchProduct): boolean {
+  if (!product.is_active) return false;
+  if (!product.track_inventory) return true;
+  if (product.allow_backorder) return true;
+  return (product.stock_quantity ?? 0) > 0;
+}
+
+/**
+ * Format price from cents to display string
+ */
+export function formatPrice(priceCents: number): string {
+  return `$${(priceCents / 100).toFixed(2)}`;
+}
+
+/**
+ * Category display labels
+ */
+export const MERCH_CATEGORY_LABELS: Record<MerchCategory, string> = {
+  apparel: 'Apparel',
+  prints: 'Prints',
+  stickers: 'Stickers',
+  accessories: 'Accessories',
+  vinyl: 'Vinyl',
+  digital: 'Digital',
+  collectibles: 'Collectibles',
+  other: 'Other',
+};
 
 /**
  * Predefined Product IDs

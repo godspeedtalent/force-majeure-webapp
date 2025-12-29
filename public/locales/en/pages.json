@@ -244,7 +244,15 @@
     "artist": "Artist",
     "manageArtistProfile": "Manage your artist profile",
     "loadUpcomingShowsFailed": "Failed to Load Upcoming Shows",
-    "couldNotRetrieveEvents": "Could not retrieve your upcoming events"
+    "couldNotRetrieveEvents": "Could not retrieve your upcoming events",
+    "notifications": "Notifications",
+    "notificationsDescription": "Manage your email notification preferences",
+    "notificationsPageDescription": "Control which updates and alerts you receive via email",
+    "emailNotifications": "Email updates",
+    "emailNotificationsDescription": "Receive news about events, artists, and special offers",
+    "notificationsEnabled": "Email notifications enabled.",
+    "notificationsDisabled": "Email notifications disabled.",
+    "notificationUpdateFailed": "Failed to update notification settings. Please try again."
   },
   "ticketing": {
     "yourTurn": "Your turn!",
@@ -471,6 +479,44 @@
     "launchDemo": "Launch Demo",
     "previewNote": "Preview of the data that will be populated in the registration form",
     "noDataGenerated": "No data generated yet. Select a mode and click Generate Data."
+  },
+  "recordingRatings": {
+    "title": "Recording Ratings",
+    "internalRatings": "Internal Ratings",
+    "yourRating": "Your rating",
+    "editRating": "Edit your rating",
+    "addRating": "Rate this recording",
+    "selectScore": "Please select a score",
+    "ratingSaved": "Rating saved",
+    "ratingUpdated": "Rating updated",
+    "saveFailed": "Failed to save rating",
+    "notes": "Notes",
+    "notesPlaceholder": "Add notes about mixing quality, track selection, energy...",
+    "lastUpdated": "Last updated",
+    "poor": "Poor",
+    "excellent": "Excellent",
+    "noRatings": "No ratings yet",
+    "beFirstToRate": "Be the first to rate this recording",
+    "avgScore": "Avg Score",
+    "totalRatings": "Ratings",
+    "min": "Min",
+    "max": "Max",
+    "distribution": "Score Distribution",
+    "allRatings": "All Ratings"
+  },
+  "recordingAnalytics": {
+    "title": "Recording Ratings",
+    "description": "Analyze ratings to find artists for your events"
+  },
+  "developerDashboards": {
+    "analytics": "Analytics",
+    "monitoring": "Monitoring",
+    "recordingRatings": "Recording Ratings",
+    "recordingRatingsDesc": "Rate and analyze artist recordings",
+    "activityLog": "Activity Log",
+    "activityLogDesc": "View recent system activity",
+    "userMetrics": "User Metrics",
+    "userMetricsDesc": "User engagement analytics"
   },
   "errors": {
     "404": {

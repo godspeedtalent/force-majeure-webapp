@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { LogOut, User as UserIcon, Building2, Scan, Database, Shield, Mail, Home } from 'lucide-react';
+import { LogOut, User as UserIcon, Building2, Scan, Database, Shield, Mail, Home, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -11,7 +11,7 @@ import {
 import { FmUserAvatar } from '@/components/common/display/FmUserAvatar';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
-import { PERMISSIONS, ROLES } from '@/shared';
+import { PERMISSIONS, ROLES, FEATURE_FLAGS, useFeatureFlagHelpers } from '@/shared';
 import { AdminLockIndicator } from '@/components/common/indicators';
 import { useIsMobile } from '@/shared';
 import { cn } from '@/shared';
@@ -36,6 +36,7 @@ interface MobileMenuSection {
 export function UserMenuDropdown() {
   const { user, profile, signOut } = useAuth();
   const { hasPermission, hasRole, isAdmin } = useUserPermissions();
+  const { isFeatureEnabled } = useFeatureFlagHelpers();
   const navigate = useNavigate();
   const { t } = useTranslation('common');
   const isMobile = useIsMobile();
@@ -52,10 +53,12 @@ export function UserMenuDropdown() {
     navigate(path);
   };
 
-  // Org tools access: manage_organization permission
-  const hasOrgToolsAccess = hasPermission(PERMISSIONS.MANAGE_ORGANIZATION);
-  // Scanning access: scan_tickets permission
-  const hasScanningAccess = hasPermission(PERMISSIONS.SCAN_TICKETS);
+  // Organization tools feature flag
+  const orgToolsEnabled = isFeatureEnabled(FEATURE_FLAGS.ORGANIZATION_TOOLS);
+  // Org tools access: manage_organization permission AND feature flag
+  const hasOrgToolsAccess = orgToolsEnabled && hasPermission(PERMISSIONS.MANAGE_ORGANIZATION);
+  // Scanning access: scan_tickets permission AND feature flag
+  const hasScanningAccess = orgToolsEnabled && hasPermission(PERMISSIONS.SCAN_TICKETS);
   // Any org access
   const hasAnyOrgAccess = hasOrgToolsAccess || hasScanningAccess;
   // Developer access
@@ -72,6 +75,11 @@ export function UserMenuDropdown() {
           label: t('nav.profile'),
           icon: UserIcon,
           onClick: () => navigate('/profile'),
+        },
+        {
+          label: t('nav.accountSettings'),
+          icon: Settings,
+          onClick: () => navigate('/profile/edit'),
         },
       ],
     },
@@ -171,6 +179,11 @@ export function UserMenuDropdown() {
           label: t('nav.profile'),
           icon: UserIcon,
           onClick: () => handleNavigate('/profile'),
+        },
+        {
+          label: t('nav.accountSettings'),
+          icon: Settings,
+          onClick: () => handleNavigate('/profile/edit'),
         },
       ],
     },
