@@ -44,8 +44,7 @@ async function decryptPayload(
 
     const payload = decoder.decode(decrypted);
     return JSON.parse(payload);
-  } catch (error) {
-    console.error('Decryption error:', error);
+  } catch {
     return null;
   }
 }
@@ -153,7 +152,7 @@ serve(async req => {
     const age = now - timestamp;
 
     if (age > CODE_EXPIRY_MS) {
-      console.log('Code expired:', { age, limit: CODE_EXPIRY_MS });
+      // Code expired - no logging needed for normal flow
       return new Response(
         JSON.stringify({
           error: 'This QR code has expired. Please scan it again.',
@@ -194,7 +193,6 @@ serve(async req => {
     );
 
     if (locationError || !locationData || locationData.length === 0) {
-      console.error('Error fetching location:', locationError);
       return new Response(
         JSON.stringify({ error: 'Location not found or inactive' }),
         {
@@ -286,7 +284,6 @@ serve(async req => {
       });
 
     if (createClaimError) {
-      console.error('Error creating claim:', createClaimError);
       return new Response(
         JSON.stringify({ error: 'Failed to create claim record' }),
         {
@@ -334,18 +331,15 @@ serve(async req => {
           }
         );
 
+        // Email send errors are non-critical - claim still succeeds
         if (!emailResponse.ok) {
-          console.error('Failed to send email:', await emailResponse.text());
-        } else {
-          console.log('Email sent successfully to:', user_email);
+          // Silently handle email failure
         }
-      } catch (emailError) {
-        console.error('Error sending email:', emailError);
+      } catch {
         // Don't fail the claim if email fails
       }
-    } else {
-      console.warn('MAILCHIMP_TRANSACTIONAL_API_KEY not set, skipping email');
     }
+    // Skip email if API key not set (silent)
 
     return new Response(
       JSON.stringify({
@@ -361,8 +355,7 @@ serve(async req => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );
-  } catch (error: any) {
-    console.error('Error in claim-scavenger-reward:', error);
+  } catch (error: unknown) {
     return new Response(
       JSON.stringify({ 
         error: 'An error occurred while claiming the reward. Please try again.',

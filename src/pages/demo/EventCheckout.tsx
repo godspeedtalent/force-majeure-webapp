@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ShoppingCart, Calendar, MapPin, Clock } from 'lucide-react';
 import {
   TicketingPanel,
@@ -47,7 +47,6 @@ const UndercardDisplay = ({ undercardIds }: { undercardIds: string[] }) => {
 export default function EventCheckout() {
   const [selectedEventId, setSelectedEventId] = useState<string | undefined>();
   const [eventDetails, setEventDetails] = useState<any>(null);
-  const [refreshKey, setRefreshKey] = useState(0);
   const [checkoutStep, setCheckoutStep] = useState<'selection' | 'checkout'>(
     'selection'
   );
@@ -55,22 +54,23 @@ export default function EventCheckout() {
     { tierId: string; quantity: number }[]
   >([]);
   const [venueModalOpen, setVenueModalOpen] = useState(false);
-  const { data: ticketTiers, isLoading: tiersLoading } =
+  const { data: ticketTiers, isLoading: tiersLoading, refetch: refetchTiers } =
     useTicketTiers(selectedEventId);
   const { startCheckout } = useCheckoutTimer();
   const queryClient = useQueryClient();
   const { getTotalFees } = useTicketFees();
 
-  const handleEventUpdated = () => {
-    // Trigger a refresh of the event details
-    setRefreshKey(prev => prev + 1);
-    // Also invalidate the ticket tiers query to refetch them
+  // Memoized callback to invalidate queries - removes refreshKey anti-pattern
+  const handleEventUpdated = useCallback(() => {
     if (selectedEventId) {
+      // Invalidate both event details and ticket tiers
       queryClient.invalidateQueries({
         queryKey: ['ticket-tiers', selectedEventId],
       });
+      // Refetch event details via the existing query
+      refetchTiers();
     }
-  };
+  }, [selectedEventId, queryClient, refetchTiers]);
 
   // Create demo tool instance
   const eventSelectionTool = FmEventSelectionDemoTool({
@@ -111,7 +111,7 @@ export default function EventCheckout() {
       // Start the checkout timer when an event is selected
       startCheckout(window.location.pathname);
     }
-  }, [selectedEventId, startCheckout, refreshKey]);
+  }, [selectedEventId, startCheckout]);
 
   const handleContinueToCheckout = (
     selections: { tierId: string; quantity: number }[]

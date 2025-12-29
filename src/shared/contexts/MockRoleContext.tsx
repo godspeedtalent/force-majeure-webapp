@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
+import { createContext, useContext, useCallback, useMemo, ReactNode } from 'react';
 import { rolesStore } from '@/shared/stores/rolesStore';
+import { useLocalStorage } from '@/shared/hooks/useLocalStorage';
 
 /**
  * Special mock role modes:
@@ -51,31 +52,7 @@ interface MockRoleProviderProps {
 }
 
 export const MockRoleProvider = ({ children }: MockRoleProviderProps) => {
-  // Initialize from localStorage if available
-  const [mockRole, setMockRoleState] = useState<MockRoleMode>(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored === 'disabled') {
-        return 'disabled';
-      }
-      // Validate it's a non-empty string (role name)
-      if (stored && typeof stored === 'string' && stored.length > 0) {
-        return stored;
-      }
-    } catch {
-      // localStorage not available
-    }
-    return 'disabled';
-  });
-
-  const setMockRole = useCallback((role: MockRoleMode) => {
-    setMockRoleState(role);
-    try {
-      localStorage.setItem(STORAGE_KEY, role);
-    } catch {
-      // localStorage not available
-    }
-  }, []);
+  const [mockRole, setMockRole] = useLocalStorage<MockRoleMode>(STORAGE_KEY, 'disabled');
 
   const clearMockRole = useCallback(() => {
     setMockRole('disabled');
