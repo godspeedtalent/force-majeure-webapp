@@ -428,7 +428,18 @@ export default function DeveloperDatabase() {
       const { data, error } = await supabase
         .from('artists')
         .select(`
-          id, name, genre, image_url, bio, created_at, updated_at,
+          id,
+          name,
+          genre,
+          image_url,
+          bio,
+          website,
+          instagram_handle,
+          tiktok_handle,
+          soundcloud_id,
+          spotify_id,
+          created_at,
+          updated_at,
           artist_genres(genre_id, is_primary)
         `)
         .order('created_at', { ascending: false });
