@@ -336,9 +336,13 @@ function RecordingsGrid({ recordings }: { recordings: any[] }) {
               <h3 className='font-canela text-sm text-white truncate group-hover:text-fm-gold transition-colors'>
                 {recording.name}
               </h3>
-              <div className='flex items-center gap-2 mt-1'>
+              <div className='flex items-center gap-2 mt-1 flex-wrap'>
                 {getPlatformIcon(recording.platform)}
                 <span className='text-xs text-white/50 capitalize'>{recording.platform}</span>
+                <span className='text-white/30'>•</span>
+                <span className='text-xs text-white/50'>
+                  {recording.is_primary_dj_set ? 'DJ Set' : 'Track'}
+                </span>
                 {recording.duration && (
                   <>
                     <span className='text-white/30'>•</span>
