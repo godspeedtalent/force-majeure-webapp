@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Music2, Link2, Clock, AlertCircle, CheckCircle2, XCircle, Loader2, FileText, UserPlus } from 'lucide-react';
+import { Music2, Link2, Clock, AlertCircle, CheckCircle2, XCircle, Loader2, FileText, UserPlus, ExternalLink, Settings, Unlink, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
@@ -22,6 +22,16 @@ import {
   DialogFooter,
 } from '@/components/common/shadcn/dialog';
 import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/common/shadcn/alert-dialog';
 
 interface LinkedArtist {
   id: string;
@@ -121,7 +131,12 @@ function convertRegistrationToFormData(
   };
 }
 
-export function UserArtistTab() {
+interface UserArtistTabProps {
+  /** When true, shows action buttons for managing the artist */
+  isEditable?: boolean;
+}
+
+export function UserArtistTab({ isEditable = false }: UserArtistTabProps) {
   const { t } = useTranslation('common');
   const { t: tToast } = useTranslation('toasts');
   const navigate = useNavigate();
@@ -130,6 +145,8 @@ export function UserArtistTab() {
 
   // Modal states
   const [showLinkModal, setShowLinkModal] = useState(false);
+  const [showUnlinkConfirm, setShowUnlinkConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [selectedArtistToLink, setSelectedArtistToLink] = useState<{ id: string; name: string } | null>(null);
 
   // Fetch linked artist
@@ -259,6 +276,60 @@ export function UserArtistTab() {
     onError: (error) => {
       logger.error('Failed to create link request', { error });
       toast.error(tToast('userArtist.linkRequestFailed'));
+    },
+  });
+
+  // Create unlink artist mutation (only used when isEditable)
+  const unlinkArtistMutation = useMutation({
+    mutationFn: async () => {
+      if (!user?.id || !linkedArtist?.id) throw new Error('No linked artist');
+
+      // Direct unlink - no admin approval needed
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase as any)
+        .from('artists')
+        .update({ user_id: null })
+        .eq('id', linkedArtist.id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success(tToast('userArtist.unlinkSuccess'));
+      queryClient.invalidateQueries({ queryKey: ['user-linked-artist', user?.id] });
+      setShowUnlinkConfirm(false);
+    },
+    onError: (error) => {
+      logger.error('Failed to unlink artist', { error });
+      toast.error(tToast('userArtist.unlinkFailed'));
+    },
+  });
+
+  // Create delete data request mutation (only used when isEditable)
+  const deleteDataMutation = useMutation({
+    mutationFn: async () => {
+      if (!user?.id) throw new Error('Not authenticated');
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase as any)
+        .from('user_requests')
+        .insert({
+          user_id: user.id,
+          request_type: 'delete_data',
+          status: 'pending',
+          parameters: { artist_id: linkedArtist?.id || null },
+        });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success(tToast('userArtist.deleteRequestSubmitted'));
+      queryClient.invalidateQueries({ queryKey: ['user-requests', user?.id] });
+      setShowDeleteConfirm(false);
+    },
+    onError: (error) => {
+      logger.error('Failed to create delete request', { error });
+      toast.error(tToast('userArtist.deleteRequestFailed'));
     },
   });
 
@@ -419,7 +490,7 @@ export function UserArtistTab() {
     // The user should see their linked artist once the artist record is created
   }
 
-  // Show linked artist - spotlight display (read-only)
+  // Show linked artist - spotlight display (read-only unless isEditable)
   if (linkedArtist) {
     return (
       <div className='space-y-6'>
@@ -470,6 +541,97 @@ export function UserArtistTab() {
             </div>
           </div>
         </div>
+
+        {/* Action Buttons - Only shown when isEditable */}
+        {isEditable && (
+          <>
+            <div className='flex flex-wrap gap-3'>
+              <FmCommonButton
+                variant='default'
+                size='sm'
+                icon={ExternalLink}
+                onClick={() => navigate(`/artists/${linkedArtist.id}`)}
+              >
+                {t('userArtist.viewArtistPage')}
+              </FmCommonButton>
+
+              <FmCommonButton
+                variant='secondary'
+                size='sm'
+                icon={Settings}
+                onClick={() => navigate(`/artists/manage/${linkedArtist.id}`)}
+              >
+                {t('userArtist.manageArtist')}
+              </FmCommonButton>
+
+              <FmCommonButton
+                variant='secondary'
+                size='sm'
+                icon={Unlink}
+                onClick={() => setShowUnlinkConfirm(true)}
+              >
+                {t('userArtist.unlinkAccount')}
+              </FmCommonButton>
+
+              <FmCommonButton
+                variant='destructive'
+                size='sm'
+                icon={Trash2}
+                onClick={() => setShowDeleteConfirm(true)}
+              >
+                {t('userArtist.requestDataDeletion')}
+              </FmCommonButton>
+            </div>
+
+            {/* Unlink Confirmation Dialog */}
+            <AlertDialog open={showUnlinkConfirm} onOpenChange={setShowUnlinkConfirm}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t('userArtist.unlinkConfirmTitle')}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {t('userArtist.unlinkConfirmDescription', { name: linkedArtist.name })}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t('buttons.cancel')}</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => unlinkArtistMutation.mutate()}
+                    disabled={unlinkArtistMutation.isPending}
+                  >
+                    {unlinkArtistMutation.isPending ? t('userArtist.unlinking') : t('userArtist.unlink')}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
+            {/* Delete Data Confirmation Dialog */}
+            <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle className='text-fm-danger'>{t('userArtist.deleteConfirmTitle')}</AlertDialogTitle>
+                  <AlertDialogDescription className='space-y-2'>
+                    <p>
+                      {t('userArtist.deleteConfirmDescription')}
+                    </p>
+                    <p className='text-muted-foreground'>
+                      {t('userArtist.deleteConfirmNote')}
+                    </p>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t('buttons.cancel')}</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => deleteDataMutation.mutate()}
+                    disabled={deleteDataMutation.isPending}
+                    className='bg-fm-danger hover:bg-fm-danger/90'
+                  >
+                    {deleteDataMutation.isPending ? t('status.submitting') : t('userArtist.requestDeletion')}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </>
+        )}
       </div>
     );
   }
