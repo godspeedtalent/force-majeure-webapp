@@ -1791,6 +1791,7 @@
     "upcomingShows": "Upcoming Shows",
     "artist": "Artist",
     "account": "Account",
+    "accountSettingsDescription": "Manage your account settings, notifications, and preferences",
     "browseEvents": "Browse Events",
     "ticketCount": "{{count}} ticket",
     "ticketCount_other": "{{count}} tickets",
@@ -1801,7 +1802,11 @@
     "memberTitle": "Member",
     "loadingShows": "Loading shows...",
     "noUpcomingShows": "No upcoming shows",
-    "linkedArtist": "Linked Artist"
+    "linkedArtist": "Linked Artist",
+    "preferences": "Preferences",
+    "languageDescription": "Choose your preferred language for the application",
+    "verifyEmailTitle": "Verify Your Email",
+    "verifyEmailDescription": "You need to verify your email address to access all features. We sent a verification link to"
   },
   "emailPreview": {
     "title": "Email Template Preview",
