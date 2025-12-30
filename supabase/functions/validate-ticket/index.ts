@@ -209,9 +209,12 @@ Deno.serve(async req => {
       .eq('id', ticketId)
       .single();
 
-    // Type the nested relations as single objects (not arrays)
-    const ticketTier = ticket?.ticket_tiers as { name: string } | null;
-    const ticketEvent = ticket?.events as { id: string; title: string; start_time: string; venue_id: string; venues: { name: string } | null } | null;
+    // Type the nested relations - Supabase returns arrays for joins
+    const ticketTiersArray = ticket?.ticket_tiers as { name: string }[] | undefined;
+    const ticketTier = ticketTiersArray?.[0] ?? null;
+    const ticketEventsArray = ticket?.events as { id: string; title: string; start_time: string; venue_id: string; venues: { name: string }[] }[] | undefined;
+    const ticketEvent = ticketEventsArray?.[0] ?? null;
+    const ticketVenue = ticketEvent?.venues?.[0] ?? null;
 
     if (ticketError || !ticket) {
       // Log failed scan attempt
@@ -286,7 +289,7 @@ Deno.serve(async req => {
             attendee_email: ticket.attendee_email,
             event_name: ticketEvent?.title || 'Unknown Event',
             event_start_time: ticketEvent?.start_time || '',
-            venue_name: ticketEvent?.venues?.name || 'Unknown Venue',
+            venue_name: ticketVenue?.name || 'Unknown Venue',
             checked_in_at: ticket.checked_in_at || '',
           },
         } as ValidateTicketResponse),
@@ -378,9 +381,9 @@ Deno.serve(async req => {
         eventId: eventId || '',
         eventName: ticketEvent?.title || 'Unknown Event',
         scannerId: user.id,
-        scannerEmail: user.email || undefined,
-        ticketTierName: ticketTier?.name || 'Unknown',
+        tierName: ticketTier?.name || 'Unknown',
         attendeeName: ticket.attendee_name || undefined,
+        scanResult: 'success',
       });
 
       await logActivity(supabase, {

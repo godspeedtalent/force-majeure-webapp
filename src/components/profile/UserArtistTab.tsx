@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Music2, ExternalLink, Settings, Link2, Unlink, Trash2, Clock, AlertCircle, CheckCircle2, XCircle, Loader2, FileText, UserPlus } from 'lucide-react';
+import { Music2, Link2, Clock, AlertCircle, CheckCircle2, XCircle, Loader2, FileText, UserPlus, ExternalLink, Settings, Unlink, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
@@ -21,6 +21,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/common/shadcn/dialog';
+import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,7 +32,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/common/shadcn/alert-dialog';
-import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
 
 interface LinkedArtist {
   id: string;
@@ -131,7 +131,12 @@ function convertRegistrationToFormData(
   };
 }
 
-export function UserArtistTab() {
+interface UserArtistTabProps {
+  /** When true, shows action buttons for managing the artist */
+  isEditable?: boolean;
+}
+
+export function UserArtistTab({ isEditable = false }: UserArtistTabProps) {
   const { t } = useTranslation('common');
   const { t: tToast } = useTranslation('toasts');
   const navigate = useNavigate();
@@ -274,7 +279,7 @@ export function UserArtistTab() {
     },
   });
 
-  // Create unlink artist request mutation
+  // Create unlink artist mutation (only used when isEditable)
   const unlinkArtistMutation = useMutation({
     mutationFn: async () => {
       if (!user?.id || !linkedArtist?.id) throw new Error('No linked artist');
@@ -300,7 +305,7 @@ export function UserArtistTab() {
     },
   });
 
-  // Create delete data request mutation
+  // Create delete data request mutation (only used when isEditable)
   const deleteDataMutation = useMutation({
     mutationFn: async () => {
       if (!user?.id) throw new Error('Not authenticated');
@@ -485,129 +490,148 @@ export function UserArtistTab() {
     // The user should see their linked artist once the artist record is created
   }
 
-  // Show linked artist
+  // Show linked artist - spotlight display (read-only unless isEditable)
   if (linkedArtist) {
     return (
       <div className='space-y-6'>
-        {/* Artist Card */}
-        <FmCommonCard className='border-border/30 backdrop-blur-sm overflow-hidden'>
-          <FmCommonCardContent className='p-0'>
-            <div className='flex gap-6'>
-              {/* Artist Image */}
-              <div className='w-32 h-32 flex-shrink-0'>
+        {/* Artist Spotlight Card */}
+        <div className='bg-black/60 backdrop-blur-md border border-white/20 rounded-none p-[30px]'>
+          <div className='flex flex-col gap-6 md:flex-row md:items-stretch'>
+            {/* Left: Image Column */}
+            <div className='w-full md:w-48 flex-shrink-0'>
+              <div className='overflow-hidden rounded-none border border-white/15 bg-white/5 shadow-inner'>
                 {linkedArtist.image_url ? (
                   <img
                     src={linkedArtist.image_url}
                     alt={linkedArtist.name}
-                    className='w-full h-full object-cover'
+                    className='aspect-[3/4] w-full object-cover'
                   />
                 ) : (
-                  <div className='w-full h-full bg-gradient-gold flex items-center justify-center'>
+                  <div className='aspect-[3/4] w-full bg-gradient-gold flex items-center justify-center'>
                     <Music2 className='h-12 w-12 text-black' />
                   </div>
                 )}
               </div>
+            </div>
 
-              {/* Artist Info */}
-              <div className='flex-1 py-4 pr-4'>
-                <h3 className='font-canela text-xl font-medium mb-1'>{linkedArtist.name}</h3>
-                {linkedArtist.genre && (
-                  <p className='text-sm text-muted-foreground mb-2'>{linkedArtist.genre}</p>
-                )}
-                {linkedArtist.bio && (
-                  <p className='text-sm text-muted-foreground line-clamp-2 whitespace-pre-wrap'>{linkedArtist.bio}</p>
-                )}
+            {/* Right: Content Column */}
+            <div className='flex-1 flex flex-col gap-4'>
+              <div className='space-y-2'>
+                <p className='text-[10px] uppercase tracking-[0.35em] text-white/50 font-canela'>
+                  {t('artistPreview.spotlight')}
+                </p>
+                <h2 className='text-2xl md:text-3xl font-canela font-semibold text-white leading-tight'>
+                  {linkedArtist.name}
+                </h2>
+                <div className='w-full h-[1px] bg-white/30' />
+              </div>
+
+              {/* Genre */}
+              {linkedArtist.genre && (
+                <div className='flex items-center gap-2'>
+                  <Music2 className='h-4 w-4 text-fm-gold' />
+                  <span className='text-sm text-fm-gold'>{linkedArtist.genre}</span>
+                </div>
+              )}
+
+              {/* Bio */}
+              <div className='prose prose-invert max-w-none text-sm text-white/80 leading-relaxed font-canela flex-1'>
+                {linkedArtist.bio || t('artistProfile.noBioAvailable')}
               </div>
             </div>
-          </FmCommonCardContent>
-        </FmCommonCard>
-
-        {/* Action Buttons */}
-        <div className='flex flex-wrap gap-3'>
-          <FmCommonButton
-            variant='default'
-            size='sm'
-            icon={ExternalLink}
-            onClick={() => navigate(`/artists/${linkedArtist.id}`)}
-          >
-            {t('userArtist.viewArtistPage')}
-          </FmCommonButton>
-
-          <FmCommonButton
-            variant='secondary'
-            size='sm'
-            icon={Settings}
-            onClick={() => navigate(`/artists/${linkedArtist.id}/manage`)}
-          >
-            {t('userArtist.manageArtist')}
-          </FmCommonButton>
-
-          <FmCommonButton
-            variant='secondary'
-            size='sm'
-            icon={Unlink}
-            onClick={() => setShowUnlinkConfirm(true)}
-          >
-            {t('userArtist.unlinkAccount')}
-          </FmCommonButton>
-
-          <FmCommonButton
-            variant='destructive'
-            size='sm'
-            icon={Trash2}
-            onClick={() => setShowDeleteConfirm(true)}
-          >
-            {t('userArtist.requestDataDeletion')}
-          </FmCommonButton>
+          </div>
         </div>
 
-        {/* Unlink Confirmation Dialog */}
-        <AlertDialog open={showUnlinkConfirm} onOpenChange={setShowUnlinkConfirm}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>{t('userArtist.unlinkConfirmTitle')}</AlertDialogTitle>
-              <AlertDialogDescription>
-                {t('userArtist.unlinkConfirmDescription', { name: linkedArtist.name })}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>{t('buttons.cancel')}</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => unlinkArtistMutation.mutate()}
-                disabled={unlinkArtistMutation.isPending}
+        {/* Action Buttons - Only shown when isEditable */}
+        {isEditable && (
+          <>
+            <div className='flex flex-wrap gap-3'>
+              <FmCommonButton
+                variant='default'
+                size='sm'
+                icon={ExternalLink}
+                onClick={() => navigate(`/artists/${linkedArtist.id}`)}
               >
-                {unlinkArtistMutation.isPending ? t('userArtist.unlinking') : t('userArtist.unlink')}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+                {t('userArtist.viewArtistPage')}
+              </FmCommonButton>
 
-        {/* Delete Data Confirmation Dialog */}
-        <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle className='text-fm-danger'>{t('userArtist.deleteConfirmTitle')}</AlertDialogTitle>
-              <AlertDialogDescription className='space-y-2'>
-                <p>
-                  {t('userArtist.deleteConfirmDescription')}
-                </p>
-                <p className='text-muted-foreground'>
-                  {t('userArtist.deleteConfirmNote')}
-                </p>
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>{t('buttons.cancel')}</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => deleteDataMutation.mutate()}
-                disabled={deleteDataMutation.isPending}
-                className='bg-fm-danger hover:bg-fm-danger/90'
+              <FmCommonButton
+                variant='secondary'
+                size='sm'
+                icon={Settings}
+                onClick={() => navigate(`/artists/manage/${linkedArtist.id}`)}
               >
-                {deleteDataMutation.isPending ? t('status.submitting') : t('userArtist.requestDeletion')}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+                {t('userArtist.manageArtist')}
+              </FmCommonButton>
+
+              <FmCommonButton
+                variant='secondary'
+                size='sm'
+                icon={Unlink}
+                onClick={() => setShowUnlinkConfirm(true)}
+              >
+                {t('userArtist.unlinkAccount')}
+              </FmCommonButton>
+
+              <FmCommonButton
+                variant='destructive'
+                size='sm'
+                icon={Trash2}
+                onClick={() => setShowDeleteConfirm(true)}
+              >
+                {t('userArtist.requestDataDeletion')}
+              </FmCommonButton>
+            </div>
+
+            {/* Unlink Confirmation Dialog */}
+            <AlertDialog open={showUnlinkConfirm} onOpenChange={setShowUnlinkConfirm}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t('userArtist.unlinkConfirmTitle')}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {t('userArtist.unlinkConfirmDescription', { name: linkedArtist.name })}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t('buttons.cancel')}</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => unlinkArtistMutation.mutate()}
+                    disabled={unlinkArtistMutation.isPending}
+                  >
+                    {unlinkArtistMutation.isPending ? t('userArtist.unlinking') : t('userArtist.unlink')}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
+            {/* Delete Data Confirmation Dialog */}
+            <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle className='text-fm-danger'>{t('userArtist.deleteConfirmTitle')}</AlertDialogTitle>
+                  <AlertDialogDescription className='space-y-2'>
+                    <p>
+                      {t('userArtist.deleteConfirmDescription')}
+                    </p>
+                    <p className='text-muted-foreground'>
+                      {t('userArtist.deleteConfirmNote')}
+                    </p>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t('buttons.cancel')}</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => deleteDataMutation.mutate()}
+                    disabled={deleteDataMutation.isPending}
+                    className='bg-fm-danger hover:bg-fm-danger/90'
+                  >
+                    {deleteDataMutation.isPending ? t('status.submitting') : t('userArtist.requestDeletion')}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </>
+        )}
       </div>
     );
   }
