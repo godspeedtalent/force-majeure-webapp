@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { LogOut, User as UserIcon, Building2, Scan, Database, Shield, Mail, Home, Settings } from 'lucide-react';
+import { LogOut, User as UserIcon, Building2, Scan, Database, Shield, Mail, Home, Settings, Music } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -15,6 +15,7 @@ import { PERMISSIONS, ROLES, FEATURE_FLAGS, useFeatureFlagHelpers } from '@/shar
 import { AdminLockIndicator } from '@/components/common/indicators';
 import { useIsMobile } from '@/shared';
 import { cn } from '@/shared';
+import { useUserLinkedArtist } from '@/shared/hooks/useUserLinkedArtist';
 
 interface MobileMenuItem {
   label: string;
@@ -65,6 +66,9 @@ export function UserMenuDropdown() {
   const isDeveloper = hasRole(ROLES.DEVELOPER);
   // Admin access
   const isAdminUser = isAdmin();
+  // Artist access
+  const isArtist = hasRole(ROLES.ARTIST);
+  const { linkedArtist } = useUserLinkedArtist();
 
   // Desktop dropdown sections - grouped by category
   const dropdownSections: DropdownSection[] = [
@@ -76,6 +80,16 @@ export function UserMenuDropdown() {
           icon: UserIcon,
           onClick: () => navigate('/profile'),
         },
+        // Artist option - only shown for users with artist role and linked artist
+        ...(isArtist && linkedArtist
+          ? [
+              {
+                label: t('nav.artistProfile'),
+                icon: Music,
+                onClick: () => navigate(`/artists/${linkedArtist.id}`),
+              },
+            ]
+          : []),
         {
           label: t('nav.accountSettings'),
           icon: Settings,
@@ -180,6 +194,16 @@ export function UserMenuDropdown() {
           icon: UserIcon,
           onClick: () => handleNavigate('/profile'),
         },
+        // Artist option - only shown for users with artist role and linked artist
+        ...(isArtist && linkedArtist
+          ? [
+              {
+                label: t('nav.artistProfile'),
+                icon: Music,
+                onClick: () => handleNavigate(`/artists/${linkedArtist.id}`),
+              },
+            ]
+          : []),
         {
           label: t('nav.accountSettings'),
           icon: Settings,
