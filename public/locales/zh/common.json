@@ -1502,7 +1502,9 @@
       "canReapplyIn": "您可以在{{time}}后重新申请。",
       "monthsRemaining": "{{count}}个月",
       "daysRemaining": "{{count}}天",
-      "dayRemaining": "1天"
+      "dayRemaining": "1天",
+      "spotifyTrack": "Spotify曲目",
+      "djSet": "DJ Set"
     },
     "signUpAsArtist": "注册成为艺术家"
   },

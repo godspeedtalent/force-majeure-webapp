@@ -1504,7 +1504,9 @@
       "canReapplyIn": "Puedes volver a solicitar en {{time}}.",
       "monthsRemaining": "{{count}} meses",
       "daysRemaining": "{{count}} días",
-      "dayRemaining": "1 día"
+      "dayRemaining": "1 día",
+      "spotifyTrack": "Pista de Spotify",
+      "djSet": "Set de DJ"
     },
     "signUpAsArtist": "Registrarse como Artista"
   },

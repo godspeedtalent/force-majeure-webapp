@@ -1518,7 +1518,9 @@
       "canReapplyIn": "You can reapply in {{time}}.",
       "monthsRemaining": "{{count}} months",
       "daysRemaining": "{{count}} days",
-      "dayRemaining": "1 day"
+      "dayRemaining": "1 day",
+      "spotifyTrack": "Spotify Track",
+      "djSet": "DJ Set"
     },
     "signUpAsArtist": "Sign Up as Artist"
   },
