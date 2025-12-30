@@ -5,7 +5,7 @@ import {
   Mail,
   AlertCircle,
   Mic2,
-  Bell,
+  Shield,
 } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -30,7 +30,7 @@ import { LanguageSelector } from '@/components/common/i18n/LanguageSelector';
 import { useLocaleSync } from '@/hooks/useLocaleSync';
 import type { SupportedLocale } from '@/i18n';
 
-type ProfileSection = 'profile' | 'notifications' | 'artist';
+type ProfileSection = 'profile' | 'account' | 'artist';
 
 interface LocationState {
   activeTab?: ProfileSection;
@@ -194,10 +194,10 @@ const ProfileEdit = () => {
           description: t('profile.personalInfoDescription'),
         },
         {
-          id: 'notifications',
-          label: t('profile.notifications'),
-          icon: Bell,
-          description: t('profile.notificationsDescription'),
+          id: 'account',
+          label: t('profile.account'),
+          icon: Shield,
+          description: t('profile.accountDescription'),
         },
         {
           id: 'artist',
@@ -212,7 +212,7 @@ const ProfileEdit = () => {
   // Mobile bottom tabs configuration
   const mobileTabs: MobileBottomTab[] = [
     { id: 'profile', label: t('profile.title'), icon: User },
-    { id: 'notifications', label: t('profile.notifications'), icon: Bell },
+    { id: 'account', label: t('profile.account'), icon: Shield },
     { id: 'artist', label: t('profile.artist'), icon: Mic2 },
   ];
 
@@ -267,39 +267,9 @@ const ProfileEdit = () => {
           <>
             <FmCommonPageHeader
               title={t('profile.editProfile')}
-              description={t('profile.accountSettings')}
+              description={t('profile.personalInfoDescription')}
               showDivider={true}
             />
-
-            {/* Email Verification Warning */}
-            {user && !user.email_confirmed_at && (
-              <FmCommonCard className='border-fm-gold/50 bg-fm-gold/10'>
-                <FmCommonCardContent className='p-6'>
-                  <div className='flex items-start gap-4'>
-                    <AlertCircle className='h-6 w-6 text-fm-gold flex-shrink-0 mt-0.5' />
-                    <div className='flex-1'>
-                      <h3 className='text-lg font-medium text-fm-gold mb-2'>
-                        {t('profile.verifyEmailTitle')}
-                      </h3>
-                      <p className='text-sm text-muted-foreground mb-4'>
-                        {t('profile.verifyEmailDescription')}{' '}
-                        <span className='font-medium text-foreground'>{user.email}</span>.
-                      </p>
-                      <FmCommonButton
-                        variant='secondary'
-                        size='sm'
-                        icon={Mail}
-                        onClick={handleResendVerification}
-                        loading={isSendingVerification}
-                        disabled={isSendingVerification}
-                      >
-                        {t('profile.resendVerification')}
-                      </FmCommonButton>
-                    </div>
-                  </div>
-                </FmCommonCardContent>
-              </FmCommonCard>
-            )}
 
             {/* Profile Picture Card */}
             <FmCommonCard>
@@ -511,6 +481,51 @@ const ProfileEdit = () => {
               </FmCommonCardContent>
             </FmCommonCard>
 
+          </>
+        )}
+
+        {/* Account Section */}
+        {activeSection === 'account' && (
+          <>
+            <FmCommonPageHeader
+              title={t('profile.account')}
+              description={t('profile.accountSettingsDescription')}
+              showDivider={true}
+            />
+
+            {/* Email Verification Warning */}
+            {user && !user.email_confirmed_at && (
+              <FmCommonCard className='border-fm-gold/50 bg-fm-gold/10'>
+                <FmCommonCardContent className='p-6'>
+                  <div className='flex items-start gap-4'>
+                    <AlertCircle className='h-6 w-6 text-fm-gold flex-shrink-0 mt-0.5' />
+                    <div className='flex-1'>
+                      <h3 className='text-lg font-medium text-fm-gold mb-2'>
+                        {t('profile.verifyEmailTitle')}
+                      </h3>
+                      <p className='text-sm text-muted-foreground mb-4'>
+                        {t('profile.verifyEmailDescription')}{' '}
+                        <span className='font-medium text-foreground'>{user.email}</span>.
+                      </p>
+                      <FmCommonButton
+                        variant='secondary'
+                        size='sm'
+                        icon={Mail}
+                        onClick={handleResendVerification}
+                        loading={isSendingVerification}
+                        disabled={isSendingVerification}
+                      >
+                        {t('profile.resendVerification')}
+                      </FmCommonButton>
+                    </div>
+                  </div>
+                </FmCommonCardContent>
+              </FmCommonCard>
+            )}
+
+            {/* Notification Settings */}
+            <NotificationSettingsSection disabled={!user.email_confirmed_at} />
+
             {/* Preferences Card */}
             <FmCommonCard>
               <FmCommonCardContent className='p-8 space-y-6'>
@@ -541,19 +556,6 @@ const ProfileEdit = () => {
 
             {/* Delete Account Section */}
             <DeleteAccountSection disabled={!user.email_confirmed_at} />
-          </>
-        )}
-
-        {/* Notifications Section */}
-        {activeSection === 'notifications' && (
-          <>
-            <FmCommonPageHeader
-              title={t('profile.notifications')}
-              description={t('profile.notificationsPageDescription')}
-              showDivider={true}
-            />
-
-            <NotificationSettingsSection disabled={!user.email_confirmed_at} />
           </>
         )}
 
