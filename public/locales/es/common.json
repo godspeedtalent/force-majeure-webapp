@@ -1777,6 +1777,7 @@
     "upcomingShows": "Próximos Shows",
     "artist": "Artista",
     "account": "Cuenta",
+    "accountSettingsDescription": "Administra la configuración de tu cuenta, notificaciones y preferencias",
     "browseEvents": "Ver Eventos",
     "ticketCount": "{{count}} entrada",
     "ticketCount_other": "{{count}} entradas",
@@ -1787,7 +1788,11 @@
     "memberTitle": "Miembro",
     "loadingShows": "Cargando shows...",
     "noUpcomingShows": "Sin shows próximos",
-    "linkedArtist": "Artista Vinculado"
+    "linkedArtist": "Artista Vinculado",
+    "preferences": "Preferencias",
+    "languageDescription": "Elige tu idioma preferido para la aplicación",
+    "verifyEmailTitle": "Verifica Tu Email",
+    "verifyEmailDescription": "Necesitas verificar tu dirección de email para acceder a todas las funciones. Enviamos un enlace de verificación a"
   },
   "emailPreview": {
     "title": "Vista Previa de Plantilla de Email",

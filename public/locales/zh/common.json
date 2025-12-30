@@ -1775,6 +1775,7 @@
     "upcomingShows": "即将演出",
     "artist": "艺人",
     "account": "账户",
+    "accountSettingsDescription": "管理您的账户设置、通知和偏好",
     "browseEvents": "浏览活动",
     "ticketCount": "{{count}} 张票",
     "ticketCount_other": "{{count}} 张票",
@@ -1785,7 +1786,11 @@
     "memberTitle": "会员",
     "loadingShows": "加载演出中...",
     "noUpcomingShows": "暂无即将举行的演出",
-    "linkedArtist": "关联艺人"
+    "linkedArtist": "关联艺人",
+    "preferences": "偏好设置",
+    "languageDescription": "选择您的首选应用语言",
+    "verifyEmailTitle": "验证您的邮箱",
+    "verifyEmailDescription": "您需要验证您的邮箱地址才能访问所有功能。我们已发送验证链接至"
   },
   "emailPreview": {
     "title": "邮件模板预览",
