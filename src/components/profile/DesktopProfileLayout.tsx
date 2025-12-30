@@ -24,6 +24,10 @@ import { Badge } from '@/components/common/shadcn/badge';
 import { UserArtistTab } from '@/components/profile/UserArtistTab';
 import { FmI18nCommon } from '@/components/common/i18n';
 import { ProfileLayoutProps } from './types';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { useAuth } from '@/features/auth/services/AuthContext';
+
+const GOLD_TAB_CLASSES = 'rounded-none data-[state=active]:bg-fm-gold data-[state=active]:text-black data-[state=active]:shadow-none font-canela';
 
 export const DesktopProfileLayout = ({
   user,
@@ -37,6 +41,11 @@ export const DesktopProfileLayout = ({
 }: ProfileLayoutProps) => {
   const navigate = useNavigate();
   const { t } = useTranslation('common');
+  const { isAdmin } = useUserPermissions();
+  const { user: currentUser } = useAuth();
+  
+  // Edit profile only available to the profile owner or admins
+  const canEditProfile = isAdmin() || currentUser?.id === user.id;
 
   return (
     <div className='max-w-6xl mx-auto px-4 py-12 space-y-8'>
@@ -59,18 +68,20 @@ export const DesktopProfileLayout = ({
           <div className='grid grid-cols-[400px_1fr] gap-0'>
             {/* Left Column - Avatar */}
             <div className='relative h-full min-h-[600px]'>
-              {/* Edit Profile Button - Top Left Corner */}
-              <div className='absolute top-4 left-4 z-10'>
-                <FmCommonButton
-                  variant='default'
-                  size='sm'
-                  onClick={() => navigate('/profile/edit')}
-                  icon={Settings}
-                  className='bg-background/80 backdrop-blur-sm'
-                >
-                  {t('profile.editProfile')}
-                </FmCommonButton>
-              </div>
+              {/* Edit Profile Button - Top Left Corner - Only for owner or admin */}
+              {canEditProfile && (
+                <div className='absolute top-4 left-4 z-10'>
+                  <FmCommonButton
+                    variant='default'
+                    size='sm'
+                    onClick={() => navigate('/profile/edit')}
+                    icon={Settings}
+                    className='bg-background/80 backdrop-blur-sm'
+                  >
+                    {t('profile.editProfile')}
+                  </FmCommonButton>
+                </div>
+              )}
 
               <FmCommonUserPhoto
                 src={profile?.avatar_url}
@@ -94,9 +105,9 @@ export const DesktopProfileLayout = ({
               {/* Tabs */}
               <Tabs defaultValue='upcoming' className='w-full'>
                 <TabsList className={`grid w-full ${hasLinkedArtist ? 'grid-cols-3' : 'grid-cols-2'}`}>
-                  <TabsTrigger value='upcoming'>{t('profile.upcomingShows')}</TabsTrigger>
+                  <TabsTrigger value='upcoming' className={GOLD_TAB_CLASSES}>{t('profile.upcomingShows')}</TabsTrigger>
                   {hasLinkedArtist && (
-                    <TabsTrigger value='artist' className='flex items-center gap-1'>
+                    <TabsTrigger value='artist' className={`flex items-center gap-1 ${GOLD_TAB_CLASSES}`}>
                       {loadingArtist ? (
                         <div className='h-3 w-3 border-2 border-fm-gold/30 border-t-fm-gold rounded-full animate-spin' />
                       ) : (
@@ -105,7 +116,7 @@ export const DesktopProfileLayout = ({
                       {t('profile.artist')}
                     </TabsTrigger>
                   )}
-                  <TabsTrigger value='account'>{t('profile.account')}</TabsTrigger>
+                  <TabsTrigger value='account' className={GOLD_TAB_CLASSES}>{t('profile.account')}</TabsTrigger>
                 </TabsList>
 
                 {/* Artist Tab - only shown if user has linked artist */}
