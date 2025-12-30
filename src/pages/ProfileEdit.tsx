@@ -568,7 +568,7 @@ const ProfileEdit = () => {
               showDivider={true}
             />
 
-            <UserArtistTab />
+            <UserArtistTab isEditable={true} />
           </>
         )}
       </div>
