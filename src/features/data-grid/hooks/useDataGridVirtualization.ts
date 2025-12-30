@@ -9,7 +9,7 @@ interface UseDataGridVirtualizationOptions {
 }
 
 export interface UseDataGridVirtualizationReturn {
-  parentRef: React.RefObject<HTMLDivElement>;
+  parentRef: React.MutableRefObject<HTMLDivElement | null>;
   virtualRows: any[];
   totalSize: number;
   isEnabled: boolean;
@@ -31,7 +31,7 @@ export function useDataGridVirtualization({
   overscan = 10, // Number of items to render outside viewport
   enabled = true,
 }: UseDataGridVirtualizationOptions): UseDataGridVirtualizationReturn {
-  const parentRef = useRef<HTMLDivElement>(null);
+  const parentRef = useRef<HTMLDivElement | null>(null);
 
   // Only enable virtualization for large datasets (>100 rows)
   const shouldVirtualize = enabled && rowCount > 100;

@@ -119,7 +119,7 @@ export const ArtistProfile = ({
         <div className='bg-black/60 backdrop-blur-sm border border-white/20 rounded-none p-[20px]'>
           <p
             className={cn(
-              'font-canela leading-relaxed',
+              'font-canela leading-relaxed whitespace-pre-wrap',
               compact ? 'text-sm' : 'text-base',
               hasBio ? 'text-foreground' : 'text-muted-foreground italic'
             )}

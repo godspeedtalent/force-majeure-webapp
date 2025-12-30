@@ -161,7 +161,15 @@
     "autoSaveFailed": "Auto-save failed",
     "autoSaveFailedDescription": "Could not save changes automatically",
     "recordingAdded": "Added \"{{trackName}}\" to recordings",
+    "recordingAddFailed": "Failed to add recording",
     "recordingUpdated": "Recording updated",
+    "recordingUpdateFailed": "Failed to update recording",
+    "recordingDeleted": "Recording deleted",
+    "recordingDeleteFailed": "Failed to delete recording",
+    "recordingSetAsPrimary": "Recording set as primary",
+    "recordingSetPrimaryFailed": "Failed to set recording as primary",
+    "recordingRefetched": "Recording details updated",
+    "recordingRefetchFailed": "Failed to refresh recording details",
     "genreAdded": "Genre added to artist",
     "genreAddFailed": "Failed to add genre",
     "genreRemoved": "Genre removed from artist",
@@ -276,5 +284,13 @@
     "recipientRemoveFailed": "Failed to remove recipient",
     "scheduleUpdated": "Schedule updated successfully",
     "scheduleUpdateFailed": "Failed to update schedule"
+  },
+  "gallery": {
+    "created": "Gallery created successfully",
+    "createFailed": "Failed to create gallery",
+    "itemDeleted": "Photo deleted",
+    "deleteItemFailed": "Failed to delete photo",
+    "imageUploaded": "Photo uploaded successfully",
+    "uploadFailed": "Failed to upload photo"
   }
 }

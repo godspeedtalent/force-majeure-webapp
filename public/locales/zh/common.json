@@ -166,7 +166,13 @@
     "emailAddress": "邮箱地址",
     "addressLine1": "地址行1",
     "addressLine2": "地址行2",
-    "database": "数据库"
+    "database": "数据库",
+    "sortBy": "排序方式",
+    "featured": "精选",
+    "refetchDetails": "刷新详情",
+    "setAsPrimary": "设为主要",
+    "noRecordingsYet": "暂无录音",
+    "addFirstRecording": "添加您的第一个录音"
   },
   "status": {
     "active": "活跃",
@@ -713,6 +719,8 @@
     "addRecordingDescription": "粘贴 Spotify 或 SoundCloud 链接以关联到此艺术家。",
     "editRecording": "编辑录音",
     "editRecordingDescription": "更新录音详情。",
+    "deleteRecording": "删除录音",
+    "deleteRecordingConfirm": "确定要删除\"{{name}}\"吗？此操作无法撤销。",
     "exportData": "导出数据",
     "exportDescription": "选择列和格式以导出 {{count}} 行",
     "exportFormat": "导出格式",
@@ -936,7 +944,21 @@
     "music": "音乐",
     "musicDescription": "艺术家录音",
     "socialMedia": "社交媒体",
-    "socialMediaDescription": "社交媒体资料"
+    "socialMediaDescription": "社交媒体资料",
+    "gallery": "图库",
+    "galleryDescription": "管理艺术家照片"
+  },
+  "gallery": {
+    "noGalleryYet": "暂无图库",
+    "createGalleryDescription": "创建图库以上传和管理该艺术家的宣传照片。",
+    "createGallery": "创建图库",
+    "pressPhotos": "宣传照片",
+    "pressPhotosDescription": "用于新闻和宣传的高质量照片。",
+    "addPhoto": "添加照片",
+    "noPhotosYet": "暂无照片",
+    "uploadPhotosToGetStarted": "上传照片以开始。",
+    "deletePhoto": "删除照片",
+    "deletePhotoConfirm": "确定要删除这张照片吗？此操作无法撤消。"
   },
   "eventNav": {
     "eventDetails": "活动详情",

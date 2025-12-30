@@ -42,6 +42,7 @@ const OrganizationDetails = lazy(() => import('./pages/admin/OrganizationDetails
 const UserDetails = lazy(() => import('./pages/admin/UserDetails'));
 const GalleryManagement = lazy(() => import('./pages/admin/GalleryManagement'));
 const ProductsManagement = lazy(() => import('./pages/admin/ProductsManagement'));
+const AnalyticsDashboard = lazy(() => import('./pages/admin/analytics/AnalyticsDashboard'));
 
 // Lazy load venue and artist pages
 const VenueDetails = lazy(() => import('./pages/venues/VenueDetails'));
@@ -81,6 +82,7 @@ import {
 } from '@/contexts/GlobalSearchContext';
 import { GlobalResourceSearch } from '@/components/admin/GlobalResourceSearch';
 import { StripeProvider } from '@/features/payments';
+import { AnalyticsProvider } from '@/features/analytics';
 
 import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
@@ -364,6 +366,16 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
+      <Route
+        path='/admin/analytics'
+        element={
+          <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <AnalyticsDashboard />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
 
       {/* Create Routes - Protected by admin/developer roles */}
       <Route
@@ -542,15 +554,17 @@ const App = () => {
                     <TooltipProvider>
                       <Sonner />
                       <BrowserRouter>
-                        <CheckoutProvider>
-                          <Suspense fallback={<LazyLoadFallback />}>
-                            <AppRoutes />
-                          </Suspense>
-                          <FmToolbar />
-                          <FmMobileDevToolbar />
-                          <FmMockRoleExitButton />
-                          <GlobalSearchWrapper />
-                        </CheckoutProvider>
+                        <AnalyticsProvider>
+                          <CheckoutProvider>
+                            <Suspense fallback={<LazyLoadFallback />}>
+                              <AppRoutes />
+                            </Suspense>
+                            <FmToolbar />
+                            <FmMobileDevToolbar />
+                            <FmMockRoleExitButton />
+                            <GlobalSearchWrapper />
+                          </CheckoutProvider>
+                        </AnalyticsProvider>
                       </BrowserRouter>
                     </TooltipProvider>
                   </GlobalSearchProvider>

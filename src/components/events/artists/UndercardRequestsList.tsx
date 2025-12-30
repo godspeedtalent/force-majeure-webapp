@@ -319,7 +319,7 @@ function RequestCard({
         <div className='px-4 pb-4 space-y-4 border-t border-white/10'>
           {/* Bio */}
           <div className='pt-4'>
-            <p className='text-sm text-muted-foreground line-clamp-3'>
+            <p className='text-sm text-muted-foreground line-clamp-3 whitespace-pre-wrap'>
               {registration.bio}
             </p>
           </div>

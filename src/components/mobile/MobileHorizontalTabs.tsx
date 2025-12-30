@@ -57,6 +57,7 @@ export const MobileHorizontalTabs = ({
   return (
     <div
       className={cn(
+        'w-screen -ml-[calc((100vw-100%)/2)]',
         'z-30',
         'bg-black/80 backdrop-blur-lg',
         'border-b border-white/20',
@@ -66,7 +67,7 @@ export const MobileHorizontalTabs = ({
     >
       <div
         ref={containerRef}
-        className='flex items-center overflow-x-auto scrollbar-hide px-[10px] py-[10px]'
+        className='flex items-center overflow-x-auto scrollbar-hide px-4 py-[10px]'
         style={{
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',

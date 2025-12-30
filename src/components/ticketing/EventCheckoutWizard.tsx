@@ -7,6 +7,7 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmCommonStackLayout } from '@/components/common/layout';
 import { EventDetailsRecord } from '@/pages/event/types';
+import { useAnalytics } from '@/features/analytics';
 
 import { TicketingPanel } from './TicketingPanel';
 import { TicketCheckoutForm } from './TicketCheckoutForm';
@@ -29,6 +30,7 @@ export const EventCheckoutWizard = ({
   const { t } = useTranslation('common');
   const [step, setStep] = useState<WizardStep>('selection');
   const [selections, setSelections] = useState<Record<string, number>>({});
+  const { trackCheckoutStart, trackCheckoutComplete } = useAnalytics();
 
   const { data: tiers = [], isLoading: tiersLoading } = useTicketTiers(
     event.id
@@ -116,12 +118,26 @@ export const EventCheckoutWizard = ({
       {}
     );
 
+    // Calculate total value for analytics
+    const totalValueCents = nextSelections.reduce((total, sel) => {
+      const tier = formattedTiers.find(t => t.id === sel.tierId);
+      return total + (tier ? tier.price * 100 * sel.quantity : 0);
+    }, 0);
+
+    // Track checkout start
+    trackCheckoutStart(event.id, `cart-${event.id}`, totalValueCents);
+
     setSelections(mapped);
     setStep('checkout');
   };
 
   const handleCheckoutComplete = async () => {
     await new Promise(resolve => setTimeout(resolve, 1200));
+
+    // Track checkout completion
+    const totalValueCents = Math.round(orderSummary.total * 100);
+    trackCheckoutComplete(event.id, `order-${event.id}-${Date.now()}`, totalValueCents);
+
     setStep('confirmation');
   };
 

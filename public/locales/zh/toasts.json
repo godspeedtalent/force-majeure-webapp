@@ -160,7 +160,15 @@
     "autoSaveFailed": "自动保存失败",
     "autoSaveFailedDescription": "无法自动保存更改",
     "recordingAdded": "已将\"{{trackName}}\"添加到录音",
+    "recordingAddFailed": "添加录音失败",
     "recordingUpdated": "录音已更新",
+    "recordingUpdateFailed": "更新录音失败",
+    "recordingDeleted": "录音已删除",
+    "recordingDeleteFailed": "删除录音失败",
+    "recordingSetAsPrimary": "录音已设为主要",
+    "recordingSetPrimaryFailed": "设置主要录音失败",
+    "recordingRefetched": "录音详情已更新",
+    "recordingRefetchFailed": "刷新录音详情失败",
     "genreAdded": "已为艺术家添加风格",
     "genreAddFailed": "添加风格失败",
     "genreRemoved": "已从艺术家移除风格",
@@ -275,5 +283,13 @@
     "recipientRemoveFailed": "移除收件人失败",
     "scheduleUpdated": "计划更新成功",
     "scheduleUpdateFailed": "更新计划失败"
+  },
+  "gallery": {
+    "created": "图库创建成功",
+    "createFailed": "创建图库失败",
+    "itemDeleted": "照片已删除",
+    "deleteItemFailed": "删除照片失败",
+    "imageUploaded": "照片上传成功",
+    "uploadFailed": "上传照片失败"
   }
 }

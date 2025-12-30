@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircle2 } from 'lucide-react';
 import {
@@ -11,17 +11,29 @@ import {
 import { Button } from '@/components/common/shadcn/button';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { FmI18nCommon } from '@/components/common/i18n';
+import { useAnalytics } from '@/features/analytics';
 
 export default function CheckoutSuccess() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const sessionId = searchParams.get('session_id');
+  const { trackCheckoutComplete } = useAnalytics();
+  const tracked = useRef(false);
 
   useEffect(() => {
     if (!sessionId) {
       navigate('/', { replace: true });
+      return;
     }
-  }, [sessionId, navigate]);
+
+    // Track checkout completion (only once)
+    if (!tracked.current) {
+      tracked.current = true;
+      // Note: In a real implementation, you'd fetch the order details
+      // to get the event ID and order value. For now, we track with session ID.
+      trackCheckoutComplete('unknown', sessionId, 0);
+    }
+  }, [sessionId, navigate, trackCheckoutComplete]);
 
   if (!sessionId) {
     return (

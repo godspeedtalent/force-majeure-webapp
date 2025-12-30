@@ -198,6 +198,50 @@ export function FmDataGrid<T extends Record<string, any>>({
     enabled: enableVirtualization,
   });
 
+  // Sticky scrollbar refs and state
+  const tableContainerRef = useRef<HTMLDivElement | null>(null);
+  const stickyScrollRef = useRef<HTMLDivElement>(null);
+  const [scrollWidth, setScrollWidth] = useState(0);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  // Update scroll width when table content changes
+  useEffect(() => {
+    const updateScrollDimensions = () => {
+      if (tableContainerRef.current) {
+        setScrollWidth(tableContainerRef.current.scrollWidth);
+        setContainerWidth(tableContainerRef.current.clientWidth);
+      }
+    };
+
+    updateScrollDimensions();
+
+    // Use ResizeObserver to track size changes
+    const resizeObserver = new ResizeObserver(updateScrollDimensions);
+    if (tableContainerRef.current) {
+      resizeObserver.observe(tableContainerRef.current);
+    }
+
+    return () => resizeObserver.disconnect();
+  }, [data, columns, columnWidths]);
+
+  // Sync scroll positions between table and sticky scrollbar
+  const handleTableScroll = useCallback(() => {
+    if (isSyncing || !tableContainerRef.current || !stickyScrollRef.current) return;
+    setIsSyncing(true);
+    stickyScrollRef.current.scrollLeft = tableContainerRef.current.scrollLeft;
+    requestAnimationFrame(() => setIsSyncing(false));
+  }, [isSyncing]);
+
+  const handleStickyScroll = useCallback(() => {
+    if (isSyncing || !tableContainerRef.current || !stickyScrollRef.current) return;
+    setIsSyncing(true);
+    tableContainerRef.current.scrollLeft = stickyScrollRef.current.scrollLeft;
+    requestAnimationFrame(() => setIsSyncing(false));
+  }, [isSyncing]);
+
+  const showStickyScrollbar = scrollWidth > containerWidth;
+
   // Handlers
   const handleSort = (columnKey: string) => {
     gridState.handleSort(columnKey);
@@ -537,13 +581,19 @@ export function FmDataGrid<T extends Record<string, any>>({
 
       {/* Table */}
       <div
-        ref={parentRef}
+        ref={el => {
+          tableContainerRef.current = el;
+          if (parentRef) parentRef.current = el;
+        }}
         className={cn(
           'rounded-none border border-border/50 bg-background/30 backdrop-blur-sm relative',
-          isVirtualized ? 'overflow-auto' : 'overflow-x-auto overflow-y-visible'
+          isVirtualized ? 'overflow-auto' : 'overflow-x-auto overflow-y-visible',
+          // Hide native scrollbar when using sticky scrollbar
+          showStickyScrollbar && !isVirtualized && 'scrollbar-hide'
         )}
         style={isVirtualized ? { maxHeight: '600px' } : undefined}
         onKeyDown={handleTableKeyDown}
+        onScroll={handleTableScroll}
         role='grid'
         aria-label={`${resourceName} data grid`}
       >
@@ -708,6 +758,18 @@ export function FmDataGrid<T extends Record<string, any>>({
           <div style={getDragBoxStyle()!} className='animate-in fade-in duration-100' />
         )}
       </div>
+
+      {/* Sticky horizontal scrollbar - always visible at bottom of viewport */}
+      {showStickyScrollbar && !isVirtualized && (
+        <div
+          ref={stickyScrollRef}
+          onScroll={handleStickyScroll}
+          className='sticky bottom-0 z-20 overflow-x-auto overflow-y-hidden bg-background/80 backdrop-blur-sm border-t border-border/30'
+          style={{ height: '12px' }}
+        >
+          <div style={{ width: scrollWidth, height: '1px' }} />
+        </div>
+      )}
 
       {/* Pagination */}
       <FmDataGridPagination

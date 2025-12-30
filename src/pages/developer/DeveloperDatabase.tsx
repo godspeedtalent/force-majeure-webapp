@@ -1011,14 +1011,14 @@ export default function DeveloperDatabase() {
       navigationGroups={navigationGroups}
       activeItem={activeTab}
       onItemChange={handleTabChange}
+      mobileHorizontalTabs={
+        <MobileHorizontalTabs
+          tabs={mobileTabs}
+          activeTab={activeTab}
+          onTabChange={tab => handleTabChange(tab as DatabaseTab)}
+        />
+      }
     >
-      {/* Mobile horizontal tabs */}
-      <MobileHorizontalTabs
-        tabs={mobileTabs}
-        activeTab={activeTab}
-        onTabChange={tab => handleTabChange(tab as DatabaseTab)}
-      />
-
       <div className='max-w-full'>
         {/* Overview Tab */}
         {activeTab === 'overview' && (

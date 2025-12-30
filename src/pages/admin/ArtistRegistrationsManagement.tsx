@@ -767,7 +767,7 @@ export function ArtistRegistrationsManagement() {
               {/* Bio */}
               <div>
                 <span className='text-xs uppercase text-muted-foreground'>{t('adminGrid.columns.bio')}</span>
-                <p className='mt-1 text-sm'>{selectedRegistration.bio || '—'}</p>
+                <p className='mt-1 text-sm whitespace-pre-wrap'>{selectedRegistration.bio || '—'}</p>
               </div>
 
               {/* Genres */}

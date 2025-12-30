@@ -121,7 +121,7 @@ export const FmResourceDetailsModal = ({
 
           {children && (
             <div className={cn(
-              'prose prose-invert max-w-none text-sm text-white/80 leading-relaxed',
+              'max-w-none text-sm text-white/80 leading-relaxed whitespace-pre-wrap',
               !children && 'italic text-white/60'
             )}>
               {children}
@@ -203,7 +203,7 @@ export const FmResourceDetailsModal = ({
 
           {children && (
             <div className={cn(
-              'prose prose-invert max-w-none text-sm text-white/80 leading-relaxed',
+              'max-w-none text-sm text-white/80 leading-relaxed whitespace-pre-wrap',
               !children && 'italic text-white/60'
             )}>
               {children}

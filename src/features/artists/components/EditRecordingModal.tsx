@@ -1,7 +1,8 @@
 /**
- * EditTrackModal Component
+ * EditRecordingModal Component
  *
- * Modal for editing an existing track's details, specifically the recording type.
+ * Modal for editing an existing recording's details.
+ * Works with the artist_recordings database table.
  */
 
 import { useState, useEffect } from 'react';
@@ -10,55 +11,58 @@ import { Save, Disc, Radio, ExternalLink, Music } from 'lucide-react';
 import { FaSpotify, FaSoundcloud } from 'react-icons/fa6';
 import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { cn } from '@/shared';
-import type { ArtistTrack, RecordingType } from '@/pages/artists/ArtistManagement';
+import type { ArtistRecording, UpdateRecordingData } from '@/shared/api/queries/recordingQueries';
 
-interface EditTrackModalProps {
-  track: ArtistTrack | null;
+interface EditRecordingModalProps {
+  recording: ArtistRecording | null;
   onClose: () => void;
-  onSave: (track: ArtistTrack) => void;
+  onSave: (data: UpdateRecordingData) => void;
 }
 
-export function EditTrackModal({ track, onClose, onSave }: EditTrackModalProps) {
+export function EditRecordingModal({ recording, onClose, onSave }: EditRecordingModalProps) {
   const { t } = useTranslation('common');
-  const [recordingType, setRecordingType] = useState<RecordingType>('track');
+  const [name, setName] = useState('');
+  const [isPrimaryDjSet, setIsPrimaryDjSet] = useState(false);
 
-  // Reset state when track changes
+  // Reset state when recording changes
   useEffect(() => {
-    if (track) {
-      setRecordingType(track.recordingType || 'track');
+    if (recording) {
+      setName(recording.name);
+      setIsPrimaryDjSet(recording.is_primary_dj_set);
     }
-  }, [track]);
+  }, [recording]);
 
   const handleSave = () => {
-    if (!track) return;
+    if (!recording) return;
 
     onSave({
-      ...track,
-      recordingType,
+      name,
+      is_primary_dj_set: isPrimaryDjSet,
     });
   };
 
-  if (!track) return null;
+  if (!recording) return null;
 
   return (
     <FmCommonModal
-      open={!!track}
+      open={!!recording}
       onOpenChange={(open) => !open && onClose()}
       title={t('dialogs.editRecording')}
       description={t('dialogs.editRecordingDescription')}
     >
       <div className="space-y-6">
-        {/* Track Preview */}
+        {/* Recording Preview */}
         <FmCommonCard variant="outline" className="p-0 overflow-hidden">
           <div className="flex gap-4">
             {/* Cover Art */}
             <div className="w-20 h-20 flex-shrink-0 relative">
-              {track.coverArt ? (
+              {recording.cover_art ? (
                 <img
-                  src={track.coverArt}
-                  alt={track.name}
+                  src={recording.cover_art}
+                  alt={recording.name}
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -68,7 +72,7 @@ export function EditTrackModal({ track, onClose, onSave }: EditTrackModalProps) 
               )}
               {/* Platform badge */}
               <div className="absolute bottom-1 right-1">
-                {track.platform === 'spotify' ? (
+                {recording.platform === 'spotify' ? (
                   <FaSpotify className="h-4 w-4 text-[#5aad7a] drop-shadow-lg" />
                 ) : (
                   <FaSoundcloud className="h-4 w-4 text-[#d48968] drop-shadow-lg" />
@@ -76,16 +80,13 @@ export function EditTrackModal({ track, onClose, onSave }: EditTrackModalProps) 
               </div>
             </div>
 
-            {/* Track Info */}
+            {/* Recording Info */}
             <div className="flex-1 py-2 pr-4">
-              <h3 className="font-semibold text-sm line-clamp-1 mb-1">
-                {track.name}
-              </h3>
-              <p className="text-xs text-muted-foreground mb-2 capitalize">
-                {track.platform}
+              <p className="text-xs text-muted-foreground mb-1 capitalize">
+                {recording.platform}
               </p>
               <a
-                href={track.url}
+                href={recording.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1 text-xs text-muted-foreground hover:text-fm-gold transition-colors"
@@ -97,16 +98,24 @@ export function EditTrackModal({ track, onClose, onSave }: EditTrackModalProps) 
           </div>
         </FmCommonCard>
 
+        {/* Name Input */}
+        <FmCommonTextField
+          label={t('labels.name')}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder={t('forms.tracks.namePlaceholder')}
+        />
+
         {/* Recording Type Selector */}
         <div className="space-y-2">
           <label className="text-xs uppercase text-muted-foreground">{t('formLabels.recordingType')}</label>
           <div className="flex gap-2">
             <button
               type="button"
-              onClick={() => setRecordingType('track')}
+              onClick={() => setIsPrimaryDjSet(false)}
               className={cn(
                 'flex-1 flex items-center justify-center gap-2 px-4 py-3 border transition-all',
-                recordingType === 'track'
+                !isPrimaryDjSet
                   ? 'border-fm-gold bg-fm-gold/10 text-fm-gold'
                   : 'border-white/20 hover:border-white/40 text-muted-foreground'
               )}
@@ -116,10 +125,10 @@ export function EditTrackModal({ track, onClose, onSave }: EditTrackModalProps) 
             </button>
             <button
               type="button"
-              onClick={() => setRecordingType('dj_set')}
+              onClick={() => setIsPrimaryDjSet(true)}
               className={cn(
                 'flex-1 flex items-center justify-center gap-2 px-4 py-3 border transition-all',
-                recordingType === 'dj_set'
+                isPrimaryDjSet
                   ? 'border-fm-gold bg-fm-gold/10 text-fm-gold'
                   : 'border-white/20 hover:border-white/40 text-muted-foreground'
               )}
@@ -129,13 +138,6 @@ export function EditTrackModal({ track, onClose, onSave }: EditTrackModalProps) 
             </button>
           </div>
         </div>
-
-        {/* Stats */}
-        {track.clickCount !== undefined && track.clickCount > 0 && (
-          <div className="text-sm text-muted-foreground">
-            <span className="text-fm-gold font-medium">{track.clickCount}</span> link clicks
-          </div>
-        )}
 
         {/* Action Buttons */}
         <div className="flex justify-end gap-3">
@@ -148,6 +150,7 @@ export function EditTrackModal({ track, onClose, onSave }: EditTrackModalProps) 
           <FmCommonButton
             icon={Save}
             onClick={handleSave}
+            disabled={!name.trim()}
           >
             {t('formActions.saveChanges')}
           </FmCommonButton>

@@ -160,7 +160,15 @@
     "autoSaveFailed": "Error en el guardado automático",
     "autoSaveFailedDescription": "No se pudieron guardar los cambios automáticamente",
     "recordingAdded": "Añadido \"{{trackName}}\" a las grabaciones",
+    "recordingAddFailed": "Error al añadir grabación",
     "recordingUpdated": "Grabación actualizada",
+    "recordingUpdateFailed": "Error al actualizar grabación",
+    "recordingDeleted": "Grabación eliminada",
+    "recordingDeleteFailed": "Error al eliminar grabación",
+    "recordingSetAsPrimary": "Grabación establecida como principal",
+    "recordingSetPrimaryFailed": "Error al establecer grabación como principal",
+    "recordingRefetched": "Detalles de grabación actualizados",
+    "recordingRefetchFailed": "Error al actualizar detalles de grabación",
     "genreAdded": "Género añadido al artista",
     "genreAddFailed": "Error al añadir género",
     "genreRemoved": "Género eliminado del artista",
@@ -275,5 +283,13 @@
     "recipientRemoveFailed": "Error al eliminar destinatario",
     "scheduleUpdated": "Programación actualizada exitosamente",
     "scheduleUpdateFailed": "Error al actualizar programación"
+  },
+  "gallery": {
+    "created": "Galería creada exitosamente",
+    "createFailed": "Error al crear galería",
+    "itemDeleted": "Foto eliminada",
+    "deleteItemFailed": "Error al eliminar foto",
+    "imageUploaded": "Foto subida exitosamente",
+    "uploadFailed": "Error al subir foto"
   }
 }

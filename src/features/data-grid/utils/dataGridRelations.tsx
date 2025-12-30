@@ -53,7 +53,7 @@ export const RELATION_MAPPING: Record<string, RelationConfig> = {
       />
     ),
     displayField: 'venue',
-    detailRoute: (id: string) => `/admin/venues/${id}`,
+    detailRoute: (id: string) => `/venues/${id}`,
     entityName: 'Venue',
   },
   artist_id: {
@@ -69,7 +69,7 @@ export const RELATION_MAPPING: Record<string, RelationConfig> = {
       />
     ),
     displayField: 'artist',
-    detailRoute: (id: string) => `/admin/artists/${id}`,
+    detailRoute: (id: string) => `/artists/${id}`,
     entityName: 'Artist',
   },
   headliner_id: {
@@ -85,7 +85,7 @@ export const RELATION_MAPPING: Record<string, RelationConfig> = {
       />
     ),
     displayField: 'headliner',
-    detailRoute: (id: string) => `/admin/artists/${id}`,
+    detailRoute: (id: string) => `/artists/${id}`,
     entityName: 'Headliner',
   },
   owner_id: {

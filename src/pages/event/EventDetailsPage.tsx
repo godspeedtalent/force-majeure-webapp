@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +12,7 @@ import { TopographicBackground } from '@/components/common/misc/TopographicBackg
 import { SEOHead } from '@/components/common/seo/SEOHead';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES, PERMISSIONS } from '@/shared';
+import { useAnalytics } from '@/features/analytics';
 
 import { EventHero } from './EventHero';
 import { EventDetailsContent } from './EventDetailsContent';
@@ -22,6 +24,14 @@ export const EventDetailsPage = () => {
   const navigate = useNavigate();
   const { data: event, isLoading, error } = useEventDetails(id);
   const { hasAnyRole, hasPermission } = useUserPermissions();
+  const { trackEventView } = useAnalytics();
+
+  // Track event view when event data is loaded
+  useEffect(() => {
+    if (event?.id) {
+      trackEventView(event.id);
+    }
+  }, [event?.id, trackEventView]);
 
   // Check if user can view non-published events
   const canViewDraft = hasAnyRole(ROLES.ADMIN, ROLES.DEVELOPER);

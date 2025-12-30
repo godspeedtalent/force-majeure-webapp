@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { XCircle } from 'lucide-react';
 import {
@@ -10,9 +11,21 @@ import {
 import { Button } from '@/components/common/shadcn/button';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { FmI18nCommon } from '@/components/common/i18n';
+import { useAnalytics } from '@/features/analytics';
 
 export default function CheckoutCancel() {
   const navigate = useNavigate();
+  const { trackCheckoutAbandon } = useAnalytics();
+  const tracked = useRef(false);
+
+  // Track checkout abandonment (only once)
+  useEffect(() => {
+    if (!tracked.current) {
+      tracked.current = true;
+      // Note: In a real implementation, you'd get the event ID from session/cart
+      trackCheckoutAbandon('unknown');
+    }
+  }, [trackCheckoutAbandon]);
 
   return (
     <div className='min-h-screen flex items-center justify-center p-4 bg-background relative overflow-hidden'>

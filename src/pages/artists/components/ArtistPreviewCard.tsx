@@ -123,7 +123,7 @@ export function ArtistPreviewCard({
 
           <div
             className={cn(
-              'prose prose-invert max-w-none text-sm text-white/80 leading-relaxed font-canela',
+              'max-w-none text-sm text-white/80 leading-relaxed font-canela whitespace-pre-wrap',
               !formData.bio && 'italic text-white/60'
             )}
           >

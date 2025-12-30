@@ -166,7 +166,13 @@
     "emailAddress": "Email Address",
     "addressLine1": "Address Line 1",
     "addressLine2": "Address Line 2",
-    "database": "Database"
+    "database": "Database",
+    "sortBy": "Sort by",
+    "featured": "Featured",
+    "refetchDetails": "Refetch details",
+    "setAsPrimary": "Set as primary",
+    "noRecordingsYet": "No recordings added yet",
+    "addFirstRecording": "Add your first recording"
   },
   "status": {
     "active": "Active",
@@ -716,6 +722,8 @@
     "addRecordingDescription": "Paste a Spotify or SoundCloud URL to link it to this artist.",
     "editRecording": "Edit Recording",
     "editRecordingDescription": "Update the recording details.",
+    "deleteRecording": "Delete Recording",
+    "deleteRecordingConfirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
     "exportData": "Export Data",
     "exportDescription": "Select columns and format to export {{count}} rows",
     "exportFormat": "Export Format",
@@ -951,7 +959,21 @@
     "music": "Music",
     "musicDescription": "Artist recordings",
     "socialMedia": "Social Media",
-    "socialMediaDescription": "Social media profiles"
+    "socialMediaDescription": "Social media profiles",
+    "gallery": "Gallery",
+    "galleryDescription": "Manage artist photos"
+  },
+  "gallery": {
+    "noGalleryYet": "No gallery yet",
+    "createGalleryDescription": "Create a gallery to upload and manage press photos for this artist.",
+    "createGallery": "Create Gallery",
+    "pressPhotos": "Press Photos",
+    "pressPhotosDescription": "High-quality photos for press and promotional use.",
+    "addPhoto": "Add Photo",
+    "noPhotosYet": "No photos yet",
+    "uploadPhotosToGetStarted": "Upload photos to get started.",
+    "deletePhoto": "Delete Photo",
+    "deletePhotoConfirm": "Are you sure you want to delete this photo? This action cannot be undone."
   },
   "eventNav": {
     "eventDetails": "Event Details",

@@ -166,7 +166,13 @@
     "emailAddress": "Dirección de Correo",
     "addressLine1": "Línea de Dirección 1",
     "addressLine2": "Línea de Dirección 2",
-    "database": "Base de datos"
+    "database": "Base de datos",
+    "sortBy": "Ordenar por",
+    "featured": "Destacado",
+    "refetchDetails": "Actualizar detalles",
+    "setAsPrimary": "Establecer como principal",
+    "noRecordingsYet": "Aún no hay grabaciones",
+    "addFirstRecording": "Añadir tu primera grabación"
   },
   "status": {
     "active": "Activo",
@@ -715,6 +721,8 @@
     "addRecordingDescription": "Pega una URL de Spotify o SoundCloud para vincularla a este artista.",
     "editRecording": "Editar Grabación",
     "editRecordingDescription": "Actualiza los detalles de la grabación.",
+    "deleteRecording": "Eliminar Grabación",
+    "deleteRecordingConfirm": "¿Estás seguro de que deseas eliminar \"{{name}}\"? Esta acción no se puede deshacer.",
     "exportData": "Exportar Datos",
     "exportDescription": "Selecciona columnas y formato para exportar {{count}} filas",
     "exportFormat": "Formato de Exportación",
@@ -938,7 +946,21 @@
     "music": "Música",
     "musicDescription": "Grabaciones del artista",
     "socialMedia": "Redes Sociales",
-    "socialMediaDescription": "Perfiles de redes sociales"
+    "socialMediaDescription": "Perfiles de redes sociales",
+    "gallery": "Galería",
+    "galleryDescription": "Gestionar fotos del artista"
+  },
+  "gallery": {
+    "noGalleryYet": "Sin galería todavía",
+    "createGalleryDescription": "Crea una galería para subir y gestionar fotos de prensa de este artista.",
+    "createGallery": "Crear Galería",
+    "pressPhotos": "Fotos de Prensa",
+    "pressPhotosDescription": "Fotos de alta calidad para prensa y uso promocional.",
+    "addPhoto": "Añadir Foto",
+    "noPhotosYet": "Sin fotos todavía",
+    "uploadPhotosToGetStarted": "Sube fotos para comenzar.",
+    "deletePhoto": "Eliminar Foto",
+    "deletePhotoConfirm": "¿Estás seguro de que deseas eliminar esta foto? Esta acción no se puede deshacer."
   },
   "eventNav": {
     "eventDetails": "Detalles del Evento",

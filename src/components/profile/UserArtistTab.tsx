@@ -515,7 +515,7 @@ export function UserArtistTab() {
                   <p className='text-sm text-muted-foreground mb-2'>{linkedArtist.genre}</p>
                 )}
                 {linkedArtist.bio && (
-                  <p className='text-sm text-muted-foreground line-clamp-2'>{linkedArtist.bio}</p>
+                  <p className='text-sm text-muted-foreground line-clamp-2 whitespace-pre-wrap'>{linkedArtist.bio}</p>
                 )}
               </div>
             </div>

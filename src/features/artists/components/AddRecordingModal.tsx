@@ -1,9 +1,9 @@
 /**
- * AddTrackModal Component
+ * AddRecordingModal Component
  *
- * Modal for adding a track to an artist by pasting a Spotify or SoundCloud URL.
+ * Modal for adding a recording to an artist by pasting a Spotify or SoundCloud URL.
  * Fetches and parses track metadata from the URL, displays a preview,
- * and allows linking the track to the artist.
+ * and saves to the artist_recordings database table.
  */
 
 import { useState, useEffect } from 'react';
@@ -17,7 +17,7 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { cn } from '@/shared';
-import type { ArtistTrack, RecordingType } from '@/pages/artists/ArtistManagement';
+import type { CreateRecordingData } from '@/shared/api/queries/recordingQueries';
 
 interface TrackMetadata {
   name: string;
@@ -27,10 +27,11 @@ interface TrackMetadata {
   url: string;
 }
 
-interface AddTrackModalProps {
+interface AddRecordingModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAddTrack: (track: ArtistTrack) => void;
+  artistId: string;
+  onAddRecording: (data: CreateRecordingData) => void;
 }
 
 // Parse platform from URL
@@ -46,9 +47,6 @@ function detectPlatform(url: string): 'spotify' | 'soundcloud' | null {
 
 // Extract Spotify track ID from URL
 function extractSpotifyTrackId(url: string): string | null {
-  // Handle URLs like:
-  // https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh
-  // https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh?si=xxx
   const match = url.match(/spotify\.com\/track\/([a-zA-Z0-9]+)/);
   return match ? match[1] : null;
 }
@@ -59,7 +57,6 @@ async function fetchSpotifyMetadata(url: string): Promise<TrackMetadata | null> 
     const trackId = extractSpotifyTrackId(url);
     if (!trackId) return null;
 
-    // Use Spotify oEmbed endpoint
     const oEmbedUrl = `https://open.spotify.com/oembed?url=${encodeURIComponent(url)}`;
     const response = await fetch(oEmbedUrl);
 
@@ -68,9 +65,6 @@ async function fetchSpotifyMetadata(url: string): Promise<TrackMetadata | null> 
     }
 
     const data = await response.json();
-
-    // oEmbed returns: title, thumbnail_url, html (embed code)
-    // Title format is usually "Song Name - Artist Name"
     const [name, artistName] = data.title?.split(' - ') || [data.title, 'Unknown Artist'];
 
     return {
@@ -83,7 +77,7 @@ async function fetchSpotifyMetadata(url: string): Promise<TrackMetadata | null> 
   } catch (error) {
     logger.error('Error fetching Spotify metadata', {
       error: error instanceof Error ? error.message : 'Unknown',
-      source: 'AddTrackModal'
+      source: 'AddRecordingModal'
     });
     return null;
   }
@@ -92,7 +86,6 @@ async function fetchSpotifyMetadata(url: string): Promise<TrackMetadata | null> 
 // Fetch SoundCloud track metadata using oEmbed
 async function fetchSoundCloudMetadata(url: string): Promise<TrackMetadata | null> {
   try {
-    // Use SoundCloud oEmbed endpoint
     const oEmbedUrl = `https://soundcloud.com/oembed?format=json&url=${encodeURIComponent(url)}`;
     const response = await fetch(oEmbedUrl);
 
@@ -101,12 +94,9 @@ async function fetchSoundCloudMetadata(url: string): Promise<TrackMetadata | nul
     }
 
     const data = await response.json();
-
-    // Parse title - usually "Track Name by Artist Name"
     let name = data.title || 'Unknown Track';
     const artistName = data.author_name || 'Unknown Artist';
 
-    // If title includes "by", extract track name
     if (name.includes(' by ')) {
       const parts = name.split(' by ');
       name = parts[0];
@@ -122,20 +112,25 @@ async function fetchSoundCloudMetadata(url: string): Promise<TrackMetadata | nul
   } catch (error) {
     logger.error('Error fetching SoundCloud metadata', {
       error: error instanceof Error ? error.message : 'Unknown',
-      source: 'AddTrackModal'
+      source: 'AddRecordingModal'
     });
     return null;
   }
 }
 
-export function AddTrackModal({ open, onOpenChange, onAddTrack }: AddTrackModalProps) {
+export function AddRecordingModal({
+  open,
+  onOpenChange,
+  artistId,
+  onAddRecording,
+}: AddRecordingModalProps) {
   const { t } = useTranslation('common');
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [trackData, setTrackData] = useState<TrackMetadata | null>(null);
   const [isLinking, setIsLinking] = useState(false);
-  const [recordingType, setRecordingType] = useState<RecordingType>('track');
+  const [isPrimaryDjSet, setIsPrimaryDjSet] = useState(false);
 
   // Reset state when modal closes
   useEffect(() => {
@@ -144,7 +139,7 @@ export function AddTrackModal({ open, onOpenChange, onAddTrack }: AddTrackModalP
       setTrackData(null);
       setError(null);
       setIsLoading(false);
-      setRecordingType('track');
+      setIsPrimaryDjSet(false);
     }
   }, [open]);
 
@@ -191,30 +186,26 @@ export function AddTrackModal({ open, onOpenChange, onAddTrack }: AddTrackModalP
       }
     };
 
-    // Debounce the fetch
     const timer = setTimeout(fetchMetadata, 500);
     return () => clearTimeout(timer);
-  }, [url]);
+  }, [url, t]);
 
   const handleLink = () => {
     if (!trackData) return;
 
     setIsLinking(true);
 
-    const newTrack: ArtistTrack = {
-      id: crypto.randomUUID(),
+    const recordingData: CreateRecordingData = {
+      artist_id: artistId,
       name: trackData.name,
       url: trackData.url,
-      coverArt: trackData.coverArt,
       platform: trackData.platform,
-      recordingType,
-      addedAt: new Date().toISOString(),
-      clickCount: 0,
+      cover_art: trackData.coverArt || null,
+      is_primary_dj_set: isPrimaryDjSet,
     };
 
-    onAddTrack(newTrack);
+    onAddRecording(recordingData);
     setIsLinking(false);
-    onOpenChange(false);
   };
 
   const platform = url ? detectPlatform(url) : null;
@@ -256,10 +247,10 @@ export function AddTrackModal({ open, onOpenChange, onAddTrack }: AddTrackModalP
             <div className="flex gap-2">
               <button
                 type="button"
-                onClick={() => setRecordingType('track')}
+                onClick={() => setIsPrimaryDjSet(false)}
                 className={cn(
                   'flex-1 flex items-center justify-center gap-2 px-4 py-3 border transition-all',
-                  recordingType === 'track'
+                  !isPrimaryDjSet
                     ? 'border-fm-gold bg-fm-gold/10 text-fm-gold'
                     : 'border-white/20 hover:border-white/40 text-muted-foreground'
                 )}
@@ -269,10 +260,10 @@ export function AddTrackModal({ open, onOpenChange, onAddTrack }: AddTrackModalP
               </button>
               <button
                 type="button"
-                onClick={() => setRecordingType('dj_set')}
+                onClick={() => setIsPrimaryDjSet(true)}
                 className={cn(
                   'flex-1 flex items-center justify-center gap-2 px-4 py-3 border transition-all',
-                  recordingType === 'dj_set'
+                  isPrimaryDjSet
                     ? 'border-fm-gold bg-fm-gold/10 text-fm-gold'
                     : 'border-white/20 hover:border-white/40 text-muted-foreground'
                 )}

@@ -4,18 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   FileText,
-  Music,
   Save,
   Eye,
   Share2,
   Headphones,
-  Plus,
-  ExternalLink,
-  Calendar,
-  Disc,
-  Radio,
-  Pencil,
   Trash2,
+  Music,
+  Image as ImageIcon,
 } from 'lucide-react';
 import {
   FaInstagram,
@@ -24,7 +19,7 @@ import {
   FaTiktok,
   FaYoutube,
 } from 'react-icons/fa6';
-import { supabase } from '@/shared';
+import { supabase, logger } from '@/shared';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -34,20 +29,31 @@ import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoa
 import { FmImageUpload } from '@/components/common/forms/FmImageUpload';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { FmI18nCommon } from '@/components/common/i18n';
+import { FmRecordingsGrid } from '@/components/artist/FmRecordingsGrid';
 import { toast } from 'sonner';
 import { handleError } from '@/shared/services/errorHandler';
 import { useDebouncedSave } from '@/shared/hooks/useDebouncedSave';
 import { FmGenreMultiSelect } from '@/features/artists/components/FmGenreMultiSelect';
-import { AddTrackModal } from '@/features/artists/components/AddTrackModal';
-import { EditTrackModal } from '@/features/artists/components/EditTrackModal';
+import { AddRecordingModal } from '@/features/artists/components/AddRecordingModal';
+import { EditRecordingModal } from '@/features/artists/components/EditRecordingModal';
+import { ArtistManageGalleryTab } from './components/manage/ArtistManageGalleryTab';
 import { useArtistGenres, useUpdateArtistGenres } from '@/features/artists/hooks/useArtistGenres';
+import {
+  useArtistRecordings,
+  useCreateRecording,
+  useUpdateRecording,
+  useDeleteRecording,
+  useSetPrimaryRecording,
+  type ArtistRecording,
+  type CreateRecordingData,
+} from '@/shared/api/queries/recordingQueries';
 
 import type { Genre } from '@/features/artists/types';
 import { cn } from '@/shared';
 
 type ArtistTab = 'overview' | 'music' | 'social' | 'gallery' | 'view';
 
-// Types for social and music links (stored in spotify_data JSON field)
+// Types for social links (stored in spotify_data JSON field)
 interface SocialLinks {
   instagram?: string;
   twitter?: string;
@@ -56,23 +62,8 @@ interface SocialLinks {
   youtube?: string;
 }
 
-// Track type for music recordings
-export type RecordingType = 'track' | 'dj_set';
-
-export interface ArtistTrack {
-  id: string;
-  name: string;
-  url: string;
-  coverArt?: string;
-  platform: 'spotify' | 'soundcloud';
-  recordingType: RecordingType;
-  addedAt?: string; // ISO date string of when the track was added
-  clickCount?: number; // Number of times the link was clicked
-}
-
 interface ArtistMetadata {
   socialLinks?: SocialLinks;
-  tracks?: ArtistTrack[];
 }
 
 export default function ArtistManagement() {
@@ -102,16 +93,23 @@ export default function ArtistManagement() {
   const [tiktok, setTiktok] = useState('');
   const [youtube, setYoutube] = useState('');
 
-  // Form state - Music Tracks
-  const [tracks, setTracks] = useState<ArtistTrack[]>([]);
-  const [isAddTrackModalOpen, setIsAddTrackModalOpen] = useState(false);
-  const [editingTrack, setEditingTrack] = useState<ArtistTrack | null>(null);
+  // Recording modal state
+  const [isAddRecordingModalOpen, setIsAddRecordingModalOpen] = useState(false);
+  const [editingRecording, setEditingRecording] = useState<ArtistRecording | null>(null);
+  const [recordingToDelete, setRecordingToDelete] = useState<ArtistRecording | null>(null);
 
   // Hooks for genre management
   const { data: artistGenres } = useArtistGenres(id);
   const updateGenresMutation = useUpdateArtistGenres();
 
-  // Build metadata object for saving
+  // Hooks for recording management
+  const { data: recordings = [], isLoading: isRecordingsLoading } = useArtistRecordings(id);
+  const createRecordingMutation = useCreateRecording();
+  const updateRecordingMutation = useUpdateRecording();
+  const deleteRecordingMutation = useDeleteRecording();
+  const setPrimaryMutation = useSetPrimaryRecording();
+
+  // Build metadata object for saving (social links only - tracks are now in separate table)
   const buildMetadata = (): ArtistMetadata => ({
     socialLinks: {
       instagram: instagram || undefined,
@@ -120,7 +118,6 @@ export default function ArtistManagement() {
       tiktok: tiktok || undefined,
       youtube: youtube || undefined,
     },
-    tracks: tracks.length > 0 ? tracks : undefined,
   });
 
   // Debounced auto-save for artist changes
@@ -205,18 +202,14 @@ export default function ArtistManagement() {
       setWebsite(artist.website || '');
       setImageUrl(artist.image_url || '');
 
-      // Parse metadata from spotify_data field
+      // Parse metadata from spotify_data field (social links only)
       const metadata = artist.spotify_data as ArtistMetadata | null;
       if (metadata) {
-        // Social links
         setInstagram(metadata.socialLinks?.instagram || '');
         setTwitter(metadata.socialLinks?.twitter || '');
         setFacebook(metadata.socialLinks?.facebook || '');
         setTiktok(metadata.socialLinks?.tiktok || '');
         setYoutube(metadata.socialLinks?.youtube || '');
-
-        // Tracks
-        setTracks(metadata.tracks || []);
       }
     }
   }, [artist]);
@@ -244,112 +237,130 @@ export default function ArtistManagement() {
     }
   };
 
-  // Handle track deletion
-  const handleDeleteTrack = (trackId: string) => {
-    const updatedTracks = tracks.filter(t => t.id !== trackId);
-    setTracks(updatedTracks);
-    // Trigger save with updated tracks
-    if (name.trim()) {
-      triggerArtistSave({
-        name,
-        bio,
-        website,
-        image_url: imageUrl,
-        spotify_data: {
-          socialLinks: {
-            instagram: instagram || undefined,
-            twitter: twitter || undefined,
-            facebook: facebook || undefined,
-            tiktok: tiktok || undefined,
-            youtube: youtube || undefined,
-          },
-          tracks: updatedTracks.length > 0 ? updatedTracks : undefined,
-        },
-      });
-    }
+  // Recording handlers (using database)
+  const handleAddRecording = (data: CreateRecordingData) => {
+    if (!id) return;
+    createRecordingMutation.mutate(data, {
+      onSuccess: () => {
+        toast.success(tToast('artists.recordingAdded', { trackName: data.name }));
+        setIsAddRecordingModalOpen(false);
+      },
+      onError: (error) => {
+        handleError(error, { title: tToast('artists.recordingAddFailed') });
+      },
+    });
   };
 
-  // Handle adding a new track
-  const handleAddTrack = (newTrack: ArtistTrack) => {
-    const updatedTracks = [...tracks, newTrack];
-    setTracks(updatedTracks);
-    // Trigger save with updated tracks
-    if (name.trim()) {
-      triggerArtistSave({
-        name,
-        bio,
-        website,
-        image_url: imageUrl,
-        spotify_data: {
-          socialLinks: {
-            instagram: instagram || undefined,
-            twitter: twitter || undefined,
-            facebook: facebook || undefined,
-            tiktok: tiktok || undefined,
-            youtube: youtube || undefined,
-          },
-          tracks: updatedTracks,
-        },
-      });
-    }
-    toast.success(tToast('artists.recordingAdded', { trackName: newTrack.name }));
+  const handleEditRecording = (recording: ArtistRecording) => {
+    setEditingRecording(recording);
   };
 
-  // Handle updating a track
-  const handleUpdateTrack = (updatedTrack: ArtistTrack) => {
-    const updatedTracks = tracks.map(t =>
-      t.id === updatedTrack.id ? updatedTrack : t
+  const handleUpdateRecording = (recordingId: string, data: Partial<CreateRecordingData>) => {
+    if (!id) return;
+    updateRecordingMutation.mutate(
+      { recordingId, artistId: id, data },
+      {
+        onSuccess: () => {
+          toast.success(tToast('artists.recordingUpdated'));
+          setEditingRecording(null);
+        },
+        onError: (error) => {
+          handleError(error, { title: tToast('artists.recordingUpdateFailed') });
+        },
+      }
     );
-    setTracks(updatedTracks);
-    setEditingTrack(null);
-    // Trigger save with updated tracks
-    if (name.trim()) {
-      triggerArtistSave({
-        name,
-        bio,
-        website,
-        image_url: imageUrl,
-        spotify_data: {
-          socialLinks: {
-            instagram: instagram || undefined,
-            twitter: twitter || undefined,
-            facebook: facebook || undefined,
-            tiktok: tiktok || undefined,
-            youtube: youtube || undefined,
-          },
-          tracks: updatedTracks,
-        },
-      });
-    }
-    toast.success(tToast('artists.recordingUpdated'));
   };
 
-  // Handle click tracking for recordings
-  const handleTrackLinkClick = (trackId: string) => {
-    const updatedTracks = tracks.map(t =>
-      t.id === trackId
-        ? { ...t, clickCount: (t.clickCount || 0) + 1 }
-        : t
-    );
-    setTracks(updatedTracks);
-    // Save in background (don't show toast for click tracking)
-    if (name.trim()) {
-      triggerArtistSave({
-        name,
-        bio,
-        website,
-        image_url: imageUrl,
-        spotify_data: {
-          socialLinks: {
-            instagram: instagram || undefined,
-            twitter: twitter || undefined,
-            facebook: facebook || undefined,
-            tiktok: tiktok || undefined,
-            youtube: youtube || undefined,
-          },
-          tracks: updatedTracks,
+  const handleDeleteRecording = (recording: ArtistRecording) => {
+    setRecordingToDelete(recording);
+  };
+
+  const confirmDeleteRecording = () => {
+    if (!id || !recordingToDelete) return;
+    deleteRecordingMutation.mutate(
+      { recordingId: recordingToDelete.id, artistId: id },
+      {
+        onSuccess: () => {
+          toast.success(tToast('artists.recordingDeleted'));
+          setRecordingToDelete(null);
         },
+        onError: (error) => {
+          handleError(error, { title: tToast('artists.recordingDeleteFailed') });
+        },
+      }
+    );
+  };
+
+  const handleSetPrimaryRecording = (recording: ArtistRecording) => {
+    if (!id) return;
+    setPrimaryMutation.mutate(
+      { recordingId: recording.id, artistId: id },
+      {
+        onSuccess: () => {
+          toast.success(tToast('artists.recordingSetAsPrimary'));
+        },
+        onError: (error) => {
+          handleError(error, { title: tToast('artists.recordingSetPrimaryFailed') });
+        },
+      }
+    );
+  };
+
+  const handleRefetchRecording = async (recording: ArtistRecording) => {
+    // Refetch metadata from the platform (Spotify/SoundCloud)
+    try {
+      const url = recording.url;
+      const platform = recording.platform;
+
+      let metadata: { name: string; cover_art?: string } | null = null;
+
+      if (platform === 'spotify') {
+        const oEmbedUrl = `https://open.spotify.com/oembed?url=${encodeURIComponent(url)}`;
+        const response = await fetch(oEmbedUrl);
+        if (response.ok) {
+          const data = await response.json();
+          const [name] = data.title?.split(' - ') || [data.title];
+          metadata = { name: name || recording.name, cover_art: data.thumbnail_url };
+        }
+      } else if (platform === 'soundcloud') {
+        const oEmbedUrl = `https://soundcloud.com/oembed?format=json&url=${encodeURIComponent(url)}`;
+        const response = await fetch(oEmbedUrl);
+        if (response.ok) {
+          const data = await response.json();
+          let name = data.title || recording.name;
+          if (name.includes(' by ')) {
+            name = name.split(' by ')[0];
+          }
+          metadata = { name, cover_art: data.thumbnail_url };
+        }
+      }
+
+      if (metadata && id) {
+        updateRecordingMutation.mutate(
+          {
+            recordingId: recording.id,
+            artistId: id,
+            data: { name: metadata.name, cover_art: metadata.cover_art },
+          },
+          {
+            onSuccess: () => {
+              toast.success(tToast('artists.recordingRefetched'));
+            },
+            onError: (error) => {
+              handleError(error, { title: tToast('artists.recordingRefetchFailed') });
+            },
+          }
+        );
+      } else {
+        toast.error(tToast('artists.recordingRefetchFailed'));
+      }
+    } catch (error) {
+      logger.error('Error refetching recording metadata', {
+        error: error instanceof Error ? error.message : 'Unknown',
+        source: 'ArtistManagement',
+        recordingId: recording.id,
       });
+      toast.error(tToast('artists.recordingRefetchFailed'));
     }
   };
 
@@ -382,6 +393,12 @@ export default function ArtistManagement() {
           label: t('artistNav.socialMedia'),
           icon: Share2,
           description: t('artistNav.socialMediaDescription'),
+        },
+        {
+          id: 'gallery',
+          label: t('artistNav.gallery'),
+          icon: ImageIcon,
+          description: t('artistNav.galleryDescription'),
         },
       ],
     },
@@ -527,145 +544,59 @@ export default function ArtistManagement() {
   const renderMusicTab = () => (
     <div className='space-y-6'>
       <FmCommonCard size='lg' hoverable={false}>
-        <div className='flex items-center justify-between mb-6'>
-          <div>
-            <FmI18nCommon i18nKey='sections.recordings' as='h2' className='text-xl font-semibold' />
-            <FmI18nCommon i18nKey='sections.recordingsDescription' as='p' className='text-muted-foreground text-sm mt-1' />
-          </div>
+        <div className='mb-6'>
+          <FmI18nCommon i18nKey='sections.recordings' as='h2' className='text-xl font-semibold' />
+          <FmI18nCommon i18nKey='sections.recordingsDescription' as='p' className='text-muted-foreground text-sm mt-1' />
         </div>
 
-        {/* Track Grid */}
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-          {tracks.map((track) => (
-            <FmCommonCard
-              key={track.id}
-              size='sm'
-              variant='outline'
-              className='group relative overflow-hidden p-0'
-            >
-              {/* Cover Art */}
-              <div className='aspect-square relative overflow-hidden'>
-                {track.coverArt ? (
-                  <img
-                    src={track.coverArt}
-                    alt={track.name}
-                    className='w-full h-full object-cover'
-                  />
-                ) : (
-                  <div className='w-full h-full bg-gradient-to-br from-fm-gold/20 to-fm-gold/5 flex items-center justify-center'>
-                    <Music className='h-12 w-12 text-fm-gold/50' />
-                  </div>
-                )}
-                {/* Platform badge */}
-                <div className='absolute top-2 right-2'>
-                  <span
-                    className={cn(
-                      'px-2 py-1 text-xs font-medium uppercase tracking-wider',
-                      track.platform === 'spotify'
-                        ? 'bg-[#5aad7a]/90 text-white'
-                        : 'bg-[#d48968]/90 text-white'
-                    )}
-                  >
-                    {track.platform}
-                  </span>
-                </div>
-                {/* Recording type badge */}
-                <div className='absolute bottom-2 left-2'>
-                  <span className='flex items-center gap-1 px-2 py-1 text-xs font-medium bg-black/70 text-white'>
-                    {track.recordingType === 'dj_set' ? (
-                      <>
-                        <Radio className='h-3 w-3' />
-                        {t('labels.djSet')}
-                      </>
-                    ) : (
-                      <>
-                        <Disc className='h-3 w-3' />
-                        {t('labels.track')}
-                      </>
-                    )}
-                  </span>
-                </div>
-                {/* Action buttons - shows on hover */}
-                <div className='absolute top-2 left-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200'>
-                  <button
-                    onClick={() => setEditingTrack(track)}
-                    className='p-1.5 bg-black/60 hover:bg-fm-gold text-white transition-colors'
-                  >
-                    <Pencil className='h-4 w-4' />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteTrack(track.id)}
-                    className='p-1.5 bg-black/60 hover:bg-red-600 text-white transition-colors'
-                  >
-                    <Trash2 className='h-4 w-4' />
-                  </button>
-                </div>
-              </div>
-
-              {/* Track Info */}
-              <div className='p-4'>
-                <h3 className='font-semibold text-sm line-clamp-1 mb-2'>
-                  {track.name}
-                </h3>
-                <div className='flex items-center justify-between text-muted-foreground text-xs'>
-                  <div className='flex items-center gap-3'>
-                    {track.addedAt && (
-                      <span className='flex items-center gap-1'>
-                        <Calendar className='h-3 w-3' />
-                        {new Date(track.addedAt).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric'
-                        })}
-                      </span>
-                    )}
-                    {track.clickCount !== undefined && track.clickCount > 0 && (
-                      <span className='text-fm-gold'>
-                        {t('labels.clicks', { count: track.clickCount })}
-                      </span>
-                    )}
-                  </div>
-                  <a
-                    href={track.url}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    onClick={() => handleTrackLinkClick(track.id)}
-                    className='flex items-center gap-1 hover:text-fm-gold transition-colors'
-                  >
-                    <ExternalLink className='h-3 w-3' />
-                    <span>{t('labels.listen')}</span>
-                  </a>
-                </div>
-              </div>
-            </FmCommonCard>
-          ))}
-
-          {/* Add Track Button */}
-          <button
-            onClick={() => setIsAddTrackModalOpen(true)}
-            className='aspect-square border-2 border-dashed border-white/20 hover:border-fm-gold/50 bg-black/20 hover:bg-fm-gold/5 flex flex-col items-center justify-center gap-3 transition-all duration-200 group'
-          >
-            <div className='p-3 rounded-full bg-white/5 group-hover:bg-fm-gold/20 transition-colors'>
-              <Plus className='h-6 w-6 text-muted-foreground group-hover:text-fm-gold' />
-            </div>
-            <span className='text-sm text-muted-foreground group-hover:text-fm-gold font-medium'>
-              {t('labels.addRecording')}
-            </span>
-          </button>
-        </div>
-
-        {/* Add Track Modal */}
-        <AddTrackModal
-          open={isAddTrackModalOpen}
-          onOpenChange={setIsAddTrackModalOpen}
-          onAddTrack={handleAddTrack}
+        {/* Recordings Grid */}
+        <FmRecordingsGrid
+          recordings={recordings}
+          editable
+          hideHeader
+          columns={3}
+          onEdit={handleEditRecording}
+          onDelete={handleDeleteRecording}
+          onRefetch={handleRefetchRecording}
+          onSetPrimary={handleSetPrimaryRecording}
+          onAdd={() => setIsAddRecordingModalOpen(true)}
+          isLoading={isRecordingsLoading}
+          className='mt-0'
         />
 
-        {/* Edit Track Modal */}
-        <EditTrackModal
-          track={editingTrack}
-          onClose={() => setEditingTrack(null)}
-          onSave={handleUpdateTrack}
+        {/* Add Recording Modal */}
+        {id && (
+          <AddRecordingModal
+            open={isAddRecordingModalOpen}
+            onOpenChange={setIsAddRecordingModalOpen}
+            artistId={id}
+            onAddRecording={handleAddRecording}
+          />
+        )}
+
+        {/* Edit Recording Modal */}
+        {id && (
+          <EditRecordingModal
+            recording={editingRecording}
+            onClose={() => setEditingRecording(null)}
+            onSave={(data) => {
+              if (editingRecording) {
+                handleUpdateRecording(editingRecording.id, data);
+              }
+            }}
+          />
+        )}
+
+        {/* Delete Confirmation Dialog */}
+        <FmCommonConfirmDialog
+          open={!!recordingToDelete}
+          onOpenChange={(open) => !open && setRecordingToDelete(null)}
+          title={t('dialogs.deleteRecording')}
+          description={t('dialogs.deleteRecordingConfirm', { name: recordingToDelete?.name })}
+          confirmText={t('buttons.delete')}
+          onConfirm={confirmDeleteRecording}
+          variant='destructive'
+          isLoading={deleteRecordingMutation.isPending}
         />
       </FmCommonCard>
     </div>
@@ -811,6 +742,13 @@ export default function ArtistManagement() {
       {activeTab === 'overview' && renderOverviewTab()}
       {activeTab === 'music' && renderMusicTab()}
       {activeTab === 'social' && renderSocialTab()}
+      {activeTab === 'gallery' && id && (
+        <ArtistManageGalleryTab
+          artistId={id}
+          artistName={name}
+          galleryId={artist?.gallery_id || null}
+        />
+      )}
 
       <FmCommonConfirmDialog
         open={showDeleteConfirm}
