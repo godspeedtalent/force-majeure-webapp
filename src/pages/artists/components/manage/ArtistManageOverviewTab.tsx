@@ -4,7 +4,6 @@ import { SiSoundcloud, SiSpotify } from 'react-icons/si';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { FmImageUpload } from '@/components/common/forms/FmImageUpload';
 import { FmGenreMultiSelect } from '@/features/artists/components/FmGenreMultiSelect';
 import { FmCityDropdown } from '@/components/common/forms/FmCityDropdown';
 import { FmI18nCommon } from '@/components/common/i18n';
@@ -18,8 +17,6 @@ interface ArtistManageOverviewTabProps {
   setBio: (value: string) => void;
   website: string;
   setWebsite: (value: string) => void;
-  imageUrl: string;
-  setImageUrl: (value: string) => void;
   cityId: string | null;
   setCityId: (value: string | null) => void;
   
@@ -50,8 +47,6 @@ export function ArtistManageOverviewTab({
   setBio,
   website,
   setWebsite,
-  imageUrl,
-  setImageUrl,
   cityId,
   setCityId,
   soundcloudUrl,
@@ -86,18 +81,6 @@ export function ArtistManageOverviewTab({
             }}
             placeholder={t('forms.artists.namePlaceholder')}
           />
-
-          <div className='space-y-1'>
-            <span className='text-xs text-muted-foreground'>{t('labels.artistImage')}</span>
-            <FmImageUpload
-              currentImageUrl={imageUrl}
-              onUploadComplete={(url) => {
-                setImageUrl(url);
-                triggerAutoSave();
-              }}
-            />
-          </div>
-
           <div>
             <FmGenreMultiSelect
               selectedGenres={selectedGenres}

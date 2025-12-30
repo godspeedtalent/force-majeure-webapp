@@ -26,7 +26,6 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
-import { FmImageUpload } from '@/components/common/forms/FmImageUpload';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { FmI18nCommon } from '@/components/common/i18n';
 import { FmRecordingsGrid } from '@/components/artist/FmRecordingsGrid';
@@ -81,7 +80,6 @@ export default function ArtistManagement() {
   const [name, setName] = useState('');
   const [bio, setBio] = useState('');
   const [website, setWebsite] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
 
   // Form state - Genres
   const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
@@ -125,7 +123,6 @@ export default function ArtistManagement() {
     name: string;
     bio: string;
     website: string;
-    image_url: string;
     spotify_data: ArtistMetadata;
   }) => {
     if (!id) return;
@@ -137,7 +134,6 @@ export default function ArtistManagement() {
           name: data.name,
           bio: data.bio,
           website: data.website,
-          image_url: data.image_url,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           spotify_data: data.spotify_data as any,
           updated_at: new Date().toISOString(),
@@ -171,7 +167,6 @@ export default function ArtistManagement() {
         name,
         bio,
         website,
-        image_url: imageUrl,
         spotify_data: buildMetadata(),
       });
     }
@@ -200,7 +195,6 @@ export default function ArtistManagement() {
       setName(artist.name || '');
       setBio(artist.bio || '');
       setWebsite(artist.website || '');
-      setImageUrl(artist.image_url || '');
 
       // Parse metadata from spotify_data field (social links only)
       const metadata = artist.spotify_data as ArtistMetadata | null;
@@ -418,7 +412,6 @@ export default function ArtistManagement() {
           name,
           bio,
           website,
-          image_url: imageUrl,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           spotify_data: buildMetadata() as any,
           updated_at: new Date().toISOString(),
@@ -475,18 +468,6 @@ export default function ArtistManagement() {
             }}
             placeholder={t('forms.artists.namePlaceholder')}
           />
-
-          <div className='space-y-1'>
-            <span className='text-xs text-muted-foreground'>{t('labels.artistImage')}</span>
-            <FmImageUpload
-              currentImageUrl={imageUrl}
-              onUploadComplete={(url) => {
-                setImageUrl(url);
-                triggerAutoSave();
-              }}
-            />
-          </div>
-
           <div>
             <FmGenreMultiSelect
               selectedGenres={selectedGenres}

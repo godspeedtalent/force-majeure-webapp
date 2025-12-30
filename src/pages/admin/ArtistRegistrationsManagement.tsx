@@ -342,7 +342,83 @@ export function ArtistRegistrationsManagement() {
         }
       }
 
-      // Step 5: Assign artist role to the user (if they have a user_id)
+      // Step 5: Create gallery and populate with images
+      try {
+        // Create the gallery using the database function
+        const { data: galleryId, error: galleryError } = await supabase.rpc('create_artist_gallery', {
+          p_artist_id: newArtist.id,
+          p_artist_name: reg.artist_name,
+        });
+
+        if (galleryError) {
+          logger.warn('Failed to create artist gallery', {
+            error: galleryError.message,
+            source: 'ArtistRegistrationsManagement',
+            details: { artistId: newArtist.id },
+          });
+        } else if (galleryId) {
+          logger.info('Artist gallery created', {
+            source: 'ArtistRegistrationsManagement',
+            details: { artistId: newArtist.id, galleryId },
+          });
+
+          // Add profile image as cover if exists
+          if (reg.profile_image_url) {
+            const { error: coverError } = await supabase
+              .from('media_items')
+              .insert({
+                gallery_id: galleryId,
+                file_path: reg.profile_image_url,
+                media_type: 'image' as const,
+                is_cover: true,
+                display_order: 0,
+                is_active: true,
+              });
+
+            if (coverError) {
+              logger.warn('Failed to add profile image to gallery', {
+                error: coverError.message,
+                source: 'ArtistRegistrationsManagement',
+              });
+            }
+          }
+
+          // Add press images to gallery
+          if (reg.press_images && reg.press_images.length > 0) {
+            const pressImageItems = reg.press_images.map((url: string, index: number) => ({
+              gallery_id: galleryId,
+              file_path: url,
+              media_type: 'image' as const,
+              is_cover: false,
+              display_order: index + 1, // Start after cover image
+              is_active: true,
+            }));
+
+            const { error: pressError } = await supabase
+              .from('media_items')
+              .insert(pressImageItems);
+
+            if (pressError) {
+              logger.warn('Failed to add press images to gallery', {
+                error: pressError.message,
+                source: 'ArtistRegistrationsManagement',
+              });
+            } else {
+              logger.info('Press images added to gallery', {
+                source: 'ArtistRegistrationsManagement',
+                details: { artistId: newArtist.id, count: pressImageItems.length },
+              });
+            }
+          }
+        }
+      } catch (galleryErr) {
+        logger.warn('Gallery creation failed', {
+          error: galleryErr instanceof Error ? galleryErr.message : 'Unknown error',
+          source: 'ArtistRegistrationsManagement',
+        });
+      }
+
+      // Step 6: Assign artist role to the user (if they have a user_id)
       if (reg.user_id) {
         try {
           await RoleManagementService.addRole(reg.user_id, ROLES.ARTIST);
