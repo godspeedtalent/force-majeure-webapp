@@ -22,6 +22,7 @@ import {
 import { supabase, logger } from '@/shared';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
+import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
@@ -708,39 +709,59 @@ export default function ArtistManagement() {
     );
   }
 
-  return (
-    <SideNavbarLayout
-      navigationGroups={navigationGroups}
-      activeItem={activeTab}
-      onItemChange={(tabId: ArtistTab) => {
-        if (tabId === 'view') {
-          navigate(`/artists/${artist?.id}`);
-        } else {
-          setActiveTab(tabId);
-        }
-      }}
-    >
-      {activeTab === 'overview' && renderOverviewTab()}
-      {activeTab === 'music' && renderMusicTab()}
-      {activeTab === 'social' && renderSocialTab()}
-      {activeTab === 'gallery' && id && (
-        <ArtistManageGalleryTab
-          artistId={id}
-          artistName={name}
-          galleryId={artist?.gallery_id || null}
-        />
-      )}
+  // Mobile tabs configuration
+  const mobileTabs: MobileBottomTab[] = [
+    { id: 'overview', label: t('artistNav.overview'), icon: FileText },
+    { id: 'music', label: t('artistNav.music'), icon: Headphones },
+    { id: 'social', label: t('artistNav.socialMedia'), icon: Share2 },
+    { id: 'gallery', label: t('artistNav.gallery'), icon: ImageIcon },
+    { id: 'view', label: t('artistNav.viewArtist'), icon: Eye },
+  ];
 
-      <FmCommonConfirmDialog
-        open={showDeleteConfirm}
-        onOpenChange={setShowDeleteConfirm}
-        title={t('buttons.deleteArtist')}
-        description={t('dialogs.deleteArtistConfirm')}
-        confirmText={t('buttons.delete')}
-        onConfirm={handleDelete}
-        variant="destructive"
-        isLoading={isDeleting}
+  const handleTabChange = (tabId: string) => {
+    if (tabId === 'view') {
+      navigate(`/artists/${artist?.id}`);
+    } else {
+      setActiveTab(tabId as ArtistTab);
+    }
+  };
+
+  return (
+    <>
+      <SideNavbarLayout
+        navigationGroups={navigationGroups}
+        activeItem={activeTab}
+        onItemChange={handleTabChange}
+      >
+        {activeTab === 'overview' && renderOverviewTab()}
+        {activeTab === 'music' && renderMusicTab()}
+        {activeTab === 'social' && renderSocialTab()}
+        {activeTab === 'gallery' && id && (
+          <ArtistManageGalleryTab
+            artistId={id}
+            artistName={name}
+            galleryId={artist?.gallery_id || null}
+          />
+        )}
+
+        <FmCommonConfirmDialog
+          open={showDeleteConfirm}
+          onOpenChange={setShowDeleteConfirm}
+          title={t('buttons.deleteArtist')}
+          description={t('dialogs.deleteArtistConfirm')}
+          confirmText={t('buttons.delete')}
+          onConfirm={handleDelete}
+          variant="destructive"
+          isLoading={isDeleting}
+        />
+      </SideNavbarLayout>
+
+      {/* Mobile bottom tab bar */}
+      <MobileBottomTabBar
+        tabs={mobileTabs}
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
       />
-    </SideNavbarLayout>
+    </>
   );
 }
