@@ -27,7 +27,8 @@
     "developerOnly": "Developer only",
     "adminOnly": "Admin only",
     "followOnInstagram": "Follow us on Instagram",
-    "accountSettings": "Account Settings"
+    "accountSettings": "Account Settings",
+    "artistProfile": "Artist Profile"
   },
   "buttons": {
     "save": "Save",
