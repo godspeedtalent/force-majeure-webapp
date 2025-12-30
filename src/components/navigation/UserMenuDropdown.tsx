@@ -340,7 +340,7 @@ export function UserMenuDropdown() {
             </div>
 
             <div
-              className='fixed inset-0 top-16 z-[100] animate-in fade-in duration-200'
+              className='fixed inset-0 top-16 z-[110] animate-in fade-in duration-200'
             >
               {/* Backdrop - only covers area below nav, click to close */}
               <div
