@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus, Trash2, Image as ImageIcon } from 'lucide-react';
+import { Plus, Trash2, Image as ImageIcon, Star } from 'lucide-react';
 import { supabase } from '@/shared';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -19,6 +19,7 @@ interface MediaItem {
   description: string | null;
   display_order: number;
   is_active: boolean;
+  is_cover: boolean;
 }
 
 interface ArtistManageGalleryTabProps {
@@ -43,9 +44,8 @@ export function ArtistManageGalleryTab({
   const { data: gallery, isLoading: galleryLoading } = useQuery({
     queryKey: ['artist-gallery', artistId],
     queryFn: async () => {
-      // If artist already has a gallery, fetch it
       if (galleryId) {
-        const { data, error } = await (supabase as any)
+        const { data, error } = await supabase
           .from('media_galleries')
           .select('*')
           .eq('id', galleryId)
@@ -65,11 +65,12 @@ export function ArtistManageGalleryTab({
     queryFn: async () => {
       if (!gallery?.id) return [];
       
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('media_items')
         .select('*')
         .eq('gallery_id', gallery.id)
         .eq('is_active', true)
+        .order('is_cover', { ascending: false }) // Cover first
         .order('display_order', { ascending: true });
       
       if (error) throw error;
@@ -102,16 +103,29 @@ export function ArtistManageGalleryTab({
   // Delete item mutation
   const deleteItemMutation = useMutation({
     mutationFn: async (itemId: string) => {
-      const { error } = await (supabase as any)
+      // Check if this is the cover image
+      const itemToDelete = items.find(i => i.id === itemId);
+      const wasCover = itemToDelete?.is_cover;
+
+      const { error } = await supabase
         .from('media_items')
         .update({ is_active: false })
         .eq('id', itemId);
       
       if (error) throw error;
+
+      // If we deleted the cover, clear the artist's image_url
+      if (wasCover) {
+        await supabase
+          .from('artists')
+          .update({ image_url: null })
+          .eq('id', artistId);
+      }
     },
     onSuccess: () => {
       toast.success(tToast('gallery.itemDeleted'));
       queryClient.invalidateQueries({ queryKey: ['artist-gallery-items', gallery?.id] });
+      queryClient.invalidateQueries({ queryKey: ['artist', artistId] });
       setDeleteItemId(null);
     },
     onError: (error) => {
@@ -119,9 +133,48 @@ export function ArtistManageGalleryTab({
     },
   });
 
+  // Set cover mutation
+  const setCoverMutation = useMutation({
+    mutationFn: async (itemId: string) => {
+      const item = items.find(i => i.id === itemId);
+      if (!item || !gallery?.id) throw new Error('Item not found');
+
+      // Unset current cover(s)
+      await supabase
+        .from('media_items')
+        .update({ is_cover: false })
+        .eq('gallery_id', gallery.id);
+
+      // Set new cover
+      const { error: coverError } = await supabase
+        .from('media_items')
+        .update({ is_cover: true })
+        .eq('id', itemId);
+
+      if (coverError) throw coverError;
+
+      // Update artist's image_url to match cover
+      const { error: artistError } = await supabase
+        .from('artists')
+        .update({ image_url: item.file_path })
+        .eq('id', artistId);
+
+      if (artistError) throw artistError;
+    },
+    onSuccess: () => {
+      toast.success(tToast('gallery.coverSet'));
+      queryClient.invalidateQueries({ queryKey: ['artist-gallery-items', gallery?.id] });
+      queryClient.invalidateQueries({ queryKey: ['artist', artistId] });
+    },
+    onError: (error) => {
+      handleError(error, { title: tToast('gallery.setCoverFailed') });
+    },
+  });
+
   const handleFileUpload = async (file: File) => {
     if (!gallery?.id) return;
 
+    const isFirstImage = items.length === 0;
     setIsUploading(true);
     try {
       const result = await imageUploadService.uploadImage({
@@ -129,21 +182,31 @@ export function ArtistManageGalleryTab({
         isPrimary: false,
       });
 
-      // Create media item
-      const { error } = await (supabase as any)
+      // Create media item - first image becomes cover
+      const { error } = await supabase
         .from('media_items')
         .insert({
           gallery_id: gallery.id,
           file_path: result.publicUrl,
-          media_type: 'image',
+          media_type: 'image' as const,
           display_order: items.length,
           is_active: true,
+          is_cover: isFirstImage,
         });
 
       if (error) throw error;
 
+      // If first image, also update artist's image_url
+      if (isFirstImage) {
+        await supabase
+          .from('artists')
+          .update({ image_url: result.publicUrl })
+          .eq('id', artistId);
+      }
+
       toast.success(tToast('gallery.imageUploaded'));
       queryClient.invalidateQueries({ queryKey: ['artist-gallery-items', gallery?.id] });
+      queryClient.invalidateQueries({ queryKey: ['artist', artistId] });
     } catch (error) {
       handleError(error, { title: tToast('gallery.uploadFailed') });
     } finally {
@@ -238,18 +301,32 @@ export function ArtistManageGalleryTab({
                   alt={item.title || `Photo ${index + 1}`}
                   className='w-full h-full object-cover'
                 />
+                {/* Cover badge */}
+                {item.is_cover && (
+                  <div className='absolute top-2 left-2 px-2 py-1 bg-primary text-primary-foreground text-xs flex items-center gap-1'>
+                    <Star className='h-3 w-3 fill-current' />
+                    {t('gallery.profilePhoto')}
+                  </div>
+                )}
                 {/* Overlay on hover */}
-                <div className='absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center'>
+                <div className='absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2'>
+                  {!item.is_cover && (
+                    <button
+                      onClick={() => setCoverMutation.mutate(item.id)}
+                      disabled={setCoverMutation.isPending}
+                      className='p-2 bg-primary hover:bg-primary/80 text-primary-foreground transition-colors'
+                      title={t('gallery.setAsProfile')}
+                    >
+                      <Star className='h-5 w-5' />
+                    </button>
+                  )}
                   <button
                     onClick={() => setDeleteItemId(item.id)}
-                    className='p-2 bg-red-600 hover:bg-red-700 text-white transition-colors'
+                    className='p-2 bg-destructive hover:bg-destructive/80 text-destructive-foreground transition-colors'
+                    title={t('buttons.delete')}
                   >
                     <Trash2 className='h-5 w-5' />
                   </button>
-                </div>
-                {/* Order indicator */}
-                <div className='absolute top-2 left-2 px-2 py-1 bg-black/70 text-white text-xs'>
-                  {index + 1}
                 </div>
               </div>
             ))}
