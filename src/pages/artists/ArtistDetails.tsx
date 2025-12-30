@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import { Music2, Calendar, ArrowLeft, Pencil } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/display/FmCommonCard';
@@ -10,10 +12,17 @@ import { useArtistById, useArtistEvents } from '@/shared/api/queries/artistQueri
 import { DetailPageWrapper } from '@/components/layout/DetailPageWrapper';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/shared';
 import type { ArtistRecording } from '@/shared/api/queries/recordingQueries';
 
 const ARTIST_PLACEHOLDER_IMAGE = '/images/artist-showcase/DSC02275.jpg';
+
+interface GalleryImage {
+  id: string;
+  file_path: string;
+  is_cover: boolean;
+}
 
 export default function ArtistDetails() {
   const { id } = useParams<{ id: string }>();
@@ -25,6 +34,29 @@ export default function ArtistDetails() {
 
   const { data: artist, isLoading, error } = useArtistById(id);
   const { data: upcomingEvents } = useArtistEvents(id);
+  
+  // State for selected gallery image
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  // Fetch gallery images
+  const { data: galleryImages = [] } = useQuery({
+    queryKey: ['artist-gallery-images', artist?.gallery_id],
+    queryFn: async (): Promise<GalleryImage[]> => {
+      if (!artist?.gallery_id) return [];
+      
+      const { data, error } = await supabase
+        .from('media_items')
+        .select('id, file_path, is_cover')
+        .eq('gallery_id', artist.gallery_id)
+        .eq('is_active', true)
+        .order('is_cover', { ascending: false })
+        .order('display_order', { ascending: true });
+      
+      if (error) return [];
+      return data || [];
+    },
+    enabled: !!artist?.gallery_id,
+  });
 
   // Smart back navigation - go back if there's history, otherwise go to artists list
   const handleBack = () => {
@@ -58,7 +90,14 @@ export default function ArtistDetails() {
       useLayout={true}
     >
       {(artist) => {
-        const heroImage = artist.image_url || ARTIST_PLACEHOLDER_IMAGE;
+        // Use gallery images if available, otherwise fall back to image_url
+        const hasGalleryImages = galleryImages.length > 0;
+        const mainImage = hasGalleryImages 
+          ? galleryImages[selectedImageIndex]?.file_path 
+          : (artist.image_url || ARTIST_PLACEHOLDER_IMAGE);
+        const thumbnailImages = hasGalleryImages 
+          ? galleryImages.filter((_, i) => i !== selectedImageIndex).slice(0, 3)
+          : [];
 
         return (
           <div className='min-h-screen'>
@@ -94,13 +133,45 @@ export default function ArtistDetails() {
               <div className='bg-black/60 backdrop-blur-md border border-white/20 rounded-none p-[30px]'>
                 <div className='flex flex-col gap-6 md:flex-row md:items-stretch'>
                   {/* Left: Image Column */}
-                  <div className='w-full md:w-64 flex-shrink-0'>
-                    <div className='overflow-hidden rounded-none border border-white/15 bg-white/5 shadow-inner'>
-                      <img
-                        src={heroImage}
-                        alt={artist.name}
-                        className='aspect-[3/4] w-full object-cover'
-                      />
+                  <div className='w-full md:w-64 flex-shrink-0 flex flex-col gap-[10px]'>
+                    {/* Mobile: Main image + additional photos side by side */}
+                    {/* Desktop: Main image with additional photos below */}
+                    <div className='flex flex-row gap-[10px] md:flex-col'>
+                      {/* Main Profile Image */}
+                      <div className='flex-1 md:flex-none overflow-hidden rounded-none border border-white/15 bg-white/5 shadow-inner'>
+                        <img
+                          src={mainImage}
+                          alt={artist.name}
+                          className='aspect-[3/4] w-full object-cover'
+                        />
+                      </div>
+
+                      {/* Additional Photos - Column on mobile (right of main), row on desktop (below main) */}
+                      {thumbnailImages.length > 0 && (
+                        <div className='flex flex-col justify-between gap-[5px] w-16 md:w-full md:flex-row md:gap-[10px]'>
+                          {thumbnailImages.map((img) => {
+                            const originalIndex = galleryImages.findIndex(g => g.id === img.id);
+                            return (
+                              <button
+                                key={img.id}
+                                type='button'
+                                onClick={() => setSelectedImageIndex(originalIndex)}
+                                className={cn(
+                                  'aspect-square flex-1 overflow-hidden rounded-none border border-white/15 bg-white/5',
+                                  'transition-all duration-200',
+                                  'cursor-pointer hover:border-fm-gold/50 hover:scale-105 hover:shadow-lg hover:shadow-fm-gold/20'
+                                )}
+                              >
+                                <img
+                                  src={img.file_path}
+                                  alt={`${artist.name} gallery`}
+                                  className='w-full h-full object-cover'
+                                />
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   </div>
 

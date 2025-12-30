@@ -48,6 +48,7 @@ export interface ArtistWithDetails extends Artist {
   created_at: string;
   updated_at: string;
   user_id?: string | null;
+  gallery_id?: string | null;
   artist_genres?: ArtistGenreRelation[];
   artist_recordings?: ArtistRecording[];
 }
