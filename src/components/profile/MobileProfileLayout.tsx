@@ -24,6 +24,10 @@ import { Badge } from '@/components/common/shadcn/badge';
 import { UserArtistTab } from '@/components/profile/UserArtistTab';
 import { FmI18nCommon } from '@/components/common/i18n';
 import { ProfileLayoutProps } from './types';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { useAuth } from '@/features/auth/services/AuthContext';
+
+const GOLD_TAB_CLASSES = 'rounded-none data-[state=active]:bg-fm-gold data-[state=active]:text-black data-[state=active]:shadow-none font-canela';
 
 export const MobileProfileLayout = ({
   user,
@@ -37,6 +41,11 @@ export const MobileProfileLayout = ({
 }: ProfileLayoutProps) => {
   const navigate = useNavigate();
   const { t } = useTranslation('common');
+  const { isAdmin } = useUserPermissions();
+  const { user: currentUser } = useAuth();
+  
+  // Edit profile only available to the profile owner or admins
+  const canEditProfile = isAdmin() || currentUser?.id === user.id;
 
   return (
     <div className='h-[calc(100vh-64px)] flex flex-col overflow-hidden'>
@@ -54,15 +63,17 @@ export const MobileProfileLayout = ({
             {t('profile.back')}
           </FmCommonButton>
 
-          <FmCommonButton
-            variant='default'
-            size='sm'
-            onClick={() => navigate('/profile/edit')}
-            icon={Settings}
-            className='bg-background/80 backdrop-blur-sm'
-          >
-            {t('profile.edit')}
-          </FmCommonButton>
+          {canEditProfile && (
+            <FmCommonButton
+              variant='default'
+              size='sm'
+              onClick={() => navigate('/profile/edit')}
+              icon={Settings}
+              className='bg-background/80 backdrop-blur-sm'
+            >
+              {t('profile.edit')}
+            </FmCommonButton>
+          )}
         </div>
 
         {/* Profile Info Row - Avatar + Name */}
@@ -86,9 +97,9 @@ export const MobileProfileLayout = ({
       {/* Tabs Container - Fixed tabs, scrollable content */}
       <Tabs defaultValue='upcoming' className='flex-1 flex flex-col overflow-hidden px-4'>
         <TabsList className={`grid w-full flex-shrink-0 ${hasLinkedArtist ? 'grid-cols-3' : 'grid-cols-2'}`}>
-          <TabsTrigger value='upcoming'>{t('profile.shows')}</TabsTrigger>
+          <TabsTrigger value='upcoming' className={GOLD_TAB_CLASSES}>{t('profile.shows')}</TabsTrigger>
           {hasLinkedArtist && (
-            <TabsTrigger value='artist' className='flex items-center gap-1'>
+            <TabsTrigger value='artist' className={`flex items-center gap-1 ${GOLD_TAB_CLASSES}`}>
               {loadingArtist ? (
                 <div className='h-3 w-3 border-2 border-fm-gold/30 border-t-fm-gold rounded-full animate-spin' />
               ) : (
@@ -97,7 +108,7 @@ export const MobileProfileLayout = ({
               {t('profile.artist')}
             </TabsTrigger>
           )}
-          <TabsTrigger value='account'>{t('profile.account')}</TabsTrigger>
+          <TabsTrigger value='account' className={GOLD_TAB_CLASSES}>{t('profile.account')}</TabsTrigger>
         </TabsList>
 
         {/* Scrollable Content Area */}
