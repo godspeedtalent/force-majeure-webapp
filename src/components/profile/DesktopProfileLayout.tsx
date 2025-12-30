@@ -147,7 +147,7 @@ export const DesktopProfileLayout = ({
                       {upcomingShows.map(event => {
                         const eventDate = new Date(event.date);
                         const formattedDate = eventDate.toLocaleDateString(
-                          'en-US',
+                          undefined,
                           {
                             weekday: 'short',
                             month: 'short',
@@ -156,7 +156,7 @@ export const DesktopProfileLayout = ({
                           }
                         );
                         const formattedTime = eventDate.toLocaleTimeString(
-                          'en-US',
+                          undefined,
                           {
                             hour: 'numeric',
                             minute: '2-digit',

@@ -77,11 +77,12 @@ function convertRegistrationToFormData(
   const pressImages = registration.press_images || [];
 
   // Build tracks array from stored URLs
+  // Note: Track names use translation keys that will be resolved in the component
   const tracks: ArtistRegistrationFormData['tracks'] = [];
   if (registration.spotify_track_url) {
     tracks.push({
       id: 'spotify-track',
-      name: 'Spotify Track',
+      name: 'spotifyTrack', // Translation key - will be resolved with t()
       url: registration.spotify_track_url,
       platform: 'spotify',
       recordingType: 'track',
@@ -91,7 +92,7 @@ function convertRegistrationToFormData(
   if (registration.soundcloud_set_url) {
     tracks.push({
       id: 'soundcloud-set',
-      name: 'DJ Set',
+      name: 'djSet', // Translation key - will be resolved with t()
       url: registration.soundcloud_set_url,
       platform: 'soundcloud',
       recordingType: 'dj_set',
