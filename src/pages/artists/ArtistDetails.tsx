@@ -80,7 +80,7 @@ export default function ArtistDetails() {
                       variant='default'
                       size='sm'
                       icon={Pencil}
-                      onClick={() => navigate(`/artists/manage/${id}`)}
+                      onClick={() => navigate(`/artists/${id}/manage`)}
                     >
                       {tCommon('buttons.edit')}
                     </FmCommonButton>
