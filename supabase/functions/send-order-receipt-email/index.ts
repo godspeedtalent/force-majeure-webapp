@@ -125,8 +125,9 @@ Deno.serve(async req => {
       );
     }
 
-    // Get recipient email - profiles is a single object from the join
-    const profile = order.profiles as { email: string; full_name: string } | null;
+    // Get recipient email - profiles returns as array from join, get first element
+    const profilesArray = order.profiles as { email: string; full_name: string }[] | null;
+    const profile = profilesArray?.[0] ?? null;
     const recipientEmail = profile?.email;
     const recipientName = profile?.full_name || 'Valued Customer';
 
@@ -143,8 +144,10 @@ Deno.serve(async req => {
 
     console.log('Generating email content for:', recipientEmail);
 
-    // events is a single object from the join
-    const event = order.events as { id: string; title: string; start_time: string; venues: { name: string; address: string } | null } | null;
+    // events returns as array from join, get first element
+    const eventsArray = order.events as { id: string; title: string; start_time: string; venues: { name: string; address: string }[] }[] | null;
+    const event = eventsArray?.[0] ?? null;
+    const venue = event?.venues?.[0] ?? null;
 
     // Generate HTML email content
     const emailHTML = generateEmailHTML({
@@ -153,7 +156,7 @@ Deno.serve(async req => {
       purchaserName: recipientName,
       eventTitle: event?.title || 'Event',
       eventDate: event?.start_time || new Date().toISOString(),
-      venueName: event?.venues?.name || 'Venue',
+      venueName: venue?.name || 'Venue',
       items: order.order_items.map((item: any) => ({
         name: item.ticket_tiers?.name || 'Ticket',
         quantity: item.quantity,

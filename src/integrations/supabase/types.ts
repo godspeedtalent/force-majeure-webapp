@@ -128,6 +128,490 @@ export type Database = {
         }
         Relationships: []
       }
+      analytics_funnel_events: {
+        Row: {
+          cart_id: string | null
+          created_at: string
+          event_id: string
+          event_type: Database["public"]["Enums"]["funnel_event_type"]
+          id: string
+          metadata: Json | null
+          occurred_at: string
+          order_id: string | null
+          quantity: number | null
+          session_id: string
+          ticket_tier_id: string | null
+          time_since_event_view_ms: number | null
+          time_since_session_start_ms: number | null
+          user_id: string | null
+          value_cents: number | null
+        }
+        Insert: {
+          cart_id?: string | null
+          created_at?: string
+          event_id: string
+          event_type: Database["public"]["Enums"]["funnel_event_type"]
+          id?: string
+          metadata?: Json | null
+          occurred_at?: string
+          order_id?: string | null
+          quantity?: number | null
+          session_id: string
+          ticket_tier_id?: string | null
+          time_since_event_view_ms?: number | null
+          time_since_session_start_ms?: number | null
+          user_id?: string | null
+          value_cents?: number | null
+        }
+        Update: {
+          cart_id?: string | null
+          created_at?: string
+          event_id?: string
+          event_type?: Database["public"]["Enums"]["funnel_event_type"]
+          id?: string
+          metadata?: Json | null
+          occurred_at?: string
+          order_id?: string | null
+          quantity?: number | null
+          session_id?: string
+          ticket_tier_id?: string | null
+          time_since_event_view_ms?: number | null
+          time_since_session_start_ms?: number | null
+          user_id?: string | null
+          value_cents?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_funnel_events_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_funnel_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_funnel_events_ticket_tier_id_fkey"
+            columns: ["ticket_tier_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_tiers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_funnel_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analytics_funnel_events_archive: {
+        Row: {
+          archived_at: string
+          cart_id: string | null
+          created_at: string
+          event_id: string
+          event_type: Database["public"]["Enums"]["funnel_event_type"]
+          id: string
+          metadata: Json | null
+          occurred_at: string
+          order_id: string | null
+          quantity: number | null
+          session_id: string
+          ticket_tier_id: string | null
+          time_since_event_view_ms: number | null
+          time_since_session_start_ms: number | null
+          user_id: string | null
+          value_cents: number | null
+        }
+        Insert: {
+          archived_at?: string
+          cart_id?: string | null
+          created_at?: string
+          event_id: string
+          event_type: Database["public"]["Enums"]["funnel_event_type"]
+          id?: string
+          metadata?: Json | null
+          occurred_at?: string
+          order_id?: string | null
+          quantity?: number | null
+          session_id: string
+          ticket_tier_id?: string | null
+          time_since_event_view_ms?: number | null
+          time_since_session_start_ms?: number | null
+          user_id?: string | null
+          value_cents?: number | null
+        }
+        Update: {
+          archived_at?: string
+          cart_id?: string | null
+          created_at?: string
+          event_id?: string
+          event_type?: Database["public"]["Enums"]["funnel_event_type"]
+          id?: string
+          metadata?: Json | null
+          occurred_at?: string
+          order_id?: string | null
+          quantity?: number | null
+          session_id?: string
+          ticket_tier_id?: string | null
+          time_since_event_view_ms?: number | null
+          time_since_session_start_ms?: number | null
+          user_id?: string | null
+          value_cents?: number | null
+        }
+        Relationships: []
+      }
+      analytics_page_views: {
+        Row: {
+          created_at: string
+          id: string
+          page_path: string
+          page_title: string | null
+          page_type: string | null
+          referrer_page: string | null
+          resource_id: string | null
+          scroll_depth_percent: number | null
+          session_id: string
+          session_ref: string | null
+          source: Database["public"]["Enums"]["analytics_page_source"]
+          time_on_page_ms: number | null
+          user_agent: string | null
+          user_id: string | null
+          viewed_at: string
+          viewport_height: number | null
+          viewport_width: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          page_path: string
+          page_title?: string | null
+          page_type?: string | null
+          referrer_page?: string | null
+          resource_id?: string | null
+          scroll_depth_percent?: number | null
+          session_id: string
+          session_ref?: string | null
+          source?: Database["public"]["Enums"]["analytics_page_source"]
+          time_on_page_ms?: number | null
+          user_agent?: string | null
+          user_id?: string | null
+          viewed_at?: string
+          viewport_height?: number | null
+          viewport_width?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          page_path?: string
+          page_title?: string | null
+          page_type?: string | null
+          referrer_page?: string | null
+          resource_id?: string | null
+          scroll_depth_percent?: number | null
+          session_id?: string
+          session_ref?: string | null
+          source?: Database["public"]["Enums"]["analytics_page_source"]
+          time_on_page_ms?: number | null
+          user_agent?: string | null
+          user_id?: string | null
+          viewed_at?: string
+          viewport_height?: number | null
+          viewport_width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_page_views_session_ref_fkey"
+            columns: ["session_ref"]
+            isOneToOne: false
+            referencedRelation: "analytics_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_page_views_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analytics_page_views_archive: {
+        Row: {
+          archived_at: string
+          created_at: string
+          id: string
+          page_path: string
+          page_title: string | null
+          page_type: string | null
+          referrer_page: string | null
+          resource_id: string | null
+          scroll_depth_percent: number | null
+          session_id: string
+          session_ref: string | null
+          source: Database["public"]["Enums"]["analytics_page_source"]
+          time_on_page_ms: number | null
+          user_agent: string | null
+          user_id: string | null
+          viewed_at: string
+          viewport_height: number | null
+          viewport_width: number | null
+        }
+        Insert: {
+          archived_at?: string
+          created_at?: string
+          id?: string
+          page_path: string
+          page_title?: string | null
+          page_type?: string | null
+          referrer_page?: string | null
+          resource_id?: string | null
+          scroll_depth_percent?: number | null
+          session_id: string
+          session_ref?: string | null
+          source?: Database["public"]["Enums"]["analytics_page_source"]
+          time_on_page_ms?: number | null
+          user_agent?: string | null
+          user_id?: string | null
+          viewed_at?: string
+          viewport_height?: number | null
+          viewport_width?: number | null
+        }
+        Update: {
+          archived_at?: string
+          created_at?: string
+          id?: string
+          page_path?: string
+          page_title?: string | null
+          page_type?: string | null
+          referrer_page?: string | null
+          resource_id?: string | null
+          scroll_depth_percent?: number | null
+          session_id?: string
+          session_ref?: string | null
+          source?: Database["public"]["Enums"]["analytics_page_source"]
+          time_on_page_ms?: number | null
+          user_agent?: string | null
+          user_id?: string | null
+          viewed_at?: string
+          viewport_height?: number | null
+          viewport_width?: number | null
+        }
+        Relationships: []
+      }
+      analytics_performance: {
+        Row: {
+          created_at: string
+          endpoint: string | null
+          id: string
+          metadata: Json | null
+          metric_rating: string | null
+          metric_type: Database["public"]["Enums"]["performance_metric_type"]
+          metric_value: number
+          page_path: string
+          recorded_at: string
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          endpoint?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_rating?: string | null
+          metric_type: Database["public"]["Enums"]["performance_metric_type"]
+          metric_value: number
+          page_path: string
+          recorded_at?: string
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          endpoint?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_rating?: string | null
+          metric_type?: Database["public"]["Enums"]["performance_metric_type"]
+          metric_value?: number
+          page_path?: string
+          recorded_at?: string
+          session_id?: string
+        }
+        Relationships: []
+      }
+      analytics_sessions: {
+        Row: {
+          browser: string | null
+          created_at: string
+          device_type: string | null
+          ended_at: string | null
+          entry_page: string | null
+          exit_page: string | null
+          id: string
+          ip_address: unknown
+          os: string | null
+          page_count: number | null
+          referrer: string | null
+          screen_height: number | null
+          screen_width: number | null
+          session_id: string
+          started_at: string
+          total_duration_ms: number | null
+          user_agent: string | null
+          user_id: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+        }
+        Insert: {
+          browser?: string | null
+          created_at?: string
+          device_type?: string | null
+          ended_at?: string | null
+          entry_page?: string | null
+          exit_page?: string | null
+          id?: string
+          ip_address?: unknown
+          os?: string | null
+          page_count?: number | null
+          referrer?: string | null
+          screen_height?: number | null
+          screen_width?: number | null
+          session_id: string
+          started_at?: string
+          total_duration_ms?: number | null
+          user_agent?: string | null
+          user_id?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Update: {
+          browser?: string | null
+          created_at?: string
+          device_type?: string | null
+          ended_at?: string | null
+          entry_page?: string | null
+          exit_page?: string | null
+          id?: string
+          ip_address?: unknown
+          os?: string | null
+          page_count?: number | null
+          referrer?: string | null
+          screen_height?: number | null
+          screen_width?: number | null
+          session_id?: string
+          started_at?: string
+          total_duration_ms?: number | null
+          user_agent?: string | null
+          user_id?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analytics_sessions_archive: {
+        Row: {
+          archived_at: string
+          browser: string | null
+          created_at: string
+          device_type: string | null
+          ended_at: string | null
+          entry_page: string | null
+          exit_page: string | null
+          id: string
+          ip_address: unknown
+          os: string | null
+          page_count: number | null
+          referrer: string | null
+          screen_height: number | null
+          screen_width: number | null
+          session_id: string
+          started_at: string
+          total_duration_ms: number | null
+          user_agent: string | null
+          user_id: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+        }
+        Insert: {
+          archived_at?: string
+          browser?: string | null
+          created_at?: string
+          device_type?: string | null
+          ended_at?: string | null
+          entry_page?: string | null
+          exit_page?: string | null
+          id?: string
+          ip_address?: unknown
+          os?: string | null
+          page_count?: number | null
+          referrer?: string | null
+          screen_height?: number | null
+          screen_width?: number | null
+          session_id: string
+          started_at?: string
+          total_duration_ms?: number | null
+          user_agent?: string | null
+          user_id?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Update: {
+          archived_at?: string
+          browser?: string | null
+          created_at?: string
+          device_type?: string | null
+          ended_at?: string | null
+          entry_page?: string | null
+          exit_page?: string | null
+          id?: string
+          ip_address?: unknown
+          os?: string | null
+          page_count?: number | null
+          referrer?: string | null
+          screen_height?: number | null
+          screen_width?: number | null
+          session_id?: string
+          started_at?: string
+          total_duration_ms?: number | null
+          user_agent?: string | null
+          user_id?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Relationships: []
+      }
       app_settings: {
         Row: {
           created_at: string
@@ -999,6 +1483,7 @@ export type Database = {
           flag_name: string
           group_name: string | null
           id: string
+          is_archived: boolean
           is_enabled: boolean
           updated_at: string | null
         }
@@ -1009,6 +1494,7 @@ export type Database = {
           flag_name: string
           group_name?: string | null
           id?: string
+          is_archived?: boolean
           is_enabled?: boolean
           updated_at?: string | null
         }
@@ -1019,6 +1505,7 @@ export type Database = {
           flag_name?: string
           group_name?: string | null
           id?: string
+          is_archived?: boolean
           is_enabled?: boolean
           updated_at?: string | null
         }
@@ -1565,35 +2052,59 @@ export type Database = {
       }
       products: {
         Row: {
+          allow_backorder: boolean
+          category: string | null
           created_at: string
           description: string | null
           id: string
+          image_url: string | null
           is_active: boolean
+          low_stock_threshold: number | null
           metadata: Json | null
           name: string
           price_cents: number
+          sku: string | null
+          sort_order: number | null
+          stock_quantity: number | null
+          track_inventory: boolean
           type: string
           updated_at: string
         }
         Insert: {
+          allow_backorder?: boolean
+          category?: string | null
           created_at?: string
           description?: string | null
           id?: string
+          image_url?: string | null
           is_active?: boolean
+          low_stock_threshold?: number | null
           metadata?: Json | null
           name: string
           price_cents: number
+          sku?: string | null
+          sort_order?: number | null
+          stock_quantity?: number | null
+          track_inventory?: boolean
           type: string
           updated_at?: string
         }
         Update: {
+          allow_backorder?: boolean
+          category?: string | null
           created_at?: string
           description?: string | null
           id?: string
+          image_url?: string | null
           is_active?: boolean
+          low_stock_threshold?: number | null
           metadata?: Json | null
           name?: string
           price_cents?: number
+          sku?: string | null
+          sort_order?: number | null
+          stock_quantity?: number | null
+          track_inventory?: boolean
           type?: string
           updated_at?: string
         }
@@ -2888,6 +3399,59 @@ export type Database = {
       }
     }
     Views: {
+      analytics_daily_page_views: {
+        Row: {
+          avg_scroll_depth: number | null
+          avg_time_on_page_ms: number | null
+          day: string | null
+          page_path: string | null
+          page_type: string | null
+          unique_sessions: number | null
+          unique_users: number | null
+          view_count: number | null
+        }
+        Relationships: []
+      }
+      analytics_funnel_summary: {
+        Row: {
+          add_to_carts: number | null
+          avg_time_to_purchase_ms: number | null
+          cart_abandons: number | null
+          checkout_abandons: number | null
+          checkout_completes: number | null
+          checkout_starts: number | null
+          event_id: string | null
+          event_views: number | null
+          ticket_tier_views: number | null
+          total_revenue_cents: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_funnel_events_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analytics_performance_summary: {
+        Row: {
+          avg_value: number | null
+          day: string | null
+          good_count: number | null
+          metric_type:
+            | Database["public"]["Enums"]["performance_metric_type"]
+            | null
+          needs_improvement_count: number | null
+          p50_value: number | null
+          p75_value: number | null
+          p95_value: number | null
+          poor_count: number | null
+          sample_count: number | null
+        }
+        Relationships: []
+      }
       daily_scan_statistics: {
         Row: {
           duplicate_scans: number | null
@@ -2945,6 +3509,14 @@ export type Database = {
         Args: { p_retention_days?: number }
         Returns: number
       }
+      archive_old_analytics: {
+        Args: { p_retention_days?: number }
+        Returns: {
+          funnel_events_archived: number
+          page_views_archived: number
+          sessions_archived: number
+        }[]
+      }
       cleanup_old_ticketing_sessions: { Args: never; Returns: undefined }
       convert_hold_to_sale: { Args: { p_hold_id: string }; Returns: boolean }
       create_artist_gallery: {
@@ -2967,6 +3539,14 @@ export type Database = {
           expires_at: string
           hold_id: string
         }[]
+      }
+      decrement_product_stock: {
+        Args: { p_product_id: string; p_quantity: number }
+        Returns: boolean
+      }
+      end_analytics_session: {
+        Args: { p_session_id: string }
+        Returns: undefined
       }
       get_activity_log_archive_status: {
         Args: never
@@ -3112,6 +3692,33 @@ export type Database = {
         Args: { p_event_id: string }
         Returns: number
       }
+      increment_product_stock: {
+        Args: { p_product_id: string; p_quantity: number }
+        Returns: boolean
+      }
+      increment_recording_click: {
+        Args: { recording_id: string }
+        Returns: number
+      }
+      init_analytics_session: {
+        Args: {
+          p_browser?: string
+          p_device_type?: string
+          p_entry_page?: string
+          p_os?: string
+          p_referrer?: string
+          p_screen_height?: number
+          p_screen_width?: number
+          p_session_id: string
+          p_user_agent?: string
+          p_utm_campaign?: string
+          p_utm_content?: string
+          p_utm_medium?: string
+          p_utm_source?: string
+          p_utm_term?: string
+        }
+        Returns: string
+      }
       is_dev_admin: { Args: { user_id_param: string }; Returns: boolean }
       is_user_interested: {
         Args: { p_event_id: string; p_user_id: string }
@@ -3141,12 +3748,61 @@ export type Database = {
         }
         Returns: string
       }
+      record_funnel_event: {
+        Args: {
+          p_cart_id?: string
+          p_event_id: string
+          p_event_type: Database["public"]["Enums"]["funnel_event_type"]
+          p_metadata?: Json
+          p_order_id?: string
+          p_quantity?: number
+          p_session_id: string
+          p_ticket_tier_id?: string
+          p_value_cents?: number
+        }
+        Returns: string
+      }
+      record_page_view: {
+        Args: {
+          p_page_path: string
+          p_page_title?: string
+          p_page_type?: string
+          p_referrer_page?: string
+          p_resource_id?: string
+          p_session_id: string
+          p_source?: Database["public"]["Enums"]["analytics_page_source"]
+          p_user_agent?: string
+          p_viewport_height?: number
+          p_viewport_width?: number
+        }
+        Returns: string
+      }
+      record_performance_metric: {
+        Args: {
+          p_endpoint?: string
+          p_metadata?: Json
+          p_metric_rating?: string
+          p_metric_type: Database["public"]["Enums"]["performance_metric_type"]
+          p_metric_value: number
+          p_page_path: string
+          p_session_id: string
+        }
+        Returns: string
+      }
       refresh_all_table_metadata: { Args: never; Returns: Json }
       refresh_table_metadata: { Args: { p_table_name: string }; Returns: Json }
       release_ticket_hold: { Args: { p_hold_id: string }; Returns: boolean }
       trigger_activity_log_archive: {
         Args: { p_retention_days?: number }
         Returns: Json
+      }
+      update_page_view_duration: {
+        Args: {
+          p_scroll_depth_percent?: number
+          p_time_on_page_ms: number
+          p_view_id: string
+        }
+        Returns: undefined
       }
     }
     Enums: {
@@ -3171,8 +3827,33 @@ export type Database = {
         | "ticket_scanned"
         | "ticket_refunded"
         | "ticket_cancelled"
+      analytics_page_source:
+        | "direct"
+        | "internal"
+        | "external"
+        | "search_engine"
+        | "social"
+        | "email"
+        | "advertisement"
       app_role: "user" | "admin" | "developer" | "org_admin" | "org_staff"
+      funnel_event_type:
+        | "event_view"
+        | "ticket_tier_view"
+        | "add_to_cart"
+        | "checkout_start"
+        | "checkout_complete"
+        | "checkout_abandon"
+        | "cart_abandon"
       media_type: "image" | "video" | "audio"
+      performance_metric_type:
+        | "page_load"
+        | "first_contentful_paint"
+        | "largest_contentful_paint"
+        | "first_input_delay"
+        | "interaction_to_next_paint"
+        | "cumulative_layout_shift"
+        | "time_to_first_byte"
+        | "api_response"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -3323,8 +4004,36 @@ export const Constants = {
         "ticket_refunded",
         "ticket_cancelled",
       ],
+      analytics_page_source: [
+        "direct",
+        "internal",
+        "external",
+        "search_engine",
+        "social",
+        "email",
+        "advertisement",
+      ],
       app_role: ["user", "admin", "developer", "org_admin", "org_staff"],
+      funnel_event_type: [
+        "event_view",
+        "ticket_tier_view",
+        "add_to_cart",
+        "checkout_start",
+        "checkout_complete",
+        "checkout_abandon",
+        "cart_abandon",
+      ],
       media_type: ["image", "video", "audio"],
+      performance_metric_type: [
+        "page_load",
+        "first_contentful_paint",
+        "largest_contentful_paint",
+        "first_input_delay",
+        "interaction_to_next_paint",
+        "cumulative_layout_shift",
+        "time_to_first_byte",
+        "api_response",
+      ],
     },
   },
 } as const
