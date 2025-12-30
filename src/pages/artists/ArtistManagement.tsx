@@ -18,6 +18,8 @@ import {
   FaFacebook,
   FaTiktok,
   FaYoutube,
+  FaSoundcloud,
+  FaSpotify,
 } from 'react-icons/fa6';
 import { supabase, logger } from '@/shared';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
@@ -85,11 +87,14 @@ export default function ArtistManagement() {
   // Form state - Genres
   const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
 
-  // Form state - Social Links
+  // Form state - Social Links (stored in dedicated columns)
   const [instagram, setInstagram] = useState('');
+  const [tiktok, setTiktok] = useState('');
+  const [soundcloud, setSoundcloud] = useState('');
+  const [spotify, setSpotify] = useState('');
+  // Additional social links (stored in spotify_data JSON)
   const [twitter, setTwitter] = useState('');
   const [facebook, setFacebook] = useState('');
-  const [tiktok, setTiktok] = useState('');
   const [youtube, setYoutube] = useState('');
 
   // Recording modal state
@@ -135,6 +140,10 @@ export default function ArtistManagement() {
           name: data.name,
           bio: data.bio,
           website: data.website,
+          instagram_handle: instagram || null,
+          tiktok_handle: tiktok || null,
+          soundcloud_id: soundcloud || null,
+          spotify_id: spotify || null,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           spotify_data: data.spotify_data as any,
           updated_at: new Date().toISOString(),
@@ -197,14 +206,18 @@ export default function ArtistManagement() {
       setBio(artist.bio || '');
       setWebsite(artist.website || '');
 
-      // Parse metadata from spotify_data field (social links only)
+      // Populate social links from dedicated columns
+      setInstagram(artist.instagram_handle || '');
+      setTiktok(artist.tiktok_handle || '');
+      setSoundcloud(artist.soundcloud_id || '');
+      setSpotify(artist.spotify_id || '');
+
+      // Parse additional social links from spotify_data field
       const metadata = artist.spotify_data as ArtistMetadata | null;
-      if (metadata) {
-        setInstagram(metadata.socialLinks?.instagram || '');
-        setTwitter(metadata.socialLinks?.twitter || '');
-        setFacebook(metadata.socialLinks?.facebook || '');
-        setTiktok(metadata.socialLinks?.tiktok || '');
-        setYoutube(metadata.socialLinks?.youtube || '');
+      if (metadata?.socialLinks) {
+        setTwitter(metadata.socialLinks.twitter || '');
+        setFacebook(metadata.socialLinks.facebook || '');
+        setYoutube(metadata.socialLinks.youtube || '');
       }
     }
   }, [artist]);
@@ -413,6 +426,10 @@ export default function ArtistManagement() {
           name,
           bio,
           website,
+          instagram_handle: instagram || null,
+          tiktok_handle: tiktok || null,
+          soundcloud_id: soundcloud || null,
+          spotify_id: spotify || null,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           spotify_data: buildMetadata() as any,
           updated_at: new Date().toISOString(),
@@ -642,6 +659,35 @@ export default function ArtistManagement() {
 
   const renderSocialTab = () => (
     <div className='space-y-6'>
+      {/* Music Platforms */}
+      <FmCommonCard size='lg' hoverable={false}>
+        <FmI18nCommon i18nKey='sections.musicPlatforms' as='h2' className='text-xl font-semibold mb-6' />
+        <FmI18nCommon i18nKey='sections.musicPlatformsDescription' as='p' className='text-muted-foreground mb-6' />
+
+        <div className='space-y-4'>
+          <SocialInput
+            icon={FaSpotify}
+            label={t('labels.spotify')}
+            value={spotify}
+            onChange={setSpotify}
+            placeholder={t('placeholders.spotifyArtistId')}
+            iconColor='text-[#1DB954]'
+            urlBuilder={(id) => id ? `https://open.spotify.com/artist/${id}` : ''}
+          />
+
+          <SocialInput
+            icon={FaSoundcloud}
+            label={t('labels.soundcloud')}
+            value={soundcloud}
+            onChange={setSoundcloud}
+            placeholder={t('placeholders.soundcloudUrl')}
+            iconColor='text-[#FF5500]'
+            urlBuilder={(url) => url || ''}
+          />
+        </div>
+      </FmCommonCard>
+
+      {/* Social Media */}
       <FmCommonCard size='lg' hoverable={false}>
         <FmI18nCommon i18nKey='sections.socialMedia' as='h2' className='text-xl font-semibold mb-6' />
         <FmI18nCommon i18nKey='sections.socialMediaDescription' as='p' className='text-muted-foreground mb-6' />
@@ -655,6 +701,16 @@ export default function ArtistManagement() {
             placeholder={t('placeholders.username')}
             iconColor='text-[#E4405F]'
             urlBuilder={socialUrlBuilders.instagram}
+          />
+
+          <SocialInput
+            icon={FaTiktok}
+            label={t('labels.tiktok')}
+            value={tiktok}
+            onChange={setTiktok}
+            placeholder={t('placeholders.username')}
+            iconColor='text-white'
+            urlBuilder={socialUrlBuilders.tiktok}
           />
 
           <SocialInput
@@ -675,16 +731,6 @@ export default function ArtistManagement() {
             placeholder={t('placeholders.usernameOrPage')}
             iconColor='text-[#1877F2]'
             urlBuilder={socialUrlBuilders.facebook}
-          />
-
-          <SocialInput
-            icon={FaTiktok}
-            label={t('labels.tiktok')}
-            value={tiktok}
-            onChange={setTiktok}
-            placeholder={t('placeholders.username')}
-            iconColor='text-white'
-            urlBuilder={socialUrlBuilders.tiktok}
           />
 
           <SocialInput
