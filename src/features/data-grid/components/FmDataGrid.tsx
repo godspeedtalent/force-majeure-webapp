@@ -125,6 +125,23 @@ export function FmDataGrid<T extends Record<string, any>>({
   exportFilename,
 }: FmDataGridProps<T>) {
   const { t } = useTranslation('common');
+  const isMobile = useIsMobile();
+
+  // Render mobile view on small screens
+  if (isMobile) {
+    return (
+      <FmMobileDataGrid
+        data={data}
+        columns={columns}
+        actions={actions}
+        loading={loading}
+        className={className}
+        onUpdate={onUpdate}
+        resourceName={resourceName}
+        pageSize={pageSize}
+      />
+    );
+  }
 
   // Custom hooks for state management
   const gridState = useDataGridState({ dataLength: data.length });
