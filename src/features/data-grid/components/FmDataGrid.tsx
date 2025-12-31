@@ -127,7 +127,18 @@ export function FmDataGrid<T extends Record<string, any>>({
   const { t } = useTranslation('common');
   const isMobile = useIsMobile();
 
-  // Render mobile view on small screens
+  // Custom hooks for state management - must be called before any conditional returns
+  const gridState = useDataGridState({ dataLength: data.length });
+  const selection = useDataGridSelection();
+  const filters = useDataGridFilters({
+    data,
+    columns,
+    sortColumn: gridState.sortColumn,
+    sortDirection: gridState.sortDirection,
+  });
+  const ui = useDataGridUI();
+
+  // Render mobile view on small screens (after all hooks)
   if (isMobile) {
     return (
       <FmMobileDataGrid
@@ -142,17 +153,6 @@ export function FmDataGrid<T extends Record<string, any>>({
       />
     );
   }
-
-  // Custom hooks for state management
-  const gridState = useDataGridState({ dataLength: data.length });
-  const selection = useDataGridSelection();
-  const filters = useDataGridFilters({
-    data,
-    columns,
-    sortColumn: gridState.sortColumn,
-    sortDirection: gridState.sortDirection,
-  });
-  const ui = useDataGridUI();
 
   // Column Resize State
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
