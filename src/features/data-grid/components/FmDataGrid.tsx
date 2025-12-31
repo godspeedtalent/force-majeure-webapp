@@ -8,7 +8,7 @@ import React, {
 import { useTranslation } from 'react-i18next';
 import { Table, TableBody, TableCell, TableRow } from '@/components/common/shadcn/table';
 import { toast } from 'sonner';
-import { cn } from '@/shared';
+import { cn, useIsMobile } from '@/shared';
 import { useDataGridKeyboardNav } from '../hooks/useDataGridKeyboardNav';
 import { useDataGridVirtualization } from '../hooks/useDataGridVirtualization';
 import { useDataGridState } from '../hooks/useDataGridState';
@@ -34,6 +34,7 @@ import { FmDataGridNewRow } from './table/FmDataGridNewRow';
 import { FmDataGridPagination } from './table/FmDataGridPagination';
 import { FmDataGridBatchDeleteDialog } from './table/FmDataGridDialogs';
 import { ContextMenuAction } from '@/components/common/modals/FmCommonContextMenu';
+import { FmMobileDataGrid } from './mobile';
 
 /**
  * Option for select-type columns
