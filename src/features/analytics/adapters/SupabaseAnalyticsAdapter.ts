@@ -73,7 +73,7 @@ export class SupabaseAnalyticsAdapter implements AnalyticsAdapter {
     }
   }
 
-  async writePageView(entry: PageViewEntry): Promise<AdapterResult<string>> {
+  async writePageView(entry: PageViewEntry & { timeOnPageMs?: number; scrollDepthPercent?: number }): Promise<AdapterResult<string>> {
     try {
       const { data, error } = await (supabase as AnySupabase).rpc('record_page_view', {
         p_session_id: entry.sessionId,
@@ -93,7 +93,18 @@ export class SupabaseAnalyticsAdapter implements AnalyticsAdapter {
         return { success: false, error: error.message };
       }
 
-      return { success: true, data: data as string };
+      const viewId = data as string;
+
+      // If time/scroll data was provided (from batched entry), update immediately after insert
+      if (viewId && (entry.timeOnPageMs !== undefined || entry.scrollDepthPercent !== undefined)) {
+        await this.updatePageViewDuration(
+          viewId,
+          entry.timeOnPageMs || 0,
+          entry.scrollDepthPercent
+        );
+      }
+
+      return { success: true, data: viewId };
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error';
       analyticsLogger.error('Exception in writePageView', { error: message });
@@ -517,6 +528,31 @@ export class SupabaseAnalyticsAdapter implements AnalyticsAdapter {
     }
   }
 
+  async getActiveSessionsCount(): Promise<AdapterResult<number>> {
+    try {
+      // Consider a session "active" if it started within the last 30 minutes
+      // and hasn't ended yet (ended_at is null)
+      const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+
+      const { count, error } = await (supabase as AnySupabase)
+        .from('analytics_sessions')
+        .select('*', { count: 'exact', head: true })
+        .gte('started_at', thirtyMinutesAgo.toISOString())
+        .is('ended_at', null);
+
+      if (error) {
+        analyticsLogger.error('Failed to get active sessions count', { error: error.message });
+        return { success: false, error: error.message };
+      }
+
+      return { success: true, data: count || 0 };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      analyticsLogger.error('Exception in getActiveSessionsCount', { error: message });
+      return { success: false, error: message };
+    }
+  }
+
   async getOverviewStats(
     startDate: Date,
     endDate: Date
@@ -528,6 +564,7 @@ export class SupabaseAnalyticsAdapter implements AnalyticsAdapter {
       avgSessionDuration: number;
       avgPagesPerSession: number;
       bounceRate: number;
+      activeSessions: number;
     }>
   > {
     try {
@@ -541,7 +578,7 @@ export class SupabaseAnalyticsAdapter implements AnalyticsAdapter {
       // Get session stats
       const { data: sessionData } = await (supabase as AnySupabase)
         .from('analytics_sessions')
-        .select('id, user_id, total_duration_ms, page_count')
+        .select('id, user_id, total_duration_ms, page_count, started_at')
         .gte('started_at', startDate.toISOString())
         .lte('started_at', endDate.toISOString());
 
@@ -550,6 +587,7 @@ export class SupabaseAnalyticsAdapter implements AnalyticsAdapter {
         user_id: string | null;
         total_duration_ms: number | null;
         page_count: number;
+        started_at: string;
       }
 
       const sessions: SessionRow[] = sessionData || [];
@@ -573,6 +611,12 @@ export class SupabaseAnalyticsAdapter implements AnalyticsAdapter {
       const bounceSessions = sessions.filter(s => s.page_count === 1).length;
       const bounceRate = totalSessions > 0 ? (bounceSessions / totalSessions) * 100 : 0;
 
+      // Active sessions = sessions that started in the last 30 minutes
+      const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+      const activeSessions = sessions.filter(
+        s => new Date(s.started_at) >= thirtyMinutesAgo
+      ).length;
+
       return {
         success: true,
         data: {
@@ -582,6 +626,7 @@ export class SupabaseAnalyticsAdapter implements AnalyticsAdapter {
           avgSessionDuration: Math.round(avgDuration),
           avgPagesPerSession: Math.round(avgPages * 100) / 100,
           bounceRate: Math.round(bounceRate * 100) / 100,
+          activeSessions,
         },
       };
     } catch (err) {

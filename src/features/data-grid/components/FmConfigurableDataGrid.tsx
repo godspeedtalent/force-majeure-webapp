@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { supabase } from '@/shared';
+import type { Json } from '@/integrations/supabase/types';
 import { FmDataGrid, DataGridColumn, DataGridAction } from './FmDataGrid';
 
 import { useTableSchema } from '../hooks/useTableSchema';
@@ -132,7 +133,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
     }
 
     try {
-      const { data: configData, error } = await (supabase as any)
+      const { data: configData, error } = await supabase
         .from('datagrid_configs')
         .select('config')
         .eq('user_id', user.id)
@@ -144,7 +145,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
       }
 
       if (configData?.config) {
-        setConfig(configData.config as GridConfig);
+        setConfig(configData.config as unknown as GridConfig);
       }
     } catch (error) {
       logger.error('Error loading grid config:', { error: error instanceof Error ? error.message : 'Unknown' });
@@ -157,13 +158,13 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
     if (!user?.id) return;
 
     try {
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('datagrid_configs')
         .upsert(
           {
             user_id: user.id,
             grid_id: gridId,
-            config: newConfig,
+            config: newConfig as unknown as Json,
             updated_at: new Date().toISOString(),
           },
           {
@@ -367,7 +368,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
 
     if (user?.id) {
       try {
-        const { error } = await (supabase as any)
+        const { error } = await supabase
           .from('datagrid_configs')
           .delete()
           .eq('user_id', user.id)

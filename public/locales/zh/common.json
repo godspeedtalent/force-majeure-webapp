@@ -27,7 +27,8 @@
     "developerOnly": "仅限开发者",
     "adminOnly": "仅限管理员",
     "followOnInstagram": "在Instagram上关注我们",
-    "accountSettings": "账户设置"
+    "accountSettings": "账户设置",
+    "artistProfile": "艺术家资料"
   },
   "buttons": {
     "save": "保存",
@@ -83,7 +84,15 @@
     "create": "创建",
     "submitRequest": "提交请求",
     "showArchived": "已归档 ({{count}})",
-    "hideArchived": "隐藏已归档"
+    "hideArchived": "隐藏已归档",
+    "limitedTickets": "限量门票",
+    "sellingFast": "热卖中",
+    "lastChance": "最后机会",
+    "soldOut": "已售罄",
+    "joinWaitlist": "加入等待名单",
+    "getTickets": "获取门票",
+    "processing": "处理中...",
+    "tryAgain": "重试"
   },
   "labels": {
     "email": "邮箱",
@@ -323,7 +332,10 @@
     "reloadPage": "重新加载页面",
     "goBack": "返回",
     "viewDetails": "查看详情",
-    "copyErrorDetails": "复制错误详情"
+    "copyErrorDetails": "复制错误详情",
+    "sectionError": "出错了",
+    "sectionErrorDescription": "加载{{section}}部分时出现问题。",
+    "genericSectionError": "加载此部分时出现问题。"
   },
   "errorOverlay": {
     "errorMessage": "错误消息",
@@ -2748,6 +2760,9 @@
     "core": "核心",
     "adminControls": "管理员控制",
     "developerHome": "开发者主页",
+    "dashboards": "仪表板",
+    "analytics": "分析",
+    "albumRatings": "专辑评分",
     "subdomains": "子域名",
     "sonicGauntlet": "Sonic Gauntlet",
     "noSubdomains": "没有启用的子域名",

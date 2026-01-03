@@ -484,5 +484,3 @@ export const GalleryManagementSection = () => {
     </div>
   );
 };
-
-export default GalleryManagementSection;

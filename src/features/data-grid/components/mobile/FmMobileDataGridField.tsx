@@ -3,6 +3,10 @@ import { FmMobileDataGridFieldProps } from './types';
 
 /**
  * Simple dumb component for rendering a single field (label: value pair) in a mobile card
+ *
+ * Text handling:
+ * - Titles and subtitles: 2-line clamp with ellipsis
+ * - Regular fields: wrap text, hyphenate long words if needed
  */
 export function FmMobileDataGridField({
   label,
@@ -14,7 +18,13 @@ export function FmMobileDataGridField({
 }: FmMobileDataGridFieldProps) {
   if (isTitle) {
     return (
-      <h3 className={cn('font-semibold text-foreground truncate', className)}>
+      <h3
+        className={cn(
+          'font-semibold text-foreground',
+          'line-clamp-2 break-words hyphens-auto',
+          className
+        )}
+      >
         {value}
       </h3>
     );
@@ -22,20 +32,26 @@ export function FmMobileDataGridField({
 
   if (isSubtitle) {
     return (
-      <p className={cn('text-sm text-muted-foreground truncate', className)}>
+      <p
+        className={cn(
+          'text-sm text-muted-foreground',
+          'line-clamp-2 break-words hyphens-auto',
+          className
+        )}
+      >
         {value}
       </p>
     );
   }
 
   return (
-    <div className={cn('flex flex-col gap-0.5', className)}>
+    <div className={cn('flex flex-col gap-0.5 min-w-0', className)}>
       {showLabel && (
-        <span className='text-xs text-muted-foreground uppercase tracking-wide'>
+        <span className='text-xs text-muted-foreground uppercase tracking-wide truncate'>
           {label}
         </span>
       )}
-      <span className='text-sm text-foreground truncate'>
+      <span className='text-sm text-foreground break-words hyphens-auto line-clamp-3'>
         {value ?? '-'}
       </span>
     </div>

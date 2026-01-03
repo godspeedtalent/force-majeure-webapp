@@ -200,6 +200,8 @@ export interface AnalyticsConfig {
   sampleRate: number;
   /** Paths to exclude from tracking */
   excludedPaths: string[];
+  /** User IDs to exclude from tracking (e.g., admin users, developers) */
+  excludedUserIds: string[];
   /** Enable console logging in development */
   consoleLogging: boolean;
 }
@@ -214,6 +216,7 @@ export const DEFAULT_ANALYTICS_CONFIG: AnalyticsConfig = {
   trackApiTiming: true,
   sampleRate: 1.0,
   excludedPaths: [],
+  excludedUserIds: [],
   consoleLogging: import.meta.env.DEV,
 };
 

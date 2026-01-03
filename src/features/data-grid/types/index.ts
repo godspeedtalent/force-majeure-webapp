@@ -22,6 +22,7 @@ export interface DataGridColumn<T = any> {
   render?: (value: any, row: T) => React.ReactNode;
   width?: string;
   isRelation?: boolean; // Mark this column as a foreign key relation
+  isImage?: boolean; // Mark this column as an image (for mobile layout)
   multiline?: boolean; // Use textarea for multiline text editing
   rows?: number; // Number of rows for multiline textarea (default: 3)
   type?:

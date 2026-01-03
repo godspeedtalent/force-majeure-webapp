@@ -5,7 +5,9 @@
  */
 
 import { useMemo } from 'react';
+import { HelpCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import { FmPortalTooltip } from '@/components/common/feedback/FmPortalTooltip';
 import type { PerformanceSummary, PerformanceMetricType } from '@/features/analytics';
 
 interface PerformanceMetricsProps {
@@ -20,6 +22,7 @@ const METRIC_CONFIG: Record<
     goodThreshold: number;
     poorThreshold: number;
     description: string;
+    tooltip: string;
   }
 > = {
   largest_contentful_paint: {
@@ -28,6 +31,7 @@ const METRIC_CONFIG: Record<
     goodThreshold: 2500,
     poorThreshold: 4000,
     description: 'Largest Contentful Paint',
+    tooltip: 'Measures how long it takes for the largest content element (image, text block, or video) to become visible. Good: ≤2.5s, Poor: >4s. Improve by optimizing images, using a CDN, and preloading key resources.',
   },
   first_input_delay: {
     name: 'FID',
@@ -35,6 +39,7 @@ const METRIC_CONFIG: Record<
     goodThreshold: 100,
     poorThreshold: 300,
     description: 'First Input Delay',
+    tooltip: 'Measures the time from when a user first interacts (click, tap, keypress) to when the browser responds. Good: ≤100ms, Poor: >300ms. Improve by reducing JavaScript execution time and breaking up long tasks.',
   },
   cumulative_layout_shift: {
     name: 'CLS',
@@ -42,6 +47,7 @@ const METRIC_CONFIG: Record<
     goodThreshold: 0.1,
     poorThreshold: 0.25,
     description: 'Cumulative Layout Shift',
+    tooltip: 'Measures visual stability by tracking unexpected layout shifts. Score is unitless (0-1+). Good: ≤0.1, Poor: >0.25. Improve by setting explicit dimensions for images/embeds and avoiding inserting content above existing content.',
   },
   interaction_to_next_paint: {
     name: 'INP',
@@ -49,6 +55,7 @@ const METRIC_CONFIG: Record<
     goodThreshold: 200,
     poorThreshold: 500,
     description: 'Interaction to Next Paint',
+    tooltip: 'Measures responsiveness to all user interactions throughout the page lifecycle. Replaced FID as a Core Web Vital in 2024. Good: ≤200ms, Poor: >500ms. Improve by optimizing event handlers and reducing main thread blocking.',
   },
   first_contentful_paint: {
     name: 'FCP',
@@ -56,6 +63,7 @@ const METRIC_CONFIG: Record<
     goodThreshold: 1800,
     poorThreshold: 3000,
     description: 'First Contentful Paint',
+    tooltip: 'Measures when the first text or image is painted on screen. Good: ≤1.8s, Poor: >3s. Improve by reducing server response time, eliminating render-blocking resources, and optimizing critical CSS.',
   },
   time_to_first_byte: {
     name: 'TTFB',
@@ -63,6 +71,7 @@ const METRIC_CONFIG: Record<
     goodThreshold: 800,
     poorThreshold: 1800,
     description: 'Time to First Byte',
+    tooltip: 'Measures how long it takes for the browser to receive the first byte from the server. Good: ≤800ms, Poor: >1.8s. Improve by optimizing server code, using a CDN, and enabling caching.',
   },
   page_load: {
     name: 'Page Load',
@@ -70,6 +79,7 @@ const METRIC_CONFIG: Record<
     goodThreshold: 3000,
     poorThreshold: 6000,
     description: 'Full page load time',
+    tooltip: 'Total time from navigation start until the page is fully loaded (including all resources). Good: ≤3s, Poor: >6s. Improve by reducing resource size, lazy loading non-critical resources, and optimizing network requests.',
   },
   api_response: {
     name: 'API Response',
@@ -77,6 +87,7 @@ const METRIC_CONFIG: Record<
     goodThreshold: 200,
     poorThreshold: 500,
     description: 'API response time',
+    tooltip: 'Measures how long API calls take to return data. Good: ≤200ms, Poor: >500ms. Improve by optimizing database queries, adding indexes, using caching layers, and reducing payload sizes.',
   },
 };
 
@@ -206,9 +217,21 @@ export function PerformanceMetrics({ data }: PerformanceMetricsProps) {
             {latestMetrics.map(metric => (
               <div key={metric.type} className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium font-canela">
-                    {metric.config.name}
-                  </span>
+                  <FmPortalTooltip
+                    content={
+                      <div className="max-w-xs">
+                        <div className="font-medium mb-1">{metric.config.description}</div>
+                        <div className="text-muted-foreground">{metric.config.tooltip}</div>
+                      </div>
+                    }
+                    side="top"
+                    delayDuration={200}
+                  >
+                    <span className="text-sm font-medium font-canela cursor-help flex items-center gap-1 hover:text-fm-gold transition-colors">
+                      {metric.config.name}
+                      <HelpCircle className="h-3 w-3 text-muted-foreground" />
+                    </span>
+                  </FmPortalTooltip>
                   <span className="text-xs text-muted-foreground">
                     {metric.sample_count} samples
                   </span>

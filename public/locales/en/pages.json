@@ -521,6 +521,48 @@
     "userMetrics": "User Metrics",
     "userMetricsDesc": "User engagement analytics"
   },
+  "analytics": {
+    "overview": {
+      "activeNow": "Active now",
+      "activeNowDesc": "Sessions in last 30 min",
+      "pageViews": "Page views",
+      "pageViewsDesc": "Total page views",
+      "sessions": "Sessions",
+      "sessionsDesc": "Total sessions",
+      "uniqueUsers": "Unique users",
+      "uniqueUsersDesc": "Unique visitors",
+      "avgSession": "Avg. session",
+      "avgSessionDesc": "Average session duration",
+      "pagesPerSession": "Pages/session",
+      "pagesPerSessionDesc": "Average pages per session",
+      "bounceRate": "Bounce rate",
+      "bounceRateDesc": "Single-page sessions"
+    },
+    "sessions": {
+      "title": "Recent sessions",
+      "empty": "No sessions recorded yet.",
+      "showing": "Showing {{count}} of {{total}}",
+      "searchPlaceholder": "Search sessions...",
+      "clearFilters": "Clear filters",
+      "filterBy": "Filter by:",
+      "device": "Device",
+      "allDevices": "All devices",
+      "browser": "Browser",
+      "allBrowsers": "All browsers",
+      "source": "Source",
+      "allSources": "All sources",
+      "noResults": "No sessions match your filters.",
+      "started": "Started",
+      "deviceLabel": "Device",
+      "browserLabel": "Browser",
+      "entry": "Entry",
+      "exit": "Exit",
+      "pages": "Pages",
+      "duration": "Duration",
+      "sourceLabel": "Source",
+      "direct": "Direct"
+    }
+  },
   "errors": {
     "404": {
       "title": "Page not found.",

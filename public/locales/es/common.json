@@ -27,7 +27,8 @@
     "developerOnly": "Solo desarrolladores",
     "adminOnly": "Solo administradores",
     "followOnInstagram": "Síguenos en Instagram",
-    "accountSettings": "Configuración de cuenta"
+    "accountSettings": "Configuración de cuenta",
+    "artistProfile": "Perfil de Artista"
   },
   "buttons": {
     "save": "Guardar",
@@ -83,7 +84,15 @@
     "create": "Crear",
     "submitRequest": "Enviar Solicitud",
     "showArchived": "Archivados ({{count}})",
-    "hideArchived": "Ocultar Archivados"
+    "hideArchived": "Ocultar Archivados",
+    "limitedTickets": "Entradas Limitadas",
+    "sellingFast": "Vendiendo Rápido",
+    "lastChance": "Última Oportunidad",
+    "soldOut": "Agotado",
+    "joinWaitlist": "Unirse a la Lista de Espera",
+    "getTickets": "Obtener Entradas",
+    "processing": "Procesando...",
+    "tryAgain": "Intentar de Nuevo"
   },
   "labels": {
     "email": "Correo Electrónico",
@@ -325,7 +334,10 @@
     "reloadPage": "Recargar Página",
     "goBack": "Volver",
     "viewDetails": "Ver detalles",
-    "copyErrorDetails": "Copiar detalles del error"
+    "copyErrorDetails": "Copiar detalles del error",
+    "sectionError": "Algo salió mal",
+    "sectionErrorDescription": "Hubo un problema al cargar la sección {{section}}.",
+    "genericSectionError": "Hubo un problema al cargar esta sección."
   },
   "errorOverlay": {
     "errorMessage": "Mensaje de Error",
@@ -2750,6 +2762,9 @@
     "core": "Principal",
     "adminControls": "Controles de Administrador",
     "developerHome": "Inicio de Desarrollador",
+    "dashboards": "Paneles",
+    "analytics": "Analíticas",
+    "albumRatings": "Calificaciones de Álbumes",
     "subdomains": "Subdominios",
     "sonicGauntlet": "Sonic Gauntlet",
     "noSubdomains": "No hay subdominios habilitados",

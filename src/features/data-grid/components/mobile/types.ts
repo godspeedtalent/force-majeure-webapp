@@ -9,6 +9,7 @@ export interface MobileCardFieldConfig {
   showLabel: boolean;
   isTitle?: boolean; // If true, renders as card title
   isSubtitle?: boolean; // If true, renders as secondary text
+  isImage?: boolean; // If true, renders as featured image in left column
 }
 
 /**
@@ -22,17 +23,20 @@ export interface FmMobileDataGridProps<T = any> {
   className?: string;
   onUpdate?: (item: T, columnKey: string, newValue: any) => Promise<void>;
   resourceName?: string;
-  
+
+  // Persistence
+  storageKey?: string; // Unique key for persisting grid state to localStorage
+
   // Mobile-specific configuration
   cardFieldConfig?: MobileCardFieldConfig[];
   onCardFieldConfigChange?: (config: MobileCardFieldConfig[]) => void;
-  
+
   // Pagination
   pageSize?: number;
   currentPage?: number;
   totalPages?: number;
   onPageChange?: (page: number) => void;
-  
+
   // Filtering
   searchQuery?: string;
   onSearchChange?: (query: string) => void;
@@ -40,7 +44,7 @@ export interface FmMobileDataGridProps<T = any> {
   onColumnFilter?: (columnKey: string, value: string) => void;
   onClearFilters?: () => void;
   activeFilterCount?: number;
-  
+
   // Sorting
   sortColumn?: string | null;
   sortDirection?: 'asc' | 'desc';

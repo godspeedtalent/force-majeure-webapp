@@ -1,11 +1,13 @@
 /**
  * Page Views Chart
  *
- * Line chart showing page views over time.
+ * Filled area line chart showing page views over time.
+ * Uses FmLineChart component with labeling support.
  */
 
-import { useMemo } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import { FmLineChart, FmLineChartDataPoint } from '@/components/common/charts';
 import type { DailyPageViewSummary } from '@/features/analytics';
 
 interface PageViewsChartProps {
@@ -13,8 +15,10 @@ interface PageViewsChartProps {
 }
 
 export function PageViewsChart({ data }: PageViewsChartProps) {
-  // Aggregate data by day
-  const chartData = useMemo(() => {
+  const [labels, setLabels] = useState<Record<string, string>>({});
+
+  // Aggregate data by day and convert to FmLineChart format
+  const chartData = useMemo((): FmLineChartDataPoint[] => {
     const byDay = new Map<string, { views: number; sessions: number; users: number }>();
 
     data.forEach(item => {
@@ -29,13 +33,50 @@ export function PageViewsChart({ data }: PageViewsChartProps) {
 
     return Array.from(byDay.entries())
       .map(([day, stats]) => ({
-        day,
-        ...stats,
+        id: day,
+        x: day,
+        value: stats.views,
+        secondaryValues: [
+          { label: 'Sessions', value: stats.sessions },
+          { label: 'Users', value: stats.users },
+        ],
       }))
-      .sort((a, b) => a.day.localeCompare(b.day));
+      .sort((a, b) => a.x.localeCompare(b.x));
   }, [data]);
 
-  const maxViews = Math.max(...chartData.map(d => d.views), 1);
+  // Calculate summary stats
+  const summaryStats = useMemo(() => {
+    const totalViews = chartData.reduce((sum, d) => sum + d.value, 0);
+    const totalSessions = chartData.reduce((sum, d) => {
+      const sessionVal = d.secondaryValues?.find(v => v.label === 'Sessions')?.value;
+      return sum + (typeof sessionVal === 'number' ? sessionVal : 0);
+    }, 0);
+    const avgViewsPerDay = chartData.length > 0 ? Math.round(totalViews / chartData.length) : 0;
+
+    return { totalViews, totalSessions, avgViewsPerDay };
+  }, [chartData]);
+
+  // Handle label changes
+  const handleLabelChange = useCallback((pointId: string, label: string | undefined) => {
+    setLabels(prev => {
+      if (label) {
+        return { ...prev, [pointId]: label };
+      } else {
+        const { [pointId]: _, ...rest } = prev;
+        return rest;
+      }
+    });
+  }, []);
+
+  // Format date for display
+  const formatDate = useCallback((dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }, []);
+
+  // Format tooltip value
+  const formatTooltipValue = useCallback((value: number) => {
+    return `${value.toLocaleString()} views`;
+  }, []);
 
   if (chartData.length === 0) {
     return (
@@ -58,59 +99,31 @@ export function PageViewsChart({ data }: PageViewsChartProps) {
         <CardTitle className="font-canela">Page views over time</CardTitle>
       </CardHeader>
       <CardContent>
-        {/* Simple bar chart visualization */}
-        <div className="h-[200px] flex items-end gap-1">
-          {chartData.map((item, index) => {
-            const height = (item.views / maxViews) * 100;
-            return (
-              <div
-                key={item.day}
-                className="flex-1 flex flex-col items-center gap-1 group"
-              >
-                <div className="relative w-full flex flex-col items-center">
-                  {/* Tooltip on hover */}
-                  <div className="absolute bottom-full mb-2 hidden group-hover:block bg-black/90 border border-white/20 px-2 py-1 text-xs whitespace-nowrap z-10">
-                    <div className="font-bold">{item.day}</div>
-                    <div>Views: {item.views.toLocaleString()}</div>
-                    <div>Sessions: {item.sessions.toLocaleString()}</div>
-                    <div>Users: {item.users.toLocaleString()}</div>
-                  </div>
-                  {/* Bar */}
-                  <div
-                    className="w-full bg-fm-gold/80 hover:bg-fm-gold transition-colors"
-                    style={{ height: `${Math.max(height, 2)}%` }}
-                  />
-                </div>
-                {/* Label every few days to avoid crowding */}
-                {(index === 0 || index === chartData.length - 1 || index % 3 === 0) && (
-                  <div className="text-[10px] text-muted-foreground rotate-45 origin-left mt-1">
-                    {new Date(item.day).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+        <FmLineChart
+          data={chartData}
+          formatXLabel={formatDate}
+          formatTooltipValue={formatTooltipValue}
+          labels={labels}
+          onLabelChange={handleLabelChange}
+        />
 
         {/* Summary stats */}
         <div className="flex gap-6 mt-6 pt-4 border-t border-white/10">
           <div>
             <div className="text-2xl font-bold font-canela">
-              {chartData.reduce((sum, d) => sum + d.views, 0).toLocaleString()}
+              {summaryStats.totalViews.toLocaleString()}
             </div>
             <div className="text-xs text-muted-foreground">Total views</div>
           </div>
           <div>
             <div className="text-2xl font-bold font-canela">
-              {chartData.reduce((sum, d) => sum + d.sessions, 0).toLocaleString()}
+              {summaryStats.totalSessions.toLocaleString()}
             </div>
             <div className="text-xs text-muted-foreground">Total sessions</div>
           </div>
           <div>
             <div className="text-2xl font-bold font-canela">
-              {Math.round(
-                chartData.reduce((sum, d) => sum + d.views, 0) / chartData.length
-              ).toLocaleString()}
+              {summaryStats.avgViewsPerDay.toLocaleString()}
             </div>
             <div className="text-xs text-muted-foreground">Avg views/day</div>
           </div>

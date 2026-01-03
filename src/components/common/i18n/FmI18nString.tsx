@@ -179,5 +179,3 @@ export const FmI18nValidation = (props: Omit<FmI18nStringProps, 'ns'>) => (
 export const FmI18nToasts = (props: Omit<FmI18nStringProps, 'ns'>) => (
   <FmI18nString {...props} ns="toasts" />
 );
-
-export default FmI18nString;

@@ -33,5 +33,3 @@ export const ForceMajeureRootLayout = ({
     </div>
   );
 };
-
-export default ForceMajeureRootLayout;

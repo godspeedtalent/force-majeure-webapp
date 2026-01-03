@@ -35,3 +35,6 @@ export type { UseDataGridVirtualizationReturn } from './useDataGridVirtualizatio
 
 export { useDataGridPersistence } from './useDataGridPersistence';
 export type { UseDataGridPersistenceReturn } from './useDataGridPersistence';
+
+export { useMobileGridPersistence } from './useMobileGridPersistence';
+export type { UseMobileGridPersistenceReturn } from './useMobileGridPersistence';

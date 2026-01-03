@@ -9,7 +9,6 @@ import {
   Compass,
   Database,
   ToggleLeft,
-  Settings2,
   ClipboardList,
 } from 'lucide-react';
 import { cn } from '@/shared';
@@ -127,11 +126,6 @@ export function FmMobileDevDrawer({
       id: 'features',
       label: t('mobileDevTools.tools.features'),
       icon: <ToggleLeft className="h-[24px] w-[24px]" strokeWidth={2} />,
-    },
-    {
-      id: 'session',
-      label: t('mobileDevTools.tools.session'),
-      icon: <Settings2 className="h-[24px] w-[24px]" strokeWidth={2} />,
     },
     {
       id: 'notes',

@@ -8,64 +8,31 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Check, X, Eye, Clock, CheckCircle2, XCircle, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { supabase, logger, cn } from '@/shared';
-import { useAuth } from '@/features/auth/services/AuthContext';
-import { RoleManagementService } from '@/shared/services/roleManagementService';
-import { ROLES } from '@/shared/auth/permissions';
+import { cn, logger } from '@/shared';
 import { FmConfigurableDataGrid, DataGridAction, DataGridColumn, DataGridColumns } from '@/features/data-grid';
-import { FmCommonButton } from '@/components/common/buttons';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/common/shadcn/dialog';
-import { Button } from '@/components/common/shadcn/button';
 import { FmSocialLinks } from '@/components/common/display/FmSocialLinks';
-
-interface ArtistRegistration {
-  id: string;
-  user_id: string | null;
-  artist_name: string;
-  email: string | null;
-  bio: string;
-  genres: string[] | null;
-  instagram_handle: string | null;
-  soundcloud_url: string | null;
-  soundcloud_id: string | null;
-  soundcloud_set_url: string | null;
-  spotify_url: string | null;
-  spotify_id: string | null;
-  spotify_track_url: string | null;
-  tiktok_handle: string | null;
-  profile_image_url: string | null;
-  press_images: string[] | null;
-  status: 'pending' | 'approved' | 'denied';
-  submitted_at: string;
-  reviewed_at: string | null;
-  reviewed_by: string | null;
-  reviewer_notes: string | null;
-  paid_show_count_group: string | null;
-  talent_differentiator: string | null;
-  crowd_sources: string | null;
-  city_id: string | null;
-  city?: { name: string; state: string } | null;
-}
-
-type StatusFilter = 'all' | 'pending' | 'approved' | 'denied';
+import {
+  useArtistRegistrationsData,
+  useArtistRegistrationActions,
+  ArtistRegistration,
+  StatusFilter,
+} from './hooks/useArtistRegistrations';
+import {
+  ArtistRegistrationDetailsModal,
+  ArtistRegistrationApproveModal,
+  ArtistRegistrationDenyModal,
+  ArtistRegistrationDeleteModal,
+} from './components/ArtistRegistrationModals';
 
 export function ArtistRegistrationsManagement() {
   const { t } = useTranslation('common');
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
 
-  // State
+  // Filter state
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('pending');
+
+  // Modal states
   const [selectedRegistration, setSelectedRegistration] = useState<ArtistRegistration | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showApproveConfirm, setShowApproveConfirm] = useState(false);
@@ -74,377 +41,16 @@ export function ArtistRegistrationsManagement() {
   const [registrationToAction, setRegistrationToAction] = useState<ArtistRegistration | null>(null);
   const [reviewerNotes, setReviewerNotes] = useState('');
 
-  // Fetch registrations
-  const { data: registrations = [], isLoading } = useQuery({
-    queryKey: ['artist-registrations', statusFilter],
-    queryFn: async () => {
-      let query = supabase
-        .from('artist_registrations')
-        .select(`
-          *,
-          city:cities!city_id(name, state)
-        `)
-        .order('submitted_at', { ascending: false });
+  // Data and actions
+  const { registrations, isLoading, genresMap, pendingCount } = useArtistRegistrationsData(statusFilter);
+  const { handleApprove, handleDeny, handleDelete } = useArtistRegistrationActions();
 
-      if (statusFilter !== 'all') {
-        query = query.eq('status', statusFilter);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        logger.error('Failed to fetch artist registrations', {
-          error: error.message,
-          code: error.code,
-          details: error.details,
-          hint: error.hint,
-        });
-        throw error;
-      }
-
-      return (data ?? []) as ArtistRegistration[];
-    },
-  });
-
-  // Fetch all genres for name lookup
-  const { data: genresMap = new Map() } = useQuery({
-    queryKey: ['genres-map'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('genres')
-        .select('id, name');
-
-      if (error) {
-        logger.error('Failed to fetch genres', { error: error.message });
-        return new Map<string, string>();
-      }
-
-      return new Map(data.map(g => [g.id, g.name]));
-    },
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-  });
-
-  // Fetch pending count for badge
-  const { data: pendingCount = 0 } = useQuery({
-    queryKey: ['artist-registrations-pending-count'],
-    queryFn: async () => {
-      const { count, error } = await supabase
-        .from('artist_registrations')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'pending');
-
-      if (error) throw error;
-      return count ?? 0;
-    },
-  });
-
-  // Handle approve - creates artist record and links to user
-  const handleApprove = async () => {
+  // Handle approve with error handling
+  const onApprove = async () => {
     if (!registrationToAction) return;
 
     try {
-      // Step 0: Re-fetch the registration fresh to avoid stale data
-      const { data: freshRegistration, error: fetchError } = await supabase
-        .from('artist_registrations')
-        .select('*')
-        .eq('id', registrationToAction.id)
-        .single();
-
-      if (fetchError || !freshRegistration) {
-        logger.error('Failed to fetch fresh registration data', {
-          error: fetchError?.message,
-          source: 'ArtistRegistrationsManagement',
-          details: { registrationId: registrationToAction.id },
-        });
-        throw fetchError || new Error('Registration not found');
-      }
-
-      // Use fresh data for all subsequent operations
-      const reg = freshRegistration;
-
-      // Step 1: Create the artist record from registration data
-      // For socials: trim whitespace and use URL as fallback for ID fields
-      const instagramHandle = reg.instagram_handle?.trim() || null;
-      const tiktokHandle = reg.tiktok_handle?.trim() || null;
-      // For soundcloud/spotify: prefer ID, fallback to URL
-      const soundcloudId = reg.soundcloud_id?.trim() || reg.soundcloud_url?.trim() || null;
-      const spotifyId = reg.spotify_id?.trim() || reg.spotify_url?.trim() || null;
-
-      const { data: newArtist, error: artistError } = await supabase
-        .from('artists')
-        .insert({
-          name: reg.artist_name,
-          bio: reg.bio || null,
-          image_url: reg.profile_image_url || null,
-          city_id: reg.city_id || null,
-          user_id: reg.user_id || null,
-          soundcloud_id: soundcloudId,
-          spotify_id: spotifyId,
-          instagram_handle: instagramHandle,
-          tiktok_handle: tiktokHandle,
-          // Legacy genre field is deprecated - we use artist_genres junction table now
-        })
-        .select('id')
-        .single();
-
-      if (artistError) {
-        logger.error('Failed to create artist from registration', {
-          error: artistError.message,
-          source: 'ArtistRegistrationsManagement',
-          details: {
-            registrationId: reg.id,
-            pgDetails: artistError.details,
-            pgHint: artistError.hint,
-            pgCode: artistError.code,
-          },
-        });
-        throw artistError;
-      }
-
-      logger.info('Artist created from registration', {
-        source: 'ArtistRegistrationsManagement',
-        details: { artistId: newArtist.id, registrationId: reg.id },
-      });
-
-      // Step 2: Create artist_genres entries for the new artist
-      const genreIds = reg.genres;
-      if (genreIds && genreIds.length > 0) {
-        const genreEntries = genreIds.map((genreId: string, index: number) => ({
-          artist_id: newArtist.id,
-          genre_id: genreId,
-          is_primary: index === 0, // First genre is primary
-        }));
-
-        const { error: genresError } = await supabase
-          .from('artist_genres')
-          .insert(genreEntries);
-
-        if (genresError) {
-          // Log but don't fail - artist was created successfully
-          logger.warn('Failed to create artist genres from registration', {
-            error: genresError.message,
-            source: 'ArtistRegistrationsManagement',
-            details: { artistId: newArtist.id, registrationId: reg.id, genreIds },
-          });
-        } else {
-          logger.info('Artist genres created from registration', {
-            source: 'ArtistRegistrationsManagement',
-            details: { artistId: newArtist.id, count: genreEntries.length },
-          });
-        }
-      }
-
-      // Step 3: Update the registration status to approved
-      const { error: updateError } = await supabase
-        .from('artist_registrations')
-        .update({
-          status: 'approved',
-          reviewed_at: new Date().toISOString(),
-          reviewed_by: user?.id || null,
-          reviewer_notes: reviewerNotes || null,
-        })
-        .eq('id', reg.id);
-
-      if (updateError) {
-        // If registration update fails, we should ideally rollback the artist creation
-        // but for now just log it - the artist was created successfully
-        logger.error('Failed to update registration status after artist creation', {
-          error: updateError.message,
-          source: 'ArtistRegistrationsManagement',
-          details: { registrationId: reg.id, artistId: newArtist.id },
-        });
-        throw updateError;
-      }
-
-      // Step 4: Create artist recordings from tracks_metadata (not profile URLs)
-      // Only create recordings from actual track/set URLs, not profile links
-      const tracksMetadata = reg.tracks_metadata as Array<{
-        name: string;
-        url: string;
-        coverArt: string | null;
-        platform: string;
-        recordingType: 'track' | 'dj_set';
-      }> | null;
-
-      if (tracksMetadata && tracksMetadata.length > 0) {
-        const recordingsToCreate = tracksMetadata.map((track, index) => ({
-          artist_id: newArtist.id,
-          name: track.name || `${reg.artist_name} - Recording ${index + 1}`,
-          url: track.url,
-          platform: track.platform,
-          cover_art: track.coverArt || null,
-          is_primary_dj_set: track.recordingType === 'dj_set' && index === 0,
-        }));
-
-        const { error: recordingsError } = await supabase
-          .from('artist_recordings')
-          .insert(recordingsToCreate);
-
-        if (recordingsError) {
-          // Log but don't fail - artist was created successfully
-          logger.warn('Failed to create artist recordings from registration', {
-            error: recordingsError.message,
-            source: 'ArtistRegistrationsManagement',
-            details: { artistId: newArtist.id, registrationId: reg.id },
-          });
-        } else {
-          logger.info('Artist recordings created from registration', {
-            source: 'ArtistRegistrationsManagement',
-            details: { artistId: newArtist.id, count: recordingsToCreate.length },
-          });
-        }
-      } else {
-        // Fallback: Use legacy URL fields if tracks_metadata is empty
-        // Only use the specific track/set URLs, NOT profile URLs
-        const legacyRecordings: Array<{
-          artist_id: string;
-          name: string;
-          url: string;
-          platform: string;
-          is_primary_dj_set: boolean;
-        }> = [];
-
-        if (reg.soundcloud_set_url) {
-          legacyRecordings.push({
-            artist_id: newArtist.id,
-            name: `${reg.artist_name} - DJ Set`,
-            url: reg.soundcloud_set_url,
-            platform: 'soundcloud',
-            is_primary_dj_set: true,
-          });
-        }
-        if (reg.spotify_track_url) {
-          legacyRecordings.push({
-            artist_id: newArtist.id,
-            name: `${reg.artist_name} - Track`,
-            url: reg.spotify_track_url,
-            platform: 'spotify',
-            is_primary_dj_set: false,
-          });
-        }
-
-        if (legacyRecordings.length > 0) {
-          const { error: recordingsError } = await supabase
-            .from('artist_recordings')
-            .insert(legacyRecordings);
-
-          if (recordingsError) {
-            logger.warn('Failed to create legacy artist recordings', {
-              error: recordingsError.message,
-              source: 'ArtistRegistrationsManagement',
-            });
-          } else {
-            logger.info('Legacy artist recordings created', {
-              source: 'ArtistRegistrationsManagement',
-              details: { artistId: newArtist.id, count: legacyRecordings.length },
-            });
-          }
-        }
-      }
-
-      // Step 5: Create gallery and populate with images
-      try {
-        // Create the gallery using the database function
-        const { data: galleryId, error: galleryError } = await supabase.rpc('create_artist_gallery', {
-          p_artist_id: newArtist.id,
-          p_artist_name: reg.artist_name,
-        });
-
-        if (galleryError) {
-          logger.warn('Failed to create artist gallery', {
-            error: galleryError.message,
-            source: 'ArtistRegistrationsManagement',
-            details: { artistId: newArtist.id },
-          });
-        } else if (galleryId) {
-          logger.info('Artist gallery created', {
-            source: 'ArtistRegistrationsManagement',
-            details: { artistId: newArtist.id, galleryId },
-          });
-
-          // Add profile image as cover if exists
-          if (reg.profile_image_url) {
-            const { error: coverError } = await supabase
-              .from('media_items')
-              .insert({
-                gallery_id: galleryId,
-                file_path: reg.profile_image_url,
-                media_type: 'image' as const,
-                is_cover: true,
-                display_order: 0,
-                is_active: true,
-              });
-
-            if (coverError) {
-              logger.warn('Failed to add profile image to gallery', {
-                error: coverError.message,
-                source: 'ArtistRegistrationsManagement',
-              });
-            }
-          }
-
-          // Add press images to gallery
-          if (reg.press_images && reg.press_images.length > 0) {
-            const pressImageItems = reg.press_images.map((url: string, index: number) => ({
-              gallery_id: galleryId,
-              file_path: url,
-              media_type: 'image' as const,
-              is_cover: false,
-              display_order: index + 1, // Start after cover image
-              is_active: true,
-            }));
-
-            const { error: pressError } = await supabase
-              .from('media_items')
-              .insert(pressImageItems);
-
-            if (pressError) {
-              logger.warn('Failed to add press images to gallery', {
-                error: pressError.message,
-                source: 'ArtistRegistrationsManagement',
-              });
-            } else {
-              logger.info('Press images added to gallery', {
-                source: 'ArtistRegistrationsManagement',
-                details: { artistId: newArtist.id, count: pressImageItems.length },
-              });
-            }
-          }
-        }
-      } catch (galleryErr) {
-        logger.warn('Gallery creation failed', {
-          error: galleryErr instanceof Error ? galleryErr.message : 'Unknown error',
-          source: 'ArtistRegistrationsManagement',
-        });
-      }
-
-      // Step 6: Assign artist role to the user (if they have a user_id)
-      if (reg.user_id) {
-        try {
-          await RoleManagementService.addRole(reg.user_id, ROLES.ARTIST);
-          logger.info('Artist role assigned to user', {
-            source: 'ArtistRegistrationsManagement',
-            details: { userId: reg.user_id, artistId: newArtist.id },
-          });
-        } catch (roleError) {
-          // Log but don't fail the approval - the artist was created successfully
-          logger.warn('Failed to assign artist role to user', {
-            error: roleError instanceof Error ? roleError.message : 'Unknown error',
-            source: 'ArtistRegistrationsManagement',
-            details: { userId: reg.user_id, artistId: newArtist.id },
-          });
-        }
-      }
-
-      toast.success(t('artistRegistrations.approveSuccess', { name: reg.artist_name }));
-      queryClient.invalidateQueries({ queryKey: ['artist-registrations'] });
-      queryClient.invalidateQueries({ queryKey: ['artist-registrations-pending-count'] });
-      // Refresh dev/admin data grids that show newly created artists/recordings
-      queryClient.invalidateQueries({ queryKey: ['admin-artists'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-recordings'] });
-      queryClient.invalidateQueries({ queryKey: ['recordings-count'] });
-      // Keep legacy invalidation for any other consumers
-      queryClient.invalidateQueries({ queryKey: ['artists'] });
+      await handleApprove(registrationToAction, reviewerNotes);
       setShowApproveConfirm(false);
       setRegistrationToAction(null);
       setReviewerNotes('');
@@ -464,65 +70,22 @@ export function ArtistRegistrationsManagement() {
     }
   };
 
-  // Handle deny
-  const handleDeny = async () => {
+  // Handle deny with error handling
+  const onDeny = async () => {
     if (!registrationToAction) return;
 
     try {
-      const updatePayload = {
-        status: 'denied' as const,
-        reviewed_at: new Date().toISOString(),
-        reviewed_by: user?.id || null,
-        reviewer_notes: reviewerNotes || null,
-      };
-
-      logger.info('Attempting to deny registration', {
-        source: 'ArtistRegistrationsManagement',
-        details: {
-          registrationId: registrationToAction.id,
-          userId: user?.id,
-          payload: updatePayload,
-        },
-      });
-
-      const { error, data } = await supabase
-        .from('artist_registrations')
-        .update(updatePayload)
-        .eq('id', registrationToAction.id)
-        .select();
-
-      if (error) {
-        logger.error('Supabase returned error', {
-          source: 'ArtistRegistrationsManagement',
-          details: {
-            errorMessage: error.message,
-            errorDetails: error.details,
-            errorHint: error.hint,
-            errorCode: error.code,
-          },
-        });
-        throw error;
-      }
-
-      logger.info('Deny succeeded', {
-        source: 'ArtistRegistrationsManagement',
-        details: { updatedData: data },
-      });
-
-      toast.success(t('artistRegistrations.denySuccess', { name: registrationToAction.artist_name }));
-      queryClient.invalidateQueries({ queryKey: ['artist-registrations'] });
-      queryClient.invalidateQueries({ queryKey: ['artist-registrations-pending-count'] });
+      await handleDeny(registrationToAction, reviewerNotes);
       setShowDenyConfirm(false);
       setRegistrationToAction(null);
       setReviewerNotes('');
     } catch (error) {
-      // PostgrestError has message, details, hint, and code properties
       const pgError = error as { message?: string; details?: string; hint?: string; code?: string };
       logger.error('Failed to deny registration', {
         error: pgError.message || 'Unknown error',
         source: 'ArtistRegistrationsManagement',
         details: {
-          registrationId: registrationToAction.id,
+          registrationId: registrationToAction?.id,
           pgDetails: pgError.details,
           pgHint: pgError.hint,
           pgCode: pgError.code,
@@ -532,29 +95,15 @@ export function ArtistRegistrationsManagement() {
     }
   };
 
-  // Handle delete (permanent removal)
-  const handleDelete = async () => {
+  // Handle delete with error handling
+  const onDelete = async () => {
     if (!registrationToAction) return;
 
     try {
-      const { error } = await supabase
-        .from('artist_registrations')
-        .delete()
-        .eq('id', registrationToAction.id);
-
-      if (error) throw error;
-
-      toast.success(t('artistRegistrations.deleteSuccess', { name: registrationToAction.artist_name }));
-      queryClient.invalidateQueries({ queryKey: ['artist-registrations'] });
-      queryClient.invalidateQueries({ queryKey: ['artist-registrations-pending-count'] });
+      await handleDelete(registrationToAction);
       setShowDeleteConfirm(false);
       setRegistrationToAction(null);
-    } catch (error) {
-      logger.error('Failed to delete registration', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        source: 'ArtistRegistrationsManagement',
-        details: { registrationId: registrationToAction.id },
-      });
+    } catch {
       toast.error(t('artistRegistrations.deleteFailed'));
     }
   };
@@ -681,7 +230,7 @@ export function ArtistRegistrationsManagement() {
     {
       key: 'city',
       label: t('adminGrid.columns.city'),
-      render: (_value: any, row: ArtistRegistration) => {
+      render: (_value: unknown, row: ArtistRegistration) => {
         if (!row.city) return <span className='text-muted-foreground'>—</span>;
         return (
           <span className='text-xs'>
@@ -696,7 +245,6 @@ export function ArtistRegistrationsManagement() {
       format: 'short',
       sortable: true,
     }),
-    // Individual social columns for visibility/filtering
     DataGridColumns.text({
       key: 'instagram_handle',
       label: 'Instagram',
@@ -733,11 +281,10 @@ export function ArtistRegistrationsManagement() {
       sortable: true,
       filterable: true,
     }),
-    // Combined socials summary column
     {
       key: 'socials',
       label: t('adminGrid.columns.socials'),
-      render: (_value: any, row: ArtistRegistration) => {
+      render: (_value: unknown, row: ArtistRegistration) => {
         const hasSocials = row.instagram_handle || row.soundcloud_url || row.spotify_url || row.tiktok_handle;
         if (!hasSocials) return <span className='text-muted-foreground'>—</span>;
 
@@ -800,333 +347,54 @@ export function ArtistRegistrationsManagement() {
         resourceName='Registration'
       />
 
-      {/* Details Modal */}
-      <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
-        <DialogContent className='max-w-2xl max-h-[90vh] overflow-y-auto'>
-          <DialogHeader>
-            <DialogTitle className='font-canela text-2xl'>
-              {selectedRegistration?.artist_name}
-            </DialogTitle>
-          </DialogHeader>
+      {/* Modals */}
+      <ArtistRegistrationDetailsModal
+        open={showDetailsModal}
+        onOpenChange={setShowDetailsModal}
+        registration={selectedRegistration}
+        onApprove={(reg) => {
+          setRegistrationToAction(reg);
+          setShowApproveConfirm(true);
+        }}
+        onDeny={(reg) => {
+          setRegistrationToAction(reg);
+          setShowDenyConfirm(true);
+        }}
+      />
 
-          {selectedRegistration && (
-            <div className='space-y-6'>
-              {/* Profile Image and Basic Info */}
-              <div className='flex gap-6'>
-                {selectedRegistration.profile_image_url && (
-                  <img
-                    src={selectedRegistration.profile_image_url}
-                    alt={selectedRegistration.artist_name}
-                    className='w-32 h-32 object-cover border border-white/20'
-                  />
-                )}
-                <div className='flex-1 space-y-2'>
-                  <div>
-                    <span className='text-xs uppercase text-muted-foreground'>{t('labels.email')}</span>
-                    <p>{selectedRegistration.email || '—'}</p>
-                  </div>
-                  <div>
-                    <span className='text-xs uppercase text-muted-foreground'>{t('adminGrid.columns.city')}</span>
-                    <p>
-                      {selectedRegistration.city
-                        ? `${selectedRegistration.city.name}, ${selectedRegistration.city.state}`
-                        : '—'}
-                    </p>
-                  </div>
-                  <div>
-                    <span className='text-xs uppercase text-muted-foreground'>{t('adminGrid.columns.status')}</span>
-                    <p className='capitalize'>{selectedRegistration.status}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bio */}
-              <div>
-                <span className='text-xs uppercase text-muted-foreground'>{t('adminGrid.columns.bio')}</span>
-                <p className='mt-1 text-sm whitespace-pre-wrap'>{selectedRegistration.bio || '—'}</p>
-              </div>
-
-              {/* Genres */}
-              {selectedRegistration.genres && selectedRegistration.genres.length > 0 && (
-                <div>
-                  <span className='text-xs uppercase text-muted-foreground'>{t('adminGrid.columns.genres')}</span>
-                  <div className='flex flex-wrap gap-2 mt-1'>
-                    {selectedRegistration.genres.map((genre, i) => (
-                      <span
-                        key={i}
-                        className='px-2 py-1 text-xs bg-fm-gold/10 text-fm-gold border border-fm-gold/30'
-                      >
-                        {genre}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Social Links */}
-              <div>
-                <span className='text-xs uppercase text-muted-foreground'>{t('adminGrid.columns.socials')}</span>
-                <div className='mt-2'>
-                  <FmSocialLinks
-                    instagram={selectedRegistration.instagram_handle}
-                    soundcloud={selectedRegistration.soundcloud_url}
-                    spotify={selectedRegistration.spotify_url}
-                    tiktok={selectedRegistration.tiktok_handle}
-                    size='md'
-                    gap='md'
-                  />
-                </div>
-              </div>
-
-              {/* Performance History */}
-              <div className='space-y-4 border-t border-white/10 pt-4'>
-                <h3 className='text-sm font-medium uppercase text-muted-foreground'>
-                  {t('artistRegistrations.performanceHistory')}
-                </h3>
-
-                {selectedRegistration.paid_show_count_group && (
-                  <div>
-                    <span className='text-xs uppercase text-muted-foreground'>
-                      {t('artistRegistrations.paidShows')}
-                    </span>
-                    <p className='mt-1 text-sm'>{selectedRegistration.paid_show_count_group}</p>
-                  </div>
-                )}
-
-                {selectedRegistration.talent_differentiator && (
-                  <div>
-                    <span className='text-xs uppercase text-muted-foreground'>
-                      {t('artistRegistrations.talentDifferentiator')}
-                    </span>
-                    <p className='mt-1 text-sm'>{selectedRegistration.talent_differentiator}</p>
-                  </div>
-                )}
-
-                {selectedRegistration.crowd_sources && (
-                  <div>
-                    <span className='text-xs uppercase text-muted-foreground'>
-                      {t('artistRegistrations.crowdSources')}
-                    </span>
-                    <p className='mt-1 text-sm'>{selectedRegistration.crowd_sources}</p>
-                  </div>
-                )}
-              </div>
-
-              {/* Press Images */}
-              {selectedRegistration.press_images && selectedRegistration.press_images.length > 0 && (
-                <div className='border-t border-white/10 pt-4'>
-                  <span className='text-xs uppercase text-muted-foreground'>
-                    {t('artistRegistrations.pressImages')}
-                  </span>
-                  <div className='flex gap-2 mt-2'>
-                    {selectedRegistration.press_images.map((url, i) => (
-                      <a key={i} href={url} target='_blank' rel='noopener noreferrer'>
-                        <img
-                          src={url}
-                          alt={`Press ${i + 1}`}
-                          className='w-20 h-20 object-cover border border-white/20 hover:border-fm-gold/50 transition-colors'
-                        />
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Review Notes (if reviewed) */}
-              {selectedRegistration.reviewer_notes && (
-                <div className='border-t border-white/10 pt-4'>
-                  <span className='text-xs uppercase text-muted-foreground'>
-                    {t('artistRegistrations.reviewerNotes')}
-                  </span>
-                  <p className='mt-1 text-sm'>{selectedRegistration.reviewer_notes}</p>
-                </div>
-              )}
-
-              {/* Action Buttons for Pending */}
-              {selectedRegistration.status === 'pending' && (
-                <div className='flex gap-4 border-t border-white/10 pt-4'>
-                  <FmCommonButton
-                    onClick={() => {
-                      setRegistrationToAction(selectedRegistration);
-                      setShowDetailsModal(false);
-                      setShowApproveConfirm(true);
-                    }}
-                    className='flex-1'
-                    icon={Check}
-                  >
-                    {t('artistRegistrations.approve')}
-                  </FmCommonButton>
-                  <FmCommonButton
-                    onClick={() => {
-                      setRegistrationToAction(selectedRegistration);
-                      setShowDetailsModal(false);
-                      setShowDenyConfirm(true);
-                    }}
-                    variant='destructive'
-                    className='flex-1'
-                    icon={X}
-                  >
-                    {t('artistRegistrations.deny')}
-                  </FmCommonButton>
-                </div>
-              )}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Approve Confirmation */}
-      <Dialog
+      <ArtistRegistrationApproveModal
         open={showApproveConfirm}
         onOpenChange={(open) => {
           setShowApproveConfirm(open);
-          if (!open) {
-            setRegistrationToAction(null);
-            setReviewerNotes('');
-          }
+          if (!open) setRegistrationToAction(null);
         }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('artistRegistrations.confirmApprove')}</DialogTitle>
-            <DialogDescription>
-              {t('artistRegistrations.confirmApproveDescription', {
-                name: registrationToAction?.artist_name,
-              })}
-            </DialogDescription>
-          </DialogHeader>
-          <div className='mt-4'>
-            <label className='text-xs uppercase text-muted-foreground'>
-              {t('artistRegistrations.reviewerNotes')} ({t('labels.optional')})
-            </label>
-            <textarea
-              value={reviewerNotes}
-              onChange={(e) => setReviewerNotes(e.target.value)}
-              className='w-full mt-1 p-3 bg-white/5 border border-white/20 text-foreground text-sm resize-none focus:border-fm-gold/50 focus:outline-none'
-              rows={3}
-              placeholder={t('artistRegistrations.notesPlaceholder')}
-            />
-          </div>
-          <DialogFooter className='mt-4'>
-            <Button
-              variant='outline'
-              onClick={() => {
-                setShowApproveConfirm(false);
-                setRegistrationToAction(null);
-                setReviewerNotes('');
-              }}
-            >
-              {t('buttons.cancel')}
-            </Button>
-            <Button onClick={handleApprove}>
-              {t('artistRegistrations.approve')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        registration={registrationToAction}
+        reviewerNotes={reviewerNotes}
+        onReviewerNotesChange={setReviewerNotes}
+        onConfirm={onApprove}
+      />
 
-      {/* Deny Confirmation */}
-      <Dialog
+      <ArtistRegistrationDenyModal
         open={showDenyConfirm}
         onOpenChange={(open) => {
           setShowDenyConfirm(open);
-          if (!open) {
-            setRegistrationToAction(null);
-            setReviewerNotes('');
-          }
+          if (!open) setRegistrationToAction(null);
         }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('artistRegistrations.confirmDeny')}</DialogTitle>
-            <DialogDescription>
-              {t('artistRegistrations.confirmDenyDescription', {
-                name: registrationToAction?.artist_name,
-              })}
-            </DialogDescription>
-          </DialogHeader>
-          <div className='mt-4'>
-            <label className='text-xs uppercase text-muted-foreground'>
-              {t('artistRegistrations.reviewerNotes')} ({t('labels.optional')})
-            </label>
-            <textarea
-              value={reviewerNotes}
-              onChange={(e) => setReviewerNotes(e.target.value)}
-              className='w-full mt-1 p-3 bg-white/5 border border-white/20 text-foreground text-sm resize-none focus:border-fm-gold/50 focus:outline-none'
-              rows={3}
-              placeholder={t('artistRegistrations.denyNotesPlaceholder')}
-            />
-          </div>
-          <DialogFooter className='mt-4'>
-            <Button
-              variant='outline'
-              onClick={() => {
-                setShowDenyConfirm(false);
-                setRegistrationToAction(null);
-                setReviewerNotes('');
-              }}
-            >
-              {t('buttons.cancel')}
-            </Button>
-            <Button variant='destructive' onClick={handleDeny}>
-              {t('artistRegistrations.deny')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        registration={registrationToAction}
+        reviewerNotes={reviewerNotes}
+        onReviewerNotesChange={setReviewerNotes}
+        onConfirm={onDeny}
+      />
 
-      {/* Delete Confirmation */}
-      <Dialog
+      <ArtistRegistrationDeleteModal
         open={showDeleteConfirm}
         onOpenChange={(open) => {
           setShowDeleteConfirm(open);
-          if (!open) {
-            setRegistrationToAction(null);
-          }
+          if (!open) setRegistrationToAction(null);
         }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('artistRegistrations.confirmDelete')}</DialogTitle>
-            <DialogDescription className='space-y-3'>
-              <p>
-                {t('artistRegistrations.confirmDeleteDescription', {
-                  name: registrationToAction?.artist_name,
-                })}
-              </p>
-              <div className='mt-4 p-3 bg-white/5 border border-white/20 space-y-2'>
-                <p className='text-sm font-medium text-foreground'>
-                  {t('artistRegistrations.deleteVsDenyTitle')}
-                </p>
-                <ul className='text-sm space-y-1'>
-                  <li>
-                    <span className='text-red-400 font-medium'>{t('artistRegistrations.deny')}:</span>{' '}
-                    {t('artistRegistrations.denyExplanation')}
-                  </li>
-                  <li>
-                    <span className='text-red-400 font-medium'>{t('artistRegistrations.delete')}:</span>{' '}
-                    {t('artistRegistrations.deleteExplanation')}
-                  </li>
-                </ul>
-              </div>
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className='mt-4'>
-            <Button
-              variant='outline'
-              onClick={() => {
-                setShowDeleteConfirm(false);
-                setRegistrationToAction(null);
-              }}
-            >
-              {t('buttons.cancel')}
-            </Button>
-            <Button variant='destructive' onClick={handleDelete}>
-              {t('artistRegistrations.deletePermanently')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        registration={registrationToAction}
+        onConfirm={onDelete}
+      />
     </div>
   );
 }

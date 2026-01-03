@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Home, Shield, Database, Mail, Music } from 'lucide-react';
+import { Home, Shield, Database, Mail, Music, BarChart3, Star } from 'lucide-react';
 import { Separator } from '@/components/common/shadcn/separator';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCollapsibleGroupHeader } from '@/components/common/data/FmCollapsibleGroupHeader';
@@ -70,6 +70,58 @@ export function DevNavigationTabContent({ onNavigate, isAdmin }: DevNavigationTa
               <ContextMenuContent className='bg-card border-border rounded-none w-40'>
                 <ContextMenuItem
                   onClick={() => onNavigate('/developer')}
+                  className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
+                >
+                  {t('devNavigation.goTo')}
+                </ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenu>
+          </div>
+        </FmCollapsibleGroupHeader>
+
+        {/* Dashboards Section */}
+        <FmCollapsibleGroupHeader title={t('devNavigation.dashboards')} count={2}>
+          <div className='flex flex-col gap-2'>
+            <ContextMenu>
+              <ContextMenuTrigger asChild>
+                <div>
+                  <FmCommonButton
+                    variant='default'
+                    icon={BarChart3}
+                    iconPosition='left'
+                    onClick={() => onNavigate('/admin/analytics')}
+                    className='w-full justify-start'
+                  >
+                    {t('devNavigation.analytics')}
+                  </FmCommonButton>
+                </div>
+              </ContextMenuTrigger>
+              <ContextMenuContent className='bg-card border-border rounded-none w-40'>
+                <ContextMenuItem
+                  onClick={() => onNavigate('/admin/analytics')}
+                  className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
+                >
+                  {t('devNavigation.goTo')}
+                </ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenu>
+            <ContextMenu>
+              <ContextMenuTrigger asChild>
+                <div>
+                  <FmCommonButton
+                    variant='default'
+                    icon={Star}
+                    iconPosition='left'
+                    onClick={() => onNavigate('/developer/dashboards?tab=recording-ratings')}
+                    className='w-full justify-start'
+                  >
+                    {t('devNavigation.albumRatings')}
+                  </FmCommonButton>
+                </div>
+              </ContextMenuTrigger>
+              <ContextMenuContent className='bg-card border-border rounded-none w-40'>
+                <ContextMenuItem
+                  onClick={() => onNavigate('/developer/dashboards?tab=recording-ratings')}
                   className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
                 >
                   {t('devNavigation.goTo')}

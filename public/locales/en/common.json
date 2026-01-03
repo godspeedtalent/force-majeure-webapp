@@ -84,7 +84,15 @@
     "create": "Create",
     "submitRequest": "Submit Request",
     "showArchived": "Archived ({{count}})",
-    "hideArchived": "Hide Archived"
+    "hideArchived": "Hide Archived",
+    "limitedTickets": "Limited Tickets",
+    "sellingFast": "Selling Fast",
+    "lastChance": "Last Chance",
+    "soldOut": "Sold Out",
+    "joinWaitlist": "Join Waitlist",
+    "getTickets": "Get Tickets",
+    "processing": "Processing...",
+    "tryAgain": "Try Again"
   },
   "labels": {
     "email": "Email",
@@ -326,7 +334,10 @@
     "reloadPage": "Reload Page",
     "goBack": "Go Back",
     "viewDetails": "View details",
-    "copyErrorDetails": "Copy error details"
+    "copyErrorDetails": "Copy error details",
+    "sectionError": "Something went wrong",
+    "sectionErrorDescription": "There was a problem loading the {{section}} section.",
+    "genericSectionError": "There was a problem loading this section."
   },
   "errorOverlay": {
     "errorMessage": "Error Message",
@@ -2776,6 +2787,9 @@
     "core": "Core",
     "adminControls": "Admin Controls",
     "developerHome": "Developer Home",
+    "dashboards": "Dashboards",
+    "analytics": "Analytics",
+    "albumRatings": "Album Ratings",
     "subdomains": "Subdomains",
     "sonicGauntlet": "Sonic Gauntlet",
     "noSubdomains": "No subdomains enabled",

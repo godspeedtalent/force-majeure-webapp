@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { cn } from '@/shared';
 import { FmMobileDataGridProps, MobileCardFieldConfig } from './types';
 import { FmMobileDataGridCard, getDefaultFieldConfig } from './FmMobileDataGridCard';
@@ -9,6 +9,7 @@ import { FmMobileDataGridSort } from './FmMobileDataGridSort';
 import { FmMobileDataGridColumnConfig } from './FmMobileDataGridColumnConfig';
 import { FmDataGridPagination } from '../table/FmDataGridPagination';
 import { useDataGridFilters } from '../../hooks/useDataGridFilters';
+import { useMobileGridPersistence } from '../../hooks/useMobileGridPersistence';
 
 /**
  * Main mobile data grid container
@@ -22,10 +23,20 @@ export function FmMobileDataGrid<T extends Record<string, any>>({
   className,
   onUpdate,
   resourceName = 'Item',
+  storageKey,
   cardFieldConfig: externalFieldConfig,
   onCardFieldConfigChange,
   pageSize = 20,
 }: FmMobileDataGridProps<T>) {
+  // Persistence
+  const persistence = useMobileGridPersistence({
+    storageKey: storageKey || resourceName.toLowerCase().replace(/\s+/g, '-'),
+    enabled: !externalFieldConfig, // Only persist if not externally controlled
+  });
+
+  // Track if we've loaded persisted state
+  const hasLoadedPersistence = useRef(false);
+
   // UI state
   const [showFilters, setShowFilters] = useState(false);
   const [showSort, setShowSort] = useState(false);
@@ -34,14 +45,46 @@ export function FmMobileDataGrid<T extends Record<string, any>>({
   const [currentPage, setCurrentPage] = useState(1);
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-  
-  // Field configuration
-  const [internalFieldConfig, setInternalFieldConfig] = useState<MobileCardFieldConfig[]>(() =>
-    getDefaultFieldConfig(columns)
-  );
-  
+
+  // Field configuration - load from persistence if available
+  const [internalFieldConfig, setInternalFieldConfig] = useState<MobileCardFieldConfig[]>(() => {
+    const persisted = persistence.loadState();
+    if (persisted?.fieldConfig && persisted.fieldConfig.length > 0) {
+      hasLoadedPersistence.current = true;
+      return persisted.fieldConfig;
+    }
+    return getDefaultFieldConfig(columns);
+  });
+
+  // Load persisted sort state on mount (only once)
+  useEffect(() => {
+    if (hasLoadedPersistence.current) return;
+    const persisted = persistence.loadState();
+    if (persisted) {
+      hasLoadedPersistence.current = true;
+      if (persisted.sortColumn !== undefined) {
+        setSortColumn(persisted.sortColumn);
+      }
+      if (persisted.sortDirection) {
+        setSortDirection(persisted.sortDirection);
+      }
+    }
+  }, [persistence]);
+
   const fieldConfig = externalFieldConfig ?? internalFieldConfig;
-  const handleFieldConfigChange = onCardFieldConfigChange ?? setInternalFieldConfig;
+
+  // Handle field config changes with persistence
+  const handleFieldConfigChange = useCallback(
+    (config: MobileCardFieldConfig[]) => {
+      if (onCardFieldConfigChange) {
+        onCardFieldConfigChange(config);
+      } else {
+        setInternalFieldConfig(config);
+        persistence.saveFieldConfig(config);
+      }
+    },
+    [onCardFieldConfigChange, persistence]
+  );
   
   // Filtering
   const filters = useDataGridFilters({
@@ -59,24 +102,32 @@ export function FmMobileDataGrid<T extends Record<string, any>>({
   
   const totalPages = Math.ceil(filters.filteredData.length / pageSize);
   
-  // Sort handler
-  const handleSort = (columnKey: string) => {
-    if (!columnKey) {
-      setSortColumn(null);
-      return;
-    }
-    if (sortColumn === columnKey) {
-      setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
-    } else {
-      setSortColumn(columnKey);
-      setSortDirection('asc');
-    }
-  };
-  
+  // Sort handler with persistence
+  const handleSort = useCallback(
+    (columnKey: string) => {
+      if (!columnKey) {
+        setSortColumn(null);
+        persistence.saveSortState(null, 'asc');
+        return;
+      }
+      if (sortColumn === columnKey) {
+        const newDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+        setSortDirection(newDirection);
+        persistence.saveSortState(columnKey, newDirection);
+      } else {
+        setSortColumn(columnKey);
+        setSortDirection('asc');
+        persistence.saveSortState(columnKey, 'asc');
+      }
+    },
+    [sortColumn, sortDirection, persistence]
+  );
+
   return (
-    <div className={cn('space-y-4', className)}>
-      {/* Toolbar */}
-      <FmMobileDataGridToolbar
+    <div className={cn('space-y-0', className)}>
+      {/* Sticky Toolbar */}
+      <div className='sticky top-0 z-20 bg-background/95 backdrop-blur-sm pb-4'>
+        <FmMobileDataGridToolbar
         searchQuery={filters.searchQuery}
         onSearchChange={query => {
           filters.setSearchQuery(query);
@@ -89,7 +140,8 @@ export function FmMobileDataGrid<T extends Record<string, any>>({
         sortColumn={sortColumn}
         sortDirection={sortDirection}
       />
-      
+      </div>
+
       {/* Card list */}
       <div className='space-y-2'>
         {loading ? (

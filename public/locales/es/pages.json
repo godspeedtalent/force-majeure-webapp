@@ -521,6 +521,48 @@
     "userMetrics": "Métricas de Usuarios",
     "userMetricsDesc": "Analíticas de participación de usuarios"
   },
+  "analytics": {
+    "overview": {
+      "activeNow": "Activo ahora",
+      "activeNowDesc": "Sesiones en últimos 30 min",
+      "pageViews": "Vistas de página",
+      "pageViewsDesc": "Total de vistas de página",
+      "sessions": "Sesiones",
+      "sessionsDesc": "Total de sesiones",
+      "uniqueUsers": "Usuarios únicos",
+      "uniqueUsersDesc": "Visitantes únicos",
+      "avgSession": "Sesión prom.",
+      "avgSessionDesc": "Duración promedio de sesión",
+      "pagesPerSession": "Páginas/sesión",
+      "pagesPerSessionDesc": "Promedio de páginas por sesión",
+      "bounceRate": "Tasa de rebote",
+      "bounceRateDesc": "Sesiones de una sola página"
+    },
+    "sessions": {
+      "title": "Sesiones recientes",
+      "empty": "Aún no hay sesiones registradas.",
+      "showing": "Mostrando {{count}} de {{total}}",
+      "searchPlaceholder": "Buscar sesiones...",
+      "clearFilters": "Limpiar filtros",
+      "filterBy": "Filtrar por:",
+      "device": "Dispositivo",
+      "allDevices": "Todos los dispositivos",
+      "browser": "Navegador",
+      "allBrowsers": "Todos los navegadores",
+      "source": "Fuente",
+      "allSources": "Todas las fuentes",
+      "noResults": "No hay sesiones que coincidan con tus filtros.",
+      "started": "Inicio",
+      "deviceLabel": "Dispositivo",
+      "browserLabel": "Navegador",
+      "entry": "Entrada",
+      "exit": "Salida",
+      "pages": "Páginas",
+      "duration": "Duración",
+      "sourceLabel": "Fuente",
+      "direct": "Directo"
+    }
+  },
   "errors": {
     "404": {
       "title": "Página no encontrada.",

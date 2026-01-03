@@ -55,21 +55,44 @@ import { logger } from '@/shared/services/logger';
 
 const analyticsLogger = logger.ns('AnalyticsService');
 
+// Extended page view entry with duration/scroll data for batching
+interface BatchedPageViewEntry extends PageViewEntry {
+  timeOnPageMs?: number;
+  scrollDepthPercent?: number;
+}
+
 export class AnalyticsService {
   private adapter: AnalyticsAdapter;
   private config: AnalyticsConfig;
-  private pageViewQueue: PageViewEntry[] = [];
+  private pageViewQueue: BatchedPageViewEntry[] = [];
   private funnelQueue: FunnelEventEntry[] = [];
   private performanceQueue: PerformanceEntry[] = [];
   private flushTimer: ReturnType<typeof setTimeout> | null = null;
   private currentPageViewId: string | null = null;
+  private currentBatchedPageViewIndex: number = -1; // Track index for batched updates
   private pageLoadTime: number = Date.now();
   private sessionInitialized: boolean = false;
   private previousPagePath: string | null = null;
+  private currentUserId: string | null = null;
 
   constructor(adapter?: AnalyticsAdapter, config: Partial<AnalyticsConfig> = {}) {
     this.adapter = adapter || new ConsoleAnalyticsAdapter();
     this.config = { ...DEFAULT_ANALYTICS_CONFIG, ...config };
+  }
+
+  /**
+   * Set the current user ID for tracking authenticated sessions
+   */
+  setCurrentUser(userId: string | null): void {
+    this.currentUserId = userId;
+    this.logToConsole('User ID set for analytics', { userId });
+  }
+
+  /**
+   * Get the current user ID
+   */
+  getCurrentUserId(): string | null {
+    return this.currentUserId;
   }
 
   /**
@@ -91,7 +114,15 @@ export class AnalyticsService {
    */
   private shouldTrack(): boolean {
     if (!this.config.enabled) return false;
-    return isSessionSampled(this.config.sampleRate);
+    if (!isSessionSampled(this.config.sampleRate)) return false;
+
+    // Check if current user is excluded
+    if (this.currentUserId && this.config.excludedUserIds.includes(this.currentUserId)) {
+      this.logToConsole('Skipping tracking for excluded user', { userId: this.currentUserId });
+      return false;
+    }
+
+    return true;
   }
 
   /**
@@ -201,6 +232,8 @@ export class AnalyticsService {
 
     if (this.config.batchEnabled) {
       this.addToBatch('pageView', fullEntry);
+      // Track index for updating duration/scroll before flush
+      this.currentBatchedPageViewIndex = this.pageViewQueue.length - 1;
       return 'batched';
     }
 
@@ -218,9 +251,24 @@ export class AnalyticsService {
    * Update the current page view with time-on-page and scroll depth
    */
   async updatePageViewDuration(scrollDepth?: number): Promise<void> {
-    if (!this.currentPageViewId) return;
-
     const timeOnPage = Date.now() - this.pageLoadTime;
+
+    // If we have a batched page view, update it in the queue
+    if (this.currentBatchedPageViewIndex >= 0 && this.pageViewQueue[this.currentBatchedPageViewIndex]) {
+      const entry = this.pageViewQueue[this.currentBatchedPageViewIndex];
+      entry.timeOnPageMs = timeOnPage;
+      entry.scrollDepthPercent = scrollDepth;
+
+      this.logToConsole('Updated batched page view duration', {
+        index: this.currentBatchedPageViewIndex,
+        timeOnPage,
+        scrollDepth,
+      });
+      return;
+    }
+
+    // Otherwise, update via adapter if we have a view ID
+    if (!this.currentPageViewId) return;
 
     try {
       await this.adapter.updatePageViewDuration(

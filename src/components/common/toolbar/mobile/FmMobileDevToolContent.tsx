@@ -14,7 +14,6 @@ import {
   DatabaseTabFooter,
 } from '../tabs/DatabaseTab';
 import { FeatureTogglesTabContent } from '../tabs/FeatureTogglesTab';
-import { SessionOverridesTabContent } from '../tabs/SessionOverridesTab';
 import { DevNotesTabContent } from '../tabs/DevNotesTab';
 import { Button } from '@/components/common/shadcn/button';
 
@@ -43,7 +42,6 @@ export function FmMobileDevToolContent({
     navigation: t('mobileDevTools.toolLabels.navigation'),
     database: t('mobileDevTools.toolLabels.database'),
     features: t('mobileDevTools.toolLabels.features'),
-    session: t('mobileDevTools.toolLabels.session'),
     notes: t('mobileDevTools.toolLabels.notes'),
   };
 
@@ -74,8 +72,6 @@ export function FmMobileDevToolContent({
         );
       case 'features':
         return <FeatureTogglesTabContent />;
-      case 'session':
-        return <SessionOverridesTabContent />;
       case 'notes':
         return <DevNotesTabContent />;
       default:

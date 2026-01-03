@@ -369,9 +369,89 @@ export const A11Y = {
 } as const;
 
 /**
+ * Categorical Color Palette
+ *
+ * Used for distinguishing categories, tags, and types (e.g., page types).
+ * Colors are designed to work on dark backgrounds with good contrast.
+ * Each color has a matching background (with transparency) and text variant.
+ */
+export const CATEGORICAL_COLORS = {
+  // Primary categories - most common page types
+  event: { bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/40' },
+  ticketing: { bg: 'bg-emerald-500/20', text: 'text-emerald-400', border: 'border-emerald-500/40' },
+  checkout: { bg: 'bg-green-500/20', text: 'text-green-400', border: 'border-green-500/40' },
+  checkout_success: { bg: 'bg-green-600/20', text: 'text-green-300', border: 'border-green-600/40' },
+  checkout_cancel: { bg: 'bg-red-500/20', text: 'text-red-400', border: 'border-red-500/40' },
+
+  // Content pages
+  artist: { bg: 'bg-purple-500/20', text: 'text-purple-400', border: 'border-purple-500/40' },
+  venue: { bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/40' },
+  home: { bg: 'bg-fm-gold/20', text: 'text-fm-gold', border: 'border-fm-gold/40' },
+
+  // List pages
+  event_list: { bg: 'bg-amber-500/15', text: 'text-amber-300', border: 'border-amber-500/30' },
+  artist_list: { bg: 'bg-purple-500/15', text: 'text-purple-300', border: 'border-purple-500/30' },
+  venue_list: { bg: 'bg-blue-500/15', text: 'text-blue-300', border: 'border-blue-500/30' },
+
+  // User pages
+  profile: { bg: 'bg-cyan-500/20', text: 'text-cyan-400', border: 'border-cyan-500/40' },
+  orders: { bg: 'bg-teal-500/20', text: 'text-teal-400', border: 'border-teal-500/40' },
+  auth: { bg: 'bg-indigo-500/20', text: 'text-indigo-400', border: 'border-indigo-500/40' },
+
+  // Admin/Dev pages
+  admin: { bg: 'bg-rose-500/20', text: 'text-rose-400', border: 'border-rose-500/40' },
+  developer: { bg: 'bg-orange-500/20', text: 'text-orange-400', border: 'border-orange-500/40' },
+  demo: { bg: 'bg-pink-500/20', text: 'text-pink-400', border: 'border-pink-500/40' },
+
+  // Other pages
+  merch: { bg: 'bg-fuchsia-500/20', text: 'text-fuchsia-400', border: 'border-fuchsia-500/40' },
+  contact: { bg: 'bg-sky-500/20', text: 'text-sky-400', border: 'border-sky-500/40' },
+  other: { bg: 'bg-gray-500/20', text: 'text-gray-400', border: 'border-gray-500/40' },
+} as const;
+
+/**
+ * Get categorical color classes for a page type
+ */
+export function getPageTypeColors(pageType: string): {
+  bg: string;
+  text: string;
+  border: string;
+} {
+  const colors = CATEGORICAL_COLORS[pageType as keyof typeof CATEGORICAL_COLORS];
+  return colors || CATEGORICAL_COLORS.other;
+}
+
+/**
+ * All page types with their display labels
+ */
+export const PAGE_TYPE_LABELS: Record<string, string> = {
+  event: 'Event',
+  ticketing: 'Ticketing',
+  checkout: 'Checkout',
+  checkout_success: 'Success',
+  checkout_cancel: 'Cancelled',
+  artist: 'Artist',
+  venue: 'Venue',
+  home: 'Home',
+  event_list: 'Events',
+  artist_list: 'Artists',
+  venue_list: 'Venues',
+  profile: 'Profile',
+  orders: 'Orders',
+  auth: 'Auth',
+  admin: 'Admin',
+  developer: 'Dev',
+  demo: 'Demo',
+  merch: 'Merch',
+  contact: 'Contact',
+  other: 'Other',
+};
+
+/**
  * Type exports for TypeScript
  */
 export type ColorKey = keyof typeof COLORS;
 export type SpacingKey = keyof typeof SPACING;
 export type DepthLevel = keyof typeof DEPTH;
 export type PrimaryComponent = (typeof PRIMARY_COMPONENTS)[number];
+export type PageTypeKey = keyof typeof CATEGORICAL_COLORS;

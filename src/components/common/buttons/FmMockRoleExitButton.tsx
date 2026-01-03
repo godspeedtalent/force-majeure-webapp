@@ -127,5 +127,3 @@ export const FmMockRoleExitButton = () => {
     />
   );
 };
-
-export default FmMockRoleExitButton;

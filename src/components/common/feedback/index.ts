@@ -1,4 +1,5 @@
 export { FmErrorToast, showErrorToast } from './FmErrorToast';
+export { PageErrorBoundary } from './PageErrorBoundary';
 
 // Skeleton components
 export { FmDataGridRowSkeleton, FmDataGridSkeleton } from './FmDataGridRowSkeleton';

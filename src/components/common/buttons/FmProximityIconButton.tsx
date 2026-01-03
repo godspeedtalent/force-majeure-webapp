@@ -211,5 +211,3 @@ export const FmProximityIconButton = ({
 
   return buttonElement;
 };
-
-export default FmProximityIconButton;

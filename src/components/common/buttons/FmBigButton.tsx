@@ -1,4 +1,5 @@
 import { forwardRef, useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/shared';
 
@@ -49,6 +50,7 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
     },
     ref
   ) => {
+    const { t } = useTranslation('common');
     const [isHovered, setIsHovered] = useState(false);
     const [ripples, setRipples] = useState<
       Array<{ x: number; y: number; id: number }>
@@ -117,13 +119,13 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
     };
 
     const urgencyConfig = {
-      limited: { label: 'Limited Tickets', pulseSpeed: 'animate-pulse' },
+      limited: { label: t('buttons.limitedTickets'), pulseSpeed: 'animate-pulse' },
       'selling-fast': {
-        label: 'Selling Fast',
+        label: t('buttons.sellingFast'),
         pulseSpeed: 'animate-[pulse_1s_ease-in-out_infinite]',
       },
       'last-chance': {
-        label: 'Last Chance',
+        label: t('buttons.lastChance'),
         pulseSpeed: 'animate-[pulse_0.8s_ease-in-out_infinite]',
       },
     };
@@ -133,9 +135,9 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
 
     const buttonText = isSoldOut
       ? showWaitlist
-        ? 'Join Waitlist'
-        : 'Sold Out'
-      : children || 'Get Tickets';
+        ? t('buttons.joinWaitlist')
+        : t('buttons.soldOut')
+      : children || t('buttons.getTickets');
 
     return (
       <button
@@ -157,12 +159,12 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
           // Base state with dusty gold
           isSoldOut && !showWaitlist
             ? 'border-2 border-border bg-background text-muted-foreground'
-            : 'border-2 border-[#B8956A]/50 bg-background text-[#B8956A]',
+            : 'border-2 border-fm-gold/50 bg-background text-fm-gold',
           // Hover transform
           !disabled &&
             !isLoading &&
             !isSoldOut &&
-            'hover:border-[#B8956A]/70 hover:bg-[#B8956A]/5 hover:scale-[1.02]',
+            'hover:border-fm-gold/70 hover:bg-fm-gold/5 hover:scale-[1.02]',
           // Active state
           !disabled && !isLoading && !isSoldOut && 'active:scale-[0.99]',
           className
@@ -171,8 +173,8 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
           boxShadow: isSoldOut
             ? 'none'
             : isHovered
-              ? '0 0 24px rgba(184, 149, 106, 0.2), 0 0 12px rgba(184, 149, 106, 0.1), inset 0 0 20px rgba(184, 149, 106, 0.06)'
-              : '0 0 16px rgba(184, 149, 106, 0.12), inset 0 0 12px rgba(184, 149, 106, 0.04)',
+              ? '0 0 24px rgb(223 186 125 / 0.2), 0 0 12px rgb(223 186 125 / 0.1), inset 0 0 20px rgb(223 186 125 / 0.06)'
+              : '0 0 16px rgb(223 186 125 / 0.12), inset 0 0 12px rgb(223 186 125 / 0.04)',
           animation:
             !disabled && !isLoading && !isSoldOut && isHovered
               ? 'border-ripple-1 2s ease-out infinite, border-ripple-2 2s ease-out infinite 0.4s, border-ripple-3 2s ease-out infinite 0.8s'
@@ -191,7 +193,7 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
             )}
             style={{
               background:
-                'linear-gradient(90deg, transparent, rgba(184, 149, 106, 0.3), transparent) border-box',
+                'linear-gradient(90deg, transparent, rgb(223 186 125 / 0.3), transparent) border-box',
               WebkitMask:
                 'linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)',
               WebkitMaskComposite: 'xor',
@@ -204,7 +206,7 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
         {!isSoldOut && !disableAnimations && !isLoading && isHovered && (
           <div
             className={cn(
-              'absolute inset-0 bg-gradient-to-r from-transparent via-[#B8956A]/10 to-transparent',
+              'absolute inset-0 bg-gradient-to-r from-transparent via-fm-gold/10 to-transparent',
               'motion-safe:animate-[shimmer_2s_ease-in-out_infinite]',
               'pointer-events-none'
             )}
@@ -249,7 +251,7 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
         {ripples.map(ripple => (
           <span
             key={ripple.id}
-            className='absolute rounded-full bg-[#B8956A]/30 pointer-events-none animate-ripple'
+            className='absolute rounded-full bg-fm-gold/30 pointer-events-none animate-ripple'
             style={{
               left: `${ripple.x}%`,
               top: `${ripple.y}%`,
@@ -265,7 +267,7 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
           sparkles.map(sparkle => (
             <span
               key={sparkle.id}
-              className='absolute w-1 h-1 bg-[#B8956A]/60 rounded-full pointer-events-none'
+              className='absolute w-1 h-1 bg-fm-gold/60 rounded-full pointer-events-none'
               style={{
                 left: `${sparkle.x}%`,
                 top: `${sparkle.y}%`,
@@ -281,7 +283,7 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
           {isLoading ? (
             <>
               <div className='h-4 w-4 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
-              <span>Processing...</span>
+              <span>{t('buttons.processing')}</span>
             </>
           ) : (
             <span

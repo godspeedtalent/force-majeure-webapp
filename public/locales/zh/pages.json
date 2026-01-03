@@ -521,6 +521,48 @@
     "userMetrics": "用户指标",
     "userMetricsDesc": "用户参与度分析"
   },
+  "analytics": {
+    "overview": {
+      "activeNow": "当前活跃",
+      "activeNowDesc": "最近30分钟内的会话",
+      "pageViews": "页面浏览量",
+      "pageViewsDesc": "总页面浏览量",
+      "sessions": "会话数",
+      "sessionsDesc": "总会话数",
+      "uniqueUsers": "独立用户",
+      "uniqueUsersDesc": "独立访客数",
+      "avgSession": "平均会话",
+      "avgSessionDesc": "平均会话时长",
+      "pagesPerSession": "页面/会话",
+      "pagesPerSessionDesc": "每会话平均页面数",
+      "bounceRate": "跳出率",
+      "bounceRateDesc": "单页会话比例"
+    },
+    "sessions": {
+      "title": "最近会话",
+      "empty": "暂无会话记录。",
+      "showing": "显示 {{count}} / {{total}}",
+      "searchPlaceholder": "搜索会话...",
+      "clearFilters": "清除筛选",
+      "filterBy": "筛选条件：",
+      "device": "设备",
+      "allDevices": "所有设备",
+      "browser": "浏览器",
+      "allBrowsers": "所有浏览器",
+      "source": "来源",
+      "allSources": "所有来源",
+      "noResults": "没有符合筛选条件的会话。",
+      "started": "开始时间",
+      "deviceLabel": "设备",
+      "browserLabel": "浏览器",
+      "entry": "入口页",
+      "exit": "出口页",
+      "pages": "页面数",
+      "duration": "时长",
+      "sourceLabel": "来源",
+      "direct": "直接访问"
+    }
+  },
   "errors": {
     "404": {
       "title": "页面未找到。",

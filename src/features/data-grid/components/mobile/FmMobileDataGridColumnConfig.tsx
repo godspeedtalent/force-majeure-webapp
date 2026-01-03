@@ -117,6 +117,29 @@ export function FmMobileDataGridColumnConfig({
   // Local state for editing
   const [localConfig, setLocalConfig] = useState<(MobileCardFieldConfig & { visible: boolean })[]>([]);
   
+  /**
+   * Sort fields: active (visible) first, then inactive.
+   * Within each group, sort alphabetically by column label.
+   */
+  const sortFieldsForDisplay = (
+    items: (MobileCardFieldConfig & { visible: boolean })[],
+    cols: typeof columns
+  ) => {
+    const getLabel = (key: string) =>
+      cols.find(c => c.key === key)?.label?.toLowerCase() ?? key.toLowerCase();
+
+    // Separate visible and hidden fields
+    const visible = items.filter(f => f.visible);
+    const hidden = items.filter(f => !f.visible);
+
+    // Sort each group alphabetically by label
+    visible.sort((a, b) => getLabel(a.key).localeCompare(getLabel(b.key)));
+    hidden.sort((a, b) => getLabel(a.key).localeCompare(getLabel(b.key)));
+
+    // Combine: visible first, then hidden
+    return [...visible, ...hidden];
+  };
+
   // Initialize local config when opening
   useEffect(() => {
     if (open) {
@@ -132,11 +155,14 @@ export function FmMobileDataGridColumnConfig({
             showLabel: existing?.showLabel ?? true,
             isTitle: existing?.isTitle ?? false,
             isSubtitle: existing?.isSubtitle ?? false,
+            isImage: existing?.isImage ?? false,
             visible: existing !== undefined,
           };
-        })
-        .sort((a, b) => a.priority - b.priority);
-      setLocalConfig(merged);
+        });
+
+      // Sort: visible first, then alphabetically within each group
+      const sorted = sortFieldsForDisplay(merged, columns);
+      setLocalConfig(sorted);
     }
   }, [open, columns, fieldConfig]);
   
@@ -192,8 +218,9 @@ export function FmMobileDataGridColumnConfig({
         showLabel: f.showLabel,
         isTitle: f.isTitle,
         isSubtitle: f.isSubtitle,
+        isImage: f.isImage,
       }));
-    
+
     onFieldConfigChange(newConfig);
     onOpenChange(false);
   };

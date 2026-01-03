@@ -4,8 +4,9 @@
  * Displays summary statistics for the analytics dashboard.
  */
 
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/shadcn/card';
-import { Eye, Users, Clock, ArrowUpRight, Percent, Layers } from 'lucide-react';
+import { Eye, Users, Clock, ArrowUpRight, Percent, Layers, Radio } from 'lucide-react';
 
 interface OverviewStats {
   totalPageViews: number;
@@ -14,6 +15,7 @@ interface OverviewStats {
   avgSessionDuration: number;
   avgPagesPerSession: number;
   bounceRate: number;
+  activeSessions: number;
 }
 
 interface AnalyticsOverviewProps {
@@ -39,57 +41,71 @@ function formatNumber(num: number): string {
 }
 
 export function AnalyticsOverview({ stats }: AnalyticsOverviewProps) {
+  const { t } = useTranslation('pages');
+
   const cards = [
     {
-      title: 'Page views',
+      title: t('analytics.overview.activeNow', 'Active now'),
+      value: stats ? formatNumber(stats.activeSessions) : '-',
+      icon: Radio,
+      description: t('analytics.overview.activeNowDesc', 'Sessions in last 30 min'),
+      highlight: true,
+    },
+    {
+      title: t('analytics.overview.pageViews', 'Page views'),
       value: stats ? formatNumber(stats.totalPageViews) : '-',
       icon: Eye,
-      description: 'Total page views',
+      description: t('analytics.overview.pageViewsDesc', 'Total page views'),
     },
     {
-      title: 'Sessions',
+      title: t('analytics.overview.sessions', 'Sessions'),
       value: stats ? formatNumber(stats.totalSessions) : '-',
       icon: Layers,
-      description: 'Total sessions',
+      description: t('analytics.overview.sessionsDesc', 'Total sessions'),
     },
     {
-      title: 'Unique users',
+      title: t('analytics.overview.uniqueUsers', 'Unique users'),
       value: stats ? formatNumber(stats.totalUsers) : '-',
       icon: Users,
-      description: 'Unique visitors',
+      description: t('analytics.overview.uniqueUsersDesc', 'Unique visitors'),
     },
     {
-      title: 'Avg. session',
+      title: t('analytics.overview.avgSession', 'Avg. session'),
       value: stats ? formatDuration(stats.avgSessionDuration) : '-',
       icon: Clock,
-      description: 'Average session duration',
+      description: t('analytics.overview.avgSessionDesc', 'Average session duration'),
     },
     {
-      title: 'Pages/session',
+      title: t('analytics.overview.pagesPerSession', 'Pages/session'),
       value: stats ? stats.avgPagesPerSession.toFixed(1) : '-',
       icon: ArrowUpRight,
-      description: 'Average pages per session',
+      description: t('analytics.overview.pagesPerSessionDesc', 'Average pages per session'),
     },
     {
-      title: 'Bounce rate',
+      title: t('analytics.overview.bounceRate', 'Bounce rate'),
       value: stats ? `${stats.bounceRate.toFixed(1)}%` : '-',
       icon: Percent,
-      description: 'Single-page sessions',
+      description: t('analytics.overview.bounceRateDesc', 'Single-page sessions'),
     },
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
       {cards.map(card => (
         <Card
           key={card.title}
-          className="bg-black/60 border-white/20 rounded-none backdrop-blur-sm"
+          className={`
+            bg-black/60 border-white/20 rounded-none backdrop-blur-sm
+            transition-all duration-200 ease-out cursor-default
+            hover:bg-black/40 hover:brightness-110 hover:border-fm-gold
+            ${'highlight' in card && card.highlight ? 'border-fm-gold/50' : ''}
+          `}
         >
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground font-canela">
               {card.title}
             </CardTitle>
-            <card.icon className="h-4 w-4 text-fm-gold" />
+            <card.icon className={`h-4 w-4 ${'highlight' in card && card.highlight ? 'text-green-400 animate-pulse' : 'text-fm-gold'}`} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold font-canela">{card.value}</div>

@@ -55,5 +55,3 @@ export const SplitPageLayout = ({
     </div>
   );
 };
-
-export default SplitPageLayout;

@@ -10,6 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Layout } from '@/components/layout/Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
 import { SupabaseAnalyticsAdapter } from '@/features/analytics';
 import { AnalyticsOverview } from './components/AnalyticsOverview';
 import { PageViewsChart } from './components/PageViewsChart';
@@ -18,11 +19,21 @@ import { PerformanceMetrics } from './components/PerformanceMetrics';
 import { TopPagesTable } from './components/TopPagesTable';
 import { SessionsTable } from './components/SessionsTable';
 
+const DATE_RANGE_OPTIONS = [
+  { value: '7d', label: 'Last 7 days' },
+  { value: '30d', label: 'Last 30 days' },
+  { value: '90d', label: 'Last 90 days' },
+];
+
 export default function AnalyticsDashboard() {
-  const [dateRange, setDateRange] = useState<{ start: Date; end: Date }>({
-    start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
-    end: new Date(),
-  });
+  const [selectedRange, setSelectedRange] = useState('7d');
+  const dateRange = useMemo(() => {
+    const days = selectedRange === '7d' ? 7 : selectedRange === '30d' ? 30 : 90;
+    return {
+      start: new Date(Date.now() - days * 24 * 60 * 60 * 1000),
+      end: new Date(),
+    };
+  }, [selectedRange]);
 
   const adapter = useMemo(() => new SupabaseAnalyticsAdapter(), []);
 
@@ -83,29 +94,12 @@ export default function AnalyticsDashboard() {
           <h1 className="text-3xl font-canela">Analytics dashboard.</h1>
 
           {/* Date range selector */}
-          <div className="flex items-center gap-2">
-            <select
-              className="bg-black/60 border border-white/20 rounded-none px-3 py-2 text-sm font-canela"
-              value={
-                dateRange.start.getTime() === new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).setHours(0,0,0,0)
-                  ? '7d'
-                  : dateRange.start.getTime() === new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).setHours(0,0,0,0)
-                  ? '30d'
-                  : '90d'
-              }
-              onChange={e => {
-                const days = e.target.value === '7d' ? 7 : e.target.value === '30d' ? 30 : 90;
-                setDateRange({
-                  start: new Date(Date.now() - days * 24 * 60 * 60 * 1000),
-                  end: new Date(),
-                });
-              }}
-            >
-              <option value="7d">Last 7 days</option>
-              <option value="30d">Last 30 days</option>
-              <option value="90d">Last 90 days</option>
-            </select>
-          </div>
+          <FmCommonSelect
+            value={selectedRange}
+            onChange={setSelectedRange}
+            options={DATE_RANGE_OPTIONS}
+            className="w-[160px]"
+          />
         </div>
 
         {isLoading ? (

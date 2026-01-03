@@ -13,6 +13,7 @@ import type { AnalyticsConfig } from '../types';
 import { DEFAULT_ANALYTICS_CONFIG } from '../types';
 import { usePageTracking } from '../hooks/usePageTracking';
 import { usePerformanceTracking } from '../hooks/usePerformanceTracking';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface AnalyticsContextValue {
   service: AnalyticsService;
@@ -102,6 +103,23 @@ export function AnalyticsProvider({
     // End session on unmount (tab close)
     return () => {
       service.flush();
+    };
+  }, [service]);
+
+  // Sync user ID with auth state
+  useEffect(() => {
+    // Get initial user
+    supabase.auth.getUser().then(({ data }) => {
+      service.setCurrentUser(data.user?.id ?? null);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      service.setCurrentUser(session?.user?.id ?? null);
+    });
+
+    return () => {
+      subscription.unsubscribe();
     };
   }, [service]);
 

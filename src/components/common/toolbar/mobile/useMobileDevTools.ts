@@ -4,7 +4,6 @@ export type MobileDevToolId =
   | 'navigation'
   | 'database'
   | 'features'
-  | 'session'
   | 'notes';
 
 export interface MobileDevTool {
@@ -44,7 +43,6 @@ export function useMobileDevTools(): UseMobileDevToolsReturn {
     navigation: 0,
     database: 0,
     features: 0,
-    session: 0,
     notes: 0,
   });
 
