@@ -36,7 +36,7 @@ export interface RecordingWithRatings {
   name: string;
   url: string;
   cover_art: string | null;
-  platform: 'spotify' | 'soundcloud';
+  platform: 'spotify' | 'soundcloud' | 'youtube';
   recording_type: 'track' | 'dj_set';
   is_primary_dj_set: boolean;
   click_count: number;
@@ -71,7 +71,7 @@ export interface RecordingAnalyticsFilters {
   dateFrom?: Date;
   dateTo?: Date;
   minRatingCount?: number;
-  platform?: 'spotify' | 'soundcloud' | 'all';
+  platform?: 'spotify' | 'soundcloud' | 'youtube' | 'all';
   recordingType?: 'track' | 'dj_set' | 'all';
   sortBy?: 'average_score' | 'rating_count' | 'created_at' | 'name';
   sortDirection?: 'asc' | 'desc';

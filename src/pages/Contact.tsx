@@ -101,7 +101,9 @@ export default function Contact() {
             label={t('contact.form.messageLabel')}
             required
             multiline
-            rows={5}
+            autoSize
+            minRows={3}
+            maxRows={12}
             value={formData.message}
             onChange={(e) => setFormData({ ...formData, message: e.target.value })}
             placeholder={t('contact.form.messagePlaceholder')}

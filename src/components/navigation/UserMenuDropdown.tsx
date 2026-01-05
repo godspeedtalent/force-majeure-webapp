@@ -142,25 +142,19 @@ export function UserMenuDropdown() {
               {
                 label: t('nav.database'),
                 icon: Database,
-                onClick: () => navigate('/developer/database'),
+                onClick: () => navigate('/developer?tab=db_overview'),
                 badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.developerOnly')} />,
               },
-            ],
-          },
-        ]
-      : []),
-    // Admin section (only if user is admin)
-    ...(isAdminUser
-      ? [
-          {
-            label: t('nav.admin'),
-            items: [
-              {
-                label: t('nav.adminPanel'),
-                icon: Shield,
-                onClick: () => navigate('/admin/controls'),
-                badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.adminOnly')} />,
-              },
+              ...(isAdminUser
+                ? [
+                    {
+                      label: t('nav.adminPanel'),
+                      icon: Shield,
+                      onClick: () => navigate('/developer?tab=admin_settings'),
+                      badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.adminOnly')} />,
+                    },
+                  ]
+                : []),
             ],
           },
         ]
@@ -256,25 +250,19 @@ export function UserMenuDropdown() {
               {
                 label: t('nav.database'),
                 icon: Database,
-                onClick: () => handleNavigate('/developer/database'),
+                onClick: () => handleNavigate('/developer?tab=db_overview'),
                 badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.developerOnly')} />,
               },
-            ],
-          },
-        ]
-      : []),
-    // Admin section (only if user is admin)
-    ...(isAdminUser
-      ? [
-          {
-            label: t('nav.admin'),
-            items: [
-              {
-                label: t('nav.adminPanel'),
-                icon: Shield,
-                onClick: () => handleNavigate('/admin/controls'),
-                badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.adminOnly')} />,
-              },
+              ...(isAdminUser
+                ? [
+                    {
+                      label: t('nav.adminPanel'),
+                      icon: Shield,
+                      onClick: () => handleNavigate('/developer?tab=admin_settings'),
+                      badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.adminOnly')} />,
+                    },
+                  ]
+                : []),
             ],
           },
         ]

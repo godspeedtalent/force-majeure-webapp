@@ -45,6 +45,8 @@ export interface MediaItem {
   // Display
   display_order: number;
   is_active: boolean;
+  /** Whether this is the primary/cover image for the gallery */
+  is_cover: boolean;
   created_at: string;
   updated_at: string;
 }

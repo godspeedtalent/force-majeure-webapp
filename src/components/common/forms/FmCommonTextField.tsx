@@ -18,6 +18,12 @@ interface FmCommonTextFieldProps
   password?: boolean;
   multiline?: boolean;
   rows?: number;
+  /** Auto-resize textarea to fit content (only applies when multiline=true) */
+  autoSize?: boolean;
+  /** Minimum rows for auto-size mode (default: 2) */
+  minRows?: number;
+  /** Maximum rows for auto-size mode (default: 10) */
+  maxRows?: number;
 }
 
 /**
@@ -43,13 +49,42 @@ export const FmCommonTextField = React.forwardRef<
       type,
       multiline = false,
       rows = 3,
+      autoSize = false,
+      minRows = 2,
+      maxRows = 10,
       ...props
     },
     ref
   ) => {
     const [showPassword, setShowPassword] = React.useState(false);
     const [isFocused, setIsFocused] = React.useState(false);
+    const textareaRef = React.useRef<HTMLTextAreaElement>(null);
     const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : `input-${Math.random().toString(36).substr(2, 9)}`);
+
+    // Auto-resize textarea to fit content
+    const resizeTextarea = React.useCallback(() => {
+      const textarea = textareaRef.current;
+      if (!textarea || !autoSize) return;
+
+      // Reset height to auto to get the correct scrollHeight
+      textarea.style.height = 'auto';
+
+      // Calculate line height (approximately 24px per line)
+      const lineHeight = 24;
+      const minHeight = minRows * lineHeight;
+      const maxHeight = maxRows * lineHeight;
+
+      // Set height to scrollHeight, clamped between min and max
+      const newHeight = Math.min(Math.max(textarea.scrollHeight, minHeight), maxHeight);
+      textarea.style.height = `${newHeight}px`;
+    }, [autoSize, minRows, maxRows]);
+
+    // Resize on mount and when value changes
+    React.useEffect(() => {
+      if (multiline && autoSize) {
+        resizeTextarea();
+      }
+    }, [multiline, autoSize, props.value, resizeTextarea]);
     const inputType = password ? (showPassword ? 'text' : 'password') : type;
 
     const baseInputClasses = cn(
@@ -60,18 +95,39 @@ export const FmCommonTextField = React.forwardRef<
       error && 'border-red-500 focus:border-red-500'
     );
 
+    // Combine refs for textarea
+    const setTextareaRefs = React.useCallback(
+      (element: HTMLTextAreaElement | null) => {
+        // Set internal ref
+        (textareaRef as React.MutableRefObject<HTMLTextAreaElement | null>).current = element;
+        // Forward ref
+        if (typeof ref === 'function') {
+          ref(element);
+        } else if (ref) {
+          (ref as React.MutableRefObject<HTMLTextAreaElement | null>).current = element;
+        }
+      },
+      [ref]
+    );
+
     const renderInput = () => {
       // Multiline mode uses Textarea
       if (multiline) {
         return (
           <Textarea
-            ref={ref as React.Ref<HTMLTextAreaElement>}
+            ref={setTextareaRefs}
             id={inputId}
             disabled={disabled}
-            rows={rows}
+            rows={autoSize ? undefined : rows}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
-            className={cn('resize-none', baseInputClasses, className)}
+            onInput={autoSize ? resizeTextarea : undefined}
+            className={cn(
+              autoSize ? 'overflow-hidden' : 'resize-none',
+              baseInputClasses,
+              className
+            )}
+            style={autoSize ? { minHeight: `${minRows * 24}px` } : undefined}
             {...(props as React.ComponentPropsWithoutRef<typeof Textarea>)}
           />
         );
@@ -97,11 +153,13 @@ export const FmCommonTextField = React.forwardRef<
               className='absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent transition-all duration-200'
               onClick={() => setShowPassword(!showPassword)}
               tabIndex={-1}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              aria-pressed={showPassword}
             >
               {showPassword ? (
-                <EyeOff className='h-4 w-4 text-muted-foreground hover:text-fm-gold transition-colors duration-200 hover:scale-110' />
+                <EyeOff className='h-4 w-4 text-muted-foreground hover:text-fm-gold transition-colors duration-200 hover:scale-110' aria-hidden='true' />
               ) : (
-                <Eye className='h-4 w-4 text-muted-foreground hover:text-fm-gold transition-colors duration-200 hover:scale-110' />
+                <Eye className='h-4 w-4 text-muted-foreground hover:text-fm-gold transition-colors duration-200 hover:scale-110' aria-hidden='true' />
               )}
             </Button>
           </div>

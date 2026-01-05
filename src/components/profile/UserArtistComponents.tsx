@@ -345,10 +345,20 @@ export function LinkedArtistDisplay({
               <div className='w-full h-[1px] bg-white/30' />
             </div>
 
-            {linkedArtist.genre && (
+            {(linkedArtist.artist_genres?.length || linkedArtist.genre) && (
               <div className='flex items-center gap-2'>
                 <Music2 className='h-4 w-4 text-fm-gold' />
-                <span className='text-sm text-fm-gold'>{linkedArtist.genre}</span>
+                <div className='flex flex-wrap gap-1.5'>
+                  {linkedArtist.artist_genres?.length ? (
+                    linkedArtist.artist_genres.map((ag) => (
+                      <span key={ag.genre_id} className='text-sm text-fm-gold bg-fm-gold/10 px-2 py-0.5 border border-fm-gold/30'>
+                        {ag.genres?.name}
+                      </span>
+                    ))
+                  ) : (
+                    <span className='text-sm text-fm-gold'>{linkedArtist.genre}</span>
+                  )}
+                </div>
               </div>
             )}
 

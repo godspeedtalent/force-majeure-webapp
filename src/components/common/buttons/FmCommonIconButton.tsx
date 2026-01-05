@@ -21,6 +21,8 @@ export interface FmCommonIconButtonProps
   icon: LucideIcon;
   loading?: boolean;
   tooltip?: string;
+  /** Accessible label for screen readers. Falls back to tooltip if not provided. */
+  'aria-label'?: string;
   asChild?: boolean;
   /** Context menu actions (shown on right-click or press-and-hold) */
   contextMenuActions?: ContextMenuAction<void>[];
@@ -45,6 +47,7 @@ export const FmCommonIconButton = forwardRef<
       icon: Icon,
       loading = false,
       tooltip,
+      'aria-label': ariaLabel,
       className,
       disabled,
       asChild,
@@ -55,6 +58,8 @@ export const FmCommonIconButton = forwardRef<
     },
     ref
   ) => {
+    // Use explicit aria-label, fall back to tooltip for accessibility
+    const accessibleLabel = ariaLabel || tooltip;
     const [isPressed, setIsPressed] = useState(false);
     const [isLongPressing, setIsLongPressing] = useState(false);
     const [contextMenuOpen, setContextMenuOpen] = useState(false);
@@ -171,6 +176,7 @@ export const FmCommonIconButton = forwardRef<
           className
         )}
         asChild={asChild}
+        aria-label={accessibleLabel}
         {...props}
       >
         <>

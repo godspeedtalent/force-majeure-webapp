@@ -37,7 +37,8 @@
     "emailVerified": "邮箱验证成功！",
     "emailVerificationSent": "验证邮件已发送",
     "sessionExpired": "您的会话已过期，请重新登录。",
-    "loginRequired": "您必须登录才能执行此操作"
+    "loginRequired": "您必须登录才能执行此操作",
+    "unexpectedError": "发生意外错误"
   },
   "profile": {
     "updateSuccess": "资料更新成功",
@@ -291,5 +292,18 @@
     "deleteItemFailed": "删除照片失败",
     "imageUploaded": "照片上传成功",
     "uploadFailed": "上传照片失败"
+  },
+  "recordings": {
+    "noUrlFound": "未找到此录音的链接",
+    "fetchingDetails": "正在获取录音详情...",
+    "notFound": "未找到录音",
+    "unknownPlatform": "未知平台",
+    "fetchFailed": "获取录音详情失败",
+    "fetchSuccess": "录音详情已更新",
+    "listenOn": "在此收听"
+  },
+  "demo": {
+    "mockDataGenerated": "模拟数据生成成功！",
+    "generateDataFirst": "请先生成数据"
   }
 }

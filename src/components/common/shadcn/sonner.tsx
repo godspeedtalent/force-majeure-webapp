@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { Toaster as Sonner, toast } from 'sonner';
 import { Info } from 'lucide-react';
@@ -6,6 +7,23 @@ type ToasterProps = React.ComponentProps<typeof Sonner>;
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = 'system' } = useTheme();
+
+  // Add click-to-dismiss functionality
+  useEffect(() => {
+    const handleClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      const toastElement = target.closest('[data-sonner-toast]');
+      if (toastElement) {
+        const toastId = toastElement.getAttribute('data-sonner-toast');
+        if (toastId) {
+          toast.dismiss(toastId);
+        }
+      }
+    };
+
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, []);
 
   return (
     <Sonner

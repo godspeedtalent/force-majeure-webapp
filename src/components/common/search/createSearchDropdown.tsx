@@ -4,7 +4,7 @@ import {
   FmCommonSearchDropdown,
   SearchDropdownOption,
 } from './FmCommonSearchDropdown';
-import { supabase } from '@/shared';
+import { supabase, logger } from '@/shared';
 import { useRecentSelections } from '@/shared';
 
 /**
@@ -190,7 +190,24 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
 
       const { data, error } = await queryBuilder.limit(10);
 
-      if (error || !data) return [];
+      if (error) {
+        logger.error('Search dropdown query failed', {
+          source: 'createSearchDropdown',
+          tableName,
+          query,
+          error: error.message,
+        });
+        return [];
+      }
+
+      if (!data) return [];
+
+      logger.debug('Search dropdown results', {
+        source: 'createSearchDropdown',
+        tableName,
+        query,
+        resultCount: data.length,
+      });
 
       return data.map((item: any) => ({
         id: formatValue ? formatValue(item as T) : item.id,

@@ -86,7 +86,9 @@ export function PerformanceHistoryStep({
                 onChange={e => onInputChange('talentDifferentiator', e.target.value)}
                 placeholder={t('artistRegistration.talentDifferentiatorPlaceholder')}
                 multiline
-                rows={4}
+                autoSize
+                minRows={3}
+                maxRows={10}
               />
 
               {/* Crowd Sources */}
@@ -97,7 +99,9 @@ export function PerformanceHistoryStep({
                 onChange={e => onInputChange('crowdSources', e.target.value)}
                 placeholder={t('artistRegistration.crowdSourcesPlaceholder')}
                 multiline
-                rows={4}
+                autoSize
+                minRows={3}
+                maxRows={10}
               />
             </div>
           </div>

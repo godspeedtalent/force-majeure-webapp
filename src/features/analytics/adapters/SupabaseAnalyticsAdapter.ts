@@ -31,7 +31,7 @@ import type {
   PaginationParams,
 } from '../types';
 
-const analyticsLogger = logger.ns('SupabaseAnalyticsAdapter');
+const analyticsLogger = logger.createNamespace('SupabaseAnalyticsAdapter');
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnySupabase = any;
@@ -372,9 +372,10 @@ export class SupabaseAnalyticsAdapter implements AnalyticsAdapter {
     pagination: PaginationParams = { page: 1, pageSize: 50 }
   ): Promise<AdapterResult<PaginatedResult<StoredSession>>> {
     try {
+      // Join with profiles to get username for authenticated sessions
       let query = (supabase as AnySupabase)
         .from('analytics_sessions')
-        .select('*', { count: 'exact' })
+        .select('*, profiles:user_id(username)', { count: 'exact' })
         .order('started_at', { ascending: false });
 
       if (filters?.startDate) {
@@ -396,10 +397,23 @@ export class SupabaseAnalyticsAdapter implements AnalyticsAdapter {
         return { success: false, error: error.message };
       }
 
+      // Transform the data to flatten the profiles join
+      interface RawSessionRow {
+        profiles: { username: string | null } | null;
+        [key: string]: unknown;
+      }
+      const sessions = ((data || []) as RawSessionRow[]).map(row => {
+        const { profiles, ...rest } = row;
+        return {
+          ...rest,
+          username: profiles?.username || null,
+        };
+      }) as StoredSession[];
+
       return {
         success: true,
         data: {
-          data: (data || []) as StoredSession[],
+          data: sessions,
           total: count || 0,
           page: pagination.page,
           pageSize: pagination.pageSize,

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Music,
@@ -26,9 +26,16 @@ export interface ArtistSlot {
   order: number;
 }
 
+export interface InitialArtistSchedule {
+  artistId: string;
+  setTime?: string | null;
+  setOrder?: number | null;
+}
+
 interface EventArtistManagementProps {
   headlinerId?: string;
   undercardIds?: string[];
+  initialScheduleData?: InitialArtistSchedule[];
   onChange: (data: {
     headlinerId: string;
     undercardIds: string[];
@@ -46,13 +53,28 @@ interface EventArtistManagementProps {
 export function EventArtistManagement({
   headlinerId = '',
   undercardIds = [],
+  initialScheduleData = [],
   onChange,
   lookingForUndercard = false,
   onLookingForUndercardChange,
   className,
 }: EventArtistManagementProps) {
   const { t } = useTranslation('common');
-  // Initialize artist slots from props
+
+  // Helper to extract time string from ISO timestamp
+  const extractTimeFromTimestamp = (timestamp: string | null | undefined): string | undefined => {
+    if (!timestamp) return undefined;
+    try {
+      const date = new Date(timestamp);
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      return `${hours}:${minutes}`;
+    } catch {
+      return undefined;
+    }
+  };
+
+  // Initialize artist slots from props with scheduling data
   const [artistSlots, setArtistSlots] = useState<ArtistSlot[]>(() => {
     const slots: ArtistSlot[] = [];
 
@@ -66,19 +88,77 @@ export function EventArtistManagement({
     }
 
     undercardIds.forEach((artistId, index) => {
+      // Find scheduling data for this artist
+      const scheduleData = initialScheduleData.find(s => s.artistId === artistId);
+
       slots.push({
         id: `undercard-${Date.now()}-${index}`,
         artistId,
         role: 'undercard',
-        order: slots.length,
+        order: scheduleData?.setOrder ?? slots.length,
+        setTime: extractTimeFromTimestamp(scheduleData?.setTime),
       });
     });
+
+    // Sort by order if we have scheduling data
+    if (initialScheduleData.length > 0) {
+      slots.sort((a, b) => a.order - b.order);
+    }
 
     return slots;
   });
 
-  const [showScheduling, setShowScheduling] = useState(false);
+  const [showScheduling, setShowScheduling] = useState(() => {
+    // Auto-enable scheduling if there's existing schedule data
+    return initialScheduleData.some(s => s.setTime);
+  });
   const [stagedSlotId, setStagedSlotId] = useState<string | null>(null);
+
+  // Track if we've initialized to avoid re-running on every render
+  const hasInitialized = useRef(false);
+
+  // Re-initialize slots when props change (for async data loading)
+  useEffect(() => {
+    // Skip if we've already initialized and have the same data
+    if (hasInitialized.current) return;
+
+    // Only initialize once we have data
+    if (headlinerId || undercardIds.length > 0) {
+      hasInitialized.current = true;
+
+      const slots: ArtistSlot[] = [];
+
+      if (headlinerId) {
+        slots.push({
+          id: `headliner-${Date.now()}`,
+          artistId: headlinerId,
+          role: 'headliner',
+          order: 0,
+        });
+      }
+
+      undercardIds.forEach((artistId, index) => {
+        const scheduleData = initialScheduleData.find(s => s.artistId === artistId);
+        slots.push({
+          id: `undercard-${Date.now()}-${index}`,
+          artistId,
+          role: 'undercard',
+          order: scheduleData?.setOrder ?? slots.length,
+          setTime: extractTimeFromTimestamp(scheduleData?.setTime),
+        });
+      });
+
+      if (initialScheduleData.length > 0) {
+        slots.sort((a, b) => a.order - b.order);
+        // Auto-enable scheduling if any slot has a set time
+        if (initialScheduleData.some(s => s.setTime)) {
+          setShowScheduling(true);
+        }
+      }
+
+      setArtistSlots(slots);
+    }
+  }, [headlinerId, undercardIds, initialScheduleData]);
 
   // Get artists by role
   const headliners = artistSlots.filter(

@@ -37,7 +37,8 @@
     "emailVerified": "¡Correo verificado exitosamente!",
     "emailVerificationSent": "Correo de verificación enviado",
     "sessionExpired": "Tu sesión ha expirado. Por favor, inicia sesión de nuevo.",
-    "loginRequired": "Debes iniciar sesión para realizar esta acción"
+    "loginRequired": "Debes iniciar sesión para realizar esta acción",
+    "unexpectedError": "Ocurrió un error inesperado"
   },
   "profile": {
     "updateSuccess": "Perfil actualizado exitosamente",
@@ -291,5 +292,18 @@
     "deleteItemFailed": "Error al eliminar foto",
     "imageUploaded": "Foto subida exitosamente",
     "uploadFailed": "Error al subir foto"
+  },
+  "recordings": {
+    "noUrlFound": "No se encontró URL para esta grabación",
+    "fetchingDetails": "Obteniendo detalles de la grabación...",
+    "notFound": "Grabación no encontrada",
+    "unknownPlatform": "Plataforma desconocida",
+    "fetchFailed": "Error al obtener detalles de la grabación",
+    "fetchSuccess": "Detalles de grabación actualizados",
+    "listenOn": "Escuchar en"
+  },
+  "demo": {
+    "mockDataGenerated": "¡Datos de prueba generados exitosamente!",
+    "generateDataFirst": "Por favor genera los datos primero"
   }
 }

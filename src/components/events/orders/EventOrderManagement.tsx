@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { FmConfigurableDataGrid } from '@/features/data-grid';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { useEventOrders, type EventOrder } from './hooks/useEventOrders';
+import { useEventById } from '@/shared/api/queries/eventQueries';
 import { Badge } from '@/components/common/shadcn/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/shadcn/avatar';
 import { Eye, XCircle, RefreshCw, Mail } from 'lucide-react';
@@ -13,6 +14,7 @@ import { logger } from '@/shared/services/logger';
 import { EmailService } from '@/services/email/EmailService';
 import { toast } from 'sonner';
 import type { DataGridColumn, DataGridAction } from '@/features/data-grid/types';
+import type { OrderEventForEmail } from '@/types/email';
 
 interface EventOrderManagementProps {
   eventId: string;
@@ -23,6 +25,7 @@ type ConfirmAction = 'cancel' | 'refund' | null;
 export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => {
   const { t } = useTranslation('common');
   const { orders, isLoading, cancelOrder, refundOrder } = useEventOrders(eventId);
+  const { data: event } = useEventById(eventId);
   const [selectedOrder, setSelectedOrder] = useState<EventOrder | null>(null);
   const [orderForAction, setOrderForAction] = useState<EventOrder | null>(null);
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
@@ -159,14 +162,38 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
 
   const handleResendConfirmation = async (order: EventOrder) => {
     if (isResending) return; // Prevent multiple simultaneous resends
+    if (!event) {
+      toast.error(tToast('orders.resendFailed'));
+      logger.error('Cannot resend confirmation: event data not available', { orderId: order.id });
+      return;
+    }
 
     setIsResending(order.id);
     try {
+      // Build event data for email
+      // Parse start_time into date and time components
+      const startDate = new Date(event.start_time);
+      const eventForEmail: OrderEventForEmail = {
+        title: event.title,
+        date: startDate.toISOString().split('T')[0], // Extract date portion
+        time: startDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        venue: event.venue ? {
+          name: event.venue.name,
+          address: event.venue.address_line_1 || undefined,
+          city: event.venue.city || undefined,
+        } : undefined,
+        image_url: event.image_url || undefined,
+      };
+
       // Convert order to email data format
-      const emailData = EmailService.convertOrderToEmailData(order, {
-        fullName: order.profile?.full_name || order.profile?.display_name || 'Customer',
-        email: order.profile?.email || '',
-      });
+      const emailData = EmailService.convertOrderToEmailData(
+        order,
+        eventForEmail,
+        {
+          fullName: order.profile?.full_name || order.profile?.display_name || 'Customer',
+          email: order.profile?.email || '',
+        }
+      );
 
       const result = await EmailService.sendOrderReceipt(emailData);
 

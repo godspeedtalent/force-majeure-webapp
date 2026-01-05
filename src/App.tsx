@@ -23,20 +23,17 @@ const EventCheckoutConfirmation = lazy(() => import('./pages/demo/EventCheckoutC
 const EmailTemplateDemo = lazy(() => import('./pages/demo/EmailTemplateDemo'));
 
 // Lazy load developer pages
-const DeveloperDatabase = lazy(() => import('./pages/developer/DeveloperDatabase'));
+const DeveloperHome = lazy(() => import('./pages/developer/DeveloperHome'));
 const DeveloperDocumentation = lazy(() => import('./pages/developer/DeveloperDocumentation'));
 const TicketFlowTests = lazy(() => import('./pages/developer/TicketFlowTests'));
 const DeveloperCreateEventPage = lazy(() => import('./pages/developer/database/CreateEvent'));
 const DeveloperCreateArtistPage = lazy(() => import('./pages/developer/database/CreateArtist'));
 const DeveloperCreateVenuePage = lazy(() => import('./pages/developer/database/CreateVenue'));
 const DeveloperCreateOrganizationPage = lazy(() => import('./pages/developer/database/CreateOrganization'));
-const DeveloperIndex = lazy(() => import('./pages/developer/DeveloperIndex'));
 const ArtistSignupDemo = lazy(() => import('./pages/developer/ArtistSignupDemo'));
-const DeveloperDashboards = lazy(() => import('./pages/developer/DeveloperDashboards'));
 
 // Lazy load admin pages
 const Statistics = lazy(() => import('./pages/admin/Statistics'));
-const AdminControls = lazy(() => import('./pages/admin/AdminControls'));
 const ActivityLogs = lazy(() => import('./pages/admin/ActivityLogs'));
 const OrganizationDetails = lazy(() => import('./pages/admin/OrganizationDetails'));
 const UserDetails = lazy(() => import('./pages/admin/UserDetails'));
@@ -170,20 +167,15 @@ const AppRoutes = () => {
         element={
           <DemoProtectedRoute>
             <Suspense fallback={<LazyLoadFallback />}>
-              <DeveloperIndex />
+              <DeveloperHome />
             </Suspense>
           </DemoProtectedRoute>
         }
       />
+      {/* Redirect old database route to unified developer home */}
       <Route
         path='/developer/database'
-        element={
-          <DemoProtectedRoute>
-            <Suspense fallback={<LazyLoadFallback />}>
-              <DeveloperDatabase />
-            </Suspense>
-          </DemoProtectedRoute>
-        }
+        element={<Navigate to='/developer?tab=db_overview' replace />}
       />
       <Route
         path='/developer/documentation'
@@ -205,20 +197,15 @@ const AppRoutes = () => {
           </DemoProtectedRoute>
         }
       />
+      {/* Redirect old dashboards route to unified developer home */}
       <Route
         path='/developer/dashboards'
-        element={
-          <DemoProtectedRoute>
-            <Suspense fallback={<LazyLoadFallback />}>
-              <DeveloperDashboards />
-            </Suspense>
-          </DemoProtectedRoute>
-        }
+        element={<Navigate to='/developer?tab=dash_recordings' replace />}
       />
-      {/* Redirect old route to new dashboards */}
+      {/* Redirect old recording analytics route */}
       <Route
         path='/developer/recording-analytics'
-        element={<Navigate to='/developer/dashboards?tab=recording-ratings' replace />}
+        element={<Navigate to='/developer?tab=dash_recordings' replace />}
       />
 
       {/* Demo Routes - Protected by developer/admin roles */}
@@ -306,15 +293,10 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
+      {/* Redirect old admin controls route to unified developer home */}
       <Route
         path='/admin/controls'
-        element={
-          <ProtectedRoute role={ROLES.ADMIN}>
-            <Suspense fallback={<LazyLoadFallback />}>
-              <AdminControls />
-            </Suspense>
-          </ProtectedRoute>
-        }
+        element={<Navigate to='/developer?tab=admin_settings' replace />}
       />
       <Route
         path='/admin/organizations/:id'

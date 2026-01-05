@@ -21,6 +21,7 @@
 | [ARCHITECTURE.md](./architecture/ARCHITECTURE.md) | System architecture overview and design decisions |
 | [ARCHITECTURE_QUICK_REFERENCE.md](./architecture/ARCHITECTURE_QUICK_REFERENCE.md) | Condensed architecture cheat sheet |
 | [DESIGN_SYSTEM.md](./architecture/DESIGN_SYSTEM.md) | Complete design system - colors, spacing, typography, components |
+| [HOOKS_PATTERNS.md](./architecture/HOOKS_PATTERNS.md) | React hooks patterns - data fetching, mutations, form hooks |
 | [PARALLAX_SYSTEM.md](./architecture/PARALLAX_SYSTEM.md) | Parallax scrolling system implementation |
 
 ---
@@ -38,6 +39,8 @@
 | [SHOPPING_CART_GUIDE.md](./features/SHOPPING_CART_GUIDE.md) | Shopping cart implementation and Zustand store |
 | [SKELETON_LOADING_GUIDE.md](./features/SKELETON_LOADING_GUIDE.md) | Skeleton loading state patterns |
 | [TICKETING_GATE_IMPLEMENTATION.md](./features/TICKETING_GATE_IMPLEMENTATION.md) | Ticketing gate/scanning feature |
+| [EXPORT-GUIDE.md](./features/EXPORT-GUIDE.md) | Data export functionality guide |
+| [SPOTIFY_INTEGRATION_GUIDE.md](./features/SPOTIFY_INTEGRATION_GUIDE.md) | Spotify API integration for artists |
 
 ---
 
@@ -71,6 +74,8 @@
 | [EVENT_VIEWS_SETUP.md](./backend/EVENT_VIEWS_SETUP.md) | Event views database setup |
 | [IMAGE_UPLOAD_SETUP.md](./backend/IMAGE_UPLOAD_SETUP.md) | Image upload configuration guide |
 | [LOCAL_EMAIL_TESTING.md](./backend/LOCAL_EMAIL_TESTING.md) | Local email testing setup |
+| [GENRE_SETUP_GUIDE.md](./backend/GENRE_SETUP_GUIDE.md) | Genre taxonomy and database setup |
+| [ORGANIZATION_COLUMN_SETUP.md](./backend/ORGANIZATION_COLUMN_SETUP.md) | Organization column setup for multi-tenancy |
 
 ---
 
@@ -92,6 +97,7 @@ Active refactoring plans and guides:
 | [ARTIST_REGISTER_REFACTORING_PLAN.md](./refactoring/ARTIST_REGISTER_REFACTORING_PLAN.md) | Artist registration refactoring plan |
 | [EVENT_DETAILS_CONTENT_REFACTORING.md](./refactoring/EVENT_DETAILS_CONTENT_REFACTORING.md) | Event details page refactoring notes |
 | [TICKET_GROUP_MANAGER_REFACTORING.md](./refactoring/TICKET_GROUP_MANAGER_REFACTORING.md) | Ticket group manager refactoring plan |
+| [I18N_REMAINING_WORK.md](./refactoring/I18N_REMAINING_WORK.md) | Internationalization remaining work and priorities |
 
 ---
 
@@ -119,19 +125,6 @@ Completed work preserved for historical reference:
 
 ---
 
-## Feature-Specific READMEs
-
-Located within their respective source directories:
-
-| Document | Description |
-|----------|-------------|
-| [packages/web/src/features/payments/README.md](../packages/web/src/features/payments/README.md) | Payments feature documentation |
-| [packages/web/src/services/email/README.md](../packages/web/src/services/email/README.md) | Email service documentation |
-| [packages/web/src/config/tailwind/README.md](../packages/web/src/config/tailwind/README.md) | Tailwind configuration |
-| [packages/web/src/components/scavenger/ARCHITECTURE_REFACTOR.md](../packages/web/src/components/scavenger/ARCHITECTURE_REFACTOR.md) | Scavenger hunt architecture |
-
----
-
 ## Directory Structure
 
 ```
@@ -139,10 +132,10 @@ docs/
 ├── INDEX.md                 # This file
 ├── AI_INSTRUCTIONS.md       # AI assistant standards
 ├── LOVABLE.md               # Lovable AI notes
-├── architecture/            # System design docs (4)
-├── backend/                 # Infrastructure docs (8)
+├── architecture/            # System design docs (5)
+├── backend/                 # Infrastructure docs (9)
 ├── error-handling/          # Error handling docs (3)
-├── features/                # Feature-specific docs (10)
+├── features/                # Feature-specific docs (11)
 ├── refactoring/             # Active refactoring plans (5)
 ├── security/                # Auth & permissions (2)
 ├── testing/                 # Testing docs (1)
@@ -180,4 +173,4 @@ docs/
 
 ---
 
-*Last updated: December 21, 2025*
+*Last updated: January 4, 2026*

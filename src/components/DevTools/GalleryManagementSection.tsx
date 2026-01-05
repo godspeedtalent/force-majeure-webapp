@@ -14,13 +14,16 @@ import {
   Image as ImageIcon,
   Video,
   Music,
+  FolderPlus,
+  Star,
 } from 'lucide-react';
 import { useGalleryManagement } from '@/features/media/hooks/useGalleryManagement';
 import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
-import { FmGallerySelectDropdown } from '@/components/common/forms/FmGallerySelectDropdown';
+import { FmGallerySearchDropdown } from '@/components/common/search/FmGallerySearchDropdown';
 import {
   Dialog,
   DialogContent,
@@ -38,7 +41,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/common/shadcn/alert-dialog';
-import type { ResolvedMediaItem, MediaType } from '@/features/media/types';
+import type { ResolvedMediaItem, MediaType, MediaGallery } from '@/features/media/types';
 import { cn } from '@/shared';
 
 const MEDIA_TYPE_ICONS: Record<MediaType, typeof ImageIcon> = {
@@ -56,9 +59,11 @@ export const GalleryManagementSection = () => {
     items,
     itemsLoading,
     deleteGallery,
+    createGallery,
     createMediaItem,
     updateMediaItem,
     deleteMediaItem,
+    setCoverItem,
     uploadFile,
   } = useGalleryManagement();
 
@@ -75,6 +80,12 @@ export const GalleryManagementSection = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadingCount, setUploadingCount] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+
+  // Create gallery dialog state
+  const [showCreateGallery, setShowCreateGallery] = useState(false);
+  const [newGalleryName, setNewGalleryName] = useState('');
+  const [newGallerySlug, setNewGallerySlug] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
 
   // Edit form state
   const [editForm, setEditForm] = useState({
@@ -186,16 +197,65 @@ export const GalleryManagementSection = () => {
     setDeleteConfirm(null);
   };
 
+  // Create gallery handlers
+  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const name = e.target.value;
+    setNewGalleryName(name);
+    // Auto-generate slug from name
+    setNewGallerySlug(
+      name
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '')
+    );
+  };
+
+  const handleCreateGallery = async () => {
+    if (!newGalleryName || !newGallerySlug) return;
+
+    setIsCreating(true);
+    try {
+      const gallery = await createGallery({
+        name: newGalleryName,
+        slug: newGallerySlug
+          .toLowerCase()
+          .replace(/[^a-z0-9-]/g, '-')
+          .replace(/-+/g, '-'),
+      });
+
+      if (gallery) {
+        setShowCreateGallery(false);
+        setNewGalleryName('');
+        setNewGallerySlug('');
+        setSelectedGallery(gallery);
+      }
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  // Handle gallery selection from search dropdown
+  const handleGalleryChange = useCallback(
+    (_id: string, gallery?: MediaGallery) => {
+      if (gallery) {
+        setSelectedGallery(gallery);
+      }
+    },
+    [setSelectedGallery]
+  );
+
   return (
     <div className='space-y-4'>
       {/* Header with gallery selector */}
       <div className='flex items-center gap-2'>
-        <FmGallerySelectDropdown
-          value={selectedGallery}
-          onChange={setSelectedGallery}
-          showCreateOption={true}
-          className='flex-1'
-        />
+        <div className='flex-1'>
+          <FmGallerySearchDropdown
+            value={selectedGallery?.id}
+            onChange={handleGalleryChange}
+            onCreateNew={() => setShowCreateGallery(true)}
+          />
+        </div>
 
         {selectedGallery && (
           <FmCommonButton
@@ -317,10 +377,14 @@ export const GalleryManagementSection = () => {
                   ))}
                 {items.map(item => {
                   const TypeIcon = MEDIA_TYPE_ICONS[item.media_type];
+                  const isCover = item.is_cover;
                   return (
                     <div
                       key={item.id}
-                      className='group relative aspect-square bg-black/40 border border-white/10 overflow-hidden'
+                      className={cn(
+                        'group relative aspect-square bg-black/40 border overflow-hidden',
+                        isCover ? 'border-fm-gold border-2' : 'border-white/10'
+                      )}
                     >
                       {/* Thumbnail */}
                       {item.media_type === 'image' ? (
@@ -337,14 +401,26 @@ export const GalleryManagementSection = () => {
                       )}
 
                       {/* Overlay on hover */}
-                      <div className='absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2'>
-                        <button
+                      <div className='absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1'>
+                        <FmCommonIconButton
+                          icon={Star}
+                          size='sm'
+                          variant={isCover ? 'gold' : 'default'}
+                          tooltip={isCover ? 'Cover image' : 'Set as cover'}
+                          onClick={() => setCoverItem(item.id)}
+                        />
+                        <FmCommonIconButton
+                          icon={Edit}
+                          size='sm'
+                          variant='default'
+                          tooltip='Edit'
                           onClick={() => openEditModal(item)}
-                          className='p-2 bg-white/10 hover:bg-white/20 transition-colors'
-                        >
-                          <Edit className='w-4 h-4' />
-                        </button>
-                        <button
+                        />
+                        <FmCommonIconButton
+                          icon={Trash2}
+                          size='sm'
+                          variant='destructive'
+                          tooltip='Delete'
                           onClick={() =>
                             setDeleteConfirm({
                               type: 'item',
@@ -352,10 +428,7 @@ export const GalleryManagementSection = () => {
                               name: item.title || 'this item',
                             })
                           }
-                          className='p-2 bg-white/10 hover:bg-fm-danger/50 transition-colors'
-                        >
-                          <Trash2 className='w-4 h-4' />
-                        </button>
+                        />
                       </div>
 
                       {/* Order indicator */}
@@ -363,8 +436,16 @@ export const GalleryManagementSection = () => {
                         {item.display_order + 1}
                       </div>
 
+                      {/* Cover badge */}
+                      {isCover && (
+                        <div className='absolute top-1 right-1 bg-fm-gold text-black px-1.5 py-0.5 flex items-center gap-1'>
+                          <Star className='w-3 h-3 fill-current' />
+                          <span className='text-[10px] font-medium'>Cover</span>
+                        </div>
+                      )}
+
                       {/* Type badge */}
-                      {item.media_type !== 'image' && (
+                      {item.media_type !== 'image' && !isCover && (
                         <div className='absolute top-1 right-1 bg-black/70 px-1.5 py-0.5'>
                           <TypeIcon className='w-3 h-3' />
                         </div>
@@ -481,6 +562,59 @@ export const GalleryManagementSection = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Create Gallery Dialog */}
+      <Dialog open={showCreateGallery} onOpenChange={setShowCreateGallery}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className='flex items-center gap-2'>
+              <FolderPlus className='w-5 h-5' />
+              Create gallery
+            </DialogTitle>
+          </DialogHeader>
+          <div className='space-y-4 py-4'>
+            <FmCommonTextField
+              label='Name'
+              value={newGalleryName}
+              onChange={handleNameChange}
+              placeholder='Artist Signup Carousel'
+              autoFocus
+            />
+            <FmCommonTextField
+              label='Slug'
+              value={newGallerySlug}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setNewGallerySlug(e.target.value)
+              }
+              placeholder='artist-signup-carousel'
+              description='URL-safe identifier used in code'
+            />
+          </div>
+          <DialogFooter>
+            <FmCommonButton
+              variant='secondary'
+              onClick={() => setShowCreateGallery(false)}
+              disabled={isCreating}
+            >
+              Cancel
+            </FmCommonButton>
+            <FmCommonButton
+              variant='gold'
+              onClick={handleCreateGallery}
+              disabled={!newGalleryName || !newGallerySlug || isCreating}
+            >
+              {isCreating ? (
+                <>
+                  <FmCommonLoadingSpinner size='sm' className='mr-2' />
+                  Creating...
+                </>
+              ) : (
+                'Create'
+              )}
+            </FmCommonButton>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

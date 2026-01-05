@@ -75,13 +75,17 @@ export default function ArtistDetails() {
                     <p className='text-lg font-medium'>{artist.name}</p>
                   </div>
 
-                  {artist.genre && (
+                  {artist.artist_genres && artist.artist_genres.length > 0 && (
                     <div>
-                      <label className='text-sm text-muted-foreground'>{t('labels.genre')}</label>
-                      <div className='mt-1'>
-                        <Badge variant='secondary' className='bg-fm-gold/20 text-fm-gold'>
-                          {artist.genre}
-                        </Badge>
+                      <label className='text-sm text-muted-foreground'>{t('labels.genres')}</label>
+                      <div className='mt-1 flex flex-wrap gap-1.5'>
+                        {artist.artist_genres
+                          .filter((ag) => ag.genres?.name)
+                          .map((ag) => (
+                          <Badge key={ag.genre_id} variant='secondary' className='bg-fm-gold/20 text-fm-gold'>
+                            {ag.genres?.name}
+                          </Badge>
+                        ))}
                       </div>
                     </div>
                   )}

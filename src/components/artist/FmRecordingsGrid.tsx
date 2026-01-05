@@ -11,7 +11,7 @@ import {
   Plus,
   Music,
 } from 'lucide-react';
-import { SiSoundcloud, SiSpotify } from 'react-icons/si';
+import { SiSoundcloud, SiSpotify, SiYoutube } from 'react-icons/si';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmRecordingLink } from '@/components/common/links/FmRecordingLink';
 import {
@@ -105,6 +105,8 @@ export function FmRecordingsGrid({
         return <SiSoundcloud className='h-4 w-4 text-[#d48968]' />;
       case 'spotify':
         return <SiSpotify className='h-4 w-4 text-[#5aad7a]' />;
+      case 'youtube':
+        return <SiYoutube className='h-4 w-4 text-[#FF0000]' />;
       default:
         return <Disc3 className='h-4 w-4 text-fm-gold' />;
     }

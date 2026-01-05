@@ -1,8 +1,16 @@
 /**
  * FmCommonFormSection
  *
- * Form-specific section component with consistent layout
- * Used within forms to group related fields with labels
+ * Form-specific section component with consistent layout.
+ * Used within forms to group related fields with labels.
+ *
+ * **When to use:**
+ * - When you need layout options (stack, grid-2, grid-3)
+ * - When sections need icons or required indicators
+ * - For structured form field grouping
+ *
+ * **See also:**
+ * - `FormSection` - For simple visual separation with decorative dividers
  */
 
 import { LucideIcon } from 'lucide-react';

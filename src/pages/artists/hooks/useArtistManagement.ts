@@ -2,7 +2,7 @@
  * useArtistManagement
  *
  * Consolidates all state and handlers for the artist management page.
- * Handles artist data fetching, form state, auto-save, and recordings.
+ * Handles artist data fetching, form state, and recordings.
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -12,7 +12,6 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, logger } from '@/shared';
 import { toast } from 'sonner';
 import { handleError } from '@/shared/services/errorHandler';
-import { useDebouncedSave } from '@/shared/hooks/useDebouncedSave';
 import { useArtistGenres, useUpdateArtistGenres } from '@/features/artists/hooks/useArtistGenres';
 import {
   useArtistRecordings,
@@ -99,64 +98,6 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
       youtube: youtube || undefined,
     },
   }), [instagram, twitter, facebook, tiktok, youtube]);
-
-  // Debounced auto-save for artist changes
-  const saveArtistData = useCallback(async (data: {
-    name: string;
-    bio: string;
-    website: string;
-    spotify_data: ArtistMetadata;
-  }) => {
-    if (!artistId) return;
-
-    try {
-      const { error } = await supabase
-        .from('artists')
-        .update({
-          name: data.name,
-          bio: data.bio,
-          website: data.website,
-          instagram_handle: instagram || null,
-          tiktok_handle: tiktok || null,
-          soundcloud_id: soundcloud || null,
-          spotify_id: spotify || null,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          spotify_data: data.spotify_data as any,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', artistId);
-
-      if (error) throw error;
-
-      toast.success(tToast('artists.autoSaved'));
-      queryClient.invalidateQueries({ queryKey: ['artist', artistId] });
-    } catch (error) {
-      await handleError(error, {
-        title: tToast('artists.autoSaveFailed'),
-        description: tToast('artists.autoSaveFailedDescription'),
-        endpoint: 'ArtistManagement',
-        method: 'UPDATE',
-      });
-    }
-  }, [artistId, instagram, tiktok, soundcloud, spotify, tToast, queryClient]);
-
-  const { triggerSave: triggerArtistSave, flushSave: flushArtistSave } =
-    useDebouncedSave({
-      saveFn: saveArtistData,
-      delay: 2000,
-    });
-
-  // Helper to trigger auto-save
-  const triggerAutoSave = useCallback(() => {
-    if (name.trim()) {
-      triggerArtistSave({
-        name,
-        bio,
-        website,
-        spotify_data: buildMetadata(),
-      });
-    }
-  }, [name, bio, website, buildMetadata, triggerArtistSave]);
 
   // Fetch artist data
   const { data: artist, isLoading } = useQuery({
@@ -316,6 +257,13 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
           }
           metadata = { name, cover_art: data.thumbnail_url };
         }
+      } else if (platform === 'youtube') {
+        const oEmbedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`;
+        const response = await fetch(oEmbedUrl);
+        if (response.ok) {
+          const data = await response.json();
+          metadata = { name: data.title || recording.name, cover_art: data.thumbnail_url };
+        }
       }
 
       if (metadata && artistId) {
@@ -353,8 +301,6 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
 
     setIsSaving(true);
     try {
-      await flushArtistSave();
-
       const { error } = await supabase
         .from('artists')
         .update({
@@ -380,7 +326,7 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
     } finally {
       setIsSaving(false);
     }
-  }, [artistId, name, bio, website, instagram, tiktok, soundcloud, spotify, buildMetadata, flushArtistSave, queryClient, tToast]);
+  }, [artistId, name, bio, website, instagram, tiktok, soundcloud, spotify, buildMetadata, queryClient, tToast]);
 
   // Delete handler
   const handleDelete = useCallback(async () => {
@@ -462,9 +408,6 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
     recordingToDelete,
     setRecordingToDelete,
     deleteRecordingMutation,
-
-    // Auto-save
-    triggerAutoSave,
 
     // Handlers
     handleSave,

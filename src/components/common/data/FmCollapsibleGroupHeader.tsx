@@ -1,5 +1,5 @@
 import { ReactNode, useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, LucideIcon } from 'lucide-react';
 import { cn } from '@/shared';
 
 interface FmCollapsibleGroupHeaderProps {
@@ -19,6 +19,10 @@ interface FmCollapsibleGroupHeaderProps {
   className?: string;
   /** Whether to show the horizontal line divider (default: true) */
   showDivider?: boolean;
+  /** Optional icon to display before the title */
+  icon?: LucideIcon;
+  /** Size variant: 'default' for H2-level, 'large' for H1-level main groups */
+  size?: 'default' | 'large';
 }
 
 /**
@@ -62,6 +66,8 @@ export const FmCollapsibleGroupHeader = ({
   children,
   className,
   showDivider = true,
+  icon: Icon,
+  size = 'default',
 }: FmCollapsibleGroupHeaderProps) => {
   const [internalExpanded, setInternalExpanded] = useState(defaultExpanded);
 
@@ -78,6 +84,8 @@ export const FmCollapsibleGroupHeader = ({
     }
   };
 
+  const isLarge = size === 'large';
+
   return (
     <div className={cn('space-y-1.5', className)}>
       {/* Group Header - Clickable */}
@@ -85,27 +93,42 @@ export const FmCollapsibleGroupHeader = ({
       <button
         onClick={handleToggle}
         className={cn(
-          'flex items-center gap-2 py-1.5 px-1 w-full group/header transition-all duration-300 rounded-sm',
+          'flex items-center gap-2 w-full group/header transition-all duration-300 rounded-sm',
           'hover:bg-fm-gold/5 hover:shadow-[0_0_12px_rgba(223,186,125,0.1)]',
-          'active:scale-[0.99] active:bg-fm-gold/10'
+          'active:scale-[0.99] active:bg-fm-gold/10',
+          isLarge ? 'py-2 px-1.5' : 'py-1.5 px-1'
         )}
         type="button"
       >
         <ChevronDown
           className={cn(
-            'h-3 w-3 transition-all duration-300',
+            'transition-all duration-300',
             'text-white/40 group-hover/header:text-fm-gold',
-            !isExpanded && '-rotate-90'
+            !isExpanded && '-rotate-90',
+            isLarge ? 'h-4 w-4' : 'h-3 w-3'
           )}
         />
+        {Icon && (
+          <Icon
+            className={cn(
+              'transition-all duration-300',
+              'text-white/50 group-hover/header:text-fm-gold',
+              isLarge ? 'h-4 w-4' : 'h-3.5 w-3.5'
+            )}
+          />
+        )}
         <span className={cn(
-          'text-[10px] font-medium uppercase tracking-wider transition-all duration-300',
-          'text-white/60 group-hover/header:text-fm-gold group-hover/header:tracking-widest'
+          'font-medium uppercase tracking-wider transition-all duration-300',
+          'text-white/60 group-hover/header:text-fm-gold group-hover/header:tracking-widest',
+          isLarge ? 'text-[11px]' : 'text-[10px]'
         )}>
           {title}
         </span>
         {count !== undefined && (
-          <span className="text-[9px] text-white/30 group-hover/header:text-fm-gold/50 transition-colors duration-300">
+          <span className={cn(
+            'text-white/30 group-hover/header:text-fm-gold/50 transition-colors duration-300',
+            isLarge ? 'text-[10px]' : 'text-[9px]'
+          )}>
             ({count})
           </span>
         )}
@@ -122,6 +145,92 @@ export const FmCollapsibleGroupHeader = ({
       <div
         className={cn(
           'grid transition-all duration-200 ease-in-out',
+          isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+        )}
+      >
+        <div className="overflow-hidden">{children}</div>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * FmCollapsibleSubgroupHeader - A smaller subgroup header for nested navigation (H2 level)
+ *
+ * Use this for subgroups within a main FmCollapsibleGroupHeader.
+ * Slightly smaller and more subtle than the main group header.
+ */
+interface FmCollapsibleSubgroupHeaderProps {
+  title: string;
+  count?: number;
+  defaultExpanded?: boolean;
+  expanded?: boolean;
+  onExpandedChange?: (expanded: boolean) => void;
+  children: ReactNode;
+  className?: string;
+  icon?: LucideIcon;
+}
+
+export const FmCollapsibleSubgroupHeader = ({
+  title,
+  count,
+  defaultExpanded = true,
+  expanded: controlledExpanded,
+  onExpandedChange,
+  children,
+  className,
+  icon: Icon,
+}: FmCollapsibleSubgroupHeaderProps) => {
+  const [internalExpanded, setInternalExpanded] = useState(defaultExpanded);
+  const isExpanded = controlledExpanded !== undefined ? controlledExpanded : internalExpanded;
+
+  const handleToggle = () => {
+    const newValue = !isExpanded;
+    if (controlledExpanded !== undefined) {
+      onExpandedChange?.(newValue);
+    } else {
+      setInternalExpanded(newValue);
+      onExpandedChange?.(newValue);
+    }
+  };
+
+  return (
+    <div className={cn('space-y-1', className)}>
+      <button
+        onClick={handleToggle}
+        className={cn(
+          'flex items-center gap-1.5 py-1 px-2 w-full group/subheader transition-all duration-300 rounded-sm',
+          'hover:bg-white/5',
+          'active:scale-[0.99]'
+        )}
+        type="button"
+      >
+        <ChevronDown
+          className={cn(
+            'h-2.5 w-2.5 transition-all duration-300',
+            'text-white/30 group-hover/subheader:text-white/50',
+            !isExpanded && '-rotate-90'
+          )}
+        />
+        {Icon && (
+          <Icon className="h-3 w-3 text-white/40 group-hover/subheader:text-white/60 transition-colors" />
+        )}
+        <span className={cn(
+          'text-[9px] font-medium uppercase tracking-wide transition-all duration-300',
+          'text-white/50 group-hover/subheader:text-white/70'
+        )}>
+          {title}
+        </span>
+        {count !== undefined && (
+          <span className="text-[8px] text-white/25">
+            ({count})
+          </span>
+        )}
+      </button>
+
+      <div
+        className={cn(
+          'grid transition-all duration-200 ease-in-out pl-2',
           isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
         )}
       >

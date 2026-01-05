@@ -1,3 +1,18 @@
+/**
+ * FormSection
+ *
+ * Simple section component with decorative dividers for visual separation.
+ * Used to divide form content into distinct visual areas.
+ *
+ * **When to use:**
+ * - When you need visual separation with decorative dividers
+ * - For long forms that need clear section breaks
+ * - Supports forwardRef for scroll-to-section behavior
+ *
+ * **See also:**
+ * - `FmCommonFormSection` - For structured layout with grids, icons, and required indicators
+ */
+
 import * as React from 'react';
 
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';

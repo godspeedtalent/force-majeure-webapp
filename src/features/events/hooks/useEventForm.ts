@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { useAsyncAction } from '@/shared';
+import { useAsyncMutation } from '@/shared';
 import { eventService } from '../services/eventService';
 import { EventFormState } from './useEventData';
 import { getArtistName } from '@/features/artists/services/artistQueries';
@@ -21,8 +21,8 @@ export interface UseEventFormOptions {
 export function useEventForm(options: UseEventFormOptions) {
   const { eventId, onSuccess, mode } = options;
 
-  const { execute: submitForm, isLoading } = useAsyncAction(
-    async (formState: EventFormState) => {
+  const { execute: submitForm, isLoading } = useAsyncMutation({
+    mutationFn: async (formState: EventFormState) => {
       // Fetch artist and venue names for title using centralized query services
       const [headliner, venue] = await Promise.all([
         getArtistName(formState.headlinerId),
@@ -104,21 +104,20 @@ export function useEventForm(options: UseEventFormOptions) {
 
       return { eventId: resultEventId, eventTitle };
     },
-    {
-      successMessage:
-        mode === 'edit'
-          ? 'Event updated successfully'
-          : 'Event created successfully',
-      errorMessage:
-        mode === 'edit' ? 'Failed to update event' : 'Failed to create event',
-      onSuccess: () => {
-        // Delay callback to ensure DB consistency
-        setTimeout(() => {
-          onSuccess?.();
-        }, 500);
-      },
-    }
-  );
+    successMessage:
+      mode === 'edit'
+        ? 'Event updated successfully'
+        : 'Event created successfully',
+    errorMessage:
+      mode === 'edit' ? 'Failed to update event' : 'Failed to create event',
+    onSuccess: () => {
+      // Delay callback to ensure DB consistency
+      setTimeout(() => {
+        onSuccess?.();
+      }, 500);
+    },
+    throwOnError: true, // Maintain legacy behavior
+  });
 
   const validateForm = (formState: EventFormState): string | null => {
     if (!formState.headlinerId) {

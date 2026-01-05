@@ -38,7 +38,8 @@
     "emailVerified": "Email verified successfully!",
     "emailVerificationSent": "Verification email sent",
     "sessionExpired": "Your session has expired. Please sign in again.",
-    "loginRequired": "You must be logged in to perform this action"
+    "loginRequired": "You must be logged in to perform this action",
+    "unexpectedError": "An unexpected error occurred"
   },
   "profile": {
     "updateSuccess": "Profile updated successfully",
@@ -292,5 +293,18 @@
     "deleteItemFailed": "Failed to delete photo",
     "imageUploaded": "Photo uploaded successfully",
     "uploadFailed": "Failed to upload photo"
+  },
+  "recordings": {
+    "noUrlFound": "No URL found for this recording",
+    "fetchingDetails": "Fetching recording details...",
+    "notFound": "Recording not found",
+    "unknownPlatform": "Unknown Platform",
+    "fetchFailed": "Failed to fetch recording details",
+    "fetchSuccess": "Recording details updated",
+    "listenOn": "Listen on"
+  },
+  "demo": {
+    "mockDataGenerated": "Mock data generated successfully!",
+    "generateDataFirst": "Please generate data first"
   }
 }

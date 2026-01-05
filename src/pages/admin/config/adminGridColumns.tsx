@@ -1,8 +1,6 @@
 import { DataGridColumn, DataGridColumns } from '@/features/data-grid';
 import { BadgeListCell } from '@/features/data-grid/components/cells';
-import { supabase } from '@/shared';
-import { toast } from 'sonner';
-import { logger } from '@/shared';
+import { updateImageField } from '@/shared/services/imageUploadService';
 import i18n from '@/i18n';
 
 /**
@@ -13,62 +11,43 @@ const t = (key: string) => i18n.t(key, { ns: 'common' });
 /**
  * Update artist image URL in the database
  */
-async function updateArtistImage(row: any, newImageUrl: string) {
-  try {
-    const { error } = await supabase
-      .from('artists')
-      .update({ image_url: newImageUrl })
-      .eq('id', row.id);
-
-    if (error) throw error;
-    toast.success(t('adminGrid.artistImageUpdated'));
-  } catch (error) {
-    logger.error('Failed to update artist image', { error, artistId: row.id });
-    toast.error(t('adminGrid.artistImageUpdateFailed'));
-    throw error;
-  }
+async function updateArtistImage(row: { id: string }, newImageUrl: string) {
+  return updateImageField({
+    tableName: 'artists',
+    recordId: row.id,
+    fieldName: 'image_url',
+    newImageUrl,
+    successMessageKey: 'adminGrid.artistImageUpdated',
+    errorMessageKey: 'adminGrid.artistImageUpdateFailed',
+  });
 }
 
 /**
  * Update user avatar URL in the database
  */
-async function updateUserAvatar(row: any, newImageUrl: string) {
-  try {
-    const { error } = await supabase
-      .from('profiles')
-      .update({ avatar_url: newImageUrl })
-      .eq('id', row.id);
-
-    if (error) throw error;
-    toast.success(t('adminGrid.userAvatarUpdated'));
-  } catch (error) {
-    logger.error('Failed to update user avatar', { error, userId: row.id });
-    toast.error(t('adminGrid.userAvatarUpdateFailed'));
-    throw error;
-  }
+async function updateUserAvatar(row: { id: string }, newImageUrl: string) {
+  return updateImageField({
+    tableName: 'profiles',
+    recordId: row.id,
+    fieldName: 'avatar_url',
+    newImageUrl,
+    successMessageKey: 'adminGrid.userAvatarUpdated',
+    errorMessageKey: 'adminGrid.userAvatarUpdateFailed',
+  });
 }
 
 /**
  * Update venue image URL in the database
  */
-async function updateVenueImage(row: any, newImageUrl: string) {
-  try {
-    const { error } = await supabase
-      .from('venues')
-      .update({ image_url: newImageUrl })
-      .eq('id', row.id);
-
-    if (error) throw error;
-    toast.success(t('adminGrid.venueImageUpdated'));
-  } catch (error) {
-    logger.error('Failed to update venue image', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-      source: 'adminGridColumns',
-      details: { venueId: row.id }
-    });
-    toast.error(t('adminGrid.venueImageUpdateFailed'));
-    throw error;
-  }
+async function updateVenueImage(row: { id: string }, newImageUrl: string) {
+  return updateImageField({
+    tableName: 'venues',
+    recordId: row.id,
+    fieldName: 'image_url',
+    newImageUrl,
+    successMessageKey: 'adminGrid.venueImageUpdated',
+    errorMessageKey: 'adminGrid.venueImageUpdateFailed',
+  });
 }
 
 /**

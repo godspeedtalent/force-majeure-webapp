@@ -92,7 +92,8 @@
     "joinWaitlist": "Join Waitlist",
     "getTickets": "Get Tickets",
     "processing": "Processing...",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "setAsCover": "Set as cover"
   },
   "labels": {
     "email": "Email",
@@ -155,6 +156,7 @@
     "tiktok": "TikTok",
     "tiktokHandle": "TikTok Handle (Optional)",
     "youtube": "YouTube",
+    "coverImage": "Cover image",
     "soundcloudUrl": "SoundCloud URL",
     "spotifyArtistUrl": "Spotify Artist URL",
     "listen": "Listen",
@@ -249,7 +251,22 @@
     "avgClicksPerLink": "Avg. Clicks/Link",
     "clicksOverTime": "Clicks Over Time (Last 7 Days)",
     "topPerformingLinks": "Top 5 Performing Links",
-    "clicksBySource": "Clicks by Source"
+    "clicksBySource": "Clicks by Source",
+    "timespan": {
+      "last7Days": "Last 7 days",
+      "last30Days": "Last 30 days",
+      "last12Months": "Last 12 months",
+      "custom": "Custom"
+    },
+    "labels": {
+      "totalViews": "Total views",
+      "totalSessions": "Total sessions",
+      "avgViewsPerDay": "Avg views/day"
+    },
+    "sources": {
+      "direct": "Direct",
+      "unknown": "Unknown"
+    }
   },
   "time": {
     "today": "Today",
@@ -301,7 +318,9 @@
     "permissionCount_one": "{{count}} permission",
     "clearSimulation": "Clear simulation",
     "unauthenticated": "Unauthenticated",
-    "unauthenticatedDescription": "Simulate a logged-out user with no roles or permissions"
+    "unauthenticatedDescription": "Simulate a logged-out user with no roles or permissions",
+    "exitSimulation": "Exit \"{{role}}\" simulation",
+    "exitSimulationHint": "Click here to exit the simulation when finished"
   },
   "searchDropdown": {
     "placeholder": "Search...",
@@ -2958,5 +2977,179 @@
     "userAvatarUpdateFailed": "Failed to update user avatar",
     "venueImageUpdated": "Venue image updated",
     "venueImageUpdateFailed": "Failed to update venue image"
+  },
+  "charts": {
+    "noDataAvailable": "No data available.",
+    "label": "Label",
+    "pointLabel": "Point label",
+    "enterLabel": "Enter label...",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "topPagesTable": {
+    "allTypes": "All types",
+    "selectedCount": "{{count}} selected",
+    "pageTypes": "Page types",
+    "clear": "Clear",
+    "page": "Page",
+    "type": "Type",
+    "views": "Views",
+    "sessions": "Sessions",
+    "avgTime": "Avg. time",
+    "avgScroll": "Avg. scroll",
+    "searchPages": "Search pages...",
+    "unignorePage": "Unignore this page",
+    "ignorePage": "Ignore this page",
+    "noIgnoredPages": "No ignored pages found.",
+    "noPagesToDisplay": "No pages to display. All pages may be ignored."
+  },
+  "recordingRatings": {
+    "name": "Name",
+    "artist": "Artist",
+    "platform": "Platform",
+    "type": "Type",
+    "avgScore": "Avg Score",
+    "ratingCount": "Rating Count",
+    "url": "URL",
+    "scoreRange": "Score range",
+    "minRatings": "Min ratings",
+    "sortBy": "Sort by",
+    "allTypes": "All types",
+    "allPlatforms": "All platforms",
+    "noDataYet": "No data yet",
+    "recordingNotFound": "Recording not found",
+    "unknownPlatform": "Unknown Platform",
+    "scores": {
+      "all": "All scores",
+      "excellent": "8+ (Excellent)",
+      "good": "6+ (Good)",
+      "average": "4+ (Average)",
+      "belowAverage": "Below 6"
+    },
+    "platforms": {
+      "spotify": "Spotify",
+      "soundcloud": "SoundCloud"
+    },
+    "types": {
+      "djSets": "DJ Sets",
+      "tracks": "Tracks"
+    },
+    "sort": {
+      "highestRated": "Highest rated",
+      "lowestRated": "Lowest rated",
+      "mostReviewed": "Most reviewed",
+      "leastReviewed": "Least reviewed",
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "nameAZ": "Name A-Z",
+      "nameZA": "Name Z-A"
+    },
+    "minRatingsOptions": {
+      "any": "Any",
+      "atLeast1": "At least 1",
+      "atLeast2": "At least 2",
+      "atLeast3": "At least 3",
+      "atLeast5": "At least 5"
+    }
+  },
+  "adminControls": {
+    "title": "Admin Controls",
+    "siteControls": "Site Controls",
+    "developerTools": "Developer Tools",
+    "devToolsDesc": "Toggle dev environment features",
+    "ticketing": "Ticketing",
+    "ticketingDesc": "Configure ticketing fees and checkout behavior",
+    "siteSettings": "Site Settings",
+    "siteSettingsDesc": "Configure site settings",
+    "database": "Database",
+    "organizations": "Organizations",
+    "organizationsDesc": "Manage organizations",
+    "users": "Users",
+    "usersDesc": "Manage user accounts",
+    "monitoring": "Monitoring",
+    "activityLogs": "Activity Logs",
+    "activityLogsDesc": "View system activity logs",
+    "devToolsMobile": "Dev Tools",
+    "ticketingMobile": "Ticketing",
+    "settingsMobile": "Settings",
+    "orgsMobile": "Orgs",
+    "usersMobile": "Users"
+  },
+  "galleryManagement": {
+    "notFound": "Gallery not found",
+    "notFoundMessage": "The gallery \"{{slug}}\" could not be found.",
+    "uploadPrompt": "Drop files here or click to upload",
+    "supportedTypes": "Supported: Images, Videos, Audio",
+    "selectFiles": "Select files",
+    "addMedia": "Add media",
+    "editMedia": "Edit media",
+    "deleteMediaConfirm": "Delete media?",
+    "deleteMediaMessage": "This will permanently delete \"{{name}}\". This action cannot be undone.",
+    "photoTitle": "Photo title",
+    "altText": "Description for accessibility",
+    "creator": "Photographer or creator name",
+    "year": "Year",
+    "additionalDetails": "Additional details",
+    "selectOrCreateHint": "Select or create a gallery to manage media",
+    "createGallery": "Create gallery",
+    "galleryName": "Gallery name",
+    "galleryNamePlaceholder": "Artist Signup Carousel",
+    "slug": "Slug",
+    "slugPlaceholder": "artist-signup-carousel",
+    "slugDescription": "URL-safe identifier used in code",
+    "deleteGalleryConfirm": "Delete gallery?",
+    "deleteItemConfirm": "Delete item?",
+    "deleteGalleryMessage": "This will permanently delete the gallery \"{{name}}\" and all its media. This action cannot be undone.",
+    "labels": {
+      "title": "Title",
+      "altText": "Alt text",
+      "creator": "Creator",
+      "year": "Year",
+      "description": "Description",
+      "name": "Name",
+      "slug": "Slug"
+    }
+  },
+  "sonicGauntlet": {
+    "backToForceMajeure": "Back to Force Majeure",
+    "presents": "Force Majeure presents",
+    "title": "Sonic Gauntlet",
+    "subtitle": "atx electronic showcase",
+    "description": "Austin's premier DJ competition returns. Local electronic artists battle for glory, prizes, and the chance to headline a Force Majeure event.",
+    "registrationInfo": "Registration opens soon. Stay tuned for dates and details.",
+    "registrationComing": "Registration Coming Soon",
+    "followText": "Follow",
+    "forUpdates": "for updates"
+  },
+  "dashboards": {
+    "activityLog": "Activity Log",
+    "userMetrics": "User Metrics",
+    "comingSoon": "Coming soon"
+  },
+  "mediaGallery": {
+    "loading": "Loading...",
+    "noImagesAvailable": "No images available",
+    "openInNavigator": "Open in Database Navigator"
+  },
+  "accessibility": {
+    "pagination": "pagination",
+    "breadcrumb": "breadcrumb",
+    "goToPreviousPage": "Go to previous page",
+    "goToNextPage": "Go to next page",
+    "previous": "Previous",
+    "next": "Next",
+    "morePages": "More pages",
+    "more": "More",
+    "close": "Close",
+    "toggleSidebar": "Toggle Sidebar",
+    "previousSlide": "Previous slide",
+    "nextSlide": "Next slide"
+  },
+  "datePicker": {
+    "pickADate": "Pick a date",
+    "pickADateRange": "Pick a date range"
+  },
+  "demo": {
+    "selectEventInstruction": "Select an event from Demo Tools to begin"
   }
 }

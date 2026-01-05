@@ -83,7 +83,10 @@
   },
   "artistDetails": {
     "back": "Volver",
+    "events": "Eventos",
     "upcomingEvents": "Próximos Eventos",
+    "pastEvents": "Eventos Pasados",
+    "morePastEvents": "+{{count}} eventos pasados más",
     "entityName": "Artista",
     "notFound": "Artista No Encontrado"
   },
@@ -455,6 +458,8 @@
     "loading": "Cargando..."
   },
   "artistSignup": {
+    "seoTitle": "Únete a Nuestro Roster de Artistas",
+    "seoDescription": "Envía tu perfil de artista y sé descubierto por la comunidad de música electrónica más comprometida de Austin. Reserva shows, conecta con fans y haz crecer tu carrera.",
     "heroTitle": "Ven a tocar con nosotros.",
     "valueProposition1": "FM ha sido, y siempre será, un grupo que eleva la escena electrónica local de Austin cuidando a nuestros artistas.",
     "valueProposition2": "Nos aseguramos con orgullo de que nuestros undercards representen una selección diversa de estrellas emergentes de un amplio panteón de géneros.",

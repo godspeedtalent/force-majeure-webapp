@@ -92,7 +92,8 @@
     "joinWaitlist": "加入等待名单",
     "getTickets": "获取门票",
     "processing": "处理中...",
-    "tryAgain": "重试"
+    "tryAgain": "重试",
+    "setAsCover": "设为封面"
   },
   "labels": {
     "email": "邮箱",
@@ -155,6 +156,7 @@
     "tiktok": "TikTok",
     "tiktokHandle": "TikTok账号（可选）",
     "youtube": "YouTube",
+    "coverImage": "封面图片",
     "soundcloudUrl": "SoundCloud链接",
     "spotifyArtistUrl": "Spotify艺术家链接",
     "listen": "收听",
@@ -249,7 +251,22 @@
     "avgClicksPerLink": "平均点击/链接",
     "clicksOverTime": "点击趋势（过去7天）",
     "topPerformingLinks": "表现最佳的5个链接",
-    "clicksBySource": "按来源统计点击"
+    "clicksBySource": "按来源统计点击",
+    "timespan": {
+      "last7Days": "过去7天",
+      "last30Days": "过去30天",
+      "last12Months": "过去12个月",
+      "custom": "自定义"
+    },
+    "labels": {
+      "totalViews": "总浏览量",
+      "totalSessions": "总会话数",
+      "avgViewsPerDay": "日均浏览量"
+    },
+    "sources": {
+      "direct": "直接访问",
+      "unknown": "未知"
+    }
   },
   "time": {
     "today": "今天",
@@ -280,6 +297,8 @@
     "devNotes": "开发笔记",
     "mockRole": "模拟角色",
     "mockRoleSimulator": "角色模拟器",
+    "gallery": "图库",
+    "galleryManager": "媒体图库",
     "dragToResize": "拖动调整大小",
     "groups": {
       "organization": "组织",
@@ -299,7 +318,9 @@
     "permissionCount_one": "{{count}}个权限",
     "clearSimulation": "清除模拟",
     "unauthenticated": "未认证",
-    "unauthenticatedDescription": "模拟未登录用户，无角色和权限"
+    "unauthenticatedDescription": "模拟未登录用户，无角色和权限",
+    "exitSimulation": "退出\"{{role}}\"模拟",
+    "exitSimulationHint": "完成后点击此处退出模拟"
   },
   "searchDropdown": {
     "placeholder": "搜索...",
@@ -2886,5 +2907,179 @@
         "organizationDetails": "组织详情"
       }
     }
+  },
+  "charts": {
+    "noDataAvailable": "暂无数据。",
+    "label": "标签",
+    "pointLabel": "点标签",
+    "enterLabel": "输入标签...",
+    "save": "保存",
+    "cancel": "取消"
+  },
+  "topPagesTable": {
+    "allTypes": "所有类型",
+    "selectedCount": "已选择{{count}}个",
+    "pageTypes": "页面类型",
+    "clear": "清除",
+    "page": "页面",
+    "type": "类型",
+    "views": "浏览量",
+    "sessions": "会话",
+    "avgTime": "平均时间",
+    "avgScroll": "平均滚动",
+    "searchPages": "搜索页面...",
+    "unignorePage": "取消忽略此页面",
+    "ignorePage": "忽略此页面",
+    "noIgnoredPages": "未找到被忽略的页面。",
+    "noPagesToDisplay": "没有可显示的页面。所有页面可能已被忽略。"
+  },
+  "recordingRatings": {
+    "name": "名称",
+    "artist": "艺术家",
+    "platform": "平台",
+    "type": "类型",
+    "avgScore": "平均分",
+    "ratingCount": "评分数量",
+    "url": "链接",
+    "scoreRange": "分数范围",
+    "minRatings": "最少评分",
+    "sortBy": "排序方式",
+    "allTypes": "所有类型",
+    "allPlatforms": "所有平台",
+    "noDataYet": "暂无数据",
+    "recordingNotFound": "未找到录音",
+    "unknownPlatform": "未知平台",
+    "scores": {
+      "all": "所有分数",
+      "excellent": "8+（优秀）",
+      "good": "6+（良好）",
+      "average": "4+（一般）",
+      "belowAverage": "低于6"
+    },
+    "platforms": {
+      "spotify": "Spotify",
+      "soundcloud": "SoundCloud"
+    },
+    "types": {
+      "djSets": "DJ Sets",
+      "tracks": "曲目"
+    },
+    "sort": {
+      "highestRated": "评分最高",
+      "lowestRated": "评分最低",
+      "mostReviewed": "评价最多",
+      "leastReviewed": "评价最少",
+      "newest": "最新",
+      "oldest": "最旧",
+      "nameAZ": "名称 A-Z",
+      "nameZA": "名称 Z-A"
+    },
+    "minRatingsOptions": {
+      "any": "任意",
+      "atLeast1": "至少1条",
+      "atLeast2": "至少2条",
+      "atLeast3": "至少3条",
+      "atLeast5": "至少5条"
+    }
+  },
+  "adminControls": {
+    "title": "管理员控制",
+    "siteControls": "站点控制",
+    "developerTools": "开发者工具",
+    "devToolsDesc": "切换开发环境功能",
+    "ticketing": "票务",
+    "ticketingDesc": "配置票务费用和结账行为",
+    "siteSettings": "站点设置",
+    "siteSettingsDesc": "配置站点设置",
+    "database": "数据库",
+    "organizations": "组织",
+    "organizationsDesc": "管理组织",
+    "users": "用户",
+    "usersDesc": "管理用户账户",
+    "monitoring": "监控",
+    "activityLogs": "活动日志",
+    "activityLogsDesc": "查看系统活动日志",
+    "devToolsMobile": "开发工具",
+    "ticketingMobile": "票务",
+    "settingsMobile": "设置",
+    "orgsMobile": "组织",
+    "usersMobile": "用户"
+  },
+  "galleryManagement": {
+    "notFound": "未找到图库",
+    "notFoundMessage": "无法找到图库\"{{slug}}\"。",
+    "uploadPrompt": "将文件拖放到此处或点击上传",
+    "supportedTypes": "支持：图片、视频、音频",
+    "selectFiles": "选择文件",
+    "addMedia": "添加媒体",
+    "editMedia": "编辑媒体",
+    "deleteMediaConfirm": "删除媒体？",
+    "deleteMediaMessage": "这将永久删除\"{{name}}\"。此操作无法撤消。",
+    "photoTitle": "照片标题",
+    "altText": "无障碍描述",
+    "creator": "摄影师或创作者姓名",
+    "year": "年份",
+    "additionalDetails": "其他详情",
+    "selectOrCreateHint": "选择或创建图库以管理媒体",
+    "createGallery": "创建图库",
+    "galleryName": "图库名称",
+    "galleryNamePlaceholder": "艺术家注册轮播图",
+    "slug": "Slug",
+    "slugPlaceholder": "artist-signup-carousel",
+    "slugDescription": "代码中使用的URL安全标识符",
+    "deleteGalleryConfirm": "删除图库？",
+    "deleteItemConfirm": "删除项目？",
+    "deleteGalleryMessage": "这将永久删除图库\"{{name}}\"及其所有媒体。此操作无法撤消。",
+    "labels": {
+      "title": "标题",
+      "altText": "替代文本",
+      "creator": "创作者",
+      "year": "年份",
+      "description": "描述",
+      "name": "名称",
+      "slug": "Slug"
+    }
+  },
+  "sonicGauntlet": {
+    "backToForceMajeure": "返回 Force Majeure",
+    "presents": "Force Majeure 呈现",
+    "title": "Sonic Gauntlet",
+    "subtitle": "ATX 电子音乐展示",
+    "description": "奥斯汀首屈一指的DJ比赛回归。本地电子音乐艺术家为荣耀、奖品和成为Force Majeure活动主演的机会而战。",
+    "registrationInfo": "报名即将开放。敬请关注日期和详情。",
+    "registrationComing": "报名即将开始",
+    "followText": "关注",
+    "forUpdates": "获取更新"
+  },
+  "dashboards": {
+    "activityLog": "活动日志",
+    "userMetrics": "用户指标",
+    "comingSoon": "即将推出"
+  },
+  "mediaGallery": {
+    "loading": "加载中...",
+    "noImagesAvailable": "暂无图片",
+    "openInNavigator": "在数据库导航器中打开"
+  },
+  "accessibility": {
+    "pagination": "分页",
+    "breadcrumb": "面包屑导航",
+    "goToPreviousPage": "转到上一页",
+    "goToNextPage": "转到下一页",
+    "previous": "上一个",
+    "next": "下一个",
+    "morePages": "更多页面",
+    "more": "更多",
+    "close": "关闭",
+    "toggleSidebar": "切换侧边栏",
+    "previousSlide": "上一张幻灯片",
+    "nextSlide": "下一张幻灯片"
+  },
+  "datePicker": {
+    "pickADate": "选择日期",
+    "pickADateRange": "选择日期范围"
+  },
+  "demo": {
+    "selectEventInstruction": "从演示工具中选择活动以开始"
   }
 }

@@ -16,12 +16,18 @@ import { useAuth } from '@/features/auth/services/AuthContext';
 // Types
 // ============================================================================
 
+export interface LinkedArtistGenre {
+  genre_id: string;
+  genres: { id: string; name: string };
+}
+
 export interface LinkedArtist {
   id: string;
   name: string;
   image_url: string | null;
   bio: string | null;
   genre: string | null;
+  artist_genres?: LinkedArtistGenre[];
 }
 
 export interface UserRequest {
@@ -81,7 +87,13 @@ export function useUserArtist() {
 
       const { data, error } = await supabase
         .from('artists')
-        .select('id, name, image_url, bio, genre')
+        .select(`
+          id, name, image_url, bio, genre,
+          artist_genres(
+            genre_id,
+            genres:genres(id, name)
+          )
+        `)
         .eq('user_id', user.id)
         .maybeSingle();
 

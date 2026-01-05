@@ -2,25 +2,31 @@
 
 ## For Developers
 
-### Import the Hook
+### Import Constants and Hook
 
 ```typescript
-import { useUserPermissions } from '@/shared/hooks';
+import { PERMISSIONS, ROLES } from '@/shared/auth/permissions';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
 ```
 
 ### Check Permissions
 
 ```typescript
-const { hasPermission, hasRole, roles } = useUserPermissions();
+const { hasPermission, hasRole, isAdmin, roles } = useUserPermissions();
 
-// Check if user has a specific permission
-if (hasPermission('manage_events')) {
+// Check if user has a specific permission (use constants, not strings!)
+if (hasPermission(PERMISSIONS.MANAGE_EVENTS)) {
   // Show event management UI
 }
 
 // Check if user has a specific role
-if (hasRole('admin')) {
+if (hasRole(ROLES.ADMIN)) {
   // Show admin controls
+}
+
+// Quick admin check (admins bypass all permission checks)
+if (isAdmin()) {
+  // User is admin
 }
 
 // Access all roles
@@ -36,11 +42,13 @@ roles?.forEach(role => {
 #### Protecting Routes
 
 ```typescript
+import { PERMISSIONS } from '@/shared/auth/permissions';
+
 const { hasPermission } = useUserPermissions();
 const navigate = useNavigate();
 
 useEffect(() => {
-  if (!hasPermission('manage_organization')) {
+  if (!hasPermission(PERMISSIONS.MANAGE_ORGANIZATION)) {
     navigate('/');
   }
 }, [hasPermission, navigate]);
@@ -49,11 +57,13 @@ useEffect(() => {
 #### Conditional UI Rendering
 
 ```typescript
+import { PERMISSIONS } from '@/shared/auth/permissions';
+
 const { hasPermission } = useUserPermissions();
 
 return (
   <div>
-    {hasPermission('manage_events') && (
+    {hasPermission(PERMISSIONS.MANAGE_EVENTS) && (
       <Button onClick={createEvent}>Create Event</Button>
     )}
   </div>
@@ -63,11 +73,19 @@ return (
 #### Multiple Permission Checks
 
 ```typescript
-const { hasPermission } = useUserPermissions();
+import { PERMISSIONS } from '@/shared/auth/permissions';
 
-const canManageOrg = hasPermission('manage_organization');
-const canViewOrg = hasPermission('view_organization');
-const hasOrgAccess = canManageOrg || canViewOrg;
+const { hasPermission, hasAnyPermission } = useUserPermissions();
+
+// Check multiple permissions with OR logic
+const hasOrgAccess = hasAnyPermission([
+  PERMISSIONS.MANAGE_ORGANIZATION,
+  PERMISSIONS.VIEW_ORGANIZATION,
+]);
+
+// Or check individually
+const canManageOrg = hasPermission(PERMISSIONS.MANAGE_ORGANIZATION);
+const canViewOrg = hasPermission(PERMISSIONS.VIEW_ORGANIZATION);
 ```
 
 ## Available Permissions
@@ -191,8 +209,10 @@ if (role === 'admin') {
 ### New Code ✅
 
 ```typescript
+import { ROLES } from '@/shared/auth/permissions';
+
 const { hasRole } = useUserPermissions();
-if (hasRole('admin')) {
+if (hasRole(ROLES.ADMIN)) {
   // do something
 }
 ```
@@ -200,8 +220,10 @@ if (hasRole('admin')) {
 ### Permission-Based (Better) ✨
 
 ```typescript
+import { PERMISSIONS } from '@/shared/auth/permissions';
+
 const { hasPermission } = useUserPermissions();
-if (hasPermission('manage_events')) {
+if (hasPermission(PERMISSIONS.MANAGE_EVENTS)) {
   // do something
 }
 ```
@@ -221,25 +243,31 @@ const isAdmin = userRoles?.some(
 
 ## Best Practices
 
-1. **Prefer permission checks over role checks** when possible
+1. **Always use constants, never hardcode strings**
+   - ✅ `hasPermission(PERMISSIONS.MANAGE_EVENTS)`
+   - ❌ `hasPermission('manage_events')`
+
+2. **Prefer permission checks over role checks** when possible
    - More flexible and maintainable
    - Easier to adjust access without changing code
 
-2. **Use semantic permission names**
-   - `hasPermission('manage_events')` is clearer than `hasRole('org_admin')`
+3. **Use semantic permission names**
+   - `hasPermission(PERMISSIONS.MANAGE_EVENTS)` is clearer than `hasRole(ROLES.ORG_ADMIN)`
 
-3. **Always check for wildcard (`*`) permission**
-   - Admin and developer roles have full access
+4. **Admin role bypasses all checks**
+   - Users with `ROLES.ADMIN` automatically pass all permission checks
+   - No need to assign individual permissions to admins
 
-4. **Handle loading states**
+5. **Handle loading states**
 
    ```typescript
    const { hasPermission, roles } = useUserPermissions();
    if (!roles) return <Loading />;
    ```
 
-5. **Don't hardcode role names in logic**
-   - Use permissions instead for better flexibility
+6. **Import from the correct location**
+   - Constants: `import { PERMISSIONS, ROLES } from '@/shared/auth/permissions'`
+   - Hook: `import { useUserPermissions } from '@/shared/hooks/useUserRole'`
 
 ## Troubleshooting
 

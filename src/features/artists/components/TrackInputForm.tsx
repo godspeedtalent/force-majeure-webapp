@@ -1,7 +1,7 @@
 /**
  * TrackInputForm Component
  *
- * Reusable form for adding a track by pasting a Spotify or SoundCloud URL.
+ * Reusable form for adding a track by pasting a Spotify, SoundCloud, or YouTube URL.
  * Fetches and parses track metadata from the URL and displays a preview.
  * Can be used standalone or within a modal.
  */
@@ -10,7 +10,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link2, Music, ExternalLink, AlertCircle, Disc, Radio, Trash2, Pencil, X, Star } from 'lucide-react';
 import { logger } from '@/shared/services/logger';
-import { FaSpotify, FaSoundcloud } from 'react-icons/fa6';
+import { FaSpotify, FaSoundcloud, FaYoutube } from 'react-icons/fa6';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
@@ -19,11 +19,13 @@ import { cn } from '@/shared';
 
 export type RecordingType = 'track' | 'dj_set';
 
+export type RecordingPlatform = 'spotify' | 'soundcloud' | 'youtube';
+
 export interface TrackMetadata {
   name: string;
   coverArt?: string;
   artistName?: string;
-  platform: 'spotify' | 'soundcloud';
+  platform: RecordingPlatform;
   url: string;
 }
 
@@ -32,7 +34,7 @@ export interface TrackFormData {
   name: string;
   url: string;
   coverArt?: string;
-  platform: 'spotify' | 'soundcloud';
+  platform: RecordingPlatform;
   recordingType: RecordingType;
   /** Whether this is the primary/featured DJ set for the artist */
   isPrimaryDjSet?: boolean;
@@ -50,12 +52,15 @@ interface TrackInputFormProps {
 }
 
 // Parse platform from URL
-function detectPlatform(url: string): 'spotify' | 'soundcloud' | null {
+function detectPlatform(url: string): RecordingPlatform | null {
   if (url.includes('spotify.com') || url.includes('open.spotify')) {
     return 'spotify';
   }
   if (url.includes('soundcloud.com')) {
     return 'soundcloud';
+  }
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    return 'youtube';
   }
   return null;
 }
@@ -133,6 +138,36 @@ async function fetchSoundCloudMetadata(url: string): Promise<TrackMetadata | nul
   }
 }
 
+// Fetch YouTube video metadata using oEmbed
+async function fetchYouTubeMetadata(url: string): Promise<TrackMetadata | null> {
+  try {
+    const oEmbedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`;
+    const response = await fetch(oEmbedUrl);
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch YouTube metadata');
+    }
+
+    const data = await response.json();
+    const name = data.title || 'Unknown Video';
+    const artistName = data.author_name || 'Unknown Channel';
+
+    return {
+      name,
+      coverArt: data.thumbnail_url,
+      artistName,
+      platform: 'youtube',
+      url,
+    };
+  } catch (error) {
+    logger.error('Error fetching YouTube metadata', {
+      error: error instanceof Error ? error.message : 'Unknown',
+      source: 'TrackInputForm'
+    });
+    return null;
+  }
+}
+
 export function TrackInputForm({
   onAddTrack,
   onCancel,
@@ -193,6 +228,8 @@ export function TrackInputForm({
           metadata = await fetchSpotifyMetadata(url);
         } else if (platform === 'soundcloud') {
           metadata = await fetchSoundCloudMetadata(url);
+        } else if (platform === 'youtube') {
+          metadata = await fetchYouTubeMetadata(url);
         }
 
         if (metadata) {
@@ -274,6 +311,10 @@ export function TrackInputForm({
             <FaSoundcloud className={cn('h-4 w-4', platform === 'soundcloud' ? 'text-[#d48968]' : 'opacity-30')} />
             SoundCloud
           </span>
+          <span className="flex items-center gap-[5px]">
+            <FaYoutube className={cn('h-4 w-4', platform === 'youtube' ? 'text-[#FF0000]' : 'opacity-30')} />
+            YouTube
+          </span>
         </div>
       </div>
 
@@ -347,10 +388,14 @@ export function TrackInputForm({
               )}
               {/* Platform badge */}
               <div className="absolute bottom-1 right-1">
-                {trackData.platform === 'spotify' ? (
+                {trackData.platform === 'spotify' && (
                   <FaSpotify className="h-5 w-5 text-[#5aad7a] drop-shadow-lg" />
-                ) : (
+                )}
+                {trackData.platform === 'soundcloud' && (
                   <FaSoundcloud className="h-5 w-5 text-[#d48968] drop-shadow-lg" />
+                )}
+                {trackData.platform === 'youtube' && (
+                  <FaYoutube className="h-5 w-5 text-[#FF0000] drop-shadow-lg" />
                 )}
               </div>
             </div>
@@ -459,10 +504,14 @@ export function TrackList({ tracks, onRemoveTrack, onEditTrack, onSetPrimaryDjSe
                   )}
                   {/* Platform badge */}
                   <div className="absolute bottom-0.5 right-0.5">
-                    {track.platform === 'spotify' ? (
+                    {track.platform === 'spotify' && (
                       <FaSpotify className="h-4 w-4 text-[#5aad7a] drop-shadow-lg" />
-                    ) : (
+                    )}
+                    {track.platform === 'soundcloud' && (
                       <FaSoundcloud className="h-4 w-4 text-[#d48968] drop-shadow-lg" />
+                    )}
+                    {track.platform === 'youtube' && (
+                      <FaYoutube className="h-4 w-4 text-[#FF0000] drop-shadow-lg" />
                     )}
                   </div>
                   {/* Primary badge */}

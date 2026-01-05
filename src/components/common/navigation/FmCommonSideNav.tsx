@@ -12,7 +12,7 @@ import {
   useSidebar,
 } from '@/components/common/shadcn/sidebar';
 import { cn } from '@/shared';
-import { FmCollapsibleGroupHeader } from '@/components/common/data/FmCollapsibleGroupHeader';
+import { FmCollapsibleGroupHeader, FmCollapsibleSubgroupHeader } from '@/components/common/data/FmCollapsibleGroupHeader';
 
 export interface FmCommonSideNavItem<T = string> {
   id: T;
@@ -24,10 +24,24 @@ export interface FmCommonSideNavItem<T = string> {
   isExternal?: boolean;
 }
 
+/** Subgroup within a main navigation group (H2 level) */
+export interface FmCommonSideNavSubgroup<T = string> {
+  label: string;
+  icon?: LucideIcon;
+  items: FmCommonSideNavItem<T>[];
+  /** Start collapsed (default: false) */
+  defaultCollapsed?: boolean;
+}
+
 export interface FmCommonSideNavGroup<T = string> {
   label?: string;
   icon?: LucideIcon;
-  items: FmCommonSideNavItem<T>[];
+  /** Direct items in this group (no subgroup nesting) */
+  items?: FmCommonSideNavItem<T>[];
+  /** Nested subgroups for hierarchical navigation (H1 > H2 structure) */
+  subgroups?: FmCommonSideNavSubgroup<T>[];
+  /** Admin-only group indicator */
+  adminOnly?: boolean;
 }
 
 export interface FmCommonSideNavProps<T = string> {
@@ -194,6 +208,11 @@ export function FmCommonSideNav<T extends string = string>({
         {groups.map((group, groupIndex) => {
           const groupLabel = group.label || `group-${groupIndex}`;
           const isExpanded = !collapsedGroups[groupLabel];
+          const hasSubgroups = group.subgroups && group.subgroups.length > 0;
+          const hasItems = group.items && group.items.length > 0;
+          const totalItemCount = hasSubgroups
+            ? group.subgroups!.reduce((sum, sg) => sum + sg.items.length, 0)
+            : (group.items?.length || 0);
 
           return (
             <div key={groupIndex}>
@@ -216,20 +235,44 @@ export function FmCommonSideNav<T extends string = string>({
                   <div className='px-2'>
                     <FmCollapsibleGroupHeader
                       title={group.label}
-                      count={group.items.length}
+                      count={totalItemCount}
                       expanded={isExpanded}
                       onExpandedChange={(expanded) => handleGroupToggle(groupLabel, expanded)}
                       showDivider={true}
+                      icon={group.icon}
+                      size={hasSubgroups ? 'large' : 'default'}
                     >
                       <SidebarGroupContent>
-                        {renderMenuItems(group.items)}
+                        {/* Render direct items if present */}
+                        {hasItems && renderMenuItems(group.items!)}
+
+                        {/* Render subgroups if present */}
+                        {hasSubgroups && group.subgroups!.map((subgroup, subIndex) => {
+                          const subgroupLabel = `${groupLabel}-${subgroup.label}`;
+                          const isSubgroupExpanded = !collapsedGroups[subgroupLabel];
+
+                          return (
+                            <FmCollapsibleSubgroupHeader
+                              key={subIndex}
+                              title={subgroup.label}
+                              count={subgroup.items.length}
+                              icon={subgroup.icon}
+                              expanded={isSubgroupExpanded}
+                              onExpandedChange={(expanded) => handleGroupToggle(subgroupLabel, expanded)}
+                              defaultExpanded={!subgroup.defaultCollapsed}
+                            >
+                              {renderMenuItems(subgroup.items)}
+                            </FmCollapsibleSubgroupHeader>
+                          );
+                        })}
                       </SidebarGroupContent>
                     </FmCollapsibleGroupHeader>
                   </div>
                 ) : (
                   /* When collapsed or no label, just show items */
                   <SidebarGroupContent>
-                    {renderMenuItems(group.items)}
+                    {hasItems && renderMenuItems(group.items!)}
+                    {hasSubgroups && group.subgroups!.flatMap(sg => sg.items).map(item => renderMenuItems([item]))}
                   </SidebarGroupContent>
                 )}
               </SidebarGroup>

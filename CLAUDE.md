@@ -27,6 +27,7 @@ CLAUDE.md (you are here)
 | Task | Consult |
 |------|---------|
 | Implementing UI components | `docs/architecture/DESIGN_SYSTEM.md` |
+| Working with hooks/data fetching | `docs/architecture/HOOKS_PATTERNS.md` |
 | Working with permissions/roles | `docs/security/PERMISSION_MANAGEMENT_GUIDE.md` |
 | Using feature flags | `docs/features/FEATURE_FLAG_GUIDE.md` |
 | Working with data grids | `docs/features/DATA_GRID_DOCUMENTATION.md` |
@@ -291,15 +292,40 @@ export default function EntityDetails() {
 - Use structured context objects:
   ```typescript
   // ✅ Correct
-  logger.error('Error loading data', { 
+  logger.error('Error loading data', {
     error: error instanceof Error ? error.message : 'Unknown',
     source: 'componentName',
-    details: additionalData 
+    details: additionalData
   });
-  
+
   // ❌ Wrong
   logger.error('Error loading data', error);
   ```
+
+**Error Handling (Centralized):**
+- Use `handleError` from `@/shared/services/errorHandler` for consistent error handling:
+  ```typescript
+  import { handleError } from '@/shared';
+
+  try {
+    await someApiCall();
+  } catch (error) {
+    handleError(error, {
+      title: 'Failed to Save',
+      context: 'Saving user profile',
+      endpoint: '/api/profile',
+    });
+  }
+  ```
+- Use `withErrorHandler` wrapper for simpler cases:
+  ```typescript
+  const result = await withErrorHandler(
+    async () => await supabase.from('events').select(),
+    { title: 'Failed to load events' }
+  );
+  ```
+- Benefits: Automatic logging, role-based error details (devs see stack traces), consistent toast notifications
+- **DO NOT** use raw `toast.error()` + `logger.error()` directly - use `handleError` instead
 
 **Handling Unused Parameters:**
 - Prefix unused parameters with underscore: `_value`, `_event`
@@ -342,6 +368,19 @@ When code and types don't match:
 - Context API for global client state
 - Local state with useState for component-specific state
 - Avoid prop drilling - use composition or context
+
+### Hooks Patterns
+
+**📖 See `docs/architecture/HOOKS_PATTERNS.md` for detailed patterns on:**
+- Data fetching with React Query hooks
+- Async mutations with `useAsyncMutation`
+- Event form hooks architecture
+- Custom hook guidelines
+
+**Quick reference:**
+- Use React Query hooks from `@/shared` for data fetching (not direct Supabase calls)
+- Use `useAsyncMutation` for form submissions and CRUD operations
+- Event forms use `useEventForm` hook (combines state, validation, submission)
 
 ### File Naming
 
@@ -760,6 +799,20 @@ npm run lint          # Lint all files
     - **NEVER use gold/colored backgrounds** for form buttons unless specifically required
     - Default form button style is outline with subtle hover state
     - Keep button styling consistent across all create/edit forms
+
+    **FmCommonButton variants** (for buttons with text):
+    - `default` - Outline style with gold hover glow
+    - `secondary` - Ghost style
+    - `destructive` - Red/danger style
+    - `destructive-outline` - Outlined danger style
+    - `gold` - Gold background, black text (for CTAs/primary actions)
+
+    **FmCommonIconButton variants** (for icon-only buttons):
+    - `default` - Outline with gold hover
+    - `secondary` - Ghost style
+    - `destructive` - Red/danger style
+    - `gold` - Gold background
+    - `create` - White outline with floating + indicator (for "add new" actions)
 
 12. **Context Menus** (`FmCommonContextMenu`):
     - **Visual Design**:

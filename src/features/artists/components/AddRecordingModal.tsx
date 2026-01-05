@@ -10,7 +10,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link2, Music, ExternalLink, AlertCircle, Disc, Radio } from 'lucide-react';
 import { logger } from '@/shared/services/logger';
-import { FaSpotify, FaSoundcloud } from 'react-icons/fa6';
+import { FaSpotify, FaSoundcloud, FaYoutube } from 'react-icons/fa6';
 import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -23,7 +23,7 @@ interface TrackMetadata {
   name: string;
   coverArt?: string;
   artistName?: string;
-  platform: 'spotify' | 'soundcloud';
+  platform: 'spotify' | 'soundcloud' | 'youtube';
   url: string;
 }
 
@@ -35,12 +35,15 @@ interface AddRecordingModalProps {
 }
 
 // Parse platform from URL
-function detectPlatform(url: string): 'spotify' | 'soundcloud' | null {
+function detectPlatform(url: string): 'spotify' | 'soundcloud' | 'youtube' | null {
   if (url.includes('spotify.com') || url.includes('open.spotify')) {
     return 'spotify';
   }
   if (url.includes('soundcloud.com')) {
     return 'soundcloud';
+  }
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    return 'youtube';
   }
   return null;
 }
@@ -118,6 +121,34 @@ async function fetchSoundCloudMetadata(url: string): Promise<TrackMetadata | nul
   }
 }
 
+// Fetch YouTube video metadata using oEmbed (no API key required)
+async function fetchYouTubeMetadata(url: string): Promise<TrackMetadata | null> {
+  try {
+    const oEmbedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`;
+    const response = await fetch(oEmbedUrl);
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch YouTube metadata');
+    }
+
+    const data = await response.json();
+
+    return {
+      name: data.title || 'Unknown Video',
+      coverArt: data.thumbnail_url,
+      artistName: data.author_name || 'Unknown Channel',
+      platform: 'youtube',
+      url,
+    };
+  } catch (error) {
+    logger.error('Error fetching YouTube metadata', {
+      error: error instanceof Error ? error.message : 'Unknown',
+      source: 'AddRecordingModal'
+    });
+    return null;
+  }
+}
+
 export function AddRecordingModal({
   open,
   onOpenChange,
@@ -169,6 +200,8 @@ export function AddRecordingModal({
           metadata = await fetchSpotifyMetadata(url);
         } else if (platform === 'soundcloud') {
           metadata = await fetchSoundCloudMetadata(url);
+        } else if (platform === 'youtube') {
+          metadata = await fetchYouTubeMetadata(url);
         }
 
         if (metadata) {
@@ -236,6 +269,10 @@ export function AddRecordingModal({
             <span className="flex items-center gap-1">
               <FaSoundcloud className={cn('h-4 w-4', platform === 'soundcloud' ? 'text-[#d48968]' : 'opacity-30')} />
               SoundCloud
+            </span>
+            <span className="flex items-center gap-1">
+              <FaYoutube className={cn('h-4 w-4', platform === 'youtube' ? 'text-[#FF0000]' : 'opacity-30')} />
+              YouTube
             </span>
           </div>
         </div>
@@ -310,10 +347,14 @@ export function AddRecordingModal({
                 )}
                 {/* Platform badge */}
                 <div className="absolute bottom-1 right-1">
-                  {trackData.platform === 'spotify' ? (
+                  {trackData.platform === 'spotify' && (
                     <FaSpotify className="h-5 w-5 text-[#5aad7a] drop-shadow-lg" />
-                  ) : (
+                  )}
+                  {trackData.platform === 'soundcloud' && (
                     <FaSoundcloud className="h-5 w-5 text-[#d48968] drop-shadow-lg" />
+                  )}
+                  {trackData.platform === 'youtube' && (
+                    <FaYoutube className="h-5 w-5 text-[#FF0000] drop-shadow-lg" />
                   )}
                 </div>
               </div>

@@ -8,9 +8,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Images, Trash2, Upload, Edit, ImagePlus, Image as ImageIcon, Video, Music, Download } from 'lucide-react';
+import { ArrowLeft, Images, Trash2, Upload, Edit, ImagePlus, Image as ImageIcon, Video, Music, Download, Star } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
 import { Button } from '@/components/common/shadcn/button';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
@@ -83,6 +84,7 @@ export default function GalleryManagement() {
     createMediaItem,
     updateMediaItem,
     deleteMediaItem,
+    setCoverItem,
     uploadFile,
   } = useGalleryManagement();
 
@@ -371,10 +373,14 @@ export default function GalleryManagement() {
                     ))}
                   {items.map(item => {
                     const TypeIcon = MEDIA_TYPE_ICONS[item.media_type];
+                    const isCover = item.is_cover;
                     return (
                       <div
                         key={item.id}
-                        className='group relative aspect-square bg-black/40 border border-white/10 overflow-hidden'
+                        className={cn(
+                          'group relative aspect-square bg-black/40 border overflow-hidden',
+                          isCover ? 'border-fm-gold border-2' : 'border-white/10'
+                        )}
                       >
                         {/* Thumbnail */}
                         {item.media_type === 'image' ? (
@@ -391,25 +397,33 @@ export default function GalleryManagement() {
                         )}
 
                         {/* Overlay on hover */}
-                        <div className='absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3'>
-                          <button
+                        <div className='absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2'>
+                          <FmCommonIconButton
+                            icon={Star}
+                            size='sm'
+                            variant={isCover ? 'gold' : 'default'}
+                            tooltip={isCover ? t('labels.coverImage') : t('buttons.setAsCover')}
+                            onClick={() => setCoverItem(item.id)}
+                          />
+                          <FmCommonIconButton
+                            icon={Edit}
+                            size='sm'
+                            variant='default'
+                            tooltip={t('buttons.edit')}
                             onClick={() => openEditModal(item)}
-                            className='p-2 bg-white/10 hover:bg-white/20 transition-colors'
-                            title={t('buttons.edit')}
-                          >
-                            <Edit className='w-5 h-5' />
-                          </button>
-                          <a
-                            href={item.url}
-                            download={item.title || item.file_path?.split('/').pop() || 'download'}
-                            className='p-2 bg-white/10 hover:bg-white/20 transition-colors'
-                            title={t('buttons.download')}
-                            target='_blank'
-                            rel='noopener noreferrer'
-                          >
-                            <Download className='w-5 h-5' />
-                          </a>
-                          <button
+                          />
+                          <FmCommonIconButton
+                            icon={Download}
+                            size='sm'
+                            variant='default'
+                            tooltip={t('buttons.download')}
+                            onClick={() => window.open(item.url, '_blank')}
+                          />
+                          <FmCommonIconButton
+                            icon={Trash2}
+                            size='sm'
+                            variant='destructive'
+                            tooltip={t('buttons.delete')}
                             onClick={() =>
                               setDeleteConfirm({
                                 type: 'item',
@@ -417,11 +431,7 @@ export default function GalleryManagement() {
                                 name: item.title || 'this item',
                               })
                             }
-                            className='p-2 bg-white/10 hover:bg-fm-danger/50 transition-colors'
-                            title={t('buttons.delete')}
-                          >
-                            <Trash2 className='w-5 h-5' />
-                          </button>
+                          />
                         </div>
 
                         {/* Order indicator */}
@@ -429,8 +439,16 @@ export default function GalleryManagement() {
                           {item.display_order + 1}
                         </div>
 
+                        {/* Cover badge */}
+                        {isCover && (
+                          <div className='absolute top-1 right-1 bg-fm-gold text-black px-1.5 py-0.5 flex items-center gap-1'>
+                            <Star className='w-3 h-3 fill-current' />
+                            <span className='text-[10px] font-medium'>Cover</span>
+                          </div>
+                        )}
+
                         {/* Type badge */}
-                        {item.media_type !== 'image' && (
+                        {item.media_type !== 'image' && !isCover && (
                           <div className='absolute top-1 right-1 bg-black/70 px-1.5 py-0.5'>
                             <TypeIcon className='w-3 h-3' />
                           </div>

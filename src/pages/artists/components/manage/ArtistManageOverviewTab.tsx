@@ -104,7 +104,9 @@ export function ArtistManageOverviewTab({
           <FmCommonTextField
             label={t('labels.bio')}
             multiline
-            rows={5}
+            autoSize
+            minRows={3}
+            maxRows={15}
             value={bio}
             onChange={(e) => {
               setBio(e.target.value);

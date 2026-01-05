@@ -1,8 +1,11 @@
 /**
- * FmCitySearchDropdown
+ * FmCityGeodbSearchDropdown
  *
  * City search dropdown powered by GeoDB Cities API
  * Allows users to search and select their home city
+ *
+ * Note: For searching cities in the local database, use
+ * FmCitySearchDropdown from @/components/common/search/ instead.
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -34,7 +37,7 @@ interface City {
   displayName: string;
 }
 
-interface FmCitySearchDropdownProps {
+interface FmCityGeodbSearchDropdownProps {
   value?: string;
   onChange?: (city: string) => void;
   label?: string;
@@ -82,7 +85,7 @@ const searchCities = async (query: string): Promise<City[]> => {
   }
 };
 
-export const FmCitySearchDropdown = ({
+export const FmCityGeodbSearchDropdown = ({
   value = '',
   onChange,
   label,
@@ -90,7 +93,7 @@ export const FmCitySearchDropdown = ({
   description,
   error,
   className,
-}: FmCitySearchDropdownProps) => {
+}: FmCityGeodbSearchDropdownProps) => {
   const { t } = useTranslation('common');
   const resolvedPlaceholder = placeholder ?? t('citySearch.searchForCity');
   const [open, setOpen] = useState(false);

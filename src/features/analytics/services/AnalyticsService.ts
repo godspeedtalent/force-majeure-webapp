@@ -53,7 +53,7 @@ import {
 } from '../utils';
 import { logger } from '@/shared/services/logger';
 
-const analyticsLogger = logger.ns('AnalyticsService');
+const analyticsLogger = logger.createNamespace('AnalyticsService');
 
 // Extended page view entry with duration/scroll data for batching
 interface BatchedPageViewEntry extends PageViewEntry {

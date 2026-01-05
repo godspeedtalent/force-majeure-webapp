@@ -216,7 +216,7 @@ export function useArtistsByGenre(genre: string | undefined) {
 }
 
 /**
- * Fetch upcoming events for an artist
+ * Fetch upcoming events for an artist (headliner only)
  *
  * @param artistId - Artist ID
  */
@@ -251,6 +251,119 @@ export function useArtistEvents(artistId: string | undefined) {
       }
 
       return data || [];
+    },
+    enabled: isUuid(artistId),
+  });
+}
+
+export interface ArtistEventData {
+  id: string;
+  title: string;
+  start_time: string;
+  hero_image: string | null;
+  venues: { name: string } | null;
+}
+
+/**
+ * Fetch all events (past and future) where the artist is in the lineup or is headliner
+ *
+ * @param artistId - Artist ID
+ */
+export function useArtistAllEvents(artistId: string | undefined) {
+  return useQuery({
+    queryKey: ['artist-all-events', artistId],
+    queryFn: async (): Promise<{ upcoming: ArtistEventData[]; past: ArtistEventData[] }> => {
+      if (!isUuid(artistId)) return { upcoming: [], past: [] };
+
+      const now = new Date().toISOString();
+
+      // Fetch events where artist is in the lineup
+      const { data: lineupEvents, error: lineupError } = await supabase
+        .from('event_artists')
+        .select(`
+          events!inner(
+            id,
+            title,
+            start_time,
+            hero_image,
+            status,
+            venues(name)
+          )
+        `)
+        .eq('artist_id', artistId);
+
+      if (lineupError) {
+        logger.error('Error fetching lineup events', {
+          error: lineupError.message,
+          source: 'artistQueries',
+          artistId,
+        });
+      }
+
+      // Fetch events where artist is headliner
+      const { data: headlinerEvents, error: headlinerError } = await supabase
+        .from('events')
+        .select(`
+          id,
+          title,
+          start_time,
+          hero_image,
+          status,
+          venues(name)
+        `)
+        .eq('headliner_id', artistId);
+
+      if (headlinerError) {
+        logger.error('Error fetching headliner events', {
+          error: headlinerError.message,
+          source: 'artistQueries',
+          artistId,
+        });
+      }
+
+      // Combine and deduplicate events
+      const eventMap = new Map<string, ArtistEventData>();
+
+      // Add headliner events
+      (headlinerEvents || []).forEach((event: any) => {
+        if (event.status === 'published') {
+          eventMap.set(event.id, {
+            id: event.id,
+            title: event.title,
+            start_time: event.start_time,
+            hero_image: event.hero_image,
+            venues: event.venues,
+          });
+        }
+      });
+
+      // Add lineup events
+      (lineupEvents || []).forEach((item: any) => {
+        const event = item.events;
+        if (event && event.status === 'published' && !eventMap.has(event.id)) {
+          eventMap.set(event.id, {
+            id: event.id,
+            title: event.title,
+            start_time: event.start_time,
+            hero_image: event.hero_image,
+            venues: event.venues,
+          });
+        }
+      });
+
+      // Convert to array and sort
+      const allEvents = Array.from(eventMap.values());
+
+      // Split into upcoming and past
+      const upcoming = allEvents
+        .filter(e => e.start_time >= now)
+        .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
+
+      const past = allEvents
+        .filter(e => e.start_time < now)
+        .sort((a, b) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime());
+
+      return { upcoming, past };
     },
     enabled: isUuid(artistId),
   });

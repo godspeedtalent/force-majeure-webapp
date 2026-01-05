@@ -1,5 +1,11 @@
 import { supabase } from '@/shared';
-import { OrderReceiptEmailData, EmailSendResult } from '@/types/email';
+import {
+  OrderReceiptEmailData,
+  EmailSendResult,
+  OrderForEmailConversion,
+  OrderItemForEmail,
+  OrderEventForEmail,
+} from '@/types/email';
 import { generateOrderReceiptEmailHTML } from './templates/OrderReceiptEmail';
 import { generateArtistRegistrationEmailHTML } from './templates/ArtistRegistrationEmail';
 import { logger } from '@/shared';
@@ -162,29 +168,35 @@ export class EmailService {
 
   /**
    * Convert order data from database to email format
+   * Transforms snake_case database fields and cents-based amounts to email format
+   *
+   * @param order - Order data from database (with items)
+   * @param event - Event data (title, date, time, venue, image)
+   * @param purchaserInfo - Purchaser contact information
    */
   static convertOrderToEmailData(
-    order: any, // TODO: Type this with proper Order interface
+    order: OrderForEmailConversion,
+    event: OrderEventForEmail,
     purchaserInfo: { fullName: string; email: string; phone?: string }
   ): OrderReceiptEmailData {
     return {
       orderId: order.id,
       orderDate: order.created_at,
       event: {
-        title: order.event.title,
-        date: order.event.date,
-        time: order.event.time,
+        title: event.title,
+        date: event.date,
+        time: event.time,
         venue: {
-          name: order.event.venue?.name || 'TBA',
-          address: order.event.venue?.address || 'TBA',
-          city: order.event.venue?.city || 'TBA',
+          name: event.venue?.name || 'TBA',
+          address: event.venue?.address || 'TBA',
+          city: event.venue?.city || 'TBA',
         },
-        imageUrl: order.event.image_url,
+        imageUrl: event.image_url,
       },
       purchaser: purchaserInfo,
       orderSummary: {
-        items: order.items.map((item: any) => ({
-          ticketTierName: item.ticket_tier.name,
+        items: (order.items || []).map((item: OrderItemForEmail) => ({
+          ticketTierName: item.ticket_tier?.name || 'Ticket',
           quantity: item.quantity,
           unitPrice: item.unit_price_cents / 100,
           subtotal: item.subtotal_cents / 100,
@@ -199,7 +211,7 @@ export class EmailService {
         ticketProtection: order.ticket_protection_cents
           ? order.ticket_protection_cents / 100
           : undefined,
-        tax: order.tax_cents / 100,
+        tax: order.tax_cents ? order.tax_cents / 100 : 0,
         total: order.total_cents / 100,
         currency: order.currency || 'USD',
       },

@@ -58,6 +58,7 @@ const PLATFORM_OPTIONS = [
   { value: 'all', label: 'All platforms' },
   { value: 'spotify', label: 'Spotify' },
   { value: 'soundcloud', label: 'SoundCloud' },
+  { value: 'youtube', label: 'YouTube' },
 ];
 
 // Recording type options
@@ -205,7 +206,7 @@ export default function RecordingRatingsDashboard() {
 
   // Filter state
   const [scoreRange, setScoreRange] = useState('all');
-  const [platform, setPlatform] = useState<'all' | 'spotify' | 'soundcloud'>('all');
+  const [platform, setPlatform] = useState<'all' | 'spotify' | 'soundcloud' | 'youtube'>('all');
   const [recordingType, setRecordingType] = useState<'all' | 'track' | 'dj_set'>('all');
   const [sortOption, setSortOption] = useState('average_score-desc');
   const [minRatings, setMinRatings] = useState('0');
@@ -227,7 +228,7 @@ export default function RecordingRatingsDashboard() {
   const filters: RecordingAnalyticsFilters = useMemo(
     () => ({
       ...scoreFilter,
-      platform: platform as 'spotify' | 'soundcloud' | 'all',
+      platform: platform as 'spotify' | 'soundcloud' | 'youtube' | 'all',
       recordingType: recordingType as 'track' | 'dj_set' | 'all',
       minRatingCount: parseInt(minRatings),
       sortBy,
@@ -435,7 +436,7 @@ export default function RecordingRatingsDashboard() {
           <FmCommonSelect
             options={PLATFORM_OPTIONS}
             value={platform}
-            onChange={(value) => setPlatform(value as 'all' | 'spotify' | 'soundcloud')}
+            onChange={(value) => setPlatform(value as 'all' | 'spotify' | 'soundcloud' | 'youtube')}
             placeholder="Platform"
           />
           <FmCommonSelect

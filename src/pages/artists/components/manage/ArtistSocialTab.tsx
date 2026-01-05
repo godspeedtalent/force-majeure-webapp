@@ -5,6 +5,7 @@
  */
 
 import { useTranslation } from 'react-i18next';
+import { Globe, Save } from 'lucide-react';
 import {
   FaInstagram,
   FaXTwitter,
@@ -14,6 +15,7 @@ import {
   FaSoundcloud,
   FaSpotify,
 } from 'react-icons/fa6';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmI18nCommon } from '@/components/common/i18n';
@@ -27,6 +29,75 @@ const socialUrlBuilders = {
   tiktok: (username: string) => `https://tiktok.com/@${username}`,
   youtube: (username: string) => `https://youtube.com/@${username}`,
 };
+
+// Music platform URL extractors - extract ID/username from full URLs
+const extractSpotifyArtistId = (input: string): string => {
+  // If it's a full URL, extract just the artist ID
+  const spotifyMatch = input.match(/spotify\.com\/artist\/([a-zA-Z0-9]+)/);
+  if (spotifyMatch) return spotifyMatch[1];
+  // Otherwise return as-is (already just the ID)
+  return input.replace(/^https?:\/\//, '').replace(/^open\.spotify\.com\/artist\//, '');
+};
+
+const extractSoundcloudUsername = (input: string): string => {
+  // If it's a full URL, extract just the username
+  const soundcloudMatch = input.match(/soundcloud\.com\/([^/?]+)/);
+  if (soundcloudMatch) return soundcloudMatch[1];
+  // Otherwise return as-is (already just the username)
+  return input.replace(/^https?:\/\//, '').replace(/^soundcloud\.com\//, '');
+};
+
+// Music platform input - shows base URL in prepend, extracts ID from full URLs
+function MusicPlatformInput({
+  icon: Icon,
+  label,
+  value,
+  onChange,
+  placeholder,
+  iconColor,
+  baseUrl,
+  extractId,
+  urlBuilder,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+  iconColor: string;
+  baseUrl: string;
+  extractId: (input: string) => string;
+  urlBuilder: (id: string) => string;
+}) {
+  return (
+    <div className='space-y-1'>
+      <div className='flex items-center gap-2 text-xs text-muted-foreground'>
+        <Icon className={cn('h-4 w-4', iconColor)} />
+        <span>{label}</span>
+      </div>
+      <FmCommonTextField
+        value={value}
+        onChange={(e) => {
+          // Extract ID/username if full URL is pasted
+          const extracted = extractId(e.target.value);
+          onChange(extracted);
+        }}
+        placeholder={placeholder}
+        prepend={baseUrl}
+      />
+      {value && (
+        <a
+          href={urlBuilder(value)}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='text-xs text-muted-foreground hover:text-fm-gold transition-colors truncate block'
+        >
+          {urlBuilder(value)}
+        </a>
+      )}
+    </div>
+  );
+}
 
 // Social media input with icon - username only, shows constructed URL
 function SocialInput({
@@ -82,7 +153,9 @@ interface ArtistSocialTabProps {
   onSpotifyChange: (value: string) => void;
   soundcloud: string;
   onSoundcloudChange: (value: string) => void;
-  // Social media
+  // Website & Social media
+  website: string;
+  onWebsiteChange: (value: string) => void;
   instagram: string;
   onInstagramChange: (value: string) => void;
   tiktok: string;
@@ -93,8 +166,9 @@ interface ArtistSocialTabProps {
   onFacebookChange: (value: string) => void;
   youtube: string;
   onYoutubeChange: (value: string) => void;
-  // Auto-save
-  onTriggerAutoSave: () => void;
+  // Save
+  onSave: () => void;
+  isSaving: boolean;
 }
 
 export function ArtistSocialTab({
@@ -102,6 +176,8 @@ export function ArtistSocialTab({
   onSpotifyChange,
   soundcloud,
   onSoundcloudChange,
+  website,
+  onWebsiteChange,
   instagram,
   onInstagramChange,
   tiktok,
@@ -112,15 +188,10 @@ export function ArtistSocialTab({
   onFacebookChange,
   youtube,
   onYoutubeChange,
-  onTriggerAutoSave,
+  onSave,
+  isSaving,
 }: ArtistSocialTabProps) {
   const { t } = useTranslation('common');
-
-  // Wrapper to trigger auto-save after each change
-  const withAutoSave = (setter: (value: string) => void) => (value: string) => {
-    setter(value);
-    onTriggerAutoSave();
-  };
 
   return (
     <div className='space-y-6'>
@@ -130,24 +201,28 @@ export function ArtistSocialTab({
         <FmI18nCommon i18nKey='sections.musicPlatformsDescription' as='p' className='text-muted-foreground mb-6' />
 
         <div className='space-y-4'>
-          <SocialInput
+          <MusicPlatformInput
             icon={FaSpotify}
             label={t('labels.spotify')}
             value={spotify}
-            onChange={withAutoSave(onSpotifyChange)}
+            onChange={onSpotifyChange}
             placeholder={t('placeholders.spotifyArtistId')}
             iconColor='text-[#1DB954]'
+            baseUrl='open.spotify.com/artist/'
+            extractId={extractSpotifyArtistId}
             urlBuilder={(id) => id ? `https://open.spotify.com/artist/${id}` : ''}
           />
 
-          <SocialInput
+          <MusicPlatformInput
             icon={FaSoundcloud}
             label={t('labels.soundcloud')}
             value={soundcloud}
-            onChange={withAutoSave(onSoundcloudChange)}
-            placeholder={t('placeholders.soundcloudUrl')}
+            onChange={onSoundcloudChange}
+            placeholder={t('placeholders.soundcloudUsername')}
             iconColor='text-[#FF5500]'
-            urlBuilder={(url) => url || ''}
+            baseUrl='soundcloud.com/'
+            extractId={extractSoundcloudUsername}
+            urlBuilder={(username) => username ? `https://soundcloud.com/${username}` : ''}
           />
         </div>
       </FmCommonCard>
@@ -158,11 +233,34 @@ export function ArtistSocialTab({
         <FmI18nCommon i18nKey='sections.socialMediaDescription' as='p' className='text-muted-foreground mb-6' />
 
         <div className='space-y-4'>
+          {/* Website - full URL input */}
+          <div className='space-y-1'>
+            <div className='flex items-center gap-2 text-xs text-muted-foreground'>
+              <Globe className='h-4 w-4 text-fm-gold' />
+              <span>{t('labels.website')}</span>
+            </div>
+            <FmCommonTextField
+              value={website}
+              onChange={(e) => onWebsiteChange(e.target.value)}
+              placeholder={t('forms.artists.websitePlaceholder')}
+            />
+            {website && (
+              <a
+                href={website.startsWith('http') ? website : `https://${website}`}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='text-xs text-muted-foreground hover:text-fm-gold transition-colors truncate block'
+              >
+                {website.startsWith('http') ? website : `https://${website}`}
+              </a>
+            )}
+          </div>
+
           <SocialInput
             icon={FaInstagram}
             label={t('labels.instagram')}
             value={instagram}
-            onChange={withAutoSave(onInstagramChange)}
+            onChange={onInstagramChange}
             placeholder={t('placeholders.username')}
             iconColor='text-[#E4405F]'
             urlBuilder={socialUrlBuilders.instagram}
@@ -172,7 +270,7 @@ export function ArtistSocialTab({
             icon={FaTiktok}
             label={t('labels.tiktok')}
             value={tiktok}
-            onChange={withAutoSave(onTiktokChange)}
+            onChange={onTiktokChange}
             placeholder={t('placeholders.username')}
             iconColor='text-white'
             urlBuilder={socialUrlBuilders.tiktok}
@@ -182,7 +280,7 @@ export function ArtistSocialTab({
             icon={FaXTwitter}
             label={t('labels.twitterX')}
             value={twitter}
-            onChange={withAutoSave(onTwitterChange)}
+            onChange={onTwitterChange}
             placeholder={t('placeholders.username')}
             iconColor='text-white'
             urlBuilder={socialUrlBuilders.twitter}
@@ -192,7 +290,7 @@ export function ArtistSocialTab({
             icon={FaFacebook}
             label={t('labels.facebook')}
             value={facebook}
-            onChange={withAutoSave(onFacebookChange)}
+            onChange={onFacebookChange}
             placeholder={t('placeholders.usernameOrPage')}
             iconColor='text-[#1877F2]'
             urlBuilder={socialUrlBuilders.facebook}
@@ -202,13 +300,24 @@ export function ArtistSocialTab({
             icon={FaYoutube}
             label={t('labels.youtube')}
             value={youtube}
-            onChange={withAutoSave(onYoutubeChange)}
+            onChange={onYoutubeChange}
             placeholder={t('placeholders.channelHandle')}
             iconColor='text-[#FF0000]'
             urlBuilder={socialUrlBuilders.youtube}
           />
         </div>
       </FmCommonCard>
+
+      {/* Save Button */}
+      <div className='flex justify-end'>
+        <FmCommonButton
+          icon={Save}
+          onClick={onSave}
+          disabled={isSaving}
+        >
+          {isSaving ? t('buttons.saving') : t('buttons.saveChanges')}
+        </FmCommonButton>
+      </div>
     </div>
   );
 }

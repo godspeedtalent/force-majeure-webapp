@@ -52,3 +52,59 @@ export interface EmailSendResult {
   messageId?: string;
   error?: string;
 }
+
+/**
+ * Order item as stored in the database (snake_case, cents-based amounts)
+ * Used for converting database orders to email format
+ */
+export interface OrderItemForEmail {
+  ticket_tier?: {
+    id?: string;
+    name: string;
+    description?: string | null;
+  };
+  quantity: number;
+  unit_price_cents: number;
+  unit_fee_cents?: number;
+  subtotal_cents: number;
+  fees_cents?: number;
+  total_cents?: number;
+}
+
+/**
+ * Event venue info as stored in the database
+ */
+export interface OrderEventVenueForEmail {
+  name?: string;
+  address?: string;
+  city?: string;
+}
+
+/**
+ * Event info as stored in the database (for email conversion)
+ */
+export interface OrderEventForEmail {
+  title: string;
+  date: string;
+  time: string;
+  venue?: OrderEventVenueForEmail;
+  image_url?: string;
+}
+
+/**
+ * Order data structure as stored in the database (snake_case, cents-based amounts)
+ * Used by EmailService.convertOrderToEmailData() to convert to EmailOrderReceiptData
+ */
+export interface OrderForEmailConversion {
+  id: string;
+  created_at: string;
+  items?: OrderItemForEmail[];
+  subtotal_cents: number;
+  fees_cents?: number;
+  service_fee_cents?: number;
+  processing_fee_cents?: number;
+  ticket_protection_cents?: number;
+  tax_cents?: number;
+  total_cents: number;
+  currency?: string;
+}

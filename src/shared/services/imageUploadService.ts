@@ -267,6 +267,63 @@ export const imageUploadService = {
   },
 };
 
+export interface UpdateImageFieldOptions {
+  /** Database table name */
+  tableName: string;
+  /** Record ID to update */
+  recordId: string;
+  /** Column name to update (e.g., 'image_url', 'avatar_url') */
+  fieldName: string;
+  /** New image URL */
+  newImageUrl: string;
+  /** Success message key (i18n) */
+  successMessageKey?: string;
+  /** Error message key (i18n) */
+  errorMessageKey?: string;
+}
+
+/**
+ * Update an image URL field in any table
+ * Generic utility for updating image_url, avatar_url, etc.
+ */
+export async function updateImageField({
+  tableName,
+  recordId,
+  fieldName,
+  newImageUrl,
+  successMessageKey,
+  errorMessageKey,
+}: UpdateImageFieldOptions): Promise<void> {
+  const { toast } = await import('sonner');
+  const i18n = await import('@/i18n').then(m => m.default);
+
+  try {
+    // Cast tableName to satisfy TypeScript - validated at runtime by Supabase
+    const { error } = await supabase
+      .from(tableName as 'artists' | 'profiles' | 'venues' | 'events')
+      .update({ [fieldName]: newImageUrl } as Record<string, string>)
+      .eq('id', recordId);
+
+    if (error) throw error;
+
+    if (successMessageKey) {
+      toast.success(i18n.t(successMessageKey, { ns: 'common' }));
+    }
+  } catch (error) {
+    logger.error(`Failed to update ${fieldName} in ${tableName}`, {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      source: 'imageUploadService.updateImageField',
+      details: { tableName, recordId, fieldName },
+    });
+
+    if (errorMessageKey) {
+      toast.error(i18n.t(errorMessageKey, { ns: 'common' }));
+    }
+
+    throw error;
+  }
+}
+
 /**
  * Helper function to get image dimensions
  */

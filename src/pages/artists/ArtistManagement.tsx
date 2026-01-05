@@ -84,9 +84,6 @@ export default function ArtistManagement() {
     setRecordingToDelete,
     deleteRecordingMutation,
 
-    // Auto-save
-    triggerAutoSave,
-
     // Handlers
     handleSave,
     handleDelete,
@@ -175,11 +172,8 @@ export default function ArtistManagement() {
               onNameChange={setName}
               bio={bio}
               onBioChange={setBio}
-              website={website}
-              onWebsiteChange={setWebsite}
               selectedGenres={selectedGenres}
               onGenreChange={handleGenreChange}
-              onTriggerAutoSave={triggerAutoSave}
               onSave={handleSave}
               onDeleteClick={handleDeleteClick}
               isSaving={isSaving}
@@ -219,6 +213,8 @@ export default function ArtistManagement() {
               onSpotifyChange={setSpotify}
               soundcloud={soundcloud}
               onSoundcloudChange={setSoundcloud}
+              website={website}
+              onWebsiteChange={setWebsite}
               instagram={instagram}
               onInstagramChange={setInstagram}
               tiktok={tiktok}
@@ -229,7 +225,8 @@ export default function ArtistManagement() {
               onFacebookChange={setFacebook}
               youtube={youtube}
               onYoutubeChange={setYoutube}
-              onTriggerAutoSave={triggerAutoSave}
+              onSave={handleSave}
+              isSaving={isSaving}
             />
           </PageErrorBoundary>
         )}

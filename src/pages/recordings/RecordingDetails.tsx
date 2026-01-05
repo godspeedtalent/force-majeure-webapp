@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, ExternalLink, Music2, User, Calendar, RefreshCw, Star } from 'lucide-react';
-import { SiSoundcloud, SiSpotify } from 'react-icons/si';
+import { SiSoundcloud, SiSpotify, SiYoutube } from 'react-icons/si';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmRecordingLink } from '@/components/common/links/FmRecordingLink';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -133,8 +133,41 @@ export default function RecordingDetails() {
     }
   };
 
-  const PlatformIcon = recording?.platform === 'spotify' ? SiSpotify : SiSoundcloud;
-  const platformColor = recording?.platform === 'spotify' ? 'text-[#1DB954]' : 'text-[#FF5500]';
+  const getPlatformIcon = (platform: string | undefined) => {
+    switch (platform) {
+      case 'spotify': return SiSpotify;
+      case 'youtube': return SiYoutube;
+      default: return SiSoundcloud;
+    }
+  };
+
+  const getPlatformColor = (platform: string | undefined) => {
+    switch (platform) {
+      case 'spotify': return 'text-[#1DB954]';
+      case 'youtube': return 'text-[#FF0000]';
+      default: return 'text-[#FF5500]';
+    }
+  };
+
+  const getPlatformName = (platform: string | undefined) => {
+    switch (platform) {
+      case 'spotify': return 'Spotify';
+      case 'youtube': return 'YouTube';
+      case 'soundcloud': return 'SoundCloud';
+      default: return t('recordings.unknownPlatform', 'Unknown Platform');
+    }
+  };
+
+  const getPlatformButtonStyle = (platform: string | undefined) => {
+    switch (platform) {
+      case 'spotify': return 'bg-[#1DB954] hover:bg-[#1ed760] text-black';
+      case 'youtube': return 'bg-[#FF0000] hover:bg-[#cc0000] text-white';
+      default: return 'bg-[#FF5500] hover:bg-[#ff6a1a] text-white';
+    }
+  };
+
+  const PlatformIcon = getPlatformIcon(recording?.platform);
+  const platformColor = getPlatformColor(recording?.platform);
 
   return (
     <DetailPageWrapper
@@ -286,14 +319,10 @@ export default function RecordingDetails() {
                     <FmRecordingLink
                       recordingId={recording.id}
                       url={recording.url}
-                      className={`inline-flex items-center gap-2 px-6 py-3 font-medium transition-all duration-300 ${
-                        recording.platform === 'spotify'
-                          ? 'bg-[#1DB954] hover:bg-[#1ed760] text-black'
-                          : 'bg-[#FF5500] hover:bg-[#ff6a1a] text-white'
-                      }`}
+                      className={`inline-flex items-center gap-2 px-6 py-3 font-medium transition-all duration-300 ${getPlatformButtonStyle(recording.platform)}`}
                     >
                       <PlatformIcon className='h-5 w-5' />
-                      Listen on {recording.platform === 'spotify' ? 'Spotify' : 'SoundCloud'}
+                      {t('recordings.listenOn', 'Listen on')} {getPlatformName(recording.platform)}
                       <ExternalLink className='h-4 w-4' />
                     </FmRecordingLink>
                   </div>

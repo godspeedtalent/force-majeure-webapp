@@ -1,6 +1,12 @@
 import { cn } from '@/shared';
-import { Instagram as InstagramIcon } from 'lucide-react';
-import { SiSoundcloud, SiSpotify, SiTiktok } from 'react-icons/si';
+import { Globe, Instagram as InstagramIcon } from 'lucide-react';
+import {
+  SiFacebook,
+  SiSoundcloud,
+  SiSpotify,
+  SiTiktok,
+  SiYoutube,
+} from 'react-icons/si';
 
 /**
  * Social media platform configuration
@@ -14,6 +20,14 @@ interface SocialPlatform {
 }
 
 const PLATFORMS: Record<string, SocialPlatform> = {
+  website: {
+    name: 'Website',
+    icon: Globe,
+    getUrl: (url: string) =>
+      url.startsWith('http') ? url : `https://${url}`,
+    hoverColor: 'hover:text-fm-gold',
+    borderColor: 'hover:border-fm-gold/50',
+  },
   instagram: {
     name: 'Instagram',
     icon: InstagramIcon,
@@ -21,6 +35,26 @@ const PLATFORMS: Record<string, SocialPlatform> = {
       `https://instagram.com/${handle.replace('@', '')}`,
     hoverColor: 'hover:text-fm-gold',
     borderColor: 'hover:border-fm-gold/50',
+  },
+  youtube: {
+    name: 'YouTube',
+    icon: SiYoutube,
+    getUrl: (handle: string) =>
+      handle.startsWith('http')
+        ? handle
+        : `https://youtube.com/@${handle.replace('@', '')}`,
+    hoverColor: 'hover:text-[#FF0000]',
+    borderColor: 'hover:border-[#FF0000]/50',
+  },
+  facebook: {
+    name: 'Facebook',
+    icon: SiFacebook,
+    getUrl: (handle: string) =>
+      handle.startsWith('http')
+        ? handle
+        : `https://facebook.com/${handle}`,
+    hoverColor: 'hover:text-[#1877F2]',
+    borderColor: 'hover:border-[#1877F2]/50',
   },
   soundcloud: {
     name: 'SoundCloud',
@@ -55,8 +89,14 @@ const SIZE_CLASSES: Record<SocialSize, { icon: string; padding: string }> = {
 };
 
 export interface FmSocialLinksProps {
+  /** Website URL */
+  website?: string | null;
   /** Instagram handle (with or without @) */
   instagram?: string | null;
+  /** YouTube channel handle or URL */
+  youtube?: string | null;
+  /** Facebook page name or URL */
+  facebook?: string | null;
   /** SoundCloud profile URL */
   soundcloud?: string | null;
   /** Spotify artist URL */
@@ -81,7 +121,7 @@ const GAP_CLASSES = {
  * FmSocialLinks - Displays social media icon links for artists/profiles
  *
  * Features:
- * - Supports Instagram, SoundCloud, Spotify, and TikTok
+ * - Supports Website, Instagram, YouTube, Facebook, SoundCloud, Spotify, and TikTok
  * - Brand-specific hover colors
  * - Accessible with proper aria-labels
  * - Opens links in new tabs safely
@@ -89,7 +129,10 @@ const GAP_CLASSES = {
  * @example
  * ```tsx
  * <FmSocialLinks
+ *   website="https://example.com"
  *   instagram="@djname"
+ *   youtube="@djname"
+ *   facebook="djnamepage"
  *   soundcloud="https://soundcloud.com/djname"
  *   spotify="https://open.spotify.com/artist/..."
  *   size="md"
@@ -97,7 +140,10 @@ const GAP_CLASSES = {
  * ```
  */
 export function FmSocialLinks({
+  website,
   instagram,
+  youtube,
+  facebook,
   soundcloud,
   spotify,
   tiktok,
@@ -107,9 +153,12 @@ export function FmSocialLinks({
 }: FmSocialLinksProps) {
   const sizeClasses = SIZE_CLASSES[size];
 
-  // Collect active platforms
+  // Collect active platforms (order matches visual display preference)
   const activePlatforms: Array<{ key: string; value: string }> = [];
+  if (website) activePlatforms.push({ key: 'website', value: website });
   if (instagram) activePlatforms.push({ key: 'instagram', value: instagram });
+  if (youtube) activePlatforms.push({ key: 'youtube', value: youtube });
+  if (facebook) activePlatforms.push({ key: 'facebook', value: facebook });
   if (soundcloud) activePlatforms.push({ key: 'soundcloud', value: soundcloud });
   if (spotify) activePlatforms.push({ key: 'spotify', value: spotify });
   if (tiktok) activePlatforms.push({ key: 'tiktok', value: tiktok });

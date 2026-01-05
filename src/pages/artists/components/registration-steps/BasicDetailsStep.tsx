@@ -197,7 +197,9 @@ export function BasicDetailsStep({
                 onChange={e => onInputChange('bio', e.target.value)}
                 placeholder={t('forms.artists.bioLongPlaceholder')}
                 multiline
-                rows={6}
+                autoSize
+                minRows={4}
+                maxRows={15}
               />
 
               <FmCityDropdown

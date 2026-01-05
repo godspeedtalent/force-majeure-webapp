@@ -83,7 +83,10 @@
   },
   "artistDetails": {
     "back": "返回",
+    "events": "活动",
     "upcomingEvents": "即将举办的活动",
+    "pastEvents": "往期活动",
+    "morePastEvents": "+{{count}} 更多往期活动",
     "entityName": "艺术家",
     "notFound": "未找到艺术家"
   },
@@ -421,6 +424,8 @@
     "loading": "加载中..."
   },
   "artistSignup": {
+    "seoTitle": "加入我们的艺术家阵容",
+    "seoDescription": "提交您的艺术家资料，被奥斯汀最活跃的电子音乐社区发现。预约演出，与粉丝建立联系，发展您的职业生涯。",
     "heroTitle": "来和我们一起演出吧。",
     "valueProposition1": "FM一直以来都是一个通过照顾艺术家来提升奥斯汀当地电子音乐场景的团体。",
     "valueProposition2": "我们自豪地确保活动暖场阵容代表着来自各种风格的多元化新星。",

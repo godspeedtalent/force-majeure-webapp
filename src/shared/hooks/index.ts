@@ -17,20 +17,21 @@ export {
 /**
  * Async Operation Hooks
  *
- * Two hooks are available for different async patterns:
+ * The recommended hook for async mutations is useAsyncMutation.
+ * It provides loading state, error handling, toast notifications,
+ * and optional React Query cache invalidation.
  *
- * useAsyncAction - Use when you know the async function at hook initialization
- *   - Pre-bound function with built-in toast notifications
- *   - Best for: Form submissions, CRUD operations with consistent messaging
- *   - Example: useAsyncAction(saveEvent, { successMessage: 'Saved!' })
- *
- * useAsyncOperation - Use when you decide the async function at execute time
- *   - Dynamic function execution, no built-in toasts
- *   - Best for: One-off operations, file uploads, mixed async workflows
- *   - Example: execute(async () => await fetch('/api'))
+ * Legacy hooks (deprecated):
+ * - useAsyncAction - Use useAsyncMutation with throwOnError: true instead
+ * - useMutationWithToast - Use useAsyncMutation with invalidateKeys instead
  */
+export { useAsyncMutation, useAsyncMutationSimple } from './useAsyncMutation';
+export type { UseAsyncMutationOptions, UseAsyncMutationReturn } from './useAsyncMutation';
+
+/** @deprecated Use useAsyncMutation instead */
 export { useAsyncAction } from './useAsyncAction';
 export type { UseAsyncActionOptions } from './useAsyncAction';
+
 export { useAsyncOperation } from './useAsyncOperation';
 export type { UseAsyncOperationReturn } from './useAsyncOperation';
 export { useDeleteConfirmation } from './useDeleteConfirmation';

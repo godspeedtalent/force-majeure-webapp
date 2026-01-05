@@ -89,6 +89,27 @@ export default function EventManagement() {
     enabled: !!id,
   });
 
+  // Fetch event artists with scheduling data from event_artists junction table
+  const { data: eventArtistsData } = useQuery({
+    queryKey: ['event-artists', id],
+    queryFn: async () => {
+      if (!id) return [];
+
+      const { data, error } = await supabase
+        .from('event_artists')
+        .select('artist_id, set_time, set_order')
+        .eq('event_id', id)
+        .order('set_order', { ascending: true });
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!id,
+  });
+
+  // Extract undercard IDs for backwards compatibility
+  const undercardArtists = eventArtistsData?.map(item => item.artist_id) || [];
+
   // Sync displaySubtitle from event data (for UX Display tab)
   useEffect(() => {
     if (event) {
@@ -403,7 +424,12 @@ export default function EventManagement() {
               <div className='space-y-8'>
                 <EventArtistManagement
                   headlinerId={event.headliner_id || ''}
-                  undercardIds={[]}
+                  undercardIds={undercardArtists || []}
+                  initialScheduleData={eventArtistsData?.map(item => ({
+                    artistId: item.artist_id,
+                    setTime: item.set_time,
+                    setOrder: item.set_order,
+                  })) || []}
                   lookingForUndercard={(event as any).looking_for_undercard ?? false}
                   onLookingForUndercardChange={async (checked) => {
                     try {
@@ -434,13 +460,13 @@ export default function EventManagement() {
                       // Update the headliner in the events table
                       const { error: eventError } = await supabase
                         .from('events')
-                        .update({ headliner_id: data.headlinerId })
+                        .update({ headliner_id: data.headlinerId || null })
                         .eq('id', id);
 
                       if (eventError) throw eventError;
 
-                      // Update undercard artists in event_artists junction table
-                      // First, delete existing undercard artists
+                      // Update event_artists junction table with scheduling data
+                      // First, delete existing entries
                       const { error: deleteError } = await supabase
                         .from('event_artists')
                         .delete()
@@ -448,22 +474,39 @@ export default function EventManagement() {
 
                       if (deleteError) throw deleteError;
 
-                      // Then insert new undercard artists
-                      if (data.undercardIds.length > 0) {
-                        const undercardRecords = data.undercardIds.map(artistId => ({
-                          event_id: id,
-                          artist_id: artistId,
-                        }));
+                      // Insert all artists with scheduling data (undercard + co-headliners)
+                      // Filter out empty artist slots and the main headliner (stored on events table)
+                      const artistRecords = data.artistSlots
+                        .filter(slot => slot.artistId && slot.role !== 'headliner')
+                        .map((slot, index) => {
+                          // Convert time string to full timestamp if event has a date
+                          let setTime = null;
+                          if (slot.setTime && event?.start_time) {
+                            const eventDate = new Date(event.start_time);
+                            const [hours, minutes] = slot.setTime.split(':').map(Number);
+                            eventDate.setHours(hours, minutes, 0, 0);
+                            setTime = eventDate.toISOString();
+                          }
 
+                          return {
+                            event_id: id,
+                            artist_id: slot.artistId,
+                            set_time: setTime,
+                            set_order: slot.order ?? index,
+                          };
+                        });
+
+                      if (artistRecords.length > 0) {
                         const { error: insertError } = await supabase
                           .from('event_artists')
-                          .insert(undercardRecords);
+                          .insert(artistRecords);
 
                         if (insertError) throw insertError;
                       }
 
                       toast.success(tToast('events.artistsUpdated'));
                       queryClient.invalidateQueries({ queryKey: ['event', id] });
+                      queryClient.invalidateQueries({ queryKey: ['event-artists', id] });
                     } catch (error) {
                       await handleError(error, {
                         title: tToast('events.artistUpdateFailed'),

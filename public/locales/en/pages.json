@@ -83,7 +83,10 @@
   },
   "artistDetails": {
     "back": "Back",
+    "events": "Events",
     "upcomingEvents": "Upcoming Events",
+    "pastEvents": "Past Events",
+    "morePastEvents": "+{{count}} more past events",
     "entityName": "Artist",
     "notFound": "Artist Not Found"
   },
@@ -455,6 +458,8 @@
     "loading": "Loading..."
   },
   "artistSignup": {
+    "seoTitle": "Join Our Artist Roster",
+    "seoDescription": "Submit your artist profile and get discovered by Austin's most engaged electronic music community. Book shows, connect with fans, and grow your career.",
     "heroTitle": "Come spin with us.",
     "valueProposition1": "FM has, and always will be, a group that elevates the local Austin electronic scene by taking care of our artists.",
     "valueProposition2": "We proudly make sure our event undercards represent a diverse selection of rising stars from an expansive pantheon of genre.",

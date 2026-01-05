@@ -24,7 +24,7 @@ export function DatabaseTabFooter({ onNavigate }: { onNavigate: (path: string) =
         variant='default'
         icon={Database}
         iconPosition='left'
-        onClick={() => onNavigate('/developer/database')}
+        onClick={() => onNavigate('/developer?tab=db_overview')}
         className='w-full justify-start'
       >
         {t('databaseTab.goToManager')}

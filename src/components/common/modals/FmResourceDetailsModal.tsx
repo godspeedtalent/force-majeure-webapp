@@ -1,10 +1,11 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { Settings } from 'lucide-react';
 
 import { FmCommonModal } from './FmCommonModal';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonBadgeGroup, FmCommonBadgeItem as BadgeItem } from '@/components/common/display/FmCommonBadgeGroup';
 import { DialogTitle } from '@/components/common/shadcn/dialog';
+import { Skeleton } from '@/components/common/shadcn/skeleton';
 import { cn } from '@/shared';
 
 export interface ResourceMetadataItem {
@@ -57,7 +58,15 @@ export const FmResourceDetailsModal = ({
   imagePlaceholder = true,
   actions,
 }: FmResourceDetailsModalProps) => {
+  const [isImageLoading, setIsImageLoading] = useState(true);
   const showManage = canManage && onManage;
+
+  // Reset loading state when imageUrl changes
+  useEffect(() => {
+    if (imageUrl) {
+      setIsImageLoading(true);
+    }
+  }, [imageUrl]);
 
   // Manage button styled to sit in top-right, left of the close X button
   const manageButton = showManage ? (
@@ -86,11 +95,18 @@ export const FmResourceDetailsModal = ({
         {/* Hero Image */}
         {imageUrl && (
           <div className='w-full h-64 overflow-hidden relative'>
+            {isImageLoading && (
+              <Skeleton className='absolute inset-0 w-full h-full rounded-none' />
+            )}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={imageUrl}
               alt={title}
-              className='w-full h-full object-cover'
+              className={cn(
+                'w-full h-full object-cover transition-opacity duration-300',
+                isImageLoading ? 'opacity-0' : 'opacity-100'
+              )}
+              onLoad={() => setIsImageLoading(false)}
             />
             <div className='absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent' />
           </div>
@@ -170,14 +186,24 @@ export const FmResourceDetailsModal = ({
               {title}
             </h2>
           </div>
-          <div className='mt-4 overflow-hidden rounded-xl border border-white/15 bg-white/5 shadow-inner'>
+          <div className='mt-4 overflow-hidden rounded-xl border border-white/15 bg-white/5 shadow-inner relative'>
             {imageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={imageUrl}
-                alt={title}
-                className={cn(imageAspectRatio, 'w-full object-cover')}
-              />
+              <>
+                {isImageLoading && (
+                  <Skeleton className={cn(imageAspectRatio, 'absolute inset-0 w-full rounded-none')} />
+                )}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={imageUrl}
+                  alt={title}
+                  className={cn(
+                    imageAspectRatio,
+                    'w-full object-cover transition-opacity duration-300',
+                    isImageLoading ? 'opacity-0' : 'opacity-100'
+                  )}
+                  onLoad={() => setIsImageLoading(false)}
+                />
+              </>
             ) : imagePlaceholder ? (
               <div className={cn(imageAspectRatio, 'w-full bg-gradient-to-br from-fm-gold/15 via-fm-gold/5 to-transparent')} />
             ) : null}

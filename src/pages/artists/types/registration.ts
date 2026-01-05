@@ -7,7 +7,7 @@ export interface RegistrationTrack {
   name: string;
   url: string;
   coverArt?: string;
-  platform: 'spotify' | 'soundcloud';
+  platform: 'spotify' | 'soundcloud' | 'youtube';
   recordingType: RecordingType;
   /** Whether this is the primary/featured DJ set for the artist */
   isPrimaryDjSet?: boolean;

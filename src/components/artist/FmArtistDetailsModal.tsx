@@ -1,7 +1,11 @@
-import { type ReactNode, useMemo } from 'react';
+import { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FmResourceDetailsModal } from '@/components/common/modals/FmResourceDetailsModal';
+import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
+import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { DialogTitle } from '@/components/common/shadcn/dialog';
+import { FmArtistSpotlight } from '@/components/artist/FmArtistSpotlight';
+import { useArtistById } from '@/shared/api/queries/artistQueries';
 
 export interface FmArtistDetailsModalProps {
   artist: {
@@ -21,41 +25,37 @@ export const FmArtistDetailsModal = ({
   artist,
   open,
   onOpenChange,
-  canManage = false,
-  onManage,
 }: FmArtistDetailsModalProps) => {
   const { t } = useTranslation('common');
-  const badges = useMemo(() => {
-    if (!artist?.genre) return [];
-    return artist.genre
-      .split(/[,/|]/)
-      .map(genre => genre.trim())
-      .filter(Boolean)
-      .map(label => ({
-        label,
-        className: 'border-fm-gold/60 bg-fm-gold/10 text-fm-gold',
-      }));
-  }, [artist?.genre]);
 
-  const handleManage = () => {
-    if (artist?.id && onManage) {
-      onManage(artist.id);
-    }
-  };
+  // Fetch full artist data when modal is open and we have an ID
+  const { data: fullArtist, isLoading } = useArtistById(
+    open && artist?.id ? artist.id : undefined
+  );
 
   return (
-    <FmResourceDetailsModal
+    <FmCommonModal
       open={open}
       onOpenChange={onOpenChange}
-      title={artist?.name ?? t('artistDetails.defaultTitle')}
-      eyebrow={t('artistDetails.spotlight')}
-      imageUrl={artist?.image}
-      layout='side-by-side'
-      badges={badges}
-      canManage={canManage && !!artist?.id}
-      onManage={handleManage}
+      title=''
+      headerContent={
+        <DialogTitle className='sr-only'>
+          {artist?.name ?? t('artistDetails.defaultTitle')}
+        </DialogTitle>
+      }
+      className='max-w-3xl max-h-[90vh] overflow-y-auto p-0'
     >
-      {artist?.description ?? t('artistDetails.defaultDescription')}
-    </FmResourceDetailsModal>
+      {isLoading && artist?.id ? (
+        <div className='flex items-center justify-center py-20'>
+          <FmCommonLoadingSpinner size='lg' />
+        </div>
+      ) : fullArtist ? (
+        <FmArtistSpotlight artist={fullArtist} showRecordings />
+      ) : (
+        <div className='flex items-center justify-center py-20 text-muted-foreground'>
+          {t('artistDetails.defaultDescription')}
+        </div>
+      )}
+    </FmCommonModal>
   );
 };

@@ -21,7 +21,9 @@ export * from './api/queries';
 // ============================================================================
 // Types - Feature types
 // ============================================================================
-export * from './types/features/events';
+// Event types - canonical source is features/events/types
+export * from '../features/events/types';
+// Ticketing types - extends event types with checkout/cart types
 export * from './types/features/ticketing';
 export * from './types/features/products';
 export * from './types/features/payments';
@@ -267,6 +269,13 @@ export {
   useIsDevelopment,
   useIsQA,
 } from './hooks/useEnvironment';
+export {
+  useAsyncMutation,
+  useAsyncMutationSimple,
+  type UseAsyncMutationOptions,
+  type UseAsyncMutationReturn,
+} from './hooks/useAsyncMutation';
+/** @deprecated Use useAsyncMutation instead */
 export { useAsyncAction, type UseAsyncActionOptions } from './hooks/useAsyncAction';
 export { useAsyncOperation, type UseAsyncOperationReturn } from './hooks/useAsyncOperation';
 export {

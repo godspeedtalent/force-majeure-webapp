@@ -92,7 +92,8 @@
     "joinWaitlist": "Unirse a la Lista de Espera",
     "getTickets": "Obtener Entradas",
     "processing": "Procesando...",
-    "tryAgain": "Intentar de Nuevo"
+    "tryAgain": "Intentar de Nuevo",
+    "setAsCover": "Establecer como portada"
   },
   "labels": {
     "email": "Correo Electrónico",
@@ -155,6 +156,7 @@
     "tiktok": "TikTok",
     "tiktokHandle": "Usuario de TikTok (Opcional)",
     "youtube": "YouTube",
+    "coverImage": "Imagen de portada",
     "soundcloudUrl": "URL de SoundCloud",
     "spotifyArtistUrl": "URL de Artista de Spotify",
     "listen": "Escuchar",
@@ -249,7 +251,22 @@
     "avgClicksPerLink": "Promedio de Clics/Enlace",
     "clicksOverTime": "Clics a lo Largo del Tiempo (Últimos 7 Días)",
     "topPerformingLinks": "Top 5 Enlaces con Mejor Rendimiento",
-    "clicksBySource": "Clics por Fuente"
+    "clicksBySource": "Clics por Fuente",
+    "timespan": {
+      "last7Days": "Últimos 7 días",
+      "last30Days": "Últimos 30 días",
+      "last12Months": "Últimos 12 meses",
+      "custom": "Personalizado"
+    },
+    "labels": {
+      "totalViews": "Total de vistas",
+      "totalSessions": "Total de sesiones",
+      "avgViewsPerDay": "Prom. vistas/día"
+    },
+    "sources": {
+      "direct": "Directo",
+      "unknown": "Desconocido"
+    }
   },
   "time": {
     "today": "Hoy",
@@ -301,7 +318,9 @@
     "permissionCount_one": "{{count}} permiso",
     "clearSimulation": "Limpiar simulación",
     "unauthenticated": "No autenticado",
-    "unauthenticatedDescription": "Simular un usuario sin sesión iniciada, sin roles ni permisos"
+    "unauthenticatedDescription": "Simular un usuario sin sesión iniciada, sin roles ni permisos",
+    "exitSimulation": "Salir de simulación \"{{role}}\"",
+    "exitSimulationHint": "Haz clic aquí para salir de la simulación cuando termines"
   },
   "searchDropdown": {
     "placeholder": "Buscar...",
@@ -2888,5 +2907,179 @@
         "organizationDetails": "Detalles de la Organización"
       }
     }
+  },
+  "charts": {
+    "noDataAvailable": "No hay datos disponibles.",
+    "label": "Etiqueta",
+    "pointLabel": "Etiqueta del punto",
+    "enterLabel": "Ingresa etiqueta...",
+    "save": "Guardar",
+    "cancel": "Cancelar"
+  },
+  "topPagesTable": {
+    "allTypes": "Todos los tipos",
+    "selectedCount": "{{count}} seleccionados",
+    "pageTypes": "Tipos de página",
+    "clear": "Limpiar",
+    "page": "Página",
+    "type": "Tipo",
+    "views": "Vistas",
+    "sessions": "Sesiones",
+    "avgTime": "Tiempo prom.",
+    "avgScroll": "Scroll prom.",
+    "searchPages": "Buscar páginas...",
+    "unignorePage": "Dejar de ignorar esta página",
+    "ignorePage": "Ignorar esta página",
+    "noIgnoredPages": "No se encontraron páginas ignoradas.",
+    "noPagesToDisplay": "No hay páginas para mostrar. Todas las páginas pueden estar ignoradas."
+  },
+  "recordingRatings": {
+    "name": "Nombre",
+    "artist": "Artista",
+    "platform": "Plataforma",
+    "type": "Tipo",
+    "avgScore": "Puntuación Prom.",
+    "ratingCount": "Cantidad de Calificaciones",
+    "url": "URL",
+    "scoreRange": "Rango de puntuación",
+    "minRatings": "Calificaciones mínimas",
+    "sortBy": "Ordenar por",
+    "allTypes": "Todos los tipos",
+    "allPlatforms": "Todas las plataformas",
+    "noDataYet": "Sin datos aún",
+    "recordingNotFound": "Grabación no encontrada",
+    "unknownPlatform": "Plataforma Desconocida",
+    "scores": {
+      "all": "Todas las puntuaciones",
+      "excellent": "8+ (Excelente)",
+      "good": "6+ (Bueno)",
+      "average": "4+ (Promedio)",
+      "belowAverage": "Menos de 6"
+    },
+    "platforms": {
+      "spotify": "Spotify",
+      "soundcloud": "SoundCloud"
+    },
+    "types": {
+      "djSets": "Sets de DJ",
+      "tracks": "Pistas"
+    },
+    "sort": {
+      "highestRated": "Mejor calificados",
+      "lowestRated": "Peor calificados",
+      "mostReviewed": "Más reseñados",
+      "leastReviewed": "Menos reseñados",
+      "newest": "Más recientes",
+      "oldest": "Más antiguos",
+      "nameAZ": "Nombre A-Z",
+      "nameZA": "Nombre Z-A"
+    },
+    "minRatingsOptions": {
+      "any": "Cualquiera",
+      "atLeast1": "Al menos 1",
+      "atLeast2": "Al menos 2",
+      "atLeast3": "Al menos 3",
+      "atLeast5": "Al menos 5"
+    }
+  },
+  "adminControls": {
+    "title": "Controles de Administrador",
+    "siteControls": "Controles del Sitio",
+    "developerTools": "Herramientas de Desarrollo",
+    "devToolsDesc": "Alternar funciones del entorno de desarrollo",
+    "ticketing": "Venta de Entradas",
+    "ticketingDesc": "Configurar tarifas de entradas y comportamiento del checkout",
+    "siteSettings": "Configuración del Sitio",
+    "siteSettingsDesc": "Configurar ajustes del sitio",
+    "database": "Base de Datos",
+    "organizations": "Organizaciones",
+    "organizationsDesc": "Administrar organizaciones",
+    "users": "Usuarios",
+    "usersDesc": "Administrar cuentas de usuario",
+    "monitoring": "Monitoreo",
+    "activityLogs": "Registros de Actividad",
+    "activityLogsDesc": "Ver registros de actividad del sistema",
+    "devToolsMobile": "Dev Tools",
+    "ticketingMobile": "Entradas",
+    "settingsMobile": "Config",
+    "orgsMobile": "Orgs",
+    "usersMobile": "Usuarios"
+  },
+  "galleryManagement": {
+    "notFound": "Galería no encontrada",
+    "notFoundMessage": "No se pudo encontrar la galería \"{{slug}}\".",
+    "uploadPrompt": "Arrastra archivos aquí o haz clic para subir",
+    "supportedTypes": "Soportados: Imágenes, Videos, Audio",
+    "selectFiles": "Seleccionar archivos",
+    "addMedia": "Añadir media",
+    "editMedia": "Editar media",
+    "deleteMediaConfirm": "¿Eliminar media?",
+    "deleteMediaMessage": "Esto eliminará permanentemente \"{{name}}\". Esta acción no se puede deshacer.",
+    "photoTitle": "Título de la foto",
+    "altText": "Descripción para accesibilidad",
+    "creator": "Nombre del fotógrafo o creador",
+    "year": "Año",
+    "additionalDetails": "Detalles adicionales",
+    "selectOrCreateHint": "Selecciona o crea una galería para gestionar media",
+    "createGallery": "Crear galería",
+    "galleryName": "Nombre de la galería",
+    "galleryNamePlaceholder": "Carrusel de Registro de Artistas",
+    "slug": "Slug",
+    "slugPlaceholder": "carrusel-registro-artistas",
+    "slugDescription": "Identificador seguro para URL usado en código",
+    "deleteGalleryConfirm": "¿Eliminar galería?",
+    "deleteItemConfirm": "¿Eliminar elemento?",
+    "deleteGalleryMessage": "Esto eliminará permanentemente la galería \"{{name}}\" y todos sus medios. Esta acción no se puede deshacer.",
+    "labels": {
+      "title": "Título",
+      "altText": "Texto alternativo",
+      "creator": "Creador",
+      "year": "Año",
+      "description": "Descripción",
+      "name": "Nombre",
+      "slug": "Slug"
+    }
+  },
+  "sonicGauntlet": {
+    "backToForceMajeure": "Volver a Force Majeure",
+    "presents": "Force Majeure presenta",
+    "title": "Sonic Gauntlet",
+    "subtitle": "showcase electrónico de atx",
+    "description": "Regresa la principal competencia de DJs de Austin. Artistas electrónicos locales compiten por gloria, premios y la oportunidad de encabezar un evento de Force Majeure.",
+    "registrationInfo": "Las inscripciones abren pronto. Mantente atento para fechas y detalles.",
+    "registrationComing": "Inscripciones Próximamente",
+    "followText": "Síguenos",
+    "forUpdates": "para actualizaciones"
+  },
+  "dashboards": {
+    "activityLog": "Registro de Actividad",
+    "userMetrics": "Métricas de Usuario",
+    "comingSoon": "Próximamente"
+  },
+  "mediaGallery": {
+    "loading": "Cargando...",
+    "noImagesAvailable": "No hay imágenes disponibles",
+    "openInNavigator": "Abrir en Navegador de Base de Datos"
+  },
+  "accessibility": {
+    "pagination": "paginación",
+    "breadcrumb": "ruta de navegación",
+    "goToPreviousPage": "Ir a página anterior",
+    "goToNextPage": "Ir a página siguiente",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "morePages": "Más páginas",
+    "more": "Más",
+    "close": "Cerrar",
+    "toggleSidebar": "Alternar Barra Lateral",
+    "previousSlide": "Diapositiva anterior",
+    "nextSlide": "Diapositiva siguiente"
+  },
+  "datePicker": {
+    "pickADate": "Seleccionar fecha",
+    "pickADateRange": "Seleccionar rango de fechas"
+  },
+  "demo": {
+    "selectEventInstruction": "Selecciona un evento de Demo Tools para comenzar"
   }
 }

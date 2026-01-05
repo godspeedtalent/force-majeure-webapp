@@ -113,7 +113,7 @@ export default function ActivityLogs() {
   }, [refreshAll]);
 
   const handleBackToAdmin = useCallback(() => {
-    navigate('/admin/controls');
+    navigate('/developer?tab=admin_settings');
   }, [navigate]);
 
   // Handle sidebar item change to filter by category

@@ -1,11 +1,11 @@
 /**
  * Sessions Filters Hook
  *
- * Manages filtering and sorting state for the sessions table
+ * Manages filtering, sorting, and ignore state for the sessions table
  * in the analytics dashboard.
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import type { StoredSession } from '@/features/analytics';
 
 export type SessionSortField =
@@ -13,7 +13,8 @@ export type SessionSortField =
   | 'device_type'
   | 'browser'
   | 'page_count'
-  | 'total_duration_ms';
+  | 'total_duration_ms'
+  | 'username';
 
 export type SortDirection = 'asc' | 'desc';
 
@@ -22,6 +23,11 @@ export interface SessionFilters {
   deviceType: string;
   browser: string;
   source: string;
+}
+
+export interface IgnoredItems {
+  sources: Set<string>;
+  users: Set<string>;
 }
 
 export interface UseSessionsFiltersOptions {
@@ -55,6 +61,17 @@ export interface UseSessionsFiltersReturn {
   deviceTypes: string[];
   browsers: string[];
   sources: string[];
+  usernames: string[];
+
+  // Ignore functionality
+  ignoredSources: Set<string>;
+  ignoredUsers: Set<string>;
+  toggleIgnoreSource: (source: string) => void;
+  toggleIgnoreUser: (username: string) => void;
+  showIgnored: boolean;
+  setShowIgnored: (show: boolean) => void;
+  ignoredSourceCount: number;
+  ignoredUserCount: number;
 }
 
 const DEFAULT_FILTERS: SessionFilters = {
@@ -64,12 +81,91 @@ const DEFAULT_FILTERS: SessionFilters = {
   source: '',
 };
 
+// LocalStorage keys
+const IGNORED_SOURCES_KEY = 'fm-analytics-ignored-sources';
+const IGNORED_USERS_KEY = 'fm-analytics-ignored-users';
+
+function getIgnoredFromStorage(key: string): Set<string> {
+  try {
+    const stored = localStorage.getItem(key);
+    if (stored) {
+      return new Set(JSON.parse(stored));
+    }
+  } catch {
+    // Ignore parse errors
+  }
+  return new Set();
+}
+
+function saveIgnoredToStorage(key: string, items: Set<string>): void {
+  try {
+    localStorage.setItem(key, JSON.stringify(Array.from(items)));
+  } catch {
+    // Ignore storage errors
+  }
+}
+
 export function useSessionsFilters({
   data,
 }: UseSessionsFiltersOptions): UseSessionsFiltersReturn {
   const [filters, setFilters] = useState<SessionFilters>(DEFAULT_FILTERS);
   const [sortField, setSortField] = useState<SessionSortField>('started_at');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [ignoredSources, setIgnoredSources] = useState<Set<string>>(() =>
+    getIgnoredFromStorage(IGNORED_SOURCES_KEY)
+  );
+  const [ignoredUsers, setIgnoredUsers] = useState<Set<string>>(() =>
+    getIgnoredFromStorage(IGNORED_USERS_KEY)
+  );
+  const [showIgnored, setShowIgnored] = useState(false);
+
+  // Persist ignored items to localStorage
+  useEffect(() => {
+    saveIgnoredToStorage(IGNORED_SOURCES_KEY, ignoredSources);
+  }, [ignoredSources]);
+
+  useEffect(() => {
+    saveIgnoredToStorage(IGNORED_USERS_KEY, ignoredUsers);
+  }, [ignoredUsers]);
+
+  // Toggle ignore functions
+  const toggleIgnoreSource = useCallback((source: string) => {
+    setIgnoredSources(prev => {
+      const next = new Set(prev);
+      if (next.has(source)) {
+        next.delete(source);
+      } else {
+        next.add(source);
+      }
+      return next;
+    });
+  }, []);
+
+  const toggleIgnoreUser = useCallback((username: string) => {
+    setIgnoredUsers(prev => {
+      const next = new Set(prev);
+      if (next.has(username)) {
+        next.delete(username);
+      } else {
+        next.add(username);
+      }
+      return next;
+    });
+  }, []);
+
+  // Helper to get source string from session
+  const getSessionSource = useCallback((session: StoredSession): string => {
+    if (session.utm_source) {
+      return session.utm_source;
+    } else if (session.referrer) {
+      try {
+        return new URL(session.referrer).hostname;
+      } catch {
+        return 'Unknown';
+      }
+    }
+    return 'Direct';
+  }, []);
 
   // Extract unique filter options from data
   const deviceTypes = useMemo(() => {
@@ -95,24 +191,52 @@ export function useSessionsFilters({
   const sources = useMemo(() => {
     const sourceSet = new Set<string>();
     data.forEach(session => {
-      if (session.utm_source) {
-        sourceSet.add(session.utm_source);
-      } else if (session.referrer) {
-        try {
-          sourceSet.add(new URL(session.referrer).hostname);
-        } catch {
-          // Invalid URL, skip
-        }
-      } else {
-        sourceSet.add('Direct');
-      }
+      sourceSet.add(getSessionSource(session));
     });
     return Array.from(sourceSet).sort();
+  }, [data, getSessionSource]);
+
+  const usernames = useMemo(() => {
+    const usernameSet = new Set<string>();
+    data.forEach(session => {
+      if (session.username) {
+        usernameSet.add(session.username);
+      }
+    });
+    return Array.from(usernameSet).sort();
   }, [data]);
+
+  // Count ignored items that exist in current data
+  const ignoredSourceCount = useMemo(() => {
+    return sources.filter(s => ignoredSources.has(s)).length;
+  }, [sources, ignoredSources]);
+
+  const ignoredUserCount = useMemo(() => {
+    return usernames.filter(u => ignoredUsers.has(u)).length;
+  }, [usernames, ignoredUsers]);
 
   // Filter and sort data
   const filteredData = useMemo(() => {
     let result = [...data];
+
+    // Apply ignored filter
+    if (showIgnored) {
+      // Only show sessions with ignored sources or users
+      result = result.filter(session => {
+        const source = getSessionSource(session);
+        const isSourceIgnored = ignoredSources.has(source);
+        const isUserIgnored = session.username ? ignoredUsers.has(session.username) : false;
+        return isSourceIgnored || isUserIgnored;
+      });
+    } else {
+      // Hide sessions with ignored sources or users
+      result = result.filter(session => {
+        const source = getSessionSource(session);
+        const isSourceIgnored = ignoredSources.has(source);
+        const isUserIgnored = session.username ? ignoredUsers.has(session.username) : false;
+        return !isSourceIgnored && !isUserIgnored;
+      });
+    }
 
     // Apply search filter (searches across multiple fields)
     if (filters.search) {
@@ -126,6 +250,7 @@ export function useSessionsFilters({
           session.utm_source,
           session.referrer,
           session.os,
+          session.username,
         ];
         return searchableFields.some(
           field => field?.toLowerCase().includes(query)
@@ -191,6 +316,10 @@ export function useSessionsFilters({
           aVal = a.total_duration_ms ?? 0;
           bVal = b.total_duration_ms ?? 0;
           break;
+        case 'username':
+          aVal = a.username?.toLowerCase() ?? '';
+          bVal = b.username?.toLowerCase() ?? '';
+          break;
         default:
           return 0;
       }
@@ -214,7 +343,7 @@ export function useSessionsFilters({
     });
 
     return result;
-  }, [data, filters, sortField, sortDirection]);
+  }, [data, filters, sortField, sortDirection, showIgnored, ignoredSources, ignoredUsers, getSessionSource]);
 
   // Count active filters
   const activeFilterCount = useMemo(() => {
@@ -290,5 +419,16 @@ export function useSessionsFilters({
     deviceTypes,
     browsers,
     sources,
+    usernames,
+
+    // Ignore functionality
+    ignoredSources,
+    ignoredUsers,
+    toggleIgnoreSource,
+    toggleIgnoreUser,
+    showIgnored,
+    setShowIgnored,
+    ignoredSourceCount,
+    ignoredUserCount,
   };
 }

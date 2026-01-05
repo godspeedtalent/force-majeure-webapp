@@ -1,7 +1,7 @@
 /**
  * ArtistOverviewTab
  *
- * Overview tab for artist management - basic info, bio, website, and genres.
+ * Overview tab for artist management - basic info, bio, and genres.
  */
 
 import { useTranslation } from 'react-i18next';
@@ -18,11 +18,8 @@ interface ArtistOverviewTabProps {
   onNameChange: (value: string) => void;
   bio: string;
   onBioChange: (value: string) => void;
-  website: string;
-  onWebsiteChange: (value: string) => void;
   selectedGenres: Genre[];
   onGenreChange: (genres: Genre[]) => void;
-  onTriggerAutoSave: () => void;
   onSave: () => void;
   onDeleteClick: () => void;
   isSaving: boolean;
@@ -34,11 +31,8 @@ export function ArtistOverviewTab({
   onNameChange,
   bio,
   onBioChange,
-  website,
-  onWebsiteChange,
   selectedGenres,
   onGenreChange,
-  onTriggerAutoSave,
   onSave,
   onDeleteClick,
   isSaving,
@@ -56,10 +50,7 @@ export function ArtistOverviewTab({
             label={t('labels.artistName')}
             required
             value={name}
-            onChange={(e) => {
-              onNameChange(e.target.value);
-              onTriggerAutoSave();
-            }}
+            onChange={(e) => onNameChange(e.target.value)}
             placeholder={t('forms.artists.namePlaceholder')}
           />
           <div>
@@ -74,23 +65,12 @@ export function ArtistOverviewTab({
           <FmCommonTextField
             label={t('labels.bio')}
             multiline
-            rows={5}
+            autoSize
+            minRows={3}
+            maxRows={15}
             value={bio}
-            onChange={(e) => {
-              onBioChange(e.target.value);
-              onTriggerAutoSave();
-            }}
+            onChange={(e) => onBioChange(e.target.value)}
             placeholder={t('forms.artists.bioPlaceholder')}
-          />
-
-          <FmCommonTextField
-            label={t('labels.website')}
-            value={website}
-            onChange={(e) => {
-              onWebsiteChange(e.target.value);
-              onTriggerAutoSave();
-            }}
-            placeholder={t('forms.artists.websitePlaceholder')}
           />
         </div>
       </FmCommonCard>

@@ -124,6 +124,8 @@ export interface StoredSession {
   screen_width: number | null;
   screen_height: number | null;
   created_at: string;
+  /** Username from profiles table (if user is authenticated) */
+  username: string | null;
 }
 
 export interface StoredPageView {
@@ -309,3 +311,38 @@ export interface PaginatedResult<T> {
   pageSize: number;
   totalPages: number;
 }
+
+// ============================================================
+// Chart Labels Types
+// ============================================================
+
+/**
+ * Stored chart label from database
+ */
+export interface ChartLabel {
+  id: string;
+  chart_id: string;
+  point_id: string;
+  label: string;
+  marker_color: string | null;
+  metadata: Record<string, unknown>;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Input for creating/updating a chart label
+ */
+export interface ChartLabelInput {
+  chart_id: string;
+  point_id: string;
+  label: string;
+  marker_color?: string;
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Chart label as a key-value map (for FmLineChart compatibility)
+ */
+export type ChartLabelsMap = Record<string, string>;

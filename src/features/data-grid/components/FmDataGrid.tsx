@@ -1,9 +1,7 @@
 import React, {
-  useState,
-  useEffect,
   useMemo,
   useRef,
-  useCallback,
+  useEffect,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, TableBody, TableCell, TableRow } from '@/components/common/shadcn/table';
@@ -15,18 +13,13 @@ import { useDataGridState } from '../hooks/useDataGridState';
 import { useDataGridSelection } from '../hooks/useDataGridSelection';
 import { useDataGridFilters } from '../hooks/useDataGridFilters';
 import { useDataGridUI } from '../hooks/useDataGridUI';
+import { useDataGridColumnResize } from '../hooks/useDataGridColumnResize';
+import { useDataGridScrollSync } from '../hooks/useDataGridScrollSync';
+import { useDataGridGrouping } from '../hooks/useDataGridGrouping';
 import { FmDataGridExportDialog, ExportFormat } from './FmDataGridExportDialog';
 import { FmDataGridGroupDialog } from './FmDataGridGroupDialog';
 import { FmBulkEditDialog } from './FmBulkEditDialog';
 import { exportData } from '../utils/dataExport';
-import {
-  groupData,
-  flattenGroupedData,
-  toggleGroupExpanded,
-  type GroupConfig,
-  type GroupedRow,
-  type FlattenedRow,
-} from '../utils/grouping';
 import { FmDataGridToolbar } from './table/FmDataGridToolbar';
 import { FmDataGridHeader } from './table/FmDataGridHeader';
 import { FmDataGridRow, FmDataGridGroupRow } from './table/FmDataGridRow';
@@ -138,6 +131,21 @@ export function FmDataGrid<T extends Record<string, any>>({
   });
   const ui = useDataGridUI();
 
+  // Column resize hook
+  const { columnWidths, resizingColumn, handleResizeStart } = useDataGridColumnResize();
+
+  // Grouping hook
+  const grouping = useDataGridGrouping({
+    data: filters.filteredData,
+    columns,
+    onPageReset: () => gridState.setCurrentPage(1),
+  });
+
+  // Scroll sync hook for sticky scrollbar
+  const scrollSync = useDataGridScrollSync({
+    deps: [data, columns, columnWidths],
+  });
+
   // Render mobile view on small screens (after all hooks)
   if (isMobile) {
     return (
@@ -153,17 +161,6 @@ export function FmDataGrid<T extends Record<string, any>>({
       />
     );
   }
-
-  // Column Resize State
-  const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
-  const [resizingColumn, setResizingColumn] = useState<string | null>(null);
-  const resizeStartX = useRef<number>(0);
-  const resizeStartWidth = useRef<number>(0);
-
-  // Export/Group/Bulk Edit State
-  const [groupConfig, setGroupConfig] = useState<GroupConfig | null>(null);
-  const [groupedRows, setGroupedRows] = useState<GroupedRow<T>[]>([]);
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   // Drag Select State (kept local as it's UI-specific and temporary)
   const dragTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -181,12 +178,9 @@ export function FmDataGrid<T extends Record<string, any>>({
   const totalPages = Math.ceil(filteredData.length / pageSize);
 
   // Get display data (grouped or regular)
-  const displayData = useMemo<FlattenedRow<T>[]>(() => {
-    if (groupConfig && groupedRows.length > 0) {
-      return flattenGroupedData(groupedRows);
-    }
-    return paginatedData.map(row => ({ type: 'data' as const, row, depth: 0 }));
-  }, [groupConfig, groupedRows, paginatedData]);
+  const displayData = useMemo(() => {
+    return grouping.getDisplayData(paginatedData);
+  }, [grouping, paginatedData]);
 
   // Keyboard navigation
   const { handleTableKeyDown, getFocusableCellProps } = useDataGridKeyboardNav({
@@ -216,49 +210,6 @@ export function FmDataGrid<T extends Record<string, any>>({
     enabled: enableVirtualization,
   });
 
-  // Sticky scrollbar refs and state
-  const tableContainerRef = useRef<HTMLDivElement | null>(null);
-  const stickyScrollRef = useRef<HTMLDivElement>(null);
-  const [scrollWidth, setScrollWidth] = useState(0);
-  const [containerWidth, setContainerWidth] = useState(0);
-  const [isSyncing, setIsSyncing] = useState(false);
-
-  // Update scroll width when table content changes
-  useEffect(() => {
-    const updateScrollDimensions = () => {
-      if (tableContainerRef.current) {
-        setScrollWidth(tableContainerRef.current.scrollWidth);
-        setContainerWidth(tableContainerRef.current.clientWidth);
-      }
-    };
-
-    updateScrollDimensions();
-
-    // Use ResizeObserver to track size changes
-    const resizeObserver = new ResizeObserver(updateScrollDimensions);
-    if (tableContainerRef.current) {
-      resizeObserver.observe(tableContainerRef.current);
-    }
-
-    return () => resizeObserver.disconnect();
-  }, [data, columns, columnWidths]);
-
-  // Sync scroll positions between table and sticky scrollbar
-  const handleTableScroll = useCallback(() => {
-    if (isSyncing || !tableContainerRef.current || !stickyScrollRef.current) return;
-    setIsSyncing(true);
-    stickyScrollRef.current.scrollLeft = tableContainerRef.current.scrollLeft;
-    requestAnimationFrame(() => setIsSyncing(false));
-  }, [isSyncing]);
-
-  const handleStickyScroll = useCallback(() => {
-    if (isSyncing || !tableContainerRef.current || !stickyScrollRef.current) return;
-    setIsSyncing(true);
-    tableContainerRef.current.scrollLeft = stickyScrollRef.current.scrollLeft;
-    requestAnimationFrame(() => setIsSyncing(false));
-  }, [isSyncing]);
-
-  const showStickyScrollbar = scrollWidth > containerWidth;
 
   // Handlers
   const handleSort = (columnKey: string) => {
@@ -389,31 +340,6 @@ export function FmDataGrid<T extends Record<string, any>>({
     toast.success(t('dataGrid.exportSuccessful'));
   };
 
-  const handleApplyGrouping = (config: GroupConfig) => {
-    setGroupConfig(config);
-    const grouped = groupData(filteredData, config, columns);
-    setGroupedRows(grouped);
-    const allGroupKeys = grouped.map(g => g.groupValue);
-    setExpandedGroups(new Set(allGroupKeys));
-    gridState.setCurrentPage(1);
-  };
-
-  const handleClearGrouping = () => {
-    setGroupConfig(null);
-    setGroupedRows([]);
-    setExpandedGroups(new Set());
-  };
-
-  const handleToggleGroup = (groupValue: string) => {
-    const updated = toggleGroupExpanded(groupedRows, groupValue);
-    setGroupedRows(updated);
-    setExpandedGroups(prev => {
-      const next = new Set(prev);
-      if (next.has(groupValue)) next.delete(groupValue);
-      else next.add(groupValue);
-      return next;
-    });
-  };
 
   const handleBulkEdit = async (updates: Partial<T>) => {
     if (!onUpdate) return;
@@ -433,42 +359,6 @@ export function FmDataGrid<T extends Record<string, any>>({
     }
   };
 
-  // Column resizing
-  const handleResizeStart = (columnKey: string, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setResizingColumn(columnKey);
-    resizeStartX.current = e.clientX;
-    resizeStartWidth.current = columnWidths[columnKey] || 150;
-  };
-
-  const handleResizeMove = useCallback(
-    (e: MouseEvent) => {
-      if (!resizingColumn) return;
-      const diff = e.clientX - resizeStartX.current;
-      const newWidth = Math.max(80, resizeStartWidth.current + diff);
-      setColumnWidths(prev => ({ ...prev, [resizingColumn]: newWidth }));
-    },
-    [resizingColumn]
-  );
-
-  const handleResizeEnd = useCallback(() => setResizingColumn(null), []);
-
-  useEffect(() => {
-    if (resizingColumn) {
-      document.addEventListener('mousemove', handleResizeMove);
-      document.addEventListener('mouseup', handleResizeEnd);
-      document.body.style.cursor = 'col-resize';
-      document.body.style.userSelect = 'none';
-      return () => {
-        document.removeEventListener('mousemove', handleResizeMove);
-        document.removeEventListener('mouseup', handleResizeEnd);
-        document.body.style.cursor = '';
-        document.body.style.userSelect = '';
-      };
-    }
-    return undefined;
-  }, [resizingColumn, handleResizeMove, handleResizeEnd]);
 
   // Drag select handlers
   const handleMouseDown = (index: number, event: React.MouseEvent) => {
@@ -591,7 +481,7 @@ export function FmDataGrid<T extends Record<string, any>>({
         resourceName={resourceName}
         createButtonLabel={createButtonLabel}
         enableExport={enableExport}
-        hasGrouping={!!groupConfig}
+        hasGrouping={!!grouping.groupConfig}
         totalDataCount={filteredData.length}
         toolbarActions={toolbarActions}
         isBatchDeleting={ui.isBatchDeleting}
@@ -600,18 +490,18 @@ export function FmDataGrid<T extends Record<string, any>>({
       {/* Table */}
       <div
         ref={el => {
-          tableContainerRef.current = el;
+          scrollSync.setTableContainerRef(el);
           if (parentRef) parentRef.current = el;
         }}
         className={cn(
           'rounded-none border border-border/50 bg-background/30 backdrop-blur-sm relative',
           isVirtualized ? 'overflow-auto' : 'overflow-x-auto overflow-y-visible',
           // Hide native scrollbar when using sticky scrollbar
-          showStickyScrollbar && !isVirtualized && 'scrollbar-hide'
+          scrollSync.showStickyScrollbar && !isVirtualized && 'scrollbar-hide'
         )}
         style={isVirtualized ? { maxHeight: '600px' } : undefined}
         onKeyDown={handleTableKeyDown}
-        onScroll={handleTableScroll}
+        onScroll={scrollSync.handleTableScroll}
         role='grid'
         aria-label={`${resourceName} data grid`}
       >
@@ -676,8 +566,8 @@ export function FmDataGrid<T extends Record<string, any>>({
                       groupData={groupRow.groupData}
                       columns={columns}
                       hasActions={actions.length > 0}
-                      isExpanded={expandedGroups.has(groupRow.groupData.groupValue)}
-                      onToggle={() => handleToggleGroup(groupRow.groupData.groupValue)}
+                      isExpanded={grouping.expandedGroups.has(groupRow.groupData.groupValue)}
+                      onToggle={() => grouping.handleToggleGroup(groupRow.groupData.groupValue)}
                     />
                   );
                 }
@@ -778,14 +668,14 @@ export function FmDataGrid<T extends Record<string, any>>({
       </div>
 
       {/* Sticky horizontal scrollbar - always visible at bottom of viewport */}
-      {showStickyScrollbar && !isVirtualized && (
+      {scrollSync.showStickyScrollbar && !isVirtualized && (
         <div
-          ref={stickyScrollRef}
-          onScroll={handleStickyScroll}
+          ref={scrollSync.stickyScrollRef}
+          onScroll={scrollSync.handleStickyScroll}
           className='sticky bottom-0 z-20 overflow-x-auto overflow-y-hidden bg-background/80 backdrop-blur-sm border-t border-border/30'
           style={{ height: '12px' }}
         >
-          <div style={{ width: scrollWidth, height: '1px' }} />
+          <div style={{ width: scrollSync.scrollWidth, height: '1px' }} />
         </div>
       )}
 
@@ -821,9 +711,9 @@ export function FmDataGrid<T extends Record<string, any>>({
         open={ui.showGroupDialog}
         onOpenChange={ui.closeGroupDialog}
         columns={columns}
-        currentGroupConfig={groupConfig}
-        onApply={handleApplyGrouping}
-        onClear={handleClearGrouping}
+        currentGroupConfig={grouping.groupConfig}
+        onApply={grouping.handleApplyGrouping}
+        onClear={grouping.handleClearGrouping}
       />
 
       <FmBulkEditDialog

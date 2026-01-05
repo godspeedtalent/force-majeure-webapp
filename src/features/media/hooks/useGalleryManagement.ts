@@ -38,6 +38,7 @@ interface UseGalleryManagementResult {
   updateMediaItem: (id: string, data: UpdateMediaItemInput) => Promise<boolean>;
   deleteMediaItem: (id: string) => Promise<boolean>;
   reorderMediaItems: (orderedIds: string[]) => Promise<boolean>;
+  setCoverItem: (id: string) => Promise<boolean>;
 
   // Upload
   uploadFile: (file: File, galleryId: string) => Promise<string | null>;
@@ -78,6 +79,7 @@ interface UpdateMediaItemInput {
   tags?: string[];
   is_active?: boolean;
   display_order?: number;
+  is_cover?: boolean;
 }
 
 export const useGalleryManagement = (): UseGalleryManagementResult => {
@@ -371,6 +373,47 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
     [queryClient]
   );
 
+  // Set cover item (unsets all others in the gallery)
+  const setCoverItem = useCallback(
+    async (id: string): Promise<boolean> => {
+      if (!selectedGallery) return false;
+
+      try {
+        // First, unset all is_cover in this gallery
+        const { error: unsetError } = await (supabase as any)
+          .from('media_items')
+          .update({ is_cover: false })
+          .eq('gallery_id', selectedGallery.id);
+
+        if (unsetError) throw unsetError;
+
+        // Then set this item as cover
+        const { error: setError } = await (supabase as any)
+          .from('media_items')
+          .update({ is_cover: true })
+          .eq('id', id);
+
+        if (setError) throw setError;
+
+        toast.success('Cover image set');
+        queryClient.invalidateQueries({
+          queryKey: ['gallery-items-management'],
+        });
+        queryClient.invalidateQueries({ queryKey: ['gallery'] });
+        queryClient.invalidateQueries({ queryKey: ['artist-gallery-images'] });
+        return true;
+      } catch (error) {
+        logger.error('Failed to set cover item', {
+          error: error instanceof Error ? error.message : 'Unknown',
+          source: 'useGalleryManagement',
+        });
+        toast.error('Failed to set cover image');
+        return false;
+      }
+    },
+    [queryClient, selectedGallery]
+  );
+
   // Upload file to storage
   const uploadFile = useCallback(
     async (file: File, galleryId: string): Promise<string | null> => {
@@ -414,6 +457,7 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
     updateMediaItem,
     deleteMediaItem,
     reorderMediaItems,
+    setCoverItem,
 
     uploadFile,
   };
