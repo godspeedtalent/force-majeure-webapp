@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
@@ -12,7 +11,6 @@ import {
   Users,
   Database,
   Building2,
-  Activity,
 } from 'lucide-react';
 import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
 import { AdminTicketingSection } from '@/components/admin/AdminTicketingSection';
@@ -21,20 +19,15 @@ import { UserManagement } from './UserManagement';
 import { OrganizationsManagement } from './OrganizationsManagement';
 import { formatHeader } from '@/shared';
 
-type AdminTab = 'devtools' | 'ticketing' | 'settings' | 'users' | 'organizations' | 'logs';
+type AdminTab = 'devtools' | 'ticketing' | 'settings' | 'users' | 'organizations';
 
 export default function AdminControls() {
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<AdminTab>('settings');
 
-  // Handle tab changes - some tabs navigate to external pages
+  // Handle tab changes
   const handleTabChange = useCallback((tab: AdminTab) => {
-    if (tab === 'logs') {
-      navigate('/admin/logs');
-    } else {
-      setActiveTab(tab);
-    }
-  }, [navigate]);
+    setActiveTab(tab);
+  }, []);
 
   // Navigation groups configuration - Alphabetically sorted
   const navigationGroups: FmCommonSideNavGroup<AdminTab>[] = [
@@ -77,19 +70,6 @@ export default function AdminControls() {
           label: 'Users',
           icon: Users,
           description: 'Manage user accounts',
-        },
-      ],
-    },
-    {
-      label: 'Monitoring',
-      icon: Activity,
-      items: [
-        {
-          id: 'logs',
-          label: 'Activity Logs',
-          icon: Activity,
-          description: 'View system activity logs',
-          isExternal: true,
         },
       ],
     },

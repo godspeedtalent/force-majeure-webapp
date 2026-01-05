@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input } from '@/components/common/shadcn/input';
-import { Button } from '@/components/common/shadcn/button';
+import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { Save } from 'lucide-react';
 
 export interface FmFilterPresetSaveProps {
@@ -25,7 +25,7 @@ export function FmFilterPresetSave({ onSave, disabled = false }: FmFilterPresetS
   if (showInput) {
     return (
       <div className='flex gap-2'>
-        <Input
+        <FmCommonTextField
           placeholder={t('dataGrid.presetNamePlaceholder')}
           value={presetName}
           onChange={e => setPresetName(e.target.value)}
@@ -34,28 +34,28 @@ export function FmFilterPresetSave({ onSave, disabled = false }: FmFilterPresetS
             if (e.key === 'Escape') setShowInput(false);
           }}
           autoFocus
+          containerClassName='flex-1'
         />
-        <Button onClick={handleSave} size='sm'>
-          <Save className='h-4 w-4 mr-2' />
+        <FmCommonButton onClick={handleSave} size='sm' icon={Save}>
           {t('buttons.save')}
-        </Button>
-        <Button variant='ghost' onClick={() => setShowInput(false)} size='sm'>
+        </FmCommonButton>
+        <FmCommonButton variant='secondary' onClick={() => setShowInput(false)} size='sm'>
           {t('buttons.cancel')}
-        </Button>
+        </FmCommonButton>
       </div>
     );
   }
 
   return (
-    <Button
-      variant='outline'
+    <FmCommonButton
+      variant='default'
       size='sm'
       onClick={() => setShowInput(true)}
       className='w-full'
       disabled={disabled}
+      icon={Save}
     >
-      <Save className='h-4 w-4 mr-2' />
       {t('dataGrid.saveAsPreset')}
-    </Button>
+    </FmCommonButton>
   );
 }

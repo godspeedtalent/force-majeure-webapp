@@ -21,6 +21,8 @@ export interface FmResourceDetailsModalProps {
   subtitle?: string;
   eyebrow?: string;
   imageUrl?: string | null;
+  /** Logo/icon URL displayed next to the title */
+  logoUrl?: string | null;
   metadata?: ResourceMetadataItem[];
   badges?: BadgeItem[];
   footer?: ReactNode;
@@ -46,6 +48,7 @@ export const FmResourceDetailsModal = ({
   title,
   eyebrow,
   imageUrl,
+  logoUrl,
   metadata,
   badges,
   footer,
@@ -68,17 +71,27 @@ export const FmResourceDetailsModal = ({
     }
   }, [imageUrl]);
 
-  // Manage button styled to sit in top-right, left of the close X button
-  const manageButton = showManage ? (
-    <FmCommonButton
-      size='sm'
-      variant='secondary'
-      icon={Settings}
-      onClick={onManage}
-      className='absolute right-12 top-4 bg-white/10 text-white hover:bg-white/20 border border-white/30 px-3 py-1 h-7 text-xs'
-    >
-      Manage
-    </FmCommonButton>
+  // Header row with eyebrow on left and manage button on right
+  const headerRow = (eyebrow || showManage) ? (
+    <div className='absolute top-4 left-4 right-4 flex items-center justify-between z-10'>
+      {eyebrow && (
+        <p className='text-[10px] uppercase tracking-[0.35em] text-white/70'>
+          {eyebrow}
+        </p>
+      )}
+      {!eyebrow && <div />}
+      {showManage && (
+        <FmCommonButton
+          size='sm'
+          variant='secondary'
+          icon={Settings}
+          onClick={onManage}
+          className='bg-white/10 text-white hover:bg-white/20 border border-white/30 px-3 py-1 h-7 text-xs mr-8'
+        >
+          Manage
+        </FmCommonButton>
+      )}
+    </div>
   ) : null;
 
   // Hero layout - full-width image at top
@@ -89,12 +102,12 @@ export const FmResourceDetailsModal = ({
         onOpenChange={onOpenChange}
         title=''
         headerContent={<DialogTitle className='sr-only'>{title}</DialogTitle>}
-        className={cn('max-w-3xl p-0 overflow-hidden', className)}
+        className={cn('max-w-3xl max-h-[90vh] p-0 flex flex-col', className)}
       >
-        {manageButton}
-        {/* Hero Image */}
+        {headerRow}
+        {/* Hero Image - fixed height, doesn't scroll */}
         {imageUrl && (
-          <div className='w-full h-64 overflow-hidden relative'>
+          <div className='w-full h-64 flex-shrink-0 overflow-hidden relative border-b-2 border-fm-gold'>
             {isImageLoading && (
               <Skeleton className='absolute inset-0 w-full h-full rounded-none' />
             )}
@@ -108,58 +121,65 @@ export const FmResourceDetailsModal = ({
               )}
               onLoad={() => setIsImageLoading(false)}
             />
-            <div className='absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent' />
           </div>
         )}
 
-        <div className='p-8 flex flex-col gap-6'>
-          {eyebrow && (
-            <div className='space-y-3'>
-              <p className='text-[10px] uppercase tracking-[0.35em] text-white/50'>
-                {eyebrow}
-              </p>
+        {/* Scrollable content area */}
+        <div className='flex-1 overflow-y-auto min-h-0'>
+          <div className='p-8 flex flex-col gap-6'>
+            {/* Title with optional logo */}
+            <div className='flex items-center gap-4'>
+              {logoUrl && (
+                <div className='flex-shrink-0 w-12 h-12 border-2 border-fm-gold overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(223,186,125,0.4)]'>
+                  <img
+                    src={logoUrl}
+                    alt={`${title} logo`}
+                    className='w-full h-full object-cover'
+                  />
+                </div>
+              )}
               <h2 className='text-3xl font-canela font-semibold text-white leading-tight'>
                 {title}
               </h2>
             </div>
-          )}
 
-          {metadata && metadata.length > 0 && (
-            <div className='flex flex-col gap-2'>
-              {metadata.map((item, index) => (
-                <div key={`${item.label}-${index}`} className='flex items-start gap-3 text-sm text-white/70'>
-                  {item.icon && <span className='flex-shrink-0 mt-0.5 text-fm-gold'>{item.icon}</span>}
-                  <span>{item.value}</span>
-                </div>
-              ))}
-            </div>
-          )}
+            {metadata && metadata.length > 0 && (
+              <div className='flex flex-col gap-2'>
+                {metadata.map((item, index) => (
+                  <div key={`${item.label}-${index}`} className='flex items-start gap-3 text-sm text-white/70'>
+                    {item.icon && <span className='flex-shrink-0 mt-0.5 text-fm-gold'>{item.icon}</span>}
+                    <span>{item.value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
 
-          {children && (
-            <div className={cn(
-              'max-w-none text-sm text-white/80 leading-relaxed whitespace-pre-wrap',
-              !children && 'italic text-white/60'
-            )}>
-              {children}
-            </div>
-          )}
+            {children && (
+              <div className={cn(
+                'max-w-none text-sm text-white/80 leading-relaxed whitespace-pre-wrap',
+                !children && 'italic text-white/60'
+              )}>
+                {children}
+              </div>
+            )}
 
-          {badges && badges.length > 0 && (
-            <FmCommonBadgeGroup
-              badges={badges}
-              badgeClassName='border-fm-gold/60 bg-fm-gold/10 text-fm-gold'
-              gap='lg'
-            />
-          )}
+            {badges && badges.length > 0 && (
+              <FmCommonBadgeGroup
+                badges={badges}
+                badgeClassName='border-fm-gold/60 bg-fm-gold/10 text-fm-gold'
+                gap='lg'
+              />
+            )}
 
-          {actions && (
-            <div className='flex flex-wrap gap-3'>
-              {actions}
-            </div>
-          )}
+            {actions && (
+              <div className='flex flex-wrap gap-3'>
+                {actions}
+              </div>
+            )}
+          </div>
+
+          {footer && <div className='px-8 pb-8'>{footer}</div>}
         </div>
-
-        {footer && <div className='px-8 pb-8'>{footer}</div>}
       </FmCommonModal>
     );
   }
@@ -173,7 +193,7 @@ export const FmResourceDetailsModal = ({
       headerContent={<DialogTitle className='sr-only'>{title}</DialogTitle>}
       className={cn('max-w-3xl', className)}
     >
-      {manageButton}
+      {headerRow}
       <div className='flex flex-col gap-8 sm:flex-row sm:items-stretch'>
         <div className='sm:w-60 flex-shrink-0'>
           <div className='space-y-3'>
@@ -182,9 +202,20 @@ export const FmResourceDetailsModal = ({
                 {eyebrow}
               </p>
             )}
-            <h2 className='text-3xl font-canela font-semibold text-white leading-tight'>
-              {title}
-            </h2>
+            <div className='flex items-center gap-3'>
+              {logoUrl && (
+                <div className='flex-shrink-0 w-10 h-10 border-2 border-fm-gold overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(223,186,125,0.4)]'>
+                  <img
+                    src={logoUrl}
+                    alt={`${title} logo`}
+                    className='w-full h-full object-cover'
+                  />
+                </div>
+              )}
+              <h2 className='text-3xl font-canela font-semibold text-white leading-tight'>
+                {title}
+              </h2>
+            </div>
           </div>
           <div className='mt-4 overflow-hidden rounded-xl border border-white/15 bg-white/5 shadow-inner relative'>
             {imageUrl ? (

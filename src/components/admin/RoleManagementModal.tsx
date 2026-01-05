@@ -1,15 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/common/shadcn/dialog';
+import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
-import { Label } from '@/components/common/shadcn/label';
 import { Shield, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { logger } from '@/shared';
@@ -120,65 +113,60 @@ export function RoleManagementModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-[600px]'>
-        <DialogHeader>
-          <DialogTitle className='flex items-center gap-2'>
-            <Shield className='h-5 w-5 text-fm-gold' />
-            {t('dialogs.manageRoles')}
-          </DialogTitle>
-          <DialogDescription>
-            {t('dialogs.manageRolesFor', { email: userEmail })}
-          </DialogDescription>
-        </DialogHeader>
+    <FmCommonModal
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t('dialogs.manageRoles')}
+      description={t('dialogs.manageRolesFor', { email: userEmail })}
+      className='sm:max-w-[600px]'
+      headerActions={<Shield className='h-5 w-5 text-fm-gold' />}
+    >
+      <div className='space-y-6 py-4'>
+        {/* Available Roles */}
+        <div className='space-y-3'>
+          <label className='text-base font-medium'>{t('labels.roles')}</label>
+          {loading ? (
+            <div className='flex items-center gap-2 p-4 border border-dashed bg-muted/50 text-muted-foreground'>
+              <AlertCircle className='h-4 w-4' />
+              <span className='text-sm'>{t('dialogs.loadingRoles')}</span>
+            </div>
+          ) : availableRoles.length > 0 ? (
+            <div className='space-y-2'>
+              {availableRoles.map(role => {
+                const userHasRole = hasRole(role.role_name);
+                const isToggling = togglingRole === role.role_name;
 
-        <div className='space-y-6 py-4'>
-          {/* Available Roles */}
-          <div className='space-y-3'>
-            <Label className='text-base font-medium'>{t('labels.roles')}</Label>
-            {loading ? (
-              <div className='flex items-center gap-2 p-4 border border-dashed bg-muted/50 text-muted-foreground'>
-                <AlertCircle className='h-4 w-4' />
-                <span className='text-sm'>{t('dialogs.loadingRoles')}</span>
-              </div>
-            ) : availableRoles.length > 0 ? (
-              <div className='space-y-2'>
-                {availableRoles.map(role => {
-                  const userHasRole = hasRole(role.role_name);
-                  const isToggling = togglingRole === role.role_name;
-
-                  return (
-                    <FmCommonToggle
-                      key={role.role_name}
-                      id={`role-${role.role_name}`}
-                      label={role.display_name}
-                      icon={Shield}
-                      checked={userHasRole}
-                      onCheckedChange={(checked) => handleToggleRole(role.role_name, checked)}
-                      disabled={isToggling}
-                    />
-                  );
-                })}
-              </div>
-            ) : (
-              <div className='flex items-center gap-2 p-4 border border-dashed bg-muted/50 text-muted-foreground'>
-                <AlertCircle className='h-4 w-4' />
-                <span className='text-sm'>{t('dialogs.noRolesAvailable')}</span>
-              </div>
-            )}
-          </div>
+                return (
+                  <FmCommonToggle
+                    key={role.role_name}
+                    id={`role-${role.role_name}`}
+                    label={role.display_name}
+                    icon={Shield}
+                    checked={userHasRole}
+                    onCheckedChange={(checked) => handleToggleRole(role.role_name, checked)}
+                    disabled={isToggling}
+                  />
+                );
+              })}
+            </div>
+          ) : (
+            <div className='flex items-center gap-2 p-4 border border-dashed bg-muted/50 text-muted-foreground'>
+              <AlertCircle className='h-4 w-4' />
+              <span className='text-sm'>{t('dialogs.noRolesAvailable')}</span>
+            </div>
+          )}
         </div>
+      </div>
 
-        {/* Footer */}
-        <div className='flex justify-end gap-2 pt-4 border-t'>
-          <FmCommonButton
-            variant='secondary'
-            onClick={() => onOpenChange(false)}
-          >
-            {t('dialogs.done')}
-          </FmCommonButton>
-        </div>
-      </DialogContent>
-    </Dialog>
+      {/* Footer */}
+      <div className='flex justify-end gap-2 pt-4 border-t'>
+        <FmCommonButton
+          variant='secondary'
+          onClick={() => onOpenChange(false)}
+        >
+          {t('dialogs.done')}
+        </FmCommonButton>
+      </div>
+    </FmCommonModal>
   );
 }

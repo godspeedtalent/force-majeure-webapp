@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 
+import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import Auth from './pages/Auth';
 import CheckoutCancel from './pages/CheckoutCancel';
 import CheckoutSuccess from './pages/CheckoutSuccess';
@@ -34,12 +35,12 @@ const ArtistSignupDemo = lazy(() => import('./pages/developer/ArtistSignupDemo')
 
 // Lazy load admin pages
 const Statistics = lazy(() => import('./pages/admin/Statistics'));
-const ActivityLogs = lazy(() => import('./pages/admin/ActivityLogs'));
+// ActivityLogs moved to inline DeveloperHome - keeping redirect for backwards compatibility
 const OrganizationDetails = lazy(() => import('./pages/admin/OrganizationDetails'));
 const UserDetails = lazy(() => import('./pages/admin/UserDetails'));
 const GalleryManagement = lazy(() => import('./pages/admin/GalleryManagement'));
 const ProductsManagement = lazy(() => import('./pages/admin/ProductsManagement'));
-const AnalyticsDashboard = lazy(() => import('./pages/admin/analytics/AnalyticsDashboard'));
+// AnalyticsDashboard moved to inline DeveloperHome - keeping redirect for backwards compatibility
 
 // Lazy load venue and artist pages
 const VenueDetails = lazy(() => import('./pages/venues/VenueDetails'));
@@ -96,7 +97,7 @@ const queryClient = new QueryClient();
 // Loading fallback for lazy-loaded components
 const LazyLoadFallback = () => (
   <div className='min-h-screen flex items-center justify-center bg-background'>
-    <div className='animate-spin rounded-full h-8 w-8 border-[3px] border-fm-gold border-b-transparent' />
+    <FmCommonLoadingSpinner size='lg' />
   </div>
 );
 
@@ -111,7 +112,7 @@ const AppRoutes = () => {
   if (isLoading) {
     return (
       <div className='min-h-screen flex items-center justify-center bg-background'>
-        <div className='animate-spin rounded-full h-8 w-8 border-[3px] border-fm-gold border-b-transparent' />
+        <FmCommonLoadingSpinner size='lg' />
       </div>
     );
   }
@@ -318,15 +319,10 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
+      {/* Redirect old activity logs route to unified developer home */}
       <Route
         path='/admin/logs'
-        element={
-          <ProtectedRoute role={ROLES.ADMIN}>
-            <Suspense fallback={<LazyLoadFallback />}>
-              <ActivityLogs />
-            </Suspense>
-          </ProtectedRoute>
-        }
+        element={<Navigate to='/developer?tab=logs_all' replace />}
       />
       <Route
         path='/admin/galleries/:slug'
@@ -348,15 +344,10 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
+      {/* Redirect old analytics route to unified developer home */}
       <Route
         path='/admin/analytics'
-        element={
-          <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
-            <Suspense fallback={<LazyLoadFallback />}>
-              <AnalyticsDashboard />
-            </Suspense>
-          </ProtectedRoute>
-        }
+        element={<Navigate to='/developer?tab=dash_analytics' replace />}
       />
 
       {/* Create Routes - Protected by admin/developer roles */}

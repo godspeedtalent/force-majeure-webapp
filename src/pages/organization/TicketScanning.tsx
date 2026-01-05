@@ -184,7 +184,7 @@ const TicketScanning = () => {
       >
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-[20px]'>
         {/* Scanner Card */}
-        <FmCommonCard variant='outline' className='p-[20px]'>
+        <FmCommonCard variant='default' className='p-[20px]'>
           <div className='space-y-[20px]'>
             <div className='flex items-center gap-[10px]'>
               <div className='p-[10px] rounded-none bg-fm-gold/10 border border-fm-gold/20'>
@@ -244,7 +244,7 @@ const TicketScanning = () => {
         </FmCommonCard>
 
         {/* Last Scan Result Card */}
-        <FmCommonCard variant='outline' className='p-[20px]'>
+        <FmCommonCard variant='default' className='p-[20px]'>
           <div className='space-y-[20px]'>
             <h3 className='text-lg font-canela'>
               {formatHeader(t('ticketScanning.lastScanResult'))}
@@ -337,7 +337,7 @@ const TicketScanning = () => {
       </div>
 
       {/* Quick Stats */}
-      <FmCommonCard variant='outline' className='p-[20px]'>
+      <FmCommonCard variant='default' className='p-[20px]'>
         <h3 className='text-lg font-canela mb-[20px]'>
           {formatHeader(t('ticketScanning.todayStatistics'))}
         </h3>

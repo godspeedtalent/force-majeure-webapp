@@ -2,22 +2,23 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
-import { FileText, MapPin, Save, Trash2, Eye } from 'lucide-react';
+import { FileText, MapPin, Save, Trash2, Eye, Images } from 'lucide-react';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { FmImageUpload } from '@/components/common/forms/FmImageUpload';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
+import { FmFlexibleImageUpload } from '@/components/common/forms/FmFlexibleImageUpload';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { FmCommonCard } from '@/components/common/display/FmCommonCard';
+import { GalleryManagementSection } from '@/components/DevTools/GalleryManagementSection';
 import { toast } from 'sonner';
 import { handleError } from '@/shared/services/errorHandler';
 import { useDebouncedSave } from '@/shared/hooks/useDebouncedSave';
 import { venueService } from '@/features/venues/services/venueService';
 import { useVenueById, venueKeys } from '@/shared/api/queries/venueQueries';
 
-type VenueTab = 'overview' | 'view';
+type VenueTab = 'overview' | 'gallery' | 'view';
 
 export default function VenueManagement() {
   const { t } = useTranslation('common');
@@ -32,20 +33,23 @@ export default function VenueManagement() {
 
   // Form state
   const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [logoUrl, setLogoUrl] = useState('');
+  const [isLogoUploading, setIsLogoUploading] = useState(false);
   const [addressLine1, setAddressLine1] = useState('');
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [capacity, setCapacity] = useState<number>(0);
-  const [imageUrl, setImageUrl] = useState('');
 
   // Debounced auto-save for venue changes
   const saveVenueData = async (data: {
     name: string;
+    description: string;
+    logo_url: string;
     address_line_1: string;
     city: string;
     state: string;
     capacity: number;
-    image_url: string;
   }) => {
     if (!id) return;
 
@@ -74,11 +78,12 @@ export default function VenueManagement() {
     if (name.trim()) {
       triggerVenueSave({
         name,
+        description,
+        logo_url: logoUrl,
         address_line_1: addressLine1,
         city,
         state,
         capacity,
-        image_url: imageUrl,
       });
     }
   };
@@ -88,11 +93,12 @@ export default function VenueManagement() {
   useEffect(() => {
     if (venue) {
       setName(venue.name || '');
+      setDescription(venue.description || '');
+      setLogoUrl(venue.logo_url || '');
       setAddressLine1(venue.address_line_1 || '');
       setCity(venue.city || '');
       setState(venue.state || '');
       setCapacity(venue.capacity || 0);
-      setImageUrl(venue.image_url || '');
     }
   }, [venue]);
 
@@ -114,6 +120,12 @@ export default function VenueManagement() {
           icon: FileText,
           description: t('venueNav.overviewDescription'),
         },
+        {
+          id: 'gallery',
+          label: t('venueNav.gallery', 'Gallery'),
+          icon: Images,
+          description: t('venueNav.galleryDescription', 'Manage venue photos and media'),
+        },
       ],
     },
   ];
@@ -128,11 +140,12 @@ export default function VenueManagement() {
 
       await venueService.updateVenue(id, {
         name,
+        description,
+        logo_url: logoUrl,
         address_line_1: addressLine1,
         city,
         state,
         capacity,
-        image_url: imageUrl,
       });
 
       toast.success(tToast('venues.updated'));
@@ -183,13 +196,34 @@ export default function VenueManagement() {
           </div>
 
           <div>
-            <Label>{t('venueManagement.venueImage')}</Label>
-            <FmImageUpload
-              currentImageUrl={imageUrl}
-              onUploadComplete={(url) => {
-                setImageUrl(url);
+            <Label>{t('venueManagement.venueLogo')}</Label>
+            <FmFlexibleImageUpload
+              value={logoUrl}
+              onChange={(url) => {
+                setLogoUrl(url);
                 triggerAutoSave();
               }}
+              onUploadStateChange={setIsLogoUploading}
+              bucket='venue-images'
+              pathPrefix={`venues/${id}/logo`}
+              className='max-w-[200px]'
+            />
+            <p className='text-xs text-muted-foreground mt-1'>
+              {t('venueManagement.venueLogoDescription')}
+            </p>
+          </div>
+
+          <div>
+            <Label>{t('venueManagement.description')}</Label>
+            <textarea
+              value={description}
+              onChange={(e) => {
+                setDescription(e.target.value);
+                triggerAutoSave();
+              }}
+              placeholder={t('venueManagement.descriptionPlaceholder')}
+              className='flex min-h-[100px] w-full rounded-none border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
+              rows={4}
             />
           </div>
 
@@ -258,11 +292,23 @@ export default function VenueManagement() {
         <FmCommonButton
           icon={Save}
           onClick={handleSave}
-          disabled={isSaving || !name}
+          disabled={isSaving || isLogoUploading || !name}
         >
           {isSaving ? t('buttons.saving') : t('buttons.saveChanges')}
         </FmCommonButton>
       </div>
+    </div>
+  );
+
+  const renderGalleryTab = () => (
+    <div className='space-y-6'>
+      <FmCommonCard className='p-6'>
+        <h2 className='text-xl font-semibold mb-6'>{t('venueManagement.gallery', 'Venue Gallery')}</h2>
+        <p className='text-sm text-muted-foreground mb-6'>
+          {t('venueManagement.galleryDescription', 'Manage photos and media for this venue. Select or create a gallery to get started.')}
+        </p>
+        <GalleryManagementSection />
+      </FmCommonCard>
     </div>
   );
 
@@ -287,6 +333,7 @@ export default function VenueManagement() {
       }}
     >
       {activeTab === 'overview' && renderOverviewTab()}
+      {activeTab === 'gallery' && renderGalleryTab()}
 
       <FmCommonConfirmDialog
         open={showDeleteConfirm}

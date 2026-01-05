@@ -6,6 +6,15 @@ import { CALL_TIME_INTERVAL_MINUTES } from '../components/constants';
 export function useEventDetailsData(event: EventDetailsRecord) {
   const eventDate = useMemo(() => new Date(event.date), [event.date]);
 
+  // Check if the event is in the past (date is before today at midnight)
+  const isPastEvent = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const eventDay = new Date(eventDate);
+    eventDay.setHours(0, 0, 0, 0);
+    return eventDay < today;
+  }, [eventDate]);
+
   const longDateLabel = useMemo(
     () =>
       eventDate.toLocaleDateString('en-US', {
@@ -218,6 +227,7 @@ export function useEventDetailsData(event: EventDetailsRecord) {
 
   return {
     eventDate,
+    isPastEvent,
     longDateLabel,
     compactDateLabel,
     formattedTime,

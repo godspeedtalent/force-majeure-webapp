@@ -56,6 +56,7 @@
     "search": "Buscar",
     "filter": "Filtrar",
     "clear": "Limpiar",
+    "allClear": "Todo Despejado",
     "apply": "Aplicar",
     "reset": "Restablecer",
     "upload": "Subir",
@@ -91,6 +92,7 @@
     "soldOut": "Agotado",
     "joinWaitlist": "Unirse a la Lista de Espera",
     "getTickets": "Obtener Entradas",
+    "pastEvent": "Evento Pasado",
     "processing": "Procesando...",
     "tryAgain": "Intentar de Nuevo",
     "setAsCover": "Establecer como portada"
@@ -148,6 +150,7 @@
     "genre": "Género",
     "website": "Sitio Web",
     "artistImage": "Imagen del Artista",
+    "artistImages": "Imágenes del Artista",
     "genres": "Géneros",
     "instagram": "Instagram",
     "instagramHandle": "Usuario de Instagram",
@@ -266,6 +269,17 @@
     "sources": {
       "direct": "Directo",
       "unknown": "Desconocido"
+    },
+    "dateRange": {
+      "last7Days": "Últimos 7 días",
+      "last30Days": "Últimos 30 días",
+      "last90Days": "Últimos 90 días"
+    },
+    "tabs": {
+      "traffic": "Tráfico",
+      "funnel": "Embudo de conversión",
+      "performance": "Rendimiento",
+      "sessions": "Sesiones"
     }
   },
   "time": {
@@ -409,6 +423,7 @@
   },
   "placeholders": {
     "search": "Buscar...",
+    "searchByName": "Buscar por nombre...",
     "searchArtist": "Buscar artista...",
     "searchVenue": "Buscar lugar...",
     "searchGenre": "Buscar géneros...",
@@ -554,7 +569,8 @@
     "contactInformation": "Información de Contacto",
     "socialProfile": "Perfil Social",
     "accountSecurity": "Seguridad de la Cuenta",
-    "preferences": "Preferencias"
+    "preferences": "Preferencias",
+    "artistGallery": "Galería del Artista"
   },
   "createForms": {
     "orCreateManually": "O crear manualmente",
@@ -563,7 +579,8 @@
       "description": "Añade un nuevo perfil de artista, incluyendo imágenes y metadatos de género.",
       "helperText": "Usa este formulario para crear registros de artistas de prueba o producción.",
       "submitText": "Crear Artista",
-      "importFromSpotify": "Importar Artista desde Spotify"
+      "importFromSpotify": "Importar Artista desde Spotify",
+      "importFromSoundCloud": "Importar Artista desde SoundCloud"
     },
     "venue": {
       "title": "Crear Lugar",
@@ -581,7 +598,9 @@
   "artistDetails": {
     "defaultTitle": "Artista",
     "spotlight": "Artista Destacado",
-    "defaultDescription": "Más información sobre este artista estará disponible pronto. Vuelve más cerca del evento para ver horarios, pistas destacadas y entrevistas exclusivas."
+    "defaultDescription": "Más información sobre este artista estará disponible pronto. Vuelve más cerca del evento para ver horarios, pistas destacadas y entrevistas exclusivas.",
+    "viewDetails": "Ver detalles del artista",
+    "manage": "Gestionar artista"
   },
   "scavenger": {
     "registration": {
@@ -915,7 +934,14 @@
     "ofFollowingRules": "de las siguientes reglas:",
     "addRule": "Añadir Regla",
     "clearAll": "Limpiar Todo",
-    "applyFilters": "Aplicar Filtros"
+    "applyFilters": "Aplicar Filtros",
+    "dateRange": {
+      "label": "Rango de fechas",
+      "allTime": "Todo el tiempo",
+      "pastWeek": "Última semana",
+      "pastMonth": "Último mes",
+      "pastYear": "Último año"
+    }
   },
   "aria": {
     "closeSearch": "Cerrar búsqueda",
@@ -984,6 +1010,7 @@
   "gallery": {
     "noGalleryYet": "Sin galería todavía",
     "createGalleryDescription": "Crea una galería para subir y gestionar fotos de prensa de este artista.",
+    "createEventGalleryDescription": "Crea una galería para subir y gestionar fotos de este evento. La primera foto será la imagen principal.",
     "createGallery": "Crear Galería",
     "pressPhotos": "Fotos de Prensa",
     "pressPhotosDescription": "Fotos de alta calidad para prensa y uso promocional.",
@@ -991,7 +1018,26 @@
     "noPhotosYet": "Sin fotos todavía",
     "uploadPhotosToGetStarted": "Sube fotos para comenzar.",
     "deletePhoto": "Eliminar Foto",
-    "deletePhotoConfirm": "¿Estás seguro de que deseas eliminar esta foto? Esta acción no se puede deshacer."
+    "deletePhotoConfirm": "¿Estás seguro de que deseas eliminar esta foto? Esta acción no se puede deshacer.",
+    "heroImage": "Imagen Principal",
+    "heroImageDescription": "La imagen principal se muestra prominentemente en la página del evento. Selecciona cualquier foto de la galería para establecerla como principal.",
+    "currentHeroImage": "Imagen Principal Actual",
+    "heroImageWillBeIncluded": "Esta imagen principal se incluirá cuando crees la galería.",
+    "noHeroImageYet": "Sin imagen principal",
+    "uploadPhotoToSetHero": "Sube una foto para establecerla como imagen principal.",
+    "setAsHero": "Establecer como Principal",
+    "eventPhotos": "Fotos del Evento",
+    "eventPhotosDescription": "Fotos para la galería del evento. Haz clic en la estrella de cualquier foto para establecerla como imagen principal.",
+    "profilePhoto": "Foto de Perfil",
+    "image": "Imagen",
+    "cover": "Portada",
+    "setAsCover": "Establecer como portada",
+    "addMore": "Añadir más",
+    "maxImagesReached": "Número máximo de imágenes alcanzado",
+    "onlyUploadingCount": "Solo subiendo {{count}} imágenes debido al límite",
+    "uploadMultipleDescription": "Sube hasta 10 imágenes. JPEG, PNG, WebP soportados.",
+    "firstImageIsCover": "La primera imagen se establecerá como foto de portada/perfil.",
+    "imageCount": "{{count}} de {{max}} imágenes"
   },
   "eventNav": {
     "eventDetails": "Detalles del Evento",
@@ -999,6 +1045,8 @@
     "viewEventDescription": "Ver página de detalles del evento",
     "overview": "Resumen",
     "overviewDescription": "Información básica del evento",
+    "gallery": "Galería",
+    "galleryDescription": "Gestionar fotos e imagen principal del evento",
     "artists": "Artistas",
     "artistsDescription": "Gestionar alineación y programación",
     "social": "Social",
@@ -1098,7 +1146,8 @@
     "heroImage": "Imagen Principal",
     "enterEventTitle": "Ingresa el título del evento",
     "enterEventSubtitle": "Ingresa el subtítulo del evento",
-    "enterEventDescription": "Ingresa la descripción del evento..."
+    "enterEventDescription": "Ingresa la descripción del evento...",
+    "showVenueMap": "Mostrar mapa del local en la página del evento"
   },
   "venueNav": {
     "venueDetails": "Detalles del Local",
@@ -1111,6 +1160,10 @@
     "basicInformation": "Información Básica",
     "venueName": "Nombre del Local",
     "enterVenueName": "Ingresa el nombre del local",
+    "venueLogo": "Logo del Local",
+    "venueLogoDescription": "Logo cuadrado o icono que se muestra junto al nombre del local",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Ingresa la descripción del local, amenidades, información de estacionamiento, etc.",
     "venueImage": "Imagen del Local",
     "address": "Dirección",
     "streetAddress": "Dirección",
@@ -1119,6 +1172,13 @@
     "capacity": "Capacidad",
     "deleteVenue": "Eliminar Local",
     "deleteVenueConfirm": "¿Estás seguro de que deseas eliminar este local?"
+  },
+  "venue": {
+    "location": "Ubicación",
+    "noLocationAvailable": "Ubicación no disponible",
+    "viewOnGoogleMaps": "Ver en Mapas",
+    "mapTitle": "Mapa mostrando {{address}}",
+    "mapLoadError": "No se pudo cargar el mapa"
   },
   "dataGrid": {
     "columnsLabel": "Columnas",
@@ -1228,6 +1288,7 @@
     "uploading": "Subiendo...",
     "compressing": "Comprimiendo imagen...",
     "dropImageOr": "Arrastra tu imagen aquí, o",
+    "dropImagesOr": "Arrastra imágenes aquí, o",
     "browse": "explorar",
     "supportedFormats": "JPEG, PNG, WebP o GIF (imágenes grandes se comprimen automáticamente)",
     "imageSource": "Fuente de imagen",
@@ -2424,7 +2485,9 @@
     "goHome": "Ir a Inicio",
     "manage": "Gestionar",
     "capacity": "Capacidad: {{count}}",
-    "upcomingEvents": "Próximos eventos."
+    "upcomingEvents": "Próximos eventos.",
+    "viewDetails": "Ver detalles del lugar",
+    "visitWebsite": "Visitar sitio web"
   },
   "organizationsManagement": {
     "title": "Gestión de Organizaciones",
@@ -2565,6 +2628,7 @@
   },
   "undercardApplication": {
     "callTimes": "Horarios de llamada",
+    "artists": "Artistas",
     "acceptingApplications": "Aceptando Solicitudes de Artistas Teloneros",
     "modalTitle": "Buscamos talento local.",
     "modalDescription": "Estamos buscando artistas locales para abrir este evento. Si eres DJ, productor o artista, nos encantaría saber de ti.",
@@ -2573,7 +2637,20 @@
     "step2": "Envía un mix o demo mostrando tu estilo",
     "step3": "Revisaremos las solicitudes y te contactaremos si hay match",
     "signUpAsArtist": "Regístrate como artista",
-    "alreadyHaveProfile": "¿Ya tienes un perfil? Vincularemos tu cuenta automáticamente."
+    "alreadyHaveProfile": "¿Ya tienes un perfil? Vincularemos tu cuenta automáticamente.",
+    "requestingAs": "Solicitando como este artista",
+    "suggestDjSet": "Sugerir un DJ set",
+    "optional": "opcional",
+    "searchDjSets": "Buscar tus DJ sets...",
+    "djSetHint": "Ayúdanos a conocer tu estilo compartiendo un set del que estés orgulloso.",
+    "requestSlot": "Solicitar espacio de telonero",
+    "submitting": "Enviando...",
+    "or": "o",
+    "registerNewArtist": "Registrar un artista diferente",
+    "alreadyRequested": "Solicitud enviada",
+    "requestPending": "Tu solicitud está pendiente de revisión.",
+    "requestApproved": "¡Tu solicitud ha sido aprobada!",
+    "requestRejected": "Tu solicitud no fue aceptada para este evento."
   },
   "artistProfile": {
     "yourArtistName": "Tu nombre de artista",
@@ -2610,9 +2687,11 @@
     "selectedCount": "{{count}} / {{max}} seleccionados",
     "maximumReached": "Máximo alcanzado",
     "searchGenres": "Buscar géneros...",
+    "searchAndAddGenres": "Buscar y agregar géneros...",
     "addGenre": "Agregar género",
     "startTyping": "Empieza a escribir para buscar géneros",
-    "noGenresFound": "No se encontraron géneros para \"{{query}}\""
+    "noGenresFound": "No se encontraron géneros para \"{{query}}\"",
+    "createNewGenre": "+ Crear Nuevo Género"
   },
   "activityLogFilters": {
     "search": "Buscar",
@@ -2817,6 +2896,7 @@
     "description": "Buscar en todos los recursos de la base de datos",
     "placeholder": "Buscar usuarios, artistas, eventos...",
     "recentRecords": "Registros recientes",
+    "allTables": "Todas las tablas",
     "unknownUser": "Usuario Desconocido",
     "tba": "Por confirmar",
     "noResults": "No se encontraron resultados para \"{{query}}\"",

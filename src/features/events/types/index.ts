@@ -51,6 +51,7 @@ export interface TicketGroup {
 export interface Venue {
   id: string;
   name: string;
+  description?: string | null;
   address_line_1?: string | null;
   address_line_2?: string | null;
   city?: string | null;
@@ -59,6 +60,7 @@ export interface Venue {
   capacity?: number | null;
   website?: string | null;
   image_url?: string | null;
+  logo_url?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
 }

@@ -1,5 +1,5 @@
 
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
   ClipboardCheck,
   Users,
@@ -39,6 +39,7 @@ interface FmCommonSideNavGroup<T extends string> {
 
 export default function TicketFlowTests() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const activeScenario =
     (searchParams.get('scenario') as TicketFlowScenario) || 'queue';
 
@@ -57,42 +58,42 @@ export default function TicketFlowTests() {
           label: 'Queue Tests',
           icon: Users,
           description: 'Test checkout queue management and user flow',
-          badge: <Badge variant='outline'>6 tests</Badge>,
+          badge: <Badge variant='default'>6 tests</Badge>,
         },
         {
           id: 'selection',
           label: 'Selection Tests',
           icon: ShoppingCart,
           description: 'Test ticket selection and cart operations',
-          badge: <Badge variant='outline'>6 tests</Badge>,
+          badge: <Badge variant='default'>6 tests</Badge>,
         },
         {
           id: 'payment',
           label: 'Payment Tests',
           icon: CreditCard,
           description: 'Test payment processing and Stripe integration',
-          badge: <Badge variant='outline'>6 tests</Badge>,
+          badge: <Badge variant='default'>6 tests</Badge>,
         },
         {
           id: 'timeout',
           label: 'Timeout Tests',
           icon: Clock,
           description: 'Test timer expiration and session cleanup',
-          badge: <Badge variant='outline'>5 tests</Badge>,
+          badge: <Badge variant='default'>5 tests</Badge>,
         },
         {
           id: 'confirmation',
           label: 'Confirmation Tests',
           icon: CheckCircle,
           description: 'Test order confirmation and record creation',
-          badge: <Badge variant='outline'>5 tests</Badge>,
+          badge: <Badge variant='default'>5 tests</Badge>,
         },
         {
           id: 'delivery',
           label: 'Delivery Tests',
           icon: Send,
           description: 'Test ticket delivery and PDF generation',
-          badge: <Badge variant='outline'>5 tests</Badge>,
+          badge: <Badge variant='default'>5 tests</Badge>,
         },
       ],
     },
@@ -136,6 +137,9 @@ export default function TicketFlowTests() {
       backgroundOpacity={0.15}
       showDividers={false}
       defaultOpen={true}
+      showBackButton
+      onBack={() => navigate('/developer')}
+      backButtonLabel='Developer Home'
     >
       {/* Mobile horizontal tabs */}
       <MobileHorizontalTabs
@@ -212,7 +216,7 @@ function SelectionTestsContent() {
         </div>
       </FmCommonCard>
 
-      <FmCommonCard variant='outline' className='p-[20px]'>
+      <FmCommonCard variant='default' className='p-[20px]'>
         <p className='text-xs text-muted-foreground font-canela text-center'>
           Test implementation coming soon. This will validate cart operations and
           inventory management.
@@ -255,7 +259,7 @@ function PaymentTestsContent() {
         </div>
       </FmCommonCard>
 
-      <FmCommonCard variant='outline' className='p-[20px]'>
+      <FmCommonCard variant='default' className='p-[20px]'>
         <p className='text-xs text-muted-foreground font-canela text-center'>
           Test implementation coming soon. This will use mock Stripe integration
           for safe testing.
@@ -297,7 +301,7 @@ function TimeoutTestsContent() {
         </div>
       </FmCommonCard>
 
-      <FmCommonCard variant='outline' className='p-[20px]'>
+      <FmCommonCard variant='default' className='p-[20px]'>
         <p className='text-xs text-muted-foreground font-canela text-center'>
           Test implementation coming soon. This will validate timer accuracy and
           cleanup behavior.
@@ -339,7 +343,7 @@ function ConfirmationTestsContent() {
         </div>
       </FmCommonCard>
 
-      <FmCommonCard variant='outline' className='p-[20px]'>
+      <FmCommonCard variant='default' className='p-[20px]'>
         <p className='text-xs text-muted-foreground font-canela text-center'>
           Test implementation coming soon. This will verify order completion and
           data integrity.
@@ -381,7 +385,7 @@ function DeliveryTestsContent() {
         </div>
       </FmCommonCard>
 
-      <FmCommonCard variant='outline' className='p-[20px]'>
+      <FmCommonCard variant='default' className='p-[20px]'>
         <p className='text-xs text-muted-foreground font-canela text-center'>
           Test implementation coming soon. This will validate ticket generation
           and delivery workflows.

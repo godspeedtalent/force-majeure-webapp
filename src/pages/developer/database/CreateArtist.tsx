@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Mic2, User, Music, Share2 } from 'lucide-react';
+import { Mic2, User, Music, Share2, Images } from 'lucide-react';
 import { FaSoundcloud } from 'react-icons/fa6';
 import { useNavigate } from 'react-router-dom';
 import { useCreateEntityNavigation } from '@/shared';
 import { FmCommonCreateForm } from '@/components/common/forms/FmCommonCreateForm';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
-import { FmCommonJsonEditor } from '@/components/common/forms/FmCommonJsonEditor';
-import { FmFlexibleImageUpload } from '@/components/common/forms/FmFlexibleImageUpload';
+import { FmSocialLinksInput, SocialLinksData } from '@/components/common/forms/FmSocialLinksInput';
+import { FmGalleryImageUpload, GalleryImage } from '@/components/common/forms/FmGalleryImageUpload';
 import { FmFormFieldGroup } from '@/components/common/forms/FmFormFieldGroup';
 import { FmGenreMultiSelect } from '@/features/artists/components/FmGenreMultiSelect';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -27,30 +27,37 @@ const DeveloperCreateArtistPage = () => {
   const { returnTo, navigateWithEntity } = useCreateEntityNavigation('newArtistId');
   const [formData, setFormData] = useState({
     name: '',
-    image_url: '',
     bio: '',
   });
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
-  const [socialLinks, setSocialLinks] = useState<Record<string, string>>({});
+  const [socialLinks, setSocialLinks] = useState<SocialLinksData>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [showSpotifyImport, setShowSpotifyImport] = useState(false);
   const [showSoundCloudImport, setShowSoundCloudImport] = useState(false);
 
   const handleSpotifyImport = (artist: SpotifyArtist) => {
     setFormData({
       name: artist.name,
-      image_url: artist.images[0]?.url || '',
       bio: `${artist.name} - ${artist.genres.slice(0, 3).join(', ')}`,
     });
+    // Add Spotify image to gallery if available
+    if (artist.images[0]?.url) {
+      setGalleryImages([{ url: artist.images[0].url, isCover: true }]);
+    }
     toast.success(tToast('artists.importedFromSpotify'));
   };
 
   const handleSoundCloudImport = (user: SoundCloudUserData) => {
     setFormData({
       name: user.name,
-      image_url: user.avatarUrl || '',
       bio: user.description || '',
     });
+    // Add SoundCloud avatar to gallery if available
+    if (user.avatarUrl) {
+      setGalleryImages([{ url: user.avatarUrl, isCover: true }]);
+    }
     toast.success(tToast('artists.importedFromSoundCloud'));
   };
 
@@ -62,13 +69,23 @@ const DeveloperCreateArtistPage = () => {
 
     setIsSubmitting(true);
     try {
-      // Create the artist
+      // Get the cover image URL for the artist's image_url field
+      const coverImage = galleryImages.find(img => img.isCover);
+      const imageUrl = coverImage?.url || galleryImages[0]?.url || null;
+
+      // Create the artist with social links
       const { data: artist, error: artistError } = await supabase
         .from('artists')
         .insert({
           name: formData.name.trim(),
-          image_url: formData.image_url.trim() || null,
+          image_url: imageUrl,
           bio: formData.bio.trim() || null,
+          // Social links
+          website: socialLinks.website?.trim() || null,
+          instagram_handle: socialLinks.instagram?.trim() || null,
+          tiktok_handle: socialLinks.tiktok?.trim() || null,
+          spotify_id: socialLinks.spotify?.trim() || null,
+          soundcloud_id: socialLinks.soundcloud?.trim() || null,
         })
         .select()
         .single();
@@ -90,6 +107,54 @@ const DeveloperCreateArtistPage = () => {
         if (genreError) {
           logger.error('Error adding artist genres:', genreError);
           // Continue even if genre insert fails
+        }
+      }
+
+      // Create gallery and media items if images were uploaded
+      if (galleryImages.length > 0 && artist) {
+        try {
+          // Create the gallery using the RPC function
+          const { data: galleryId, error: galleryError } = await supabase.rpc(
+            'create_artist_gallery',
+            {
+              p_artist_id: artist.id,
+              p_artist_name: artist.name,
+            }
+          );
+
+          if (galleryError) {
+            logger.error('Error creating artist gallery:', {
+              error: galleryError.message,
+              source: 'CreateArtist',
+            });
+          } else if (galleryId) {
+            // Insert media items for each gallery image
+            const mediaItems = galleryImages.map((img, index) => ({
+              gallery_id: galleryId,
+              file_path: img.url,
+              media_type: 'image' as const,
+              display_order: index,
+              is_active: true,
+              is_cover: img.isCover,
+            }));
+
+            const { error: mediaError } = await supabase
+              .from('media_items')
+              .insert(mediaItems);
+
+            if (mediaError) {
+              logger.error('Error adding gallery images:', {
+                error: mediaError.message,
+                source: 'CreateArtist',
+              });
+            }
+          }
+        } catch (galleryErr) {
+          logger.error('Error setting up artist gallery:', {
+            error: galleryErr instanceof Error ? galleryErr.message : 'Unknown',
+            source: 'CreateArtist',
+          });
+          // Continue even if gallery creation fails - artist was created
         }
       }
 
@@ -117,7 +182,8 @@ const DeveloperCreateArtistPage = () => {
     if (returnTo) {
       navigate(decodeURIComponent(returnTo));
     } else {
-      setFormData({ name: '', image_url: '', bio: '' });
+      setFormData({ name: '', bio: '' });
+      setGalleryImages([]);
       setSelectedGenres([]);
       setSocialLinks({});
       navigate('/developer/database');
@@ -131,7 +197,7 @@ const DeveloperCreateArtistPage = () => {
       description={t('createForms.artist.description')}
       icon={Mic2}
       helperText={t('createForms.artist.helperText')}
-      isSubmitting={isSubmitting}
+      isSubmitting={isSubmitting || isUploading}
       onSubmit={handleSubmit}
       onCancel={handleCancel}
       submitText={t('createForms.artist.submitText')}
@@ -142,7 +208,7 @@ const DeveloperCreateArtistPage = () => {
           type='button'
           variant='default'
           onClick={() => setShowSpotifyImport(true)}
-          disabled={isSubmitting}
+          disabled={isSubmitting || isUploading}
           className='text-[#5aad7a]'
           icon={<SpotifyIcon className='h-4 w-4' />}
         >
@@ -152,7 +218,7 @@ const DeveloperCreateArtistPage = () => {
           type='button'
           variant='default'
           onClick={() => setShowSoundCloudImport(true)}
-          disabled={isSubmitting}
+          disabled={isSubmitting || isUploading}
           className='text-[#d48968]'
           icon={<FaSoundcloud className='h-4 w-4' />}
         >
@@ -185,14 +251,6 @@ const DeveloperCreateArtistPage = () => {
           placeholder={t('placeholders.enterArtistName')}
         />
 
-        <FmFlexibleImageUpload
-          label={t('labels.artistImage')}
-          value={formData.image_url}
-          onChange={url => setFormData({ ...formData, image_url: url })}
-          bucket='artist-images'
-          pathPrefix='artists'
-        />
-
         <FmCommonTextField
           label={t('labels.bio')}
           multiline
@@ -200,6 +258,22 @@ const DeveloperCreateArtistPage = () => {
           value={formData.bio}
           onChange={e => setFormData({ ...formData, bio: e.target.value })}
           placeholder={t('placeholders.artistBiography')}
+        />
+      </FmFormFieldGroup>
+
+      <FmFormFieldGroup
+        title={t('formGroups.artistGallery')}
+        icon={Images}
+        layout='stack'
+      >
+        <FmGalleryImageUpload
+          label={t('labels.artistImages')}
+          value={galleryImages}
+          onChange={setGalleryImages}
+          bucket='artist-images'
+          pathPrefix='artists'
+          maxImages={10}
+          onUploadStateChange={setIsUploading}
         />
       </FmFormFieldGroup>
 
@@ -221,12 +295,9 @@ const DeveloperCreateArtistPage = () => {
         icon={Share2}
         layout='stack'
       >
-        <FmCommonJsonEditor
-          label={t('formGroups.socialLinks')}
+        <FmSocialLinksInput
           value={socialLinks}
           onChange={setSocialLinks}
-          keyPlaceholder={t('placeholders.platformInstagramTwitter')}
-          valuePlaceholder={t('placeholders.handleOrUrl')}
         />
       </FmFormFieldGroup>
     </FmCommonCreateForm>

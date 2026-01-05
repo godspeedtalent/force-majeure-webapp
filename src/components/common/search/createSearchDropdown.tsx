@@ -111,6 +111,7 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
     const navigate = useNavigate();
     const [selectedItem, setSelectedItem] = React.useState<{
       label: string;
+      icon?: React.ReactNode;
       data?: T;
     } | null>(null);
     const { recentItems, addRecentItem } =
@@ -164,7 +165,11 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
           .single()
           .then(({ data }) => {
             if (data) {
-              setSelectedItem({ label: formatLabel(data as T), data: data as T });
+              setSelectedItem({
+                label: formatLabel(data as T),
+                icon: renderIcon(data as T),
+                data: data as T,
+              });
             }
           });
       } else {
@@ -268,6 +273,7 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
         placeholder={placeholder}
         createNewLabel={createNewLabel}
         selectedLabel={selectedItem?.label}
+        selectedIcon={selectedItem?.icon}
         disabled={disabled}
         typeIcon={typeIcon}
         typeTooltip={typeTooltip}

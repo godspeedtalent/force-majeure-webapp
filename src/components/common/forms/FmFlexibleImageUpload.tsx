@@ -187,7 +187,7 @@ export const FmFlexibleImageUpload = ({
 
   return (
     <div className={cn('space-y-4', className)}>
-      <FmCommonCard variant='outline' className='p-6'>
+      <FmCommonCard variant='default' className='p-6'>
         <input
           ref={fileInputRef}
           type='file'

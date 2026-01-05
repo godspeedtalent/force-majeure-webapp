@@ -157,7 +157,7 @@ export function SoundCloudUserImport({ open, onClose, onImport }: SoundCloudUser
 
           {/* User Preview */}
           {userData && !isLoading && (
-            <FmCommonCard variant='outline' className='p-0 overflow-hidden'>
+            <FmCommonCard variant='default' className='p-0 overflow-hidden'>
               <div className='flex flex-col sm:flex-row gap-[10px] sm:gap-[20px] items-start sm:items-center p-[10px] sm:p-0'>
                 {/* Avatar */}
                 <div className='w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 relative'>

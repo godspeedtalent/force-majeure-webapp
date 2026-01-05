@@ -7,17 +7,12 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Calendar, X } from 'lucide-react';
-import { format } from 'date-fns';
+import { Search, X } from 'lucide-react';
 import { cn } from '@/shared';
-import { Button } from '@/components/common/shadcn/button';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
 import { Input } from '@/components/common/shadcn/input';
-import { Calendar as CalendarComponent } from '@/components/common/shadcn/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/common/shadcn/popover';
+import { FmCommonDatePicker } from '@/components/common/forms/FmCommonDatePicker';
 import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
 import {
   ActivityLogFilters as Filters,
@@ -103,14 +98,11 @@ export function ActivityLogFilters({
               className="pl-9 bg-black/40 border-white/20 focus:border-fm-gold"
             />
           </div>
-          <Button
-            variant="outline"
-            size="icon"
+          <FmCommonIconButton
+            icon={Search}
             onClick={handleSearchSubmit}
-            className="border-white/20 hover:border-fm-gold hover:bg-fm-gold/10"
-          >
-            <Search className="h-4 w-4" />
-          </Button>
+            tooltip={t('activityLogFilters.search')}
+          />
         </div>
       </div>
 
@@ -120,75 +112,16 @@ export function ActivityLogFilters({
           {t('activityLogFilters.dateRange')}
         </label>
         <div className="space-y-2">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  'w-full justify-start text-left font-normal',
-                  'bg-black/40 border-white/20 hover:border-fm-gold/50',
-                  !filters.dateFrom && 'text-muted-foreground'
-                )}
-              >
-                <Calendar className="mr-2 h-4 w-4" />
-                {filters.dateFrom
-                  ? format(new Date(filters.dateFrom), 'MMM d, yyyy')
-                  : t('activityLogFilters.fromDate')}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              className="w-auto p-0 bg-black/90 backdrop-blur-md border border-white/20"
-              align="start"
-            >
-              <CalendarComponent
-                mode="single"
-                selected={
-                  filters.dateFrom ? new Date(filters.dateFrom) : undefined
-                }
-                onSelect={handleDateFromChange}
-                initialFocus
-                classNames={{
-                  day_selected:
-                    'bg-fm-gold text-black hover:bg-fm-gold hover:text-black',
-                }}
-              />
-            </PopoverContent>
-          </Popover>
-
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  'w-full justify-start text-left font-normal',
-                  'bg-black/40 border-white/20 hover:border-fm-gold/50',
-                  !filters.dateTo && 'text-muted-foreground'
-                )}
-              >
-                <Calendar className="mr-2 h-4 w-4" />
-                {filters.dateTo
-                  ? format(new Date(filters.dateTo), 'MMM d, yyyy')
-                  : t('activityLogFilters.toDate')}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              className="w-auto p-0 bg-black/90 backdrop-blur-md border border-white/20"
-              align="start"
-            >
-              <CalendarComponent
-                mode="single"
-                selected={
-                  filters.dateTo ? new Date(filters.dateTo) : undefined
-                }
-                onSelect={handleDateToChange}
-                initialFocus
-                classNames={{
-                  day_selected:
-                    'bg-fm-gold text-black hover:bg-fm-gold hover:text-black',
-                }}
-              />
-            </PopoverContent>
-          </Popover>
+          <FmCommonDatePicker
+            value={filters.dateFrom ? new Date(filters.dateFrom) : undefined}
+            onChange={handleDateFromChange}
+            placeholder={t('activityLogFilters.fromDate')}
+          />
+          <FmCommonDatePicker
+            value={filters.dateTo ? new Date(filters.dateTo) : undefined}
+            onChange={handleDateToChange}
+            placeholder={t('activityLogFilters.toDate')}
+          />
         </div>
       </div>
 
@@ -226,14 +159,14 @@ export function ActivityLogFilters({
 
       {/* Clear Filters */}
       {hasActiveFilters && (
-        <Button
-          variant="outline"
+        <FmCommonButton
+          variant="destructive-outline"
           onClick={onClearFilters}
-          className="w-full border-white/20 hover:border-fm-danger hover:bg-fm-danger/10 hover:text-fm-danger"
+          icon={X}
+          className="w-full"
         >
-          <X className="mr-2 h-4 w-4" />
           {t('activityLogFilters.clearFilters')}
-        </Button>
+        </FmCommonButton>
       )}
     </div>
   );

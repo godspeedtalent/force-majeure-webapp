@@ -3,7 +3,7 @@ import { TestResult } from '../types/testing';
 import { useTestResults } from '../hooks/useTestResults';
 import { TestCaseItem } from './TestCaseItem';
 import { FmCommonStatCard } from '@/components/common/display/FmCommonStatCard';
-import { Button } from '@/components/common/shadcn/button';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { Input } from '@/components/common/shadcn/input';
 import { Badge } from '@/components/common/shadcn/badge';
 import {
@@ -100,8 +100,8 @@ export function TestResultsPanel({ results }: TestResultsPanelProps) {
         </div>
 
         <div className='flex gap-2'>
-          <Button
-            variant={filter === 'all' ? 'default' : 'outline'}
+          <FmCommonButton
+            variant={filter === 'all' ? 'gold' : 'default'}
             size='sm'
             onClick={() => setFilter('all')}
           >
@@ -109,9 +109,9 @@ export function TestResultsPanel({ results }: TestResultsPanelProps) {
             <Badge variant='secondary' className='ml-2'>
               {results.length}
             </Badge>
-          </Button>
-          <Button
-            variant={filter === 'passed' ? 'default' : 'outline'}
+          </FmCommonButton>
+          <FmCommonButton
+            variant={filter === 'passed' ? 'gold' : 'default'}
             size='sm'
             onClick={() => setFilter('passed')}
           >
@@ -119,9 +119,9 @@ export function TestResultsPanel({ results }: TestResultsPanelProps) {
             <Badge variant='secondary' className='ml-2'>
               {summary.passed}
             </Badge>
-          </Button>
-          <Button
-            variant={filter === 'failed' ? 'default' : 'outline'}
+          </FmCommonButton>
+          <FmCommonButton
+            variant={filter === 'failed' ? 'gold' : 'default'}
             size='sm'
             onClick={() => setFilter('failed')}
           >
@@ -129,15 +129,14 @@ export function TestResultsPanel({ results }: TestResultsPanelProps) {
             <Badge variant='secondary' className='ml-2'>
               {summary.failed}
             </Badge>
-          </Button>
+          </FmCommonButton>
         </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant='outline' size='sm'>
-              <Download className='h-4 w-4 mr-2' />
+            <FmCommonButton variant='default' size='sm' icon={Download}>
               {t('testResultsPanel.export')}
-            </Button>
+            </FmCommonButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end'>
             <DropdownMenuItem onClick={() => exportResults('json')}>

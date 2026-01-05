@@ -212,8 +212,8 @@ export const DESIGN_ELEMENTS = {
   BUTTON_STYLE: 'sharp-edges', // No rounded corners
 
   // Card styles
-  CARD_OUTLINE: 'transparent-outline',
-  CARD_FROSTED: 'black-frosted-glass',
+  CARD_DEFAULT: 'gold-outline-hover', // Semi-transparent, white border, gold on hover
+  CARD_FROSTED: 'black-frosted-glass', // Frosted glass effect for modals/overlays
 } as const;
 
 /**

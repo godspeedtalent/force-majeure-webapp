@@ -32,6 +32,8 @@ interface FmCommonSearchDropdownProps {
   placeholder?: string;
   createNewLabel?: string;
   selectedLabel?: string;
+  /** Icon to display for the currently selected item */
+  selectedIcon?: React.ReactNode;
   disabled?: boolean;
   /** Optional icon representing the entity type */
   typeIcon?: React.ReactNode;
@@ -53,6 +55,7 @@ export function FmCommonSearchDropdown({
   placeholder,
   createNewLabel,
   selectedLabel,
+  selectedIcon,
   disabled = false,
   typeIcon,
   typeTooltip,
@@ -162,7 +165,11 @@ export function FmCommonSearchDropdown({
           </Tooltip>
         </TooltipProvider>
       )}
-      <Search className='h-3 w-3 text-white/50 flex-shrink-0 ml-3' />
+      {selectedIcon ? (
+        <div className='flex-shrink-0 ml-3'>{selectedIcon}</div>
+      ) : (
+        <Search className='h-3 w-3 text-white/50 flex-shrink-0 ml-3' />
+      )}
       <span className={cn(
         'flex-1 truncate font-light',
         selectedLabel ? 'text-white' : 'text-white/40 text-sm'

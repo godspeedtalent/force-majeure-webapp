@@ -1,21 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/common/shadcn/dialog';
-import { Button } from '@/components/common/shadcn/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/common/shadcn/select';
+import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
 import { Plus } from 'lucide-react';
 import { DataGridColumn } from './FmDataGrid';
 import { FmFilterRuleRow } from './filters/FmFilterRuleRow';
@@ -136,93 +123,88 @@ export function FmAdvancedFilterDialog<T = any>({
     onClear();
   };
 
+  const logicOptions = [
+    { value: 'AND', label: t('filters.all') },
+    { value: 'OR', label: t('filters.any') },
+  ];
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-w-3xl max-h-[80vh] overflow-y-auto'>
-        <DialogHeader>
-          <DialogTitle>{t('filters.advancedFilters')}</DialogTitle>
-          <DialogDescription>
-            {t('filters.buildComplexFilters')}
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className='space-y-4 py-4'>
-          {/* Logic selector */}
-          <div className='flex items-center gap-2'>
-            <span className='text-sm text-muted-foreground'>{t('filters.match')}</span>
-            <Select
-              value={filterGroup.logic}
-              onValueChange={(value: FilterLogic) =>
-                setFilterGroup({ ...filterGroup, logic: value })
-              }
-            >
-              <SelectTrigger className='w-24'>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='AND'>{t('filters.all')}</SelectItem>
-                <SelectItem value='OR'>{t('filters.any')}</SelectItem>
-              </SelectContent>
-            </Select>
-            <span className='text-sm text-muted-foreground'>
-              {t('filters.ofFollowingRules')}
-            </span>
-          </div>
-
-          {/* Rules */}
-          <div className='space-y-2'>
-            {filterGroup.rules.length === 0 ? (
-              <div className='text-center py-8 text-muted-foreground'>
-                {t('formMessages.noFiltersAdded')}
-              </div>
-            ) : (
-              filterGroup.rules.map((rule, index) => (
-                <FmFilterRuleRow
-                  key={rule.id}
-                  rule={rule}
-                  index={index}
-                  filterableColumns={filterableColumns}
-                  onUpdate={updateRule}
-                  onRemove={removeRule}
-                />
-              ))
-            )}
-          </div>
-
-          {/* Add Rule Button */}
-          <Button variant='outline' size='sm' onClick={addRule} className='w-full'>
-            <Plus className='h-4 w-4 mr-2' />
-            {t('filters.addRule')}
-          </Button>
-
-          {/* Presets */}
-          <FmFilterPresets
-            presets={presets}
-            onLoadPreset={handleLoadPreset}
-            onDeletePreset={onDeletePreset}
+    <FmCommonModal
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t('filters.advancedFilters')}
+      description={t('filters.buildComplexFilters')}
+      className='max-w-3xl max-h-[80vh] overflow-y-auto'
+    >
+      <div className='space-y-4 py-4'>
+        {/* Logic selector */}
+        <div className='flex items-center gap-2'>
+          <span className='text-sm text-muted-foreground'>{t('filters.match')}</span>
+          <FmCommonSelect
+            value={filterGroup.logic}
+            onChange={(value) =>
+              setFilterGroup({ ...filterGroup, logic: value as FilterLogic })
+            }
+            options={logicOptions}
+            className='w-24'
           />
-
-          {/* Save Preset */}
-          <div className='space-y-2 pt-2'>
-            <FmFilterPresetSave
-              onSave={handleSavePreset}
-              disabled={filterGroup.rules.length === 0}
-            />
-          </div>
+          <span className='text-sm text-muted-foreground'>
+            {t('filters.ofFollowingRules')}
+          </span>
         </div>
 
-        <DialogFooter className='gap-2'>
-          <Button variant='outline' onClick={handleClear}>
-            {t('filters.clearAll')}
-          </Button>
-          <Button variant='outline' onClick={() => onOpenChange(false)}>
-            {t('buttons.cancel')}
-          </Button>
-          <Button onClick={handleApply} disabled={filterGroup.rules.length === 0}>
-            {t('filters.applyFilters')}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        {/* Rules */}
+        <div className='space-y-2'>
+          {filterGroup.rules.length === 0 ? (
+            <div className='text-center py-8 text-muted-foreground'>
+              {t('formMessages.noFiltersAdded')}
+            </div>
+          ) : (
+            filterGroup.rules.map((rule, index) => (
+              <FmFilterRuleRow
+                key={rule.id}
+                rule={rule}
+                index={index}
+                filterableColumns={filterableColumns}
+                onUpdate={updateRule}
+                onRemove={removeRule}
+              />
+            ))
+          )}
+        </div>
+
+        {/* Add Rule Button */}
+        <FmCommonButton variant='default' size='sm' onClick={addRule} className='w-full' icon={Plus}>
+          {t('filters.addRule')}
+        </FmCommonButton>
+
+        {/* Presets */}
+        <FmFilterPresets
+          presets={presets}
+          onLoadPreset={handleLoadPreset}
+          onDeletePreset={onDeletePreset}
+        />
+
+        {/* Save Preset */}
+        <div className='space-y-2 pt-2'>
+          <FmFilterPresetSave
+            onSave={handleSavePreset}
+            disabled={filterGroup.rules.length === 0}
+          />
+        </div>
+      </div>
+
+      <div className='flex justify-end gap-2 pt-4 border-t'>
+        <FmCommonButton variant='destructive-outline' onClick={handleClear}>
+          {t('filters.clearAll')}
+        </FmCommonButton>
+        <FmCommonButton variant='secondary' onClick={() => onOpenChange(false)}>
+          {t('buttons.cancel')}
+        </FmCommonButton>
+        <FmCommonButton variant='gold' onClick={handleApply} disabled={filterGroup.rules.length === 0}>
+          {t('filters.applyFilters')}
+        </FmCommonButton>
+      </div>
+    </FmCommonModal>
   );
 }

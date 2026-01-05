@@ -289,7 +289,7 @@ export const TicketCheckoutForm = ({
       )}
 
       <form onSubmit={handleSubmit} className='space-y-6'>
-        <FmCommonCard variant='outline' className='space-y-6'>
+        <FmCommonCard variant='default' className='space-y-6'>
           <div className='space-y-4'>
             <h4 className='text-sm font-medium text-foreground flex items-center gap-2'>
               <CreditCard className='h-4 w-4 text-fm-gold' />
@@ -369,7 +369,7 @@ export const TicketCheckoutForm = ({
           </div>
         </FmCommonCard>
 
-        <FmCommonCard variant='outline' className='space-y-6'>
+        <FmCommonCard variant='default' className='space-y-6'>
           <div className='space-y-4'>
             <h4 className='text-sm font-medium text-foreground flex items-center gap-2'>
               <MapPin className='h-4 w-4 text-fm-gold' />
@@ -482,7 +482,7 @@ export const TicketCheckoutForm = ({
           </div>
         </div>
 
-        <FmCommonCard variant='outline' className='space-y-4'>
+        <FmCommonCard variant='default' className='space-y-4'>
           <div className='flex items-center gap-2 text-sm font-medium text-foreground'>
             <CheckCircle2 className='h-4 w-4 text-fm-gold' />
             {t('checkout.orderSummary')}

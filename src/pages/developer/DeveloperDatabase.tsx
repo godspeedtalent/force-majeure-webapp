@@ -18,6 +18,7 @@ import {
   MessageSquare,
   FileQuestion,
   BarChart3,
+  List,
 } from 'lucide-react';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared';
@@ -39,6 +40,7 @@ import {
 
 type DatabaseTab =
   | 'overview'
+  | 'all_tables'
   | 'artists'
   | 'events'
   | 'galleries'
@@ -52,6 +54,7 @@ type DatabaseTab =
 
 const VALID_TABS: DatabaseTab[] = [
   'overview',
+  'all_tables',
   'artists',
   'events',
   'galleries',
@@ -201,6 +204,12 @@ export default function DeveloperDatabase() {
             label: 'Dashboard',
             icon: Database,
             description: 'Database overview and search',
+          },
+          {
+            id: 'all_tables' as const,
+            label: 'All Tables',
+            icon: List,
+            description: 'Browse all database tables',
           },
         ],
       },
@@ -384,6 +393,148 @@ export default function DeveloperDatabase() {
                 </p>
               </div>
               <UserRequestsAdmin />
+            </div>
+          </PageErrorBoundary>
+        )}
+
+        {activeTab === 'all_tables' && (
+          <PageErrorBoundary section='All Tables'>
+            <div className='space-y-6'>
+              <div>
+                <h1 className='text-3xl font-canela font-bold text-foreground mb-2'>
+                  All Database Tables
+                </h1>
+                <p className='text-muted-foreground'>
+                  Browse and navigate to all available database tables.
+                </p>
+              </div>
+              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+                {/* Core Tables */}
+                <button
+                  onClick={() => handleTabChange('artists')}
+                  className='p-4 bg-black/40 border border-white/10 hover:border-fm-gold/50 hover:bg-black/60 transition-all text-left group'
+                >
+                  <div className='flex items-center gap-3 mb-2'>
+                    <Mic2 className='h-5 w-5 text-muted-foreground group-hover:text-fm-gold transition-colors' />
+                    <span className='font-medium'>Artists</span>
+                    <span className='ml-auto text-xs text-muted-foreground'>{artistsCount}</span>
+                  </div>
+                  <p className='text-xs text-muted-foreground'>Artist profiles and metadata</p>
+                </button>
+
+                <button
+                  onClick={() => handleTabChange('events')}
+                  className='p-4 bg-black/40 border border-white/10 hover:border-fm-gold/50 hover:bg-black/60 transition-all text-left group'
+                >
+                  <div className='flex items-center gap-3 mb-2'>
+                    <Calendar className='h-5 w-5 text-muted-foreground group-hover:text-fm-gold transition-colors' />
+                    <span className='font-medium'>Events</span>
+                    <span className='ml-auto text-xs text-muted-foreground'>{eventsCount}</span>
+                  </div>
+                  <p className='text-xs text-muted-foreground'>Event listings and details</p>
+                </button>
+
+                <button
+                  onClick={() => handleTabChange('venues')}
+                  className='p-4 bg-black/40 border border-white/10 hover:border-fm-gold/50 hover:bg-black/60 transition-all text-left group'
+                >
+                  <div className='flex items-center gap-3 mb-2'>
+                    <MapPin className='h-5 w-5 text-muted-foreground group-hover:text-fm-gold transition-colors' />
+                    <span className='font-medium'>Venues</span>
+                    <span className='ml-auto text-xs text-muted-foreground'>{venuesCount}</span>
+                  </div>
+                  <p className='text-xs text-muted-foreground'>Venue information and locations</p>
+                </button>
+
+                <button
+                  onClick={() => handleTabChange('recordings')}
+                  className='p-4 bg-black/40 border border-white/10 hover:border-fm-gold/50 hover:bg-black/60 transition-all text-left group'
+                >
+                  <div className='flex items-center gap-3 mb-2'>
+                    <Disc3 className='h-5 w-5 text-muted-foreground group-hover:text-fm-gold transition-colors' />
+                    <span className='font-medium'>Recordings</span>
+                    <span className='ml-auto text-xs text-muted-foreground'>{recordingsCount}</span>
+                  </div>
+                  <p className='text-xs text-muted-foreground'>Music recordings and mixes</p>
+                </button>
+
+                {isAdmin && (
+                  <>
+                    <button
+                      onClick={() => handleTabChange('organizations')}
+                      className='p-4 bg-black/40 border border-white/10 hover:border-fm-gold/50 hover:bg-black/60 transition-all text-left group'
+                    >
+                      <div className='flex items-center gap-3 mb-2'>
+                        <Building2 className='h-5 w-5 text-muted-foreground group-hover:text-fm-gold transition-colors' />
+                        <span className='font-medium'>Organizations</span>
+                        <span className='ml-auto text-xs text-muted-foreground'>{organizationsCount}</span>
+                      </div>
+                      <p className='text-xs text-muted-foreground'>Organization management</p>
+                    </button>
+
+                    <button
+                      onClick={() => handleTabChange('users')}
+                      className='p-4 bg-black/40 border border-white/10 hover:border-fm-gold/50 hover:bg-black/60 transition-all text-left group'
+                    >
+                      <div className='flex items-center gap-3 mb-2'>
+                        <Users className='h-5 w-5 text-muted-foreground group-hover:text-fm-gold transition-colors' />
+                        <span className='font-medium'>Users</span>
+                        <span className='ml-auto text-xs text-muted-foreground'>{usersCount}</span>
+                      </div>
+                      <p className='text-xs text-muted-foreground'>User profiles and accounts</p>
+                    </button>
+                  </>
+                )}
+
+                {/* Storage Tables */}
+                <button
+                  onClick={() => handleTabChange('galleries')}
+                  className='p-4 bg-black/40 border border-white/10 hover:border-fm-gold/50 hover:bg-black/60 transition-all text-left group'
+                >
+                  <div className='flex items-center gap-3 mb-2'>
+                    <Images className='h-5 w-5 text-muted-foreground group-hover:text-fm-gold transition-colors' />
+                    <span className='font-medium'>Galleries</span>
+                  </div>
+                  <p className='text-xs text-muted-foreground'>Media galleries and collections</p>
+                </button>
+
+                {isAdmin && (
+                  <>
+                    {/* Messages Tables */}
+                    <button
+                      onClick={() => handleTabChange('registrations')}
+                      className='p-4 bg-black/40 border border-white/10 hover:border-fm-gold/50 hover:bg-black/60 transition-all text-left group'
+                    >
+                      <div className='flex items-center gap-3 mb-2'>
+                        <UserPlus className='h-5 w-5 text-muted-foreground group-hover:text-fm-gold transition-colors' />
+                        <span className='font-medium'>Artist Registrations</span>
+                        {pendingRegistrationsCount > 0 && (
+                          <span className='ml-auto px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold'>
+                            {pendingRegistrationsCount}
+                          </span>
+                        )}
+                      </div>
+                      <p className='text-xs text-muted-foreground'>Pending artist applications</p>
+                    </button>
+
+                    <button
+                      onClick={() => handleTabChange('user_requests')}
+                      className='p-4 bg-black/40 border border-white/10 hover:border-fm-gold/50 hover:bg-black/60 transition-all text-left group'
+                    >
+                      <div className='flex items-center gap-3 mb-2'>
+                        <FileQuestion className='h-5 w-5 text-muted-foreground group-hover:text-fm-gold transition-colors' />
+                        <span className='font-medium'>User Requests</span>
+                        {pendingUserRequestsCount > 0 && (
+                          <span className='ml-auto px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold'>
+                            {pendingUserRequestsCount}
+                          </span>
+                        )}
+                      </div>
+                      <p className='text-xs text-muted-foreground'>User feedback and requests</p>
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </PageErrorBoundary>
         )}

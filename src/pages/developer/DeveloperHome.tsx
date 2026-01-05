@@ -10,7 +10,7 @@
  * Accessible to users with admin or developer roles.
  */
 
-import { useEffect, useMemo, useCallback } from 'react';
+import { useEffect, useMemo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
@@ -25,19 +25,26 @@ import {
   Database,
   FileText,
   FlaskConical,
-  Package,
   ClipboardCheck,
   Code,
   // Admin icons
   Shield,
   Sliders,
   DollarSign,
-  Activity,
   // Dashboard icons
   BarChart3,
   Star,
   Users,
   LineChart,
+  // Activity Logs icons
+  Activity,
+  UserCircle,
+  Ticket,
+  Mail,
+  RefreshCw,
+  Download,
+  FileJson,
+  FileSpreadsheet,
   // Database icons
   Mic2,
   Calendar,
@@ -51,11 +58,19 @@ import {
   FileQuestion,
 } from 'lucide-react';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
-import { ROLES } from '@/shared';
+import { ROLES, FEATURE_FLAGS } from '@/shared';
+import { useFeatureFlagHelpers } from '@/shared';
 import { AdminLockIndicator } from '@/components/common/indicators';
 import { PageErrorBoundary } from '@/components/common/feedback';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { formatHeader } from '@/shared';
+import { Button } from '@/components/common/shadcn/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/common/shadcn/dropdown-menu';
 
 // Admin components
 import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
@@ -79,6 +94,23 @@ import { useDatabaseCounts } from './hooks/useDeveloperDatabaseData';
 
 // Dashboard components
 import RecordingRatingsDashboard from './dashboards/RecordingRatingsDashboard';
+import { AnalyticsDashboardContent } from './dashboards/AnalyticsDashboardContent';
+import { UserMetricsDashboard } from './dashboards/userMetrics';
+
+// Activity Logs components
+import { ActivityLogList } from '@/features/activity-logs/components/ActivityLogList';
+import { ActivityLogSummary } from '@/features/activity-logs/components/ActivityLogSummary';
+import { ActivityLogFilters } from '@/features/activity-logs/components/ActivityLogFilters';
+import {
+  useActivityLogs,
+  useActivitySummary,
+  useExportActivityLogs,
+  useRefreshActivityLogs,
+} from '@/features/activity-logs/hooks/useActivityLogs';
+import {
+  ActivityLogFilters as LogFilters,
+  ActivityCategory,
+} from '@/features/activity-logs/types';
 
 // ============================================================================
 // Types
@@ -88,18 +120,21 @@ type DeveloperTab =
   // Developer Tools (external links)
   | 'dev_demo'
   | 'dev_docs'
-  | 'dev_components'
   | 'dev_ticket_flow'
   // Admin Controls
   | 'admin_settings'
   | 'admin_devtools'
   | 'admin_ticketing'
-  | 'admin_logs'
   // Dashboards
   | 'dash_recordings'
-  | 'dash_activity'
   | 'dash_users'
   | 'dash_analytics'
+  // Activity Logs
+  | 'logs_all'
+  | 'logs_account'
+  | 'logs_event'
+  | 'logs_ticket'
+  | 'logs_contact'
   // Database - Overview
   | 'db_overview'
   // Database - Tables
@@ -118,16 +153,18 @@ type DeveloperTab =
 const VALID_TABS: DeveloperTab[] = [
   'dev_demo',
   'dev_docs',
-  'dev_components',
   'dev_ticket_flow',
   'admin_settings',
   'admin_devtools',
   'admin_ticketing',
-  'admin_logs',
   'dash_recordings',
-  'dash_activity',
   'dash_users',
   'dash_analytics',
+  'logs_all',
+  'logs_account',
+  'logs_event',
+  'logs_ticket',
+  'logs_contact',
   'db_overview',
   'db_artists',
   'db_events',
@@ -140,14 +177,11 @@ const VALID_TABS: DeveloperTab[] = [
   'db_user_requests',
 ];
 
-// External navigation mapping
+// External navigation mapping (dash_analytics is now inline)
 const EXTERNAL_ROUTES: Partial<Record<DeveloperTab, string>> = {
   dev_demo: '/developer/demo',
   dev_docs: '/developer/documentation',
-  dev_components: '/developer/components',
   dev_ticket_flow: '/developer/ticket-flow',
-  admin_logs: '/admin/logs',
-  dash_analytics: '/admin/analytics',
 };
 
 // ============================================================================
@@ -161,6 +195,8 @@ export default function DeveloperHome() {
   const [searchParams] = useSearchParams();
   const { hasRole } = useUserPermissions();
   const isAdmin = hasRole(ROLES.ADMIN);
+  const { isFeatureEnabled } = useFeatureFlagHelpers();
+  const isRecordingRatingsEnabled = isFeatureEnabled(FEATURE_FLAGS.RECORDING_RATINGS);
 
   // Get all counts for navigation badges
   const {
@@ -198,13 +234,6 @@ export default function DeveloperHome() {
         isExternal: true,
       },
       {
-        id: 'dev_components',
-        label: t('developerIndex.componentsCatalog'),
-        icon: Package,
-        description: t('developerIndex.componentsCatalogDescription'),
-        isExternal: true,
-      },
-      {
         id: 'dev_ticket_flow',
         label: t('developerIndex.ticketFlowTests'),
         icon: ClipboardCheck,
@@ -217,9 +246,9 @@ export default function DeveloperHome() {
     const adminControlsItems: FmCommonSideNavItem<DeveloperTab>[] = [
       {
         id: 'admin_settings',
-        label: 'Site Settings',
+        label: 'Feature Flags',
         icon: Sliders,
-        description: 'Configure feature flags and site settings',
+        description: 'Toggle feature flags and site settings',
       },
       {
         id: 'admin_devtools',
@@ -233,29 +262,20 @@ export default function DeveloperHome() {
         icon: DollarSign,
         description: 'Configure ticketing fees and checkout behavior',
       },
-      {
-        id: 'admin_logs',
-        label: 'Activity Logs',
-        icon: Activity,
-        description: 'View system activity logs',
-        isExternal: true,
-      },
     ];
 
-    // Dashboards group
+    // Dashboards group - conditionally include Recording Ratings based on feature flag
     const dashboardItems: FmCommonSideNavItem<DeveloperTab>[] = [
-      {
-        id: 'dash_recordings',
-        label: 'Recording Ratings',
-        icon: Star,
-        description: 'Rate and analyze artist recordings',
-      },
-      {
-        id: 'dash_activity',
-        label: 'Activity Log',
-        icon: Activity,
-        description: 'View recent system activity',
-      },
+      ...(isRecordingRatingsEnabled
+        ? [
+            {
+              id: 'dash_recordings' as DeveloperTab,
+              label: 'Recording Ratings',
+              icon: Star,
+              description: 'Rate and analyze artist recordings',
+            },
+          ]
+        : []),
       {
         id: 'dash_users',
         label: 'User Metrics',
@@ -267,7 +287,40 @@ export default function DeveloperHome() {
         label: 'Site Analytics',
         icon: LineChart,
         description: 'Comprehensive site analytics',
-        isExternal: true,
+      },
+    ];
+
+    // Activity Logs group
+    const activityLogsItems: FmCommonSideNavItem<DeveloperTab>[] = [
+      {
+        id: 'logs_all',
+        label: t('activityLogsPage.allLogs'),
+        icon: Activity,
+        description: t('activityLogsPage.allLogsDescription'),
+      },
+      {
+        id: 'logs_account',
+        label: t('activityLogsPage.accountActivity'),
+        icon: UserCircle,
+        description: t('activityLogsPage.accountActivityDescription'),
+      },
+      {
+        id: 'logs_event',
+        label: t('activityLogsPage.eventActivity'),
+        icon: Calendar,
+        description: t('activityLogsPage.eventActivityDescription'),
+      },
+      {
+        id: 'logs_ticket',
+        label: t('activityLogsPage.ticketActivity'),
+        icon: Ticket,
+        description: t('activityLogsPage.ticketActivityDescription'),
+      },
+      {
+        id: 'logs_contact',
+        label: t('activityLogsPage.contactActivity'),
+        icon: Mail,
+        description: t('activityLogsPage.contactActivityDescription'),
       },
     ];
 
@@ -406,25 +459,17 @@ export default function DeveloperHome() {
       );
     }
 
-    const dbMessagesSubgroup: FmCommonSideNavSubgroup<DeveloperTab> | null =
-      messagesItems.length > 0
-        ? {
-            label: 'Messages',
-            icon: MessageSquare,
-            items: messagesItems,
-          }
-        : null;
+    // Build the groups array - Order: Dashboards, Admin, Messages, Storage, Database, Developer, Activity Logs
+    const groups: FmCommonSideNavGroup<DeveloperTab>[] = [];
 
-    // Build the groups array
-    const groups: FmCommonSideNavGroup<DeveloperTab>[] = [
-      {
-        label: 'Developer Tools',
-        icon: Code,
-        items: devToolsItems,
-      },
-    ];
+    // 1. Dashboards
+    groups.push({
+      label: 'Dashboards',
+      icon: BarChart3,
+      items: dashboardItems,
+    });
 
-    // Admin Controls - only show if admin
+    // 2. Admin Controls - only show if admin
     if (isAdmin) {
       groups.push({
         label: 'Admin Controls',
@@ -434,23 +479,28 @@ export default function DeveloperHome() {
       });
     }
 
-    // Dashboards
+    // 3. Messages (top-level, admin only)
+    if (isAdmin && messagesItems.length > 0) {
+      groups.push({
+        label: 'Messages',
+        icon: MessageSquare,
+        items: messagesItems,
+        adminOnly: true,
+      });
+    }
+
+    // 4. Storage (top-level)
     groups.push({
-      label: 'Dashboards',
-      icon: BarChart3,
-      items: dashboardItems,
+      label: 'Storage',
+      icon: HardDrive,
+      items: dbStorageSubgroup.items,
     });
 
-    // Database with subgroups
+    // 5. Database with subgroups (just Overview and Tables now)
     const dbSubgroups: FmCommonSideNavSubgroup<DeveloperTab>[] = [
       dbOverviewSubgroup,
       dbTablesSubgroup,
-      dbStorageSubgroup,
     ];
-
-    if (dbMessagesSubgroup) {
-      dbSubgroups.push(dbMessagesSubgroup);
-    }
 
     groups.push({
       label: 'Database',
@@ -458,9 +508,27 @@ export default function DeveloperHome() {
       subgroups: dbSubgroups,
     });
 
+    // 6. Developer Tools
+    groups.push({
+      label: 'Developer',
+      icon: Code,
+      items: devToolsItems,
+    });
+
+    // 7. Activity Logs - only show if admin
+    if (isAdmin) {
+      groups.push({
+        label: 'Activity Logs',
+        icon: Activity,
+        items: activityLogsItems,
+        adminOnly: true,
+      });
+    }
+
     return groups;
   }, [
     isAdmin,
+    isRecordingRatingsEnabled,
     t,
     pendingRegistrationsCount,
     pendingUserRequestsCount,
@@ -535,17 +603,6 @@ export default function DeveloperHome() {
     </div>
   );
 
-  // Placeholder for future dashboards
-  const ComingSoonDashboard = ({ title }: { title: string }) => (
-    <div className="flex items-center justify-center h-[400px]">
-      <div className="text-center space-y-2">
-        <BarChart3 className="h-12 w-12 mx-auto text-muted-foreground" />
-        <h2 className="text-xl font-medium">{title}</h2>
-        <p className="text-muted-foreground">Coming soon</p>
-      </div>
-    </div>
-  );
-
   return (
     <SideNavbarLayout
       navigationGroups={navigationGroups}
@@ -563,13 +620,10 @@ export default function DeveloperHome() {
       <div className="max-w-full">
         {/* ======================== ADMIN CONTROLS ======================== */}
         {activeTab === 'admin_settings' && (
-          <PageErrorBoundary section="Site Settings">
-            {renderTabHeader('Site Settings')}
+          <PageErrorBoundary section="Feature Flags">
+            {renderTabHeader('Feature Flags')}
             <div className="space-y-8">
               <div>
-                <h3 className="text-lg font-canela font-semibold mb-2">
-                  {formatHeader('Feature Flags')}
-                </h3>
                 <p className="text-muted-foreground text-sm mb-4">
                   Control feature availability across different environments
                 </p>
@@ -617,15 +671,29 @@ export default function DeveloperHome() {
           </PageErrorBoundary>
         )}
 
-        {activeTab === 'dash_activity' && (
-          <PageErrorBoundary section="Activity Log">
-            <ComingSoonDashboard title="Activity Log" />
+        {activeTab === 'dash_users' && (
+          <PageErrorBoundary section="User Metrics">
+            <UserMetricsDashboard />
           </PageErrorBoundary>
         )}
 
-        {activeTab === 'dash_users' && (
-          <PageErrorBoundary section="User Metrics">
-            <ComingSoonDashboard title="User Metrics" />
+        {activeTab === 'dash_analytics' && (
+          <PageErrorBoundary section="Site Analytics">
+            <AnalyticsDashboardContent />
+          </PageErrorBoundary>
+        )}
+
+        {/* ======================== ACTIVITY LOGS ======================== */}
+        {(activeTab === 'logs_all' ||
+          activeTab === 'logs_account' ||
+          activeTab === 'logs_event' ||
+          activeTab === 'logs_ticket' ||
+          activeTab === 'logs_contact') && (
+          <PageErrorBoundary section="Activity Logs">
+            <ActivityLogsContent
+              activeTab={activeTab}
+              t={t}
+            />
           </PageErrorBoundary>
         )}
 
@@ -711,5 +779,184 @@ export default function DeveloperHome() {
         )}
       </div>
     </SideNavbarLayout>
+  );
+}
+
+// ============================================================================
+// Activity Logs Content Component
+// ============================================================================
+
+interface ActivityLogsContentProps {
+  activeTab: DeveloperTab;
+  t: (key: string, options?: Record<string, unknown>) => string;
+}
+
+function ActivityLogsContent({ activeTab, t }: ActivityLogsContentProps) {
+  const [filters, setFilters] = useState<LogFilters>({});
+  const [page, setPage] = useState(1);
+  const pageSize = 50;
+
+  // Map tab to category filter
+  const categoryMap: Record<string, ActivityCategory | undefined> = {
+    logs_all: undefined,
+    logs_account: 'account',
+    logs_event: 'event',
+    logs_ticket: 'ticket',
+    logs_contact: 'contact',
+  };
+
+  // Get effective filters based on active tab
+  const effectiveFilters: LogFilters = {
+    ...filters,
+    categories: categoryMap[activeTab] ? [categoryMap[activeTab] as ActivityCategory] : filters.categories,
+  };
+
+  // Queries
+  const { data: logsData, isLoading: isLoadingLogs } = useActivityLogs(effectiveFilters, page, pageSize);
+  const { data: summary = [], isLoading: isLoadingSummary } = useActivitySummary(
+    effectiveFilters.dateFrom,
+    effectiveFilters.dateTo
+  );
+
+  // Mutations
+  const exportMutation = useExportActivityLogs();
+  const { refreshAll } = useRefreshActivityLogs();
+
+  const handleFiltersChange = useCallback((newFilters: LogFilters) => {
+    setFilters(newFilters);
+    setPage(1);
+  }, []);
+
+  const handleClearFilters = useCallback(() => {
+    setFilters({});
+    setPage(1);
+  }, []);
+
+  const handleCategoryClick = useCallback((category: ActivityCategory) => {
+    setFilters(prev => ({
+      ...prev,
+      categories: [category],
+    }));
+    setPage(1);
+  }, []);
+
+  const handleLoadMore = useCallback(() => {
+    if (logsData && page < logsData.totalPages) {
+      setPage(prev => prev + 1);
+    }
+  }, [logsData, page]);
+
+  const handleExport = useCallback(
+    (format: 'json' | 'csv') => {
+      exportMutation.mutate({ filters: effectiveFilters, format });
+    },
+    [exportMutation, effectiveFilters]
+  );
+
+  const allLogs = logsData?.data || [];
+  const hasMore = logsData ? page < logsData.totalPages : false;
+
+  // Get title based on active tab
+  const getTitle = () => {
+    switch (activeTab) {
+      case 'logs_account':
+        return t('activityLogsPage.accountActivity');
+      case 'logs_event':
+        return t('activityLogsPage.eventActivity');
+      case 'logs_ticket':
+        return t('activityLogsPage.ticketActivity');
+      case 'logs_contact':
+        return t('activityLogsPage.contactActivity');
+      default:
+        return t('activityLogsPage.title');
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-[10px]">
+            <Activity className="h-6 w-6 text-fm-gold" />
+            <h1 className="text-3xl font-canela">{formatHeader(getTitle())}</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refreshAll()}
+              className="border-white/20 hover:border-fm-gold"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              {t('buttons.refresh')}
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={exportMutation.isPending}
+                  className="border-white/20 hover:border-fm-gold"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  {t('table.export')}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-black/90 border-white/20">
+                <DropdownMenuItem onClick={() => handleExport('json')}>
+                  <FileJson className="h-4 w-4 mr-2" />
+                  {t('activityLogsPage.exportAsJson')}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExport('csv')}>
+                  <FileSpreadsheet className="h-4 w-4 mr-2" />
+                  {t('activityLogsPage.exportAsCsv')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+        <p className="text-muted-foreground text-sm mt-2">
+          {t('activityLogsPage.description')}
+        </p>
+      </div>
+
+      <DecorativeDivider marginTop="mt-0" marginBottom="mb-6" lineWidth="w-32" opacity={0.5} />
+
+      {/* Summary Cards */}
+      <ActivityLogSummary
+        summary={summary}
+        isLoading={isLoadingSummary}
+        onCategoryClick={handleCategoryClick}
+      />
+
+      {/* Filters */}
+      {activeTab === 'logs_all' && (
+        <div className="p-4 bg-black/40 border border-white/10">
+          <ActivityLogFilters
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            onClearFilters={handleClearFilters}
+          />
+        </div>
+      )}
+
+      {/* Results count */}
+      {logsData && (
+        <div className="text-sm text-muted-foreground">
+          {t('activityLogsPage.showingLogs', { showing: allLogs.length, total: logsData.totalCount })}
+        </div>
+      )}
+
+      {/* Log List */}
+      <div className="bg-black/40 border border-white/10">
+        <ActivityLogList
+          logs={allLogs}
+          isLoading={isLoadingLogs}
+          onLoadMore={handleLoadMore}
+          hasMore={hasMore}
+        />
+      </div>
+    </div>
   );
 }

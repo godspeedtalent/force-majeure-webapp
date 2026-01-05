@@ -371,7 +371,7 @@ export function TrackInputForm({
 
       {/* Track Preview */}
       {trackData && !isLoading && (
-        <FmCommonCard variant="outline" className="p-0 overflow-hidden">
+        <FmCommonCard variant="default" className="p-0 overflow-hidden">
           <div className="flex gap-[20px]">
             {/* Cover Art */}
             <div className="w-24 h-24 flex-shrink-0 relative">
@@ -481,7 +481,7 @@ export function TrackList({ tracks, onRemoveTrack, onEditTrack, onSetPrimaryDjSe
           return (
             <FmCommonCard
               key={track.id}
-              variant="outline"
+              variant="default"
               className={cn(
                 "p-0 overflow-hidden transition-all duration-200",
                 isEditing && "border-fm-gold/50 bg-fm-gold/5",

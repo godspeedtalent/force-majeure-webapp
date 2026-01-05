@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Save, Eye } from 'lucide-react';
+import { Save, Eye, MapPin } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmVenueSearchDropdown } from '@/components/common/search/FmVenueSearchDropdown';
 import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
@@ -29,6 +29,7 @@ interface EventOverviewFormProps {
     description?: string | null;
     about_event?: string | null;
     display_subtitle?: boolean;
+    show_venue_map?: boolean;
     status?: string;
   };
   orderCount: number;
@@ -55,6 +56,7 @@ export const EventOverviewForm = ({
     setCustomTitle,
     setEventSubtitle,
     setAboutEvent,
+    setShowVenueMap,
     isSaving,
     handleSave,
     triggerAutoSave,
@@ -76,6 +78,7 @@ export const EventOverviewForm = ({
     customTitle,
     eventSubtitle,
     aboutEvent,
+    showVenueMap,
   } = formState;
 
   return (
@@ -126,6 +129,21 @@ export const EventOverviewForm = ({
             }}
             placeholder={t('placeholders.selectVenue')}
           />
+          {/* Show Venue Map Toggle */}
+          <div className='flex items-center gap-2 pt-2'>
+            <Checkbox
+              id='show-venue-map'
+              checked={showVenueMap}
+              onCheckedChange={checked => {
+                setShowVenueMap(!!checked);
+                triggerAutoSave();
+              }}
+            />
+            <Label htmlFor='show-venue-map' className='cursor-pointer flex items-center gap-2'>
+              <MapPin className='h-4 w-4 text-fm-gold' />
+              {t('eventOverview.showVenueMap')}
+            </Label>
+          </div>
         </div>
 
         {/* Event Title & Subtitle */}

@@ -25,6 +25,7 @@
     "upcomingEvents": "Próximos Eventos",
     "pastEvents": "Eventos Pasados",
     "noEvents": "No se encontraron eventos",
+    "noMatchingEvents": "No hay eventos que coincidan con tus filtros",
     "filterByDate": "Filtrar por Fecha",
     "filterByVenue": "Filtrar por Lugar",
     "filterByGenre": "Filtrar por Género",
@@ -83,6 +84,7 @@
   },
   "artistDetails": {
     "back": "Volver",
+    "edit": "Editar",
     "events": "Eventos",
     "upcomingEvents": "Próximos Eventos",
     "pastEvents": "Eventos Pasados",
@@ -578,6 +580,45 @@
       "title": "Algo salió mal.",
       "subtitle": "Estamos trabajando en solucionar el problema. Por favor, inténtalo más tarde.",
       "retry": "Intentar de Nuevo"
+    }
+  },
+  "userMetrics": {
+    "title": "Métricas de usuarios",
+    "description": "Seguimiento del crecimiento, participación y demografía de usuarios.",
+    "totalUsers": "Usuarios totales",
+    "activeUsers": "Usuarios activos",
+    "inDateRange": "En el período seleccionado",
+    "newThisMonth": "Nuevos este mes",
+    "newPast30Days": "Nuevos (30 días)",
+    "usersWithOrders": "Con pedidos",
+    "avgOrders": "Promedio pedidos/usuario",
+    "conversionRate": "Tasa de conversión",
+    "userGrowth": "Crecimiento de usuarios",
+    "dailyActivity": "Actividad diaria",
+    "topSpenders": "Mayores compradores",
+    "recentUsers": "Usuarios recientes",
+    "usersByCity": "Usuarios por ciudad",
+    "user": "Usuario",
+    "orders": "Pedidos",
+    "totalSpent": "Total gastado",
+    "joined": "Se unió",
+    "spent": "Gastado",
+    "lastActive": "Última actividad",
+    "noGrowthData": "Sin datos de crecimiento",
+    "noGrowthDataDescription": "Los datos de crecimiento aparecerán aquí cuando los usuarios se registren",
+    "noActivityData": "Sin datos de actividad",
+    "noActivityDataDescription": "La actividad diaria aparecerá aquí",
+    "noCityData": "Sin datos de ciudad",
+    "noCityDataDescription": "La distribución por ciudad aparecerá cuando los usuarios agreguen su ubicación",
+    "noSpenders": "Sin datos de gastos",
+    "noSpendersDescription": "Los mayores compradores aparecerán cuando los usuarios realicen compras",
+    "noUsers": "Aún no hay usuarios",
+    "noUsersDescription": "Los usuarios recientes aparecerán aquí",
+    "tabs": {
+      "growth": "Crecimiento",
+      "activity": "Actividad",
+      "engagement": "Participación",
+      "demographics": "Demografía"
     }
   }
 }

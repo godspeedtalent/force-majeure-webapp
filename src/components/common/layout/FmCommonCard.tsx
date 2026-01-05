@@ -2,8 +2,8 @@
  * FmCommonCard
  *
  * Versatile card component with two distinct styles:
- * - Default: Frosted glass effect (classic FM style)
- * - Outline: Clean bordered style with minimal background
+ * - Default: Semi-transparent with white border, gold border on hover
+ * - Frosted: Glass effect background with blur (for modals, overlays)
  *
  * Both variants include hover effects for enhanced UX.
  * Provides a foundation for InfoCard, StatCard, and other card-based components.
@@ -15,8 +15,8 @@ import { cn } from '@/shared';
 interface FmCommonCardProps {
   /** Card content */
   children: ReactNode;
-  /** Card variant - default (frosted glass) or outline (clean border) */
-  variant?: 'default' | 'outline';
+  /** Card variant - default (gold hover) or frosted (glass effect) */
+  variant?: 'default' | 'frosted';
   /** Size variant */
   size?: 'sm' | 'md' | 'lg';
   /** Enable hover effects (enabled by default) */
@@ -45,7 +45,20 @@ export const FmCommonCard = ({
 
   const variantStyles = {
     default: cn(
-      // Base frosted glass effect
+      // Semi-transparent with white border, gold on hover
+      'rounded-none',
+      'bg-black/40',
+      'border border-white/20',
+      'shadow-sm',
+      // Hover effects
+      hoverable && 'transition-all duration-300',
+      hoverable && 'hover:bg-black/35',
+      hoverable && 'hover:border-fm-gold/50',
+      hoverable && 'hover:shadow-[0_0_12px_rgba(223,186,125,0.15)]',
+      hoverable && isClickable && 'hover:scale-[1.005]'
+    ),
+    frosted: cn(
+      // Frosted glass effect
       'rounded-none',
       'bg-black/60',
       'backdrop-blur-sm',
@@ -57,19 +70,6 @@ export const FmCommonCard = ({
       hoverable && 'hover:border-white/30',
       hoverable && 'hover:shadow-fm-gold/10',
       hoverable && isClickable && 'hover:scale-[1.01]'
-    ),
-    outline: cn(
-      // Clean outline style
-      'rounded-none',
-      'bg-black/40',
-      'border border-white/10',
-      'shadow-sm',
-      // Hover effects
-      hoverable && 'transition-all duration-300',
-      hoverable && 'hover:bg-black/50',
-      hoverable && 'hover:border-fm-gold/50',
-      hoverable && 'hover:shadow-[0_0_12px_rgba(212,175,55,0.15)]',
-      hoverable && isClickable && 'hover:scale-[1.005]'
     ),
   };
 

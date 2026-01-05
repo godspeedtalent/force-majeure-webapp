@@ -27,6 +27,7 @@ export interface Genre {
   parentId: string | null;
   createdAt: string | null;
   updatedAt: string | null;
+  selectionCount?: number;
 }
 
 /**

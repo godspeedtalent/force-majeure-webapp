@@ -147,7 +147,7 @@ export const FmImageUpload = ({
   };
 
   return (
-    <FmCommonCard variant='outline' className={cn('p-6', className)}>
+    <FmCommonCard variant='default' className={cn('p-6', className)}>
       <input
         ref={fileInputRef}
         type='file'

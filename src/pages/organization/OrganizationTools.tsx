@@ -57,7 +57,7 @@ const OrganizationTools = () => {
     >
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         {/* Sales Reports Card */}
-        <FmCommonCard variant='outline' className='p-6'>
+        <FmCommonCard variant='default' className='p-6'>
           <div className='flex items-start gap-4'>
             <div className='p-3 rounded-none bg-fm-gold/10 border border-fm-gold/20'>
               <TrendingUp className='h-6 w-6 text-fm-gold' />
@@ -79,7 +79,7 @@ const OrganizationTools = () => {
         </FmCommonCard>
 
         {/* Venue Management Card */}
-        <FmCommonCard variant='outline' className='p-6'>
+        <FmCommonCard variant='default' className='p-6'>
           <div className='flex items-start gap-4'>
             <div className='p-3 rounded-none bg-fm-gold/10 border border-fm-gold/20'>
               <Building2 className='h-6 w-6 text-fm-gold' />
@@ -101,7 +101,7 @@ const OrganizationTools = () => {
         </FmCommonCard>
 
         {/* Staff Management Card */}
-        <FmCommonCard variant='outline' className='p-6'>
+        <FmCommonCard variant='default' className='p-6'>
           <div className='flex items-start gap-4'>
             <div className='p-3 rounded-none bg-fm-gold/10 border border-fm-gold/20'>
               <Users className='h-6 w-6 text-fm-gold' />
@@ -123,7 +123,7 @@ const OrganizationTools = () => {
         </FmCommonCard>
 
         {/* Organization Profile Card */}
-        <FmCommonCard variant='outline' className='p-6'>
+        <FmCommonCard variant='default' className='p-6'>
           <div className='flex items-start gap-4'>
             <div className='p-3 rounded-none bg-fm-gold/10 border border-fm-gold/20'>
               <Settings className='h-6 w-6 text-fm-gold' />

@@ -25,6 +25,7 @@
     "upcomingEvents": "Upcoming Events",
     "pastEvents": "Past Events",
     "noEvents": "No events found",
+    "noMatchingEvents": "No events match your filters",
     "filterByDate": "Filter by Date",
     "filterByVenue": "Filter by Venue",
     "filterByGenre": "Filter by Genre",
@@ -83,6 +84,7 @@
   },
   "artistDetails": {
     "back": "Back",
+    "edit": "Edit",
     "events": "Events",
     "upcomingEvents": "Upcoming Events",
     "pastEvents": "Past Events",
@@ -578,6 +580,45 @@
       "title": "Something went wrong.",
       "subtitle": "We're working on fixing the problem. Please try again later.",
       "retry": "Try Again"
+    }
+  },
+  "userMetrics": {
+    "title": "User metrics",
+    "description": "Track user growth, engagement, and demographics.",
+    "totalUsers": "Total users",
+    "activeUsers": "Active users",
+    "inDateRange": "In selected period",
+    "newThisMonth": "New this month",
+    "newPast30Days": "New (30 days)",
+    "usersWithOrders": "With orders",
+    "avgOrders": "Avg orders/user",
+    "conversionRate": "Conversion rate",
+    "userGrowth": "User growth",
+    "dailyActivity": "Daily activity",
+    "topSpenders": "Top spenders",
+    "recentUsers": "Recent users",
+    "usersByCity": "Users by city",
+    "user": "User",
+    "orders": "Orders",
+    "totalSpent": "Total spent",
+    "joined": "Joined",
+    "spent": "Spent",
+    "lastActive": "Last active",
+    "noGrowthData": "No growth data",
+    "noGrowthDataDescription": "User growth data will appear here once users sign up",
+    "noActivityData": "No activity data",
+    "noActivityDataDescription": "Daily activity will appear here",
+    "noCityData": "No city data",
+    "noCityDataDescription": "City distribution will appear when users add their location",
+    "noSpenders": "No spending data",
+    "noSpendersDescription": "Top spenders will appear when users make purchases",
+    "noUsers": "No users yet",
+    "noUsersDescription": "Recent users will appear here",
+    "tabs": {
+      "growth": "Growth",
+      "activity": "Activity",
+      "engagement": "Engagement",
+      "demographics": "Demographics"
     }
   }
 }

@@ -31,6 +31,9 @@ export const FEATURE_FLAGS = {
 
   // Organization features
   ORGANIZATION_TOOLS: 'organization_tools',
+
+  // Dashboard features
+  RECORDING_RATINGS: 'recording_ratings',
 } as const;
 
 export type FeatureFlag = (typeof FEATURE_FLAGS)[keyof typeof FEATURE_FLAGS];
@@ -93,6 +96,10 @@ export const FEATURE_FLAG_METADATA: Record<
   [FEATURE_FLAGS.ORGANIZATION_TOOLS]: {
     displayName: 'Organization Tools',
     description: 'Enables organization management tools and routes',
+  },
+  [FEATURE_FLAGS.RECORDING_RATINGS]: {
+    displayName: 'Recording Ratings',
+    description: 'Enables the recording ratings dashboard for rating artist tracks',
   },
 };
 

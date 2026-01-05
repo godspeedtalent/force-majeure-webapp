@@ -36,6 +36,8 @@ export interface FmArtistSpotlightProps {
   showRecordings?: boolean;
   /** Custom class name */
   className?: string;
+  /** Optional action element to render in the header row (e.g., manage button) */
+  headerAction?: React.ReactNode;
 }
 
 /**
@@ -56,6 +58,7 @@ export function FmArtistSpotlight({
   artist,
   showRecordings = true,
   className,
+  headerAction,
 }: FmArtistSpotlightProps) {
   const { t: tCommon } = useTranslation('common');
 
@@ -137,9 +140,12 @@ export function FmArtistSpotlight({
 
             {/* Artist Info */}
             <div className='flex-1 flex flex-col justify-center min-w-0'>
-              <p className='text-[9px] uppercase tracking-[0.3em] text-white/50 font-canela mb-1'>
-                {tCommon('artistPreview.spotlight')}
-              </p>
+              <div className='flex items-center justify-between gap-2 mb-1'>
+                <p className='text-[9px] uppercase tracking-[0.3em] text-white/50 font-canela'>
+                  {tCommon('artistPreview.spotlight')}
+                </p>
+                {headerAction}
+              </div>
               <h1 className='text-2xl font-canela font-semibold text-white leading-tight mb-2 truncate'>
                 {artist.name}
               </h1>
@@ -288,9 +294,12 @@ export function FmArtistSpotlight({
             {/* Right: Content Column */}
             <div className='flex-1 flex flex-col gap-4 min-h-[320px]'>
               <div className='space-y-2'>
-                <p className='text-[10px] uppercase tracking-[0.35em] text-white/50 font-canela'>
-                  {tCommon('artistPreview.spotlight')}
-                </p>
+                <div className='flex items-center justify-between gap-2'>
+                  <p className='text-[10px] uppercase tracking-[0.35em] text-white/50 font-canela'>
+                    {tCommon('artistPreview.spotlight')}
+                  </p>
+                  {headerAction}
+                </div>
                 <h1 className='text-4xl font-canela font-semibold text-white leading-tight'>
                   {artist.name}
                 </h1>

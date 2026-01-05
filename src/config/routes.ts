@@ -216,9 +216,6 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
   '/admin/statistics': {
     label: 'Statistics',
   },
-  '/admin/logs': {
-    label: 'Activity Logs',
-  },
 
   // Demo Routes
   '/demo': {
@@ -236,7 +233,7 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
 
   // Developer pages
   '/developer': {
-    label: 'Developer Tools',
+    label: 'Developer Home',
   },
   '/developer/database': {
     label: 'Database Navigator',

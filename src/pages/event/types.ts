@@ -10,11 +10,13 @@ export interface ArtistSummary {
 export interface VenueDetails {
   id?: string;
   name: string;
+  description?: string | null;
   address?: string | null;
   city?: string | null;
   state?: string | null;
   zipCode?: string | null;
   image?: string | null;
+  logo?: string | null;
   website?: string | null;
   googleMapsUrl?: string | null;
 }

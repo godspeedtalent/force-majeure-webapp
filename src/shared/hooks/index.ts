@@ -46,3 +46,18 @@ export type {
   UseSequentialFadeOutOptions,
   UseSequentialFadeOutResult,
 } from './useSequentialFadeOut';
+
+// Fuzzy search hook
+export {
+  useFuzzySearch,
+  fuzzySearchKeys,
+  type FuzzySearchConfig,
+  type FuzzySearchResults,
+  type UseFuzzySearchReturn,
+  type SearchableTable,
+  type ArtistSearchResult,
+  type EventSearchResult,
+  type VenueSearchResult,
+  type ProfileSearchResult,
+  type OrganizationSearchResult,
+} from './useFuzzySearch';

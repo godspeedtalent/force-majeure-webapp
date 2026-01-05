@@ -36,7 +36,7 @@ export const EventGuestList = ({
 
   return (
     <FmCommonCard
-      variant='outline'
+      variant='default'
       onClick={isLoggedIn ? onCardClick : undefined}
       className='relative overflow-hidden'
     >

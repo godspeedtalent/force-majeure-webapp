@@ -24,6 +24,8 @@ interface FmCommonEmptyStateProps {
   size?: 'sm' | 'md' | 'lg';
   /** Additional CSS classes */
   className?: string;
+  /** Custom icon class names (e.g., for color) */
+  iconClassName?: string;
 }
 
 const sizeConfig = {
@@ -54,6 +56,7 @@ export const FmCommonEmptyState = ({
   action,
   size = 'md',
   className,
+  iconClassName,
 }: FmCommonEmptyStateProps) => {
   const { t } = useTranslation('common');
   const config = sizeConfig[size];
@@ -63,10 +66,10 @@ export const FmCommonEmptyState = ({
     <div className={cn('text-center', config.container, className)}>
       {Icon && (
         <Icon
-          className={cn(config.icon, 'text-muted-foreground mx-auto mb-4')}
+          className={cn(config.icon, 'mx-auto mb-4', iconClassName || 'text-muted-foreground')}
         />
       )}
-      <h3 className={cn(config.title, 'font-medium text-foreground mb-2')}>
+      <h3 className={cn(config.title, 'text-foreground mb-2')}>
         {displayTitle}
       </h3>
       {description && (

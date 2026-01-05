@@ -12,6 +12,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
+import { Layout } from '@/components/layout/Layout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
 import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
@@ -218,18 +219,20 @@ const ProfileEdit = () => {
 
   if (!user) {
     return (
-      <div className='flex items-center justify-center min-h-screen'>
-        <FmCommonCard>
-          <FmCommonCardContent className='p-12 text-center'>
-            <p className='text-muted-foreground mb-6'>
-              {t('profile.signInRequired')}
-            </p>
-            <FmCommonButton variant='gold' onClick={() => navigate('/auth')}>
-              {tCommon('nav.signIn')}
-            </FmCommonButton>
-          </FmCommonCardContent>
-        </FmCommonCard>
-      </div>
+      <Layout>
+        <div className='flex items-center justify-center min-h-[60vh]'>
+          <FmCommonCard>
+            <FmCommonCardContent className='p-12 text-center'>
+              <p className='text-muted-foreground mb-6'>
+                {t('profile.signInRequired')}
+              </p>
+              <FmCommonButton variant='gold' onClick={() => navigate('/auth')}>
+                {tCommon('nav.signIn')}
+              </FmCommonButton>
+            </FmCommonCardContent>
+          </FmCommonCard>
+        </div>
+      </Layout>
     );
   }
 

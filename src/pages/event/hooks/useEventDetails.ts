@@ -8,12 +8,14 @@ import { ArtistSummary, EventDetailsRecord, EventStatus, VenueDetails } from '..
 interface VenueRow {
   id: string;
   name: string;
+  description?: string | null;
   address_line_1?: string | null;
   address_line_2?: string | null;
   city?: string | null;
   state?: string | null;
   zip_code?: string | null;
   image_url?: string | null;
+  logo_url?: string | null;
   website?: string | null;
 }
 
@@ -73,11 +75,13 @@ const transformVenue = (venue: VenueRow | null): VenueDetails | null => {
   return {
     id: venue.id,
     name: venue.name,
+    description: venue.description ?? null,
     address,
     city: venue.city ?? null,
     state: venue.state ?? null,
     zipCode: venue.zip_code ?? null,
     image: venue.image_url ?? null,
+    logo: venue.logo_url ?? null,
     website: venue.website ?? null,
     googleMapsUrl: null, // Not stored in database yet
   };
@@ -163,7 +167,7 @@ const fetchEventDetails = async (
       description,
       hero_image,
       status,
-      venue:venues(id, name, address_line_1, address_line_2, city, state, zip_code, image_url, website),
+      venue:venues(id, name, description, address_line_1, address_line_2, city, state, zip_code, image_url, logo_url, website),
       headliner_artist:artists!events_headliner_id_fkey(id, name, genre, image_url),
       event_artists!left(
         set_time,

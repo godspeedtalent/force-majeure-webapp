@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FmCommonLoadingOverlay } from '@/components/common/feedback/FmCommonLoadingOverlay';
+import { Layout } from '@/components/layout/Layout';
 import { useProxyToken } from '@/shared/hooks/useProxyToken';
 
 export default function ProxyToken() {
@@ -12,5 +13,9 @@ export default function ProxyToken() {
     processToken();
   }, [processToken]);
 
-  return <FmCommonLoadingOverlay message={t('status.processingQRCode')} />;
+  return (
+    <Layout>
+      <FmCommonLoadingOverlay message={t('status.processingQRCode')} />
+    </Layout>
+  );
 }

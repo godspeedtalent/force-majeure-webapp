@@ -56,6 +56,7 @@
     "search": "搜索",
     "filter": "筛选",
     "clear": "清除",
+    "allClear": "全部清除",
     "apply": "应用",
     "reset": "重置",
     "upload": "上传",
@@ -91,6 +92,7 @@
     "soldOut": "已售罄",
     "joinWaitlist": "加入等待名单",
     "getTickets": "获取门票",
+    "pastEvent": "往期活动",
     "processing": "处理中...",
     "tryAgain": "重试",
     "setAsCover": "设为封面"
@@ -148,6 +150,7 @@
     "genre": "风格",
     "website": "网站",
     "artistImage": "艺术家图片",
+    "artistImages": "艺术家图片集",
     "genres": "风格",
     "instagram": "Instagram",
     "instagramHandle": "Instagram账号",
@@ -266,6 +269,17 @@
     "sources": {
       "direct": "直接访问",
       "unknown": "未知"
+    },
+    "dateRange": {
+      "last7Days": "过去7天",
+      "last30Days": "过去30天",
+      "last90Days": "过去90天"
+    },
+    "tabs": {
+      "traffic": "流量",
+      "funnel": "转化漏斗",
+      "performance": "性能",
+      "sessions": "会话"
     }
   },
   "time": {
@@ -409,6 +423,7 @@
   },
   "placeholders": {
     "search": "搜索...",
+    "searchByName": "按名称搜索...",
     "searchArtist": "搜索艺术家...",
     "searchVenue": "搜索场馆...",
     "searchGenre": "搜索风格...",
@@ -554,7 +569,8 @@
     "contactInformation": "联系信息",
     "socialProfile": "社交档案",
     "accountSecurity": "账户安全",
-    "preferences": "偏好设置"
+    "preferences": "偏好设置",
+    "artistGallery": "艺术家图库"
   },
   "createForms": {
     "orCreateManually": "或手动创建",
@@ -563,7 +579,8 @@
       "description": "添加新的艺术家档案，包括图片和流派元数据。",
       "helperText": "使用此表单创建占位符或正式艺术家记录。",
       "submitText": "创建艺术家",
-      "importFromSpotify": "从Spotify导入艺术家"
+      "importFromSpotify": "从Spotify导入艺术家",
+      "importFromSoundCloud": "从SoundCloud导入艺术家"
     },
     "venue": {
       "title": "创建场地",
@@ -581,7 +598,9 @@
   "artistDetails": {
     "defaultTitle": "艺术家",
     "spotlight": "艺术家聚焦",
-    "defaultDescription": "关于这位艺术家的更多信息即将推出。请在活动临近时回来查看演出时间、精选曲目和独家采访。"
+    "defaultDescription": "关于这位艺术家的更多信息即将推出。请在活动临近时回来查看演出时间、精选曲目和独家采访。",
+    "viewDetails": "查看艺人详情",
+    "manage": "管理艺人"
   },
   "scavenger": {
     "registration": {
@@ -915,7 +934,14 @@
     "ofFollowingRules": "以下规则：",
     "addRule": "添加规则",
     "clearAll": "清除全部",
-    "applyFilters": "应用筛选"
+    "applyFilters": "应用筛选",
+    "dateRange": {
+      "label": "日期范围",
+      "allTime": "所有时间",
+      "pastWeek": "过去一周",
+      "pastMonth": "过去一个月",
+      "pastYear": "过去一年"
+    }
   },
   "aria": {
     "closeSearch": "关闭搜索",
@@ -984,6 +1010,7 @@
   "gallery": {
     "noGalleryYet": "暂无图库",
     "createGalleryDescription": "创建图库以上传和管理该艺术家的宣传照片。",
+    "createEventGalleryDescription": "创建图库以上传和管理该活动的照片。第一张照片将成为主图。",
     "createGallery": "创建图库",
     "pressPhotos": "宣传照片",
     "pressPhotosDescription": "用于新闻和宣传的高质量照片。",
@@ -991,7 +1018,26 @@
     "noPhotosYet": "暂无照片",
     "uploadPhotosToGetStarted": "上传照片以开始。",
     "deletePhoto": "删除照片",
-    "deletePhotoConfirm": "确定要删除这张照片吗？此操作无法撤消。"
+    "deletePhotoConfirm": "确定要删除这张照片吗？此操作无法撤消。",
+    "heroImage": "主图",
+    "heroImageDescription": "主图在活动页面上显著展示。从下方图库中选择任何照片将其设为主图。",
+    "currentHeroImage": "当前主图",
+    "heroImageWillBeIncluded": "创建图库时将包含此主图。",
+    "noHeroImageYet": "暂无主图",
+    "uploadPhotoToSetHero": "上传照片以设为主图。",
+    "setAsHero": "设为主图",
+    "eventPhotos": "活动照片",
+    "eventPhotosDescription": "活动图库照片。点击任何照片上的星标将其设为主图。",
+    "profilePhoto": "头像照片",
+    "image": "图片",
+    "cover": "封面",
+    "setAsCover": "设为封面",
+    "addMore": "添加更多",
+    "maxImagesReached": "已达到最大图片数量",
+    "onlyUploadingCount": "由于限制，仅上传{{count}}张图片",
+    "uploadMultipleDescription": "最多上传10张图片。支持JPEG、PNG、WebP格式。",
+    "firstImageIsCover": "第一张图片将设为封面/头像。",
+    "imageCount": "{{count}}/{{max}}张图片"
   },
   "eventNav": {
     "eventDetails": "活动详情",
@@ -999,6 +1045,8 @@
     "viewEventDescription": "查看活动详情页面",
     "overview": "概览",
     "overviewDescription": "活动基本信息",
+    "gallery": "图库",
+    "galleryDescription": "管理活动照片和主图",
     "artists": "艺术家",
     "artistsDescription": "管理阵容和日程",
     "social": "社交",
@@ -1098,7 +1146,8 @@
     "heroImage": "主图",
     "enterEventTitle": "输入活动标题",
     "enterEventSubtitle": "输入活动副标题",
-    "enterEventDescription": "输入活动描述..."
+    "enterEventDescription": "输入活动描述...",
+    "showVenueMap": "在活动页面显示场馆地图"
   },
   "venueNav": {
     "venueDetails": "场馆详情",
@@ -1111,6 +1160,10 @@
     "basicInformation": "基本信息",
     "venueName": "场馆名称",
     "enterVenueName": "输入场馆名称",
+    "venueLogo": "场馆标志",
+    "venueLogoDescription": "显示在场馆名称旁边的方形标志或图标",
+    "description": "描述",
+    "descriptionPlaceholder": "输入场馆描述、设施、停车信息等",
     "venueImage": "场馆图片",
     "address": "地址",
     "streetAddress": "街道地址",
@@ -1119,6 +1172,13 @@
     "capacity": "容量",
     "deleteVenue": "删除场馆",
     "deleteVenueConfirm": "确定要删除此场馆吗？"
+  },
+  "venue": {
+    "location": "位置",
+    "noLocationAvailable": "暂无位置信息",
+    "viewOnGoogleMaps": "在地图中查看",
+    "mapTitle": "显示 {{address}} 的地图",
+    "mapLoadError": "无法加载地图"
   },
   "dataGrid": {
     "columnsLabel": "列",
@@ -1228,6 +1288,7 @@
     "uploading": "上传中...",
     "compressing": "压缩图片中...",
     "dropImageOr": "拖放图片到这里，或",
+    "dropImagesOr": "拖放图片到这里，或",
     "browse": "浏览",
     "supportedFormats": "JPEG、PNG、WebP 或 GIF（大图片会自动压缩）",
     "imageSource": "图片来源",
@@ -2424,7 +2485,9 @@
     "goHome": "返回首页",
     "manage": "管理",
     "capacity": "容量：{{count}}",
-    "upcomingEvents": "即将举行的活动"
+    "upcomingEvents": "即将举行的活动",
+    "viewDetails": "查看场地详情",
+    "visitWebsite": "访问网站"
   },
   "organizationsManagement": {
     "title": "组织管理",
@@ -2565,6 +2628,7 @@
   },
   "undercardApplication": {
     "callTimes": "演出时间表",
+    "artists": "艺人",
     "acceptingApplications": "正在接受暖场艺人申请",
     "modalTitle": "我们正在寻找本地人才。",
     "modalDescription": "我们正在寻找本地艺人为本次活动开场。如果您是DJ、制作人或表演者，我们很乐意听到您的消息。",
@@ -2573,7 +2637,20 @@
     "step2": "提交展示您风格的混音或小样",
     "step3": "我们会审核提交内容，如果合适会与您联系",
     "signUpAsArtist": "注册成为艺人",
-    "alreadyHaveProfile": "已有档案？我们会自动匹配您的账户。"
+    "alreadyHaveProfile": "已有档案？我们会自动匹配您的账户。",
+    "requestingAs": "以此艺人身份申请",
+    "suggestDjSet": "推荐一个DJ set",
+    "optional": "可选",
+    "searchDjSets": "搜索您的DJ sets...",
+    "djSetHint": "分享一个您引以为傲的set，帮助我们了解您的风格。",
+    "requestSlot": "申请暖场位置",
+    "submitting": "提交中...",
+    "or": "或",
+    "registerNewArtist": "注册其他艺人",
+    "alreadyRequested": "申请已提交",
+    "requestPending": "您的申请正在审核中。",
+    "requestApproved": "您的申请已通过！",
+    "requestRejected": "您的申请未被本次活动采纳。"
   },
   "artistProfile": {
     "yourArtistName": "您的艺人名称",
@@ -2610,9 +2687,11 @@
     "selectedCount": "{{count}} / {{max}} 已选择",
     "maximumReached": "已达最大数量",
     "searchGenres": "搜索流派...",
+    "searchAndAddGenres": "搜索并添加流派...",
     "addGenre": "添加流派",
     "startTyping": "开始输入以搜索流派",
-    "noGenresFound": "未找到 \"{{query}}\" 相关流派"
+    "noGenresFound": "未找到 \"{{query}}\" 相关流派",
+    "createNewGenre": "+ 创建新流派"
   },
   "activityLogFilters": {
     "search": "搜索",
@@ -2817,6 +2896,7 @@
     "description": "搜索所有数据库资源",
     "placeholder": "搜索用户、艺术家、活动...",
     "recentRecords": "最近记录",
+    "allTables": "所有表",
     "unknownUser": "未知用户",
     "tba": "待定",
     "noResults": "未找到\"{{query}}\"的结果",

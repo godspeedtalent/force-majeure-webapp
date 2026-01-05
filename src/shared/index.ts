@@ -294,3 +294,20 @@ export { useLocalStorage } from './hooks/useLocalStorage';
 
 // Shopping Cart
 export { ShoppingCartProvider, useShoppingCart } from './hooks/useShoppingCart';
+
+// Fuzzy search
+export {
+  useFuzzySearch,
+  fuzzySearchKeys,
+  type FuzzySearchConfig,
+  type FuzzySearchResults,
+  type UseFuzzySearchReturn,
+  type SearchableTable,
+} from './hooks/useFuzzySearch';
+export {
+  fuzzySearch,
+  reRankWithFuse,
+  calculateSimilarity,
+  type FuzzySearchOptions,
+  type FuzzySearchResult,
+} from './utils/fuzzySearch';

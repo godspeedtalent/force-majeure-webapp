@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo, useState } from 'react';
+import { useEffect, useRef, useMemo, useState, useCallback } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { supabase } from '@/shared';
 import { useFontLoader } from '@/shared';
@@ -10,6 +10,7 @@ import { getImageUrl } from '@/shared';
 import { logApiError } from '@/shared';
 import { IndexMobile } from './components/IndexMobile';
 import { IndexDesktop } from './components/IndexDesktop';
+import { SortDirection, DateRange } from '@/components/common/filters/FmListSortFilter';
 
 interface Artist {
   name: string;
@@ -71,6 +72,12 @@ const Index = () => {
   const [contentReady, setContentReady] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
   const eventsRef = useRef<HTMLDivElement>(null);
+
+  // Past events sorting and filtering state
+  const [pastEventsSortBy, setPastEventsSortBy] = useState<string>('date');
+  const [pastEventsSortDirection, setPastEventsSortDirection] = useState<SortDirection>('desc');
+  const [pastEventsSearchText, setPastEventsSearchText] = useState<string>('');
+  const [pastEventsDateRange, setPastEventsDateRange] = useState<DateRange>('all');
 
   // Determine if we have a single row of events (3 or fewer on desktop)
   const isSingleRow = !isMobile && upcomingEvents.length <= 3;
@@ -225,13 +232,80 @@ const Index = () => {
     [scrollY, isMobile]
   );
 
+  // Filter and sort past events based on current settings
+  const sortedPastEvents = useMemo(() => {
+    let filtered = [...pastEvents];
+
+    // Apply text search filter
+    if (pastEventsSearchText.trim()) {
+      const searchLower = pastEventsSearchText.toLowerCase().trim();
+      filtered = filtered.filter(event =>
+        event.title.toLowerCase().includes(searchLower) ||
+        event.headliner.name.toLowerCase().includes(searchLower) ||
+        event.venue.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Apply date range filter
+    if (pastEventsDateRange !== 'all') {
+      const now = new Date();
+      let cutoffDate: Date;
+
+      switch (pastEventsDateRange) {
+        case 'week':
+          cutoffDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          break;
+        case 'month':
+          cutoffDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+          break;
+        case 'year':
+          cutoffDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+          break;
+        default:
+          cutoffDate = new Date(0);
+      }
+
+      filtered = filtered.filter(event => new Date(event.date) >= cutoffDate);
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      let comparison = 0;
+      if (pastEventsSortBy === 'date') {
+        comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
+      } else if (pastEventsSortBy === 'name') {
+        comparison = a.title.localeCompare(b.title);
+      }
+      return pastEventsSortDirection === 'asc' ? comparison : -comparison;
+    });
+
+    return filtered;
+  }, [pastEvents, pastEventsSortBy, pastEventsSortDirection, pastEventsSearchText, pastEventsDateRange]);
+
+  // Callbacks for sort and filter changes
+  const handlePastEventsSortChange = useCallback((value: string) => {
+    setPastEventsSortBy(value);
+  }, []);
+
+  const handlePastEventsSortDirectionChange = useCallback((direction: SortDirection) => {
+    setPastEventsSortDirection(direction);
+  }, []);
+
+  const handlePastEventsSearchChange = useCallback((value: string) => {
+    setPastEventsSearchText(value);
+  }, []);
+
+  const handlePastEventsDateRangeChange = useCallback((value: DateRange) => {
+    setPastEventsDateRange(value);
+  }, []);
+
   return (
     <Layout enableScrollSnap={false}>
       <div className='min-h-screen relative'>
         {isMobile ? (
           <IndexMobile
             upcomingEvents={upcomingEvents}
-            pastEvents={pastEvents}
+            pastEvents={sortedPastEvents}
             loading={loading}
             showPastEvents={showPastEvents}
             setShowPastEvents={setShowPastEvents}
@@ -240,11 +314,20 @@ const Index = () => {
             activeSection={activeSection}
             scrollToSection={scrollToSection}
             contentReady={contentReady}
+            pastEventsSortBy={pastEventsSortBy}
+            onPastEventsSortChange={handlePastEventsSortChange}
+            pastEventsSortDirection={pastEventsSortDirection}
+            onPastEventsSortDirectionChange={handlePastEventsSortDirectionChange}
+            pastEventsSearchText={pastEventsSearchText}
+            onPastEventsSearchChange={handlePastEventsSearchChange}
+            pastEventsDateRange={pastEventsDateRange}
+            onPastEventsDateRangeChange={handlePastEventsDateRangeChange}
+            totalPastEventsCount={pastEvents.length}
           />
         ) : (
           <IndexDesktop
             upcomingEvents={upcomingEvents}
-            pastEvents={pastEvents}
+            pastEvents={sortedPastEvents}
             loading={loading}
             showPastEvents={showPastEvents}
             setShowPastEvents={setShowPastEvents}
@@ -254,6 +337,15 @@ const Index = () => {
             parallaxOffset={parallaxOffset}
             fadeOpacity={fadeOpacity}
             contentReady={contentReady}
+            pastEventsSortBy={pastEventsSortBy}
+            onPastEventsSortChange={handlePastEventsSortChange}
+            pastEventsSortDirection={pastEventsSortDirection}
+            onPastEventsSortDirectionChange={handlePastEventsSortDirectionChange}
+            pastEventsSearchText={pastEventsSearchText}
+            onPastEventsSearchChange={handlePastEventsSearchChange}
+            pastEventsDateRange={pastEventsDateRange}
+            onPastEventsDateRangeChange={handlePastEventsDateRangeChange}
+            totalPastEventsCount={pastEvents.length}
           />
         )}
       </div>

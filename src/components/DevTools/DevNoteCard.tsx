@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { MoreVertical } from 'lucide-react';
 import { FmCommonCard, FmCommonCardContent, FmCommonCardFooter } from '@/components/common/display/FmCommonCard';
 import { Separator } from '@/components/common/shadcn/separator';
+import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -120,12 +121,14 @@ export const DevNoteCard = ({
               <div className='flex items-start justify-end -mt-1'>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button
-                      className='hover:text-fm-gold transition-colors focus:outline-none'
+                    <FmCommonIconButton
+                      icon={MoreVertical}
+                      variant='secondary'
+                      size='sm'
+                      className='h-6 w-6 text-muted-foreground hover:text-fm-gold'
                       onClick={e => e.stopPropagation()}
-                    >
-                      <MoreVertical className='h-3 w-3 text-muted-foreground flex-shrink-0 hover:text-fm-gold' />
-                    </button>
+                      aria-label={t('devNotes.openMenu')}
+                    />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className='bg-card border-border rounded-none w-48'>
                     <DropdownMenuItem

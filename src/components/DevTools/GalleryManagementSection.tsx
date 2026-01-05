@@ -5,7 +5,7 @@
  * Allows creating galleries, uploading media, editing metadata, and reordering.
  */
 
-import { useState, useCallback, useRef, ChangeEvent } from 'react';
+import { useState, useCallback, useRef, ChangeEvent, useEffect } from 'react';
 import {
   ImagePlus,
   Trash2,
@@ -16,6 +16,9 @@ import {
   Music,
   FolderPlus,
   Star,
+  Pencil,
+  Check,
+  X,
 } from 'lucide-react';
 import { useGalleryManagement } from '@/features/media/hooks/useGalleryManagement';
 import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
@@ -60,6 +63,7 @@ export const GalleryManagementSection = () => {
     itemsLoading,
     deleteGallery,
     createGallery,
+    updateGallery,
     createMediaItem,
     updateMediaItem,
     deleteMediaItem,
@@ -86,6 +90,17 @@ export const GalleryManagementSection = () => {
   const [newGalleryName, setNewGalleryName] = useState('');
   const [newGallerySlug, setNewGallerySlug] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+
+  // Gallery name editing state
+  const [isEditingGalleryName, setIsEditingGalleryName] = useState(false);
+  const [editedGalleryName, setEditedGalleryName] = useState('');
+  const [isSavingGalleryName, setIsSavingGalleryName] = useState(false);
+
+  // Reset gallery name edit state when gallery changes
+  useEffect(() => {
+    setIsEditingGalleryName(false);
+    setEditedGalleryName(selectedGallery?.name || '');
+  }, [selectedGallery?.id]);
 
   // Edit form state
   const [editForm, setEditForm] = useState({
@@ -245,6 +260,41 @@ export const GalleryManagementSection = () => {
     [setSelectedGallery]
   );
 
+  // Handle gallery name save
+  const handleSaveGalleryName = async () => {
+    if (!selectedGallery || !editedGalleryName.trim()) return;
+
+    setIsSavingGalleryName(true);
+    try {
+      const success = await updateGallery(selectedGallery.id, {
+        name: editedGalleryName.trim(),
+      });
+
+      if (success) {
+        // Update local state with new name
+        setSelectedGallery({
+          ...selectedGallery,
+          name: editedGalleryName.trim(),
+        });
+        setIsEditingGalleryName(false);
+      }
+    } finally {
+      setIsSavingGalleryName(false);
+    }
+  };
+
+  // Handle cancel gallery name edit
+  const handleCancelGalleryNameEdit = () => {
+    setIsEditingGalleryName(false);
+    setEditedGalleryName(selectedGallery?.name || '');
+  };
+
+  // Start editing gallery name
+  const startEditingGalleryName = () => {
+    setEditedGalleryName(selectedGallery?.name || '');
+    setIsEditingGalleryName(true);
+  };
+
   return (
     <div className='space-y-4'>
       {/* Header with gallery selector */}
@@ -277,12 +327,60 @@ export const GalleryManagementSection = () => {
 
       {/* Gallery info */}
       {selectedGallery && (
-        <div className='text-xs text-muted-foreground'>
-          <span className='font-mono bg-white/5 px-1.5 py-0.5'>
-            {selectedGallery.slug}
-          </span>
-          <span className='mx-2'>•</span>
-          <span>{items.length} items</span>
+        <div className='space-y-2'>
+          {/* Gallery name with edit capability */}
+          <div className='flex items-center gap-2'>
+            {isEditingGalleryName ? (
+              <div className='flex items-center gap-2 flex-1'>
+                <input
+                  type='text'
+                  value={editedGalleryName}
+                  onChange={e => setEditedGalleryName(e.target.value)}
+                  className='flex-1 bg-white/5 border border-white/20 px-2 py-1 text-sm focus:border-fm-gold focus:outline-none'
+                  autoFocus
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') handleSaveGalleryName();
+                    if (e.key === 'Escape') handleCancelGalleryNameEdit();
+                  }}
+                />
+                <FmCommonIconButton
+                  icon={Check}
+                  size='sm'
+                  variant='gold'
+                  tooltip='Save'
+                  onClick={handleSaveGalleryName}
+                  disabled={isSavingGalleryName || !editedGalleryName.trim()}
+                />
+                <FmCommonIconButton
+                  icon={X}
+                  size='sm'
+                  variant='secondary'
+                  tooltip='Cancel'
+                  onClick={handleCancelGalleryNameEdit}
+                  disabled={isSavingGalleryName}
+                />
+              </div>
+            ) : (
+              <>
+                <span className='text-sm font-medium'>{selectedGallery.name}</span>
+                <FmCommonIconButton
+                  icon={Pencil}
+                  size='sm'
+                  variant='secondary'
+                  tooltip='Rename gallery'
+                  onClick={startEditingGalleryName}
+                />
+              </>
+            )}
+          </div>
+          {/* Slug and item count */}
+          <div className='text-xs text-muted-foreground'>
+            <span className='font-mono bg-white/5 px-1.5 py-0.5'>
+              {selectedGallery.slug}
+            </span>
+            <span className='mx-2'>•</span>
+            <span>{items.length} items</span>
+          </div>
         </div>
       )}
 

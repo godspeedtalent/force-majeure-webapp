@@ -1,5 +1,6 @@
 import { cn } from '@/shared';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import { Footer } from '@/components/navigation/Footer';
 
 interface EventDetailsLayoutProps {
   leftColumn: React.ReactNode;
@@ -35,9 +36,12 @@ export function EventDetailsLayout({
       </div>
 
       {/* Mobile: stacked layout */}
-      <div className='lg:hidden relative z-10'>
+      <div className='lg:hidden relative z-10 flex flex-col min-h-screen'>
         <div className='max-h-[40vh]'>{leftColumn}</div>
-        <div className='relative z-20'>{rightColumn}</div>
+        <div className='relative z-20 flex-1'>{rightColumn}</div>
+        <div className='relative z-20'>
+          <Footer />
+        </div>
       </div>
 
       {/* Desktop: two-column side-by-side layout */}
@@ -49,10 +53,11 @@ export function EventDetailsLayout({
 
         {/* Right Column - Content (scrollable, takes remaining space) - z-20 */}
         <div className='flex-1 overflow-y-auto relative h-screen z-20'>
-          <div className='relative flex items-center justify-center min-h-full'>
-            <div className='w-full max-w-4xl mx-auto px-8'>
+          <div className='relative flex flex-col min-h-full'>
+            <div className='w-full max-w-4xl mx-auto px-8 flex-1'>
               {rightColumn}
             </div>
+            <Footer />
           </div>
         </div>
       </div>

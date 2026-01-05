@@ -12,6 +12,7 @@ import type { Venue } from '@/features/events/types';
 
 export interface CreateVenueData {
   name: string;
+  description?: string | null;
   address_line_1?: string | null;
   address_line_2?: string | null;
   city?: string | null;
@@ -20,6 +21,7 @@ export interface CreateVenueData {
   capacity?: number | null;
   website?: string | null;
   image_url?: string | null;
+  logo_url?: string | null;
 }
 
 export interface UpdateVenueData extends Partial<CreateVenueData> {
@@ -36,7 +38,7 @@ export interface VenueFilters {
 const baseService = createService<Venue, CreateVenueData>({
   tableName: 'venues',
   serviceName: 'venueService',
-  defaultSelect: 'id, name, address_line_1, address_line_2, city, state, zip_code, capacity, website, image_url',
+  defaultSelect: 'id, name, description, address_line_1, address_line_2, city, state, zip_code, capacity, website, image_url, logo_url',
   defaultOrder: { column: 'name', ascending: true },
 });
 
@@ -193,7 +195,7 @@ export const venueService = {
   async getVenuesWithFilters(filters: VenueFilters): Promise<Venue[]> {
     let query = supabase
       .from('venues')
-      .select('id, name, address_line_1, address_line_2, city, state, zip_code, capacity, website, image_url');
+      .select('id, name, description, address_line_1, address_line_2, city, state, zip_code, capacity, website, image_url');
 
     if (filters.city) {
       query = query.eq('city', filters.city);

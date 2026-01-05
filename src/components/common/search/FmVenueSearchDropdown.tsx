@@ -5,18 +5,26 @@ interface Venue {
   id: string;
   name: string;
   city: string | null;
+  logo_url?: string | null;
 }
 
 export const FmVenueSearchDropdown = createSearchDropdown<Venue>({
   tableName: 'venues',
   searchField: 'name',
-  selectFields: 'id, name, city',
+  selectFields: 'id, name, city, logo_url',
   formatLabel: venue => `${venue.name}${venue.city ? ` - ${venue.city}` : ''}`,
-  renderIcon: () => (
-    <div className='h-8 w-8 rounded-full bg-white/10 flex items-center justify-center'>
-      <MapPin className='h-4 w-4 text-white/50' />
-    </div>
-  ),
+  renderIcon: venue =>
+    venue.logo_url ? (
+      <img
+        src={venue.logo_url}
+        alt={venue.name}
+        className='h-8 w-8 rounded-full object-cover'
+      />
+    ) : (
+      <div className='h-8 w-8 rounded-full bg-white/10 flex items-center justify-center'>
+        <MapPin className='h-4 w-4 text-white/50' />
+      </div>
+    ),
   defaultPlaceholder: 'Search for a venue...',
   createNewLabel: '+ Create New Venue',
   createRoute: '/venues/create',

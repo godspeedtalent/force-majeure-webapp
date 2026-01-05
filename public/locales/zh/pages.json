@@ -31,7 +31,8 @@
     "sortBy": "排序",
     "sortByDate": "日期",
     "sortByName": "名称",
-    "sortByPrice": "价格"
+    "sortByPrice": "价格",
+    "noMatchingEvents": "没有符合筛选条件的活动"
   },
   "eventDetails": {
     "about": "关于本活动",
@@ -83,6 +84,7 @@
   },
   "artistDetails": {
     "back": "返回",
+    "edit": "编辑",
     "events": "活动",
     "upcomingEvents": "即将举办的活动",
     "pastEvents": "往期活动",
@@ -578,6 +580,45 @@
       "title": "出错了。",
       "subtitle": "我们正在修复问题，请稍后重试。",
       "retry": "重试"
+    }
+  },
+  "userMetrics": {
+    "title": "用户指标",
+    "description": "追踪用户增长、参与度和人口统计信息。",
+    "totalUsers": "总用户数",
+    "activeUsers": "活跃用户",
+    "inDateRange": "在所选时期内",
+    "newThisMonth": "本月新增",
+    "newPast30Days": "新增（30天）",
+    "usersWithOrders": "有订单的用户",
+    "avgOrders": "平均订单/用户",
+    "conversionRate": "转化率",
+    "userGrowth": "用户增长",
+    "dailyActivity": "每日活动",
+    "topSpenders": "消费最高用户",
+    "recentUsers": "最近注册用户",
+    "usersByCity": "按城市分布",
+    "user": "用户",
+    "orders": "订单",
+    "totalSpent": "总消费",
+    "joined": "注册时间",
+    "spent": "消费",
+    "lastActive": "最后活动",
+    "noGrowthData": "暂无增长数据",
+    "noGrowthDataDescription": "用户注册后将显示增长数据",
+    "noActivityData": "暂无活动数据",
+    "noActivityDataDescription": "每日活动数据将显示在这里",
+    "noCityData": "暂无城市数据",
+    "noCityDataDescription": "用户添加位置后将显示城市分布",
+    "noSpenders": "暂无消费数据",
+    "noSpendersDescription": "用户购买后将显示消费最高用户",
+    "noUsers": "暂无用户",
+    "noUsersDescription": "最近注册用户将显示在这里",
+    "tabs": {
+      "growth": "增长",
+      "activity": "活动",
+      "engagement": "参与度",
+      "demographics": "人口统计"
     }
   }
 }

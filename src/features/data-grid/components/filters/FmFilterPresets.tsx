@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/common/shadcn/button';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
 import { X } from 'lucide-react';
 import { FilterPreset } from '../FmAdvancedFilterDialog';
 
@@ -29,22 +30,22 @@ export function FmFilterPresets({
             key={preset.id}
             className='flex items-center gap-1 bg-muted/30 rounded-none'
           >
-            <Button
-              variant='ghost'
+            <FmCommonButton
+              variant='secondary'
               size='sm'
               onClick={() => onLoadPreset(preset)}
               className='h-8 rounded-r-none'
             >
               {preset.name}
-            </Button>
-            <Button
-              variant='ghost'
+            </FmCommonButton>
+            <FmCommonIconButton
+              icon={X}
+              variant='destructive'
               size='sm'
               onClick={() => onDeletePreset(preset.id)}
-              className='h-8 w-8 p-0 rounded-l-none hover:bg-destructive/20 hover:text-destructive'
-            >
-              <X className='h-3 w-3' />
-            </Button>
+              className='h-8 w-8 rounded-l-none'
+              tooltip={t('buttons.delete')}
+            />
           </div>
         ))}
       </div>

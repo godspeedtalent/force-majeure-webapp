@@ -26,7 +26,7 @@ export const DemoLayout = ({
   condensed = false,
   showBackButton = true,
   onBack,
-  backButtonLabel = 'Database',
+  backButtonLabel = 'Developer Home',
 }: DemoLayoutProps) => {
   return (
     <>

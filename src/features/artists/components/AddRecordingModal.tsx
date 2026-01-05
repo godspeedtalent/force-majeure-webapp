@@ -330,7 +330,7 @@ export function AddRecordingModal({
 
         {/* Track Preview */}
         {trackData && !isLoading && (
-          <FmCommonCard variant="outline" className="p-0 overflow-hidden">
+          <FmCommonCard variant="default" className="p-0 overflow-hidden">
             <div className="flex gap-4">
               {/* Cover Art */}
               <div className="w-24 h-24 flex-shrink-0 relative">

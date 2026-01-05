@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Home, Database, Mail, Music, BarChart3, Star } from 'lucide-react';
+import { Home, Database, Mail } from 'lucide-react';
 import { Separator } from '@/components/common/shadcn/separator';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCollapsibleGroupHeader } from '@/components/common/data/FmCollapsibleGroupHeader';
@@ -9,8 +9,6 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/common/shadcn/context-menu';
-import { useFeatureFlagHelpers } from '@/shared';
-import { FEATURE_FLAGS } from '@/shared';
 
 interface DevNavigationTabContentProps {
   onNavigate: (path: string) => void;
@@ -19,7 +17,6 @@ interface DevNavigationTabContentProps {
 
 export function DevNavigationTabContent({ onNavigate, isAdmin: _isAdmin }: DevNavigationTabContentProps) {
   const { t } = useTranslation('common');
-  const { isFeatureEnabled } = useFeatureFlagHelpers();
 
   return (
     <div className='space-y-4'>
@@ -51,97 +48,6 @@ export function DevNavigationTabContent({ onNavigate, isAdmin: _isAdmin }: DevNa
                 </ContextMenuItem>
               </ContextMenuContent>
             </ContextMenu>
-          </div>
-        </FmCollapsibleGroupHeader>
-
-        {/* Dashboards Section */}
-        <FmCollapsibleGroupHeader title={t('devNavigation.dashboards')} count={2}>
-          <div className='flex flex-col gap-2'>
-            <ContextMenu>
-              <ContextMenuTrigger asChild>
-                <div>
-                  <FmCommonButton
-                    variant='default'
-                    icon={BarChart3}
-                    iconPosition='left'
-                    onClick={() => onNavigate('/admin/analytics')}
-                    className='w-full justify-start'
-                  >
-                    {t('devNavigation.analytics')}
-                  </FmCommonButton>
-                </div>
-              </ContextMenuTrigger>
-              <ContextMenuContent className='bg-card border-border rounded-none w-40'>
-                <ContextMenuItem
-                  onClick={() => onNavigate('/admin/analytics')}
-                  className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                >
-                  {t('devNavigation.goTo')}
-                </ContextMenuItem>
-              </ContextMenuContent>
-            </ContextMenu>
-            <ContextMenu>
-              <ContextMenuTrigger asChild>
-                <div>
-                  <FmCommonButton
-                    variant='default'
-                    icon={Star}
-                    iconPosition='left'
-                    onClick={() => onNavigate('/developer?tab=dash_recordings')}
-                    className='w-full justify-start'
-                  >
-                    {t('devNavigation.albumRatings')}
-                  </FmCommonButton>
-                </div>
-              </ContextMenuTrigger>
-              <ContextMenuContent className='bg-card border-border rounded-none w-40'>
-                <ContextMenuItem
-                  onClick={() => onNavigate('/developer?tab=dash_recordings')}
-                  className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                >
-                  {t('devNavigation.goTo')}
-                </ContextMenuItem>
-              </ContextMenuContent>
-            </ContextMenu>
-          </div>
-        </FmCollapsibleGroupHeader>
-
-        {/* Subdomains Section */}
-        <FmCollapsibleGroupHeader
-          title={t('devNavigation.subdomains')}
-          count={isFeatureEnabled(FEATURE_FLAGS.SONIC_GAUNTLET) ? 1 : 0}
-        >
-          <div className='flex flex-col gap-2'>
-            {isFeatureEnabled(FEATURE_FLAGS.SONIC_GAUNTLET) && (
-              <ContextMenu>
-                <ContextMenuTrigger asChild>
-                  <div>
-                    <FmCommonButton
-                      variant='default'
-                      icon={Music}
-                      iconPosition='left'
-                      onClick={() => onNavigate('/sonic-gauntlet')}
-                      className='w-full justify-start'
-                    >
-                      {t('devNavigation.sonicGauntlet')}
-                    </FmCommonButton>
-                  </div>
-                </ContextMenuTrigger>
-                <ContextMenuContent className='bg-card border-border rounded-none w-40'>
-                  <ContextMenuItem
-                    onClick={() => onNavigate('/sonic-gauntlet')}
-                    className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                  >
-                    {t('devNavigation.goTo')}
-                  </ContextMenuItem>
-                </ContextMenuContent>
-              </ContextMenu>
-            )}
-            {!isFeatureEnabled(FEATURE_FLAGS.SONIC_GAUNTLET) && (
-              <p className='text-[10px] text-white/30 px-2'>
-                {t('devNavigation.noSubdomains')}
-              </p>
-            )}
           </div>
         </FmCollapsibleGroupHeader>
 

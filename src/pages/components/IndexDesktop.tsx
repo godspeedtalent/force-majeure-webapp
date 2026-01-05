@@ -1,7 +1,10 @@
 import { useTranslation } from 'react-i18next';
+import { CalendarX, History, ChevronUp } from 'lucide-react';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonEmptyState } from '@/components/common/display/FmCommonEmptyState';
 import { FmArtistUndercardCard } from '@/components/common/display/FmArtistUndercardCard';
+import { FmListSortFilter, SortDirection, DateRange } from '@/components/common/filters/FmListSortFilter';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import { EventCard } from '@/features/events/components/EventCard';
@@ -41,6 +44,24 @@ export interface IndexDesktopProps {
   parallaxOffset: number;
   fadeOpacity: number;
   contentReady: boolean;
+  /** Sort field for past events */
+  pastEventsSortBy: string;
+  /** Callback when past events sort changes */
+  onPastEventsSortChange: (value: string) => void;
+  /** Sort direction for past events */
+  pastEventsSortDirection: SortDirection;
+  /** Callback when past events sort direction changes */
+  onPastEventsSortDirectionChange: (direction: SortDirection) => void;
+  /** Search text for past events */
+  pastEventsSearchText: string;
+  /** Callback when past events search changes */
+  onPastEventsSearchChange: (value: string) => void;
+  /** Date range filter for past events */
+  pastEventsDateRange: DateRange;
+  /** Callback when past events date range changes */
+  onPastEventsDateRangeChange: (value: DateRange) => void;
+  /** Total count of past events before filtering */
+  totalPastEventsCount: number;
 }
 
 export function IndexDesktop({
@@ -55,6 +76,15 @@ export function IndexDesktop({
   parallaxOffset,
   fadeOpacity,
   contentReady,
+  pastEventsSortBy,
+  onPastEventsSortChange,
+  pastEventsSortDirection,
+  onPastEventsSortDirectionChange,
+  pastEventsSearchText,
+  onPastEventsSearchChange,
+  pastEventsDateRange,
+  onPastEventsDateRangeChange,
+  totalPastEventsCount,
 }: IndexDesktopProps) {
   const { t } = useTranslation('pages');
 
@@ -93,35 +123,120 @@ export function IndexDesktop({
         {/* Events Section - Bottom Row */}
         <div ref={eventsRef} className='flex items-center justify-center' data-section-id='events'>
           <div className='max-w-7xl mx-auto animate-fade-in w-full'>
-            <div className='flex justify-center items-center gap-8'>
+            <div className='grid grid-cols-3 gap-8 justify-items-center'>
               {loading ? (
-                Array.from({ length: 6 }).map((_, idx) => (
+                Array.from({ length: 3 }).map((_, idx) => (
                   <EventCardSkeleton key={`skeleton-${idx}`} />
                 ))
               ) : upcomingEvents.length > 0 ? (
-                upcomingEvents.map(event =>
-                  event.is_tba ? (
-                    <FmTbaEventCard
-                      key={event.id}
-                      event={{
-                        id: event.id,
-                        date: event.date,
-                        time: event.time,
-                        venue: event.venue !== 'TBA' ? event.venue : undefined,
-                        is_tba: true,
-                      }}
-                      isSingleRow={isSingleRow}
-                    />
-                  ) : (
-                    <EventCard key={event.id} event={event} isSingleRow={isSingleRow} />
-                  )
-                )
+                <>
+                  {upcomingEvents.map(event =>
+                    event.is_tba ? (
+                      <FmTbaEventCard
+                        key={event.id}
+                        event={{
+                          id: event.id,
+                          date: event.date,
+                          time: event.time,
+                          venue: event.venue !== 'TBA' ? event.venue : undefined,
+                          is_tba: true,
+                        }}
+                        isSingleRow={isSingleRow}
+                      />
+                    ) : (
+                      <EventCard key={event.id} event={event} isSingleRow={isSingleRow} />
+                    )
+                  )}
+                  {/* Empty placeholder cells to maintain 3-column layout */}
+                  {Array.from({ length: 3 - upcomingEvents.length }).map((_, idx) => (
+                    <div key={`placeholder-${idx}`} className='w-full max-w-[40vw] min-w-[320px]' />
+                  ))}
+                </>
               ) : (
-                <div className='flex justify-center'>
-                  <FmArtistUndercardCard />
+                <div className='col-span-3 flex flex-col items-center w-full my-[40px]'>
+                  <FmArtistUndercardCard className='mb-[40px]' />
+                  <FmCommonEmptyState
+                    icon={CalendarX}
+                    title={t('home.noUpcomingEvents')}
+                    size='sm'
+                    iconClassName='text-fm-gold'
+                  />
                 </div>
               )}
             </div>
+
+            {/* Divider between empty state and past events button */}
+            {!loading && upcomingEvents.length === 0 && totalPastEventsCount > 0 && (
+              <DecorativeDivider marginTop='mt-[40px]' marginBottom='mb-[20px]' opacity={0.2} />
+            )}
+
+            {/* Display Past Events Button */}
+            {!loading && totalPastEventsCount > 0 && (
+              <div className={`flex justify-center ${upcomingEvents.length === 0 ? 'mt-[20px]' : 'mt-[40px]'}`}>
+                <FmCommonButton
+                  onClick={() => setShowPastEvents(!showPastEvents)}
+                  variant='secondary'
+                  icon={showPastEvents ? ChevronUp : History}
+                  iconPosition='left'
+                >
+                  {showPastEvents ? t('home.hidePastEvents') : t('home.showPastEvents')}
+                </FmCommonButton>
+              </div>
+            )}
+
+            {/* Past Events Section */}
+            {!loading && showPastEvents && totalPastEventsCount > 0 && (
+              <div className='mt-[60px]'>
+                <div className='flex items-center justify-between mb-[40px]'>
+                  <h2 className='text-2xl lg:text-3xl font-canela text-foreground'>
+                    {t('home.pastEventsTitle')}
+                  </h2>
+                  <FmListSortFilter
+                    sortBy={pastEventsSortBy}
+                    onSortChange={onPastEventsSortChange}
+                    sortOptions={[
+                      { value: 'date', label: t('events.sortByDate') },
+                      { value: 'name', label: t('events.sortByName') },
+                    ]}
+                    sortDirection={pastEventsSortDirection}
+                    onSortDirectionChange={onPastEventsSortDirectionChange}
+                    searchText={pastEventsSearchText}
+                    onSearchChange={onPastEventsSearchChange}
+                    dateRange={pastEventsDateRange}
+                    onDateRangeChange={onPastEventsDateRangeChange}
+                    compact
+                  />
+                </div>
+                {pastEvents.length > 0 ? (
+                  <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center'>
+                    {pastEvents.map(event =>
+                      event.is_tba ? (
+                        <FmTbaEventCard
+                          key={event.id}
+                          event={{
+                            id: event.id,
+                            date: event.date,
+                            time: event.time,
+                            venue: event.venue !== 'TBA' ? event.venue : undefined,
+                            is_tba: true,
+                          }}
+                          isSingleRow={false}
+                        />
+                      ) : (
+                        <EventCard key={event.id} event={event} isSingleRow={false} isPastEvent />
+                      )
+                    )}
+                  </div>
+                ) : (
+                  <FmCommonEmptyState
+                    icon={CalendarX}
+                    title={t('events.noMatchingEvents')}
+                    size='sm'
+                    iconClassName='text-fm-gold'
+                  />
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -193,18 +308,31 @@ export function IndexDesktop({
               )
             )
           ) : (
-            <div className='col-span-full flex justify-center'>
-              <FmArtistUndercardCard />
+            <div className='col-span-full flex flex-col items-center w-full my-[40px]'>
+              <FmArtistUndercardCard className='mb-[40px]' />
+              <FmCommonEmptyState
+                icon={CalendarX}
+                title={t('home.noUpcomingEvents')}
+                size='sm'
+                iconClassName='text-fm-gold'
+              />
             </div>
           )}
         </div>
 
+        {/* Divider between empty state and past events button */}
+        {!loading && upcomingEvents.length === 0 && totalPastEventsCount > 0 && (
+          <DecorativeDivider marginTop='mt-[40px]' marginBottom='mb-[20px]' opacity={0.2} />
+        )}
+
         {/* Display Past Events Button */}
-        {!loading && pastEvents.length > 0 && (
-          <div className='flex justify-center mt-[40px]'>
+        {!loading && totalPastEventsCount > 0 && (
+          <div className={`flex justify-center ${upcomingEvents.length === 0 ? 'mt-[20px]' : 'mt-[40px]'}`}>
             <FmCommonButton
               onClick={() => setShowPastEvents(!showPastEvents)}
               variant='secondary'
+              icon={showPastEvents ? ChevronUp : History}
+              iconPosition='left'
             >
               {showPastEvents ? t('home.hidePastEvents') : t('home.showPastEvents')}
             </FmCommonButton>
@@ -212,30 +340,56 @@ export function IndexDesktop({
         )}
 
         {/* Past Events Section */}
-        {!loading && showPastEvents && pastEvents.length > 0 && (
+        {!loading && showPastEvents && totalPastEventsCount > 0 && (
           <div className='mt-[60px]'>
-            <h2 className='text-2xl lg:text-3xl font-canela text-fm-gold mb-[40px] text-center'>
-              {t('home.pastEventsTitle')}
-            </h2>
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center'>
-              {pastEvents.map(event =>
-                event.is_tba ? (
-                  <FmTbaEventCard
-                    key={event.id}
-                    event={{
-                      id: event.id,
-                      date: event.date,
-                      time: event.time,
-                      venue: event.venue !== 'TBA' ? event.venue : undefined,
-                      is_tba: true,
-                    }}
-                    isSingleRow={false}
-                  />
-                ) : (
-                  <EventCard key={event.id} event={event} isSingleRow={false} isPastEvent />
-                )
-              )}
+            <div className='flex items-center justify-between mb-[40px]'>
+              <h2 className='text-2xl lg:text-3xl font-canela text-foreground'>
+                {t('home.pastEventsTitle')}
+              </h2>
+              <FmListSortFilter
+                sortBy={pastEventsSortBy}
+                onSortChange={onPastEventsSortChange}
+                sortOptions={[
+                  { value: 'date', label: t('events.sortByDate') },
+                  { value: 'name', label: t('events.sortByName') },
+                ]}
+                sortDirection={pastEventsSortDirection}
+                onSortDirectionChange={onPastEventsSortDirectionChange}
+                searchText={pastEventsSearchText}
+                onSearchChange={onPastEventsSearchChange}
+                dateRange={pastEventsDateRange}
+                onDateRangeChange={onPastEventsDateRangeChange}
+                compact
+              />
             </div>
+            {pastEvents.length > 0 ? (
+              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center'>
+                {pastEvents.map(event =>
+                  event.is_tba ? (
+                    <FmTbaEventCard
+                      key={event.id}
+                      event={{
+                        id: event.id,
+                        date: event.date,
+                        time: event.time,
+                        venue: event.venue !== 'TBA' ? event.venue : undefined,
+                        is_tba: true,
+                      }}
+                      isSingleRow={false}
+                    />
+                  ) : (
+                    <EventCard key={event.id} event={event} isSingleRow={false} isPastEvent />
+                  )
+                )}
+              </div>
+            ) : (
+              <FmCommonEmptyState
+                icon={CalendarX}
+                title={t('events.noMatchingEvents')}
+                size='sm'
+                iconClassName='text-fm-gold'
+              />
+            )}
           </div>
         )}
       </div>

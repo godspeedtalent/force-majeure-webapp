@@ -200,6 +200,10 @@
     "deleteFailed": "Error al eliminar género(s)",
     "nameRequired": "El nombre del género es requerido"
   },
+  "undercardRequest": {
+    "submitted": "Solicitud de telonero enviada exitosamente",
+    "failed": "Error al enviar solicitud de telonero"
+  },
   "admin": {
     "userUpdated": "Usuario actualizado",
     "userUpdateFailed": "Error al actualizar usuario",
@@ -291,7 +295,12 @@
     "itemDeleted": "Foto eliminada",
     "deleteItemFailed": "Error al eliminar foto",
     "imageUploaded": "Foto subida exitosamente",
-    "uploadFailed": "Error al subir foto"
+    "imagesUploaded": "{{count}} fotos subidas exitosamente",
+    "uploadFailed": "Error al subir foto",
+    "coverSet": "Foto de perfil establecida",
+    "setCoverFailed": "Error al establecer foto de perfil",
+    "heroImageSet": "Imagen principal establecida",
+    "setHeroFailed": "Error al establecer imagen principal"
   },
   "recordings": {
     "noUrlFound": "No se encontró URL para esta grabación",

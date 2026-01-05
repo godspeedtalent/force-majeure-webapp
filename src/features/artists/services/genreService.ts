@@ -393,33 +393,107 @@ export async function getGenreTree(): Promise<GenreTree> {
 
 /**
  * Search genres by name (partial match, case-insensitive)
+ * Results are sorted by relevance:
+ * 1. Exact match (case-insensitive)
+ * 2. Prefix match (starts with query) - sorted by popularity
+ * 3. Substring match (contains query) - sorted by popularity
+ * Within each tier, results are sorted by selection count (popularity), then alphabetically
  */
 export async function searchGenres(query: string, limit: number = 20): Promise<Genre[]> {
   try {
     logger.info('Searching genres', { source: 'searchGenres', details: { query, limit } });
 
+    // Fetch more results than limit to allow for relevance sorting
     const { data, error } = await supabase
       .from('genres')
       .select('*')
       .ilike('name', `%${query}%`)
-      .order('name', { ascending: true })
-      .limit(limit);
+      .limit(limit * 3);
 
     if (error) {
       logApiError({ message: 'Failed to search genres', source: 'searchGenres', details: error });
       throw error;
     }
 
-    return data.map(row => ({
+    const queryLower = query.toLowerCase();
+
+    // Score results by relevance
+    const scoredResults = data.map(row => {
+      const nameLower = row.name.toLowerCase();
+      let score: number;
+
+      if (nameLower === queryLower) {
+        // Exact match - highest priority
+        score = 0;
+      } else if (nameLower.startsWith(queryLower)) {
+        // Prefix match - second priority
+        score = 1;
+      } else {
+        // Substring match - lowest priority
+        score = 2;
+      }
+
+      return {
+        row,
+        score,
+        selectionCount: (row as { selection_count?: number }).selection_count ?? 0,
+      };
+    });
+
+    // Sort by score first, then by selection count (popularity), then alphabetically
+    scoredResults.sort((a, b) => {
+      // Primary: relevance score (exact > prefix > substring)
+      if (a.score !== b.score) {
+        return a.score - b.score;
+      }
+      // Secondary: popularity (higher selection count first)
+      if (a.selectionCount !== b.selectionCount) {
+        return b.selectionCount - a.selectionCount;
+      }
+      // Tertiary: alphabetical
+      return a.row.name.localeCompare(b.row.name);
+    });
+
+    // Take the top results after sorting
+    return scoredResults.slice(0, limit).map(({ row, selectionCount }) => ({
       id: row.id,
       name: row.name,
       parentId: row.parent_id,
       createdAt: row.created_at ?? null,
       updatedAt: row.updated_at ?? null,
+      selectionCount,
     }));
   } catch (error) {
     logger.error('Failed to search genres', { error, query });
     throw error;
+  }
+}
+
+/**
+ * Increment the selection count for a genre (for popularity tracking)
+ * Called when a user selects a genre
+ */
+export async function trackGenreSelection(genreId: string): Promise<void> {
+  try {
+    // Note: RPC function created by migration 20260106200000_add_selection_count_to_genres.sql
+    // Using type assertion until types are regenerated after migration
+    const { error } = await (supabase as any).rpc('increment_genre_selection_count', {
+      genre_id: genreId,
+    });
+
+    if (error) {
+      // Don't throw - this is a non-critical tracking operation
+      logger.warn('Failed to track genre selection', {
+        source: 'trackGenreSelection',
+        details: { genreId, error: error.message },
+      });
+    }
+  } catch (error) {
+    // Silently fail - tracking shouldn't break the main flow
+    logger.warn('Exception tracking genre selection', {
+      source: 'trackGenreSelection',
+      details: { genreId, error: error instanceof Error ? error.message : String(error) },
+    });
   }
 }
 

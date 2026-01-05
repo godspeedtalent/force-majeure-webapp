@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { ExternalLinkDialog } from '@/components/business/ExternalLinkDialog';
 import { FmDateBox } from '@/components/common/display/FmDateBox';
 import { FmUndercardList } from '@/components/common/display/FmUndercardList';
-import { Button } from '@/components/common/shadcn/button';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import {
   FmCommonContextMenu,
   ContextMenuAction,
@@ -197,14 +197,15 @@ export const EventCard = ({ event, isSingleRow = false, isPastEvent = false }: E
                 {/* Action Buttons - Push to bottom */}
                 {!isPastEvent && event.ticketUrl && (
                   <div className='flex gap-2 mt-auto'>
-                    <Button
+                    <FmCommonButton
                       size='sm'
                       onClick={handleTicketsClick}
-                      className='flex-1 bg-fm-gold hover:bg-fm-gold/90 text-background font-medium transition-all duration-200'
+                      variant='gold'
+                      icon={ExternalLink}
+                      className='flex-1'
                     >
-                      <ExternalLink className='w-4 h-4 mr-2' />
                       {t('eventCard.getTickets')}
-                    </Button>
+                    </FmCommonButton>
                   </div>
                 )}
               </div>

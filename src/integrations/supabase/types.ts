@@ -1315,6 +1315,7 @@ export type Database = {
           description: string | null
           display_subtitle: boolean
           end_time: string | null
+          gallery_id: string | null
           headliner_id: string | null
           hero_image: string | null
           hero_image_focal_x: number | null
@@ -1327,6 +1328,7 @@ export type Database = {
           min_share_count_display: number
           organization_id: string | null
           share_count: number
+          show_venue_map: boolean
           show_view_count: boolean | null
           start_time: string | null
           status: string
@@ -1342,6 +1344,7 @@ export type Database = {
           description?: string | null
           display_subtitle?: boolean
           end_time?: string | null
+          gallery_id?: string | null
           headliner_id?: string | null
           hero_image?: string | null
           hero_image_focal_x?: number | null
@@ -1354,6 +1357,7 @@ export type Database = {
           min_share_count_display?: number
           organization_id?: string | null
           share_count?: number
+          show_venue_map?: boolean
           show_view_count?: boolean | null
           start_time?: string | null
           status?: string
@@ -1369,6 +1373,7 @@ export type Database = {
           description?: string | null
           display_subtitle?: boolean
           end_time?: string | null
+          gallery_id?: string | null
           headliner_id?: string | null
           hero_image?: string | null
           hero_image_focal_x?: number | null
@@ -1381,6 +1386,7 @@ export type Database = {
           min_share_count_display?: number
           organization_id?: string | null
           share_count?: number
+          show_venue_map?: boolean
           show_view_count?: boolean | null
           start_time?: string | null
           status?: string
@@ -3322,6 +3328,7 @@ export type Database = {
           city: string | null
           city_id: string | null
           created_at: string | null
+          description: string | null
           id: string
           image_url: string | null
           name: string
@@ -3338,6 +3345,7 @@ export type Database = {
           city?: string | null
           city_id?: string | null
           created_at?: string | null
+          description?: string | null
           id?: string
           image_url?: string | null
           name: string
@@ -3354,6 +3362,7 @@ export type Database = {
           city?: string | null
           city_id?: string | null
           created_at?: string | null
+          description?: string | null
           id?: string
           image_url?: string | null
           name?: string
@@ -3521,6 +3530,10 @@ export type Database = {
       convert_hold_to_sale: { Args: { p_hold_id: string }; Returns: boolean }
       create_artist_gallery: {
         Args: { p_artist_id: string; p_artist_name: string }
+        Returns: string
+      }
+      create_event_gallery: {
+        Args: { p_event_id: string; p_event_title: string }
         Returns: string
       }
       create_event_with_tiers: {

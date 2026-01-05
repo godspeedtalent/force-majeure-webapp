@@ -1,13 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { Input } from '@/components/common/shadcn/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/common/shadcn/select';
-import { Button } from '@/components/common/shadcn/button';
+import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
+import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
+import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
 import { X } from 'lucide-react';
 import { DataGridColumn } from '../FmDataGrid';
 import { FilterRule, FilterOperator } from '../FmAdvancedFilterDialog';
@@ -50,60 +44,54 @@ export function FmFilterRuleRow({
   const operator = OPERATORS.find(op => op.value === rule.operator);
   const requiresValue = operator?.requiresValue ?? true;
 
+  const columnOptions = filterableColumns.map(col => ({
+    value: col.key,
+    label: col.label,
+  }));
+
+  const operatorOptions = OPERATORS.map(op => ({
+    value: op.value,
+    label: t(op.labelKey),
+  }));
+
   return (
     <div className='flex items-start gap-2 p-3 border border-border/50 rounded-none bg-muted/20'>
       <span className='text-xs text-muted-foreground mt-2 w-6'>{index + 1}.</span>
 
       {/* Column */}
-      <Select value={rule.column} onValueChange={value => onUpdate(rule.id, { column: value })}>
-        <SelectTrigger className='w-40'>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {filterableColumns.map(col => (
-            <SelectItem key={col.key} value={col.key}>
-              {col.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <FmCommonSelect
+        value={rule.column}
+        onChange={value => onUpdate(rule.id, { column: value })}
+        options={columnOptions}
+        className='w-40'
+      />
 
       {/* Operator */}
-      <Select
+      <FmCommonSelect
         value={rule.operator}
-        onValueChange={(value: FilterOperator) => onUpdate(rule.id, { operator: value })}
-      >
-        <SelectTrigger className='w-48'>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {OPERATORS.map(op => (
-            <SelectItem key={op.value} value={op.value}>
-              {t(op.labelKey)}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+        onChange={(value) => onUpdate(rule.id, { operator: value as FilterOperator })}
+        options={operatorOptions}
+        className='w-48'
+      />
 
       {/* Value */}
       {requiresValue && (
-        <Input
+        <FmCommonTextField
           placeholder={t('dataGrid.valuePlaceholder')}
           value={rule.value}
           onChange={e => onUpdate(rule.id, { value: e.target.value })}
-          className='flex-1'
+          containerClassName='flex-1'
         />
       )}
 
       {/* Remove */}
-      <Button
-        variant='ghost'
+      <FmCommonIconButton
+        icon={X}
+        variant='destructive'
         size='sm'
         onClick={() => onRemove(rule.id)}
-        className='h-10 w-10 p-0 hover:bg-destructive/20 hover:text-destructive'
-      >
-        <X className='h-4 w-4' />
-      </Button>
+        tooltip={t('buttons.remove')}
+      />
     </div>
   );
 }

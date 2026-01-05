@@ -362,6 +362,11 @@ export function FmDataGrid<T extends Record<string, any>>({
 
   // Drag select handlers
   const handleMouseDown = (index: number, event: React.MouseEvent) => {
+    // Don't start drag mode on right-click (context menu)
+    if (event.button === 2) {
+      return;
+    }
+
     // Don't start drag mode if we're resizing columns
     if (resizingColumn) {
       return;

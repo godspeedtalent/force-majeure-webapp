@@ -9,6 +9,8 @@ interface FmBigButtonProps
   isLoading?: boolean;
   /** Sold out state */
   isSoldOut?: boolean;
+  /** Past event state - shows 'Past Event' text and disables button */
+  isPastEvent?: boolean;
   /** Show urgency indicator */
   urgency?: 'none' | 'limited' | 'selling-fast' | 'last-chance';
   /** Enable join waitlist mode (for sold out) */
@@ -41,6 +43,7 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
       className,
       isLoading = false,
       isSoldOut = false,
+      isPastEvent = false,
       urgency = 'none',
       showWaitlist = false,
       disableAnimations = false,
@@ -74,7 +77,7 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
 
     // Generate sparkles on hover (more subtle)
     useEffect(() => {
-      if (isHovered && !disableAnimations && !isSoldOut && !isLoading) {
+      if (isHovered && !disableAnimations && !isSoldOut && !isPastEvent && !isLoading) {
         sparkleIntervalRef.current = setInterval(() => {
           const newSparkle = {
             x: Math.random() * 100,
@@ -96,7 +99,7 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
           clearInterval(sparkleIntervalRef.current);
         }
       };
-    }, [isHovered, disableAnimations, isSoldOut, isLoading]);
+    }, [isHovered, disableAnimations, isSoldOut, isPastEvent, isLoading]);
 
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
       if (disabled || isLoading) return;
@@ -130,20 +133,25 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
       },
     };
 
-    const showUrgency = urgency !== 'none' && !isSoldOut && !isLoading;
+    const showUrgency = urgency !== 'none' && !isSoldOut && !isPastEvent && !isLoading;
     const urgencyInfo = urgency !== 'none' ? urgencyConfig[urgency] : null;
 
-    const buttonText = isSoldOut
-      ? showWaitlist
-        ? t('buttons.joinWaitlist')
-        : t('buttons.soldOut')
-      : children || t('buttons.getTickets');
+    // Determine if button should show disabled state styling
+    const isDisabledState = isSoldOut || isPastEvent;
+
+    const buttonText = isPastEvent
+      ? t('buttons.pastEvent')
+      : isSoldOut
+        ? showWaitlist
+          ? t('buttons.joinWaitlist')
+          : t('buttons.soldOut')
+        : children || t('buttons.getTickets');
 
     return (
       <button
         ref={buttonRef}
         type='button'
-        disabled={disabled || isLoading || (isSoldOut && !showWaitlist)}
+        disabled={disabled || isLoading || isPastEvent || (isSoldOut && !showWaitlist)}
         onClick={handleClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -157,33 +165,33 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
           // Cursor
           !disabled && !isLoading && 'cursor-pointer',
           // Base state with dusty gold
-          isSoldOut && !showWaitlist
+          isDisabledState && !showWaitlist
             ? 'border-2 border-border bg-background text-muted-foreground'
             : 'border-2 border-fm-gold/50 bg-background text-fm-gold',
           // Hover transform
           !disabled &&
             !isLoading &&
-            !isSoldOut &&
+            !isDisabledState &&
             'hover:border-fm-gold/70 hover:bg-fm-gold/5 hover:scale-[1.02]',
           // Active state
-          !disabled && !isLoading && !isSoldOut && 'active:scale-[0.99]',
+          !disabled && !isLoading && !isDisabledState && 'active:scale-[0.99]',
           className
         )}
         style={{
-          boxShadow: isSoldOut
+          boxShadow: isDisabledState
             ? 'none'
             : isHovered
               ? '0 0 24px rgb(223 186 125 / 0.2), 0 0 12px rgb(223 186 125 / 0.1), inset 0 0 20px rgb(223 186 125 / 0.06)'
               : '0 0 16px rgb(223 186 125 / 0.12), inset 0 0 12px rgb(223 186 125 / 0.04)',
           animation:
-            !disabled && !isLoading && !isSoldOut && isHovered
+            !disabled && !isLoading && !isDisabledState && isHovered
               ? 'border-ripple-1 2s ease-out infinite, border-ripple-2 2s ease-out infinite 0.4s, border-ripple-3 2s ease-out infinite 0.8s'
               : undefined,
         }}
         {...props}
       >
         {/* Animated border shimmer */}
-        {!isSoldOut && !disableAnimations && (
+        {!isDisabledState && !disableAnimations && (
           <div
             className={cn(
               'absolute inset-0 border-2 border-transparent',
@@ -203,7 +211,7 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
         )}
 
         {/* Subtle inner glow on hover */}
-        {!isSoldOut && !disableAnimations && !isLoading && isHovered && (
+        {!isDisabledState && !disableAnimations && !isLoading && isHovered && (
           <div
             className={cn(
               'absolute inset-0 bg-gradient-to-r from-transparent via-fm-gold/10 to-transparent',
@@ -217,7 +225,7 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
         )}
 
         {/* Metallic sheen effect on hover */}
-        {!isSoldOut && !disableAnimations && isHovered && (
+        {!isDisabledState && !disableAnimations && isHovered && (
           <div
             className={cn(
               'absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent',

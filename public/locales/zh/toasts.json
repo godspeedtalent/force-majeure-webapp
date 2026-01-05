@@ -200,6 +200,10 @@
     "deleteFailed": "删除风格失败",
     "nameRequired": "请输入风格名称"
   },
+  "undercardRequest": {
+    "submitted": "暖场申请提交成功",
+    "failed": "提交暖场申请失败"
+  },
   "admin": {
     "userUpdated": "用户已更新",
     "userUpdateFailed": "更新用户失败",
@@ -291,7 +295,12 @@
     "itemDeleted": "照片已删除",
     "deleteItemFailed": "删除照片失败",
     "imageUploaded": "照片上传成功",
-    "uploadFailed": "上传照片失败"
+    "imagesUploaded": "{{count}}张照片上传成功",
+    "uploadFailed": "上传照片失败",
+    "coverSet": "头像照片已设置",
+    "setCoverFailed": "设置头像照片失败",
+    "heroImageSet": "主图已设置",
+    "setHeroFailed": "设置主图失败"
   },
   "recordings": {
     "noUrlFound": "未找到此录音的链接",

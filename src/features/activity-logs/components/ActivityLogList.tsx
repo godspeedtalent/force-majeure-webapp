@@ -23,7 +23,8 @@ import {
   Mail,
 } from 'lucide-react';
 import { cn } from '@/shared';
-import { Button } from '@/components/common/shadcn/button';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import {
   ActivityLog,
   GroupedActivityLog,
@@ -275,7 +276,7 @@ export function ActivityLogList({
   if (isLoading && logs.length === 0) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-fm-gold" />
+        <FmCommonLoadingSpinner size="lg" />
       </div>
     );
   }
@@ -301,14 +302,13 @@ export function ActivityLogList({
       {/* Load more button */}
       {hasMore && (
         <div className="p-4 flex justify-center">
-          <Button
-            variant="outline"
+          <FmCommonButton
+            variant="default"
             onClick={onLoadMore}
-            disabled={isLoading}
-            className="border-white/20 hover:border-fm-gold"
+            loading={isLoading}
           >
-            {isLoading ? t('buttons.loading') : t('activityLogs.loadMore')}
-          </Button>
+            {t('activityLogs.loadMore')}
+          </FmCommonButton>
         </div>
       )}
     </div>

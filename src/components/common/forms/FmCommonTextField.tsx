@@ -168,10 +168,10 @@ export const FmCommonTextField = React.forwardRef<
 
       if (prepend) {
         return (
-          <div className='relative flex items-center'>
+          <div className='flex items-center'>
             <div
               className={cn(
-                'absolute left-0 top-0 h-9 w-9 bg-muted flex items-center justify-center text-sm font-medium text-foreground/70 border-r border-border transition-all duration-300',
+                'h-9 px-3 bg-muted flex items-center justify-center text-sm font-medium text-foreground/70 border border-r-0 border-border transition-all duration-300 whitespace-nowrap shrink-0',
                 isFocused && 'bg-fm-gold/20 text-fm-gold border-fm-gold'
               )}
             >
@@ -184,7 +184,7 @@ export const FmCommonTextField = React.forwardRef<
               disabled={disabled}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
-              className={cn('h-9 pl-11', baseInputClasses, className)}
+              className={cn('h-9 flex-1', baseInputClasses, className)}
               {...props}
             />
           </div>

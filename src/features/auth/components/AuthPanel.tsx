@@ -15,13 +15,12 @@ import {
 } from '@/components/common/display/FmCommonCard';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/common/shadcn/tabs';
-import { Button } from '@/components/common/shadcn/button';
-import { Label } from '@/components/common/shadcn/label';
+  FmCommonTabs,
+  FmCommonTabsContent,
+  FmCommonTabsList,
+  FmCommonTabsTrigger,
+} from '@/components/common/navigation/FmCommonTabs';
+import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { useAuth } from '@/features/auth/services/AuthContext';
 
 interface AuthPanelProps {
@@ -174,7 +173,7 @@ export const AuthPanel = ({
     return (
       <FmCommonCard className='w-full max-w-md border border-white/20 shadow-2xl'>
         <FmCommonCardContent className='flex items-center justify-center py-12'>
-          <div className='w-8 h-8 animate-spin rounded-full border-[3px] border-fm-gold border-b-transparent' />
+          <FmCommonLoadingSpinner size='lg' />
         </FmCommonCardContent>
       </FmCommonCard>
     );
@@ -195,23 +194,17 @@ export const AuthPanel = ({
       </FmCommonCardHeader>
 
       <FmCommonCardContent>
-        <Tabs defaultValue='signin' className='w-full'>
-          <TabsList className='grid w-full grid-cols-2 bg-black/40 border border-white/10 rounded-none p-1'>
-            <TabsTrigger
-              value='signin'
-              className='rounded-none data-[state=active]:bg-fm-gold data-[state=active]:text-black data-[state=active]:shadow-none font-canela'
-            >
+        <FmCommonTabs defaultValue='signin' className='w-full'>
+          <FmCommonTabsList className='grid w-full grid-cols-2'>
+            <FmCommonTabsTrigger value='signin'>
               {t('auth.signInTab')}
-            </TabsTrigger>
-            <TabsTrigger
-              value='signup'
-              className='rounded-none data-[state=active]:bg-fm-gold data-[state=active]:text-black data-[state=active]:shadow-none font-canela'
-            >
+            </FmCommonTabsTrigger>
+            <FmCommonTabsTrigger value='signup'>
               {t('auth.signUpTab')}
-            </TabsTrigger>
-          </TabsList>
+            </FmCommonTabsTrigger>
+          </FmCommonTabsList>
 
-          <TabsContent value='signin' className='space-y-6 mt-6'>
+          <FmCommonTabsContent value='signin' className='space-y-6 mt-6'>
             <form onSubmit={handleSignIn} className='space-y-6'>
               <FmCommonTextField
                 label={t('auth.emailLabel')}
@@ -247,12 +240,12 @@ export const AuthPanel = ({
                     checked={rememberMe}
                     onCheckedChange={setRememberMe}
                   />
-                  <Label
+                  <label
                     htmlFor='remember-me'
                     className='text-sm font-normal text-muted-foreground cursor-pointer'
                   >
                     {t('auth.rememberMeDays')}
-                  </Label>
+                  </label>
                 </div>
                 <Link
                   to='/forgot-password'
@@ -272,19 +265,19 @@ export const AuthPanel = ({
             </form>
 
             {showGuestOption && onGuestContinue && (
-              <Button
+              <FmCommonButton
                 type='button'
-                variant='outline'
+                variant='default'
                 className='w-full mt-3'
                 onClick={onGuestContinue}
+                icon={UserX}
               >
-                <UserX className='h-4 w-4 mr-2' />
                 {t('auth.continueAsGuest')}
-              </Button>
+              </FmCommonButton>
             )}
-          </TabsContent>
+          </FmCommonTabsContent>
 
-          <TabsContent value='signup' className='space-y-6 mt-6'>
+          <FmCommonTabsContent value='signup' className='space-y-6 mt-6'>
             <form onSubmit={handleSignUp} className='space-y-8'>
               <div className='grid grid-cols-2 gap-4'>
                 <FmCommonTextField
@@ -395,18 +388,18 @@ export const AuthPanel = ({
             </form>
 
             {showGuestOption && onGuestContinue && (
-              <Button
+              <FmCommonButton
                 type='button'
-                variant='outline'
+                variant='default'
                 className='w-full mt-3'
                 onClick={onGuestContinue}
+                icon={UserX}
               >
-                <UserX className='h-4 w-4 mr-2' />
                 {t('auth.continueAsGuest')}
-              </Button>
+              </FmCommonButton>
             )}
-          </TabsContent>
-        </Tabs>
+          </FmCommonTabsContent>
+        </FmCommonTabs>
       </FmCommonCardContent>
     </FmCommonCard>
   );

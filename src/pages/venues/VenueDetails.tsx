@@ -7,6 +7,7 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { Layout } from '@/components/layout/Layout';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmEventRow } from '@/components/common/display/FmEventRow';
+import { FmVenueMap } from '@/components/common/display/FmVenueMap';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
 import { useVenueById } from '@/shared/api/queries/venueQueries';
@@ -112,22 +113,53 @@ export default function VenueDetails() {
           )}
         </div>
 
-        {/* Hero Image Section - always show with placeholder fallback */}
-        <div className='relative h-[50vh] mb-8 overflow-hidden rounded-none border border-border'>
-          <ImageWithSkeleton
-            src={venue.image_url || VENUE_PLACEHOLDER_IMAGE}
-            alt={venue.name}
-            className='w-full h-full object-cover'
-            skeletonClassName='rounded-none'
-          />
-          <div className='absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent' />
+        {/* Hero Image Section with Floating Map Container */}
+        <div className='relative mb-8'>
+          {/* Hero Image */}
+          <div className='relative h-[50vh] overflow-hidden rounded-none border border-border'>
+            <ImageWithSkeleton
+              src={venue.image_url || VENUE_PLACEHOLDER_IMAGE}
+              alt={venue.name}
+              className='w-full h-full object-cover'
+              skeletonClassName='rounded-none'
+            />
+            <div className='absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent' />
 
-          {/* Venue Title Overlay */}
-          <div className='absolute bottom-0 left-0 right-0 p-8'>
-            <h1 className='text-5xl font-canela font-medium text-foreground mb-2'>
-              {venue.name}
-            </h1>
+            {/* Venue Title Overlay */}
+            <div className='absolute bottom-0 left-0 right-0 p-8'>
+              <div className='flex items-center gap-4'>
+                {venue.logo_url && (
+                  <div className='flex-shrink-0 w-16 h-16 border-2 border-fm-gold overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(223,186,125,0.4)]'>
+                    <img
+                      src={venue.logo_url}
+                      alt={`${venue.name} logo`}
+                      className='w-full h-full object-cover'
+                    />
+                  </div>
+                )}
+                <h1 className='text-5xl font-canela font-medium text-foreground mb-2'>
+                  {venue.name}
+                </h1>
+              </div>
+            </div>
           </div>
+
+          {/* Floating Map Component - Desktop Only */}
+          {(venue.address_line_1 || venue.city || venue.state) && (
+            <div className='hidden lg:block absolute -bottom-20 right-8 w-72 z-10'>
+              <div className='bg-black/80 backdrop-blur-lg border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.5)]'>
+                <FmVenueMap
+                  addressLine1={venue.address_line_1}
+                  addressLine2={venue.address_line_2}
+                  city={venue.city}
+                  state={venue.state}
+                  zipCode={venue.zip_code}
+                  size='sm'
+                  showExternalLink={true}
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Venue Info Section */}
@@ -155,6 +187,25 @@ export default function VenueDetails() {
               </div>
             )}
           </div>
+
+          {/* Location Map - Mobile/Tablet Only (desktop uses floating map) */}
+          {(venue.address_line_1 || venue.city || venue.state) && (
+            <div className='mb-8 lg:hidden'>
+              <h2 className='text-3xl font-canela font-medium mb-6 flex items-center gap-3'>
+                <MapPin className='h-7 w-7 text-fm-gold' />
+                {t('venue.location')}
+              </h2>
+              <FmVenueMap
+                addressLine1={venue.address_line_1}
+                addressLine2={venue.address_line_2}
+                city={venue.city}
+                state={venue.state}
+                zipCode={venue.zip_code}
+                size='lg'
+                showExternalLink={true}
+              />
+            </div>
+          )}
 
           {/* Upcoming Events */}
           {upcomingEvents && upcomingEvents.length > 0 && (

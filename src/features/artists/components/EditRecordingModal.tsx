@@ -55,7 +55,7 @@ export function EditRecordingModal({ recording, onClose, onSave }: EditRecording
     >
       <div className="space-y-6">
         {/* Recording Preview */}
-        <FmCommonCard variant="outline" className="p-0 overflow-hidden">
+        <FmCommonCard variant="default" className="p-0 overflow-hidden">
           <div className="flex gap-4">
             {/* Cover Art */}
             <div className="w-20 h-20 flex-shrink-0 relative">

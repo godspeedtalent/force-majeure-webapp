@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { LogOut, User as UserIcon, Building2, Scan, Database, Shield, Mail, Home, Settings, Music } from 'lucide-react';
+import { LogOut, User as UserIcon, Building2, Scan, Mail, Home, Settings, Music } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -36,7 +36,7 @@ interface MobileMenuSection {
  */
 export function UserMenuDropdown() {
   const { user, profile, signOut } = useAuth();
-  const { hasPermission, hasRole, isAdmin } = useUserPermissions();
+  const { hasPermission, hasRole } = useUserPermissions();
   const { isFeatureEnabled } = useFeatureFlagHelpers();
   const navigate = useNavigate();
   const { t } = useTranslation('common');
@@ -64,8 +64,6 @@ export function UserMenuDropdown() {
   const hasAnyOrgAccess = hasOrgToolsAccess || hasScanningAccess;
   // Developer access
   const isDeveloper = hasRole(ROLES.DEVELOPER);
-  // Admin access
-  const isAdminUser = isAdmin();
   // Artist access
   const isArtist = hasRole(ROLES.ARTIST);
   const { linkedArtist } = useUserLinkedArtist();
@@ -139,22 +137,6 @@ export function UserMenuDropdown() {
                 onClick: () => navigate('/developer'),
                 badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.developerOnly')} />,
               },
-              {
-                label: t('nav.database'),
-                icon: Database,
-                onClick: () => navigate('/developer?tab=db_overview'),
-                badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.developerOnly')} />,
-              },
-              ...(isAdminUser
-                ? [
-                    {
-                      label: t('nav.adminPanel'),
-                      icon: Shield,
-                      onClick: () => navigate('/developer?tab=admin_settings'),
-                      badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.adminOnly')} />,
-                    },
-                  ]
-                : []),
             ],
           },
         ]
@@ -247,22 +229,6 @@ export function UserMenuDropdown() {
                 onClick: () => handleNavigate('/developer'),
                 badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.developerOnly')} />,
               },
-              {
-                label: t('nav.database'),
-                icon: Database,
-                onClick: () => handleNavigate('/developer?tab=db_overview'),
-                badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.developerOnly')} />,
-              },
-              ...(isAdminUser
-                ? [
-                    {
-                      label: t('nav.adminPanel'),
-                      icon: Shield,
-                      onClick: () => handleNavigate('/developer?tab=admin_settings'),
-                      badge: <AdminLockIndicator position="inline" size="xs" tooltipText={t('nav.adminOnly')} />,
-                    },
-                  ]
-                : []),
             ],
           },
         ]

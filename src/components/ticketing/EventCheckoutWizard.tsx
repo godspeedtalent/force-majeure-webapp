@@ -161,7 +161,7 @@ export const EventCheckoutWizard = ({
         </div>
       </div>
 
-      <FmCommonCard variant='outline' className='space-y-4'>
+      <FmCommonCard variant='default' className='space-y-4'>
         <div className='space-y-2'>
           <h4 className='text-sm font-medium text-foreground'>{t('checkout.orderSummary')}</h4>
           <p className='text-xs text-muted-foreground'>

@@ -62,6 +62,7 @@ export const EventDetailsContent = ({
 
   // Use extracted hooks for date/time calculations and attendee list
   const {
+    isPastEvent,
     longDateLabel,
     compactDateLabel,
     formattedTime,
@@ -133,6 +134,9 @@ export const EventDetailsContent = ({
   // Check if view count should be shown
   const showViewCount = (event as any).show_view_count ?? true;
 
+  // Check if venue map should be shown
+  const showVenueMap = (event as any).show_venue_map ?? true;
+
   // Record page view on mount
   useEffect(() => {
     recordView();
@@ -175,11 +179,13 @@ export const EventDetailsContent = ({
     setSelectedVenue({
       id: event.venueDetails?.id,
       name: event.venue,
+      description: event.venueDetails?.description ?? undefined,
       address: event.venueDetails?.address ?? undefined,
       city: event.venueDetails?.city ?? undefined,
       state: event.venueDetails?.state ?? undefined,
       zipCode: event.venueDetails?.zipCode ?? undefined,
       image: event.venueDetails?.image,
+      logo: event.venueDetails?.logo,
       website: event.venueDetails?.website,
       googleMapsUrl: event.venueDetails?.googleMapsUrl,
     });
@@ -268,6 +274,7 @@ export const EventDetailsContent = ({
           onArtistSelect={handleArtistSelect}
           lookingForUndercard={event.lookingForUndercard}
           eventId={event.id}
+          isPastEvent={isPastEvent}
         />
       </div>
 
@@ -315,6 +322,7 @@ export const EventDetailsContent = ({
       guestListEnabled={guestListEnabled ?? false}
       onInterestClick={handleInterestClick}
       onShareClick={handleOpenShareModal}
+      isPastEvent={isPastEvent}
     />
   );
 
@@ -417,7 +425,7 @@ export const EventDetailsContent = ({
                       />
 
                       <div className='mt-6'>
-                        <FmBigButton onClick={handleOpenCheckout}>
+                        <FmBigButton onClick={handleOpenCheckout} isPastEvent={isPastEvent}>
                           {t('eventDetails.getTickets')}
                         </FmBigButton>
                       </div>
@@ -455,6 +463,7 @@ export const EventDetailsContent = ({
         onOpenChange={handleVenueModalChange}
         canManage={canManage}
         onManage={handleManageVenue}
+        showMap={showVenueMap}
       />
 
       <FmShareModal

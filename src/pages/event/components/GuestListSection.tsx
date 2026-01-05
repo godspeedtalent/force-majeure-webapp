@@ -23,7 +23,7 @@ export function GuestListSection({
 
   return (
     <FmCommonCard
-      variant='outline'
+      variant='default'
       onClick={isLoggedIn ? onClick : undefined}
       className='relative overflow-hidden'
     >

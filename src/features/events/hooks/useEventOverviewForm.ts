@@ -20,6 +20,7 @@ export interface EventOverviewData {
   hero_image_focal_x: number;
   hero_image_focal_y: number;
   display_subtitle: boolean;
+  show_venue_map: boolean;
 }
 
 export interface EventOverviewFormState {
@@ -34,6 +35,7 @@ export interface EventOverviewFormState {
   eventSubtitle: string;
   aboutEvent: string;
   displaySubtitle: boolean;
+  showVenueMap: boolean;
 }
 
 export interface UseEventOverviewFormOptions {
@@ -50,6 +52,7 @@ export interface UseEventOverviewFormOptions {
     description?: string | null;
     about_event?: string | null;
     display_subtitle?: boolean;
+    show_venue_map?: boolean;
   };
 }
 
@@ -68,6 +71,7 @@ export interface UseEventOverviewFormReturn {
   setEventSubtitle: (value: string) => void;
   setAboutEvent: (value: string) => void;
   setDisplaySubtitle: (value: boolean) => void;
+  setShowVenueMap: (value: boolean) => void;
   // Save operations
   isSaving: boolean;
   handleSave: () => Promise<void>;
@@ -103,6 +107,7 @@ export function useEventOverviewForm({
   const [eventSubtitle, setEventSubtitle] = useState<string>('');
   const [aboutEvent, setAboutEvent] = useState<string>('');
   const [displaySubtitle, setDisplaySubtitle] = useState<boolean>(true);
+  const [showVenueMap, setShowVenueMap] = useState<boolean>(true);
 
   // Populate form when initial data loads
   useEffect(() => {
@@ -129,6 +134,7 @@ export function useEventOverviewForm({
       setEventSubtitle(initialData.description || '');
       setAboutEvent(initialData.about_event || '');
       setDisplaySubtitle(initialData.display_subtitle ?? true);
+      setShowVenueMap(initialData.show_venue_map ?? true);
 
       // Parse date and time from start_time
       if (initialData.start_time) {
@@ -162,6 +168,7 @@ export function useEventOverviewForm({
       hero_image_focal_x: 50,
       hero_image_focal_y: heroImageFocalY,
       display_subtitle: displaySubtitle,
+      show_venue_map: showVenueMap,
     };
   }, [
     customTitle,
@@ -175,6 +182,7 @@ export function useEventOverviewForm({
     heroImage,
     heroImageFocalY,
     displaySubtitle,
+    showVenueMap,
   ]);
 
   // Debounced auto-save for overview changes
@@ -321,6 +329,7 @@ export function useEventOverviewForm({
     eventSubtitle,
     aboutEvent,
     displaySubtitle,
+    showVenueMap,
   };
 
   return {
@@ -336,6 +345,7 @@ export function useEventOverviewForm({
     setEventSubtitle,
     setAboutEvent,
     setDisplaySubtitle,
+    setShowVenueMap,
     isSaving,
     handleSave,
     triggerAutoSave,

@@ -201,6 +201,10 @@
     "deleteFailed": "Failed to delete genre(s)",
     "nameRequired": "Genre name is required"
   },
+  "undercardRequest": {
+    "submitted": "Undercard request submitted successfully",
+    "failed": "Failed to submit undercard request"
+  },
   "admin": {
     "userUpdated": "User updated",
     "userUpdateFailed": "Failed to update user",
@@ -292,7 +296,12 @@
     "itemDeleted": "Photo deleted",
     "deleteItemFailed": "Failed to delete photo",
     "imageUploaded": "Photo uploaded successfully",
-    "uploadFailed": "Failed to upload photo"
+    "imagesUploaded": "{{count}} photos uploaded successfully",
+    "uploadFailed": "Failed to upload photo",
+    "coverSet": "Profile photo set",
+    "setCoverFailed": "Failed to set profile photo",
+    "heroImageSet": "Hero image set",
+    "setHeroFailed": "Failed to set hero image"
   },
   "recordings": {
     "noUrlFound": "No URL found for this recording",

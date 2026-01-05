@@ -17,6 +17,7 @@ import {
   Eye,
   Share2,
   Palette,
+  Images,
 } from 'lucide-react';
 import { supabase } from '@/shared';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
@@ -36,6 +37,7 @@ import { eventService } from '@/features/events/services/eventService';
 import { GuestListSettings } from '@/components/events/social/GuestListSettings';
 import { EventOverviewForm } from '@/components/events/overview/EventOverviewForm';
 import { EventQueueConfigForm } from '@/components/events/queue';
+import { EventGalleryTab } from '@/components/events/gallery';
 
 import { toast } from 'sonner';
 import { FmCommonCard } from '@/components/common/display/FmCommonCard';
@@ -48,7 +50,7 @@ import { AdminLockIndicator } from '@/components/common/indicators';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { PageErrorBoundary } from '@/components/common/feedback';
 
-type EventTab = 'overview' | 'artists' | 'tiers' | 'orders' | 'sales' | 'reports' | 'tracking' | 'social' | 'ux_display' | 'admin' | 'view';
+type EventTab = 'overview' | 'gallery' | 'artists' | 'tiers' | 'orders' | 'sales' | 'reports' | 'tracking' | 'social' | 'ux_display' | 'admin' | 'view';
 
 export default function EventManagement() {
   const { t } = useTranslation('common');
@@ -147,6 +149,12 @@ export default function EventManagement() {
           description: t('eventNav.overviewDescription'),
         },
         {
+          id: 'gallery',
+          label: t('eventNav.gallery'),
+          icon: Images,
+          description: t('eventNav.galleryDescription'),
+        },
+        {
           id: 'artists',
           label: t('eventNav.artists'),
           icon: Users,
@@ -231,6 +239,7 @@ export default function EventManagement() {
   const mobileTabs: MobileBottomTab[] = [
     { id: 'view', label: t('eventNav.viewEvent'), icon: Eye },
     { id: 'overview', label: t('eventNav.overview'), icon: FileText },
+    { id: 'gallery', label: t('eventNav.gallery'), icon: Images },
     { id: 'artists', label: t('eventNav.artists'), icon: Users },
     { id: 'social', label: t('eventNav.social'), icon: Share2 },
     { id: 'ux_display', label: t('eventNav.uxDisplay'), icon: Palette },
@@ -415,6 +424,17 @@ export default function EventManagement() {
                 event={event}
                 orderCount={orderCount}
                 onMakeInvisible={handleMakeInvisible}
+              />
+            </PageErrorBoundary>
+          )}
+
+          {activeTab === 'gallery' && id && (
+            <PageErrorBoundary section='Gallery'>
+              <EventGalleryTab
+                eventId={id}
+                eventTitle={event.title || ''}
+                galleryId={(event as any).gallery_id || null}
+                heroImage={(event as any).hero_image || null}
               />
             </PageErrorBoundary>
           )}
