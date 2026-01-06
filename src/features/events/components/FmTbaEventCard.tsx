@@ -74,14 +74,15 @@ export const FmTbaEventCard = ({
       className={cn(
         'group relative overflow-hidden rounded-none border border-border bg-card',
         'transition-all duration-300',
-        isSingleRow ? 'h-[50vh] w-auto' : 'aspect-[2/3]',
+        isSingleRow
+          ? 'w-full max-w-[28vw] min-w-[240px] max-h-[65vh] aspect-[2/3]'
+          : 'aspect-[2/3]',
         // Shimmer effect for TBA cards
         'before:absolute before:inset-0 before:z-10 before:bg-gradient-to-r',
         'before:from-transparent before:via-white/5 before:to-transparent',
         'before:animate-[shimmer_3s_ease-in-out_infinite]',
         'hover:border-fm-gold/30 hover:shadow-lg hover:shadow-fm-gold/5'
       )}
-      style={isSingleRow ? { aspectRatio: '2/3' } : undefined}
     >
       {/* Hero Image Section - Skeleton with pattern */}
       <div className='relative h-[65%] overflow-hidden bg-black/40'>

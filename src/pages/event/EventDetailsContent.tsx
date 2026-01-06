@@ -430,7 +430,7 @@ export const EventDetailsContent = ({
                         </FmBigButton>
                       </div>
 
-                      <div className='pb-10 mt-4'>{detailsContent}</div>
+                      <div className='mt-4'>{detailsContent}</div>
                     </div>
                   </div>
                 </div>

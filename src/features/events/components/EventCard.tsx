@@ -120,7 +120,7 @@ export const EventCard = ({ event, isSingleRow = false, isPastEvent = false }: E
             'group relative overflow-hidden rounded-none border border-border bg-card',
             'transition-all duration-300 cursor-pointer',
             isSingleRow
-              ? 'w-full max-w-[40vw] min-w-[320px]'
+              ? 'w-full max-w-[28vw] min-w-[240px] max-h-[65vh]'
               : 'w-full max-w-[25vw] min-w-[280px]',
             // Apply hover state when actually hovering OR when context menu is open
             contextMenuOpen && 'border-fm-gold/50 shadow-lg shadow-fm-gold/10',

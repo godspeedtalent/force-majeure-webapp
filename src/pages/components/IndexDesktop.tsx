@@ -149,7 +149,7 @@ export function IndexDesktop({
                   )}
                   {/* Empty placeholder cells to maintain 3-column layout */}
                   {Array.from({ length: 3 - upcomingEvents.length }).map((_, idx) => (
-                    <div key={`placeholder-${idx}`} className='w-full max-w-[40vw] min-w-[320px]' />
+                    <div key={`placeholder-${idx}`} className='w-full max-w-[28vw] min-w-[240px]' />
                   ))}
                 </>
               ) : (
