@@ -166,6 +166,11 @@ export const FmRecordingSearchDropdown = ({
     onChange(newValue, data as Recording);
   };
 
+  // Generate icon for selected item
+  const selectedIcon = selectedItem?.data
+    ? renderRecordingIcon(selectedItem.data)
+    : undefined;
+
   return (
     <FmCommonSearchDropdown
       onChange={handleChange}
@@ -173,6 +178,7 @@ export const FmRecordingSearchDropdown = ({
       onGetRecentOptions={handleGetRecentOptions}
       placeholder={placeholder}
       selectedLabel={selectedItem?.label}
+      selectedIcon={selectedIcon}
       disabled={disabled || !artistId}
       typeIcon={<Disc className='h-3 w-3 text-fm-gold' />}
       typeTooltip='DJ Set'

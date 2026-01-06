@@ -1,23 +1,21 @@
 /**
- * ArtistSocialTab
+ * VenueSocialTab
  *
- * Social media tab for artist management - music platforms and social links.
+ * Social media tab for venue management - website and social links.
+ * Matches the style of ArtistSocialTab for consistency.
  */
 
 import { useTranslation } from 'react-i18next';
 import { Globe } from 'lucide-react';
 import {
   FaInstagram,
-  FaXTwitter,
   FaFacebook,
   FaTiktok,
+  FaXTwitter,
   FaYoutube,
-  FaSoundcloud,
-  FaSpotify,
 } from 'react-icons/fa6';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
-import { FmI18nCommon } from '@/components/common/i18n';
 import { cn } from '@/shared';
 
 // Social media URL builders
@@ -28,75 +26,6 @@ const socialUrlBuilders = {
   tiktok: (username: string) => `https://tiktok.com/@${username}`,
   youtube: (username: string) => `https://youtube.com/@${username}`,
 };
-
-// Music platform URL extractors - extract ID/username from full URLs
-const extractSpotifyArtistId = (input: string): string => {
-  // If it's a full URL, extract just the artist ID
-  const spotifyMatch = input.match(/spotify\.com\/artist\/([a-zA-Z0-9]+)/);
-  if (spotifyMatch) return spotifyMatch[1];
-  // Otherwise return as-is (already just the ID)
-  return input.replace(/^https?:\/\//, '').replace(/^open\.spotify\.com\/artist\//, '');
-};
-
-const extractSoundcloudUsername = (input: string): string => {
-  // If it's a full URL, extract just the username
-  const soundcloudMatch = input.match(/soundcloud\.com\/([^/?]+)/);
-  if (soundcloudMatch) return soundcloudMatch[1];
-  // Otherwise return as-is (already just the username)
-  return input.replace(/^https?:\/\//, '').replace(/^soundcloud\.com\//, '');
-};
-
-// Music platform input - shows base URL in prepend, extracts ID from full URLs
-function MusicPlatformInput({
-  icon: Icon,
-  label,
-  value,
-  onChange,
-  placeholder,
-  iconColor,
-  baseUrl,
-  extractId,
-  urlBuilder,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-  iconColor: string;
-  baseUrl: string;
-  extractId: (input: string) => string;
-  urlBuilder: (id: string) => string;
-}) {
-  return (
-    <div className='space-y-1'>
-      <div className='flex items-center gap-2 text-xs text-muted-foreground'>
-        <Icon className={cn('h-4 w-4', iconColor)} />
-        <span>{label}</span>
-      </div>
-      <FmCommonTextField
-        value={value}
-        onChange={(e) => {
-          // Extract ID/username if full URL is pasted
-          const extracted = extractId(e.target.value);
-          onChange(extracted);
-        }}
-        placeholder={placeholder}
-        prepend={baseUrl}
-      />
-      {value && (
-        <a
-          href={urlBuilder(value)}
-          target='_blank'
-          rel='noopener noreferrer'
-          className='text-xs text-muted-foreground hover:text-fm-gold transition-colors truncate block'
-        >
-          {urlBuilder(value)}
-        </a>
-      )}
-    </div>
-  );
-}
 
 // Social media input with icon - username only, shows constructed URL
 function SocialInput({
@@ -146,21 +75,17 @@ function SocialInput({
   );
 }
 
-interface ArtistSocialTabProps {
-  // Music platforms
-  spotify: string;
-  onSpotifyChange: (value: string) => void;
-  soundcloud: string;
-  onSoundcloudChange: (value: string) => void;
-  // Website & Social media
+interface VenueSocialTabProps {
+  // Website
   website: string;
   onWebsiteChange: (value: string) => void;
+  // Social media
   instagram: string;
   onInstagramChange: (value: string) => void;
-  tiktok: string;
-  onTiktokChange: (value: string) => void;
   twitter: string;
   onTwitterChange: (value: string) => void;
+  tiktok: string;
+  onTiktokChange: (value: string) => void;
   facebook: string;
   onFacebookChange: (value: string) => void;
   youtube: string;
@@ -170,64 +95,32 @@ interface ArtistSocialTabProps {
   isSaving?: boolean;
 }
 
-export function ArtistSocialTab({
-  spotify,
-  onSpotifyChange,
-  soundcloud,
-  onSoundcloudChange,
+export function VenueSocialTab({
   website,
   onWebsiteChange,
   instagram,
   onInstagramChange,
-  tiktok,
-  onTiktokChange,
   twitter,
   onTwitterChange,
+  tiktok,
+  onTiktokChange,
   facebook,
   onFacebookChange,
   youtube,
   onYoutubeChange,
-}: ArtistSocialTabProps) {
+}: VenueSocialTabProps) {
   const { t } = useTranslation('common');
 
   return (
     <div className='space-y-6'>
-      {/* Music Platforms */}
-      <FmCommonCard size='lg' hoverable={false}>
-        <FmI18nCommon i18nKey='sections.musicPlatforms' as='h2' className='text-xl font-semibold mb-6' />
-        <FmI18nCommon i18nKey='sections.musicPlatformsDescription' as='p' className='text-muted-foreground mb-6' />
-
-        <div className='space-y-4'>
-          <MusicPlatformInput
-            icon={FaSpotify}
-            label={t('labels.spotify')}
-            value={spotify}
-            onChange={onSpotifyChange}
-            placeholder={t('placeholders.spotifyArtistId')}
-            iconColor='text-[#1DB954]'
-            baseUrl='open.spotify.com/artist/'
-            extractId={extractSpotifyArtistId}
-            urlBuilder={(id) => id ? `https://open.spotify.com/artist/${id}` : ''}
-          />
-
-          <MusicPlatformInput
-            icon={FaSoundcloud}
-            label={t('labels.soundcloud')}
-            value={soundcloud}
-            onChange={onSoundcloudChange}
-            placeholder={t('placeholders.soundcloudUsername')}
-            iconColor='text-[#FF5500]'
-            baseUrl='soundcloud.com/'
-            extractId={extractSoundcloudUsername}
-            urlBuilder={(username) => username ? `https://soundcloud.com/${username}` : ''}
-          />
-        </div>
-      </FmCommonCard>
-
       {/* Social Media */}
       <FmCommonCard size='lg' hoverable={false}>
-        <FmI18nCommon i18nKey='sections.socialMedia' as='h2' className='text-xl font-semibold mb-6' />
-        <FmI18nCommon i18nKey='sections.socialMediaDescription' as='p' className='text-muted-foreground mb-6' />
+        <h2 className='text-xl font-semibold mb-6'>
+          {t('sections.socialMedia', 'Social Media & Web')}
+        </h2>
+        <p className='text-muted-foreground mb-6'>
+          {t('venueManagement.socialMediaDescription', 'Add your venue\'s website and social media links so fans can find and follow you.')}
+        </p>
 
         <div className='space-y-4'>
           {/* Website - full URL input */}
@@ -239,7 +132,7 @@ export function ArtistSocialTab({
             <FmCommonTextField
               value={website}
               onChange={(e) => onWebsiteChange(e.target.value)}
-              placeholder={t('forms.artists.websitePlaceholder')}
+              placeholder={t('placeholders.websiteUrl', 'https://yourwebsite.com')}
             />
             {website && (
               <a
@@ -264,16 +157,6 @@ export function ArtistSocialTab({
           />
 
           <SocialInput
-            icon={FaTiktok}
-            label={t('labels.tiktok')}
-            value={tiktok}
-            onChange={onTiktokChange}
-            placeholder={t('placeholders.username')}
-            iconColor='text-white'
-            urlBuilder={socialUrlBuilders.tiktok}
-          />
-
-          <SocialInput
             icon={FaXTwitter}
             label={t('labels.twitterX')}
             value={twitter}
@@ -281,6 +164,16 @@ export function ArtistSocialTab({
             placeholder={t('placeholders.username')}
             iconColor='text-white'
             urlBuilder={socialUrlBuilders.twitter}
+          />
+
+          <SocialInput
+            icon={FaTiktok}
+            label={t('labels.tiktok')}
+            value={tiktok}
+            onChange={onTiktokChange}
+            placeholder={t('placeholders.username')}
+            iconColor='text-white'
+            urlBuilder={socialUrlBuilders.tiktok}
           />
 
           <SocialInput

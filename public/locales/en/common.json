@@ -185,6 +185,7 @@
     "featured": "Featured",
     "refetchDetails": "Refetch details",
     "setAsPrimary": "Set as primary",
+    "setAsFeatured": "Set as featured",
     "noRecordingsYet": "No recordings added yet",
     "addFirstRecording": "Add your first recording"
   },
@@ -601,7 +602,17 @@
     "spotlight": "Artist Spotlight",
     "defaultDescription": "More information about this artist will be available soon. Check back closer to the event for set times, featured tracks, and exclusive interviews.",
     "viewDetails": "View artist details",
-    "manage": "Manage artist"
+    "manage": "Manage artist",
+    "artistProfile": "Artist Profile"
+  },
+  "organizationDetails": {
+    "defaultTitle": "Organization",
+    "partner": "Event Partner",
+    "defaultDescription": "More information about this organization will be available soon.",
+    "viewDetails": "View organization details",
+    "manage": "Manage organization",
+    "viewProfile": "View Profile",
+    "eventPartner": "Event Partner"
   },
   "scavenger": {
     "registration": {
@@ -827,7 +838,11 @@
     "cannotDeleteWithSubgenres": "Cannot delete genres with subgenres. Please delete subgenres first.",
     "cannotDeleteWithArtists": "Cannot delete genres assigned to artists. Please unassign artists first.",
     "noneTopLevel": "None (Top Level)",
-    "creating": "Creating..."
+    "creating": "Creating...",
+    "unsavedChanges": "Unsaved changes",
+    "unsavedChangesDescription": "You have unsaved changes. Are you sure you want to leave this page? Your changes will be lost.",
+    "leaveWithoutSaving": "Leave without saving",
+    "stayOnPage": "Stay on page"
   },
   "sections": {
     "basicInformation": "Basic Information",
@@ -1160,7 +1175,11 @@
     "enterEventTitle": "Enter event title",
     "enterEventSubtitle": "Enter event subtitle",
     "enterEventDescription": "Enter event description...",
-    "showVenueMap": "Display venue map on event page"
+    "showVenueMap": "Display venue map on event page",
+    "pastDateConfirmation": {
+      "title": "Set Past Date?",
+      "message": "You're about to set this event's date to a date in the past. This is typically used for archiving or backdating events. Are you sure you want to continue?"
+    }
   },
   "venueNav": {
     "venueDetails": "Venue Details",
@@ -1185,6 +1204,55 @@
     "capacity": "Capacity",
     "deleteVenue": "Delete Venue",
     "deleteVenueConfirm": "Are you sure you want to delete this venue?"
+  },
+  "venueGallery": {
+    "selectGallery": "Select a gallery",
+    "default": "Default",
+    "newGallery": "New gallery",
+    "renameGallery": "Rename gallery",
+    "defaultGalleryCreated": "Default gallery created",
+    "defaultGalleryInfo": "This is your default gallery. The cover image will be used as the venue hero image.",
+    "items": "items",
+    "dropFiles": "Drop files here or click to upload",
+    "selectFiles": "Select files",
+    "addMedia": "Add media",
+    "uploading": "Uploading...",
+    "coverImage": "Cover image",
+    "setAsCover": "Set as cover",
+    "cover": "Cover",
+    "editMedia": "Edit media",
+    "title": "Title",
+    "titlePlaceholder": "Photo title",
+    "altText": "Alt text",
+    "altTextPlaceholder": "Description for accessibility",
+    "creator": "Creator",
+    "creatorPlaceholder": "Photographer or creator name",
+    "year": "Year",
+    "description": "Description",
+    "descriptionPlaceholder": "Additional details",
+    "deleteGalleryTitle": "Delete gallery?",
+    "deleteGalleryDescription": "This will delete the gallery and all its media items. This action cannot be undone.",
+    "deleteMediaTitle": "Delete media?",
+    "deleteMediaDescription": "This will permanently delete this item. This action cannot be undone.",
+    "createGallery": "Create gallery",
+    "galleryName": "Name",
+    "galleryNamePlaceholder": "Event Photos",
+    "creating": "Creating...",
+    "noGallerySelected": "Select a gallery to manage media",
+    "galleryCreated": "Gallery created",
+    "createFailed": "Failed to create gallery",
+    "galleryUpdated": "Gallery updated",
+    "updateFailed": "Failed to update gallery",
+    "galleryDeleted": "Gallery deleted",
+    "deleteFailed": "Failed to delete gallery",
+    "mediaUploaded": "Media uploaded",
+    "uploadFailed": "Failed to upload file",
+    "mediaUpdated": "Media updated",
+    "updateMediaFailed": "Failed to update media",
+    "mediaDeleted": "Media deleted",
+    "deleteMediaFailed": "Failed to delete media",
+    "coverSet": "Cover image set",
+    "setCoverFailed": "Failed to set cover image"
   },
   "venue": {
     "location": "Location",
@@ -2508,11 +2576,16 @@
   "venueDetails": {
     "notFound": "Venue not found.",
     "goHome": "Go Home",
-    "manage": "Manage",
+    "manage": "Manage venue",
     "capacity": "Capacity: {{count}}",
     "upcomingEvents": "Upcoming events.",
     "viewDetails": "View venue details",
-    "visitWebsite": "Visit website"
+    "visitWebsite": "Visit website",
+    "eyebrow": "Venue Details",
+    "defaultTitle": "Venue",
+    "events": "Events",
+    "noUpcomingEvents": "No upcoming events at this venue.",
+    "showPastEvents": "Show past events"
   },
   "organizationsManagement": {
     "title": "Organizations Management",

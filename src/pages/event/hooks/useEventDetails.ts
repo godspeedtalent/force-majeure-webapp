@@ -17,6 +17,10 @@ interface VenueRow {
   image_url?: string | null;
   logo_url?: string | null;
   website?: string | null;
+  instagram_handle?: string | null;
+  facebook_url?: string | null;
+  youtube_url?: string | null;
+  tiktok_handle?: string | null;
 }
 
 interface EventRow {
@@ -84,6 +88,10 @@ const transformVenue = (venue: VenueRow | null): VenueDetails | null => {
     logo: venue.logo_url ?? null,
     website: venue.website ?? null,
     googleMapsUrl: null, // Not stored in database yet
+    instagram: venue.instagram_handle ?? null,
+    facebook: venue.facebook_url ?? null,
+    youtube: venue.youtube_url ?? null,
+    tiktok: venue.tiktok_handle ?? null,
   };
 };
 
@@ -167,7 +175,7 @@ const fetchEventDetails = async (
       description,
       hero_image,
       status,
-      venue:venues(id, name, description, address_line_1, address_line_2, city, state, zip_code, image_url, logo_url, website),
+      venue:venues(id, name, description, address_line_1, address_line_2, city, state, zip_code, image_url, logo_url, website, instagram_handle, facebook_url, youtube_url, tiktok_handle),
       headliner_artist:artists!events_headliner_id_fkey(id, name, genre, image_url),
       event_artists!left(
         set_time,

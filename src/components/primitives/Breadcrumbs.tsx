@@ -40,8 +40,13 @@ export const Breadcrumbs = () => {
     setTimeout(() => {
       let targetPath = path;
 
+      // Special breadcrumb redirects
+      // Venues breadcrumb always goes to homepage (no public venues listing yet)
+      if (label.toLowerCase() === 'venues') {
+        targetPath = '/';
+      }
       // If user is admin/developer, redirect Artists/Events breadcrumbs to database
-      if (isAdminOrDeveloper) {
+      else if (isAdminOrDeveloper) {
         // Check if this is an event detail page or artists page
         if (path.startsWith('/event/') || label.toLowerCase() === 'events') {
           targetPath = '/developer/database?table=events';

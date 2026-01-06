@@ -185,6 +185,7 @@
     "featured": "Destacado",
     "refetchDetails": "Actualizar detalles",
     "setAsPrimary": "Establecer como principal",
+    "setAsFeatured": "Establecer como destacado",
     "noRecordingsYet": "Aún no hay grabaciones",
     "addFirstRecording": "Añadir tu primera grabación"
   },
@@ -600,7 +601,17 @@
     "spotlight": "Artista Destacado",
     "defaultDescription": "Más información sobre este artista estará disponible pronto. Vuelve más cerca del evento para ver horarios, pistas destacadas y entrevistas exclusivas.",
     "viewDetails": "Ver detalles del artista",
-    "manage": "Gestionar artista"
+    "manage": "Gestionar artista",
+    "artistProfile": "Perfil del Artista"
+  },
+  "organizationDetails": {
+    "defaultTitle": "Organización",
+    "partner": "Socio del Evento",
+    "defaultDescription": "Más información sobre esta organización estará disponible pronto.",
+    "viewDetails": "Ver detalles de la organización",
+    "manage": "Gestionar organización",
+    "viewProfile": "Ver Perfil",
+    "eventPartner": "Socio del Evento"
   },
   "scavenger": {
     "registration": {
@@ -826,7 +837,11 @@
     "cannotDeleteWithSubgenres": "No se pueden eliminar géneros con subgéneros. Por favor, elimina los subgéneros primero.",
     "cannotDeleteWithArtists": "No se pueden eliminar géneros asignados a artistas. Por favor, desasigna los artistas primero.",
     "noneTopLevel": "Ninguno (Nivel Superior)",
-    "creating": "Creando..."
+    "creating": "Creando...",
+    "unsavedChanges": "Cambios sin guardar",
+    "unsavedChangesDescription": "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir de esta página? Tus cambios se perderán.",
+    "leaveWithoutSaving": "Salir sin guardar",
+    "stayOnPage": "Permanecer en la página"
   },
   "sections": {
     "basicInformation": "Información Básica",
@@ -1147,7 +1162,11 @@
     "enterEventTitle": "Ingresa el título del evento",
     "enterEventSubtitle": "Ingresa el subtítulo del evento",
     "enterEventDescription": "Ingresa la descripción del evento...",
-    "showVenueMap": "Mostrar mapa del local en la página del evento"
+    "showVenueMap": "Mostrar mapa del local en la página del evento",
+    "pastDateConfirmation": {
+      "title": "¿Establecer Fecha Pasada?",
+      "message": "Estás a punto de establecer la fecha de este evento en una fecha pasada. Esto se usa típicamente para archivar o antedatar eventos. ¿Estás seguro de que deseas continuar?"
+    }
   },
   "venueNav": {
     "venueDetails": "Detalles del Local",
@@ -1172,6 +1191,55 @@
     "capacity": "Capacidad",
     "deleteVenue": "Eliminar Local",
     "deleteVenueConfirm": "¿Estás seguro de que deseas eliminar este local?"
+  },
+  "venueGallery": {
+    "selectGallery": "Selecciona una galería",
+    "default": "Predeterminada",
+    "newGallery": "Nueva galería",
+    "renameGallery": "Renombrar galería",
+    "defaultGalleryCreated": "Galería predeterminada creada",
+    "defaultGalleryInfo": "Esta es tu galería predeterminada. La imagen de portada se usará como imagen principal del local.",
+    "items": "elementos",
+    "dropFiles": "Arrastra archivos aquí o haz clic para subir",
+    "selectFiles": "Seleccionar archivos",
+    "addMedia": "Agregar media",
+    "uploading": "Subiendo...",
+    "coverImage": "Imagen de portada",
+    "setAsCover": "Establecer como portada",
+    "cover": "Portada",
+    "editMedia": "Editar media",
+    "title": "Título",
+    "titlePlaceholder": "Título de la foto",
+    "altText": "Texto alternativo",
+    "altTextPlaceholder": "Descripción para accesibilidad",
+    "creator": "Creador",
+    "creatorPlaceholder": "Nombre del fotógrafo o creador",
+    "year": "Año",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Detalles adicionales",
+    "deleteGalleryTitle": "¿Eliminar galería?",
+    "deleteGalleryDescription": "Esto eliminará la galería y todos sus elementos multimedia. Esta acción no se puede deshacer.",
+    "deleteMediaTitle": "¿Eliminar media?",
+    "deleteMediaDescription": "Esto eliminará permanentemente este elemento. Esta acción no se puede deshacer.",
+    "createGallery": "Crear galería",
+    "galleryName": "Nombre",
+    "galleryNamePlaceholder": "Fotos del Evento",
+    "creating": "Creando...",
+    "noGallerySelected": "Selecciona una galería para administrar media",
+    "galleryCreated": "Galería creada",
+    "createFailed": "Error al crear galería",
+    "galleryUpdated": "Galería actualizada",
+    "updateFailed": "Error al actualizar galería",
+    "galleryDeleted": "Galería eliminada",
+    "deleteFailed": "Error al eliminar galería",
+    "mediaUploaded": "Media subida",
+    "uploadFailed": "Error al subir archivo",
+    "mediaUpdated": "Media actualizada",
+    "updateMediaFailed": "Error al actualizar media",
+    "mediaDeleted": "Media eliminada",
+    "deleteMediaFailed": "Error al eliminar media",
+    "coverSet": "Imagen de portada establecida",
+    "setCoverFailed": "Error al establecer imagen de portada"
   },
   "venue": {
     "location": "Ubicación",
@@ -2483,11 +2551,16 @@
   "venueDetails": {
     "notFound": "Venue no encontrado.",
     "goHome": "Ir a Inicio",
-    "manage": "Gestionar",
+    "manage": "Gestionar local",
     "capacity": "Capacidad: {{count}}",
     "upcomingEvents": "Próximos eventos.",
     "viewDetails": "Ver detalles del lugar",
-    "visitWebsite": "Visitar sitio web"
+    "visitWebsite": "Visitar sitio web",
+    "eyebrow": "Detalles del Local",
+    "defaultTitle": "Local",
+    "events": "Eventos",
+    "noUpcomingEvents": "No hay próximos eventos en este local.",
+    "showPastEvents": "Mostrar eventos pasados"
   },
   "organizationsManagement": {
     "title": "Gestión de Organizaciones",

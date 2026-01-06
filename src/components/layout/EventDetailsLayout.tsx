@@ -44,22 +44,25 @@ export function EventDetailsLayout({
         </div>
       </div>
 
-      {/* Desktop: two-column side-by-side layout */}
-      <div className='hidden lg:flex lg:h-screen'>
-        {/* Left Column - Hero Image (auto width based on aspect ratio) - z-10 */}
-        <div className='relative overflow-hidden flex-shrink-0 h-screen z-10'>
-          {leftColumn}
-        </div>
+      {/* Desktop: two-column layout with footer below fold */}
+      <div className='hidden lg:block'>
+        {/* Two-column content area - viewport height */}
+        <div className='flex h-[calc(100vh-4rem)]'>
+          {/* Left Column - Hero Image (width based on aspect ratio) - z-10 */}
+          <div className='relative overflow-hidden z-10 h-full flex-shrink-0'>
+            {leftColumn}
+          </div>
 
-        {/* Right Column - Content (scrollable, takes remaining space) - z-20 */}
-        <div className='flex-1 overflow-y-auto relative h-screen z-20'>
-          <div className='relative flex flex-col min-h-full'>
-            <div className='w-full max-w-4xl mx-auto px-8 flex-1'>
+          {/* Right Column - Content (internal scroll) - z-20 */}
+          <div className='flex-1 overflow-y-auto relative z-20'>
+            <div className='w-full max-w-4xl mx-auto px-8'>
               {rightColumn}
             </div>
-            <Footer />
           </div>
         </div>
+
+        {/* Footer below fold - revealed by page scroll */}
+        <Footer />
       </div>
     </div>
   );

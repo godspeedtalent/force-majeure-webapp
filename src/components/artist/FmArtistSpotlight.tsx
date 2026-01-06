@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { Music2 } from 'lucide-react';
+import { Music2, Disc3 } from 'lucide-react';
 
 import { FmCommonBadgeGroup } from '@/components/common/display/FmCommonBadgeGroup';
 import { FmSocialLinks } from '@/components/common/display/FmSocialLinks';
@@ -36,8 +36,10 @@ export interface FmArtistSpotlightProps {
   showRecordings?: boolean;
   /** Custom class name */
   className?: string;
-  /** Optional action element to render in the header row (e.g., manage button) */
-  headerAction?: React.ReactNode;
+  /** Optional action element to render next to social links (e.g., view profile button) */
+  footerAction?: React.ReactNode;
+  /** Hide the "Artist Spotlight" subheader (when shown in modal with its own header) */
+  hideSpotlightHeader?: boolean;
 }
 
 /**
@@ -58,7 +60,8 @@ export function FmArtistSpotlight({
   artist,
   showRecordings = true,
   className,
-  headerAction,
+  footerAction,
+  hideSpotlightHeader = false,
 }: FmArtistSpotlightProps) {
   const { t: tCommon } = useTranslation('common');
 
@@ -140,12 +143,11 @@ export function FmArtistSpotlight({
 
             {/* Artist Info */}
             <div className='flex-1 flex flex-col justify-center min-w-0'>
-              <div className='flex items-center justify-between gap-2 mb-1'>
-                <p className='text-[9px] uppercase tracking-[0.3em] text-white/50 font-canela'>
+              {!hideSpotlightHeader && (
+                <p className='text-[9px] uppercase tracking-[0.3em] text-white/50 font-canela mb-1'>
                   {tCommon('artistPreview.spotlight')}
                 </p>
-                {headerAction}
-              </div>
+              )}
               <h1 className='text-2xl font-canela font-semibold text-white leading-tight mb-2 truncate'>
                 {artist.name}
               </h1>
@@ -217,29 +219,34 @@ export function FmArtistSpotlight({
           </div>
 
           {/* Social Links - Mobile */}
-          {hasSocialLinks && (
+          {(hasSocialLinks || footerAction) && (
             <>
               <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent mt-4' />
-              <div className='flex items-center mt-3'>
-                <FmSocialLinks
-                  website={artist.website}
-                  instagram={artist.instagram_handle}
-                  youtube={youtube}
-                  facebook={facebook}
-                  soundcloud={
-                    artist.soundcloud_id
-                      ? `https://soundcloud.com/${artist.soundcloud_id}`
-                      : undefined
-                  }
-                  spotify={
-                    artist.spotify_id
-                      ? `https://open.spotify.com/artist/${artist.spotify_id}`
-                      : undefined
-                  }
-                  tiktok={artist.tiktok_handle}
-                  size='sm'
-                  gap='md'
-                />
+              <div className='flex items-center justify-between mt-3'>
+                {hasSocialLinks ? (
+                  <FmSocialLinks
+                    website={artist.website}
+                    instagram={artist.instagram_handle}
+                    youtube={youtube}
+                    facebook={facebook}
+                    soundcloud={
+                      artist.soundcloud_id
+                        ? `https://soundcloud.com/${artist.soundcloud_id}`
+                        : undefined
+                    }
+                    spotify={
+                      artist.spotify_id
+                        ? `https://open.spotify.com/artist/${artist.spotify_id}`
+                        : undefined
+                    }
+                    tiktok={artist.tiktok_handle}
+                    size='sm'
+                    gap='md'
+                  />
+                ) : (
+                  <div />
+                )}
+                {footerAction}
               </div>
             </>
           )}
@@ -294,12 +301,11 @@ export function FmArtistSpotlight({
             {/* Right: Content Column */}
             <div className='flex-1 flex flex-col gap-4 min-h-[320px]'>
               <div className='space-y-2'>
-                <div className='flex items-center justify-between gap-2'>
+                {!hideSpotlightHeader && (
                   <p className='text-[10px] uppercase tracking-[0.35em] text-white/50 font-canela'>
                     {tCommon('artistPreview.spotlight')}
                   </p>
-                  {headerAction}
-                </div>
+                )}
                 <h1 className='text-4xl font-canela font-semibold text-white leading-tight'>
                   {artist.name}
                 </h1>
@@ -331,29 +337,34 @@ export function FmArtistSpotlight({
           </div>
 
           {/* Social Links - Desktop */}
-          {hasSocialLinks && (
+          {(hasSocialLinks || footerAction) && (
             <>
               <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent mt-[20px]' />
-              <div className='flex items-center mt-[15px]'>
-                <FmSocialLinks
-                  website={artist.website}
-                  instagram={artist.instagram_handle}
-                  youtube={youtube}
-                  facebook={facebook}
-                  soundcloud={
-                    artist.soundcloud_id
-                      ? `https://soundcloud.com/${artist.soundcloud_id}`
-                      : undefined
-                  }
-                  spotify={
-                    artist.spotify_id
-                      ? `https://open.spotify.com/artist/${artist.spotify_id}`
-                      : undefined
-                  }
-                  tiktok={artist.tiktok_handle}
-                  size='md'
-                  gap='md'
-                />
+              <div className='flex items-center justify-between mt-[15px]'>
+                {hasSocialLinks ? (
+                  <FmSocialLinks
+                    website={artist.website}
+                    instagram={artist.instagram_handle}
+                    youtube={youtube}
+                    facebook={facebook}
+                    soundcloud={
+                      artist.soundcloud_id
+                        ? `https://soundcloud.com/${artist.soundcloud_id}`
+                        : undefined
+                    }
+                    spotify={
+                      artist.spotify_id
+                        ? `https://open.spotify.com/artist/${artist.spotify_id}`
+                        : undefined
+                    }
+                    tiktok={artist.tiktok_handle}
+                    size='md'
+                    gap='md'
+                  />
+                ) : (
+                  <div />
+                )}
+                {footerAction}
               </div>
             </>
           )}
@@ -363,6 +374,10 @@ export function FmArtistSpotlight({
       {/* Recordings Section */}
       {showRecordings && recordings.length > 0 && (
         <div className='mt-6 border border-white/20 bg-black/40 backdrop-blur-sm p-4 md:p-6'>
+          <h2 className='text-xl font-canela mb-4 flex items-center gap-2'>
+            <Disc3 className='h-5 w-5 text-fm-gold' />
+            {tCommon('sections.recordings')}
+          </h2>
           <FmRecordingsGrid recordings={recordings} className='mt-0' hideHeader />
         </div>
       )}

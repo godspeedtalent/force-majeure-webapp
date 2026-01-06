@@ -19,6 +19,10 @@ export interface VenueDetails {
   logo?: string | null;
   website?: string | null;
   googleMapsUrl?: string | null;
+  instagram?: string | null;
+  facebook?: string | null;
+  youtube?: string | null;
+  tiktok?: string | null;
 }
 
 export type EventStatus = 'draft' | 'published' | 'invisible';

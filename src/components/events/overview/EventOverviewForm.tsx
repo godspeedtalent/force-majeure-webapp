@@ -1,5 +1,6 @@
+import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Save, Eye, MapPin } from 'lucide-react';
+import { Save, Eye, MapPin, AlertTriangle } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmVenueSearchDropdown } from '@/components/common/search/FmVenueSearchDropdown';
 import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
@@ -7,6 +8,7 @@ import { FmCommonDatePicker } from '@/components/common/forms/FmCommonDatePicker
 import { FmCommonTimePicker } from '@/components/common/forms/FmCommonTimePicker';
 import { FmImageUpload } from '@/components/common/forms/FmImageUpload';
 import { FmI18nCommon } from '@/components/common/i18n';
+import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { Checkbox } from '@/components/common/shadcn/checkbox';
@@ -45,6 +47,10 @@ export const EventOverviewForm = ({
   const { t } = useTranslation('common');
   const { isFeatureEnabled } = useFeatureFlagHelpers();
 
+  // State for past date confirmation modal
+  const [pendingPastDate, setPendingPastDate] = useState<Date | null>(null);
+  const [isPastDateModalOpen, setIsPastDateModalOpen] = useState(false);
+
   const {
     formState,
     setHeadlinerId,
@@ -80,6 +86,45 @@ export const EventOverviewForm = ({
     aboutEvent,
     showVenueMap,
   } = formState;
+
+  // Handle date change with past date confirmation
+  const handleDateChange = useCallback((value: Date | undefined) => {
+    if (!value) {
+      setEventDate(undefined);
+      triggerAutoSave();
+      return;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const selectedDate = new Date(value);
+    selectedDate.setHours(0, 0, 0, 0);
+
+    // Check if selected date is in the past
+    if (selectedDate < today) {
+      setPendingPastDate(value);
+      setIsPastDateModalOpen(true);
+    } else {
+      setEventDate(value);
+      triggerAutoSave();
+    }
+  }, [setEventDate, triggerAutoSave]);
+
+  // Confirm past date selection
+  const handleConfirmPastDate = useCallback(() => {
+    if (pendingPastDate) {
+      setEventDate(pendingPastDate);
+      triggerAutoSave();
+    }
+    setPendingPastDate(null);
+    setIsPastDateModalOpen(false);
+  }, [pendingPastDate, setEventDate, triggerAutoSave]);
+
+  // Cancel past date selection
+  const handleCancelPastDate = useCallback(() => {
+    setPendingPastDate(null);
+    setIsPastDateModalOpen(false);
+  }, []);
 
   return (
     <FmCommonCard className='p-8 relative'>
@@ -204,10 +249,8 @@ export const EventOverviewForm = ({
           <div className='flex gap-2'>
             <FmCommonDatePicker
               value={eventDate}
-              onChange={value => {
-                setEventDate(value);
-                triggerAutoSave();
-              }}
+              onChange={handleDateChange}
+              disablePastDates={false}
             />
             <FmCommonTimePicker
               value={formattedStartTime}
@@ -306,6 +349,39 @@ export const EventOverviewForm = ({
           </div>
         )}
       </div>
+
+      {/* Past Date Confirmation Modal */}
+      <FmCommonModal
+        open={isPastDateModalOpen}
+        onOpenChange={setIsPastDateModalOpen}
+        title={t('eventOverview.pastDateConfirmation.title')}
+        className='max-w-md'
+      >
+        <div className='flex flex-col gap-4'>
+          <div className='flex items-start gap-3'>
+            <div className='p-2 rounded-none bg-yellow-500/10'>
+              <AlertTriangle className='h-5 w-5 text-yellow-500' />
+            </div>
+            <p className='text-sm text-muted-foreground'>
+              {t('eventOverview.pastDateConfirmation.message')}
+            </p>
+          </div>
+          <div className='flex justify-end gap-3'>
+            <FmCommonButton
+              variant='secondary'
+              onClick={handleCancelPastDate}
+            >
+              {t('buttons.cancel')}
+            </FmCommonButton>
+            <FmCommonButton
+              variant='default'
+              onClick={handleConfirmPastDate}
+            >
+              {t('buttons.confirm')}
+            </FmCommonButton>
+          </div>
+        </div>
+      </FmCommonModal>
     </FmCommonCard>
   );
 };

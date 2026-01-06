@@ -43,10 +43,9 @@ export const EventHero = ({
 
   return (
     <div
-      className='relative'
+      className='relative h-full'
       style={{
         viewTransitionName: `magazine-hero-${event.id}`,
-        height: 'calc(100vh - 4rem)' // 100vh minus nav bar height (h-16 = 4rem = 64px)
       }}
     >
       {/* Real image - only render if we have one */}
@@ -109,34 +108,30 @@ export const EventHero = ({
         </div>
       )}
 
-      {/* Fixed buttons on mobile, absolute on desktop */}
-      <div className='fixed lg:absolute top-6 left-6 right-6 lg:top-10 lg:left-10 lg:right-10 flex justify-between z-50 lg:z-auto pointer-events-none'>
-        {/* Back button - left side */}
-        <div className='flex gap-2 pointer-events-auto'>
+      {/* Fixed buttons - stay at top of viewport */}
+      <div className='fixed top-20 left-6 z-50 flex gap-2'>
+        {/* Back button */}
+        <FmCommonButton
+          variant='secondary'
+          size='icon'
+          onClick={onBack}
+          icon={ArrowLeft}
+          className='text-white bg-black/40 hover:bg-black/20 backdrop-blur-sm border-white border-2 hover:border-fm-gold hover:text-fm-gold hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] transition-colors duration-200 lg:w-auto lg:px-4'
+        >
+          <span className='hidden lg:inline'>{t('eventDetails.back')}</span>
+        </FmCommonButton>
+
+        {/* Manage button */}
+        {canManage && (
           <FmCommonButton
             variant='secondary'
             size='icon'
-            onClick={onBack}
-            icon={ArrowLeft}
+            onClick={onManage}
+            icon={Settings}
             className='text-white bg-black/40 hover:bg-black/20 backdrop-blur-sm border-white border-2 hover:border-fm-gold hover:text-fm-gold hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] transition-colors duration-200 lg:w-auto lg:px-4'
           >
-            <span className='hidden lg:inline'>{t('eventDetails.back')}</span>
+            <span className='hidden lg:inline'>{t('eventDetails.manage')}</span>
           </FmCommonButton>
-        </div>
-
-        {/* Manage button - right side (top right on desktop) */}
-        {canManage && (
-          <div className='pointer-events-auto'>
-            <FmCommonButton
-              variant='secondary'
-              size='icon'
-              onClick={onManage}
-              icon={Settings}
-              className='text-white bg-black/40 hover:bg-black/20 backdrop-blur-sm border-white border-2 hover:border-fm-gold hover:text-fm-gold hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] transition-colors duration-200 lg:w-auto lg:px-4'
-            >
-              <span className='hidden lg:inline'>{t('eventDetails.manage')}</span>
-            </FmCommonButton>
-          </div>
         )}
       </div>
     </div>

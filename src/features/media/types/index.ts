@@ -14,6 +14,10 @@ export interface MediaGallery {
   description: string | null;
   allowed_types: MediaType[];
   is_active: boolean;
+  /** The venue that owns this gallery. NULL for global galleries. */
+  venue_id: string | null;
+  /** Whether this is the default gallery for the venue. */
+  is_default: boolean;
   created_at: string;
   updated_at: string;
 }

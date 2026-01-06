@@ -60,13 +60,9 @@ export function useEventDetailsData(event: EventDetailsRecord) {
 
   const yearNumber = useMemo(() => eventDate.getFullYear(), [eventDate]);
 
-  // Format time as: 9pm - 2am PST (just the time, no date)
+  // Format time as: 9pm - 2am (just the time, no timezone)
+  // For after hours events: 9pm - Late
   const formattedDateTime = useMemo(() => {
-    // Get timezone
-    const timezone = new Date()
-      .toLocaleTimeString('en-US', { timeZoneName: 'short' })
-      .split(' ')[2];
-
     // Parse start time (e.g., "9:00 PM")
     const startMatch = event.time?.match(/(\d+):(\d+)\s*(AM|PM)?/i);
     if (!startMatch) return '';
@@ -74,20 +70,20 @@ export function useEventDetailsData(event: EventDetailsRecord) {
     const startHour = parseInt(startMatch[1], 10);
     const startMeridiem = (startMatch[3] || 'PM').toUpperCase();
 
-    // If after hours, just show start time
+    // If after hours, show "9pm - Late"
     if (event.isAfterHours) {
-      return `${startHour}${startMeridiem.toLowerCase()} ${timezone}`;
+      return `${startHour}${startMeridiem.toLowerCase()} - Late`;
     }
 
     // If no end time, just show start time
     if (!event.endTime) {
-      return `${startHour}${startMeridiem.toLowerCase()} ${timezone}`;
+      return `${startHour}${startMeridiem.toLowerCase()}`;
     }
 
     // Parse end time (e.g., "2:00 AM")
     const endMatch = event.endTime.match(/(\d+):(\d+)\s*(AM|PM)?/i);
     if (!endMatch) {
-      return `${startHour}${startMeridiem.toLowerCase()} ${timezone}`;
+      return `${startHour}${startMeridiem.toLowerCase()}`;
     }
 
     const endHour = parseInt(endMatch[1], 10);
@@ -98,7 +94,7 @@ export function useEventDetailsData(event: EventDetailsRecord) {
       startMeridiem !== endMeridiem ? startMeridiem.toLowerCase() : '';
     const endMeridiemDisplay = endMeridiem.toLowerCase();
 
-    return `${startHour}${startMeridiemDisplay} - ${endHour}${endMeridiemDisplay} ${timezone}`;
+    return `${startHour}${startMeridiemDisplay} - ${endHour}${endMeridiemDisplay}`;
   }, [event.time, event.endTime, event.isAfterHours]);
 
   const callTimeLineup = useMemo(() => {

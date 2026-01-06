@@ -9,6 +9,23 @@ import {
   GripVertical,
   Plus,
 } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+  arrayMove,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
@@ -44,6 +61,113 @@ interface EventArtistManagementProps {
   lookingForUndercard?: boolean;
   onLookingForUndercardChange?: (checked: boolean) => void;
   className?: string;
+}
+
+/** Props for the sortable undercard slot */
+interface SortableUndercardSlotProps {
+  slot: ArtistSlot;
+  showScheduling: boolean;
+  onUpdate: (id: string, updates: Partial<ArtistSlot>) => void;
+  onRemove: (id: string) => void;
+  onPromote: (id: string) => void;
+  t: (key: string) => string;
+}
+
+/** Sortable undercard artist slot with drag and drop */
+function SortableUndercardSlot({
+  slot,
+  showScheduling,
+  onUpdate,
+  onRemove,
+  onPromote,
+  t,
+}: SortableUndercardSlotProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: slot.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        'group relative p-4 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 hover:shadow-[0_0_12px_rgba(212,175,55,0.2)] transition-all duration-300',
+        isDragging && 'opacity-50 shadow-lg z-50 border-fm-gold/50'
+      )}
+    >
+      {/* Drag Handle */}
+      <div
+        {...attributes}
+        {...listeners}
+        className='absolute left-1 top-1/2 -translate-y-1/2 cursor-grab active:cursor-grabbing p-1 hover:bg-white/10 rounded transition-colors'
+      >
+        <GripVertical className='h-4 w-4 text-muted-foreground hover:text-fm-gold' />
+      </div>
+
+      <div className='flex items-start gap-4 pl-6'>
+        <div className='flex-1 space-y-3'>
+          {/* Artist Selection */}
+          <div className='flex items-center gap-3'>
+            <div className='flex-1'>
+              <FmArtistSearchDropdown
+                value={slot.artistId}
+                onChange={artistId => onUpdate(slot.id, { artistId })}
+                placeholder={t('artistManagement.selectUndercard')}
+              />
+            </div>
+            <button
+              onClick={() => onPromote(slot.id)}
+              className='text-xs px-2 py-1 rounded bg-fm-gold/20 hover:bg-fm-gold/30 text-fm-gold transition-colors'
+            >
+              {t('artistManagement.promote')}
+            </button>
+          </div>
+
+          {/* Scheduling (if enabled) */}
+          {showScheduling && (
+            <div className='grid grid-cols-2 gap-3'>
+              <FmCommonTextField
+                label={t('artistManagement.setTime')}
+                type='time'
+                value={slot.setTime || ''}
+                onChange={e => onUpdate(slot.id, { setTime: e.target.value })}
+                placeholder='20:00'
+              />
+              <FmCommonTextField
+                label={t('artistManagement.durationMin')}
+                type='number'
+                value={slot.setDuration?.toString() || ''}
+                onChange={e =>
+                  onUpdate(slot.id, {
+                    setDuration: parseInt(e.target.value) || 0,
+                  })
+                }
+                placeholder='45'
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Remove Button */}
+        <button
+          onClick={() => onRemove(slot.id)}
+          className='opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-red-500/20 rounded text-red-400 hover:text-red-300'
+        >
+          <Trash2 className='h-4 w-4' />
+        </button>
+      </div>
+    </div>
+  );
 }
 
 /**
@@ -113,6 +237,14 @@ export function EventArtistManagement({
     return initialScheduleData.some(s => s.setTime);
   });
   const [stagedSlotId, setStagedSlotId] = useState<string | null>(null);
+
+  // Drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   // Track if we've initialized to avoid re-running on every render
   const hasInitialized = useRef(false);
@@ -218,23 +350,25 @@ export function EventArtistManagement({
     updateParent(updated);
   };
 
-  const moveArtist = (id: string, direction: 'up' | 'down') => {
-    const index = artistSlots.findIndex(slot => slot.id === id);
-    if (index === -1) return;
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
 
-    const newIndex = direction === 'up' ? index - 1 : index + 1;
-    if (newIndex < 0 || newIndex >= artistSlots.length) return;
+    if (over && active.id !== over.id) {
+      const oldIndex = artistSlots.findIndex(slot => slot.id === active.id);
+      const newIndex = artistSlots.findIndex(slot => slot.id === over.id);
 
-    const updated = [...artistSlots];
-    [updated[index], updated[newIndex]] = [updated[newIndex], updated[index]];
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const updated = arrayMove(artistSlots, oldIndex, newIndex);
 
-    // Update order values
-    updated.forEach((slot, idx) => {
-      slot.order = idx;
-    });
+        // Update order values
+        updated.forEach((slot, idx) => {
+          slot.order = idx;
+        });
 
-    setArtistSlots(updated);
-    updateParent(updated);
+        setArtistSlots(updated);
+        updateParent(updated);
+      }
+    }
   };
 
   const promoteToCoHeadliner = (id: string) => {
@@ -257,7 +391,7 @@ export function EventArtistManagement({
             </div>
           )}
 
-          {headliners.map((slot, index) => (
+          {headliners.map(slot => (
             <div
               key={slot.id}
               className={cn(
@@ -268,18 +402,7 @@ export function EventArtistManagement({
                 'hover:bg-white/10 hover:shadow-[0_0_12px_rgba(212,175,55,0.2)]'
               )}
             >
-              {/* Reorder Handle */}
-              <div className='absolute left-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity'>
-                <button
-                  onClick={() => moveArtist(slot.id, 'up')}
-                  disabled={index === 0}
-                  className='p-1 hover:bg-white/10 rounded disabled:opacity-30'
-                >
-                  <GripVertical className='h-4 w-4' />
-                </button>
-              </div>
-
-              <div className='flex items-start gap-4 pl-6'>
+              <div className='flex items-start gap-4'>
                 <div className='flex-1 space-y-3'>
                   {/* Artist Selection */}
                   <div className='flex items-center gap-3'>
@@ -377,80 +500,30 @@ export function EventArtistManagement({
             </div>
           )}
 
-          {undercards.map((slot, index) => (
-            <div
-              key={slot.id}
-              className='group relative p-4 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 hover:shadow-[0_0_12px_rgba(212,175,55,0.2)] transition-all duration-300'
+          {undercards.length > 0 && (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
             >
-              {/* Reorder Handle */}
-              <div className='absolute left-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity'>
-                <button
-                  onClick={() => moveArtist(slot.id, 'up')}
-                  disabled={index === 0}
-                  className='p-1 hover:bg-white/10 rounded disabled:opacity-30'
-                >
-                  <GripVertical className='h-4 w-4' />
-                </button>
-              </div>
-
-              <div className='flex items-start gap-4 pl-6'>
-                <div className='flex-1 space-y-3'>
-                  {/* Artist Selection */}
-                  <div className='flex items-center gap-3'>
-                    <div className='flex-1'>
-                      <FmArtistSearchDropdown
-                        value={slot.artistId}
-                        onChange={artistId =>
-                          updateArtist(slot.id, { artistId })
-                        }
-                        placeholder={t('artistManagement.selectUndercard')}
-                      />
-                    </div>
-                    <button
-                      onClick={() => promoteToCoHeadliner(slot.id)}
-                      className='text-xs px-2 py-1 rounded bg-fm-gold/20 hover:bg-fm-gold/30 text-fm-gold transition-colors'
-                    >
-                      {t('artistManagement.promote')}
-                    </button>
-                  </div>
-
-                  {/* Scheduling (if enabled) */}
-                  {showScheduling && (
-                    <div className='grid grid-cols-2 gap-3'>
-                      <FmCommonTextField
-                        label={t('artistManagement.setTime')}
-                        type='time'
-                        value={slot.setTime || ''}
-                        onChange={e =>
-                          updateArtist(slot.id, { setTime: e.target.value })
-                        }
-                        placeholder='20:00'
-                      />
-                      <FmCommonTextField
-                        label={t('artistManagement.durationMin')}
-                        type='number'
-                        value={slot.setDuration?.toString() || ''}
-                        onChange={e =>
-                          updateArtist(slot.id, {
-                            setDuration: parseInt(e.target.value) || 0,
-                          })
-                        }
-                        placeholder='45'
-                      />
-                    </div>
-                  )}
-                </div>
-
-                {/* Remove Button */}
-                <button
-                  onClick={() => removeArtist(slot.id)}
-                  className='opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-red-500/20 rounded text-red-400 hover:text-red-300'
-                >
-                  <Trash2 className='h-4 w-4' />
-                </button>
-              </div>
-            </div>
-          ))}
+              <SortableContext
+                items={undercards.map(slot => slot.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {undercards.map(slot => (
+                  <SortableUndercardSlot
+                    key={slot.id}
+                    slot={slot}
+                    showScheduling={showScheduling}
+                    onUpdate={updateArtist}
+                    onRemove={removeArtist}
+                    onPromote={promoteToCoHeadliner}
+                    t={t}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          )}
 
           {/* Add Undercard Button */}
           <FmCommonButton

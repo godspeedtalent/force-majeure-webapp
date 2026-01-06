@@ -5,6 +5,7 @@ import {
   SiSoundcloud,
   SiSpotify,
   SiTiktok,
+  SiX,
   SiYoutube,
 } from 'react-icons/si';
 
@@ -78,6 +79,14 @@ const PLATFORMS: Record<string, SocialPlatform> = {
     hoverColor: 'hover:text-white',
     borderColor: 'hover:border-white/50',
   },
+  twitter: {
+    name: 'X (Twitter)',
+    icon: SiX,
+    getUrl: (handle: string) =>
+      `https://x.com/${handle.replace('@', '')}`,
+    hoverColor: 'hover:text-white',
+    borderColor: 'hover:border-white/50',
+  },
 };
 
 export type SocialSize = 'sm' | 'md' | 'lg';
@@ -103,6 +112,8 @@ export interface FmSocialLinksProps {
   spotify?: string | null;
   /** TikTok handle (with or without @) */
   tiktok?: string | null;
+  /** Twitter/X handle (with or without @) */
+  twitter?: string | null;
   /** Icon and padding size */
   size?: SocialSize;
   /** Gap between links */
@@ -147,6 +158,7 @@ export function FmSocialLinks({
   soundcloud,
   spotify,
   tiktok,
+  twitter,
   size = 'md',
   gap = 'md',
   className,
@@ -157,6 +169,7 @@ export function FmSocialLinks({
   const activePlatforms: Array<{ key: string; value: string }> = [];
   if (website) activePlatforms.push({ key: 'website', value: website });
   if (instagram) activePlatforms.push({ key: 'instagram', value: instagram });
+  if (twitter) activePlatforms.push({ key: 'twitter', value: twitter });
   if (youtube) activePlatforms.push({ key: 'youtube', value: youtube });
   if (facebook) activePlatforms.push({ key: 'facebook', value: facebook });
   if (soundcloud) activePlatforms.push({ key: 'soundcloud', value: soundcloud });

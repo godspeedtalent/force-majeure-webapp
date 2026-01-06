@@ -185,6 +185,7 @@
     "featured": "精选",
     "refetchDetails": "刷新详情",
     "setAsPrimary": "设为主要",
+    "setAsFeatured": "设为精选",
     "noRecordingsYet": "暂无录音",
     "addFirstRecording": "添加您的第一个录音"
   },
@@ -600,7 +601,17 @@
     "spotlight": "艺术家聚焦",
     "defaultDescription": "关于这位艺术家的更多信息即将推出。请在活动临近时回来查看演出时间、精选曲目和独家采访。",
     "viewDetails": "查看艺人详情",
-    "manage": "管理艺人"
+    "manage": "管理艺人",
+    "artistProfile": "艺人主页"
+  },
+  "organizationDetails": {
+    "defaultTitle": "组织",
+    "partner": "活动合作伙伴",
+    "defaultDescription": "关于这个组织的更多信息即将推出。",
+    "viewDetails": "查看组织详情",
+    "manage": "管理组织",
+    "viewProfile": "查看主页",
+    "eventPartner": "活动合作伙伴"
   },
   "scavenger": {
     "registration": {
@@ -826,7 +837,11 @@
     "cannotDeleteWithSubgenres": "无法删除有子风格的风格。请先删除子风格。",
     "cannotDeleteWithArtists": "无法删除已分配给艺术家的风格。请先解除艺术家的关联。",
     "noneTopLevel": "无（顶级）",
-    "creating": "创建中..."
+    "creating": "创建中...",
+    "unsavedChanges": "未保存的更改",
+    "unsavedChangesDescription": "您有未保存的更改。确定要离开此页面吗？您的更改将会丢失。",
+    "leaveWithoutSaving": "不保存并离开",
+    "stayOnPage": "留在页面"
   },
   "sections": {
     "basicInformation": "基本信息",
@@ -1147,7 +1162,11 @@
     "enterEventTitle": "输入活动标题",
     "enterEventSubtitle": "输入活动副标题",
     "enterEventDescription": "输入活动描述...",
-    "showVenueMap": "在活动页面显示场馆地图"
+    "showVenueMap": "在活动页面显示场馆地图",
+    "pastDateConfirmation": {
+      "title": "设置过去日期？",
+      "message": "您即将把此活动的日期设置为过去的日期。这通常用于归档或追溯活动。您确定要继续吗？"
+    }
   },
   "venueNav": {
     "venueDetails": "场馆详情",
@@ -1172,6 +1191,55 @@
     "capacity": "容量",
     "deleteVenue": "删除场馆",
     "deleteVenueConfirm": "确定要删除此场馆吗？"
+  },
+  "venueGallery": {
+    "selectGallery": "选择相册",
+    "default": "默认",
+    "newGallery": "新建相册",
+    "renameGallery": "重命名相册",
+    "defaultGalleryCreated": "已创建默认相册",
+    "defaultGalleryInfo": "这是您的默认相册。封面图片将用作场馆主图。",
+    "items": "项",
+    "dropFiles": "拖拽文件到此处或点击上传",
+    "selectFiles": "选择文件",
+    "addMedia": "添加媒体",
+    "uploading": "上传中...",
+    "coverImage": "封面图片",
+    "setAsCover": "设为封面",
+    "cover": "封面",
+    "editMedia": "编辑媒体",
+    "title": "标题",
+    "titlePlaceholder": "照片标题",
+    "altText": "替代文本",
+    "altTextPlaceholder": "无障碍访问描述",
+    "creator": "创作者",
+    "creatorPlaceholder": "摄影师或创作者姓名",
+    "year": "年份",
+    "description": "描述",
+    "descriptionPlaceholder": "其他详情",
+    "deleteGalleryTitle": "删除相册？",
+    "deleteGalleryDescription": "这将删除相册及其所有媒体项目。此操作无法撤销。",
+    "deleteMediaTitle": "删除媒体？",
+    "deleteMediaDescription": "这将永久删除此项目。此操作无法撤销。",
+    "createGallery": "创建相册",
+    "galleryName": "名称",
+    "galleryNamePlaceholder": "活动照片",
+    "creating": "创建中...",
+    "noGallerySelected": "选择一个相册来管理媒体",
+    "galleryCreated": "相册已创建",
+    "createFailed": "创建相册失败",
+    "galleryUpdated": "相册已更新",
+    "updateFailed": "更新相册失败",
+    "galleryDeleted": "相册已删除",
+    "deleteFailed": "删除相册失败",
+    "mediaUploaded": "媒体已上传",
+    "uploadFailed": "上传文件失败",
+    "mediaUpdated": "媒体已更新",
+    "updateMediaFailed": "更新媒体失败",
+    "mediaDeleted": "媒体已删除",
+    "deleteMediaFailed": "删除媒体失败",
+    "coverSet": "封面图片已设置",
+    "setCoverFailed": "设置封面图片失败"
   },
   "venue": {
     "location": "位置",
@@ -2483,11 +2551,16 @@
   "venueDetails": {
     "notFound": "未找到场地。",
     "goHome": "返回首页",
-    "manage": "管理",
+    "manage": "管理场馆",
     "capacity": "容量：{{count}}",
     "upcomingEvents": "即将举行的活动",
     "viewDetails": "查看场地详情",
-    "visitWebsite": "访问网站"
+    "visitWebsite": "访问网站",
+    "eyebrow": "场馆详情",
+    "defaultTitle": "场馆",
+    "events": "活动",
+    "noUpcomingEvents": "该场馆暂无即将举行的活动。",
+    "showPastEvents": "显示过往活动"
   },
   "organizationsManagement": {
     "title": "组织管理",

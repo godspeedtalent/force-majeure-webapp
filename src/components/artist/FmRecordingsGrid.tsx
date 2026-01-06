@@ -137,7 +137,7 @@ export function FmRecordingsGrid({
 
     if (onSetPrimary && !recording.is_primary_dj_set) {
       actions.push({
-        label: t('labels.setAsPrimary'),
+        label: t('labels.setAsFeatured'),
         icon: <Star className='h-4 w-4' />,
         onClick: onSetPrimary,
         separator: true,
@@ -179,10 +179,10 @@ export function FmRecordingsGrid({
             : 'border-white/20'
         )}
       >
-        {/* Primary badge */}
+        {/* Featured badge */}
         {recording.is_primary_dj_set && (
-          <div className='absolute -top-2 -right-2 bg-fm-gold text-black text-[10px] font-bold px-2 py-0.5 rounded-sm z-10'>
-            {t('labels.primary').toUpperCase()}
+          <div className='absolute -top-2 -right-2 bg-fm-gold text-black text-[10px] font-bold px-2 py-0.5 rounded-sm z-20'>
+            {t('labels.featured').toUpperCase()}
           </div>
         )}
 

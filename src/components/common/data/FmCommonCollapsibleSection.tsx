@@ -1,7 +1,5 @@
 import { ReactNode, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import { Button } from '@/components/common/shadcn/button';
+import { ChevronDown } from 'lucide-react';
 import { cn } from '@/shared';
 
 interface FmCommonCollapsibleSectionProps {
@@ -12,11 +10,11 @@ interface FmCommonCollapsibleSectionProps {
 }
 
 /**
- * FmCommonCollapsibleSection - A collapsible section with toggle button
+ * FmCommonCollapsibleSection - A collapsible section with toggleable header
  *
  * Features:
- * - Toggle expand/collapse state
- * - Chevron icon that rotates
+ * - Clickable header to toggle expand/collapse
+ * - Chevron icon that rotates smoothly
  * - Smooth slide down/up + fade in/out animations
  * - Optional default expanded state
  *
@@ -33,32 +31,25 @@ export const FmCommonCollapsibleSection = ({
   defaultExpanded = true,
   className = '',
 }: FmCommonCollapsibleSectionProps) => {
-  const { t } = useTranslation('common');
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
   return (
     <div className={className}>
-      <div className='flex items-center justify-between mb-4'>
-        <h3 className='font-canela text-lg text-white'>{title}</h3>
-        <Button
-          variant='secondary'
-          size='sm'
-          onClick={() => setIsExpanded(!isExpanded)}
-          className='text-white hover:text-fm-gold'
-        >
-          {isExpanded ? (
-            <>
-              <ChevronUp className='h-4 w-4 mr-1' />
-              {t('collapsible.collapse')}
-            </>
-          ) : (
-            <>
-              <ChevronDown className='h-4 w-4 mr-1' />
-              {t('collapsible.expand')}
-            </>
+      <button
+        type='button'
+        onClick={() => setIsExpanded(!isExpanded)}
+        className='w-full flex items-center justify-between mb-4 group cursor-pointer'
+      >
+        <h3 className='font-canela text-lg text-white group-hover:text-fm-gold transition-colors'>
+          {title}
+        </h3>
+        <ChevronDown
+          className={cn(
+            'h-5 w-5 text-muted-foreground group-hover:text-fm-gold transition-all duration-300',
+            isExpanded ? 'rotate-180' : 'rotate-0'
           )}
-        </Button>
-      </div>
+        />
+      </button>
 
       <div
         className={cn(

@@ -386,7 +386,7 @@ export function LinkedArtistDisplay({
               variant='secondary'
               size='sm'
               icon={Settings}
-              onClick={() => navigate(`/artists/manage/${linkedArtist.id}`)}
+              onClick={() => navigate(`/artists/${linkedArtist.id}/manage`)}
             >
               {t('userArtist.manageArtist')}
             </FmCommonButton>

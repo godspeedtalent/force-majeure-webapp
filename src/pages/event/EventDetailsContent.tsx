@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Clock, MapPin } from 'lucide-react';
+import { Clock, MapPin, Moon } from 'lucide-react';
+import { Badge } from '@/components/common/shadcn/badge';
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
 
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
@@ -37,6 +38,7 @@ import {
   EventHeaderActions,
   EventCallTimes,
   EventGuestList,
+  EventPartners,
   AttendeeModal,
 } from './components';
 import { BULLET_SEPARATOR } from './components/constants';
@@ -53,6 +55,7 @@ export const EventDetailsContent = ({
   displayTitle,
 }: EventDetailsContentProps) => {
   const { t } = useTranslation('pages');
+  const { t: tCommon } = useTranslation('common');
   const { user } = useAuth();
   const { hasAnyRole } = useUserPermissions();
   const navigate = useNavigate();
@@ -188,6 +191,10 @@ export const EventDetailsContent = ({
       logo: event.venueDetails?.logo,
       website: event.venueDetails?.website,
       googleMapsUrl: event.venueDetails?.googleMapsUrl,
+      instagram: event.venueDetails?.instagram,
+      facebook: event.venueDetails?.facebook,
+      youtube: event.venueDetails?.youtube,
+      tiktok: event.venueDetails?.tiktok,
     });
     setIsVenueModalOpen(true);
   };
@@ -228,6 +235,13 @@ export const EventDetailsContent = ({
     [navigate]
   );
 
+  const handleManageOrganization = useCallback(
+    (organizationId: string) => {
+      navigate(`/admin/organizations/${organizationId}`);
+    },
+    [navigate]
+  );
+
   const detailsContent = (
     <>
       {/* Unified grid - items flow to fill gaps */}
@@ -264,6 +278,7 @@ export const EventDetailsContent = ({
           formattedDateTime={formattedDateTime}
           isAfterHours={isAfterHours}
           venue={event.venue}
+          venueLogo={event.venueDetails?.logo}
           onVenueSelect={handleVenueSelect}
           className={!guestListEnabled ? 'lg:col-span-2' : ''}
         />
@@ -275,6 +290,13 @@ export const EventDetailsContent = ({
           lookingForUndercard={event.lookingForUndercard}
           eventId={event.id}
           isPastEvent={isPastEvent}
+        />
+
+        {/* Partners - only shows if event has partner organizations */}
+        <EventPartners
+          eventId={event.id}
+          canManage={canManage}
+          onManageOrganization={handleManageOrganization}
         />
       </div>
 
@@ -358,11 +380,17 @@ export const EventDetailsContent = ({
               })
             }
           />
-          <div className='flex flex-col gap-1.5 text-sm text-muted-foreground/90 sm:flex-row sm:flex-wrap sm:items-center tracking-wide'>
+          <div className='flex flex-col gap-1.5 text-sm text-muted-foreground/90 tracking-wide'>
             <div className='flex items-center gap-2'>
               <Clock className='h-4 w-4 text-fm-gold flex-shrink-0' />
               <span>{formattedDateTime}</span>
             </div>
+            {isAfterHours && (
+              <Badge className='w-fit bg-fm-gold/20 text-fm-gold border-fm-gold/40 text-[10px] px-2 py-0.5 flex items-center gap-1.5'>
+                <Moon className='h-3 w-3' />
+                {tCommon('eventForm.afterHoursEvent')}
+              </Badge>
+            )}
             <div className='flex items-center gap-2'>
               <MapPin className='h-4 w-4 text-fm-gold flex-shrink-0' />
               <FmTextLink onClick={handleVenueSelect}>

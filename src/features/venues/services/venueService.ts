@@ -22,6 +22,12 @@ export interface CreateVenueData {
   website?: string | null;
   image_url?: string | null;
   logo_url?: string | null;
+  // Social media fields
+  instagram_handle?: string | null;
+  facebook_url?: string | null;
+  youtube_url?: string | null;
+  tiktok_handle?: string | null;
+  twitter_handle?: string | null;
 }
 
 export interface UpdateVenueData extends Partial<CreateVenueData> {
@@ -38,7 +44,7 @@ export interface VenueFilters {
 const baseService = createService<Venue, CreateVenueData>({
   tableName: 'venues',
   serviceName: 'venueService',
-  defaultSelect: 'id, name, description, address_line_1, address_line_2, city, state, zip_code, capacity, website, image_url, logo_url',
+  defaultSelect: 'id, name, description, address_line_1, address_line_2, city, state, zip_code, capacity, website, image_url, logo_url, instagram_handle, facebook_url, youtube_url, tiktok_handle, twitter_handle',
   defaultOrder: { column: 'name', ascending: true },
 });
 

@@ -30,6 +30,8 @@ interface FmFlexibleImageUploadProps {
   className?: string;
   /** Callback when upload state changes (for form submission control) */
   onUploadStateChange?: (isUploading: boolean) => void;
+  /** Variant for different use cases: 'banner' (16:9) or 'logo' (square, compact) */
+  variant?: 'banner' | 'logo';
 }
 
 /**
@@ -52,6 +54,7 @@ export const FmFlexibleImageUpload = ({
   isPrimary = false,
   className,
   onUploadStateChange,
+  variant = 'banner',
 }: FmFlexibleImageUploadProps) => {
   const { t } = useTranslation('common');
   const { t: tToast } = useTranslation('toasts');
@@ -187,7 +190,7 @@ export const FmFlexibleImageUpload = ({
 
   return (
     <div className={cn('space-y-4', className)}>
-      <FmCommonCard variant='default' className='p-6'>
+      <FmCommonCard variant='default' className={variant === 'logo' ? 'p-4' : 'p-6'}>
         <input
           ref={fileInputRef}
           type='file'
@@ -199,7 +202,10 @@ export const FmFlexibleImageUpload = ({
         {value || previewUrl ? (
           /* Preview uploaded or uploading image */
           <div className='space-y-4'>
-            <div className='relative aspect-video w-full overflow-hidden rounded-none bg-muted'>
+            <div className={cn(
+              'relative overflow-hidden rounded-none bg-muted',
+              variant === 'logo' ? 'aspect-square w-full max-w-[250px]' : 'aspect-video w-full'
+            )}>
               <img
                 src={previewUrl || value}
                 alt={t('upload.imagePreview')}
@@ -250,20 +256,27 @@ export const FmFlexibleImageUpload = ({
             onDrop={handleDrop}
             onClick={handleButtonClick}
             className={cn(
-              'flex flex-col items-center justify-center rounded-none border-2 border-dashed p-12 transition-colors cursor-pointer',
+              'flex flex-col items-center justify-center rounded-none border-2 border-dashed transition-colors cursor-pointer',
+              variant === 'logo' ? 'aspect-square max-w-[250px] p-6' : 'p-12',
               dragActive
                 ? 'border-fm-gold bg-fm-gold/10'
                 : 'border-border bg-card hover:border-fm-gold/50 hover:bg-muted/50'
             )}
           >
-            <ImageIcon className='mb-4 h-12 w-12 text-muted-foreground' />
-            <p className='mb-2 text-sm font-medium'>
+            <ImageIcon className={cn(
+              'mb-4 text-muted-foreground',
+              variant === 'logo' ? 'h-8 w-8' : 'h-12 w-12'
+            )} />
+            <p className={cn(
+              'mb-2 font-medium text-center',
+              variant === 'logo' ? 'text-xs' : 'text-sm'
+            )}>
               {t('upload.dropImageOr')}{' '}
               <span className='text-fm-gold hover:underline'>
                 {t('upload.browse')}
               </span>
             </p>
-            <p className='text-xs text-muted-foreground'>
+            <p className='text-xs text-muted-foreground text-center'>
               {t('upload.supportedFormats')}
             </p>
           </div>

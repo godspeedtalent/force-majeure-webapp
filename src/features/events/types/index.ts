@@ -61,6 +61,12 @@ export interface Venue {
   website?: string | null;
   image_url?: string | null;
   logo_url?: string | null;
+  // Social media fields
+  instagram_handle?: string | null;
+  facebook_url?: string | null;
+  youtube_url?: string | null;
+  tiktok_handle?: string | null;
+  twitter_handle?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
 }
@@ -79,6 +85,9 @@ export interface Artist {
   // Social media fields
   instagram_handle?: string | null;
   tiktok_handle?: string | null;
+  twitter_handle?: string | null;
+  facebook_url?: string | null;
+  youtube_url?: string | null;
   soundcloud_id?: string | null;
 }
 

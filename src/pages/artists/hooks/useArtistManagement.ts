@@ -5,7 +5,7 @@
  * Handles artist data fetching, form state, and recordings.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -77,6 +77,20 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
   const [editingRecording, setEditingRecording] = useState<ArtistRecording | null>(null);
   const [recordingToDelete, setRecordingToDelete] = useState<ArtistRecording | null>(null);
 
+  // Track initial values for dirty state detection
+  const initialValuesRef = useRef<{
+    name: string;
+    bio: string;
+    website: string;
+    instagram: string;
+    tiktok: string;
+    soundcloud: string;
+    spotify: string;
+    twitter: string;
+    facebook: string;
+    youtube: string;
+  } | null>(null);
+
   // Hooks for genre management
   const { data: artistGenres } = useArtistGenres(artistId);
   const updateGenresMutation = useUpdateArtistGenres();
@@ -120,23 +134,33 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
   // Populate form state from artist data
   useEffect(() => {
     if (artist) {
-      setName(artist.name || '');
-      setBio(artist.bio || '');
-      setWebsite(artist.website || '');
-
-      // Populate social links from dedicated columns
-      setInstagram(artist.instagram_handle || '');
-      setTiktok(artist.tiktok_handle || '');
-      setSoundcloud(artist.soundcloud_id || '');
-      setSpotify(artist.spotify_id || '');
-
-      // Parse additional social links from spotify_data field
       const metadata = artist.spotify_data as ArtistMetadata | null;
-      if (metadata?.socialLinks) {
-        setTwitter(metadata.socialLinks.twitter || '');
-        setFacebook(metadata.socialLinks.facebook || '');
-        setYoutube(metadata.socialLinks.youtube || '');
-      }
+
+      const initialValues = {
+        name: artist.name || '',
+        bio: artist.bio || '',
+        website: artist.website || '',
+        instagram: artist.instagram_handle || '',
+        tiktok: artist.tiktok_handle || '',
+        soundcloud: artist.soundcloud_id || '',
+        spotify: artist.spotify_id || '',
+        twitter: metadata?.socialLinks?.twitter || '',
+        facebook: metadata?.socialLinks?.facebook || '',
+        youtube: metadata?.socialLinks?.youtube || '',
+      };
+
+      setName(initialValues.name);
+      setBio(initialValues.bio);
+      setWebsite(initialValues.website);
+      setInstagram(initialValues.instagram);
+      setTiktok(initialValues.tiktok);
+      setSoundcloud(initialValues.soundcloud);
+      setSpotify(initialValues.spotify);
+      setTwitter(initialValues.twitter);
+      setFacebook(initialValues.facebook);
+      setYoutube(initialValues.youtube);
+
+      initialValuesRef.current = initialValues;
     }
   }, [artist]);
 
@@ -147,6 +171,24 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
       setSelectedGenres(genres);
     }
   }, [artistGenres]);
+
+  // Calculate if form has unsaved changes
+  const isDirty = useMemo(() => {
+    if (!initialValuesRef.current) return false;
+    const initial = initialValuesRef.current;
+    return (
+      name !== initial.name ||
+      bio !== initial.bio ||
+      website !== initial.website ||
+      instagram !== initial.instagram ||
+      tiktok !== initial.tiktok ||
+      soundcloud !== initial.soundcloud ||
+      spotify !== initial.spotify ||
+      twitter !== initial.twitter ||
+      facebook !== initial.facebook ||
+      youtube !== initial.youtube
+    );
+  }, [name, bio, website, instagram, tiktok, soundcloud, spotify, twitter, facebook, youtube]);
 
   // Handle genre changes
   const handleGenreChange = useCallback((genres: Genre[]) => {
@@ -308,7 +350,10 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
           bio,
           website,
           instagram_handle: instagram || null,
+          twitter_handle: twitter || null,
           tiktok_handle: tiktok || null,
+          facebook_url: facebook || null,
+          youtube_url: youtube || null,
           soundcloud_id: soundcloud || null,
           spotify_id: spotify || null,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -319,6 +364,20 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
 
       if (error) throw error;
 
+      // Update initial values to reset dirty state
+      initialValuesRef.current = {
+        name,
+        bio,
+        website,
+        instagram,
+        tiktok,
+        soundcloud,
+        spotify,
+        twitter,
+        facebook,
+        youtube,
+      };
+
       toast.success(tToast('artists.updated'));
       queryClient.invalidateQueries({ queryKey: ['artist', artistId] });
     } catch (error) {
@@ -326,7 +385,7 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
     } finally {
       setIsSaving(false);
     }
-  }, [artistId, name, bio, website, instagram, tiktok, soundcloud, spotify, buildMetadata, queryClient, tToast]);
+  }, [artistId, name, bio, website, instagram, twitter, tiktok, facebook, youtube, soundcloud, spotify, buildMetadata, queryClient, tToast]);
 
   // Delete handler
   const handleDelete = useCallback(async () => {
@@ -367,6 +426,7 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
     setActiveTab,
     isDeleting,
     isSaving,
+    isDirty,
     showDeleteConfirm,
     setShowDeleteConfirm,
 

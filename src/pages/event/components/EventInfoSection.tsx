@@ -12,6 +12,8 @@ interface EventInfoSectionProps {
   formattedDateTime: string;
   isAfterHours: boolean;
   venue: string;
+  /** Venue logo URL */
+  venueLogo?: string | null;
   onVenueSelect: () => void;
   className?: string;
 }
@@ -26,6 +28,7 @@ export const EventInfoSection = ({
   formattedDateTime,
   isAfterHours,
   venue,
+  venueLogo,
   onVenueSelect,
   className = '',
 }: EventInfoSectionProps) => {
@@ -63,8 +66,17 @@ export const EventInfoSection = ({
           label={t('eventInfo.venue')}
           size='sm'
           value={
-            <FmTextLink onClick={onVenueSelect}>
-              {venue || t('eventInfo.venueTBA')}
+            <FmTextLink onClick={onVenueSelect} className='text-white'>
+              <span className='flex items-center gap-2'>
+                {venueLogo && (
+                  <img
+                    src={venueLogo}
+                    alt=''
+                    className='w-5 h-5 object-contain flex-shrink-0'
+                  />
+                )}
+                {venue || t('eventInfo.venueTBA')}
+              </span>
             </FmTextLink>
           }
         />

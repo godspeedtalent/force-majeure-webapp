@@ -26,31 +26,47 @@ import { cn } from '@/shared';
 import { toast } from 'sonner';
 import { logger } from '@/shared';
 
+interface ArtistRegistrationData {
+  id: string;
+  artist_name: string;
+  bio: string;
+  city: string;
+  profile_image_url: string | null;
+  instagram_handle: string | null;
+  soundcloud_url: string | null;
+  spotify_url: string | null;
+  genres: string[];
+  tracks_metadata: {
+    name: string;
+    url: string;
+    cover_art: string | null;
+    platform: string;
+    recording_type: string;
+  }[] | null;
+}
+
+interface LinkedArtistData {
+  id: string;
+  name: string;
+  bio: string | null;
+  city: string | null;
+  image_url: string | null;
+  instagram: string | null;
+  soundcloud: string | null;
+  spotify: string | null;
+  genres: { id: string; name: string }[] | null;
+}
+
 interface UndercardRequest {
   id: string;
   event_id: string;
-  artist_registration_id: string;
+  artist_registration_id: string | null;
+  artist_id: string | null;
   status: 'pending' | 'approved' | 'rejected';
   reviewer_notes: string | null;
   created_at: string;
-  artist_registration: {
-    id: string;
-    artist_name: string;
-    bio: string;
-    city: string;
-    profile_image_url: string | null;
-    instagram_handle: string | null;
-    soundcloud_url: string | null;
-    spotify_url: string | null;
-    genres: string[];
-    tracks: {
-      name: string;
-      url: string;
-      cover_art: string | null;
-      platform: string;
-      recording_type: string;
-    }[];
-  };
+  artist_registration: ArtistRegistrationData | null;
+  artist: LinkedArtistData | null;
 }
 
 interface UndercardRequestsListProps {
@@ -76,6 +92,7 @@ export function UndercardRequestsList({
           id,
           event_id,
           artist_registration_id,
+          artist_id,
           status,
           reviewer_notes,
           created_at,
@@ -89,7 +106,23 @@ export function UndercardRequestsList({
             soundcloud_url,
             spotify_url,
             genres,
-            tracks
+            tracks_metadata
+          ),
+          artist:artists (
+            id,
+            name,
+            bio,
+            city,
+            image_url,
+            instagram,
+            soundcloud,
+            spotify,
+            genres:artist_genres (
+              genre:genres (
+                id,
+                name
+              )
+            )
           )
         `)
         .eq('event_id', eventId)
@@ -100,7 +133,16 @@ export function UndercardRequestsList({
         throw error;
       }
 
-      return data as unknown as UndercardRequest[];
+      // Transform the nested genre structure for linked artists
+      const transformed = (data || []).map((request: any) => ({
+        ...request,
+        artist: request.artist ? {
+          ...request.artist,
+          genres: request.artist.genres?.map((g: any) => g.genre) || null,
+        } : null,
+      }));
+
+      return transformed as UndercardRequest[];
     },
   });
 
@@ -247,9 +289,38 @@ function RequestCard({
 }: RequestCardProps) {
   const { t } = useTranslation('common');
   const registration = request.artist_registration;
-  const djSets = registration.tracks?.filter(
-    track => track.recording_type === 'dj_set'
-  ) || [];
+  const linkedArtist = request.artist;
+
+  // Early return if no artist data at all
+  if (!registration && !linkedArtist) {
+    return (
+      <div className='border border-white/10 rounded-lg p-4 text-muted-foreground text-sm'>
+        {t('undercardRequests.noRegistrationData', 'Artist data unavailable')}
+      </div>
+    );
+  }
+
+  // Normalize data from either source
+  const artistName = registration?.artist_name || linkedArtist?.name || 'Unknown Artist';
+  const artistBio = registration?.bio || linkedArtist?.bio || '';
+  const artistCity = registration?.city || linkedArtist?.city || '';
+  const artistImage = registration?.profile_image_url || linkedArtist?.image_url || null;
+  const instagramHandle = registration?.instagram_handle || linkedArtist?.instagram || null;
+  const spotifyUrl = registration?.spotify_url || linkedArtist?.spotify || null;
+  const soundcloudUrl = registration?.soundcloud_url || linkedArtist?.soundcloud || null;
+  const isLinkedArtist = !!linkedArtist && !registration;
+
+  type TrackMetadata = {
+    name: string;
+    url: string;
+    cover_art: string | null;
+    platform: string;
+    recording_type: string;
+  };
+
+  const djSets = (registration?.tracks_metadata || []).filter(
+    (track: TrackMetadata) => track.recording_type === 'dj_set'
+  );
 
   return (
     <div
@@ -269,10 +340,10 @@ function RequestCard({
       >
         {/* Avatar */}
         <div className='w-12 h-12 flex-shrink-0 rounded-full overflow-hidden bg-white/10'>
-          {registration.profile_image_url ? (
+          {artistImage ? (
             <img
-              src={registration.profile_image_url}
-              alt={registration.artist_name}
+              src={artistImage}
+              alt={artistName}
               className='w-full h-full object-cover'
             />
           ) : (
@@ -284,12 +355,19 @@ function RequestCard({
 
         {/* Info */}
         <div className='flex-1 text-left'>
-          <h4 className='font-semibold'>{registration.artist_name}</h4>
+          <div className='flex items-center gap-2'>
+            <h4 className='font-semibold'>{artistName}</h4>
+            {isLinkedArtist && (
+              <span className='px-1.5 py-0.5 text-[10px] bg-fm-gold/20 text-fm-gold rounded'>
+                {t('undercardRequests.linkedArtist', 'Linked')}
+              </span>
+            )}
+          </div>
           <div className='flex items-center gap-3 text-sm text-muted-foreground'>
-            {registration.city && (
+            {artistCity && (
               <span className='flex items-center gap-1'>
                 <MapPin className='h-3 w-3' />
-                {registration.city}
+                {artistCity}
               </span>
             )}
             <span className='flex items-center gap-1'>
@@ -318,28 +396,30 @@ function RequestCard({
       {isExpanded && (
         <div className='px-4 pb-4 space-y-4 border-t border-white/10'>
           {/* Bio */}
-          <div className='pt-4'>
-            <p className='text-sm text-muted-foreground line-clamp-3 whitespace-pre-wrap'>
-              {registration.bio}
-            </p>
-          </div>
+          {artistBio && (
+            <div className='pt-4'>
+              <p className='text-sm text-muted-foreground line-clamp-3 whitespace-pre-wrap'>
+                {artistBio}
+              </p>
+            </div>
+          )}
 
           {/* Social Links */}
           <div className='flex items-center gap-3'>
-            {registration.instagram_handle && (
+            {instagramHandle && (
               <a
-                href={`https://instagram.com/${registration.instagram_handle}`}
+                href={`https://instagram.com/${instagramHandle.replace('@', '')}`}
                 target='_blank'
                 rel='noopener noreferrer'
                 className='flex items-center gap-1 text-sm text-muted-foreground hover:text-white transition-colors'
               >
                 <FaInstagram className='h-4 w-4' />
-                @{registration.instagram_handle}
+                @{instagramHandle.replace('@', '')}
               </a>
             )}
-            {registration.spotify_url && (
+            {spotifyUrl && (
               <a
-                href={registration.spotify_url}
+                href={spotifyUrl}
                 target='_blank'
                 rel='noopener noreferrer'
                 className='text-[#5aad7a] hover:opacity-80 transition-opacity'
@@ -347,9 +427,9 @@ function RequestCard({
                 <FaSpotify className='h-5 w-5' />
               </a>
             )}
-            {registration.soundcloud_url && (
+            {soundcloudUrl && (
               <a
-                href={registration.soundcloud_url}
+                href={soundcloudUrl}
                 target='_blank'
                 rel='noopener noreferrer'
                 className='text-[#d48968] hover:opacity-80 transition-opacity'
@@ -366,7 +446,7 @@ function RequestCard({
                 {t('undercardRequests.djSets', { count: djSets.length })}
               </h5>
               <div className='space-y-2'>
-                {djSets.map((track, idx) => (
+                {djSets.map((track: TrackMetadata, idx: number) => (
                   <a
                     key={idx}
                     href={track.url}

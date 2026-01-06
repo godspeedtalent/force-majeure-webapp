@@ -20,7 +20,10 @@ import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSid
 import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
+import { UnsavedChangesDialog } from '@/components/common/modals/UnsavedChangesDialog';
+import { FmStickyFormFooter } from '@/components/common/forms/FmStickyFormFooter';
 import { PageErrorBoundary } from '@/components/common/feedback';
+import { useUnsavedChanges } from '@/shared/hooks';
 import { useArtistManagement, type ArtistTab } from './hooks';
 import {
   ArtistOverviewTab,
@@ -42,6 +45,7 @@ export default function ArtistManagement() {
     activeTab,
     isDeleting,
     isSaving,
+    isDirty,
     showDeleteConfirm,
     setShowDeleteConfirm,
 
@@ -99,6 +103,9 @@ export default function ArtistManagement() {
     handleSetPrimaryRecording,
     handleRefetchRecording,
   } = useArtistManagement({ artistId: id });
+
+  // Unsaved changes warning
+  const unsavedChanges = useUnsavedChanges({ isDirty });
 
   // Navigation configuration
   const navigationGroups: FmCommonSideNavGroup<ArtistTab>[] = [
@@ -174,9 +181,7 @@ export default function ArtistManagement() {
               onBioChange={setBio}
               selectedGenres={selectedGenres}
               onGenreChange={handleGenreChange}
-              onSave={handleSave}
               onDeleteClick={handleDeleteClick}
-              isSaving={isSaving}
               isDeleting={isDeleting}
             />
           </PageErrorBoundary>
@@ -225,8 +230,6 @@ export default function ArtistManagement() {
               onFacebookChange={setFacebook}
               youtube={youtube}
               onYoutubeChange={setYoutube}
-              onSave={handleSave}
-              isSaving={isSaving}
             />
           </PageErrorBoundary>
         )}
@@ -251,6 +254,22 @@ export default function ArtistManagement() {
           variant='destructive'
           isLoading={isDeleting}
         />
+
+        <UnsavedChangesDialog
+          open={unsavedChanges.showDialog}
+          onConfirm={unsavedChanges.confirmNavigation}
+          onCancel={unsavedChanges.cancelNavigation}
+        />
+
+        {/* Sticky Save Footer - shows on overview and social tabs */}
+        {(activeTab === 'overview' || activeTab === 'social') && (
+          <FmStickyFormFooter
+            isDirty={isDirty}
+            isSaving={isSaving}
+            disabled={!name}
+            onSave={handleSave}
+          />
+        )}
       </SideNavbarLayout>
 
       {/* Mobile bottom tab bar */}

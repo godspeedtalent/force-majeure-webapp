@@ -1,0 +1,1 @@
+export { VenueSocialTab } from './VenueSocialTab';

@@ -1,13 +1,17 @@
 import { type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowRight, Settings } from 'lucide-react';
+import { ArrowRight, Settings, X } from 'lucide-react';
 
-import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmPortalTooltip } from '@/components/common/feedback/FmPortalTooltip';
-import { DialogTitle } from '@/components/common/shadcn/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from '@/components/common/shadcn/dialog';
 import { FmArtistSpotlight } from '@/components/artist/FmArtistSpotlight';
 import { useArtistById } from '@/shared/api/queries/artistQueries';
 
@@ -53,63 +57,76 @@ export const FmArtistDetailsModal = ({
     }
   };
 
-  // Manage button to show in the header row
-  const manageButton = canManage && artist?.id ? (
-    <FmPortalTooltip content={t('artistDetails.manage')} side='left'>
-      <FmCommonIconButton
-        icon={Settings}
-        onClick={handleManage}
-        variant='secondary'
-        size='sm'
-        aria-label={t('artistDetails.manage')}
-        className='bg-white/10 text-white hover:bg-white/20 hover:text-fm-gold'
-      />
-    </FmPortalTooltip>
+  // "Artist Profile" button to show next to social links
+  const profileButton = artist?.id ? (
+    <FmCommonButton
+      variant='secondary'
+      size='sm'
+      icon={ArrowRight}
+      iconPosition='right'
+      onClick={handleViewDetails}
+      className='bg-white/10 text-white hover:bg-white/20 hover:text-fm-gold'
+    >
+      {t('artistDetails.artistProfile')}
+    </FmCommonButton>
   ) : null;
 
   return (
-    <FmCommonModal
-      open={open}
-      onOpenChange={onOpenChange}
-      title=''
-      headerContent={
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className='max-w-3xl max-h-[90vh] p-0 gap-0 border border-white/20 bg-background/95 backdrop-blur-xl overflow-hidden flex flex-col'>
         <DialogTitle className='sr-only'>
           {artist?.name ?? t('artistDetails.defaultTitle')}
         </DialogTitle>
-      }
-      className='max-w-3xl max-h-[90vh] overflow-y-auto p-0'
-    >
-      {isLoading && artist?.id ? (
-        <div className='flex items-center justify-center py-20'>
-          <FmCommonLoadingSpinner size='lg' />
-        </div>
-      ) : fullArtist ? (
-        <div className='flex flex-col'>
-          <FmArtistSpotlight
-            artist={fullArtist}
-            showRecordings
-            headerAction={manageButton}
-          />
-          {artist?.id && (
-            <div className='px-8 pt-4 pb-8'>
-              <FmPortalTooltip content={t('artistDetails.viewDetails')} side='top'>
+
+        {/* Sticky header bar */}
+        <div className='sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b border-white/10 bg-background/95 backdrop-blur-sm'>
+          <p className='text-[10px] uppercase tracking-[0.35em] text-white/50 font-canela'>
+            {t('artistPreview.spotlight')}
+          </p>
+          <div className='flex items-center gap-2'>
+            {canManage && artist?.id && (
+              <FmPortalTooltip content={t('artistDetails.manage')} side='bottom'>
                 <FmCommonIconButton
-                  icon={ArrowRight}
-                  onClick={handleViewDetails}
+                  icon={Settings}
+                  onClick={handleManage}
                   variant='secondary'
                   size='sm'
-                  aria-label={t('artistDetails.viewDetails')}
-                  className='bg-white/10 text-white hover:bg-white/20'
+                  aria-label={t('artistDetails.manage')}
+                  className='bg-white/10 text-white hover:bg-white/20 hover:text-fm-gold'
                 />
               </FmPortalTooltip>
+            )}
+            <FmCommonIconButton
+              icon={X}
+              onClick={() => onOpenChange(false)}
+              variant='secondary'
+              size='sm'
+              aria-label={t('common.close')}
+              className='bg-white/10 text-white hover:bg-white/20'
+            />
+          </div>
+        </div>
+
+        {/* Scrollable content */}
+        <div className='flex-1 overflow-y-auto'>
+          {isLoading && artist?.id ? (
+            <div className='flex items-center justify-center py-20'>
+              <FmCommonLoadingSpinner size='lg' />
+            </div>
+          ) : fullArtist ? (
+            <FmArtistSpotlight
+              artist={fullArtist}
+              showRecordings
+              hideSpotlightHeader
+              footerAction={profileButton}
+            />
+          ) : (
+            <div className='flex items-center justify-center py-20 text-muted-foreground'>
+              {t('artistDetails.defaultDescription')}
             </div>
           )}
         </div>
-      ) : (
-        <div className='flex items-center justify-center py-20 text-muted-foreground'>
-          {t('artistDetails.defaultDescription')}
-        </div>
-      )}
-    </FmCommonModal>
+      </DialogContent>
+    </Dialog>
   );
 };

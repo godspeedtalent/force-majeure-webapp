@@ -1,24 +1,27 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
-import { FileText, MapPin, Save, Trash2, Eye, Images } from 'lucide-react';
+import { FileText, MapPin, Trash2, Eye, Images, Share2 } from 'lucide-react';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
+import { UnsavedChangesDialog } from '@/components/common/modals/UnsavedChangesDialog';
+import { FmStickyFormFooter } from '@/components/common/forms/FmStickyFormFooter';
 import { FmFlexibleImageUpload } from '@/components/common/forms/FmFlexibleImageUpload';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { FmCommonCard } from '@/components/common/display/FmCommonCard';
-import { GalleryManagementSection } from '@/components/DevTools/GalleryManagementSection';
+import { VenueGallerySection } from '@/components/venue/VenueGallerySection';
+import { VenueSocialTab } from './components/manage';
 import { toast } from 'sonner';
 import { handleError } from '@/shared/services/errorHandler';
-import { useDebouncedSave } from '@/shared/hooks/useDebouncedSave';
 import { venueService } from '@/features/venues/services/venueService';
 import { useVenueById, venueKeys } from '@/shared/api/queries/venueQueries';
+import { useUnsavedChanges } from '@/shared/hooks';
 
-type VenueTab = 'overview' | 'gallery' | 'view';
+type VenueTab = 'overview' | 'social' | 'gallery' | 'view';
 
 export default function VenueManagement() {
   const { t } = useTranslation('common');
@@ -40,67 +43,91 @@ export default function VenueManagement() {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [capacity, setCapacity] = useState<number>(0);
-
-  // Debounced auto-save for venue changes
-  const saveVenueData = async (data: {
-    name: string;
-    description: string;
-    logo_url: string;
-    address_line_1: string;
-    city: string;
-    state: string;
-    capacity: number;
-  }) => {
-    if (!id) return;
-
-    try {
-      await venueService.updateVenue(id, data);
-      toast.success(tToast('venues.autoSaved'));
-      queryClient.invalidateQueries({ queryKey: venueKeys.detail(id) });
-    } catch (error) {
-      await handleError(error, {
-        title: tToast('venues.autoSaveFailed'),
-        description: tToast('venues.autoSaveFailedDescription'),
-        endpoint: 'VenueManagement',
-        method: 'UPDATE',
-      });
-    }
-  };
-
-  const { triggerSave: triggerVenueSave, flushSave: flushVenueSave } =
-    useDebouncedSave({
-      saveFn: saveVenueData,
-      delay: 5000,
-    });
-
-  // Helper to trigger auto-save
-  const triggerAutoSave = () => {
-    if (name.trim()) {
-      triggerVenueSave({
-        name,
-        description,
-        logo_url: logoUrl,
-        address_line_1: addressLine1,
-        city,
-        state,
-        capacity,
-      });
-    }
-  };
+  const [website, setWebsite] = useState('');
+  const [instagramHandle, setInstagramHandle] = useState('');
+  const [twitterHandle, setTwitterHandle] = useState('');
+  const [facebookUrl, setFacebookUrl] = useState('');
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [tiktokHandle, setTiktokHandle] = useState('');
 
   const { data: venue, isLoading } = useVenueById(id);
 
+  // Track initial values for dirty state detection
+  const initialValuesRef = useRef<{
+    name: string;
+    description: string;
+    logoUrl: string;
+    addressLine1: string;
+    city: string;
+    state: string;
+    capacity: number;
+    website: string;
+    instagramHandle: string;
+    twitterHandle: string;
+    facebookUrl: string;
+    youtubeUrl: string;
+    tiktokHandle: string;
+  } | null>(null);
+
   useEffect(() => {
     if (venue) {
-      setName(venue.name || '');
-      setDescription(venue.description || '');
-      setLogoUrl(venue.logo_url || '');
-      setAddressLine1(venue.address_line_1 || '');
-      setCity(venue.city || '');
-      setState(venue.state || '');
-      setCapacity(venue.capacity || 0);
+      const initialValues = {
+        name: venue.name || '',
+        description: venue.description || '',
+        logoUrl: venue.logo_url || '',
+        addressLine1: venue.address_line_1 || '',
+        city: venue.city || '',
+        state: venue.state || '',
+        capacity: venue.capacity || 0,
+        website: venue.website || '',
+        instagramHandle: venue.instagram_handle || '',
+        twitterHandle: venue.twitter_handle || '',
+        facebookUrl: venue.facebook_url || '',
+        youtubeUrl: venue.youtube_url || '',
+        tiktokHandle: venue.tiktok_handle || '',
+      };
+
+      setName(initialValues.name);
+      setDescription(initialValues.description);
+      setLogoUrl(initialValues.logoUrl);
+      setAddressLine1(initialValues.addressLine1);
+      setCity(initialValues.city);
+      setState(initialValues.state);
+      setCapacity(initialValues.capacity);
+      setWebsite(initialValues.website);
+      setInstagramHandle(initialValues.instagramHandle);
+      setTwitterHandle(initialValues.twitterHandle);
+      setFacebookUrl(initialValues.facebookUrl);
+      setYoutubeUrl(initialValues.youtubeUrl);
+      setTiktokHandle(initialValues.tiktokHandle);
+
+      initialValuesRef.current = initialValues;
     }
   }, [venue]);
+
+  // Calculate if form has unsaved changes
+  const isDirty = useMemo(() => {
+    if (!initialValuesRef.current) return false;
+    const initial = initialValuesRef.current;
+    return (
+      name !== initial.name ||
+      description !== initial.description ||
+      logoUrl !== initial.logoUrl ||
+      addressLine1 !== initial.addressLine1 ||
+      city !== initial.city ||
+      state !== initial.state ||
+      capacity !== initial.capacity ||
+      website !== initial.website ||
+      instagramHandle !== initial.instagramHandle ||
+      twitterHandle !== initial.twitterHandle ||
+      facebookUrl !== initial.facebookUrl ||
+      youtubeUrl !== initial.youtubeUrl ||
+      tiktokHandle !== initial.tiktokHandle
+    );
+  }, [name, description, logoUrl, addressLine1, city, state, capacity, website, instagramHandle, twitterHandle, facebookUrl, youtubeUrl, tiktokHandle]);
+
+  // Unsaved changes warning
+  const unsavedChanges = useUnsavedChanges({ isDirty });
 
   const navigationGroups: FmCommonSideNavGroup<VenueTab>[] = [
     {
@@ -121,6 +148,12 @@ export default function VenueManagement() {
           description: t('venueNav.overviewDescription'),
         },
         {
+          id: 'social',
+          label: t('venueNav.social', 'Social'),
+          icon: Share2,
+          description: t('venueNav.socialDescription', 'Manage social media links'),
+        },
+        {
           id: 'gallery',
           label: t('venueNav.gallery', 'Gallery'),
           icon: Images,
@@ -130,14 +163,11 @@ export default function VenueManagement() {
     },
   ];
 
-  const handleSave = async () => {
+  const handleSaveOverview = async () => {
     if (!id) return;
 
     setIsSaving(true);
     try {
-      // Flush any pending debounced save first
-      await flushVenueSave();
-
       await venueService.updateVenue(id, {
         name,
         description,
@@ -147,6 +177,56 @@ export default function VenueManagement() {
         state,
         capacity,
       });
+
+      // Update initial values to reset dirty state
+      if (initialValuesRef.current) {
+        initialValuesRef.current = {
+          ...initialValuesRef.current,
+          name,
+          description,
+          logoUrl,
+          addressLine1,
+          city,
+          state,
+          capacity,
+        };
+      }
+
+      toast.success(tToast('venues.updated'));
+      queryClient.invalidateQueries({ queryKey: venueKeys.detail(id) });
+    } catch (error) {
+      handleError(error, { title: tToast('venues.updateFailed') });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSaveSocial = async () => {
+    if (!id) return;
+
+    setIsSaving(true);
+    try {
+      await venueService.updateVenue(id, {
+        website,
+        instagram_handle: instagramHandle,
+        twitter_handle: twitterHandle,
+        facebook_url: facebookUrl,
+        youtube_url: youtubeUrl,
+        tiktok_handle: tiktokHandle,
+      });
+
+      // Update initial values to reset dirty state
+      if (initialValuesRef.current) {
+        initialValuesRef.current = {
+          ...initialValuesRef.current,
+          website,
+          instagramHandle,
+          twitterHandle,
+          facebookUrl,
+          youtubeUrl,
+          tiktokHandle,
+        };
+      }
 
       toast.success(tToast('venues.updated'));
       queryClient.invalidateQueries({ queryKey: venueKeys.detail(id) });
@@ -187,10 +267,7 @@ export default function VenueManagement() {
             <Label>{t('venueManagement.venueName')} *</Label>
             <Input
               value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-                triggerAutoSave();
-              }}
+              onChange={(e) => setName(e.target.value)}
               placeholder={t('venueManagement.enterVenueName')}
             />
           </div>
@@ -199,14 +276,11 @@ export default function VenueManagement() {
             <Label>{t('venueManagement.venueLogo')}</Label>
             <FmFlexibleImageUpload
               value={logoUrl}
-              onChange={(url) => {
-                setLogoUrl(url);
-                triggerAutoSave();
-              }}
+              onChange={setLogoUrl}
               onUploadStateChange={setIsLogoUploading}
-              bucket='venue-images'
+              bucket='images'
               pathPrefix={`venues/${id}/logo`}
-              className='max-w-[200px]'
+              variant='logo'
             />
             <p className='text-xs text-muted-foreground mt-1'>
               {t('venueManagement.venueLogoDescription')}
@@ -217,10 +291,7 @@ export default function VenueManagement() {
             <Label>{t('venueManagement.description')}</Label>
             <textarea
               value={description}
-              onChange={(e) => {
-                setDescription(e.target.value);
-                triggerAutoSave();
-              }}
+              onChange={(e) => setDescription(e.target.value)}
               placeholder={t('venueManagement.descriptionPlaceholder')}
               className='flex min-h-[100px] w-full rounded-none border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
               rows={4}
@@ -231,10 +302,7 @@ export default function VenueManagement() {
             <Label>{t('venueManagement.address')}</Label>
             <Input
               value={addressLine1}
-              onChange={(e) => {
-                setAddressLine1(e.target.value);
-                triggerAutoSave();
-              }}
+              onChange={(e) => setAddressLine1(e.target.value)}
               placeholder={t('venueManagement.streetAddress')}
             />
           </div>
@@ -244,10 +312,7 @@ export default function VenueManagement() {
               <Label>{t('venueManagement.city')}</Label>
               <Input
                 value={city}
-                onChange={(e) => {
-                  setCity(e.target.value);
-                  triggerAutoSave();
-                }}
+                onChange={(e) => setCity(e.target.value)}
                 placeholder={t('venueManagement.city')}
               />
             </div>
@@ -255,10 +320,7 @@ export default function VenueManagement() {
               <Label>{t('venueManagement.state')}</Label>
               <Input
                 value={state}
-                onChange={(e) => {
-                  setState(e.target.value);
-                  triggerAutoSave();
-                }}
+                onChange={(e) => setState(e.target.value)}
                 placeholder={t('venueManagement.state')}
               />
             </div>
@@ -269,17 +331,15 @@ export default function VenueManagement() {
             <Input
               type='number'
               value={capacity}
-              onChange={(e) => {
-                setCapacity(Number(e.target.value));
-                triggerAutoSave();
-              }}
+              onChange={(e) => setCapacity(Number(e.target.value))}
               placeholder={t('venueManagement.capacity')}
             />
           </div>
         </div>
       </FmCommonCard>
 
-      <div className='flex justify-between'>
+      {/* Delete button stays inline */}
+      <div className='flex justify-start'>
         <FmCommonButton
           variant='destructive'
           icon={Trash2}
@@ -288,29 +348,28 @@ export default function VenueManagement() {
         >
           {isDeleting ? t('buttons.deleting') : t('venueManagement.deleteVenue')}
         </FmCommonButton>
-
-        <FmCommonButton
-          icon={Save}
-          onClick={handleSave}
-          disabled={isSaving || isLogoUploading || !name}
-        >
-          {isSaving ? t('buttons.saving') : t('buttons.saveChanges')}
-        </FmCommonButton>
       </div>
     </div>
   );
 
-  const renderGalleryTab = () => (
-    <div className='space-y-6'>
-      <FmCommonCard className='p-6'>
-        <h2 className='text-xl font-semibold mb-6'>{t('venueManagement.gallery', 'Venue Gallery')}</h2>
-        <p className='text-sm text-muted-foreground mb-6'>
-          {t('venueManagement.galleryDescription', 'Manage photos and media for this venue. Select or create a gallery to get started.')}
-        </p>
-        <GalleryManagementSection />
-      </FmCommonCard>
-    </div>
-  );
+  const renderGalleryTab = () => {
+    if (!id || !venue) return null;
+
+    return (
+      <div className='space-y-6'>
+        <FmCommonCard className='p-6'>
+          <h2 className='text-xl font-semibold mb-6'>{t('venueManagement.gallery', 'Venue Gallery')}</h2>
+          <p className='text-sm text-muted-foreground mb-6'>
+            {t('venueManagement.galleryDescription', 'Manage photos and media for this venue. The cover image of the default gallery will be used as the venue hero image.')}
+          </p>
+          <VenueGallerySection
+            venueId={id}
+            venueName={venue.name || 'Venue'}
+          />
+        </FmCommonCard>
+      </div>
+    );
+  };
 
   if (isLoading) {
     return (
@@ -333,6 +392,22 @@ export default function VenueManagement() {
       }}
     >
       {activeTab === 'overview' && renderOverviewTab()}
+      {activeTab === 'social' && (
+        <VenueSocialTab
+          website={website}
+          instagram={instagramHandle}
+          twitter={twitterHandle}
+          facebook={facebookUrl}
+          youtube={youtubeUrl}
+          tiktok={tiktokHandle}
+          onWebsiteChange={setWebsite}
+          onInstagramChange={setInstagramHandle}
+          onTwitterChange={setTwitterHandle}
+          onFacebookChange={setFacebookUrl}
+          onYoutubeChange={setYoutubeUrl}
+          onTiktokChange={setTiktokHandle}
+        />
+      )}
       {activeTab === 'gallery' && renderGalleryTab()}
 
       <FmCommonConfirmDialog
@@ -345,6 +420,22 @@ export default function VenueManagement() {
         variant="destructive"
         isLoading={isDeleting}
       />
+
+      <UnsavedChangesDialog
+        open={unsavedChanges.showDialog}
+        onConfirm={unsavedChanges.confirmNavigation}
+        onCancel={unsavedChanges.cancelNavigation}
+      />
+
+      {/* Sticky Save Footer - shows on overview and social tabs */}
+      {(activeTab === 'overview' || activeTab === 'social') && (
+        <FmStickyFormFooter
+          isDirty={isDirty}
+          isSaving={isSaving}
+          disabled={activeTab === 'overview' ? (isLogoUploading || !name) : false}
+          onSave={activeTab === 'overview' ? handleSaveOverview : handleSaveSocial}
+        />
+      )}
     </SideNavbarLayout>
   );
 }

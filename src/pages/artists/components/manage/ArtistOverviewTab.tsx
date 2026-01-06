@@ -5,7 +5,7 @@
  */
 
 import { useTranslation } from 'react-i18next';
-import { Save, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
@@ -20,10 +20,11 @@ interface ArtistOverviewTabProps {
   onBioChange: (value: string) => void;
   selectedGenres: Genre[];
   onGenreChange: (genres: Genre[]) => void;
-  onSave: () => void;
   onDeleteClick: () => void;
-  isSaving: boolean;
   isDeleting: boolean;
+  // Save handled by parent via sticky footer
+  onSave?: () => void;
+  isSaving?: boolean;
 }
 
 export function ArtistOverviewTab({
@@ -33,9 +34,7 @@ export function ArtistOverviewTab({
   onBioChange,
   selectedGenres,
   onGenreChange,
-  onSave,
   onDeleteClick,
-  isSaving,
   isDeleting,
 }: ArtistOverviewTabProps) {
   const { t } = useTranslation('common');
@@ -75,7 +74,8 @@ export function ArtistOverviewTab({
         </div>
       </FmCommonCard>
 
-      <div className='flex justify-between'>
+      {/* Delete button stays inline */}
+      <div className='flex justify-start'>
         <FmCommonButton
           variant='destructive'
           icon={Trash2}
@@ -83,14 +83,6 @@ export function ArtistOverviewTab({
           disabled={isDeleting}
         >
           {isDeleting ? t('buttons.deleting') : t('buttons.deleteArtist')}
-        </FmCommonButton>
-
-        <FmCommonButton
-          icon={Save}
-          onClick={onSave}
-          disabled={isSaving || !name}
-        >
-          {isSaving ? t('buttons.saving') : t('buttons.saveChanges')}
         </FmCommonButton>
       </div>
     </div>

@@ -61,3 +61,10 @@ export {
   type ProfileSearchResult,
   type OrganizationSearchResult,
 } from './useFuzzySearch';
+
+// Unsaved changes warning hook
+export { useUnsavedChanges } from './useUnsavedChanges';
+export type {
+  UseUnsavedChangesOptions,
+  UseUnsavedChangesReturn,
+} from './useUnsavedChanges';
