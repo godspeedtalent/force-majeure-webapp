@@ -62,12 +62,12 @@ export function useAutoScrollMode({
   // Determine if auto-scroll is active
   const isActive = enabled && !isCancelled && !shouldSkip;
 
-  // Calculate parallax offsets based on progress (max 5vh/5vw)
+  // Calculate parallax offsets based on progress (max 2vh/2vw)
   // Image: slides down (positive Y) and right (positive X) from top-left corner
   // Content: slides up (negative Y)
-  const imageParallaxY = isActive ? progress * 5 : 0; // 0 to 5vh (down)
-  const imageParallaxX = isActive ? progress * 5 : 0; // 0 to 5vw (right)
-  const contentParallaxY = isActive ? progress * -5 : 0; // 0 to -5vh (up)
+  const imageParallaxY = isActive ? progress * 2 : 0; // 0 to 2vh (down)
+  const imageParallaxX = isActive ? progress * 2 : 0; // 0 to 2vw (right)
+  const contentParallaxY = isActive ? progress * -2 : 0; // 0 to -2vh (up)
 
   // Animation loop using requestAnimationFrame
   // Use stable callback that reads from ref
@@ -119,18 +119,21 @@ export function useAutoScrollMode({
     };
   }, [isActive, animate]);
 
-  // Reset timer when index changes (but only if active)
+  // Reset timer when index changes (restart animation for new card)
   useEffect(() => {
-    if (isActive && !hasCompletedRef.current) {
-      // Restart the animation for the new index
-      startTimeRef.current = null;
-      hasCompletedRef.current = false;
-      setProgress(0);
+    // Always reset state for new index
+    startTimeRef.current = null;
+    hasCompletedRef.current = false;
+    setProgress(0);
 
-      // Cancel existing animation and start fresh
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
+    // Cancel existing animation
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+
+    // Start fresh animation if active
+    if (isActive) {
       animationFrameRef.current = requestAnimationFrame(animate);
     }
   }, [currentIndex]); // eslint-disable-line react-hooks/exhaustive-deps
