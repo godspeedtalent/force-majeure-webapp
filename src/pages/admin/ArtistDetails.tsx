@@ -8,6 +8,7 @@ import { Separator } from '@/components/common/shadcn/separator';
 import { format } from 'date-fns';
 import { useArtistById } from '@/shared';
 import { DetailPageWrapper } from '@/components/layout/DetailPageWrapper';
+import { EntityDeletionActions } from '@/components/common/entity/EntityDeletionActions';
 
 export default function ArtistDetails() {
   const { t } = useTranslation('common');
@@ -166,6 +167,12 @@ export default function ArtistDetails() {
                   >
                     {t('adminDetails.backToArtistsList')}
                   </Button>
+                  <EntityDeletionActions
+                    entityType='artist'
+                    entityId={artist.id}
+                    entityName={artist.name}
+                    onDeleted={() => navigate('/admin/artists')}
+                  />
                 </FmCommonCardContent>
               </FmCommonCard>
             </div>

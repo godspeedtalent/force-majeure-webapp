@@ -12,6 +12,7 @@ import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoa
 import { Layout } from '@/components/layout/Layout';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { EntityDeletionActions } from '@/components/common/entity/EntityDeletionActions';
 
 interface Organization {
   id: string;
@@ -182,6 +183,12 @@ export default function OrganizationDetails() {
               >
                 {t('organization.backToList')}
               </Button>
+              <EntityDeletionActions
+                entityType='organization'
+                entityId={organization.id}
+                entityName={organization.name}
+                onDeleted={() => navigate('/admin/organizations')}
+              />
             </FmCommonCardContent>
           </FmCommonCard>
         </div>

@@ -191,7 +191,28 @@
     "noRecordingsYet": "暂无录音",
     "addFirstRecording": "添加您的第一个录音",
     "spotify": "Spotify",
-    "soundcloud": "SoundCloud"
+    "soundcloud": "SoundCloud",
+    "submittedOn": "提交于",
+    "actions": "操作"
+  },
+  "entities": {
+    "venue": "场地",
+    "artist": "艺术家",
+    "organization": "组织"
+  },
+  "deletion": {
+    "adminDelete": "删除",
+    "adminDeleteDescription": "永久删除此{{entityType}}。此操作无法撤销。",
+    "confirmDeleteTitle": "删除{{entityType}}？",
+    "confirmDeleteDescription": "您确定要永久删除\"{{entityName}}\"吗？此操作无法撤销。",
+    "requestDeletion": "请求删除",
+    "requestDeletionDescription": "提交删除此{{entityType}}的请求。管理员将审核您的请求。",
+    "requestSubmitted": "删除请求已成功提交",
+    "requestFailed": "提交删除请求失败",
+    "pendingRequest": "删除请求待审核",
+    "pendingRequestDescription": "您已提交删除此{{entityType}}的请求。请等待管理员审核。",
+    "deleteSuccess": "{{entityType}}删除成功",
+    "deleteFailed": "删除{{entityType}}失败"
   },
   "status": {
     "active": "活跃",
@@ -1546,6 +1567,9 @@
       "linkArtist": "关联艺术家",
       "deleteData": "删除数据",
       "unlinkArtist": "取消关联艺术家",
+      "deleteVenue": "删除场地",
+      "deleteArtist": "删除艺术家",
+      "deleteOrganization": "删除组织",
       "requested": "请求时间",
       "resolved": "解决时间",
       "by": "处理人",
@@ -1556,6 +1580,9 @@
       "approveDescLinkArtist": "这将把艺术家\"{{artistName}}\"关联到用户的账户。他们将能够管理此艺术家资料。",
       "approveDescDeleteData": "这将标记请求为已批准。您需要手动删除用户的数据。请确保删除所有艺术家数据、录音和其他相关信息。",
       "approveDescUnlinkArtist": "这将取消艺术家与用户账户的关联。艺术家资料将保留但不再与此用户关联。",
+      "approveDescDeleteVenue": "这将永久删除场地\"{{venueName}}\"及所有相关数据。此操作无法撤销。",
+      "approveDescDeleteArtist": "这将永久删除艺术家\"{{artistName}}\"及所有相关数据，包括录音、流派关联和活动出席记录。此操作无法撤销。",
+      "approveDescDeleteOrganization": "这将永久删除组织\"{{organizationName}}\"及所有相关数据。此操作无法撤销。",
       "denyRequest": "拒绝请求",
       "denyDescription": "请提供拒绝此请求的原因。用户将看到此信息。"
     },

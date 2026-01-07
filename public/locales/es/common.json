@@ -191,7 +191,28 @@
     "noRecordingsYet": "Aún no hay grabaciones",
     "addFirstRecording": "Añadir tu primera grabación",
     "spotify": "Spotify",
-    "soundcloud": "SoundCloud"
+    "soundcloud": "SoundCloud",
+    "submittedOn": "Enviado el",
+    "actions": "Acciones"
+  },
+  "entities": {
+    "venue": "Local",
+    "artist": "Artista",
+    "organization": "Organización"
+  },
+  "deletion": {
+    "adminDelete": "Eliminar",
+    "adminDeleteDescription": "Eliminar permanentemente este/a {{entityType}}. Esta acción no se puede deshacer.",
+    "confirmDeleteTitle": "¿Eliminar {{entityType}}?",
+    "confirmDeleteDescription": "¿Estás seguro de que deseas eliminar permanentemente \"{{entityName}}\"? Esta acción no se puede deshacer.",
+    "requestDeletion": "Solicitar Eliminación",
+    "requestDeletionDescription": "Envía una solicitud para eliminar este/a {{entityType}}. Un administrador revisará tu solicitud.",
+    "requestSubmitted": "Solicitud de eliminación enviada exitosamente",
+    "requestFailed": "Error al enviar solicitud de eliminación",
+    "pendingRequest": "Solicitud de eliminación pendiente",
+    "pendingRequestDescription": "Ya has enviado una solicitud para eliminar este/a {{entityType}}. Por favor espera a que un administrador la revise.",
+    "deleteSuccess": "{{entityType}} eliminado exitosamente",
+    "deleteFailed": "Error al eliminar {{entityType}}"
   },
   "status": {
     "active": "Activo",
@@ -1546,6 +1567,9 @@
       "linkArtist": "Vincular Artista",
       "deleteData": "Eliminar Datos",
       "unlinkArtist": "Desvincular Artista",
+      "deleteVenue": "Eliminar Local",
+      "deleteArtist": "Eliminar Artista",
+      "deleteOrganization": "Eliminar Organización",
       "requested": "Solicitado",
       "resolved": "Resuelto",
       "by": "Por",
@@ -1556,6 +1580,9 @@
       "approveDescLinkArtist": "Esto vinculará al artista \"{{artistName}}\" a la cuenta del usuario. Podrán gestionar este perfil de artista.",
       "approveDescDeleteData": "Esto marcará la solicitud como aprobada. Deberás eliminar manualmente los datos del usuario. Asegúrate de eliminar todos los datos del artista, grabaciones y otra información asociada.",
       "approveDescUnlinkArtist": "Esto desvinculará al artista de la cuenta del usuario. El perfil del artista permanecerá pero no estará asociado con este usuario.",
+      "approveDescDeleteVenue": "Esto eliminará permanentemente el local \"{{venueName}}\" y todos los datos asociados. Esta acción no se puede deshacer.",
+      "approveDescDeleteArtist": "Esto eliminará permanentemente al artista \"{{artistName}}\" y todos los datos asociados incluyendo grabaciones, asociaciones de género y apariciones en eventos. Esta acción no se puede deshacer.",
+      "approveDescDeleteOrganization": "Esto eliminará permanentemente la organización \"{{organizationName}}\" y todos los datos asociados. Esta acción no se puede deshacer.",
       "denyRequest": "Denegar Solicitud",
       "denyDescription": "Por favor proporciona una razón para denegar esta solicitud. Esto será visible para el usuario."
     },

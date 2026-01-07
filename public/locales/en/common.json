@@ -191,7 +191,28 @@
     "noRecordingsYet": "No recordings added yet",
     "addFirstRecording": "Add your first recording",
     "spotify": "Spotify",
-    "soundcloud": "SoundCloud"
+    "soundcloud": "SoundCloud",
+    "submittedOn": "Submitted on",
+    "actions": "Actions"
+  },
+  "entities": {
+    "venue": "Venue",
+    "artist": "Artist",
+    "organization": "Organization"
+  },
+  "deletion": {
+    "adminDelete": "Delete",
+    "adminDeleteDescription": "Permanently delete this {{entityType}}. This action cannot be undone.",
+    "confirmDeleteTitle": "Delete {{entityType}}?",
+    "confirmDeleteDescription": "Are you sure you want to permanently delete \"{{entityName}}\"? This action cannot be undone.",
+    "requestDeletion": "Request Deletion",
+    "requestDeletionDescription": "Submit a request to have this {{entityType}} deleted. An administrator will review your request.",
+    "requestSubmitted": "Deletion request submitted successfully",
+    "requestFailed": "Failed to submit deletion request",
+    "pendingRequest": "Deletion request pending",
+    "pendingRequestDescription": "You have already submitted a request to delete this {{entityType}}. Please wait for an administrator to review it.",
+    "deleteSuccess": "{{entityType}} deleted successfully",
+    "deleteFailed": "Failed to delete {{entityType}}"
   },
   "status": {
     "active": "Active",
@@ -1524,6 +1545,9 @@
       "linkArtist": "Link Artist",
       "deleteData": "Delete Data",
       "unlinkArtist": "Unlink Artist",
+      "deleteVenue": "Delete Venue",
+      "deleteArtist": "Delete Artist",
+      "deleteOrganization": "Delete Organization",
       "requested": "Requested",
       "resolved": "Resolved",
       "by": "By",
@@ -1534,6 +1558,9 @@
       "approveDescLinkArtist": "This will link the artist \"{{artistName}}\" to the user's account. They will be able to manage this artist profile.",
       "approveDescDeleteData": "This will permanently delete the artist profile and all associated data including recordings, genre associations, and event appearances. This action cannot be undone.",
       "approveDescUnlinkArtist": "This will unlink the artist from the user's account. The artist profile will remain but won't be associated with this user.",
+      "approveDescDeleteVenue": "This will permanently delete the venue \"{{venueName}}\" and all associated data. This action cannot be undone.",
+      "approveDescDeleteArtist": "This will permanently delete the artist \"{{artistName}}\" and all associated data including recordings, genre associations, and event appearances. This action cannot be undone.",
+      "approveDescDeleteOrganization": "This will permanently delete the organization \"{{organizationName}}\" and all associated data. This action cannot be undone.",
       "denyRequest": "Deny Request",
       "denyDescription": "Please provide a reason for denying this request. This will be visible to the user."
     },

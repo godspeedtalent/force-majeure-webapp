@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Link2, Trash2, Unlink, Clock, CheckCircle2, XCircle, User, Calendar, AlertCircle } from 'lucide-react';
+import { Link2, Trash2, Unlink, Clock, CheckCircle2, XCircle, User, Calendar, AlertCircle, MapPin, Music, Building2, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
-import { supabase } from '@/shared';
+import { supabase, logger, isDeletionRequest, getEntityTypeFromRequestType } from '@/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { logger } from '@/shared';
 import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { Button } from '@/components/common/shadcn/button';
 import { Badge } from '@/components/common/shadcn/badge';
+import type { DeletionRequestParameters } from '@/shared/types/deletionRequests';
 import {
   Dialog,
   DialogContent,
@@ -27,7 +28,13 @@ import {
 
 interface UserRequest {
   id: string;
-  request_type: 'link_artist' | 'delete_data' | 'unlink_artist';
+  request_type:
+    | 'link_artist'
+    | 'delete_data'
+    | 'unlink_artist'
+    | 'delete_venue'
+    | 'delete_artist'
+    | 'delete_organization';
   status: 'pending' | 'approved' | 'denied';
   user_id: string;
   parameters: Record<string, unknown> | null;
@@ -58,6 +65,9 @@ const REQUEST_TYPE_ICONS: Record<string, React.ReactNode> = {
   link_artist: <Link2 className='h-4 w-4' />,
   delete_data: <Trash2 className='h-4 w-4' />,
   unlink_artist: <Unlink className='h-4 w-4' />,
+  delete_venue: <MapPin className='h-4 w-4' />,
+  delete_artist: <Music className='h-4 w-4' />,
+  delete_organization: <Building2 className='h-4 w-4' />,
 };
 
 export function UserRequestsAdmin() {
@@ -71,6 +81,9 @@ export function UserRequestsAdmin() {
     link_artist: t('admin.requests.linkArtist'),
     delete_data: t('admin.requests.deleteData'),
     unlink_artist: t('admin.requests.unlinkArtist'),
+    delete_venue: t('admin.requests.deleteVenue'),
+    delete_artist: t('admin.requests.deleteArtist'),
+    delete_organization: t('admin.requests.deleteOrganization'),
   };
 
   // Modal states
@@ -138,6 +151,35 @@ export function UserRequestsAdmin() {
     mutationFn: async (request: UserRequest) => {
       if (!currentUser?.id) throw new Error('Not authenticated');
 
+      // Handle entity deletion requests - delete the entity first
+      if (isDeletionRequest(request.request_type)) {
+        const params = request.parameters as DeletionRequestParameters | null;
+        if (params?.entity_id) {
+          const entityType = getEntityTypeFromRequestType(request.request_type);
+          if (entityType) {
+            const tableName =
+              entityType === 'venue'
+                ? 'venues'
+                : entityType === 'artist'
+                  ? 'artists'
+                  : 'organizations';
+
+            const { error: deleteError } = await supabase
+              .from(tableName)
+              .delete()
+              .eq('id', params.entity_id);
+
+            if (deleteError) {
+              logger.error(`Failed to delete ${entityType}`, {
+                error: deleteError.message,
+                entityId: params.entity_id,
+              });
+              throw new Error(`Failed to delete ${entityType}: ${deleteError.message}`);
+            }
+          }
+        }
+      }
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error } = await (supabase as any)
         .from('user_requests')
@@ -151,9 +193,20 @@ export function UserRequestsAdmin() {
 
       if (error) throw error;
     },
-    onSuccess: () => {
+    onSuccess: (_, request) => {
       toast.success(tToast('admin.requestApproved'));
       queryClient.invalidateQueries({ queryKey: ['admin-user-requests'] });
+
+      // Invalidate entity queries if this was a deletion request
+      if (isDeletionRequest(request.request_type)) {
+        const entityType = getEntityTypeFromRequestType(request.request_type);
+        if (entityType) {
+          queryClient.invalidateQueries({
+            queryKey: [entityType === 'venue' ? 'venues' : entityType === 'artist' ? 'artists' : 'organizations'],
+          });
+        }
+      }
+
       setShowApproveModal(false);
       setSelectedRequest(null);
     },
@@ -272,6 +325,25 @@ export function UserRequestsAdmin() {
                   <span className='text-sm'>
                     {t('labels.artist')}: <strong>{request.artist.name}</strong>
                   </span>
+                </div>
+              )}
+
+              {/* Entity Info (for deletion requests) */}
+              {isDeletionRequest(request.request_type) && request.parameters && (
+                <div className='flex items-center gap-2 mt-2'>
+                  <div className='h-8 w-8 rounded-none bg-fm-danger/20 flex items-center justify-center'>
+                    {REQUEST_TYPE_ICONS[request.request_type]}
+                  </div>
+                  <span className='text-sm'>
+                    {t(`entities.${(request.parameters as DeletionRequestParameters).entity_type}`)}: <strong>{(request.parameters as DeletionRequestParameters).entity_name}</strong>
+                  </span>
+                  <Link
+                    to={`/admin/${(request.parameters as DeletionRequestParameters).entity_type}s/${(request.parameters as DeletionRequestParameters).entity_id}`}
+                    className='text-fm-gold hover:underline text-sm flex items-center gap-1'
+                  >
+                    {t('buttons.viewDetails')}
+                    <ExternalLink className='h-3 w-3' />
+                  </Link>
                 </div>
               )}
 
@@ -410,6 +482,27 @@ export function UserRequestsAdmin() {
               {selectedRequest?.request_type === 'unlink_artist' && (
                 <>
                   {t('admin.requests.approveDescUnlinkArtist')}
+                </>
+              )}
+              {selectedRequest?.request_type === 'delete_venue' && (
+                <>
+                  {t('admin.requests.approveDescDeleteVenue', {
+                    venueName: (selectedRequest?.parameters as DeletionRequestParameters)?.entity_name,
+                  })}
+                </>
+              )}
+              {selectedRequest?.request_type === 'delete_artist' && (
+                <>
+                  {t('admin.requests.approveDescDeleteArtist', {
+                    artistName: (selectedRequest?.parameters as DeletionRequestParameters)?.entity_name,
+                  })}
+                </>
+              )}
+              {selectedRequest?.request_type === 'delete_organization' && (
+                <>
+                  {t('admin.requests.approveDescDeleteOrganization', {
+                    organizationName: (selectedRequest?.parameters as DeletionRequestParameters)?.entity_name,
+                  })}
                 </>
               )}
             </DialogDescription>

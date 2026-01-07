@@ -58,6 +58,9 @@ export {
 // Types - Other
 export * from './types/imageAnchor';
 
+// Deletion request types
+export * from './types/deletionRequests';
+
 // ============================================================================
 // Stores
 // ============================================================================
@@ -311,3 +314,7 @@ export {
   type FuzzySearchOptions,
   type FuzzySearchResult,
 } from './utils/fuzzySearch';
+
+// Entity ownership and deletion requests
+export { useEntityOwnership } from './hooks/useEntityOwnership';
+export { useDeletionRequest } from './hooks/useDeletionRequest';

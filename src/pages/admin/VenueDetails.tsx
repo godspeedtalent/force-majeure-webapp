@@ -6,6 +6,7 @@ import { FmCommonCard, FmCommonCardContent, FmCommonCardHeader, FmCommonCardTitl
 import { useVenueById } from '@/shared';
 import { DetailPageWrapper } from '@/components/layout/DetailPageWrapper';
 import { FmCommonDetailPageLayout } from '@/components/common/layout/FmCommonDetailPageLayout';
+import { EntityDeletionActions } from '@/components/common/entity/EntityDeletionActions';
 
 export default function VenueDetails() {
   const { t } = useTranslation('common');
@@ -37,13 +38,21 @@ export default function VenueDetails() {
             createdAt={venue.created_at}
             updatedAt={venue.updated_at}
             actions={
-              <Button
-                variant='outline'
-                className='w-full border-white/20 hover:bg-white/10'
-                onClick={() => navigate(`/admin/venues`)}
-              >
-                {t('adminDetails.backToVenuesList')}
-              </Button>
+              <div className='space-y-2'>
+                <Button
+                  variant='outline'
+                  className='w-full border-white/20 hover:bg-white/10'
+                  onClick={() => navigate(`/admin/venues`)}
+                >
+                  {t('adminDetails.backToVenuesList')}
+                </Button>
+                <EntityDeletionActions
+                  entityType='venue'
+                  entityId={venue.id}
+                  entityName={venue.name}
+                  onDeleted={() => navigate('/admin/venues')}
+                />
+              </div>
             }
           >
             <FmCommonCard>
