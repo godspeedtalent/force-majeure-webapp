@@ -5,7 +5,7 @@
  */
 
 import { useTranslation } from 'react-i18next';
-import { Globe } from 'lucide-react';
+import { Globe, Mail } from 'lucide-react';
 import {
   FaInstagram,
   FaXTwitter,
@@ -152,7 +152,9 @@ interface ArtistSocialTabProps {
   onSpotifyChange: (value: string) => void;
   soundcloud: string;
   onSoundcloudChange: (value: string) => void;
-  // Website & Social media
+  // Email & Website & Social media
+  email: string;
+  onEmailChange: (value: string) => void;
   website: string;
   onWebsiteChange: (value: string) => void;
   instagram: string;
@@ -175,6 +177,8 @@ export function ArtistSocialTab({
   onSpotifyChange,
   soundcloud,
   onSoundcloudChange,
+  email,
+  onEmailChange,
   website,
   onWebsiteChange,
   instagram,
@@ -230,6 +234,28 @@ export function ArtistSocialTab({
         <FmI18nCommon i18nKey='sections.socialMediaDescription' as='p' className='text-muted-foreground mb-6' />
 
         <div className='space-y-4'>
+          {/* Email - contact email input */}
+          <div className='space-y-1'>
+            <div className='flex items-center gap-2 text-xs text-muted-foreground'>
+              <Mail className='h-4 w-4 text-fm-gold' />
+              <span>{t('labels.socialEmail', 'Contact Email')}</span>
+            </div>
+            <FmCommonTextField
+              value={email}
+              onChange={(e) => onEmailChange(e.target.value)}
+              placeholder={t('placeholders.enterEmail')}
+              type='email'
+            />
+            {email && (
+              <a
+                href={`mailto:${email}`}
+                className='text-xs text-muted-foreground hover:text-fm-gold transition-colors truncate block'
+              >
+                {email}
+              </a>
+            )}
+          </div>
+
           {/* Website - full URL input */}
           <div className='space-y-1'>
             <div className='flex items-center gap-2 text-xs text-muted-foreground'>

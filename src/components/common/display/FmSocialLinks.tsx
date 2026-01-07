@@ -1,5 +1,5 @@
 import { cn } from '@/shared';
-import { Globe, Instagram as InstagramIcon } from 'lucide-react';
+import { Globe, Instagram as InstagramIcon, Mail } from 'lucide-react';
 import {
   SiFacebook,
   SiSoundcloud,
@@ -21,6 +21,13 @@ interface SocialPlatform {
 }
 
 const PLATFORMS: Record<string, SocialPlatform> = {
+  email: {
+    name: 'Email',
+    icon: Mail,
+    getUrl: (email: string) => `mailto:${email}`,
+    hoverColor: 'hover:text-fm-gold',
+    borderColor: 'hover:border-fm-gold/50',
+  },
   website: {
     name: 'Website',
     icon: Globe,
@@ -98,6 +105,8 @@ const SIZE_CLASSES: Record<SocialSize, { icon: string; padding: string }> = {
 };
 
 export interface FmSocialLinksProps {
+  /** Email address for contact */
+  email?: string | null;
   /** Website URL */
   website?: string | null;
   /** Instagram handle (with or without @) */
@@ -151,6 +160,7 @@ const GAP_CLASSES = {
  * ```
  */
 export function FmSocialLinks({
+  email,
   website,
   instagram,
   youtube,
@@ -167,6 +177,7 @@ export function FmSocialLinks({
 
   // Collect active platforms (order matches visual display preference)
   const activePlatforms: Array<{ key: string; value: string }> = [];
+  if (email) activePlatforms.push({ key: 'email', value: email });
   if (website) activePlatforms.push({ key: 'website', value: website });
   if (instagram) activePlatforms.push({ key: 'instagram', value: instagram });
   if (twitter) activePlatforms.push({ key: 'twitter', value: twitter });

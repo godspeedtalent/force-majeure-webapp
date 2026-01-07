@@ -95,7 +95,8 @@
     "pastEvent": "往期活动",
     "processing": "处理中...",
     "tryAgain": "重试",
-    "setAsCover": "设为封面"
+    "setAsCover": "设为封面",
+    "change": "更改"
   },
   "labels": {
     "email": "邮箱",
@@ -154,6 +155,7 @@
     "genres": "风格",
     "instagram": "Instagram",
     "instagramHandle": "Instagram账号",
+    "socialEmail": "联系邮箱",
     "twitterX": "Twitter / X",
     "facebook": "Facebook",
     "tiktok": "TikTok",
@@ -187,7 +189,9 @@
     "setAsPrimary": "设为主要",
     "setAsFeatured": "设为精选",
     "noRecordingsYet": "暂无录音",
-    "addFirstRecording": "添加您的第一个录音"
+    "addFirstRecording": "添加您的第一个录音",
+    "spotify": "Spotify",
+    "soundcloud": "SoundCloud"
   },
   "status": {
     "active": "活跃",
@@ -463,6 +467,9 @@
     "channelHandle": "频道名称",
     "username": "用户名",
     "usernameOrPage": "用户名或页面名称",
+    "spotifyArtistId": "艺术家 ID",
+    "soundcloudUsername": "用户名",
+    "websiteUrl": "https://yourwebsite.com",
     "email": "your@email.com",
     "password": "输入密码",
     "enterArtistName": "输入艺术家名称",
@@ -861,7 +868,17 @@
     "actions": "操作",
     "permissionCount": "{{count}} 个权限",
     "permissionCountPlural": "{{count}} 个权限",
-    "andMore": "... 还有 {{count}} 个"
+    "andMore": "... 还有 {{count}} 个",
+    "recordings": "录音",
+    "recordingsDescription": "从 Spotify 或 SoundCloud 添加曲目",
+    "socialMedia": "社交媒体",
+    "socialMediaDescription": "输入每个平台的用户名。",
+    "profileImages": "个人资料图片",
+    "profileSettings": "个人资料设置",
+    "supportForceMajeure": "支持 Force Majeure",
+    "supportDescription": "您的支持帮助我们创造更好的活动并支持更多艺术家。关注我们的 Instagram 与社区保持联系。",
+    "musicPlatforms": "音乐平台",
+    "musicPlatformsDescription": "添加您的流媒体资料，让粉丝可以收听您的音乐。"
   },
   "pageTitles": {
     "orgDashboard": "组织控制台",
@@ -1177,6 +1194,7 @@
   },
   "venueManagement": {
     "basicInformation": "基本信息",
+    "logo": "标志",
     "venueName": "场馆名称",
     "enterVenueName": "输入场馆名称",
     "venueLogo": "场馆标志",
@@ -1190,7 +1208,8 @@
     "state": "州/省",
     "capacity": "容量",
     "deleteVenue": "删除场馆",
-    "deleteVenueConfirm": "确定要删除此场馆吗？"
+    "deleteVenueConfirm": "确定要删除此场馆吗？",
+    "socialMediaDescription": "添加您场馆的网站和社交媒体链接，让粉丝可以找到并关注您。"
   },
   "venueGallery": {
     "selectGallery": "选择相册",
@@ -1343,6 +1362,68 @@
     "shareCount_plural": "{{count}} 次分享",
     "viewCount": "{{count}} 次查看",
     "viewCount_plural": "{{count}} 次查看"
+  },
+  "instagramStory": {
+    "shareToStory": "分享到 Instagram 快拍",
+    "shareToInstagram": "分享到 Instagram",
+    "previewTitle": "快拍预览",
+    "previewAlt": "Instagram 快拍预览",
+    "generating": "生成快拍中...",
+    "generationFailed": "生成快拍图片失败",
+    "sharing": "正在打开 Instagram...",
+    "shareInitiated": "正在打开 Instagram 分享你的快拍",
+    "shareFailed": "分享到 Instagram 失败",
+    "downloaded": "快拍图片已下载",
+    "helpText": "快拍将在 Instagram 中打开，你可以在那里自定义并分享"
+  },
+  "storyDesigner": {
+    "title": "故事设计器",
+    "description": "使用实时渲染设计和预览 Instagram 快拍模板",
+    "entityType": "模板类型",
+    "types": {
+      "event": "活动",
+      "artist": "艺术家",
+      "venue": "场馆",
+      "organization": "组织"
+    },
+    "commonFields": "通用字段",
+    "specificFields": "字段",
+    "fields": {
+      "title": "标题",
+      "subtitle": "副标题",
+      "heroImage": "主图 URL",
+      "heroImageHelper": "使用完整 URL 或路径如 /images/...",
+      "url": "链接 URL",
+      "date": "日期",
+      "time": "时间",
+      "venue": "场馆",
+      "location": "位置",
+      "ctaText": "按钮文字",
+      "genres": "音乐流派",
+      "genresHelper": "用逗号分隔的流派列表",
+      "upcomingEvent": "即将举行的活动",
+      "eventTitle": "活动标题",
+      "eventDate": "活动日期",
+      "capacity": "容量",
+      "logoUrl": "Logo URL",
+      "tagline": "标语"
+    },
+    "reset": "重置",
+    "download": "下载",
+    "autoRefresh": "自动刷新预览",
+    "generatePreview": "生成预览",
+    "preview": "预览",
+    "generateError": "生成快拍预览失败",
+    "downloadSuccess": "快拍图片已下载",
+    "downloadError": "下载图片失败",
+    "resetSuccess": "已重置为示例数据",
+    "tips": {
+      "title": "设计技巧",
+      "tip1": "使用高质量图片获得最佳效果（1080x1920 最佳）",
+      "tip2": "保持标题简短以便在手机上更易阅读",
+      "tip3": "二维码链接到你指定的 URL",
+      "tip4": "分享前下载并在手机上测试"
+    }
   },
   "upload": {
     "invalidFileType": "无效文件类型",
@@ -1500,6 +1581,7 @@
   "eventCard": {
     "getTickets": "获取门票",
     "afterHours": "深夜场",
+    "afterHoursEvent": "深夜场活动",
     "redirectDescription": "您即将被重定向到外部网站购买门票。继续吗？",
     "externalLink": "外部链接",
     "externalLinkDescription": "您即将访问外部售票网站。这将在新标签页中打开。",
@@ -2078,7 +2160,8 @@
     "heroImageFailed": "保存主图失败",
     "heroImageFailedDescription": "图片已上传但无法关联到此活动。",
     "venueCapacityFailed": "获取场地容量失败",
-    "venueCapacityDefault": "使用默认容量 100"
+    "venueCapacityDefault": "使用默认容量 100",
+    "afterHoursEvent": "深夜活动"
   },
   "adminGrid": {
     "artistImageUpdated": "艺人图片已更新",
@@ -2454,9 +2537,12 @@
     "componentsCatalogDescription": "所有 Force Majeure 通用组件的完整目录，包含实时演示、文档和关系图可视化",
     "ticketFlowTests": "门票流程测试",
     "ticketFlowTestsDescription": "完整的门票流程冒烟测试套件，包括队列管理、选择、支付、超时和交付",
+    "orderCsvImport": "订单 CSV 导入",
+    "orderCsvImportDescription": "从 CSV 文件导入历史订单，自动通过电子邮件链接到现有用户，并创建订单、门票和订单项记录",
     "categoryDatabase": "数据库",
     "categoryTesting": "测试",
     "categoryDocumentation": "文档",
+    "categoryData": "数据导入",
     "openPage": "打开页面",
     "accessNote": "这些工具仅对管理员和开发者用户可用"
   },
@@ -2469,9 +2555,12 @@
     "emailTemplateDescription": "使用可配置数据和实时发送功能预览和测试订单收据邮件模板",
     "artistSignup": "艺术家注册",
     "artistSignupDescription": "使用 Spotify 或 SoundCloud 自动填充数据、可配置选项和表单预填功能测试艺术家注册流程",
+    "storyDesigner": "故事设计器",
+    "storyDesignerDescription": "使用实时 Canvas 渲染设计和预览活动、艺术家、场馆和组织的 Instagram 故事模板",
     "categoryEcommerce": "电子商务",
     "categoryCommunication": "通讯",
     "categoryArtistManagement": "艺术家管理",
+    "categorySocial": "社交分享",
     "openDemo": "打开演示",
     "accessNote": "这些演示仅对管理员用户可用，在生产环境中不可见"
   },
@@ -3234,5 +3323,90 @@
   },
   "demo": {
     "selectEventInstruction": "从演示工具中选择活动以开始"
+  },
+  "orderCsvImport": {
+    "title": "订单 CSV 导入",
+    "description": "从 CSV 文件导入历史订单。订单将通过电子邮件地址链接到现有用户，或保持未链接状态等待未来用户注册。",
+    "steps": {
+      "upload": "上传",
+      "map": "映射",
+      "preview": "预览",
+      "complete": "完成"
+    },
+    "uploadPrompt": "选择 CSV 文件以导入订单",
+    "selectFile": "选择 CSV 文件",
+    "fileRequirements": "CSV 必须包含标题。必填项：email、event_id、ticket_tier_id",
+    "columnMapping": "列映射",
+    "showMapping": "显示映射",
+    "hideMapping": "隐藏映射",
+    "selectColumn": "选择列...",
+    "dataPreview": "数据预览",
+    "rowCount": "找到 {{count}} 行",
+    "back": "返回",
+    "validateData": "验证数据",
+    "validation": {
+      "invalidEmail": "无效的电子邮件地址",
+      "missingEventId": "缺少活动 ID",
+      "eventNotFound": "未找到活动：{{eventId}}",
+      "missingTicketTierId": "缺少门票等级 ID",
+      "ticketTierNotFound": "未找到门票等级：{{tierId}}",
+      "tierEventMismatch": "门票等级不属于此活动",
+      "invalidQuantity": "无效的数量"
+    },
+    "stats": {
+      "valid": "有效订单",
+      "invalid": "无效订单",
+      "withUser": "已链接到用户",
+      "orphaned": "孤立订单",
+      "totalTickets": "门票总数",
+      "totalRevenue": "总收入"
+    },
+    "table": {
+      "row": "行",
+      "email": "电子邮件",
+      "event": "活动",
+      "tier": "等级",
+      "qty": "数量",
+      "total": "总计",
+      "status": "状态"
+    },
+    "userFound": "在数据库中找到用户",
+    "duplicate": "重复",
+    "ready": "就绪",
+    "importOrders": "导入 {{count}} 个订单",
+    "complete": {
+      "title": "导入完成",
+      "description": "成功导入 {{count}} 个订单",
+      "importedOrders": "已导入的订单",
+      "tickets": "张门票"
+    },
+    "importAnother": "导入另一个文件",
+    "success": "成功导入 {{count}} 个订单",
+    "info": {
+      "title": "订单导入工作原理",
+      "point1": "订单通过电子邮件地址与现有用户匹配",
+      "point2": "孤立订单（无匹配用户）将在用户注册时链接",
+      "point3": "门票会自动为每个订单创建",
+      "point4": "重复订单（按外部 ID）将被跳过"
+    },
+    "errors": {
+      "emptyFile": "文件为空或没有数据行",
+      "fileReadError": "读取文件时出错",
+      "validationFailed": "验证订单时出错",
+      "noValidOrders": "没有有效的订单可导入",
+      "importFailed": "导入订单时出错"
+    },
+    "fields": {
+      "customerEmail": "客户电子邮件",
+      "customerName": "客户姓名",
+      "eventId": "活动 ID",
+      "ticketTierId": "门票等级 ID",
+      "quantity": "数量",
+      "unitPriceCents": "单价（分）",
+      "unitFeeCents": "单位费用（分）",
+      "orderDate": "订单日期",
+      "status": "状态",
+      "externalOrderId": "外部订单 ID"
+    }
   }
 }

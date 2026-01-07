@@ -62,6 +62,8 @@ export default function ArtistManagement() {
     handleGenreChange,
 
     // Form state - Social Links
+    email,
+    setEmail,
     instagram,
     setInstagram,
     tiktok,
@@ -218,6 +220,8 @@ export default function ArtistManagement() {
               onSpotifyChange={setSpotify}
               soundcloud={soundcloud}
               onSoundcloudChange={setSoundcloud}
+              email={email}
+              onEmailChange={setEmail}
               website={website}
               onWebsiteChange={setWebsite}
               instagram={instagram}

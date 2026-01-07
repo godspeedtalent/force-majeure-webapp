@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Calendar, ArrowLeft, Pencil, History, Clock } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmArtistSpotlight } from '@/components/artist/FmArtistSpotlight';
+import { FmInstagramStoryButton } from '@/components/common/sharing';
 import { useArtistById, useArtistAllEvents, type ArtistEventData } from '@/shared/api/queries/artistQueries';
 import { DetailPageWrapper } from '@/components/layout/DetailPageWrapper';
 import { useAuth } from '@/features/auth/services/AuthContext';
@@ -55,16 +56,39 @@ export default function ArtistDetails() {
                   {t('artistDetails.back')}
                 </FmCommonButton>
 
-                {canEdit && (
-                  <FmCommonButton
-                    variant='default'
-                    size='sm'
-                    icon={Pencil}
-                    onClick={() => navigate(`/artists/${id}/manage`)}
-                  >
-                    {t('artistDetails.edit')}
-                  </FmCommonButton>
-                )}
+                <div className='flex items-center gap-2'>
+                  {/* Instagram Story Button - Mobile only */}
+                  <FmInstagramStoryButton
+                    entityType='artist'
+                    entityData={{
+                      id: artistData.id,
+                      heroImage: artistData.image_url ?? null,
+                      title: artistData.name,
+                      genres: artistData.artist_genres
+                        ?.map((ag) => ag.genres?.name)
+                        .filter((name): name is string => Boolean(name)),
+                      upcomingEvent: artistEvents?.upcoming?.[0] ? {
+                        title: artistEvents.upcoming[0].title,
+                        date: new Date(artistEvents.upcoming[0].start_time).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                        }),
+                      } : undefined,
+                    }}
+                    variant='icon'
+                  />
+
+                  {canEdit && (
+                    <FmCommonButton
+                      variant='default'
+                      size='sm'
+                      icon={Pencil}
+                      onClick={() => navigate(`/artists/${id}/manage`)}
+                    >
+                      {t('artistDetails.edit')}
+                    </FmCommonButton>
+                  )}
+                </div>
               </div>
             </div>
           </div>

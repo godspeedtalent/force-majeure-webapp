@@ -22,6 +22,7 @@ const DemoIndex = lazy(() => import('./pages/demo/DemoIndex'));
 const EventCheckout = lazy(() => import('./pages/demo/EventCheckout'));
 const EventCheckoutConfirmation = lazy(() => import('./pages/demo/EventCheckoutConfirmation'));
 const EmailTemplateDemo = lazy(() => import('./pages/demo/EmailTemplateDemo'));
+const StoryDesigner = lazy(() => import('./pages/demo/StoryDesigner'));
 
 // Lazy load developer pages
 const DeveloperHome = lazy(() => import('./pages/developer/DeveloperHome'));
@@ -32,6 +33,7 @@ const DeveloperCreateArtistPage = lazy(() => import('./pages/developer/database/
 const DeveloperCreateVenuePage = lazy(() => import('./pages/developer/database/CreateVenue'));
 const DeveloperCreateOrganizationPage = lazy(() => import('./pages/developer/database/CreateOrganization'));
 const ArtistSignupDemo = lazy(() => import('./pages/developer/ArtistSignupDemo'));
+const OrderCsvImport = lazy(() => import('./pages/developer/OrderCsvImport'));
 
 // Lazy load admin pages
 const Statistics = lazy(() => import('./pages/admin/Statistics'));
@@ -256,6 +258,26 @@ const AppRoutes = () => {
           <DemoProtectedRoute>
             <Suspense fallback={<LazyLoadFallback />}>
               <ArtistSignupDemo />
+            </Suspense>
+          </DemoProtectedRoute>
+        }
+      />
+      <Route
+        path='/developer/demo/story-designer'
+        element={
+          <DemoProtectedRoute>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <StoryDesigner />
+            </Suspense>
+          </DemoProtectedRoute>
+        }
+      />
+      <Route
+        path='/developer/tools/order-csv-import'
+        element={
+          <DemoProtectedRoute>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <OrderCsvImport />
             </Suspense>
           </DemoProtectedRoute>
         }

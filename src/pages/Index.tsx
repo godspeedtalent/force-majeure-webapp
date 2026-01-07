@@ -31,6 +31,7 @@ interface EventData {
   ticketUrl?: string | null;
   is_tba?: boolean;
   display_subtitle?: boolean;
+  is_after_hours?: boolean;
 }
 
 /** Raw event row from Supabase query with relations */
@@ -42,6 +43,7 @@ interface EventRow {
   hero_image: string | null;
   is_tba: boolean | null;
   display_subtitle: boolean | null;
+  is_after_hours: boolean | null;
   headliner_artist: {
     id: string;
     name: string;
@@ -206,6 +208,7 @@ const Index = () => {
             ticketUrl: null,
             is_tba: event.is_tba ?? false,
             display_subtitle: event.display_subtitle ?? true,
+            is_after_hours: event.is_after_hours ?? false,
           };
         };
 

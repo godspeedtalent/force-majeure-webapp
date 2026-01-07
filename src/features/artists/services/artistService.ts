@@ -35,6 +35,15 @@ export async function getArtistGenres(artistId: string): Promise<ArtistGenreWith
       throw error;
     }
 
+    logger.debug('RPC get_artist_genres response', {
+      source: 'artistService.getArtistGenres',
+      details: { artistId, rowCount: data?.length ?? 0, data },
+    });
+
+    if (!data || data.length === 0) {
+      return [];
+    }
+
     return data.map((row: any) => ({
       id: '', // RPC doesn't return the junction table ID
       artistId,

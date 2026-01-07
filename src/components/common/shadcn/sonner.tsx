@@ -32,6 +32,9 @@ const Toaster = ({ ...props }: ToasterProps) => {
       icons={{
         info: <Info className='h-4 w-4 text-fm-gold' />,
       }}
+      // Limit visible toasts and add close button
+      visibleToasts={3}
+      closeButton
       toastOptions={{
         classNames: {
           toast:

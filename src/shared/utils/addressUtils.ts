@@ -46,13 +46,15 @@ export function formatFullAddress(
 /**
  * Generates a Google Maps embed URL for an address
  * Uses the free embed mode without API key requirement
+ * Includes zoom level and enables scroll wheel zoom through gesture handling
  * @param address - Full formatted address string
  * @returns Google Maps embed URL or null if no address
  */
 export function getGoogleMapsEmbedUrl(address: string | null): string | null {
   if (!address) return null;
   const encodedAddress = encodeURIComponent(address);
-  return `https://www.google.com/maps?q=${encodedAddress}&output=embed`;
+  // Use z=15 for good default zoom, ie=UTF8 for proper encoding
+  return `https://maps.google.com/maps?q=${encodedAddress}&t=&z=15&ie=UTF8&iwloc=B&output=embed`;
 }
 
 /**

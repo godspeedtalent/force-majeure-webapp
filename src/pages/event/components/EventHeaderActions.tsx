@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { Eye, Share2, Star } from 'lucide-react';
 
+import { FmInstagramStoryButton, EventShareData } from '@/components/common/sharing';
+
 interface EventHeaderActionsProps {
   isInterested: boolean;
   isInterestLoading: boolean;
@@ -15,6 +17,8 @@ interface EventHeaderActionsProps {
   onShareClick: () => void;
   /** When true, disables share and interest buttons (for past events) */
   isPastEvent?: boolean;
+  /** Event data for Instagram Story sharing */
+  eventData?: EventShareData;
 }
 
 /**
@@ -35,6 +39,7 @@ export const EventHeaderActions = ({
   onInterestClick,
   onShareClick,
   isPastEvent = false,
+  eventData,
 }: EventHeaderActionsProps) => {
   const { t } = useTranslation('common');
 
@@ -87,6 +92,15 @@ export const EventHeaderActions = ({
           </span>
         )}
       </div>
+
+      {/* Instagram Story Button - Mobile only */}
+      {eventData && !isPastEvent && (
+        <FmInstagramStoryButton
+          entityType='event'
+          entityData={eventData}
+          variant='icon'
+        />
+      )}
 
       {/* Show view count here if guest list is disabled but view count is enabled */}
       {!guestListEnabled && showViewCount && (

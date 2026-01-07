@@ -23,6 +23,7 @@ export interface CreateVenueData {
   image_url?: string | null;
   logo_url?: string | null;
   // Social media fields
+  social_email?: string | null;
   instagram_handle?: string | null;
   facebook_url?: string | null;
   youtube_url?: string | null;

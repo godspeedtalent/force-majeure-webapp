@@ -104,7 +104,7 @@ export const FmVenueMap = ({
           </div>
         )}
 
-        {/* Map iframe with dark mode styling */}
+        {/* Map iframe with dark mode styling - scroll wheel zoom enabled */}
         {embedUrl && (
           <iframe
             src={embedUrl}
@@ -115,7 +115,7 @@ export const FmVenueMap = ({
               // Dark mode filter: invert colors, adjust hue toward gold/warm, reduce brightness
               filter: 'invert(90%) hue-rotate(180deg) brightness(0.95) contrast(0.9) sepia(10%)',
             }}
-            allowFullScreen={false}
+            allowFullScreen
             loading='lazy'
             referrerPolicy='no-referrer-when-downgrade'
             title={t('venue.mapTitle', { address: fullAddress })}

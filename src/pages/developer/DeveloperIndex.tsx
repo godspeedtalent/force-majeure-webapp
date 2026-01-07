@@ -9,6 +9,7 @@ import {
   Database,
   FileText,
   ClipboardCheck,
+  FileSpreadsheet,
 } from 'lucide-react';
 import { DemoLayout } from '@/components/demo/DemoLayout';
 
@@ -54,6 +55,14 @@ export default function DeveloperIndex() {
       path: '/developer/ticket-flow',
       icon: ClipboardCheck,
       category: t('developerIndex.categoryTesting'),
+      status: 'Active',
+    },
+    {
+      title: t('developerIndex.orderCsvImport'),
+      description: t('developerIndex.orderCsvImportDescription'),
+      path: '/developer/tools/order-csv-import',
+      icon: FileSpreadsheet,
+      category: t('developerIndex.categoryData'),
       status: 'Active',
     },
   ];

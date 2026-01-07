@@ -95,7 +95,8 @@
     "pastEvent": "Past Event",
     "processing": "Processing...",
     "tryAgain": "Try Again",
-    "setAsCover": "Set as cover"
+    "setAsCover": "Set as cover",
+    "change": "Change"
   },
   "labels": {
     "email": "Email",
@@ -154,6 +155,7 @@
     "genres": "Genres",
     "instagram": "Instagram",
     "instagramHandle": "Instagram Handle",
+    "socialEmail": "Contact Email",
     "twitterX": "Twitter / X",
     "facebook": "Facebook",
     "tiktok": "TikTok",
@@ -187,7 +189,9 @@
     "setAsPrimary": "Set as primary",
     "setAsFeatured": "Set as featured",
     "noRecordingsYet": "No recordings added yet",
-    "addFirstRecording": "Add your first recording"
+    "addFirstRecording": "Add your first recording",
+    "spotify": "Spotify",
+    "soundcloud": "SoundCloud"
   },
   "status": {
     "active": "Active",
@@ -464,6 +468,9 @@
     "channelHandle": "channel handle",
     "username": "username",
     "usernameOrPage": "username or page name",
+    "spotifyArtistId": "artist ID",
+    "soundcloudUsername": "username",
+    "websiteUrl": "https://yourwebsite.com",
     "password": "Enter your password",
     "enterArtistName": "Enter artist name",
     "artistBiography": "Artist biography...",
@@ -870,7 +877,9 @@
     "profileImages": "Profile Images",
     "profileSettings": "Profile Settings",
     "supportForceMajeure": "Support Force Majeure",
-    "supportDescription": "Your support helps us create better events and support more artists. Follow us on Instagram to stay connected with the community."
+    "supportDescription": "Your support helps us create better events and support more artists. Follow us on Instagram to stay connected with the community.",
+    "musicPlatforms": "Music Platforms",
+    "musicPlatformsDescription": "Add your streaming profiles so fans can listen to your music."
   },
   "pageTitles": {
     "orgDashboard": "Org Dashboard",
@@ -1190,6 +1199,7 @@
   },
   "venueManagement": {
     "basicInformation": "Basic Information",
+    "logo": "Logo",
     "venueName": "Venue Name",
     "enterVenueName": "Enter venue name",
     "venueLogo": "Venue Logo",
@@ -1203,7 +1213,8 @@
     "state": "State",
     "capacity": "Capacity",
     "deleteVenue": "Delete Venue",
-    "deleteVenueConfirm": "Are you sure you want to delete this venue?"
+    "deleteVenueConfirm": "Are you sure you want to delete this venue?",
+    "socialMediaDescription": "Add your venue's website and social media links so fans can find and follow you."
   },
   "venueGallery": {
     "selectGallery": "Select a gallery",
@@ -1356,6 +1367,68 @@
     "shareCount_plural": "{{count}} shares",
     "viewCount": "{{count}} view",
     "viewCount_plural": "{{count}} views"
+  },
+  "instagramStory": {
+    "shareToStory": "Share to Instagram Story",
+    "shareToInstagram": "Share to Instagram",
+    "previewTitle": "Story Preview",
+    "previewAlt": "Instagram story preview",
+    "generating": "Generating story...",
+    "generationFailed": "Failed to generate story image",
+    "sharing": "Opening Instagram...",
+    "shareInitiated": "Opening Instagram to share your story",
+    "shareFailed": "Failed to share to Instagram",
+    "downloaded": "Story image downloaded",
+    "helpText": "The story will open in Instagram where you can customize and share it"
+  },
+  "storyDesigner": {
+    "title": "Story Designer",
+    "description": "Design and preview Instagram Story templates with live rendering",
+    "entityType": "Template Type",
+    "types": {
+      "event": "Event",
+      "artist": "Artist",
+      "venue": "Venue",
+      "organization": "Organization"
+    },
+    "commonFields": "Common Fields",
+    "specificFields": "Fields",
+    "fields": {
+      "title": "Title",
+      "subtitle": "Subtitle",
+      "heroImage": "Hero Image URL",
+      "heroImageHelper": "Use a full URL or path like /images/...",
+      "url": "Link URL",
+      "date": "Date",
+      "time": "Time",
+      "venue": "Venue",
+      "location": "Location",
+      "ctaText": "Button Text",
+      "genres": "Genres",
+      "genresHelper": "Comma-separated list of genres",
+      "upcomingEvent": "Upcoming Event",
+      "eventTitle": "Event Title",
+      "eventDate": "Event Date",
+      "capacity": "Capacity",
+      "logoUrl": "Logo URL",
+      "tagline": "Tagline"
+    },
+    "reset": "Reset",
+    "download": "Download",
+    "autoRefresh": "Auto-refresh preview",
+    "generatePreview": "Generate Preview",
+    "preview": "Preview",
+    "generateError": "Failed to generate story preview",
+    "downloadSuccess": "Story image downloaded",
+    "downloadError": "Failed to download image",
+    "resetSuccess": "Reset to sample data",
+    "tips": {
+      "title": "Design Tips",
+      "tip1": "Use high-quality images for best results (1080x1920 optimal)",
+      "tip2": "Keep titles short for better readability on mobile",
+      "tip3": "The QR code links to the URL you specify",
+      "tip4": "Download and test on your phone before sharing"
+    }
   },
   "checkout": {
     "loadingCheckout": "Loading checkout...",
@@ -1513,6 +1586,7 @@
   "eventCard": {
     "getTickets": "Get Tickets",
     "afterHours": "After Hours",
+    "afterHoursEvent": "After Hours Event",
     "redirectDescription": "You're about to be redirected to an external site to purchase tickets. Continue?",
     "externalLink": "External Link",
     "externalLinkDescription": "You're about to visit an external ticketing site. This will open in a new tab.",
@@ -2091,7 +2165,8 @@
     "heroImageFailed": "Failed to Save Hero Image",
     "heroImageFailedDescription": "The image was uploaded but could not be linked to this event.",
     "venueCapacityFailed": "Failed to fetch venue capacity",
-    "venueCapacityDefault": "Using default capacity of 100"
+    "venueCapacityDefault": "Using default capacity of 100",
+    "afterHoursEvent": "After Hours Event"
   },
   "adminGrid": {
     "artistImageUpdated": "Artist image updated",
@@ -2479,9 +2554,12 @@
     "componentsCatalogDescription": "Comprehensive catalog of all Force Majeure common components with live demos, documentation, and relationship graph visualization",
     "ticketFlowTests": "Ticket Flow Tests",
     "ticketFlowTestsDescription": "Comprehensive smoke testing suite for the complete ticketing flow including queue management, selection, payment, timeouts, and delivery",
+    "orderCsvImport": "Order CSV Import",
+    "orderCsvImportDescription": "Import historical orders from CSV files, automatically linking to existing users by email and creating order, ticket, and order item records",
     "categoryDatabase": "Database",
     "categoryTesting": "Testing",
     "categoryDocumentation": "Documentation",
+    "categoryData": "Data Import",
     "openPage": "Open page",
     "accessNote": "These tools are only accessible to admin and developer users"
   },
@@ -2494,9 +2572,12 @@
     "emailTemplateDescription": "Preview and test order receipt email templates with configurable data and live sending capabilities",
     "artistSignup": "Artist Signup",
     "artistSignupDescription": "Test the artist registration flow with auto-populated Spotify or SoundCloud data, configurable options, and form pre-filling",
+    "storyDesigner": "Story Designer",
+    "storyDesignerDescription": "Design and preview Instagram Story templates for events, artists, venues, and organizations with live Canvas rendering",
     "categoryEcommerce": "E-Commerce",
     "categoryCommunication": "Communication",
     "categoryArtistManagement": "Artist Management",
+    "categorySocial": "Social Sharing",
     "openDemo": "Open demo",
     "accessNote": "These demos are only accessible to admin users and are not visible in production"
   },
@@ -3304,5 +3385,90 @@
   },
   "demo": {
     "selectEventInstruction": "Select an event from Demo Tools to begin"
+  },
+  "orderCsvImport": {
+    "title": "Order CSV Import",
+    "description": "Import historical orders from CSV files. Orders will be linked to existing users by email address, or left unlinked for future user sign-ups.",
+    "steps": {
+      "upload": "Upload",
+      "map": "Map",
+      "preview": "Preview",
+      "complete": "Complete"
+    },
+    "uploadPrompt": "Select a CSV file to import orders",
+    "selectFile": "Select CSV File",
+    "fileRequirements": "CSV must include headers. Required: email, event_id, ticket_tier_id",
+    "columnMapping": "Column Mapping",
+    "showMapping": "Show mapping",
+    "hideMapping": "Hide mapping",
+    "selectColumn": "Select column...",
+    "dataPreview": "Data Preview",
+    "rowCount": "{{count}} rows found",
+    "back": "Back",
+    "validateData": "Validate Data",
+    "validation": {
+      "invalidEmail": "Invalid email address",
+      "missingEventId": "Missing event ID",
+      "eventNotFound": "Event not found: {{eventId}}",
+      "missingTicketTierId": "Missing ticket tier ID",
+      "ticketTierNotFound": "Ticket tier not found: {{tierId}}",
+      "tierEventMismatch": "Ticket tier does not belong to this event",
+      "invalidQuantity": "Invalid quantity"
+    },
+    "stats": {
+      "valid": "Valid Orders",
+      "invalid": "Invalid Orders",
+      "withUser": "Linked to Users",
+      "orphaned": "Orphan Orders",
+      "totalTickets": "Total Tickets",
+      "totalRevenue": "Total Revenue"
+    },
+    "table": {
+      "row": "Row",
+      "email": "Email",
+      "event": "Event",
+      "tier": "Tier",
+      "qty": "Qty",
+      "total": "Total",
+      "status": "Status"
+    },
+    "userFound": "User found in database",
+    "duplicate": "Duplicate",
+    "ready": "Ready",
+    "importOrders": "Import {{count}} Orders",
+    "complete": {
+      "title": "Import Complete",
+      "description": "Successfully imported {{count}} orders",
+      "importedOrders": "Imported Orders",
+      "tickets": "tickets"
+    },
+    "importAnother": "Import Another File",
+    "success": "Successfully imported {{count}} orders",
+    "info": {
+      "title": "How Order Import Works",
+      "point1": "Orders are matched to existing users by email address",
+      "point2": "Orphan orders (no matching user) will be linked when the user signs up",
+      "point3": "Tickets are created automatically for each order",
+      "point4": "Duplicate orders (by external ID) are skipped"
+    },
+    "errors": {
+      "emptyFile": "File is empty or has no data rows",
+      "fileReadError": "Error reading file",
+      "validationFailed": "Error validating orders",
+      "noValidOrders": "No valid orders to import",
+      "importFailed": "Error importing orders"
+    },
+    "fields": {
+      "customerEmail": "Customer Email",
+      "customerName": "Customer Name",
+      "eventId": "Event ID",
+      "ticketTierId": "Ticket Tier ID",
+      "quantity": "Quantity",
+      "unitPriceCents": "Unit Price (cents)",
+      "unitFeeCents": "Unit Fee (cents)",
+      "orderDate": "Order Date",
+      "status": "Status",
+      "externalOrderId": "External Order ID"
+    }
   }
 }

@@ -9,7 +9,6 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { UnsavedChangesDialog } from '@/components/common/modals/UnsavedChangesDialog';
 import { FmStickyFormFooter } from '@/components/common/forms/FmStickyFormFooter';
-import { FmFlexibleImageUpload } from '@/components/common/forms/FmFlexibleImageUpload';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { FmCommonCard } from '@/components/common/display/FmCommonCard';
@@ -43,6 +42,7 @@ export default function VenueManagement() {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [capacity, setCapacity] = useState<number>(0);
+  const [socialEmail, setSocialEmail] = useState('');
   const [website, setWebsite] = useState('');
   const [instagramHandle, setInstagramHandle] = useState('');
   const [twitterHandle, setTwitterHandle] = useState('');
@@ -61,6 +61,7 @@ export default function VenueManagement() {
     city: string;
     state: string;
     capacity: number;
+    socialEmail: string;
     website: string;
     instagramHandle: string;
     twitterHandle: string;
@@ -79,6 +80,7 @@ export default function VenueManagement() {
         city: venue.city || '',
         state: venue.state || '',
         capacity: venue.capacity || 0,
+        socialEmail: (venue as { social_email?: string }).social_email || '',
         website: venue.website || '',
         instagramHandle: venue.instagram_handle || '',
         twitterHandle: venue.twitter_handle || '',
@@ -94,6 +96,7 @@ export default function VenueManagement() {
       setCity(initialValues.city);
       setState(initialValues.state);
       setCapacity(initialValues.capacity);
+      setSocialEmail(initialValues.socialEmail);
       setWebsite(initialValues.website);
       setInstagramHandle(initialValues.instagramHandle);
       setTwitterHandle(initialValues.twitterHandle);
@@ -117,6 +120,7 @@ export default function VenueManagement() {
       city !== initial.city ||
       state !== initial.state ||
       capacity !== initial.capacity ||
+      socialEmail !== initial.socialEmail ||
       website !== initial.website ||
       instagramHandle !== initial.instagramHandle ||
       twitterHandle !== initial.twitterHandle ||
@@ -124,7 +128,7 @@ export default function VenueManagement() {
       youtubeUrl !== initial.youtubeUrl ||
       tiktokHandle !== initial.tiktokHandle
     );
-  }, [name, description, logoUrl, addressLine1, city, state, capacity, website, instagramHandle, twitterHandle, facebookUrl, youtubeUrl, tiktokHandle]);
+  }, [name, description, logoUrl, addressLine1, city, state, capacity, socialEmail, website, instagramHandle, twitterHandle, facebookUrl, youtubeUrl, tiktokHandle]);
 
   // Unsaved changes warning
   const unsavedChanges = useUnsavedChanges({ isDirty });
@@ -207,6 +211,7 @@ export default function VenueManagement() {
     setIsSaving(true);
     try {
       await venueService.updateVenue(id, {
+        social_email: socialEmail,
         website,
         instagram_handle: instagramHandle,
         twitter_handle: twitterHandle,
@@ -219,6 +224,7 @@ export default function VenueManagement() {
       if (initialValuesRef.current) {
         initialValuesRef.current = {
           ...initialValuesRef.current,
+          socialEmail,
           website,
           instagramHandle,
           twitterHandle,
@@ -263,28 +269,103 @@ export default function VenueManagement() {
         <h2 className='text-xl font-semibold mb-6'>{t('venueManagement.basicInformation')}</h2>
 
         <div className='space-y-4'>
-          <div>
-            <Label>{t('venueManagement.venueName')} *</Label>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={t('venueManagement.enterVenueName')}
-            />
-          </div>
+          {/* Logo and Venue Name row */}
+          <div className='flex gap-4 items-start'>
+            {/* Small square logo upload */}
+            <div className='flex-shrink-0 w-[100px]'>
+              <Label className='mb-2 block'>{t('venueManagement.logo')}</Label>
+              <div className='w-[100px] h-[100px] relative'>
+                {logoUrl ? (
+                  <div className='relative w-full h-full border border-border bg-muted overflow-hidden group'>
+                    <img
+                      src={logoUrl}
+                      alt={t('venueManagement.venueLogo')}
+                      className='w-full h-full object-cover'
+                    />
+                    <button
+                      type='button'
+                      onClick={() => setLogoUrl('')}
+                      className='absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity'
+                    >
+                      <span className='text-xs text-white'>{t('buttons.change')}</span>
+                    </button>
+                    <input
+                      type='file'
+                      accept='image/jpeg,image/jpg,image/png,image/webp,image/gif'
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setIsLogoUploading(true);
+                          try {
+                            const { imageUploadService } = await import('@/shared');
+                            const result = await imageUploadService.uploadImage({
+                              file,
+                              bucket: 'images',
+                              path: `venues/${id}/logo`,
+                            });
+                            setLogoUrl(result.publicUrl);
+                          } catch {
+                            toast.error(t('upload.uploadFailed'));
+                          } finally {
+                            setIsLogoUploading(false);
+                          }
+                        }
+                      }}
+                      className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
+                    />
+                  </div>
+                ) : (
+                  <label className='flex flex-col items-center justify-center w-full h-full border-2 border-dashed border-border bg-card hover:border-fm-gold/50 hover:bg-muted/50 cursor-pointer transition-colors'>
+                    <Images className='h-6 w-6 text-muted-foreground mb-1' />
+                    <span className='text-[10px] text-muted-foreground text-center'>
+                      {t('upload.browse')}
+                    </span>
+                    <input
+                      type='file'
+                      accept='image/jpeg,image/jpg,image/png,image/webp,image/gif'
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setIsLogoUploading(true);
+                          try {
+                            const { imageUploadService } = await import('@/shared');
+                            const result = await imageUploadService.uploadImage({
+                              file,
+                              bucket: 'images',
+                              path: `venues/${id}/logo`,
+                            });
+                            setLogoUrl(result.publicUrl);
+                          } catch {
+                            toast.error(t('upload.uploadFailed'));
+                          } finally {
+                            setIsLogoUploading(false);
+                          }
+                        }
+                      }}
+                      className='hidden'
+                    />
+                  </label>
+                )}
+                {isLogoUploading && (
+                  <div className='absolute inset-0 flex items-center justify-center bg-black/60'>
+                    <div className='h-6 w-6 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
+                  </div>
+                )}
+              </div>
+            </div>
 
-          <div>
-            <Label>{t('venueManagement.venueLogo')}</Label>
-            <FmFlexibleImageUpload
-              value={logoUrl}
-              onChange={setLogoUrl}
-              onUploadStateChange={setIsLogoUploading}
-              bucket='images'
-              pathPrefix={`venues/${id}/logo`}
-              variant='logo'
-            />
-            <p className='text-xs text-muted-foreground mt-1'>
-              {t('venueManagement.venueLogoDescription')}
-            </p>
+            {/* Venue Name field */}
+            <div className='flex-1'>
+              <Label>{t('venueManagement.venueName')} *</Label>
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={t('venueManagement.enterVenueName')}
+              />
+              <p className='text-xs text-muted-foreground mt-1'>
+                {t('venueManagement.venueLogoDescription')}
+              </p>
+            </div>
           </div>
 
           <div>
@@ -394,6 +475,8 @@ export default function VenueManagement() {
       {activeTab === 'overview' && renderOverviewTab()}
       {activeTab === 'social' && (
         <VenueSocialTab
+          email={socialEmail}
+          onEmailChange={setSocialEmail}
           website={website}
           instagram={instagramHandle}
           twitter={twitterHandle}

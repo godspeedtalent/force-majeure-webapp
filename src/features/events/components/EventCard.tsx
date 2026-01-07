@@ -3,7 +3,6 @@ import {
   ExternalLink,
   Settings,
   X,
-  Users,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -19,7 +18,6 @@ import {
 } from '@/components/common/modals/FmCommonContextMenu';
 import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
 import { cn } from '@/shared';
-import { parseTimeToMinutes } from '@/shared';
 
 interface Artist {
   name: string;
@@ -39,6 +37,7 @@ interface Event {
   description: string | null;
   ticketUrl?: string | null;
   display_subtitle?: boolean;
+  is_after_hours?: boolean;
 }
 
 interface EventCardProps {
@@ -65,10 +64,7 @@ export const EventCard = ({ event, isSingleRow = false, isPastEvent = false }: E
     };
   };
 
-  const isAfterHours = (() => {
-    const minutes = parseTimeToMinutes(event.time);
-    return minutes !== null && minutes > 120; // strictly past 2:00 AM
-  })();
+  const isAfterHours = event.is_after_hours ?? false;
 
   const handleTicketsClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -150,20 +146,15 @@ export const EventCard = ({ event, isSingleRow = false, isPastEvent = false }: E
           </div>
 
           {/* Content Section - Card Body */}
-          <div className='relative flex flex-col'>
-            <div className='flex flex-1'>
+          <div className='relative'>
+            <div className='flex'>
               {/* Main Content - Left Side */}
               <div className='flex-1 p-6 flex flex-col min-w-0'>
-                {/* Event Title and Venue */}
+                {/* Event Title */}
                 <div className='mb-4'>
-                  <h3 className='font-canela text-2xl font-medium text-foreground line-clamp-2 mb-0.5'>
+                  <h3 className='font-canela text-2xl font-medium text-foreground line-clamp-2'>
                     {displayTitle}
                   </h3>
-                  {(event.display_subtitle ?? true) && (
-                    <p className='text-sm text-muted-foreground/90 truncate'>
-                      {event.venue}
-                    </p>
-                  )}
                 </div>
 
                 {/* Undercard Artists */}
@@ -173,25 +164,13 @@ export const EventCard = ({ event, isSingleRow = false, isPastEvent = false }: E
                   className='mb-4'
                 />
 
-                {/* Event Details */}
-                <div className='space-y-2 mb-4'>
-                  {/* Lineup - only show if there are undercard artists */}
-                  {event.undercard.length > 0 && (
-                    <div className='flex items-start gap-2 text-sm text-muted-foreground'>
-                      <Users className='w-4 h-4 text-fm-gold flex-shrink-0 mt-0.5' />
-                      <div className='flex flex-col'>
-                        {event.undercard.map((artist, index) => (
-                          <span key={index} className='truncate'>
-                            {artist.name}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  <div className='flex items-center gap-2 text-sm text-muted-foreground'>
-                    <MapPin className='w-4 h-4 text-fm-gold flex-shrink-0' />
-                    <span className='truncate'>{event.venue}</span>
-                  </div>
+                {/* Venue Detail - only add margin if action buttons follow */}
+                <div className={cn(
+                  'flex items-center gap-2 text-sm text-muted-foreground',
+                  !isPastEvent && event.ticketUrl && 'mb-4'
+                )}>
+                  <MapPin className='w-4 h-4 text-fm-gold flex-shrink-0' />
+                  <span className='truncate'>{event.venue}</span>
                 </div>
 
                 {/* Action Buttons - Push to bottom */}
@@ -210,22 +189,22 @@ export const EventCard = ({ event, isSingleRow = false, isPastEvent = false }: E
                 )}
               </div>
 
-              {/* Date Column - Right Side */}
+              {/* Date Column - Right Side - extends to bottom of container */}
               <FmDateBox
                 weekday={dateObj.weekday}
                 month={dateObj.month}
                 day={dateObj.day}
                 year={parseInt(dateObj.year, 10)}
                 size='md'
-                className='border-l rounded-none'
+                className='border-l rounded-none self-stretch'
               />
             </div>
 
             {/* Card Footer - After Hours Badge */}
             {isAfterHours && (
-              <div className='w-full border-t border-border bg-transparent py-0.5 text-center transition-all duration-200 group-hover:bg-fm-gold group-hover:text-background mb-0'>
+              <div className='w-full border-t border-border bg-transparent h-6 flex items-center justify-center transition-all duration-200 group-hover:bg-fm-gold group-hover:text-background'>
                 <span className='text-[8px] font-bold tracking-wider uppercase leading-none text-fm-gold group-hover:text-background'>
-                  {t('eventCard.afterHours')}
+                  {t('eventCard.afterHoursEvent')}
                 </span>
               </div>
             )}

@@ -6,7 +6,7 @@
  */
 
 import { useTranslation } from 'react-i18next';
-import { Globe } from 'lucide-react';
+import { Globe, Mail } from 'lucide-react';
 import {
   FaInstagram,
   FaXTwitter,
@@ -142,6 +142,7 @@ function SocialInput({
 export interface SocialLinksData {
   spotify?: string;
   soundcloud?: string;
+  email?: string;
   website?: string;
   instagram?: string;
   tiktok?: string;
@@ -231,6 +232,28 @@ export function FmSocialLinksInput({
           <p className='text-xs uppercase text-muted-foreground tracking-wider'>
             {t('sections.socialMedia')}
           </p>
+
+          {/* Email - direct email input */}
+          <div className='space-y-1'>
+            <div className='flex items-center gap-2 text-xs text-muted-foreground'>
+              <Mail className='h-4 w-4 text-fm-gold' />
+              <span>{t('labels.socialEmail', 'Contact Email')}</span>
+            </div>
+            <FmCommonTextField
+              value={value.email || ''}
+              onChange={(e) => updateField('email', e.target.value)}
+              placeholder={t('placeholders.enterEmail')}
+              type='email'
+            />
+            {value.email && (
+              <a
+                href={`mailto:${value.email}`}
+                className='text-xs text-muted-foreground hover:text-fm-gold transition-colors truncate block'
+              >
+                {value.email}
+              </a>
+            )}
+          </div>
 
           {/* Website - full URL input */}
           <div className='space-y-1'>

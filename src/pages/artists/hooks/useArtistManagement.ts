@@ -26,6 +26,7 @@ import type { Genre } from '@/features/artists/types';
 
 // Types for social links (stored in spotify_data JSON field)
 interface SocialLinks {
+  email?: string;
   instagram?: string;
   twitter?: string;
   facebook?: string;
@@ -68,6 +69,7 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
   const [soundcloud, setSoundcloud] = useState('');
   const [spotify, setSpotify] = useState('');
   // Additional social links (stored in spotify_data JSON)
+  const [email, setEmail] = useState('');
   const [twitter, setTwitter] = useState('');
   const [facebook, setFacebook] = useState('');
   const [youtube, setYoutube] = useState('');
@@ -86,14 +88,26 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
     tiktok: string;
     soundcloud: string;
     spotify: string;
+    email: string;
     twitter: string;
     facebook: string;
     youtube: string;
   } | null>(null);
 
   // Hooks for genre management
-  const { data: artistGenres } = useArtistGenres(artistId);
+  const { data: artistGenres, error: artistGenresError } = useArtistGenres(artistId);
   const updateGenresMutation = useUpdateArtistGenres();
+
+  // Log genre loading errors
+  useEffect(() => {
+    if (artistGenresError) {
+      logger.error('Failed to load artist genres', {
+        error: artistGenresError instanceof Error ? artistGenresError.message : String(artistGenresError),
+        source: 'useArtistManagement',
+        details: { artistId },
+      });
+    }
+  }, [artistGenresError, artistId]);
 
   // Hooks for recording management
   const { data: recordings = [], isLoading: isRecordingsLoading } = useArtistRecordings(artistId);
@@ -105,13 +119,14 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
   // Build metadata object for saving (social links only)
   const buildMetadata = useCallback((): ArtistMetadata => ({
     socialLinks: {
+      email: email || undefined,
       instagram: instagram || undefined,
       twitter: twitter || undefined,
       facebook: facebook || undefined,
       tiktok: tiktok || undefined,
       youtube: youtube || undefined,
     },
-  }), [instagram, twitter, facebook, tiktok, youtube]);
+  }), [email, instagram, twitter, facebook, tiktok, youtube]);
 
   // Fetch artist data
   const { data: artist, isLoading } = useQuery({
@@ -144,6 +159,7 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
         tiktok: artist.tiktok_handle || '',
         soundcloud: artist.soundcloud_id || '',
         spotify: artist.spotify_id || '',
+        email: metadata?.socialLinks?.email || '',
         twitter: metadata?.socialLinks?.twitter || '',
         facebook: metadata?.socialLinks?.facebook || '',
         youtube: metadata?.socialLinks?.youtube || '',
@@ -156,6 +172,7 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
       setTiktok(initialValues.tiktok);
       setSoundcloud(initialValues.soundcloud);
       setSpotify(initialValues.spotify);
+      setEmail(initialValues.email);
       setTwitter(initialValues.twitter);
       setFacebook(initialValues.facebook);
       setYoutube(initialValues.youtube);
@@ -167,10 +184,14 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
   // Populate genres from artist_genres table
   useEffect(() => {
     if (artistGenres) {
+      logger.debug('Artist genres loaded', {
+        source: 'useArtistManagement',
+        details: { artistId, genreCount: artistGenres.length, genres: artistGenres },
+      });
       const genres: Genre[] = artistGenres.map(ag => ag.genre);
       setSelectedGenres(genres);
     }
-  }, [artistGenres]);
+  }, [artistGenres, artistId]);
 
   // Calculate if form has unsaved changes
   const isDirty = useMemo(() => {
@@ -184,11 +205,12 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
       tiktok !== initial.tiktok ||
       soundcloud !== initial.soundcloud ||
       spotify !== initial.spotify ||
+      email !== initial.email ||
       twitter !== initial.twitter ||
       facebook !== initial.facebook ||
       youtube !== initial.youtube
     );
-  }, [name, bio, website, instagram, tiktok, soundcloud, spotify, twitter, facebook, youtube]);
+  }, [name, bio, website, instagram, tiktok, soundcloud, spotify, email, twitter, facebook, youtube]);
 
   // Handle genre changes
   const handleGenreChange = useCallback((genres: Genre[]) => {
@@ -373,6 +395,7 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
         tiktok,
         soundcloud,
         spotify,
+        email,
         twitter,
         facebook,
         youtube,
@@ -443,6 +466,8 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
     handleGenreChange,
 
     // Form state - Social Links
+    email,
+    setEmail,
     instagram,
     setInstagram,
     tiktok,

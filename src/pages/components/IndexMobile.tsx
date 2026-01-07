@@ -34,6 +34,7 @@ interface EventData {
   ticketUrl?: string | null;
   is_tba?: boolean;
   display_subtitle?: boolean;
+  is_after_hours?: boolean;
 }
 
 export interface IndexMobileProps {

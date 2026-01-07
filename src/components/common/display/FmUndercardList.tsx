@@ -1,3 +1,4 @@
+import { Users } from 'lucide-react';
 import { FmTextLink } from './FmTextLink';
 
 interface Artist {
@@ -27,11 +28,13 @@ export const FmUndercardList = ({
   }
 
   const sizeClasses = size === 'sm' ? 'text-xs gap-x-2' : 'text-sm gap-x-3';
+  const iconSize = size === 'sm' ? 'w-3.5 h-3.5' : 'w-4 h-4';
 
   return (
     <div
       className={`flex flex-wrap items-center gap-y-1 text-muted-foreground/75 ${sizeClasses} ${className}`}
     >
+      <Users className={`${iconSize} text-fm-gold flex-shrink-0`} />
       {artists.map((artist, index) => (
         <span
           key={`${artist.id ?? artist.name}-${index}`}

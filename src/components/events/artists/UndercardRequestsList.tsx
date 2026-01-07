@@ -51,9 +51,9 @@ interface LinkedArtistData {
   bio: string | null;
   city: string | null;
   image_url: string | null;
-  instagram: string | null;
-  soundcloud: string | null;
-  spotify: string | null;
+  instagram_handle: string | null;
+  soundcloud_id: string | null;
+  spotify_id: string | null;
   genres: { id: string; name: string }[] | null;
 }
 
@@ -112,11 +112,13 @@ export function UndercardRequestsList({
             id,
             name,
             bio,
-            city,
             image_url,
-            instagram,
-            soundcloud,
-            spotify,
+            instagram_handle,
+            soundcloud_id,
+            spotify_id,
+            city:cities (
+              name
+            ),
             genres:artist_genres (
               genre:genres (
                 id,
@@ -133,11 +135,13 @@ export function UndercardRequestsList({
         throw error;
       }
 
-      // Transform the nested genre structure for linked artists
+      // Transform the nested structures for linked artists
       const transformed = (data || []).map((request: any) => ({
         ...request,
         artist: request.artist ? {
           ...request.artist,
+          // Extract city name from nested object
+          city: request.artist.city?.name || null,
           genres: request.artist.genres?.map((g: any) => g.genre) || null,
         } : null,
       }));
@@ -305,9 +309,9 @@ function RequestCard({
   const artistBio = registration?.bio || linkedArtist?.bio || '';
   const artistCity = registration?.city || linkedArtist?.city || '';
   const artistImage = registration?.profile_image_url || linkedArtist?.image_url || null;
-  const instagramHandle = registration?.instagram_handle || linkedArtist?.instagram || null;
-  const spotifyUrl = registration?.spotify_url || linkedArtist?.spotify || null;
-  const soundcloudUrl = registration?.soundcloud_url || linkedArtist?.soundcloud || null;
+  const instagramHandle = registration?.instagram_handle || linkedArtist?.instagram_handle || null;
+  const spotifyUrl = registration?.spotify_url || (linkedArtist?.spotify_id ? `https://open.spotify.com/artist/${linkedArtist.spotify_id}` : null);
+  const soundcloudUrl = registration?.soundcloud_url || (linkedArtist?.soundcloud_id ? `https://soundcloud.com/${linkedArtist.soundcloud_id}` : null);
   const isLinkedArtist = !!linkedArtist && !registration;
 
   type TrackMetadata = {

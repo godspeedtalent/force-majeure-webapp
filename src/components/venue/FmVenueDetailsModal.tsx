@@ -1,8 +1,8 @@
-import { type ReactNode, useMemo, useState } from 'react';
+import { type ReactNode, useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { MapPin, Settings, ChevronDown } from 'lucide-react';
+import { MapPin, Settings, ChevronDown, X } from 'lucide-react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 
 import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
@@ -62,6 +62,19 @@ export const FmVenueDetailsModal = ({
   const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [showPastEvents, setShowPastEvents] = useState(false);
+
+  // Delay tooltip enabling to prevent it from showing immediately on modal open
+  const [tooltipEnabled, setTooltipEnabled] = useState(false);
+
+  useEffect(() => {
+    if (!open) {
+      setTooltipEnabled(false);
+      return;
+    }
+    // Wait for modal animation to complete before enabling tooltip
+    const timer = setTimeout(() => setTooltipEnabled(true), 400);
+    return () => clearTimeout(timer);
+  }, [open]);
 
   // Fetch upcoming events for this venue
   const { data: upcomingEvents = [] } = useQuery({
@@ -177,8 +190,8 @@ export const FmVenueDetailsModal = ({
       ) : (
         <div className='w-full h-full bg-gradient-to-br from-fm-gold/10 to-transparent' />
       )}
-      <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent' />
-      <div className='absolute bottom-0 left-0 right-0 p-2'>
+      <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent' />
+      <div className='absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm border-t border-white/10 px-3 py-2'>
         <p className='text-[10px] text-fm-gold mb-0.5'>
           {formatEventDate(event.start_time)}
         </p>
@@ -207,17 +220,36 @@ export const FmVenueDetailsModal = ({
               </p>
               <div className='flex items-center gap-2'>
                 {canManage && venue?.id && (
-                  <FmPortalTooltip content={t('venueDetails.manage')} side='bottom'>
+                  tooltipEnabled ? (
+                    <FmPortalTooltip content={t('venueDetails.manage')} side='bottom'>
+                      <FmCommonIconButton
+                        icon={Settings}
+                        onClick={handleManage}
+                        variant='secondary'
+                        size='sm'
+                        aria-label={t('venueDetails.manage')}
+                        className='bg-white/10 text-white hover:bg-white/20 hover:text-fm-gold hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]'
+                      />
+                    </FmPortalTooltip>
+                  ) : (
                     <FmCommonIconButton
                       icon={Settings}
                       onClick={handleManage}
                       variant='secondary'
                       size='sm'
                       aria-label={t('venueDetails.manage')}
-                      className='bg-white/10 text-white hover:bg-white/20 hover:text-fm-gold border border-white/30'
+                      className='bg-white/10 text-white hover:bg-white/20 hover:text-fm-gold hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]'
                     />
-                  </FmPortalTooltip>
+                  )
                 )}
+                <FmCommonIconButton
+                  icon={X}
+                  onClick={() => onOpenChange(false)}
+                  variant='secondary'
+                  size='sm'
+                  aria-label={t('common.close')}
+                  className='bg-white/10 text-white hover:bg-white/20 hover:text-fm-gold hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]'
+                />
               </div>
             </div>
 
@@ -254,9 +286,9 @@ export const FmVenueDetailsModal = ({
 
           {/* Scrollable content area */}
           <div className='flex-1 overflow-y-auto min-h-0'>
-            <div className='p-8 flex flex-col gap-6'>
-              {/* Title with logo - add right padding on lg screens to avoid map */}
-              <div className='flex items-center gap-4 lg:pr-52'>
+            {/* Title row with frosted glass - full width */}
+            <div className='bg-black/60 backdrop-blur-md border-b border-white/10'>
+              <div className='px-8 py-4 flex items-center gap-4 lg:pr-52'>
                 {venue?.logo && (
                   <div className='flex-shrink-0 w-[50px] h-[50px] border-2 border-fm-gold overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(223,186,125,0.4)]'>
                     <img
@@ -270,6 +302,9 @@ export const FmVenueDetailsModal = ({
                   {venue?.name ?? 'Venue'}
                 </h2>
               </div>
+            </div>
+
+            <div className='p-8 flex flex-col gap-6'>
 
               {/* Address */}
               {fullAddress && (

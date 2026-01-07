@@ -95,7 +95,8 @@
     "pastEvent": "Evento Pasado",
     "processing": "Procesando...",
     "tryAgain": "Intentar de Nuevo",
-    "setAsCover": "Establecer como portada"
+    "setAsCover": "Establecer como portada",
+    "change": "Cambiar"
   },
   "labels": {
     "email": "Correo Electrónico",
@@ -154,6 +155,7 @@
     "genres": "Géneros",
     "instagram": "Instagram",
     "instagramHandle": "Usuario de Instagram",
+    "socialEmail": "Email de Contacto",
     "twitterX": "Twitter / X",
     "facebook": "Facebook",
     "tiktok": "TikTok",
@@ -187,7 +189,9 @@
     "setAsPrimary": "Establecer como principal",
     "setAsFeatured": "Establecer como destacado",
     "noRecordingsYet": "Aún no hay grabaciones",
-    "addFirstRecording": "Añadir tu primera grabación"
+    "addFirstRecording": "Añadir tu primera grabación",
+    "spotify": "Spotify",
+    "soundcloud": "SoundCloud"
   },
   "status": {
     "active": "Activo",
@@ -463,6 +467,9 @@
     "channelHandle": "nombre del canal",
     "username": "nombre de usuario",
     "usernameOrPage": "nombre de usuario o página",
+    "spotifyArtistId": "ID de artista",
+    "soundcloudUsername": "nombre de usuario",
+    "websiteUrl": "https://tusitio.com",
     "email": "tu@email.com",
     "password": "Ingresa tu contraseña",
     "enterArtistName": "Ingresa nombre del artista",
@@ -861,7 +868,17 @@
     "actions": "Acciones",
     "permissionCount": "{{count}} permiso",
     "permissionCountPlural": "{{count}} permisos",
-    "andMore": "... y {{count}} más"
+    "andMore": "... y {{count}} más",
+    "recordings": "Grabaciones",
+    "recordingsDescription": "Agrega pistas de Spotify o SoundCloud",
+    "socialMedia": "Redes Sociales",
+    "socialMediaDescription": "Ingresa nombres de usuario para cada plataforma.",
+    "profileImages": "Imágenes de Perfil",
+    "profileSettings": "Configuración de Perfil",
+    "supportForceMajeure": "Apoya a Force Majeure",
+    "supportDescription": "Tu apoyo nos ayuda a crear mejores eventos y apoyar a más artistas. Síguenos en Instagram para mantenerte conectado con la comunidad.",
+    "musicPlatforms": "Plataformas de Música",
+    "musicPlatformsDescription": "Agrega tus perfiles de streaming para que los fans puedan escuchar tu música."
   },
   "pageTitles": {
     "orgDashboard": "Panel de Organización",
@@ -1177,6 +1194,7 @@
   },
   "venueManagement": {
     "basicInformation": "Información Básica",
+    "logo": "Logo",
     "venueName": "Nombre del Local",
     "enterVenueName": "Ingresa el nombre del local",
     "venueLogo": "Logo del Local",
@@ -1190,7 +1208,8 @@
     "state": "Estado",
     "capacity": "Capacidad",
     "deleteVenue": "Eliminar Local",
-    "deleteVenueConfirm": "¿Estás seguro de que deseas eliminar este local?"
+    "deleteVenueConfirm": "¿Estás seguro de que deseas eliminar este local?",
+    "socialMediaDescription": "Agrega el sitio web y enlaces de redes sociales de tu local para que los fans puedan encontrarte y seguirte."
   },
   "venueGallery": {
     "selectGallery": "Selecciona una galería",
@@ -1343,6 +1362,68 @@
     "shareCount_plural": "{{count}} compartidos",
     "viewCount": "{{count}} vista",
     "viewCount_plural": "{{count}} vistas"
+  },
+  "instagramStory": {
+    "shareToStory": "Compartir en Historia de Instagram",
+    "shareToInstagram": "Compartir en Instagram",
+    "previewTitle": "Vista Previa de Historia",
+    "previewAlt": "Vista previa de historia de Instagram",
+    "generating": "Generando historia...",
+    "generationFailed": "Error al generar imagen de historia",
+    "sharing": "Abriendo Instagram...",
+    "shareInitiated": "Abriendo Instagram para compartir tu historia",
+    "shareFailed": "Error al compartir en Instagram",
+    "downloaded": "Imagen de historia descargada",
+    "helpText": "La historia se abrirá en Instagram donde puedes personalizarla y compartirla"
+  },
+  "storyDesigner": {
+    "title": "Diseñador de Stories",
+    "description": "Diseñar y previsualizar plantillas de Instagram Stories con renderizado en vivo",
+    "entityType": "Tipo de Plantilla",
+    "types": {
+      "event": "Evento",
+      "artist": "Artista",
+      "venue": "Venue",
+      "organization": "Organización"
+    },
+    "commonFields": "Campos Comunes",
+    "specificFields": "Campos",
+    "fields": {
+      "title": "Título",
+      "subtitle": "Subtítulo",
+      "heroImage": "URL de Imagen Principal",
+      "heroImageHelper": "Usa una URL completa o ruta como /images/...",
+      "url": "URL del Enlace",
+      "date": "Fecha",
+      "time": "Hora",
+      "venue": "Venue",
+      "location": "Ubicación",
+      "ctaText": "Texto del Botón",
+      "genres": "Géneros",
+      "genresHelper": "Lista de géneros separados por comas",
+      "upcomingEvent": "Próximo Evento",
+      "eventTitle": "Título del Evento",
+      "eventDate": "Fecha del Evento",
+      "capacity": "Capacidad",
+      "logoUrl": "URL del Logo",
+      "tagline": "Eslogan"
+    },
+    "reset": "Reiniciar",
+    "download": "Descargar",
+    "autoRefresh": "Auto-actualizar vista previa",
+    "generatePreview": "Generar Vista Previa",
+    "preview": "Vista Previa",
+    "generateError": "Error al generar vista previa de historia",
+    "downloadSuccess": "Imagen de historia descargada",
+    "downloadError": "Error al descargar imagen",
+    "resetSuccess": "Reiniciado a datos de ejemplo",
+    "tips": {
+      "title": "Consejos de Diseño",
+      "tip1": "Usa imágenes de alta calidad para mejores resultados (1080x1920 óptimo)",
+      "tip2": "Mantén los títulos cortos para mejor legibilidad en móvil",
+      "tip3": "El código QR enlaza a la URL que especifiques",
+      "tip4": "Descarga y prueba en tu teléfono antes de compartir"
+    }
   },
   "upload": {
     "invalidFileType": "Tipo de Archivo Inválido",
@@ -1500,6 +1581,7 @@
   "eventCard": {
     "getTickets": "Obtener Entradas",
     "afterHours": "After Hours",
+    "afterHoursEvent": "Evento After Hours",
     "redirectDescription": "Estás a punto de ser redirigido a un sitio externo para comprar entradas. ¿Continuar?",
     "externalLink": "Enlace Externo",
     "externalLinkDescription": "Estás a punto de visitar un sitio de venta de entradas externo. Se abrirá en una nueva pestaña.",
@@ -2078,7 +2160,8 @@
     "heroImageFailed": "Error al Guardar Imagen Principal",
     "heroImageFailedDescription": "La imagen se subió pero no se pudo vincular a este evento.",
     "venueCapacityFailed": "Error al obtener capacidad del lugar",
-    "venueCapacityDefault": "Usando capacidad predeterminada de 100"
+    "venueCapacityDefault": "Usando capacidad predeterminada de 100",
+    "afterHoursEvent": "Evento After Hours"
   },
   "adminGrid": {
     "artistImageUpdated": "Imagen del artista actualizada",
@@ -2454,9 +2537,12 @@
     "componentsCatalogDescription": "Catálogo completo de todos los componentes comunes de Force Majeure con demos en vivo, documentación y visualización de gráfico de relaciones",
     "ticketFlowTests": "Pruebas de Flujo de Entradas",
     "ticketFlowTestsDescription": "Suite completa de pruebas de humo para el flujo de venta de entradas incluyendo gestión de cola, selección, pago, tiempos de espera y entrega",
+    "orderCsvImport": "Importar CSV de Pedidos",
+    "orderCsvImportDescription": "Importar pedidos históricos desde archivos CSV, vinculando automáticamente a usuarios existentes por email y creando registros de pedidos, entradas e ítems",
     "categoryDatabase": "Base de Datos",
     "categoryTesting": "Pruebas",
     "categoryDocumentation": "Documentación",
+    "categoryData": "Importación de Datos",
     "openPage": "Abrir página",
     "accessNote": "Estas herramientas solo son accesibles para usuarios admin y desarrolladores"
   },
@@ -2469,9 +2555,12 @@
     "emailTemplateDescription": "Previsualizar y probar plantillas de email de recibo con datos configurables y capacidades de envío en vivo",
     "artistSignup": "Registro de Artista",
     "artistSignupDescription": "Probar el flujo de registro de artista con datos pre-poblados de Spotify o SoundCloud, opciones configurables y pre-llenado de formulario",
+    "storyDesigner": "Diseñador de Stories",
+    "storyDesignerDescription": "Diseñar y previsualizar plantillas de Instagram Stories para eventos, artistas, venues y organizaciones con renderizado Canvas en vivo",
     "categoryEcommerce": "E-Commerce",
     "categoryCommunication": "Comunicación",
     "categoryArtistManagement": "Gestión de Artistas",
+    "categorySocial": "Compartir Social",
     "openDemo": "Abrir demo",
     "accessNote": "Estas demos solo son accesibles para usuarios admin y no son visibles en producción"
   },
@@ -3234,5 +3323,90 @@
   },
   "demo": {
     "selectEventInstruction": "Selecciona un evento de Demo Tools para comenzar"
+  },
+  "orderCsvImport": {
+    "title": "Importar CSV de Pedidos",
+    "description": "Importar pedidos históricos desde archivos CSV. Los pedidos se vincularán a usuarios existentes por dirección de email, o se dejarán sin vincular para futuros registros de usuarios.",
+    "steps": {
+      "upload": "Subir",
+      "map": "Mapear",
+      "preview": "Vista Previa",
+      "complete": "Completado"
+    },
+    "uploadPrompt": "Selecciona un archivo CSV para importar pedidos",
+    "selectFile": "Seleccionar Archivo CSV",
+    "fileRequirements": "El CSV debe incluir encabezados. Requeridos: email, event_id, ticket_tier_id",
+    "columnMapping": "Mapeo de Columnas",
+    "showMapping": "Mostrar mapeo",
+    "hideMapping": "Ocultar mapeo",
+    "selectColumn": "Seleccionar columna...",
+    "dataPreview": "Vista Previa de Datos",
+    "rowCount": "{{count}} filas encontradas",
+    "back": "Atrás",
+    "validateData": "Validar Datos",
+    "validation": {
+      "invalidEmail": "Dirección de email inválida",
+      "missingEventId": "Falta ID de evento",
+      "eventNotFound": "Evento no encontrado: {{eventId}}",
+      "missingTicketTierId": "Falta ID de nivel de entrada",
+      "ticketTierNotFound": "Nivel de entrada no encontrado: {{tierId}}",
+      "tierEventMismatch": "El nivel de entrada no pertenece a este evento",
+      "invalidQuantity": "Cantidad inválida"
+    },
+    "stats": {
+      "valid": "Pedidos Válidos",
+      "invalid": "Pedidos Inválidos",
+      "withUser": "Vinculados a Usuarios",
+      "orphaned": "Pedidos Huérfanos",
+      "totalTickets": "Total de Entradas",
+      "totalRevenue": "Ingresos Totales"
+    },
+    "table": {
+      "row": "Fila",
+      "email": "Email",
+      "event": "Evento",
+      "tier": "Nivel",
+      "qty": "Cant",
+      "total": "Total",
+      "status": "Estado"
+    },
+    "userFound": "Usuario encontrado en base de datos",
+    "duplicate": "Duplicado",
+    "ready": "Listo",
+    "importOrders": "Importar {{count}} Pedidos",
+    "complete": {
+      "title": "Importación Completa",
+      "description": "Se importaron exitosamente {{count}} pedidos",
+      "importedOrders": "Pedidos Importados",
+      "tickets": "entradas"
+    },
+    "importAnother": "Importar Otro Archivo",
+    "success": "Se importaron exitosamente {{count}} pedidos",
+    "info": {
+      "title": "Cómo Funciona la Importación de Pedidos",
+      "point1": "Los pedidos se vinculan a usuarios existentes por dirección de email",
+      "point2": "Los pedidos huérfanos (sin usuario coincidente) se vincularán cuando el usuario se registre",
+      "point3": "Las entradas se crean automáticamente para cada pedido",
+      "point4": "Los pedidos duplicados (por ID externo) se omiten"
+    },
+    "errors": {
+      "emptyFile": "El archivo está vacío o no tiene filas de datos",
+      "fileReadError": "Error al leer el archivo",
+      "validationFailed": "Error al validar pedidos",
+      "noValidOrders": "No hay pedidos válidos para importar",
+      "importFailed": "Error al importar pedidos"
+    },
+    "fields": {
+      "customerEmail": "Email del Cliente",
+      "customerName": "Nombre del Cliente",
+      "eventId": "ID de Evento",
+      "ticketTierId": "ID de Nivel de Entrada",
+      "quantity": "Cantidad",
+      "unitPriceCents": "Precio Unitario (centavos)",
+      "unitFeeCents": "Tarifa Unitaria (centavos)",
+      "orderDate": "Fecha de Pedido",
+      "status": "Estado",
+      "externalOrderId": "ID de Pedido Externo"
+    }
   }
 }

@@ -345,6 +345,17 @@ export const EventDetailsContent = ({
       onInterestClick={handleInterestClick}
       onShareClick={handleOpenShareModal}
       isPastEvent={isPastEvent}
+      eventData={{
+        id: event.id,
+        heroImage: event.heroImage,
+        title: displayTitle,
+        date: longDateLabel,
+        time: formattedTime,
+        venue: event.venue,
+        location: event.venueDetails?.city && event.venueDetails?.state
+          ? `${event.venueDetails.city}, ${event.venueDetails.state}`
+          : undefined,
+      }}
     />
   );
 
@@ -452,11 +463,14 @@ export const EventDetailsContent = ({
                         scrollContainerRef={contentViewportRef}
                       />
 
-                      <div className='mt-6'>
-                        <FmBigButton onClick={handleOpenCheckout} isPastEvent={isPastEvent}>
-                          {t('eventDetails.getTickets')}
-                        </FmBigButton>
-                      </div>
+                      {/* Only show ticket button for upcoming events */}
+                      {!isPastEvent && (
+                        <div className='mt-6'>
+                          <FmBigButton onClick={handleOpenCheckout}>
+                            {t('eventDetails.getTickets')}
+                          </FmBigButton>
+                        </div>
+                      )}
 
                       <div className='mt-4'>{detailsContent}</div>
                     </div>

@@ -28,7 +28,7 @@ export function EventDetailsLayout({
   className,
 }: EventDetailsLayoutProps) {
   return (
-    <div className={cn('min-h-screen bg-background relative', className)}>
+    <div className={cn('bg-background relative', className)}>
       {/* Global Background Layer - z-0 */}
       <div className='absolute inset-0 pointer-events-none overflow-hidden z-0'>
         <TopographicBackground opacity={0.35} parallax={false} />
@@ -46,7 +46,7 @@ export function EventDetailsLayout({
 
       {/* Desktop: two-column layout with footer below fold */}
       <div className='hidden lg:block'>
-        {/* Two-column content area - viewport height */}
+        {/* Two-column content area - viewport height minus nav */}
         <div className='flex h-[calc(100vh-4rem)]'>
           {/* Left Column - Hero Image (width based on aspect ratio) - z-10 */}
           <div className='relative overflow-hidden z-10 h-full flex-shrink-0'>
@@ -61,7 +61,7 @@ export function EventDetailsLayout({
           </div>
         </div>
 
-        {/* Footer below fold - revealed by page scroll */}
+        {/* Footer - positioned directly after content */}
         <Footer />
       </div>
     </div>

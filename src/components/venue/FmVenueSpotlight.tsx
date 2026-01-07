@@ -1,17 +1,16 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { Music2, Disc3 } from 'lucide-react';
+import { MapPin, Users } from 'lucide-react';
 
-import { FmCommonBadgeGroup } from '@/components/common/display/FmCommonBadgeGroup';
 import { FmSocialLinks } from '@/components/common/display/FmSocialLinks';
-import { FmRecordingsGrid } from '@/components/artist/FmRecordingsGrid';
+import { FmVenueMap } from '@/components/common/display/FmVenueMap';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/shared';
-import type { ArtistWithDetails } from '@/shared/api/queries/artistQueries';
-import type { ArtistRecording } from '@/shared/api/queries/recordingQueries';
+import { getImageUrl } from '@/shared/utils/imageUtils';
+import type { Venue } from '@/features/events/types';
 
-const ARTIST_PLACEHOLDER_IMAGE = '/images/artist-showcase/DSC02275.jpg';
+const VENUE_PLACEHOLDER_IMAGE = '/images/artist-showcase/_KAK4846.jpg';
 
 interface GalleryImage {
   id: string;
@@ -19,65 +18,66 @@ interface GalleryImage {
   is_cover: boolean;
 }
 
-// Types for social links (stored in spotify_data JSON field)
-interface SocialLinks {
-  youtube?: string;
-  facebook?: string;
-}
-
-interface ArtistMetadata {
-  socialLinks?: SocialLinks;
-}
-
-export interface FmArtistSpotlightProps {
-  /** Full artist data with details */
-  artist: ArtistWithDetails;
-  /** Show recordings section */
-  showRecordings?: boolean;
+export interface FmVenueSpotlightProps {
+  /** Full venue data */
+  venue: Venue;
+  /** Show map section */
+  showMap?: boolean;
   /** Custom class name */
   className?: string;
   /** Optional action element to render next to social links (e.g., view profile button) */
   footerAction?: React.ReactNode;
-  /** Hide the "Artist Spotlight" subheader (when shown in modal with its own header) */
+  /** Hide the "Venue Spotlight" subheader (when shown in modal with its own header) */
   hideSpotlightHeader?: boolean;
 }
 
 /**
- * FmArtistSpotlight
+ * FmVenueSpotlight
  *
- * Reusable artist spotlight card component.
- * Used in ArtistDetails page and FmArtistDetailsModal.
+ * Reusable venue spotlight card component.
+ * Used in VenueDetails page and FmVenueDetailsModal.
  *
  * Features:
- * - "ARTIST SPOTLIGHT" header
- * - Artist name and genre badges
+ * - "VENUE SPOTLIGHT" header
+ * - Venue name and logo
  * - Gallery images with thumbnails
- * - Bio section
+ * - Description section
+ * - Address and capacity
  * - Social links
- * - Optional recordings grid
+ * - Optional map
  */
-export function FmArtistSpotlight({
-  artist,
-  showRecordings = true,
+export function FmVenueSpotlight({
+  venue,
+  showMap = true,
   className,
   footerAction,
   hideSpotlightHeader = false,
-}: FmArtistSpotlightProps) {
+}: FmVenueSpotlightProps) {
   const { t: tCommon } = useTranslation('common');
 
   // State for selected gallery image
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  // Fetch gallery images
+  // Fetch gallery images for venue
   const { data: galleryImages = [] } = useQuery({
-    queryKey: ['artist-gallery-images', artist?.gallery_id],
+    queryKey: ['venue-gallery-images', venue?.id],
     queryFn: async (): Promise<GalleryImage[]> => {
-      if (!artist?.gallery_id) return [];
+      if (!venue?.id) return [];
+
+      // Get default gallery for this venue
+      const { data: galleries } = await supabase
+        .from('media_galleries')
+        .select('id')
+        .eq('venue_id', venue.id)
+        .eq('is_default', true)
+        .limit(1);
+
+      if (!galleries || galleries.length === 0) return [];
 
       const { data, error } = await supabase
         .from('media_items')
         .select('id, file_path, is_cover')
-        .eq('gallery_id', artist.gallery_id)
+        .eq('gallery_id', galleries[0].id)
         .eq('is_active', true)
         .order('is_cover', { ascending: false })
         .order('display_order', { ascending: true });
@@ -85,44 +85,38 @@ export function FmArtistSpotlight({
       if (error) return [];
       return data || [];
     },
-    enabled: !!artist?.gallery_id,
+    enabled: !!venue?.id,
   });
-
-  // Extract genres from artist_genres relation
-  const genres =
-    artist?.artist_genres?.map((ag: any) => ag.genres?.name).filter(Boolean) ||
-    [];
-  const genreBadges = genres.map((name: string) => ({
-    label: name,
-    className: 'border-fm-gold/60 bg-fm-gold/10 text-fm-gold',
-  }));
-
-  // Get all recordings
-  const recordings = (artist?.artist_recordings?.filter((r: any) => r.platform) ||
-    []) as ArtistRecording[];
 
   // Use gallery images if available, otherwise fall back to image_url
   const hasGalleryImages = galleryImages.length > 0;
   const mainImage = hasGalleryImages
-    ? galleryImages[selectedImageIndex]?.file_path
-    : artist.image_url || ARTIST_PLACEHOLDER_IMAGE;
+    ? getImageUrl(galleryImages[selectedImageIndex]?.file_path)
+    : venue.image_url || VENUE_PLACEHOLDER_IMAGE;
   const thumbnailImages = hasGalleryImages
     ? galleryImages.filter((_, i) => i !== selectedImageIndex).slice(0, 3)
     : [];
 
-  // Extract social links from spotify_data JSON field
-  const metadata = artist.spotify_data as ArtistMetadata | null;
-  const youtube = metadata?.socialLinks?.youtube;
-  const facebook = metadata?.socialLinks?.facebook;
+  // Format full address
+  const fullAddress = [
+    venue.address_line_1,
+    venue.address_line_2,
+    venue.city,
+    venue.state,
+    venue.zip_code,
+  ]
+    .filter(Boolean)
+    .join(', ');
 
   const hasSocialLinks =
-    artist.website ||
-    artist.instagram_handle ||
-    youtube ||
-    facebook ||
-    artist.soundcloud_id ||
-    artist.spotify_id ||
-    artist.tiktok_handle;
+    venue.website ||
+    venue.instagram_handle ||
+    venue.facebook_url ||
+    venue.youtube_url ||
+    venue.tiktok_handle ||
+    venue.twitter_handle;
+
+  const hasAddressData = venue.address_line_1 || venue.city || venue.state;
 
   return (
     <div className={cn('w-full', className)}>
@@ -136,31 +130,40 @@ export function FmArtistSpotlight({
             <div className='w-28 h-36 flex-shrink-0 overflow-hidden rounded-none border border-white/15 bg-white/5'>
               <img
                 src={mainImage}
-                alt={artist.name}
+                alt={venue.name}
                 className='w-full h-full object-cover'
               />
             </div>
 
-            {/* Artist Info */}
+            {/* Venue Info */}
             <div className='flex-1 flex flex-col justify-center min-w-0'>
               {!hideSpotlightHeader && (
                 <p className='text-[9px] uppercase tracking-[0.3em] text-white/50 font-canela mb-1'>
-                  {tCommon('artistPreview.spotlight')}
+                  {tCommon('venuePreview.spotlight', 'Venue Spotlight')}
                 </p>
               )}
-              <h1 className='text-2xl font-canela font-semibold text-white leading-tight mb-2 mt-1 truncate'>
-                {artist.name}
-              </h1>
+              <div className='flex items-center gap-2 mb-2 mt-1'>
+                {venue.logo_url && (
+                  <div className='flex-shrink-0 w-7 h-7 border border-fm-gold overflow-hidden'>
+                    <img
+                      src={venue.logo_url}
+                      alt={`${venue.name} logo`}
+                      className='w-full h-full object-cover'
+                    />
+                  </div>
+                )}
+                <h1 className='text-2xl font-canela font-semibold text-white leading-tight truncate'>
+                  {venue.name}
+                </h1>
+              </div>
 
-              {/* Genre badges */}
-              {genreBadges.length > 0 && (
+              {/* Capacity badge */}
+              {venue.capacity && (
                 <div className='flex items-center gap-1.5'>
-                  <Music2 className='h-3 w-3 text-fm-gold flex-shrink-0' />
-                  <FmCommonBadgeGroup
-                    badges={genreBadges.slice(0, 2)}
-                    badgeClassName='border-fm-gold/60 bg-fm-gold/10 text-fm-gold text-[10px] px-1.5 py-0.5'
-                    gap='sm'
-                  />
+                  <Users className='h-3 w-3 text-fm-gold flex-shrink-0' />
+                  <span className='text-xs text-white/70'>
+                    {tCommon('venueDetails.capacity', { count: venue.capacity })}
+                  </span>
                 </div>
               )}
             </div>
@@ -176,7 +179,7 @@ export function FmArtistSpotlight({
               >
                 <img
                   src={mainImage}
-                  alt={artist.name}
+                  alt={venue.name}
                   className='w-full h-full object-cover'
                 />
               </button>
@@ -196,8 +199,8 @@ export function FmArtistSpotlight({
                     )}
                   >
                     <img
-                      src={img.file_path}
-                      alt={`${artist.name} gallery`}
+                      src={getImageUrl(img.file_path)}
+                      alt={`${venue.name} gallery`}
                       className='w-full h-full object-cover'
                     />
                   </button>
@@ -208,15 +211,39 @@ export function FmArtistSpotlight({
 
           <div className='w-full h-[1px] bg-white/20 mb-4' />
 
-          {/* Bio */}
+          {/* Address */}
+          {fullAddress && (
+            <div className='flex items-start gap-2 text-sm text-white/70 mb-4'>
+              <MapPin className='flex-shrink-0 mt-0.5 text-fm-gold w-4 h-4' />
+              <span>{fullAddress}</span>
+            </div>
+          )}
+
+          {/* Description */}
           <div
             className={cn(
               'text-sm text-white/60 leading-loose font-canela whitespace-pre-wrap italic px-1',
-              !artist.bio && 'text-white/40'
+              !venue.description && 'text-white/40'
             )}
           >
-            {artist.bio || tCommon('artistProfile.noBioAvailable')}
+            {venue.description || tCommon('venueProfile.noDescriptionAvailable', 'More information about this venue will be available soon.')}
           </div>
+
+          {/* Map - Mobile */}
+          {showMap && hasAddressData && (
+            <div className='mt-4'>
+              <FmVenueMap
+                addressLine1={venue.address_line_1}
+                addressLine2={venue.address_line_2}
+                city={venue.city}
+                state={venue.state}
+                zipCode={venue.zip_code}
+                size='md'
+                showExternalLink={true}
+                showFooter={false}
+              />
+            </div>
+          )}
 
           {/* Social Links - Mobile */}
           {(hasSocialLinks || footerAction) && (
@@ -225,21 +252,12 @@ export function FmArtistSpotlight({
               <div className='flex items-center justify-between mt-3'>
                 {hasSocialLinks ? (
                   <FmSocialLinks
-                    website={artist.website}
-                    instagram={artist.instagram_handle}
-                    youtube={youtube}
-                    facebook={facebook}
-                    soundcloud={
-                      artist.soundcloud_id
-                        ? `https://soundcloud.com/${artist.soundcloud_id}`
-                        : undefined
-                    }
-                    spotify={
-                      artist.spotify_id
-                        ? `https://open.spotify.com/artist/${artist.spotify_id}`
-                        : undefined
-                    }
-                    tiktok={artist.tiktok_handle}
+                    website={venue.website}
+                    instagram={venue.instagram_handle}
+                    facebook={venue.facebook_url}
+                    youtube={venue.youtube_url}
+                    tiktok={venue.tiktok_handle}
+                    twitter={venue.twitter_handle}
                     size='sm'
                     gap='md'
                   />
@@ -262,7 +280,7 @@ export function FmArtistSpotlight({
                 <div className='overflow-hidden rounded-none border border-white/15 bg-white/5 shadow-inner'>
                   <img
                     src={mainImage}
-                    alt={artist.name}
+                    alt={venue.name}
                     className='aspect-[3/4] w-full object-cover'
                   />
                 </div>
@@ -286,8 +304,8 @@ export function FmArtistSpotlight({
                           )}
                         >
                           <img
-                            src={img.file_path}
-                            alt={`${artist.name} gallery`}
+                            src={getImageUrl(img.file_path)}
+                            alt={`${venue.name} gallery`}
                             className='w-full h-full object-cover'
                           />
                         </button>
@@ -303,38 +321,68 @@ export function FmArtistSpotlight({
               <div className='space-y-2'>
                 {!hideSpotlightHeader && (
                   <p className='text-[10px] uppercase tracking-[0.35em] text-white/50 font-canela'>
-                    {tCommon('artistPreview.spotlight')}
+                    {tCommon('venuePreview.spotlight', 'Venue Spotlight')}
                   </p>
                 )}
-                <h1 className='text-4xl font-canela font-semibold text-white leading-tight mt-2'>
-                  {artist.name}
-                </h1>
+                <div className='flex items-center gap-3 mt-2'>
+                  {venue.logo_url && (
+                    <div className='flex-shrink-0 w-9 h-9 border border-fm-gold overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-[0_0_16px_rgba(223,186,125,0.35)]'>
+                      <img
+                        src={venue.logo_url}
+                        alt={`${venue.name} logo`}
+                        className='w-full h-full object-cover'
+                      />
+                    </div>
+                  )}
+                  <h1 className='text-4xl font-canela font-semibold text-white leading-tight'>
+                    {venue.name}
+                  </h1>
+                </div>
                 <div className='w-full h-[1px] bg-white/30' />
               </div>
 
-              {/* Genre badges */}
-              {genreBadges.length > 0 && (
-                <div className='flex items-center gap-2'>
-                  <Music2 className='h-4 w-4 text-fm-gold' />
-                  <FmCommonBadgeGroup
-                    badges={genreBadges}
-                    badgeClassName='border-fm-gold/60 bg-fm-gold/10 text-fm-gold'
-                    gap='sm'
-                  />
-                </div>
-              )}
+              {/* Address and capacity */}
+              <div className='space-y-2'>
+                {fullAddress && (
+                  <div className='flex items-start gap-2 text-sm text-white/70'>
+                    <MapPin className='flex-shrink-0 mt-0.5 text-fm-gold w-4 h-4' />
+                    <span>{fullAddress}</span>
+                  </div>
+                )}
+                {venue.capacity && (
+                  <div className='flex items-center gap-2 text-sm text-white/70'>
+                    <Users className='flex-shrink-0 text-fm-gold w-4 h-4' />
+                    <span>{tCommon('venueDetails.capacity', { count: venue.capacity })}</span>
+                  </div>
+                )}
+              </div>
 
-              {/* Bio */}
+              {/* Description */}
               <div
                 className={cn(
                   'max-w-none text-sm text-white/60 leading-loose font-canela flex-1 whitespace-pre-wrap italic px-1',
-                  !artist.bio && 'text-white/40'
+                  !venue.description && 'text-white/40'
                 )}
               >
-                {artist.bio || tCommon('artistProfile.noBioAvailable')}
+                {venue.description || tCommon('venueProfile.noDescriptionAvailable', 'More information about this venue will be available soon.')}
               </div>
             </div>
           </div>
+
+          {/* Map - Desktop */}
+          {showMap && hasAddressData && (
+            <div className='mt-6'>
+              <FmVenueMap
+                addressLine1={venue.address_line_1}
+                addressLine2={venue.address_line_2}
+                city={venue.city}
+                state={venue.state}
+                zipCode={venue.zip_code}
+                size='md'
+                showExternalLink={true}
+              />
+            </div>
+          )}
 
           {/* Social Links - Desktop */}
           {(hasSocialLinks || footerAction) && (
@@ -343,21 +391,12 @@ export function FmArtistSpotlight({
               <div className='flex items-center justify-between mt-[15px]'>
                 {hasSocialLinks ? (
                   <FmSocialLinks
-                    website={artist.website}
-                    instagram={artist.instagram_handle}
-                    youtube={youtube}
-                    facebook={facebook}
-                    soundcloud={
-                      artist.soundcloud_id
-                        ? `https://soundcloud.com/${artist.soundcloud_id}`
-                        : undefined
-                    }
-                    spotify={
-                      artist.spotify_id
-                        ? `https://open.spotify.com/artist/${artist.spotify_id}`
-                        : undefined
-                    }
-                    tiktok={artist.tiktok_handle}
+                    website={venue.website}
+                    instagram={venue.instagram_handle}
+                    facebook={venue.facebook_url}
+                    youtube={venue.youtube_url}
+                    tiktok={venue.tiktok_handle}
+                    twitter={venue.twitter_handle}
                     size='md'
                     gap='md'
                   />
@@ -370,17 +409,6 @@ export function FmArtistSpotlight({
           )}
         </div>
       </div>
-
-      {/* Recordings Section */}
-      {showRecordings && recordings.length > 0 && (
-        <div className='mt-6 border border-white/20 bg-black/40 backdrop-blur-sm p-4 md:p-6'>
-          <h2 className='text-xl font-canela mb-4 flex items-center gap-2'>
-            <Disc3 className='h-5 w-5 text-fm-gold' />
-            {tCommon('sections.recordings')}
-          </h2>
-          <FmRecordingsGrid recordings={recordings} className='mt-0' hideHeader />
-        </div>
-      )}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { supabase } from '@/shared';
 import { ArrowLeft, Building2, Calendar } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
 import { FmCommonCard, FmCommonCardContent, FmCommonCardHeader, FmCommonCardTitle } from '@/components/common/display/FmCommonCard';
+import { FmInstagramStoryButton } from '@/components/common/sharing';
 
 import { Separator } from '@/components/common/shadcn/separator';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
@@ -91,6 +92,18 @@ export default function OrganizationDetails() {
             <p className='text-muted-foreground mt-1'>{t('organization.details')}</p>
           </div>
         </div>
+
+        {/* Instagram Story Button - Mobile only */}
+        <FmInstagramStoryButton
+          entityType='organization'
+          entityData={{
+            id: organization.id,
+            heroImage: organization.profile_picture || null,
+            title: organization.name,
+            logoUrl: organization.profile_picture,
+          }}
+          variant='icon'
+        />
       </div>
 
       <Separator />

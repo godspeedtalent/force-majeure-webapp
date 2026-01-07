@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowRight, Settings, X } from 'lucide-react';
@@ -39,6 +39,19 @@ export const FmArtistDetailsModal = ({
   const { t } = useTranslation('common');
   const navigate = useNavigate();
 
+  // Delay tooltip enabling to prevent it from showing immediately on modal open
+  const [tooltipEnabled, setTooltipEnabled] = useState(false);
+
+  useEffect(() => {
+    if (!open) {
+      setTooltipEnabled(false);
+      return;
+    }
+    // Wait for modal animation to complete before enabling tooltip
+    const timer = setTimeout(() => setTooltipEnabled(true), 400);
+    return () => clearTimeout(timer);
+  }, [open]);
+
   // Fetch full artist data when modal is open and we have an ID
   const { data: fullArtist, isLoading } = useArtistById(
     open && artist?.id ? artist.id : undefined
@@ -65,7 +78,7 @@ export const FmArtistDetailsModal = ({
       icon={ArrowRight}
       iconPosition='right'
       onClick={handleViewDetails}
-      className='bg-white/10 text-white hover:bg-white/20 hover:text-fm-gold'
+      className='bg-white/10 text-white hover:bg-white/20 hover:text-fm-gold hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]'
     >
       {t('artistDetails.artistProfile')}
     </FmCommonButton>
@@ -73,7 +86,7 @@ export const FmArtistDetailsModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-w-3xl max-h-[90vh] p-0 gap-0 border border-white/20 bg-background/95 backdrop-blur-xl overflow-hidden flex flex-col'>
+      <DialogContent className='max-w-3xl max-h-[90vh] p-0 gap-0 border-x-2 border-y-4 border-fm-gold/30 border-t-fm-gold border-b-fm-gold bg-gradient-to-br from-black/95 to-neutral-900/95 backdrop-blur-xl overflow-hidden flex flex-col shadow-[0_8px_32px_rgba(0,0,0,0.5)]'>
         <DialogTitle className='sr-only'>
           {artist?.name ?? t('artistDetails.defaultTitle')}
         </DialogTitle>
@@ -85,16 +98,27 @@ export const FmArtistDetailsModal = ({
           </p>
           <div className='flex items-center gap-2'>
             {canManage && artist?.id && (
-              <FmPortalTooltip content={t('artistDetails.manage')} side='bottom'>
+              tooltipEnabled ? (
+                <FmPortalTooltip content={t('artistDetails.manage')} side='bottom'>
+                  <FmCommonIconButton
+                    icon={Settings}
+                    onClick={handleManage}
+                    variant='secondary'
+                    size='sm'
+                    aria-label={t('artistDetails.manage')}
+                    className='bg-white/10 text-white hover:bg-white/20 hover:text-fm-gold hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]'
+                  />
+                </FmPortalTooltip>
+              ) : (
                 <FmCommonIconButton
                   icon={Settings}
                   onClick={handleManage}
                   variant='secondary'
                   size='sm'
                   aria-label={t('artistDetails.manage')}
-                  className='bg-white/10 text-white hover:bg-white/20 hover:text-fm-gold'
+                  className='bg-white/10 text-white hover:bg-white/20 hover:text-fm-gold hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]'
                 />
-              </FmPortalTooltip>
+              )
             )}
             <FmCommonIconButton
               icon={X}
@@ -102,7 +126,7 @@ export const FmArtistDetailsModal = ({
               variant='secondary'
               size='sm'
               aria-label={t('common.close')}
-              className='bg-white/10 text-white hover:bg-white/20'
+              className='bg-white/10 text-white hover:bg-white/20 hover:text-fm-gold hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]'
             />
           </div>
         </div>
