@@ -69,12 +69,12 @@ export const FmCommonSlidingIconButton = forwardRef<
 
     // Custom variant styles
     const variantStyles = {
-      gold: 'bg-fm-gold hover:bg-fm-gold/90 text-black font-medium hover:shadow-[0_0_20px_rgba(207,173,118,0.5)]',
+      gold: 'bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold font-medium hover:bg-fm-gold/30 hover:shadow-[0_0_20px_rgba(207,173,118,0.5)]',
       default:
         'bg-white/5 border-white/30 hover:bg-fm-gold/20 hover:border-fm-gold hover:text-fm-gold hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]',
       secondary: 'hover:bg-fm-gold/10 hover:border-fm-gold hover:text-fm-gold',
       destructive:
-        'bg-transparent border border-destructive text-destructive hover:bg-destructive hover:text-black hover:border-destructive hover:shadow-[0_0_12px_hsl(var(--destructive)/0.3)]',
+        'bg-destructive/20 backdrop-blur-sm border border-destructive text-destructive hover:bg-destructive hover:text-black hover:border-destructive shadow-[0_0_12px_hsl(var(--destructive)/0.2)] hover:shadow-[0_0_20px_hsl(var(--destructive)/0.4)]',
     };
 
     const sizeClasses = {
@@ -89,10 +89,12 @@ export const FmCommonSlidingIconButton = forwardRef<
       lg: 'w-6 h-6',
     };
 
-    const paddingClasses = {
-      default: isHovered ? 'px-4' : 'px-2.5',
-      sm: isHovered ? 'px-3' : 'px-2',
-      lg: isHovered ? 'px-5' : 'px-3',
+    // When collapsed, use aspect-square with no explicit padding to ensure perfect square
+    // When expanded, add horizontal padding for the label
+    const sizeStyles = {
+      default: isHovered ? 'px-4' : 'w-10 justify-center',
+      sm: isHovered ? 'px-3' : 'w-8 justify-center',
+      lg: isHovered ? 'px-5' : 'w-12 justify-center',
     };
 
     return (
@@ -115,7 +117,7 @@ export const FmCommonSlidingIconButton = forwardRef<
           'relative overflow-hidden group',
           'transition-all duration-300 ease-out',
           sizeClasses[size],
-          paddingClasses[size],
+          sizeStyles[size],
           variantStyles[variant],
           isPressed && 'scale-95',
           // Mobile touch feedback (hover-like effects on tap for touch devices)

@@ -69,6 +69,7 @@ export const VenueGallerySection = ({
     id: string;
     name: string;
     isDefault?: boolean;
+    isCover?: boolean;
   } | null>(null);
 
   // Gallery name editing state
@@ -310,13 +311,19 @@ export const VenueGallerySection = ({
           onUpload={actions.uploadFiles}
           onSetCover={handleSetCover}
           onEditItem={setEditingItem}
-          onDeleteItem={item =>
+          onDeleteItem={item => {
+            // Prevent deletion of cover if it's the only image
+            if (item.is_cover && state.items.length === 1) {
+              toast.error(t('venueGallery.cannotDeleteOnlyCover', 'Cannot delete the only image. A gallery must always have a cover photo.'));
+              return;
+            }
             setDeleteConfirm({
               type: 'item',
               id: item.id,
               name: item.title || 'this item',
-            })
-          }
+              isCover: item.is_cover,
+            });
+          }}
         />
       ) : (
         <div className='h-[200px] border border-dashed border-white/20 flex items-center justify-center text-muted-foreground'>
@@ -339,7 +346,9 @@ export const VenueGallerySection = ({
             <AlertDialogTitle>
               {deleteConfirm?.type === 'gallery'
                 ? t('venueGallery.deleteGalleryTitle', 'Delete gallery?')
-                : t('venueGallery.deleteMediaTitle', 'Delete media?')}
+                : deleteConfirm?.isCover
+                  ? t('venueGallery.deleteCoverTitle', 'Delete cover photo?')
+                  : t('venueGallery.deleteMediaTitle', 'Delete media?')}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {deleteConfirm?.type === 'gallery'
@@ -347,10 +356,15 @@ export const VenueGallerySection = ({
                     'venueGallery.deleteGalleryDescription',
                     `This will delete the gallery "${deleteConfirm?.name}" and all its media items. This action cannot be undone.`
                   )
-                : t(
-                    'venueGallery.deleteMediaDescription',
-                    `This will permanently delete "${deleteConfirm?.name}". This action cannot be undone.`
-                  )}
+                : deleteConfirm?.isCover
+                  ? t(
+                      'venueGallery.deleteCoverDescription',
+                      'This is the current cover photo. If you delete it, another photo will automatically be set as the new cover. This action cannot be undone.'
+                    )
+                  : t(
+                      'venueGallery.deleteMediaDescription',
+                      `This will permanently delete "${deleteConfirm?.name}". This action cannot be undone.`
+                    )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

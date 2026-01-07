@@ -214,7 +214,7 @@ export const FmCommonTextField = React.forwardRef<
               <Label
                 htmlFor={inputId}
                 className={cn(
-                  'text-xs transition-colors duration-200',
+                  'text-xs uppercase tracking-wider transition-colors duration-200',
                   isFocused ? 'text-fm-gold' : 'text-muted-foreground'
                 )}
               >

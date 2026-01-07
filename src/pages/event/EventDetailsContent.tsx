@@ -393,6 +393,12 @@ export const EventDetailsContent = ({
           />
           <div className='flex flex-col gap-1.5 text-sm text-muted-foreground/90 tracking-wide'>
             <div className='flex items-center gap-2'>
+              <MapPin className='h-4 w-4 text-fm-gold flex-shrink-0' />
+              <FmTextLink onClick={handleVenueSelect}>
+                {event.venue || t('eventDetails.venueTba')}
+              </FmTextLink>
+            </div>
+            <div className='flex items-center gap-2'>
               <Clock className='h-4 w-4 text-fm-gold flex-shrink-0' />
               <span>{formattedDateTime}</span>
             </div>
@@ -402,12 +408,6 @@ export const EventDetailsContent = ({
                 {tCommon('eventForm.afterHoursEvent')}
               </Badge>
             )}
-            <div className='flex items-center gap-2'>
-              <MapPin className='h-4 w-4 text-fm-gold flex-shrink-0' />
-              <FmTextLink onClick={handleVenueSelect}>
-                {event.venue || t('eventDetails.venueTba')}
-              </FmTextLink>
-            </div>
           </div>
         </div>
       </div>

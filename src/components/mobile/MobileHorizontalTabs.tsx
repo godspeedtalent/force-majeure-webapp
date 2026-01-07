@@ -91,12 +91,12 @@ export const MobileHorizontalTabs = ({
                 // Inactive state: gold text, divider border
                 'text-fm-gold',
                 'border-r border-fm-gold/30 last:border-r-0',
-                // Inactive hover: gold bg, black text
-                'hover:bg-fm-gold hover:text-black',
-                // Active state: gold border, gold text, semi-opaque white bg
-                isActive && 'border border-fm-gold bg-white/10',
-                // Active hover: gold bg, black text
-                isActive && 'hover:bg-fm-gold hover:text-black'
+                // Inactive hover: frosted gold bg
+                'hover:bg-fm-gold/20 hover:text-fm-gold hover:shadow-[0_0_12px_rgba(223,186,125,0.3)]',
+                // Active state: gold border, gold text, frosted gold bg with glow
+                isActive && 'border border-fm-gold bg-fm-gold/20 shadow-[0_0_12px_rgba(223,186,125,0.3)]',
+                // Active hover: stronger frosted gold bg
+                isActive && 'hover:bg-fm-gold/30 hover:text-fm-gold'
               )}
               aria-label={tab.label}
               aria-current={isActive ? 'page' : undefined}

@@ -1,5 +1,7 @@
 export { FmCommonTextField } from './FmCommonTextField';
 export { FmCommonFormSection } from './FmCommonFormSection';
+export { FmFormSection } from './FmFormSection';
+export { FmFormSectionHeader } from './FmFormSectionHeader';
 export { FmCommonForm } from './FmCommonForm';
 export { FmCommonFormField } from './FmCommonFormField';
 export { FmCommonFormSelect } from './FmCommonFormSelect';

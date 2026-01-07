@@ -1106,7 +1106,11 @@
     "onlyUploadingCount": "由于限制，仅上传{{count}}张图片",
     "uploadMultipleDescription": "最多上传10张图片。支持JPEG、PNG、WebP格式。",
     "firstImageIsCover": "第一张图片将设为封面/头像。",
-    "imageCount": "{{count}}/{{max}}张图片"
+    "imageCount": "{{count}}/{{max}}张图片",
+    "cannotDeleteOnlyCover": "无法删除唯一的图片。图库必须始终有一张封面照片。",
+    "deleteCoverPhoto": "删除封面照片？",
+    "deleteCoverPhotoConfirm": "这是当前的封面照片。如果删除，另一张照片将自动成为新封面。此操作无法撤消。",
+    "setAsProfile": "设为头像照片"
   },
   "eventNav": {
     "eventDetails": "活动详情",
@@ -1246,7 +1250,14 @@
     "capacity": "容量",
     "deleteVenue": "删除场馆",
     "deleteVenueConfirm": "确定要删除此场馆吗？",
-    "socialMediaDescription": "添加您场馆的网站和社交媒体链接，让粉丝可以找到并关注您。"
+    "socialMediaDescription": "添加您场馆的网站和社交媒体链接，让粉丝可以找到并关注您。",
+    "dangerZone": "危险操作区",
+    "dangerZoneDescription": "影响此场馆的不可逆操作。",
+    "requestDeletionInfo": "提交删除请求后，管理员将收到通知并审核您的请求。在请求获批之前，该场馆将继续对用户可见。",
+    "requestVenueDeletion": "申请删除场馆",
+    "requestVenueDeletionTitle": "申请删除场馆",
+    "requestVenueDeletionConfirm": "此操作将向管理员发送删除请求。管理员将审核请求并决定是否批准。在请求获批之前，该场馆将保持可见。",
+    "submitRequest": "提交请求"
   },
   "venueGallery": {
     "selectGallery": "选择相册",
@@ -1295,7 +1306,10 @@
     "mediaDeleted": "媒体已删除",
     "deleteMediaFailed": "删除媒体失败",
     "coverSet": "封面图片已设置",
-    "setCoverFailed": "设置封面图片失败"
+    "setCoverFailed": "设置封面图片失败",
+    "cannotDeleteOnlyCover": "无法删除唯一的图片。相册必须始终有一张封面照片。",
+    "deleteCoverTitle": "删除封面照片？",
+    "deleteCoverDescription": "这是当前的封面照片。如果删除，另一张照片将自动成为新封面。此操作无法撤销。"
   },
   "venue": {
     "location": "位置",

@@ -59,6 +59,7 @@ export interface Venue {
   zip_code?: string | null;
   capacity?: number | null;
   website?: string | null;
+  /** @deprecated Use gallery system instead - venues have galleries via media_galleries.venue_id */
   image_url?: string | null;
   logo_url?: string | null;
   // Social media fields
@@ -75,13 +76,16 @@ export interface Artist {
   id: string;
   name: string;
   bio?: string | null;
+  /** @deprecated Use gallery_id and fetch cover image from gallery instead */
   image_url?: string | null;
+  gallery_id?: string | null; // FK to media_galleries - use this for the artist's featured image
   spotify_id?: string | null;
   spotify_data?: any;
   website_url?: string | null;
   website?: string | null;    // Database column name
   genre?: string | null;      // Artist genre
-  image?: string | null;      // Alias for image_url
+  /** @deprecated Use gallery_id instead */
+  image?: string | null;      // Legacy alias for image_url
   // Social media fields
   instagram_handle?: string | null;
   tiktok_handle?: string | null;

@@ -153,7 +153,7 @@ export function IndexDesktop({
                     <div key={`placeholder-${idx}`} className='w-full max-w-[28vw] min-w-[240px]' />
                   ))}
                 </>
-              ) : (
+              ) : totalPastEventsCount === 0 ? (
                 <div className='col-span-3 flex flex-col items-center w-full my-[40px]'>
                   <FmArtistUndercardCard className='mb-[40px]' />
                   <FmCommonEmptyState
@@ -163,17 +163,12 @@ export function IndexDesktop({
                     iconClassName='text-fm-gold'
                   />
                 </div>
-              )}
+              ) : null}
             </div>
 
-            {/* Divider between empty state and past events button */}
-            {!loading && upcomingEvents.length === 0 && totalPastEventsCount > 0 && (
-              <DecorativeDivider marginTop='mt-[40px]' marginBottom='mb-[20px]' opacity={0.2} />
-            )}
-
-            {/* Display Past Events Button */}
-            {!loading && totalPastEventsCount > 0 && (
-              <div className={`flex justify-center ${upcomingEvents.length === 0 ? 'mt-[20px]' : 'mt-[40px]'}`}>
+            {/* Display Past Events Button - only show when there are upcoming events */}
+            {!loading && upcomingEvents.length > 0 && totalPastEventsCount > 0 && (
+              <div className='flex justify-center mt-[40px]'>
                 <FmCommonButton
                   onClick={() => setShowPastEvents(!showPastEvents)}
                   variant='secondary'
@@ -185,7 +180,7 @@ export function IndexDesktop({
               </div>
             )}
 
-            {/* Past Events Section */}
+            {/* Past Events Section - auto-shown when no upcoming events, toggleable otherwise */}
             {!loading && showPastEvents && totalPastEventsCount > 0 && (
               <div className='mt-[60px]'>
                 <div className='flex items-center justify-between mb-[40px]'>
@@ -308,7 +303,7 @@ export function IndexDesktop({
                 <EventCard key={event.id} event={event} isSingleRow={false} />
               )
             )
-          ) : (
+          ) : totalPastEventsCount === 0 ? (
             <div className='col-span-full flex flex-col items-center w-full my-[40px]'>
               <FmArtistUndercardCard className='mb-[40px]' />
               <FmCommonEmptyState
@@ -318,17 +313,12 @@ export function IndexDesktop({
                 iconClassName='text-fm-gold'
               />
             </div>
-          )}
+          ) : null}
         </div>
 
-        {/* Divider between empty state and past events button */}
-        {!loading && upcomingEvents.length === 0 && totalPastEventsCount > 0 && (
-          <DecorativeDivider marginTop='mt-[40px]' marginBottom='mb-[20px]' opacity={0.2} />
-        )}
-
-        {/* Display Past Events Button */}
-        {!loading && totalPastEventsCount > 0 && (
-          <div className={`flex justify-center ${upcomingEvents.length === 0 ? 'mt-[20px]' : 'mt-[40px]'}`}>
+        {/* Display Past Events Button - only show when there are upcoming events */}
+        {!loading && upcomingEvents.length > 0 && totalPastEventsCount > 0 && (
+          <div className='flex justify-center mt-[40px]'>
             <FmCommonButton
               onClick={() => setShowPastEvents(!showPastEvents)}
               variant='secondary'
@@ -340,7 +330,7 @@ export function IndexDesktop({
           </div>
         )}
 
-        {/* Past Events Section */}
+        {/* Past Events Section - auto-shown when no upcoming events, toggleable otherwise */}
         {!loading && showPastEvents && totalPastEventsCount > 0 && (
           <div className='mt-[60px]'>
             <div className='flex items-center justify-between mb-[40px]'>

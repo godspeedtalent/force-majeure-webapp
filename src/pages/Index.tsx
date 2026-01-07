@@ -213,8 +213,16 @@ const Index = () => {
         };
 
         // Type assertion needed because Supabase's auto-generated types don't match our query shape
-        setUpcomingEvents((upcomingData as unknown as EventRow[]).map(transformEvent));
-        setPastEvents((pastData as unknown as EventRow[]).map(transformEvent));
+        const transformedUpcoming = (upcomingData as unknown as EventRow[]).map(transformEvent);
+        const transformedPast = (pastData as unknown as EventRow[]).map(transformEvent);
+
+        setUpcomingEvents(transformedUpcoming);
+        setPastEvents(transformedPast);
+
+        // Auto-show past events if there are no upcoming events but past events exist
+        if (transformedUpcoming.length === 0 && transformedPast.length > 0) {
+          setShowPastEvents(true);
+        }
       } catch (error) {
         await handleFetchError('in initialization', error);
       } finally {

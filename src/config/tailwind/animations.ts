@@ -185,6 +185,34 @@ const snapAnimations = {
   },
 };
 
+// Spring animations for mobile swipe experience
+const springAnimations = {
+  // Spring scale for logo entrance
+  'spring-scale-in': {
+    '0%': { opacity: '0', transform: 'scale(0.8)' },
+    '60%': { opacity: '1', transform: 'scale(1.05)' },
+    '100%': { opacity: '1', transform: 'scale(1)' },
+  },
+  // Spring slide up for text
+  'spring-slide-up': {
+    '0%': { opacity: '0', transform: 'translateY(20px)' },
+    '60%': { opacity: '1', transform: 'translateY(-3px)' },
+    '100%': { opacity: '1', transform: 'translateY(0)' },
+  },
+  // Spring expand for divider
+  'spring-expand': {
+    '0%': { opacity: '0', transform: 'scaleX(0)' },
+    '60%': { opacity: '1', transform: 'scaleX(1.05)' },
+    '100%': { opacity: '1', transform: 'scaleX(1)' },
+  },
+  // Card entrance with spring
+  'spring-card-in': {
+    '0%': { opacity: '0', transform: 'translateY(30px) scale(0.95)' },
+    '60%': { opacity: '1', transform: 'translateY(-5px) scale(1.01)' },
+    '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+  },
+};
+
 export const keyframes = {
   ...layoutAnimations,
   ...entryAnimations,
@@ -193,6 +221,7 @@ export const keyframes = {
   ...orbAnimations,
   ...collapsibleAnimations,
   ...snapAnimations,
+  ...springAnimations,
 };
 
 // Animation configurations with consistent timing
@@ -260,4 +289,10 @@ export const animations = {
   'section-pulse': createAnimation('section-pulse', '1.5s', 'ease-in-out', 'infinite'),
   'indicator-pulse': createAnimation('indicator-pulse', '0.3s', 'ease-out'),
   'scroll-cue-bounce': createAnimation('scroll-cue-bounce', '2s', 'ease-in-out', 'infinite'),
+
+  // Spring animations (using cubic-bezier for spring-like overshoot)
+  'spring-scale-in': 'spring-scale-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+  'spring-slide-up': 'spring-slide-up 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+  'spring-expand': 'spring-expand 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+  'spring-card-in': 'spring-card-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
 };

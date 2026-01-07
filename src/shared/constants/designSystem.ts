@@ -301,15 +301,35 @@ export const LABEL_STYLES = {
   // Size and casing
   SIZE: 'text-xs',
   CASE: 'uppercase',
+  TRACKING: 'tracking-wider',
 
   // Colors
   COLOR_DEFAULT: 'text-muted-foreground',
   COLOR_FOCUSED: 'text-fm-gold',
 
   // Complete Classes
-  DEFAULT_CLASSES: 'text-xs uppercase text-muted-foreground',
-  FOCUSED_CLASSES: 'text-xs uppercase text-fm-gold',
+  DEFAULT_CLASSES: 'text-xs uppercase tracking-wider text-muted-foreground',
+  FOCUSED_CLASSES: 'text-xs uppercase tracking-wider text-fm-gold',
   TRANSITION: 'transition-colors duration-200',
+} as const;
+
+/**
+ * Form Section Styling
+ *
+ * Styling for form section headers with gold-white gradient.
+ */
+export const FORM_SECTION_STYLES = {
+  // Header gradient (gold → white)
+  HEADER_GRADIENT: 'bg-gradient-to-r from-fm-gold to-white bg-clip-text text-transparent',
+  HEADER_CLASSES: 'font-canela text-xl tracking-wide bg-gradient-to-r from-fm-gold to-white bg-clip-text text-transparent',
+
+  // Description
+  DESCRIPTION_CLASSES: 'text-sm text-muted-foreground mt-1',
+
+  // Feathered gold divider
+  DIVIDER_FEATHERED: 'h-px bg-gradient-to-r from-transparent via-fm-gold/50 to-transparent',
+  DIVIDER_SUBTLE: 'h-px bg-gradient-to-r from-transparent via-fm-gold/30 to-transparent',
+  DIVIDER_STRONG: 'h-px bg-gradient-to-r from-transparent via-fm-gold/70 to-transparent',
 } as const;
 
 /**

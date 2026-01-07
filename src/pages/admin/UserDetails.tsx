@@ -4,7 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/shared';
 import { ArrowLeft, User, Mail, Calendar, Shield, Building2 } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
-import { FmCommonCard, FmCommonCardContent, FmCommonCardHeader, FmCommonCardTitle } from '@/components/common/display/FmCommonCard';
+import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
+import { FmFormSectionHeader } from '@/components/common/forms/FmFormSectionHeader';
 import { Badge } from '@/components/common/shadcn/badge';
 import { Separator } from '@/components/common/shadcn/separator';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
@@ -128,11 +129,12 @@ export default function UserDetails() {
         {/* Left Column - Main Info */}
         <div className='md:col-span-2 space-y-6'>
           {/* Basic Information */}
-          <FmCommonCard>
-            <FmCommonCardHeader>
-              <FmCommonCardTitle>{t('sections.basicInformation')}</FmCommonCardTitle>
-            </FmCommonCardHeader>
-            <FmCommonCardContent className='space-y-4'>
+          <FmCommonCard className='p-6'>
+            <FmFormSectionHeader
+              title={t('sections.basicInformation')}
+              icon={User}
+            />
+            <FmCommonCardContent className='space-y-4 pt-6 px-0 pb-0'>
               {user.avatar_url && (
                 <div>
                   <img
@@ -144,42 +146,40 @@ export default function UserDetails() {
               )}
 
               <div>
-                <label className='text-sm text-muted-foreground'>{t('labels.username')}</label>
                 <p className='text-lg font-medium'>{user.display_name}</p>
+                <label className='text-xs uppercase tracking-wider text-muted-foreground'>{t('labels.username')}</label>
               </div>
 
               {user.full_name && (
                 <div>
-                  <label className='text-sm text-muted-foreground'>{t('labels.fullName')}</label>
                   <p>{user.full_name}</p>
+                  <label className='text-xs uppercase tracking-wider text-muted-foreground'>{t('labels.fullName')}</label>
                 </div>
               )}
 
               <div>
-                <label className='text-sm text-muted-foreground flex items-center gap-2'>
-                  <Mail className='h-4 w-4' />
+                <p className='font-mono'>{user.email}</p>
+                <label className='text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-2'>
+                  <Mail className='h-3 w-3' />
                   {t('labels.email')}
                 </label>
-                <p className='font-mono'>{user.email}</p>
               </div>
 
               <div>
-                <label className='text-sm text-muted-foreground'>{t('labels.showOnLeaderboard')}</label>
                 <p>{user.show_on_leaderboard ? t('labels.yes') : t('labels.no')}</p>
+                <label className='text-xs uppercase tracking-wider text-muted-foreground'>{t('labels.showOnLeaderboard')}</label>
               </div>
             </FmCommonCardContent>
           </FmCommonCard>
 
           {/* Organization */}
           {user.organization && (
-            <FmCommonCard>
-              <FmCommonCardHeader>
-                <FmCommonCardTitle className='flex items-center gap-2'>
-                  <Building2 className='h-5 w-5' />
-                  {t('sections.organization')}
-                </FmCommonCardTitle>
-              </FmCommonCardHeader>
-              <FmCommonCardContent>
+            <FmCommonCard className='p-6'>
+              <FmFormSectionHeader
+                title={t('sections.organization')}
+                icon={Building2}
+              />
+              <FmCommonCardContent className='pt-6 px-0 pb-0'>
                 <p className='font-medium mb-3'>{user.organization.name}</p>
                 <Button
                   variant='outline'
@@ -195,14 +195,12 @@ export default function UserDetails() {
 
           {/* Roles & Permissions */}
           {user.roles && user.roles.length > 0 && (
-            <FmCommonCard>
-              <FmCommonCardHeader>
-                <FmCommonCardTitle className='flex items-center gap-2'>
-                  <Shield className='h-5 w-5' />
-                  {t('sections.rolesAndPermissions')}
-                </FmCommonCardTitle>
-              </FmCommonCardHeader>
-              <FmCommonCardContent className='space-y-4'>
+            <FmCommonCard className='p-6'>
+              <FmFormSectionHeader
+                title={t('sections.rolesAndPermissions')}
+                icon={Shield}
+              />
+              <FmCommonCardContent className='space-y-4 pt-6 px-0 pb-0'>
                 {user.roles.map(role => (
                   <div key={role.role_name} className='space-y-2'>
                     <Badge variant='secondary' className='bg-fm-gold/20 text-fm-gold'>
@@ -232,33 +230,35 @@ export default function UserDetails() {
 
         {/* Right Column - Metadata */}
         <div className='space-y-6'>
-          <FmCommonCard>
-            <FmCommonCardHeader>
-              <FmCommonCardTitle>{t('sections.metadata')}</FmCommonCardTitle>
-            </FmCommonCardHeader>
-            <FmCommonCardContent className='space-y-3'>
+          <FmCommonCard className='p-6'>
+            <FmFormSectionHeader
+              title={t('sections.metadata')}
+              icon={Calendar}
+            />
+            <FmCommonCardContent className='space-y-3 pt-6 px-0 pb-0'>
               <div>
-                <label className='text-sm text-muted-foreground'>{t('labels.userId')}</label>
                 <p className='font-mono text-sm'>{user.id}</p>
+                <label className='text-xs uppercase tracking-wider text-muted-foreground'>{t('labels.userId')}</label>
               </div>
 
               <div>
-                <label className='text-sm text-muted-foreground flex items-center gap-2'>
-                  <Calendar className='h-4 w-4' />
-                  {t('labels.created')}
-                </label>
                 <p className='text-sm'>
                   {format(new Date(user.created_at), 'PPP')}
                 </p>
+                <label className='text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-2'>
+                  <Calendar className='h-3 w-3' />
+                  {t('labels.created')}
+                </label>
               </div>
             </FmCommonCardContent>
           </FmCommonCard>
 
-          <FmCommonCard>
-            <FmCommonCardHeader>
-              <FmCommonCardTitle>{t('sections.actions')}</FmCommonCardTitle>
-            </FmCommonCardHeader>
-            <FmCommonCardContent className='space-y-2'>
+          <FmCommonCard className='p-6'>
+            <FmFormSectionHeader
+              title={t('sections.actions')}
+              showDivider={false}
+            />
+            <FmCommonCardContent className='space-y-2 pt-4 px-0 pb-0'>
               <Button
                 variant='outline'
                 className='w-full border-white/20 hover:bg-white/10'

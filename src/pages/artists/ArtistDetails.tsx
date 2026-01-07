@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Calendar, ArrowLeft, Pencil, History, Clock } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonSlidingIconButton } from '@/components/common/buttons/FmCommonSlidingIconButton';
 import { FmArtistSpotlight } from '@/components/artist/FmArtistSpotlight';
 import { FmInstagramStoryButton } from '@/components/common/sharing';
 import { useArtistById, useArtistAllEvents, type ArtistEventData } from '@/shared/api/queries/artistQueries';
@@ -79,14 +80,13 @@ export default function ArtistDetails() {
                   />
 
                   {canEdit && (
-                    <FmCommonButton
+                    <FmCommonSlidingIconButton
                       variant='default'
                       size='sm'
                       icon={Pencil}
+                      label={t('artistDetails.edit')}
                       onClick={() => navigate(`/artists/${id}/manage`)}
-                    >
-                      {t('artistDetails.edit')}
-                    </FmCommonButton>
+                    />
                   )}
                 </div>
               </div>

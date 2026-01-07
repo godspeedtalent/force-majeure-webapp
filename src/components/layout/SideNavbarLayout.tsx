@@ -105,12 +105,12 @@ export const SideNavbarLayout = <T extends string>({
             <div
               className={cn(
                 'max-w-full relative z-10',
-                isMobile ? 'h-full overflow-y-auto px-4 py-4' : 'm-10',
+                isMobile ? 'h-full overflow-y-auto px-[15vw] py-4' : 'm-10',
                 isMobile && mobileTabBar && 'pb-[120px]' // Extra padding for mobile tab bar (~70px + safe area + spacing)
               )}
             >
               {(showBackButton || backButtonActions) && (
-                <div className='absolute top-[20px] left-[20px] right-[20px] z-20 flex items-center justify-between'>
+                <div className='mb-[20px] flex items-center justify-between'>
                   {showBackButton ? (
                     <FmBackButton
                       position='inline'

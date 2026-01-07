@@ -137,20 +137,20 @@ const Profile = () => {
     );
   }
 
-  // Format the account creation date
+  // Format the account creation date with 3-letter month abbreviation
   const createdAt = user.created_at
     ? new Date(user.created_at).toLocaleDateString('en-US', {
         year: 'numeric',
-        month: 'long',
+        month: 'short',
         day: 'numeric',
       })
     : 'Unknown';
 
-  // Format linked artist date if available
+  // Format linked artist date if available with 3-letter month abbreviation
   const linkedArtistDate = linkedArtist?.created_at
     ? new Date(linkedArtist.created_at).toLocaleDateString('en-US', {
         year: 'numeric',
-        month: 'long',
+        month: 'short',
         day: 'numeric',
       })
     : null;

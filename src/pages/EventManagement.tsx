@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -9,7 +9,6 @@ import {
   DollarSign,
   ShoppingBag,
   Calendar,
-  Save,
   BarChart3,
   Shield,
   Trash2,
@@ -40,7 +39,6 @@ import { EventQueueConfigForm } from '@/components/events/queue';
 import { EventGalleryTab } from '@/components/events/gallery';
 
 import { toast } from 'sonner';
-import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { Checkbox } from '@/components/common/shadcn/checkbox';
 import { Label } from '@/components/common/shadcn/label';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
@@ -49,6 +47,8 @@ import { handleError } from '@/shared/services/errorHandler';
 import { AdminLockIndicator } from '@/components/common/indicators';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { PageErrorBoundary } from '@/components/common/feedback';
+import { FmStickyFormFooter } from '@/components/common/forms/FmStickyFormFooter';
+import { FmFormSection } from '@/components/common/forms/FmFormSection';
 
 type EventTab = 'overview' | 'gallery' | 'artists' | 'tiers' | 'orders' | 'sales' | 'reports' | 'tracking' | 'social' | 'ux_display' | 'admin' | 'view';
 
@@ -66,6 +66,17 @@ export default function EventManagement() {
   const [displaySubtitle, setDisplaySubtitle] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  // Overview form state for sticky footer
+  const [overviewFormState, setOverviewFormState] = useState<{
+    isDirty: boolean;
+    isSaving: boolean;
+    onSave: () => void;
+  }>({ isDirty: false, isSaving: false, onSave: () => {} });
+
+  const handleOverviewFormStateChange = useCallback((state: { isDirty: boolean; isSaving: boolean; onSave: () => void }) => {
+    setOverviewFormState(state);
+  }, []);
 
   // Fetch event data
   const { data: event, isLoading } = useQuery({
@@ -424,6 +435,7 @@ export default function EventManagement() {
                 event={event}
                 orderCount={orderCount}
                 onMakeInvisible={handleMakeInvisible}
+                onFormStateChange={handleOverviewFormStateChange}
               />
             </PageErrorBoundary>
           )}
@@ -582,56 +594,36 @@ export default function EventManagement() {
 
           {activeTab === 'ux_display' && (
             <PageErrorBoundary section='UX Display'>
-              <FmCommonCard className='p-8 relative'>
-                {/* Sticky Save Button */}
-                <div className='sticky top-0 z-10 -mx-8 -mt-8 px-8 pt-8 pb-6 bg-card border-b border-border mb-6'>
-                  <div className='flex items-center justify-between'>
-                    <div>
-                      <h2 className='text-2xl font-bold text-foreground mb-2'>
-                        {t('eventManagement.uxDisplaySettings')}
-                      </h2>
-                      <p className='text-muted-foreground'>
-                        {t('eventManagement.uxDisplayDescription')}
+              <FmFormSection
+                title={t('eventManagement.uxDisplaySettings')}
+                description={t('eventManagement.uxDisplayDescription')}
+                icon={Palette}
+              >
+                <div className='space-y-4'>
+                  <h3 className='text-sm font-semibold text-foreground'>
+                    {t('eventManagement.homepageEventCard')}
+                  </h3>
+                  <p className='text-xs text-muted-foreground'>
+                    {t('eventManagement.homepageEventCardDescription')}
+                  </p>
+
+                  <div className='flex items-center gap-3 p-4 rounded-none border border-border bg-card'>
+                    <Checkbox
+                      id='display-subtitle'
+                      checked={displaySubtitle}
+                      onCheckedChange={checked => setDisplaySubtitle(!!checked)}
+                    />
+                    <div className='flex-1'>
+                      <Label htmlFor='display-subtitle' className='cursor-pointer font-medium'>
+                        {t('eventManagement.displaySubtitle')}
+                      </Label>
+                      <p className='text-xs text-muted-foreground mt-1'>
+                        {t('eventManagement.displaySubtitleDescription')}
                       </p>
                     </div>
-                    <FmCommonButton
-                      onClick={handleSaveUXDisplay}
-                      loading={isSaving}
-                      icon={Save}
-                    >
-                      {t('buttons.saveChanges')}
-                    </FmCommonButton>
                   </div>
                 </div>
-
-                  <div className='space-y-6'>
-                    {/* Homepage Event Card Section */}
-                    <div className='space-y-4'>
-                      <h3 className='text-lg font-semibold text-foreground'>
-                        {t('eventManagement.homepageEventCard')}
-                      </h3>
-                      <p className='text-sm text-muted-foreground'>
-                        {t('eventManagement.homepageEventCardDescription')}
-                      </p>
-
-                      <div className='flex items-center gap-3 p-4 rounded-none border border-border bg-card'>
-                        <Checkbox
-                          id='display-subtitle'
-                          checked={displaySubtitle}
-                          onCheckedChange={checked => setDisplaySubtitle(!!checked)}
-                        />
-                        <div className='flex-1'>
-                          <Label htmlFor='display-subtitle' className='cursor-pointer font-medium'>
-                            {t('eventManagement.displaySubtitle')}
-                          </Label>
-                          <p className='text-xs text-muted-foreground mt-1'>
-                            {t('eventManagement.displaySubtitleDescription')}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-              </FmCommonCard>
+              </FmFormSection>
             </PageErrorBoundary>
           )}
 
@@ -641,45 +633,27 @@ export default function EventManagement() {
                 {/* Queue Configuration */}
                 {id && <EventQueueConfigForm eventId={id} />}
 
-                {/* Delete Event Card */}
-                <FmCommonCard className='p-8'>
-                  <div className='space-y-6'>
-                    <div>
-                      <h2 className='text-2xl font-bold text-foreground mb-2'>
-                        {t('eventManagement.dangerZone')}
-                      </h2>
-                      <p className='text-muted-foreground'>
-                        {t('eventManagement.irreversibleActions')}
-                      </p>
-                    </div>
-
-                    <div className='space-y-4'>
-                      <div className='rounded-none border border-destructive/50 bg-destructive/5 p-6'>
-                        <div className='flex items-start gap-4'>
-                          <div className='p-3 rounded-none bg-destructive/10'>
-                            <Trash2 className='h-6 w-6 text-destructive' />
-                          </div>
-                          <div className='flex-1'>
-                            <h3 className='text-lg font-semibold text-foreground mb-2'>
-                              {t('eventManagement.deleteEvent')}
-                            </h3>
-                            <p className='text-sm text-muted-foreground mb-4'>
-                              {t('eventManagement.deleteEventDescription')}
-                            </p>
-                            <FmCommonButton
-                              variant='destructive'
-                              icon={Trash2}
-                              onClick={() => setShowDeleteConfirm(true)}
-                              loading={isDeleting}
-                            >
-                              {isDeleting ? t('buttons.deleting') : t('eventManagement.deleteEvent')}
-                            </FmCommonButton>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                {/* Delete Event - Danger Zone */}
+                <FmFormSection
+                  title={t('eventManagement.dangerZone')}
+                  description={t('eventManagement.irreversibleActions')}
+                  icon={Trash2}
+                  className='border-fm-danger/30'
+                >
+                  <div className='p-4 bg-fm-danger/10 border border-fm-danger/20'>
+                    <p className='text-sm text-muted-foreground mb-4'>
+                      {t('eventManagement.deleteEventDescription')}
+                    </p>
+                    <FmCommonButton
+                      variant='destructive-outline'
+                      icon={Trash2}
+                      onClick={() => setShowDeleteConfirm(true)}
+                      loading={isDeleting}
+                    >
+                      {isDeleting ? t('buttons.deleting') : t('eventManagement.deleteEvent')}
+                    </FmCommonButton>
                   </div>
-                </FmCommonCard>
+                </FmFormSection>
               </div>
             </PageErrorBoundary>
           )}
@@ -697,6 +671,15 @@ export default function EventManagement() {
         variant="destructive"
         isLoading={isDeleting}
       />
+
+      {/* Sticky Save Footer - shows on overview and ux_display tabs */}
+      {(activeTab === 'overview' || activeTab === 'ux_display') && (
+        <FmStickyFormFooter
+          isDirty={activeTab === 'overview' ? overviewFormState.isDirty : false}
+          isSaving={activeTab === 'overview' ? overviewFormState.isSaving : isSaving}
+          onSave={activeTab === 'overview' ? overviewFormState.onSave : handleSaveUXDisplay}
+        />
+      )}
     </SideNavbarLayout>
   );
 }

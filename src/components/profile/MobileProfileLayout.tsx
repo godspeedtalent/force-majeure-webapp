@@ -7,6 +7,7 @@ import {
   Clock,
   Mic2,
   Award,
+  Ticket,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -27,6 +28,7 @@ import { FmI18nCommon } from '@/components/common/i18n';
 import { ProfileLayoutProps } from './types';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { useAuth } from '@/features/auth/services/AuthContext';
+import { getImageUrl } from '@/shared/utils/imageUtils';
 
 export const MobileProfileLayout = ({
   user,
@@ -43,22 +45,43 @@ export const MobileProfileLayout = ({
   const { t } = useTranslation('common');
   const { isAdmin } = useUserPermissions();
   const { user: currentUser } = useAuth();
-  
+
   // Edit profile only available to the profile owner or admins
   const canEditProfile = isAdmin() || currentUser?.id === user.id;
 
   return (
     <div className='h-[calc(100vh-64px)] flex flex-col overflow-hidden'>
-      {/* Fixed Header Section */}
-      <div className='flex-shrink-0 px-6 pt-4 pb-2 space-y-4'>
-        {/* Header Row - Back Button + Edit Profile */}
-        <div className='flex items-center justify-between'>
+      {/* Hero Section with Profile Photo */}
+      <div className='relative flex-shrink-0'>
+        {/* Hero Image */}
+        <div className='w-full h-[280px] relative overflow-hidden'>
+          {profile?.avatar_url ? (
+            <img
+              src={getImageUrl(profile.avatar_url)}
+              alt={profile?.display_name || t('profile.defaultName')}
+              className='w-full h-full object-cover'
+            />
+          ) : (
+            <FmCommonUserPhoto
+              src={null}
+              name={profile?.display_name || user.email}
+              size='square'
+              useAnimatedGradient={true}
+              className='w-full h-full'
+            />
+          )}
+          {/* Gradient overlay for better text visibility */}
+          <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent' />
+        </div>
+
+        {/* Navigation Controls - Fixed over hero */}
+        <div className='absolute top-4 left-4 right-4 flex items-center justify-between z-10'>
           <FmCommonButton
             variant='secondary'
             size='sm'
             onClick={() => navigate('/')}
             icon={ArrowLeft}
-            className='text-muted-foreground hover:text-foreground'
+            className='bg-black/60 backdrop-blur-sm text-white hover:bg-black/80 border border-white/30'
           >
             {t('profile.back')}
           </FmCommonButton>
@@ -69,30 +92,58 @@ export const MobileProfileLayout = ({
               size='sm'
               onClick={() => navigate('/profile/edit')}
               icon={Settings}
-              className='bg-background/80 backdrop-blur-sm'
+              className='bg-black/60 backdrop-blur-sm text-white hover:bg-black/80 border border-white/30'
             >
               {t('profile.edit')}
             </FmCommonButton>
           )}
         </div>
 
-        {/* Profile Info Row - Avatar + Name */}
-        <div className='flex items-center gap-4'>
-          <FmCommonUserPhoto
-            src={profile?.avatar_url}
-            name={profile?.display_name || user.email}
-            size='square'
-            useAnimatedGradient={!profile?.avatar_url}
-            className='flex-1 w-24 h-24 max-w-24'
-          />
-          <div className='flex-[2] min-w-0'>
-            <h2 className='text-xl font-canela font-medium text-foreground truncate'>
-              {profile?.display_name || t('profile.defaultName')}
-            </h2>
-            <FmI18nCommon i18nKey='profile.memberTitle' as='p' className='text-xs text-muted-foreground' />
+        {/* User Stats Card - Overlapping hero bottom */}
+        <div className='absolute bottom-0 left-0 right-0 translate-y-1/2 px-[20px]'>
+          <div className='ml-[10px] mr-[40px] bg-black/80 backdrop-blur-lg border border-white/20 p-4'>
+            {/* Name and Title */}
+            <div className='mb-3'>
+              <h2 className='text-xl font-canela font-medium text-white truncate'>
+                {profile?.display_name || t('profile.defaultName')}
+              </h2>
+              <FmI18nCommon i18nKey='profile.memberTitle' as='p' className='text-xs text-white/60' />
+            </div>
+
+            {/* Stats Row */}
+            <div className='flex items-center gap-4 text-sm'>
+              {/* Upcoming Shows */}
+              <div className='flex items-center gap-1.5'>
+                <Ticket className='h-4 w-4 text-fm-gold' />
+                <span className='text-white font-medium'>{upcomingShows.length}</span>
+                <span className='text-white/60'>{t('profile.shows')}</span>
+              </div>
+
+              {/* Member Since */}
+              <div className='flex items-center gap-1.5'>
+                <Calendar className='h-4 w-4 text-fm-gold' />
+                <span className='text-white/60 text-xs'>{createdAt}</span>
+              </div>
+            </div>
+
+            {/* Linked Artist Badge */}
+            {hasLinkedArtist && linkedArtistName && (
+              <div className='mt-3 pt-3 border-t border-white/10'>
+                <div className='flex items-center gap-2'>
+                  <Mic2 className='h-4 w-4 text-fm-gold' />
+                  <span className='text-white/80 text-sm'>{linkedArtistName}</span>
+                  <Badge variant='outline' className='text-[10px] px-1.5 py-0 border-fm-gold/50 text-fm-gold'>
+                    {t('profile.artist')}
+                  </Badge>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Spacer for the overlapping card - increased height to prevent stats from covering tabs */}
+      <div className={`flex-shrink-0 ${hasLinkedArtist ? 'h-[90px]' : 'h-[60px]'}`} />
 
       {/* Tabs Container - Fixed tabs, scrollable content */}
       <FmCommonTabs defaultValue='upcoming' className='flex-1 flex flex-col overflow-hidden px-6'>

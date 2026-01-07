@@ -2,16 +2,17 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
-import { FileText, MapPin, Trash2, Eye, Images, Share2 } from 'lucide-react';
+import { FileText, MapPin, Trash2, Eye, Images, Share2, Building, AlertTriangle } from 'lucide-react';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
+import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { UnsavedChangesDialog } from '@/components/common/modals/UnsavedChangesDialog';
 import { FmStickyFormFooter } from '@/components/common/forms/FmStickyFormFooter';
-import { Input } from '@/components/common/shadcn/input';
+import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { Label } from '@/components/common/shadcn/label';
-import { FmCommonCard } from '@/components/common/display/FmCommonCard';
+import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { VenueGallerySection } from '@/components/venue/VenueGallerySection';
 import { VenueSocialTab } from './components/manage';
 import { toast } from 'sonner';
@@ -167,6 +168,14 @@ export default function VenueManagement() {
     },
   ];
 
+  // Mobile bottom tabs - mirrors navigation groups for mobile
+  const mobileTabs: MobileBottomTab[] = [
+    { id: 'view', label: t('venueNav.viewVenue'), icon: Eye },
+    { id: 'overview', label: t('venueNav.overview'), icon: FileText },
+    { id: 'social', label: t('venueNav.social', 'Social'), icon: Share2 },
+    { id: 'gallery', label: t('venueNav.gallery', 'Gallery'), icon: Images },
+  ];
+
   const handleSaveOverview = async () => {
     if (!id) return;
 
@@ -265,171 +274,174 @@ export default function VenueManagement() {
 
   const renderOverviewTab = () => (
     <div className='space-y-6'>
-      <FmCommonCard className='p-6'>
-        <h2 className='text-xl font-semibold mb-6'>{t('venueManagement.basicInformation')}</h2>
-
-        <div className='space-y-4'>
-          {/* Logo and Venue Name row */}
-          <div className='flex gap-4 items-start'>
-            {/* Small square logo upload */}
-            <div className='flex-shrink-0 w-[100px]'>
-              <Label className='mb-2 block'>{t('venueManagement.logo')}</Label>
-              <div className='w-[100px] h-[100px] relative'>
-                {logoUrl ? (
-                  <div className='relative w-full h-full border border-border bg-muted overflow-hidden group'>
-                    <img
-                      src={logoUrl}
-                      alt={t('venueManagement.venueLogo')}
-                      className='w-full h-full object-cover'
-                    />
-                    <button
-                      type='button'
-                      onClick={() => setLogoUrl('')}
-                      className='absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity'
-                    >
-                      <span className='text-xs text-white'>{t('buttons.change')}</span>
-                    </button>
-                    <input
-                      type='file'
-                      accept='image/jpeg,image/jpg,image/png,image/webp,image/gif'
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setIsLogoUploading(true);
-                          try {
-                            const { imageUploadService } = await import('@/shared');
-                            const result = await imageUploadService.uploadImage({
-                              file,
-                              bucket: 'images',
-                              path: `venues/${id}/logo`,
-                            });
-                            setLogoUrl(result.publicUrl);
-                          } catch {
-                            toast.error(t('upload.uploadFailed'));
-                          } finally {
-                            setIsLogoUploading(false);
-                          }
+      <FmFormSection
+        title={t('venueManagement.basicInformation')}
+        description={t('venueManagement.basicInformationDescription', 'Core details about this venue.')}
+        icon={Building}
+      >
+        {/* Logo and Venue Name row */}
+        <div className='flex gap-4 items-start'>
+          {/* Small square logo upload */}
+          <div className='flex-shrink-0 w-[100px]'>
+            <div className='w-[100px] h-[100px] relative'>
+              {logoUrl ? (
+                <div className='relative w-full h-full border border-border bg-muted overflow-hidden group'>
+                  <img
+                    src={logoUrl}
+                    alt={t('venueManagement.venueLogo')}
+                    className='w-full h-full object-cover'
+                  />
+                  <button
+                    type='button'
+                    onClick={() => setLogoUrl('')}
+                    className='absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity'
+                  >
+                    <span className='text-xs text-white'>{t('buttons.change')}</span>
+                  </button>
+                  <input
+                    type='file'
+                    accept='image/jpeg,image/jpg,image/png,image/webp,image/gif'
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setIsLogoUploading(true);
+                        try {
+                          const { imageUploadService } = await import('@/shared');
+                          const result = await imageUploadService.uploadImage({
+                            file,
+                            bucket: 'images',
+                            path: `venues/${id}/logo`,
+                          });
+                          setLogoUrl(result.publicUrl);
+                        } catch {
+                          toast.error(t('upload.uploadFailed'));
+                        } finally {
+                          setIsLogoUploading(false);
                         }
-                      }}
-                      className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
-                    />
-                  </div>
-                ) : (
-                  <label className='flex flex-col items-center justify-center w-full h-full border-2 border-dashed border-border bg-card hover:border-fm-gold/50 hover:bg-muted/50 cursor-pointer transition-colors'>
-                    <Images className='h-6 w-6 text-muted-foreground mb-1' />
-                    <span className='text-[10px] text-muted-foreground text-center'>
-                      {t('upload.browse')}
-                    </span>
-                    <input
-                      type='file'
-                      accept='image/jpeg,image/jpg,image/png,image/webp,image/gif'
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setIsLogoUploading(true);
-                          try {
-                            const { imageUploadService } = await import('@/shared');
-                            const result = await imageUploadService.uploadImage({
-                              file,
-                              bucket: 'images',
-                              path: `venues/${id}/logo`,
-                            });
-                            setLogoUrl(result.publicUrl);
-                          } catch {
-                            toast.error(t('upload.uploadFailed'));
-                          } finally {
-                            setIsLogoUploading(false);
-                          }
+                      }
+                    }}
+                    className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
+                  />
+                </div>
+              ) : (
+                <label className='flex flex-col items-center justify-center w-full h-full border-2 border-dashed border-border bg-card hover:border-fm-gold/50 hover:bg-muted/50 cursor-pointer transition-colors'>
+                  <Images className='h-6 w-6 text-muted-foreground mb-1' />
+                  <span className='text-[10px] text-muted-foreground text-center'>
+                    {t('upload.browse')}
+                  </span>
+                  <input
+                    type='file'
+                    accept='image/jpeg,image/jpg,image/png,image/webp,image/gif'
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setIsLogoUploading(true);
+                        try {
+                          const { imageUploadService } = await import('@/shared');
+                          const result = await imageUploadService.uploadImage({
+                            file,
+                            bucket: 'images',
+                            path: `venues/${id}/logo`,
+                          });
+                          setLogoUrl(result.publicUrl);
+                        } catch {
+                          toast.error(t('upload.uploadFailed'));
+                        } finally {
+                          setIsLogoUploading(false);
                         }
-                      }}
-                      className='hidden'
-                    />
-                  </label>
-                )}
-                {isLogoUploading && (
-                  <div className='absolute inset-0 flex items-center justify-center bg-black/60'>
-                    <div className='h-6 w-6 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
-                  </div>
-                )}
-              </div>
+                      }
+                    }}
+                    className='hidden'
+                  />
+                </label>
+              )}
+              {isLogoUploading && (
+                <div className='absolute inset-0 flex items-center justify-center bg-black/60'>
+                  <div className='h-6 w-6 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
+                </div>
+              )}
             </div>
-
-            {/* Venue Name field */}
-            <div className='flex-1'>
-              <Label>{t('venueManagement.venueName')} *</Label>
-              <Input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder={t('venueManagement.enterVenueName')}
-              />
-              <p className='text-xs text-muted-foreground mt-1'>
-                {t('venueManagement.venueLogoDescription')}
-              </p>
-            </div>
+            <Label className='mt-2 block text-xs uppercase tracking-wider text-muted-foreground text-center'>
+              {t('venueManagement.logo')}
+            </Label>
           </div>
 
-          <div>
-            <Label>{t('venueManagement.description')}</Label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder={t('venueManagement.descriptionPlaceholder')}
-              className='flex min-h-[100px] w-full rounded-none border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
-              rows={4}
-            />
-          </div>
-
-          <div>
-            <Label>{t('venueManagement.address')}</Label>
-            <Input
-              value={addressLine1}
-              onChange={(e) => setAddressLine1(e.target.value)}
-              placeholder={t('venueManagement.streetAddress')}
-            />
-          </div>
-
-          <div className='grid grid-cols-2 gap-4'>
-            <div>
-              <Label>{t('venueManagement.city')}</Label>
-              <Input
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                placeholder={t('venueManagement.city')}
-              />
-            </div>
-            <div>
-              <Label>{t('venueManagement.state')}</Label>
-              <Input
-                value={state}
-                onChange={(e) => setState(e.target.value)}
-                placeholder={t('venueManagement.state')}
-              />
-            </div>
-          </div>
-
-          <div>
-            <Label>{t('venueManagement.capacity')}</Label>
-            <Input
-              type='number'
-              value={capacity}
-              onChange={(e) => setCapacity(Number(e.target.value))}
-              placeholder={t('venueManagement.capacity')}
+          {/* Venue Name field */}
+          <div className='flex-1'>
+            <FmCommonTextField
+              label={t('venueManagement.venueName')}
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={t('venueManagement.enterVenueName')}
+              description={t('venueManagement.venueLogoDescription')}
             />
           </div>
         </div>
-      </FmCommonCard>
 
-      {/* Delete button stays inline */}
-      <div className='flex justify-start'>
-        <FmCommonButton
-          variant='destructive'
-          icon={Trash2}
-          onClick={handleDeleteClick}
-          disabled={isDeleting}
-        >
-          {isDeleting ? t('buttons.deleting') : t('venueManagement.deleteVenue')}
-        </FmCommonButton>
-      </div>
+        <FmCommonTextField
+          label={t('venueManagement.description')}
+          multiline
+          autoSize
+          minRows={3}
+          maxRows={10}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder={t('venueManagement.descriptionPlaceholder')}
+        />
+
+        <FmCommonTextField
+          label={t('venueManagement.address')}
+          value={addressLine1}
+          onChange={(e) => setAddressLine1(e.target.value)}
+          placeholder={t('venueManagement.streetAddress')}
+        />
+
+        <div className='grid grid-cols-2 gap-4'>
+          <FmCommonTextField
+            label={t('venueManagement.city')}
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder={t('venueManagement.city')}
+          />
+          <FmCommonTextField
+            label={t('venueManagement.state')}
+            value={state}
+            onChange={(e) => setState(e.target.value)}
+            placeholder={t('venueManagement.state')}
+          />
+        </div>
+
+        <FmCommonTextField
+          label={t('venueManagement.capacity')}
+          type='number'
+          value={capacity.toString()}
+          onChange={(e) => setCapacity(Number(e.target.value))}
+          placeholder={t('venueManagement.capacity')}
+        />
+      </FmFormSection>
+
+      {/* Danger Zone - Request Venue Deletion */}
+      <FmFormSection
+        title={t('venueManagement.dangerZone', 'Danger Zone')}
+        description={t('venueManagement.dangerZoneDescription', 'Irreversible actions that affect this venue.')}
+        icon={AlertTriangle}
+        className='border-fm-danger/30'
+      >
+        <div className='space-y-3'>
+          <p className='text-sm text-muted-foreground'>
+            {t('venueManagement.requestDeletionInfo', 'Requesting deletion will notify administrators who can review and approve the request. The venue will remain active until an administrator processes the request.')}
+          </p>
+          <FmCommonButton
+            variant='destructive-outline'
+            icon={Trash2}
+            onClick={handleDeleteClick}
+            disabled={isDeleting}
+          >
+            {isDeleting ? t('buttons.processing') : t('venueManagement.requestVenueDeletion', 'Request Venue Deletion')}
+          </FmCommonButton>
+        </div>
+      </FmFormSection>
     </div>
   );
 
@@ -438,16 +450,16 @@ export default function VenueManagement() {
 
     return (
       <div className='space-y-6'>
-        <FmCommonCard className='p-6'>
-          <h2 className='text-xl font-semibold mb-6'>{t('venueManagement.gallery', 'Venue Gallery')}</h2>
-          <p className='text-sm text-muted-foreground mb-6'>
-            {t('venueManagement.galleryDescription', 'Manage photos and media for this venue. The cover image of the default gallery will be used as the venue hero image.')}
-          </p>
+        <FmFormSection
+          title={t('venueManagement.gallery', 'Venue Gallery')}
+          description={t('venueManagement.galleryDescription', 'Manage photos and media for this venue. The cover image of the default gallery will be used as the venue hero image.')}
+          icon={Images}
+        >
           <VenueGallerySection
             venueId={id}
             venueName={venue.name || 'Venue'}
           />
-        </FmCommonCard>
+        </FmFormSection>
       </div>
     );
   };
@@ -464,13 +476,26 @@ export default function VenueManagement() {
     <SideNavbarLayout
       navigationGroups={navigationGroups}
       activeItem={activeTab}
-      onItemChange={(id: VenueTab) => {
-        if (id === 'view') {
+      onItemChange={(tab: VenueTab) => {
+        if (tab === 'view') {
           navigate(`/venues/${venue?.id}`);
         } else {
-          setActiveTab(id);
+          setActiveTab(tab);
         }
       }}
+      mobileTabBar={
+        <MobileBottomTabBar
+          tabs={mobileTabs}
+          activeTab={activeTab}
+          onTabChange={(tab) => {
+            if (tab === 'view') {
+              navigate(`/venues/${venue?.id}`);
+            } else {
+              setActiveTab(tab as VenueTab);
+            }
+          }}
+        />
+      }
     >
       {activeTab === 'overview' && renderOverviewTab()}
       {activeTab === 'social' && (
@@ -496,9 +521,9 @@ export default function VenueManagement() {
       <FmCommonConfirmDialog
         open={showDeleteConfirm}
         onOpenChange={setShowDeleteConfirm}
-        title={t('venueManagement.deleteVenue')}
-        description={t('venueManagement.deleteVenueConfirm')}
-        confirmText={t('buttons.delete')}
+        title={t('venueManagement.requestVenueDeletionTitle', 'Request Venue Deletion')}
+        description={t('venueManagement.requestVenueDeletionConfirm', 'This will send a deletion request to administrators for review. The venue will remain active until the request is approved. Are you sure you want to proceed?')}
+        confirmText={t('venueManagement.submitRequest', 'Submit Request')}
         onConfirm={handleDelete}
         variant="destructive"
         isLoading={isDeleting}

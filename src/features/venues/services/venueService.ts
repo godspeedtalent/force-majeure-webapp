@@ -20,6 +20,7 @@ export interface CreateVenueData {
   zip_code?: string | null;
   capacity?: number | null;
   website?: string | null;
+  /** @deprecated Use gallery system instead - venues have galleries via media_galleries.venue_id */
   image_url?: string | null;
   logo_url?: string | null;
   // Social media fields

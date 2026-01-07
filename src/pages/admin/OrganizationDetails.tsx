@@ -2,9 +2,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/shared';
-import { ArrowLeft, Building2, Calendar } from 'lucide-react';
+import { ArrowLeft, Building2, Calendar, Settings } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
-import { FmCommonCard, FmCommonCardContent, FmCommonCardHeader, FmCommonCardTitle } from '@/components/common/display/FmCommonCard';
+import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
+import { FmFormSectionHeader } from '@/components/common/forms/FmFormSectionHeader';
 import { FmInstagramStoryButton } from '@/components/common/sharing';
 
 import { Separator } from '@/components/common/shadcn/separator';
@@ -114,11 +115,12 @@ export default function OrganizationDetails() {
         {/* Left Column - Main Info */}
         <div className='md:col-span-2 space-y-6'>
           {/* Basic Information */}
-          <FmCommonCard>
-            <FmCommonCardHeader>
-              <FmCommonCardTitle>{t('organization.basicInfo')}</FmCommonCardTitle>
-            </FmCommonCardHeader>
-            <FmCommonCardContent className='space-y-4'>
+          <FmCommonCard className='p-6'>
+            <FmFormSectionHeader
+              title={t('organization.basicInfo')}
+              icon={Building2}
+            />
+            <FmCommonCardContent className='space-y-4 pt-6 px-0 pb-0'>
               {organization.profile_picture && (
                 <div>
                   <img
@@ -130,8 +132,8 @@ export default function OrganizationDetails() {
               )}
 
               <div>
-                <label className='text-sm text-muted-foreground'>{t('labels.name')}</label>
                 <p className='text-lg font-medium'>{organization.name}</p>
+                <label className='text-xs uppercase tracking-wider text-muted-foreground'>{t('labels.name')}</label>
               </div>
             </FmCommonCardContent>
           </FmCommonCard>
@@ -139,43 +141,46 @@ export default function OrganizationDetails() {
 
         {/* Right Column - Metadata */}
         <div className='space-y-6'>
-          <FmCommonCard>
-            <FmCommonCardHeader>
-              <FmCommonCardTitle>{t('organization.metadata')}</FmCommonCardTitle>
-            </FmCommonCardHeader>
-            <FmCommonCardContent className='space-y-3'>
+          <FmCommonCard className='p-6'>
+            <FmFormSectionHeader
+              title={t('organization.metadata')}
+              icon={Calendar}
+            />
+            <FmCommonCardContent className='space-y-3 pt-6 px-0 pb-0'>
               <div>
-                <label className='text-sm text-muted-foreground'>{t('organization.organizationId')}</label>
                 <p className='font-mono text-sm'>{organization.id}</p>
+                <label className='text-xs uppercase tracking-wider text-muted-foreground'>{t('organization.organizationId')}</label>
               </div>
 
               <div>
-                <label className='text-sm text-muted-foreground flex items-center gap-2'>
-                  <Calendar className='h-4 w-4' />
-                  {t('labels.created')}
-                </label>
                 <p className='text-sm'>
                   {format(new Date(organization.created_at), 'PPP')}
                 </p>
+                <label className='text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-2'>
+                  <Calendar className='h-3 w-3' />
+                  {t('labels.created')}
+                </label>
               </div>
 
               <div>
-                <label className='text-sm text-muted-foreground flex items-center gap-2'>
-                  <Calendar className='h-4 w-4' />
-                  {t('labels.lastUpdated')}
-                </label>
                 <p className='text-sm'>
                   {format(new Date(organization.updated_at), 'PPP')}
                 </p>
+                <label className='text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-2'>
+                  <Calendar className='h-3 w-3' />
+                  {t('labels.lastUpdated')}
+                </label>
               </div>
             </FmCommonCardContent>
           </FmCommonCard>
 
-          <FmCommonCard>
-            <FmCommonCardHeader>
-              <FmCommonCardTitle>{t('labels.actions')}</FmCommonCardTitle>
-            </FmCommonCardHeader>
-            <FmCommonCardContent className='space-y-2'>
+          <FmCommonCard className='p-6'>
+            <FmFormSectionHeader
+              title={t('labels.actions')}
+              icon={Settings}
+              showDivider={false}
+            />
+            <FmCommonCardContent className='space-y-2 pt-4 px-0 pb-0'>
               <Button
                 variant='outline'
                 className='w-full border-white/20 hover:bg-white/10'

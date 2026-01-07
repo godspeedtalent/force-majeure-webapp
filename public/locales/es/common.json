@@ -1106,7 +1106,11 @@
     "onlyUploadingCount": "Solo subiendo {{count}} imágenes debido al límite",
     "uploadMultipleDescription": "Sube hasta 10 imágenes. JPEG, PNG, WebP soportados.",
     "firstImageIsCover": "La primera imagen se establecerá como foto de portada/perfil.",
-    "imageCount": "{{count}} de {{max}} imágenes"
+    "imageCount": "{{count}} de {{max}} imágenes",
+    "cannotDeleteOnlyCover": "No se puede eliminar la única imagen. Una galería siempre debe tener una foto de portada.",
+    "deleteCoverPhoto": "¿Eliminar foto de portada?",
+    "deleteCoverPhotoConfirm": "Esta es la foto de portada actual. Si la eliminas, otra foto se establecerá automáticamente como nueva portada. Esta acción no se puede deshacer.",
+    "setAsProfile": "Establecer como foto de perfil"
   },
   "eventNav": {
     "eventDetails": "Detalles del Evento",
@@ -1246,7 +1250,14 @@
     "capacity": "Capacidad",
     "deleteVenue": "Eliminar Local",
     "deleteVenueConfirm": "¿Estás seguro de que deseas eliminar este local?",
-    "socialMediaDescription": "Agrega el sitio web y enlaces de redes sociales de tu local para que los fans puedan encontrarte y seguirte."
+    "socialMediaDescription": "Agrega el sitio web y enlaces de redes sociales de tu local para que los fans puedan encontrarte y seguirte.",
+    "dangerZone": "Zona de Peligro",
+    "dangerZoneDescription": "Acciones irreversibles que afectan este local.",
+    "requestDeletionInfo": "Solicitar la eliminación notificará a los administradores quienes pueden revisar y aprobar la solicitud. El local permanecerá activo hasta que un administrador procese la solicitud.",
+    "requestVenueDeletion": "Solicitar Eliminación del Local",
+    "requestVenueDeletionTitle": "Solicitar Eliminación del Local",
+    "requestVenueDeletionConfirm": "Esto enviará una solicitud de eliminación a los administradores para su revisión. El local permanecerá activo hasta que se apruebe la solicitud. ¿Estás seguro de que deseas continuar?",
+    "submitRequest": "Enviar Solicitud"
   },
   "venueGallery": {
     "selectGallery": "Selecciona una galería",
@@ -1295,7 +1306,10 @@
     "mediaDeleted": "Media eliminada",
     "deleteMediaFailed": "Error al eliminar media",
     "coverSet": "Imagen de portada establecida",
-    "setCoverFailed": "Error al establecer imagen de portada"
+    "setCoverFailed": "Error al establecer imagen de portada",
+    "cannotDeleteOnlyCover": "No se puede eliminar la única imagen. Una galería siempre debe tener una foto de portada.",
+    "deleteCoverTitle": "¿Eliminar foto de portada?",
+    "deleteCoverDescription": "Esta es la foto de portada actual. Si la eliminas, otra foto se establecerá automáticamente como nueva portada. Esta acción no se puede deshacer."
   },
   "venue": {
     "location": "Ubicación",

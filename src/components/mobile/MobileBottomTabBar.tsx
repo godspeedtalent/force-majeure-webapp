@@ -91,8 +91,8 @@ export const MobileBottomTabBar = ({
                 'rounded-none',
                 'border-b-2',
                 isActive
-                  ? 'bg-fm-gold text-black border-fm-gold'
-                  : 'bg-transparent text-white/70 hover:text-fm-gold border-transparent hover:border-fm-gold/50'
+                  ? 'bg-fm-gold/20 backdrop-blur-sm text-fm-gold border-fm-gold shadow-[0_0_12px_rgba(223,186,125,0.3)]'
+                  : 'bg-transparent text-white/70 hover:text-fm-gold hover:bg-fm-gold/10 border-transparent hover:border-fm-gold/50'
               )}
               aria-label={tab.label}
               aria-current={isActive ? 'page' : undefined}

@@ -1111,7 +1111,11 @@
     "onlyUploadingCount": "Only uploading {{count}} images due to limit",
     "uploadMultipleDescription": "Upload up to 10 images. JPEG, PNG, WebP supported.",
     "firstImageIsCover": "The first image will be set as the cover/profile photo.",
-    "imageCount": "{{count}} of {{max}} images"
+    "imageCount": "{{count}} of {{max}} images",
+    "cannotDeleteOnlyCover": "Cannot delete the only image. A gallery must always have a cover photo.",
+    "deleteCoverPhoto": "Delete cover photo?",
+    "deleteCoverPhotoConfirm": "This is the current cover photo. If you delete it, another photo will automatically be set as the new cover. This action cannot be undone.",
+    "setAsProfile": "Set as profile photo"
   },
   "eventNav": {
     "eventDetails": "Event Details",
@@ -1251,7 +1255,14 @@
     "capacity": "Capacity",
     "deleteVenue": "Delete Venue",
     "deleteVenueConfirm": "Are you sure you want to delete this venue?",
-    "socialMediaDescription": "Add your venue's website and social media links so fans can find and follow you."
+    "socialMediaDescription": "Add your venue's website and social media links so fans can find and follow you.",
+    "dangerZone": "Danger Zone",
+    "dangerZoneDescription": "Irreversible actions that affect this venue.",
+    "requestDeletionInfo": "Requesting deletion will notify administrators who can review and approve the request. The venue will remain active until an administrator processes the request.",
+    "requestVenueDeletion": "Request Venue Deletion",
+    "requestVenueDeletionTitle": "Request Venue Deletion",
+    "requestVenueDeletionConfirm": "This will send a deletion request to administrators for review. The venue will remain active until the request is approved. Are you sure you want to proceed?",
+    "submitRequest": "Submit Request"
   },
   "venueGallery": {
     "selectGallery": "Select a gallery",
@@ -1300,7 +1311,10 @@
     "mediaDeleted": "Media deleted",
     "deleteMediaFailed": "Failed to delete media",
     "coverSet": "Cover image set",
-    "setCoverFailed": "Failed to set cover image"
+    "setCoverFailed": "Failed to set cover image",
+    "cannotDeleteOnlyCover": "Cannot delete the only image. A gallery must always have a cover photo.",
+    "deleteCoverTitle": "Delete cover photo?",
+    "deleteCoverDescription": "This is the current cover photo. If you delete it, another photo will automatically be set as the new cover. This action cannot be undone."
   },
   "venue": {
     "location": "Location",

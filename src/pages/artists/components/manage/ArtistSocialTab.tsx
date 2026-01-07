@@ -5,7 +5,7 @@
  */
 
 import { useTranslation } from 'react-i18next';
-import { Globe, Mail } from 'lucide-react';
+import { Globe, Mail, Music, Share2 } from 'lucide-react';
 import {
   FaInstagram,
   FaXTwitter,
@@ -15,9 +15,8 @@ import {
   FaSoundcloud,
   FaSpotify,
 } from 'react-icons/fa6';
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
+import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
-import { FmI18nCommon } from '@/components/common/i18n';
 import { cn } from '@/shared';
 
 // Social media URL builders
@@ -197,43 +196,42 @@ export function ArtistSocialTab({
   return (
     <div className='space-y-6'>
       {/* Music Platforms */}
-      <FmCommonCard size='lg' hoverable={false}>
-        <FmI18nCommon i18nKey='sections.musicPlatforms' as='h2' className='text-xl font-semibold mb-6' />
-        <FmI18nCommon i18nKey='sections.musicPlatformsDescription' as='p' className='text-muted-foreground mb-6' />
+      <FmFormSection
+        title={t('sections.musicPlatforms')}
+        description={t('sections.musicPlatformsDescription')}
+        icon={Music}
+      >
+        <MusicPlatformInput
+          icon={FaSpotify}
+          label={t('labels.spotify')}
+          value={spotify}
+          onChange={onSpotifyChange}
+          placeholder={t('placeholders.spotifyArtistId')}
+          iconColor='text-[#1DB954]'
+          baseUrl='open.spotify.com/artist/'
+          extractId={extractSpotifyArtistId}
+          urlBuilder={(id) => id ? `https://open.spotify.com/artist/${id}` : ''}
+        />
 
-        <div className='space-y-4'>
-          <MusicPlatformInput
-            icon={FaSpotify}
-            label={t('labels.spotify')}
-            value={spotify}
-            onChange={onSpotifyChange}
-            placeholder={t('placeholders.spotifyArtistId')}
-            iconColor='text-[#1DB954]'
-            baseUrl='open.spotify.com/artist/'
-            extractId={extractSpotifyArtistId}
-            urlBuilder={(id) => id ? `https://open.spotify.com/artist/${id}` : ''}
-          />
-
-          <MusicPlatformInput
-            icon={FaSoundcloud}
-            label={t('labels.soundcloud')}
-            value={soundcloud}
-            onChange={onSoundcloudChange}
-            placeholder={t('placeholders.soundcloudUsername')}
-            iconColor='text-[#FF5500]'
-            baseUrl='soundcloud.com/'
-            extractId={extractSoundcloudUsername}
-            urlBuilder={(username) => username ? `https://soundcloud.com/${username}` : ''}
-          />
-        </div>
-      </FmCommonCard>
+        <MusicPlatformInput
+          icon={FaSoundcloud}
+          label={t('labels.soundcloud')}
+          value={soundcloud}
+          onChange={onSoundcloudChange}
+          placeholder={t('placeholders.soundcloudUsername')}
+          iconColor='text-[#FF5500]'
+          baseUrl='soundcloud.com/'
+          extractId={extractSoundcloudUsername}
+          urlBuilder={(username) => username ? `https://soundcloud.com/${username}` : ''}
+        />
+      </FmFormSection>
 
       {/* Social Media */}
-      <FmCommonCard size='lg' hoverable={false}>
-        <FmI18nCommon i18nKey='sections.socialMedia' as='h2' className='text-xl font-semibold mb-6' />
-        <FmI18nCommon i18nKey='sections.socialMediaDescription' as='p' className='text-muted-foreground mb-6' />
-
-        <div className='space-y-4'>
+      <FmFormSection
+        title={t('sections.socialMedia')}
+        description={t('sections.socialMediaDescription')}
+        icon={Share2}
+      >
           {/* Email - contact email input */}
           <div className='space-y-1'>
             <div className='flex items-center gap-2 text-xs text-muted-foreground'>
@@ -328,8 +326,7 @@ export function ArtistSocialTab({
             iconColor='text-[#FF0000]'
             urlBuilder={socialUrlBuilders.youtube}
           />
-        </div>
-      </FmCommonCard>
+      </FmFormSection>
     </div>
   );
 }

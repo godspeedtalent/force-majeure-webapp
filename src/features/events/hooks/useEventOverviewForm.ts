@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
@@ -74,6 +74,7 @@ export interface UseEventOverviewFormReturn {
   setShowVenueMap: (value: boolean) => void;
   // Save operations
   isSaving: boolean;
+  isDirty: boolean;
   handleSave: () => Promise<void>;
   triggerAutoSave: () => void;
   handleHeroImageUpload: (publicUrl: string) => Promise<void>;
@@ -109,40 +110,102 @@ export function useEventOverviewForm({
   const [displaySubtitle, setDisplaySubtitle] = useState<boolean>(true);
   const [showVenueMap, setShowVenueMap] = useState<boolean>(true);
 
+  // Track initial values for dirty state detection
+  const initialValuesRef = useRef<{
+    headlinerId: string;
+    venueId: string;
+    eventDate: Date | undefined;
+    endTime: string;
+    isAfterHours: boolean;
+    heroImage: string;
+    heroImageFocalY: number;
+    customTitle: string;
+    eventSubtitle: string;
+    aboutEvent: string;
+    displaySubtitle: boolean;
+    showVenueMap: boolean;
+  } | null>(null);
+
   // Populate form when initial data loads
   useEffect(() => {
     if (initialData) {
-      setHeadlinerId(initialData.headliner_id || '');
-      setVenueId(initialData.venue_id || '');
-      setIsAfterHours(initialData.is_after_hours || false);
+      const initialHeadlinerId = initialData.headliner_id || '';
+      const initialVenueId = initialData.venue_id || '';
+      const initialIsAfterHours = initialData.is_after_hours || false;
 
       // Parse end_time if it exists (stored as ISO timestamp)
+      let initialEndTime = '02:00';
       if (initialData.end_time) {
         const endDate = new Date(initialData.end_time);
         const hours = endDate.getHours().toString().padStart(2, '0');
         const minutes = endDate.getMinutes().toString().padStart(2, '0');
-        setEndTime(`${hours}:${minutes}`);
-      } else {
-        setEndTime('02:00');
+        initialEndTime = `${hours}:${minutes}`;
       }
 
-      setHeroImage(initialData.hero_image || '');
-      setHeroImageFocalY(initialData.hero_image_focal_y ?? 50);
+      const initialHeroImage = initialData.hero_image || '';
+      const initialHeroImageFocalY = initialData.hero_image_focal_y ?? 50;
+      const initialCustomTitle = initialData.title || '';
+      const initialEventSubtitle = initialData.description || '';
+      const initialAboutEvent = initialData.about_event || '';
+      const initialDisplaySubtitle = initialData.display_subtitle ?? true;
+      const initialShowVenueMap = initialData.show_venue_map ?? true;
 
-      // Set title, subtitle, and description
-      setCustomTitle(initialData.title || '');
-      setEventSubtitle(initialData.description || '');
-      setAboutEvent(initialData.about_event || '');
-      setDisplaySubtitle(initialData.display_subtitle ?? true);
-      setShowVenueMap(initialData.show_venue_map ?? true);
-
-      // Parse date and time from start_time
+      let initialEventDate: Date | undefined;
       if (initialData.start_time) {
-        const parsedDate = new Date(initialData.start_time);
-        setEventDate(parsedDate);
+        initialEventDate = new Date(initialData.start_time);
       }
+
+      // Set all form values
+      setHeadlinerId(initialHeadlinerId);
+      setVenueId(initialVenueId);
+      setIsAfterHours(initialIsAfterHours);
+      setEndTime(initialEndTime);
+      setHeroImage(initialHeroImage);
+      setHeroImageFocalY(initialHeroImageFocalY);
+      setCustomTitle(initialCustomTitle);
+      setEventSubtitle(initialEventSubtitle);
+      setAboutEvent(initialAboutEvent);
+      setDisplaySubtitle(initialDisplaySubtitle);
+      setShowVenueMap(initialShowVenueMap);
+      setEventDate(initialEventDate);
+
+      // Store initial values for dirty detection
+      initialValuesRef.current = {
+        headlinerId: initialHeadlinerId,
+        venueId: initialVenueId,
+        eventDate: initialEventDate,
+        endTime: initialEndTime,
+        isAfterHours: initialIsAfterHours,
+        heroImage: initialHeroImage,
+        heroImageFocalY: initialHeroImageFocalY,
+        customTitle: initialCustomTitle,
+        eventSubtitle: initialEventSubtitle,
+        aboutEvent: initialAboutEvent,
+        displaySubtitle: initialDisplaySubtitle,
+        showVenueMap: initialShowVenueMap,
+      };
     }
   }, [initialData]);
+
+  // Calculate if form has unsaved changes
+  const isDirty = useMemo(() => {
+    if (!initialValuesRef.current) return false;
+    const initial = initialValuesRef.current;
+    return (
+      headlinerId !== initial.headlinerId ||
+      venueId !== initial.venueId ||
+      eventDate?.getTime() !== initial.eventDate?.getTime() ||
+      endTime !== initial.endTime ||
+      isAfterHours !== initial.isAfterHours ||
+      heroImage !== initial.heroImage ||
+      heroImageFocalY !== initial.heroImageFocalY ||
+      customTitle !== initial.customTitle ||
+      eventSubtitle !== initial.eventSubtitle ||
+      aboutEvent !== initial.aboutEvent ||
+      displaySubtitle !== initial.displaySubtitle ||
+      showVenueMap !== initial.showVenueMap
+    );
+  }, [headlinerId, venueId, eventDate, endTime, isAfterHours, heroImage, heroImageFocalY, customTitle, eventSubtitle, aboutEvent, displaySubtitle, showVenueMap]);
 
   // Helper to gather overview data for saving
   const getOverviewData = useCallback((): EventOverviewData => {
@@ -347,6 +410,7 @@ export function useEventOverviewForm({
     setDisplaySubtitle,
     setShowVenueMap,
     isSaving,
+    isDirty,
     handleSave,
     triggerAutoSave,
     handleHeroImageUpload,

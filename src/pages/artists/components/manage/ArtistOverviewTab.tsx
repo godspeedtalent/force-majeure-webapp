@@ -5,11 +5,10 @@
  */
 
 import { useTranslation } from 'react-i18next';
-import { Trash2 } from 'lucide-react';
+import { Trash2, User } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
+import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
-import { FmI18nCommon } from '@/components/common/i18n';
 import { FmGenreMultiSelect } from '@/features/artists/components/FmGenreMultiSelect';
 import type { Genre } from '@/features/artists/types';
 
@@ -41,38 +40,38 @@ export function ArtistOverviewTab({
 
   return (
     <div className='space-y-6'>
-      <FmCommonCard size='lg' hoverable={false}>
-        <FmI18nCommon i18nKey='sections.basicInformation' as='h2' className='text-xl font-semibold mb-6' />
-
-        <div className='space-y-4'>
-          <FmCommonTextField
-            label={t('labels.artistName')}
-            required
-            value={name}
-            onChange={(e) => onNameChange(e.target.value)}
-            placeholder={t('forms.artists.namePlaceholder')}
-          />
-          <div>
-            <FmGenreMultiSelect
-              selectedGenres={selectedGenres}
-              onChange={onGenreChange}
-              maxGenres={5}
-              label={t('labels.genres')}
-            />
-          </div>
-
-          <FmCommonTextField
-            label={t('labels.bio')}
-            multiline
-            autoSize
-            minRows={3}
-            maxRows={15}
-            value={bio}
-            onChange={(e) => onBioChange(e.target.value)}
-            placeholder={t('forms.artists.bioPlaceholder')}
+      <FmFormSection
+        title={t('sections.basicInformation')}
+        description={t('sections.basicInformationDescription', 'Core details about this artist.')}
+        icon={User}
+      >
+        <FmCommonTextField
+          label={t('labels.artistName')}
+          required
+          value={name}
+          onChange={(e) => onNameChange(e.target.value)}
+          placeholder={t('forms.artists.namePlaceholder')}
+        />
+        <div>
+          <FmGenreMultiSelect
+            selectedGenres={selectedGenres}
+            onChange={onGenreChange}
+            maxGenres={5}
+            label={t('labels.genres')}
           />
         </div>
-      </FmCommonCard>
+
+        <FmCommonTextField
+          label={t('labels.bio')}
+          multiline
+          autoSize
+          minRows={3}
+          maxRows={15}
+          value={bio}
+          onChange={(e) => onBioChange(e.target.value)}
+          placeholder={t('forms.artists.bioPlaceholder')}
+        />
+      </FmFormSection>
 
       {/* Delete button stays inline */}
       <div className='flex justify-start'>

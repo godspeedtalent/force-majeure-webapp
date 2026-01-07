@@ -127,6 +127,8 @@ export interface FmSocialLinksProps {
   size?: SocialSize;
   /** Gap between links */
   gap?: 'sm' | 'md' | 'lg';
+  /** Allow icons to wrap to next line when container is too narrow (default: true) */
+  wrap?: boolean;
   /** Additional className for container */
   className?: string;
 }
@@ -171,6 +173,7 @@ export function FmSocialLinks({
   twitter,
   size = 'md',
   gap = 'md',
+  wrap = true,
   className,
 }: FmSocialLinksProps) {
   const sizeClasses = SIZE_CLASSES[size];
@@ -193,7 +196,7 @@ export function FmSocialLinks({
   }
 
   return (
-    <div className={cn('flex items-center', GAP_CLASSES[gap], className)}>
+    <div className={cn('flex items-center', wrap && 'flex-wrap', GAP_CLASSES[gap], className)}>
       {activePlatforms.map(({ key, value }) => {
         const platform = PLATFORMS[key];
         const Icon = platform.icon;

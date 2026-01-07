@@ -21,6 +21,7 @@ import {
   Unlink,
   Trash2,
 } from 'lucide-react';
+import { FmCommonExpandableText } from '@/components/common/display/FmCommonExpandableText';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmI18nCommon } from '@/components/common/i18n';
 import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
@@ -329,8 +330,8 @@ export function LinkedArtistDisplay({
       {/* Artist Spotlight Card - Two Column Layout */}
       <div className='bg-black/60 backdrop-blur-md border border-white/20 rounded-none p-4 md:p-[30px]'>
         <div className='flex gap-3 md:gap-5'>
-          {/* Left Column - Main Image with overlay (50% width) */}
-          <div className='w-1/2 flex-shrink-0'>
+          {/* Left Column - Main Image with overlay (full width on mobile, 50% on desktop) */}
+          <div className='w-full md:w-1/2 flex-shrink-0'>
             <div className='relative overflow-hidden border border-white/15 bg-white/5'>
               {linkedArtist.image_url ? (
                 <img
@@ -376,12 +377,29 @@ export function LinkedArtistDisplay({
             </div>
           </div>
 
-          {/* Right Column - Bio (50% width) */}
-          <div className='w-1/2 flex flex-col'>
+          {/* Right Column - Bio (hidden on mobile, shown on desktop) */}
+          <div className='hidden md:flex w-1/2 flex-col'>
             <div className='text-xs md:text-sm text-white/60 leading-relaxed md:leading-loose font-canela whitespace-pre-wrap italic'>
               {linkedArtist.bio || t('artistProfile.noBioAvailable')}
             </div>
           </div>
+        </div>
+
+        {/* Bio Section - shown below image on mobile only */}
+        <div className='md:hidden mt-4 pt-4 border-t border-white/10'>
+          {linkedArtist.bio ? (
+            <FmCommonExpandableText
+              text={linkedArtist.bio}
+              lineClamp={4}
+              className='text-xs text-white/60 italic leading-[1.8]'
+              showMoreLabel={t('buttons.showMore', 'Show more')}
+              showLessLabel={t('buttons.showLess', 'Show less')}
+            />
+          ) : (
+            <p className='text-xs text-white/40 leading-[1.8] font-canela italic'>
+              {t('artistProfile.noBioAvailable')}
+            </p>
+          )}
         </div>
       </div>
 

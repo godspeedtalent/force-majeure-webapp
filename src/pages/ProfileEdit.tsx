@@ -6,6 +6,9 @@ import {
   AlertCircle,
   Mic2,
   Shield,
+  Camera,
+  MapPin,
+  Globe,
 } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -20,7 +23,7 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { PasswordChangeSection, DeleteAccountSection, NotificationSettingsSection } from '@/pages/profile/sections';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
-import { FmCommonPageHeader } from '@/components/common/display/FmCommonPageHeader';
+import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmCommonUserPhoto } from '@/components/common/display/FmCommonUserPhoto';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { toast } from 'sonner';
@@ -59,6 +62,7 @@ const ProfileEdit = () => {
   const [lastName, setLastName] = useState('');
   const [displayName, setDisplayName] = useState(profile?.display_name || '');
   const [gender, setGender] = useState(profile?.gender || 'unspecified');
+  const [ageRange, setAgeRange] = useState(profile?.age_range || 'unspecified');
   const [billingAddress, setBillingAddress] = useState(
     profile?.billing_address_line_1 || ''
   );
@@ -77,6 +81,7 @@ const ProfileEdit = () => {
       setLastName(nameParts.slice(1).join(' ') || '');
       setDisplayName(profile.display_name || '');
       setGender(profile.gender || 'unspecified');
+      setAgeRange(profile.age_range || 'unspecified');
       setBillingAddress(profile.billing_address_line_1 || '');
       setBillingCity(profile.billing_city || '');
       setBillingState(profile.billing_state || '');
@@ -95,6 +100,7 @@ const ProfileEdit = () => {
       full_name: fullName || null,
       display_name: displayName || null,
       gender: gender === 'unspecified' ? null : gender || null,
+      age_range: ageRange === 'unspecified' ? null : ageRange || null,
     });
     setIsLoading(false);
   };
@@ -263,239 +269,220 @@ const ProfileEdit = () => {
         />
       }
     >
-      {/* Add top padding to account for floating back button row */}
-      <div className='space-y-6 pt-[80px]'>
+      <div className='space-y-6'>
         {/* Profile Section */}
         {activeSection === 'profile' && (
           <>
-            <FmCommonPageHeader
-              title={t('profile.editProfile')}
-              description={t('profile.personalInfoDescription')}
-              showDivider={true}
-            />
-
-            {/* Profile Picture Card */}
-            <FmCommonCard>
-              <FmCommonCardContent className='p-8 space-y-6'>
-                <div>
-                  <h2 className='text-xl font-canela font-medium text-foreground mb-2'>
-                    {t('profile.profilePicture')}
-                  </h2>
-                  <p className='text-sm text-muted-foreground'>
-                    {t('profile.profilePictureDescription')}
-                  </p>
-                </div>
-
-                <div className='flex items-center gap-6'>
+            {/* Profile Picture Section */}
+            <FmFormSection
+              title={t('profile.profilePicture')}
+              description={t('profile.profilePictureDescription')}
+              icon={Camera}
+            >
+              <div className='flex flex-col items-center gap-4'>
+                <div className='w-32 h-40'>
                   <FmCommonUserPhoto
                     src={profile?.avatar_url}
                     name={profile?.display_name || user.email}
-                    size='2xl'
+                    size='square'
                     showBorder={true}
                     useAnimatedGradient={!profile?.avatar_url}
+                    className='w-full h-full'
+                  />
+                </div>
+
+                <div className='flex flex-col items-center gap-2'>
+                  <input
+                    ref={fileInputRef}
+                    type='file'
+                    accept='image/*'
+                    onChange={handleImageUpload}
+                    className='hidden'
+                  />
+                  <FmCommonButton
+                    variant='default'
+                    icon={Upload}
+                    onClick={() => fileInputRef.current?.click()}
+                    loading={isUploadingImage}
+                    disabled={!user.email_confirmed_at || isUploadingImage}
+                  >
+                    {isUploadingImage ? t('profile.uploading') : t('profile.uploadPhoto')}
+                  </FmCommonButton>
+                  <p className='text-xs text-muted-foreground text-center'>
+                    {t('profile.photoHint')}
+                  </p>
+                </div>
+              </div>
+            </FmFormSection>
+
+            {/* Profile Information Section */}
+            <FmFormSection
+              title={t('profile.personalInfo')}
+              description={t('profile.personalInfoDescription')}
+              icon={User}
+            >
+              <form onSubmit={handleUpdateProfileInfo} className='space-y-4'>
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                  <FmCommonTextField
+                    label={tCommon('labels.email')}
+                    id='email'
+                    type='email'
+                    value={user.email || ''}
+                    disabled
+                    className='opacity-60'
+                    description={t('profile.emailCannotBeChanged')}
                   />
 
-                  <div className='flex-1 space-y-3'>
-                    <input
-                      ref={fileInputRef}
-                      type='file'
-                      accept='image/*'
-                      onChange={handleImageUpload}
-                      className='hidden'
-                    />
-                    <FmCommonButton
-                      variant='default'
-                      icon={Upload}
-                      onClick={() => fileInputRef.current?.click()}
-                      loading={isUploadingImage}
-                      disabled={!user.email_confirmed_at || isUploadingImage}
-                    >
-                      {isUploadingImage ? t('profile.uploading') : t('profile.uploadPhoto')}
-                    </FmCommonButton>
-                    <p className='text-xs text-muted-foreground'>
-                      {t('profile.photoHint')}
-                    </p>
-                  </div>
-                </div>
-              </FmCommonCardContent>
-            </FmCommonCard>
+                  <FmCommonTextField
+                    label={tCommon('labels.username')}
+                    id='displayName'
+                    type='text'
+                    placeholder={t('profile.usernamePlaceholder')}
+                    value={displayName}
+                    onChange={e => setDisplayName(e.target.value)}
+                    description={t('profile.usernameDescription')}
+                    disabled={!user.email_confirmed_at}
+                  />
 
-            {/* Profile Information Card */}
-            <FmCommonCard>
-              <FmCommonCardContent className='p-8 space-y-6'>
-                <div>
-                  <h2 className='text-xl font-canela font-medium text-foreground mb-2'>
-                    {t('profile.personalInfo')}
-                  </h2>
-                  <p className='text-sm text-muted-foreground'>
-                    {t('profile.personalInfoDescription')}
-                  </p>
-                </div>
+                  <FmCommonTextField
+                    label={tCommon('labels.firstName')}
+                    id='firstName'
+                    type='text'
+                    placeholder={t('profile.firstNamePlaceholder')}
+                    value={firstName}
+                    onChange={e => setFirstName(e.target.value)}
+                    description={tCommon('labels.optional')}
+                    disabled={!user.email_confirmed_at}
+                  />
 
-                <form onSubmit={handleUpdateProfileInfo} className='space-y-6'>
-                  <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                    <FmCommonTextField
-                      label={tCommon('labels.email')}
-                      id='email'
-                      type='email'
-                      value={user.email || ''}
-                      disabled
-                      className='opacity-60'
-                      description={t('profile.emailCannotBeChanged')}
-                    />
+                  <FmCommonTextField
+                    label={tCommon('labels.lastName')}
+                    id='lastName'
+                    type='text'
+                    placeholder={t('profile.lastNamePlaceholder')}
+                    value={lastName}
+                    onChange={e => setLastName(e.target.value)}
+                    description={tCommon('labels.optional')}
+                    disabled={!user.email_confirmed_at}
+                  />
 
-                    <FmCommonTextField
-                      label={tCommon('labels.username')}
-                      id='displayName'
-                      type='text'
-                      placeholder={t('profile.usernamePlaceholder')}
-                      value={displayName}
-                      onChange={e => setDisplayName(e.target.value)}
-                      description={t('profile.usernameDescription')}
-                      disabled={!user.email_confirmed_at}
-                    />
+                  <FmCommonSelect
+                    label={t('profile.selectGender')}
+                    id='gender'
+                    value={gender}
+                    onChange={setGender}
+                    options={[
+                      { value: 'unspecified', label: t('profile.preferNotToSay') },
+                      { value: 'male', label: t('profile.male') },
+                      { value: 'female', label: t('profile.female') },
+                      { value: 'non-binary', label: t('profile.nonBinary') },
+                      { value: 'other', label: t('profile.other') },
+                    ]}
+                    placeholder={t('profile.selectGender')}
+                    description={tCommon('labels.optional')}
+                    disabled={!user.email_confirmed_at}
+                  />
 
-                    <FmCommonTextField
-                      label={tCommon('labels.firstName')}
-                      id='firstName'
-                      type='text'
-                      placeholder={t('profile.firstNamePlaceholder')}
-                      value={firstName}
-                      onChange={e => setFirstName(e.target.value)}
-                      description={tCommon('labels.optional')}
-                      disabled={!user.email_confirmed_at}
-                    />
-
-                    <FmCommonTextField
-                      label={tCommon('labels.lastName')}
-                      id='lastName'
-                      type='text'
-                      placeholder={t('profile.lastNamePlaceholder')}
-                      value={lastName}
-                      onChange={e => setLastName(e.target.value)}
-                      description={tCommon('labels.optional')}
-                      disabled={!user.email_confirmed_at}
-                    />
-
-                    <FmCommonSelect
-                      label={t('profile.selectGender')}
-                      id='gender'
-                      value={gender}
-                      onChange={setGender}
-                      options={[
-                        { value: 'unspecified', label: t('profile.preferNotToSay') },
-                        { value: 'male', label: t('profile.male') },
-                        { value: 'female', label: t('profile.female') },
-                        { value: 'non-binary', label: t('profile.nonBinary') },
-                        { value: 'other', label: t('profile.other') },
-                      ]}
-                      placeholder={t('profile.selectGender')}
-                      description={tCommon('labels.optional')}
-                      disabled={!user.email_confirmed_at}
-                    />
-                  </div>
-
-                  <div className='h-px bg-border/50' />
-
-                  <FmCommonButton
-                    type='submit'
-                    variant='secondary'
-                    loading={isLoading}
-                    disabled={!user.email_confirmed_at || isLoading}
-                  >
-                    {t('profile.updateProfile')}
-                  </FmCommonButton>
-                </form>
-              </FmCommonCardContent>
-            </FmCommonCard>
-
-            {/* Billing Address Card */}
-            <FmCommonCard>
-              <FmCommonCardContent className='p-8 space-y-6'>
-                <div>
-                  <h2 className='text-xl font-canela font-medium text-foreground mb-2'>
-                    {t('profile.billingAddress')}
-                  </h2>
-                  <p className='text-sm text-muted-foreground'>
-                    {t('profile.billingAddressDescription')}
-                  </p>
+                  <FmCommonSelect
+                    label={t('profile.ageRange')}
+                    id='ageRange'
+                    value={ageRange}
+                    onChange={setAgeRange}
+                    options={[
+                      { value: 'unspecified', label: t('profile.preferNotToSay') },
+                      { value: '18-24', label: '18-24' },
+                      { value: '25-34', label: '25-34' },
+                      { value: '35-44', label: '35-44' },
+                      { value: '45-54', label: '45-54' },
+                      { value: '55-64', label: '55-64' },
+                      { value: '65+', label: '65+' },
+                    ]}
+                    placeholder={t('profile.selectAgeRange')}
+                    description={t('profile.ageRangeDescription')}
+                    disabled={!user.email_confirmed_at}
+                  />
                 </div>
 
-                <form onSubmit={handleUpdateBillingAddress} className='space-y-6'>
-                  <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                    <div className='md:col-span-2'>
-                      <FmCommonTextField
-                        label={t('profile.streetAddress')}
-                        id='billingAddress'
-                        type='text'
-                        placeholder={t('profile.streetAddressPlaceholder')}
-                        value={billingAddress}
-                        onChange={e => setBillingAddress(e.target.value)}
-                        description={tCommon('labels.optional')}
-                        disabled={!user.email_confirmed_at}
-                      />
-                    </div>
+                <FmCommonButton
+                  type='submit'
+                  variant='default'
+                  loading={isLoading}
+                  disabled={!user.email_confirmed_at || isLoading}
+                >
+                  {t('profile.updateProfile')}
+                </FmCommonButton>
+              </form>
+            </FmFormSection>
 
-                    <FmCommonTextField
-                      label={tCommon('labels.city')}
-                      id='billingCity'
-                      type='text'
-                      placeholder={t('profile.cityPlaceholder')}
-                      value={billingCity}
-                      onChange={e => setBillingCity(e.target.value)}
-                      description={tCommon('labels.optional')}
-                      disabled={!user.email_confirmed_at}
-                    />
+            {/* Billing Address Section */}
+            <FmFormSection
+              title={t('profile.billingAddress')}
+              description={t('profile.billingAddressDescription')}
+              icon={MapPin}
+            >
+              <form onSubmit={handleUpdateBillingAddress} className='space-y-4'>
+                <FmCommonTextField
+                  label={t('profile.streetAddress')}
+                  id='billingAddress'
+                  type='text'
+                  placeholder={t('profile.streetAddressPlaceholder')}
+                  value={billingAddress}
+                  onChange={e => setBillingAddress(e.target.value)}
+                  description={tCommon('labels.optional')}
+                  disabled={!user.email_confirmed_at}
+                />
 
-                    <FmCommonTextField
-                      label={tCommon('labels.state')}
-                      id='billingState'
-                      type='text'
-                      placeholder={t('profile.statePlaceholder')}
-                      value={billingState}
-                      onChange={e => setBillingState(e.target.value)}
-                      description={tCommon('labels.optional')}
-                      disabled={!user.email_confirmed_at}
-                    />
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                  <FmCommonTextField
+                    label={tCommon('labels.city')}
+                    id='billingCity'
+                    type='text'
+                    placeholder={t('profile.cityPlaceholder')}
+                    value={billingCity}
+                    onChange={e => setBillingCity(e.target.value)}
+                    description={tCommon('labels.optional')}
+                    disabled={!user.email_confirmed_at}
+                  />
 
-                    <FmCommonTextField
-                      label={tCommon('labels.zipCode')}
-                      id='billingZip'
-                      type='text'
-                      placeholder={t('profile.zipCodePlaceholder')}
-                      value={billingZip}
-                      onChange={e => setBillingZip(e.target.value)}
-                      description={tCommon('labels.optional')}
-                      disabled={!user.email_confirmed_at}
-                    />
-                  </div>
+                  <FmCommonTextField
+                    label={tCommon('labels.state')}
+                    id='billingState'
+                    type='text'
+                    placeholder={t('profile.statePlaceholder')}
+                    value={billingState}
+                    onChange={e => setBillingState(e.target.value)}
+                    description={tCommon('labels.optional')}
+                    disabled={!user.email_confirmed_at}
+                  />
+                </div>
 
-                  <div className='h-px bg-border/50' />
+                <FmCommonTextField
+                  label={tCommon('labels.zipCode')}
+                  id='billingZip'
+                  type='text'
+                  placeholder={t('profile.zipCodePlaceholder')}
+                  value={billingZip}
+                  onChange={e => setBillingZip(e.target.value)}
+                  description={tCommon('labels.optional')}
+                  disabled={!user.email_confirmed_at}
+                />
 
-                  <FmCommonButton
-                    type='submit'
-                    variant='secondary'
-                    loading={isLoading}
-                    disabled={!user.email_confirmed_at || isLoading}
-                  >
-                    {t('profile.updateBillingAddress')}
-                  </FmCommonButton>
-                </form>
-              </FmCommonCardContent>
-            </FmCommonCard>
-
+                <FmCommonButton
+                  type='submit'
+                  variant='default'
+                  loading={isLoading}
+                  disabled={!user.email_confirmed_at || isLoading}
+                >
+                  {t('profile.updateBillingAddress')}
+                </FmCommonButton>
+              </form>
+            </FmFormSection>
           </>
         )}
 
         {/* Account Section */}
         {activeSection === 'account' && (
           <>
-            <FmCommonPageHeader
-              title={t('profile.account')}
-              description={t('profile.accountSettingsDescription')}
-              showDivider={true}
-            />
-
             {/* Email Verification Warning */}
             {user && !user.email_confirmed_at && (
               <FmCommonCard className='border-fm-gold/50 bg-fm-gold/10'>
@@ -529,30 +516,22 @@ const ProfileEdit = () => {
             {/* Notification Settings */}
             <NotificationSettingsSection disabled={!user.email_confirmed_at} />
 
-            {/* Preferences Card */}
-            <FmCommonCard>
-              <FmCommonCardContent className='p-8 space-y-6'>
-                <div>
-                  <h2 className='text-xl font-canela font-medium text-foreground mb-2'>
-                    {t('profile.preferences')}
-                  </h2>
-                  <p className='text-sm text-muted-foreground'>
-                    {t('profile.languageDescription')}
-                  </p>
-                </div>
-
-                <div className='max-w-xs'>
-                  <LanguageSelector
-                    value={currentLocale}
-                    onChange={async (locale: SupportedLocale) => {
-                      await changeLocale(locale);
-                      // Toast will now use the new locale since i18n has been updated
-                      toast.success(t('profile.languageSaved'));
-                    }}
-                  />
-                </div>
-              </FmCommonCardContent>
-            </FmCommonCard>
+            {/* Preferences Section */}
+            <FmFormSection
+              title={t('profile.preferences')}
+              description={t('profile.languageDescription')}
+              icon={Globe}
+            >
+              <div className='max-w-xs'>
+                <LanguageSelector
+                  value={currentLocale}
+                  onChange={async (locale: SupportedLocale) => {
+                    await changeLocale(locale);
+                    toast.success(t('profile.languageSaved'));
+                  }}
+                />
+              </div>
+            </FmFormSection>
 
             {/* Password Change Section */}
             <PasswordChangeSection disabled={!user.email_confirmed_at} />
@@ -564,15 +543,7 @@ const ProfileEdit = () => {
 
         {/* Artist Section */}
         {activeSection === 'artist' && (
-          <>
-            <FmCommonPageHeader
-              title={t('profile.artistProfile')}
-              description={t('profile.artistProfileDescription')}
-              showDivider={true}
-            />
-
-            <UserArtistTab isEditable={true} />
-          </>
+          <UserArtistTab isEditable={true} />
         )}
       </div>
     </SideNavbarLayout>

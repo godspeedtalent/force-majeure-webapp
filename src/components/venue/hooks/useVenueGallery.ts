@@ -12,10 +12,13 @@ import { useState, useCallback, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
-import { getImageUrl } from '@/shared/utils/imageUtils';
+import { getImageUrl, compressImage } from '@/shared/utils/imageUtils';
 import { logger } from '@/shared/services/logger';
 import { toast } from 'sonner';
 import type { ResolvedMediaItem, MediaGallery, MediaItem } from '@/features/media/types';
+
+/** Maximum file size for gallery images (2MB) */
+const MAX_GALLERY_IMAGE_SIZE = 2 * 1024 * 1024;
 
 interface UseVenueGalleryProps {
   venueId: string;
@@ -268,13 +271,45 @@ export function useVenueGallery({
       setUploadingCount(fileArray.length);
 
       try {
+        // Check if this gallery has any existing items (for auto-cover logic)
+        const { data: currentItems } = await (supabase as any)
+          .from('media_items')
+          .select('id')
+          .eq('gallery_id', selectedGalleryId);
+
+        const isFirstUpload = !currentItems || currentItems.length === 0;
+        let isFirstFile = true;
+
         for (const file of fileArray) {
-          const fileExt = file.name.split('.').pop();
+          // Compress image to max 2MB before upload
+          let processedFile = file;
+          if (file.type.startsWith('image/')) {
+            try {
+              processedFile = await compressImage(file, {
+                maxSizeBytes: MAX_GALLERY_IMAGE_SIZE,
+                maxWidth: 1920,
+                maxHeight: 1920,
+                quality: 0.85,
+              });
+              logger.info('Gallery image compressed', {
+                originalSize: `${(file.size / 1024 / 1024).toFixed(2)}MB`,
+                compressedSize: `${(processedFile.size / 1024 / 1024).toFixed(2)}MB`,
+                source: 'useVenueGallery',
+              });
+            } catch (compressionError) {
+              logger.warn('Image compression failed, using original', {
+                error: compressionError instanceof Error ? compressionError.message : 'Unknown',
+                source: 'useVenueGallery',
+              });
+            }
+          }
+
+          const fileExt = processedFile.name.split('.').pop() || file.name.split('.').pop();
           const fileName = `venues/${venueId}/${selectedGalleryId}/${Date.now()}.${fileExt}`;
 
           const { error: uploadError } = await supabase.storage
             .from('images')
-            .upload(fileName, file);
+            .upload(fileName, processedFile);
 
           if (uploadError) throw uploadError;
 
@@ -289,7 +324,8 @@ export function useVenueGallery({
           const nextOrder =
             existingItems && existingItems.length > 0 ? existingItems[0].display_order + 1 : 0;
 
-          // Create media item
+          // Create media item - first image in empty gallery becomes cover
+          const shouldBeCover = isFirstUpload && isFirstFile;
           const { error: itemError } = await (supabase as any)
             .from('media_items')
             .insert({
@@ -302,10 +338,12 @@ export function useVenueGallery({
                   : 'image',
               title: file.name.replace(/\.[^/.]+$/, ''),
               display_order: nextOrder,
+              is_cover: shouldBeCover,
             });
 
           if (itemError) throw itemError;
 
+          isFirstFile = false;
           setUploadingCount(prev => Math.max(0, prev - 1));
         }
 
@@ -347,9 +385,16 @@ export function useVenueGallery({
     [selectedGalleryId, queryClient, t]
   );
 
-  // Delete media item
+  // Delete media item - handles cover auto-swap
   const deleteMediaItem = useCallback(
     async (itemId: string) => {
+      if (!selectedGalleryId) return;
+
+      // Get the item being deleted to check if it's the cover
+      const itemToDelete = items.find(i => i.id === itemId);
+      const wasCover = itemToDelete?.is_cover;
+
+      // Delete the item
       const { error } = await (supabase as any)
         .from('media_items')
         .delete()
@@ -363,10 +408,23 @@ export function useVenueGallery({
         throw error;
       }
 
+      // If deleted item was cover, auto-promote another item to cover
+      if (wasCover) {
+        const remainingItems = items.filter(i => i.id !== itemId);
+        if (remainingItems.length > 0) {
+          // Promote the first remaining item to cover
+          const newCoverId = remainingItems[0].id;
+          await (supabase as any)
+            .from('media_items')
+            .update({ is_cover: true })
+            .eq('id', newCoverId);
+        }
+      }
+
       toast.success(t('venueGallery.mediaDeleted', 'Media deleted'));
       queryClient.invalidateQueries({ queryKey: ['venue-gallery-items', selectedGalleryId] });
     },
-    [selectedGalleryId, queryClient, t]
+    [selectedGalleryId, items, queryClient, t]
   );
 
   // Set cover image

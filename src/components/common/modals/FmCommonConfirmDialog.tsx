@@ -45,10 +45,10 @@ const variantConfig = {
   },
   destructive: {
     confirmButton:
-      'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+      'bg-destructive/20 backdrop-blur-sm border border-destructive text-destructive hover:bg-destructive hover:text-black hover:border-destructive shadow-[0_0_12px_hsl(var(--destructive)/0.2)] hover:shadow-[0_0_20px_hsl(var(--destructive)/0.4)] transition-all duration-200',
   },
   warning: {
-    confirmButton: 'bg-yellow-600 text-white hover:bg-yellow-700',
+    confirmButton: 'bg-yellow-600/20 backdrop-blur-sm border border-yellow-600 text-yellow-500 hover:bg-yellow-600 hover:text-black hover:border-yellow-600 shadow-[0_0_12px_rgba(202,138,4,0.2)] hover:shadow-[0_0_20px_rgba(202,138,4,0.4)] transition-all duration-200',
   },
 };
 

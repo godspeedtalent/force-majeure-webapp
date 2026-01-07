@@ -12,6 +12,9 @@ import { imageUploadService } from '@/shared';
 import { toast } from 'sonner';
 import { handleError } from '@/shared/services/errorHandler';
 
+/** Maximum file size for gallery images (2MB) */
+const MAX_GALLERY_IMAGE_SIZE = 2 * 1024 * 1024;
+
 interface MediaItem {
   id: string;
   file_path: string;
@@ -38,7 +41,10 @@ export function ArtistManageGalleryTab({
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    id: string;
+    isCover: boolean;
+  } | null>(null);
 
   // Fetch or create gallery
   const { data: gallery, isLoading: galleryLoading } = useQuery({
@@ -100,7 +106,7 @@ export function ArtistManageGalleryTab({
     },
   });
 
-  // Delete item mutation
+  // Delete item mutation - handles cover auto-swap
   const deleteItemMutation = useMutation({
     mutationFn: async (itemId: string) => {
       // Check if this is the cover image
@@ -111,22 +117,38 @@ export function ArtistManageGalleryTab({
         .from('media_items')
         .update({ is_active: false })
         .eq('id', itemId);
-      
+
       if (error) throw error;
 
-      // If we deleted the cover, clear the artist's image_url
+      // If we deleted the cover, auto-promote another item or clear image_url
       if (wasCover) {
-        await supabase
-          .from('artists')
-          .update({ image_url: null })
-          .eq('id', artistId);
+        const remainingItems = items.filter(i => i.id !== itemId);
+        if (remainingItems.length > 0) {
+          // Promote the first remaining item to cover
+          const newCover = remainingItems[0];
+          await supabase
+            .from('media_items')
+            .update({ is_cover: true })
+            .eq('id', newCover.id);
+          // Update artist's image_url to match new cover
+          await supabase
+            .from('artists')
+            .update({ image_url: newCover.file_path })
+            .eq('id', artistId);
+        } else {
+          // No remaining items, clear artist's image_url
+          await supabase
+            .from('artists')
+            .update({ image_url: null })
+            .eq('id', artistId);
+        }
       }
     },
     onSuccess: () => {
       toast.success(tToast('gallery.itemDeleted'));
       queryClient.invalidateQueries({ queryKey: ['artist-gallery-items', gallery?.id] });
       queryClient.invalidateQueries({ queryKey: ['artist', artistId] });
-      setDeleteItemId(null);
+      setDeleteConfirm(null);
     },
     onError: (error) => {
       handleError(error, { title: tToast('gallery.deleteItemFailed') });
@@ -180,6 +202,12 @@ export function ArtistManageGalleryTab({
       const result = await imageUploadService.uploadImage({
         file,
         isPrimary: false,
+        compressionOptions: {
+          maxSizeBytes: MAX_GALLERY_IMAGE_SIZE,
+          maxWidth: 1920,
+          maxHeight: 1920,
+          quality: 0.85,
+        },
       });
 
       // Create media item - first image becomes cover
@@ -321,7 +349,17 @@ export function ArtistManageGalleryTab({
                     </button>
                   )}
                   <button
-                    onClick={() => setDeleteItemId(item.id)}
+                    onClick={() => {
+                      // Prevent deletion of cover if it's the only image
+                      if (item.is_cover && items.length === 1) {
+                        toast.error(t('gallery.cannotDeleteOnlyCover', 'Cannot delete the only image. A gallery must always have a cover photo.'));
+                        return;
+                      }
+                      setDeleteConfirm({
+                        id: item.id,
+                        isCover: item.is_cover,
+                      });
+                    }}
                     className='p-2 bg-destructive hover:bg-destructive/80 text-destructive-foreground transition-colors'
                     title={t('buttons.delete')}
                   >
@@ -336,13 +374,17 @@ export function ArtistManageGalleryTab({
 
       {/* Delete confirmation */}
       <FmCommonConfirmDialog
-        open={!!deleteItemId}
-        onOpenChange={(open) => !open && setDeleteItemId(null)}
-        title={t('gallery.deletePhoto')}
-        description={t('gallery.deletePhotoConfirm')}
+        open={!!deleteConfirm}
+        onOpenChange={(open) => !open && setDeleteConfirm(null)}
+        title={deleteConfirm?.isCover ? t('gallery.deleteCoverPhoto', 'Delete cover photo?') : t('gallery.deletePhoto')}
+        description={
+          deleteConfirm?.isCover
+            ? t('gallery.deleteCoverPhotoConfirm', 'This is the current cover photo. If you delete it, another photo will automatically be set as the new cover. This action cannot be undone.')
+            : t('gallery.deletePhotoConfirm')
+        }
         confirmText={t('buttons.delete')}
         onConfirm={() => {
-          if (deleteItemId) deleteItemMutation.mutate(deleteItemId);
+          if (deleteConfirm) deleteItemMutation.mutate(deleteConfirm.id);
         }}
         variant='destructive'
         isLoading={deleteItemMutation.isPending}

@@ -1,0 +1,185 @@
+import {
+  ReactNode,
+  useRef,
+  useEffect,
+  useCallback,
+  Children,
+  cloneElement,
+  isValidElement,
+} from 'react';
+import { cn } from '@/shared';
+import { useIsMobile } from '@/shared';
+
+export interface MobileEventSwipeContainerProps {
+  children: ReactNode;
+  /** Callback when the active index changes */
+  onIndexChange?: (index: number) => void;
+  /** Current active index (controlled) */
+  currentIndex?: number;
+  /** Additional className for the container */
+  className?: string;
+  /** Whether to enable scroll snap behavior */
+  enabled?: boolean;
+}
+
+/**
+ * Full-screen swipe container for mobile event browsing
+ * Each child becomes a full-viewport snap section
+ */
+export function MobileEventSwipeContainer({
+  children,
+  onIndexChange,
+  currentIndex,
+  className,
+  enabled = true,
+}: MobileEventSwipeContainerProps) {
+  const isMobile = useIsMobile();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const isScrollingRef = useRef(false);
+  const lastReportedIndexRef = useRef<number>(-1);
+
+  const childArray = Children.toArray(children);
+  const totalItems = childArray.length;
+
+  // Scroll to a specific index
+  const scrollToIndex = useCallback(
+    (index: number) => {
+      const section = sectionRefs.current[index];
+      if (!section) return;
+
+      isScrollingRef.current = true;
+      section.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+
+      // Reset scrolling flag after animation
+      setTimeout(() => {
+        isScrollingRef.current = false;
+      }, 500);
+    },
+    []
+  );
+
+  // Handle controlled scrolling when currentIndex changes
+  useEffect(() => {
+    if (currentIndex !== undefined && currentIndex !== lastReportedIndexRef.current) {
+      scrollToIndex(currentIndex);
+    }
+  }, [currentIndex, scrollToIndex]);
+
+  // Set up Intersection Observer to track active section
+  useEffect(() => {
+    if (!enabled || !isMobile) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Find the most visible section
+        let maxRatio = 0;
+        let activeIndex = -1;
+
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
+            maxRatio = entry.intersectionRatio;
+            const index = sectionRefs.current.findIndex(
+              (ref) => ref === entry.target
+            );
+            if (index !== -1) {
+              activeIndex = index;
+            }
+          }
+        });
+
+        // Only report if we found an active section and it's different
+        if (
+          activeIndex !== -1 &&
+          activeIndex !== lastReportedIndexRef.current &&
+          !isScrollingRef.current
+        ) {
+          lastReportedIndexRef.current = activeIndex;
+          onIndexChange?.(activeIndex);
+
+          // Haptic feedback
+          if ('vibrate' in navigator) {
+            navigator.vibrate(10);
+          }
+        }
+      },
+      {
+        threshold: [0.5, 0.75],
+        rootMargin: '-10% 0px -10% 0px',
+      }
+    );
+
+    // Observe all sections
+    sectionRefs.current.forEach((section) => {
+      if (section) {
+        observer.observe(section);
+      }
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [enabled, isMobile, onIndexChange, totalItems]);
+
+  // Don't apply snap behavior on desktop
+  if (!isMobile) {
+    return <div className={className}>{children}</div>;
+  }
+
+  return (
+    <div
+      ref={containerRef}
+      className={cn(
+        // Full screen container
+        'h-[100dvh] w-full overflow-y-auto overflow-x-hidden',
+        // Scroll snap behavior
+        enabled && 'snap-y snap-mandatory',
+        // Smooth scroll with spring-like feel
+        'scroll-smooth',
+        // Hide scrollbar
+        'scrollbar-hide',
+        className
+      )}
+      style={{
+        // Account for mobile nav
+        scrollPaddingTop: '0px',
+        scrollPaddingBottom: '0px',
+        // Overscroll behavior for better UX
+        overscrollBehavior: 'contain',
+        // Smooth momentum scrolling on iOS
+        WebkitOverflowScrolling: 'touch',
+      }}
+    >
+      {childArray.map((child, index) => (
+        <div
+          key={index}
+          ref={(el) => {
+            sectionRefs.current[index] = el;
+          }}
+          className={cn(
+            // Full viewport section
+            'min-h-[100dvh] w-full',
+            // Snap alignment
+            'snap-start snap-always',
+            // Flex container for content centering
+            'flex flex-col'
+          )}
+          data-swipe-index={index}
+        >
+          {isValidElement(child)
+            ? cloneElement(child as React.ReactElement<{ sectionIndex?: number }>, {
+                sectionIndex: index,
+              })
+            : child}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// CSS to hide scrollbar (add to global styles or use as className)
+// .scrollbar-hide::-webkit-scrollbar { display: none; }
+// .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

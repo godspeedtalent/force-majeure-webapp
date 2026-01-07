@@ -6,7 +6,7 @@
  */
 
 import { useTranslation } from 'react-i18next';
-import { Globe, Mail } from 'lucide-react';
+import { Globe, Mail, Share2 } from 'lucide-react';
 import {
   FaInstagram,
   FaFacebook,
@@ -14,7 +14,7 @@ import {
   FaXTwitter,
   FaYoutube,
 } from 'react-icons/fa6';
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
+import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { cn } from '@/shared';
 
@@ -118,16 +118,12 @@ export function VenueSocialTab({
   return (
     <div className='space-y-6'>
       {/* Social Media */}
-      <FmCommonCard size='lg' hoverable={false}>
-        <h2 className='text-xl font-semibold mb-6'>
-          {t('sections.socialMedia', 'Social Media & Web')}
-        </h2>
-        <p className='text-muted-foreground mb-6'>
-          {t('venueManagement.socialMediaDescription', 'Add your venue\'s website and social media links so fans can find and follow you.')}
-        </p>
-
-        <div className='space-y-4'>
-          {/* Email - contact email input */}
+      <FmFormSection
+        title={t('sections.socialMedia', 'Social Media & Web')}
+        description={t('venueManagement.socialMediaDescription', 'Add your venue\'s website and social media links so fans can find and follow you.')}
+        icon={Share2}
+      >
+        {/* Email - contact email input */}
           <div className='space-y-1'>
             <div className='flex items-center gap-2 text-xs text-muted-foreground'>
               <Mail className='h-4 w-4 text-fm-gold' />
@@ -221,8 +217,7 @@ export function VenueSocialTab({
             iconColor='text-[#FF0000]'
             urlBuilder={socialUrlBuilders.youtube}
           />
-        </div>
-      </FmCommonCard>
+      </FmFormSection>
     </div>
   );
 }

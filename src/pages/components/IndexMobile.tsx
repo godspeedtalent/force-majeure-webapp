@@ -1,19 +1,20 @@
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CalendarX, History, ChevronUp } from 'lucide-react';
+import { CalendarX } from 'lucide-react';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
-import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonEmptyState } from '@/components/common/display/FmCommonEmptyState';
 import { FmArtistUndercardCard } from '@/components/common/display/FmArtistUndercardCard';
-import { FmListSortFilter, SortDirection, DateRange } from '@/components/common/filters/FmListSortFilter';
-import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
-import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
-import { ParallaxLayerManager } from '@/components/layout/ParallaxLayerManager';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
-import { EventCard } from '@/features/events/components/EventCard';
-import { EventCardSkeleton } from '@/features/events/components/EventCardSkeleton';
-import { FmTbaEventCard } from '@/features/events/components/FmTbaEventCard';
-import { MobileSectionIndicator, MobileScrollCue } from '@/components/mobile';
-import { MobileScrollSnapWrapper } from '@/components/mobile/MobileScrollSnapWrapper';
+import {
+  MobileEventSwipeContainer,
+  MobileEventFullCard,
+  MobileTitleCard,
+  MobilePastEventsHeader,
+  MobileSwipeIndicator,
+  MobileAutoScrollProgress,
+} from '@/components/mobile';
+import { useAutoScrollMode } from '@/shared/hooks/useAutoScrollMode';
+import { SortDirection, DateRange } from '@/components/common/filters/FmListSortFilter';
 
 interface Artist {
   name: string;
@@ -72,26 +73,138 @@ export function IndexMobile({
   upcomingEvents,
   pastEvents,
   loading,
-  showPastEvents,
-  setShowPastEvents,
-  heroRef,
-  eventsRef,
-  activeSection,
-  scrollToSection,
   contentReady,
-  pastEventsSortBy,
-  onPastEventsSortChange,
-  pastEventsSortDirection,
-  onPastEventsSortDirectionChange,
-  pastEventsSearchText,
-  onPastEventsSearchChange,
-  pastEventsDateRange,
-  onPastEventsDateRangeChange,
   totalPastEventsCount,
 }: IndexMobileProps) {
   const { t } = useTranslation('pages');
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [userHasInteracted, setUserHasInteracted] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  // Track when we're doing a programmatic scroll (timestamp-based for reliability)
+  const programmaticScrollUntilRef = useRef<number>(0);
 
-  if (!contentReady) {
+  // Calculate total items: 1 title card + upcoming events + past events
+  const totalItems = 1 + upcomingEvents.length + pastEvents.length;
+
+  // First past event index (0-based, after title + upcoming)
+  const firstPastEventIndex = 1 + upcomingEvents.length;
+
+  // Check if we're viewing past events
+  const isViewingPastEvents = currentIndex >= firstPastEventIndex && pastEvents.length > 0;
+
+  // Mark scroll as programmatic for a duration
+  const markProgrammaticScroll = useCallback((durationMs = 1000) => {
+    programmaticScrollUntilRef.current = Date.now() + durationMs;
+  }, []);
+
+  // Check if current scroll is programmatic
+  const isProgrammaticScroll = useCallback(() => {
+    return Date.now() < programmaticScrollUntilRef.current;
+  }, []);
+
+  // Scroll to a specific index
+  const scrollToIndex = useCallback(
+    (index: number) => {
+      if (containerRef.current) {
+        const sections = containerRef.current.querySelectorAll('[data-swipe-index]');
+        if (sections[index]) {
+          markProgrammaticScroll(1000);
+          sections[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    },
+    [markProgrammaticScroll]
+  );
+
+  // Store scrollToIndex in ref for use in onComplete callback
+  const scrollToIndexRef = useRef(scrollToIndex);
+  scrollToIndexRef.current = scrollToIndex;
+
+  // Store currentIndex in ref for use in onComplete callback
+  const currentIndexRef = useRef(currentIndex);
+  currentIndexRef.current = currentIndex;
+
+  // Auto-scroll mode hook
+  const {
+    progress: autoScrollProgress,
+    isActive: isAutoScrollActive,
+    imageParallaxY,
+    imageParallaxX,
+    contentParallaxY,
+    cancel: cancelAutoScroll,
+  } = useAutoScrollMode({
+    enabled: !userHasInteracted && totalItems > 1,
+    duration: 10000,
+    onComplete: () => {
+      // Use refs to get current values
+      const nextIndex = currentIndexRef.current + 1;
+      if (nextIndex < totalItems) {
+        scrollToIndexRef.current(nextIndex);
+      }
+    },
+    skipIndices: [0], // Skip title card (index 0)
+    currentIndex,
+  });
+
+  // Handle index change from swipe container
+  const handleIndexChange = useCallback(
+    (index: number) => {
+      setCurrentIndex(index);
+
+      // Only cancel auto-scroll if this was a user-initiated scroll
+      if (!isProgrammaticScroll() && !userHasInteracted) {
+        setUserHasInteracted(true);
+        cancelAutoScroll();
+      }
+    },
+    [userHasInteracted, cancelAutoScroll, isProgrammaticScroll]
+  );
+
+  // Handle auto-advance from title card (initial transition)
+  const handleAutoAdvance = useCallback(() => {
+    scrollToIndex(1);
+  }, [scrollToIndex]);
+
+  // Handle indicator click (always user-initiated)
+  const handleIndicatorClick = useCallback(
+    (index: number) => {
+      // Manual interaction cancels auto-scroll
+      if (!userHasInteracted) {
+        setUserHasInteracted(true);
+        cancelAutoScroll();
+      }
+      scrollToIndex(index);
+    },
+    [userHasInteracted, cancelAutoScroll, scrollToIndex]
+  );
+
+  // Detect touch/wheel events as user interaction
+  useEffect(() => {
+    if (userHasInteracted || !containerRef.current) return;
+
+    const container = containerRef.current;
+
+    const handleUserInteraction = () => {
+      // Only count as user interaction if not during programmatic scroll
+      if (!isProgrammaticScroll()) {
+        setUserHasInteracted(true);
+        cancelAutoScroll();
+      }
+    };
+
+    // Listen for touch start (manual swipe)
+    container.addEventListener('touchstart', handleUserInteraction, { passive: true });
+    // Listen for wheel (desktop scroll)
+    container.addEventListener('wheel', handleUserInteraction, { passive: true });
+
+    return () => {
+      container.removeEventListener('touchstart', handleUserInteraction);
+      container.removeEventListener('wheel', handleUserInteraction);
+    };
+  }, [userHasInteracted, cancelAutoScroll, isProgrammaticScroll]);
+
+  // Loading state
+  if (!contentReady || loading) {
     return (
       <div className='flex items-center justify-center min-h-screen relative z-10'>
         <FmCommonLoadingState message={t('home.loading')} />
@@ -99,180 +212,113 @@ export function IndexMobile({
     );
   }
 
-  const heroContent = (
-    <section
-      ref={heroRef}
-      className='h-screen snap-start snap-always flex items-center justify-center px-4'
-      data-section-id='hero'
-    >
-      <div className='max-w-7xl mx-auto'>
-        <div className='flex flex-col items-center text-center'>
-          <ForceMajeureLogo size='lg' className='mb-6 h-32 w-32' />
-          <h1
-            className='text-2xl font-screamer leading-none mb-8'
-            style={{ fontWeight: 475 }}
-          >
-            <span className='text-foreground'>FORCE </span>
-            <span className='bg-gradient-gold bg-clip-text text-transparent'>
-              MAJEURE
-            </span>
-          </h1>
-        </div>
-        <DecorativeDivider />
-      </div>
-      <MobileScrollCue />
-    </section>
-  );
-
-  const eventsContent = (
-    <section
-      ref={eventsRef}
-      className='h-screen snap-start snap-always flex items-center px-4'
-      data-section-id='events'
-    >
-      <div className='max-w-7xl mx-auto animate-fade-in w-full'>
-        {/* Upcoming Events */}
-        <div className='space-y-4 overflow-y-auto max-h-[80vh]'>
-          {loading ? (
-            Array.from({ length: 6 }).map((_, idx) => (
-              <EventCardSkeleton key={`skeleton-${idx}`} />
-            ))
-          ) : upcomingEvents.length > 0 ? (
-            upcomingEvents.map(event =>
-              event.is_tba ? (
-                <FmTbaEventCard
-                  key={event.id}
-                  event={{
-                    id: event.id,
-                    date: event.date,
-                    time: event.time,
-                    venue: event.venue !== 'TBA' ? event.venue : undefined,
-                    is_tba: true,
-                  }}
-                  isSingleRow={false}
-                />
-              ) : (
-                <EventCard key={event.id} event={event} isSingleRow={false} />
-              )
-            )
-          ) : (
-            <div className='flex flex-col items-center w-full my-[40px]'>
-              <FmArtistUndercardCard className='mb-[40px]' />
-              <FmCommonEmptyState
-                icon={CalendarX}
-                title={t('home.noUpcomingEvents')}
-                size='sm'
-                iconClassName='text-fm-gold'
-              />
-            </div>
-          )}
+  // Empty state - no events at all
+  if (upcomingEvents.length === 0 && totalPastEventsCount === 0) {
+    return (
+      <div className='relative min-h-screen'>
+        {/* Background */}
+        <div className='fixed inset-0 z-0'>
+          <TopographicBackground opacity={0.35} parallax={false} />
         </div>
 
-        {/* Divider between empty state and past events button */}
-        {!loading && upcomingEvents.length === 0 && totalPastEventsCount > 0 && (
-          <DecorativeDivider marginTop='mt-[40px]' marginBottom='mb-[20px]' opacity={0.2} />
-        )}
-
-        {/* Display Past Events Button */}
-        {!loading && totalPastEventsCount > 0 && (
-          <div className={`flex justify-center ${upcomingEvents.length === 0 ? 'mt-[20px]' : 'mt-[40px]'}`}>
-            <FmCommonButton
-              onClick={() => setShowPastEvents(!showPastEvents)}
-              variant='secondary'
-              icon={showPastEvents ? ChevronUp : History}
-              iconPosition='left'
-            >
-              {showPastEvents ? t('home.hidePastEvents') : t('home.showPastEvents')}
-            </FmCommonButton>
+        {/* Content */}
+        <div className='relative z-10 flex flex-col items-center justify-center min-h-screen px-[20px]'>
+          <MobileTitleCard autoAdvanceDelay={0} showScrollHint={false} />
+          <div className='mt-[40px]'>
+            <FmArtistUndercardCard className='mb-[40px]' />
+            <FmCommonEmptyState
+              icon={CalendarX}
+              title={t('home.noUpcomingEvents')}
+              size='sm'
+              iconClassName='text-fm-gold'
+            />
           </div>
-        )}
-
-        {/* Past Events Section */}
-        {!loading && showPastEvents && totalPastEventsCount > 0 && (
-          <div className='mt-[60px]'>
-            <div className='flex flex-col gap-[20px] mb-[40px]'>
-              <h2 className='text-2xl font-canela text-foreground'>
-                {t('home.pastEventsTitle')}
-              </h2>
-              <FmListSortFilter
-                sortBy={pastEventsSortBy}
-                onSortChange={onPastEventsSortChange}
-                sortOptions={[
-                  { value: 'date', label: t('events.sortByDate') },
-                  { value: 'name', label: t('events.sortByName') },
-                ]}
-                sortDirection={pastEventsSortDirection}
-                onSortDirectionChange={onPastEventsSortDirectionChange}
-                searchText={pastEventsSearchText}
-                onSearchChange={onPastEventsSearchChange}
-                dateRange={pastEventsDateRange}
-                onDateRangeChange={onPastEventsDateRangeChange}
-                compact
-              />
-            </div>
-            {pastEvents.length > 0 ? (
-              <div className='space-y-4'>
-                {pastEvents.map(event =>
-                  event.is_tba ? (
-                    <FmTbaEventCard
-                      key={event.id}
-                      event={{
-                        id: event.id,
-                        date: event.date,
-                        time: event.time,
-                        venue: event.venue !== 'TBA' ? event.venue : undefined,
-                      is_tba: true,
-                    }}
-                    isSingleRow={false}
-                  />
-                  ) : (
-                    <EventCard key={event.id} event={event} isSingleRow={false} isPastEvent />
-                  )
-                )}
-              </div>
-            ) : (
-              <FmCommonEmptyState
-                icon={CalendarX}
-                title={t('events.noMatchingEvents')}
-                size='sm'
-                iconClassName='text-fm-gold'
-              />
-            )}
-          </div>
-        )}
+        </div>
       </div>
-    </section>
-  );
+    );
+  }
+
+  // Get parallax offsets for current card (only apply to active event card, not title)
+  const getParallaxOffsets = (index: number) => {
+    if (index === currentIndex && currentIndex > 0 && isAutoScrollActive) {
+      return { imageParallaxY, imageParallaxX, contentParallaxY };
+    }
+    return { imageParallaxY: 0, imageParallaxX: 0, contentParallaxY: 0 };
+  };
 
   return (
-    <ParallaxLayerManager
-      layers={[
-        {
-          id: 'topography',
-          content: <TopographicBackground opacity={0.35} parallax={false} />,
-          speed: 0.3,
-          zIndex: 1,
-        },
-        {
-          id: 'gradient',
-          content: <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />,
-          speed: 0.5,
-          zIndex: 2,
-        },
-      ]}
-    >
-      <MobileScrollSnapWrapper enabled={true}>
-        {heroContent}
-        {eventsContent}
-        <MobileSectionIndicator
-          sections={[
-            { id: 'hero', label: t('home.welcome') },
-            { id: 'events', label: t('events.title') },
-          ]}
-          activeSection={activeSection}
-          onSectionClick={scrollToSection}
+    <div className='relative' ref={containerRef}>
+      {/* Fixed Background */}
+      <div className='fixed inset-0 z-0'>
+        <TopographicBackground opacity={0.35} parallax={false} />
+      </div>
+
+      {/* Swipe Container */}
+      <MobileEventSwipeContainer
+        onIndexChange={handleIndexChange}
+        currentIndex={currentIndex}
+        className='relative z-10'
+      >
+        {/* Title Card */}
+        <MobileTitleCard
+          onAutoAdvance={handleAutoAdvance}
+          autoAdvanceDelay={3000}
+          showScrollHint={upcomingEvents.length > 0 || pastEvents.length > 0}
+          autoAdvanceCancelled={userHasInteracted}
         />
-      </MobileScrollSnapWrapper>
-    </ParallaxLayerManager>
+
+        {/* Upcoming Events */}
+        {upcomingEvents.map((event, idx) => {
+          const eventIndex = 1 + idx; // Title card is index 0
+          const offsets = getParallaxOffsets(eventIndex);
+          return (
+            <MobileEventFullCard
+              key={event.id}
+              event={event}
+              isPastEvent={false}
+              imageParallaxY={offsets.imageParallaxY}
+              imageParallaxX={offsets.imageParallaxX}
+              contentParallaxY={offsets.contentParallaxY}
+            />
+          );
+        })}
+
+        {/* Past Events */}
+        {pastEvents.map((event, idx) => {
+          const eventIndex = 1 + upcomingEvents.length + idx;
+          const offsets = getParallaxOffsets(eventIndex);
+          return (
+            <MobileEventFullCard
+              key={event.id}
+              event={event}
+              isPastEvent={true}
+              imageParallaxY={offsets.imageParallaxY}
+              imageParallaxX={offsets.imageParallaxX}
+              contentParallaxY={offsets.contentParallaxY}
+            />
+          );
+        })}
+      </MobileEventSwipeContainer>
+
+      {/* Past Events Floating Header */}
+      <MobilePastEventsHeader
+        visible={isViewingPastEvents}
+        pastEventCount={pastEvents.length}
+      />
+
+      {/* Auto-Scroll Progress Bar */}
+      <MobileAutoScrollProgress
+        progress={autoScrollProgress}
+        isActive={isAutoScrollActive}
+      />
+
+      {/* Pagination Indicator */}
+      <MobileSwipeIndicator
+        totalCount={totalItems}
+        currentIndex={currentIndex}
+        upcomingCount={upcomingEvents.length}
+        onIndexClick={handleIndicatorClick}
+      />
+    </div>
   );
 }

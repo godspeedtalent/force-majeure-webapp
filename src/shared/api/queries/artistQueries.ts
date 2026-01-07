@@ -56,7 +56,9 @@ export interface ArtistWithDetails extends Artist {
 export interface CreateArtistData {
   name: string;
   bio?: string | null;
+  /** @deprecated Use gallery_id instead - images should be uploaded to the artist's gallery */
   image_url?: string | null;
+  gallery_id?: string | null;
   genre?: string | null;
   website?: string | null;
   spotify_id?: string | null;
@@ -134,7 +136,7 @@ export function useArtists() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('artists')
-        .select('id, name, bio, image_url, spotify_id, website, genre')
+        .select('id, name, bio, gallery_id, spotify_id, website, genre')
         .order('name', { ascending: true });
 
       if (error) {
@@ -163,7 +165,7 @@ export function useSearchArtists(query: string) {
 
       const { data, error } = await supabase
         .from('artists')
-        .select('id, name, bio, image_url, genre')
+        .select('id, name, bio, gallery_id, genre')
         .ilike('name', `%${query}%`)
         .order('name', { ascending: true })
         .limit(20);
@@ -196,7 +198,7 @@ export function useArtistsByGenre(genre: string | undefined) {
 
       const { data, error } = await supabase
         .from('artists')
-        .select('id, name, bio, image_url, genre')
+        .select('id, name, bio, gallery_id, genre')
         .eq('genre', genre)
         .order('name', { ascending: true });
 

@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash2, AlertTriangle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,6 +14,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/common/shadcn/alert-dialog';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { supabase, logger } from '@/shared';
 import { toast } from 'sonner';
@@ -71,17 +71,13 @@ export function DeleteAccountSection({ disabled = false }: DeleteAccountSectionP
   };
 
   return (
-    <FmCommonCard className='border-fm-danger/30'>
-      <FmCommonCardContent className='p-8 space-y-6'>
-        <div>
-          <h2 className='text-xl font-canela font-medium text-fm-danger mb-2'>
-            {t('profile.deleteAccount')}
-          </h2>
-          <p className='text-sm text-muted-foreground'>
-            {t('profile.deleteAccountDescription')}
-          </p>
-        </div>
-
+    <FmFormSection
+      title={t('profile.deleteAccount')}
+      description={t('profile.deleteAccountDescription')}
+      icon={AlertTriangle}
+      className='border-fm-danger/30'
+    >
+      <div className='space-y-4'>
         <div className='p-4 bg-fm-danger/10 border border-fm-danger/20'>
           <p className='text-sm text-muted-foreground'>
             {t('profile.deleteAccountWarning')}
@@ -119,7 +115,7 @@ export function DeleteAccountSection({ disabled = false }: DeleteAccountSectionP
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-      </FmCommonCardContent>
-    </FmCommonCard>
+      </div>
+    </FmFormSection>
   );
 }

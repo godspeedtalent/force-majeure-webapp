@@ -76,15 +76,15 @@ export const FmCommonButton = forwardRef<
 
     // Custom variant styles with enhanced animations
     const variantStyles = {
-      gold: 'bg-fm-gold hover:bg-fm-gold/90 text-black font-medium transition-all duration-200 hover:shadow-[0_0_20px_rgba(207,173,118,0.5)] hover:scale-105 active:scale-95',
+      gold: 'bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold font-medium transition-all duration-200 hover:bg-fm-gold/30 hover:shadow-[0_0_20px_rgba(207,173,118,0.5)] hover:scale-105 active:scale-95',
       default:
         'bg-white/5 border-white/30 hover:bg-fm-gold/20 hover:border-fm-gold hover:text-fm-gold transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]',
       secondary:
         'hover:bg-fm-gold/10 hover:border-fm-gold hover:text-fm-gold transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]',
       destructive:
-        'bg-transparent border border-destructive text-destructive hover:bg-destructive hover:text-black hover:border-destructive transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_hsl(var(--destructive)/0.3)]',
+        'bg-destructive/20 backdrop-blur-sm border border-destructive text-destructive hover:bg-destructive hover:text-black hover:border-destructive transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_0_12px_hsl(var(--destructive)/0.2)] hover:shadow-[0_0_20px_hsl(var(--destructive)/0.4)]',
       'destructive-outline':
-        'bg-transparent border border-destructive text-destructive hover:bg-destructive hover:text-black hover:border-destructive transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_hsl(var(--destructive)/0.3)]',
+        'bg-destructive/20 backdrop-blur-sm border border-destructive text-destructive hover:bg-destructive hover:text-black hover:border-destructive transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_0_12px_hsl(var(--destructive)/0.2)] hover:shadow-[0_0_20px_hsl(var(--destructive)/0.4)]',
     };
 
     return (

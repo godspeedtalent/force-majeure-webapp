@@ -5,6 +5,7 @@ import { MapPin, Users } from 'lucide-react';
 
 import { FmSocialLinks } from '@/components/common/display/FmSocialLinks';
 import { FmVenueMap } from '@/components/common/display/FmVenueMap';
+import { FmCommonExpandableText } from '@/components/common/display/FmCommonExpandableText';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/shared';
 import { getImageUrl } from '@/shared/utils/imageUtils';
@@ -88,11 +89,12 @@ export function FmVenueSpotlight({
     enabled: !!venue?.id,
   });
 
-  // Use gallery images if available, otherwise fall back to image_url
+  // Use gallery cover image as the featured image
+  // Gallery images with is_cover flag take priority (already sorted by query)
   const hasGalleryImages = galleryImages.length > 0;
   const mainImage = hasGalleryImages
     ? getImageUrl(galleryImages[selectedImageIndex]?.file_path)
-    : venue.image_url || VENUE_PLACEHOLDER_IMAGE;
+    : VENUE_PLACEHOLDER_IMAGE;
   const thumbnailImages = hasGalleryImages
     ? galleryImages.filter((_, i) => i !== selectedImageIndex).slice(0, 3)
     : [];
@@ -220,13 +222,20 @@ export function FmVenueSpotlight({
           )}
 
           {/* Description */}
-          <div
-            className={cn(
-              'text-sm text-white/60 leading-loose font-canela whitespace-pre-wrap italic px-1',
-              !venue.description && 'text-white/40'
+          <div className='px-1'>
+            {venue.description ? (
+              <FmCommonExpandableText
+                text={venue.description}
+                lineClamp={3}
+                className='text-sm text-white/60 italic leading-[1.8]'
+                showMoreLabel={tCommon('buttons.showMore', 'Show more')}
+                showLessLabel={tCommon('buttons.showLess', 'Show less')}
+              />
+            ) : (
+              <p className='text-sm text-white/40 leading-[1.8] font-canela italic'>
+                {tCommon('venueProfile.noDescriptionAvailable', 'More information about this venue will be available soon.')}
+              </p>
             )}
-          >
-            {venue.description || tCommon('venueProfile.noDescriptionAvailable', 'More information about this venue will be available soon.')}
           </div>
 
           {/* Map - Mobile */}
@@ -248,8 +257,8 @@ export function FmVenueSpotlight({
           {/* Social Links - Mobile */}
           {(hasSocialLinks || footerAction) && (
             <>
-              <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent mt-4' />
-              <div className='flex items-center justify-between mt-3'>
+              <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-fm-gold/40 to-transparent mt-4' />
+              <div className='flex flex-wrap items-center justify-between gap-3 mt-3'>
                 {hasSocialLinks ? (
                   <FmSocialLinks
                     website={venue.website}
@@ -259,12 +268,12 @@ export function FmVenueSpotlight({
                     tiktok={venue.tiktok_handle}
                     twitter={venue.twitter_handle}
                     size='sm'
-                    gap='md'
+                    gap='sm'
                   />
                 ) : (
                   <div />
                 )}
-                {footerAction}
+                <div className='flex-shrink-0'>{footerAction}</div>
               </div>
             </>
           )}
@@ -358,13 +367,20 @@ export function FmVenueSpotlight({
               </div>
 
               {/* Description */}
-              <div
-                className={cn(
-                  'max-w-none text-sm text-white/60 leading-loose font-canela flex-1 whitespace-pre-wrap italic px-1',
-                  !venue.description && 'text-white/40'
+              <div className='flex-1 px-1'>
+                {venue.description ? (
+                  <FmCommonExpandableText
+                    text={venue.description}
+                    lineClamp={4}
+                    className='text-sm text-white/60 italic leading-[1.8]'
+                    showMoreLabel={tCommon('buttons.showMore', 'Show more')}
+                    showLessLabel={tCommon('buttons.showLess', 'Show less')}
+                  />
+                ) : (
+                  <p className='text-sm text-white/40 leading-[1.8] font-canela italic'>
+                    {tCommon('venueProfile.noDescriptionAvailable', 'More information about this venue will be available soon.')}
+                  </p>
                 )}
-              >
-                {venue.description || tCommon('venueProfile.noDescriptionAvailable', 'More information about this venue will be available soon.')}
               </div>
             </div>
           </div>
@@ -387,8 +403,8 @@ export function FmVenueSpotlight({
           {/* Social Links - Desktop */}
           {(hasSocialLinks || footerAction) && (
             <>
-              <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent mt-[20px]' />
-              <div className='flex items-center justify-between mt-[15px]'>
+              <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-fm-gold/40 to-transparent mt-[20px]' />
+              <div className='flex flex-wrap items-center justify-between gap-3 mt-[15px]'>
                 {hasSocialLinks ? (
                   <FmSocialLinks
                     website={venue.website}
@@ -398,12 +414,12 @@ export function FmVenueSpotlight({
                     tiktok={venue.tiktok_handle}
                     twitter={venue.twitter_handle}
                     size='md'
-                    gap='md'
+                    gap='sm'
                   />
                 ) : (
                   <div />
                 )}
-                {footerAction}
+                <div className='flex-shrink-0'>{footerAction}</div>
               </div>
             </>
           )}

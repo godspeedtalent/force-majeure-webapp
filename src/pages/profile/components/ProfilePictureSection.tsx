@@ -112,16 +112,19 @@ export function ProfilePictureSection() {
           </p>
         </div>
 
-        <div className='flex items-center gap-6'>
-          <FmCommonUserPhoto
-            src={profile?.avatar_url}
-            name={profile?.display_name || user.email}
-            size='2xl'
-            showBorder={true}
-            useAnimatedGradient={!profile?.avatar_url}
-          />
+        <div className='flex flex-col items-center gap-4'>
+          <div className='w-32 h-40'>
+            <FmCommonUserPhoto
+              src={profile?.avatar_url}
+              name={profile?.display_name || user.email}
+              size='square'
+              showBorder={true}
+              useAnimatedGradient={!profile?.avatar_url}
+              className='w-full h-full'
+            />
+          </div>
 
-          <div className='flex-1 space-y-3'>
+          <div className='flex flex-col items-center gap-2'>
             <input
               ref={fileInputRef}
               type='file'
@@ -138,7 +141,7 @@ export function ProfilePictureSection() {
             >
               {isUploadingImage ? t('imageUpload.uploading') : t('profilePicture.uploadPhoto')}
             </FmCommonButton>
-            <p className='text-xs text-muted-foreground'>
+            <p className='text-xs text-muted-foreground text-center'>
               {t('profilePicture.formatSpecs')}
             </p>
           </div>

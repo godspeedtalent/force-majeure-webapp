@@ -525,3 +525,81 @@ export const GOLD_ACCENT_STYLES = {
    */
   GLOW_STRONG: 'shadow-[0_4px_24px_rgba(223,186,125,0.5)]',
 } as const;
+
+/**
+ * Destructive/Danger button styling constants
+ * Centralized danger-themed styles for destructive actions
+ *
+ * Pattern: Frosted danger background with solid danger on hover
+ * - Default: bg-destructive/20 with danger border/text and subtle glow
+ * - Hover: Solid bg-destructive with black text
+ *
+ * @example
+ * ```tsx
+ * // Danger button
+ * <button className={DANGER_BUTTON_STYLES.BASE}>Delete</button>
+ *
+ * // Danger icon button
+ * <button className={DANGER_BUTTON_STYLES.ICON}>
+ *   <TrashIcon />
+ * </button>
+ * ```
+ */
+export const DANGER_BUTTON_STYLES = {
+  /**
+   * Base danger button style
+   * Frosted danger background, turns solid on hover
+   */
+  BASE: cn(
+    'bg-destructive/20 backdrop-blur-sm',
+    'border border-destructive',
+    'text-destructive',
+    'hover:bg-destructive hover:text-black hover:border-destructive',
+    'shadow-[0_0_12px_hsl(var(--destructive)/0.2)]',
+    'hover:shadow-[0_0_20px_hsl(var(--destructive)/0.4)]',
+    'transition-all duration-200'
+  ),
+
+  /**
+   * Danger button with scale animation
+   * Includes hover scale-up and active scale-down
+   */
+  WITH_SCALE: cn(
+    'bg-destructive/20 backdrop-blur-sm',
+    'border border-destructive',
+    'text-destructive',
+    'hover:bg-destructive hover:text-black hover:border-destructive',
+    'shadow-[0_0_12px_hsl(var(--destructive)/0.2)]',
+    'hover:shadow-[0_0_20px_hsl(var(--destructive)/0.4)]',
+    'hover:scale-105 active:scale-95',
+    'transition-all duration-200'
+  ),
+
+  /**
+   * Danger text color only (for icons or text without button background)
+   */
+  TEXT: 'text-destructive',
+
+  /**
+   * Danger border only
+   */
+  BORDER: 'border border-destructive',
+
+  /**
+   * Danger glow effect (subtle)
+   */
+  GLOW: 'shadow-[0_0_12px_hsl(var(--destructive)/0.2)]',
+
+  /**
+   * Danger glow effect (strong, for hover states)
+   */
+  GLOW_STRONG: 'shadow-[0_0_20px_hsl(var(--destructive)/0.4)]',
+
+  /**
+   * Hover state classes only (for custom implementations)
+   */
+  HOVER_CLASSES: cn(
+    'hover:bg-destructive hover:text-black hover:border-destructive',
+    'hover:shadow-[0_0_20px_hsl(var(--destructive)/0.4)]'
+  ),
+} as const;

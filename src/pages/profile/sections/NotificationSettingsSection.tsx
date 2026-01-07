@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { Bell } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { FmCommonSwitch } from '@/components/common/forms/FmCommonSwitch';
+import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { logger } from '@/shared';
 import type { NotificationPreferences } from '../types/notifications';
@@ -88,30 +88,18 @@ export function NotificationSettingsSection({ disabled = false }: NotificationSe
   };
 
   return (
-    <FmCommonCard>
-      <FmCommonCardContent className='p-8 space-y-6'>
-        <div className='flex items-center gap-3'>
-          <Bell className='h-5 w-5 text-fm-gold' />
-          <div>
-            <h2 className='text-xl font-canela font-medium text-foreground'>
-              {t('profile.notifications')}
-            </h2>
-            <p className='text-sm text-muted-foreground'>
-              {t('profile.notificationsDescription')}
-            </p>
-          </div>
-        </div>
-
-        <div className='space-y-4'>
-          <FmCommonSwitch
-            label={t('profile.emailNotifications')}
-            description={t('profile.emailNotificationsDescription')}
-            checked={emailEnabled}
-            onCheckedChange={handleToggleNotifications}
-            disabled={disabled || isSaving}
-          />
-        </div>
-      </FmCommonCardContent>
-    </FmCommonCard>
+    <FmFormSection
+      title={t('profile.notifications')}
+      description={t('profile.notificationsDescription')}
+      icon={Bell}
+    >
+      <FmCommonSwitch
+        label={t('profile.emailNotifications')}
+        description={t('profile.emailNotificationsDescription')}
+        checked={emailEnabled}
+        onCheckedChange={handleToggleNotifications}
+        disabled={disabled || isSaving}
+      />
+    </FmFormSection>
   );
 }
