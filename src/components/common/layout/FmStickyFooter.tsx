@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { cn } from '@/shared';
+import { cn, useIsMobile } from '@/shared';
 
 interface FmStickyFooterProps {
   children: ReactNode;
@@ -14,15 +14,22 @@ interface FmStickyFooterProps {
  * - Adds appropriate padding to prevent button clipping
  * - Backdrop blur and gradient background
  * - Smooth shadow for elevation
+ * - On mobile, adds extra bottom margin to clear the mobile tab bar
  */
 export const FmStickyFooter = ({
   children,
   className,
 }: FmStickyFooterProps) => {
+  const isMobile = useIsMobile();
+
+  // Mobile bottom tab bar is ~70px + safe area, account for it
+  const bottomOffset = isMobile ? 'bottom-[70px]' : 'bottom-0';
+
   return (
     <div
       className={cn(
-        'sticky bottom-0 left-0 right-0 z-40',
+        'sticky left-0 right-0 z-40',
+        bottomOffset,
         'border-t border-border/50',
         'bg-gradient-to-t from-background via-background/98 to-background/95',
         'backdrop-blur-xl',

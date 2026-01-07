@@ -6,6 +6,7 @@ import {
   MapPin,
   Clock,
   Mic2,
+  Award,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -15,19 +16,17 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonInfoCard } from '@/components/common/display/FmCommonInfoCard';
 import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/common/shadcn/tabs';
+  FmCommonTabs,
+  FmCommonTabsContent,
+  FmCommonTabsList,
+  FmCommonTabsTrigger,
+} from '@/components/common/navigation/FmCommonTabs';
 import { Badge } from '@/components/common/shadcn/badge';
 import { UserArtistTab } from '@/components/profile/UserArtistTab';
 import { FmI18nCommon } from '@/components/common/i18n';
 import { ProfileLayoutProps } from './types';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { useAuth } from '@/features/auth/services/AuthContext';
-
-const GOLD_TAB_CLASSES = 'rounded-none data-[state=active]:bg-fm-gold data-[state=active]:text-black data-[state=active]:shadow-none font-canela';
 
 export const MobileProfileLayout = ({
   user,
@@ -36,6 +35,7 @@ export const MobileProfileLayout = ({
   loadingShows,
   hasLinkedArtist,
   linkedArtistName,
+  linkedArtistDate,
   loadingArtist,
   createdAt,
 }: ProfileLayoutProps) => {
@@ -50,7 +50,7 @@ export const MobileProfileLayout = ({
   return (
     <div className='h-[calc(100vh-64px)] flex flex-col overflow-hidden'>
       {/* Fixed Header Section */}
-      <div className='flex-shrink-0 px-4 pt-4 pb-2 space-y-4'>
+      <div className='flex-shrink-0 px-6 pt-4 pb-2 space-y-4'>
         {/* Header Row - Back Button + Edit Profile */}
         <div className='flex items-center justify-between'>
           <FmCommonButton
@@ -83,9 +83,9 @@ export const MobileProfileLayout = ({
             name={profile?.display_name || user.email}
             size='square'
             useAnimatedGradient={!profile?.avatar_url}
-            className='flex-shrink-0 w-24 h-24'
+            className='flex-1 w-24 h-24 max-w-24'
           />
-          <div className='min-w-0'>
+          <div className='flex-[2] min-w-0'>
             <h2 className='text-xl font-canela font-medium text-foreground truncate'>
               {profile?.display_name || t('profile.defaultName')}
             </h2>
@@ -95,33 +95,36 @@ export const MobileProfileLayout = ({
       </div>
 
       {/* Tabs Container - Fixed tabs, scrollable content */}
-      <Tabs defaultValue='upcoming' className='flex-1 flex flex-col overflow-hidden px-4'>
-        <TabsList className={`grid w-full flex-shrink-0 ${hasLinkedArtist ? 'grid-cols-3' : 'grid-cols-2'}`}>
-          <TabsTrigger value='upcoming' className={GOLD_TAB_CLASSES}>{t('profile.shows')}</TabsTrigger>
+      <FmCommonTabs defaultValue='upcoming' className='flex-1 flex flex-col overflow-hidden px-6'>
+        <FmCommonTabsList className={`grid w-full flex-shrink-0 ${hasLinkedArtist ? 'grid-cols-3' : 'grid-cols-2'}`}>
+          <FmCommonTabsTrigger value='upcoming'>{t('profile.shows')}</FmCommonTabsTrigger>
           {hasLinkedArtist && (
-            <TabsTrigger value='artist' className={`flex items-center gap-1 ${GOLD_TAB_CLASSES}`}>
+            <FmCommonTabsTrigger value='artist' className='flex items-center gap-1'>
               {loadingArtist ? (
                 <div className='h-3 w-3 border-2 border-fm-gold/30 border-t-fm-gold rounded-full animate-spin' />
               ) : (
                 <Mic2 className='h-3 w-3' />
               )}
               {t('profile.artist')}
-            </TabsTrigger>
+            </FmCommonTabsTrigger>
           )}
-          <TabsTrigger value='account' className={GOLD_TAB_CLASSES}>{t('profile.account')}</TabsTrigger>
-        </TabsList>
+          <FmCommonTabsTrigger value='accolades' className='flex items-center gap-1'>
+            <Award className='h-3 w-3' />
+            {t('profile.accolades')}
+          </FmCommonTabsTrigger>
+        </FmCommonTabsList>
 
         {/* Scrollable Content Area */}
         <div className='flex-1 overflow-y-auto mt-4 pb-4'>
           {/* Artist Tab - only shown if user has linked artist */}
           {hasLinkedArtist && (
-            <TabsContent value='artist' className='mt-0 h-full'>
+            <FmCommonTabsContent value='artist' className='mt-0 h-full'>
               <UserArtistTab />
-            </TabsContent>
+            </FmCommonTabsContent>
           )}
 
           {/* Upcoming Shows Tab */}
-          <TabsContent value='upcoming' className='space-y-3 mt-0'>
+          <FmCommonTabsContent value='upcoming' className='space-y-3 mt-0'>
             {loadingShows ? (
               <FmI18nCommon i18nKey='profile.loadingShows' as='div' className='text-center py-8 text-muted-foreground' />
             ) : upcomingShows.length === 0 ? (
@@ -212,10 +215,10 @@ export const MobileProfileLayout = ({
                 })}
               </div>
             )}
-          </TabsContent>
+          </FmCommonTabsContent>
 
-          {/* Account Information Tab */}
-          <TabsContent value='account' className='space-y-3 mt-0'>
+          {/* Accolades Tab */}
+          <FmCommonTabsContent value='accolades' className='space-y-3 mt-0'>
             <FmCommonInfoCard
               icon={Calendar}
               label={t('profile.memberSince')}
@@ -227,14 +230,23 @@ export const MobileProfileLayout = ({
               <FmCommonInfoCard
                 icon={Mic2}
                 label={t('profile.linkedArtist')}
-                value={linkedArtistName}
+                value={
+                  <div>
+                    <span>{linkedArtistName}</span>
+                    {linkedArtistDate && (
+                      <span className='block text-xs text-muted-foreground mt-0.5'>
+                        {t('profile.linkedSince', { date: linkedArtistDate })}
+                      </span>
+                    )}
+                  </div>
+                }
                 size='sm'
                 iconClassName='text-fm-gold'
               />
             )}
-          </TabsContent>
+          </FmCommonTabsContent>
         </div>
-      </Tabs>
+      </FmCommonTabs>
     </div>
   );
 };

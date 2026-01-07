@@ -21,6 +21,7 @@ export interface ProfileLayoutProps {
   loadingShows: boolean;
   hasLinkedArtist: boolean;
   linkedArtistName?: string | null;
+  linkedArtistDate?: string | null;
   loadingArtist: boolean;
   createdAt: string;
 }

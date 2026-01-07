@@ -86,7 +86,7 @@ export const FmArtistDetailsModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-w-3xl max-h-[90vh] p-0 gap-0 border-x-2 border-y-4 border-fm-gold/30 border-t-fm-gold border-b-fm-gold bg-gradient-to-br from-black/95 to-neutral-900/95 backdrop-blur-xl overflow-hidden flex flex-col shadow-[0_8px_32px_rgba(0,0,0,0.5)]'>
+      <DialogContent className='w-[calc(100%-2rem)] sm:w-full max-w-3xl max-h-[90vh] p-0 gap-0 border-x-2 border-y-4 border-fm-gold/30 border-t-fm-gold border-b-fm-gold bg-gradient-to-br from-black/95 to-neutral-900/95 backdrop-blur-xl overflow-hidden flex flex-col shadow-[0_8px_32px_rgba(0,0,0,0.5)]'>
         <DialogTitle className='sr-only'>
           {artist?.name ?? t('artistDetails.defaultTitle')}
         </DialogTitle>

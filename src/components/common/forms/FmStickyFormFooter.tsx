@@ -10,7 +10,7 @@ import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Save, AlertCircle } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { cn } from '@/shared';
+import { cn, useIsMobile } from '@/shared';
 
 interface FmStickyFormFooterProps {
   /** Whether the form has unsaved changes */
@@ -42,15 +42,20 @@ export function FmStickyFormFooter({
   savingText,
 }: FmStickyFormFooterProps) {
   const { t } = useTranslation('common');
+  const isMobile = useIsMobile();
 
   const buttonText = isSaving
     ? (savingText || t('buttons.saving'))
     : (saveText || t('buttons.saveChanges'));
 
+  // Mobile bottom tab bar is ~70px + safe area, so use 90px bottom offset
+  const bottomOffset = isMobile ? 'bottom-[90px]' : 'bottom-6';
+
   return (
     <div
       className={cn(
-        'fixed bottom-6 right-6 z-50',
+        'fixed right-6 z-50',
+        bottomOffset,
         'flex items-center gap-3',
         'p-4 rounded-none',
         'bg-black/80 backdrop-blur-lg',

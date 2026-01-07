@@ -43,10 +43,11 @@ export const MobileSectionIndicator = ({
   // Don't render on desktop
   if (!isMobile) return null;
 
+  // Position above mobile tab bar (tab bar is ~70px + safe area)
   return (
     <div
       className={cn(
-        'fixed bottom-[40px] left-1/2 -translate-x-1/2 z-40',
+        'fixed bottom-[90px] left-1/2 -translate-x-1/2 z-40',
         'flex items-center gap-[10px]',
         'px-[20px] py-[10px]',
         'bg-black/70 backdrop-blur-md',

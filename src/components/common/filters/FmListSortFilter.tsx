@@ -126,7 +126,7 @@ export function FmListSortFilter({
               'pl-7 pr-7 h-8 text-xs bg-transparent border-white/20',
               'focus:border-fm-gold/50 focus:ring-0',
               'placeholder:text-muted-foreground/60',
-              compact ? 'w-[140px]' : 'w-[180px]'
+              compact ? 'w-[280px]' : 'w-[360px]'
             )}
           />
           {searchText && (
@@ -166,7 +166,7 @@ export function FmListSortFilter({
             type='button'
             onClick={handleDirectionToggle}
             className={cn(
-              'p-1.5 border border-white/20 bg-transparent',
+              'h-8 w-8 flex items-center justify-center border border-white/20 bg-transparent',
               'hover:bg-white/5 hover:border-fm-gold/30',
               'transition-all duration-200',
               'text-muted-foreground hover:text-fm-gold'

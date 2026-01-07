@@ -363,7 +363,7 @@ export function ComponentRelationshipGraph() {
 
       {/* Legend */}
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4 text-sm'>
-        <div className='space-y-2 p-4 bg-muted/50 rounded-lg border border-border'>
+        <div className='space-y-2 p-4 bg-muted/50 rounded-none border border-border'>
           <h4 className='font-semibold text-fm-gold'>Visual Guide</h4>
           <ul className='space-y-1 text-muted-foreground'>
             <li className='flex items-center gap-2'>
@@ -394,7 +394,7 @@ export function ComponentRelationshipGraph() {
           </ul>
         </div>
 
-        <div className='space-y-2 p-4 bg-muted/50 rounded-lg border border-border'>
+        <div className='space-y-2 p-4 bg-muted/50 rounded-none border border-border'>
           <h4 className='font-semibold text-fm-gold'>Component Categories</h4>
           <div className='grid grid-cols-2 gap-2 text-xs'>
             {Object.entries(categoryColors).map(([category, color]) => (
@@ -410,7 +410,7 @@ export function ComponentRelationshipGraph() {
         </div>
       </div>
 
-      <div className='p-4 bg-muted/50 rounded-lg border border-border'>
+      <div className='p-4 bg-muted/50 rounded-none border border-border'>
         <h4 className='font-semibold text-fm-gold mb-2'>Key Relationships</h4>
         <ul className='text-sm text-muted-foreground space-y-1'>
           <li>

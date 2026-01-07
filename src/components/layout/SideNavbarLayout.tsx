@@ -106,7 +106,7 @@ export const SideNavbarLayout = <T extends string>({
               className={cn(
                 'max-w-full relative z-10',
                 isMobile ? 'h-full overflow-y-auto px-4 py-4' : 'm-10',
-                isMobile && mobileTabBar && 'pb-[100px]' // Extra padding for tab bar
+                isMobile && mobileTabBar && 'pb-[120px]' // Extra padding for mobile tab bar (~70px + safe area + spacing)
               )}
             >
               {(showBackButton || backButtonActions) && (

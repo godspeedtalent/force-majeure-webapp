@@ -14,7 +14,7 @@ import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES, PERMISSIONS } from '@/shared';
 import { useAnalytics } from '@/features/analytics';
 
-import { EventHero } from './EventHero';
+import { EventHero, EventHeroActions } from './EventHero';
 import { EventDetailsContent } from './EventDetailsContent';
 import { useEventDetails } from './hooks/useEventDetails';
 
@@ -142,9 +142,8 @@ export const EventDetailsPage = () => {
       <Navigation />
       <PageTransition>
         <EventDetailsLayout
-          leftColumn={
-            <EventHero
-              event={event}
+          actions={
+            <EventHeroActions
               canManage={canManage}
               onBack={() => navigate('/')}
               onManage={
@@ -152,6 +151,7 @@ export const EventDetailsPage = () => {
               }
             />
           }
+          leftColumn={<EventHero event={event} />}
           rightColumn={
             <EventDetailsContent
               event={event}

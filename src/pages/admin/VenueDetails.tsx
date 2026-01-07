@@ -1,12 +1,11 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, MapPin, Calendar, ExternalLink, Users } from 'lucide-react';
+import { MapPin, ExternalLink, Users } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
 import { FmCommonCard, FmCommonCardContent, FmCommonCardHeader, FmCommonCardTitle } from '@/components/common/display/FmCommonCard';
-import { Separator } from '@/components/common/shadcn/separator';
-import { format } from 'date-fns';
 import { useVenueById } from '@/shared';
 import { DetailPageWrapper } from '@/components/layout/DetailPageWrapper';
+import { FmCommonDetailPageLayout } from '@/components/common/layout/FmCommonDetailPageLayout';
 
 export default function VenueDetails() {
   const { t } = useTranslation('common');
@@ -29,147 +28,79 @@ export default function VenueDetails() {
           .join(', ');
 
         return (
-          <div className='w-full lg:w-[70%] mx-auto py-8 px-4 space-y-6'>
-            {/* Header */}
-            <div className='flex items-center justify-between'>
-              <div className='flex items-center gap-4'>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  onClick={() => navigate(-1)}
-                  className='border-white/20 hover:bg-white/10'
-                >
-                  <ArrowLeft className='h-4 w-4 mr-2' />
-                  {t('buttons.back')}
-                </Button>
+          <FmCommonDetailPageLayout
+            title={venue.name}
+            subtitle={t('adminDetails.venueDetails')}
+            icon={MapPin}
+            entityId={venue.id}
+            idLabel={t('adminDetails.venueId')}
+            createdAt={venue.created_at}
+            updatedAt={venue.updated_at}
+            actions={
+              <Button
+                variant='outline'
+                className='w-full border-white/20 hover:bg-white/10'
+                onClick={() => navigate(`/admin/venues`)}
+              >
+                {t('adminDetails.backToVenuesList')}
+              </Button>
+            }
+          >
+            <FmCommonCard>
+              <FmCommonCardHeader>
+                <FmCommonCardTitle>{t('adminDetails.basicInformation')}</FmCommonCardTitle>
+              </FmCommonCardHeader>
+              <FmCommonCardContent className='space-y-4'>
+                {venue.image_url && (
+                  <div>
+                    <img
+                      src={venue.image_url}
+                      alt={venue.name}
+                      className='w-full max-h-64 object-cover rounded-none border-2 border-fm-gold/30'
+                    />
+                  </div>
+                )}
+
                 <div>
-                  <h1 className='text-3xl font-bold flex items-center gap-3'>
-                    <MapPin className='h-8 w-8 text-fm-gold' />
-                    {venue.name}
-                  </h1>
-                  <p className='text-muted-foreground mt-1'>{t('adminDetails.venueDetails')}</p>
+                  <label className='text-sm text-muted-foreground'>{t('labels.name')}</label>
+                  <p className='text-lg font-medium'>{venue.name}</p>
                 </div>
-              </div>
-            </div>
 
-            <Separator />
-
-            {/* Main Content */}
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-              {/* Left Column - Main Info */}
-              <div className='md:col-span-2 space-y-6'>
-                {/* Basic Information */}
-                <FmCommonCard>
-                  <FmCommonCardHeader>
-                    <FmCommonCardTitle>{t('adminDetails.basicInformation')}</FmCommonCardTitle>
-                  </FmCommonCardHeader>
-                  <FmCommonCardContent className='space-y-4'>
-                    {venue.image_url && (
-                      <div>
-                        <img
-                          src={venue.image_url}
-                          alt={venue.name}
-                          className='w-full max-h-64 object-cover rounded-none border-2 border-fm-gold/30'
-                        />
-                      </div>
-                    )}
-
-                    <div>
-                      <label className='text-sm text-muted-foreground'>{t('labels.name')}</label>
-                      <p className='text-lg font-medium'>{venue.name}</p>
-                    </div>
-
+                {fullAddress && (
+                  <div>
+                    <label className='text-sm text-muted-foreground flex items-center gap-2'>
+                      <MapPin className='h-4 w-4' />
+                      {t('labels.address')}
+                    </label>
+                    <p>{fullAddress}</p>
                     {fullAddress && (
-                      <div>
-                        <label className='text-sm text-muted-foreground flex items-center gap-2'>
-                          <MapPin className='h-4 w-4' />
-                          {t('labels.address')}
-                        </label>
-                        <p>{fullAddress}</p>
-                        {fullAddress && (
-                          <a
-                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`}
-                            target='_blank'
-                            rel='noopener noreferrer'
-                            className='text-sm text-fm-gold hover:underline inline-flex items-center gap-1 mt-1'
-                          >
-                            {t('adminDetails.openInGoogleMaps')}
-                            <ExternalLink className='h-3 w-3' />
-                          </a>
-                        )}
-                      </div>
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='text-sm text-fm-gold hover:underline inline-flex items-center gap-1 mt-1'
+                      >
+                        {t('adminDetails.openInGoogleMaps')}
+                        <ExternalLink className='h-3 w-3' />
+                      </a>
                     )}
+                  </div>
+                )}
 
-                    {venue.capacity && (
-                      <div>
-                        <label className='text-sm text-muted-foreground flex items-center gap-2'>
-                          <Users className='h-4 w-4' />
-                          {t('labels.capacity')}
-                        </label>
-                        <p className='text-lg font-semibold text-fm-gold'>
-                          {venue.capacity.toLocaleString()} {t('adminDetails.people')}
-                        </p>
-                      </div>
-                    )}
-                  </FmCommonCardContent>
-                </FmCommonCard>
-              </div>
-
-              {/* Right Column - Metadata */}
-              <div className='space-y-6'>
-                <FmCommonCard>
-                  <FmCommonCardHeader>
-                    <FmCommonCardTitle>{t('adminDetails.metadata')}</FmCommonCardTitle>
-                  </FmCommonCardHeader>
-                  <FmCommonCardContent className='space-y-3'>
-                    <div>
-                      <label className='text-sm text-muted-foreground'>{t('adminDetails.venueId')}</label>
-                      <p className='font-mono text-sm'>{venue.id}</p>
-                    </div>
-
-                    {venue.created_at && (
-                      <div>
-                        <label className='text-sm text-muted-foreground flex items-center gap-2'>
-                          <Calendar className='h-4 w-4' />
-                          {t('adminDetails.created')}
-                        </label>
-                        <p className='text-sm'>
-                          {format(new Date(venue.created_at), 'PPP')}
-                        </p>
-                      </div>
-                    )}
-
-                    {venue.updated_at && (
-                      <div>
-                        <label className='text-sm text-muted-foreground flex items-center gap-2'>
-                          <Calendar className='h-4 w-4' />
-                          {t('adminDetails.lastUpdated')}
-                        </label>
-                        <p className='text-sm'>
-                          {format(new Date(venue.updated_at), 'PPP')}
-                        </p>
-                      </div>
-                    )}
-                  </FmCommonCardContent>
-                </FmCommonCard>
-
-                <FmCommonCard>
-                  <FmCommonCardHeader>
-                    <FmCommonCardTitle>{t('adminDetails.actions')}</FmCommonCardTitle>
-                  </FmCommonCardHeader>
-                  <FmCommonCardContent className='space-y-2'>
-                    <Button
-                      variant='outline'
-                      className='w-full border-white/20 hover:bg-white/10'
-                      onClick={() => navigate(`/admin/venues`)}
-                    >
-                      {t('adminDetails.backToVenuesList')}
-                    </Button>
-                  </FmCommonCardContent>
-                </FmCommonCard>
-              </div>
-            </div>
-          </div>
+                {venue.capacity && (
+                  <div>
+                    <label className='text-sm text-muted-foreground flex items-center gap-2'>
+                      <Users className='h-4 w-4' />
+                      {t('labels.capacity')}
+                    </label>
+                    <p className='text-lg font-semibold text-fm-gold'>
+                      {venue.capacity.toLocaleString()} {t('adminDetails.people')}
+                    </p>
+                  </div>
+                )}
+              </FmCommonCardContent>
+            </FmCommonCard>
+          </FmCommonDetailPageLayout>
         );
       }}
     </DetailPageWrapper>

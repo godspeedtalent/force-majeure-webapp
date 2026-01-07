@@ -3,12 +3,16 @@ import { ArrowLeft, Settings, ImageOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
 import { cn } from '@/shared';
 
 import { EventDetailsRecord } from './types';
 
 interface EventHeroProps {
   event: EventDetailsRecord;
+}
+
+interface EventHeroActionsProps {
   canManage: boolean;
   onBack: () => void;
   onManage?: () => void;
@@ -22,13 +26,65 @@ const isPlaceholderImage = (src: string): boolean => {
   return src === '/placeholder.svg' || src.includes('placeholder');
 };
 
-export const EventHero = ({
-  event,
+/**
+ * Action buttons for the event hero (back, manage)
+ * Rendered separately via layout to avoid stacking context issues
+ */
+export const EventHeroActions = ({
   canManage,
   onBack,
   onManage,
-}: EventHeroProps) => {
+}: EventHeroActionsProps) => {
   const { t } = useTranslation('pages');
+
+  return (
+    <>
+      {/* Back button - icon only on mobile, with text on desktop */}
+      <FmCommonIconButton
+        variant='secondary'
+        size='default'
+        onClick={onBack}
+        icon={ArrowLeft}
+        tooltip={t('eventDetails.back')}
+        className='lg:hidden text-white bg-black/40 hover:bg-black/20 backdrop-blur-sm border-white border-2 hover:border-fm-gold hover:text-fm-gold hover:shadow-[0_0_20px_rgba(255,255,255,0.6)]'
+      />
+      <FmCommonButton
+        variant='secondary'
+        size='default'
+        onClick={onBack}
+        icon={ArrowLeft}
+        className='hidden lg:flex text-white bg-black/40 hover:bg-black/20 backdrop-blur-sm border-white border-2 hover:border-fm-gold hover:text-fm-gold hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] transition-colors duration-200 px-4'
+      >
+        {t('eventDetails.back')}
+      </FmCommonButton>
+
+      {/* Manage button - icon only on mobile, with text on desktop */}
+      {canManage && (
+        <>
+          <FmCommonIconButton
+            variant='secondary'
+            size='default'
+            onClick={onManage}
+            icon={Settings}
+            tooltip={t('eventDetails.manage')}
+            className='lg:hidden text-white bg-black/40 hover:bg-black/20 backdrop-blur-sm border-white border-2 hover:border-fm-gold hover:text-fm-gold hover:shadow-[0_0_20px_rgba(255,255,255,0.6)]'
+          />
+          <FmCommonButton
+            variant='secondary'
+            size='default'
+            onClick={onManage}
+            icon={Settings}
+            className='hidden lg:flex text-white bg-black/40 hover:bg-black/20 backdrop-blur-sm border-white border-2 hover:border-fm-gold hover:text-fm-gold hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] transition-colors duration-200 px-4'
+          >
+            {t('eventDetails.manage')}
+          </FmCommonButton>
+        </>
+      )}
+    </>
+  );
+};
+
+export const EventHero = ({ event }: EventHeroProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -54,7 +110,9 @@ export const EventHero = ({
           src={event.heroImage}
           alt={event.title || event.headliner.name}
           className={cn(
-            'h-full w-auto object-contain transition-opacity duration-700',
+            'h-full transition-opacity duration-700',
+            // Mobile: cover to fill hero area, Desktop: contain to show full image
+            'w-full object-cover lg:w-auto lg:object-contain',
             imageLoaded ? 'opacity-100' : 'opacity-0'
           )}
           style={{
@@ -107,33 +165,6 @@ export const EventHero = ({
           </div>
         </div>
       )}
-
-      {/* Fixed buttons - stay at top of viewport */}
-      <div className='fixed top-20 left-6 z-50 flex gap-2'>
-        {/* Back button */}
-        <FmCommonButton
-          variant='secondary'
-          size='icon'
-          onClick={onBack}
-          icon={ArrowLeft}
-          className='text-white bg-black/40 hover:bg-black/20 backdrop-blur-sm border-white border-2 hover:border-fm-gold hover:text-fm-gold hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] transition-colors duration-200 lg:w-auto lg:px-4'
-        >
-          <span className='hidden lg:inline'>{t('eventDetails.back')}</span>
-        </FmCommonButton>
-
-        {/* Manage button */}
-        {canManage && (
-          <FmCommonButton
-            variant='secondary'
-            size='icon'
-            onClick={onManage}
-            icon={Settings}
-            className='text-white bg-black/40 hover:bg-black/20 backdrop-blur-sm border-white border-2 hover:border-fm-gold hover:text-fm-gold hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] transition-colors duration-200 lg:w-auto lg:px-4'
-          >
-            <span className='hidden lg:inline'>{t('eventDetails.manage')}</span>
-          </FmCommonButton>
-        )}
-      </div>
     </div>
   );
 };

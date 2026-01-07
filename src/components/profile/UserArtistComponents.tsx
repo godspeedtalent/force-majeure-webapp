@@ -313,56 +313,72 @@ export function LinkedArtistDisplay({
 
   return (
     <div className='space-y-6'>
-      {/* Artist Spotlight Card */}
-      <div className='bg-black/60 backdrop-blur-md border border-white/20 rounded-none p-[30px]'>
-        <div className='flex flex-col gap-6 md:flex-row md:items-stretch'>
-          {/* Left: Image Column */}
-          <div className='w-full md:w-48 flex-shrink-0'>
-            <div className='overflow-hidden rounded-none border border-white/15 bg-white/5 shadow-inner'>
+      {/* Artist Profile Button - shown when not editable (viewing profile) */}
+      {!isEditable && (
+        <FmCommonButton
+          variant='gold'
+          size='sm'
+          icon={ExternalLink}
+          onClick={() => navigate(`/artists/${linkedArtist.id}`)}
+          className='w-full'
+        >
+          {t('userArtist.artistProfile')}
+        </FmCommonButton>
+      )}
+
+      {/* Artist Spotlight Card - Two Column Layout */}
+      <div className='bg-black/60 backdrop-blur-md border border-white/20 rounded-none p-4 md:p-[30px]'>
+        <div className='flex gap-3 md:gap-5'>
+          {/* Left Column - Main Image with overlay (50% width) */}
+          <div className='w-1/2 flex-shrink-0'>
+            <div className='relative overflow-hidden border border-white/15 bg-white/5'>
               {linkedArtist.image_url ? (
                 <img
                   src={linkedArtist.image_url}
                   alt={linkedArtist.name}
-                  className='aspect-[3/4] w-full object-cover'
+                  className='w-full aspect-[3/4] object-cover'
                 />
               ) : (
-                <div className='aspect-[3/4] w-full bg-gradient-gold flex items-center justify-center'>
+                <div className='w-full aspect-[3/4] bg-gradient-gold flex items-center justify-center'>
                   <Music2 className='h-12 w-12 text-black' />
                 </div>
               )}
+              {/* Gradient overlay for text legibility */}
+              <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent' />
+
+              {/* Artist info overlaid at bottom with frosted glass */}
+              <div className='absolute bottom-0 left-0 right-0 p-3 md:p-4 bg-black/50 backdrop-blur-md border-t border-white/10'>
+                <p className='text-[8px] md:text-[9px] uppercase tracking-[0.3em] text-white/70 font-canela mb-1'>
+                  {t('artistPreview.spotlight')}
+                </p>
+                <h2 className='text-lg md:text-2xl font-canela font-semibold text-white leading-tight mb-1.5 md:mb-2 drop-shadow-lg'>
+                  {linkedArtist.name}
+                </h2>
+
+                {/* Genre badges */}
+                {(linkedArtist.artist_genres?.length || linkedArtist.genre) && (
+                  <div className='flex items-center gap-1 md:gap-1.5 flex-wrap'>
+                    <Music2 className='h-3 w-3 md:h-3.5 md:w-3.5 text-fm-gold drop-shadow flex-shrink-0' />
+                    <div className='flex flex-wrap gap-1'>
+                      {linkedArtist.artist_genres?.length ? (
+                        linkedArtist.artist_genres.slice(0, 2).map((ag) => (
+                          <span key={ag.genre_id} className='text-[9px] md:text-[10px] text-fm-gold bg-black/50 backdrop-blur-sm px-1 md:px-1.5 py-0.5 border border-fm-gold/60'>
+                            {ag.genres?.name}
+                          </span>
+                        ))
+                      ) : (
+                        <span className='text-[9px] md:text-[10px] text-fm-gold bg-black/50 backdrop-blur-sm px-1 md:px-1.5 py-0.5 border border-fm-gold/60'>{linkedArtist.genre}</span>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Right: Content Column */}
-          <div className='flex-1 flex flex-col gap-4'>
-            <div className='space-y-2'>
-              <p className='text-[10px] uppercase tracking-[0.35em] text-white/50 font-canela'>
-                {t('artistPreview.spotlight')}
-              </p>
-              <h2 className='text-2xl md:text-3xl font-canela font-semibold text-white leading-tight'>
-                {linkedArtist.name}
-              </h2>
-              <div className='w-full h-[1px] bg-white/30' />
-            </div>
-
-            {(linkedArtist.artist_genres?.length || linkedArtist.genre) && (
-              <div className='flex items-center gap-2'>
-                <Music2 className='h-4 w-4 text-fm-gold' />
-                <div className='flex flex-wrap gap-1.5'>
-                  {linkedArtist.artist_genres?.length ? (
-                    linkedArtist.artist_genres.map((ag) => (
-                      <span key={ag.genre_id} className='text-sm text-fm-gold bg-fm-gold/10 px-2 py-0.5 border border-fm-gold/30'>
-                        {ag.genres?.name}
-                      </span>
-                    ))
-                  ) : (
-                    <span className='text-sm text-fm-gold'>{linkedArtist.genre}</span>
-                  )}
-                </div>
-              </div>
-            )}
-
-            <div className='prose prose-invert max-w-none text-sm text-white/80 leading-relaxed font-canela flex-1'>
+          {/* Right Column - Bio (50% width) */}
+          <div className='w-1/2 flex flex-col'>
+            <div className='text-xs md:text-sm text-white/60 leading-relaxed md:leading-loose font-canela whitespace-pre-wrap italic'>
               {linkedArtist.bio || t('artistProfile.noBioAvailable')}
             </div>
           </div>

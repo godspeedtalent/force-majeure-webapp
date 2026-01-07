@@ -146,6 +146,15 @@ const Profile = () => {
       })
     : 'Unknown';
 
+  // Format linked artist date if available
+  const linkedArtistDate = linkedArtist?.created_at
+    ? new Date(linkedArtist.created_at).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : null;
+
   const layoutProps = {
     user,
     profile,
@@ -153,6 +162,7 @@ const Profile = () => {
     loadingShows,
     hasLinkedArtist,
     linkedArtistName: linkedArtist?.name,
+    linkedArtistDate,
     loadingArtist,
     createdAt,
   };

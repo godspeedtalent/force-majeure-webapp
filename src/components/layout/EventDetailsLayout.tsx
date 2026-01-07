@@ -5,6 +5,8 @@ import { Footer } from '@/components/navigation/Footer';
 interface EventDetailsLayoutProps {
   leftColumn: React.ReactNode;
   rightColumn: React.ReactNode;
+  /** Fixed action buttons (back, manage) rendered at root level to avoid stacking context issues */
+  actions?: React.ReactNode;
   className?: string;
 }
 
@@ -25,6 +27,7 @@ interface EventDetailsLayoutProps {
 export function EventDetailsLayout({
   leftColumn,
   rightColumn,
+  actions,
   className,
 }: EventDetailsLayoutProps) {
   return (
@@ -35,11 +38,29 @@ export function EventDetailsLayout({
         <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
       </div>
 
-      {/* Mobile: stacked layout */}
+      {/* Fixed action buttons - rendered at root level to avoid stacking context issues */}
+      {actions && (
+        <div className='fixed top-20 left-4 z-50 flex gap-2 lg:left-6'>
+          {actions}
+        </div>
+      )}
+
+      {/* Mobile: stacked layout with gradient fade */}
       <div className='lg:hidden relative z-10 flex flex-col min-h-screen'>
-        <div className='max-h-[40vh]'>{leftColumn}</div>
-        <div className='relative z-20 flex-1'>{rightColumn}</div>
-        <div className='relative z-20'>
+        {/* Hero section with gradient fade */}
+        <div className='relative h-[55vh] flex-shrink-0 overflow-hidden'>
+          {/* Hero image container - slight parallax via will-change */}
+          <div className='absolute inset-0 will-change-transform'>
+            {leftColumn}
+          </div>
+          {/* Gradient fade overlay - transparent at top, fades to background */}
+          <div className='absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none' />
+        </div>
+        {/* Content section - solid background for readability */}
+        <div className='relative z-20 flex-1 bg-background -mt-4'>
+          {rightColumn}
+        </div>
+        <div className='relative z-20 bg-background'>
           <Footer />
         </div>
       </div>

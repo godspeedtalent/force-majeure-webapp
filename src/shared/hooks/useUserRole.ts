@@ -8,7 +8,8 @@ import {
   type Permission,
   type Role,
 } from '@/shared';
-import { useMockRoleSafe, MOCK_ROLE_UNAUTHENTICATED } from '@/shared/contexts/MockRoleContext';
+import { useMockRoleSafe } from '@/shared/contexts/MockRoleContext';
+import { rolesStore } from '@/shared/stores/rolesStore';
 
 export interface UserRole {
   role_name: string;
@@ -54,31 +55,48 @@ export const useUserRole = () => {
  * Provides comprehensive methods for checking user permissions and roles
  *
  * Supports mock role simulation for development/testing:
- * - When mock role is active, permission checks use the simulated role
+ * - When mock role is active, permission checks use the simulated roles
+ * - Multiple roles can be simulated simultaneously
  * - Actual user roles are still available via `actualRoles` property
  * - Use `isMockActive` to check if simulation is enabled
  */
 export const useUserPermissions = () => {
   const { data: roles } = useUserRole();
-  const { mockRole, isMockActive, getMockPermissions } = useMockRoleSafe();
+  const {
+    isMockActive,
+    isUnauthenticated,
+    getActiveMockRoles,
+    getMockPermissions,
+    mockRole, // Legacy compatibility
+  } = useMockRoleSafe();
 
   /**
    * Get effective roles considering mock mode
    * When mock is active, returns simulated role data
    * When simulating unauthenticated, returns empty array (no roles)
+   * Supports multiple simultaneous mock roles
    */
   const getEffectiveRoles = (): UserRole[] => {
-    if (isMockActive && mockRole !== 'disabled') {
+    if (isMockActive) {
       // Unauthenticated simulation - return empty roles (logged out user)
-      if (mockRole === MOCK_ROLE_UNAUTHENTICATED) {
+      if (isUnauthenticated) {
         return [];
       }
-      const mockPermissions = getMockPermissions();
-      return [{
-        role_name: mockRole,
-        display_name: mockRole.charAt(0).toUpperCase() + mockRole.slice(1).replace('_', ' '),
-        permission_names: mockPermissions,
-      }];
+
+      // Get all active mock roles
+      const activeMockRoles = getActiveMockRoles();
+      if (activeMockRoles.length === 0) return roles || [];
+
+      // Build UserRole objects for each active mock role
+      return activeMockRoles.map(roleName => {
+        const roleRecord = rolesStore.getRoleByName(roleName);
+        return {
+          role_name: roleName,
+          display_name: roleRecord?.display_name ||
+            roleName.charAt(0).toUpperCase() + roleName.slice(1).replace(/_/g, ' '),
+          permission_names: roleRecord?.permissions || [],
+        };
+      });
     }
     return roles || [];
   };
@@ -86,7 +104,7 @@ export const useUserPermissions = () => {
   /**
    * Check if simulating unauthenticated user
    */
-  const isSimulatingUnauthenticated = isMockActive && mockRole === MOCK_ROLE_UNAUTHENTICATED;
+  const isSimulatingUnauthenticated = isMockActive && isUnauthenticated;
 
   /**
    * Check if user is an admin
@@ -212,5 +230,9 @@ export const useUserPermissions = () => {
     actualRoles: roles,
     isActuallyDeveloperOrAdmin,
     isSimulatingUnauthenticated,
+    // New multi-role utilities
+    getActiveMockRoles,
+    getMockPermissions,
+    isUnauthenticated,
   };
 };

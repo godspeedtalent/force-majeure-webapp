@@ -544,7 +544,7 @@ export function DatabaseNavigatorSearch() {
 
       {/* Recent Records - Show when query is empty */}
       {showRecentRecords && (
-        <div className='border rounded-md max-h-[400px] overflow-y-auto bg-background/50'>
+        <div className='border rounded-none max-h-[400px] overflow-y-auto bg-background/50'>
           <div className='p-2'>
             <h3 className='text-xs font-semibold text-muted-foreground uppercase mb-2 px-2 flex items-center gap-2'>
               <Clock className='h-3 w-3' />
@@ -568,7 +568,7 @@ export function DatabaseNavigatorSearch() {
 
       {/* Results - Inline Display */}
       {searchQuery.trim().length >= 2 && hasResults && (
-        <div className='border rounded-md max-h-[400px] overflow-y-auto bg-background/50'>
+        <div className='border rounded-none max-h-[400px] overflow-y-auto bg-background/50'>
           {/* Organizations */}
           {results.organizations.length > 0 && (
             <div className='p-2 border-b'>
@@ -677,7 +677,7 @@ export function DatabaseNavigatorSearch() {
 
       {/* No Results */}
       {searchQuery.trim().length >= 2 && !hasResults && !isSearching && (
-        <div className='border rounded-md p-4 bg-background/50'>
+        <div className='border rounded-none p-4 bg-background/50'>
           <p className='text-sm text-muted-foreground text-center'>
             {t('databaseSearch.noResults', { query: searchQuery })}
           </p>
@@ -685,7 +685,7 @@ export function DatabaseNavigatorSearch() {
       )}
 
       {/* All Tables Section */}
-      <div className='mt-4 border rounded-md bg-background/50'>
+      <div className='mt-4 border rounded-none bg-background/50'>
         <div className='p-2'>
           <h3 className='text-xs font-semibold text-muted-foreground uppercase mb-2 px-2 flex items-center gap-2'>
             <Database className='h-3 w-3' />

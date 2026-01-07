@@ -86,12 +86,17 @@ export const MobileHorizontalTabs = ({
                 'flex-shrink-0 flex items-center gap-[5px]',
                 'px-[20px] py-[10px]',
                 'font-canela text-sm font-medium whitespace-nowrap',
-                'transition-all duration-200',
+                'transition-all duration-300',
                 'rounded-none',
-                'border-b-2',
-                isActive
-                  ? 'text-fm-gold border-fm-gold'
-                  : 'text-white/70 hover:text-fm-gold border-transparent hover:border-fm-gold/50'
+                // Inactive state: gold text, divider border
+                'text-fm-gold',
+                'border-r border-fm-gold/30 last:border-r-0',
+                // Inactive hover: gold bg, black text
+                'hover:bg-fm-gold hover:text-black',
+                // Active state: gold border, gold text, semi-opaque white bg
+                isActive && 'border border-fm-gold bg-white/10',
+                // Active hover: gold bg, black text
+                isActive && 'hover:bg-fm-gold hover:text-black'
               )}
               aria-label={tab.label}
               aria-current={isActive ? 'page' : undefined}

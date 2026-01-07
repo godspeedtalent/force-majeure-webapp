@@ -9,6 +9,7 @@ interface LinkedArtist {
   image_url: string | null;
   bio: string | null;
   genre: string | null;
+  created_at: string | null;
 }
 
 /**
@@ -25,7 +26,7 @@ export function useUserLinkedArtist() {
 
       const { data, error } = await supabase
         .from('artists')
-        .select('id, name, image_url, bio, genre')
+        .select('id, name, image_url, bio, genre, created_at')
         .eq('user_id', user.id)
         .maybeSingle();
 

@@ -1,4 +1,4 @@
-import { type ReactNode, useMemo, useState, useEffect } from 'react';
+import { type ReactNode, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
@@ -7,7 +7,7 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 
 import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { FmPortalTooltip } from '@/components/common/feedback/FmPortalTooltip';
+import { FmCommonSlidingIconButton } from '@/components/common/buttons/FmCommonSlidingIconButton';
 import { FmVenueMap } from '@/components/common/display/FmVenueMap';
 import { FmSocialLinks } from '@/components/common/display/FmSocialLinks';
 import { supabase } from '@/integrations/supabase/client';
@@ -62,19 +62,6 @@ export const FmVenueDetailsModal = ({
   const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [showPastEvents, setShowPastEvents] = useState(false);
-
-  // Delay tooltip enabling to prevent it from showing immediately on modal open
-  const [tooltipEnabled, setTooltipEnabled] = useState(false);
-
-  useEffect(() => {
-    if (!open) {
-      setTooltipEnabled(false);
-      return;
-    }
-    // Wait for modal animation to complete before enabling tooltip
-    const timer = setTimeout(() => setTooltipEnabled(true), 400);
-    return () => clearTimeout(timer);
-  }, [open]);
 
   // Fetch upcoming events for this venue
   const { data: upcomingEvents = [] } = useQuery({
@@ -206,41 +193,28 @@ export const FmVenueDetailsModal = ({
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className='fixed inset-0 z-[9998] bg-black/70 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0' />
-        <DialogPrimitive.Content className='fixed left-[50%] top-[50%] z-[9999] w-full max-w-3xl max-h-[90vh] translate-x-[-50%] translate-y-[-50%] p-0 gap-0 border-x-2 border-y-4 border-fm-gold/30 border-t-fm-gold border-b-fm-gold bg-gradient-to-br from-black/95 to-neutral-900/95 backdrop-blur-xl overflow-hidden flex flex-col shadow-[0_8px_32px_rgba(0,0,0,0.5)] duration-200 pointer-events-auto data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95'>
+        <DialogPrimitive.Content className='fixed left-[50%] top-[50%] z-[9999] w-[calc(100%-2rem)] sm:w-full max-w-3xl max-h-[90vh] translate-x-[-50%] translate-y-[-50%] p-0 gap-0 border-x-2 border-y-4 border-fm-gold/30 border-t-fm-gold border-b-fm-gold bg-gradient-to-br from-black/95 to-neutral-900/95 backdrop-blur-xl overflow-hidden flex flex-col shadow-[0_8px_32px_rgba(0,0,0,0.5)] duration-200 pointer-events-auto data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95'>
           <DialogPrimitive.Title className='sr-only'>
             {venue?.name ?? t('venueDetails.defaultTitle')}
           </DialogPrimitive.Title>
 
           {/* Hero Image */}
           <div className='relative w-full h-64 flex-shrink-0 overflow-visible'>
-            {/* Header bar */}
-            <div className='absolute top-4 left-4 right-4 flex items-center justify-between z-20'>
+            {/* Header bar with frosted glass background */}
+            <div className='absolute top-4 left-4 right-4 flex items-center justify-between z-20 bg-black/50 backdrop-blur-md px-4 py-2 border border-white/10'>
               <p className='text-[10px] uppercase tracking-[0.35em] text-white/70'>
                 {t('venueDetails.eyebrow', 'Venue Details')}
               </p>
               <div className='flex items-center gap-2'>
                 {canManage && venue?.id && (
-                  tooltipEnabled ? (
-                    <FmPortalTooltip content={t('venueDetails.manage')} side='bottom'>
-                      <FmCommonIconButton
-                        icon={Settings}
-                        onClick={handleManage}
-                        variant='secondary'
-                        size='sm'
-                        aria-label={t('venueDetails.manage')}
-                        className='bg-white/10 text-white hover:bg-white/20 hover:text-fm-gold hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]'
-                      />
-                    </FmPortalTooltip>
-                  ) : (
-                    <FmCommonIconButton
-                      icon={Settings}
-                      onClick={handleManage}
-                      variant='secondary'
-                      size='sm'
-                      aria-label={t('venueDetails.manage')}
-                      className='bg-white/10 text-white hover:bg-white/20 hover:text-fm-gold hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]'
-                    />
-                  )
+                  <FmCommonSlidingIconButton
+                    icon={Settings}
+                    label={t('venueDetails.manage', 'Manage')}
+                    onClick={handleManage}
+                    variant='secondary'
+                    size='sm'
+                    className='bg-white/10 text-white hover:bg-white/20 hover:text-fm-gold hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]'
+                  />
                 )}
                 <FmCommonIconButton
                   icon={X}

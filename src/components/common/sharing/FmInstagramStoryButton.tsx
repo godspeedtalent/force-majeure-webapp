@@ -4,6 +4,8 @@ import { SiInstagram } from 'react-icons/si';
 
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { cn } from '@/shared';
+import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
+import { useFeatureFlagHelpers } from '@/shared/hooks/useFeatureFlags';
 import {
   isInstagramStoryAvailable,
   generateStoryPreview,
@@ -192,9 +194,13 @@ export function FmInstagramStoryButton({
   buttonClassName,
 }: FmInstagramStoryButtonProps) {
   const { t } = useTranslation('common');
+  const { isFeatureEnabled } = useFeatureFlagHelpers();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+
+  // Check if Instagram sharing feature flag is enabled
+  const isFeatureActive = isFeatureEnabled(FEATURE_FLAGS.INSTAGRAM_SHARING);
 
   // Check if Instagram sharing is available (mobile only)
   const isAvailable = useMemo(() => isInstagramStoryAvailable(), []);
@@ -227,8 +233,8 @@ export function FmInstagramStoryButton({
     setPreviewUrl(null);
   }, []);
 
-  // Don't render on desktop
-  if (!isAvailable) {
+  // Don't render if feature flag is disabled or on desktop
+  if (!isFeatureActive || !isAvailable) {
     return null;
   }
 

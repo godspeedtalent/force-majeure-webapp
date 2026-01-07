@@ -4,7 +4,12 @@ import { FmCommonCard, FmCommonCardContent, FmCommonCardDescription, FmCommonCar
 import { Button } from '@/components/common/shadcn/button';
 import { Switch } from '@/components/common/shadcn/switch';
 import { Label } from '@/components/common/shadcn/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
+import {
+  FmCommonTabs,
+  FmCommonTabsContent,
+  FmCommonTabsList,
+  FmCommonTabsTrigger,
+} from '@/components/common/navigation/FmCommonTabs';
 import { ReportScheduleConfig } from './ReportScheduleConfig';
 import { ReportRecipientsManager } from './ReportRecipientsManager';
 import { ReportHistoryTable } from './ReportHistoryTable';
@@ -159,14 +164,14 @@ export const SalesReportConfig = ({ eventId }: SalesReportConfigProps) => {
           </div>
         </FmCommonCardHeader>
         <FmCommonCardContent>
-          <Tabs defaultValue="schedule">
-            <TabsList>
-              <TabsTrigger value="schedule">{t('reports.tabs.schedule')}</TabsTrigger>
-              <TabsTrigger value="recipients">{t('reports.tabs.recipients')}</TabsTrigger>
-              <TabsTrigger value="history">{t('reports.tabs.history')}</TabsTrigger>
-            </TabsList>
+          <FmCommonTabs defaultValue="schedule">
+            <FmCommonTabsList>
+              <FmCommonTabsTrigger value="schedule">{t('reports.tabs.schedule')}</FmCommonTabsTrigger>
+              <FmCommonTabsTrigger value="recipients">{t('reports.tabs.recipients')}</FmCommonTabsTrigger>
+              <FmCommonTabsTrigger value="history">{t('reports.tabs.history')}</FmCommonTabsTrigger>
+            </FmCommonTabsList>
 
-            <TabsContent value="schedule" className="space-y-4">
+            <FmCommonTabsContent value="schedule" className="space-y-4 mt-4">
               <ReportScheduleConfig configId={config.id} />
               <div className="flex gap-2">
                 <Button
@@ -184,16 +189,16 @@ export const SalesReportConfig = ({ eventId }: SalesReportConfigProps) => {
                   {t('reports.sendTestReport')}
                 </Button>
               </div>
-            </TabsContent>
+            </FmCommonTabsContent>
 
-            <TabsContent value="recipients">
+            <FmCommonTabsContent value="recipients" className="mt-4">
               <ReportRecipientsManager configId={config.id} />
-            </TabsContent>
+            </FmCommonTabsContent>
 
-            <TabsContent value="history">
+            <FmCommonTabsContent value="history" className="mt-4">
               <ReportHistoryTable configId={config.id} />
-            </TabsContent>
-          </Tabs>
+            </FmCommonTabsContent>
+          </FmCommonTabs>
         </FmCommonCardContent>
       </FmCommonCard>
 

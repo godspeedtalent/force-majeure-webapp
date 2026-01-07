@@ -44,7 +44,12 @@ import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoa
 import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
 import { FmCommonEmptyState } from '@/components/common/display/FmCommonEmptyState';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
+import {
+  FmCommonTabs,
+  FmCommonTabsContent,
+  FmCommonTabsList,
+  FmCommonTabsTrigger,
+} from '@/components/common/navigation/FmCommonTabs';
 import {
   useUserMetricsOverview,
   useUserGrowth,
@@ -693,38 +698,26 @@ export function UserMetricsDashboard() {
       )}
 
       {/* Tabs for different views */}
-      <Tabs defaultValue="growth" className="mt-8">
+      <FmCommonTabs defaultValue="growth" className="mt-8">
         <div className="sticky top-0 z-10 -mx-6 px-6 py-3 bg-black/70 backdrop-blur-md border-b border-white/10">
-          <TabsList className="bg-black/60 border border-white/20 rounded-none w-full justify-start">
-            <TabsTrigger
-              value="growth"
-              className="rounded-none data-[state=active]:bg-fm-gold/20 data-[state=active]:text-fm-gold"
-            >
+          <FmCommonTabsList>
+            <FmCommonTabsTrigger value="growth">
               {t('userMetrics.tabs.growth', 'Growth')}
-            </TabsTrigger>
-            <TabsTrigger
-              value="activity"
-              className="rounded-none data-[state=active]:bg-fm-gold/20 data-[state=active]:text-fm-gold"
-            >
+            </FmCommonTabsTrigger>
+            <FmCommonTabsTrigger value="activity">
               {t('userMetrics.tabs.activity', 'Activity')}
-            </TabsTrigger>
-            <TabsTrigger
-              value="engagement"
-              className="rounded-none data-[state=active]:bg-fm-gold/20 data-[state=active]:text-fm-gold"
-            >
+            </FmCommonTabsTrigger>
+            <FmCommonTabsTrigger value="engagement">
               {t('userMetrics.tabs.engagement', 'Engagement')}
-            </TabsTrigger>
-            <TabsTrigger
-              value="demographics"
-              className="rounded-none data-[state=active]:bg-fm-gold/20 data-[state=active]:text-fm-gold"
-            >
+            </FmCommonTabsTrigger>
+            <FmCommonTabsTrigger value="demographics">
               {t('userMetrics.tabs.demographics', 'Demographics')}
-            </TabsTrigger>
-          </TabsList>
+            </FmCommonTabsTrigger>
+          </FmCommonTabsList>
         </div>
 
         {/* Growth Tab */}
-        <TabsContent value="growth" className="mt-6 space-y-6">
+        <FmCommonTabsContent value="growth" className="mt-6 space-y-6">
           <FmCommonCard>
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
@@ -741,10 +734,10 @@ export function UserMetricsDashboard() {
               <UserGrowthChart data={growthData || []} isLoading={loadingGrowth} />
             </div>
           </FmCommonCard>
-        </TabsContent>
+        </FmCommonTabsContent>
 
         {/* Activity Tab */}
-        <TabsContent value="activity" className="mt-6 space-y-6">
+        <FmCommonTabsContent value="activity" className="mt-6 space-y-6">
           <FmCommonCard>
             <h4 className="text-sm font-medium uppercase tracking-wide text-muted-foreground mb-4">
               {t('userMetrics.dailyActivity', 'Daily activity')}
@@ -753,10 +746,10 @@ export function UserMetricsDashboard() {
               <DailyActivityChart data={dailyActivity || []} isLoading={loadingDaily} />
             </div>
           </FmCommonCard>
-        </TabsContent>
+        </FmCommonTabsContent>
 
         {/* Engagement Tab */}
-        <TabsContent value="engagement" className="mt-6 space-y-6">
+        <FmCommonTabsContent value="engagement" className="mt-6 space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <FmCommonCard className="p-0">
               <div className="p-4 border-b border-white/10">
@@ -776,10 +769,10 @@ export function UserMetricsDashboard() {
               <RecentUsersTable data={engagementData || []} isLoading={loadingEngagement} />
             </FmCommonCard>
           </div>
-        </TabsContent>
+        </FmCommonTabsContent>
 
         {/* Demographics Tab */}
-        <TabsContent value="demographics" className="mt-6 space-y-6">
+        <FmCommonTabsContent value="demographics" className="mt-6 space-y-6">
           <FmCommonCard>
             <h4 className="text-sm font-medium uppercase tracking-wide text-muted-foreground mb-4">
               {t('userMetrics.usersByCity', 'Users by city')}
@@ -788,8 +781,8 @@ export function UserMetricsDashboard() {
               <CityDistributionChart data={cityData || []} isLoading={loadingCities} />
             </div>
           </FmCommonCard>
-        </TabsContent>
-      </Tabs>
+        </FmCommonTabsContent>
+      </FmCommonTabs>
     </div>
   );
 }

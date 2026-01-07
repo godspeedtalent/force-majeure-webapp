@@ -6,6 +6,7 @@ import {
   MapPin,
   Clock,
   Mic2,
+  Award,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -15,19 +16,17 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonInfoCard } from '@/components/common/display/FmCommonInfoCard';
 import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/common/shadcn/tabs';
+  FmCommonTabs,
+  FmCommonTabsContent,
+  FmCommonTabsList,
+  FmCommonTabsTrigger,
+} from '@/components/common/navigation/FmCommonTabs';
 import { Badge } from '@/components/common/shadcn/badge';
 import { UserArtistTab } from '@/components/profile/UserArtistTab';
 import { FmI18nCommon } from '@/components/common/i18n';
 import { ProfileLayoutProps } from './types';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { useAuth } from '@/features/auth/services/AuthContext';
-
-const GOLD_TAB_CLASSES = 'rounded-none data-[state=active]:bg-fm-gold data-[state=active]:text-black data-[state=active]:shadow-none font-canela';
 
 export const DesktopProfileLayout = ({
   user,
@@ -36,6 +35,7 @@ export const DesktopProfileLayout = ({
   loadingShows,
   hasLinkedArtist,
   linkedArtistName,
+  linkedArtistDate,
   loadingArtist,
   createdAt,
 }: ProfileLayoutProps) => {
@@ -103,31 +103,34 @@ export const DesktopProfileLayout = ({
               </div>
 
               {/* Tabs */}
-              <Tabs defaultValue='upcoming' className='w-full'>
-                <TabsList className={`grid w-full ${hasLinkedArtist ? 'grid-cols-3' : 'grid-cols-2'}`}>
-                  <TabsTrigger value='upcoming' className={GOLD_TAB_CLASSES}>{t('profile.upcomingShows')}</TabsTrigger>
+              <FmCommonTabs defaultValue='upcoming' className='w-full'>
+                <FmCommonTabsList className={`grid w-full ${hasLinkedArtist ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                  <FmCommonTabsTrigger value='upcoming'>{t('profile.upcomingShows')}</FmCommonTabsTrigger>
                   {hasLinkedArtist && (
-                    <TabsTrigger value='artist' className={`flex items-center gap-1 ${GOLD_TAB_CLASSES}`}>
+                    <FmCommonTabsTrigger value='artist' className='flex items-center gap-1'>
                       {loadingArtist ? (
                         <div className='h-3 w-3 border-2 border-fm-gold/30 border-t-fm-gold rounded-full animate-spin' />
                       ) : (
                         <Mic2 className='h-3 w-3' />
                       )}
                       {t('profile.artist')}
-                    </TabsTrigger>
+                    </FmCommonTabsTrigger>
                   )}
-                  <TabsTrigger value='account' className={GOLD_TAB_CLASSES}>{t('profile.account')}</TabsTrigger>
-                </TabsList>
+                  <FmCommonTabsTrigger value='accolades' className='flex items-center gap-1'>
+                    <Award className='h-3 w-3' />
+                    {t('profile.accolades')}
+                  </FmCommonTabsTrigger>
+                </FmCommonTabsList>
 
                 {/* Artist Tab - only shown if user has linked artist */}
                 {hasLinkedArtist && (
-                  <TabsContent value='artist' className='mt-6'>
+                  <FmCommonTabsContent value='artist' className='mt-6'>
                     <UserArtistTab />
-                  </TabsContent>
+                  </FmCommonTabsContent>
                 )}
 
                 {/* Upcoming Shows Tab */}
-                <TabsContent value='upcoming' className='space-y-4 mt-6'>
+                <FmCommonTabsContent value='upcoming' className='space-y-4 mt-6'>
                   {loadingShows ? (
                     <FmI18nCommon i18nKey='profile.loadingShows' as='div' className='text-center py-8 text-muted-foreground' />
                   ) : upcomingShows.length === 0 ? (
@@ -221,10 +224,10 @@ export const DesktopProfileLayout = ({
                       })}
                     </div>
                   )}
-                </TabsContent>
+                </FmCommonTabsContent>
 
-                {/* Account Information Tab */}
-                <TabsContent value='account' className='space-y-4 mt-6'>
+                {/* Accolades Tab */}
+                <FmCommonTabsContent value='accolades' className='space-y-4 mt-6'>
                   <div className='grid gap-4'>
                     <FmCommonInfoCard
                       icon={Calendar}
@@ -237,14 +240,23 @@ export const DesktopProfileLayout = ({
                       <FmCommonInfoCard
                         icon={Mic2}
                         label={t('profile.linkedArtist')}
-                        value={linkedArtistName}
+                        value={
+                          <div>
+                            <span>{linkedArtistName}</span>
+                            {linkedArtistDate && (
+                              <span className='block text-xs text-muted-foreground mt-0.5'>
+                                {t('profile.linkedSince', { date: linkedArtistDate })}
+                              </span>
+                            )}
+                          </div>
+                        }
                         size='sm'
                         iconClassName='text-fm-gold'
                       />
                     )}
                   </div>
-                </TabsContent>
-              </Tabs>
+                </FmCommonTabsContent>
+              </FmCommonTabs>
             </div>
           </div>
         </FmCommonCardContent>

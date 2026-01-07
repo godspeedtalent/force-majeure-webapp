@@ -131,7 +131,7 @@ export const FmCommonIconButton = forwardRef<
         'bg-white/5 border-white/30 hover:bg-fm-gold/20 hover:border-fm-gold hover:text-fm-gold transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]',
       secondary: 'transition-all duration-200 hover:scale-105 active:scale-95',
       destructive:
-        'transition-all duration-200 hover:scale-105 active:scale-95',
+        'bg-transparent border border-destructive text-destructive hover:bg-destructive hover:text-black hover:border-destructive transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_hsl(var(--destructive)/0.3)]',
     };
 
     const sizeClasses = {
@@ -152,11 +152,11 @@ export const FmCommonIconButton = forwardRef<
         variant={
           isCreateVariant || variant === 'gold'
             ? 'default'
-            : variant === 'default'
+            : variant === 'default' || variant === 'destructive'
               ? 'outline'
               : variant === 'secondary'
                 ? 'ghost'
-                : variant
+                : 'outline'
         }
         disabled={isDisabled}
         onClick={handleClick}
@@ -173,6 +173,8 @@ export const FmCommonIconButton = forwardRef<
           variant === 'destructive' && variantStyles.destructive,
           isPressed && 'scale-95',
           isLongPressing && 'scale-95 transition-transform duration-100',
+          // Mobile touch feedback (hover-like effects on tap for touch devices)
+          variant === 'destructive' ? 'fm-touch-feedback-destructive' : 'fm-touch-feedback',
           className
         )}
         asChild={asChild}

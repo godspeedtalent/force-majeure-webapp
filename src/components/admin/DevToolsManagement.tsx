@@ -94,7 +94,7 @@ export const DevToolsManagement = () => {
           <FmCommonCard key={section.id} className='p-6'>
             <div className='flex items-start justify-between gap-4'>
               <div className='flex items-start gap-3 flex-1'>
-                <div className='p-2 rounded-lg bg-muted/50 text-fm-gold'>
+                <div className='p-2 rounded-none bg-muted/50 text-fm-gold'>
                   {section.icon}
                 </div>
                 <div className='flex-1 space-y-1'>

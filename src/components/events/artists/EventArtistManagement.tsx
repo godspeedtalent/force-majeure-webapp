@@ -8,6 +8,8 @@ import {
   Trash2,
   GripVertical,
   Plus,
+  ArrowUp,
+  ArrowDown,
 } from 'lucide-react';
 import {
   DndContext,
@@ -28,8 +30,10 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
+import { FmCommonEmptyState } from '@/components/common/display/FmCommonEmptyState';
 import { FormSection } from '@/components/common/forms/FormSection';
 import { cn } from '@/shared';
 
@@ -101,7 +105,7 @@ function SortableUndercardSlot({
       ref={setNodeRef}
       style={style}
       className={cn(
-        'group relative p-4 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 hover:shadow-[0_0_12px_rgba(212,175,55,0.2)] transition-all duration-300',
+        'group relative p-4 rounded-none border border-white/20 bg-white/5 hover:bg-white/10 hover:shadow-[0_0_12px_rgba(212,175,55,0.2)] transition-all duration-300',
         isDragging && 'opacity-50 shadow-lg z-50 border-fm-gold/50'
       )}
     >
@@ -109,7 +113,7 @@ function SortableUndercardSlot({
       <div
         {...attributes}
         {...listeners}
-        className='absolute left-1 top-1/2 -translate-y-1/2 cursor-grab active:cursor-grabbing p-1 hover:bg-white/10 rounded transition-colors'
+        className='absolute left-1 top-1/2 -translate-y-1/2 cursor-grab active:cursor-grabbing p-1 hover:bg-white/10 rounded-none transition-colors'
       >
         <GripVertical className='h-4 w-4 text-muted-foreground hover:text-fm-gold' />
       </div>
@@ -125,12 +129,13 @@ function SortableUndercardSlot({
                 placeholder={t('artistManagement.selectUndercard')}
               />
             </div>
-            <button
+            <FmCommonIconButton
+              icon={ArrowUp}
               onClick={() => onPromote(slot.id)}
-              className='text-xs px-2 py-1 rounded bg-fm-gold/20 hover:bg-fm-gold/30 text-fm-gold transition-colors'
-            >
-              {t('artistManagement.promote')}
-            </button>
+              variant='secondary'
+              size='sm'
+              tooltip={t('artistManagement.promote')}
+            />
           </div>
 
           {/* Scheduling (if enabled) */}
@@ -159,12 +164,14 @@ function SortableUndercardSlot({
         </div>
 
         {/* Remove Button */}
-        <button
+        <FmCommonIconButton
+          icon={Trash2}
           onClick={() => onRemove(slot.id)}
-          className='opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-red-500/20 rounded text-red-400 hover:text-red-300'
-        >
-          <Trash2 className='h-4 w-4' />
-        </button>
+          variant='destructive'
+          size='sm'
+          tooltip={t('buttons.remove')}
+          className='opacity-0 group-hover:opacity-100 transition-opacity'
+        />
       </div>
     </div>
   );
@@ -385,9 +392,13 @@ export function EventArtistManagement({
       <FormSection title={t('artistManagement.headliners')}>
         <div className='space-y-3'>
           {headliners.length === 0 && (
-            <div className='text-center py-8 text-muted-foreground border-2 border-dashed border-white/10 rounded-lg'>
-              <Music className='h-12 w-12 mx-auto mb-2 opacity-30' />
-              <p>{t('artistManagement.noHeadlinersYet')}</p>
+            <div className='border-2 border-dashed border-white/10 rounded-none'>
+              <FmCommonEmptyState
+                icon={Music}
+                title={t('artistManagement.noHeadlinersYet')}
+                size='sm'
+                iconClassName='opacity-30'
+              />
             </div>
           )}
 
@@ -395,7 +406,7 @@ export function EventArtistManagement({
             <div
               key={slot.id}
               className={cn(
-                'group relative p-4 rounded-lg border transition-all duration-300',
+                'group relative p-4 rounded-none border transition-all duration-300',
                 slot.role === 'headliner'
                   ? 'bg-fm-gold/10 border-fm-gold/30'
                   : 'bg-white/5 border-white/20',
@@ -419,12 +430,13 @@ export function EventArtistManagement({
                       />
                     </div>
                     {slot.role === 'co-headliner' && (
-                      <button
+                      <FmCommonIconButton
+                        icon={ArrowDown}
                         onClick={() => demoteToUndercard(slot.id)}
-                        className='text-xs px-2 py-1 rounded bg-white/10 hover:bg-white/20 transition-colors'
-                      >
-                        {t('artistManagement.demote')}
-                      </button>
+                        variant='secondary'
+                        size='sm'
+                        tooltip={t('artistManagement.demote')}
+                      />
                     )}
                   </div>
 
@@ -456,12 +468,14 @@ export function EventArtistManagement({
                 </div>
 
                 {/* Remove Button */}
-                <button
+                <FmCommonIconButton
+                  icon={Trash2}
                   onClick={() => removeArtist(slot.id)}
-                  className='opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-red-500/20 rounded text-red-400 hover:text-red-300'
-                >
-                  <Trash2 className='h-4 w-4' />
-                </button>
+                  variant='destructive'
+                  size='sm'
+                  tooltip={t('buttons.remove')}
+                  className='opacity-0 group-hover:opacity-100 transition-opacity'
+                />
               </div>
             </div>
           ))}
@@ -494,9 +508,13 @@ export function EventArtistManagement({
       <FormSection title={t('artistManagement.undercardArtists')}>
         <div className='space-y-3'>
           {undercards.length === 0 && (
-            <div className='text-center py-8 text-muted-foreground border-2 border-dashed border-white/10 rounded-lg'>
-              <Users2 className='h-12 w-12 mx-auto mb-2 opacity-30' />
-              <p>{t('artistManagement.noUndercardYet')}</p>
+            <div className='border-2 border-dashed border-white/10 rounded-none'>
+              <FmCommonEmptyState
+                icon={Users2}
+                title={t('artistManagement.noUndercardYet')}
+                size='sm'
+                iconClassName='opacity-30'
+              />
             </div>
           )}
 
@@ -538,7 +556,7 @@ export function EventArtistManagement({
       </FormSection>
 
       {/* Scheduling Toggle */}
-      <div className='flex items-center gap-3 p-4 rounded-lg bg-white/5 border border-white/20'>
+      <div className='flex items-center gap-3 p-4 rounded-none bg-white/5 border border-white/20'>
         <Clock className='h-5 w-5 text-fm-gold' />
         <div className='flex-1'>
           <h3 className='font-semibold'>{t('artistManagement.setScheduling')}</h3>
@@ -556,7 +574,7 @@ export function EventArtistManagement({
       </div>
 
       {/* Looking for Undercard Toggle */}
-      <div className='flex items-center gap-3 p-4 rounded-lg bg-white/5 border border-white/20'>
+      <div className='flex items-center gap-3 p-4 rounded-none bg-white/5 border border-white/20'>
         <Users2 className='h-5 w-5 text-fm-gold' />
         <div className='flex-1'>
           <h3 className='font-semibold'>{t('artistManagement.lookingForUndercard')}</h3>
@@ -575,7 +593,7 @@ export function EventArtistManagement({
 
       {/* Summary Card */}
       {artistSlots.length > 0 && (
-        <div className='p-4 rounded-lg bg-fm-gold/10 border border-fm-gold/30'>
+        <div className='p-4 rounded-none bg-fm-gold/10 border border-fm-gold/30'>
           <h3 className='font-semibold text-fm-gold mb-2'>{t('artistManagement.lineupSummary')}</h3>
           <div className='grid grid-cols-3 gap-4 text-sm'>
             <div>

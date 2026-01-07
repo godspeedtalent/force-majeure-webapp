@@ -11,9 +11,9 @@ import { cn } from '@/shared';
 // FmCommonTabs - Force Majeure branded Tabs wrapper
 // ============================================================
 // Wraps shadcn Tabs with FM branding:
-// - Gold underline on active tab
+// - Active: Gold border, gold text, semi-opaque white bg; hover -> gold bg, black text
+// - Inactive: Gold text, no borders except dividers; hover -> gold bg, black text
 // - Smooth transitions
-// - Enhanced hover states
 
 interface FmCommonTabsProps extends React.ComponentPropsWithoutRef<typeof Tabs> {}
 
@@ -31,7 +31,10 @@ const FmCommonTabsList = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <TabsList
     ref={ref}
-    className={cn('bg-muted/50 backdrop-blur-sm', className)}
+    className={cn(
+      'bg-transparent h-auto p-0 gap-0 rounded-none',
+      className
+    )}
     {...props}
   />
 ));
@@ -44,10 +47,20 @@ const FmCommonTabsTrigger = React.forwardRef<
   <TabsTrigger
     ref={ref}
     className={cn(
+      // Base styles
+      'font-canela px-4 py-2 rounded-none',
       'transition-all duration-300',
-      'data-[state=active]:text-fm-gold',
-      'data-[state=active]:border-b-2 data-[state=active]:border-fm-gold',
-      'hover:text-fm-gold/70',
+      // Inactive state: gold text, divider border, transparent bg
+      'text-fm-gold bg-transparent',
+      'border-r border-fm-gold/30 last:border-r-0',
+      // Inactive hover: gold bg, black text
+      'hover:bg-fm-gold hover:text-black',
+      // Active state: gold border, gold text, semi-opaque white bg
+      'data-[state=active]:border data-[state=active]:border-fm-gold',
+      'data-[state=active]:text-fm-gold data-[state=active]:bg-white/10',
+      'data-[state=active]:shadow-none',
+      // Active hover: gold bg, black text
+      'data-[state=active]:hover:bg-fm-gold data-[state=active]:hover:text-black',
       className
     )}
     {...props}

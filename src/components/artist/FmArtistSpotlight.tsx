@@ -128,247 +128,135 @@ export function FmArtistSpotlight({
     <div className={cn('w-full', className)}>
       {/* Spotlight Card */}
       <div className='bg-black/60 backdrop-blur-md border border-white/20 rounded-none p-4 md:p-[30px]'>
-        {/* Mobile Layout - Compact Hero */}
-        <div className='md:hidden'>
-          {/* Compact Hero Section */}
-          <div className='flex gap-4 mb-4'>
-            {/* Main Image - Constrained size */}
-            <div className='w-28 h-36 flex-shrink-0 overflow-hidden rounded-none border border-white/15 bg-white/5'>
+        {/* Two Column Layout - Mobile & Desktop */}
+        <div className='flex gap-3 md:gap-5'>
+          {/* Left Column - Main Image with overlay (50% width) */}
+          <div className='w-1/2 flex-shrink-0'>
+            <div className='relative overflow-hidden border border-white/15 bg-white/5'>
               <img
                 src={mainImage}
                 alt={artist.name}
-                className='w-full h-full object-cover'
+                className='w-full aspect-[3/4] object-cover'
               />
-            </div>
+              {/* Gradient overlay for text legibility */}
+              <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent' />
 
-            {/* Artist Info */}
-            <div className='flex-1 flex flex-col justify-center min-w-0'>
-              {!hideSpotlightHeader && (
-                <p className='text-[9px] uppercase tracking-[0.3em] text-white/50 font-canela mb-1'>
-                  {tCommon('artistPreview.spotlight')}
-                </p>
-              )}
-              <h1 className='text-2xl font-canela font-semibold text-white leading-tight mb-2 mt-1 truncate'>
-                {artist.name}
-              </h1>
-
-              {/* Genre badges */}
-              {genreBadges.length > 0 && (
-                <div className='flex items-center gap-1.5'>
-                  <Music2 className='h-3 w-3 text-fm-gold flex-shrink-0' />
-                  <FmCommonBadgeGroup
-                    badges={genreBadges.slice(0, 2)}
-                    badgeClassName='border-fm-gold/60 bg-fm-gold/10 text-fm-gold text-[10px] px-1.5 py-0.5'
-                    gap='sm'
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Gallery Thumbnails - Horizontal scroll */}
-          {thumbnailImages.length > 0 && (
-            <div className='flex gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide'>
-              {/* Current image indicator */}
-              <button
-                type='button'
-                className='w-12 h-12 flex-shrink-0 overflow-hidden rounded-none border-2 border-fm-gold/50 bg-white/5'
-              >
-                <img
-                  src={mainImage}
-                  alt={artist.name}
-                  className='w-full h-full object-cover'
-                />
-              </button>
-              {thumbnailImages.map(img => {
-                const originalIndex = galleryImages.findIndex(
-                  g => g.id === img.id
-                );
-                return (
-                  <button
-                    key={img.id}
-                    type='button'
-                    onClick={() => setSelectedImageIndex(originalIndex)}
-                    className={cn(
-                      'w-12 h-12 flex-shrink-0 overflow-hidden rounded-none border border-white/15 bg-white/5',
-                      'transition-all duration-200',
-                      'cursor-pointer hover:border-fm-gold/50'
-                    )}
-                  >
-                    <img
-                      src={img.file_path}
-                      alt={`${artist.name} gallery`}
-                      className='w-full h-full object-cover'
-                    />
-                  </button>
-                );
-              })}
-            </div>
-          )}
-
-          <div className='w-full h-[1px] bg-white/20 mb-4' />
-
-          {/* Bio */}
-          <div
-            className={cn(
-              'text-sm text-white/60 leading-loose font-canela whitespace-pre-wrap italic px-1',
-              !artist.bio && 'text-white/40'
-            )}
-          >
-            {artist.bio || tCommon('artistProfile.noBioAvailable')}
-          </div>
-
-          {/* Social Links - Mobile */}
-          {(hasSocialLinks || footerAction) && (
-            <>
-              <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent mt-4' />
-              <div className='flex items-center justify-between mt-3'>
-                {hasSocialLinks ? (
-                  <FmSocialLinks
-                    website={artist.website}
-                    instagram={artist.instagram_handle}
-                    youtube={youtube}
-                    facebook={facebook}
-                    soundcloud={
-                      artist.soundcloud_id
-                        ? `https://soundcloud.com/${artist.soundcloud_id}`
-                        : undefined
-                    }
-                    spotify={
-                      artist.spotify_id
-                        ? `https://open.spotify.com/artist/${artist.spotify_id}`
-                        : undefined
-                    }
-                    tiktok={artist.tiktok_handle}
-                    size='sm'
-                    gap='md'
-                  />
-                ) : (
-                  <div />
+              {/* Artist info overlaid at bottom with frosted glass */}
+              <div className='absolute bottom-0 left-0 right-0 p-3 md:p-4 bg-black/50 backdrop-blur-md border-t border-white/10'>
+                {!hideSpotlightHeader && (
+                  <p className='text-[8px] md:text-[9px] uppercase tracking-[0.3em] text-white/70 font-canela mb-1'>
+                    {tCommon('artistPreview.spotlight')}
+                  </p>
                 )}
-                {footerAction}
-              </div>
-            </>
-          )}
-        </div>
+                <h1 className='text-lg md:text-2xl font-canela font-semibold text-white leading-tight mb-1.5 md:mb-2 drop-shadow-lg'>
+                  {artist.name}
+                </h1>
 
-        {/* Desktop Layout */}
-        <div className='hidden md:block'>
-          <div className='flex flex-row gap-6 items-stretch'>
-            {/* Left: Image Column */}
-            <div className='w-64 flex-shrink-0 flex flex-col gap-[10px]'>
-              <div className='flex flex-col'>
-                {/* Main Profile Image */}
-                <div className='overflow-hidden rounded-none border border-white/15 bg-white/5 shadow-inner'>
-                  <img
-                    src={mainImage}
-                    alt={artist.name}
-                    className='aspect-[3/4] w-full object-cover'
-                  />
-                </div>
-
-                {/* Additional Photos */}
-                {thumbnailImages.length > 0 && (
-                  <div className='flex flex-row gap-[10px] mt-[10px]'>
-                    {thumbnailImages.map(img => {
-                      const originalIndex = galleryImages.findIndex(
-                        g => g.id === img.id
-                      );
-                      return (
-                        <button
-                          key={img.id}
-                          type='button'
-                          onClick={() => setSelectedImageIndex(originalIndex)}
-                          className={cn(
-                            'aspect-square flex-1 overflow-hidden rounded-none border border-white/15 bg-white/5',
-                            'transition-all duration-200',
-                            'cursor-pointer hover:border-fm-gold/50 hover:scale-105 hover:shadow-lg hover:shadow-fm-gold/20'
-                          )}
-                        >
-                          <img
-                            src={img.file_path}
-                            alt={`${artist.name} gallery`}
-                            className='w-full h-full object-cover'
-                          />
-                        </button>
-                      );
-                    })}
+                {/* Genre badges */}
+                {genreBadges.length > 0 && (
+                  <div className='flex items-center gap-1 md:gap-1.5 flex-wrap'>
+                    <Music2 className='h-3 w-3 md:h-3.5 md:w-3.5 text-fm-gold drop-shadow flex-shrink-0' />
+                    <FmCommonBadgeGroup
+                      badges={genreBadges.slice(0, 2)}
+                      badgeClassName='border-fm-gold/60 bg-black/50 backdrop-blur-sm text-fm-gold text-[9px] md:text-[10px] px-1 md:px-1.5 py-0.5'
+                      gap='sm'
+                    />
                   </div>
                 )}
               </div>
             </div>
+          </div>
 
-            {/* Right: Content Column */}
-            <div className='flex-1 flex flex-col gap-4 min-h-[320px]'>
-              <div className='space-y-2'>
-                {!hideSpotlightHeader && (
-                  <p className='text-[10px] uppercase tracking-[0.35em] text-white/50 font-canela'>
-                    {tCommon('artistPreview.spotlight')}
-                  </p>
-                )}
-                <h1 className='text-4xl font-canela font-semibold text-white leading-tight mt-2'>
-                  {artist.name}
-                </h1>
-                <div className='w-full h-[1px] bg-white/30' />
+          {/* Right Column - Gallery Grid (50% width) */}
+          <div className='w-1/2 flex flex-col'>
+            {thumbnailImages.length > 0 ? (
+              <div className='grid grid-cols-2 md:grid-cols-3 gap-1.5 md:gap-2 auto-rows-fr'>
+                {thumbnailImages.map(img => {
+                  const originalIndex = galleryImages.findIndex(
+                    g => g.id === img.id
+                  );
+                  return (
+                    <button
+                      key={img.id}
+                      type='button'
+                      onClick={() => setSelectedImageIndex(originalIndex)}
+                      className={cn(
+                        'aspect-square overflow-hidden border border-white/20 bg-white/5',
+                        'transition-all duration-200',
+                        'cursor-pointer',
+                        'hover:border-fm-gold/50 hover:scale-[1.02] hover:shadow-lg hover:shadow-fm-gold/20',
+                        'active:scale-95 active:border-fm-gold/50'
+                      )}
+                    >
+                      <img
+                        src={img.file_path}
+                        alt={`${artist.name} gallery`}
+                        className='w-full h-full object-cover'
+                      />
+                    </button>
+                  );
+                })}
               </div>
-
-              {/* Genre badges */}
-              {genreBadges.length > 0 && (
-                <div className='flex items-center gap-2'>
-                  <Music2 className='h-4 w-4 text-fm-gold' />
-                  <FmCommonBadgeGroup
-                    badges={genreBadges}
-                    badgeClassName='border-fm-gold/60 bg-fm-gold/10 text-fm-gold'
-                    gap='sm'
-                  />
-                </div>
-              )}
-
-              {/* Bio */}
+            ) : (
+              /* No gallery - show bio in right column instead */
               <div
                 className={cn(
-                  'max-w-none text-sm text-white/60 leading-loose font-canela flex-1 whitespace-pre-wrap italic px-1',
+                  'text-xs md:text-sm text-white/60 leading-relaxed md:leading-loose font-canela whitespace-pre-wrap italic',
                   !artist.bio && 'text-white/40'
                 )}
               >
                 {artist.bio || tCommon('artistProfile.noBioAvailable')}
               </div>
+            )}
+          </div>
+        </div>
+
+        {/* Bio Section - only show if we have gallery images */}
+        {thumbnailImages.length > 0 && (
+          <div className='mt-4 md:mt-5 pt-4 md:pt-5 border-t border-white/10'>
+            <div
+              className={cn(
+                'text-xs md:text-sm text-white/60 leading-relaxed md:leading-loose font-canela whitespace-pre-wrap italic',
+                !artist.bio && 'text-white/40'
+              )}
+            >
+              {artist.bio || tCommon('artistProfile.noBioAvailable')}
             </div>
           </div>
+        )}
 
-          {/* Social Links - Desktop */}
-          {(hasSocialLinks || footerAction) && (
-            <>
-              <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent mt-[20px]' />
-              <div className='flex items-center justify-between mt-[15px]'>
-                {hasSocialLinks ? (
-                  <FmSocialLinks
-                    website={artist.website}
-                    instagram={artist.instagram_handle}
-                    youtube={youtube}
-                    facebook={facebook}
-                    soundcloud={
-                      artist.soundcloud_id
-                        ? `https://soundcloud.com/${artist.soundcloud_id}`
-                        : undefined
-                    }
-                    spotify={
-                      artist.spotify_id
-                        ? `https://open.spotify.com/artist/${artist.spotify_id}`
-                        : undefined
-                    }
-                    tiktok={artist.tiktok_handle}
-                    size='md'
-                    gap='md'
-                  />
-                ) : (
-                  <div />
-                )}
-                {footerAction}
-              </div>
-            </>
-          )}
-        </div>
+        {/* Social Links */}
+        {(hasSocialLinks || footerAction) && (
+          <>
+            <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent mt-4 md:mt-[20px]' />
+            <div className='flex items-center justify-between mt-3 md:mt-[15px]'>
+              {hasSocialLinks ? (
+                <FmSocialLinks
+                  website={artist.website}
+                  instagram={artist.instagram_handle}
+                  youtube={youtube}
+                  facebook={facebook}
+                  soundcloud={
+                    artist.soundcloud_id
+                      ? `https://soundcloud.com/${artist.soundcloud_id}`
+                      : undefined
+                  }
+                  spotify={
+                    artist.spotify_id
+                      ? `https://open.spotify.com/artist/${artist.spotify_id}`
+                      : undefined
+                  }
+                  tiktok={artist.tiktok_handle}
+                  size='sm'
+                  gap='md'
+                />
+              ) : (
+                <div />
+              )}
+              {footerAction}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Recordings Section */}

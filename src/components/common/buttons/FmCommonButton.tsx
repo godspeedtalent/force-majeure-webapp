@@ -82,9 +82,9 @@ export const FmCommonButton = forwardRef<
       secondary:
         'hover:bg-fm-gold/10 hover:border-fm-gold hover:text-fm-gold transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]',
       destructive:
-        'transition-all duration-200 hover:scale-105 active:scale-95',
+        'bg-transparent border border-destructive text-destructive hover:bg-destructive hover:text-black hover:border-destructive transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_hsl(var(--destructive)/0.3)]',
       'destructive-outline':
-        'bg-transparent border border-destructive text-destructive hover:bg-destructive/10 hover:border-destructive transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_hsl(var(--destructive)/0.3)]',
+        'bg-transparent border border-destructive text-destructive hover:bg-destructive hover:text-black hover:border-destructive transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_hsl(var(--destructive)/0.3)]',
     };
 
     return (
@@ -93,11 +93,11 @@ export const FmCommonButton = forwardRef<
         variant={
           variant === 'gold'
             ? 'default'
-            : variant === 'default' || variant === 'destructive-outline'
+            : variant === 'default' || variant === 'destructive-outline' || variant === 'destructive'
               ? 'outline'
               : variant === 'secondary'
                 ? 'ghost'
-                : variant
+                : 'outline'
         }
         size={size}
         disabled={isDisabled}
@@ -110,6 +110,10 @@ export const FmCommonButton = forwardRef<
           variant === 'destructive' && variantStyles.destructive,
           variant === 'destructive-outline' && variantStyles['destructive-outline'],
           isPressed && 'scale-95',
+          // Mobile touch feedback (hover-like effects on tap for touch devices)
+          variant === 'destructive' || variant === 'destructive-outline'
+            ? 'fm-touch-feedback-destructive'
+            : 'fm-touch-feedback',
           className
         )}
         asChild={asChild}

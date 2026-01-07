@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Copy, Edit, Trash2, Power, Plus } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
+import {
+  FmCommonTabs,
+  FmCommonTabsContent,
+  FmCommonTabsList,
+  FmCommonTabsTrigger,
+} from '@/components/common/navigation/FmCommonTabs';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { FmConfigurableDataGrid, DataGridAction } from '@/features/data-grid';
@@ -151,12 +156,12 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
 
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="links" className="w-full">
+      <FmCommonTabs defaultValue="links" className="w-full">
         <div className="flex items-center justify-between mb-4">
-          <TabsList>
-            <TabsTrigger value="links">{t('tracking.tabs.links')}</TabsTrigger>
-            <TabsTrigger value="analytics">{t('tracking.tabs.analytics')}</TabsTrigger>
-          </TabsList>
+          <FmCommonTabsList>
+            <FmCommonTabsTrigger value="links">{t('tracking.tabs.links')}</FmCommonTabsTrigger>
+            <FmCommonTabsTrigger value="analytics">{t('tracking.tabs.analytics')}</FmCommonTabsTrigger>
+          </FmCommonTabsList>
 
           <FmCommonButton
             variant="default"
@@ -170,7 +175,7 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
           </FmCommonButton>
         </div>
 
-        <TabsContent value="links" className="space-y-4">
+        <FmCommonTabsContent value="links" className="space-y-4">
           <FmConfigurableDataGrid
             gridId="tracking-links"
             tableName="tracking_links"
@@ -179,12 +184,12 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
             loading={isLoading}
             contextMenuActions={contextMenuActions}
           />
-        </TabsContent>
+        </FmCommonTabsContent>
 
-        <TabsContent value="analytics">
+        <FmCommonTabsContent value="analytics">
           <TrackingAnalytics eventId={eventId} />
-        </TabsContent>
-      </Tabs>
+        </FmCommonTabsContent>
+      </FmCommonTabs>
 
       <CreateLinkDialog
         eventId={eventId}

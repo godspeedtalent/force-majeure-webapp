@@ -19,11 +19,11 @@ import {
 } from '@/components/common/shadcn/dialog';
 import { Textarea } from '@/components/common/shadcn/textarea';
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/common/shadcn/tabs';
+  FmCommonTabs,
+  FmCommonTabsContent,
+  FmCommonTabsList,
+  FmCommonTabsTrigger,
+} from '@/components/common/navigation/FmCommonTabs';
 
 interface UserRequest {
   id: string;
@@ -351,20 +351,20 @@ export function UserRequestsAdmin() {
         </p>
       </div>
 
-      <Tabs defaultValue='pending'>
-        <TabsList>
-          <TabsTrigger value='pending' className='relative'>
+      <FmCommonTabs defaultValue='pending'>
+        <FmCommonTabsList>
+          <FmCommonTabsTrigger value='pending' className='relative'>
             {t('status.pending')}
             {pendingRequests.length > 0 && (
               <Badge variant='destructive' className='ml-2 h-5 w-5 p-0 flex items-center justify-center text-xs'>
                 {pendingRequests.length}
               </Badge>
             )}
-          </TabsTrigger>
-          <TabsTrigger value='resolved'>{t('status.resolved')}</TabsTrigger>
-        </TabsList>
+          </FmCommonTabsTrigger>
+          <FmCommonTabsTrigger value='resolved'>{t('status.resolved')}</FmCommonTabsTrigger>
+        </FmCommonTabsList>
 
-        <TabsContent value='pending' className='space-y-4 mt-4'>
+        <FmCommonTabsContent value='pending' className='space-y-4 mt-4'>
           {pendingRequests.length === 0 ? (
             <FmCommonCard className='border-border/30'>
               <FmCommonCardContent className='p-8 text-center'>
@@ -375,9 +375,9 @@ export function UserRequestsAdmin() {
           ) : (
             pendingRequests.map(request => renderRequestCard(request))
           )}
-        </TabsContent>
+        </FmCommonTabsContent>
 
-        <TabsContent value='resolved' className='space-y-4 mt-4'>
+        <FmCommonTabsContent value='resolved' className='space-y-4 mt-4'>
           {resolvedRequests.length === 0 ? (
             <FmCommonCard className='border-border/30'>
               <FmCommonCardContent className='p-8 text-center'>
@@ -388,8 +388,8 @@ export function UserRequestsAdmin() {
           ) : (
             resolvedRequests.map(request => renderRequestCard(request, false))
           )}
-        </TabsContent>
-      </Tabs>
+        </FmCommonTabsContent>
+      </FmCommonTabs>
 
       {/* Approve Confirmation Modal */}
       <Dialog open={showApproveModal} onOpenChange={setShowApproveModal}>

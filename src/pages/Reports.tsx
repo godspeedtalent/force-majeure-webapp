@@ -2,7 +2,12 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { Layout } from '@/components/layout/Layout';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
+import {
+  FmCommonTabs,
+  FmCommonTabsContent,
+  FmCommonTabsList,
+  FmCommonTabsTrigger,
+} from '@/components/common/navigation/FmCommonTabs';
 import { SalesReportConfig } from '@/components/reports/SalesReportConfig';
 import { AttendanceReportConfig } from '@/components/reports/AttendanceReportConfig';
 
@@ -36,20 +41,20 @@ const Reports = ({ eventId }: ReportsProps) => {
           </p>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
-            <TabsTrigger value="sales">{t('reports.dailySalesReport')}</TabsTrigger>
-            <TabsTrigger value="attendance">{t('reports.attendance.title')}</TabsTrigger>
-          </TabsList>
+        <FmCommonTabs value={activeTab} onValueChange={setActiveTab}>
+          <FmCommonTabsList>
+            <FmCommonTabsTrigger value="sales">{t('reports.dailySalesReport')}</FmCommonTabsTrigger>
+            <FmCommonTabsTrigger value="attendance">{t('reports.attendance.title')}</FmCommonTabsTrigger>
+          </FmCommonTabsList>
 
-          <TabsContent value="sales" className="mt-6">
+          <FmCommonTabsContent value="sales" className="mt-6">
             <SalesReportConfig eventId={eventId} />
-          </TabsContent>
+          </FmCommonTabsContent>
 
-          <TabsContent value="attendance" className="mt-6">
+          <FmCommonTabsContent value="attendance" className="mt-6">
             <AttendanceReportConfig eventId={eventId} />
-          </TabsContent>
-        </Tabs>
+          </FmCommonTabsContent>
+        </FmCommonTabs>
       </div>
     </Layout>
   );

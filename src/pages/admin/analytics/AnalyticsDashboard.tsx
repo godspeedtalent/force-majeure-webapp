@@ -8,7 +8,7 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Layout } from '@/components/layout/Layout';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
+import { FmCommonTabs, FmCommonTabsContent, FmCommonTabsList, FmCommonTabsTrigger } from '@/components/common/navigation/FmCommonTabs';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
 import { SupabaseAnalyticsAdapter } from '@/features/analytics';
@@ -112,54 +112,42 @@ export default function AnalyticsDashboard() {
             <AnalyticsOverview stats={overviewStats} />
 
             {/* Tabs for detailed views */}
-            <Tabs defaultValue="traffic" className="mt-8">
-              <TabsList className="bg-black/60 border border-white/20 rounded-none">
-                <TabsTrigger
-                  value="traffic"
-                  className="rounded-none data-[state=active]:bg-fm-gold/20 data-[state=active]:text-fm-gold"
-                >
+            <FmCommonTabs defaultValue="traffic" className="mt-8">
+              <FmCommonTabsList>
+                <FmCommonTabsTrigger value="traffic">
                   Traffic
-                </TabsTrigger>
-                <TabsTrigger
-                  value="funnel"
-                  className="rounded-none data-[state=active]:bg-fm-gold/20 data-[state=active]:text-fm-gold"
-                >
+                </FmCommonTabsTrigger>
+                <FmCommonTabsTrigger value="funnel">
                   Conversion funnel
-                </TabsTrigger>
-                <TabsTrigger
-                  value="performance"
-                  className="rounded-none data-[state=active]:bg-fm-gold/20 data-[state=active]:text-fm-gold"
-                >
+                </FmCommonTabsTrigger>
+                <FmCommonTabsTrigger value="performance">
                   Performance
-                </TabsTrigger>
-                <TabsTrigger
-                  value="sessions"
-                  className="rounded-none data-[state=active]:bg-fm-gold/20 data-[state=active]:text-fm-gold"
-                >
+                </FmCommonTabsTrigger>
+                <FmCommonTabsTrigger value="sessions">
                   Sessions
-                </TabsTrigger>
-              </TabsList>
+                </FmCommonTabsTrigger>
+              </FmCommonTabsList>
 
-              <TabsContent value="traffic" className="mt-6 space-y-6">
+              <FmCommonTabsContent value="traffic" className="mt-6 space-y-6">
                 <PageViewsChart data={dailyPageViews || []} />
                 <TopPagesTable data={dailyPageViews || []} />
-              </TabsContent>
+              </FmCommonTabsContent>
 
-              <TabsContent value="funnel" className="mt-6">
+              <FmCommonTabsContent value="funnel" className="mt-6">
                 <FunnelVisualization data={funnelData || []} />
-              </TabsContent>
+              </FmCommonTabsContent>
 
-              <TabsContent value="performance" className="mt-6">
+              <FmCommonTabsContent value="performance" className="mt-6">
                 <PerformanceMetrics data={performanceData || []} />
-              </TabsContent>
+              </FmCommonTabsContent>
 
-              <TabsContent value="sessions" className="mt-6">
+              <FmCommonTabsContent value="sessions" className="mt-6">
                 <SessionsTable
                   data={sessionsData?.data || []}
                   isLoading={loadingSessions}
                 />
-              </TabsContent>
-            </Tabs>
+              </FmCommonTabsContent>
+            </FmCommonTabs>
           </>
         )}
       </div>

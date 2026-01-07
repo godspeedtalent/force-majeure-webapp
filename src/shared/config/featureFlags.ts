@@ -34,6 +34,9 @@ export const FEATURE_FLAGS = {
 
   // Dashboard features
   RECORDING_RATINGS: 'recording_ratings',
+
+  // Sharing features
+  INSTAGRAM_SHARING: 'instagram_sharing',
 } as const;
 
 export type FeatureFlag = (typeof FEATURE_FLAGS)[keyof typeof FEATURE_FLAGS];
@@ -100,6 +103,10 @@ export const FEATURE_FLAG_METADATA: Record<
   [FEATURE_FLAGS.RECORDING_RATINGS]: {
     displayName: 'Recording Ratings',
     description: 'Enables the recording ratings dashboard for rating artist tracks',
+  },
+  [FEATURE_FLAGS.INSTAGRAM_SHARING]: {
+    displayName: 'Instagram Sharing',
+    description: 'Enables sharing content to Instagram Stories on mobile devices',
   },
 };
 

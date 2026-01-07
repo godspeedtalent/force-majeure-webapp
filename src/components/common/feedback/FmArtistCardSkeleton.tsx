@@ -66,7 +66,7 @@ export const FmArtistCardSkeleton = ({
         <div className='w-full sm:w-48 flex-shrink-0 flex flex-col gap-[10px]'>
           <div className='flex flex-row gap-[10px] sm:flex-col'>
             {/* Main Profile Image */}
-            <div className='flex-1 sm:flex-none overflow-hidden rounded-xl border border-white/15 bg-white/5'>
+            <div className='flex-1 sm:flex-none overflow-hidden rounded-none border border-white/15 bg-white/5'>
               <Skeleton className='aspect-[3/4] w-full rounded-none' />
             </div>
 
@@ -75,7 +75,7 @@ export const FmArtistCardSkeleton = ({
               {Array.from({ length: 3 }).map((_, index) => (
                 <Skeleton
                   key={index}
-                  className='aspect-square flex-1 rounded-lg'
+                  className='aspect-square flex-1 rounded-none'
                 />
               ))}
             </div>
