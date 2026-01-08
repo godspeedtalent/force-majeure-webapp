@@ -297,7 +297,7 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
         <FmCommonButton
           onClick={handleSave}
           loading={isSaving}
-          className='bg-fm-gold hover:bg-fm-gold/90 text-black'
+          variant='gold'
         >
           {t('queue.saveConfiguration')}
         </FmCommonButton>

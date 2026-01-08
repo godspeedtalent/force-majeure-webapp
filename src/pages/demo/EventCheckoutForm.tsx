@@ -651,7 +651,7 @@ export default function EventCheckoutForm({
             <Button
               type='submit'
               size='lg'
-              className='w-full bg-fm-gold hover:bg-fm-gold/90 text-black'
+              className='w-full bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-all duration-200'
               disabled={!isFormValid}
             >
               <Lock className='h-4 w-4 mr-2' />

@@ -142,7 +142,7 @@ export default function SonicGauntlet() {
             className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-full px-8 py-6 text-lg font-semibold transition-all duration-300 hover:scale-105"
             disabled
           >
-            Registration Coming Soon
+            Registration Opens Soon
           </Button>
         </div>
 

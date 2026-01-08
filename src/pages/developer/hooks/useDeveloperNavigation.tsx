@@ -12,8 +12,8 @@ import {
   Database,
   FileText,
   FlaskConical,
-  ClipboardCheck,
   Code,
+  FileSpreadsheet,
   // Admin icons
   Shield,
   Sliders,
@@ -88,28 +88,25 @@ export function useDeveloperNavigation({
   } = counts;
 
   const navigationGroups: FmCommonSideNavGroup<DeveloperTab>[] = useMemo(() => {
-    // Developer Tools group - external links
+    // Developer Tools group - sorted alphabetically
     const devToolsItems: FmCommonSideNavItem<DeveloperTab>[] = [
       {
         id: 'dev_demo',
         label: t('developerIndex.demoTools'),
         icon: FlaskConical,
         description: t('developerIndex.demoToolsDescription'),
-        isExternal: true,
       },
       {
         id: 'dev_docs',
         label: t('developerIndex.documentationViewer'),
         icon: FileText,
         description: t('developerIndex.documentationViewerDescription'),
-        isExternal: true,
       },
       {
-        id: 'dev_ticket_flow',
-        label: t('developerIndex.ticketFlowTests'),
-        icon: ClipboardCheck,
-        description: t('developerIndex.ticketFlowTestsDescription'),
-        isExternal: true,
+        id: 'dev_order_import',
+        label: t('developerIndex.orderCsvImport'),
+        icon: FileSpreadsheet,
+        description: t('developerIndex.orderCsvImportDescription'),
       },
     ];
 
@@ -120,12 +117,6 @@ export function useDeveloperNavigation({
         label: 'Feature Flags',
         icon: Sliders,
         description: 'Toggle feature flags and site settings',
-      },
-      {
-        id: 'admin_devtools',
-        label: 'Developer Tools',
-        icon: Code,
-        description: 'Toggle dev environment features',
       },
       {
         id: 'admin_ticketing',
@@ -350,7 +341,14 @@ export function useDeveloperNavigation({
       });
     }
 
-    // 3. Messages (top-level, admin only)
+    // 3. Developer Tools
+    groups.push({
+      label: 'Developer',
+      icon: Code,
+      items: devToolsItems,
+    });
+
+    // 4. Messages (top-level, admin only)
     if (isAdmin && messagesItems.length > 0) {
       groups.push({
         label: 'Messages',
@@ -360,14 +358,14 @@ export function useDeveloperNavigation({
       });
     }
 
-    // 4. Storage (top-level)
+    // 5. Storage (top-level)
     groups.push({
       label: 'Storage',
       icon: HardDrive,
       items: dbStorageSubgroup.items,
     });
 
-    // 5. Database with subgroups
+    // 6. Database with subgroups
     const dbSubgroups: FmCommonSideNavSubgroup<DeveloperTab>[] = [
       dbOverviewSubgroup,
       dbTablesSubgroup,
@@ -377,13 +375,6 @@ export function useDeveloperNavigation({
       label: 'Database',
       icon: Database,
       subgroups: dbSubgroups,
-    });
-
-    // 6. Developer Tools
-    groups.push({
-      label: 'Developer',
-      icon: Code,
-      items: devToolsItems,
     });
 
     // 7. Activity Logs - only show if admin

@@ -69,6 +69,7 @@
     "goBack": "Go Back",
     "viewOrganizationDetails": "View Organization Details",
     "backToUsersList": "Back to Users List",
+    "viewPublicProfile": "View Public Profile",
     "createGenre": "Create Genre",
     "deleteArtist": "Delete Artist",
     "deleting": "Deleting...",
@@ -341,10 +342,98 @@
     "gallery": "Gallery",
     "galleryManager": "Media Gallery",
     "dragToResize": "Drag to resize",
+    "pageInfo": "Page Info",
+    "pageInfoTitle": "Page Information",
+    "adminMessages": "Inbox",
+    "adminMessagesTitle": "Admin Inbox",
+    "errorLogs": "Error Logs",
+    "errorLogsTitle": "Error Monitoring",
+    "collapseGroup": "Collapse group",
+    "expandGroup": "Expand group",
+    "clickToExpand": "Click to expand",
     "groups": {
       "organization": "Organization",
-      "developerTools": "Developer Tools"
+      "developerTools": "Developer Tools",
+      "devTools": "Dev Tools",
+      "dataConfig": "Data & Config",
+      "admin": "Admin"
     }
+  },
+  "adminMessages": {
+    "loadError": "Failed to load messages",
+    "updateError": "Failed to update message",
+    "deleteError": "Failed to delete message",
+    "statusUpdated": "Message status updated",
+    "deleted": "Message deleted",
+    "searchPlaceholder": "Search messages...",
+    "filter": "Filter",
+    "sortBy": "Sort by",
+    "ascending": "Ascending",
+    "descending": "Descending",
+    "messagesCount": "{{count}} messages",
+    "unreadCount": "{{count}} unread",
+    "noMatchingMessages": "No matching messages",
+    "noMessages": "No messages yet",
+    "subject": "Subject",
+    "received": "Received",
+    "replyViaEmail": "Reply via Email",
+    "markUnread": "Mark Unread",
+    "archive": "Archive",
+    "filterLabels": {
+      "status": "Status"
+    },
+    "statuses": {
+      "unread": "Unread",
+      "read": "Read",
+      "replied": "Replied",
+      "archived": "Archived"
+    },
+    "tabs": {
+      "requests": "Requests",
+      "messages": "Messages"
+    },
+    "pendingRequests": "{{count}} pending request(s)",
+    "viewFullRequests": "View full details in Developer Home → User Requests"
+  },
+  "pageInfo": {
+    "routeInfo": "Route",
+    "path": "Path",
+    "query": "Query",
+    "hash": "Hash",
+    "routeParams": "Route Parameters",
+    "pageType": "Page Type",
+    "resourceId": "Resource ID",
+    "componentInfo": "Components",
+    "pageComponent": "Page Component",
+    "layoutComponent": "Layout",
+    "filePath": "File Path",
+    "commonComponents": "Common Components",
+    "performance": "Performance",
+    "loadTime": "Load Time",
+    "domReady": "DOM Ready",
+    "fcp": "First Contentful Paint",
+    "lcp": "Largest Contentful Paint",
+    "memory": "Memory Usage",
+    "loadingMetrics": "Loading metrics...",
+    "sessionInfo": "Session",
+    "timeOnPage": "Time on Page",
+    "renderCount": "Renders",
+    "userAgent": "User Agent",
+    "language": "Language",
+    "screenSize": "Screen Size",
+    "openInEditor": "Open in Editor",
+    "reactDevTools": "React DevTools"
+  },
+  "errorLog": {
+    "summary": "Summary",
+    "recentErrors": "Recent Errors",
+    "loading": "Loading error logs...",
+    "fetchError": "Failed to fetch error logs",
+    "noErrors": "No errors logged",
+    "clearFilter": "Show all levels",
+    "copied": "Copied to clipboard",
+    "openInSupabase": "View in Supabase",
+    "clearOldLogsTooltip": "Clear logs older than 7 days"
   },
   "mockRole": {
     "activeWarning": "Mock role active",
@@ -1643,6 +1732,14 @@
     "localFileNotAllowed": "Local file paths are not allowed. Please upload the file instead.",
     "enterValidUrl": "Please enter a valid URL starting with http:// or https://"
   },
+  "fileDropzone": {
+    "dropFileOr": "Drop your file here, or",
+    "browse": "browse",
+    "acceptedFormats": "Accepted formats: {{formats}}",
+    "clearFile": "Clear file",
+    "selectDifferentFile": "Select different file",
+    "processing": "Processing..."
+  },
   "events": {
     "publish": {
       "button": "PUBLISH EVENT",
@@ -1918,12 +2015,12 @@
     "attendance": {
       "title": "Attendance & Check-in Report",
       "description": "Track attendance and check-in data for your event",
-      "comingSoonText": "This report is coming soon. It will include:",
+      "underDevelopmentText": "This report is under development. It will include:",
       "checkInsVsTickets": "Total check-ins vs. tickets sold",
       "checkInTimeline": "Check-in timeline and peaks",
       "noShowAnalysis": "No-show analysis",
       "tierBreakdown": "Ticket tier breakdown",
-      "comingSoon": "Coming Soon"
+      "underDevelopment": "Under Development"
     }
   },
   "checkoutTimer": {
@@ -2071,8 +2168,8 @@
       "overrideCleared": "Override cleared",
       "usingDatabaseValue": "Using database value",
       "allOverridesCleared": "All session overrides cleared",
-      "overrideComingSoon": "Override Coming Soon Mode",
-      "comingSoonTooltip": "Temporarily disable Coming Soon mode for your session. Useful for testing the full app while coming_soon_mode is enabled in the database.",
+      "overridePrelaunchMode": "Override Prelaunch Mode",
+      "prelaunchTooltip": "Temporarily disable prelaunch mode for your session. Useful for testing the full app while prelaunch mode is enabled in the database.",
       "overrideActive": "Override active:",
       "usingDatabase": "Using database value:",
       "clearAll": "Clear All Session Overrides",
@@ -2304,6 +2401,8 @@
     "deny": "Deny",
     "approveSuccess": "{{name}} has been approved",
     "approveFailed": "Failed to approve registration",
+    "alreadyApproved": "{{name}} has already been approved",
+    "duplicateSpotifyId": "An artist with this Spotify ID already exists",
     "denySuccess": "{{name}} has been denied",
     "denyFailed": "Failed to deny registration",
     "confirmApprove": "Approve Registration",
@@ -2929,8 +3028,8 @@
   "memberHome": {
     "title": "Member Profile",
     "subtitle": "Manage your profile and preferences",
-    "comingSoonTitle": "Member Profiles Coming Soon",
-    "comingSoonDescription": "This feature is currently under development. Check back soon!"
+    "underDevelopmentTitle": "Member Profiles Under Development",
+    "underDevelopmentDescription": "This feature is currently under development. Check back later!"
   },
   "genreMultiSelect": {
     "clearAll": "Clear All",
@@ -3424,14 +3523,14 @@
     "subtitle": "atx electronic showcase",
     "description": "Austin's premier DJ competition returns. Local electronic artists battle for glory, prizes, and the chance to headline a Force Majeure event.",
     "registrationInfo": "Registration opens soon. Stay tuned for dates and details.",
-    "registrationComing": "Registration Coming Soon",
+    "registrationOpening": "Registration Opens Soon",
     "followText": "Follow",
     "forUpdates": "for updates"
   },
   "dashboards": {
     "activityLog": "Activity Log",
     "userMetrics": "User Metrics",
-    "comingSoon": "Coming soon"
+    "underDevelopment": "Under development"
   },
   "mediaGallery": {
     "loading": "Loading...",
@@ -3463,6 +3562,7 @@
     "title": "Order CSV Import",
     "description": "Import historical orders from CSV files. Orders will be linked to existing users by email address, or left unlinked for future user sign-ups.",
     "steps": {
+      "configure": "Configure",
       "upload": "Upload",
       "map": "Map",
       "preview": "Preview",

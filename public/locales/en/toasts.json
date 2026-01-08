@@ -269,7 +269,8 @@
     "unlinkSuccess": "Artist account unlinked successfully.",
     "unlinkFailed": "Failed to unlink artist. Please try again.",
     "deleteRequestSubmitted": "Data deletion request submitted. An admin will process your request within a few days.",
-    "deleteRequestFailed": "Failed to submit deletion request. Please try again."
+    "deleteRequestFailed": "Failed to submit deletion request. Please try again.",
+    "duplicatePendingRequest": "You already have a pending request of this type. Please wait for it to be reviewed."
   },
   "guestList": {
     "saved": "Social settings saved successfully",

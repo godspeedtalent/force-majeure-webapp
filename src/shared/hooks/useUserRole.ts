@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { logger } from '@/shared';
+import { debugAccessService } from '@/shared/services/debugAccessService';
 
 import { useAuthSafe } from '@/features/auth/services/AuthContext';
 import { supabase } from '@/shared';
@@ -21,7 +23,7 @@ export const useUserRole = () => {
   const auth = useAuthSafe();
   const user = auth?.user ?? null;
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ['user-role', user?.id],
     queryFn: async () => {
       if (!user) return null;
@@ -48,6 +50,23 @@ export const useUserRole = () => {
     enabled: !!user,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
+
+  // Sync debug access when roles load
+  // This allows the logger and error components to check role-based access
+  // even outside of React context (e.g., error boundaries)
+  useEffect(() => {
+    if (query.data) {
+      const isDevOrAdmin = query.data.some(
+        role => role.role_name === 'admin' || role.role_name === 'developer'
+      );
+      debugAccessService.setDebugAccess(isDevOrAdmin);
+    } else if (!user) {
+      // Clear debug access when user logs out
+      debugAccessService.clearDebugAccess();
+    }
+  }, [query.data, user]);
+
+  return query;
 };
 
 /**

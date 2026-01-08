@@ -218,7 +218,7 @@ function SelectionTestsContent() {
 
       <FmCommonCard variant='default' className='p-[20px]'>
         <p className='text-xs text-muted-foreground font-canela text-center'>
-          Test implementation coming soon. This will validate cart operations and
+          Test implementation in progress. This will validate cart operations and
           inventory management.
         </p>
       </FmCommonCard>
@@ -261,7 +261,7 @@ function PaymentTestsContent() {
 
       <FmCommonCard variant='default' className='p-[20px]'>
         <p className='text-xs text-muted-foreground font-canela text-center'>
-          Test implementation coming soon. This will use mock Stripe integration
+          Test implementation in progress. This will use mock Stripe integration
           for safe testing.
         </p>
       </FmCommonCard>
@@ -303,7 +303,7 @@ function TimeoutTestsContent() {
 
       <FmCommonCard variant='default' className='p-[20px]'>
         <p className='text-xs text-muted-foreground font-canela text-center'>
-          Test implementation coming soon. This will validate timer accuracy and
+          Test implementation in progress. This will validate timer accuracy and
           cleanup behavior.
         </p>
       </FmCommonCard>
@@ -345,7 +345,7 @@ function ConfirmationTestsContent() {
 
       <FmCommonCard variant='default' className='p-[20px]'>
         <p className='text-xs text-muted-foreground font-canela text-center'>
-          Test implementation coming soon. This will verify order completion and
+          Test implementation in progress. This will verify order completion and
           data integrity.
         </p>
       </FmCommonCard>
@@ -387,7 +387,7 @@ function DeliveryTestsContent() {
 
       <FmCommonCard variant='default' className='p-[20px]'>
         <p className='text-xs text-muted-foreground font-canela text-center'>
-          Test implementation coming soon. This will validate ticket generation
+          Test implementation in progress. This will validate ticket generation
           and delivery workflows.
         </p>
       </FmCommonCard>

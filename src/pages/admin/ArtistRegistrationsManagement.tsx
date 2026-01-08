@@ -8,7 +8,7 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Check, X, Eye, Clock, CheckCircle2, XCircle, Trash2 } from 'lucide-react';
+import { Check, X, Eye, Clock, CheckCircle2, XCircle, Trash2, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn, logger } from '@/shared';
 import { FmConfigurableDataGrid, DataGridAction, DataGridColumn, DataGridColumns } from '@/features/data-grid';
@@ -25,6 +25,7 @@ import {
   ArtistRegistrationDenyModal,
   ArtistRegistrationDeleteModal,
 } from './components/ArtistRegistrationModals';
+import { FmFormSectionHeader } from '@/components/common/forms/FmFormSectionHeader';
 
 export function ArtistRegistrationsManagement() {
   const { t } = useTranslation('common');
@@ -66,7 +67,17 @@ export function ArtistRegistrationsManagement() {
           pgCode: pgError.code,
         },
       });
-      toast.error(t('artistRegistrations.approveFailed'));
+
+      // Show more descriptive error message based on error type
+      if (pgError.code === '23505') {
+        // Unique constraint violation
+        toast.error(t('artistRegistrations.duplicateSpotifyId'));
+      } else if (pgError.message?.includes('Spotify ID already exists')) {
+        // Custom error from duplicate check
+        toast.error(pgError.message);
+      } else {
+        toast.error(t('artistRegistrations.approveFailed'));
+      }
     }
   };
 
@@ -304,14 +315,11 @@ export function ArtistRegistrationsManagement() {
 
   return (
     <div className='space-y-6'>
-      <div>
-        <h1 className='text-3xl font-canela font-bold text-foreground mb-2'>
-          {t('artistRegistrations.title')}
-        </h1>
-        <p className='text-muted-foreground'>
-          {t('artistRegistrations.description')}
-        </p>
-      </div>
+      <FmFormSectionHeader
+        title={t('artistRegistrations.title')}
+        description={t('artistRegistrations.description')}
+        icon={UserPlus}
+      />
 
       {/* Status Filter Tabs */}
       <div className='flex gap-2 border-b border-white/10 pb-4'>

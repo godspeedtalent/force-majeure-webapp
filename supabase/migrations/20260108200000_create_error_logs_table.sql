@@ -84,9 +84,9 @@ ALTER TABLE public.error_logs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins can view error logs"
 ON public.error_logs FOR SELECT
 USING (
-  has_role(auth.uid(), 'admin'::app_role) OR
-  has_role(auth.uid(), 'developer'::app_role) OR
-  is_dev_admin()
+  has_role(auth.uid(), 'admin') OR
+  has_role(auth.uid(), 'developer') OR
+  is_dev_admin(auth.uid())
 );
 
 -- Anyone can insert logs (authenticated or anonymous)
@@ -99,8 +99,8 @@ WITH CHECK (true);
 CREATE POLICY "Admins can delete error logs"
 ON public.error_logs FOR DELETE
 USING (
-  has_role(auth.uid(), 'admin'::app_role) OR
-  is_dev_admin()
+  has_role(auth.uid(), 'admin') OR
+  is_dev_admin(auth.uid())
 );
 
 -- ============================================================

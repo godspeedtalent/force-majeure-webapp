@@ -3,3 +3,5 @@ export { DeveloperDatabaseVenuesTab } from './DeveloperDatabaseVenuesTab';
 export { DeveloperDatabaseRecordingsTab } from './DeveloperDatabaseRecordingsTab';
 export { DeveloperDatabaseOverviewTab } from './DeveloperDatabaseOverviewTab';
 export { ActivityLogsTab } from './ActivityLogsTab';
+export { DemoToolsTab } from './DemoToolsTab';
+export { DocumentationViewerTab } from './DocumentationViewerTab';

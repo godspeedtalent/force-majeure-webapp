@@ -11,8 +11,8 @@ interface Event {
 
 export const FmEventSearchDropdown = createSearchDropdown<Event>({
   tableName: 'events',
-  searchField: query =>
-    `title.ilike.%${query}%,headliner.name.ilike.%${query}%,venue.name.ilike.%${query}%`,
+  // Only search on title - nested table fields don't work with PostgREST's or() filter
+  searchField: 'title',
   selectFields: 'id, title, start_time, headliner:headliner_id(id, name, image_url), venue:venue_id(id, name)',
   formatLabel: event => {
     const title = event.title || 'Untitled Event';

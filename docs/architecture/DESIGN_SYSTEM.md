@@ -537,21 +537,48 @@ export const MyNewPage = () => {
 
 #### Buttons
 
+##### Gold Button Styling (Primary CTA)
+
+Gold buttons use a frosted glass effect by default and transition to solid gold on hover:
+
+- Default state: Frosted glass background (`bg-fm-gold/20 backdrop-blur-sm`) with gold text and gold border
+- Hover state: Solid gold background (`bg-fm-gold`) with black text
+
 ```tsx
-// Primary action (gold)
-<FmButton variant="primary">
+// Using FmCommonButton component (recommended)
+<FmCommonButton variant="gold">
   Save changes
-</FmButton>
+</FmCommonButton>
+
+// Inline styling (when FmCommonButton can't be used)
+<Button className="bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-all duration-200">
+  Save changes
+</Button>
+```
+
+IMPORTANT: Never use solid gold (`bg-fm-gold text-black`) as the default state for buttons. Solid gold should only appear:
+
+- On hover for gold buttons
+- For active states (selected tabs, checked checkboxes)
+- For badge/tag indicators (status badges, counts)
+
+##### Other Button Variants
+
+```tsx
+// Default outline button
+<FmCommonButton variant="default">
+  Secondary action
+</FmCommonButton>
 
 // Danger action (red)
-<FmButton variant="danger">
+<FmCommonButton variant="destructive">
   Delete item
-</FmButton>
+</FmCommonButton>
 
 // Icon button
-<FmButton variant="icon" aria-label="Close">
+<FmCommonIconButton variant="default" aria-label="Close">
   <CloseIcon />
-</FmButton>
+</FmCommonIconButton>
 ```
 
 #### Spacing

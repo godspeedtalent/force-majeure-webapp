@@ -2,11 +2,16 @@
  * Centralized Logging Service
  *
  * Provides a clean API for logging throughout the application with:
- * - Automatic environment checking (logs only in development)
+ * - Dual-layer access control: environment check AND role check
  * - Structured logging with context objects
  * - Optional namespacing for different modules
  * - Log levels (DEBUG, INFO, WARN, ERROR)
  * - Color coding in development mode
+ *
+ * Access Control:
+ * - Development builds: All logs shown (for development)
+ * - Production builds: Debug/info/warn only shown for admin/developer roles
+ * - Errors: Always logged (for monitoring)
  *
  * Usage:
  * ```typescript
@@ -23,6 +28,8 @@
  * ```
  */
 
+import { debugAccessService } from './debugAccessService';
+
 type LogLevel = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
 
 export interface LogContext {
@@ -30,12 +37,18 @@ export interface LogContext {
 }
 
 class Logger {
-  private isDevelopment: boolean;
   private namespace?: string;
 
   constructor(namespace?: string) {
-    this.isDevelopment = import.meta.env.DEV;
     this.namespace = namespace;
+  }
+
+  /**
+   * Check if debug logging is allowed
+   * Uses debugAccessService which checks both environment AND user role
+   */
+  private hasDebugAccess(): boolean {
+    return debugAccessService.hasDebugAccess();
   }
 
   /**
@@ -55,28 +68,28 @@ class Logger {
   }
 
   /**
-   * Log a debug message (only in development)
+   * Log a debug message (dev mode or admin/developer role)
    */
   debug(message: string, context?: LogContext): void {
-    if (this.isDevelopment) {
+    if (this.hasDebugAccess()) {
       this.log('DEBUG', message, context, 'color: #9CA3AF');
     }
   }
 
   /**
-   * Log an informational message (only in development)
+   * Log an informational message (dev mode or admin/developer role)
    */
   info(message: string, context?: LogContext): void {
-    if (this.isDevelopment) {
+    if (this.hasDebugAccess()) {
       this.log('INFO', message, context, 'color: #3B82F6');
     }
   }
 
   /**
-   * Log a warning message (only in development)
+   * Log a warning message (dev mode or admin/developer role)
    */
   warn(message: string, context?: LogContext): void {
-    if (this.isDevelopment) {
+    if (this.hasDebugAccess()) {
       this.log('WARN', message, context, 'color: #F59E0B');
     }
   }
@@ -99,8 +112,8 @@ class Logger {
     style?: string,
     forceLog = false
   ): void {
-    // Only log if in development or forced (for errors)
-    if (!this.isDevelopment && !forceLog) {
+    // Only log if has debug access or forced (for errors)
+    if (!this.hasDebugAccess() && !forceLog) {
       return;
     }
 
@@ -117,8 +130,8 @@ class Logger {
     // Serialize context to properly handle nested objects
     const serializedContext = context ? this.serializeContext(context) : undefined;
 
-    // Log with styling in development
-    if (this.isDevelopment && style) {
+    // Log with styling when debug access is available
+    if (this.hasDebugAccess() && style) {
       consoleMethod(`%c${logMessage}`, style);
       if (serializedContext) {
         console.log('Context:', serializedContext);

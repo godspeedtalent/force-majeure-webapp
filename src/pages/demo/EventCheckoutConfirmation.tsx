@@ -76,7 +76,7 @@ export default function EventCheckoutConfirmation() {
           onClick={() =>
             navigate(`/developer/demo/event-checkout?eventId=${eventId}`)
           }
-          className='w-full bg-fm-gold hover:bg-fm-gold/90 text-black'
+          className='w-full bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-all duration-200'
           size='lg'
         >
           Back to Event

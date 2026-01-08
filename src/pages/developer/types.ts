@@ -3,13 +3,12 @@
  */
 
 export type DeveloperTab =
-  // Developer Tools (external links)
+  // Developer Tools
   | 'dev_demo'
   | 'dev_docs'
-  | 'dev_ticket_flow'
+  | 'dev_order_import'
   // Admin Controls
   | 'admin_settings'
-  | 'admin_devtools'
   | 'admin_ticketing'
   // Dashboards
   | 'dash_recordings'
@@ -39,9 +38,8 @@ export type DeveloperTab =
 export const VALID_TABS: DeveloperTab[] = [
   'dev_demo',
   'dev_docs',
-  'dev_ticket_flow',
+  'dev_order_import',
   'admin_settings',
-  'admin_devtools',
   'admin_ticketing',
   'dash_recordings',
   'dash_users',
@@ -63,9 +61,6 @@ export const VALID_TABS: DeveloperTab[] = [
   'db_user_requests',
 ];
 
-// External navigation mapping
-export const EXTERNAL_ROUTES: Partial<Record<DeveloperTab, string>> = {
-  dev_demo: '/developer/demo',
-  dev_docs: '/developer/documentation',
-  dev_ticket_flow: '/developer/ticket-flow',
-};
+// External navigation mapping (pages that still open as separate routes)
+// Currently empty - all developer tools are now inline tabs or linked from Demo Tools
+export const EXTERNAL_ROUTES: Partial<Record<DeveloperTab, string>> = {};

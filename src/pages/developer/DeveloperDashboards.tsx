@@ -64,13 +64,13 @@ const createNavigationGroups = (
 ];
 
 // Placeholder for future dashboards
-function ComingSoonDashboard({ title }: { title: string }) {
+function PlaceholderDashboard({ title }: { title: string }) {
   return (
     <div className="flex items-center justify-center h-[400px]">
       <div className="text-center space-y-2">
         <BarChart3 className="h-12 w-12 mx-auto text-muted-foreground" />
         <h2 className="text-xl font-medium">{title}</h2>
-        <p className="text-muted-foreground">Coming soon</p>
+        <p className="text-muted-foreground">Under development</p>
       </div>
     </div>
   );
@@ -97,9 +97,9 @@ export default function DeveloperDashboards() {
       case 'recording-ratings':
         return <RecordingRatingsDashboard />;
       case 'activity':
-        return <ComingSoonDashboard title="Activity Log" />;
+        return <PlaceholderDashboard title="Activity Log" />;
       case 'users':
-        return <ComingSoonDashboard title="User Metrics" />;
+        return <PlaceholderDashboard title="User Metrics" />;
       default:
         return <RecordingRatingsDashboard />;
     }

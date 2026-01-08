@@ -8,7 +8,7 @@
     "featuredArtists": "Artistas Destacados",
     "viewAllEvents": "Ver Todos los Eventos",
     "noUpcomingEvents": "No hay eventos próximos en este momento. ¡Vuelve pronto!",
-    "lineupComingSoon": "Nuestro lineup 2026 viene pronto.",
+    "lineupAnnouncement": "Nuestro lineup 2026 será anunciado.",
     "artistQuestion": "¿Eres un artista que quiere abrir para talentos principales?",
     "registerBelow": "¡Regístrate con nosotros abajo!",
     "artistRegistration": "Registro de Artistas",
@@ -265,7 +265,11 @@
     "emailNotificationsDescription": "Recibe noticias sobre eventos, artistas y ofertas especiales",
     "notificationsEnabled": "Notificaciones por correo activadas.",
     "notificationsDisabled": "Notificaciones por correo desactivadas.",
-    "notificationUpdateFailed": "Error al actualizar la configuración de notificaciones. Por favor, inténtalo de nuevo."
+    "notificationUpdateFailed": "Error al actualizar la configuración de notificaciones. Por favor, inténtalo de nuevo.",
+    "accessDenied": "No tienes permiso para editar este perfil.",
+    "notFound": "Perfil no encontrado.",
+    "adminEditingNotice": "Estás editando el perfil de {{name}} como administrador.",
+    "updateFailed": "Error al actualizar el perfil. Por favor, inténtalo de nuevo."
   },
   "ticketing": {
     "yourTurn": "¡Tu turno!",
@@ -438,7 +442,7 @@
     "title": "Mercancía Force Majeure",
     "subtitle": "Impresiones y stickers exclusivos de la colección Force Majeure",
     "loading": "Cargando mercancía...",
-    "comingSoon": "Mercancía próximamente",
+    "unavailable": "Mercancía no disponible",
     "loadFailed": "Error al cargar mercancía",
     "noItems": "No se encontraron artículos",
     "noItemsDescription": "No se encontraron artículos que coincidan con tus criterios.",
@@ -453,6 +457,11 @@
     "addToCart": "Añadir al carrito",
     "addedToCart": "¡{{name}} añadido al carrito!",
     "outOfStock": "Agotado"
+  },
+  "artistUndercard": {
+    "lookingForArtists": "Buscando artistas.",
+    "artistDescription": "Buscamos talento local para abrir nuestros eventos. Regístrate para ser considerado.",
+    "signUpAsArtist": "Regístrate como artista"
   },
   "artistSignup": {
     "seoTitle": "Únete a Nuestro Roster de Artistas",

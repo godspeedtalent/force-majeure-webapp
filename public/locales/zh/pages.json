@@ -8,7 +8,7 @@
     "featuredArtists": "精选艺术家",
     "viewAllEvents": "查看所有活动",
     "noUpcomingEvents": "目前没有即将举办的活动，请稍后再来！",
-    "lineupComingSoon": "我们的2026阵容即将公布。",
+    "lineupAnnouncement": "我们的2026阵容将会公布。",
     "artistQuestion": "你是想为主演艺人暖场的艺术家吗？",
     "registerBelow": "在下方注册！",
     "artistRegistration": "艺术家注册",
@@ -265,7 +265,11 @@
     "emailNotificationsDescription": "接收有关活动、艺术家和特别优惠的消息",
     "notificationsEnabled": "邮件通知已启用。",
     "notificationsDisabled": "邮件通知已禁用。",
-    "notificationUpdateFailed": "更新通知设置失败。请重试。"
+    "notificationUpdateFailed": "更新通知设置失败。请重试。",
+    "accessDenied": "您没有权限编辑此资料。",
+    "notFound": "未找到资料。",
+    "adminEditingNotice": "您正在以管理员身份编辑 {{name}} 的资料。",
+    "updateFailed": "更新资料失败。请重试。"
   },
   "ticketing": {
     "yourTurn": "轮到你了！",
@@ -404,7 +408,7 @@
     "title": "Force Majeure 周边商品",
     "subtitle": "Force Majeure 系列独家印刷品和贴纸",
     "loading": "加载商品中...",
-    "comingSoon": "周边商品即将推出",
+    "unavailable": "周边商品暂不可用",
     "loadFailed": "加载商品失败",
     "noItems": "未找到商品",
     "noItemsDescription": "未找到符合条件的商品。",
@@ -419,6 +423,11 @@
     "addToCart": "加入购物车",
     "addedToCart": "{{name}} 已加入购物车！",
     "outOfStock": "缺货"
+  },
+  "artistUndercard": {
+    "lookingForArtists": "招募艺人。",
+    "artistDescription": "我们正在寻找本地艺人为活动暖场。注册以获得考虑机会。",
+    "signUpAsArtist": "注册成为艺人"
   },
   "artistSignup": {
     "seoTitle": "加入我们的艺术家阵容",

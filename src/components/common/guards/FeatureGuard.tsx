@@ -42,7 +42,7 @@ interface FeatureGuardProps {
  * // Show fallback when feature is disabled
  * <FeatureGuard
  *   feature={FEATURE_FLAGS.MEMBER_PROFILES}
- *   fallback={<p>Member profiles coming soon!</p>}
+ *   fallback={<p>Member profiles unavailable</p>}
  * >
  *   <MemberProfilesList />
  * </FeatureGuard>
@@ -50,7 +50,7 @@ interface FeatureGuardProps {
  * @example
  * // Show content when feature is DISABLED (inverted logic)
  * <FeatureGuard feature={FEATURE_FLAGS.MERCH_STORE} invert>
- *   <MerchComingSoonBanner />
+ *   <MerchUnavailableBanner />
  * </FeatureGuard>
  */
 export const FeatureGuard = ({

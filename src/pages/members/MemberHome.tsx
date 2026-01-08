@@ -36,10 +36,10 @@ export default function MemberHome() {
             <div className='text-center space-y-4'>
               <User className='h-16 w-16 mx-auto text-fm-gold/50' />
               <h2 className='text-2xl font-canela'>
-                {formatHeader(t('memberHome.comingSoonTitle'))}
+                {formatHeader(t('memberHome.underDevelopmentTitle'))}
               </h2>
               <p className='text-white/60'>
-                {t('memberHome.comingSoonDescription')}
+                {t('memberHome.underDevelopmentDescription')}
               </p>
             </div>
           </div>

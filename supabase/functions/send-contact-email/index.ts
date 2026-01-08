@@ -91,7 +91,7 @@ serve(async (req) => {
 
     console.log('Contact email sent successfully:', emailResponse);
 
-    // Log the contact submission to activity logs
+    // Store contact submission in database and log to activity logs
     try {
       const supabaseUrl = Deno.env.get('SUPABASE_URL');
       const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
@@ -100,6 +100,24 @@ serve(async (req) => {
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
         const requestContext = getRequestContext(req);
 
+        // Store in contact_submissions table for admin inbox
+        const { error: insertError } = await supabase
+          .from('contact_submissions')
+          .insert({
+            name,
+            email,
+            subject: subject || null,
+            message,
+            status: 'unread',
+          });
+
+        if (insertError) {
+          console.error('Failed to store contact submission:', insertError);
+        } else {
+          console.log('Contact submission stored in database');
+        }
+
+        // Also log to activity logs for audit trail
         await logActivity(supabase, {
           ...createContactSubmissionLog({ name, email, subject, message }),
           ...requestContext,
@@ -108,8 +126,8 @@ serve(async (req) => {
         console.log('Contact submission logged to activity logs');
       }
     } catch (logError) {
-      // Don't fail the request if logging fails
-      console.error('Failed to log contact submission:', logError);
+      // Don't fail the request if logging/storage fails
+      console.error('Failed to log/store contact submission:', logError);
     }
 
     return new Response(

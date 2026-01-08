@@ -41,3 +41,6 @@ export { imageUploadService } from './imageUploadService';
 
 // Role management service
 export { RoleManagementService } from './roleManagementService';
+
+// Debug access service (controls debug info visibility based on env + role)
+export { debugAccessService } from './debugAccessService';

@@ -153,6 +153,11 @@ export function useArtistRegistrationActions() {
    * Approve a registration - creates artist record and links to user
    */
   const handleApprove = async (registration: ArtistRegistration, reviewerNotes: string) => {
+    logger.info('Starting artist registration approval', {
+      source: 'useArtistRegistrations',
+      details: { registrationId: registration.id, artistName: registration.artist_name },
+    });
+
     // Step 0: Re-fetch the registration fresh to avoid stale data
     const { data: freshRegistration, error: fetchError } = await supabase
       .from('artist_registrations')
@@ -171,25 +176,93 @@ export function useArtistRegistrationActions() {
 
     const reg = freshRegistration;
 
+    // Check if registration is already approved
+    if (reg.status === 'approved') {
+      logger.warn('Registration already approved - skipping', {
+        source: 'useArtistRegistrations',
+        details: { registrationId: reg.id, status: reg.status },
+      });
+      toast.info(t('artistRegistrations.alreadyApproved', { name: reg.artist_name }));
+      invalidateQueries();
+      return;
+    }
+
     // Step 1: Create the artist record from registration data
     const instagramHandle = reg.instagram_handle?.trim() || null;
     const tiktokHandle = reg.tiktok_handle?.trim() || null;
     const soundcloudId = reg.soundcloud_id?.trim() || reg.soundcloud_url?.trim() || null;
     const spotifyId = reg.spotify_id?.trim() || reg.spotify_url?.trim() || null;
 
+    // Log the values being inserted for debugging
+    const artistInsertData = {
+      name: reg.artist_name,
+      bio: reg.bio || null,
+      image_url: reg.profile_image_url || null,
+      city_id: reg.city_id || null,
+      user_id: reg.user_id || null,
+      soundcloud_id: soundcloudId,
+      spotify_id: spotifyId,
+      instagram_handle: instagramHandle,
+      tiktok_handle: tiktokHandle,
+    };
+
+    logger.debug('Attempting to create artist with data', {
+      source: 'useArtistRegistrations',
+      details: {
+        registrationId: reg.id,
+        artistData: artistInsertData,
+      },
+    });
+
+    // Check for existing artist with same spotify_id (unique constraint)
+    if (spotifyId) {
+      const { data: existingArtist } = await supabase
+        .from('artists')
+        .select('id, name')
+        .eq('spotify_id', spotifyId)
+        .single();
+
+      if (existingArtist) {
+        logger.error('Artist with spotify_id already exists - cannot create duplicate', {
+          source: 'useArtistRegistrations',
+          details: {
+            registrationId: reg.id,
+            spotifyId,
+            existingArtistId: existingArtist.id,
+            existingArtistName: existingArtist.name,
+          },
+        });
+        throw new Error(
+          `An artist with this Spotify ID already exists: "${existingArtist.name}" (${existingArtist.id}). ` +
+          'Please remove the Spotify ID from the registration or link to the existing artist instead.'
+        );
+      }
+    }
+
+    // Check for existing artist with same user_id (to prevent duplicate profiles)
+    if (reg.user_id) {
+      const { data: existingUserArtist } = await supabase
+        .from('artists')
+        .select('id, name')
+        .eq('user_id', reg.user_id)
+        .single();
+
+      if (existingUserArtist) {
+        logger.warn('User already has an artist profile - proceeding but flagging', {
+          source: 'useArtistRegistrations',
+          details: {
+            registrationId: reg.id,
+            userId: reg.user_id,
+            existingArtistId: existingUserArtist.id,
+            existingArtistName: existingUserArtist.name,
+          },
+        });
+      }
+    }
+
     const { data: newArtist, error: artistError } = await supabase
       .from('artists')
-      .insert({
-        name: reg.artist_name,
-        bio: reg.bio || null,
-        image_url: reg.profile_image_url || null,
-        city_id: reg.city_id || null,
-        user_id: reg.user_id || null,
-        soundcloud_id: soundcloudId,
-        spotify_id: spotifyId,
-        instagram_handle: instagramHandle,
-        tiktok_handle: tiktokHandle,
-      })
+      .insert(artistInsertData)
       .select('id')
       .single();
 
@@ -199,6 +272,7 @@ export function useArtistRegistrationActions() {
         source: 'useArtistRegistrations',
         details: {
           registrationId: reg.id,
+          artistData: artistInsertData,
           pgDetails: artistError.details,
           pgHint: artistError.hint,
           pgCode: artistError.code,

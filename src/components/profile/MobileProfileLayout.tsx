@@ -90,7 +90,7 @@ export const MobileProfileLayout = ({
             <FmCommonButton
               variant='default'
               size='sm'
-              onClick={() => navigate('/profile/edit')}
+              onClick={() => navigate(`/users/${user.id}/edit`)}
               icon={Settings}
               className='bg-black/60 backdrop-blur-sm text-white hover:bg-black/80 border border-white/30'
             >

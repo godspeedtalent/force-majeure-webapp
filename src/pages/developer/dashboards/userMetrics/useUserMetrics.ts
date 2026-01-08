@@ -208,14 +208,16 @@ async function fetchTopSpenders(limit: number): Promise<TopUsersBySpend[]> {
   // Aggregate by user first
   const userSpending: Record<string, { totalSpent: number; orderCount: number }> = {};
 
-  (ordersData || []).forEach(order => {
-    const userId = order.user_id;
-    if (!userSpending[userId]) {
-      userSpending[userId] = { totalSpent: 0, orderCount: 0 };
-    }
-    userSpending[userId].totalSpent += order.total_cents;
-    userSpending[userId].orderCount++;
-  });
+  (ordersData || [])
+    .filter((order): order is typeof order & { user_id: string } => order.user_id !== null)
+    .forEach(order => {
+      const userId = order.user_id;
+      if (!userSpending[userId]) {
+        userSpending[userId] = { totalSpent: 0, orderCount: 0 };
+      }
+      userSpending[userId].totalSpent += order.total_cents;
+      userSpending[userId].orderCount++;
+    });
 
   // Get top user IDs
   const topUserIds = Object.entries(userSpending)
@@ -420,16 +422,19 @@ async function fetchUserEngagement(): Promise<UserEngagement[]> {
 
   // Build engagement data
   const ordersByUser: Record<string, { count: number; total: number; lastOrder: string | null }> = {};
-  (orders || []).forEach(order => {
-    if (!ordersByUser[order.user_id]) {
-      ordersByUser[order.user_id] = { count: 0, total: 0, lastOrder: null };
-    }
-    ordersByUser[order.user_id].count++;
-    ordersByUser[order.user_id].total += order.total_cents;
-    if (!ordersByUser[order.user_id].lastOrder || order.created_at > ordersByUser[order.user_id].lastOrder!) {
-      ordersByUser[order.user_id].lastOrder = order.created_at;
-    }
-  });
+  (orders || [])
+    .filter((order): order is typeof order & { user_id: string } => order.user_id !== null)
+    .forEach(order => {
+      const userId = order.user_id;
+      if (!ordersByUser[userId]) {
+        ordersByUser[userId] = { count: 0, total: 0, lastOrder: null };
+      }
+      ordersByUser[userId].count++;
+      ordersByUser[userId].total += order.total_cents;
+      if (!ordersByUser[userId].lastOrder || order.created_at > ordersByUser[userId].lastOrder!) {
+        ordersByUser[userId].lastOrder = order.created_at;
+      }
+    });
 
   return (profiles || []).map(profile => ({
     userId: profile.user_id,

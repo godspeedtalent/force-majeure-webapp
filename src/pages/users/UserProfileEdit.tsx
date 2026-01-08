@@ -11,8 +11,9 @@ import {
   Globe,
 } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { Layout } from '@/components/layout/Layout';
@@ -25,11 +26,12 @@ import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmCommonUserPhoto } from '@/components/common/display/FmCommonUserPhoto';
+import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { toast } from 'sonner';
-import { supabase, handleError } from '@/shared';
-import { compressImage } from '@/shared/utils/imageUtils';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { toast } from 'sonner';
+import { supabase, logger } from '@/shared';
+import { compressImage } from '@/shared/utils/imageUtils';
 import { UserArtistTab } from '@/components/profile/UserArtistTab';
 import { LanguageSelector } from '@/components/common/i18n/LanguageSelector';
 import { useLocaleSync } from '@/hooks/useLocaleSync';
@@ -41,14 +43,39 @@ interface LocationState {
   activeTab?: ProfileSection;
 }
 
-const ProfileEdit = () => {
-  const { user, profile, updateProfile, resendVerificationEmail } = useAuth();
+interface ProfileData {
+  id: string;
+  full_name: string | null;
+  display_name: string | null;
+  avatar_url: string | null;
+  gender: string | null;
+  age_range: string | null;
+  billing_address_line_1: string | null;
+  billing_city: string | null;
+  billing_state: string | null;
+  billing_zip_code: string | null;
+}
+
+interface UserData {
+  id: string;
+  email: string | null;
+  email_confirmed_at: string | null;
+  created_at: string;
+}
+
+const UserProfileEdit = () => {
+  const { id } = useParams<{ id: string }>();
+  const { user: currentUser, profile: currentUserProfile, updateProfile, resendVerificationEmail } = useAuth();
+  const { isAdmin } = useUserPermissions();
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation('pages');
   const { t: tCommon } = useTranslation('common');
   const { currentLocale, changeLocale } = useLocaleSync();
-  const { getRoles } = useUserPermissions();
+
+  // Determine if editing own profile or another user's profile
+  const isOwnProfile = currentUser?.id === id;
+  const canEdit = isAdmin() || isOwnProfile;
 
   // Read initial active section from navigation state
   const locationState = location.state as LocationState | null;
@@ -62,22 +89,76 @@ const ProfileEdit = () => {
   // Form state - split full_name into first and last
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [displayName, setDisplayName] = useState(profile?.display_name || '');
-  const [gender, setGender] = useState(profile?.gender || 'unspecified');
-  const [ageRange, setAgeRange] = useState(profile?.age_range || 'unspecified');
-  const [billingAddress, setBillingAddress] = useState(
-    profile?.billing_address_line_1 || ''
-  );
-  const [billingCity, setBillingCity] = useState(profile?.billing_city || '');
-  const [billingState, setBillingState] = useState(
-    profile?.billing_state || ''
-  );
-  const [billingZip, setBillingZip] = useState(profile?.billing_zip_code || '');
+  const [displayName, setDisplayName] = useState('');
+  const [gender, setGender] = useState('unspecified');
+  const [ageRange, setAgeRange] = useState('unspecified');
+  const [billingAddress, setBillingAddress] = useState('');
+  const [billingCity, setBillingCity] = useState('');
+  const [billingState, setBillingState] = useState('');
+  const [billingZip, setBillingZip] = useState('');
   const [activeSection, setActiveSection] = useState<ProfileSection>(initialSection);
 
+  // Fetch profile data for the target user
+  const { data: targetProfile, isLoading: profileLoading } = useQuery({
+    queryKey: ['user-profile-edit', id],
+    queryFn: async () => {
+      if (!id) throw new Error('User ID is required');
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, display_name, avatar_url, gender, age_range, billing_address_line_1, billing_city, billing_state, billing_zip_code')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      return data as ProfileData;
+    },
+    enabled: !!id && canEdit,
+  });
+
+  // Fetch user auth data (for email, email_confirmed_at)
+  const { data: targetUser, isLoading: userLoading } = useQuery({
+    queryKey: ['user-auth-data', id],
+    queryFn: async () => {
+      if (!id) throw new Error('User ID is required');
+
+      // If editing own profile, use current user data
+      if (isOwnProfile && currentUser) {
+        return {
+          id: currentUser.id,
+          email: currentUser.email || null,
+          email_confirmed_at: currentUser.email_confirmed_at || null,
+          created_at: currentUser.created_at,
+        } as UserData;
+      }
+
+      // For admins editing other users, we need to get user data from admin API
+      // For now, we'll use a limited view - admins can see profile but not email verification status
+      const { data: profileData, error } = await supabase
+        .from('profiles')
+        .select('id, created_at')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+
+      return {
+        id: profileData.id,
+        email: null, // Admins can't see other users' emails directly
+        email_confirmed_at: null,
+        created_at: profileData.created_at,
+      } as UserData;
+    },
+    enabled: !!id && canEdit,
+  });
+
+  // Use current user's profile if editing own, otherwise use fetched profile
+  const profile = isOwnProfile ? currentUserProfile : targetProfile;
+  const user = isOwnProfile ? currentUser : targetUser;
+
+  // Initialize form state from profile data
   useEffect(() => {
     if (profile) {
-      // Split full_name into first and last name
       const nameParts = (profile.full_name || '').trim().split(' ');
       setFirstName(nameParts[0] || '');
       setLastName(nameParts.slice(1).join(' ') || '');
@@ -91,14 +172,40 @@ const ProfileEdit = () => {
     }
   }, [profile]);
 
+  // Update profile - handles both own and other user's profile
+  const handleUpdateProfileData = async (updates: Partial<ProfileData>) => {
+    if (!id) return;
+
+    if (isOwnProfile) {
+      // Use auth context for own profile
+      await updateProfile(updates);
+    } else {
+      // Direct update for admin editing other users
+      const { error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', id);
+
+      if (error) {
+        logger.error('Error updating profile', {
+          error: error.message,
+          source: 'UserProfileEdit.tsx',
+          details: { userId: id },
+        });
+        toast.error(t('profile.updateFailed'));
+        return;
+      }
+      toast.success(t('profile.profileUpdated'));
+    }
+  };
+
   const handleUpdateProfileInfo = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Combine first and last name into full_name
     const fullName = [firstName, lastName].filter(Boolean).join(' ').trim();
 
-    await updateProfile({
+    await handleUpdateProfileData({
       full_name: fullName || null,
       display_name: displayName || null,
       gender: gender === 'unspecified' ? null : gender || null,
@@ -111,7 +218,7 @@ const ProfileEdit = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    await updateProfile({
+    await handleUpdateProfileData({
       billing_address_line_1: billingAddress || null,
       billing_city: billingCity || null,
       billing_state: billingState || null,
@@ -121,18 +228,16 @@ const ProfileEdit = () => {
   };
 
   const handleResendVerification = async () => {
+    if (!isOwnProfile) return; // Only for own profile
     setIsSendingVerification(true);
     await resendVerificationEmail();
     setIsSendingVerification(false);
   };
 
-  const handleImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file || !user) return;
+    if (!file || !id) return;
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       toast.error(t('profile.uploadImageError'));
       return;
@@ -141,49 +246,44 @@ const ProfileEdit = () => {
     setIsUploadingImage(true);
 
     try {
-      // Compress and resize image - smallest dimension will be 1080px max, maintains aspect ratio
       const compressedFile = await compressImage(file, {
         maxWidth: 1080,
         maxHeight: 1080,
-        maxSizeBytes: 2 * 1024 * 1024, // 2MB max for profile photos
+        maxSizeBytes: 2 * 1024 * 1024,
         quality: 0.85,
         outputFormat: 'jpeg',
-        forceResize: true, // Always resize to ensure consistent dimensions
+        forceResize: true,
       });
 
-      // Upload to Supabase Storage - use consistent filename per user to replace existing
-      const fileName = `${user.id}.jpg`;
+      const fileName = `${id}.jpg`;
       const filePath = `avatars/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('profile-images')
         .upload(filePath, compressedFile, {
           cacheControl: '3600',
-          upsert: true, // Replace existing file
+          upsert: true,
         });
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
       const {
         data: { publicUrl },
       } = supabase.storage.from('profile-images').getPublicUrl(filePath);
 
-      // Update profile with new avatar URL
-      await updateProfile({ avatar_url: publicUrl });
+      await handleUpdateProfileData({ avatar_url: publicUrl });
 
       toast.success(t('profile.profileUpdated'));
     } catch (error: unknown) {
-      handleError(error, {
-        title: t('profile.uploadFailed'),
-        context: 'Uploading profile picture',
-        endpoint: 'storage/profile-images',
-        method: 'UPLOAD',
-        userRole: getRoles().join(', '),
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.error('Error uploading image', {
+        error: errorMessage,
+        source: 'UserProfileEdit.tsx',
+        details: 'handleImageUpload',
       });
+      toast.error(errorMessage || t('profile.uploadFailed'));
     } finally {
       setIsUploadingImage(false);
-      // Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -202,12 +302,17 @@ const ProfileEdit = () => {
           icon: User,
           description: t('profile.personalInfoDescription'),
         },
-        {
-          id: 'account',
-          label: t('profile.account'),
-          icon: Shield,
-          description: t('profile.accountDescription'),
-        },
+        // Only show account section for own profile
+        ...(isOwnProfile
+          ? [
+              {
+                id: 'account' as ProfileSection,
+                label: t('profile.account'),
+                icon: Shield,
+                description: t('profile.accountDescription'),
+              },
+            ]
+          : []),
         {
           id: 'artist',
           label: t('profile.artist'),
@@ -221,21 +326,33 @@ const ProfileEdit = () => {
   // Mobile bottom tabs configuration
   const mobileTabs: MobileBottomTab[] = [
     { id: 'profile', label: t('profile.title'), icon: User },
-    { id: 'account', label: t('profile.account'), icon: Shield },
+    ...(isOwnProfile ? [{ id: 'account', label: t('profile.account'), icon: Shield }] : []),
     { id: 'artist', label: t('profile.artist'), icon: Mic2 },
   ];
 
-  if (!user) {
+  // Loading state
+  if (profileLoading || userLoading) {
+    return (
+      <Layout>
+        <div className='flex items-center justify-center min-h-[60vh]'>
+          <FmCommonLoadingSpinner size='lg' />
+        </div>
+      </Layout>
+    );
+  }
+
+  // Access denied
+  if (!canEdit) {
     return (
       <Layout>
         <div className='flex items-center justify-center min-h-[60vh]'>
           <FmCommonCard>
             <FmCommonCardContent className='p-12 text-center'>
               <p className='text-muted-foreground mb-6'>
-                {t('profile.signInRequired')}
+                {t('profile.accessDenied')}
               </p>
-              <FmCommonButton variant='gold' onClick={() => navigate('/auth')}>
-                {tCommon('nav.signIn')}
+              <FmCommonButton variant='gold' onClick={() => navigate(-1)}>
+                {tCommon('buttons.goBack')}
               </FmCommonButton>
             </FmCommonCardContent>
           </FmCommonCard>
@@ -243,6 +360,28 @@ const ProfileEdit = () => {
       </Layout>
     );
   }
+
+  if (!user || !profile) {
+    return (
+      <Layout>
+        <div className='flex items-center justify-center min-h-[60vh]'>
+          <FmCommonCard>
+            <FmCommonCardContent className='p-12 text-center'>
+              <p className='text-muted-foreground mb-6'>
+                {t('profile.notFound')}
+              </p>
+              <FmCommonButton variant='gold' onClick={() => navigate(-1)}>
+                {tCommon('buttons.goBack')}
+              </FmCommonButton>
+            </FmCommonCardContent>
+          </FmCommonCard>
+        </div>
+      </Layout>
+    );
+  }
+
+  // For own profile, check email confirmation
+  const emailConfirmed = isOwnProfile ? !!currentUser?.email_confirmed_at : true;
 
   return (
     <SideNavbarLayout
@@ -252,13 +391,13 @@ const ProfileEdit = () => {
       showDividers={false}
       defaultOpen={true}
       showBackButton
-      onBack={() => navigate('/profile')}
+      onBack={() => navigate(`/users/${id}`)}
       backButtonLabel={t('profile.title')}
       backButtonActions={
         <FmCommonButton
           variant='default'
           size='sm'
-          onClick={() => navigate('/profile')}
+          onClick={() => navigate(`/users/${id}`)}
         >
           {t('profile.viewProfile')}
         </FmCommonButton>
@@ -272,6 +411,20 @@ const ProfileEdit = () => {
       }
     >
       <div className='space-y-6'>
+        {/* Admin editing notice */}
+        {!isOwnProfile && (
+          <FmCommonCard className='border-fm-gold/50 bg-fm-gold/10'>
+            <FmCommonCardContent className='p-4'>
+              <div className='flex items-center gap-3'>
+                <Shield className='h-5 w-5 text-fm-gold' />
+                <p className='text-sm text-muted-foreground'>
+                  {t('profile.adminEditingNotice', { name: profile.display_name || 'User' })}
+                </p>
+              </div>
+            </FmCommonCardContent>
+          </FmCommonCard>
+        )}
+
         {/* Profile Section */}
         {activeSection === 'profile' && (
           <>
@@ -285,7 +438,7 @@ const ProfileEdit = () => {
                 <div className='w-32 h-40'>
                   <FmCommonUserPhoto
                     src={profile?.avatar_url}
-                    name={profile?.display_name || user.email}
+                    name={profile?.display_name || user.email || ''}
                     size='square'
                     showBorder={true}
                     useAnimatedGradient={!profile?.avatar_url}
@@ -306,7 +459,7 @@ const ProfileEdit = () => {
                     icon={Upload}
                     onClick={() => fileInputRef.current?.click()}
                     loading={isUploadingImage}
-                    disabled={!user.email_confirmed_at || isUploadingImage}
+                    disabled={(isOwnProfile && !emailConfirmed) || isUploadingImage}
                   >
                     {isUploadingImage ? t('profile.uploading') : t('profile.uploadPhoto')}
                   </FmCommonButton>
@@ -325,15 +478,17 @@ const ProfileEdit = () => {
             >
               <form onSubmit={handleUpdateProfileInfo} className='space-y-4'>
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  <FmCommonTextField
-                    label={tCommon('labels.email')}
-                    id='email'
-                    type='email'
-                    value={user.email || ''}
-                    disabled
-                    className='opacity-60'
-                    description={t('profile.emailCannotBeChanged')}
-                  />
+                  {isOwnProfile && (
+                    <FmCommonTextField
+                      label={tCommon('labels.email')}
+                      id='email'
+                      type='email'
+                      value={currentUser?.email || ''}
+                      disabled
+                      className='opacity-60'
+                      description={t('profile.emailCannotBeChanged')}
+                    />
+                  )}
 
                   <FmCommonTextField
                     label={tCommon('labels.username')}
@@ -343,7 +498,7 @@ const ProfileEdit = () => {
                     value={displayName}
                     onChange={e => setDisplayName(e.target.value)}
                     description={t('profile.usernameDescription')}
-                    disabled={!user.email_confirmed_at}
+                    disabled={isOwnProfile && !emailConfirmed}
                   />
 
                   <FmCommonTextField
@@ -354,7 +509,7 @@ const ProfileEdit = () => {
                     value={firstName}
                     onChange={e => setFirstName(e.target.value)}
                     description={tCommon('labels.optional')}
-                    disabled={!user.email_confirmed_at}
+                    disabled={isOwnProfile && !emailConfirmed}
                   />
 
                   <FmCommonTextField
@@ -365,7 +520,7 @@ const ProfileEdit = () => {
                     value={lastName}
                     onChange={e => setLastName(e.target.value)}
                     description={tCommon('labels.optional')}
-                    disabled={!user.email_confirmed_at}
+                    disabled={isOwnProfile && !emailConfirmed}
                   />
 
                   <FmCommonSelect
@@ -382,7 +537,7 @@ const ProfileEdit = () => {
                     ]}
                     placeholder={t('profile.selectGender')}
                     description={tCommon('labels.optional')}
-                    disabled={!user.email_confirmed_at}
+                    disabled={isOwnProfile && !emailConfirmed}
                   />
 
                   <FmCommonSelect
@@ -401,7 +556,7 @@ const ProfileEdit = () => {
                     ]}
                     placeholder={t('profile.selectAgeRange')}
                     description={t('profile.ageRangeDescription')}
-                    disabled={!user.email_confirmed_at}
+                    disabled={isOwnProfile && !emailConfirmed}
                   />
                 </div>
 
@@ -409,7 +564,7 @@ const ProfileEdit = () => {
                   type='submit'
                   variant='default'
                   loading={isLoading}
-                  disabled={!user.email_confirmed_at || isLoading}
+                  disabled={(isOwnProfile && !emailConfirmed) || isLoading}
                 >
                   {t('profile.updateProfile')}
                 </FmCommonButton>
@@ -431,7 +586,7 @@ const ProfileEdit = () => {
                   value={billingAddress}
                   onChange={e => setBillingAddress(e.target.value)}
                   description={tCommon('labels.optional')}
-                  disabled={!user.email_confirmed_at}
+                  disabled={isOwnProfile && !emailConfirmed}
                 />
 
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
@@ -443,7 +598,7 @@ const ProfileEdit = () => {
                     value={billingCity}
                     onChange={e => setBillingCity(e.target.value)}
                     description={tCommon('labels.optional')}
-                    disabled={!user.email_confirmed_at}
+                    disabled={isOwnProfile && !emailConfirmed}
                   />
 
                   <FmCommonTextField
@@ -454,7 +609,7 @@ const ProfileEdit = () => {
                     value={billingState}
                     onChange={e => setBillingState(e.target.value)}
                     description={tCommon('labels.optional')}
-                    disabled={!user.email_confirmed_at}
+                    disabled={isOwnProfile && !emailConfirmed}
                   />
                 </div>
 
@@ -466,14 +621,14 @@ const ProfileEdit = () => {
                   value={billingZip}
                   onChange={e => setBillingZip(e.target.value)}
                   description={tCommon('labels.optional')}
-                  disabled={!user.email_confirmed_at}
+                  disabled={isOwnProfile && !emailConfirmed}
                 />
 
                 <FmCommonButton
                   type='submit'
                   variant='default'
                   loading={isLoading}
-                  disabled={!user.email_confirmed_at || isLoading}
+                  disabled={(isOwnProfile && !emailConfirmed) || isLoading}
                 >
                   {t('profile.updateBillingAddress')}
                 </FmCommonButton>
@@ -482,11 +637,11 @@ const ProfileEdit = () => {
           </>
         )}
 
-        {/* Account Section */}
-        {activeSection === 'account' && (
+        {/* Account Section - Only for own profile */}
+        {activeSection === 'account' && isOwnProfile && (
           <>
             {/* Email Verification Warning */}
-            {user && !user.email_confirmed_at && (
+            {currentUser && !currentUser.email_confirmed_at && (
               <FmCommonCard className='border-fm-gold/50 bg-fm-gold/10'>
                 <FmCommonCardContent className='p-6'>
                   <div className='flex items-start gap-4'>
@@ -497,7 +652,7 @@ const ProfileEdit = () => {
                       </h3>
                       <p className='text-sm text-muted-foreground mb-4'>
                         {t('profile.verifyEmailDescription')}{' '}
-                        <span className='font-medium text-foreground'>{user.email}</span>.
+                        <span className='font-medium text-foreground'>{currentUser.email}</span>.
                       </p>
                       <FmCommonButton
                         variant='secondary'
@@ -516,7 +671,7 @@ const ProfileEdit = () => {
             )}
 
             {/* Notification Settings */}
-            <NotificationSettingsSection disabled={!user.email_confirmed_at} />
+            <NotificationSettingsSection disabled={!emailConfirmed} />
 
             {/* Preferences Section */}
             <FmFormSection
@@ -536,20 +691,20 @@ const ProfileEdit = () => {
             </FmFormSection>
 
             {/* Password Change Section */}
-            <PasswordChangeSection disabled={!user.email_confirmed_at} />
+            <PasswordChangeSection disabled={!emailConfirmed} />
 
             {/* Delete Account Section */}
-            <DeleteAccountSection disabled={!user.email_confirmed_at} />
+            <DeleteAccountSection disabled={!emailConfirmed} />
           </>
         )}
 
         {/* Artist Section */}
         {activeSection === 'artist' && (
-          <UserArtistTab isEditable={true} />
+          <UserArtistTab isEditable={true} userId={id} />
         )}
       </div>
     </SideNavbarLayout>
   );
 };
 
-export default ProfileEdit;
+export default UserProfileEdit;

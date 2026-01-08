@@ -18,7 +18,7 @@ export const AttendanceReportConfig = ({ eventId: _eventId }: AttendanceReportCo
       </FmCommonCardHeader>
       <FmCommonCardContent>
         <p className="text-muted-foreground mb-4">
-          {t('reports.attendance.comingSoonText')}
+          {t('reports.attendance.underDevelopmentText')}
         </p>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
           <li>{t('reports.attendance.checkInsVsTickets')}</li>
@@ -26,7 +26,7 @@ export const AttendanceReportConfig = ({ eventId: _eventId }: AttendanceReportCo
           <li>{t('reports.attendance.noShowAnalysis')}</li>
           <li>{t('reports.attendance.tierBreakdown')}</li>
         </ul>
-        <Button disabled>{t('reports.attendance.comingSoon')}</Button>
+        <Button disabled>{t('reports.attendance.underDevelopment')}</Button>
       </FmCommonCardContent>
     </FmCommonCard>
   );

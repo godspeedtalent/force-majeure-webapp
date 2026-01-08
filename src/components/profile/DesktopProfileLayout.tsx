@@ -74,7 +74,7 @@ export const DesktopProfileLayout = ({
                   <FmCommonButton
                     variant='default'
                     size='sm'
-                    onClick={() => navigate('/profile/edit')}
+                    onClick={() => navigate(`/users/${user.id}/edit`)}
                     icon={Settings}
                     className='bg-background/80 backdrop-blur-sm'
                   >

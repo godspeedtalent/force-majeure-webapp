@@ -268,7 +268,8 @@
     "unlinkSuccess": "Cuenta de artista desvinculada exitosamente.",
     "unlinkFailed": "Error al desvincular artista. Por favor, inténtalo de nuevo.",
     "deleteRequestSubmitted": "Solicitud de eliminación de datos enviada. Un administrador procesará tu solicitud en unos días.",
-    "deleteRequestFailed": "Error al enviar solicitud de eliminación. Por favor, inténtalo de nuevo."
+    "deleteRequestFailed": "Error al enviar solicitud de eliminación. Por favor, inténtalo de nuevo.",
+    "duplicatePendingRequest": "Ya tienes una solicitud pendiente de este tipo. Por favor, espera a que sea revisada."
   },
   "guestList": {
     "saved": "Configuración social guardada exitosamente",

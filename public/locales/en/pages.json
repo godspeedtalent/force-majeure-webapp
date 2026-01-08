@@ -8,7 +8,7 @@
     "featuredArtists": "Featured Artists",
     "viewAllEvents": "View All Events",
     "noUpcomingEvents": "No upcoming events at the moment. Check back soon!",
-    "lineupComingSoon": "Our 2026 lineup is coming soon.",
+    "lineupAnnouncement": "Our 2026 lineup will be announced.",
     "artistQuestion": "Are you an artist wanting to open for headlining talent?",
     "registerBelow": "Register with us below!",
     "artistRegistration": "Artist Registration",
@@ -265,7 +265,11 @@
     "emailNotificationsDescription": "Receive news about events, artists, and special offers",
     "notificationsEnabled": "Email notifications enabled.",
     "notificationsDisabled": "Email notifications disabled.",
-    "notificationUpdateFailed": "Failed to update notification settings. Please try again."
+    "notificationUpdateFailed": "Failed to update notification settings. Please try again.",
+    "accessDenied": "You don't have permission to edit this profile.",
+    "notFound": "Profile not found.",
+    "adminEditingNotice": "You are editing {{name}}'s profile as an administrator.",
+    "updateFailed": "Failed to update profile. Please try again."
   },
   "ticketing": {
     "yourTurn": "Your turn!",
@@ -438,7 +442,7 @@
     "title": "Force Majeure Merchandise",
     "subtitle": "Exclusive prints and stickers from the Force Majeure collection",
     "loading": "Loading merchandise...",
-    "comingSoon": "Merchandise coming soon",
+    "unavailable": "Merchandise unavailable",
     "loadFailed": "Failed to load merchandise",
     "noItems": "No items found",
     "noItemsDescription": "No items found matching your criteria.",
@@ -453,6 +457,11 @@
     "addToCart": "Add to Cart",
     "addedToCart": "Added {{name}} to cart!",
     "outOfStock": "Out of Stock"
+  },
+  "artistUndercard": {
+    "lookingForArtists": "Looking for artists.",
+    "artistDescription": "We're looking for local talent to open for our events. Register to be considered.",
+    "signUpAsArtist": "Sign up as an artist"
   },
   "artistSignup": {
     "seoTitle": "Join Our Artist Roster",

@@ -15,18 +15,17 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { MobileHorizontalTabs } from '@/components/mobile';
-import { Sliders } from 'lucide-react';
+import { Sliders, Ticket, Images, FileSpreadsheet } from 'lucide-react';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES, FEATURE_FLAGS } from '@/shared';
 import { useFeatureFlagHelpers } from '@/shared';
 import { PageErrorBoundary } from '@/components/common/feedback';
-import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
+import { FmFormSectionHeader } from '@/components/common/forms/FmFormSectionHeader';
 import { formatHeader } from '@/shared';
 
 // Admin components
 import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
 import { AdminTicketingSection } from '@/components/admin/AdminTicketingSection';
-import { DevToolsManagement } from '@/components/admin/DevToolsManagement';
 import { UserManagement } from '../admin/UserManagement';
 import { OrganizationsManagement } from '../admin/OrganizationsManagement';
 import { EventsManagement } from '../admin/EventsManagement';
@@ -41,6 +40,8 @@ import {
   DeveloperDatabaseVenuesTab,
   DeveloperDatabaseRecordingsTab,
   ActivityLogsTab,
+  DemoToolsTab,
+  DocumentationViewerTab,
 } from './tabs';
 import { useDatabaseCounts } from './hooks/useDeveloperDatabaseData';
 import { useDeveloperNavigation } from './hooks/useDeveloperNavigation';
@@ -49,6 +50,9 @@ import { useDeveloperNavigation } from './hooks/useDeveloperNavigation';
 import RecordingRatingsDashboard from './dashboards/RecordingRatingsDashboard';
 import { AnalyticsDashboardContent } from './dashboards/AnalyticsDashboardContent';
 import { UserMetricsDashboard } from './dashboards/userMetrics';
+
+// Developer Tools components
+import { OrderCsvImportContent } from './OrderCsvImport';
 
 // Types
 import { DeveloperTab, VALID_TABS, EXTERNAL_ROUTES } from './types';
@@ -111,18 +115,13 @@ export default function DeveloperHome() {
     [navigate]
   );
 
-  // Render tab header for admin/dashboard sections
-  const renderTabHeader = (title: string, description?: string) => (
-    <div className="mb-[20px]">
-      <div className="flex items-center gap-[10px] mb-[20px]">
-        <Sliders className="h-6 w-6 text-fm-gold" />
-        <h1 className="text-3xl font-canela">{formatHeader(title)}</h1>
-      </div>
-      {description && (
-        <p className="text-muted-foreground text-sm mb-4">{description}</p>
-      )}
-      <DecorativeDivider marginTop="mt-0" marginBottom="mb-6" lineWidth="w-32" opacity={0.5} />
-    </div>
+  // Render tab header for admin/dashboard sections using new gradient styling
+  const renderTabHeader = (title: string, description?: string, icon?: typeof Sliders) => (
+    <FmFormSectionHeader
+      title={formatHeader(title)}
+      description={description}
+      icon={icon}
+    />
   );
 
   // Check if current tab is an activity log tab
@@ -151,46 +150,35 @@ export default function DeveloperHome() {
         {/* ======================== ADMIN CONTROLS ======================== */}
         {activeTab === 'admin_settings' && (
           <PageErrorBoundary section="Feature Flags">
-            {renderTabHeader('Feature Flags')}
-            <div className="space-y-8">
-              <div>
-                <p className="text-muted-foreground text-sm mb-4">
-                  Control feature availability across different environments
-                </p>
-                <FeatureToggleSection />
-              </div>
-            </div>
-          </PageErrorBoundary>
-        )}
-
-        {activeTab === 'admin_devtools' && (
-          <PageErrorBoundary section="Developer Tools">
-            {renderTabHeader('Developer Tools')}
-            <div className="space-y-6">
-              <div>
-                <h3 className="text-lg font-canela font-semibold mb-2">
-                  {formatHeader('Dev Toolbar Sections')}
-                </h3>
-                <p className="text-muted-foreground text-sm mb-4">
-                  Control which sections appear in the developer toolbar for testing
-                </p>
-                <DevToolsManagement />
-              </div>
-            </div>
+            {renderTabHeader('Feature Flags', 'Control feature availability across different environments', Sliders)}
+            <FeatureToggleSection />
           </PageErrorBoundary>
         )}
 
         {activeTab === 'admin_ticketing' && (
           <PageErrorBoundary section="Ticketing">
-            {renderTabHeader('Ticketing')}
-            <div className="space-y-6">
-              <div>
-                <p className="text-muted-foreground text-sm mb-4">
-                  Configure checkout timer and fees applied to all ticket purchases
-                </p>
-                <AdminTicketingSection />
-              </div>
-            </div>
+            {renderTabHeader('Ticketing', 'Configure checkout timer and fees applied to all ticket purchases', Ticket)}
+            <AdminTicketingSection />
+          </PageErrorBoundary>
+        )}
+
+        {/* ======================== DEVELOPER TOOLS ======================== */}
+        {activeTab === 'dev_order_import' && (
+          <PageErrorBoundary section="Order CSV Import">
+            {renderTabHeader('Order CSV Import', 'Import historical orders from CSV files', FileSpreadsheet)}
+            <OrderCsvImportContent />
+          </PageErrorBoundary>
+        )}
+
+        {activeTab === 'dev_demo' && (
+          <PageErrorBoundary section="Demo Tools">
+            <DemoToolsTab />
+          </PageErrorBoundary>
+        )}
+
+        {activeTab === 'dev_docs' && (
+          <PageErrorBoundary section="Documentation Viewer">
+            <DocumentationViewerTab />
           </PageErrorBoundary>
         )}
 
@@ -265,17 +253,8 @@ export default function DeveloperHome() {
 
         {activeTab === 'db_galleries' && (
           <PageErrorBoundary section="Galleries">
-            <div className="space-y-6">
-              <div>
-                <h1 className="text-3xl font-canela font-bold text-foreground mb-2">
-                  Media Galleries
-                </h1>
-                <p className="text-muted-foreground">
-                  Manage image galleries and media collections for the site.
-                </p>
-              </div>
-              <GalleryManagementSection />
-            </div>
+            {renderTabHeader('Media Galleries', 'Manage image galleries and media collections for the site.', Images)}
+            <GalleryManagementSection />
           </PageErrorBoundary>
         )}
 
@@ -287,17 +266,7 @@ export default function DeveloperHome() {
 
         {activeTab === 'db_user_requests' && (
           <PageErrorBoundary section="User Requests">
-            <div className="space-y-6">
-              <div>
-                <h1 className="text-3xl font-canela font-bold text-foreground mb-2">
-                  User Requests
-                </h1>
-                <p className="text-muted-foreground">
-                  Review and manage user requests for artist linking, data deletion, and more.
-                </p>
-              </div>
-              <UserRequestsAdmin />
-            </div>
+            <UserRequestsAdmin />
           </PageErrorBoundary>
         )}
       </div>

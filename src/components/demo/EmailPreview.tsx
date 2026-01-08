@@ -171,7 +171,7 @@ export const EmailPreview = () => {
               <Button
                 onClick={handleSendTest}
                 disabled={isSending || !testEmail}
-                className='bg-fm-gold hover:bg-fm-gold/90 text-black'
+                className='bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-all duration-200'
               >
                 <Send className='h-4 w-4 mr-2' />
                 {isSending ? t('emailPreview.sending') : t('emailPreview.sendTest')}

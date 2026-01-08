@@ -76,7 +76,8 @@ export const FmCommonButton = forwardRef<
 
     // Custom variant styles with enhanced animations
     const variantStyles = {
-      gold: 'bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold font-medium transition-all duration-200 hover:bg-fm-gold/30 hover:shadow-[0_0_20px_rgba(207,173,118,0.5)] hover:scale-105 active:scale-95',
+      // Gold variant: Frosted glass with gold text, solid gold with black text on hover
+      gold: 'bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold font-medium transition-all duration-200 hover:bg-fm-gold hover:text-black hover:shadow-[0_0_20px_rgba(207,173,118,0.5)] hover:scale-105 active:scale-95',
       default:
         'bg-white/5 border-white/30 hover:bg-fm-gold/20 hover:border-fm-gold hover:text-fm-gold transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]',
       secondary:

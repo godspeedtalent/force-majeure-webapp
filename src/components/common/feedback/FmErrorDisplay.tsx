@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { logger } from '@/shared';
+import { debugAccessService } from '@/shared/services/debugAccessService';
 import {
   AlertTriangle,
   Copy,
@@ -51,11 +52,10 @@ export const FmErrorDisplay = ({
   // Keep t() for FmInfoCard title prop which requires a string
   const { t } = useTranslation('common');
 
-  // In development mode, always show detailed errors
-  // In production, we'd need to check user roles, but that requires AuthProvider
-  // which may not be available in error boundary context
-  // For now, just use dev mode as the indicator
-  const isDeveloper = import.meta.env.DEV;
+  // Check if user has debug access (dev mode OR admin/developer role)
+  // Uses debugAccessService which stores role state in memory,
+  // allowing access even in error boundary context outside AuthProvider
+  const isDeveloper = debugAccessService.hasDebugAccess();
 
   const handleCopyStackTrace = async () => {
     const stackTrace =
@@ -135,7 +135,7 @@ export const FmErrorDisplay = ({
                 {isStackTraceExpanded && (
                   <div className='mt-2 space-y-2'>
                     <div className='p-3 bg-black/40 border border-destructive rounded-md max-h-64 overflow-auto'>
-                      <pre className='text-xs font-mono text-destructive whitespace-pre-wrap break-words'>
+                      <pre className='text-xs font-mono text-destructive whitespace-pre-wrap break-all w-full'>
                         {errorInfo?.componentStack || error.stack}
                       </pre>
                     </div>
@@ -188,7 +188,7 @@ export const FmErrorDisplay = ({
           <Button
             onClick={handleReset}
             variant='default'
-            className='bg-fm-gold hover:bg-fm-gold/90 text-black hover:text-black'
+            className='bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-all duration-200'
           >
             <FmI18nCommon i18nKey='errors.reloadPage' />
           </Button>

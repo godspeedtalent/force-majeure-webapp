@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/shared';
-import { ArrowLeft, User, Mail, Calendar, Shield, Building2 } from 'lucide-react';
+import { ArrowLeft, User, Mail, Calendar, Shield, Building2, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
 import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { FmFormSectionHeader } from '@/components/common/forms/FmFormSectionHeader';
@@ -259,6 +259,14 @@ export default function UserDetails() {
               showDivider={false}
             />
             <FmCommonCardContent className='space-y-2 pt-4 px-0 pb-0'>
+              <Button
+                variant='outline'
+                className='w-full border-white/20 hover:bg-white/10'
+                onClick={() => navigate(`/users/${user.id}`)}
+              >
+                <ExternalLink className='h-4 w-4 mr-2' />
+                {t('buttons.viewPublicProfile')}
+              </Button>
               <Button
                 variant='outline'
                 className='w-full border-white/20 hover:bg-white/10'

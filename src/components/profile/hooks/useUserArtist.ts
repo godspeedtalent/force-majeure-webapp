@@ -9,8 +9,9 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { supabase, logger } from '@/shared';
+import { supabase, logger, handleError } from '@/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
 
 // ============================================================================
 // Types
@@ -67,11 +68,21 @@ export interface ArtistRegistrationWithGenres extends PendingArtistRegistration 
 // Hook
 // ============================================================================
 
-export function useUserArtist() {
+interface UseUserArtistOptions {
+  /** Optional user ID to fetch artist data for. Defaults to current logged-in user. */
+  userId?: string;
+}
+
+export function useUserArtist(options: UseUserArtistOptions = {}) {
   const { t: tToast } = useTranslation('toasts');
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user: currentUser } = useAuth();
+  const { getRoles } = useUserPermissions();
+
+  // Use provided userId or fall back to current user
+  const targetUserId = options.userId || currentUser?.id;
+  const isOwnProfile = !options.userId || options.userId === currentUser?.id;
 
   // Modal states
   const [showLinkModal, setShowLinkModal] = useState(false);
@@ -81,9 +92,9 @@ export function useUserArtist() {
 
   // Fetch linked artist
   const { data: linkedArtist, isLoading: loadingArtist } = useQuery({
-    queryKey: ['user-linked-artist', user?.id],
+    queryKey: ['user-linked-artist', targetUserId],
     queryFn: async () => {
-      if (!user?.id) return null;
+      if (!targetUserId) return null;
 
       const { data, error } = await supabase
         .from('artists')
@@ -94,35 +105,35 @@ export function useUserArtist() {
             genres:genres(id, name)
           )
         `)
-        .eq('user_id', user.id)
+        .eq('user_id', targetUserId)
         .maybeSingle();
 
       if (error) {
-        logger.error('Failed to fetch linked artist', { error: error.message, userId: user.id });
+        logger.error('Failed to fetch linked artist', { error: error.message, userId: targetUserId });
         throw error;
       }
 
       return data as LinkedArtist | null;
     },
-    enabled: !!user?.id,
+    enabled: !!targetUserId,
   });
 
   // Fetch artist registration (pending, approved, or denied)
   const { data: artistRegistration, isLoading: loadingRegistration } = useQuery({
-    queryKey: ['user-artist-registration', user?.id],
+    queryKey: ['user-artist-registration', targetUserId],
     queryFn: async () => {
-      if (!user?.id) return null;
+      if (!targetUserId) return null;
 
       const { data, error } = await supabase
         .from('artist_registrations')
         .select('id, artist_name, bio, profile_image_url, press_images, genres, instagram_handle, spotify_url, soundcloud_url, tiktok_handle, spotify_track_url, soundcloud_set_url, status, submitted_at, reviewed_at, reviewer_notes')
-        .eq('user_id', user.id)
+        .eq('user_id', targetUserId)
         .order('submitted_at', { ascending: false })
         .limit(1)
         .maybeSingle();
 
       if (error) {
-        logger.error('Failed to fetch artist registration', { error: error.message, userId: user.id });
+        logger.error('Failed to fetch artist registration', { error: error.message, userId: targetUserId });
         throw error;
       }
 
@@ -149,30 +160,30 @@ export function useUserArtist() {
         genreNames,
       } as ArtistRegistrationWithGenres;
     },
-    enabled: !!user?.id,
+    enabled: !!targetUserId,
   });
 
-  // Fetch pending requests
+  // Fetch pending requests - only for own profile (sensitive data)
   const { data: pendingRequests = [], isLoading: loadingRequests } = useQuery({
-    queryKey: ['user-requests', user?.id],
+    queryKey: ['user-requests', targetUserId],
     queryFn: async () => {
-      if (!user?.id) return [];
+      if (!targetUserId || !isOwnProfile) return [];
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await (supabase as any)
         .from('user_requests')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', targetUserId)
         .order('created_at', { ascending: false });
 
       if (error) {
-        logger.error('Failed to fetch user requests', { error: error.message, userId: user.id });
+        logger.error('Failed to fetch user requests', { error: error.message, userId: targetUserId });
         throw error;
       }
 
       return (data || []) as UserRequest[];
     },
-    enabled: !!user?.id,
+    enabled: !!targetUserId && isOwnProfile,
   });
 
   // Check for pending delete request
@@ -185,16 +196,21 @@ export function useUserArtist() {
     r => r.request_type === 'link_artist' && r.status === 'pending'
   );
 
-  // Create link artist request mutation
+  // Create link artist request mutation - only for own profile
   const linkArtistMutation = useMutation({
     mutationFn: async (artistId: string) => {
-      if (!user?.id) throw new Error('Not authenticated');
+      if (!currentUser?.id || !isOwnProfile) throw new Error('Not authenticated or not own profile');
+
+      // Check if user already has a pending link request to prevent unique constraint violation
+      if (pendingLinkRequest) {
+        throw new Error('You already have a pending artist link request. Please wait for it to be reviewed.');
+      }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error } = await (supabase as any)
         .from('user_requests')
         .insert({
-          user_id: user.id,
+          user_id: currentUser.id,
           request_type: 'link_artist',
           status: 'pending',
           parameters: { artist_id: artistId },
@@ -204,51 +220,76 @@ export function useUserArtist() {
     },
     onSuccess: () => {
       toast.success(tToast('userArtist.linkRequestSubmitted'));
-      queryClient.invalidateQueries({ queryKey: ['user-requests', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['user-requests', targetUserId] });
       setShowLinkModal(false);
       setSelectedArtistToLink(null);
     },
     onError: (error) => {
-      logger.error('Failed to create link request', { error });
-      toast.error(tToast('userArtist.linkRequestFailed'));
+      // Check for unique constraint violation
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const isUniqueViolation = errorMessage.includes('unique_pending_request') ||
+        errorMessage.includes('duplicate key') ||
+        errorMessage.includes('already have a pending');
+
+      if (isUniqueViolation) {
+        toast.error(tToast('userArtist.duplicatePendingRequest'));
+      } else {
+        handleError(error, {
+          title: tToast('userArtist.linkRequestFailed'),
+          context: 'Creating artist link request',
+          endpoint: 'user_requests',
+          method: 'INSERT',
+          userRole: getRoles().join(', '),
+        });
+      }
     },
   });
 
-  // Create unlink artist mutation
+  // Create unlink artist mutation - only for own profile
   const unlinkArtistMutation = useMutation({
     mutationFn: async () => {
-      if (!user?.id || !linkedArtist?.id) throw new Error('No linked artist');
+      if (!currentUser?.id || !linkedArtist?.id || !isOwnProfile) throw new Error('No linked artist or not own profile');
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error } = await (supabase as any)
         .from('artists')
         .update({ user_id: null })
         .eq('id', linkedArtist.id)
-        .eq('user_id', user.id);
+        .eq('user_id', currentUser.id);
 
       if (error) throw error;
     },
     onSuccess: () => {
       toast.success(tToast('userArtist.unlinkSuccess'));
-      queryClient.invalidateQueries({ queryKey: ['user-linked-artist', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['user-linked-artist', targetUserId] });
       setShowUnlinkConfirm(false);
     },
     onError: (error) => {
-      logger.error('Failed to unlink artist', { error });
-      toast.error(tToast('userArtist.unlinkFailed'));
+      handleError(error, {
+        title: tToast('userArtist.unlinkFailed'),
+        context: 'Unlinking artist from profile',
+        endpoint: 'artists',
+        method: 'UPDATE',
+        userRole: getRoles().join(', '),
+      });
     },
   });
 
-  // Create delete data request mutation
+  // Create delete data request mutation - only for own profile
   const deleteDataMutation = useMutation({
     mutationFn: async () => {
-      if (!user?.id) throw new Error('Not authenticated');
+      if (!currentUser?.id || !isOwnProfile) throw new Error('Not authenticated or not own profile');
+
+      // Check if user already has a pending delete request
+      if (pendingDeleteRequest) {
+        throw new Error('You already have a pending data deletion request. Please wait for it to be reviewed.');
+      }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error } = await (supabase as any)
         .from('user_requests')
         .insert({
-          user_id: user.id,
+          user_id: currentUser.id,
           request_type: 'delete_data',
           status: 'pending',
           parameters: { artist_id: linkedArtist?.id || null },
@@ -258,12 +299,27 @@ export function useUserArtist() {
     },
     onSuccess: () => {
       toast.success(tToast('userArtist.deleteRequestSubmitted'));
-      queryClient.invalidateQueries({ queryKey: ['user-requests', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['user-requests', targetUserId] });
       setShowDeleteConfirm(false);
     },
     onError: (error) => {
-      logger.error('Failed to create delete request', { error });
-      toast.error(tToast('userArtist.deleteRequestFailed'));
+      // Check for unique constraint violation
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const isUniqueViolation = errorMessage.includes('unique_pending_request') ||
+        errorMessage.includes('duplicate key') ||
+        errorMessage.includes('already have a pending');
+
+      if (isUniqueViolation) {
+        toast.error(tToast('userArtist.duplicatePendingRequest'));
+      } else {
+        handleError(error, {
+          title: tToast('userArtist.deleteRequestFailed'),
+          context: 'Creating data deletion request',
+          endpoint: 'user_requests',
+          method: 'INSERT',
+          userRole: getRoles().join(', '),
+        });
+      }
     },
   });
 
@@ -276,6 +332,10 @@ export function useUserArtist() {
     pendingRequests,
     pendingDeleteRequest,
     pendingLinkRequest,
+
+    // Profile context
+    isOwnProfile,
+    targetUserId,
 
     // Loading states
     isLoading,

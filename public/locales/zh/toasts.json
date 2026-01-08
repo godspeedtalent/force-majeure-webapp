@@ -268,7 +268,8 @@
     "unlinkSuccess": "艺术家账户已成功解除关联。",
     "unlinkFailed": "解除艺术家关联失败。请重试。",
     "deleteRequestSubmitted": "数据删除请求已提交。管理员将在几天内处理您的请求。",
-    "deleteRequestFailed": "提交删除请求失败。请重试。"
+    "deleteRequestFailed": "提交删除请求失败。请重试。",
+    "duplicatePendingRequest": "您已有此类型的待处理请求。请等待审核。"
   },
   "guestList": {
     "saved": "社交设置保存成功",

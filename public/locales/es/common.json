@@ -69,6 +69,7 @@
     "goBack": "Volver",
     "viewOrganizationDetails": "Ver Detalles de la Organización",
     "backToUsersList": "Volver a la Lista de Usuarios",
+    "viewPublicProfile": "Ver Perfil Público",
     "createGenre": "Crear Género",
     "deleteArtist": "Eliminar Artista",
     "deleting": "Eliminando...",
@@ -341,10 +342,98 @@
     "gallery": "Galería",
     "galleryManager": "Galería de Medios",
     "dragToResize": "Arrastrar para redimensionar",
+    "pageInfo": "Info de Página",
+    "pageInfoTitle": "Información de Página",
+    "adminMessages": "Bandeja",
+    "adminMessagesTitle": "Bandeja de Admin",
+    "errorLogs": "Registro de Errores",
+    "errorLogsTitle": "Monitoreo de Errores",
+    "collapseGroup": "Contraer grupo",
+    "expandGroup": "Expandir grupo",
+    "clickToExpand": "Clic para expandir",
     "groups": {
       "organization": "Organización",
-      "developerTools": "Herramientas de Desarrollador"
+      "developerTools": "Herramientas de Desarrollador",
+      "devTools": "Herramientas Dev",
+      "dataConfig": "Datos y Config",
+      "admin": "Admin"
     }
+  },
+  "adminMessages": {
+    "loadError": "Error al cargar mensajes",
+    "updateError": "Error al actualizar mensaje",
+    "deleteError": "Error al eliminar mensaje",
+    "statusUpdated": "Estado del mensaje actualizado",
+    "deleted": "Mensaje eliminado",
+    "searchPlaceholder": "Buscar mensajes...",
+    "filter": "Filtrar",
+    "sortBy": "Ordenar por",
+    "ascending": "Ascendente",
+    "descending": "Descendente",
+    "messagesCount": "{{count}} mensajes",
+    "unreadCount": "{{count}} sin leer",
+    "noMatchingMessages": "No hay mensajes coincidentes",
+    "noMessages": "Aún no hay mensajes",
+    "subject": "Asunto",
+    "received": "Recibido",
+    "replyViaEmail": "Responder por Email",
+    "markUnread": "Marcar como no leído",
+    "archive": "Archivar",
+    "filterLabels": {
+      "status": "Estado"
+    },
+    "statuses": {
+      "unread": "Sin leer",
+      "read": "Leído",
+      "replied": "Respondido",
+      "archived": "Archivado"
+    },
+    "tabs": {
+      "requests": "Solicitudes",
+      "messages": "Mensajes"
+    },
+    "pendingRequests": "{{count}} solicitud(es) pendiente(s)",
+    "viewFullRequests": "Ver detalles completos en Inicio de Desarrollador → Solicitudes de Usuario"
+  },
+  "pageInfo": {
+    "routeInfo": "Ruta",
+    "path": "Ruta",
+    "query": "Consulta",
+    "hash": "Hash",
+    "routeParams": "Parámetros de Ruta",
+    "pageType": "Tipo de Página",
+    "resourceId": "ID de Recurso",
+    "componentInfo": "Componentes",
+    "pageComponent": "Componente de Página",
+    "layoutComponent": "Layout",
+    "filePath": "Ruta de Archivo",
+    "commonComponents": "Componentes Comunes",
+    "performance": "Rendimiento",
+    "loadTime": "Tiempo de Carga",
+    "domReady": "DOM Listo",
+    "fcp": "Primera Pintura de Contenido",
+    "lcp": "Mayor Pintura de Contenido",
+    "memory": "Uso de Memoria",
+    "loadingMetrics": "Cargando métricas...",
+    "sessionInfo": "Sesión",
+    "timeOnPage": "Tiempo en Página",
+    "renderCount": "Renderizados",
+    "userAgent": "Agente de Usuario",
+    "language": "Idioma",
+    "screenSize": "Tamaño de Pantalla",
+    "openInEditor": "Abrir en Editor",
+    "reactDevTools": "React DevTools"
+  },
+  "errorLog": {
+    "summary": "Resumen",
+    "recentErrors": "Errores Recientes",
+    "loading": "Cargando registro de errores...",
+    "fetchError": "Error al obtener registro de errores",
+    "noErrors": "Sin errores registrados",
+    "clearFilter": "Mostrar todos los niveles",
+    "copied": "Copiado al portapapeles",
+    "openInSupabase": "Ver en Supabase",
+    "clearOldLogsTooltip": "Eliminar registros de más de 7 días"
   },
   "mockRole": {
     "activeWarning": "Rol simulado activo",
@@ -1514,6 +1603,14 @@
     "localFileNotAllowed": "No se permiten rutas de archivos locales. Por favor, sube el archivo en su lugar.",
     "enterValidUrl": "Por favor, ingresa una URL válida que comience con http:// o https://"
   },
+  "fileDropzone": {
+    "dropFileOr": "Arrastra tu archivo aquí, o",
+    "browse": "buscar",
+    "acceptedFormats": "Formatos aceptados: {{formats}}",
+    "clearFile": "Eliminar archivo",
+    "selectDifferentFile": "Seleccionar otro archivo",
+    "processing": "Procesando..."
+  },
   "checkout": {
     "loadingCheckout": "Cargando pago...",
     "signInOrContinueAsGuest": "Inicia sesión o continúa como invitado",
@@ -1913,12 +2010,12 @@
     "attendance": {
       "title": "Reporte de Asistencia y Check-in",
       "description": "Seguimiento de asistencia y datos de check-in de tu evento",
-      "comingSoonText": "Este reporte estará disponible próximamente. Incluirá:",
+      "underDevelopmentText": "Este reporte está en desarrollo. Incluirá:",
       "checkInsVsTickets": "Total de check-ins vs. entradas vendidas",
       "checkInTimeline": "Línea de tiempo y picos de check-in",
       "noShowAnalysis": "Análisis de ausencias",
       "tierBreakdown": "Desglose por nivel de entrada",
-      "comingSoon": "Próximamente"
+      "underDevelopment": "En Desarrollo"
     }
   },
   "checkoutTimer": {
@@ -2066,8 +2163,8 @@
       "overrideCleared": "Anulación eliminada",
       "usingDatabaseValue": "Usando valor de la base de datos",
       "allOverridesCleared": "Todas las anulaciones de sesión eliminadas",
-      "overrideComingSoon": "Anular Modo Próximamente",
-      "comingSoonTooltip": "Deshabilitar temporalmente el modo Próximamente para tu sesión. Útil para probar la app completa mientras coming_soon_mode está habilitado en la base de datos.",
+      "overridePrelaunchMode": "Anular Modo Prelanzamiento",
+      "prelaunchTooltip": "Deshabilitar temporalmente el modo prelanzamiento para tu sesión. Útil para probar la app completa mientras el modo prelanzamiento está habilitado en la base de datos.",
       "overrideActive": "Anulación activa:",
       "usingDatabase": "Usando valor de BD:",
       "clearAll": "Limpiar Todas las Anulaciones",
@@ -2287,6 +2384,8 @@
     "deny": "Rechazar",
     "approveSuccess": "{{name}} ha sido aprobado",
     "approveFailed": "Error al aprobar el registro",
+    "alreadyApproved": "{{name}} ya ha sido aprobado",
+    "duplicateSpotifyId": "Ya existe un artista con este ID de Spotify",
     "denySuccess": "{{name}} ha sido rechazado",
     "denyFailed": "Error al rechazar el registro",
     "confirmApprove": "Aprobar Registro",
@@ -2912,8 +3011,8 @@
   "memberHome": {
     "title": "Perfil de Miembro",
     "subtitle": "Administra tu perfil y preferencias",
-    "comingSoonTitle": "Perfiles de Miembros Próximamente",
-    "comingSoonDescription": "Esta función está actualmente en desarrollo. ¡Vuelve pronto!"
+    "underDevelopmentTitle": "Perfiles de Miembros en Desarrollo",
+    "underDevelopmentDescription": "Esta función está actualmente en desarrollo. ¡Vuelve más tarde!"
   },
   "genreMultiSelect": {
     "clearAll": "Limpiar Todo",
@@ -3362,14 +3461,14 @@
     "subtitle": "showcase electrónico de atx",
     "description": "Regresa la principal competencia de DJs de Austin. Artistas electrónicos locales compiten por gloria, premios y la oportunidad de encabezar un evento de Force Majeure.",
     "registrationInfo": "Las inscripciones abren pronto. Mantente atento para fechas y detalles.",
-    "registrationComing": "Inscripciones Próximamente",
+    "registrationOpening": "Inscripciones Abren Pronto",
     "followText": "Síguenos",
     "forUpdates": "para actualizaciones"
   },
   "dashboards": {
     "activityLog": "Registro de Actividad",
     "userMetrics": "Métricas de Usuario",
-    "comingSoon": "Próximamente"
+    "underDevelopment": "En desarrollo"
   },
   "mediaGallery": {
     "loading": "Cargando...",
@@ -3401,6 +3500,7 @@
     "title": "Importar CSV de Pedidos",
     "description": "Importar pedidos históricos desde archivos CSV. Los pedidos se vincularán a usuarios existentes por dirección de email, o se dejarán sin vincular para futuros registros de usuarios.",
     "steps": {
+      "configure": "Configurar",
       "upload": "Subir",
       "map": "Mapear",
       "preview": "Vista Previa",

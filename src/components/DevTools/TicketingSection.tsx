@@ -210,7 +210,7 @@ export const TicketingSection = () => {
         <Button
           onClick={() => setShowConfirmDialog(true)}
           disabled={!hasChanges}
-          className='w-full bg-fm-gold hover:bg-fm-gold/90 text-black disabled:opacity-50 disabled:cursor-not-allowed'
+          className='w-full bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed'
         >
           {t('devTools.ticketing.saveFees')}
         </Button>
@@ -233,7 +233,7 @@ export const TicketingSection = () => {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleSave}
-              className='bg-fm-gold hover:bg-fm-gold/90 text-black'
+              className='bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-all duration-200'
             >
               {t('devTools.ticketing.saveChanges')}
             </AlertDialogAction>

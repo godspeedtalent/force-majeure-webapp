@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Link2, Trash2, Unlink, Clock, CheckCircle2, XCircle, User, Calendar, AlertCircle, MapPin, Music, Building2, ExternalLink } from 'lucide-react';
+import { Link2, Trash2, Unlink, Clock, CheckCircle2, XCircle, User, Calendar, AlertCircle, MapPin, Music, Building2, ExternalLink, Inbox } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase, logger, isDeletionRequest, getEntityTypeFromRequestType } from '@/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
@@ -25,6 +25,7 @@ import {
   FmCommonTabsList,
   FmCommonTabsTrigger,
 } from '@/components/common/navigation/FmCommonTabs';
+import { FmFormSectionHeader } from '@/components/common/forms/FmFormSectionHeader';
 
 interface UserRequest {
   id: string;
@@ -416,12 +417,11 @@ export function UserRequestsAdmin() {
 
   return (
     <div className='space-y-6'>
-      <div>
-        <h2 className='text-2xl font-canela font-medium mb-2'>{t('admin.requests.title')}</h2>
-        <p className='text-muted-foreground text-sm'>
-          {t('admin.requests.description')}
-        </p>
-      </div>
+      <FmFormSectionHeader
+        title={t('admin.requests.title')}
+        description={t('admin.requests.description')}
+        icon={Inbox}
+      />
 
       <FmCommonTabs defaultValue='pending'>
         <FmCommonTabsList>

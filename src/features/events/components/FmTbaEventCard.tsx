@@ -99,7 +99,7 @@ export const FmTbaEventCard = ({
               To Be Announced
             </h3>
             <p className='text-sm text-muted-foreground/60'>
-              Details coming soon...
+              Details to follow...
             </p>
           </div>
         </div>

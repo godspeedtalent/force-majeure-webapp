@@ -489,7 +489,7 @@ export const FeatureToggleSection = () => {
           <Button
             onClick={() => setShowConfirmDialog(true)}
             disabled={!hasChanges}
-            className='w-full h-7 text-xs bg-fm-gold hover:bg-fm-gold/90 text-black disabled:opacity-50 disabled:cursor-not-allowed'
+            className='w-full h-7 text-xs bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed'
           >
             {t('devTools.featureToggles.applyChanges')}
           </Button>
@@ -516,7 +516,7 @@ export const FeatureToggleSection = () => {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleApply}
-              className='bg-fm-gold hover:bg-fm-gold/90 text-black'
+              className='bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-all duration-200'
             >
               {t('devTools.featureToggles.applyChanges')}
             </AlertDialogAction>

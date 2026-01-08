@@ -69,6 +69,7 @@
     "goBack": "返回",
     "viewOrganizationDetails": "查看组织详情",
     "backToUsersList": "返回用户列表",
+    "viewPublicProfile": "查看公开个人资料",
     "createGenre": "创建风格",
     "deleteArtist": "删除艺术家",
     "deleting": "删除中...",
@@ -341,10 +342,98 @@
     "gallery": "图库",
     "galleryManager": "媒体图库",
     "dragToResize": "拖动调整大小",
+    "pageInfo": "页面信息",
+    "pageInfoTitle": "页面信息",
+    "adminMessages": "收件箱",
+    "adminMessagesTitle": "管理员收件箱",
+    "errorLogs": "错误日志",
+    "errorLogsTitle": "错误监控",
+    "collapseGroup": "折叠分组",
+    "expandGroup": "展开分组",
+    "clickToExpand": "点击展开",
     "groups": {
       "organization": "组织",
-      "developerTools": "开发者工具"
+      "developerTools": "开发者工具",
+      "devTools": "开发工具",
+      "dataConfig": "数据与配置",
+      "admin": "管理员"
     }
+  },
+  "adminMessages": {
+    "loadError": "加载消息失败",
+    "updateError": "更新消息失败",
+    "deleteError": "删除消息失败",
+    "statusUpdated": "消息状态已更新",
+    "deleted": "消息已删除",
+    "searchPlaceholder": "搜索消息...",
+    "filter": "筛选",
+    "sortBy": "排序",
+    "ascending": "升序",
+    "descending": "降序",
+    "messagesCount": "{{count}} 条消息",
+    "unreadCount": "{{count}} 条未读",
+    "noMatchingMessages": "没有匹配的消息",
+    "noMessages": "暂无消息",
+    "subject": "主题",
+    "received": "收到时间",
+    "replyViaEmail": "通过邮件回复",
+    "markUnread": "标记为未读",
+    "archive": "归档",
+    "filterLabels": {
+      "status": "状态"
+    },
+    "statuses": {
+      "unread": "未读",
+      "read": "已读",
+      "replied": "已回复",
+      "archived": "已归档"
+    },
+    "tabs": {
+      "requests": "请求",
+      "messages": "消息"
+    },
+    "pendingRequests": "{{count}} 个待处理请求",
+    "viewFullRequests": "在开发者主页 → 用户请求中查看完整详情"
+  },
+  "pageInfo": {
+    "routeInfo": "路由",
+    "path": "路径",
+    "query": "查询",
+    "hash": "哈希",
+    "routeParams": "路由参数",
+    "pageType": "页面类型",
+    "resourceId": "资源ID",
+    "componentInfo": "组件",
+    "pageComponent": "页面组件",
+    "layoutComponent": "布局",
+    "filePath": "文件路径",
+    "commonComponents": "常用组件",
+    "performance": "性能",
+    "loadTime": "加载时间",
+    "domReady": "DOM就绪",
+    "fcp": "首次内容绘制",
+    "lcp": "最大内容绘制",
+    "memory": "内存使用",
+    "loadingMetrics": "加载指标中...",
+    "sessionInfo": "会话",
+    "timeOnPage": "页面停留时间",
+    "renderCount": "渲染次数",
+    "userAgent": "用户代理",
+    "language": "语言",
+    "screenSize": "屏幕尺寸",
+    "openInEditor": "在编辑器中打开",
+    "reactDevTools": "React开发工具"
+  },
+  "errorLog": {
+    "summary": "摘要",
+    "recentErrors": "最近错误",
+    "loading": "加载错误日志...",
+    "fetchError": "获取错误日志失败",
+    "noErrors": "没有错误记录",
+    "clearFilter": "显示所有级别",
+    "copied": "已复制到剪贴板",
+    "openInSupabase": "在Supabase中查看",
+    "clearOldLogsTooltip": "清除超过7天的日志"
   },
   "mockRole": {
     "activeWarning": "模拟角色已激活",
@@ -1514,6 +1603,14 @@
     "localFileNotAllowed": "不允许使用本地文件路径。请改为上传文件。",
     "enterValidUrl": "请输入以 http:// 或 https:// 开头的有效链接"
   },
+  "fileDropzone": {
+    "dropFileOr": "将文件拖放到此处，或",
+    "browse": "浏览",
+    "acceptedFormats": "支持的格式：{{formats}}",
+    "clearFile": "清除文件",
+    "selectDifferentFile": "选择其他文件",
+    "processing": "处理中..."
+  },
   "checkout": {
     "loadingCheckout": "加载结账中...",
     "signInOrContinueAsGuest": "登录或以游客身份继续",
@@ -1913,12 +2010,12 @@
     "attendance": {
       "title": "签到与出席报告",
       "description": "跟踪您活动的签到和出席数据",
-      "comingSoonText": "此报告即将推出。它将包括：",
+      "underDevelopmentText": "此报告正在开发中。它将包括：",
       "checkInsVsTickets": "总签到数与售票数对比",
       "checkInTimeline": "签到时间线和高峰期",
       "noShowAnalysis": "缺席分析",
       "tierBreakdown": "门票等级分布",
-      "comingSoon": "即将推出"
+      "underDevelopment": "开发中"
     }
   },
   "checkoutTimer": {
@@ -2061,8 +2158,8 @@
     "sessionOverrides": {
       "description": "覆盖此浏览器会话的功能标志（不影响数据库）",
       "activeOverrides": "活跃覆盖：",
-      "overrideComingSoon": "覆盖即将上线模式",
-      "comingSoonTooltip": "启用后，将显示\"即将上线\"页面而不是主内容。用于维护或预发布模式。",
+      "overridePrelaunchMode": "覆盖预发布模式",
+      "prelaunchTooltip": "暂时禁用预发布模式。用于在预发布模式启用时测试完整应用。",
       "overrideActive": "覆盖活���：",
       "usingDatabase": "使用数据库：",
       "usingDatabaseValue": "使用数据库值",
@@ -2287,6 +2384,8 @@
     "deny": "拒绝",
     "approveSuccess": "{{name}} 已被批准",
     "approveFailed": "批准注册失败",
+    "alreadyApproved": "{{name}} 已被批准",
+    "duplicateSpotifyId": "已存在具有此 Spotify ID 的艺人",
     "denySuccess": "{{name}} 已被拒绝",
     "denyFailed": "拒绝注册失败",
     "confirmApprove": "批准注册",
@@ -2912,8 +3011,8 @@
   "memberHome": {
     "title": "会员档案",
     "subtitle": "管理您的档案和偏好设置",
-    "comingSoonTitle": "会员档案即将推出",
-    "comingSoonDescription": "此功能正在开发中，请稍后再来查看！"
+    "underDevelopmentTitle": "会员档案正在开发中",
+    "underDevelopmentDescription": "此功能正在开发中，请稍后再来查看！"
   },
   "genreMultiSelect": {
     "clearAll": "清除全部",
@@ -3362,14 +3461,14 @@
     "subtitle": "ATX 电子音乐展示",
     "description": "奥斯汀首屈一指的DJ比赛回归。本地电子音乐艺术家为荣耀、奖品和成为Force Majeure活动主演的机会而战。",
     "registrationInfo": "报名即将开放。敬请关注日期和详情。",
-    "registrationComing": "报名即将开始",
+    "registrationOpening": "报名即将开放",
     "followText": "关注",
     "forUpdates": "获取更新"
   },
   "dashboards": {
     "activityLog": "活动日志",
     "userMetrics": "用户指标",
-    "comingSoon": "即将推出"
+    "underDevelopment": "开发中"
   },
   "mediaGallery": {
     "loading": "加载中...",
@@ -3401,6 +3500,7 @@
     "title": "订单 CSV 导入",
     "description": "从 CSV 文件导入历史订单。订单将通过电子邮件地址链接到现有用户，或保持未链接状态等待未来用户注册。",
     "steps": {
+      "configure": "配置",
       "upload": "上传",
       "map": "映射",
       "preview": "预览",

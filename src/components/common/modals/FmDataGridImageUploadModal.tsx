@@ -285,7 +285,7 @@ export function FmDataGridImageUploadModal({
           <Button
             onClick={handleUpload}
             disabled={!selectedFile || isUploading}
-            className='bg-fm-gold hover:bg-fm-gold/90 text-black'
+            className='bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-all duration-200'
           >
             {isUploading ? (
               <div className='flex items-center gap-2 whitespace-nowrap'>

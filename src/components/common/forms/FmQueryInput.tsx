@@ -66,7 +66,7 @@ export const FmQueryInput = forwardRef<HTMLInputElement, FmQueryInputProps>(
           size='sm'
           onClick={handleSubmit}
           disabled={!value.trim() || disabled || isProcessing}
-          className='h-8 px-3 bg-fm-gold hover:bg-fm-gold/90 text-black font-medium'
+          className='h-8 px-3 bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-all duration-200 font-medium'
         >
           <ArrowRight className='h-3 w-3' />
         </Button>

@@ -17,7 +17,7 @@ import OrganizationTools from './pages/organization/OrganizationTools';
 import TicketScanning from './pages/organization/TicketScanning';
 
 // Lazy load demo pages
-const DemoIndex = lazy(() => import('./pages/demo/DemoIndex'));
+// DemoIndex is now embedded as a tab in DeveloperHome
 const EventCheckout = lazy(() => import('./pages/demo/EventCheckout'));
 const EventCheckoutConfirmation = lazy(() => import('./pages/demo/EventCheckoutConfirmation'));
 const EmailTemplateDemo = lazy(() => import('./pages/demo/EmailTemplateDemo'));
@@ -25,7 +25,7 @@ const StoryDesigner = lazy(() => import('./pages/demo/StoryDesigner'));
 
 // Lazy load developer pages
 const DeveloperHome = lazy(() => import('./pages/developer/DeveloperHome'));
-const DeveloperDocumentation = lazy(() => import('./pages/developer/DeveloperDocumentation'));
+// DeveloperDocumentation is now embedded as a tab in DeveloperHome
 const TicketFlowTests = lazy(() => import('./pages/developer/TicketFlowTests'));
 const DeveloperCreateEventPage = lazy(() => import('./pages/developer/database/CreateEvent'));
 const DeveloperCreateArtistPage = lazy(() => import('./pages/developer/database/CreateArtist'));
@@ -49,6 +49,10 @@ const VenueManagement = lazy(() => import('./pages/venues/VenueManagement'));
 const ArtistDetails = lazy(() => import('./pages/artists/ArtistDetails'));
 const ArtistManagement = lazy(() => import('./pages/artists/ArtistManagement'));
 const RecordingDetails = lazy(() => import('./pages/recordings/RecordingDetails'));
+
+// Lazy load user pages
+const PublicUserProfile = lazy(() => import('./pages/users/PublicUserProfile'));
+const UserProfileEdit = lazy(() => import('./pages/users/UserProfileEdit'));
 
 // Lazy load testing pages
 const TestingIndex = lazy(() => import('./pages/testing/TestingIndex'));
@@ -84,9 +88,8 @@ import { StripeProvider } from '@/features/payments';
 import { AnalyticsProvider } from '@/features/analytics';
 
 import NotFound from './pages/NotFound';
-import Profile from './pages/Profile';
-import ProfileEdit from './pages/ProfileEdit';
 import ProxyToken from './pages/ProxyToken';
+import { ProfileRedirect, ProfileEditRedirect } from './pages/users/ProfileRedirects';
 import Scavenger from './pages/Scavenger';
 import ArtistSignup from './pages/artists/ArtistSignup';
 import ArtistRegister from './pages/artists/ArtistRegister';
@@ -128,7 +131,7 @@ const AppRoutes = () => {
       <Route path='/proxy-token' element={<ProxyToken />} />
       <Route path='/contact' element={<Contact />} />
 
-      {/* Artist Registration Routes - Always accessible even in coming soon mode */}
+      {/* Artist Registration Routes - Always accessible */}
       <Route path='/artists/signup' element={<ArtistSignup />} />
       <Route
         path='/artists/register'
@@ -139,12 +142,12 @@ const AppRoutes = () => {
         }
       />
 
-      {/* Profile Routes - Always accessible for logged in users, even in coming soon mode */}
+      {/* Profile Routes - Redirect to unified /users/:id routes */}
       <Route
         path='/profile'
         element={
           <ProtectedRoute>
-            <Profile />
+            <ProfileRedirect />
           </ProtectedRoute>
         }
       />
@@ -152,14 +155,13 @@ const AppRoutes = () => {
         path='/profile/edit'
         element={
           <ProtectedRoute>
-            <ProfileEdit />
+            <ProfileEditRedirect />
           </ProtectedRoute>
         }
       />
 
       {/* ==================== ADMIN/DEVELOPER ROUTES ==================== */}
-      {/* These routes are ALWAYS accessible regardless of coming_soon_mode */}
-      {/* They are protected by role-based access control instead */}
+      {/* These routes are protected by role-based access control */}
 
       {/* Developer Routes - Protected by developer/admin roles */}
       <Route
@@ -177,15 +179,10 @@ const AppRoutes = () => {
         path='/developer/database'
         element={<Navigate to='/developer?tab=db_overview' replace />}
       />
+      {/* Redirect old documentation route to unified developer home tab */}
       <Route
         path='/developer/documentation'
-        element={
-          <DemoProtectedRoute>
-            <Suspense fallback={<LazyLoadFallback />}>
-              <DeveloperDocumentation />
-            </Suspense>
-          </DemoProtectedRoute>
-        }
+        element={<Navigate to='/developer?tab=dev_docs' replace />}
       />
       <Route
         path='/developer/ticket-flow'
@@ -208,16 +205,10 @@ const AppRoutes = () => {
         element={<Navigate to='/developer?tab=dash_recordings' replace />}
       />
 
-      {/* Demo Routes - Protected by developer/admin roles */}
+      {/* Redirect old demo index route to unified developer home tab */}
       <Route
         path='/developer/demo'
-        element={
-          <DemoProtectedRoute>
-            <Suspense fallback={<LazyLoadFallback />}>
-              <DemoIndex />
-            </Suspense>
-          </DemoProtectedRoute>
-        }
+        element={<Navigate to='/developer?tab=dev_demo' replace />}
       />
       <Route
         path='/developer/demo/event-checkout'
@@ -470,6 +461,26 @@ const AppRoutes = () => {
           <Suspense fallback={<LazyLoadFallback />}>
             <RecordingDetails />
           </Suspense>
+        }
+      />
+
+      {/* User Profile Routes (feature flag controlled with admin bypass) */}
+      <Route
+        path='/users/:id'
+        element={
+          <Suspense fallback={<LazyLoadFallback />}>
+            <PublicUserProfile />
+          </Suspense>
+        }
+      />
+      <Route
+        path='/users/:id/edit'
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <UserProfileEdit />
+            </Suspense>
+          </ProtectedRoute>
         }
       />
 

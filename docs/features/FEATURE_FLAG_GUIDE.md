@@ -30,7 +30,6 @@ All feature flags are defined in `src/shared/config/featureFlags.ts`:
 ```typescript
 export const FEATURE_FLAGS = {
   // Core Features
-  COMING_SOON_MODE: 'coming_soon_mode',
   DEMO_PAGES: 'demo_pages',
 
   // Event Features
@@ -56,10 +55,9 @@ export const FEATURE_FLAGS = {
 } as const;
 
 export const FEATURE_FLAG_METADATA = {
-  [FEATURE_FLAGS.COMING_SOON_MODE]: {
-    displayName: 'Coming Soon Mode',
-    description:
-      'Restricts access to main app features and shows coming soon page',
+  [FEATURE_FLAGS.DEMO_PAGES]: {
+    displayName: 'Demo Pages',
+    description: 'Enables access to demo/testing pages',
     category: 'Core',
   },
   // ... more metadata
@@ -110,8 +108,8 @@ import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 </FeatureGuard>
 
 // Inverted logic - show when disabled
-<FeatureGuard feature={FEATURE_FLAGS.COMING_SOON_MODE} invert={true}>
-  <MainContent />
+<FeatureGuard feature={FEATURE_FLAGS.DEMO_PAGES} invert={true}>
+  <ProductionContent />
 </FeatureGuard>
 ```
 
@@ -249,7 +247,7 @@ function MyComponent() {
     <div>
       {flags?.merch_store && <MerchLink />}
       {flags?.music_player && <MusicPlayer />}
-      {flags?.coming_soon_mode ? <ComingSoon /> : <MainApp />}
+      {flags?.demo_pages ? <DemoContent /> : <MainApp />}
     </div>
   );
 }
@@ -274,10 +272,10 @@ function MyComponent() {
       </FeatureGuard>
 
       <FeatureGuard
-        feature={FEATURE_FLAGS.COMING_SOON_MODE}
+        feature={FEATURE_FLAGS.DEMO_PAGES}
         fallback={<MainApp />}
       >
-        <ComingSoon />
+        <DemoContent />
       </FeatureGuard>
     </div>
   );
@@ -363,7 +361,7 @@ function MediaSection() {
 
 ```tsx
 const enabled = flags?.merch_store;
-if (flags?.coming_soon_mode) {
+if (flags?.demo_pages) {
 }
 ```
 
@@ -371,7 +369,7 @@ if (flags?.coming_soon_mode) {
 
 ```tsx
 const enabled = isFeatureEnabled(FEATURE_FLAGS.MERCH_STORE);
-if (isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE)) {
+if (isFeatureEnabled(FEATURE_FLAGS.DEMO_PAGES)) {
 }
 ```
 
@@ -464,7 +462,7 @@ WHERE flag_name = 'merch_store';
 -- Disable a feature
 UPDATE feature_flags
 SET enabled = false
-WHERE flag_name = 'coming_soon_mode';
+WHERE flag_name = 'demo_pages';
 ```
 
 ## Testing

@@ -303,7 +303,7 @@ export function IndexMobile({
           onClick={() => navigate('/artists/signup')}
           className={cn(
             'fixed bottom-[62px] left-1/2 -translate-x-1/2 z-40',
-            'bg-fm-gold hover:bg-fm-gold/90 text-black',
+            'bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-all duration-200',
             'text-[8px] py-0.5 px-2 h-auto',
             'rounded-none font-medium'
           )}
@@ -391,7 +391,7 @@ export function IndexMobile({
         onClick={() => navigate('/artists/signup')}
         className={cn(
           'fixed bottom-[62px] left-1/2 -translate-x-1/2 z-40',
-          'bg-fm-gold hover:bg-fm-gold/90 text-black',
+          'bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-all duration-200',
           'text-[8px] py-0.5 px-2 h-auto',
           'rounded-none font-medium'
         )}

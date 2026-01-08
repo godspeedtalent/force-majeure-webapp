@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 
 import { supabase, sessionPersistence, logger } from '@/shared';
 import { handleError } from '@/shared/services/errorHandler';
+import { debugAccessService } from '@/shared/services/debugAccessService';
 import i18n from '@/i18n';
 
 const authLogger = logger.createNamespace('Auth');
@@ -315,6 +316,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       // Clear session persistence when user explicitly logs out
       sessionPersistence.clearRememberDevice();
+
+      // Clear debug access to prevent privilege leakage
+      debugAccessService.clearDebugAccess();
 
       const { error } = await supabase.auth.signOut();
       if (error) {

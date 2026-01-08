@@ -790,28 +790,37 @@ npm run lint          # Lint all files
 11. **Button styling**:
     - **Form submission buttons**: Use `variant="outline"` with minimal custom styling
       - ✅ `<Button variant="outline" className="border-white/20 hover:bg-white/10">Submit</Button>`
-      - ❌ `<Button className="bg-fm-gold text-black">Submit</Button>`
+      - ❌ `<Button className="bg-fm-gold text-black">Submit</Button>` (solid gold is only for hover state)
       - ❌ `<Button variant="default">Submit</Button>` (this creates a solid white button)
     - **Cancel/secondary buttons**: Use `variant="outline"` or `variant="secondary"`
       - ✅ `<Button variant="outline">Cancel</Button>`
     - **Destructive actions**: Use `variant="destructive"`
       - ✅ `<Button variant="destructive">Delete</Button>`
-    - **NEVER use gold/colored backgrounds** for form buttons unless specifically required
+    - **NEVER use solid gold backgrounds** (`bg-fm-gold text-black`) as the default state for buttons
     - Default form button style is outline with subtle hover state
     - Keep button styling consistent across all create/edit forms
+
+    **Gold Button Pattern (CTAs/Primary Actions)**:
+    - Default: Frosted glass with gold text (`bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold`)
+    - Hover: Solid gold with black text (`hover:bg-fm-gold hover:text-black`)
+    - Use `<FmCommonButton variant="gold">` for the standard implementation
+    - Solid gold (`bg-fm-gold text-black`) should ONLY appear on:
+      - Hover state for gold buttons
+      - Active states (selected tabs, checked checkboxes)
+      - Badge/tag indicators (status badges, counts)
 
     **FmCommonButton variants** (for buttons with text):
     - `default` - Outline style with gold hover glow
     - `secondary` - Ghost style
     - `destructive` - Red/danger style
     - `destructive-outline` - Outlined danger style
-    - `gold` - Gold background, black text (for CTAs/primary actions)
+    - `gold` - Frosted glass with gold text, solid gold on hover (for CTAs/primary actions)
 
     **FmCommonIconButton variants** (for icon-only buttons):
     - `default` - Outline with gold hover
     - `secondary` - Ghost style
     - `destructive` - Red/danger style
-    - `gold` - Gold background
+    - `gold` - Frosted glass with gold, solid on hover
     - `create` - White outline with floating + indicator (for "add new" actions)
 
 12. **Context Menus** (`FmCommonContextMenu`):

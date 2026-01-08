@@ -201,7 +201,7 @@ export function FmCommonEventDatePicker({
           </Button>
           <Button
             onClick={handleConfirm}
-            className='flex-1 bg-fm-gold hover:bg-fm-gold/90 text-black'
+            className='flex-1 bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-all duration-200'
           >
             {t('buttons.confirm')}
           </Button>

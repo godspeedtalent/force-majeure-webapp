@@ -1,10 +1,15 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { Upload, FileSpreadsheet, AlertCircle, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { FileSpreadsheet, AlertCircle, CheckCircle, ChevronDown, ChevronUp, Settings } from 'lucide-react';
 import { DemoLayout } from '@/components/demo/DemoLayout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmFileDropzone } from '@/components/common/forms/FmFileDropzone';
+import { FmCommonSelect, SelectOption } from '@/components/common/forms/FmCommonSelect';
+import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
+import { FmCommonStatCard } from '@/components/common/display/FmCommonStatCard';
+import { FmEventSearchDropdown } from '@/components/common/search/FmEventSearchDropdown';
 import { supabase } from '@/shared';
 import { logger } from '@/shared/services/logger';
 import { toast } from 'sonner';
@@ -19,17 +24,13 @@ interface ParsedOrder {
   rowIndex: number;
   customerEmail: string;
   customerName: string;
-  eventId: string;
-  eventName?: string;
-  ticketTierId: string;
-  ticketTierName?: string;
   quantity: number;
   unitPriceCents: number;
   unitFeeCents: number;
   totalCents: number;
   orderDate: string;
-  status: 'valid' | 'refunded' | 'cancelled';
-  externalOrderId?: string; // For deduplication
+  status: 'completed' | 'refunded' | 'cancelled';
+  externalOrderId?: string;
   // Validation state
   validationErrors: string[];
   existingUserId: string | null;
@@ -42,37 +43,64 @@ interface ImportResult {
   email: string;
 }
 
-// Column mapping configuration
+// Column mapping configuration - maps Order table fields to CSV columns
+// These are the actual database fields we're populating
 interface ColumnMapping {
-  customerEmail: string;
-  customerName: string;
-  eventId: string;
-  ticketTierId: string;
-  quantity: string;
-  unitPriceCents: string;
-  unitFeeCents: string;
-  orderDate: string;
-  status: string;
-  externalOrderId: string;
+  // Profile/customer fields
+  customer_email: string;      // Required: profiles.email lookup / order customer
+  customer_name: string;       // Optional: attendee name for tickets
+  // Order fields
+  subtotal_cents: string;      // Optional: price before fees (can calculate)
+  fees_cents: string;          // Optional: service fees
+  // Order item fields
+  quantity: string;            // Required: number of tickets
+  unit_price_cents: string;    // Optional: price per ticket
+  unit_fee_cents: string;      // Optional: fee per ticket
+  // Metadata
+  created_at: string;          // Optional: order date
+  status: string;              // Optional: completed/refunded/cancelled
+  external_order_id: string;   // Optional: for deduplication
 }
 
 const DEFAULT_COLUMN_MAPPING: ColumnMapping = {
-  customerEmail: 'email',
-  customerName: 'name',
-  eventId: 'event_id',
-  ticketTierId: 'ticket_tier_id',
-  quantity: 'quantity',
-  unitPriceCents: 'unit_price_cents',
-  unitFeeCents: 'unit_fee_cents',
-  orderDate: 'order_date',
-  status: 'status',
-  externalOrderId: 'external_order_id',
+  customer_email: '',
+  customer_name: '',
+  subtotal_cents: '',
+  fees_cents: '',
+  quantity: '',
+  unit_price_cents: '',
+  unit_fee_cents: '',
+  created_at: '',
+  status: '',
+  external_order_id: '',
 };
 
-export default function OrderCsvImport() {
+// Field descriptions for the mapping UI
+const FIELD_DESCRIPTIONS: Record<keyof ColumnMapping, { label: string; required: boolean; description: string }> = {
+  customer_email: { label: 'Customer Email', required: true, description: 'Email address of the ticket purchaser' },
+  customer_name: { label: 'Customer Name', required: false, description: 'Name for ticket attendee' },
+  quantity: { label: 'Quantity', required: true, description: 'Number of tickets in this order' },
+  unit_price_cents: { label: 'Unit Price (cents)', required: false, description: 'Price per ticket in cents' },
+  unit_fee_cents: { label: 'Unit Fee (cents)', required: false, description: 'Fee per ticket in cents' },
+  subtotal_cents: { label: 'Subtotal (cents)', required: false, description: 'Total price before fees' },
+  fees_cents: { label: 'Fees (cents)', required: false, description: 'Total fees for order' },
+  created_at: { label: 'Order Date', required: false, description: 'When the order was placed' },
+  status: { label: 'Status', required: false, description: 'Order status (completed/refunded/cancelled)' },
+  external_order_id: { label: 'External Order ID', required: false, description: 'Original order ID for deduplication' },
+};
+
+/**
+ * OrderCsvImportContent - The main content without layout wrapper
+ * Used within DeveloperHome as tab content
+ */
+export function OrderCsvImportContent() {
   const { t } = useTranslation('common');
 
-  // State
+  // Configuration state - constants for all orders
+  const [selectedEventId, setSelectedEventId] = useState<string>('');
+  const [selectedTicketTierId, setSelectedTicketTierId] = useState<string>('');
+
+  // CSV state
   const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
   const [csvData, setCsvData] = useState<CsvRow[]>([]);
   const [columnMapping, setColumnMapping] = useState<ColumnMapping>(DEFAULT_COLUMN_MAPPING);
@@ -80,39 +108,40 @@ export default function OrderCsvImport() {
   const [isValidating, setIsValidating] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [importResults, setImportResults] = useState<ImportResult[]>([]);
-  const [showMapping, setShowMapping] = useState(false);
-  const [step, setStep] = useState<'upload' | 'map' | 'preview' | 'complete'>('upload');
+  const [showMapping, setShowMapping] = useState(true);
+  const [step, setStep] = useState<'configure' | 'upload' | 'map' | 'preview' | 'complete'>('configure');
+  // Store selected event object from search dropdown
+  const [selectedEvent, setSelectedEvent] = useState<{ id: string; title: string } | null>(null);
 
-  // Fetch events for validation and display
-  const { data: events } = useQuery({
-    queryKey: ['events-for-import'],
+  // Fetch ticket tiers for the selected event
+  const { data: ticketTiers, isLoading: tiersLoading } = useQuery({
+    queryKey: ['ticket-tiers-for-import', selectedEventId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('events')
-        .select('id, title')
-        .order('start_time', { ascending: false });
-      if (error) throw error;
-      return data || [];
-    },
-  });
-
-  // Fetch ticket tiers for validation and display
-  const { data: ticketTiers } = useQuery({
-    queryKey: ['ticket-tiers-for-import'],
-    queryFn: async () => {
+      if (!selectedEventId) return [];
       const { data, error } = await supabase
         .from('ticket_tiers')
-        .select('id, name, event_id');
+        .select('id, name, price_cents')
+        .eq('event_id', selectedEventId);
       if (error) throw error;
       return data || [];
     },
+    enabled: !!selectedEventId,
   });
 
-  // Parse CSV file
-  const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const uploadedFile = e.target.files?.[0];
-    if (!uploadedFile) return;
+  // Get selected tier details
+  const selectedTier = ticketTiers?.find(t => t.id === selectedTicketTierId);
 
+  // Ticket tier options for select (only shown after event is selected)
+  const tierOptions: SelectOption[] = useMemo(() => {
+    if (!ticketTiers || ticketTiers.length === 0) return [];
+    return ticketTiers.map(t => ({
+      value: t.id,
+      label: `${t.name} ($${(t.price_cents / 100).toFixed(2)})`,
+    }));
+  }, [ticketTiers]);
+
+  // Parse CSV file
+  const handleFileUpload = useCallback((file: File) => {
     const reader = new FileReader();
 
     reader.onload = (event) => {
@@ -149,7 +178,7 @@ export default function OrderCsvImport() {
       toast.error(t('orderCsvImport.errors.fileReadError'));
     };
 
-    reader.readAsText(uploadedFile);
+    reader.readAsText(file);
   }, [t]);
 
   // Parse a single CSV line (handling quoted values)
@@ -177,19 +206,19 @@ export default function OrderCsvImport() {
   // Auto-detect column mappings based on header names
   const autoDetectMappings = (headers: string[]) => {
     const lowerHeaders = headers.map(h => h.toLowerCase().replace(/[_\s-]/g, ''));
-    const newMapping = { ...columnMapping };
+    const newMapping = { ...DEFAULT_COLUMN_MAPPING };
 
     const mappingPatterns: Record<keyof ColumnMapping, string[]> = {
-      customerEmail: ['email', 'customeremail', 'buyeremail', 'purchaseremail'],
-      customerName: ['name', 'customername', 'buyername', 'fullname', 'attendeename'],
-      eventId: ['eventid', 'event'],
-      ticketTierId: ['tickettierid', 'tierid', 'tickettype', 'tier'],
-      quantity: ['quantity', 'qty', 'count', 'tickets'],
-      unitPriceCents: ['unitpricecents', 'pricecents', 'unitprice', 'price'],
-      unitFeeCents: ['unitfeecents', 'feecents', 'fee', 'servicefee'],
-      orderDate: ['orderdate', 'date', 'purchasedate', 'createdat'],
-      status: ['status', 'orderstatus', 'ticketstatus'],
-      externalOrderId: ['externalorderid', 'orderid', 'referenceid', 'transactionid'],
+      customer_email: ['email', 'customeremail', 'buyeremail', 'purchaseremail', 'attendeeemail'],
+      customer_name: ['name', 'customername', 'buyername', 'fullname', 'attendeename'],
+      quantity: ['quantity', 'qty', 'count', 'tickets', 'numtickets'],
+      unit_price_cents: ['unitpricecents', 'pricecents', 'unitprice', 'ticketprice'],
+      unit_fee_cents: ['unitfeecents', 'feecents', 'ticketfee'],
+      subtotal_cents: ['subtotalcents', 'subtotal', 'pricetotal'],
+      fees_cents: ['feescents', 'totalfees', 'servicefee', 'fee'],
+      created_at: ['createdat', 'orderdate', 'date', 'purchasedate', 'ordertime'],
+      status: ['status', 'orderstatus', 'ticketstatus', 'state'],
+      external_order_id: ['externalorderid', 'orderid', 'referenceid', 'transactionid', 'originalorderid'],
     };
 
     Object.entries(mappingPatterns).forEach(([field, patterns]) => {
@@ -226,7 +255,7 @@ export default function OrderCsvImport() {
 
       // Check for existing external order IDs to prevent duplicates
       const externalIds = csvData
-        .map(row => row[columnMapping.externalOrderId])
+        .map(row => row[columnMapping.external_order_id])
         .filter(Boolean);
 
       const existingExternalIds = new Set<string>();
@@ -240,48 +269,34 @@ export default function OrderCsvImport() {
         const row = csvData[i];
         const errors: string[] = [];
 
-        const email = row[columnMapping.customerEmail]?.trim().toLowerCase() || '';
-        const name = row[columnMapping.customerName]?.trim() || '';
-        const eventId = row[columnMapping.eventId]?.trim() || '';
-        const tierId = row[columnMapping.ticketTierId]?.trim() || '';
+        const email = row[columnMapping.customer_email]?.trim().toLowerCase() || '';
+        const name = row[columnMapping.customer_name]?.trim() || '';
         const quantityStr = row[columnMapping.quantity]?.trim() || '1';
-        const unitPriceStr = row[columnMapping.unitPriceCents]?.trim() || '0';
-        const unitFeeStr = row[columnMapping.unitFeeCents]?.trim() || '0';
-        const orderDate = row[columnMapping.orderDate]?.trim() || new Date().toISOString();
-        const status = (row[columnMapping.status]?.trim().toLowerCase() || 'valid') as 'valid' | 'refunded' | 'cancelled';
-        const externalOrderId = row[columnMapping.externalOrderId]?.trim() || '';
+        const unitPriceStr = row[columnMapping.unit_price_cents]?.trim() || '';
+        const unitFeeStr = row[columnMapping.unit_fee_cents]?.trim() || '0';
+        const orderDate = row[columnMapping.created_at]?.trim() || new Date().toISOString();
+        const statusRaw = row[columnMapping.status]?.trim().toLowerCase() || 'completed';
+        const externalOrderId = row[columnMapping.external_order_id]?.trim() || '';
+
+        // Normalize status
+        let status: 'completed' | 'refunded' | 'cancelled' = 'completed';
+        if (statusRaw === 'refunded' || statusRaw === 'refund') status = 'refunded';
+        else if (statusRaw === 'cancelled' || statusRaw === 'canceled') status = 'cancelled';
 
         // Validate email
         if (!email || !email.includes('@')) {
-          errors.push(t('orderCsvImport.validation.invalidEmail'));
-        }
-
-        // Validate event
-        const eventExists = events?.some(e => e.id === eventId);
-        if (!eventId) {
-          errors.push(t('orderCsvImport.validation.missingEventId'));
-        } else if (!eventExists) {
-          errors.push(t('orderCsvImport.validation.eventNotFound', { eventId }));
-        }
-
-        // Validate ticket tier
-        const tier = ticketTiers?.find(t => t.id === tierId);
-        if (!tierId) {
-          errors.push(t('orderCsvImport.validation.missingTicketTierId'));
-        } else if (!tier) {
-          errors.push(t('orderCsvImport.validation.ticketTierNotFound', { tierId }));
-        } else if (tier.event_id !== eventId) {
-          errors.push(t('orderCsvImport.validation.tierEventMismatch'));
+          errors.push('Invalid email address');
         }
 
         // Parse numbers
         const quantity = parseInt(quantityStr, 10) || 1;
-        const unitPriceCents = parseInt(unitPriceStr, 10) || 0;
+        // Use tier price if unit price not provided
+        const unitPriceCents = unitPriceStr ? parseInt(unitPriceStr, 10) : (selectedTier?.price_cents || 0);
         const unitFeeCents = parseInt(unitFeeStr, 10) || 0;
         const totalCents = quantity * (unitPriceCents + unitFeeCents);
 
         if (quantity < 1) {
-          errors.push(t('orderCsvImport.validation.invalidQuantity'));
+          errors.push('Quantity must be at least 1');
         }
 
         // Check for duplicate
@@ -294,10 +309,6 @@ export default function OrderCsvImport() {
           rowIndex: i + 2, // +2 for header row and 0-indexing
           customerEmail: email,
           customerName: name,
-          eventId,
-          eventName: events?.find(e => e.id === eventId)?.title,
-          ticketTierId: tierId,
-          ticketTierName: tier?.name,
           quantity,
           unitPriceCents,
           unitFeeCents,
@@ -322,7 +333,7 @@ export default function OrderCsvImport() {
     } finally {
       setIsValidating(false);
     }
-  }, [csvData, columnMapping, events, ticketTiers, t]);
+  }, [csvData, columnMapping, selectedTier, t]);
 
   // Import valid orders
   const importOrders = useCallback(async () => {
@@ -339,13 +350,11 @@ export default function OrderCsvImport() {
     try {
       for (const order of validOrders) {
         // Create order
-        // Note: customer_email and nullable user_id are added via migration
-        // but types haven't been regenerated yet, so we use explicit typing
         const orderInsert = {
-          event_id: order.eventId,
+          event_id: selectedEventId,
           user_id: order.existingUserId || undefined,
           customer_email: order.customerEmail,
-          status: order.status === 'valid' ? 'completed' : order.status,
+          status: order.status,
           subtotal_cents: order.quantity * order.unitPriceCents,
           fees_cents: order.quantity * order.unitFeeCents,
           total_cents: order.totalCents,
@@ -375,7 +384,7 @@ export default function OrderCsvImport() {
           .insert({
             order_id: newOrder.id,
             item_type: 'ticket',
-            ticket_tier_id: order.ticketTierId,
+            ticket_tier_id: selectedTicketTierId,
             quantity: order.quantity,
             unit_price_cents: order.unitPriceCents,
             unit_fee_cents: order.unitFeeCents,
@@ -398,12 +407,12 @@ export default function OrderCsvImport() {
           ticketsToCreate.push({
             order_id: newOrder.id,
             order_item_id: orderItem.id,
-            ticket_tier_id: order.ticketTierId,
-            event_id: order.eventId,
+            ticket_tier_id: selectedTicketTierId,
+            event_id: selectedEventId,
             attendee_name: order.customerName,
             attendee_email: order.customerEmail,
             qr_code_data: `IMPORT-${newOrder.id}-${i}-${Date.now()}`,
-            status: order.status,
+            status: order.status === 'completed' ? 'valid' : order.status,
             has_protection: false,
           });
         }
@@ -439,7 +448,7 @@ export default function OrderCsvImport() {
     } finally {
       setIsImporting(false);
     }
-  }, [parsedOrders, t]);
+  }, [parsedOrders, selectedEventId, selectedTicketTierId, t]);
 
   // Reset to start over
   const handleReset = () => {
@@ -447,7 +456,8 @@ export default function OrderCsvImport() {
     setCsvData([]);
     setParsedOrders([]);
     setImportResults([]);
-    setStep('upload');
+    setColumnMapping(DEFAULT_COLUMN_MAPPING);
+    setStep('configure');
   };
 
   // Stats for preview
@@ -463,59 +473,152 @@ export default function OrderCsvImport() {
     return { valid, invalid, duplicates, withUser, orphaned, totalTickets, totalRevenue };
   }, [parsedOrders]);
 
+  const steps = ['configure', 'upload', 'map', 'preview', 'complete'] as const;
+
   return (
-    <DemoLayout
-      title={t('orderCsvImport.title')}
-      description={t('orderCsvImport.description')}
-      icon={FileSpreadsheet}
-    >
-      <div className='max-w-4xl mx-auto space-y-6'>
-        {/* Step indicator */}
-        <div className='flex items-center justify-center gap-2 text-sm'>
-          {['upload', 'map', 'preview', 'complete'].map((s, idx) => (
-            <React.Fragment key={s}>
-              <div className={cn(
-                'px-3 py-1 rounded-full border',
-                step === s ? 'bg-fm-gold text-black border-fm-gold' :
-                  ['upload', 'map', 'preview', 'complete'].indexOf(step) > idx ? 'bg-green-500/20 text-green-400 border-green-500/50' : 'bg-white/5 text-muted-foreground border-white/20'
-              )}>
-                {t(`orderCsvImport.steps.${s}`)}
+    <div className='max-w-4xl mx-auto space-y-6'>
+      {/* Step indicator */}
+      <div className='flex items-center justify-center gap-2 text-sm pt-6'>
+        {steps.map((s, idx) => (
+          <React.Fragment key={s}>
+            <div className={cn(
+              'px-3 py-1 rounded-full border',
+              step === s ? 'bg-fm-gold text-black border-fm-gold' :
+                steps.indexOf(step) > idx ? 'bg-green-500/20 text-green-400 border-green-500/50' : 'bg-white/5 text-muted-foreground border-white/20'
+            )}>
+              {t(`orderCsvImport.steps.${s}`)}
+            </div>
+            {idx < steps.length - 1 && <div className='w-8 h-px bg-white/20' />}
+          </React.Fragment>
+        ))}
+      </div>
+
+      {/* Step 1: Configure - Select Event and Ticket Tier */}
+      {step === 'configure' && (
+        <div className='space-y-6'>
+          <FmCommonCard hoverable={false}>
+            <FmCommonCardContent className='p-6'>
+              <div className='flex items-center gap-2 mb-4'>
+                <Settings className='h-5 w-5 text-fm-gold' />
+                <h3 className='font-medium text-lg'>Import Configuration</h3>
               </div>
-              {idx < 3 && <div className='w-8 h-px bg-white/20' />}
-            </React.Fragment>
-          ))}
-        </div>
+              <p className='text-sm text-muted-foreground mb-6'>
+                Select the event and ticket tier that all imported orders will be associated with.
+                This ensures data consistency and simplifies the CSV format.
+              </p>
 
-        {/* Step 1: Upload */}
-        {step === 'upload' && (
-          <div className='border border-dashed border-white/30 rounded-lg p-12 text-center hover:border-fm-gold/50 transition-colors'>
-            <Upload className='h-12 w-12 text-muted-foreground mx-auto mb-4' />
-            <p className='text-lg mb-4'>{t('orderCsvImport.uploadPrompt')}</p>
-            <input
-              type='file'
-              accept='.csv'
-              onChange={handleFileUpload}
-              className='hidden'
-              id='csv-upload'
-            />
-            <label
-              htmlFor='csv-upload'
-              className='inline-block px-6 py-2 bg-fm-gold text-black font-medium cursor-pointer hover:bg-fm-gold/90 transition-colors'
+              <div className='space-y-4'>
+                <div>
+                  <label className='text-xs text-muted-foreground uppercase mb-1 block'>Event *</label>
+                  <FmEventSearchDropdown
+                    value={selectedEventId}
+                    onChange={(id, event) => {
+                      setSelectedEventId(id || '');
+                      setSelectedEvent(event ? { id: event.id, title: event.title } : null);
+                      // Reset ticket tier when event changes
+                      setSelectedTicketTierId('');
+                    }}
+                    placeholder='Search for an event...'
+                  />
+                </div>
+
+                {selectedEventId && tierOptions.length > 0 && (
+                  <FmCommonSelect
+                    label='Ticket Tier'
+                    value={selectedTicketTierId}
+                    onChange={setSelectedTicketTierId}
+                    options={tierOptions}
+                    placeholder='Select a ticket tier...'
+                    disabled={tiersLoading}
+                  />
+                )}
+
+                {selectedEventId && !tiersLoading && tierOptions.length === 0 && (
+                  <div className='p-3 bg-yellow-500/10 border border-yellow-500/30 text-sm text-yellow-400'>
+                    No ticket tiers found for this event. Please create ticket tiers first.
+                  </div>
+                )}
+
+                {selectedEvent && selectedTier && (
+                  <div className='mt-4 p-4 bg-green-500/10 border border-green-500/30 text-sm'>
+                    <div className='font-medium text-green-400 mb-2'>Configuration Summary</div>
+                    <div className='text-muted-foreground space-y-1'>
+                      <div>Event: <span className='text-white'>{selectedEvent.title}</span></div>
+                      <div>Ticket Tier: <span className='text-white'>{selectedTier.name}</span></div>
+                      <div>Default Price: <span className='text-white'>${(selectedTier.price_cents / 100).toFixed(2)}</span></div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </FmCommonCardContent>
+          </FmCommonCard>
+
+          <div className='flex justify-end'>
+            <FmCommonButton
+              variant='gold'
+              onClick={() => setStep('upload')}
+              disabled={!selectedEventId || !selectedTicketTierId}
             >
-              {t('orderCsvImport.selectFile')}
-            </label>
-            <p className='text-sm text-muted-foreground mt-4'>
-              {t('orderCsvImport.fileRequirements')}
-            </p>
+              Continue to Upload
+            </FmCommonButton>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Step 2: Column Mapping */}
-        {step === 'map' && (
-          <div className='space-y-6'>
-            <div className='bg-white/5 border border-white/10 p-4'>
+      {/* Step 2: Upload */}
+      {step === 'upload' && (
+        <div className='space-y-6'>
+          {/* Show selected config */}
+          <FmCommonCard hoverable={false} className='bg-fm-gold/10 border-fm-gold/30'>
+            <FmCommonCardContent className='p-4'>
+              <div className='text-sm'>
+                <span className='text-fm-gold font-medium'>Importing to:</span>{' '}
+                <span className='text-white'>{selectedEvent?.title}</span>
+                {' '}&bull;{' '}
+                <span className='text-white'>{selectedTier?.name}</span>
+                <button
+                  onClick={() => setStep('configure')}
+                  className='ml-4 text-fm-gold underline hover:no-underline'
+                >
+                  Change
+                </button>
+              </div>
+            </FmCommonCardContent>
+          </FmCommonCard>
+
+          <FmFileDropzone
+            accept='.csv'
+            onFileSelect={handleFileUpload}
+            label={t('orderCsvImport.uploadPrompt')}
+            helperText={t('orderCsvImport.fileRequirements')}
+          />
+        </div>
+      )}
+
+      {/* Step 3: Column Mapping */}
+      {step === 'map' && (
+        <div className='space-y-6'>
+          {/* Show selected config */}
+          <FmCommonCard hoverable={false} className='bg-fm-gold/10 border-fm-gold/30'>
+            <FmCommonCardContent className='p-4'>
+              <div className='text-sm'>
+                <span className='text-fm-gold font-medium'>Importing to:</span>{' '}
+                <span className='text-white'>{selectedEvent?.title}</span>
+                {' '}&bull;{' '}
+                <span className='text-white'>{selectedTier?.name}</span>
+              </div>
+            </FmCommonCardContent>
+          </FmCommonCard>
+
+          <FmCommonCard hoverable={false}>
+            <FmCommonCardContent className='p-4'>
               <div className='flex items-center justify-between mb-4'>
-                <h3 className='font-medium'>{t('orderCsvImport.columnMapping')}</h3>
+                <div>
+                  <h3 className='font-medium'>{t('orderCsvImport.columnMapping')}</h3>
+                  <p className='text-xs text-muted-foreground mt-1'>
+                    Map your CSV columns to Order table fields. Required fields are marked with *.
+                  </p>
+                </div>
                 <button
                   onClick={() => setShowMapping(!showMapping)}
                   className='text-sm text-fm-gold flex items-center gap-1'
@@ -527,28 +630,35 @@ export default function OrderCsvImport() {
 
               {showMapping && (
                 <div className='grid grid-cols-2 gap-4'>
-                  {Object.entries(columnMapping).map(([field, value]) => (
-                    <div key={field} className='flex items-center gap-2'>
-                      <label className='text-sm text-muted-foreground w-32'>
-                        {t(`orderCsvImport.fields.${field}`)}
-                      </label>
-                      <select
-                        value={value}
-                        onChange={(e) => setColumnMapping(prev => ({ ...prev, [field]: e.target.value }))}
-                        className='flex-1 bg-black border border-white/20 px-2 py-1 text-sm focus:border-fm-gold outline-none'
-                      >
-                        <option value=''>{t('orderCsvImport.selectColumn')}</option>
-                        {csvHeaders.map(header => (
-                          <option key={header} value={header}>{header}</option>
-                        ))}
-                      </select>
-                    </div>
-                  ))}
+                  {(Object.entries(FIELD_DESCRIPTIONS) as [keyof ColumnMapping, typeof FIELD_DESCRIPTIONS[keyof ColumnMapping]][]).map(([field, info]) => {
+                    const headerOptions: SelectOption[] = [
+                      { value: '__not_mapped__', label: '-- Not mapped --' },
+                      ...csvHeaders.map(header => ({ value: header, label: header }))
+                    ];
+                    // Convert empty string to placeholder value for display
+                    const displayValue = columnMapping[field] || '__not_mapped__';
+                    return (
+                      <FmCommonSelect
+                        key={field}
+                        label={`${info.label}${info.required ? ' *' : ''}`}
+                        value={displayValue}
+                        onChange={(newValue) => {
+                          // Convert placeholder back to empty string for storage
+                          const storeValue = newValue === '__not_mapped__' ? '' : newValue;
+                          setColumnMapping(prev => ({ ...prev, [field]: storeValue }));
+                        }}
+                        options={headerOptions}
+                        placeholder='-- Not mapped --'
+                      />
+                    );
+                  })}
                 </div>
               )}
-            </div>
+            </FmCommonCardContent>
+          </FmCommonCard>
 
-            <div className='bg-white/5 border border-white/10 p-4'>
+          <FmCommonCard hoverable={false}>
+            <FmCommonCardContent className='p-4'>
               <h3 className='font-medium mb-2'>{t('orderCsvImport.dataPreview')}</h3>
               <p className='text-sm text-muted-foreground mb-4'>
                 {t('orderCsvImport.rowCount', { count: csvData.length })}
@@ -575,139 +685,161 @@ export default function OrderCsvImport() {
                   </tbody>
                 </table>
               </div>
-            </div>
+            </FmCommonCardContent>
+          </FmCommonCard>
 
-            <div className='flex justify-between'>
-              <FmCommonButton variant='secondary' onClick={handleReset}>
-                {t('orderCsvImport.back')}
-              </FmCommonButton>
-              <FmCommonButton
-                variant='gold'
-                onClick={validateOrders}
-                disabled={isValidating || !columnMapping.customerEmail || !columnMapping.eventId || !columnMapping.ticketTierId}
-              >
-                {isValidating ? <FmCommonLoadingSpinner size='sm' /> : t('orderCsvImport.validateData')}
-              </FmCommonButton>
-            </div>
+          <div className='flex justify-between'>
+            <FmCommonButton variant='secondary' onClick={() => setStep('upload')}>
+              {t('orderCsvImport.back')}
+            </FmCommonButton>
+            <FmCommonButton
+              variant='gold'
+              onClick={validateOrders}
+              disabled={isValidating || !columnMapping.customer_email || !columnMapping.quantity}
+            >
+              {isValidating ? <FmCommonLoadingSpinner size='sm' /> : t('orderCsvImport.validateData')}
+            </FmCommonButton>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Step 3: Preview & Import */}
-        {step === 'preview' && (
-          <div className='space-y-6'>
-            {/* Stats */}
-            <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
-              <div className='bg-green-500/10 border border-green-500/30 p-4'>
-                <div className='text-2xl font-bold text-green-400'>{stats.valid.length}</div>
-                <div className='text-sm text-muted-foreground'>{t('orderCsvImport.stats.valid')}</div>
+      {/* Step 4: Preview & Import */}
+      {step === 'preview' && (
+        <div className='space-y-6'>
+          {/* Show selected config */}
+          <FmCommonCard hoverable={false} className='bg-fm-gold/10 border-fm-gold/30'>
+            <FmCommonCardContent className='p-4'>
+              <div className='text-sm'>
+                <span className='text-fm-gold font-medium'>Importing to:</span>{' '}
+                <span className='text-white'>{selectedEvent?.title}</span>
+                {' '}&bull;{' '}
+                <span className='text-white'>{selectedTier?.name}</span>
               </div>
-              <div className='bg-red-500/10 border border-red-500/30 p-4'>
-                <div className='text-2xl font-bold text-red-400'>{stats.invalid.length}</div>
-                <div className='text-sm text-muted-foreground'>{t('orderCsvImport.stats.invalid')}</div>
-              </div>
-              <div className='bg-blue-500/10 border border-blue-500/30 p-4'>
-                <div className='text-2xl font-bold text-blue-400'>{stats.withUser.length}</div>
-                <div className='text-sm text-muted-foreground'>{t('orderCsvImport.stats.withUser')}</div>
-              </div>
-              <div className='bg-orange-500/10 border border-orange-500/30 p-4'>
-                <div className='text-2xl font-bold text-orange-400'>{stats.orphaned.length}</div>
-                <div className='text-sm text-muted-foreground'>{t('orderCsvImport.stats.orphaned')}</div>
-              </div>
-            </div>
+            </FmCommonCardContent>
+          </FmCommonCard>
 
-            <div className='grid grid-cols-2 gap-4'>
-              <div className='bg-white/5 border border-white/10 p-4'>
-                <div className='text-xl font-bold'>{stats.totalTickets}</div>
-                <div className='text-sm text-muted-foreground'>{t('orderCsvImport.stats.totalTickets')}</div>
-              </div>
-              <div className='bg-white/5 border border-white/10 p-4'>
-                <div className='text-xl font-bold'>${(stats.totalRevenue / 100).toFixed(2)}</div>
-                <div className='text-sm text-muted-foreground'>{t('orderCsvImport.stats.totalRevenue')}</div>
-              </div>
-            </div>
+          {/* Stats */}
+          <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+            <FmCommonStatCard
+              value={stats.valid.length}
+              label={t('orderCsvImport.stats.valid')}
+              size='sm'
+              className='bg-green-500/10 border-green-500/30'
+            />
+            <FmCommonStatCard
+              value={stats.invalid.length}
+              label={t('orderCsvImport.stats.invalid')}
+              size='sm'
+              className='bg-red-500/10 border-red-500/30'
+            />
+            <FmCommonStatCard
+              value={stats.withUser.length}
+              label={t('orderCsvImport.stats.withUser')}
+              size='sm'
+              className='bg-blue-500/10 border-blue-500/30'
+            />
+            <FmCommonStatCard
+              value={stats.orphaned.length}
+              label={t('orderCsvImport.stats.orphaned')}
+              size='sm'
+              className='bg-orange-500/10 border-orange-500/30'
+            />
+          </div>
 
-            {/* Order list */}
-            <div className='bg-white/5 border border-white/10 max-h-96 overflow-y-auto'>
-              <table className='w-full text-sm'>
-                <thead className='sticky top-0 bg-black/90'>
-                  <tr className='border-b border-white/10'>
-                    <th className='text-left p-2'>{t('orderCsvImport.table.row')}</th>
-                    <th className='text-left p-2'>{t('orderCsvImport.table.email')}</th>
-                    <th className='text-left p-2'>{t('orderCsvImport.table.event')}</th>
-                    <th className='text-left p-2'>{t('orderCsvImport.table.tier')}</th>
-                    <th className='text-left p-2'>{t('orderCsvImport.table.qty')}</th>
-                    <th className='text-left p-2'>{t('orderCsvImport.table.total')}</th>
-                    <th className='text-left p-2'>{t('orderCsvImport.table.status')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {parsedOrders.map((order) => (
-                    <tr
-                      key={order.rowIndex}
-                      className={cn(
-                        'border-b border-white/5',
-                        order.validationErrors.length > 0 && 'bg-red-500/10',
-                        order.isDuplicate && 'bg-yellow-500/10'
-                      )}
-                    >
-                      <td className='p-2'>{order.rowIndex}</td>
-                      <td className='p-2'>
-                        <div className='flex items-center gap-1'>
-                          {order.customerEmail}
-                          {order.existingUserId && (
-                            <span title={t('orderCsvImport.userFound')}>
-                              <CheckCircle className='h-3 w-3 text-green-400' />
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className='p-2 truncate max-w-32'>{order.eventName || order.eventId}</td>
-                      <td className='p-2'>{order.ticketTierName || order.ticketTierId}</td>
-                      <td className='p-2'>{order.quantity}</td>
-                      <td className='p-2'>${(order.totalCents / 100).toFixed(2)}</td>
-                      <td className='p-2'>
-                        {order.validationErrors.length > 0 ? (
-                          <div className='flex items-center gap-1 text-red-400'>
-                            <AlertCircle className='h-3 w-3' />
-                            <span className='text-xs'>{order.validationErrors[0]}</span>
-                          </div>
-                        ) : order.isDuplicate ? (
-                          <span className='text-yellow-400 text-xs'>{t('orderCsvImport.duplicate')}</span>
-                        ) : (
-                          <span className='text-green-400 text-xs'>{t('orderCsvImport.ready')}</span>
+          <div className='grid grid-cols-2 gap-4'>
+            <FmCommonStatCard
+              value={stats.totalTickets}
+              label={t('orderCsvImport.stats.totalTickets')}
+              size='sm'
+            />
+            <FmCommonStatCard
+              value={`$${(stats.totalRevenue / 100).toFixed(2)}`}
+              label={t('orderCsvImport.stats.totalRevenue')}
+              size='sm'
+            />
+          </div>
+
+          {/* Order list */}
+          <FmCommonCard hoverable={false} className='max-h-96 overflow-y-auto'>
+            <table className='w-full text-sm'>
+              <thead className='sticky top-0 bg-black/90'>
+                <tr className='border-b border-white/10'>
+                  <th className='text-left p-2'>{t('orderCsvImport.table.row')}</th>
+                  <th className='text-left p-2'>{t('orderCsvImport.table.email')}</th>
+                  <th className='text-left p-2'>Name</th>
+                  <th className='text-left p-2'>{t('orderCsvImport.table.qty')}</th>
+                  <th className='text-left p-2'>{t('orderCsvImport.table.total')}</th>
+                  <th className='text-left p-2'>{t('orderCsvImport.table.status')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {parsedOrders.map((order) => (
+                  <tr
+                    key={order.rowIndex}
+                    className={cn(
+                      'border-b border-white/5',
+                      order.validationErrors.length > 0 && 'bg-red-500/10',
+                      order.isDuplicate && 'bg-yellow-500/10'
+                    )}
+                  >
+                    <td className='p-2'>{order.rowIndex}</td>
+                    <td className='p-2'>
+                      <div className='flex items-center gap-1'>
+                        {order.customerEmail}
+                        {order.existingUserId && (
+                          <span title={t('orderCsvImport.userFound')}>
+                            <CheckCircle className='h-3 w-3 text-green-400' />
+                          </span>
                         )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                      </div>
+                    </td>
+                    <td className='p-2 truncate max-w-32'>{order.customerName || '-'}</td>
+                    <td className='p-2'>{order.quantity}</td>
+                    <td className='p-2'>${(order.totalCents / 100).toFixed(2)}</td>
+                    <td className='p-2'>
+                      {order.validationErrors.length > 0 ? (
+                        <div className='flex items-center gap-1 text-red-400'>
+                          <AlertCircle className='h-3 w-3' />
+                          <span className='text-xs'>{order.validationErrors[0]}</span>
+                        </div>
+                      ) : order.isDuplicate ? (
+                        <span className='text-yellow-400 text-xs'>{t('orderCsvImport.duplicate')}</span>
+                      ) : (
+                        <span className='text-green-400 text-xs'>{t('orderCsvImport.ready')}</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </FmCommonCard>
 
-            <div className='flex justify-between'>
-              <FmCommonButton variant='secondary' onClick={() => setStep('map')}>
-                {t('orderCsvImport.back')}
-              </FmCommonButton>
-              <FmCommonButton
-                variant='gold'
-                onClick={importOrders}
-                disabled={isImporting || stats.valid.length === 0}
-              >
-                {isImporting ? <FmCommonLoadingSpinner size='sm' /> : t('orderCsvImport.importOrders', { count: stats.valid.length })}
-              </FmCommonButton>
-            </div>
+          <div className='flex justify-between'>
+            <FmCommonButton variant='secondary' onClick={() => setStep('map')}>
+              {t('orderCsvImport.back')}
+            </FmCommonButton>
+            <FmCommonButton
+              variant='gold'
+              onClick={importOrders}
+              disabled={isImporting || stats.valid.length === 0}
+            >
+              {isImporting ? <FmCommonLoadingSpinner size='sm' /> : t('orderCsvImport.importOrders', { count: stats.valid.length })}
+            </FmCommonButton>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Step 4: Complete */}
-        {step === 'complete' && (
-          <div className='text-center space-y-6'>
-            <CheckCircle className='h-16 w-16 text-green-400 mx-auto' />
-            <h2 className='text-2xl font-canela'>{t('orderCsvImport.complete.title')}</h2>
-            <p className='text-muted-foreground'>
-              {t('orderCsvImport.complete.description', { count: importResults.length })}
-            </p>
+      {/* Step 5: Complete */}
+      {step === 'complete' && (
+        <div className='text-center space-y-6'>
+          <CheckCircle className='h-16 w-16 text-green-400 mx-auto' />
+          <h2 className='text-2xl font-canela'>{t('orderCsvImport.complete.title')}</h2>
+          <p className='text-muted-foreground'>
+            {t('orderCsvImport.complete.description', { count: importResults.length })}
+          </p>
 
-            <div className='bg-white/5 border border-white/10 p-4 max-h-64 overflow-y-auto text-left'>
+          <FmCommonCard hoverable={false} className='max-h-64 overflow-y-auto text-left'>
+            <FmCommonCardContent className='p-4'>
               <h3 className='font-medium mb-2'>{t('orderCsvImport.complete.importedOrders')}</h3>
               <ul className='space-y-1 text-sm'>
                 {importResults.map((result, idx) => (
@@ -717,18 +849,20 @@ export default function OrderCsvImport() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </FmCommonCardContent>
+          </FmCommonCard>
 
-            <div className='flex justify-center gap-4'>
-              <FmCommonButton variant='secondary' onClick={handleReset}>
-                {t('orderCsvImport.importAnother')}
-              </FmCommonButton>
-            </div>
+          <div className='flex justify-center gap-4'>
+            <FmCommonButton variant='secondary' onClick={handleReset}>
+              {t('orderCsvImport.importAnother')}
+            </FmCommonButton>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Info box */}
-        <div className='bg-fm-gold/10 border border-fm-gold/30 p-4 text-sm'>
+      {/* Info box */}
+      <FmCommonCard hoverable={false} className='bg-fm-gold/10 border-fm-gold/30'>
+        <FmCommonCardContent className='p-4 text-sm'>
           <h4 className='font-medium text-fm-gold mb-2'>{t('orderCsvImport.info.title')}</h4>
           <ul className='list-disc list-inside space-y-1 text-muted-foreground'>
             <li>{t('orderCsvImport.info.point1')}</li>
@@ -736,8 +870,26 @@ export default function OrderCsvImport() {
             <li>{t('orderCsvImport.info.point3')}</li>
             <li>{t('orderCsvImport.info.point4')}</li>
           </ul>
-        </div>
-      </div>
+        </FmCommonCardContent>
+      </FmCommonCard>
+    </div>
+  );
+}
+
+/**
+ * OrderCsvImport - Full page with DemoLayout wrapper
+ * Used as standalone page at /developer/order-import
+ */
+export default function OrderCsvImport() {
+  const { t } = useTranslation('common');
+
+  return (
+    <DemoLayout
+      title={t('orderCsvImport.title')}
+      description={t('orderCsvImport.description')}
+      icon={FileSpreadsheet}
+    >
+      <OrderCsvImportContent />
     </DemoLayout>
   );
 }

@@ -6,6 +6,7 @@ import {
   DataGridColumn,
 } from '@/features/data-grid';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
+import { FmFormSectionHeader } from '@/components/common/forms/FmFormSectionHeader';
 import { useDeleteConfirmation, type UseDeleteConfirmationOptions } from '@/shared';
 import { Trash2 } from 'lucide-react';
 
@@ -150,12 +151,10 @@ export function FmCommonAdminGridPage<T extends { id: string }>({
   return (
     <div className='space-y-6'>
       {/* Header */}
-      <div>
-        <h1 className='text-3xl font-canela font-bold text-foreground mb-2'>
-          {title}
-        </h1>
-        <p className='text-muted-foreground'>{description}</p>
-      </div>
+      <FmFormSectionHeader
+        title={title}
+        description={description}
+      />
 
       {/* Data Grid */}
       <FmConfigurableDataGrid

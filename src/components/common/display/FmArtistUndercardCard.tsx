@@ -26,10 +26,10 @@ export const FmArtistUndercardCard = ({ className = '' }: FmArtistUndercardCardP
         <Music className="h-4 w-4 md:h-5 md:w-5 text-fm-gold mt-0.5 flex-shrink-0" />
         <div className="text-left">
           <h2 className="font-canela text-sm md:text-base text-fm-gold mb-1">
-            {t('comingSoon.lookingForArtists')}
+            {t('artistUndercard.lookingForArtists')}
           </h2>
           <p className="text-xs md:text-sm text-muted-foreground leading-snug">
-            {t('comingSoon.artistDescription')}
+            {t('artistUndercard.artistDescription')}
           </p>
         </div>
       </div>
@@ -39,7 +39,7 @@ export const FmArtistUndercardCard = ({ className = '' }: FmArtistUndercardCardP
         onClick={() => navigate('/artists/signup')}
         className="w-full border-fm-gold bg-transparent text-white hover:text-fm-gold hover:bg-fm-gold/10 text-xs md:text-sm py-2"
       >
-        {t('comingSoon.signUpAsArtist')}
+        {t('artistUndercard.signUpAsArtist')}
         <ArrowRight className="ml-2 h-3 w-3 md:h-4 md:w-4" />
       </Button>
     </div>

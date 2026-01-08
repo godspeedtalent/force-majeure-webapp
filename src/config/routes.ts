@@ -209,6 +209,36 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
     },
   },
 
+  // Users (Public Profiles)
+  '/users': {
+    label: 'Users',
+  },
+  '/users/:id': {
+    label: '',
+    async: true,
+    resolver: async params => {
+      if (!isUuid(params.id)) return 'User';
+
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('display_name')
+          .eq('id', params.id)
+          .maybeSingle();
+
+        if (error || !data) {
+          return 'User';
+        }
+        return data.display_name || 'User';
+      } catch {
+        return 'User';
+      }
+    },
+  },
+  '/users/:id/edit': {
+    label: 'Edit',
+  },
+
   // Admin Routes
   '/admin/controls': {
     label: 'Admin Controls',
@@ -241,9 +271,7 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
   '/developer/components': {
     label: 'FM Components Catalog',
   },
-  '/developer/documentation': {
-    label: 'Documentation Viewer',
-  },
+  // Documentation Viewer is now embedded as a tab in DeveloperHome
   '/developer/ticket-flow': {
     label: 'Ticket Flow Tests',
   },
