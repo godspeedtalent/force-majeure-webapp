@@ -747,6 +747,7 @@ export type Database = {
           crowd_sources: string | null
           email: string | null
           equipment: string | null
+          facebook_url: string | null
           genre: string | null
           genres: string[] | null
           id: string
@@ -774,8 +775,10 @@ export type Database = {
           talent_differentiator: string | null
           tiktok_handle: string | null
           tracks_metadata: Json | null
+          twitter_handle: string | null
           updated_at: string
           user_id: string | null
+          youtube_url: string | null
         }
         Insert: {
           artist_name: string
@@ -787,6 +790,7 @@ export type Database = {
           crowd_sources?: string | null
           email?: string | null
           equipment?: string | null
+          facebook_url?: string | null
           genre?: string | null
           genres?: string[] | null
           id?: string
@@ -814,8 +818,10 @@ export type Database = {
           talent_differentiator?: string | null
           tiktok_handle?: string | null
           tracks_metadata?: Json | null
+          twitter_handle?: string | null
           updated_at?: string
           user_id?: string | null
+          youtube_url?: string | null
         }
         Update: {
           artist_name?: string
@@ -827,6 +833,7 @@ export type Database = {
           crowd_sources?: string | null
           email?: string | null
           equipment?: string | null
+          facebook_url?: string | null
           genre?: string | null
           genres?: string[] | null
           id?: string
@@ -854,8 +861,10 @@ export type Database = {
           talent_differentiator?: string | null
           tiktok_handle?: string | null
           tracks_metadata?: Json | null
+          twitter_handle?: string | null
           updated_at?: string
           user_id?: string | null
+          youtube_url?: string | null
         }
         Relationships: [
           {
@@ -886,6 +895,7 @@ export type Database = {
           bio: string | null
           city_id: string | null
           created_at: string | null
+          facebook_url: string | null
           gallery_id: string | null
           genre: string | null
           id: string
@@ -897,14 +907,17 @@ export type Database = {
           spotify_id: string | null
           test_data: boolean
           tiktok_handle: string | null
+          twitter_handle: string | null
           updated_at: string | null
           user_id: string | null
           website: string | null
+          youtube_url: string | null
         }
         Insert: {
           bio?: string | null
           city_id?: string | null
           created_at?: string | null
+          facebook_url?: string | null
           gallery_id?: string | null
           genre?: string | null
           id?: string
@@ -916,14 +929,17 @@ export type Database = {
           spotify_id?: string | null
           test_data?: boolean
           tiktok_handle?: string | null
+          twitter_handle?: string | null
           updated_at?: string | null
           user_id?: string | null
           website?: string | null
+          youtube_url?: string | null
         }
         Update: {
           bio?: string | null
           city_id?: string | null
           created_at?: string | null
+          facebook_url?: string | null
           gallery_id?: string | null
           genre?: string | null
           id?: string
@@ -935,9 +951,11 @@ export type Database = {
           spotify_id?: string | null
           test_data?: boolean
           tiktok_handle?: string | null
+          twitter_handle?: string | null
           updated_at?: string | null
           user_id?: string | null
           website?: string | null
+          youtube_url?: string | null
         }
         Relationships: [
           {
@@ -957,6 +975,50 @@ export type Database = {
           {
             foreignKeyName: "artists_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chart_labels: {
+        Row: {
+          chart_id: string
+          created_at: string
+          created_by: string
+          id: string
+          label: string
+          marker_color: string | null
+          metadata: Json | null
+          point_id: string
+          updated_at: string
+        }
+        Insert: {
+          chart_id: string
+          created_at?: string
+          created_by: string
+          id?: string
+          label: string
+          marker_color?: string | null
+          metadata?: Json | null
+          point_id: string
+          updated_at?: string
+        }
+        Update: {
+          chart_id?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          label?: string
+          marker_color?: string | null
+          metadata?: Json | null
+          point_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chart_labels_created_by_fkey"
+            columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "users_complete"
             referencedColumns: ["id"]
@@ -1260,6 +1322,45 @@ export type Database = {
           },
         ]
       }
+      event_partners: {
+        Row: {
+          created_at: string | null
+          display_order: number | null
+          event_id: string
+          id: string
+          organization_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          display_order?: number | null
+          event_id: string
+          id?: string
+          organization_id: string
+        }
+        Update: {
+          created_at?: string | null
+          display_order?: number | null
+          event_id?: string
+          id?: string
+          organization_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_partners_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_partners_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_views: {
         Row: {
           created_at: string
@@ -1398,6 +1499,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "events_gallery_id_fkey"
+            columns: ["gallery_id"]
+            isOneToOne: false
+            referencedRelation: "media_galleries"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "events_headliner_id_fkey"
             columns: ["headliner_id"]
             isOneToOne: false
@@ -1531,6 +1639,7 @@ export type Database = {
           id: string
           name: string
           parent_id: string | null
+          selection_count: number
           updated_at: string | null
         }
         Insert: {
@@ -1538,6 +1647,7 @@ export type Database = {
           id?: string
           name: string
           parent_id?: string | null
+          selection_count?: number
           updated_at?: string | null
         }
         Update: {
@@ -1545,6 +1655,7 @@ export type Database = {
           id?: string
           name?: string
           parent_id?: string | null
+          selection_count?: number
           updated_at?: string | null
         }
         Relationships: [
@@ -1744,9 +1855,11 @@ export type Database = {
           description: string | null
           id: string
           is_active: boolean | null
+          is_default: boolean | null
           name: string
           slug: string
           updated_at: string | null
+          venue_id: string | null
         }
         Insert: {
           allowed_types?: Database["public"]["Enums"]["media_type"][] | null
@@ -1755,9 +1868,11 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean | null
+          is_default?: boolean | null
           name: string
           slug: string
           updated_at?: string | null
+          venue_id?: string | null
         }
         Update: {
           allowed_types?: Database["public"]["Enums"]["media_type"][] | null
@@ -1766,11 +1881,21 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean | null
+          is_default?: boolean | null
           name?: string
           slug?: string
           updated_at?: string | null
+          venue_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "media_galleries_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       media_items: {
         Row: {
@@ -1932,6 +2057,7 @@ export type Database = {
           billing_zip_code: string | null
           created_at: string
           currency: string
+          customer_email: string | null
           event_id: string
           fee_breakdown: Json | null
           fees_cents: number
@@ -1942,7 +2068,7 @@ export type Database = {
           subtotal_cents: number
           total_cents: number
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           billing_address_line_1?: string | null
@@ -1953,6 +2079,7 @@ export type Database = {
           billing_zip_code?: string | null
           created_at?: string
           currency?: string
+          customer_email?: string | null
           event_id: string
           fee_breakdown?: Json | null
           fees_cents?: number
@@ -1963,7 +2090,7 @@ export type Database = {
           subtotal_cents: number
           total_cents: number
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           billing_address_line_1?: string | null
@@ -1974,6 +2101,7 @@ export type Database = {
           billing_zip_code?: string | null
           created_at?: string
           currency?: string
+          customer_email?: string | null
           event_id?: string
           fee_breakdown?: Json | null
           fees_cents?: number
@@ -1984,7 +2112,7 @@ export type Database = {
           subtotal_cents?: number
           total_cents?: number
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -2143,6 +2271,7 @@ export type Database = {
           stripe_customer_id: string | null
           updated_at: string
           user_id: string
+          username: string | null
         }
         Insert: {
           age_range?: string | null
@@ -2170,6 +2299,7 @@ export type Database = {
           stripe_customer_id?: string | null
           updated_at?: string
           user_id: string
+          username?: string | null
         }
         Update: {
           age_range?: string | null
@@ -2197,6 +2327,7 @@ export type Database = {
           stripe_customer_id?: string | null
           updated_at?: string
           user_id?: string
+          username?: string | null
         }
         Relationships: [
           {
@@ -3138,7 +3269,8 @@ export type Database = {
       }
       undercard_requests: {
         Row: {
-          artist_registration_id: string
+          artist_id: string | null
+          artist_registration_id: string | null
           created_at: string
           event_id: string
           id: string
@@ -3146,10 +3278,12 @@ export type Database = {
           reviewed_by: string | null
           reviewer_notes: string | null
           status: string
+          suggested_recording_id: string | null
           updated_at: string
         }
         Insert: {
-          artist_registration_id: string
+          artist_id?: string | null
+          artist_registration_id?: string | null
           created_at?: string
           event_id: string
           id?: string
@@ -3157,10 +3291,12 @@ export type Database = {
           reviewed_by?: string | null
           reviewer_notes?: string | null
           status?: string
+          suggested_recording_id?: string | null
           updated_at?: string
         }
         Update: {
-          artist_registration_id?: string
+          artist_id?: string | null
+          artist_registration_id?: string | null
           created_at?: string
           event_id?: string
           id?: string
@@ -3168,9 +3304,17 @@ export type Database = {
           reviewed_by?: string | null
           reviewer_notes?: string | null
           status?: string
+          suggested_recording_id?: string | null
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "undercard_requests_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "artists"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "undercard_requests_artist_registration_id_fkey"
             columns: ["artist_registration_id"]
@@ -3190,6 +3334,13 @@ export type Database = {
             columns: ["reviewed_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "undercard_requests_suggested_recording_id_fkey"
+            columns: ["suggested_recording_id"]
+            isOneToOne: false
+            referencedRelation: "artist_recordings"
             referencedColumns: ["id"]
           },
         ]
@@ -3329,13 +3480,20 @@ export type Database = {
           city_id: string | null
           created_at: string | null
           description: string | null
+          facebook_url: string | null
           id: string
           image_url: string | null
+          instagram_handle: string | null
+          logo_url: string | null
           name: string
+          social_email: string | null
           state: string | null
           test_data: boolean
+          tiktok_handle: string | null
+          twitter_handle: string | null
           updated_at: string | null
           website: string | null
+          youtube_url: string | null
           zip_code: string | null
         }
         Insert: {
@@ -3346,13 +3504,20 @@ export type Database = {
           city_id?: string | null
           created_at?: string | null
           description?: string | null
+          facebook_url?: string | null
           id?: string
           image_url?: string | null
+          instagram_handle?: string | null
+          logo_url?: string | null
           name: string
+          social_email?: string | null
           state?: string | null
           test_data?: boolean
+          tiktok_handle?: string | null
+          twitter_handle?: string | null
           updated_at?: string | null
           website?: string | null
+          youtube_url?: string | null
           zip_code?: string | null
         }
         Update: {
@@ -3363,13 +3528,20 @@ export type Database = {
           city_id?: string | null
           created_at?: string | null
           description?: string | null
+          facebook_url?: string | null
           id?: string
           image_url?: string | null
+          instagram_handle?: string | null
+          logo_url?: string | null
           name?: string
+          social_email?: string | null
           state?: string | null
           test_data?: boolean
+          tiktok_handle?: string | null
+          twitter_handle?: string | null
           updated_at?: string | null
           website?: string | null
+          youtube_url?: string | null
           zip_code?: string | null
         }
         Relationships: [
@@ -3705,6 +3877,10 @@ export type Database = {
         Args: { p_event_id: string }
         Returns: number
       }
+      increment_genre_selection_count: {
+        Args: { genre_id: string }
+        Returns: undefined
+      }
       increment_product_stock: {
         Args: { p_product_id: string; p_quantity: number }
         Returns: boolean
@@ -3733,9 +3909,14 @@ export type Database = {
         Returns: string
       }
       is_dev_admin: { Args: { user_id_param: string }; Returns: boolean }
+      is_pg_trgm_available: { Args: never; Returns: boolean }
       is_user_interested: {
         Args: { p_event_id: string; p_user_id: string }
         Returns: boolean
+      }
+      link_orders_for_user: {
+        Args: { user_email: string; user_uuid: string }
+        Returns: number
       }
       log_activity: {
         Args: {
@@ -3805,6 +3986,66 @@ export type Database = {
       refresh_all_table_metadata: { Args: never; Returns: Json }
       refresh_table_metadata: { Args: { p_table_name: string }; Returns: Json }
       release_ticket_hold: { Args: { p_hold_id: string }; Returns: boolean }
+      search_artists_fuzzy: {
+        Args: { p_limit?: number; p_query: string; p_threshold?: number }
+        Returns: {
+          bio: string
+          id: string
+          image_url: string
+          name: string
+          similarity_score: number
+        }[]
+      }
+      search_events_fuzzy: {
+        Args: {
+          p_limit?: number
+          p_query: string
+          p_threshold?: number
+          p_upcoming_only?: boolean
+        }
+        Returns: {
+          description: string
+          hero_image: string
+          id: string
+          similarity_score: number
+          start_time: string
+          title: string
+          venue_id: string
+        }[]
+      }
+      search_organizations_fuzzy: {
+        Args: { p_limit?: number; p_query: string; p_threshold?: number }
+        Returns: {
+          id: string
+          logo_url: string
+          name: string
+          similarity_score: number
+        }[]
+      }
+      search_profiles_fuzzy: {
+        Args: { p_limit?: number; p_query: string; p_threshold?: number }
+        Returns: {
+          avatar_url: string
+          display_name: string
+          full_name: string
+          id: string
+          similarity_score: number
+          user_id: string
+        }[]
+      }
+      search_venues_fuzzy: {
+        Args: { p_limit?: number; p_query: string; p_threshold?: number }
+        Returns: {
+          city: string
+          id: string
+          image_url: string
+          name: string
+          similarity_score: number
+          state: string
+        }[]
+      }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
       trigger_activity_log_archive: {
         Args: { p_retention_days?: number }
         Returns: Json
