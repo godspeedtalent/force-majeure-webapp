@@ -36,7 +36,7 @@ const FmCommonCard = React.forwardRef<HTMLDivElement, FmCommonCardProps>(
       ref={ref}
       className={cn(
         // Base styles
-        'transition-all duration-300',
+        'transition-all duration-300 min-w-0 overflow-hidden',
         // Variant styles
         variant === 'default' &&
           'bg-black/40 border border-white/20',

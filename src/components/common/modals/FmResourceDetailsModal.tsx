@@ -1,4 +1,5 @@
 import { ReactNode, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Settings } from 'lucide-react';
 
 import { FmCommonModal } from './FmCommonModal';
@@ -61,6 +62,7 @@ export const FmResourceDetailsModal = ({
   imagePlaceholder = true,
   actions,
 }: FmResourceDetailsModalProps) => {
+  const { t } = useTranslation('common');
   const [isImageLoading, setIsImageLoading] = useState(true);
   const showManage = canManage && onManage;
 
@@ -83,12 +85,12 @@ export const FmResourceDetailsModal = ({
       {showManage && (
         <FmCommonButton
           size='sm'
-          variant='secondary'
+          variant='default'
           icon={Settings}
           onClick={onManage}
-          className='bg-white/10 text-white hover:bg-white/20 border border-white/30 px-3 py-1 h-7 text-xs mr-8'
+          className='h-7 text-xs mr-8'
         >
-          Manage
+          {t('buttons.manage')}
         </FmCommonButton>
       )}
     </div>

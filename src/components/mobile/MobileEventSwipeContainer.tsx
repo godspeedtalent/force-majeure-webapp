@@ -42,16 +42,20 @@ export function MobileEventSwipeContainer({
   const childArray = Children.toArray(children);
   const totalItems = childArray.length;
 
-  // Scroll to a specific index
+  // Scroll to a specific index - uses container.scrollTo to avoid scrolling document
   const scrollToIndex = useCallback(
     (index: number) => {
       const section = sectionRefs.current[index];
-      if (!section) return;
+      const container = containerRef.current;
+      if (!section || !container) return;
 
       isScrollingRef.current = true;
-      section.scrollIntoView({
+
+      // Use container scrollTo instead of scrollIntoView to prevent document scroll
+      const sectionTop = section.offsetTop;
+      container.scrollTo({
+        top: sectionTop,
         behavior: 'smooth',
-        block: 'start',
       });
 
       // Reset scrolling flag after animation
@@ -165,7 +169,11 @@ export function MobileEventSwipeContainer({
             // Snap alignment
             'snap-start snap-always',
             // Flex container for content centering
-            'flex flex-col'
+            'flex flex-col',
+            // Position relative for gradient overlays
+            'relative',
+            // Clip oversized children (prevents parallax images from hanging off screen edge)
+            'overflow-hidden'
           )}
           data-swipe-index={index}
         >
@@ -174,6 +182,32 @@ export function MobileEventSwipeContainer({
                 sectionIndex: index,
               })
             : child}
+
+          {/* Bottom gradient overlay for smooth transition to next panel */}
+          <div
+            className={cn(
+              'absolute bottom-0 left-0 right-0',
+              'h-[60px]',
+              'bg-gradient-to-t from-black/80 via-black/40 to-transparent',
+              'backdrop-blur-[2px]',
+              'pointer-events-none',
+              'z-20'
+            )}
+          />
+
+          {/* Top gradient overlay for smooth transition from previous panel */}
+          {index > 0 && (
+            <div
+              className={cn(
+                'absolute top-0 left-0 right-0',
+                'h-[60px]',
+                'bg-gradient-to-b from-black/80 via-black/40 to-transparent',
+                'backdrop-blur-[2px]',
+                'pointer-events-none',
+                'z-20'
+              )}
+            />
+          )}
         </div>
       ))}
     </div>

@@ -49,8 +49,8 @@ interface FeatureGuardProps {
  *
  * @example
  * // Show content when feature is DISABLED (inverted logic)
- * <FeatureGuard feature={FEATURE_FLAGS.COMING_SOON_MODE} invert>
- *   <MainContent />
+ * <FeatureGuard feature={FEATURE_FLAGS.MERCH_STORE} invert>
+ *   <MerchComingSoonBanner />
  * </FeatureGuard>
  */
 export const FeatureGuard = ({

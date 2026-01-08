@@ -283,9 +283,9 @@ export const DevNotesSection = () => {
         <Popover open={filterOpen} onOpenChange={setFilterOpen}>
           <PopoverTrigger asChild>
             <FmCommonButton
-              variant='secondary'
+              variant='default'
               size='sm'
-              className='h-8 px-3 border-white/20 rounded-none hover:border-fm-gold transition-colors text-xs gap-1'
+              className='h-8 text-xs'
             >
               <Filter className='h-3 w-3' />
               {t('devNotes.filter')}

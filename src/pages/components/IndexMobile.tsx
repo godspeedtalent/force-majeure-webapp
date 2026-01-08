@@ -1,10 +1,13 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { CalendarX } from 'lucide-react';
+import { CalendarX, ArrowRight } from 'lucide-react';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { FmCommonEmptyState } from '@/components/common/display/FmCommonEmptyState';
 import { FmArtistUndercardCard } from '@/components/common/display/FmArtistUndercardCard';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import { Button } from '@/components/common/shadcn/button';
+import { cn } from '@/shared';
 import {
   MobileEventSwipeContainer,
   MobileEventFullCard,
@@ -12,6 +15,9 @@ import {
   MobilePastEventsHeader,
   MobileSwipeIndicator,
   MobileAutoScrollProgress,
+  MobileViewToggle,
+  MobileEventListView,
+  type MobileViewMode,
 } from '@/components/mobile';
 import { useAutoScrollMode } from '@/shared/hooks/useAutoScrollMode';
 import { SortDirection, DateRange } from '@/components/common/filters/FmListSortFilter';
@@ -77,8 +83,10 @@ export function IndexMobile({
   totalPastEventsCount,
 }: IndexMobileProps) {
   const { t } = useTranslation('pages');
+  const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userHasInteracted, setUserHasInteracted] = useState(false);
+  const [viewMode, setViewMode] = useState<MobileViewMode>('carousel');
   const containerRef = useRef<HTMLDivElement>(null);
   // Track when we're doing a programmatic scroll (timestamp-based for reliability)
   const programmaticScrollUntilRef = useRef<number>(0);
@@ -102,14 +110,22 @@ export function IndexMobile({
     return Date.now() < programmaticScrollUntilRef.current;
   }, []);
 
-  // Scroll to a specific index
+  // Scroll to a specific index - uses container.scrollTo to avoid scrolling document
   const scrollToIndex = useCallback(
     (index: number) => {
       if (containerRef.current) {
         const sections = containerRef.current.querySelectorAll('[data-swipe-index]');
-        if (sections[index]) {
+        const section = sections[index] as HTMLElement | undefined;
+        if (section) {
           markProgrammaticScroll(1000);
-          sections[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // Find the scroll container (MobileEventSwipeContainer) and scroll within it
+          const scrollContainer = section.closest('[class*="overflow-y-auto"]') as HTMLElement | null;
+          if (scrollContainer) {
+            scrollContainer.scrollTo({
+              top: section.offsetTop,
+              behavior: 'smooth',
+            });
+          }
         }
       }
     },
@@ -139,7 +155,11 @@ export function IndexMobile({
       // Use refs to get current values
       const nextIndex = currentIndexRef.current + 1;
       if (nextIndex < totalItems) {
+        // Advance to next event
         scrollToIndexRef.current(nextIndex);
+      } else {
+        // Cycle back to first event (index 1, skip title card)
+        scrollToIndexRef.current(1);
       }
     },
     skipIndices: [0], // Skip title card (index 0)
@@ -246,12 +266,68 @@ export function IndexMobile({
     return { imageParallaxY: 0, imageParallaxX: 0, contentParallaxY: 0 };
   };
 
+  // Handle view mode change - cancel auto-scroll when switching to list
+  const handleViewModeChange = (mode: MobileViewMode) => {
+    if (mode === 'list' && !userHasInteracted) {
+      setUserHasInteracted(true);
+      cancelAutoScroll();
+    }
+    setViewMode(mode);
+  };
+
+  // List View
+  if (viewMode === 'list') {
+    return (
+      <div className='relative'>
+        {/* Fixed Background */}
+        <div className='fixed inset-0 z-0'>
+          <TopographicBackground opacity={0.35} parallax={false} />
+        </div>
+
+        {/* List View */}
+        <MobileEventListView
+          upcomingEvents={upcomingEvents}
+          pastEvents={pastEvents}
+          className='relative z-10'
+        />
+
+        {/* View Toggle */}
+        <MobileViewToggle
+          viewMode={viewMode}
+          onViewModeChange={handleViewModeChange}
+        />
+
+        {/* Artist Signup Button - above pagination indicator */}
+        <Button
+          variant="default"
+          onClick={() => navigate('/artists/signup')}
+          className={cn(
+            'fixed bottom-[62px] left-1/2 -translate-x-1/2 z-40',
+            'bg-fm-gold hover:bg-fm-gold/90 text-black',
+            'text-[8px] py-0.5 px-2 h-auto',
+            'rounded-none font-medium'
+          )}
+        >
+          2026 Undercard Artists
+          <ArrowRight className="ml-1 h-2 w-2" />
+        </Button>
+      </div>
+    );
+  }
+
+  // Carousel View (default)
   return (
     <div className='relative' ref={containerRef}>
       {/* Fixed Background */}
       <div className='fixed inset-0 z-0'>
         <TopographicBackground opacity={0.35} parallax={false} />
       </div>
+
+      {/* View Toggle */}
+      <MobileViewToggle
+        viewMode={viewMode}
+        onViewModeChange={handleViewModeChange}
+      />
 
       {/* Swipe Container */}
       <MobileEventSwipeContainer
@@ -301,16 +377,28 @@ export function IndexMobile({
       </MobileEventSwipeContainer>
 
       {/* Past Events Floating Header */}
-      <MobilePastEventsHeader
-        visible={isViewingPastEvents}
-        pastEventCount={pastEvents.length}
-      />
+      <MobilePastEventsHeader visible={isViewingPastEvents} />
 
       {/* Auto-Scroll Progress Bar */}
       <MobileAutoScrollProgress
         progress={autoScrollProgress}
         isActive={isAutoScrollActive}
       />
+
+      {/* Artist Signup Button - above pagination indicator */}
+      <Button
+        variant="default"
+        onClick={() => navigate('/artists/signup')}
+        className={cn(
+          'fixed bottom-[62px] left-1/2 -translate-x-1/2 z-40',
+          'bg-fm-gold hover:bg-fm-gold/90 text-black',
+          'text-[8px] py-0.5 px-2 h-auto',
+          'rounded-none font-medium'
+        )}
+      >
+        2026 Undercard Artists
+        <ArrowRight className="ml-1 h-2 w-2" />
+      </Button>
 
       {/* Pagination Indicator */}
       <MobileSwipeIndicator

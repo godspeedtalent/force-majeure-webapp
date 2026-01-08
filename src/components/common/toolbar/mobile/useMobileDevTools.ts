@@ -4,7 +4,8 @@ export type MobileDevToolId =
   | 'navigation'
   | 'database'
   | 'features'
-  | 'notes';
+  | 'notes'
+  | 'roles';
 
 export interface MobileDevTool {
   id: MobileDevToolId;
@@ -44,6 +45,7 @@ export function useMobileDevTools(): UseMobileDevToolsReturn {
     database: 0,
     features: 0,
     notes: 0,
+    roles: 0,
   });
 
   const openMainDrawer = useCallback(() => {

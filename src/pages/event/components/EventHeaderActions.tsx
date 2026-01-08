@@ -44,7 +44,7 @@ export const EventHeaderActions = ({
   const { t } = useTranslation('common');
 
   return (
-    <div className='flex items-center gap-2'>
+    <div className='flex items-center gap-2 flex-shrink-0'>
       {/* Interest Button - with count inside */}
       <button
         type='button'

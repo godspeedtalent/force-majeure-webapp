@@ -14,6 +14,8 @@ interface LayoutProps {
   backButtonLabel?: string;
   /** Hide footer and remove bottom padding (for single-viewport pages) */
   hideFooter?: boolean;
+  /** Hide the topographic background (for pages with custom backgrounds) */
+  hideBackground?: boolean;
 }
 
 export const Layout = ({
@@ -23,11 +25,12 @@ export const Layout = ({
   onBack,
   backButtonLabel,
   hideFooter = false,
+  hideBackground = false,
 }: LayoutProps) => {
   const isMobile = useIsMobile();
 
   return (
-    <div className='min-h-screen bg-background flex flex-col'>
+    <div className={cn('min-h-screen flex flex-col', !hideBackground && 'bg-background')}>
       <Navigation />
 
       <main
@@ -44,8 +47,12 @@ export const Layout = ({
             : undefined
         }
       >
-        <TopographicBackground opacity={0.35} />
-        <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
+        {!hideBackground && (
+          <>
+            <TopographicBackground opacity={0.35} />
+            <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
+          </>
+        )}
         <div className='relative'>
           {showBackButton && (
             <FmBackButton

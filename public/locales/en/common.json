@@ -36,6 +36,7 @@
     "submit": "Submit",
     "delete": "Delete",
     "edit": "Edit",
+    "manage": "Manage",
     "back": "Back",
     "next": "Next",
     "previous": "Previous",
@@ -916,7 +917,15 @@
     "supportForceMajeure": "Support Force Majeure",
     "supportDescription": "Your support helps us create better events and support more artists. Follow us on Instagram to stay connected with the community.",
     "musicPlatforms": "Music Platforms",
-    "musicPlatformsDescription": "Add your streaming profiles so fans can listen to your music."
+    "musicPlatformsDescription": "Add your streaming profiles so fans can listen to your music.",
+    "dangerZone": "Danger zone",
+    "dangerZoneDescription": "Irreversible actions. Proceed with caution."
+  },
+  "artistManage": {
+    "deleteArtistInfo": "This will permanently delete this artist profile and all associated data. This action cannot be undone.",
+    "requestDeletionInfo": "Requesting deletion will notify administrators who can review and approve the request. The artist profile will remain active until an administrator processes the request.",
+    "requestArtistDeletion": "Request Artist Deletion",
+    "deletionRequiresApproval": "As the artist owner, your deletion request will be reviewed by an administrator."
   },
   "pageTitles": {
     "orgDashboard": "Org Dashboard",
@@ -1015,7 +1024,9 @@
       "pastWeek": "Past week",
       "pastMonth": "Past month",
       "pastYear": "Past year"
-    }
+    },
+    "sortByDate": "Sort by date",
+    "sortByName": "Sort by name"
   },
   "aria": {
     "closeSearch": "Close search",
@@ -3080,14 +3091,16 @@
       "database": "Database",
       "features": "Features",
       "session": "Session",
-      "notes": "Notes"
+      "notes": "Notes",
+      "roles": "Roles"
     },
     "toolLabels": {
       "navigation": "Navigation",
       "database": "Database",
       "features": "Feature Toggles",
       "session": "Session Overrides",
-      "notes": "Developer Notes"
+      "notes": "Developer Notes",
+      "roles": "Role Simulation"
     },
     "fab": {
       "open": "Open developer tools",

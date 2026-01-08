@@ -1,11 +1,12 @@
 import { useTranslation } from 'react-i18next';
-import { Save, Trash2, AlertCircle } from 'lucide-react';
+import { Trash2, AlertTriangle } from 'lucide-react';
 import { SiSoundcloud, SiSpotify } from 'react-icons/si';
 import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmGenreMultiSelect } from '@/features/artists/components/FmGenreMultiSelect';
 import { FmCityDropdown } from '@/components/common/forms/FmCityDropdown';
+import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmI18nCommon } from '@/components/common/i18n';
 import type { Genre } from '@/features/artists/types';
 
@@ -56,17 +57,17 @@ export function ArtistManageOverviewTab({
   selectedGenres,
   onGenreChange,
   triggerAutoSave,
-  onSave,
+  onSave: _onSave,
   onDelete,
-  isSaving,
+  isSaving: _isSaving,
   isDeleting,
   canDeleteDirectly,
-  isArtistOwner,
+  isArtistOwner: _isArtistOwner,
 }: ArtistManageOverviewTabProps) {
   const { t } = useTranslation('common');
 
   return (
-    <div className='space-y-6'>
+    <div className='space-y-6 pb-24 md:pb-6'>
       <FmCommonCard size='lg' hoverable={false}>
         <FmI18nCommon i18nKey='sections.basicInformation' as='h2' className='text-xl font-semibold mb-6' />
 
@@ -163,37 +164,35 @@ export function ArtistManageOverviewTab({
         </div>
       </FmCommonCard>
 
-      {/* Actions */}
-      <div className='flex justify-between'>
-        <FmCommonButton
-          variant={canDeleteDirectly ? 'destructive' : 'destructive-outline'}
-          icon={canDeleteDirectly ? Trash2 : AlertCircle}
-          onClick={onDelete}
-          disabled={isDeleting}
-        >
-          {isDeleting 
-            ? t('buttons.deleting') 
-            : canDeleteDirectly 
-              ? t('buttons.deleteArtist')
-              : t('buttons.requestDeletion')
-          }
-        </FmCommonButton>
-
-        <FmCommonButton
-          icon={Save}
-          onClick={onSave}
-          disabled={isSaving || !name}
-        >
-          {isSaving ? t('buttons.saving') : t('buttons.saveChanges')}
-        </FmCommonButton>
-      </div>
-
-      {/* Info note for artist owners */}
-      {isArtistOwner && !canDeleteDirectly && (
-        <p className='text-xs text-muted-foreground text-center'>
-          {t('artistManage.deletionRequiresApproval')}
-        </p>
-      )}
+      {/* Danger Zone - Delete/Request Deletion */}
+      <FmFormSection
+        title={t('sections.dangerZone')}
+        description={t('sections.dangerZoneDescription')}
+        icon={AlertTriangle}
+        className='border-fm-danger/30'
+      >
+        <div className='space-y-3'>
+          <p className='text-sm text-muted-foreground'>
+            {canDeleteDirectly
+              ? t('artistManage.deleteArtistInfo')
+              : t('artistManage.requestDeletionInfo')
+            }
+          </p>
+          <FmCommonButton
+            variant='destructive-outline'
+            icon={Trash2}
+            onClick={onDelete}
+            disabled={isDeleting}
+          >
+            {isDeleting
+              ? t('buttons.processing')
+              : canDeleteDirectly
+                ? t('buttons.deleteArtist')
+                : t('artistManage.requestArtistDeletion')
+            }
+          </FmCommonButton>
+        </div>
+      </FmFormSection>
     </div>
   );
 }

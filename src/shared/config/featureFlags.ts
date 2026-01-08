@@ -7,7 +7,6 @@
  */
 export const FEATURE_FLAGS = {
   // Core features
-  COMING_SOON_MODE: 'coming_soon_mode',
   DEMO_PAGES: 'demo_pages',
 
   // Event features
@@ -52,10 +51,6 @@ export const FEATURE_FLAG_METADATA: Record<
     description: string;
   }
 > = {
-  [FEATURE_FLAGS.COMING_SOON_MODE]: {
-    displayName: 'Coming Soon Mode',
-    description: 'Shows "Coming Soon" page instead of main content',
-  },
   [FEATURE_FLAGS.DEMO_PAGES]: {
     displayName: 'Demo Pages',
     description: 'Enables access to demo/testing pages',

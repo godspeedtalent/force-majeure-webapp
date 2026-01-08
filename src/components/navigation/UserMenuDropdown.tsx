@@ -306,7 +306,7 @@ export function UserMenuDropdown() {
               <div
                 className={cn(
                   'absolute top-0 left-0 right-0',
-                  'bg-black/90 backdrop-blur-xl',
+                  'bg-black/95 backdrop-blur-xl',
                   'border-b-2 border-white/20 border-l-[3px] border-l-fm-gold/60',
                   'shadow-lg shadow-black/50'
                 )}

@@ -116,7 +116,7 @@ export const DevNoteCard = ({
               title={statusConfig.label}
             />
 
-            <FmCommonCardContent className='p-[8px] pl-[32px] space-y-[8px]'>
+            <FmCommonCardContent className='p-[10px] pl-[40px] space-y-[10px]'>
               {/* Three Dots Dropdown Menu */}
               <div className='flex items-start justify-end -mt-1'>
                 <DropdownMenu>
@@ -196,7 +196,7 @@ export const DevNoteCard = ({
 
             <Separator className='bg-border/50' />
 
-            <FmCommonCardFooter className='p-[8px] pl-[32px] pt-[6px] flex items-center justify-between text-[10px] text-muted-foreground'>
+            <FmCommonCardFooter className='p-[10px] pl-[40px] pt-[5px] flex items-center justify-between text-[10px] text-muted-foreground'>
               <div className='flex items-center gap-2'>
                 <span className='font-medium text-fm-gold'>
                   {note.author_name}

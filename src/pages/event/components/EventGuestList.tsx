@@ -42,7 +42,7 @@ export const EventGuestList = ({
     >
       <h3 className='text-lg mb-4 font-canela'>{t('guestList.guestListTitle')}</h3>
 
-      <div className='flex items-center gap-3 mb-4'>
+      <div className='flex items-center gap-3 mb-4 min-w-0 overflow-hidden'>
         <div className='flex -space-x-2'>
           {attendeePreview.map((attendee, index) => (
             <div

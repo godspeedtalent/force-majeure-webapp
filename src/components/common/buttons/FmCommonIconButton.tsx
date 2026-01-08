@@ -16,7 +16,7 @@ import {
 
 export interface FmCommonIconButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'default' | 'secondary' | 'destructive' | 'gold' | 'create';
+  variant?: 'default' | 'secondary' | 'destructive' | 'gold' | 'create' | 'success';
   size?: 'default' | 'sm' | 'lg';
   icon: LucideIcon;
   loading?: boolean;
@@ -127,6 +127,7 @@ export const FmCommonIconButton = forwardRef<
       create:
         'bg-transparent border border-white text-white hover:bg-white/5 hover:border-white hover:text-white transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_rgba(255,255,255,0.3)]',
       gold: 'bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold font-medium transition-all duration-200 hover:bg-fm-gold/30 hover:shadow-[0_0_20px_rgba(207,173,118,0.5)] hover:scale-105 active:scale-95',
+      success: 'bg-fm-success/20 backdrop-blur-sm border border-fm-success text-fm-success font-medium transition-all duration-200 hover:bg-fm-success/30 hover:shadow-[0_0_20px_rgba(125,155,114,0.5)] hover:scale-105 active:scale-95',
       default:
         'bg-white/5 border-white/30 hover:bg-fm-gold/20 hover:border-fm-gold hover:text-fm-gold transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]',
       secondary: 'transition-all duration-200 hover:scale-105 active:scale-95',
@@ -150,7 +151,7 @@ export const FmCommonIconButton = forwardRef<
       <Button
         ref={ref}
         variant={
-          isCreateVariant || variant === 'gold'
+          isCreateVariant || variant === 'gold' || variant === 'success'
             ? 'default'
             : variant === 'default' || variant === 'destructive'
               ? 'outline'
@@ -168,6 +169,7 @@ export const FmCommonIconButton = forwardRef<
           sizeClasses[size],
           isCreateVariant && variantStyles.create,
           variant === 'gold' && variantStyles.gold,
+          variant === 'success' && variantStyles.success,
           variant === 'default' && !isCreateVariant && variantStyles.default,
           variant === 'secondary' && variantStyles.secondary,
           variant === 'destructive' && variantStyles.destructive,

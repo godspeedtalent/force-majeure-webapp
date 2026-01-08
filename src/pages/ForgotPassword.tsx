@@ -105,6 +105,7 @@ const ForgotPassword = () => {
 
               <FmCommonButton
                 type='submit'
+                variant='default'
                 className='w-full'
                 loading={isLoading}
               >

@@ -2,14 +2,15 @@
  * FmStickyFormFooter
  *
  * A sticky footer component for forms with Save Changes buttons.
- * Floats at the bottom right of the viewport with a frosted glass effect.
- * Shows an unsaved changes indicator when the form is dirty.
+ * Floats at the bottom left of the viewport with a frosted glass effect.
+ * Only visible when the form has unsaved changes - slides in from the left.
  */
 
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Save, AlertCircle } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
 import { cn, useIsMobile } from '@/shared';
 
 interface FmStickyFormFooterProps {
@@ -51,42 +52,59 @@ export function FmStickyFormFooter({
   // Mobile bottom tab bar is ~70px + safe area, so use 90px bottom offset
   const bottomOffset = isMobile ? 'bottom-[90px]' : 'bottom-6';
 
+  // Don't render at all when there are no unsaved changes
+  if (!isDirty && !isSaving) {
+    return null;
+  }
+
   return (
     <div
       className={cn(
-        'fixed right-6 z-50',
+        'fixed left-6 z-50',
         bottomOffset,
         'flex items-center gap-3',
         'p-4 rounded-none',
         'bg-black/80 backdrop-blur-lg',
         'border border-white/20',
         'shadow-lg shadow-black/50',
-        'transition-all duration-300',
-        isDirty ? 'opacity-100 translate-y-0' : 'opacity-70 hover:opacity-100',
+        // Slide in from left animation
+        'animate-in slide-in-from-left-full duration-300',
         className
       )}
     >
-      {/* Unsaved changes indicator */}
-      {isDirty && (
+      {/* Unsaved changes indicator - desktop only */}
+      {isDirty && !isMobile && (
         <div className='flex items-center gap-2 text-fm-gold text-sm'>
           <AlertCircle className='h-4 w-4' />
-          <span className='hidden sm:inline'>{t('dialogs.unsavedChanges')}</span>
+          <span>{t('dialogs.unsavedChanges')}</span>
         </div>
       )}
 
       {/* Secondary action (e.g., delete) */}
       {secondaryAction}
 
-      {/* Save button */}
-      <FmCommonButton
-        icon={Save}
-        onClick={onSave}
-        disabled={disabled || isSaving}
-        loading={isSaving}
-        variant={isDirty ? 'gold' : 'default'}
-      >
-        {buttonText}
-      </FmCommonButton>
+      {/* Save button - icon only on mobile, full button on desktop */}
+      {isMobile ? (
+        <FmCommonIconButton
+          icon={Save}
+          onClick={onSave}
+          disabled={disabled || isSaving}
+          loading={isSaving}
+          variant='gold'
+          tooltip={buttonText}
+          aria-label={buttonText}
+        />
+      ) : (
+        <FmCommonButton
+          icon={Save}
+          onClick={onSave}
+          disabled={disabled || isSaving}
+          loading={isSaving}
+          variant='gold'
+        >
+          {buttonText}
+        </FmCommonButton>
+      )}
     </div>
   );
 }

@@ -4,6 +4,7 @@
  * Social media tab for artist management - music platforms and social links.
  */
 
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Globe, Mail, Music, Share2 } from 'lucide-react';
 import {
@@ -17,7 +18,7 @@ import {
 } from 'react-icons/fa6';
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
-import { cn } from '@/shared';
+import { cn, useIsMobile } from '@/shared';
 
 // Social media URL builders
 const socialUrlBuilders = {
@@ -45,6 +46,39 @@ const extractSoundcloudUsername = (input: string): string => {
   return input.replace(/^https?:\/\//, '').replace(/^soundcloud\.com\//, '');
 };
 
+// Expandable URL link - truncated by default, expands on tap
+function ExpandableUrlLink({
+  url,
+  className,
+}: {
+  url: string;
+  className?: string;
+}) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <a
+      href={url}
+      target='_blank'
+      rel='noopener noreferrer'
+      onClick={(e) => {
+        // On first tap, expand instead of navigating
+        if (!isExpanded) {
+          e.preventDefault();
+          setIsExpanded(true);
+        }
+      }}
+      className={cn(
+        'text-[10px] text-muted-foreground hover:text-fm-gold transition-colors block',
+        !isExpanded && 'truncate',
+        className
+      )}
+    >
+      {url}
+    </a>
+  );
+}
+
 // Music platform input - shows base URL in prepend, extracts ID from full URLs
 function MusicPlatformInput({
   icon: Icon,
@@ -68,9 +102,9 @@ function MusicPlatformInput({
   urlBuilder: (id: string) => string;
 }) {
   return (
-    <div className='space-y-1'>
-      <div className='flex items-center gap-2 text-xs text-muted-foreground'>
-        <Icon className={cn('h-4 w-4', iconColor)} />
+    <div className='space-y-0.5'>
+      <div className='flex items-center gap-1.5 text-[10px] text-muted-foreground'>
+        <Icon className={cn('h-3 w-3', iconColor)} />
         <span>{label}</span>
       </div>
       <FmCommonTextField
@@ -82,17 +116,9 @@ function MusicPlatformInput({
         }}
         placeholder={placeholder}
         prepend={baseUrl}
+        className='h-10 text-sm'
       />
-      {value && (
-        <a
-          href={urlBuilder(value)}
-          target='_blank'
-          rel='noopener noreferrer'
-          className='text-xs text-muted-foreground hover:text-fm-gold transition-colors truncate block'
-        >
-          {urlBuilder(value)}
-        </a>
-      )}
+      {value && <ExpandableUrlLink url={urlBuilder(value)} />}
     </div>
   );
 }
@@ -116,9 +142,9 @@ function SocialInput({
   urlBuilder: (username: string) => string;
 }) {
   return (
-    <div className='space-y-1'>
-      <div className='flex items-center gap-2 text-xs text-muted-foreground'>
-        <Icon className={cn('h-4 w-4', iconColor)} />
+    <div className='space-y-0.5'>
+      <div className='flex items-center gap-1.5 text-[10px] text-muted-foreground'>
+        <Icon className={cn('h-3 w-3', iconColor)} />
         <span>{label}</span>
       </div>
       <FmCommonTextField
@@ -130,17 +156,9 @@ function SocialInput({
         }}
         placeholder={placeholder}
         prepend='@'
+        className='h-10 text-sm'
       />
-      {value && (
-        <a
-          href={urlBuilder(value)}
-          target='_blank'
-          rel='noopener noreferrer'
-          className='text-xs text-muted-foreground hover:text-fm-gold transition-colors truncate block'
-        >
-          {urlBuilder(value)}
-        </a>
-      )}
+      {value && <ExpandableUrlLink url={urlBuilder(value)} />}
     </div>
   );
 }
@@ -192,9 +210,10 @@ export function ArtistSocialTab({
   onYoutubeChange,
 }: ArtistSocialTabProps) {
   const { t } = useTranslation('common');
+  const isMobile = useIsMobile();
 
   return (
-    <div className='space-y-6'>
+    <div className={cn('space-y-4', isMobile && 'pb-[140px]')}>
       {/* Music Platforms */}
       <FmFormSection
         title={t('sections.musicPlatforms')}
@@ -233,9 +252,9 @@ export function ArtistSocialTab({
         icon={Share2}
       >
           {/* Email - contact email input */}
-          <div className='space-y-1'>
-            <div className='flex items-center gap-2 text-xs text-muted-foreground'>
-              <Mail className='h-4 w-4 text-fm-gold' />
+          <div className='space-y-0.5'>
+            <div className='flex items-center gap-1.5 text-[10px] text-muted-foreground'>
+              <Mail className='h-3 w-3 text-fm-gold' />
               <span>{t('labels.socialEmail', 'Contact Email')}</span>
             </div>
             <FmCommonTextField
@@ -243,37 +262,27 @@ export function ArtistSocialTab({
               onChange={(e) => onEmailChange(e.target.value)}
               placeholder={t('placeholders.enterEmail')}
               type='email'
+              className='h-10 text-sm'
             />
-            {email && (
-              <a
-                href={`mailto:${email}`}
-                className='text-xs text-muted-foreground hover:text-fm-gold transition-colors truncate block'
-              >
-                {email}
-              </a>
-            )}
+            {email && <ExpandableUrlLink url={`mailto:${email}`} />}
           </div>
 
           {/* Website - full URL input */}
-          <div className='space-y-1'>
-            <div className='flex items-center gap-2 text-xs text-muted-foreground'>
-              <Globe className='h-4 w-4 text-fm-gold' />
+          <div className='space-y-0.5'>
+            <div className='flex items-center gap-1.5 text-[10px] text-muted-foreground'>
+              <Globe className='h-3 w-3 text-fm-gold' />
               <span>{t('labels.website')}</span>
             </div>
             <FmCommonTextField
               value={website}
               onChange={(e) => onWebsiteChange(e.target.value)}
               placeholder={t('forms.artists.websitePlaceholder')}
+              className='h-10 text-sm'
             />
             {website && (
-              <a
-                href={website.startsWith('http') ? website : `https://${website}`}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='text-xs text-muted-foreground hover:text-fm-gold transition-colors truncate block'
-              >
-                {website.startsWith('http') ? website : `https://${website}`}
-              </a>
+              <ExpandableUrlLink
+                url={website.startsWith('http') ? website : `https://${website}`}
+              />
             )}
           </div>
 

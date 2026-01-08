@@ -23,6 +23,7 @@ interface EventDetailsLayoutProps {
  * - z-0: Background (topography pattern)
  * - z-10: Left column (hero image)
  * - z-20: Right column (content + UX elements)
+ * - z-40: Action buttons (below nav overlays like user menu at z-[110])
  */
 export function EventDetailsLayout({
   leftColumn,
@@ -31,7 +32,7 @@ export function EventDetailsLayout({
   className,
 }: EventDetailsLayoutProps) {
   return (
-    <div className={cn('bg-background relative', className)}>
+    <div className={cn('bg-background relative overflow-x-hidden', className)}>
       {/* Global Background Layer - z-0 */}
       <div className='absolute inset-0 pointer-events-none overflow-hidden z-0'>
         <TopographicBackground opacity={0.35} parallax={false} />
@@ -39,14 +40,15 @@ export function EventDetailsLayout({
       </div>
 
       {/* Fixed action buttons - rendered at root level to avoid stacking context issues */}
+      {/* z-40 keeps buttons above content but below nav overlays (user menu at z-[110]) */}
       {actions && (
-        <div className='fixed top-20 left-4 z-50 flex gap-2 lg:left-6'>
+        <div className='fixed top-20 left-4 z-40 flex gap-2 lg:left-6'>
           {actions}
         </div>
       )}
 
       {/* Mobile: stacked layout with gradient fade */}
-      <div className='lg:hidden relative z-10 flex flex-col min-h-screen'>
+      <div className='lg:hidden relative z-10 flex flex-col min-h-screen overflow-x-hidden'>
         {/* Hero section with gradient fade */}
         <div className='relative h-[55vh] flex-shrink-0 overflow-hidden'>
           {/* Hero image container - slight parallax via will-change */}
@@ -56,11 +58,11 @@ export function EventDetailsLayout({
           {/* Gradient fade overlay - transparent at top, fades to background */}
           <div className='absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none' />
         </div>
-        {/* Content section - solid background for readability */}
-        <div className='relative z-20 flex-1 bg-background -mt-4'>
+        {/* Content section - transparent to show topography behind */}
+        <div className='relative z-20 flex-1 -mt-4 overflow-x-hidden max-w-full min-w-0'>
           {rightColumn}
         </div>
-        <div className='relative z-20 bg-background'>
+        <div className='relative z-20 bg-background/95 backdrop-blur-sm'>
           <Footer />
         </div>
       </div>

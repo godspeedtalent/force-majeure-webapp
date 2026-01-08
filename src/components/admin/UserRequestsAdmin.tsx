@@ -384,7 +384,7 @@ export function UserRequestsAdmin() {
               <Button
                 size='sm'
                 variant='outline'
-                className='border-green-500/50 text-green-500 hover:bg-green-500/10'
+                className='border-fm-success/50 text-fm-success hover:bg-fm-success/10'
                 onClick={() => handleApproveClick(request)}
               >
                 <CheckCircle2 className='h-4 w-4 mr-1' />
@@ -514,7 +514,7 @@ export function UserRequestsAdmin() {
             <Button
               onClick={() => selectedRequest && approveMutation.mutate(selectedRequest)}
               disabled={approveMutation.isPending}
-              className='bg-green-600 hover:bg-green-700'
+              className='bg-fm-success hover:bg-fm-success/80 text-black'
             >
               {approveMutation.isPending ? t('status.approving') : t('buttons.approve')}
             </Button>

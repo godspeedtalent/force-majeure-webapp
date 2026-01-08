@@ -36,6 +36,7 @@
     "submit": "Enviar",
     "delete": "Eliminar",
     "edit": "Editar",
+    "manage": "Gestionar",
     "back": "Atrás",
     "next": "Siguiente",
     "previous": "Anterior",
@@ -915,7 +916,15 @@
     "supportForceMajeure": "Apoya a Force Majeure",
     "supportDescription": "Tu apoyo nos ayuda a crear mejores eventos y apoyar a más artistas. Síguenos en Instagram para mantenerte conectado con la comunidad.",
     "musicPlatforms": "Plataformas de Música",
-    "musicPlatformsDescription": "Agrega tus perfiles de streaming para que los fans puedan escuchar tu música."
+    "musicPlatformsDescription": "Agrega tus perfiles de streaming para que los fans puedan escuchar tu música.",
+    "dangerZone": "Zona de peligro",
+    "dangerZoneDescription": "Acciones irreversibles. Procede con precaución."
+  },
+  "artistManage": {
+    "deleteArtistInfo": "Esto eliminará permanentemente este perfil de artista y todos los datos asociados. Esta acción no se puede deshacer.",
+    "requestDeletionInfo": "Solicitar la eliminación notificará a los administradores que pueden revisar y aprobar la solicitud. El perfil del artista permanecerá activo hasta que un administrador procese la solicitud.",
+    "requestArtistDeletion": "Solicitar Eliminación de Artista",
+    "deletionRequiresApproval": "Como propietario del artista, tu solicitud de eliminación será revisada por un administrador."
   },
   "pageTitles": {
     "orgDashboard": "Panel de Organización",
@@ -1010,7 +1019,9 @@
       "pastWeek": "Última semana",
       "pastMonth": "Último mes",
       "pastYear": "Último año"
-    }
+    },
+    "sortByDate": "Ordenar por fecha",
+    "sortByName": "Ordenar por nombre"
   },
   "aria": {
     "closeSearch": "Cerrar búsqueda",
@@ -3063,14 +3074,16 @@
       "database": "Base de Datos",
       "features": "Funciones",
       "session": "Sesión",
-      "notes": "Notas"
+      "notes": "Notas",
+      "roles": "Roles"
     },
     "toolLabels": {
       "navigation": "Navegación",
       "database": "Base de Datos",
       "features": "Alternar Funciones",
       "session": "Anulaciones de Sesión",
-      "notes": "Notas de Desarrollo"
+      "notes": "Notas de Desarrollo",
+      "roles": "Simulación de Roles"
     },
     "fab": {
       "open": "Abrir herramientas de desarrollo",

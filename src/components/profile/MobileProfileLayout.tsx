@@ -7,7 +7,7 @@ import {
   Clock,
   Mic2,
   Award,
-  Ticket,
+  Disc,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -99,24 +99,23 @@ export const MobileProfileLayout = ({
           )}
         </div>
 
-        {/* User Stats Card - Overlapping hero bottom */}
-        <div className='absolute bottom-0 left-0 right-0 translate-y-1/2 px-[20px]'>
+        {/* User Stats Card - Overlapping hero bottom (only top 25% overlaps) */}
+        <div className='absolute bottom-0 left-0 right-0 translate-y-3/4 px-[20px]'>
           <div className='ml-[10px] mr-[40px] bg-black/80 backdrop-blur-lg border border-white/20 p-4'>
-            {/* Name and Title */}
+            {/* Name */}
             <div className='mb-3'>
               <h2 className='text-xl font-canela font-medium text-white truncate'>
                 {profile?.display_name || t('profile.defaultName')}
               </h2>
-              <FmI18nCommon i18nKey='profile.memberTitle' as='p' className='text-xs text-white/60' />
             </div>
 
             {/* Stats Row */}
             <div className='flex items-center gap-4 text-sm'>
               {/* Upcoming Shows */}
               <div className='flex items-center gap-1.5'>
-                <Ticket className='h-4 w-4 text-fm-gold' />
+                <Disc className='h-4 w-4 text-fm-gold' />
                 <span className='text-white font-medium'>{upcomingShows.length}</span>
-                <span className='text-white/60'>{t('profile.shows')}</span>
+                <span className='text-[10px] uppercase tracking-wider text-slate-400'>{t('profile.shows')}</span>
               </div>
 
               {/* Member Since */}
@@ -143,7 +142,7 @@ export const MobileProfileLayout = ({
       </div>
 
       {/* Spacer for the overlapping card - increased height to prevent stats from covering tabs */}
-      <div className={`flex-shrink-0 ${hasLinkedArtist ? 'h-[90px]' : 'h-[60px]'}`} />
+      <div className={`flex-shrink-0 ${hasLinkedArtist ? 'h-[130px]' : 'h-[100px]'}`} />
 
       {/* Tabs Container - Fixed tabs, scrollable content */}
       <FmCommonTabs defaultValue='upcoming' className='flex-1 flex flex-col overflow-hidden px-6'>

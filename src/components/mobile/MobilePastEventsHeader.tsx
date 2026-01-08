@@ -6,8 +6,6 @@ import { useIsMobile } from '@/shared';
 export interface MobilePastEventsHeaderProps {
   /** Whether the header is visible */
   visible: boolean;
-  /** Number of past events */
-  pastEventCount?: number;
   /** Additional className */
   className?: string;
 }
@@ -18,7 +16,6 @@ export interface MobilePastEventsHeaderProps {
  */
 export function MobilePastEventsHeader({
   visible,
-  pastEventCount,
   className,
 }: MobilePastEventsHeaderProps) {
   const { t } = useTranslation('pages');
@@ -30,8 +27,8 @@ export function MobilePastEventsHeader({
   return (
     <div
       className={cn(
-        // Fixed positioning below navigation bar
-        'fixed top-[64px] left-0 right-0 z-40',
+        // Fixed positioning below navigation bar - explicit left/right 0 with 100vw width
+        'fixed top-[64px] left-0 right-0 w-screen z-40',
         // Frosted glass effect
         'bg-black/60 backdrop-blur-md',
         // Gold accent border
@@ -52,11 +49,6 @@ export function MobilePastEventsHeader({
         <span className='text-sm font-canela text-foreground'>
           {t('home.pastEventsTitle')}
         </span>
-        {pastEventCount !== undefined && pastEventCount > 0 && (
-          <span className='text-xs text-muted-foreground'>
-            ({pastEventCount})
-          </span>
-        )}
       </div>
     </div>
   );

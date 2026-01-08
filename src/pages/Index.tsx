@@ -311,7 +311,7 @@ const Index = () => {
   }, []);
 
   return (
-    <Layout enableScrollSnap={false}>
+    <Layout enableScrollSnap={false} hideBackground={isMobile}>
       <div className='min-h-screen relative'>
         {isMobile ? (
           <IndexMobile

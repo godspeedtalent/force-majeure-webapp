@@ -10,6 +10,7 @@ import {
   Database,
   ToggleLeft,
   ClipboardList,
+  UserCog,
 } from 'lucide-react';
 import { cn } from '@/shared';
 import { MobileDevToolId } from './useMobileDevTools';
@@ -131,6 +132,11 @@ export function FmMobileDevDrawer({
       id: 'notes',
       label: t('mobileDevTools.tools.notes'),
       icon: <ClipboardList className="h-[24px] w-[24px]" strokeWidth={2} />,
+    },
+    {
+      id: 'roles',
+      label: t('mobileDevTools.tools.roles'),
+      icon: <UserCog className="h-[24px] w-[24px]" strokeWidth={2} />,
     },
   ];
 

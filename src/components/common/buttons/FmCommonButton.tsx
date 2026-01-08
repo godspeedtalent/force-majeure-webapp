@@ -19,7 +19,7 @@ const isReactComponent = (component: unknown): component is React.ComponentType<
 
 interface FmCommonButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'default' | 'secondary' | 'destructive' | 'destructive-outline' | 'gold';
+  variant?: 'default' | 'secondary' | 'destructive' | 'destructive-outline' | 'gold' | 'success';
   size?: 'default' | 'sm' | 'lg' | 'icon';
   icon?: LucideIcon | React.ReactNode;
   iconPosition?: 'left' | 'right';
@@ -85,13 +85,15 @@ export const FmCommonButton = forwardRef<
         'bg-destructive/20 backdrop-blur-sm border border-destructive text-destructive hover:bg-destructive hover:text-black hover:border-destructive transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_0_12px_hsl(var(--destructive)/0.2)] hover:shadow-[0_0_20px_hsl(var(--destructive)/0.4)]',
       'destructive-outline':
         'bg-destructive/20 backdrop-blur-sm border border-destructive text-destructive hover:bg-destructive hover:text-black hover:border-destructive transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_0_12px_hsl(var(--destructive)/0.2)] hover:shadow-[0_0_20px_hsl(var(--destructive)/0.4)]',
+      success:
+        'bg-fm-success/20 backdrop-blur-sm border border-fm-success text-fm-success font-medium transition-all duration-200 hover:bg-fm-success/30 hover:shadow-[0_0_20px_rgba(125,155,114,0.5)] hover:scale-105 active:scale-95',
     };
 
     return (
       <Button
         ref={ref}
         variant={
-          variant === 'gold'
+          variant === 'gold' || variant === 'success'
             ? 'default'
             : variant === 'default' || variant === 'destructive-outline' || variant === 'destructive'
               ? 'outline'
@@ -105,6 +107,7 @@ export const FmCommonButton = forwardRef<
         className={cn(
           'relative overflow-hidden',
           variant === 'gold' && variantStyles.gold,
+          variant === 'success' && variantStyles.success,
           variant === 'default' && variantStyles.default,
           variant === 'secondary' && variantStyles.secondary,
           variant === 'destructive' && variantStyles.destructive,

@@ -104,7 +104,8 @@ export function MobileSwipeIndicator({
   return (
     <div
       className={cn(
-        'fixed bottom-[90px] left-1/2 -translate-x-1/2 z-40',
+        // Position just above the progress bar at bottom of viewport
+        'fixed bottom-[20px] left-1/2 -translate-x-1/2 z-40',
         'flex items-center gap-[6px]',
         'px-[16px] py-[10px]',
         'bg-black/70 backdrop-blur-md',

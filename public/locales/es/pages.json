@@ -16,7 +16,8 @@
     "hidePastEvents": "Ocultar eventos pasados",
     "pastEventsTitle": "Eventos pasados.",
     "welcome": "Bienvenido",
-    "loading": "Cargando..."
+    "loading": "Cargando...",
+    "searchEvents": "Buscar eventos..."
   },
   "events": {
     "title": "Eventos",
@@ -452,16 +453,6 @@
     "addToCart": "Añadir al carrito",
     "addedToCart": "¡{{name}} añadido al carrito!",
     "outOfStock": "Agotado"
-  },
-  "comingSoon": {
-    "title": "Próximamente",
-    "subtitle": "Espera un momento.",
-    "lookingForArtists": "Buscando Artistas de Apertura para 2026",
-    "artistDescription": "Estamos buscando artistas locales para abrir nuestros eventos de 2026. Si eres DJ, productor o artista, nos encantaría saber de ti.",
-    "signUpAsArtist": "Regístrate como artista",
-    "artistSignedUp": "¡Ya estás registrado!",
-    "artistSignedUpDescription": "Mantente atento a los eventos publicados donde podrás expresar tu interés en unirte al lineup.",
-    "loading": "Cargando..."
   },
   "artistSignup": {
     "seoTitle": "Únete a Nuestro Roster de Artistas",

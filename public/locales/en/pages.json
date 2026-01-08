@@ -16,7 +16,8 @@
     "hidePastEvents": "Hide past events",
     "pastEventsTitle": "Past events.",
     "welcome": "Welcome",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "searchEvents": "Search events..."
   },
   "events": {
     "title": "Events",
@@ -452,16 +453,6 @@
     "addToCart": "Add to Cart",
     "addedToCart": "Added {{name}} to cart!",
     "outOfStock": "Out of Stock"
-  },
-  "comingSoon": {
-    "title": "Coming Soon",
-    "subtitle": "Just hang tight.",
-    "lookingForArtists": "Looking for 2026 Undercard Artists",
-    "artistDescription": "We're looking for local artists to open up for our 2026 events. If you're a DJ, producer, or performer, we'd love to hear from you.",
-    "signUpAsArtist": "Sign up as an artist",
-    "artistSignedUp": "You're signed up!",
-    "artistSignedUpDescription": "Keep an eye out for posted events where you can express interest in joining the lineup.",
-    "loading": "Loading..."
   },
   "artistSignup": {
     "seoTitle": "Join Our Artist Roster",

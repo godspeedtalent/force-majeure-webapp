@@ -34,7 +34,7 @@ export const FmCommonCollapsibleSection = ({
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
   return (
-    <div className={className}>
+    <div className={`min-w-0 overflow-hidden ${className}`}>
       <button
         type='button'
         onClick={() => setIsExpanded(!isExpanded)}

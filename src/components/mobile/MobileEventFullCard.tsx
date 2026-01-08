@@ -110,16 +110,17 @@ export function MobileEventFullCard({
         onClick={handleCardClick}
       >
         {/* Hero Image - fills available space with parallax, top padding for nav bar */}
-        {/* Oversized and offset to prevent blank space during parallax movement */}
+        {/* Oversized to 106vw/106vh with -3vw/-3vh offset to prevent blank space during parallax movement */}
+        {/* Parallax can move image up to +2vw right/+2vh down, so we need extra buffer on all sides */}
         <div
           className='absolute transition-transform duration-100 ease-linear pt-[64px]'
           style={{
-            // Start offset by -2vw/-2vh to account for max parallax movement
-            // Size is 100% + 2vw/2vh to fill any gaps
-            top: '-2vh',
-            left: '-2vw',
-            width: 'calc(100% + 4vw)',
-            height: 'calc(100% + 4vh)',
+            // Start offset by -3vw/-3vh to account for max parallax movement of +2vw/+2vh
+            // Size is 106vw/106vh to fully cover viewport at any parallax position
+            top: '-3vh',
+            left: '-3vw',
+            width: '106vw',
+            height: '106vh',
             viewTransitionName: `magazine-hero-${event.id}`,
             transform: `translate(${imageParallaxX}vw, ${imageParallaxY}vh)`,
           }}

@@ -10,6 +10,7 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonSlidingIconButton } from '@/components/common/buttons/FmCommonSlidingIconButton';
 import { FmVenueMap } from '@/components/common/display/FmVenueMap';
 import { FmSocialLinks } from '@/components/common/display/FmSocialLinks';
+import { FmCommonExpandableText } from '@/components/common/display/FmCommonExpandableText';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/shared';
 
@@ -159,7 +160,7 @@ export const FmVenueDetailsModal = ({
       type='button'
       onClick={() => {
         onOpenChange(false);
-        navigate(`/events/${event.id}`);
+        navigate(`/event/${event.id}`);
       }}
       className={cn(
         'group relative aspect-[4/3] overflow-hidden border border-white/10',
@@ -289,9 +290,13 @@ export const FmVenueDetailsModal = ({
               )}
 
               {/* Description */}
-              <div className='max-w-none text-sm text-white/80 leading-relaxed whitespace-pre-wrap'>
-                {venue?.description ?? DEFAULT_DESCRIPTION}
-              </div>
+              <FmCommonExpandableText
+                text={typeof venue?.description === 'string' ? venue.description : DEFAULT_DESCRIPTION}
+                lineClamp={4}
+                className='text-sm text-white/80'
+                showMoreLabel={t('common.showMore', 'Show more')}
+                showLessLabel={t('common.showLess', 'Show less')}
+              />
 
               {/* Social Links */}
               {hasSocialLinks && (

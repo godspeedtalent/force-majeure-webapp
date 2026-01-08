@@ -6,7 +6,6 @@ import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoa
 import Auth from './pages/Auth';
 import CheckoutCancel from './pages/CheckoutCancel';
 import CheckoutSuccess from './pages/CheckoutSuccess';
-import ComingSoon from './pages/ComingSoon';
 import Contact from './pages/Contact';
 import EventDetails from './pages/EventDetails';
 import EventTicketing from './pages/event/EventTicketingPage';
@@ -118,8 +117,6 @@ const AppRoutes = () => {
       </div>
     );
   }
-
-  const comingSoonMode = isFeatureEnabled(FEATURE_FLAGS.COMING_SOON_MODE);
 
   return (
     <Routes>
@@ -440,93 +437,83 @@ const AppRoutes = () => {
 
       {/* ==================== END ADMIN/DEVELOPER ROUTES ==================== */}
 
-      {/* Coming Soon Mode - Show only coming soon page for public routes */}
-      {comingSoonMode ? (
+      {/* Public App Routes */}
+      <Route path='/' element={<Index />} />
+      <Route path='/event/:id' element={<EventDetails />} />
+      <Route path='/event/:id/tickets' element={<EventTicketing />} />
+      <Route path='/event/:id/manage' element={<EventManagement />} />
+
+      {/* Venue Routes (public) */}
+      <Route
+        path='/venues/:id'
+        element={
+          <Suspense fallback={<LazyLoadFallback />}>
+            <VenueDetails />
+          </Suspense>
+        }
+      />
+
+      {/* Artist Routes (public) */}
+      <Route
+        path='/artists/:id'
+        element={
+          <Suspense fallback={<LazyLoadFallback />}>
+            <ArtistDetails />
+          </Suspense>
+        }
+      />
+
+      {/* Recording Routes (public) */}
+      <Route
+        path='/recordings/:id'
+        element={
+          <Suspense fallback={<LazyLoadFallback />}>
+            <RecordingDetails />
+          </Suspense>
+        }
+      />
+
+      {/* Conditionally render merch route based on feature flag */}
+      {isFeatureEnabled(FEATURE_FLAGS.MERCH_STORE) && (
+        <Route path='/merch' element={<Merch />} />
+      )}
+
+      {/* Conditionally render member profiles route based on feature flag */}
+      {isFeatureEnabled(FEATURE_FLAGS.MEMBER_PROFILES) && (
+        <Route path='/members/home' element={<MemberHome />} />
+      )}
+
+      {/* Conditionally render Sonic Gauntlet route based on feature flag */}
+      {isFeatureEnabled(FEATURE_FLAGS.SONIC_GAUNTLET) && (
+        <Route
+          path='/sonic-gauntlet'
+          element={
+            <Suspense fallback={<LazyLoadFallback />}>
+              <SonicGauntlet />
+            </Suspense>
+          }
+        />
+      )}
+
+      <Route path='/orders' element={<Orders />} />
+
+      {/* Checkout Routes */}
+      <Route path='/checkout/success' element={<CheckoutSuccess />} />
+      <Route path='/checkout/cancel' element={<CheckoutCancel />} />
+
+      {/* Organization Routes - gated by feature flag */}
+      {isFeatureEnabled(FEATURE_FLAGS.ORGANIZATION_TOOLS) && (
         <>
-          <Route path='/' element={<ComingSoon />} />
-        </>
-      ) : (
-        <>
-          {/* Normal App Routes - Only accessible when NOT in coming soon mode */}
-          <Route path='/' element={<Index />} />
-          <Route path='/event/:id' element={<EventDetails />} />
-          <Route path='/event/:id/tickets' element={<EventTicketing />} />
-          <Route path='/event/:id/manage' element={<EventManagement />} />
-
-          {/* Venue Routes (public) */}
-          <Route
-            path='/venues/:id'
-            element={
-              <Suspense fallback={<LazyLoadFallback />}>
-                <VenueDetails />
-              </Suspense>
-            }
-          />
-
-          {/* Artist Routes (public) */}
-          <Route
-            path='/artists/:id'
-            element={
-              <Suspense fallback={<LazyLoadFallback />}>
-                <ArtistDetails />
-              </Suspense>
-            }
-          />
-
-          {/* Recording Routes (public) */}
-          <Route
-            path='/recordings/:id'
-            element={
-              <Suspense fallback={<LazyLoadFallback />}>
-                <RecordingDetails />
-              </Suspense>
-            }
-          />
-
-          {/* Conditionally render merch route based on feature flag */}
-          {isFeatureEnabled(FEATURE_FLAGS.MERCH_STORE) && (
-            <Route path='/merch' element={<Merch />} />
-          )}
-
-          {/* Conditionally render member profiles route based on feature flag */}
-          {isFeatureEnabled(FEATURE_FLAGS.MEMBER_PROFILES) && (
-            <Route path='/members/home' element={<MemberHome />} />
-          )}
-
-          {/* Conditionally render Sonic Gauntlet route based on feature flag */}
-          {isFeatureEnabled(FEATURE_FLAGS.SONIC_GAUNTLET) && (
-            <Route
-              path='/sonic-gauntlet'
-              element={
-                <Suspense fallback={<LazyLoadFallback />}>
-                  <SonicGauntlet />
-                </Suspense>
-              }
-            />
-          )}
-
-          {/* Profile routes are now defined above, outside coming soon mode */}
-          <Route path='/orders' element={<Orders />} />
-
-          {/* Checkout Routes */}
-          <Route path='/checkout/success' element={<CheckoutSuccess />} />
-          <Route path='/checkout/cancel' element={<CheckoutCancel />} />
-
-          {/* Organization Routes - gated by feature flag */}
-          {isFeatureEnabled(FEATURE_FLAGS.ORGANIZATION_TOOLS) && (
-            <>
-              <Route path='/organization/tools' element={<OrganizationTools />} />
-              <Route path='/organization/scanning' element={<TicketScanning />} />
-            </>
-          )}
-
-          {/* Artist Routes - signup and register are above, outside coming soon mode */}
-          <Route path='/artists' element={<Navigate to='/' replace />} />
+          <Route path='/organization/tools' element={<OrganizationTools />} />
+          <Route path='/organization/scanning' element={<TicketScanning />} />
         </>
       )}
 
+      {/* Artist Routes - signup and register are defined above */}
+      <Route path='/artists' element={<Navigate to='/' replace />} />
+
       {/* Catch-all route - must be last */}
-      <Route path='*' element={comingSoonMode ? <Navigate to='/' replace /> : <NotFound />} />
+      <Route path='*' element={<NotFound />} />
     </Routes>
   );
 };

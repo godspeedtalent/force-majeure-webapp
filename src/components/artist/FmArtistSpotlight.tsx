@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { Music2, Disc3 } from 'lucide-react';
+import { Disc3 } from 'lucide-react';
 
 import { FmCommonBadgeGroup } from '@/components/common/display/FmCommonBadgeGroup';
 import { FmSocialLinks } from '@/components/common/display/FmSocialLinks';
 import { FmCommonExpandableText } from '@/components/common/display/FmCommonExpandableText';
 import { FmRecordingsGrid } from '@/components/artist/FmRecordingsGrid';
+import { FmHeroSectionSkeleton } from '@/components/common/feedback/FmHeroSectionSkeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/shared';
 import type { ArtistWithDetails } from '@/shared/api/queries/artistQueries';
@@ -70,7 +71,7 @@ export function FmArtistSpotlight({
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   // Fetch gallery images
-  const { data: galleryImages = [] } = useQuery({
+  const { data: galleryImages = [], isLoading: isGalleryLoading } = useQuery({
     queryKey: ['artist-gallery-images', artist?.gallery_id],
     queryFn: async (): Promise<GalleryImage[]> => {
       if (!artist?.gallery_id) return [];
@@ -88,6 +89,9 @@ export function FmArtistSpotlight({
     },
     enabled: !!artist?.gallery_id,
   });
+
+  // Show skeleton while gallery is loading (only if artist has a gallery)
+  const showSkeleton = artist?.gallery_id && isGalleryLoading;
 
   // Extract genres from artist_genres relation
   const genres =
@@ -126,12 +130,143 @@ export function FmArtistSpotlight({
     artist.spotify_id ||
     artist.tiktok_handle;
 
+  // Determine if we have secondary images for mobile layout decision
+  const hasSecondaryImages = thumbnailImages.length > 0;
+
+  // Show skeleton while gallery is loading
+  if (showSkeleton) {
+    return (
+      <FmHeroSectionSkeleton
+        variant='with-gallery'
+        showHeader={!hideSpotlightHeader}
+        showSocialLinks={!!hasSocialLinks}
+        showBio={!!artist.bio}
+        className={className}
+      />
+    );
+  }
+
   return (
     <div className={cn('w-full', className)}>
       {/* Spotlight Card */}
       <div className='bg-black/60 backdrop-blur-md border border-white/20 rounded-none p-4 md:p-[30px]'>
-        {/* Two Column Layout - Mobile & Desktop */}
-        <div className='flex gap-3 md:gap-5'>
+        {/* Mobile: Artist Spotlight header at top */}
+        {!hideSpotlightHeader && (
+          <p className='md:hidden text-[9px] uppercase tracking-[0.3em] text-white/70 font-canela mb-3 text-center'>
+            {tCommon('artistPreview.spotlight')}
+          </p>
+        )}
+
+        {/* Mobile Layout - Stacked rows */}
+        <div className='md:hidden'>
+          {/* Mobile: Image section */}
+          {hasSecondaryImages ? (
+            /* Mobile with gallery: Two columns */
+            <div className='flex gap-2'>
+              {/* Main image with compact overlay */}
+              <div className='w-1/2 flex-shrink-0'>
+                <div className='relative overflow-hidden border border-white/15 bg-white/5'>
+                  <img
+                    src={mainImage}
+                    alt={artist.name}
+                    className='w-full aspect-[3/4] object-cover'
+                  />
+                  {/* Gradient overlay */}
+                  <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent' />
+
+                  {/* Compact artist info overlay - name only */}
+                  <div className='absolute bottom-0 left-0 right-0 p-2 bg-black/40 backdrop-blur-sm'>
+                    <h1 className='text-base font-canela font-semibold text-white leading-tight drop-shadow-lg'>
+                      {artist.name}
+                    </h1>
+                  </div>
+                </div>
+              </div>
+
+              {/* Thumbnail grid */}
+              <div className='w-1/2 flex flex-col'>
+                <div className='grid grid-cols-2 gap-1.5 auto-rows-fr'>
+                  {thumbnailImages.map(img => {
+                    const originalIndex = galleryImages.findIndex(
+                      g => g.id === img.id
+                    );
+                    return (
+                      <button
+                        key={img.id}
+                        type='button'
+                        onClick={() => setSelectedImageIndex(originalIndex)}
+                        className={cn(
+                          'aspect-square overflow-hidden border border-white/20 bg-white/5',
+                          'transition-all duration-200',
+                          'cursor-pointer',
+                          'hover:border-fm-gold/50 hover:scale-[1.02] hover:shadow-lg hover:shadow-fm-gold/20',
+                          'active:scale-95 active:border-fm-gold/50'
+                        )}
+                      >
+                        <img
+                          src={img.file_path}
+                          alt={`${artist.name} gallery`}
+                          className='w-full h-full object-cover'
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Mobile without gallery: Horizontal hero image */
+            <div className='relative overflow-hidden border border-white/15 bg-white/5'>
+              <img
+                src={mainImage}
+                alt={artist.name}
+                className='w-full aspect-[16/9] object-cover'
+              />
+              {/* Gradient overlay */}
+              <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent' />
+
+              {/* Compact artist info overlay - name only */}
+              <div className='absolute bottom-0 left-0 right-0 p-3 bg-black/40 backdrop-blur-sm'>
+                <h1 className='text-lg font-canela font-semibold text-white leading-tight drop-shadow-lg'>
+                  {artist.name}
+                </h1>
+              </div>
+            </div>
+          )}
+
+          {/* Mobile: Genre badges row */}
+          {genreBadges.length > 0 && (
+            <div className='mt-3 pt-3 border-t border-white/10'>
+              <div className='flex items-center gap-1.5 flex-wrap'>
+                <FmCommonBadgeGroup
+                  badges={genreBadges}
+                  badgeClassName='border-fm-gold/60 bg-fm-gold/10 text-fm-gold text-[9px] px-1.5 py-0.5'
+                  gap='sm'
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Mobile: Bio section */}
+          <div className={cn('mt-3 pt-3 border-t border-white/10', !genreBadges.length && 'mt-3')}>
+            {artist.bio ? (
+              <FmCommonExpandableText
+                text={artist.bio}
+                lineClamp={4}
+                className='text-xs text-white/60 italic leading-[1.8]'
+                showMoreLabel={tCommon('buttons.showMore', 'Show more')}
+                showLessLabel={tCommon('buttons.showLess', 'Show less')}
+              />
+            ) : (
+              <p className='text-xs text-white/40 leading-[1.8] font-canela italic'>
+                {tCommon('artistProfile.noBioAvailable')}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Desktop Layout - Two columns (hidden on mobile) */}
+        <div className='hidden md:flex gap-5'>
           {/* Left Column - Main Image with overlay (50% width) */}
           <div className='w-1/2 flex-shrink-0'>
             <div className='relative overflow-hidden border border-white/15 bg-white/5'>
@@ -143,28 +278,16 @@ export function FmArtistSpotlight({
               {/* Gradient overlay for text legibility */}
               <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent' />
 
-              {/* Artist info overlaid at bottom with frosted glass */}
-              <div className='absolute bottom-0 left-0 right-0 p-3 md:p-4 bg-black/50 backdrop-blur-md border-t border-white/10'>
+              {/* Artist info overlaid at bottom with frosted glass - name only */}
+              <div className='absolute bottom-0 left-0 right-0 p-4 bg-black/50 backdrop-blur-md border-t border-white/10'>
                 {!hideSpotlightHeader && (
-                  <p className='text-[8px] md:text-[9px] uppercase tracking-[0.3em] text-white/70 font-canela mb-1'>
+                  <p className='text-[9px] uppercase tracking-[0.3em] text-white/70 font-canela mb-1'>
                     {tCommon('artistPreview.spotlight')}
                   </p>
                 )}
-                <h1 className='text-lg md:text-2xl font-canela font-semibold text-white leading-tight mb-1.5 md:mb-2 drop-shadow-lg'>
+                <h1 className='text-2xl font-canela font-semibold text-white leading-tight drop-shadow-lg'>
                   {artist.name}
                 </h1>
-
-                {/* Genre badges */}
-                {genreBadges.length > 0 && (
-                  <div className='flex items-center gap-1 md:gap-1.5 flex-wrap'>
-                    <Music2 className='h-3 w-3 md:h-3.5 md:w-3.5 text-fm-gold drop-shadow flex-shrink-0' />
-                    <FmCommonBadgeGroup
-                      badges={genreBadges.slice(0, 2)}
-                      badgeClassName='border-fm-gold/60 bg-black/50 backdrop-blur-sm text-fm-gold text-[9px] md:text-[10px] px-1 md:px-1.5 py-0.5'
-                      gap='sm'
-                    />
-                  </div>
-                )}
               </div>
             </div>
           </div>
@@ -172,7 +295,7 @@ export function FmArtistSpotlight({
           {/* Right Column - Gallery Grid (50% width) */}
           <div className='w-1/2 flex flex-col'>
             {thumbnailImages.length > 0 ? (
-              <div className='grid grid-cols-2 md:grid-cols-3 gap-1.5 md:gap-2 auto-rows-fr'>
+              <div className='grid grid-cols-3 gap-2 auto-rows-fr'>
                 {thumbnailImages.map(img => {
                   const originalIndex = galleryImages.findIndex(
                     g => g.id === img.id
@@ -200,18 +323,29 @@ export function FmArtistSpotlight({
                 })}
               </div>
             ) : (
-              /* No gallery - show bio in right column instead */
-              <div className='px-1 md:px-2'>
+              /* No gallery - show genres and bio in right column instead */
+              <div className='px-2 space-y-4'>
+                {/* Genre badges */}
+                {genreBadges.length > 0 && (
+                  <div className='flex items-center gap-1.5 flex-wrap'>
+                    <FmCommonBadgeGroup
+                      badges={genreBadges}
+                      badgeClassName='border-fm-gold/60 bg-fm-gold/10 text-fm-gold text-[10px] px-1.5 py-0.5'
+                      gap='sm'
+                    />
+                  </div>
+                )}
+                {/* Bio */}
                 {artist.bio ? (
                   <FmCommonExpandableText
                     text={artist.bio}
                     lineClamp={4}
-                    className='text-xs md:text-sm text-white/60 italic leading-[1.8]'
+                    className='text-sm text-white/60 italic leading-[1.8]'
                     showMoreLabel={tCommon('buttons.showMore', 'Show more')}
                     showLessLabel={tCommon('buttons.showLess', 'Show less')}
                   />
                 ) : (
-                  <p className='text-xs md:text-sm text-white/40 leading-[1.8] font-canela italic'>
+                  <p className='text-sm text-white/40 leading-[1.8] font-canela italic'>
                     {tCommon('artistProfile.noBioAvailable')}
                   </p>
                 )}
@@ -220,19 +354,30 @@ export function FmArtistSpotlight({
           </div>
         </div>
 
-        {/* Bio Section - only show if we have gallery images */}
+        {/* Desktop: Genres + Bio Section - only show if we have gallery images */}
         {thumbnailImages.length > 0 && (
-          <div className='mt-4 md:mt-5 pt-4 md:pt-5 border-t border-white/10 px-2 md:px-4'>
+          <div className='hidden md:block mt-5 pt-5 border-t border-white/10 px-4 space-y-4'>
+            {/* Genre badges */}
+            {genreBadges.length > 0 && (
+              <div className='flex items-center gap-1.5 flex-wrap'>
+                <FmCommonBadgeGroup
+                  badges={genreBadges}
+                  badgeClassName='border-fm-gold/60 bg-fm-gold/10 text-fm-gold text-[10px] px-1.5 py-0.5'
+                  gap='sm'
+                />
+              </div>
+            )}
+            {/* Bio */}
             {artist.bio ? (
               <FmCommonExpandableText
                 text={artist.bio}
                 lineClamp={3}
-                className='text-xs md:text-sm text-white/60 italic leading-[1.8]'
+                className='text-sm text-white/60 italic leading-[1.8]'
                 showMoreLabel={tCommon('buttons.showMore', 'Show more')}
                 showLessLabel={tCommon('buttons.showLess', 'Show less')}
               />
             ) : (
-              <p className='text-xs md:text-sm text-white/40 leading-[1.8] font-canela italic'>
+              <p className='text-sm text-white/40 leading-[1.8] font-canela italic'>
                 {tCommon('artistProfile.noBioAvailable')}
               </p>
             )}

@@ -99,9 +99,9 @@ const PLATFORMS: Record<string, SocialPlatform> = {
 export type SocialSize = 'sm' | 'md' | 'lg';
 
 const SIZE_CLASSES: Record<SocialSize, { icon: string; padding: string }> = {
-  sm: { icon: 'h-4 w-4', padding: 'p-[8px]' },
+  sm: { icon: 'h-4 w-4', padding: 'p-[5px]' },
   md: { icon: 'h-5 w-5', padding: 'p-[10px]' },
-  lg: { icon: 'h-6 w-6', padding: 'p-[12px]' },
+  lg: { icon: 'h-6 w-6', padding: 'p-[10px]' },
 };
 
 export interface FmSocialLinksProps {
@@ -135,7 +135,7 @@ export interface FmSocialLinksProps {
 
 const GAP_CLASSES = {
   sm: 'gap-[10px]',
-  md: 'gap-[15px]',
+  md: 'gap-[10px]',
   lg: 'gap-[20px]',
 };
 

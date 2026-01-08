@@ -381,11 +381,6 @@ ON CONFLICT (name) DO NOTHING;
 -- FEATURE FLAGS: Initialize all flags with environment references
 -- ============================================================================
 INSERT INTO feature_flags (flag_name, is_enabled, environment_id, description)
-SELECT 'coming_soon_mode', false, e.id, 'Shows "Coming Soon" page instead of main content'
-FROM environments e WHERE e.name = 'all'
-ON CONFLICT (flag_name, environment_id) DO NOTHING;
-
-INSERT INTO feature_flags (flag_name, is_enabled, environment_id, description)
 SELECT 'demo_pages', CASE WHEN e.name IN ('dev', 'qa') THEN true ELSE false END, e.id, 'Enables access to demo/testing pages'
 FROM environments e WHERE e.name IN ('dev', 'qa', 'prod')
 ON CONFLICT (flag_name, environment_id) DO NOTHING;

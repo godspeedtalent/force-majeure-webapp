@@ -80,7 +80,7 @@ export const FmCommonInfoCard = ({
       >
         <div
           className={cn(
-            'flex items-center justify-center rounded-md bg-accent/10 p-2',
+            'flex items-center justify-center rounded-none bg-accent/10 p-2',
             layout === 'vertical' && 'w-full'
           )}
         >

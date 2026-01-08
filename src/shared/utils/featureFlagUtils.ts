@@ -1,6 +1,5 @@
 import {
   Music,
-  EyeOff,
   ShoppingBag,
   UserCircle,
   Ticket,
@@ -15,7 +14,7 @@ import {
 
 /**
  * Format feature flag name for display
- * Example: 'coming_soon_mode' -> 'Coming Soon Mode'
+ * Example: 'scavenger_hunt' -> 'Scavenger Hunt'
  */
 export const formatFlagName = (flagName: string): string => {
   return flagName
@@ -30,7 +29,6 @@ export const formatFlagName = (flagName: string): string => {
 export const getFlagIcon = (flagName: string): LucideIcon => {
   const iconMap: Record<string, LucideIcon> = {
     music_player: Music,
-    coming_soon_mode: EyeOff,
     merch_store: ShoppingBag,
     member_profiles: UserCircle,
     ticketing: Ticket,
@@ -52,7 +50,6 @@ export const getFlagIcon = (flagName: string): LucideIcon => {
 export const getFlagDescription = (flagName: string): string => {
   const descriptionMap: Record<string, string> = {
     music_player: 'Enable the music player component',
-    coming_soon_mode: 'Show coming soon page instead of normal content',
     merch_store: 'Enable the merchandise store',
     member_profiles: 'Enable member profile pages',
     scavenger_hunt: 'Enable scavenger hunt feature',

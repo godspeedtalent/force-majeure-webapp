@@ -193,8 +193,13 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
     }
   }, [artistGenres, artistId]);
 
+  // Track a version counter to force isDirty recomputation after save
+  const [dirtyCheckVersion, setDirtyCheckVersion] = useState(0);
+
   // Calculate if form has unsaved changes
   const isDirty = useMemo(() => {
+    // dirtyCheckVersion is included to force recomputation after save
+    void dirtyCheckVersion;
     if (!initialValuesRef.current) return false;
     const initial = initialValuesRef.current;
     return (
@@ -210,7 +215,7 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
       facebook !== initial.facebook ||
       youtube !== initial.youtube
     );
-  }, [name, bio, website, instagram, tiktok, soundcloud, spotify, email, twitter, facebook, youtube]);
+  }, [name, bio, website, instagram, tiktok, soundcloud, spotify, email, twitter, facebook, youtube, dirtyCheckVersion]);
 
   // Handle genre changes
   const handleGenreChange = useCallback((genres: Genre[]) => {
@@ -400,6 +405,9 @@ export function useArtistManagement({ artistId }: UseArtistManagementOptions) {
         facebook,
         youtube,
       };
+
+      // Trigger isDirty recomputation
+      setDirtyCheckVersion(v => v + 1);
 
       toast.success(tToast('artists.updated'));
       queryClient.invalidateQueries({ queryKey: ['artist', artistId] });

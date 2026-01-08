@@ -3,16 +3,31 @@ import { ChevronDown } from 'lucide-react';
 import { cn } from '@/shared';
 
 /**
- * Converts text with newlines into React elements with proper line breaks
+ * Converts text with newlines into React elements with proper paragraph/line breaks
+ * - Double newlines (\n\n) create new paragraphs with vertical spacing
+ * - Single newlines (\n) create simple line breaks
  */
 const renderTextWithLineBreaks = (text: string): React.ReactNode => {
-  const lines = text.split(/\n/);
-  return lines.map((line, index) => (
-    <span key={index}>
-      {line}
-      {index < lines.length - 1 && <br />}
-    </span>
-  ));
+  // Split by double newlines to get paragraphs
+  const paragraphs = text.split(/\n\n+/);
+
+  return paragraphs.map((paragraph, pIndex) => {
+    // Within each paragraph, split by single newlines for line breaks
+    const lines = paragraph.split(/\n/);
+    return (
+      <span
+        key={pIndex}
+        className={pIndex < paragraphs.length - 1 ? 'block mb-4' : undefined}
+      >
+        {lines.map((line, lIndex) => (
+          <span key={lIndex}>
+            {line}
+            {lIndex < lines.length - 1 && <br />}
+          </span>
+        ))}
+      </span>
+    );
+  });
 };
 
 interface FmCommonExpandableTextProps {
@@ -103,7 +118,7 @@ export const FmCommonExpandableText = ({
         ref={measureRef}
         aria-hidden='true'
         className={cn(
-          'leading-relaxed font-canela absolute opacity-0 pointer-events-none',
+          'leading-relaxed font-canela tracking-wide px-4 absolute opacity-0 pointer-events-none',
           className
         )}
         style={{ width: '100%', visibility: 'hidden' }}
@@ -124,7 +139,7 @@ export const FmCommonExpandableText = ({
       >
         <p
           ref={textRef}
-          className={cn('leading-relaxed font-canela', className)}
+          className={cn('leading-relaxed font-canela tracking-wide px-4', className)}
         >
           {renderedContent}
         </p>
@@ -140,7 +155,7 @@ export const FmCommonExpandableText = ({
           type='button'
           onClick={() => setIsExpanded(!isExpanded)}
           className={cn(
-            'flex items-center gap-1 mt-2',
+            'flex items-center gap-1 mt-2 px-4',
             'text-xs uppercase tracking-wider',
             'text-fm-gold/70 hover:text-fm-gold',
             'transition-colors duration-200',

@@ -44,6 +44,9 @@ const brandColors = {
   // Danger - Chili Red (brighter than crimson)
   'fm-danger': '#D64933',
 
+  // Success - Dusty Sage Green (for approve/success actions)
+  'fm-success': '#7D9B72',
+
   // Legacy colors (can be deprecated if not in use)
   'fm-charcoal': 'hsl(var(--fm-charcoal))',
   'fm-silver': 'hsl(var(--fm-silver))',

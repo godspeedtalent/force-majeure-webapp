@@ -36,6 +36,7 @@
     "submit": "提交",
     "delete": "删除",
     "edit": "编辑",
+    "manage": "管理",
     "back": "返回",
     "next": "下一步",
     "previous": "上一步",
@@ -915,7 +916,15 @@
     "supportForceMajeure": "支持 Force Majeure",
     "supportDescription": "您的支持帮助我们创造更好的活动并支持更多艺术家。关注我们的 Instagram 与社区保持联系。",
     "musicPlatforms": "音乐平台",
-    "musicPlatformsDescription": "添加您的流媒体资料，让粉丝可以收听您的音乐。"
+    "musicPlatformsDescription": "添加您的流媒体资料，让粉丝可以收听您的音乐。",
+    "dangerZone": "危险区域",
+    "dangerZoneDescription": "不可逆操作。请谨慎操作。"
+  },
+  "artistManage": {
+    "deleteArtistInfo": "这将永久删除此艺术家资料及所有相关数据。此操作无法撤销。",
+    "requestDeletionInfo": "请求删除将通知管理员审核和批准该请求。艺术家资料将保持活跃状态，直到管理员处理该请求。",
+    "requestArtistDeletion": "请求删除艺术家",
+    "deletionRequiresApproval": "作为艺术家所有者，您的删除请求将由管理员审核。"
   },
   "pageTitles": {
     "orgDashboard": "组织控制台",
@@ -1010,7 +1019,9 @@
       "pastWeek": "过去一周",
       "pastMonth": "过去一个月",
       "pastYear": "过去一年"
-    }
+    },
+    "sortByDate": "按日期排序",
+    "sortByName": "按名称排序"
   },
   "aria": {
     "closeSearch": "关闭搜索",
@@ -3063,14 +3074,16 @@
       "database": "数据库",
       "features": "功能",
       "session": "会话",
-      "notes": "笔记"
+      "notes": "笔记",
+      "roles": "角色"
     },
     "toolLabels": {
       "navigation": "导航",
       "database": "数据库",
       "features": "功能开关",
       "session": "会话覆盖",
-      "notes": "开发者笔记"
+      "notes": "开发者笔记",
+      "roles": "角色模拟"
     },
     "fab": {
       "open": "打开开发者工具",

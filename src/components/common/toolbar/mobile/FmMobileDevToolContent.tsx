@@ -15,6 +15,7 @@ import {
 } from '../tabs/DatabaseTab';
 import { FeatureTogglesTabContent } from '../tabs/FeatureTogglesTab';
 import { DevNotesTabContent } from '../tabs/DevNotesTab';
+import { MockRoleTabContent } from '../tabs/MockRoleTab';
 import { Button } from '@/components/common/shadcn/button';
 
 interface FmMobileDevToolContentProps {
@@ -43,6 +44,7 @@ export function FmMobileDevToolContent({
     database: t('mobileDevTools.toolLabels.database'),
     features: t('mobileDevTools.toolLabels.features'),
     notes: t('mobileDevTools.toolLabels.notes'),
+    roles: t('mobileDevTools.toolLabels.roles'),
   };
 
   if (!toolId) return null;
@@ -74,6 +76,8 @@ export function FmMobileDevToolContent({
         return <FeatureTogglesTabContent />;
       case 'notes':
         return <DevNotesTabContent />;
+      case 'roles':
+        return <MockRoleTabContent />;
       default:
         return <div className="text-white/50 text-center">{t('mobileDevTools.toolNotFound')}</div>;
     }

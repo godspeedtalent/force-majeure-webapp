@@ -16,7 +16,8 @@
     "hidePastEvents": "隐藏往期活动",
     "pastEventsTitle": "往期活动。",
     "welcome": "欢迎",
-    "loading": "加载中..."
+    "loading": "加载中...",
+    "searchEvents": "搜索活动..."
   },
   "events": {
     "title": "活动",
@@ -418,16 +419,6 @@
     "addToCart": "加入购物车",
     "addedToCart": "{{name}} 已加入购物车！",
     "outOfStock": "缺货"
-  },
-  "comingSoon": {
-    "title": "即将推出",
-    "subtitle": "请稍等片刻。",
-    "lookingForArtists": "招募2026年暖场艺术家",
-    "artistDescription": "我们正在寻找本地艺术家为2026年的活动开场。如果你是DJ、制作人或表演者，我们很想听到你的消息。",
-    "signUpAsArtist": "注册成为艺术家",
-    "artistSignedUp": "您已注册！",
-    "artistSignedUpDescription": "请关注发布的活动，您可以在那里表达加入演出阵容的意向。",
-    "loading": "加载中..."
   },
   "artistSignup": {
     "seoTitle": "加入我们的艺术家阵容",

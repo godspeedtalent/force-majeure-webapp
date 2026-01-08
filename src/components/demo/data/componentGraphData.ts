@@ -268,7 +268,7 @@ export const COMPONENT_NODES: ComponentNode[] = [
     x: 2.5,
     y: 5.5,
     isBase: true,
-    children: ['form-section', 'form-field', 'form-select', 'form-actions'],
+    children: ['form-section', 'form-field', 'form-select'],
     parents: ['stack-layout'],
   },
   {
@@ -298,15 +298,6 @@ export const COMPONENT_NODES: ComponentNode[] = [
     y: 4,
     isBase: true,
     parents: ['form', 'form-section'],
-  },
-  {
-    id: 'form-actions',
-    label: 'FmCommonFormActions',
-    category: 'Form System',
-    x: 3,
-    y: 4.8,
-    isBase: true,
-    parents: ['form'],
   },
 
   // LAYOUT CATEGORY (x: 3.5-4.5, y: 4-6)
@@ -446,7 +437,6 @@ export const COMPONENT_RELATIONSHIPS: ComponentRelationship[] = [
   { from: 'form', to: 'form-section', type: 'uses' },
   { from: 'form', to: 'form-field', type: 'uses' },
   { from: 'form', to: 'form-select', type: 'uses' },
-  { from: 'form', to: 'form-actions', type: 'uses' },
   { from: 'form', to: 'stack-layout', type: 'uses' },
   { from: 'form-section', to: 'form-field', type: 'uses' },
   { from: 'form-section', to: 'form-select', type: 'uses' },

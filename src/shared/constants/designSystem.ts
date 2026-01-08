@@ -25,6 +25,7 @@ export const COLORS = {
   // Semantic Colors
   MUTED_NAVY: '#545E75', // Info/tertiary - informational states
   CHILI_RED: '#D64933', // Danger - errors, warnings, destructive actions
+  DUSTY_SAGE: '#7D9B72', // Success - approve, confirm, success actions
 } as const;
 
 /**
@@ -53,6 +54,11 @@ export const COLOR_CLASSES = {
   DANGER_BG: 'bg-fm-danger',
   DANGER_TEXT: 'text-fm-danger',
   DANGER_BORDER: 'border-fm-danger',
+
+  // Dusty Sage (Success)
+  SUCCESS_BG: 'bg-fm-success',
+  SUCCESS_TEXT: 'text-fm-success',
+  SUCCESS_BORDER: 'border-fm-success',
 
   // Black & White
   BLACK_BG: 'bg-black',

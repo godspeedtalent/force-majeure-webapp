@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Clock, MapPin, Moon } from 'lucide-react';
 import { Badge } from '@/components/common/shadcn/badge';
-import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
 
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { FmBigButton } from '@/components/common/buttons/FmBigButton';
@@ -11,7 +10,6 @@ import { FmDateBox } from '@/components/common/display/FmDateBox';
 import { FmTextLink } from '@/components/common/display/FmTextLink';
 import { FmUndercardList } from '@/components/common/display/FmUndercardList';
 import { FmDynamicStickyHeader } from '@/components/common/layout/FmDynamicStickyHeader';
-import { ScrollBar } from '@/components/common/shadcn/scroll-area';
 import { FmCommonCollapsibleSection } from '@/components/common/data/FmCommonCollapsibleSection';
 import { type FmArtistRowProps } from '@/components/artist/FmArtistRow';
 import {
@@ -245,7 +243,7 @@ export const EventDetailsContent = ({
   const detailsContent = (
     <>
       {/* Unified grid - items flow to fill gaps */}
-      <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 cascade-item'>
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 cascade-item min-w-0 overflow-hidden'>
         {/* About This Event - only shows if description exists */}
         {event.description?.trim() && (
           <FmCommonCollapsibleSection
@@ -360,7 +358,7 @@ export const EventDetailsContent = ({
   );
 
   const primaryHeader = (
-    <div className='flex flex-col gap-5'>
+    <div className='flex flex-col gap-5 overflow-hidden'>
       <div className='flex flex-wrap items-center gap-4 lg:flex-nowrap'>
         <FmDateBox
           weekday={weekdayLabel}
@@ -369,7 +367,7 @@ export const EventDetailsContent = ({
           year={yearNumber}
           size='lg'
         />
-        <div className='space-y-3'>
+        <div className='space-y-3 min-w-0 flex-1'>
           <div className='space-y-0.5'>
             <h1 className='text-3xl lg:text-4xl font-canela font-medium text-foreground leading-tight'>
               {displayTitle}
@@ -416,9 +414,9 @@ export const EventDetailsContent = ({
   );
 
   const stickyHeader = (
-    <div className='flex items-center justify-between gap-3'>
-      <div className='flex items-center gap-3 min-w-0'>
-        <div className='flex flex-col items-center justify-center rounded-none border border-border/60 bg-background/70 px-3 py-2 text-[10px] font-semibold tracking-[0.35em] text-muted-foreground/80'>
+    <div className='flex items-center justify-between gap-3 overflow-hidden'>
+      <div className='flex items-center gap-3 min-w-0 flex-1'>
+        <div className='flex flex-col items-center justify-center rounded-none border border-border/60 bg-background/70 px-3 py-2 text-[10px] font-semibold tracking-[0.35em] text-muted-foreground/80 flex-shrink-0'>
           <span>{weekdayLabel}</span>
           <span>{dayNumber}</span>
         </div>
@@ -441,49 +439,30 @@ export const EventDetailsContent = ({
 
   return (
     <>
-      <div className='relative h-full'>
-        <ScrollAreaPrimitive.Root className='relative h-full overflow-hidden'>
-        <ScrollAreaPrimitive.Viewport className='h-full w-full'>
-          <div className='flex flex-col'>
-            <ScrollAreaPrimitive.Root className='relative flex-1 overflow-hidden'>
-              <ScrollAreaPrimitive.Viewport
-                ref={handleContentViewportRef}
-                className='h-full w-full'
-              >
-                <div className='flex flex-col'>
-                  <div className='p-6 lg:p-8'>
-                    <div className='mx-auto w-full lg:w-[65%] space-y-8'>
-                      <FmDynamicStickyHeader
-                        primaryContent={primaryHeader}
-                        stickyContent={stickyHeader}
-                        className='pt-4'
-                        primaryClassName='group transition-all duration-300'
-                        stickyClassName='border border-border/50 bg-background/95 backdrop-blur px-4 py-3 shadow-[0_12px_40px_-20px_rgba(0,0,0,0.7)] transition-shadow duration-300'
-                        stickyOffset='calc(4rem + 1.5rem)'
-                        scrollContainerRef={contentViewportRef}
-                      />
+      <div ref={handleContentViewportRef} className='p-6 lg:p-8'>
+        <div className='mx-auto lg:max-w-[65%] space-y-8'>
+          <FmDynamicStickyHeader
+            primaryContent={primaryHeader}
+            stickyContent={stickyHeader}
+            className='pt-4'
+            primaryClassName='group transition-all duration-300'
+            stickyClassName='border border-border/50 bg-background/95 backdrop-blur px-4 py-3 shadow-[0_12px_40px_-20px_rgba(0,0,0,0.7)] transition-shadow duration-300'
+            stickyOffset='calc(4rem + 1.5rem)'
+            scrollContainerRef={contentViewportRef}
+          />
 
-                      {/* Only show ticket button for upcoming events */}
-                      {!isPastEvent && (
-                        <div className='mt-6'>
-                          <FmBigButton onClick={handleOpenCheckout}>
-                            {t('eventDetails.getTickets')}
-                          </FmBigButton>
-                        </div>
-                      )}
+          {/* Only show ticket button for upcoming events */}
+          {!isPastEvent && (
+            <div className='mt-6'>
+              <FmBigButton onClick={handleOpenCheckout}>
+                {t('eventDetails.getTickets')}
+              </FmBigButton>
+            </div>
+          )}
 
-                      <div className='mt-4'>{detailsContent}</div>
-                    </div>
-                  </div>
-                </div>
-              </ScrollAreaPrimitive.Viewport>
-              <ScrollBar orientation='vertical' />
-            </ScrollAreaPrimitive.Root>
-          </div>
-        </ScrollAreaPrimitive.Viewport>
-        <ScrollBar orientation='vertical' />
-      </ScrollAreaPrimitive.Root>
-    </div>
+          <div className='mt-4'>{detailsContent}</div>
+        </div>
+      </div>
 
       <AttendeeModal
         open={isAttendeeModalOpen}

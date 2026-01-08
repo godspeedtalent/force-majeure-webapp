@@ -40,7 +40,6 @@ export { FmCommonFormSection } from './forms/FmCommonFormSection';
 export { FmCommonForm } from './forms/FmCommonForm';
 export { FmCommonFormField } from './forms/FmCommonFormField';
 export { FmCommonFormSelect } from './forms/FmCommonFormSelect';
-export { FmCommonFormActions } from './forms/FmCommonFormActions';
 export { FmCommonSwitch } from './forms/FmCommonSwitch';
 export { FmCommonLabel } from './forms/FmCommonLabel';
 

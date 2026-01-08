@@ -5,7 +5,6 @@ export { FmFormSectionHeader } from './FmFormSectionHeader';
 export { FmCommonForm } from './FmCommonForm';
 export { FmCommonFormField } from './FmCommonFormField';
 export { FmCommonFormSelect } from './FmCommonFormSelect';
-export { FmCommonFormActions } from './FmCommonFormActions';
 export { FmImageUpload } from './FmImageUpload';
 export { FmFlexibleImageUpload } from './FmFlexibleImageUpload';
 export {

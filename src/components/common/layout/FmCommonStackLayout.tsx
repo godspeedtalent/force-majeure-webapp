@@ -45,7 +45,7 @@ export const FmCommonStackLayout = ({
   return (
     <div
       className={cn(
-        'flex flex-col',
+        'flex flex-col min-w-0 overflow-hidden',
         spacingClasses[spacing],
         alignClasses[align],
         dividers && 'divide-y divide-border',

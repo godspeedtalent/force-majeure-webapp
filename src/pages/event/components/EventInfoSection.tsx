@@ -40,7 +40,7 @@ export const EventInfoSection = ({
       defaultExpanded={true}
       className={className}
     >
-      <div className='grid gap-4'>
+      <div className='grid grid-cols-1 gap-4 min-w-0 overflow-hidden'>
         <FmCommonInfoCard
           icon={Calendar}
           label={t('eventInfo.dateTime')}

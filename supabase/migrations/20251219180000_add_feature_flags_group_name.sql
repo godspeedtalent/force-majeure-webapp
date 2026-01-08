@@ -9,7 +9,7 @@ CREATE INDEX IF NOT EXISTS idx_feature_flags_group_name ON feature_flags(group_n
 
 -- Update existing flags with logical groupings based on their names
 -- Core flags
-UPDATE feature_flags SET group_name = 'core' WHERE flag_name IN ('coming_soon_mode', 'demo_pages');
+UPDATE feature_flags SET group_name = 'core' WHERE flag_name IN ('demo_pages');
 
 -- Event-related flags
 UPDATE feature_flags SET group_name = 'events' WHERE flag_name IN ('event_checkout_timer', 'hero_image_horizontal_centering');
