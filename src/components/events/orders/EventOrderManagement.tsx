@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FmConfigurableDataGrid } from '@/features/data-grid';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
+import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { useEventOrders, type EventOrder } from './hooks/useEventOrders';
 import { useEventById } from '@/shared/api/queries/eventQueries';
 import { Badge } from '@/components/common/shadcn/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/shadcn/avatar';
-import { Eye, XCircle, RefreshCw, Mail } from 'lucide-react';
+import { Eye, XCircle, RefreshCw, Mail, ShoppingBag } from 'lucide-react';
 import { OrderDetailModal } from './OrderDetailModal';
 import { DataGridColumns } from '@/features/data-grid/utils';
 import { formatCurrency } from '@/lib/utils/currency';
@@ -243,14 +244,11 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
   ];
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h2 className="text-2xl font-bold">{t('orderManagement.title')}</h2>
-        <p className="text-muted-foreground">
-          {t('orderManagement.description')}
-        </p>
-      </div>
-
+    <FmFormSection
+      title={t('orderManagement.title')}
+      description={t('orderManagement.description')}
+      icon={ShoppingBag}
+    >
       <FmConfigurableDataGrid
         data={orders}
         columns={columns}
@@ -287,6 +285,6 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
         variant="destructive"
         isLoading={isProcessing}
       />
-    </div>
+    </FmFormSection>
   );
 };

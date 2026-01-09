@@ -24,4 +24,6 @@ export interface ProfileLayoutProps {
   linkedArtistDate?: string | null;
   loadingArtist: boolean;
   createdAt: string;
+  /** Whether the current authenticated user is viewing their own profile */
+  isOwnProfile: boolean;
 }

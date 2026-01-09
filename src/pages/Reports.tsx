@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FmCommonCard } from '@/components/common/display/FmCommonCard';
-import { Layout } from '@/components/layout/Layout';
+import { FileText } from 'lucide-react';
+import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import {
   FmCommonTabs,
   FmCommonTabsContent,
@@ -21,42 +21,33 @@ const Reports = ({ eventId }: ReportsProps) => {
 
   if (!eventId) {
     return (
-      <Layout>
-        <div className="container mx-auto p-6">
-          <FmCommonCard className="p-6">
-            <p className="text-muted-foreground">{t('reports.eventIdRequired')}</p>
-          </FmCommonCard>
-        </div>
-      </Layout>
+      <div className="flex items-center justify-center p-8">
+        <p className="text-muted-foreground">{t('reports.eventIdRequired')}</p>
+      </div>
     );
   }
 
   return (
-    <Layout>
-      <div className="container mx-auto p-6 space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">{t('reports.pageTitle')}</h1>
-          <p className="text-muted-foreground mt-2">
-            {t('reports.pageDescription')}
-          </p>
-        </div>
+    <FmFormSection
+      title={t('reports.pageTitle')}
+      description={t('reports.pageDescription')}
+      icon={FileText}
+    >
+      <FmCommonTabs value={activeTab} onValueChange={setActiveTab}>
+        <FmCommonTabsList>
+          <FmCommonTabsTrigger value="sales">{t('reports.dailySalesReport')}</FmCommonTabsTrigger>
+          <FmCommonTabsTrigger value="attendance">{t('reports.attendance.title')}</FmCommonTabsTrigger>
+        </FmCommonTabsList>
 
-        <FmCommonTabs value={activeTab} onValueChange={setActiveTab}>
-          <FmCommonTabsList>
-            <FmCommonTabsTrigger value="sales">{t('reports.dailySalesReport')}</FmCommonTabsTrigger>
-            <FmCommonTabsTrigger value="attendance">{t('reports.attendance.title')}</FmCommonTabsTrigger>
-          </FmCommonTabsList>
+        <FmCommonTabsContent value="sales" className="mt-6">
+          <SalesReportConfig eventId={eventId} />
+        </FmCommonTabsContent>
 
-          <FmCommonTabsContent value="sales" className="mt-6">
-            <SalesReportConfig eventId={eventId} />
-          </FmCommonTabsContent>
-
-          <FmCommonTabsContent value="attendance" className="mt-6">
-            <AttendanceReportConfig eventId={eventId} />
-          </FmCommonTabsContent>
-        </FmCommonTabs>
-      </div>
-    </Layout>
+        <FmCommonTabsContent value="attendance" className="mt-6">
+          <AttendanceReportConfig eventId={eventId} />
+        </FmCommonTabsContent>
+      </FmCommonTabs>
+    </FmFormSection>
   );
 };
 

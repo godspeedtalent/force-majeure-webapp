@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Users } from 'lucide-react';
+import { Users, Save } from 'lucide-react';
 import { supabase } from '@/shared';
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
+import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
+import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
 import { Label } from '@/components/common/shadcn/label';
-import { Input } from '@/components/common/shadcn/input';
-import { Switch } from '@/components/common/shadcn/switch';
 import { toast } from 'sonner';
 import { handleError } from '@/shared/services/errorHandler';
 
@@ -29,7 +29,7 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
   const { t: tToast } = useTranslation('toasts');
   const queryClient = useQueryClient();
   const [isSaving, setIsSaving] = useState(false);
-  
+
   const [isEnabled, setIsEnabled] = useState(false);
   const [minInterested, setMinInterested] = useState(0);
   const [minPrivate, setMinPrivate] = useState(0);
@@ -146,21 +146,19 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
   }
 
   return (
-    <FmCommonCard className="p-8">
+    <FmFormSection
+      title={t('guestList.title')}
+      description={t('guestList.description')}
+      icon={Users}
+    >
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-foreground mb-2">
-              {t('guestList.title')}
-            </h2>
-            <p className="text-muted-foreground">
-              {t('guestList.description')}
-            </p>
-          </div>
+        {/* Save Button */}
+        <div className="flex justify-end">
           <FmCommonButton
             onClick={handleSave}
             loading={isSaving}
-            icon={Users}
+            icon={Save}
+            variant="gold"
           >
             {t('guestList.saveSettings')}
           </FmCommonButton>
@@ -176,10 +174,12 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
               {t('guestList.enableGuestListDescription')}
             </p>
           </div>
-          <Switch
+          <FmCommonToggle
             id="guest-list-enabled"
+            label={t('guestList.enableGuestList')}
             checked={isEnabled}
             onCheckedChange={setIsEnabled}
+            hideLabel
           />
         </div>
 
@@ -193,58 +193,40 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
           </div>
 
           {/* Interested Guests */}
-          <div className="space-y-2">
-            <Label htmlFor="min-interested">
-              {t('guestList.minInterestedGuests')}
-            </Label>
-            <Input
-              id="min-interested"
-              type="number"
-              min="0"
-              value={minInterested}
-              onChange={(e) => setMinInterested(Math.max(0, parseInt(e.target.value) || 0))}
-              placeholder="0"
-            />
-            <p className="text-xs text-muted-foreground">
-              {t('guestList.minInterestedDescription')}
-            </p>
-          </div>
+          <FmCommonTextField
+            id="min-interested"
+            label={t('guestList.minInterestedGuests')}
+            type="number"
+            min={0}
+            value={minInterested.toString()}
+            onChange={(e) => setMinInterested(Math.max(0, parseInt(e.target.value) || 0))}
+            placeholder="0"
+            description={t('guestList.minInterestedDescription')}
+          />
 
           {/* Private Guests */}
-          <div className="space-y-2">
-            <Label htmlFor="min-private">
-              {t('guestList.minPrivateGuests')}
-            </Label>
-            <Input
-              id="min-private"
-              type="number"
-              min="0"
-              value={minPrivate}
-              onChange={(e) => setMinPrivate(Math.max(0, parseInt(e.target.value) || 0))}
-              placeholder="0"
-            />
-            <p className="text-xs text-muted-foreground">
-              {t('guestList.minPrivateDescription')}
-            </p>
-          </div>
+          <FmCommonTextField
+            id="min-private"
+            label={t('guestList.minPrivateGuests')}
+            type="number"
+            min={0}
+            value={minPrivate.toString()}
+            onChange={(e) => setMinPrivate(Math.max(0, parseInt(e.target.value) || 0))}
+            placeholder="0"
+            description={t('guestList.minPrivateDescription')}
+          />
 
           {/* Public Guests */}
-          <div className="space-y-2">
-            <Label htmlFor="min-public">
-              {t('guestList.minPublicGuests')}
-            </Label>
-            <Input
-              id="min-public"
-              type="number"
-              min="0"
-              value={minPublic}
-              onChange={(e) => setMinPublic(Math.max(0, parseInt(e.target.value) || 0))}
-              placeholder="0"
-            />
-            <p className="text-xs text-muted-foreground">
-              {t('guestList.minPublicDescription')}
-            </p>
-          </div>
+          <FmCommonTextField
+            id="min-public"
+            label={t('guestList.minPublicGuests')}
+            type="number"
+            min={0}
+            value={minPublic.toString()}
+            onChange={(e) => setMinPublic(Math.max(0, parseInt(e.target.value) || 0))}
+            placeholder="0"
+            description={t('guestList.minPublicDescription')}
+          />
         </div>
 
         {/* View Count Toggle */}
@@ -257,10 +239,12 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
               {t('guestList.displayViewCountDescription')}
             </p>
           </div>
-          <Switch
+          <FmCommonToggle
             id="view-count-enabled"
+            label={t('guestList.displayViewCount')}
             checked={showViewCount}
             onCheckedChange={setShowViewCount}
+            hideLabel
           />
         </div>
 
@@ -273,6 +257,6 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
           </div>
         )}
       </div>
-    </FmCommonCard>
+    </FmFormSection>
   );
 }

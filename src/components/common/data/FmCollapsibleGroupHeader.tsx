@@ -103,7 +103,7 @@ export const FmCollapsibleGroupHeader = ({
         <ChevronDown
           className={cn(
             'transition-all duration-300',
-            'text-white/40 group-hover/header:text-fm-gold',
+            'text-fm-gold/40 group-hover/header:text-fm-gold',
             !isExpanded && '-rotate-90',
             isLarge ? 'h-4 w-4' : 'h-3 w-3'
           )}
@@ -112,21 +112,21 @@ export const FmCollapsibleGroupHeader = ({
           <Icon
             className={cn(
               'transition-all duration-300',
-              'text-white/50 group-hover/header:text-fm-gold',
+              'text-fm-gold/50 group-hover/header:text-fm-gold',
               isLarge ? 'h-4 w-4' : 'h-3.5 w-3.5'
             )}
           />
         )}
         <span className={cn(
           'font-medium uppercase tracking-wider transition-all duration-300',
-          'text-white/60 group-hover/header:text-fm-gold group-hover/header:tracking-widest',
+          'text-fm-gold/60 group-hover/header:text-fm-gold group-hover/header:tracking-widest',
           isLarge ? 'text-[11px]' : 'text-[10px]'
         )}>
           {title}
         </span>
         {count !== undefined && (
           <span className={cn(
-            'text-white/30 group-hover/header:text-fm-gold/50 transition-colors duration-300',
+            'text-fm-gold/30 group-hover/header:text-fm-gold/60 transition-colors duration-300',
             isLarge ? 'text-[10px]' : 'text-[9px]'
           )}>
             ({count})
@@ -135,8 +135,8 @@ export const FmCollapsibleGroupHeader = ({
         {showDivider && (
           <div className={cn(
             'flex-1 h-[1px] transition-all duration-300',
-            'bg-gradient-to-r from-white/10 to-transparent',
-            'group-hover/header:from-fm-gold/30 group-hover/header:to-fm-gold/5'
+            'bg-gradient-to-r from-fm-gold/20 to-transparent',
+            'group-hover/header:from-fm-gold/40 group-hover/header:to-fm-gold/10'
           )} />
         )}
       </button>
@@ -200,7 +200,7 @@ export const FmCollapsibleSubgroupHeader = ({
         onClick={handleToggle}
         className={cn(
           'flex items-center gap-1.5 py-1 px-2 w-full group/subheader transition-all duration-300 rounded-sm',
-          'hover:bg-white/5',
+          'hover:bg-fm-gold/5',
           'active:scale-[0.99]'
         )}
         type="button"
@@ -208,21 +208,21 @@ export const FmCollapsibleSubgroupHeader = ({
         <ChevronDown
           className={cn(
             'h-2.5 w-2.5 transition-all duration-300',
-            'text-white/30 group-hover/subheader:text-white/50',
+            'text-fm-gold/30 group-hover/subheader:text-fm-gold/60',
             !isExpanded && '-rotate-90'
           )}
         />
         {Icon && (
-          <Icon className="h-3 w-3 text-white/40 group-hover/subheader:text-white/60 transition-colors" />
+          <Icon className="h-3 w-3 text-fm-gold/40 group-hover/subheader:text-fm-gold/70 transition-colors" />
         )}
         <span className={cn(
           'text-[9px] font-medium uppercase tracking-wide transition-all duration-300',
-          'text-white/50 group-hover/subheader:text-white/70'
+          'text-fm-gold/50 group-hover/subheader:text-fm-gold/80'
         )}>
           {title}
         </span>
         {count !== undefined && (
-          <span className="text-[8px] text-white/25">
+          <span className="text-[8px] text-fm-gold/25">
             ({count})
           </span>
         )}

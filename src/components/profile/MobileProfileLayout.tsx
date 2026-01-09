@@ -27,7 +27,6 @@ import { UserArtistTab } from '@/components/profile/UserArtistTab';
 import { FmI18nCommon } from '@/components/common/i18n';
 import { ProfileLayoutProps } from './types';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
-import { useAuth } from '@/features/auth/services/AuthContext';
 import { getImageUrl } from '@/shared/utils/imageUtils';
 
 export const MobileProfileLayout = ({
@@ -40,17 +39,17 @@ export const MobileProfileLayout = ({
   linkedArtistDate,
   loadingArtist,
   createdAt,
+  isOwnProfile,
 }: ProfileLayoutProps) => {
   const navigate = useNavigate();
   const { t } = useTranslation('common');
   const { isAdmin } = useUserPermissions();
-  const { user: currentUser } = useAuth();
 
   // Edit profile only available to the profile owner or admins
-  const canEditProfile = isAdmin() || currentUser?.id === user.id;
+  const canEditProfile = isAdmin() || isOwnProfile;
 
   return (
-    <div className='h-[calc(100vh-64px)] flex flex-col overflow-hidden'>
+    <div className='h-[calc(100vh-64px)] mt-16 flex flex-col overflow-hidden'>
       {/* Hero Section with Profile Photo */}
       <div className='relative flex-shrink-0'>
         {/* Hero Image */}

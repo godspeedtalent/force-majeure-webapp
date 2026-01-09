@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/common/shadcn/button';
-import { Save } from 'lucide-react';
+import { Save, Ticket } from 'lucide-react';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { TicketGroupManager } from './TicketGroupManager';
 import { useEventTicketTiers } from './hooks/useEventTicketTiers';
 import type { TicketGroup } from './ticket-group-manager/types';
@@ -33,24 +34,28 @@ export const EventTicketTierManagement = ({ eventId }: EventTicketTierManagement
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold">{t('eventManagement.ticketTierManagement')}</h2>
-          <p className="text-muted-foreground">
-            {t('eventManagement.ticketTierDescription')}
-          </p>
+    <FmFormSection
+      title={t('eventManagement.ticketTierManagement')}
+      description={t('eventManagement.ticketTierDescription')}
+      icon={Ticket}
+    >
+      <div className="space-y-4">
+        <div className="flex justify-end">
+          <FmCommonButton
+            onClick={handleSave}
+            loading={isSaving}
+            icon={Save}
+            variant="gold"
+          >
+            {isSaving ? t('buttons.saving') : t('buttons.saveChanges')}
+          </FmCommonButton>
         </div>
-        <Button onClick={handleSave} disabled={isSaving}>
-          <Save className="w-4 h-4 mr-2" />
-          {isSaving ? t('buttons.saving') : t('buttons.saveChanges')}
-        </Button>
-      </div>
 
-      <TicketGroupManager
-        groups={localGroups}
-        onChange={setLocalGroups}
-      />
-    </div>
+        <TicketGroupManager
+          groups={localGroups}
+          onChange={setLocalGroups}
+        />
+      </div>
+    </FmFormSection>
   );
 };

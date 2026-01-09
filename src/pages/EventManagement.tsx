@@ -49,6 +49,7 @@ import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfir
 import { PageErrorBoundary } from '@/components/common/feedback';
 import { FmStickyFormFooter } from '@/components/common/forms/FmStickyFormFooter';
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
+import { FmTabContentHeader } from '@/components/common/headers/FmTabContentHeader';
 
 type EventTab = 'overview' | 'gallery' | 'artists' | 'tiers' | 'orders' | 'sales' | 'reports' | 'tracking' | 'social' | 'ux_display' | 'admin' | 'view';
 
@@ -420,11 +421,11 @@ export default function EventManagement() {
         </div>
 
         {/* Title */}
-        <div className='mb-6'>
-          <h1 className='text-3xl font-bold text-foreground'>
-            {event.title}
-          </h1>
-        </div>
+        <FmTabContentHeader
+          title={event.title || ''}
+          size="large"
+          className="mb-6"
+        />
 
         {/* Main Content */}
         <div className='space-y-6'>

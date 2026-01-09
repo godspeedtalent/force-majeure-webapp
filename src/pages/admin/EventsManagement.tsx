@@ -7,8 +7,9 @@ import {
 import { FmCommonAdminGridPage } from '@/components/common/layout/FmCommonAdminGridPage';
 import { useEvents } from '@/features/events/hooks/useEvents';
 import { useQueryClient } from '@tanstack/react-query';
-import { Edit } from 'lucide-react';
+import { Edit, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { supabase, logger } from '@/shared';
+import { FmPortalTooltip } from '@/components/common/feedback/FmPortalTooltip';
 
 interface EventRow {
   id: string;
@@ -88,6 +89,46 @@ export const EventsManagement = () => {
       getLabel: (row: EventRow) => row.headliner?.name || '—',
       getHref: (row: EventRow) => row.headliner_id ? `/artist/${row.headliner_id}` : '#',
     }),
+    {
+      key: 'issues',
+      label: t('table.issues'),
+      width: '120px',
+      render: (_value: unknown, row: EventRow) => {
+        const issues: string[] = [];
+
+        if (!row.headliner_id) {
+          issues.push(t('table.noHeadliner'));
+        }
+
+        if (issues.length === 0) {
+          return (
+            <FmPortalTooltip content={t('table.noIssues')} side="top">
+              <div className="flex items-center gap-1 text-green-500">
+                <CheckCircle2 className="h-4 w-4" />
+              </div>
+            </FmPortalTooltip>
+          );
+        }
+
+        return (
+          <FmPortalTooltip
+            content={
+              <ul className="list-disc pl-4 space-y-1">
+                {issues.map((issue, i) => (
+                  <li key={i}>{issue}</li>
+                ))}
+              </ul>
+            }
+            side="top"
+          >
+            <div className="flex items-center gap-1.5 text-yellow-500">
+              <AlertTriangle className="h-4 w-4" />
+              <span className="text-xs font-medium">{issues.length}</span>
+            </div>
+          </FmPortalTooltip>
+        );
+      },
+    },
   ];
 
   return (

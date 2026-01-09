@@ -165,6 +165,7 @@ const Profile = () => {
     linkedArtistDate,
     loadingArtist,
     createdAt,
+    isOwnProfile: true, // Profile.tsx always shows the current user's own profile
   };
 
   return (

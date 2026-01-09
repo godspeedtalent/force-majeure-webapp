@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '@/shared';
 import { toast } from 'sonner';
 import type { TicketGroup } from '../ticket-group-manager/types';
+import { NO_GROUP_ID, NO_GROUP_COLOR } from '../ticket-group-manager/constants';
 import { useDeleteTicketTier, useSetTierActive, ticketTierKeys } from '@/shared/api/queries/ticketTierQueries';
 
 interface TicketTierWithOrders {
@@ -106,14 +107,14 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
         tiers: tiersWithOrders.filter(t => t.group_id === group.id),
       }));
 
-      // Add ungrouped tiers
+      // Add tiers without a group to "No Group"
       const ungroupedTiers = tiersWithOrders.filter(t => !t.group_id);
       if (ungroupedTiers.length > 0) {
         result.push({
-          id: 'ungrouped',
-          name: 'Ungrouped Tiers',
-          description: 'Tiers not assigned to any group',
-          color: 'border-gray-500',
+          id: NO_GROUP_ID,
+          name: 'No Group',
+          description: 'Tickets without a specific group',
+          color: NO_GROUP_COLOR,
           group_order: 999,
           is_active: true,
           fee_flat_cents: 0,
@@ -138,7 +139,7 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
 
       // Save groups
       for (const group of groups) {
-        if (group.id === 'ungrouped') continue;
+        if (group.id === NO_GROUP_ID) continue;
 
         const groupData = {
           event_id: eventId,
@@ -177,7 +178,7 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
         for (const tier of group.tiers) {
           const tierData = {
             event_id: eventId,
-            group_id: group.id === 'ungrouped' ? null : group.id,
+            group_id: group.id === NO_GROUP_ID ? null : group.id,
             name: tier.name,
             description: tier.description,
             price_cents: tier.price_cents,

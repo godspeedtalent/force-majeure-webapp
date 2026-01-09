@@ -1,6 +1,10 @@
 export const NO_GROUP_ID = 'no-group';
 
+// Default grey color for "No Group"
+export const NO_GROUP_COLOR = 'bg-gray-500/20 border-gray-500/50 text-gray-300';
+
 export const GROUP_COLORS = [
+  { name: 'Grey', value: NO_GROUP_COLOR },
   { name: 'Gold', value: 'bg-amber-500/20 border-amber-500/50 text-amber-200' },
   {
     name: 'Purple',

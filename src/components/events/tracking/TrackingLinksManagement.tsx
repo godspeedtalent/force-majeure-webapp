@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Copy, Edit, Trash2, Power, Plus } from 'lucide-react';
+import { Copy, Edit, Trash2, Power, Plus, Link2 } from 'lucide-react';
 import {
   FmCommonTabs,
   FmCommonTabsContent,
@@ -9,6 +9,7 @@ import {
 } from '@/components/common/navigation/FmCommonTabs';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
+import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmConfigurableDataGrid, DataGridAction } from '@/features/data-grid';
 import { useTrackingLinks } from './hooks/useTrackingLinks';
 import { TrackingLink } from '@/types/tracking';
@@ -155,7 +156,11 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
   };
 
   return (
-    <div className="space-y-6">
+    <FmFormSection
+      title={t('tracking.title')}
+      description={t('tracking.description')}
+      icon={Link2}
+    >
       <FmCommonTabs defaultValue="links" className="w-full">
         <div className="flex items-center justify-between mb-4">
           <FmCommonTabsList>
@@ -210,6 +215,6 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
         onConfirm={handleDeleteConfirm}
         variant="destructive"
       />
-    </div>
+    </FmFormSection>
   );
 }

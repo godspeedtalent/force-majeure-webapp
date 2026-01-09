@@ -92,7 +92,7 @@ export const orderService = {
       .from('orders')
       .select(`
         *,
-        profile:profiles!user_id(
+        profile:profiles!orders_user_id_profiles_fkey(
           id,
           display_name,
           full_name,
@@ -177,7 +177,7 @@ export const orderService = {
       .from('orders')
       .select(`
         *,
-        profile:profiles!user_id(
+        profile:profiles!orders_user_id_profiles_fkey(
           id,
           display_name,
           full_name,
@@ -401,7 +401,7 @@ export const orderService = {
       .from('orders')
       .select(`
         *,
-        profile:profiles!user_id(
+        profile:profiles!orders_user_id_profiles_fkey(
           id,
           display_name,
           full_name,

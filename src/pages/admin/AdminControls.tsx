@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import { FeatureToggleSection } from '@/components/DevTools/FeatureToggleSection';
 import { AdminTicketingSection } from '@/components/admin/AdminTicketingSection';
-import { DevToolsManagement } from '@/components/admin/DevToolsManagement';
 import { UserManagement } from './UserManagement';
 import { OrganizationsManagement } from './OrganizationsManagement';
 import { formatHeader } from '@/shared';
@@ -181,7 +180,9 @@ export default function AdminControls() {
                 Control which sections appear in the developer toolbar for
                 testing
               </p>
-              <DevToolsManagement />
+              <p className='text-muted-foreground italic'>
+                Dev toolbar management coming soon.
+              </p>
             </div>
           </div>
         )}

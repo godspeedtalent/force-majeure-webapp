@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import type { TicketGroup, TicketTier } from '../types';
-import { GROUP_COLORS, NO_GROUP_ID } from '../constants';
+import { GROUP_COLORS, NO_GROUP_ID, NO_GROUP_COLOR } from '../constants';
 
 // Helper to create default No Group
 const createNoGroup = (): TicketGroup => ({
   id: NO_GROUP_ID,
   name: 'No Group',
   description: 'Tickets without a specific group',
-  color: GROUP_COLORS[0].value,
+  color: NO_GROUP_COLOR,
   tiers: [
     {
       name: 'General Admission',

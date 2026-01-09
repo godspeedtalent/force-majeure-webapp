@@ -26,7 +26,6 @@ import { UserArtistTab } from '@/components/profile/UserArtistTab';
 import { FmI18nCommon } from '@/components/common/i18n';
 import { ProfileLayoutProps } from './types';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
-import { useAuth } from '@/features/auth/services/AuthContext';
 
 export const DesktopProfileLayout = ({
   user,
@@ -38,14 +37,14 @@ export const DesktopProfileLayout = ({
   linkedArtistDate,
   loadingArtist,
   createdAt,
+  isOwnProfile,
 }: ProfileLayoutProps) => {
   const navigate = useNavigate();
   const { t } = useTranslation('common');
   const { isAdmin } = useUserPermissions();
-  const { user: currentUser } = useAuth();
-  
+
   // Edit profile only available to the profile owner or admins
-  const canEditProfile = isAdmin() || currentUser?.id === user.id;
+  const canEditProfile = isAdmin() || isOwnProfile;
 
   return (
     <div className='max-w-6xl mx-auto px-4 py-12 space-y-8'>

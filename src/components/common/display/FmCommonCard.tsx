@@ -13,13 +13,13 @@ import { cn } from '@/shared';
 // FmCommonCard - Force Majeure branded Card wrapper
 // ============================================================
 // Wraps shadcn Card with FM branding:
-// - Default: Semi-transparent with white border, gold border on hover
+// - Default: Semi-transparent muted background with gold border, subtle hover
 // - Frosted: Glass effect background with blur (for modals, overlays)
-// - Subtle gold glow + brightness increase on hover
+// - Frosted variant has subtle gold glow + brightness increase on hover
 // - Consistent spacing and transitions
 //
 // Usage:
-//   <FmCommonCard>Content</FmCommonCard>  // default with gold hover effects
+//   <FmCommonCard>Content</FmCommonCard>  // default with gold border, subtle hover
 //   <FmCommonCard variant="frosted">...</FmCommonCard>  // frosted glass effect
 //   <FmCommonCard hoverable={false}>...</FmCommonCard>  // disable hover effects
 
@@ -39,12 +39,12 @@ const FmCommonCard = React.forwardRef<HTMLDivElement, FmCommonCardProps>(
         'transition-all duration-300 min-w-0 overflow-hidden',
         // Variant styles
         variant === 'default' &&
-          'bg-black/40 border border-white/20',
+          'bg-muted/20 border border-fm-gold/30',
         variant === 'frosted' &&
           'bg-background/60 backdrop-blur-md border-border',
         // Hover effects (when enabled)
         hoverable && variant === 'default' &&
-          'hover:border-fm-gold/50 hover:bg-black/35 hover:shadow-[0_0_12px_rgba(223,186,125,0.15)]',
+          'hover:bg-white/5',
         hoverable && variant === 'frosted' &&
           'hover:border-white/30 hover:shadow-[0_0_8px_rgba(223,186,125,0.08)] hover:bg-background/55 hover:brightness-[1.02]',
         className

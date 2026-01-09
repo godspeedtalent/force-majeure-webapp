@@ -1090,7 +1090,11 @@
     "manageEvent": "Gestionar Evento",
     "deleteEvent": "Eliminar Evento",
     "deleteGenre": "Eliminar Género",
-    "addGenre": "Añadir Género"
+    "addGenre": "Añadir Género",
+    "addEvent": "Añadir Evento",
+    "issues": "Problemas",
+    "noHeadliner": "Sin Artista Principal",
+    "noIssues": "Sin problemas"
   },
   "filters": {
     "advancedFilters": "Filtros Avanzados",
@@ -3231,6 +3235,7 @@
     "placeholder": "Buscar usuarios, artistas, eventos...",
     "recentRecords": "Registros recientes",
     "allTables": "Todas las tablas",
+    "createNew": "Crear nuevo {{entity}}",
     "unknownUser": "Usuario Desconocido",
     "tba": "Por confirmar",
     "noResults": "No se encontraron resultados para \"{{query}}\"",

@@ -1,17 +1,18 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { subDays } from 'date-fns';
-import { Calendar, DollarSign, TrendingUp, Eye, Target, Download } from 'lucide-react';
+import { Calendar, DollarSign, TrendingUp, Eye, Target, Download, BarChart3 } from 'lucide-react';
 import { useEventAnalytics } from './hooks/useEventAnalytics';
 import { AnalyticsStatCard } from './AnalyticsStatCard';
 import { SalesOverTimeChart } from './charts/SalesOverTimeChart';
 import { ViewsOverTimeChart } from './charts/ViewsOverTimeChart';
 import { RevenueByTierChart } from './charts/RevenueByTierChart';
 import { HourlyDistributionChart } from './charts/HourlyDistributionChart';
-import { Button } from '@/components/common/shadcn/button';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { DatePickerWithRange } from '@/components/common/shadcn/date-range-picker';
 import { DateRange } from 'react-day-picker';
 import { formatCurrency } from '@/lib/utils/currency';
+import { FmFormSection } from '@/components/common/forms/FmFormSection';
 
 interface EventAnalyticsProps {
   eventId: string;
@@ -71,94 +72,93 @@ export const EventAnalytics = ({ eventId }: EventAnalyticsProps) => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header with Date Range and Export */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold">{t('analytics.eventAnalytics')}</h2>
-          <p className="text-muted-foreground">
-            {t('analytics.trackPerformance')}
-          </p>
+    <FmFormSection
+      title={t('analytics.eventAnalytics')}
+      description={t('analytics.trackPerformance')}
+      icon={BarChart3}
+    >
+      <div className="space-y-6">
+        {/* Date Range and Export */}
+        <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4">
+          <div className="flex gap-2">
+            <DatePickerWithRange
+              date={dateRange}
+              onDateChange={(range) => {
+                if (range) {
+                  setDateRange(range);
+                }
+              }}
+            />
+            <FmCommonButton onClick={handleExportCSV} variant="default" size="sm" icon={Download}>
+              {t('analytics.exportCSV')}
+            </FmCommonButton>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <DatePickerWithRange
-            date={dateRange}
-            onDateChange={(range) => {
-              if (range) {
-                setDateRange(range);
-              }
-            }}
+
+        {/* KPI Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <AnalyticsStatCard
+            title={t('analytics.totalRevenue')}
+            value={analytics.totalRevenue}
+            icon={DollarSign}
+            format="currency"
+            subtitle={t('analytics.excludingFees')}
           />
-          <Button onClick={handleExportCSV} variant="outline" size="sm">
-            <Download className="w-4 h-4 mr-2" />
-            {t('analytics.exportCSV')}
-          </Button>
+          <AnalyticsStatCard
+            title={t('analytics.ticketsSold')}
+            value={analytics.totalTicketsSold}
+            icon={TrendingUp}
+            format="number"
+          />
+          <AnalyticsStatCard
+            title={t('analytics.pageViews')}
+            value={analytics.totalViews}
+            icon={Eye}
+            format="number"
+            subtitle={t('analytics.uniqueVisitorsCount', { count: analytics.uniqueVisitors })}
+          />
+          <AnalyticsStatCard
+            title={t('analytics.conversionRate')}
+            value={analytics.conversionRate}
+            icon={Target}
+            format="percentage"
+            subtitle={t('analytics.viewsToPurchases')}
+          />
+        </div>
+
+        {/* Secondary Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <AnalyticsStatCard
+            title={t('analytics.averageOrderValue')}
+            value={analytics.averageOrderValue}
+            icon={DollarSign}
+            format="currency"
+          />
+          <AnalyticsStatCard
+            title={t('analytics.totalFeesCollected')}
+            value={analytics.totalFees}
+            icon={DollarSign}
+            format="currency"
+          />
+          <AnalyticsStatCard
+            title={t('analytics.refundRate')}
+            value={analytics.refundRate}
+            icon={Calendar}
+            format="percentage"
+          />
+        </div>
+
+        {/* Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <SalesOverTimeChart data={analytics.salesOverTime} />
+          <ViewsOverTimeChart data={analytics.viewsOverTime} />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <RevenueByTierChart data={analytics.revenueByTier} />
+          <HourlyDistributionChart data={analytics.hourlyDistribution} />
         </div>
       </div>
-
-      {/* KPI Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <AnalyticsStatCard
-          title={t('analytics.totalRevenue')}
-          value={analytics.totalRevenue}
-          icon={DollarSign}
-          format="currency"
-          subtitle={t('analytics.excludingFees')}
-        />
-        <AnalyticsStatCard
-          title={t('analytics.ticketsSold')}
-          value={analytics.totalTicketsSold}
-          icon={TrendingUp}
-          format="number"
-        />
-        <AnalyticsStatCard
-          title={t('analytics.pageViews')}
-          value={analytics.totalViews}
-          icon={Eye}
-          format="number"
-          subtitle={t('analytics.uniqueVisitorsCount', { count: analytics.uniqueVisitors })}
-        />
-        <AnalyticsStatCard
-          title={t('analytics.conversionRate')}
-          value={analytics.conversionRate}
-          icon={Target}
-          format="percentage"
-          subtitle={t('analytics.viewsToPurchases')}
-        />
-      </div>
-
-      {/* Secondary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <AnalyticsStatCard
-          title={t('analytics.averageOrderValue')}
-          value={analytics.averageOrderValue}
-          icon={DollarSign}
-          format="currency"
-        />
-        <AnalyticsStatCard
-          title={t('analytics.totalFeesCollected')}
-          value={analytics.totalFees}
-          icon={DollarSign}
-          format="currency"
-        />
-        <AnalyticsStatCard
-          title={t('analytics.refundRate')}
-          value={analytics.refundRate}
-          icon={Calendar}
-          format="percentage"
-        />
-      </div>
-
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <SalesOverTimeChart data={analytics.salesOverTime} />
-        <ViewsOverTimeChart data={analytics.viewsOverTime} />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <RevenueByTierChart data={analytics.revenueByTier} />
-        <HourlyDistributionChart data={analytics.hourlyDistribution} />
-      </div>
-    </div>
+    </FmFormSection>
   );
 };

@@ -19,6 +19,7 @@ import {
   UserPlus,
   FileQuestion,
   ChevronRight,
+  Plus,
 } from 'lucide-react';
 import { Input } from '@/components/common/shadcn/input';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
@@ -134,6 +135,7 @@ interface DatabaseTableConfig {
   icon: typeof Database;
   route: string;
   description: string;
+  createRoute?: string;
 }
 
 const DATABASE_TABLES: DatabaseTableConfig[] = [
@@ -143,6 +145,7 @@ const DATABASE_TABLES: DatabaseTableConfig[] = [
     icon: Music,
     route: '/developer/database?table=artists',
     description: 'Artist profiles and metadata',
+    createRoute: '/artists/create',
   },
   {
     id: 'events',
@@ -150,6 +153,7 @@ const DATABASE_TABLES: DatabaseTableConfig[] = [
     icon: Calendar,
     route: '/developer/database?table=events',
     description: 'Event listings and details',
+    createRoute: '/events/create',
   },
   {
     id: 'venues',
@@ -157,6 +161,7 @@ const DATABASE_TABLES: DatabaseTableConfig[] = [
     icon: MapPin,
     route: '/developer/database?table=venues',
     description: 'Venue information',
+    createRoute: '/venues/create',
   },
   {
     id: 'recordings',
@@ -171,6 +176,7 @@ const DATABASE_TABLES: DatabaseTableConfig[] = [
     icon: Building2,
     route: '/developer/database?table=organizations',
     description: 'Organization management',
+    createRoute: '/organizations/create',
   },
   {
     id: 'users',
@@ -695,22 +701,35 @@ export function DatabaseNavigatorSearch() {
             {DATABASE_TABLES.map(table => {
               const IconComponent = table.icon;
               return (
-                <button
-                  key={table.id}
-                  onClick={() => navigate(table.route)}
-                  className='w-full flex items-center gap-3 p-2 rounded hover:bg-muted transition-colors text-left group'
-                >
-                  <div className='flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center'>
-                    <IconComponent className='h-4 w-4 text-muted-foreground group-hover:text-fm-gold transition-colors' />
-                  </div>
-                  <div className='flex-1 min-w-0'>
-                    <p className='text-sm font-medium truncate'>{table.label}</p>
-                    <p className='text-xs text-muted-foreground truncate'>
-                      {table.description}
-                    </p>
-                  </div>
-                  <ChevronRight className='h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity' />
-                </button>
+                <div key={table.id} className='flex items-center gap-1'>
+                  <button
+                    onClick={() => navigate(table.route)}
+                    className='flex-1 flex items-center gap-3 p-2 rounded hover:bg-muted transition-colors text-left group'
+                  >
+                    <div className='flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center'>
+                      <IconComponent className='h-4 w-4 text-muted-foreground group-hover:text-fm-gold transition-colors' />
+                    </div>
+                    <div className='flex-1 min-w-0'>
+                      <p className='text-sm font-medium truncate'>{table.label}</p>
+                      <p className='text-xs text-muted-foreground truncate'>
+                        {table.description}
+                      </p>
+                    </div>
+                    <ChevronRight className='h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity' />
+                  </button>
+                  {table.createRoute && (
+                    <button
+                      onClick={e => {
+                        e.stopPropagation();
+                        navigate(table.createRoute!);
+                      }}
+                      className='flex-shrink-0 w-8 h-8 flex items-center justify-center rounded hover:bg-fm-gold/20 transition-colors group/create'
+                      title={t('databaseSearch.createNew', { entity: table.label })}
+                    >
+                      <Plus className='h-4 w-4 text-muted-foreground group-hover/create:text-fm-gold transition-colors' />
+                    </button>
+                  )}
+                </div>
               );
             })}
           </div>

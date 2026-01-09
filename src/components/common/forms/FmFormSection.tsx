@@ -2,15 +2,16 @@
  * FmFormSection
  *
  * Unified form section component that combines:
- * - Gold-white gradient section header
+ * - Gold gradient section header (gold to lighter gold)
  * - Optional description subtext
  * - Feathered gold divider
- * - FmCommonCard container
+ * - FmCommonCard container with gold border on hover
  *
  * **Features:**
  * - Layout options (stack, grid-2, grid-3)
  * - Optional icon support
  * - Consistent form section styling
+ * - Gold border hover effect on cards
  *
  * **When to use:**
  * - For any form section that needs a styled header with card container
@@ -49,7 +50,7 @@ interface FmFormSectionProps {
   contentClassName?: string;
   /** Card variant */
   variant?: 'default' | 'frosted';
-  /** Enable hover effects on card */
+  /** Enable hover effects on card (default: true for gold border on hover) */
   hoverable?: boolean;
 }
 
@@ -72,7 +73,7 @@ export const FmFormSection = React.forwardRef<HTMLDivElement, FmFormSectionProps
       cardClassName,
       contentClassName,
       variant = 'default',
-      hoverable = false,
+      hoverable = true,
     },
     ref
   ) => {

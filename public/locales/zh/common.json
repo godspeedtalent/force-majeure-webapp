@@ -1090,7 +1090,11 @@
     "manageEvent": "管理活动",
     "deleteEvent": "删除活动",
     "deleteGenre": "删除风格",
-    "addGenre": "添加风格"
+    "addGenre": "添加风格",
+    "addEvent": "添加活动",
+    "issues": "问题",
+    "noHeadliner": "无主演",
+    "noIssues": "无问题"
   },
   "filters": {
     "advancedFilters": "高级筛选",
@@ -3231,6 +3235,7 @@
     "placeholder": "搜索用户、艺术家、活动...",
     "recentRecords": "最近记录",
     "allTables": "所有表",
+    "createNew": "创建新{{entity}}",
     "unknownUser": "未知用户",
     "tba": "待定",
     "noResults": "未找到\"{{query}}\"的结果",

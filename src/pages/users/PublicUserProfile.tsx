@@ -9,12 +9,14 @@ import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoa
 import { supabase, logger, useFeatureFlagHelpers, FEATURE_FLAGS, ROLES } from '@/shared';
 import { handleError } from '@/shared/services/errorHandler';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { useAuth } from '@/features/auth/services/AuthContext';
 import { MobileProfileLayout } from '@/components/profile/MobileProfileLayout';
 import { DesktopProfileLayout } from '@/components/profile/DesktopProfileLayout';
 import { UpcomingEvent } from '@/components/profile/types';
 
 interface PublicProfile {
   id: string;
+  user_id: string;
   display_name: string | null;
   avatar_url: string | null;
   created_at: string;
@@ -27,6 +29,7 @@ const PublicUserProfile = () => {
   const navigate = useNavigate();
   const { isAdmin, hasRole } = useUserPermissions();
   const { isFeatureEnabled, isLoading: flagsLoading } = useFeatureFlagHelpers();
+  const { user: currentUser } = useAuth();
 
   const [upcomingShows, setUpcomingShows] = useState<UpcomingEvent[]>([]);
   const [loadingShows, setLoadingShows] = useState(true);
@@ -46,7 +49,7 @@ const PublicUserProfile = () => {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, display_name, avatar_url, created_at')
+        .select('id, user_id, display_name, avatar_url, created_at')
         .eq('id', id)
         .single();
 
@@ -192,6 +195,10 @@ const PublicUserProfile = () => {
     created_at: profileData.created_at,
   };
 
+  // Check if current user is viewing their own profile
+  // Compare auth user ID with profile's user_id (not the profile's own id)
+  const isOwnProfile = currentUser?.id === profileData.user_id;
+
   const layoutProps = {
     user: userForLayout as any,
     profile: {
@@ -205,6 +212,7 @@ const PublicUserProfile = () => {
     linkedArtistDate: null,
     loadingArtist: false,
     createdAt,
+    isOwnProfile,
   };
 
   return (

@@ -1,11 +1,11 @@
 /**
  * FmFormSectionHeader
  *
- * Section header component with gold-to-white gradient title.
+ * Section header component with gold gradient title (gold to lighter gold).
  * Includes optional description and feathered gold divider.
  *
  * **Features:**
- * - Gold-white gradient text for section titles
+ * - Gold gradient text for section titles
  * - Optional description subtext
  * - Optional icon
  * - Feathered gold divider below
@@ -43,7 +43,7 @@ export const FmFormSectionHeader = ({
           {Icon && (
             <Icon className='w-5 h-5 text-fm-gold/70 flex-shrink-0' />
           )}
-          <h3 className='font-canela text-xl tracking-wide bg-gradient-to-r from-fm-gold to-white bg-clip-text text-transparent'>
+          <h3 className='font-canela text-xl tracking-wide bg-gradient-to-r from-fm-gold to-fm-gold/50 bg-clip-text text-transparent'>
             {title}
           </h3>
         </div>

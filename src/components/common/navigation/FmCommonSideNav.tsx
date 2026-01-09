@@ -118,6 +118,8 @@ export function FmCommonSideNav<T extends string = string>({
                 'cursor-pointer transition-all duration-200',
                 'relative overflow-hidden',
                 open ? 'justify-start pl-4' : 'justify-center',
+                // Base left border (transparent) to prevent layout shift on hover
+                !isExternal && 'border-l-2 border-transparent',
                 // External item styling - frosted glass background
                 isExternal && [
                   'bg-white/5 backdrop-blur-sm',
@@ -127,14 +129,16 @@ export function FmCommonSideNav<T extends string = string>({
                 ],
                 // Hover effects (non-external, non-active)
                 !isActive &&
-                  !isExternal &&
-                  'hover:bg-white/5 hover:translate-x-0.5',
+                  !isExternal && [
+                    'hover:bg-white/5 hover:translate-x-0.5',
+                    'hover:border-white',
+                  ],
                 // Active state
                 isActive && [
                   'bg-fm-gold/20 text-fm-gold',
                   'hover:bg-fm-gold/30',
                   'shadow-[0_0_12px_rgba(212,175,55,0.2)]',
-                  'border-l-2 border-fm-gold',
+                  'border-fm-gold',
                 ],
                 // Previous item fade out
                 isPrevious && 'bg-fm-gold/20 animate-fade-out'
