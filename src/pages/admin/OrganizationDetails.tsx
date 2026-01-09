@@ -5,7 +5,7 @@ import { supabase } from '@/shared';
 import { ArrowLeft, Building2, Calendar, Settings } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
 import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
-import { FmFormSectionHeader } from '@/components/common/forms/FmFormSectionHeader';
+import { FmFormSectionHeader } from '@/components/common/display/FmSectionHeader';
 import { FmInstagramStoryButton } from '@/components/common/sharing';
 
 import { Separator } from '@/components/common/shadcn/separator';

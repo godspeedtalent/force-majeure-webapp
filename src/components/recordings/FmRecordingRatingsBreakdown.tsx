@@ -18,7 +18,7 @@ import {
   Cell,
 } from 'recharts';
 import { cn } from '@/shared';
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import {
   useRecordingRatings,

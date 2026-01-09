@@ -26,7 +26,7 @@ import {
   FmCommonCard,
   FmCommonCardContent,
 } from '@/components/common/display/FmCommonCard';
-import { FmFormSectionHeader } from './FmFormSectionHeader';
+import { FmSectionHeader } from '@/components/common/display/FmSectionHeader';
 import { cn } from '@/shared';
 
 interface FmFormSectionProps {
@@ -84,7 +84,7 @@ export const FmFormSection = React.forwardRef<HTMLDivElement, FmFormSectionProps
           hoverable={hoverable}
           className={cn('p-6', cardClassName)}
         >
-          <FmFormSectionHeader
+          <FmSectionHeader
             title={title}
             description={description}
             icon={icon}

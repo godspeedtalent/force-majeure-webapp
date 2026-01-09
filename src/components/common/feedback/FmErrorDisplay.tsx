@@ -11,7 +11,7 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
-import { FmInfoCard } from '@/components/common/data/FmInfoCard';
+import { FmCommonCard, FmCommonCardHeader, FmCommonCardTitle, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { FmI18nCommon } from '@/components/common/i18n';
 
@@ -49,7 +49,7 @@ export const FmErrorDisplay = ({
 }: FmErrorDisplayProps) => {
   const [isStackTraceExpanded, setIsStackTraceExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
-  // Keep t() for FmInfoCard title prop which requires a string
+  // Keep t() for FmCommonCardTitle prop which requires a string
   const { t } = useTranslation('common');
 
   // Check if user has debug access (dev mode OR admin/developer role)
@@ -107,80 +107,82 @@ export const FmErrorDisplay = ({
 
         {/* Error Message - Different for developers vs users */}
         {isDeveloper ? (
-          <FmInfoCard
-            icon={AlertTriangle}
-            title={t('errors.errorDetails')}
-            className='text-left'
-          >
-            <p className='text-sm font-mono text-destructive break-words'>
-              {error.message}
-            </p>
+          <FmCommonCard size='lg' className='text-left'>
+            <FmCommonCardHeader icon={AlertTriangle} className='p-0 pb-2'>
+              <FmCommonCardTitle className='font-medium text-sm'>{t('errors.errorDetails')}</FmCommonCardTitle>
+            </FmCommonCardHeader>
+            <FmCommonCardContent className='p-0'>
+              <p className='text-sm font-mono text-destructive break-words'>
+                {error.message}
+              </p>
 
-            {(errorInfo?.componentStack || error.stack) && (
-              <div className='mt-4'>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  onClick={() => setIsStackTraceExpanded(!isStackTraceExpanded)}
-                  className='w-full justify-between text-xs'
-                >
-                  <FmI18nCommon i18nKey='errors.stackTrace' />
-                  {isStackTraceExpanded ? (
-                    <ChevronUp className='h-4 w-4' />
-                  ) : (
-                    <ChevronDown className='h-4 w-4' />
-                  )}
-                </Button>
+              {(errorInfo?.componentStack || error.stack) && (
+                <div className='mt-4'>
+                  <Button
+                    variant='ghost'
+                    size='sm'
+                    onClick={() => setIsStackTraceExpanded(!isStackTraceExpanded)}
+                    className='w-full justify-between text-xs'
+                  >
+                    <FmI18nCommon i18nKey='errors.stackTrace' />
+                    {isStackTraceExpanded ? (
+                      <ChevronUp className='h-4 w-4' />
+                    ) : (
+                      <ChevronDown className='h-4 w-4' />
+                    )}
+                  </Button>
 
-                {isStackTraceExpanded && (
-                  <div className='mt-2 space-y-2'>
-                    <div className='p-3 bg-black/40 border border-destructive rounded-md max-h-64 overflow-auto'>
-                      <pre className='text-xs font-mono text-destructive whitespace-pre-wrap break-all w-full'>
-                        {errorInfo?.componentStack || error.stack}
-                      </pre>
+                  {isStackTraceExpanded && (
+                    <div className='mt-2 space-y-2'>
+                      <div className='p-3 bg-black/40 border border-destructive rounded-md max-h-64 overflow-auto'>
+                        <pre className='text-xs font-mono text-destructive whitespace-pre-wrap break-all w-full'>
+                          {errorInfo?.componentStack || error.stack}
+                        </pre>
+                      </div>
+                      <Button
+                        variant='outline'
+                        size='sm'
+                        onClick={handleCopyStackTrace}
+                        className='w-full text-xs border-destructive text-destructive hover:bg-destructive/10'
+                      >
+                        {copied ? (
+                          <>
+                            <Check className='h-3 w-3 mr-2' />
+                            <FmI18nCommon i18nKey='errors.copied' />
+                          </>
+                        ) : (
+                          <>
+                            <Copy className='h-3 w-3 mr-2' />
+                            <FmI18nCommon i18nKey='errors.copyStackTrace' />
+                          </>
+                        )}
+                      </Button>
                     </div>
-                    <Button
-                      variant='outline'
-                      size='sm'
-                      onClick={handleCopyStackTrace}
-                      className='w-full text-xs border-destructive text-destructive hover:bg-destructive/10'
-                    >
-                      {copied ? (
-                        <>
-                          <Check className='h-3 w-3 mr-2' />
-                          <FmI18nCommon i18nKey='errors.copied' />
-                        </>
-                      ) : (
-                        <>
-                          <Copy className='h-3 w-3 mr-2' />
-                          <FmI18nCommon i18nKey='errors.copyStackTrace' />
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                )}
-              </div>
-            )}
-          </FmInfoCard>
+                  )}
+                </div>
+              )}
+            </FmCommonCardContent>
+          </FmCommonCard>
         ) : (
-          <FmInfoCard
-            icon={MessageCircle}
-            title={t('errors.needHelp')}
-            className='text-left'
-          >
-            <p className='text-sm text-muted-foreground'>
-              <FmI18nCommon i18nKey='errors.contactUsMessage' />{' '}
-              <a
-                href='https://www.instagram.com/force.majeure.events'
-                target='_blank'
-                rel='noopener noreferrer'
-                className='text-fm-gold hover:text-fm-gold/80 transition-colors underline'
-              >
-                @force.majeure.events
-              </a>{' '}
-              <FmI18nCommon i18nKey='errors.onInstagram' />
-            </p>
-          </FmInfoCard>
+          <FmCommonCard size='lg' className='text-left'>
+            <FmCommonCardHeader icon={MessageCircle} className='p-0 pb-2'>
+              <FmCommonCardTitle className='font-medium text-sm'>{t('errors.needHelp')}</FmCommonCardTitle>
+            </FmCommonCardHeader>
+            <FmCommonCardContent className='p-0'>
+              <p className='text-sm text-muted-foreground'>
+                <FmI18nCommon i18nKey='errors.contactUsMessage' />{' '}
+                <a
+                  href='https://www.instagram.com/force.majeure.events'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='text-fm-gold hover:text-fm-gold/80 transition-colors underline'
+                >
+                  @force.majeure.events
+                </a>{' '}
+                <FmI18nCommon i18nKey='errors.onInstagram' />
+              </p>
+            </FmCommonCardContent>
+          </FmCommonCard>
         )}
 
         {/* Action Buttons */}

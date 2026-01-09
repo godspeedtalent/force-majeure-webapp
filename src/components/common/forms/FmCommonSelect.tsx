@@ -14,6 +14,7 @@ export interface SelectOption {
   value: string;
   label: string;
   icon?: React.ComponentType<{ className?: string }>;
+  labelClassName?: string; // Optional className for label styling (e.g., 'font-mono' for code)
 }
 
 interface FmCommonSelectProps {
@@ -78,7 +79,7 @@ export function FmCommonSelect({
             <SelectItem key={option.value} value={option.value}>
               <div className='flex items-center gap-2'>
                 {option.icon && <option.icon className='h-4 w-4' />}
-                <span>{option.label}</span>
+                <span className={option.labelClassName}>{option.label}</span>
               </div>
             </SelectItem>
           ))}

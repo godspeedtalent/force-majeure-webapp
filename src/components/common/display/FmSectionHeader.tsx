@@ -1,5 +1,5 @@
 /**
- * FmFormSectionHeader
+ * FmSectionHeader
  *
  * Section header component with gold gradient title (gold to lighter gold).
  * Includes optional description and feathered gold divider.
@@ -9,6 +9,11 @@
  * - Optional description subtext
  * - Optional icon
  * - Feathered gold divider below
+ *
+ * **Usage:**
+ * - Use for any section that needs a styled header
+ * - Works well inside FmCommonCard or standalone
+ * - Common in admin pages, forms, and detail views
  */
 
 import { LucideIcon } from 'lucide-react';
@@ -16,7 +21,7 @@ import { LucideIcon } from 'lucide-react';
 import { FmFeatheredDivider } from '@/components/common/display/FmFeatheredDivider';
 import { cn } from '@/shared';
 
-interface FmFormSectionHeaderProps {
+interface FmSectionHeaderProps {
   /** Section title */
   title: string;
   /** Optional description/help text */
@@ -29,13 +34,13 @@ interface FmFormSectionHeaderProps {
   className?: string;
 }
 
-export const FmFormSectionHeader = ({
+export const FmSectionHeader = ({
   title,
   description,
   icon: Icon,
   showDivider = true,
   className,
-}: FmFormSectionHeaderProps) => {
+}: FmSectionHeaderProps) => {
   return (
     <div className={cn('space-y-2', className)}>
       <div className='space-y-1'>
@@ -56,4 +61,9 @@ export const FmFormSectionHeader = ({
   );
 };
 
-FmFormSectionHeader.displayName = 'FmFormSectionHeader';
+FmSectionHeader.displayName = 'FmSectionHeader';
+
+/**
+ * @deprecated Use FmSectionHeader instead. This alias is provided for backwards compatibility.
+ */
+export const FmFormSectionHeader = FmSectionHeader;

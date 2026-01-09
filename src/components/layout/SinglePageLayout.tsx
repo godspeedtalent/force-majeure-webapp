@@ -39,9 +39,11 @@ export const SinglePageLayout = ({
   return (
     <div className='min-h-screen bg-background flex flex-col'>
       <Navigation />
+      {/* Spacer for fixed navigation */}
+      <div className='h-16 flex-shrink-0' />
 
       <main
-        className={`flex-1 pt-16 pb-20 relative overflow-hidden ${className}`}
+        className={`flex-1 pb-20 relative overflow-hidden ${className}`}
       >
         <TopographicBackground opacity={backgroundOpacity} />
         <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />

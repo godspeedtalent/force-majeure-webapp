@@ -1,4 +1,4 @@
-import { FmInfoCard } from '@/components/common/data/FmInfoCard';
+import { FmCommonCard, FmCommonCardHeader } from '@/components/common/display/FmCommonCard';
 import { FmCommonCollapsibleSection } from '@/components/common/data/FmCommonCollapsibleSection';
 import { Wrench } from 'lucide-react';
 import { FmCommonDemoTool } from './types/FmCommonDemoTool';
@@ -14,7 +14,7 @@ interface FmCommonDemoToolbarProps {
  * Features:
  * - Displays an array of demo tools in a collapsible card
  * - Each tool is rendered in its own section
- * - Consistent styling with FmInfoCard
+ * - Consistent styling with FmCommonCard
  * - Collapsible with FmCommonCollapsibleSection
  *
  * Usage:
@@ -32,17 +32,19 @@ export const FmCommonDemoToolbar = ({
   defaultExpanded = true,
 }: FmCommonDemoToolbarProps) => {
   return (
-    <FmInfoCard icon={Wrench} className='mb-6'>
-      <FmCommonCollapsibleSection
-        title='Demo Tools'
-        defaultExpanded={defaultExpanded}
-      >
-        <div className='space-y-6'>
-          {tools.map(tool => (
-            <div key={tool.id}>{tool.render()}</div>
-          ))}
-        </div>
-      </FmCommonCollapsibleSection>
-    </FmInfoCard>
+    <FmCommonCard size='lg' className='mb-6'>
+      <FmCommonCardHeader icon={Wrench}>
+        <FmCommonCollapsibleSection
+          title='Demo Tools'
+          defaultExpanded={defaultExpanded}
+        >
+          <div className='space-y-6'>
+            {tools.map(tool => (
+              <div key={tool.id}>{tool.render()}</div>
+            ))}
+          </div>
+        </FmCommonCollapsibleSection>
+      </FmCommonCardHeader>
+    </FmCommonCard>
   );
 };

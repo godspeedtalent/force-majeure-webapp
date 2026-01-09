@@ -25,7 +25,7 @@ import {
   FmCommonTabsList,
   FmCommonTabsTrigger,
 } from '@/components/common/navigation/FmCommonTabs';
-import { FmFormSectionHeader } from '@/components/common/forms/FmFormSectionHeader';
+import { FmFormSectionHeader } from '@/components/common/display/FmSectionHeader';
 
 interface UserRequest {
   id: string;

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Trash2, AlertTriangle } from 'lucide-react';
 import { SiSoundcloud, SiSpotify } from 'react-icons/si';
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmGenreMultiSelect } from '@/features/artists/components/FmGenreMultiSelect';

@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/c
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { getSoundCloudUserFromUrl, extractSoundCloudUsername } from '@/services/soundcloud/soundcloudApiService';
 import { checkArtistExistsBySoundcloudId } from '@/features/artists/services/artistService';
 import { toast } from 'sonner';

@@ -16,6 +16,8 @@ export const ForceMajeureRootLayout = ({
   return (
     <div className={`min-h-screen bg-background flex flex-col ${className}`}>
       <Navigation />
+      {/* Spacer for fixed navigation */}
+      <div className='h-16 flex-shrink-0' />
 
       {/* Main content area with topography background */}
       <div className='flex-1 relative overflow-hidden'>

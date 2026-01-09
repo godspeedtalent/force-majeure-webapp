@@ -11,7 +11,7 @@ import {
 
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmBigButton } from '@/components/common/buttons/FmBigButton';
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { Separator } from '@/components/common/shadcn/separator';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';

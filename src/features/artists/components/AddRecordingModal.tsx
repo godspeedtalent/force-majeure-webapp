@@ -15,7 +15,7 @@ import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { cn } from '@/shared';
 import type { CreateRecordingData } from '@/shared/api/queries/recordingQueries';
 

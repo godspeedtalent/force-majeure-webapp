@@ -18,7 +18,7 @@ import {
   TooltipTrigger,
 } from '@/components/common/shadcn/tooltip';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { useFeatureFlagHelpers, useIsMobile, cn } from '@/shared';
+import { useFeatureFlagHelpers } from '@/shared';
 import { FEATURE_FLAGS } from '@/shared';
 import { useCheckoutTimer } from '@/contexts/CheckoutContext';
 import { SOCIAL_LINKS } from '@/shared';
@@ -30,14 +30,9 @@ export const Navigation = () => {
   const { t } = useTranslation('common');
   const { isFeatureEnabled } = useFeatureFlagHelpers();
   const { isCheckoutActive, endCheckout, redirectUrl } = useCheckoutTimer();
-  const isMobile = useIsMobile();
 
   return (
-    <nav className={cn(
-      'top-0 z-50 w-full bg-background/50 backdrop-blur-md border-b border-border',
-      // Fixed on mobile to ensure it always stays visible above swipe content
-      isMobile ? 'fixed' : 'sticky'
-    )}>
+    <nav className='fixed top-0 z-50 w-full bg-background/50 backdrop-blur-md border-b border-border'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='flex justify-between items-center h-16'>
           {/* Logo and Breadcrumbs */}

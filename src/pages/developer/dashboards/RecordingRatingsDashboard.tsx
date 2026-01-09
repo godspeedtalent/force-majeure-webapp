@@ -33,7 +33,7 @@ import {
 } from 'recharts';
 import { SiSpotify, SiSoundcloud } from 'react-icons/si';
 import { cn } from '@/shared';
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';

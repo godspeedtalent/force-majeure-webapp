@@ -2566,7 +2566,8 @@
     "confirmCancel": "¿Estás seguro de que quieres cancelar este pedido?",
     "refundOrder": "Reembolsar Pedido",
     "confirmRefund": "¿Estás seguro de que quieres reembolsar este pedido?",
-    "resendConfirmation": "Reenviar Confirmación"
+    "resendConfirmation": "Reenviar Confirmación",
+    "importOrders": "Importar pedidos"
   },
   "artistManagement": {
     "headliners": "Artistas Principales",
@@ -3213,7 +3214,21 @@
     "supabaseDashboard": "Panel de Supabase",
     "mailpit": "Mailpit (Email Local)",
     "goTo": "Ir a",
-    "open": "Abrir"
+    "open": "Abrir",
+    "bookmarks": "Marcadores",
+    "noBookmarks": "Aún no hay marcadores",
+    "addBookmark": "Marcar esta página",
+    "removeBookmark": "Eliminar marcador",
+    "renameBookmark": "Renombrar",
+    "bookmarkAdded": "Página marcada",
+    "bookmarkRemoved": "Marcador eliminado",
+    "confirmRemove": "¿Eliminar marcador?",
+    "confirmRemoveDescription": "¿Estás seguro de que deseas eliminar \"{{label}}\" de tus marcadores?",
+    "currentPage": "Página actual",
+    "path": "Ruta",
+    "bookmarkName": "Nombre",
+    "bookmarkNameHint": "Déjalo vacío para usar el nombre generado automáticamente desde la URL",
+    "includeQuerystring": "Incluir cadena de consulta"
   },
   "devToolsManagement": {
     "title": "Controles del Entorno de Desarrollo",
@@ -3510,6 +3525,7 @@
     "title": "Importar CSV de Pedidos",
     "description": "Importar pedidos históricos desde archivos CSV. Los pedidos se vincularán a usuarios existentes por dirección de email, o se dejarán sin vincular para futuros registros de usuarios.",
     "steps": {
+      "home": "Inicio",
       "configure": "Configurar",
       "upload": "Subir",
       "map": "Mapear",

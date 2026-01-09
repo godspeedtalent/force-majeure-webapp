@@ -18,8 +18,8 @@ import {
   FmCommonContextMenu,
   ContextMenuAction,
 } from '@/components/common/modals/FmCommonContextMenu';
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
-import { FmFormSectionHeader } from '@/components/common/forms/FmFormSectionHeader';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
+import { FmFormSectionHeader } from '@/components/common/display/FmSectionHeader';
 import { cn, useIsMobile } from '@/shared';
 import type { ArtistRecording } from '@/shared/api/queries/recordingQueries';
 

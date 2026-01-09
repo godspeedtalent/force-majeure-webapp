@@ -70,63 +70,61 @@ export const SideNavbarLayout = <T extends string>({
 }: SideNavbarLayoutProps<T>) => {
   const isMobile = useIsMobile();
 
-  // Nav height is h-16 (64px) - content below nav should account for this
-  const NAV_HEIGHT = '64px';
-
   return (
-    <div className='min-h-screen flex flex-col bg-background'>
+    <div className='h-screen bg-background flex flex-col overflow-hidden'>
+      {/* Fixed Navigation */}
       <Navigation />
+
+      {/* Spacer for fixed nav */}
+      <div className='h-16 flex-shrink-0' />
+
       {/* Mobile horizontal tabs - rendered at layout level for full width */}
       {mobileHorizontalTabs}
-      <SidebarProvider defaultOpen={defaultOpen}>
-        <div
-          className='flex flex-1 w-full'
-          style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})` }}
-        >
-          {/* Desktop sidebar - hidden on mobile when mobile tab bar is provided */}
-          <div className={cn(mobileTabBar && isMobile ? 'hidden' : 'block')}>
-            <FmCommonSideNav
-              groups={navigationGroups}
-              activeItem={activeItem}
-              onItemChange={onItemChange}
-              showDividers={showDividers}
-            />
-          </div>
 
-          <main
+      {/* Content area - flex row with sidebar and main content, both independently scrollable */}
+      <SidebarProvider defaultOpen={defaultOpen} className='flex-1 flex min-h-0'>
+        {/* Desktop sidebar - hidden on mobile when mobile tab bar is provided */}
+        <div className={cn(mobileTabBar && isMobile ? 'hidden' : 'flex')}>
+          <FmCommonSideNav
+            groups={navigationGroups}
+            activeItem={activeItem}
+            onItemChange={onItemChange}
+            showDividers={showDividers}
+          />
+        </div>
+
+        <main
+          className={cn(
+            'flex-1 relative overflow-y-auto overflow-x-hidden',
+            className
+          )}
+        >
+          <TopographicBackground opacity={backgroundOpacity} />
+          <div className='absolute inset-0 bg-gradient-monochrome opacity-10 pointer-events-none' />
+          <div
             className={cn(
-              'flex-1 relative overflow-hidden',
-              !isMobile && 'pb-6 px-6',
-              className
+              'relative z-10 p-6',
+              isMobile && 'px-4 py-4',
+              isMobile && mobileTabBar && 'pb-[120px]'
             )}
           >
-            <TopographicBackground opacity={backgroundOpacity} />
-            <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
-            <div
-              className={cn(
-                'max-w-full relative z-10',
-                isMobile ? 'h-full overflow-y-auto px-[15vw] py-4' : 'm-10',
-                isMobile && mobileTabBar && 'pb-[120px]' // Extra padding for mobile tab bar (~70px + safe area + spacing)
-              )}
-            >
-              {(showBackButton || backButtonActions) && (
-                <div className='mb-[20px] flex items-center justify-between'>
-                  {showBackButton ? (
-                    <FmBackButton
-                      position='inline'
-                      onClick={onBack}
-                      label={backButtonLabel}
-                    />
-                  ) : (
-                    <div />
-                  )}
-                  {backButtonActions}
-                </div>
-              )}
-              {children}
-            </div>
-          </main>
-        </div>
+            {(showBackButton || backButtonActions) && (
+              <div className='mb-[20px] flex items-center justify-between'>
+                {showBackButton ? (
+                  <FmBackButton
+                    position='inline'
+                    onClick={onBack}
+                    label={backButtonLabel}
+                  />
+                ) : (
+                  <div />
+                )}
+                {backButtonActions}
+              </div>
+            )}
+            {children}
+          </div>
+        </main>
       </SidebarProvider>
 
       {/* Mobile bottom tab bar */}

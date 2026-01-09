@@ -4,7 +4,7 @@ import { logger } from '@/shared';
 import { CheckCircle2 } from 'lucide-react';
 
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { FmCommonStackLayout } from '@/components/common/layout';
 import { EventDetailsRecord } from '@/pages/event/types';
 import { useAnalytics } from '@/features/analytics';

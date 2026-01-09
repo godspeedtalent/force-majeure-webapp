@@ -16,4 +16,5 @@ export {
 } from './FmCommonCard';
 export { FmCommonSeparator } from './FmCommonSeparator';
 export { FmFeatheredDivider } from './FmFeatheredDivider';
+export { FmSectionHeader, FmFormSectionHeader } from './FmSectionHeader';
 export type { FmCommonBadgeItem } from './FmCommonBadgeGroup';
