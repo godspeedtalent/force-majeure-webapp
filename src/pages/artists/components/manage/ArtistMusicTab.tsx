@@ -5,7 +5,7 @@
  */
 
 import { useTranslation } from 'react-i18next';
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { FmI18nCommon } from '@/components/common/i18n';
 import { FmRecordingsGrid } from '@/components/artist/FmRecordingsGrid';

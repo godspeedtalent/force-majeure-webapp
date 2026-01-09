@@ -10,7 +10,7 @@ export { FmCommonDetailSection } from './display/FmCommonDetailSection';
 export { FmCommonEmptyState } from './display/FmCommonEmptyState';
 export { FmTextLink } from './display/FmTextLink';
 export {
-  FmCommonCard as FmCommonCardDisplay,
+  FmCommonCard,
   FmCommonCardHeader,
   FmCommonCardTitle,
   FmCommonCardDescription,
@@ -44,6 +44,5 @@ export { FmCommonSwitch } from './forms/FmCommonSwitch';
 export { FmCommonLabel } from './forms/FmCommonLabel';
 
 // Layout components
-export { FmCommonCard } from './layout/FmCommonCard';
 export { FmCommonGridLayout } from './layout/FmCommonGridLayout';
 export { FmCommonStackLayout } from './layout/FmCommonStackLayout';

@@ -6,7 +6,7 @@ import {
   DataGridColumn,
 } from '@/features/data-grid';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
-import { FmFormSectionHeader } from '@/components/common/forms/FmFormSectionHeader';
+import { FmFormSectionHeader } from '@/components/common/display/FmSectionHeader';
 import { useDeleteConfirmation, type UseDeleteConfirmationOptions } from '@/shared';
 import { Trash2 } from 'lucide-react';
 

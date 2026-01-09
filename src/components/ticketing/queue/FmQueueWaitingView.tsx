@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, Clock, Users, Timer } from 'lucide-react';
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { FmQueueProgressBar } from '@/components/common/feedback/FmQueueProgressBar';
 import { FmDateBox } from '@/components/common/display/FmDateBox';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';

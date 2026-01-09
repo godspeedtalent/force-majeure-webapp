@@ -1,7 +1,8 @@
 export { FmCommonTextField } from './FmCommonTextField';
 export { FmCommonFormSection } from './FmCommonFormSection';
 export { FmFormSection } from './FmFormSection';
-export { FmFormSectionHeader } from './FmFormSectionHeader';
+// FmFormSectionHeader moved to display/FmSectionHeader - re-export for backwards compatibility
+export { FmFormSectionHeader, FmSectionHeader } from '@/components/common/display/FmSectionHeader';
 export { FmCommonForm } from './FmCommonForm';
 export { FmCommonFormField } from './FmCommonFormField';
 export { FmCommonFormSelect } from './FmCommonFormSelect';

@@ -12,7 +12,7 @@ import { FaSpotify, FaSoundcloud } from 'react-icons/fa6';
 import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { cn } from '@/shared';
 import type { ArtistRecording, UpdateRecordingData } from '@/shared/api/queries/recordingQueries';
 

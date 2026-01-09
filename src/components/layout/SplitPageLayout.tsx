@@ -24,6 +24,8 @@ export const SplitPageLayout = ({
   return (
     <div className={`min-h-screen bg-background flex flex-col ${className}`}>
       <Navigation />
+      {/* Spacer for fixed navigation */}
+      <div className='h-16 flex-shrink-0' />
 
       <div className='flex-1 flex min-h-[calc(100vh-160px)]'>
         {/* Left Panel */}

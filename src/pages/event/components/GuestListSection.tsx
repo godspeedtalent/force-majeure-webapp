@@ -1,5 +1,5 @@
 import { Eye, Users } from 'lucide-react';
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { useTranslation } from 'react-i18next';
 
 interface GuestListSectionProps {

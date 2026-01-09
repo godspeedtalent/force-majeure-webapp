@@ -13,7 +13,7 @@ import { Badge } from '@/components/common/shadcn/badge';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { logger } from '@/shared';
-import { FmFormSectionHeader } from '@/components/common/forms/FmFormSectionHeader';
+import { FmFormSectionHeader } from '@/components/common/display/FmSectionHeader';
 import { formatHeader } from '@/shared';
 
 interface DocumentFile {

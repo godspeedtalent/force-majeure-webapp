@@ -2561,7 +2561,8 @@
     "confirmCancel": "您确定要取消此订单吗？",
     "refundOrder": "退款订单",
     "confirmRefund": "您确定要退款此订单吗？",
-    "resendConfirmation": "重新发送确认"
+    "resendConfirmation": "重新发送确认",
+    "importOrders": "导入订单"
   },
   "artistManagement": {
     "headliners": "主要艺人",
@@ -3208,7 +3209,21 @@
     "supabaseDashboard": "Supabase 控制面板",
     "mailpit": "Mailpit（本地邮件）",
     "goTo": "前往",
-    "open": "打开"
+    "open": "打开",
+    "bookmarks": "书签",
+    "noBookmarks": "暂无书签",
+    "addBookmark": "将此页加入书签",
+    "removeBookmark": "删除书签",
+    "renameBookmark": "重命名",
+    "bookmarkAdded": "页面已加入书签",
+    "bookmarkRemoved": "书签已删除",
+    "confirmRemove": "删除书签？",
+    "confirmRemoveDescription": "确定要从书签中删除"{{label}}"吗？",
+    "currentPage": "当前页面",
+    "path": "路径",
+    "bookmarkName": "名称",
+    "bookmarkNameHint": "留空则使用从 URL 自动生成的名称",
+    "includeQuerystring": "包含查询字符串"
   },
   "devToolsManagement": {
     "title": "开发环境控制",
@@ -3505,6 +3520,7 @@
     "title": "订单 CSV 导入",
     "description": "从 CSV 文件导入历史订单。订单将通过电子邮件地址链接到现有用户，或保持未链接状态等待未来用户注册。",
     "steps": {
+      "home": "首页",
       "configure": "配置",
       "upload": "上传",
       "map": "映射",

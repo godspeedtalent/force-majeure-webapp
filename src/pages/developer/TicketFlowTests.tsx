@@ -12,7 +12,7 @@ import {
 
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
 import { MobileHorizontalTabs } from '@/components/mobile';
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { Badge } from '@/components/common/shadcn/badge';
 import { TestSuiteRunner } from '@/features/testing/components/TestSuiteRunner';
 import { queueTestSuite } from './ticket-flow/tests/queueTests';

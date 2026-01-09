@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { Star, Save, X, Edit3, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/shared';
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import {

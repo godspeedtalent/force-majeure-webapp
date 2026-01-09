@@ -25,7 +25,7 @@ import {
   ArtistRegistrationDenyModal,
   ArtistRegistrationDeleteModal,
 } from './components/ArtistRegistrationModals';
-import { FmFormSectionHeader } from '@/components/common/forms/FmFormSectionHeader';
+import { FmFormSectionHeader } from '@/components/common/display/FmSectionHeader';
 
 export function ArtistRegistrationsManagement() {
   const { t } = useTranslation('common');

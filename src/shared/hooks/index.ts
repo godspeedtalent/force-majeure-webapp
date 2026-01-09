@@ -68,3 +68,7 @@ export type {
   UseUnsavedChangesOptions,
   UseUnsavedChangesReturn,
 } from './useUnsavedChanges';
+
+// Developer bookmarks hook
+export { useDevBookmarks } from './useDevBookmarks';
+export type { DevBookmark } from './useDevBookmarks';

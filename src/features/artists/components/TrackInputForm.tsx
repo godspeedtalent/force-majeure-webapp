@@ -14,7 +14,7 @@ import { FaSpotify, FaSoundcloud, FaYoutube } from 'react-icons/fa6';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { cn } from '@/shared';
 
 export type RecordingType = 'track' | 'dj_set';

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, Gift, LogIn, Tag, Ticket } from 'lucide-react';
 
-import { FmInfoCard } from '@/components/common/data/FmInfoCard';
+import { FmCommonCard, FmCommonCardHeader, FmCommonCardTitle, FmCommonCardDescription, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { FmPromoCodeInput } from '@/components/common/misc/FmPromoCodeInput';
 import { FmBigButton } from '@/components/common/buttons/FmBigButton';
 import { Button } from '@/components/common/shadcn/button';
@@ -410,37 +410,43 @@ export const TicketingPanel = ({
         <Separator className='mt-4' />
 
         <div className='grid grid-cols-2 gap-[10px]'>
-          <FmInfoCard
-            icon={Tag}
-            title={t('ticketingPanel.promoCode')}
-            description={t('ticketingPanel.havePromoCode')}
-            className='p-[20px]'
-          >
-            <FmPromoCodeInput onPromoCodeApplied={handlePromoCodeApplied} />
-          </FmInfoCard>
+          <FmCommonCard className='p-[20px]'>
+            <FmCommonCardHeader icon={Tag} className='p-0 pb-2'>
+              <FmCommonCardTitle className='font-medium text-sm'>{t('ticketingPanel.promoCode')}</FmCommonCardTitle>
+              <FmCommonCardDescription className='text-xs'>{t('ticketingPanel.havePromoCode')}</FmCommonCardDescription>
+            </FmCommonCardHeader>
+            <FmCommonCardContent className='p-0'>
+              <FmPromoCodeInput onPromoCodeApplied={handlePromoCodeApplied} />
+            </FmCommonCardContent>
+          </FmCommonCard>
 
-          <FmInfoCard icon={Gift} title={t('ticketingPanel.memberRewards')} className='p-[20px]'>
-            {!user ? (
-              <div className='flex flex-col items-center justify-center text-center space-y-2'>
-                <div className='text-xs text-muted-foreground'>
-                  {t('ticketingPanel.signInToSeeRewards')}
+          <FmCommonCard className='p-[20px]'>
+            <FmCommonCardHeader icon={Gift} className='p-0 pb-2'>
+              <FmCommonCardTitle className='font-medium text-sm'>{t('ticketingPanel.memberRewards')}</FmCommonCardTitle>
+            </FmCommonCardHeader>
+            <FmCommonCardContent className='p-0'>
+              {!user ? (
+                <div className='flex flex-col items-center justify-center text-center space-y-2'>
+                  <div className='text-xs text-muted-foreground'>
+                    {t('ticketingPanel.signInToSeeRewards')}
+                  </div>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    onClick={() => navigate('/auth')}
+                    className='text-xs h-8 border-fm-gold text-fm-gold hover:bg-fm-gold/10'
+                  >
+                    <LogIn className='h-3 w-3 mr-1' />
+                    {t('nav.signIn')}
+                  </Button>
                 </div>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  onClick={() => navigate('/auth')}
-                  className='text-xs h-8 border-fm-gold text-fm-gold hover:bg-fm-gold/10'
-                >
-                  <LogIn className='h-3 w-3 mr-1' />
-                  {t('nav.signIn')}
-                </Button>
-              </div>
-            ) : (
-              <div className='text-xs text-foreground'>
-                {t('ticketingPanel.noRewardsAvailable')}
-              </div>
-            )}
-          </FmInfoCard>
+              ) : (
+                <div className='text-xs text-foreground'>
+                  {t('ticketingPanel.noRewardsAvailable')}
+                </div>
+              )}
+            </FmCommonCardContent>
+          </FmCommonCard>
         </div>
 
         <Separator className='mt-4' />

@@ -20,7 +20,7 @@ import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES, FEATURE_FLAGS } from '@/shared';
 import { useFeatureFlagHelpers } from '@/shared';
 import { PageErrorBoundary } from '@/components/common/feedback';
-import { FmFormSectionHeader } from '@/components/common/forms/FmFormSectionHeader';
+import { FmFormSectionHeader } from '@/components/common/display/FmSectionHeader';
 import { formatHeader } from '@/shared';
 
 // Admin components
@@ -52,7 +52,7 @@ import { AnalyticsDashboardContent } from './dashboards/AnalyticsDashboardConten
 import { UserMetricsDashboard } from './dashboards/userMetrics';
 
 // Developer Tools components
-import { OrderCsvImportContent } from './OrderCsvImport';
+import { OrderCsvImportContent } from './orderImport';
 
 // Types
 import { DeveloperTab, VALID_TABS, EXTERNAL_ROUTES } from './types';

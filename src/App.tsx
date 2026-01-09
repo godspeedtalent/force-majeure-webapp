@@ -32,7 +32,6 @@ const DeveloperCreateArtistPage = lazy(() => import('./pages/developer/database/
 const DeveloperCreateVenuePage = lazy(() => import('./pages/developer/database/CreateVenue'));
 const DeveloperCreateOrganizationPage = lazy(() => import('./pages/developer/database/CreateOrganization'));
 const ArtistSignupDemo = lazy(() => import('./pages/developer/ArtistSignupDemo'));
-const OrderCsvImport = lazy(() => import('./pages/developer/OrderCsvImport'));
 
 // Lazy load admin pages
 const Statistics = lazy(() => import('./pages/admin/Statistics'));
@@ -256,16 +255,6 @@ const AppRoutes = () => {
           <DemoProtectedRoute>
             <Suspense fallback={<LazyLoadFallback />}>
               <StoryDesigner />
-            </Suspense>
-          </DemoProtectedRoute>
-        }
-      />
-      <Route
-        path='/developer/tools/order-csv-import'
-        element={
-          <DemoProtectedRoute>
-            <Suspense fallback={<LazyLoadFallback />}>
-              <OrderCsvImport />
             </Suspense>
           </DemoProtectedRoute>
         }

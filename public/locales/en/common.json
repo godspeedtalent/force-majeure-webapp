@@ -2578,7 +2578,8 @@
     "confirmCancel": "Are you sure you want to cancel this order?",
     "refundOrder": "Refund Order",
     "confirmRefund": "Are you sure you want to refund this order?",
-    "resendConfirmation": "Resend Confirmation"
+    "resendConfirmation": "Resend Confirmation",
+    "importOrders": "Import orders"
   },
   "artistManagement": {
     "headliners": "Headliners",
@@ -3225,7 +3226,21 @@
     "supabaseDashboard": "Supabase Dashboard",
     "mailpit": "Mailpit (Local Email)",
     "goTo": "Go to",
-    "open": "Open"
+    "open": "Open",
+    "bookmarks": "Bookmarks",
+    "noBookmarks": "No bookmarks yet",
+    "addBookmark": "Bookmark this page",
+    "removeBookmark": "Remove bookmark",
+    "renameBookmark": "Rename",
+    "bookmarkAdded": "Page bookmarked",
+    "bookmarkRemoved": "Bookmark removed",
+    "confirmRemove": "Remove bookmark?",
+    "confirmRemoveDescription": "Are you sure you want to remove \"{{label}}\" from your bookmarks?",
+    "currentPage": "Current page",
+    "path": "Path",
+    "bookmarkName": "Name",
+    "bookmarkNameHint": "Leave empty to use the auto-generated name from the URL",
+    "includeQuerystring": "Include query string"
   },
   "devToolsManagement": {
     "title": "Development Environment Controls",
@@ -3567,6 +3582,7 @@
     "title": "Order CSV Import",
     "description": "Import historical orders from CSV files. Orders will be linked to existing users by email address, or left unlinked for future user sign-ups.",
     "steps": {
+      "home": "Home",
       "configure": "Configure",
       "upload": "Upload",
       "map": "Map",

@@ -1,7 +1,7 @@
 import { Eye, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 
 interface Attendee {
   name: string;

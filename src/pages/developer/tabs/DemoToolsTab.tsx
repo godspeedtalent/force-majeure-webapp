@@ -17,7 +17,7 @@ import {
   FlaskConical,
   ClipboardCheck,
 } from 'lucide-react';
-import { FmFormSectionHeader } from '@/components/common/forms/FmFormSectionHeader';
+import { FmFormSectionHeader } from '@/components/common/display/FmSectionHeader';
 import { formatHeader } from '@/shared';
 
 interface DemoTool {

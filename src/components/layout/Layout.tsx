@@ -32,6 +32,8 @@ export const Layout = ({
   return (
     <div className={cn('min-h-screen flex flex-col', !hideBackground && 'bg-background')}>
       <Navigation />
+      {/* Spacer for fixed navigation */}
+      <div className='h-16 flex-shrink-0' />
 
       <main
         className={cn(

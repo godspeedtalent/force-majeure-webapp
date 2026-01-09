@@ -1,19 +1,23 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { FmConfigurableDataGrid } from '@/features/data-grid';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { useEventOrders, type EventOrder } from './hooks/useEventOrders';
 import { useEventById } from '@/shared/api/queries/eventQueries';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { Badge } from '@/components/common/shadcn/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/shadcn/avatar';
-import { Eye, XCircle, RefreshCw, Mail, ShoppingBag } from 'lucide-react';
+import { Eye, XCircle, RefreshCw, Mail, ShoppingBag, Upload } from 'lucide-react';
 import { OrderDetailModal } from './OrderDetailModal';
 import { DataGridColumns } from '@/features/data-grid/utils';
 import { formatCurrency } from '@/lib/utils/currency';
 import { logger } from '@/shared/services/logger';
 import { EmailService } from '@/services/email/EmailService';
 import { toast } from 'sonner';
+import { ROLES } from '@/shared';
 import type { DataGridColumn, DataGridAction } from '@/features/data-grid/types';
 import type { OrderEventForEmail } from '@/types/email';
 
@@ -25,6 +29,9 @@ type ConfirmAction = 'cancel' | 'refund' | null;
 
 export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => {
   const { t } = useTranslation('common');
+  const { t: tToast } = useTranslation('toasts');
+  const navigate = useNavigate();
+  const { hasAnyRole } = useUserPermissions();
   const { orders, isLoading, cancelOrder, refundOrder } = useEventOrders(eventId);
   const { data: event } = useEventById(eventId);
   const [selectedOrder, setSelectedOrder] = useState<EventOrder | null>(null);
@@ -32,7 +39,8 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isResending, setIsResending] = useState<string | null>(null);
-  const { t: tToast } = useTranslation('toasts');
+
+  const isAdminOrDev = hasAnyRole(ROLES.ADMIN, ROLES.DEVELOPER);
 
   const columns: DataGridColumn<EventOrder>[] = [
     {
@@ -249,6 +257,17 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
       description={t('orderManagement.description')}
       icon={ShoppingBag}
     >
+      {isAdminOrDev && (
+        <div className="flex justify-end mb-4">
+          <FmCommonButton
+            variant="default"
+            onClick={() => navigate('/developer?tab=dev_order_import')}
+          >
+            <Upload className="w-4 h-4 mr-2" />
+            {t('orderManagement.importOrders')}
+          </FmCommonButton>
+        </div>
+      )}
       <FmConfigurableDataGrid
         data={orders}
         columns={columns}

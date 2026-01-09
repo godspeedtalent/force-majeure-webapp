@@ -23,6 +23,8 @@ export const ArtistRegistrationLayout = ({ children }: ArtistRegistrationLayoutP
 
       {/* Navigation */}
       <Navigation />
+      {/* Spacer for fixed navigation */}
+      <div className='h-16 flex-shrink-0' />
 
       {/* Main Content */}
       <main className='relative z-10 flex-1 min-h-0'>

@@ -16,7 +16,7 @@ import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { FmCommonFormCheckbox } from '@/components/common/forms/FmCommonFormCheckbox';
 import { Separator } from '@/components/common/shadcn/separator';
-import { FmCommonCard } from '@/components/common/display/FmCommonCard';
+import { FmCommonCard, FmCommonCardHeader, FmCommonCardTitle, FmCommonCardDescription, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import {
   Select,
   SelectContent,
@@ -32,7 +32,6 @@ import {
 } from '@/components/common/shadcn/dialog';
 import { PhoneInput } from '@/components/common/forms/PhoneInput';
 import { toast } from 'sonner';
-import { FmInfoCard } from '@/components/common/data/FmInfoCard';
 import { z } from 'zod';
 import {
   emailField,
@@ -500,52 +499,59 @@ export default function EventCheckoutForm({
 
             {/* Guest Sign-Up Prompt */}
             {isGuestMode && (
-              <FmInfoCard
-                icon={UserPlus}
-                title={t('checkout.createAnAccount')}
-                description={t('checkout.saveInfoForNextTime')}
-              >
-                <Button
-                  type='button'
-                  variant='outline'
-                  size='sm'
-                  onClick={() => setShowSignUpModal(true)}
-                  className='border-fm-gold text-fm-gold hover:bg-fm-gold/10'
-                >
-                  {t('buttons.signUpNow')}
-                </Button>
-              </FmInfoCard>
+              <FmCommonCard size='lg'>
+                <FmCommonCardHeader icon={UserPlus} className='p-0 pb-2'>
+                  <FmCommonCardTitle className='font-medium text-sm'>{t('checkout.createAnAccount')}</FmCommonCardTitle>
+                  <FmCommonCardDescription className='text-xs'>{t('checkout.saveInfoForNextTime')}</FmCommonCardDescription>
+                </FmCommonCardHeader>
+                <FmCommonCardContent className='p-0'>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    size='sm'
+                    onClick={() => setShowSignUpModal(true)}
+                    className='border-fm-gold text-fm-gold hover:bg-fm-gold/10'
+                  >
+                    {t('buttons.signUpNow')}
+                  </Button>
+                </FmCommonCardContent>
+              </FmCommonCard>
             )}
 
             {/* Secure Payment */}
-            <FmInfoCard
-              icon={Lock}
-              title={t('checkout.securePayment')}
-              description={t('checkout.redirectedToStripe')}
-            />
+            <FmCommonCard size='lg'>
+              <FmCommonCardHeader icon={Lock} className='p-0'>
+                <FmCommonCardTitle className='font-medium text-sm'>{t('checkout.securePayment')}</FmCommonCardTitle>
+                <FmCommonCardDescription className='text-xs'>{t('checkout.redirectedToStripe')}</FmCommonCardDescription>
+              </FmCommonCardHeader>
+            </FmCommonCard>
 
             {/* Ticket Protection */}
-            <FmInfoCard icon={Shield}>
-              <div className='flex items-start justify-between mb-2'>
-                <div>
-                  <h3 className='font-medium text-sm mb-1'>
-                    {t('checkout.ticketProtection')}
-                  </h3>
-                  <p className='text-xs text-muted-foreground mb-3'>
-                    {t('checkout.ticketProtectionDescription')}
-                  </p>
+            <FmCommonCard size='lg'>
+              <FmCommonCardHeader icon={Shield} className='p-0 pb-2'>
+                <div className='flex items-start justify-between mb-2'>
+                  <div>
+                    <h3 className='font-medium text-sm mb-1'>
+                      {t('checkout.ticketProtection')}
+                    </h3>
+                    <p className='text-xs text-muted-foreground mb-3'>
+                      {t('checkout.ticketProtectionDescription')}
+                    </p>
+                  </div>
+                  <span className='text-sm font-medium text-fm-gold ml-4'>
+                    +${ticketProtectionFee.toFixed(2)}
+                  </span>
                 </div>
-                <span className='text-sm font-medium text-fm-gold ml-4'>
-                  +${ticketProtectionFee.toFixed(2)}
-                </span>
-              </div>
-              <FmCommonFormCheckbox
-                id='ticketProtection'
-                checked={ticketProtection}
-                onCheckedChange={setTicketProtection}
-                label={t('checkout.addTicketProtection')}
-              />
-            </FmInfoCard>
+              </FmCommonCardHeader>
+              <FmCommonCardContent className='p-0'>
+                <FmCommonFormCheckbox
+                  id='ticketProtection'
+                  checked={ticketProtection}
+                  onCheckedChange={setTicketProtection}
+                  label={t('checkout.addTicketProtection')}
+                />
+              </FmCommonCardContent>
+            </FmCommonCard>
 
             {/* Marketing Consent */}
             <FmCommonFormCheckbox

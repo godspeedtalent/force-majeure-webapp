@@ -5,7 +5,7 @@ import { supabase } from '@/shared';
 import { ArrowLeft, User, Mail, Calendar, Shield, Building2, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
 import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
-import { FmFormSectionHeader } from '@/components/common/forms/FmFormSectionHeader';
+import { FmFormSectionHeader } from '@/components/common/display/FmSectionHeader';
 import { Badge } from '@/components/common/shadcn/badge';
 import { Separator } from '@/components/common/shadcn/separator';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';

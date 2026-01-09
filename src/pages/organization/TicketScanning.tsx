@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Scan, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 
 import { Layout } from '@/components/layout/Layout';
-import { FmCommonCard } from '@/components/common/layout/FmCommonCard';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonPageLayout } from '@/components/common/layout';
 import { Input } from '@/components/common/shadcn/input';

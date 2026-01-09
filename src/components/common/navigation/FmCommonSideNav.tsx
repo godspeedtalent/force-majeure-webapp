@@ -115,9 +115,9 @@ export function FmCommonSideNav<T extends string = string>({
             <SidebarMenuButton
               onClick={() => handleItemClick(item.id)}
               className={cn(
-                'cursor-pointer transition-all duration-200',
+                'cursor-pointer transition-all duration-300 ease-in-out',
                 'relative overflow-hidden',
-                open ? 'justify-start pl-4' : 'justify-center',
+                open ? 'justify-start pl-4' : 'justify-center pl-2',
                 // Base left border (transparent) to prevent layout shift on hover
                 !isExternal && 'border-l-2 border-transparent',
                 // External item styling - frosted glass background
@@ -148,27 +148,27 @@ export function FmCommonSideNav<T extends string = string>({
               {/* Icon with subtle animation */}
               <item.icon
                 className={cn(
-                  'h-4 w-4 transition-transform duration-200',
+                  'h-4 w-4 shrink-0 transition-transform duration-300',
                   isActive && 'scale-110'
                 )}
               />
 
-              {/* Label with fade animation */}
-              {open && (
-                <span
-                  className={cn(
-                    'ml-3 transition-all duration-200 flex items-center gap-1.5 flex-1',
-                    isActive && 'font-semibold'
-                  )}
-                >
-                  {item.label}
-                  {/* External link icon for external items */}
-                  {isExternal && (
-                    <ExternalLink className='h-3 w-3 ml-auto text-white/50' />
-                  )}
-                  {item.badge && !isExternal && <span className='ml-auto'>{item.badge}</span>}
-                </span>
-              )}
+              {/* Label with smooth collapse animation */}
+              <span
+                className={cn(
+                  'ml-3 flex items-center gap-1.5 flex-1 whitespace-nowrap',
+                  'transition-all duration-300 ease-in-out',
+                  open ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0 ml-0 overflow-hidden',
+                  isActive && 'font-semibold'
+                )}
+              >
+                {item.label}
+                {/* External link icon for external items */}
+                {isExternal && (
+                  <ExternalLink className='h-3 w-3 ml-auto text-white/50' />
+                )}
+                {item.badge && !isExternal && <span className='ml-auto'>{item.badge}</span>}
+              </span>
 
               {/* Active indicator bar (subtle pulse) */}
               {isActive && (
@@ -193,21 +193,28 @@ export function FmCommonSideNav<T extends string = string>({
 
   return (
     <Sidebar
-      className={cn('border-r border-white/20 bg-black/40', className)}
+      className={cn('border-white/20 bg-black/40 relative', className)}
       collapsible='icon'
     >
-      <SidebarContent className='pt-4'>
-        {/* Toggle Button */}
-        <div className='px-2 mb-4'>
-          <SidebarTrigger
-            className={cn(
-              'hover:bg-fm-gold/20 transition-all duration-300',
-              'hover:scale-105 active:scale-95',
-              'hover:shadow-[0_0_16px_rgba(212,175,55,0.3)]'
-            )}
-          />
-        </div>
+      {/* Toggle Button - floating, positioned on right edge when expanded */}
+      <div
+        className={cn(
+          'absolute z-20',
+          open ? 'top-2 right-2' : 'top-2 left-1/2 -translate-x-1/2'
+        )}
+      >
+        <SidebarTrigger
+          className={cn(
+            'transition-all duration-300',
+            'hover:bg-fm-gold/20 hover:scale-105 active:scale-95',
+            'hover:shadow-[0_0_16px_rgba(212,175,55,0.3)]',
+            '[&>svg]:transition-colors [&>svg]:duration-300',
+            '[&:hover>svg]:text-fm-gold'
+          )}
+        />
+      </div>
 
+      <SidebarContent className='pt-12'>
         {/* Navigation Groups */}
         {groups.map((group, groupIndex) => {
           const groupLabel = group.label || `group-${groupIndex}`;
