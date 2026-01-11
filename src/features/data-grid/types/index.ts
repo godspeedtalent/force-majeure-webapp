@@ -20,6 +20,7 @@ export interface DataGridColumn<T = any> {
   readonly?: boolean; // Mark field as readonly (cannot be edited inline or in forms)
   required?: boolean; // Mark field as required for new row creation
   render?: (value: any, row: T) => React.ReactNode;
+  filterValue?: (row: T) => string; // Extract searchable string from row for filtering
   width?: string;
   isRelation?: boolean; // Mark this column as a foreign key relation
   isImage?: boolean; // Mark this column as an image (for mobile layout)

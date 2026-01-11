@@ -13,6 +13,7 @@ import {
   DollarSign,
 } from 'lucide-react';
 import { cn } from '@/shared';
+import { formatCurrency } from '@/lib/utils/currency';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
@@ -124,7 +125,7 @@ export function PreviewStep({
   };
 
   return (
-    <div className='space-y-6'>
+    <div className='space-y-6 relative pb-[80px]'>
       {/* Import Progress Overlay */}
       {isImporting && importResults.length > 0 && (
         <FmCommonCard hoverable={false} className='border-fm-gold/50'>
@@ -168,7 +169,7 @@ export function PreviewStep({
         <FmCommonStatCard label='Total Rows' value={parsedOrders.length} icon={FileSpreadsheet} size='sm' />
         <FmCommonStatCard label='Valid Orders' value={stats.valid.length} icon={CheckCircle} size='sm' />
         <FmCommonStatCard label='Total Tickets' value={stats.totalTickets} icon={Ticket} size='sm' />
-        <FmCommonStatCard label='Total Revenue' value={`$${(stats.totalRevenue / 100).toFixed(2)}`} icon={DollarSign} size='sm' />
+        <FmCommonStatCard label='Total Revenue' value={formatCurrency(stats.totalRevenue)} icon={DollarSign} size='sm' />
       </div>
 
       <div className='flex gap-2'>
@@ -269,7 +270,7 @@ export function PreviewStep({
                         <td className='p-2'>
                           {order.lineItems.filter(li => li.type === 'ticket').reduce((sum, li) => sum + li.quantity, 0)}
                         </td>
-                        <td className='p-2'>${(order.totalCents / 100).toFixed(2)}</td>
+                        <td className='p-2'>{formatCurrency(order.totalCents)}</td>
                         <td className='p-2'>
                           {importStatus?.error ? (
                             <span className={cn('text-xs', importStatus.status === 'failed' ? 'text-red-400' : 'text-yellow-400')}>
@@ -333,11 +334,11 @@ export function PreviewStep({
                                         </div>
                                         <div className='flex items-center gap-4 text-sm'>
                                           <span className='text-muted-foreground'>Qty: <span className='text-white'>{lineItem.quantity}</span></span>
-                                          <span className='text-muted-foreground'>Unit: <span className='text-white font-mono'>${(lineItem.unitPriceCents / 100).toFixed(2)}</span></span>
+                                          <span className='text-muted-foreground'>Unit: <span className='text-white font-mono'>{formatCurrency(lineItem.unitPriceCents)}</span></span>
                                           {lineItem.unitFeeCents > 0 && (
-                                            <span className='text-muted-foreground'>Fee: <span className='text-white font-mono'>${(lineItem.unitFeeCents / 100).toFixed(2)}</span></span>
+                                            <span className='text-muted-foreground'>Fee: <span className='text-white font-mono'>{formatCurrency(lineItem.unitFeeCents)}</span></span>
                                           )}
-                                          <span className='font-medium text-fm-gold font-mono'>${(lineItem.totalCents / 100).toFixed(2)}</span>
+                                          <span className='font-medium text-fm-gold font-mono'>{formatCurrency(lineItem.totalCents)}</span>
                                         </div>
                                       </div>
 
@@ -357,8 +358,8 @@ export function PreviewStep({
                                                 </div>
                                                 <div className='flex items-center gap-3 text-xs'>
                                                   <span className='text-muted-foreground'>Qty: <span className='text-white'>{subItem.quantity}</span></span>
-                                                  <span className='text-muted-foreground'>Unit: <span className='text-white font-mono'>${(subItem.unitPriceCents / 100).toFixed(2)}</span></span>
-                                                  <span className='font-mono text-fm-gold'>${(subItem.totalCents / 100).toFixed(2)}</span>
+                                                  <span className='text-muted-foreground'>Unit: <span className='text-white font-mono'>{formatCurrency(subItem.unitPriceCents)}</span></span>
+                                                  <span className='font-mono text-fm-gold'>{formatCurrency(subItem.totalCents)}</span>
                                                 </div>
                                               </div>
                                             ))}
@@ -387,10 +388,14 @@ export function PreviewStep({
         </FmCommonCardContent>
       </FmCommonCard>
 
-      <div className='flex justify-between'>
+      <div className='flex justify-start'>
         <FmCommonButton variant='secondary' onClick={onBack}>
           Back to Mapping
         </FmCommonButton>
+      </div>
+
+      {/* Fixed Import Button Toolbar */}
+      <div className='fixed bottom-[20px] right-[20px] bg-black/70 backdrop-blur-md border border-white/20 p-[10px] z-50'>
         <FmCommonButton
           variant='gold'
           onClick={onImport}

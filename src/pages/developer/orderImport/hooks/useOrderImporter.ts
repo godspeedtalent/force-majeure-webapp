@@ -236,7 +236,7 @@ export function useOrderImporter({
                   attendee_name: order.customerName,
                   attendee_email: order.customerEmail,
                   qr_code_data: `IMPORT-${newOrder.id}-${lineItem.templateId}-${j}-${Date.now()}`,
-                  status: order.status === 'completed' ? 'valid' : order.status,
+                  status: order.status === 'paid' ? 'valid' : order.status,
                   has_protection: hasProtection,
                 });
               }
@@ -251,6 +251,40 @@ export function useOrderImporter({
               } else if (createdTickets) {
                 createdTicketIds.push(...createdTickets.map(t => t.id));
                 orderTicketCount += createdTickets.length;
+
+                // Update ticket tier inventory to reflect sold tickets
+                // First get current inventory values
+                const { data: currentTier, error: tierFetchError } = await supabase
+                  .from('ticket_tiers')
+                  .select('sold_inventory, available_inventory')
+                  .eq('id', lineItem.ticketTierId)
+                  .single();
+
+                if (tierFetchError) {
+                  logger.warn('Failed to fetch tier inventory for update', {
+                    error: tierFetchError.message,
+                    tierId: lineItem.ticketTierId,
+                    source: 'useOrderImporter.importOrders',
+                  });
+                } else if (currentTier) {
+                  const ticketCount = createdTickets.length;
+                  const { error: tierUpdateError } = await supabase
+                    .from('ticket_tiers')
+                    .update({
+                      sold_inventory: (currentTier.sold_inventory ?? 0) + ticketCount,
+                      available_inventory: Math.max(0, (currentTier.available_inventory ?? 0) - ticketCount),
+                    })
+                    .eq('id', lineItem.ticketTierId);
+
+                  if (tierUpdateError) {
+                    logger.warn('Failed to update tier inventory', {
+                      error: tierUpdateError.message,
+                      tierId: lineItem.ticketTierId,
+                      ticketCount,
+                      source: 'useOrderImporter.importOrders',
+                    });
+                  }
+                }
               }
             }
 

@@ -9,6 +9,7 @@ import {
   LogIn,
 } from 'lucide-react';
 
+import { formatDollars } from '@/lib/utils/currency';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmBigButton } from '@/components/common/buttons/FmBigButton';
 import { FmCommonCard } from '@/components/common/display/FmCommonCard';
@@ -465,7 +466,7 @@ export const TicketCheckoutForm = ({
                 {t('checkout.ticketProtection')}
               </h4>
               <span className='text-sm font-medium text-fm-gold'>
-                +${ticketProtectionFee.toFixed(2)}
+                +{formatDollars(ticketProtectionFee)}
               </span>
             </div>
             <p className='text-xs text-muted-foreground mb-3'>
@@ -497,11 +498,11 @@ export const TicketCheckoutForm = ({
                 <div>
                   <p className='font-medium text-foreground'>{ticket.name}</p>
                   <p className='text-xs text-muted-foreground'>
-                    {ticket.quantity} × ${ticket.price.toFixed(2)}
+                    {ticket.quantity} × {formatDollars(ticket.price)}
                   </p>
                 </div>
                 <span className='font-medium text-foreground'>
-                  ${ticket.subtotal.toFixed(2)}
+                  {formatDollars(ticket.subtotal)}
                 </span>
               </div>
             ))}
@@ -513,7 +514,7 @@ export const TicketCheckoutForm = ({
             <div className='flex justify-between'>
               <span className='text-muted-foreground'>{t('checkout.subtotal')}</span>
               <span className='text-foreground'>
-                ${summary.subtotal.toFixed(2)}
+                {formatDollars(summary.subtotal)}
               </span>
             </div>
 
@@ -526,7 +527,7 @@ export const TicketCheckoutForm = ({
                   {fee.name.replace(/_/g, ' ')}
                 </span>
                 <span className='text-foreground'>
-                  ${fee.amount.toFixed(2)}
+                  {formatDollars(fee.amount)}
                 </span>
               </div>
             ))}
@@ -535,7 +536,7 @@ export const TicketCheckoutForm = ({
               <div className='flex justify-between text-xs text-muted-foreground'>
                 <span>{t('checkout.ticketProtection')}</span>
                 <span className='text-foreground'>
-                  ${ticketProtectionFee.toFixed(2)}
+                  {formatDollars(ticketProtectionFee)}
                 </span>
               </div>
             )}
@@ -546,7 +547,7 @@ export const TicketCheckoutForm = ({
           <div className='flex justify-between items-center text-base font-canela'>
             <span>{t('checkout.total')}</span>
             <span className='text-fm-gold'>
-              ${totalWithProtection.toFixed(2)}
+              {formatDollars(totalWithProtection)}
             </span>
           </div>
         </FmCommonCard>

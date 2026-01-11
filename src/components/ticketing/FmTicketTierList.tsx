@@ -3,6 +3,7 @@ import {
   FmCommonList,
   type FmCommonListColumn,
 } from '@/components/common/data/FmCommonList';
+import { formatDollars } from '@/lib/utils/currency';
 
 interface TicketTierSummary {
   id: string;
@@ -37,7 +38,7 @@ export const FmTicketTierList = ({
         <div className='flex flex-col gap-0.5'>
           <span className='font-medium text-foreground'>{item.tier.name}</span>
           <span className='text-xs text-muted-foreground'>
-            {item.quantity}x ${item.tier.price.toFixed(2)}
+            {item.quantity}x {formatDollars(item.tier.price)}
           </span>
         </div>
       ),
@@ -48,7 +49,7 @@ export const FmTicketTierList = ({
       label: t('checkout.subtotal'),
       render: (_, item) => (
         <span className='font-medium text-foreground'>
-          ${item.subtotal.toFixed(2)}
+          {formatDollars(item.subtotal)}
         </span>
       ),
       align: 'right',

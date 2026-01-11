@@ -31,7 +31,7 @@ import { EventOrderManagement } from '@/components/events/orders';
 import { EventAnalytics } from '@/components/events/analytics';
 import Reports from './Reports';
 import { TrackingLinksManagement } from '@/components/events/tracking/TrackingLinksManagement';
-import { EventStatusBadge, PublishEventButton } from '@/components/events/status';
+import { EventStatusBadge, PublishEventButton, EventTicketStatusDashboard } from '@/components/events/status';
 import { eventService } from '@/features/events/services/eventService';
 import { GuestListSettings } from '@/components/events/social/GuestListSettings';
 import { EventOverviewForm } from '@/components/events/overview/EventOverviewForm';
@@ -51,7 +51,7 @@ import { FmStickyFormFooter } from '@/components/common/forms/FmStickyFormFooter
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmTabContentHeader } from '@/components/common/headers/FmTabContentHeader';
 
-type EventTab = 'overview' | 'gallery' | 'artists' | 'tiers' | 'orders' | 'sales' | 'reports' | 'tracking' | 'social' | 'ux_display' | 'admin' | 'view';
+type EventTab = 'overview' | 'gallery' | 'artists' | 'tiers' | 'orders' | 'ticket-status' | 'sales' | 'reports' | 'tracking' | 'social' | 'ux_display' | 'admin' | 'view';
 
 export default function EventManagement() {
   const { t } = useTranslation('common');
@@ -204,6 +204,12 @@ export default function EventManagement() {
           description: t('eventNav.ordersDescription'),
         },
         {
+          id: 'ticket-status',
+          label: t('eventNav.ticketStatus'),
+          icon: BarChart3,
+          description: t('eventNav.ticketStatusDescription'),
+        },
+        {
           id: 'tracking',
           label: t('eventNav.trackingLinks'),
           icon: Link2,
@@ -258,6 +264,7 @@ export default function EventManagement() {
     { id: 'ux_display', label: t('eventNav.uxDisplay'), icon: Palette },
     { id: 'tiers', label: t('eventNav.ticketTiers'), icon: Ticket },
     { id: 'orders', label: t('eventNav.orders'), icon: ShoppingBag },
+    { id: 'ticket-status', label: t('eventNav.ticketStatus'), icon: BarChart3 },
     { id: 'tracking', label: t('eventNav.trackingLinks'), icon: Link2 },
     { id: 'sales', label: t('eventNav.salesSummary'), icon: DollarSign },
     { id: 'reports', label: t('eventNav.reports'), icon: FileText },
@@ -568,6 +575,12 @@ export default function EventManagement() {
           {activeTab === 'orders' && id && (
             <PageErrorBoundary section='Orders'>
               <EventOrderManagement eventId={id} />
+            </PageErrorBoundary>
+          )}
+
+          {activeTab === 'ticket-status' && id && (
+            <PageErrorBoundary section='Ticket Status'>
+              <EventTicketStatusDashboard eventId={id} />
             </PageErrorBoundary>
           )}
 

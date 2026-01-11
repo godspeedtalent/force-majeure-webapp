@@ -14,6 +14,7 @@ import { FmCommonEmptyState } from '@/components/common/display/FmCommonEmptySta
 import { Layout } from '@/components/layout/Layout';
 import { format } from 'date-fns';
 import { Receipt, Calendar } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils/currency';
 
 export default function Orders() {
   const { t } = useTranslation('pages');
@@ -105,7 +106,7 @@ export default function Orders() {
                           {item.quantity}x {item.ticket_tier?.name || t('orders.ticket')}
                         </span>
                         <span className='text-fm-gold'>
-                          ${(item.subtotal_cents / 100).toFixed(2)}
+                          {formatCurrency(item.subtotal_cents)}
                         </span>
                       </div>
                     ))}
@@ -117,17 +118,17 @@ export default function Orders() {
                   <div className='space-y-1 text-sm'>
                     <div className='flex justify-between text-muted-foreground'>
                       <span>{t('orders.subtotal')}</span>
-                      <span>${(order.subtotal_cents / 100).toFixed(2)}</span>
+                      <span>{formatCurrency(order.subtotal_cents)}</span>
                     </div>
                     <div className='flex justify-between text-muted-foreground'>
                       <span>{t('orders.fees')}</span>
-                      <span>${(order.fees_cents / 100).toFixed(2)}</span>
+                      <span>{formatCurrency(order.fees_cents)}</span>
                     </div>
                     <Separator className='my-2' />
                     <div className='flex justify-between font-canela text-base'>
                       <span>{t('orders.total')}</span>
                       <span className='text-fm-gold'>
-                        ${(order.total_cents / 100).toFixed(2)}
+                        {formatCurrency(order.total_cents)}
                       </span>
                     </div>
                   </div>

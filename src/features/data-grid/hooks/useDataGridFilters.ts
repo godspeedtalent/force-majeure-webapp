@@ -48,13 +48,22 @@ export function useDataGridFilters<T extends Record<string, any>>({
   const filteredData = useMemo(() => {
     let filtered = [...data];
 
+    // Helper to get searchable string value from a row for a column
+    const getSearchableValue = (row: T, col: DataGridColumn): string => {
+      if (col.filterValue) {
+        return col.filterValue(row);
+      }
+      const value = row[col.key];
+      return value?.toString() ?? '';
+    };
+
     // Apply universal search
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(row =>
         columns.some(col => {
-          const value = row[col.key];
-          return value?.toString().toLowerCase().includes(query);
+          const value = getSearchableValue(row, col);
+          return value.toLowerCase().includes(query);
         })
       );
     }
@@ -63,9 +72,10 @@ export function useDataGridFilters<T extends Record<string, any>>({
     Object.entries(columnFilters).forEach(([key, value]) => {
       if (value) {
         const query = value.toLowerCase();
+        const col = columns.find(c => c.key === key);
         filtered = filtered.filter(row => {
-          const cellValue = row[key];
-          return cellValue?.toString().toLowerCase().includes(query);
+          const cellValue = col ? getSearchableValue(row, col) : row[key]?.toString() ?? '';
+          return cellValue.toLowerCase().includes(query);
         });
       }
     });

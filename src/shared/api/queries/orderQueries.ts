@@ -137,7 +137,9 @@ export function useCreateOrder() {
     mutationFn: (orderData) => orderService.createOrder(orderData),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: orderKeys.byEvent(variables.event_id) });
-      queryClient.invalidateQueries({ queryKey: orderKeys.byUser(variables.user_id) });
+      if (variables.user_id) {
+        queryClient.invalidateQueries({ queryKey: orderKeys.byUser(variables.user_id) });
+      }
       queryClient.invalidateQueries({ queryKey: orderKeys.count(variables.event_id) });
     },
   });

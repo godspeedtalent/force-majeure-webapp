@@ -195,7 +195,7 @@ export interface ParsedOrder {
   totalCents: number;           // subtotalCents + feesCents
   // Order metadata
   orderDate: string;
-  status: 'completed' | 'refunded' | 'cancelled';
+  status: 'paid' | 'refunded' | 'cancelled';
   externalOrderId?: string;
   // Validation state
   validationErrors: string[];

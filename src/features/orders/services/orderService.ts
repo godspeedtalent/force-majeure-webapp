@@ -8,7 +8,7 @@ import { logger } from '@/shared';
  * Consolidates duplicate Supabase queries for orders table.
  */
 
-export type OrderStatus = 'pending' | 'completed' | 'cancelled' | 'refunded' | 'failed';
+export type OrderStatus = 'pending' | 'paid' | 'completed' | 'cancelled' | 'refunded' | 'failed';
 
 export interface OrderProfile {
   id: string;
@@ -16,6 +16,13 @@ export interface OrderProfile {
   full_name: string | null;
   email: string | null;
   avatar_url: string | null;
+}
+
+export interface OrderGuest {
+  id: string;
+  email: string;
+  full_name: string | null;
+  phone: string | null;
 }
 
 export interface OrderItem {
@@ -38,7 +45,9 @@ export interface OrderItem {
 export interface Order {
   id: string;
   event_id: string;
-  user_id: string;
+  user_id: string | null;
+  guest_id: string | null;
+  customer_email?: string | null;
   status: OrderStatus;
   subtotal_cents: number;
   fees_cents: number;
@@ -48,13 +57,16 @@ export interface Order {
   stripe_checkout_session_id?: string | null;
   created_at: string;
   updated_at: string;
-  profile?: OrderProfile;
+  profile?: OrderProfile | null;
+  guest?: OrderGuest | null;
   items?: OrderItem[];
 }
 
 export interface CreateOrderData {
   event_id: string;
-  user_id: string;
+  user_id?: string | null;
+  guest_id?: string | null;
+  customer_email?: string;
   subtotal_cents: number;
   fees_cents: number;
   total_cents: number;
@@ -98,6 +110,12 @@ export const orderService = {
           full_name,
           email,
           avatar_url
+        ),
+        guest:guests!orders_guest_id_fkey(
+          id,
+          email,
+          full_name,
+          phone
         ),
         items:order_items(
           id,
@@ -183,6 +201,12 @@ export const orderService = {
           full_name,
           email,
           avatar_url
+        ),
+        guest:guests!orders_guest_id_fkey(
+          id,
+          email,
+          full_name,
+          phone
         ),
         items:order_items(
           id,
@@ -406,6 +430,12 @@ export const orderService = {
           display_name,
           full_name,
           email
+        ),
+        guest:guests!orders_guest_id_fkey(
+          id,
+          email,
+          full_name,
+          phone
         ),
         items:order_items(
           id,

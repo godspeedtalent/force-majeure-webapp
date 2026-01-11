@@ -14,65 +14,73 @@ interface TabGroup {
 interface GroupBracketLinesProps {
   group: TabGroup;
   showGroupLabel: string | null;
+  isTabHovered: boolean;
 }
 
 /** Renders the bracket lines connecting tabs in a group */
-const GroupBracketLines = ({ group, showGroupLabel }: GroupBracketLinesProps) => (
-  <>
-    {/* Vertical line connecting items */}
-    <div
-      className={cn(
-        'absolute transition-opacity duration-300',
-        showGroupLabel === group.group ? 'opacity-100' : 'opacity-30'
-      )}
-      style={{
-        left: '-12px',
-        top: '24px',
-        height: `${(group.tabs.length - 1) * 56}px`,
-        width: '1px',
-        background: 'rgba(255, 255, 255, 0.2)',
-      }}
-    />
-    {/* Horizontal tick at first item */}
-    <div
-      className={cn(
-        'absolute transition-opacity duration-300',
-        showGroupLabel === group.group ? 'opacity-100' : 'opacity-30'
-      )}
-      style={{
-        left: '-12px',
-        top: '24px',
-        width: '8px',
-        height: '1px',
-        background: 'rgba(255, 255, 255, 0.2)',
-      }}
-    />
-    {/* Horizontal tick at last item */}
-    <div
-      className={cn(
-        'absolute transition-opacity duration-300',
-        showGroupLabel === group.group ? 'opacity-100' : 'opacity-30'
-      )}
-      style={{
-        left: '-12px',
-        top: `${24 + (group.tabs.length - 1) * 56}px`,
-        width: '8px',
-        height: '1px',
-        background: 'rgba(255, 255, 255, 0.2)',
-      }}
-    />
-  </>
-);
+const GroupBracketLines = ({ group, showGroupLabel, isTabHovered }: GroupBracketLinesProps) => {
+  // Only show bracket lines when tabs are hovered
+  const isVisible = isTabHovered && showGroupLabel === group.group;
+  const isPartiallyVisible = isTabHovered;
+
+  return (
+    <>
+      {/* Vertical line connecting items */}
+      <div
+        className={cn(
+          'absolute transition-opacity duration-300',
+          isVisible ? 'opacity-100' : isPartiallyVisible ? 'opacity-30' : 'opacity-0'
+        )}
+        style={{
+          left: '-12px',
+          top: '24px',
+          height: `${(group.tabs.length - 1) * 56}px`,
+          width: '1px',
+          background: 'rgba(255, 255, 255, 0.2)',
+        }}
+      />
+      {/* Horizontal tick at first item */}
+      <div
+        className={cn(
+          'absolute transition-opacity duration-300',
+          isVisible ? 'opacity-100' : isPartiallyVisible ? 'opacity-30' : 'opacity-0'
+        )}
+        style={{
+          left: '-12px',
+          top: '24px',
+          width: '8px',
+          height: '1px',
+          background: 'rgba(255, 255, 255, 0.2)',
+        }}
+      />
+      {/* Horizontal tick at last item */}
+      <div
+        className={cn(
+          'absolute transition-opacity duration-300',
+          isVisible ? 'opacity-100' : isPartiallyVisible ? 'opacity-30' : 'opacity-0'
+        )}
+        style={{
+          left: '-12px',
+          top: `${24 + (group.tabs.length - 1) * 56}px`,
+          width: '8px',
+          height: '1px',
+          background: 'rgba(255, 255, 255, 0.2)',
+        }}
+      />
+    </>
+  );
+};
 
 interface GroupLabelProps {
   groupLabel: string;
   showGroupLabel: string | null;
   groupName: string;
+  isTabHovered: boolean;
   onClick?: () => void;
 }
 
 /** Renders the vertical group label text */
-const GroupLabel = ({ groupLabel, showGroupLabel, groupName, onClick }: GroupLabelProps) => {
+const GroupLabel = ({ groupLabel, showGroupLabel, groupName, isTabHovered, onClick }: GroupLabelProps) => {
   const handleClick = onClick
     ? (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -80,11 +88,14 @@ const GroupLabel = ({ groupLabel, showGroupLabel, groupName, onClick }: GroupLab
       }
     : undefined;
 
+  // Only show label when tabs are hovered AND this specific group is active
+  const isVisible = isTabHovered && showGroupLabel === groupName;
+
   return (
     <div
       className={cn(
         'absolute transition-opacity duration-300',
-        showGroupLabel === groupName ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
       )}
       style={{
         left: '-52px',
@@ -165,7 +176,7 @@ export const TopTabGroups = ({
             >
               {/* Group bracket lines */}
               {shouldShowLabel && groupLabel && group.tabs.length > 1 && (
-                <GroupBracketLines group={group} showGroupLabel={showGroupLabel} />
+                <GroupBracketLines group={group} showGroupLabel={showGroupLabel} isTabHovered={isTabHovered} />
               )}
 
               {/* Group label - vertical text */}
@@ -174,6 +185,7 @@ export const TopTabGroups = ({
                   groupLabel={groupLabel}
                   showGroupLabel={showGroupLabel}
                   groupName={group.group}
+                  isTabHovered={isTabHovered}
                 />
               )}
 
@@ -291,7 +303,7 @@ export const BottomTabGroups = ({
 
               {/* Group bracket lines */}
               {shouldShowLabel && groupLabel && !collapsed && group.tabs.length > 1 && (
-                <GroupBracketLines group={group} showGroupLabel={showGroupLabel} />
+                <GroupBracketLines group={group} showGroupLabel={showGroupLabel} isTabHovered={isTabHovered} />
               )}
 
               {/* Collapse bar - appears on hover at the top of the group */}
@@ -301,7 +313,7 @@ export const BottomTabGroups = ({
                     'absolute -top-4 left-1/2 -translate-x-1/2 flex items-center justify-center',
                     'w-12 h-3 bg-white/5 border border-white/10 hover:bg-white/15 hover:border-fm-gold/50',
                     'transition-all duration-300 cursor-pointer z-10',
-                    showGroupLabel === group.group
+                    isTabHovered && showGroupLabel === group.group
                       ? 'opacity-100'
                       : 'opacity-0 pointer-events-none'
                   )}
@@ -321,6 +333,7 @@ export const BottomTabGroups = ({
                   groupLabel={groupLabel}
                   showGroupLabel={showGroupLabel}
                   groupName={group.group}
+                  isTabHovered={isTabHovered}
                   onClick={() => toggleGroupCollapsed(group.group)}
                 />
               )}

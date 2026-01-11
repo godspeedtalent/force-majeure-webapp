@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { logger } from '@/shared';
 import { CheckCircle2 } from 'lucide-react';
 
+import { formatDollars } from '@/lib/utils/currency';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { FmCommonStackLayout } from '@/components/common/layout';
@@ -178,11 +179,11 @@ export const EventCheckoutWizard = ({
               <div>
                 <p className='font-medium text-foreground'>{ticket.name}</p>
                 <p className='text-xs text-muted-foreground'>
-                  {ticket.quantity} × ${ticket.price.toFixed(2)}
+                  {ticket.quantity} × {formatDollars(ticket.price)}
                 </p>
               </div>
               <span className='font-medium text-foreground'>
-                ${ticket.subtotal.toFixed(2)}
+                {formatDollars(ticket.subtotal)}
               </span>
             </div>
           ))}
@@ -192,7 +193,7 @@ export const EventCheckoutWizard = ({
           <div className='flex justify-between'>
             <span className='text-muted-foreground'>{t('checkout.subtotal')}</span>
             <span className='text-foreground'>
-              ${orderSummary.subtotal.toFixed(2)}
+              {formatDollars(orderSummary.subtotal)}
             </span>
           </div>
 
@@ -202,14 +203,14 @@ export const EventCheckoutWizard = ({
               className='flex justify-between text-xs text-muted-foreground'
             >
               <span className='capitalize'>{fee.name.replace(/_/g, ' ')}</span>
-              <span className='text-foreground'>${fee.amount.toFixed(2)}</span>
+              <span className='text-foreground'>{formatDollars(fee.amount)}</span>
             </div>
           ))}
         </div>
 
         <div className='flex justify-between items-center text-base font-canela'>
           <span>{t('checkout.total')}</span>
-          <span className='text-fm-gold'>${orderSummary.total.toFixed(2)}</span>
+          <span className='text-fm-gold'>{formatDollars(orderSummary.total)}</span>
         </div>
       </FmCommonCard>
 

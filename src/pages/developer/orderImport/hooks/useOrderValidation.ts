@@ -106,7 +106,7 @@ export function useOrderValidation({
         const emailRaw = resolveFieldValue(columnMapping.customer_email, row, { tierPrice, eventDate });
         const nameRaw = resolveFieldValue(columnMapping.customer_name, row, { tierPrice, eventDate });
         const orderDateRaw = resolveFieldValue(columnMapping.created_at, row, { tierPrice, eventDate }) || defaultOrderDate;
-        const statusRaw = resolveFieldValue(columnMapping.status, row, { tierPrice, eventDate }) || 'completed';
+        const statusRaw = resolveFieldValue(columnMapping.status, row, { tierPrice, eventDate }) || 'paid';
         const externalOrderIdRaw = resolveFieldValue(columnMapping.external_order_id, row, { tierPrice, eventDate });
 
         // Convert values
@@ -122,7 +122,7 @@ export function useOrderValidation({
 
         const statusResult = convertToDataType(statusRaw, 'enum', FIELD_DESCRIPTIONS.status.enumValues);
         if (statusResult.error) errors.push(`Status: ${statusResult.error}`);
-        const status = (statusResult.value as 'completed' | 'refunded' | 'cancelled') || 'completed';
+        const status = (statusResult.value as 'paid' | 'refunded' | 'cancelled') || 'paid';
 
         const externalOrderIdResult = convertToDataType(externalOrderIdRaw, 'text');
         const externalOrderId = (externalOrderIdResult.value as string) || '';

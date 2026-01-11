@@ -119,7 +119,7 @@ export function useOrderImport(options?: UseOrderImportOptions) {
       customer_email: { mode: 'column', value: '', defaultValue: '' },
       customer_name: { mode: 'column', value: '', defaultValue: '' },
       created_at: { mode: 'column', value: '', defaultValue: '' },
-      status: { mode: 'column', value: '', defaultValue: 'completed' },
+      status: { mode: 'column', value: '', defaultValue: 'paid' },
       external_order_id: { mode: 'column', value: '', defaultValue: '' },
     };
 

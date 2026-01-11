@@ -29,7 +29,7 @@ export const DEFAULT_COLUMN_MAPPING: ColumnMapping = {
   customer_email: { ...DEFAULT_FIELD_MAPPING },
   customer_name: { ...DEFAULT_FIELD_MAPPING },
   created_at: { ...DEFAULT_FIELD_MAPPING }, // Default will be set from event date
-  status: { ...DEFAULT_FIELD_MAPPING, defaultValue: 'completed' },
+  status: { ...DEFAULT_FIELD_MAPPING, defaultValue: 'paid' },
   external_order_id: { ...DEFAULT_FIELD_MAPPING },
 };
 
@@ -112,9 +112,9 @@ export const FIELD_DESCRIPTIONS: Record<keyof ColumnMapping, FieldDescription> =
     dbColumn: 'status',
     tableName: 'orders',
     required: false,
-    description: 'completed | refunded | cancelled',
+    description: 'paid | refunded | cancelled',
     dataType: 'enum',
-    enumValues: ['completed', 'refunded', 'cancelled'],
+    enumValues: ['paid', 'refunded', 'cancelled'],
     supportsDefault: true,
     category: 'orders',
   },

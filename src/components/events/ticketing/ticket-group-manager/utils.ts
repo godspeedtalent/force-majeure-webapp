@@ -1,7 +1,8 @@
+import { formatCurrency } from '@/lib/utils/currency';
 import type { TicketGroup } from './types';
 
 export const formatPrice = (cents: number): string => {
-  return `$${(cents / 100).toFixed(2)}`;
+  return formatCurrency(cents);
 };
 
 export const getTotalTicketsInGroup = (group: TicketGroup): number => {

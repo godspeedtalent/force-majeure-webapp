@@ -42,13 +42,16 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
 
   const isAdminOrDev = hasAnyRole(ROLES.ADMIN, ROLES.DEVELOPER);
 
+  // Filter out any null/undefined orders to prevent rendering errors
+  const validOrders = orders.filter((order): order is EventOrder => order != null);
+
   const columns: DataGridColumn<EventOrder>[] = [
     {
       key: 'id',
       label: t('orderManagement.orderId'),
       sortable: true,
       filterable: true,
-      render: (order) => (
+      render: (_value, order) => (
         <span className="font-mono text-sm">
           #{order.id.slice(0, 8)}...
         </span>
@@ -59,33 +62,66 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
       label: t('orderManagement.customer'),
       sortable: true,
       filterable: true,
-      render: (order) => (
-        <div className="flex items-center gap-2">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={order.profile?.avatar_url || undefined} />
-            <AvatarFallback>
-              {order.profile?.display_name?.[0] || order.profile?.full_name?.[0] || 'U'}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col">
-            <span className="font-medium">
-              {order.profile?.display_name || order.profile?.full_name || 'Unknown'}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {order.profile?.email}
-            </span>
+      filterValue: (order) => {
+        const name = order.profile?.display_name
+          || order.profile?.full_name
+          || order.guest?.full_name
+          || '';
+        const email = order.profile?.email
+          || order.guest?.email
+          || order.customer_email
+          || '';
+        return `${name} ${email}`.trim();
+      },
+      render: (_value, order) => {
+        // Determine customer info from profile OR guest
+        const customerName = order.profile?.display_name
+          || order.profile?.full_name
+          || order.guest?.full_name
+          || order.customer_email
+          || 'Unknown';
+
+        const customerEmail = order.profile?.email
+          || order.guest?.email
+          || order.customer_email;
+
+        const avatarFallback = customerName?.[0] || 'U';
+        const isGuest = !order.user_id && order.guest_id;
+
+        return (
+          <div className="flex items-center gap-2">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={order.profile?.avatar_url || undefined} />
+              <AvatarFallback>
+                {avatarFallback}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+              <span className="font-medium flex items-center gap-2">
+                {customerName}
+                {isGuest && (
+                  <Badge variant="outline" className="text-xs py-0 px-1">
+                    {t('orderManagement.guest')}
+                  </Badge>
+                )}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {customerEmail}
+              </span>
+            </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       key: 'status',
       label: t('labels.status'),
       sortable: true,
       filterable: true,
-      render: (order) => {
+      render: (_value, order) => {
         const statusColors: Record<string, string> = {
           pending: 'bg-yellow-500/10 text-yellow-500',
+          paid: 'bg-green-500/10 text-green-500',
           completed: 'bg-green-500/10 text-green-500',
           cancelled: 'bg-red-500/10 text-red-500',
           refunded: 'bg-gray-500/10 text-gray-500',
@@ -103,7 +139,7 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
       sortable: true,
       filterable: true,
       type: 'number',
-      render: (order) => (
+      render: (_value, order) => (
         <span className="font-semibold">
           {formatCurrency(order.total_cents, order.currency)}
         </span>
@@ -126,18 +162,22 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
       sortable: true,
       filterable: true,
       type: 'date',
-      render: (order) => new Date(order.created_at).toLocaleDateString(),
+      render: (_value, order) => new Date(order.created_at).toLocaleDateString(),
     },
     {
       key: 'items',
       label: t('orderManagement.tickets'),
       sortable: false,
       filterable: false,
-      render: (order) => {
-        const summary = order.items
-          .map((item: any) => `${item.quantity}x ${item.ticket_tier.name}`)
-          .join(', ');
-        return <span className="text-sm text-muted-foreground">{summary}</span>;
+      render: (_value, order) => {
+        if (!order.items || order.items.length === 0) {
+          return <span className="text-sm text-muted-foreground">0</span>;
+        }
+        const totalQuantity = order.items.reduce(
+          (sum, item) => sum + (item.quantity || 0),
+          0
+        );
+        return <span className="text-sm">{totalQuantity}</span>;
       },
     },
   ];
@@ -269,7 +309,7 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
         </div>
       )}
       <FmConfigurableDataGrid
-        data={orders}
+        data={validOrders}
         columns={columns}
         actions={actions}
         loading={isLoading}

@@ -19,8 +19,10 @@ import { Separator } from '@/components/common/shadcn/separator';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { cn } from '@/shared';
 import { formatHeader } from '@/shared';
+import { formatDollars } from '@/lib/utils/currency';
 
 import { FmTicketTierList } from '@/components/ticketing/FmTicketTierList';
+import { FmTicketAvailabilityBadge } from '@/components/ticketing/FmTicketAvailabilityBadge';
 import { useTicketFees } from './hooks/useTicketFees';
 
 export interface TicketTierOption {
@@ -296,19 +298,19 @@ export const TicketingPanel = ({
                                   {tier.description}
                                 </p>
                               )}
-                              {soldOut && (
-                                <span className='text-[10px] bg-destructive/20 text-destructive px-1.5 py-0.5 rounded font-medium inline-block'>
-                                  {t('status.soldOut').toUpperCase()}
-                                </span>
-                              )}
+                              <FmTicketAvailabilityBadge
+                                available={tier.available_inventory}
+                                total={tier.total_tickets}
+                                showExactCount
+                                size="sm"
+                              />
                             </div>
                             <div className='flex items-center gap-[10px]'>
                               <div className='relative group/price'>
                                 <span className='text-xs text-fm-gold cursor-help'>
-                                  $
-                                  {calculateFinalTicketPrice(
+                                  {formatDollars(calculateFinalTicketPrice(
                                     tier.price
-                                  ).toFixed(2)}
+                                  ))}
                                 </span>
                                 <div className='absolute right-0 bottom-full mb-2 hidden group-hover/price:block bg-popover text-popover-foreground px-[10px] py-[10px] rounded-none border border-border shadow-lg whitespace-nowrap z-50 min-w-[200px]'>
                                   <div className='text-xs font-medium mb-2 text-foreground'>
@@ -326,7 +328,7 @@ export const TicketingPanel = ({
                                           {item.label}:
                                         </span>
                                         <span className='text-foreground'>
-                                          ${item.amount.toFixed(2)}
+                                          {formatDollars(item.amount)}
                                         </span>
                                       </div>
                                     ))}
@@ -336,10 +338,9 @@ export const TicketingPanel = ({
                                           {t('labels.total')}:
                                         </span>
                                         <span className='text-fm-gold'>
-                                          $
-                                          {getPriceBreakdown(
+                                          {formatDollars(getPriceBreakdown(
                                             tier.price
-                                          ).total.toFixed(2)}
+                                          ).total)}
                                         </span>
                                       </div>
                                     </div>
@@ -465,13 +466,13 @@ export const TicketingPanel = ({
 
           <div className='flex justify-between text-xs'>
             <span className='text-muted-foreground'>{t('checkout.subtotal')}</span>
-            <span className='text-foreground'>${subtotal.toFixed(2)}</span>
+            <span className='text-foreground'>{formatDollars(subtotal)}</span>
           </div>
 
           {promoCode && promoDiscount > 0 && (
             <div className='flex justify-between text-xs text-green-600'>
               <span>{t('ticketingPanel.promo')} ({promoCode.code})</span>
-              <span>-${promoDiscount.toFixed(2)}</span>
+              <span>-{formatDollars(promoDiscount)}</span>
             </div>
           )}
 
@@ -479,8 +480,8 @@ export const TicketingPanel = ({
             const isSalesTax = fee.name.toLowerCase().includes('tax');
             const tooltipText =
               fee.type === 'percentage'
-                ? `${fee.value}% of $${subtotalAfterPromo.toFixed(2)} = $${fee.amount.toFixed(2)}`
-                : `$${fee.value.toFixed(2)} flat fee`;
+                ? `${fee.value}% of ${formatDollars(subtotalAfterPromo)} = ${formatDollars(fee.amount)}`
+                : `${formatDollars(fee.value)} flat fee`;
 
             return (
               <div
@@ -494,7 +495,7 @@ export const TicketingPanel = ({
                     ` (${fee.value}%)`}
                 </span>
                 <span className='text-foreground'>
-                  ${fee.amount.toFixed(2)}
+                  {formatDollars(fee.amount)}
                 </span>
 
                 <div className='absolute left-0 bottom-full mb-1 hidden group-hover:block bg-popover text-popover-foreground text-xs px-2 py-1 rounded border border-border whitespace-nowrap z-10'>
@@ -509,7 +510,7 @@ export const TicketingPanel = ({
           <div className='flex justify-between items-center pt-1'>
             <span className='font-canela text-base text-foreground'>{t('checkout.total')}</span>
             <span className='font-canela text-xl text-fm-gold'>
-              ${grandTotal.toFixed(2)}
+              {formatDollars(grandTotal)}
             </span>
           </div>
         </div>

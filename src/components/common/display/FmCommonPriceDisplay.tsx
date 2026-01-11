@@ -1,8 +1,10 @@
 import { cn } from '@/shared';
+import { formatCurrency } from '@/lib/utils/currency';
 
 interface FmCommonPriceDisplayProps {
   /** Amount in cents */
   amountCents: number;
+  /** Currency code (e.g., 'USD', 'EUR') */
   currency?: string;
   /** Show original price with strikethrough */
   originalAmountCents?: number;
@@ -21,9 +23,8 @@ const sizeClasses = {
   xl: 'text-lg font-semibold',
 };
 
-const formatPrice = (cents: number, currency: string = '$'): string => {
-  const dollars = cents / 100;
-  return `${currency}${dollars.toFixed(2)}`;
+const formatPrice = (cents: number, currency: string = 'USD'): string => {
+  return formatCurrency(cents, currency);
 };
 
 const calculateDiscount = (original: number, current: number): number => {
@@ -36,7 +37,7 @@ const calculateDiscount = (original: number, current: number): number => {
  */
 export function FmCommonPriceDisplay({
   amountCents,
-  currency = '$',
+  currency = 'USD',
   originalAmountCents,
   showDiscount = true,
   size = 'md',
