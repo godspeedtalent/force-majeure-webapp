@@ -9,11 +9,12 @@ import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus, Trash2, Image as ImageIcon, Star, ImagePlus } from 'lucide-react';
-import { supabase } from '@/shared';
+import { supabase, useFeatureFlagHelpers, FEATURE_FLAGS } from '@/shared';
 import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
+import { HeroImageFocalPoint } from '@/components/events/overview/HeroImageFocalPoint';
 import { imageUploadService } from '@/shared';
 import { toast } from 'sonner';
 import { handleError } from '@/shared/services/errorHandler';
@@ -34,6 +35,7 @@ interface EventGalleryTabProps {
   eventTitle: string;
   galleryId: string | null;
   heroImage: string | null;
+  heroImageFocalY: number | null;
 }
 
 export function EventGalleryTab({
@@ -41,9 +43,11 @@ export function EventGalleryTab({
   eventTitle,
   galleryId,
   heroImage,
+  heroImageFocalY,
 }: EventGalleryTabProps) {
   const { t } = useTranslation('common');
   const { t: tToast } = useTranslation('toasts');
+  const { isFeatureEnabled } = useFeatureFlagHelpers();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -173,6 +177,24 @@ export function EventGalleryTab({
     },
   });
 
+  // Update hero image focal point mutation
+  const updateFocalPointMutation = useMutation({
+    mutationFn: async (focalY: number) => {
+      const { error } = await supabase
+        .from('events')
+        .update({ hero_image_focal_y: focalY })
+        .eq('id', eventId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['event', eventId] });
+    },
+    onError: error => {
+      handleError(error, { title: tToast('gallery.focalPointUpdateFailed') });
+    },
+  });
+
   const handleFileUpload = async (file: File) => {
     if (!gallery?.id) return;
 
@@ -286,16 +308,31 @@ export function EventGalleryTab({
         </div>
 
         {heroImage ? (
-          <div className='relative aspect-video max-w-2xl overflow-hidden bg-black/20'>
-            <img
-              src={heroImage}
-              alt={t('gallery.heroImage')}
-              className='w-full h-full object-cover'
-            />
-            <div className='absolute top-2 left-2 px-2 py-1 bg-fm-gold text-black text-xs flex items-center gap-1'>
-              <Star className='h-3 w-3 fill-current' />
-              {t('gallery.heroImage')}
+          <div className='space-y-4'>
+            <div className='relative aspect-video max-w-2xl overflow-hidden bg-black/20'>
+              <img
+                src={heroImage}
+                alt={t('gallery.heroImage')}
+                className='w-full h-full object-cover'
+              />
+              <div className='absolute top-2 left-2 px-2 py-1 bg-fm-gold text-black text-xs flex items-center gap-1'>
+                <Star className='h-3 w-3 fill-current' />
+                {t('gallery.heroImage')}
+              </div>
             </div>
+
+            {/* Hero Image Focal Point */}
+            {isFeatureEnabled(FEATURE_FLAGS.HERO_IMAGE_HORIZONTAL_CENTERING) && (
+              <div className='max-w-2xl'>
+                <HeroImageFocalPoint
+                  imageUrl={heroImage}
+                  focalY={heroImageFocalY ?? 50}
+                  onChange={(y) => {
+                    updateFocalPointMutation.mutate(y);
+                  }}
+                />
+              </div>
+            )}
           </div>
         ) : (
           <div className='border-2 border-dashed border-white/20 rounded-none p-8 text-center max-w-2xl'>

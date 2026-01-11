@@ -5,7 +5,7 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
 import { Shield, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import { logger } from '@/shared';
+import { handleError } from '@/shared/services/errorHandler';
 import { RoleManagementService } from '@/shared';
 
 interface RoleInfo {
@@ -71,10 +71,10 @@ export function RoleManagementModal({
           description: null,
         }))
       );
-    } catch (error: any) {
-      logger.error('Error fetching available roles:', error);
-      toast.error(tToast('admin.rolesLoadFailed'), {
-        description: error.message,
+    } catch (error: unknown) {
+      handleError(error, {
+        title: tToast('admin.rolesLoadFailed'),
+        context: 'RoleManagementModal.fetchAvailableRoles',
       });
     } finally {
       setLoading(false);
@@ -97,10 +97,10 @@ export function RoleManagementModal({
       }
 
       onRolesUpdated();
-    } catch (error: any) {
-      logger.error('Error toggling role:', error);
-      toast.error(shouldAdd ? tToast('admin.roleAddFailed') : tToast('admin.roleRemoveFailed'), {
-        description: error.message,
+    } catch (error: unknown) {
+      handleError(error, {
+        title: shouldAdd ? tToast('admin.roleAddFailed') : tToast('admin.roleRemoveFailed'),
+        context: `RoleManagementModal.handleToggleRole(${roleName}, ${shouldAdd})`,
       });
     } finally {
       setTogglingRole(null);

@@ -14,9 +14,8 @@ import {
   Inbox,
   Mail,
 } from 'lucide-react';
-import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { logger, cn } from '@/shared';
+import { cn, handleError } from '@/shared';
 import { Separator } from '@/components/common/shadcn/separator';
 import { AdminMessagesSection } from '@/components/DevTools/AdminMessagesSection';
 import { Badge } from '@/components/common/shadcn/badge';
@@ -75,8 +74,11 @@ function UserRequestsSection() {
         .order('created_at', { ascending: false });
 
       if (requestsError) {
-        logger.error('Failed to fetch user requests', { error: requestsError.message });
-        toast.error(t('adminMessages.loadError'));
+        handleError(requestsError, {
+          title: t('adminMessages.loadError'),
+          context: 'AdminMessagesTab.loadRequests',
+          endpoint: 'user_requests',
+        });
         return;
       }
 
@@ -101,11 +103,12 @@ function UserRequestsSection() {
       } else {
         setRequests([]);
       }
-    } catch (error) {
-      logger.error('Failed to load user requests', {
-        error: error instanceof Error ? error.message : 'Unknown error',
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('adminMessages.loadError'),
+        context: 'AdminMessagesTab.loadRequests',
+        endpoint: 'user_requests',
       });
-      toast.error(t('adminMessages.loadError'));
     } finally {
       setIsLoading(false);
     }

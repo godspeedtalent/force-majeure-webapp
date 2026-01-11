@@ -16,7 +16,7 @@ import {
 import { supabase } from '@/shared';
 import { toast } from 'sonner';
 import { cn } from '@/shared';
-import { logger } from '@/shared';
+import { logger, handleError } from '@/shared';
 import { useEnvironmentName } from '@/shared';
 
 interface Fee {
@@ -83,9 +83,12 @@ export const AdminFeesSection = () => {
         };
       });
       setLocalFees(initialLocal);
-    } catch (error) {
-      logger.error('Failed to fetch fees:', { error: error instanceof Error ? error.message : 'Unknown' });
-      toast.error(tToast('admin.feesLoadFailed'));
+    } catch (error: unknown) {
+      handleError(error, {
+        title: tToast('admin.feesLoadFailed'),
+        context: 'AdminFeesSection.fetchFees',
+        endpoint: 'ticketing_fees',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -141,9 +144,12 @@ export const AdminFeesSection = () => {
       await Promise.all(updates);
       toast.success(tToast('admin.feesUpdated'));
       await fetchFees();
-    } catch (error) {
-      logger.error('Failed to update fees:', { error: error instanceof Error ? error.message : 'Unknown' });
-      toast.error(tToast('admin.feesUpdateFailed'));
+    } catch (error: unknown) {
+      handleError(error, {
+        title: tToast('admin.feesUpdateFailed'),
+        context: 'AdminFeesSection.handleSave',
+        endpoint: 'ticketing_fees.update',
+      });
     }
   };
 

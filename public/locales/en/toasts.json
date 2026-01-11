@@ -302,7 +302,8 @@
     "coverSet": "Profile photo set",
     "setCoverFailed": "Failed to set profile photo",
     "heroImageSet": "Hero image set",
-    "setHeroFailed": "Failed to set hero image"
+    "setHeroFailed": "Failed to set hero image",
+    "focalPointUpdateFailed": "Failed to update focal point"
   },
   "recordings": {
     "noUrlFound": "No URL found for this recording",

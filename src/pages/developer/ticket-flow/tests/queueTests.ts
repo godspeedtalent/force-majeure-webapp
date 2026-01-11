@@ -127,11 +127,12 @@ export const queueTestSuite: TestSuite = {
           await assertSessionCount(event.id, 'waiting', 0);
 
           logger.info('Test passed: User got immediate access');
-        } catch (error: any) {
+        } catch (error: unknown) {
+          const err = error instanceof Error ? error : new Error('Unknown error');
           logger.error('Test failed with error', {
-            message: error.message,
-            stack: error.stack,
-            name: error.name,
+            message: err.message,
+            stack: err.stack,
+            name: err.name,
           });
           throw error;
         } finally {

@@ -474,6 +474,73 @@ interface Props {
 }
 ```
 
+### ❌ Direct Supabase Calls in Components
+
+```typescript
+// Wrong - direct database call in component
+function MyComponent() {
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    supabase.from('events').select().then(({ data }) => setData(data));
+  }, []);
+}
+
+// Correct - use React Query hook
+function MyComponent() {
+  const { data } = useEvents(); // Hook defined in shared/api/queries/
+}
+```
+
+### ❌ Raw Error Handling (Not Using Centralized Handler)
+
+```typescript
+// Wrong - manual toast + logger
+catch (error) {
+  logger.error('Error:', error);
+  toast.error('Failed');
+}
+
+// Correct - centralized handler
+catch (error) {
+  handleError(error, { title: 'Failed', context: 'MyComponent' });
+}
+```
+
+### ❌ useState for Server Data
+
+```typescript
+// Wrong - server data in local state
+const [events, setEvents] = useState([]);
+const [loading, setLoading] = useState(true);
+useEffect(() => {
+  setLoading(true);
+  fetchEvents().then(data => {
+    setEvents(data);
+    setLoading(false);
+  });
+}, []);
+
+// Correct - React Query manages server state
+const { data: events, isLoading } = useQuery({
+  queryKey: ['events'],
+  queryFn: fetchEvents,
+});
+```
+
+### ❌ Design System Violations
+
+```typescript
+// Wrong - rounded corners, arbitrary spacing, hardcoded colors
+<div className="rounded-lg p-3 bg-[#dfba7d]">
+  <button className="bg-fm-gold text-black">Submit</button>
+</div>
+
+// Correct - sharp corners, scale spacing, design system colors
+<div className="rounded-none p-[10px] bg-fm-gold/20">
+  <FmCommonButton variant="gold">Submit</FmCommonButton>
+</div>
+```
+
 ---
 
 ## Summary Checklist

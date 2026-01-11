@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@/shared';
+import { supabase, handleError } from '@/shared';
 import { toast } from 'sonner';
 import { NoteType, NoteStatus } from '../config/devNotesConfig';
-import { logger } from '@/shared';
 
 interface DevNote {
   id: string;
@@ -61,9 +60,12 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
 
       if (error) throw error;
       return (data || []) as DevNote[];
-    } catch (error) {
-      logger.error('Failed to fetch dev notes:', error instanceof Error ? { error: error.message } : {});
-      toast.error(t('devNotes.loadFailed'));
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('devNotes.loadFailed'),
+        context: 'useDevNotesActions.loadNotes',
+        endpoint: 'dev_notes',
+      });
       return [];
     } finally {
       setIsLoading(false);
@@ -85,9 +87,12 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
 
       if (error) throw error;
       toast.success(t('devNotes.createSuccess'));
-    } catch (error) {
-      logger.error('Failed to update dev note:', error instanceof Error ? { error: error.message } : {});
-      toast.error(t('devNotes.createFailed'));
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('devNotes.createFailed'),
+        context: 'useDevNotesActions.createNote',
+        endpoint: 'dev_notes.insert',
+      });
       throw error;
     }
   };
@@ -107,9 +112,12 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
 
       if (error) throw error;
       toast.success(t('devNotes.statusUpdated'));
-    } catch (error) {
-      logger.error('Failed to delete dev note:', error instanceof Error ? { error: error.message } : {});
-      toast.error(t('devNotes.statusUpdateFailed'));
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('devNotes.statusUpdateFailed'),
+        context: 'useDevNotesActions.updateStatus',
+        endpoint: 'dev_notes.update',
+      });
       throw error;
     }
   };
@@ -129,9 +137,12 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
 
       if (error) throw error;
       toast.success(t('devNotes.typeUpdated'));
-    } catch (error) {
-      logger.error('Failed to update dev note type:', error instanceof Error ? { error: error.message } : {});
-      toast.error(t('devNotes.typeUpdateFailed'));
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('devNotes.typeUpdateFailed'),
+        context: 'useDevNotesActions.updateType',
+        endpoint: 'dev_notes.update',
+      });
       throw error;
     }
   };
@@ -151,9 +162,12 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
 
       if (error) throw error;
       toast.success(t('devNotes.priorityUpdated'));
-    } catch (error) {
-      logger.error('Failed to update dev note priority:', error instanceof Error ? { error: error.message } : {});
-      toast.error(t('devNotes.priorityUpdateFailed'));
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('devNotes.priorityUpdateFailed'),
+        context: 'useDevNotesActions.updatePriority',
+        endpoint: 'dev_notes.update',
+      });
       throw error;
     }
   };
@@ -173,9 +187,12 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
 
       if (error) throw error;
       toast.success(t('devNotes.updateSuccess'));
-    } catch (error) {
-      logger.error('Failed to complete dev note:', error instanceof Error ? { error: error.message } : {});
-      toast.error(t('devNotes.updateFailed'));
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('devNotes.updateFailed'),
+        context: 'useDevNotesActions.updateMessage',
+        endpoint: 'dev_notes.update',
+      });
       throw error;
     }
   };
@@ -192,9 +209,12 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
 
       if (error) throw error;
       toast.success(t('devNotes.deleteSuccess'));
-    } catch (error) {
-      logger.error('Failed to update note type:', error instanceof Error ? { error: error.message } : {});
-      toast.error(t('devNotes.deleteFailed'));
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('devNotes.deleteFailed'),
+        context: 'useDevNotesActions.deleteNote',
+        endpoint: 'dev_notes.delete',
+      });
       throw error;
     }
   };

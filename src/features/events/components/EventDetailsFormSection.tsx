@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { Label } from '@/components/common/shadcn/label';
-import { Checkbox } from '@/components/common/shadcn/checkbox';
+import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
 import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
 import { FmVenueSearchDropdown } from '@/components/common/search/FmVenueSearchDropdown';
 import { FmCommonDatePicker } from '@/components/common/forms/FmCommonDatePicker';
@@ -111,10 +111,10 @@ export function EventDetailsFormSection({
 
       <div className='space-y-1'>
         <div className='flex items-center gap-2'>
-          <Checkbox
+          <FmCommonCheckbox
             id='after-hours'
             checked={state.isAfterHours}
-            onCheckedChange={checked => actions.setIsAfterHours(checked === true)}
+            onCheckedChange={checked => actions.setIsAfterHours(checked)}
           />
           <Label htmlFor='after-hours' className='text-white/70 cursor-pointer'>
             {t('formLabels.afterHoursEvent')}
@@ -127,10 +127,10 @@ export function EventDetailsFormSection({
 
       <div className='space-y-1'>
         <div className='flex items-center gap-2'>
-          <Checkbox
+          <FmCommonCheckbox
             id='tba-event'
             checked={state.isTba}
-            onCheckedChange={checked => actions.setIsTba(checked === true)}
+            onCheckedChange={checked => actions.setIsTba(checked)}
           />
           <Label htmlFor='tba-event' className='text-white/70 cursor-pointer'>
             {t('formLabels.tbaEvent')}

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Label } from '@/components/common/shadcn/label';
 import { Input } from '@/components/common/shadcn/input';
-import { Checkbox } from '@/components/common/shadcn/checkbox';
+import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
 import { FmCommonRowManager } from '@/components/common/forms/FmCommonRowManager';
 import { cn } from '@/shared';
 import { EventFormState, EventFormActions, TicketTier } from '../hooks/useEventFormState';
@@ -152,11 +152,11 @@ export function TicketTiersFormSection({ state, actions }: TicketTiersFormSectio
               />
             </div>
             <div className='flex items-center gap-2'>
-              <Checkbox
+              <FmCommonCheckbox
                 id={`tier-${index}-hide`}
                 checked={tier.hideUntilPreviousSoldOut}
                 onCheckedChange={checked =>
-                  handleUpdateField(index, 'hideUntilPreviousSoldOut', checked === true)
+                  handleUpdateField(index, 'hideUntilPreviousSoldOut', checked)
                 }
               />
               <Label htmlFor={`tier-${index}-hide`} className='text-white/70 text-sm cursor-pointer'>

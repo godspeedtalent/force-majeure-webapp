@@ -16,7 +16,7 @@ import { Button } from '@/components/common/shadcn/button';
 import { FmCommonTextField } from '@/components/common/forms';
 import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
-import { Checkbox } from '@/components/common/shadcn/checkbox';
+import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
 import { Label } from '@/components/common/shadcn/label';
 import {
   useAllProducts,
@@ -338,13 +338,13 @@ export const ProductsManagement = () => {
 
             <div className='space-y-3 pt-2 border-t border-white/10'>
               <div className='flex items-center space-x-2'>
-                <Checkbox
+                <FmCommonCheckbox
                   id='track_inventory'
                   checked={createFormData.track_inventory}
                   onCheckedChange={(checked) =>
                     setCreateFormData((prev) => ({
                       ...prev,
-                      track_inventory: Boolean(checked),
+                      track_inventory: checked,
                     }))
                   }
                 />

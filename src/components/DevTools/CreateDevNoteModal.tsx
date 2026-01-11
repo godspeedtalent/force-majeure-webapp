@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { logger } from '@/shared';
 import { CheckCircle2, Info, Bug, HelpCircle } from 'lucide-react';
 import {
   Dialog,
@@ -15,7 +14,7 @@ import {
 } from '@/components/common/forms/FmCommonSelect';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { supabase } from '@/shared';
+import { supabase, handleError } from '@/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { toast } from 'sonner';
 
@@ -95,9 +94,12 @@ export const CreateDevNoteModal = ({
       setType('TODO');
       onOpenChange(false);
       onNoteCreated();
-    } catch (error) {
-      logger.error('Failed to create dev note:', error instanceof Error ? { error: error.message } : {});
-      toast.error(t('devTools.notes.createError'));
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('devTools.notes.createError'),
+        context: 'CreateDevNoteModal.handleSubmit',
+        endpoint: 'dev_notes.insert',
+      });
     } finally {
       setIsSubmitting(false);
     }

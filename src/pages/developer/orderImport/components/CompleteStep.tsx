@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CheckCircle, AlertTriangle, XCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { CheckCircle, AlertTriangle, XCircle, ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
 import { cn } from '@/shared';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
@@ -9,12 +9,14 @@ interface CompleteStepProps {
   importResults: ImportResult[];
   onReset: () => void;
   onViewHistory: () => void;
+  onRetry?: () => void;
 }
 
 export function CompleteStep({
   importResults,
   onReset,
   onViewHistory,
+  onRetry,
 }: CompleteStepProps) {
   const [showErrors, setShowErrors] = useState(true);
 
@@ -64,12 +66,26 @@ export function CompleteStep({
           </div>
 
           <div className='flex justify-center gap-4'>
-            <FmCommonButton variant='default' onClick={onReset}>
-              Start New Import
-            </FmCommonButton>
-            <FmCommonButton variant='gold' onClick={onViewHistory}>
-              View History
-            </FmCommonButton>
+            {allFailed && onRetry ? (
+              <>
+                <FmCommonButton variant='gold' onClick={onRetry}>
+                  <RefreshCw className='h-4 w-4 mr-2' />
+                  Retry Import
+                </FmCommonButton>
+                <FmCommonButton variant='default' onClick={onReset}>
+                  Start Over
+                </FmCommonButton>
+              </>
+            ) : (
+              <>
+                <FmCommonButton variant='default' onClick={onReset}>
+                  Start New Import
+                </FmCommonButton>
+                <FmCommonButton variant='gold' onClick={onViewHistory}>
+                  View History
+                </FmCommonButton>
+              </>
+            )}
           </div>
         </FmCommonCardContent>
       </FmCommonCard>

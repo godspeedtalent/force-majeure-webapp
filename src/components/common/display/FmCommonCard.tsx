@@ -26,9 +26,9 @@ import { cn } from '@/shared';
 //   <FmCommonCard size="lg" onClick={handleClick}>...</FmCommonCard>  // clickable with padding
 
 const sizeConfig = {
-  sm: 'p-3',
-  md: 'p-4',
-  lg: 'p-6',
+  sm: 'p-[10px]',
+  md: 'p-[20px]',
+  lg: 'p-[40px]',
 };
 
 interface FmCommonCardProps extends Omit<React.ComponentPropsWithoutRef<typeof Card>, 'variant' | 'onClick'> {

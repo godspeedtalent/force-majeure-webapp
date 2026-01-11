@@ -967,6 +967,96 @@ npm run lint          # Lint all files
 - `DepthLevel` - Only valid depth levels (0-3)
 - `ButtonVariant`, `CardVariant`, etc.
 
+### Pre-Implementation Checklist
+
+**MANDATORY: Before submitting ANY code, verify these rules are followed:**
+
+#### 1. Type Safety (ZERO TOLERANCE)
+
+- [ ] **NO `any` types** - Use `unknown` for truly unknown types, then narrow with type guards
+- [ ] **NO `as any` casts** - Fix the root type issue instead
+- [ ] **Catch blocks use `unknown`** - `catch (error: unknown)`, not `catch (error: any)`
+- [ ] **Supabase queries properly typed** - Don't cast QueryBuilder to `any`
+
+```typescript
+// ❌ NEVER
+const data: any = await fetchData();
+catch (error: any) { ... }
+(queryBuilder as any).select()
+
+// ✅ ALWAYS
+const data: Event[] = await fetchData();
+catch (error: unknown) {
+  const message = error instanceof Error ? error.message : 'Unknown error';
+}
+queryBuilder.select<Event>()
+```
+
+#### 2. Error Handling (USE CENTRALIZED HANDLER)
+
+- [ ] **Use `handleError()`** - Never raw `toast.error()` + `logger.error()` combo
+- [ ] **Use `withErrorHandler()`** - For simple async operations
+- [ ] **Structured logging** - Always pass context object to logger
+
+```typescript
+// ❌ NEVER
+catch (error) {
+  logger.error('Failed', error);
+  toast.error('Failed to save');
+}
+
+// ✅ ALWAYS
+catch (error) {
+  handleError(error, {
+    title: t('toasts.saveFailed'),
+    context: 'UserProfile.save',
+    endpoint: '/api/profile',
+  });
+}
+```
+
+#### 3. Data Fetching (USE HOOKS, NOT DIRECT CALLS)
+
+- [ ] **Components NEVER call `supabase.from()` directly**
+- [ ] **Create/use React Query hooks** for data fetching
+- [ ] **Use `useQuery`** for reads, `useMutation` for writes
+- [ ] **Server state in React Query** - NOT in `useState`
+
+```typescript
+// ❌ NEVER in components
+const [data, setData] = useState([]);
+useEffect(() => {
+  supabase.from('events').select().then(({ data }) => setData(data));
+}, []);
+
+// ✅ ALWAYS
+const { data, isLoading } = useEvents(); // Hook wraps React Query
+```
+
+#### 4. Design System (STRICT COMPLIANCE)
+
+- [ ] **`rounded-none` only** - No `rounded-lg`, `rounded-md`, `rounded-xl`
+- [ ] **Spacing scale only** - 5/10/20/40/60px (use `p-[20px]` not `p-3`)
+- [ ] **No hardcoded colors** - Use `fm-gold`, `fm-crimson`, etc.
+- [ ] **Gold buttons: hover only** - Default is frosted glass, solid gold on hover
+- [ ] **Use FmCommon* components** - Don't create custom inputs/buttons
+
+```typescript
+// ❌ NEVER
+<div className="rounded-lg p-3 bg-[#dfba7d]">
+<button className="bg-fm-gold text-black">Submit</button>
+
+// ✅ ALWAYS
+<div className="rounded-none p-[10px] bg-fm-gold/20">
+<FmCommonButton variant="gold">Submit</FmCommonButton>
+```
+
+#### 5. Internationalization (ALL TEXT THROUGH i18n)
+
+- [ ] **No hardcoded strings** - Use `t()` for all user-facing text
+- [ ] **Update ALL locale files** - en, es, zh simultaneously
+- [ ] **Toast messages use i18n** - `toast.error(t('toasts.key'))`
+
 ### Internationalization (i18n)
 
 **CRITICAL: All user-facing text must use the translation system.**

@@ -88,7 +88,7 @@ export const DevNoteCard = ({
         <FmCommonCard
           className={cn(
             'border-l-[4px] border-t-[1px] cursor-pointer transition-all duration-200 relative text-xs',
-            'hover:bg-[#1a1612]',
+            'hover:bg-white/5',
             isFocused
               ? 'border-fm-gold'
               : 'border-border hover:border-fm-gold/50',

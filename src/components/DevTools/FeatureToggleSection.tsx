@@ -23,7 +23,7 @@ import {
 } from '@/shared';
 import { useEnvironmentName } from '@/shared';
 import { environmentService } from '@/shared';
-import { logger } from '@/shared';
+import { handleError, logger } from '@/shared';
 import {
   setFeatureFlagOverride,
   clearFeatureFlagOverride,
@@ -107,9 +107,12 @@ export const FeatureToggleSection = () => {
       });
       setLocalFlags(initialLocal);
       loadSessionOverrides();
-    } catch (error) {
-      logger.error('Failed to fetch feature flags:', { error: error instanceof Error ? error.message : 'Unknown' });
-      toast.error(t('devTools.featureToggles.loadError'));
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('devTools.featureToggles.loadError'),
+        context: 'FeatureToggleSection.fetchFlags',
+        endpoint: 'feature_flags',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -257,9 +260,12 @@ export const FeatureToggleSection = () => {
       await Promise.all(updates);
       toast.success(t('devTools.featureToggles.applied', { count: updates.length }));
       await fetchFlags();
-    } catch (error) {
-      logger.error('Failed to update feature flags:', { error: error instanceof Error ? error.message : 'Unknown' });
-      toast.error(t('devTools.featureToggles.updateError'));
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('devTools.featureToggles.updateError'),
+        context: 'FeatureToggleSection.handleApply',
+        endpoint: 'feature_flags.update',
+      });
     }
   };
 

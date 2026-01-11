@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { Label } from '@/components/common/shadcn/label';
 import { Input } from '@/components/common/shadcn/input';
-import { Checkbox } from '@/components/common/shadcn/checkbox';
+import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
 import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
 import { FmVenueSearchDropdown } from '@/components/common/search/FmVenueSearchDropdown';
 import { FmCommonDatePicker } from '@/components/common/forms/FmCommonDatePicker';
@@ -92,11 +92,11 @@ export const EventDetailsSection = ({
       </div>
 
       <div className='flex items-center gap-2'>
-        <Checkbox
+        <FmCommonCheckbox
           id='after-hours'
           checked={formState.isAfterHours}
           onCheckedChange={checked =>
-            setFormState(prev => ({ ...prev, isAfterHours: checked === true }))
+            setFormState(prev => ({ ...prev, isAfterHours: checked }))
           }
         />
         <Label htmlFor='after-hours' className='text-white/70 cursor-pointer'>

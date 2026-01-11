@@ -39,7 +39,7 @@ import { EventQueueConfigForm } from '@/components/events/queue';
 import { EventGalleryTab } from '@/components/events/gallery';
 
 import { toast } from 'sonner';
-import { Checkbox } from '@/components/common/shadcn/checkbox';
+import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
 import { Label } from '@/components/common/shadcn/label';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared';
@@ -153,6 +153,7 @@ export default function EventManagement() {
           label: t('eventNav.viewEvent'),
           icon: Eye,
           description: t('eventNav.viewEventDescription'),
+          isExternal: true,
         },
         {
           id: 'overview',
@@ -448,6 +449,7 @@ export default function EventManagement() {
                 eventTitle={event.title || ''}
                 galleryId={(event as any).gallery_id || null}
                 heroImage={(event as any).hero_image || null}
+                heroImageFocalY={(event as any).hero_image_focal_y ?? null}
               />
             </PageErrorBoundary>
           )}
@@ -609,10 +611,10 @@ export default function EventManagement() {
                   </p>
 
                   <div className='flex items-center gap-3 p-4 rounded-none border border-border bg-card'>
-                    <Checkbox
+                    <FmCommonCheckbox
                       id='display-subtitle'
                       checked={displaySubtitle}
-                      onCheckedChange={checked => setDisplaySubtitle(!!checked)}
+                      onCheckedChange={checked => setDisplaySubtitle(checked)}
                     />
                     <div className='flex-1'>
                       <Label htmlFor='display-subtitle' className='cursor-pointer font-medium'>

@@ -129,11 +129,21 @@ export function MapStep({
 
   const addUnmappedAssignment = () => {
     if (unmappedColumns.length === 0) return;
+
+    // Find the first available target column that isn't already used
+    const defaultTable = ASSIGNABLE_FIELDS[0].table;
+    const usedColumnsForDefaultTable = unmappedAssignments
+      .filter(a => a.targetTable === defaultTable)
+      .map(a => a.targetColumn);
+    const firstAvailableField = ASSIGNABLE_FIELDS.find(
+      f => f.table === defaultTable && !usedColumnsForDefaultTable.includes(f.column)
+    ) || ASSIGNABLE_FIELDS[0];
+
     const newAssignment: UnmappedFieldAssignment = {
       id: `assign-${Date.now()}`,
       csvColumn: unmappedColumns[0],
-      targetTable: ASSIGNABLE_FIELDS[0].table,
-      targetColumn: ASSIGNABLE_FIELDS[0].column,
+      targetTable: firstAvailableField.table,
+      targetColumn: firstAvailableField.column,
     };
     setUnmappedAssignments(prev => [...prev, newAssignment]);
   };
@@ -561,6 +571,18 @@ export function MapStep({
                   <div className='space-y-2'>
                     {unmappedAssignments.map(assignment => {
                       const fieldsForTable = ASSIGNABLE_FIELDS.filter(f => f.table === assignment.targetTable);
+
+                      // Get target columns already assigned by OTHER assignments (not this one)
+                      const usedTargetColumns = unmappedAssignments
+                        .filter(a => a.id !== assignment.id && a.targetTable === assignment.targetTable)
+                        .map(a => a.targetColumn);
+
+                      // Filter available target columns to exclude already-used ones
+                      // But always include the current assignment's selected column
+                      const availableTargetColumns = fieldsForTable.filter(f =>
+                        f.column === assignment.targetColumn || !usedTargetColumns.includes(f.column)
+                      );
+
                       // Include the currently selected column in options even if it's been "consumed"
                       // because unmappedColumns filters out already-assigned columns
                       const csvColumnOptions = [
@@ -585,10 +607,17 @@ export function MapStep({
                             <FmCommonSelect
                               value={assignment.targetTable}
                               onChange={(value) => {
-                                const firstField = ASSIGNABLE_FIELDS.find(f => f.table === value);
+                                // Get columns already used for this table by other assignments
+                                const usedColumnsForNewTable = unmappedAssignments
+                                  .filter(a => a.id !== assignment.id && a.targetTable === value)
+                                  .map(a => a.targetColumn);
+                                // Find first available column for the new table
+                                const firstAvailableField = ASSIGNABLE_FIELDS.find(
+                                  f => f.table === value && !usedColumnsForNewTable.includes(f.column)
+                                );
                                 updateUnmappedAssignment(assignment.id, {
                                   targetTable: value,
-                                  targetColumn: firstField?.column || ''
+                                  targetColumn: firstAvailableField?.column || ''
                                 });
                               }}
                               options={assignableTables.map(table => ({ value: table, label: table, labelClassName: 'font-mono text-xs' }))}
@@ -600,7 +629,7 @@ export function MapStep({
                             <FmCommonSelect
                               value={assignment.targetColumn}
                               onChange={(value) => updateUnmappedAssignment(assignment.id, { targetColumn: value })}
-                              options={fieldsForTable.map(f => ({
+                              options={availableTargetColumns.map(f => ({
                                 value: f.column,
                                 label: f.column,
                                 labelClassName: 'font-mono text-xs'

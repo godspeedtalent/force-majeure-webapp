@@ -193,13 +193,13 @@ export function FmRecordingsGrid({
       >
         {/* Featured badge */}
         {recording.is_primary_dj_set && (
-          <div className='absolute -top-2 -right-2 bg-fm-gold text-black text-[10px] font-bold px-2 py-0.5 rounded-sm z-20'>
+          <div className='absolute -top-2 -right-2 bg-fm-gold text-black text-[10px] font-bold px-2 py-0.5 rounded-none z-20'>
             {t('labels.featured').toUpperCase()}
           </div>
         )}
 
         {/* Cover art or placeholder */}
-        <div className='w-full aspect-square mb-2 rounded-sm overflow-hidden bg-white/5 border border-white/10'>
+        <div className='w-full aspect-square mb-[10px] rounded-none overflow-hidden bg-white/5 border border-white/10'>
           {recording.cover_art ? (
             <img
               src={recording.cover_art}
@@ -218,7 +218,7 @@ export function FmRecordingsGrid({
           <h3 className='font-canela text-sm text-white truncate group-hover:text-fm-gold transition-colors'>
             {recording.name}
           </h3>
-          <div className='flex items-center gap-2 mt-1 flex-wrap'>
+          <div className='flex items-center gap-[10px] mt-[5px] flex-wrap'>
             {getPlatformIcon(recording.platform)}
             <span className='text-xs text-white/50 capitalize'>
               {recording.platform}
@@ -300,13 +300,13 @@ export function FmRecordingsGrid({
       >
         {/* Featured badge - absolutely positioned */}
         {recording.is_primary_dj_set && (
-          <div className='absolute -top-2 -right-2 bg-fm-gold text-black text-[9px] font-bold px-1.5 py-0.5 rounded-sm z-20'>
+          <div className='absolute -top-2 -right-2 bg-fm-gold text-black text-[9px] font-bold px-1.5 py-0.5 rounded-none z-20'>
             {t('labels.featured').toUpperCase()}
           </div>
         )}
 
         {/* Cover art thumbnail */}
-        <div className='w-16 h-16 flex-shrink-0 rounded-sm overflow-hidden bg-white/5 border border-white/10'>
+        <div className='w-16 h-16 flex-shrink-0 rounded-none overflow-hidden bg-white/5 border border-white/10'>
           {recording.cover_art ? (
             <img
               src={recording.cover_art}

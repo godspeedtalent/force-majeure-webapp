@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { FmConfigurableDataGrid, DataGridAction } from '@/features/data-grid';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Trash2 } from 'lucide-react';
-import { supabase, logger, useDeleteConfirmation } from '@/shared';
+import { supabase, handleError, useDeleteConfirmation } from '@/shared';
 import { toast } from 'sonner';
 import { genreColumns } from './config/adminGridColumns';
 import {
@@ -186,13 +186,12 @@ export const GenresManagement = () => {
       );
 
       toast.success(tToast('genres.updated'));
-    } catch (error) {
-      logger.error('Error updating genre', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        source: 'GenresManagement',
-        details: { genreId: row.id, columnKey },
+    } catch (error: unknown) {
+      handleError(error, {
+        title: tToast('genres.updateFailed'),
+        context: 'GenresManagement.handleUpdate',
+        endpoint: 'genres.update',
       });
-      toast.error(tToast('genres.updateFailed'));
       throw error;
     }
   };
@@ -216,13 +215,12 @@ export const GenresManagement = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-genres'] });
       setIsCreateDialogOpen(false);
       setCreateFormData({ name: '', parentId: null });
-    } catch (error) {
-      logger.error('Error creating genre', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        source: 'GenresManagement',
-        details: { name: createFormData.name },
+    } catch (error: unknown) {
+      handleError(error, {
+        title: tToast('genres.createFailed'),
+        context: 'GenresManagement.handleCreate',
+        endpoint: 'genres.insert',
       });
-      toast.error(tToast('genres.createFailed'));
     } finally {
       setIsCreating(false);
     }

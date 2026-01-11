@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { RoleManagementModal } from '@/components/admin/RoleManagementModal';
 import { logger } from '@/shared';
+import { handleError } from '@/shared/services/errorHandler';
 
 interface UserData {
   id: string;
@@ -59,10 +60,11 @@ export function FmUserDataGrid() {
 
       logger.info('Fetched users data:', data.users);
       setUsers(data.users || []);
-    } catch (error: any) {
-      logger.error('Error fetching users:', error);
-      toast.error(tToast('admin.userLoadFailed'), {
-        description: error.message,
+    } catch (error: unknown) {
+      handleError(error, {
+        title: tToast('admin.userLoadFailed'),
+        context: 'FmUserDataGrid.fetchUsers',
+        endpoint: 'get-users',
       });
     } finally {
       setLoading(false);
@@ -246,10 +248,11 @@ export function FmUserDataGrid() {
       toast.success(tToast('admin.userUpdated'), {
         description: `${columnKey}`,
       });
-    } catch (error: any) {
-      logger.error('Error updating user:', error);
-      toast.error(tToast('admin.userUpdateFailed'), {
-        description: error.message,
+    } catch (error: unknown) {
+      handleError(error, {
+        title: tToast('admin.userUpdateFailed'),
+        context: 'FmUserDataGrid.handleUpdate',
+        endpoint: 'profiles.update',
       });
       throw error; // Re-throw so the grid knows the update failed
     }

@@ -20,7 +20,7 @@ import {
   useProcessRollback,
 } from './hooks';
 
-import type { CsvRow, ColumnMapping, ImportResult } from './types';
+import type { CsvRow, ColumnMapping, ImportResult, ProcessRecord } from './types';
 
 // ============================================================================
 // HOOK
@@ -72,10 +72,45 @@ export function useOrderImport(options?: UseOrderImportOptions) {
     onStepChange: state.setStep,
   });
 
-  // Rollback
-  const { rollbackProcess, isRollingBack } = useProcessRollback({
+  // Rollback & Delete & Rerun
+  const {
+    rollbackProcess,
+    isRollingBack,
+    deleteProcess,
+    isDeleting,
+    isRerunning,
+    getRerunData,
+    canRerun,
+  } = useProcessRollback({
     refetchHistory: queries.refetchHistory,
   });
+
+  // Setup for re-run: rollback if needed, then restore state from stored data
+  const setupRerun = useCallback(async (process: ProcessRecord) => {
+    const rerunData = getRerunData(process);
+    if (!rerunData) {
+      toast.error('No re-run data available for this process');
+      return;
+    }
+
+    // If process is completed (not rolled back), roll it back first
+    if (process.status === 'completed') {
+      const success = await rollbackProcess(process, true); // silent = true
+      if (!success) {
+        toast.error('Failed to rollback before re-run');
+        return;
+      }
+    }
+
+    // Restore state from stored data
+    state.setSelectedEventId(rerunData.selected_event?.id || '');
+    state.setSelectedEvent(rerunData.selected_event);
+    state.setLineItems(rerunData.line_items);
+    state.setParsedOrders(rerunData.parsed_orders);
+    state.setStep('preview');
+
+    toast.success('Ready to re-import. Review and click Import.');
+  }, [getRerunData, rollbackProcess, state]);
 
   // Auto-detect column mappings
   const autoDetectMappings = useCallback((headers: string[]) => {
@@ -201,6 +236,7 @@ export function useOrderImport(options?: UseOrderImportOptions) {
     isValidating: state.isValidating,
     isImporting: state.isImporting,
     isRollingBack,
+    isDeleting,
     historyLoading: queries.historyLoading,
     tiersLoading: queries.tiersLoading,
 
@@ -220,6 +256,10 @@ export function useOrderImport(options?: UseOrderImportOptions) {
     validateOrders,
     importOrders,
     rollbackProcess,
+    deleteProcess,
+    setupRerun,
+    canRerun,
+    isRerunning,
     reset: state.reset,
     refetchHistory: queries.refetchHistory,
   };

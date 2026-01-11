@@ -4,7 +4,7 @@ import { DollarSign, Percent } from 'lucide-react';
 import { FmCommonToggleHeader } from '@/components/common/forms/FmCommonToggleHeader';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { Button } from '@/components/common/shadcn/button';
-import { logger } from '@/shared';
+import { handleError } from '@/shared';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -70,9 +70,12 @@ export const TicketingSection = () => {
         };
       });
       setLocalFees(initialLocal);
-    } catch (error) {
-      logger.error('Failed to fetch fees:', { error: error instanceof Error ? error.message : 'Unknown' });
-      toast.error(t('devTools.ticketing.loadError'));
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('devTools.ticketing.loadError'),
+        context: 'TicketingSection.fetchFees',
+        endpoint: 'ticketing_fees',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -122,9 +125,12 @@ export const TicketingSection = () => {
       await Promise.all(updates);
       toast.success(t('devTools.ticketing.updateSuccess'));
       await fetchFees();
-    } catch (error) {
-      logger.error('Failed to update fees:', { error: error instanceof Error ? error.message : 'Unknown' });
-      toast.error(t('devTools.ticketing.updateError'));
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('devTools.ticketing.updateError'),
+        context: 'TicketingSection.handleSave',
+        endpoint: 'ticketing_fees.update',
+      });
     }
   };
 

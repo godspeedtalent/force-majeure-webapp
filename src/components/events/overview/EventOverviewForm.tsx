@@ -1,19 +1,16 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Eye, MapPin, AlertTriangle, FileText, Calendar, Image } from 'lucide-react';
+import { Eye, MapPin, AlertTriangle, FileText, Calendar } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmVenueSearchDropdown } from '@/components/common/search/FmVenueSearchDropdown';
 import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
 import { FmCommonDatePicker } from '@/components/common/forms/FmCommonDatePicker';
 import { FmCommonTimePicker } from '@/components/common/forms/FmCommonTimePicker';
-import { FmImageUpload } from '@/components/common/forms/FmImageUpload';
 import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { Label } from '@/components/common/shadcn/label';
-import { Checkbox } from '@/components/common/shadcn/checkbox';
+import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
-import { useFeatureFlagHelpers, FEATURE_FLAGS } from '@/shared';
-import { HeroImageFocalPoint } from '@/components/events/overview/HeroImageFocalPoint';
 import { useEventOverviewForm } from '@/features/events/hooks';
 
 interface EventOverviewFormProps {
@@ -24,8 +21,6 @@ interface EventOverviewFormProps {
     start_time?: string | null;
     end_time?: string | null;
     is_after_hours?: boolean;
-    hero_image?: string | null;
-    hero_image_focal_y?: number | null;
     title?: string | null;
     description?: string | null;
     about_event?: string | null;
@@ -47,7 +42,6 @@ export const EventOverviewForm = ({
   onFormStateChange,
 }: EventOverviewFormProps) => {
   const { t } = useTranslation('common');
-  const { isFeatureEnabled } = useFeatureFlagHelpers();
 
   // State for past date confirmation modal
   const [pendingPastDate, setPendingPastDate] = useState<Date | null>(null);
@@ -60,7 +54,6 @@ export const EventOverviewForm = ({
     setEventDate,
     setEndTime,
     setIsAfterHours,
-    setHeroImageFocalY,
     setCustomTitle,
     setEventSubtitle,
     setAboutEvent,
@@ -69,7 +62,6 @@ export const EventOverviewForm = ({
     isDirty,
     handleSave,
     triggerAutoSave,
-    handleHeroImageUpload,
     formattedStartTime,
   } = useEventOverviewForm({
     eventId,
@@ -87,8 +79,6 @@ export const EventOverviewForm = ({
     eventDate,
     endTime,
     isAfterHours,
-    heroImage,
-    heroImageFocalY,
     customTitle,
     eventSubtitle,
     aboutEvent,
@@ -198,11 +188,11 @@ export const EventOverviewForm = ({
             />
             {/* Show Venue Map Toggle */}
             <div className='flex items-center gap-2 pt-2'>
-              <Checkbox
+              <FmCommonCheckbox
                 id='show-venue-map'
                 checked={showVenueMap}
                 onCheckedChange={checked => {
-                  setShowVenueMap(!!checked);
+                  setShowVenueMap(checked);
                   triggerAutoSave();
                 }}
               />
@@ -296,11 +286,11 @@ export const EventOverviewForm = ({
 
           {/* After Hours Checkbox */}
           <div className='flex items-center gap-2'>
-            <Checkbox
+            <FmCommonCheckbox
               id='after-hours'
               checked={isAfterHours}
               onCheckedChange={checked => {
-                setIsAfterHours(!!checked);
+                setIsAfterHours(checked);
                 triggerAutoSave();
               }}
             />
@@ -309,33 +299,6 @@ export const EventOverviewForm = ({
             </Label>
           </div>
         </div>
-      </FmFormSection>
-
-      {/* Hero Image Section */}
-      <FmFormSection
-        title={t('eventOverview.heroImage')}
-        description={t('eventOverview.heroImageDescription')}
-        icon={Image}
-      >
-        <FmImageUpload
-          eventId={eventId}
-          currentImageUrl={heroImage}
-          isPrimary={true}
-          onUploadComplete={handleHeroImageUpload}
-        />
-
-        {/* Hero Image Focal Point */}
-        {heroImage && isFeatureEnabled(FEATURE_FLAGS.HERO_IMAGE_HORIZONTAL_CENTERING) && (
-          <div className='mt-4'>
-            <HeroImageFocalPoint
-              imageUrl={heroImage}
-              focalY={heroImageFocalY}
-              onChange={(y) => {
-                setHeroImageFocalY(y);
-              }}
-            />
-          </div>
-        )}
       </FmFormSection>
 
       {/* Event Visibility Control - only show if published */}

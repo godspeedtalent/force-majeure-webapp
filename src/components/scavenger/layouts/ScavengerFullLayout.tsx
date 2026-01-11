@@ -70,7 +70,7 @@ export function ScavengerFullLayout({
                       {userClaims.map(claim => (
                         <div
                           key={claim.id}
-                          className='flex items-center justify-between bg-primary-foreground/10 rounded-lg p-2'
+                          className='flex items-center justify-between bg-primary-foreground/10 rounded-none p-2'
                         >
                           <span className='font-medium text-sm'>
                             {(claim.scavenger_locations as any).location_name}

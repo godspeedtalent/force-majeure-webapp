@@ -8,7 +8,7 @@ import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmFlexibleImageUpload } from '@/components/common/forms/FmFlexibleImageUpload';
 import { supabase } from '@/shared';
 import { toast } from 'sonner';
-import { logger } from '@/shared';
+import { handleError } from '@/shared/services/errorHandler';
 
 const DeveloperCreateVenuePage = () => {
   const { t } = useTranslation('common');
@@ -60,22 +60,12 @@ const DeveloperCreateVenuePage = () => {
       } else {
         navigate('/developer/database?table=venues');
       }
-    } catch (error) {
-      // Enhanced error logging for Supabase errors
-      const supabaseError = error as any;
-      logger.error('Error creating venue:', {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        code: supabaseError?.code,
-        details: supabaseError?.details,
-        hint: supabaseError?.hint,
-        statusCode: supabaseError?.statusCode,
-        fullError: error,
+    } catch (error: unknown) {
+      handleError(error, {
+        title: tToast('error.create'),
+        context: 'CreateVenue.handleSubmit',
+        endpoint: 'venues.insert',
       });
-
-      // Show detailed error to user
-      const errorMessage = supabaseError?.message || tToast('error.create');
-      const errorHint = supabaseError?.hint ? ` (${supabaseError.hint})` : '';
-      toast.error(`${errorMessage}${errorHint}`);
     } finally {
       setIsSubmitting(false);
     }

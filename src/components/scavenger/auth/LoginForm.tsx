@@ -6,6 +6,7 @@ import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
 import { supabase } from '@/shared';
 import { sessionPersistence } from '@/shared';
+import { handleError } from '@/shared/services/errorHandler';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -52,8 +53,12 @@ export function LoginForm({
 
       toast.success(tToast('auth.signInSuccess'));
       onSuccess?.();
-    } catch (error: any) {
-      toast.error(error.message || tToast('auth.signInError'));
+    } catch (error: unknown) {
+      handleError(error, {
+        title: tToast('auth.signInError'),
+        context: 'ScavengerLoginForm.handleSubmit',
+        endpoint: 'auth.signInWithPassword',
+      });
     } finally {
       setIsLogging(false);
     }
@@ -64,19 +69,19 @@ export function LoginForm({
       {onBack && (
         <button
           onClick={onBack}
-          className='mb-4 text-muted-foreground hover:text-foreground bg-transparent hover:bg-white/5 px-3 py-2 rounded transition-colors'
+          className='mb-[20px] text-muted-foreground hover:text-foreground bg-transparent hover:bg-white/5 px-[10px] py-[10px] rounded-none transition-colors'
         >
           ← {t('buttons.back')}
         </button>
       )}
 
-      <div className='bg-background/60 backdrop-blur-md border-2 border-border/40 p-6 lg:p-8 w-full shadow-2xl'>
-        <div className='mb-4 text-center'>
+      <div className='bg-background/60 backdrop-blur-md border-2 border-border/40 p-[20px] lg:p-[40px] w-full shadow-2xl'>
+        <div className='mb-[20px] text-center'>
           <h1 className='font-display text-2xl md:text-3xl mb-2'>{displayTitle}</h1>
           <p className='text-muted-foreground text-sm'>{displayDescription}</p>
         </div>
 
-        <form onSubmit={handleSubmit} className='space-y-4'>
+        <form onSubmit={handleSubmit} className='space-y-[20px]'>
           <FmCommonTextField
             label={`${t('labels.email')} *`}
             id='loginEmail'
@@ -99,7 +104,7 @@ export function LoginForm({
             className='h-9'
           />
 
-          <div className='pt-2'>
+          <div className='pt-[10px]'>
             <FmCommonToggle
               id='rememberDevice'
               label={t('auth.rememberDevice')}
@@ -111,7 +116,7 @@ export function LoginForm({
 
           <button
             type='submit'
-            className='w-full bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] h-9 mt-6 rounded-md disabled:opacity-50 disabled:cursor-not-allowed'
+            className='w-full bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] h-9 mt-[20px] rounded-none disabled:opacity-50 disabled:cursor-not-allowed'
             disabled={isLogging}
           >
             {isLogging ? t('auth.signingIn') : t('auth.signIn')}

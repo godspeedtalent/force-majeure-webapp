@@ -64,6 +64,7 @@ export function useOrderImporter({
     const createdOrderIds: string[] = [];
     const createdOrderItemIds: string[] = [];
     const createdTicketIds: string[] = [];
+    const createdGuestIds: string[] = [];
     const importErrors: Array<{ rowIndex: number; error: string }> = [];
     let processId: string | null = null;
 
@@ -86,6 +87,12 @@ export function useOrderImporter({
         line_items_count: lineItems.length,
         total_orders: validOrders.length,
         total_tickets: totalTickets,
+        // Store data for potential re-run
+        rerun_data: {
+          parsed_orders: validOrders,
+          line_items: lineItems,
+          selected_event: selectedEvent,
+        },
       };
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -128,9 +135,44 @@ export function useOrderImporter({
         onResultsChange([...results]);
 
         try {
+          let guestId: string | null = null;
+
+          // If no existing user, create or find a guest record
+          if (!order.existingUserId) {
+            // First, check if a guest with this email already exists
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data: existingGuest } = await (supabase as any)
+              .from('guests')
+              .select('id')
+              .eq('email', order.customerEmail.toLowerCase())
+              .maybeSingle();
+
+            if (existingGuest) {
+              guestId = existingGuest.id;
+            } else {
+              // Create a new guest record
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const { data: newGuest, error: guestError } = await (supabase as any)
+                .from('guests')
+                .insert({
+                  email: order.customerEmail.toLowerCase(),
+                  full_name: order.customerName || null,
+                })
+                .select('id')
+                .single();
+
+              if (guestError) {
+                throw new Error(`Guest creation failed: ${guestError.message}`);
+              }
+              guestId = newGuest.id;
+              createdGuestIds.push(newGuest.id);
+            }
+          }
+
           const orderInsert = {
             event_id: selectedEventId,
-            user_id: order.existingUserId || undefined,
+            user_id: order.existingUserId || null,
+            guest_id: order.existingUserId ? null : guestId,
             customer_email: order.customerEmail,
             status: order.status,
             subtotal_cents: order.subtotalCents,
@@ -298,6 +340,7 @@ export function useOrderImporter({
           order_ids: createdOrderIds,
           order_item_ids: createdOrderItemIds,
           ticket_ids: createdTicketIds,
+          guest_ids: createdGuestIds,
         };
 
         const processMetadataWithErrors = {
@@ -358,6 +401,7 @@ export function useOrderImporter({
               order_ids: createdOrderIds,
               order_item_ids: createdOrderItemIds,
               ticket_ids: createdTicketIds,
+              guest_ids: createdGuestIds,
             },
           })
           .eq('id', processId);

@@ -301,7 +301,8 @@
     "coverSet": "头像照片已设置",
     "setCoverFailed": "设置头像照片失败",
     "heroImageSet": "主图已设置",
-    "setHeroFailed": "设置主图失败"
+    "setHeroFailed": "设置主图失败",
+    "focalPointUpdateFailed": "更新焦点失败"
   },
   "recordings": {
     "noUrlFound": "未找到此录音的链接",

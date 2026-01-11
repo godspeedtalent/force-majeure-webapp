@@ -163,10 +163,11 @@ export function FmDataGridImageUploadModal({
       // Call the callback with new URL
       onImageUploaded(urlData.publicUrl);
       onOpenChange(false);
-    } catch (error: any) {
-      logger.error('Upload error:', error);
+    } catch (error: unknown) {
+      logger.error('Upload error:', { error });
+      const errorMessage = error instanceof Error ? error.message : t('imageUpload.failedToUpload');
       toast.error(t('imageUpload.uploadFailed'), {
-        description: error.message || t('imageUpload.failedToUpload'),
+        description: errorMessage,
       });
     } finally {
       setIsUploading(false);

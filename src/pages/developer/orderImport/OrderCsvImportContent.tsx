@@ -49,6 +49,7 @@ export function OrderCsvImportContent() {
     isValidating,
     isImporting,
     isRollingBack,
+    isDeleting,
     historyLoading,
     tiersLoading,
     tierOptions,
@@ -64,6 +65,10 @@ export function OrderCsvImportContent() {
     validateOrders,
     importOrders,
     rollbackProcess,
+    deleteProcess,
+    setupRerun,
+    canRerun,
+    isRerunning,
     reset,
     refetchHistory,
   } = importState;
@@ -84,9 +89,14 @@ export function OrderCsvImportContent() {
           onStartNew={() => setStep('configure')}
           onRefetchHistory={refetchHistory}
           onRollback={rollbackProcess}
+          onDelete={deleteProcess}
+          onRerun={setupRerun}
+          canRerun={canRerun}
           historyLoading={historyLoading}
           importHistory={importHistory}
           isRollingBack={isRollingBack}
+          isDeleting={isDeleting}
+          isRerunning={isRerunning}
         />
       )}
 
@@ -167,6 +177,7 @@ export function OrderCsvImportContent() {
           importResults={importResults}
           onReset={reset}
           onViewHistory={() => setStep('home')}
+          onRetry={() => setStep('preview')}
         />
       )}
     </div>

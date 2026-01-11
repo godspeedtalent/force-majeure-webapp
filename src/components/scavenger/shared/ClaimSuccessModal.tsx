@@ -72,12 +72,12 @@ export const ClaimSuccessModal = ({
           </p>
 
           {/* Reward card */}
-          <div className='bg-muted/30 border border-border rounded-lg p-6 mb-6'>
+          <div className='bg-muted/30 border border-border rounded-none p-6 mb-6'>
             <div className='text-sm text-muted-foreground mb-2'>
               {t('scavenger.claimSuccess.yourReward')}
             </div>
             <FmI18nCommon i18nKey='scavenger.claimSuccess.exclusiveReward' as='div' className='text-3xl font-display mb-3' />
-            <div className='bg-background border-2 border-fm-gold rounded-lg p-4'>
+            <div className='bg-background border-2 border-fm-gold rounded-none p-4'>
               <div className='text-xs text-muted-foreground mb-1'>
                 {t('ticketingPanel.promoCode')}
               </div>

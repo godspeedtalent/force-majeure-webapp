@@ -59,7 +59,7 @@ export const HeroImageFocalPoint = ({
     return (
       <div className='space-y-2'>
         <Label>{t('focalPoint.label')}</Label>
-        <div className='flex items-center justify-center h-32 border border-dashed border-border rounded-lg bg-muted/20'>
+        <div className='flex items-center justify-center h-32 border border-dashed border-border rounded-none bg-muted/20'>
           <FmI18nCommon i18nKey='focalPoint.uploadToSet' as='p' className='text-sm text-muted-foreground' />
         </div>
       </div>
@@ -77,7 +77,7 @@ export const HeroImageFocalPoint = ({
       <div
         ref={containerRef}
         className={cn(
-          'relative w-full h-48 rounded-lg overflow-hidden border border-border cursor-ns-resize',
+          'relative w-full h-48 rounded-none overflow-hidden border border-border cursor-ns-resize',
           isDragging && 'ring-2 ring-fm-gold'
         )}
         onMouseDown={handleMouseDown}

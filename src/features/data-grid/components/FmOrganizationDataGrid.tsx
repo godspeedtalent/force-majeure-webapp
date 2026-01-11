@@ -7,7 +7,7 @@ import { Building2, Trash2, Edit, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { Organization } from '@/types/organization';
-import { logger } from '@/shared';
+import { handleError } from '@/shared/services/errorHandler';
 
 export function FmOrganizationDataGrid() {
   const { t } = useTranslation('common');
@@ -28,7 +28,7 @@ export function FmOrganizationDataGrid() {
 
       // Fetch owner profiles separately
       if (orgsData && orgsData.length > 0) {
-        const ownerIds = [...new Set(orgsData.map((org: any) => org.owner_id))];
+        const ownerIds = [...new Set(orgsData.map(org => org.owner_id))];
 
         const { data: profilesData } = await supabase
           .from('profiles')
@@ -40,19 +40,20 @@ export function FmOrganizationDataGrid() {
           profilesData?.map(p => [p.user_id, p]) || []
         );
 
-        const orgsWithOwners = orgsData.map((org: any) => ({
+        const orgsWithOwners = orgsData.map(org => ({
           ...org,
           owner: profileMap.get(org.owner_id),
         }));
 
-        setOrganizations(orgsWithOwners as any);
+        setOrganizations(orgsWithOwners as Organization[]);
       } else {
         setOrganizations([]);
       }
-    } catch (error: any) {
-      logger.error('Error fetching organizations:', error);
-      toast.error(tToast('error.load'), {
-        description: error.message,
+    } catch (error: unknown) {
+      handleError(error, {
+        title: tToast('error.load'),
+        context: 'FmOrganizationDataGrid.fetchOrganizations',
+        endpoint: 'organizations.select',
       });
     } finally {
       setLoading(false);
@@ -211,10 +212,11 @@ export function FmOrganizationDataGrid() {
       }
 
       toast.success(tToast('admin.organizationUpdated'));
-    } catch (error: any) {
-      logger.error('Error updating organization:', error);
-      toast.error(tToast('error.update'), {
-        description: error.message,
+    } catch (error: unknown) {
+      handleError(error, {
+        title: tToast('error.update'),
+        context: 'FmOrganizationDataGrid.handleUpdate',
+        endpoint: 'organizations.update',
       });
       throw error;
     }
@@ -239,6 +241,9 @@ export function FmOrganizationDataGrid() {
         .single();
 
       if (error) throw error;
+      if (!data) throw new Error('No data returned');
+
+      const orgData = data as unknown as Organization;
 
       // Fetch the owner profile separately
       const { data: ownerProfile } = await supabase
@@ -248,21 +253,20 @@ export function FmOrganizationDataGrid() {
         .single();
 
       const orgWithOwner = {
-        ...(data as any),
+        ...orgData,
         owner: ownerProfile,
-      };
+      } as Organization;
 
       setOrganizations(prev => [...prev, orgWithOwner]);
 
       toast.success(tToast('admin.organizationCreated'), {
-        description: (data as any).name,
+        description: orgData.name,
       });
-
-      return orgWithOwner;
-    } catch (error: any) {
-      logger.error('Error creating organization:', error);
-      toast.error(tToast('error.create'), {
-        description: error.message,
+    } catch (error: unknown) {
+      handleError(error, {
+        title: tToast('error.create'),
+        context: 'FmOrganizationDataGrid.handleCreate',
+        endpoint: 'organizations.insert',
       });
       throw error;
     }

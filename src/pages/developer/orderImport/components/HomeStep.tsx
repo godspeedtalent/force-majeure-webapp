@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, History, RotateCcw, Calendar, Clock, ChevronDown, ChevronUp, AlertTriangle } from 'lucide-react';
+import { Plus, History, RotateCcw, Calendar, Clock, ChevronDown, ChevronUp, AlertTriangle, Trash2, RefreshCw } from 'lucide-react';
 import { cn } from '@/shared';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
@@ -14,19 +14,29 @@ interface ProcessError {
 interface HomeStepProps {
   onStartNew: () => void;
   onRefetchHistory: () => void;
-  onRollback: (process: ProcessRecord) => Promise<void>;
+  onRollback: (process: ProcessRecord) => Promise<boolean | void>;
+  onDelete: (process: ProcessRecord) => Promise<void>;
+  onRerun: (process: ProcessRecord) => Promise<void>;
+  canRerun: (process: ProcessRecord) => boolean;
   historyLoading: boolean;
   importHistory: ProcessRecord[] | undefined;
   isRollingBack: string | null;
+  isDeleting: string | null;
+  isRerunning: string | null;
 }
 
 export function HomeStep({
   onStartNew,
   onRefetchHistory,
   onRollback,
+  onDelete,
+  onRerun,
+  canRerun,
   historyLoading,
   importHistory,
   isRollingBack,
+  isDeleting,
+  isRerunning,
 }: HomeStepProps) {
   const [expandedErrors, setExpandedErrors] = useState<Set<string>>(new Set());
 
@@ -150,23 +160,60 @@ export function HomeStep({
                           <span className='font-mono'>{process.id.slice(0, 8)}...</span>
                         </div>
                       </div>
-                      {canRollback && (
-                        <FmCommonButton
-                          variant='destructive-outline'
-                          size='sm'
-                          onClick={() => onRollback(process)}
-                          disabled={isRollingBack === process.id}
-                        >
-                          {isRollingBack === process.id ? (
-                            <FmCommonLoadingSpinner size='sm' />
-                          ) : (
-                            <>
-                              <RotateCcw className='h-3 w-3 mr-1' />
-                              Rollback
-                            </>
-                          )}
-                        </FmCommonButton>
-                      )}
+                      <div className='flex items-center gap-2'>
+                        {/* Re-run button - show for completed or rolled_back with rerun data */}
+                        {canRerun(process) && (
+                          <FmCommonButton
+                            variant='gold'
+                            size='sm'
+                            onClick={() => onRerun(process)}
+                            disabled={isRerunning === process.id || isRollingBack === process.id || isDeleting === process.id}
+                          >
+                            {isRerunning === process.id ? (
+                              <FmCommonLoadingSpinner size='sm' />
+                            ) : (
+                              <>
+                                <RefreshCw className='h-3 w-3 mr-1' />
+                                Re-run
+                              </>
+                            )}
+                          </FmCommonButton>
+                        )}
+                        {canRollback && (
+                          <FmCommonButton
+                            variant='destructive-outline'
+                            size='sm'
+                            onClick={() => onRollback(process)}
+                            disabled={isRollingBack === process.id || isDeleting === process.id || isRerunning === process.id}
+                          >
+                            {isRollingBack === process.id ? (
+                              <FmCommonLoadingSpinner size='sm' />
+                            ) : (
+                              <>
+                                <RotateCcw className='h-3 w-3 mr-1' />
+                                Rollback
+                              </>
+                            )}
+                          </FmCommonButton>
+                        )}
+                        {/* Delete button - show for failed, rolled_back, or completed with no orders */}
+                        {(process.status === 'failed' ||
+                          process.status === 'rolled_back' ||
+                          (process.status === 'completed' && !rollbackData?.order_ids?.length)) && (
+                          <FmCommonButton
+                            variant='secondary'
+                            size='sm'
+                            onClick={() => onDelete(process)}
+                            disabled={isDeleting === process.id || isRollingBack === process.id || isRerunning === process.id}
+                          >
+                            {isDeleting === process.id ? (
+                              <FmCommonLoadingSpinner size='sm' />
+                            ) : (
+                              <Trash2 className='h-3 w-3' />
+                            )}
+                          </FmCommonButton>
+                        )}
+                      </div>
                     </div>
 
                     {/* General error message */}

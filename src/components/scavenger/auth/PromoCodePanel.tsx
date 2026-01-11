@@ -54,7 +54,7 @@ export function PromoCodePanel({
           {userDisplayName ? (
             <>
               <FmI18nCommon i18nKey='scavenger.promoCode.yourPromoCode' as='h2' className='font-display text-2xl md:text-3xl text-fm-gold mb-4' />
-              <div className='bg-black/50 border-2 border-fm-gold p-4 rounded-lg mb-6'>
+              <div className='bg-black/50 border-2 border-fm-gold p-4 rounded-none mb-6'>
                 <code className='font-mono text-lg md:text-xl text-fm-gold tracking-wider'>
                   {PROMO_CODE}
                 </code>

@@ -25,6 +25,7 @@ import { supabase } from '@/shared';
 import { toast } from 'sonner';
 import { cn } from '@/shared';
 import { logger } from '@/shared';
+import { handleError } from '@/shared';
 import { useEnvironmentName, FEATURE_FLAGS } from '@/shared';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -111,11 +112,12 @@ export const AdminTicketingSection = () => {
         };
       });
       setLocalFees(initialLocal);
-    } catch (error) {
-      logger.error('Failed to fetch fees:', {
-        error: error instanceof Error ? error.message : 'Unknown',
+    } catch (error: unknown) {
+      handleError(error, {
+        title: tToast('admin.feesLoadFailed'),
+        context: 'AdminTicketingSection.fetchFees',
+        endpoint: 'ticketing_fees',
       });
-      toast.error(tToast('admin.feesLoadFailed'));
     }
   };
 
@@ -265,11 +267,12 @@ export const AdminTicketingSection = () => {
 
       toast.success(tToast('admin.feesUpdated'));
       await fetchAll();
-    } catch (error) {
-      logger.error('Failed to update ticketing settings:', {
-        error: error instanceof Error ? error.message : 'Unknown',
+    } catch (error: unknown) {
+      handleError(error, {
+        title: tToast('admin.feesUpdateFailed'),
+        context: 'AdminTicketingSection.handleSave',
+        endpoint: 'ticketing_fees',
       });
-      toast.error(tToast('admin.feesUpdateFailed'));
     }
   };
 

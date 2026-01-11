@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { logger, cn } from '@/shared';
+import { cn, handleError } from '@/shared';
 import { Input } from '@/components/common/shadcn/input';
 import { Separator } from '@/components/common/shadcn/separator';
 import {
@@ -91,17 +91,21 @@ export const AdminMessagesSection = () => {
         .order(sortField, { ascending: sortOrder === 'asc' }) as unknown as Promise<{ data: ContactSubmission[] | null; error: Error | null }>);
 
       if (error) {
-        logger.error('Failed to load contact submissions', { error: error.message });
-        toast.error(t('adminMessages.loadError'));
+        handleError(error, {
+          title: t('adminMessages.loadError'),
+          context: 'AdminMessagesSection.loadMessages',
+          endpoint: 'contact_submissions',
+        });
         return;
       }
 
       setMessages(data || []);
-    } catch (error) {
-      logger.error('Failed to load contact submissions', {
-        error: error instanceof Error ? error.message : 'Unknown error',
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('adminMessages.loadError'),
+        context: 'AdminMessagesSection.loadMessages',
+        endpoint: 'contact_submissions',
       });
-      toast.error(t('adminMessages.loadError'));
     } finally {
       setIsLoading(false);
     }
@@ -125,18 +129,22 @@ export const AdminMessagesSection = () => {
         .eq('id', id) as unknown as Promise<{ error: Error | null }>);
 
       if (error) {
-        logger.error('Failed to update message status', { error: error.message });
-        toast.error(t('adminMessages.updateError'));
+        handleError(error, {
+          title: t('adminMessages.updateError'),
+          context: 'AdminMessagesSection.updateMessageStatus',
+          endpoint: 'contact_submissions.update',
+        });
         return;
       }
 
       toast.success(t('adminMessages.statusUpdated'));
       loadMessages();
-    } catch (error) {
-      logger.error('Failed to update message status', {
-        error: error instanceof Error ? error.message : 'Unknown error',
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('adminMessages.updateError'),
+        context: 'AdminMessagesSection.updateMessageStatus',
+        endpoint: 'contact_submissions.update',
       });
-      toast.error(t('adminMessages.updateError'));
     }
   };
 
@@ -149,19 +157,23 @@ export const AdminMessagesSection = () => {
         .eq('id', id) as unknown as Promise<{ error: Error | null }>);
 
       if (error) {
-        logger.error('Failed to delete message', { error: error.message });
-        toast.error(t('adminMessages.deleteError'));
+        handleError(error, {
+          title: t('adminMessages.deleteError'),
+          context: 'AdminMessagesSection.deleteMessage',
+          endpoint: 'contact_submissions.delete',
+        });
         return;
       }
 
       toast.success(t('adminMessages.deleted'));
       setExpandedMessage(null);
       loadMessages();
-    } catch (error) {
-      logger.error('Failed to delete message', {
-        error: error instanceof Error ? error.message : 'Unknown error',
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('adminMessages.deleteError'),
+        context: 'AdminMessagesSection.deleteMessage',
+        endpoint: 'contact_submissions.delete',
       });
-      toast.error(t('adminMessages.deleteError'));
     }
   };
 

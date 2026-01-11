@@ -301,7 +301,8 @@
     "coverSet": "Foto de perfil establecida",
     "setCoverFailed": "Error al establecer foto de perfil",
     "heroImageSet": "Imagen principal establecida",
-    "setHeroFailed": "Error al establecer imagen principal"
+    "setHeroFailed": "Error al establecer imagen principal",
+    "focalPointUpdateFailed": "Error al actualizar punto focal"
   },
   "recordings": {
     "noUrlFound": "No se encontró URL para esta grabación",

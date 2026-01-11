@@ -7,7 +7,7 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { Input } from '@/components/common/shadcn/input';
-import { Checkbox } from '@/components/common/shadcn/checkbox';
+import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
 import { Label } from '@/components/common/shadcn/label';
 import {
   FmResponsiveGroupLayout,
@@ -167,11 +167,11 @@ export function DevNavigationTabContent({ onNavigate, isAdmin: _isAdmin }: DevNa
                 />
                 {currentSearch && (
                   <div className='flex items-center gap-2'>
-                    <Checkbox
+                    <FmCommonCheckbox
                       id='include-querystring'
                       checked={includeQuerystring}
-                      onCheckedChange={(checked) => setIncludeQuerystring(checked === true)}
-                      className='h-3 w-3'
+                      onCheckedChange={(checked) => setIncludeQuerystring(checked)}
+                      className='h-4 w-4'
                     />
                     <Label
                       htmlFor='include-querystring'

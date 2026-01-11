@@ -171,12 +171,12 @@ export function ScavengerOrchestrator({
           title: t('scavengerOrchestrator.successTitle'),
           description: t('scavengerOrchestrator.addedToGuestlist'),
         });
-      } catch (error: any) {
-        logger.error('Claim error:', error);
+      } catch (error: unknown) {
+        logger.error('Claim error:', { error });
+        const errorMessage = error instanceof Error ? error.message : t('scavengerOrchestrator.claimFailed');
         toast({
           title: t('scavengerOrchestrator.errorTitle'),
-          description:
-            error.message || t('scavengerOrchestrator.claimFailed'),
+          description: errorMessage,
           variant: 'destructive',
         });
       } finally {

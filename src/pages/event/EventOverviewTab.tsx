@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
-import { Checkbox } from '@/components/common/shadcn/checkbox';
+import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
 import { FmVenueSearchDropdown } from '@/components/common/search/FmVenueSearchDropdown';
@@ -204,10 +204,10 @@ export const EventOverviewTab = ({
                 disabled={isAfterHours}
               />
               <div className='flex items-center gap-2'>
-                <Checkbox
+                <FmCommonCheckbox
                   id='after-hours'
                   checked={isAfterHours}
-                  onCheckedChange={checked => handleAfterHoursChange(!!checked)}
+                  onCheckedChange={checked => handleAfterHoursChange(checked)}
                 />
                 <Label htmlFor='after-hours' className='cursor-pointer'>
                   {t('eventCard.afterHours')}

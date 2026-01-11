@@ -163,7 +163,7 @@ export function RegistrationForm({
 
       toast.success(tToast('auth.emailVerificationSent'));
       onSuccess?.(formData.email);
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Use centralized error handler for network/connection errors
       await handleError(error, {
         title: t('scavenger.registration.registrationFailed'),
@@ -179,7 +179,7 @@ export function RegistrationForm({
 
   return (
     <div className='mh-72 bg-background/60 backdrop-blur-md border-2 border-border/40 w-full shadow-2xl animate-slide-up-fade'>
-      <div className='px-8 lg:px-12 pt-6 lg:pt-8 pb-4 text-center'>
+      <div className='px-[40px] lg:px-[40px] pt-[20px] lg:pt-[40px] pb-[20px] text-center'>
         <h1 className='font-display text-2xl md:text-3xl mb-2'>{displayTitle}</h1>
         <p className='text-muted-foreground text-sm'>{displayDescription}</p>
       </div>
@@ -187,7 +187,7 @@ export function RegistrationForm({
         <form
           id='registration-form'
           onSubmit={handleSubmit}
-          className='px-8 lg:px-12 pb-6 space-y-[20px]'
+          className='px-[40px] lg:px-[40px] pb-[20px] space-y-[20px]'
         >
           {/* Contact Information */}
           <FmFormFieldGroup
@@ -235,7 +235,7 @@ export function RegistrationForm({
             description={t('scavenger.registration.howYouAppear')}
             layout='stack'
           >
-            <div className='space-y-3'>
+            <div className='space-y-[10px]'>
               <FmCommonTextField
                 label={t('labels.username')}
                 id='displayName'
@@ -287,7 +287,7 @@ export function RegistrationForm({
               className='h-9'
             />
 
-            <div className='space-y-2'>
+            <div className='space-y-[10px]'>
               <FmCommonTextField
                 label={t('labels.confirmPassword')}
                 id='confirmPassword'
@@ -309,11 +309,11 @@ export function RegistrationForm({
 
             {/* Password Strength Guide */}
             {formData.password && (
-              <div className='space-y-2 text-xs mt-3'>
+              <div className='space-y-[10px] text-xs mt-[10px]'>
                 <p className='font-medium text-foreground/70'>
                   {t('scavenger.registration.passwordRequirements')}
                 </p>
-                <div className='space-y-1.5'>
+                <div className='space-y-[5px]'>
                   <div className='flex items-center gap-1.5'>
                     {passwordStrength.hasMinLength ? (
                       <Check className='h-3 w-3 text-fm-gold' />
@@ -417,11 +417,11 @@ export function RegistrationForm({
           </FmFormFieldGroup>
         </form>
 
-        <div className='px-8 lg:px-12 py-6 border-t border-border/40'>
+        <div className='px-[40px] lg:px-[40px] py-[20px] border-t border-border/40'>
           <button
             type='submit'
             form='registration-form'
-            className='w-full bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] h-9 rounded-md disabled:opacity-50 disabled:cursor-not-allowed'
+            className='w-full bg-gradient-gold hover:opacity-90 font-semibold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] h-9 rounded-none disabled:opacity-50 disabled:cursor-not-allowed'
             disabled={isSubmitting || !isFormValid}
           >
             {isSubmitting ? t('buttons.submitting') : t('buttons.submit')}

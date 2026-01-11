@@ -33,7 +33,7 @@ export const LocationCard = ({
     >
       <div className='flex items-start gap-4 mb-4'>
         <div
-          className={`p-3 rounded-lg ${
+          className={`p-3 rounded-none ${
             isFullyClaimed ? 'bg-muted' : 'bg-gradient-gold'
           }`}
         >

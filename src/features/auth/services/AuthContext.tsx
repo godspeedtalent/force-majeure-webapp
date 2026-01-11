@@ -266,7 +266,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       return { error };
-    } catch (error: any) {
+    } catch (error: unknown) {
       authLogger.error('Sign up exception', { error });
       // Use centralized error handler for network/connection errors
       await handleError(error, {
@@ -299,7 +299,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       return { error };
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Use centralized error handler for network/connection errors
       await handleError(error, {
         title: i18n.t('auth.signInError', { ns: 'toasts' }),
@@ -324,8 +324,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       if (error) {
         toast.error(error.message);
       }
-    } catch (error: any) {
-      toast.error(error?.message || 'An unexpected error occurred');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast.error(message);
     }
   };
 
@@ -348,8 +349,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       return { error };
-    } catch (error: any) {
-      const errorMsg = error?.message || 'An unexpected error occurred';
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Error ? error.message : 'An unexpected error occurred';
       toast.error(errorMsg);
       return { error };
     }
@@ -376,8 +377,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       return { error };
-    } catch (error: any) {
-      const errorMsg = error?.message || 'An unexpected error occurred';
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Error ? error.message : 'An unexpected error occurred';
       toast.error(errorMsg);
       return { error };
     }
@@ -400,7 +401,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       return { error };
-    } catch (error: any) {
+    } catch (error: unknown) {
       authLogger.error('Password reset request exception', { error });
       await handleError(error, {
         title: i18n.t('auth.passwordResetError', { ns: 'toasts' }),
@@ -428,7 +429,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       return { error };
-    } catch (error: any) {
+    } catch (error: unknown) {
       authLogger.error('Password update exception', { error });
       await handleError(error, {
         title: i18n.t('auth.passwordUpdateError', { ns: 'toasts' }),

@@ -85,7 +85,7 @@ export function TrackingAnalytics({ eventId }: TrackingAnalyticsProps) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <FmCommonCard className="p-6">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-primary/10 rounded-lg">
+            <div className="p-3 bg-primary/10 rounded-none">
               <Link2 className="h-6 w-6 text-primary" />
             </div>
             <div>
@@ -97,7 +97,7 @@ export function TrackingAnalytics({ eventId }: TrackingAnalyticsProps) {
 
         <FmCommonCard className="p-6">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-secondary/10 rounded-lg">
+            <div className="p-3 bg-secondary/10 rounded-none">
               <MousePointerClick className="h-6 w-6 text-secondary" />
             </div>
             <div>
@@ -109,7 +109,7 @@ export function TrackingAnalytics({ eventId }: TrackingAnalyticsProps) {
 
         <FmCommonCard className="p-6">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-accent/10 rounded-lg">
+            <div className="p-3 bg-accent/10 rounded-none">
               <TrendingUp className="h-6 w-6 text-accent" />
             </div>
             <div>
