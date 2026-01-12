@@ -162,14 +162,9 @@ export function UserMenuDropdown() {
 
   // Mobile menu sections - grouped by category
   const mobileMenuSections: MobileMenuSection[] = [
-    // Profile section (no header)
+    // Profile section (no header) - Profile link is in the header user info area
     {
       items: [
-        {
-          label: t('nav.profile'),
-          icon: UserIcon,
-          onClick: () => handleNavigate('/profile'),
-        },
         // Artist option - only shown for users with artist role and linked artist
         ...(isArtist && linkedArtist
           ? [
@@ -328,22 +323,31 @@ export function UserMenuDropdown() {
                     }
                   }
                 `}</style>
-              {/* Header with user info */}
-              <div className='flex items-center gap-[15px] p-[20px] border-b border-white/10'>
+              {/* Header with user info - clickable to profile */}
+              <button
+                onClick={() => handleNavigate('/profile')}
+                className={cn(
+                  'w-full flex items-center gap-[15px] p-[20px] border-b border-white/10',
+                  'group cursor-pointer',
+                  'hover:bg-fm-gold/10 active:bg-fm-gold/15',
+                  'transition-all duration-200'
+                )}
+              >
                 <FmUserAvatar
                   avatarUrl={profile?.avatar_url}
                   displayName={profile?.display_name || user?.user_metadata?.display_name}
                   size='md'
+                  className='transition-all duration-200 group-hover:ring-2 group-hover:ring-fm-gold group-hover:ring-offset-1 group-hover:ring-offset-background'
                 />
-                <div>
-                  <p className='font-canela font-medium text-white'>
+                <div className='text-left'>
+                  <p className='font-canela font-medium text-white group-hover:text-fm-gold transition-colors duration-200'>
                     {profile?.display_name || user?.user_metadata?.display_name || t('nav.user')}
                   </p>
                   <p className='font-canela text-xs text-white/50'>
                     {user?.email}
                   </p>
                 </div>
-              </div>
+              </button>
 
               {/* Menu Sections */}
               <div className='p-[10px]'>
