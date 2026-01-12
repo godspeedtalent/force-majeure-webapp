@@ -10,14 +10,12 @@ export const FEATURE_FLAGS = {
   DEMO_PAGES: 'demo_pages',
 
   // Event features
-  EVENT_CHECKOUT_TIMER: 'event_checkout_timer',
   HERO_IMAGE_HORIZONTAL_CENTERING: 'hero_image_horizontal_centering',
 
   // Social/Community features
   SCAVENGER_HUNT: 'scavenger_hunt',
   SCAVENGER_HUNT_ACTIVE: 'scavenger_hunt_active',
   SHOW_LEADERBOARD: 'show_leaderboard',
-  MEMBER_PROFILES: 'member_profiles',
 
   // Store features
   MERCH_STORE: 'merch_store',
@@ -55,10 +53,6 @@ export const FEATURE_FLAG_METADATA: Record<
     displayName: 'Demo Pages',
     description: 'Enables access to demo/testing pages',
   },
-  [FEATURE_FLAGS.EVENT_CHECKOUT_TIMER]: {
-    displayName: 'Event Checkout Timer',
-    description: 'Shows countdown timer during event checkout',
-  },
   [FEATURE_FLAGS.HERO_IMAGE_HORIZONTAL_CENTERING]: {
     displayName: 'Hero Image Horizontal Centering',
     description: 'Enables focal point control for hero image horizontal rendering',
@@ -74,10 +68,6 @@ export const FEATURE_FLAG_METADATA: Record<
   [FEATURE_FLAGS.SHOW_LEADERBOARD]: {
     displayName: 'Show Leaderboard',
     description: 'Displays scavenger hunt leaderboard',
-  },
-  [FEATURE_FLAGS.MEMBER_PROFILES]: {
-    displayName: 'Member Profiles',
-    description: 'Enables member profile pages',
   },
   [FEATURE_FLAGS.MERCH_STORE]: {
     displayName: 'Merch Store',

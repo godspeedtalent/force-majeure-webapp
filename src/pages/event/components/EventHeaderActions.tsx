@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Eye, Share2, Star } from 'lucide-react';
 
 import { FmInstagramStoryButton, EventShareData } from '@/components/common/sharing';
+import { Skeleton } from '@/components/common/shadcn/skeleton';
 
 interface EventHeaderActionsProps {
   isInterested: boolean;
@@ -12,6 +13,7 @@ interface EventHeaderActionsProps {
   shouldShowShareCount: boolean;
   viewCount: number;
   showViewCount: boolean;
+  isViewCountLoading?: boolean;
   guestListEnabled: boolean;
   onInterestClick: () => void;
   onShareClick: () => void;
@@ -35,6 +37,7 @@ export const EventHeaderActions = ({
   shouldShowShareCount,
   viewCount,
   showViewCount,
+  isViewCountLoading = false,
   guestListEnabled,
   onInterestClick,
   onShareClick,
@@ -106,9 +109,13 @@ export const EventHeaderActions = ({
       {!guestListEnabled && showViewCount && (
         <div className='flex items-center gap-2 px-3 py-2 h-10 bg-white/5 rounded-none border border-transparent'>
           <Eye className='w-4 h-4 text-muted-foreground' />
-          <span className='text-sm text-muted-foreground'>
-            {viewCount.toLocaleString()}
-          </span>
+          {isViewCountLoading ? (
+            <Skeleton className='h-4 w-8 rounded-none' />
+          ) : (
+            <span className='text-sm text-muted-foreground'>
+              {viewCount.toLocaleString()}
+            </span>
+          )}
         </div>
       )}
     </div>

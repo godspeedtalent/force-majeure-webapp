@@ -59,7 +59,7 @@ export const EventDetailsContent = ({
   const navigate = useNavigate();
   const location = useLocation();
   const [ticketCount] = useState(() => Math.floor(Math.random() * 100) + 50);
-  const { viewCount, recordView } = useEventViews(event.id);
+  const { viewCount, isLoading: isViewCountLoading, recordView } = useEventViews(event.id);
 
   // Use extracted hooks for date/time calculations and attendee list
   const {
@@ -264,6 +264,7 @@ export const EventDetailsContent = ({
             ticketCount={ticketCount}
             viewCount={viewCount}
             showViewCount={showViewCount}
+            isViewCountLoading={isViewCountLoading}
             isLoggedIn={!!user}
             onCardClick={handleAttendeeCardClick}
             onPromptLogin={handlePromptLogin}
@@ -339,6 +340,7 @@ export const EventDetailsContent = ({
       shouldShowShareCount={shouldShowShareCount}
       viewCount={viewCount}
       showViewCount={showViewCount}
+      isViewCountLoading={isViewCountLoading}
       guestListEnabled={guestListEnabled ?? false}
       onInterestClick={handleInterestClick}
       onShareClick={handleOpenShareModal}

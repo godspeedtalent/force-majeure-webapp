@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Instagram,
   ShoppingCart,
@@ -18,8 +19,7 @@ import {
   TooltipTrigger,
 } from '@/components/common/shadcn/tooltip';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { useFeatureFlagHelpers } from '@/shared';
-import { FEATURE_FLAGS } from '@/shared';
+import { cn, useIsMobile, FEATURE_FLAGS } from '@/shared';
 import { useCheckoutTimer } from '@/contexts/CheckoutContext';
 import { SOCIAL_LINKS } from '@/shared';
 import { FeatureGuard } from '@/components/common/guards/FeatureGuard';
@@ -28,11 +28,20 @@ export const Navigation = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation('common');
-  const { isFeatureEnabled } = useFeatureFlagHelpers();
   const { isCheckoutActive, endCheckout, redirectUrl } = useCheckoutTimer();
+  const isMobile = useIsMobile();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <nav className='fixed top-0 z-50 w-full bg-background/50 backdrop-blur-md border-b border-border'>
+    <nav
+      className={cn(
+        'fixed top-0 z-50 w-full border-b transition-all duration-200',
+        // When mobile menu is open, match the dropdown's frosted glass styling
+        isMobile && isMobileMenuOpen
+          ? 'bg-black/95 backdrop-blur-xl border-white/20 border-l-[3px] border-l-fm-gold/60'
+          : 'bg-background/50 backdrop-blur-md border-border'
+      )}
+    >
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='flex justify-between items-center h-16'>
           {/* Logo and Breadcrumbs */}
@@ -48,8 +57,7 @@ export const Navigation = () => {
 
           {/* Center Title or Countdown */}
           <div className='absolute left-1/2 transform -translate-x-1/2 hidden lg:block'>
-            {isFeatureEnabled(FEATURE_FLAGS.EVENT_CHECKOUT_TIMER) &&
-            isCheckoutActive ? (
+            {isCheckoutActive ? (
               <CheckoutCountdown
                 onExpire={endCheckout}
                 redirectUrl={redirectUrl}
@@ -123,7 +131,7 @@ export const Navigation = () => {
           {/* Mobile menu - user dropdown only */}
           <div className='md:hidden flex items-center'>
             {user ? (
-              <UserMenuDropdown />
+              <UserMenuDropdown onOpenChange={setIsMobileMenuOpen} />
             ) : (
               <Button
                 variant='ghost'

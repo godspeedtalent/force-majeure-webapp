@@ -15,17 +15,30 @@ interface GroupBracketLinesProps {
   group: TabGroup;
   showGroupLabel: string | null;
   isTabHovered: boolean;
+  groupLabel?: string;
 }
 
 /** Renders the bracket lines connecting tabs in a group */
-const GroupBracketLines = ({ group, showGroupLabel, isTabHovered }: GroupBracketLinesProps) => {
+const GroupBracketLines = ({ group, showGroupLabel, isTabHovered, groupLabel }: GroupBracketLinesProps) => {
   // Only show bracket lines when tabs are hovered
   const isVisible = isTabHovered && showGroupLabel === group.group;
   const isPartiallyVisible = isTabHovered;
 
+  const totalLineHeight = (group.tabs.length - 1) * 56;
+  const lineStart = 24;
+  const lineEnd = lineStart + totalLineHeight;
+  const centerY = (lineStart + lineEnd) / 2;
+  // Gap for the label - based on label length (~5px per char at 9px font) + 5px padding on each side
+  const charWidth = 5;
+  const padding = 5;
+  const labelLength = groupLabel?.length ?? 0;
+  const labelGap = labelLength * charWidth + padding * 2;
+  const topSegmentEnd = centerY - labelGap / 2;
+  const bottomSegmentStart = centerY + labelGap / 2;
+
   return (
-    <>
-      {/* Vertical line connecting items */}
+    <div className='pointer-events-none'>
+      {/* Vertical line - top segment (above label) */}
       <div
         className={cn(
           'absolute transition-opacity duration-300',
@@ -33,8 +46,22 @@ const GroupBracketLines = ({ group, showGroupLabel, isTabHovered }: GroupBracket
         )}
         style={{
           left: '-12px',
-          top: '24px',
-          height: `${(group.tabs.length - 1) * 56}px`,
+          top: `${lineStart}px`,
+          height: `${Math.max(0, topSegmentEnd - lineStart)}px`,
+          width: '1px',
+          background: 'rgba(255, 255, 255, 0.2)',
+        }}
+      />
+      {/* Vertical line - bottom segment (below label) */}
+      <div
+        className={cn(
+          'absolute transition-opacity duration-300',
+          isVisible ? 'opacity-100' : isPartiallyVisible ? 'opacity-30' : 'opacity-0'
+        )}
+        style={{
+          left: '-12px',
+          top: `${bottomSegmentStart}px`,
+          height: `${Math.max(0, lineEnd - bottomSegmentStart)}px`,
           width: '1px',
           background: 'rgba(255, 255, 255, 0.2)',
         }}
@@ -61,13 +88,13 @@ const GroupBracketLines = ({ group, showGroupLabel, isTabHovered }: GroupBracket
         )}
         style={{
           left: '-12px',
-          top: `${24 + (group.tabs.length - 1) * 56}px`,
+          top: `${lineEnd}px`,
           width: '8px',
           height: '1px',
           background: 'rgba(255, 255, 255, 0.2)',
         }}
       />
-    </>
+    </div>
   );
 };
 
@@ -94,11 +121,11 @@ const GroupLabel = ({ groupLabel, showGroupLabel, groupName, isTabHovered, onCli
   return (
     <div
       className={cn(
-        'absolute transition-opacity duration-300',
-        isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        'absolute transition-opacity duration-300 pointer-events-none',
+        isVisible ? 'opacity-100' : 'opacity-0'
       )}
       style={{
-        left: '-52px',
+        left: '-18px',
         top: '50%',
         transform: 'translateY(-50%)',
       }}
@@ -106,7 +133,7 @@ const GroupLabel = ({ groupLabel, showGroupLabel, groupName, isTabHovered, onCli
       <span
         className={cn(
           'text-[9px] text-white/50 whitespace-nowrap font-light tracking-wide uppercase',
-          onClick && 'cursor-pointer hover:text-fm-gold transition-colors'
+          onClick && 'cursor-pointer hover:text-fm-gold transition-colors pointer-events-auto'
         )}
         style={{
           writingMode: 'vertical-rl',
@@ -176,7 +203,7 @@ export const TopTabGroups = ({
             >
               {/* Group bracket lines */}
               {shouldShowLabel && groupLabel && group.tabs.length > 1 && (
-                <GroupBracketLines group={group} showGroupLabel={showGroupLabel} isTabHovered={isTabHovered} />
+                <GroupBracketLines group={group} showGroupLabel={showGroupLabel} isTabHovered={isTabHovered} groupLabel={groupLabel} />
               )}
 
               {/* Group label - vertical text */}
@@ -288,22 +315,9 @@ export const BottomTabGroups = ({
               onMouseEnter={() => handleGroupMouseEnter(group.group)}
               onMouseLeave={handleGroupMouseLeave}
             >
-              {/* Invisible hover extension */}
-              {shouldShowLabel && groupLabel && !collapsed && group.tabs.length > 1 && (
-                <div
-                  className='absolute inset-0 z-0'
-                  style={{
-                    top: '-20px',
-                    left: '-60px',
-                    right: '-4px',
-                    bottom: '-4px',
-                  }}
-                />
-              )}
-
               {/* Group bracket lines */}
               {shouldShowLabel && groupLabel && !collapsed && group.tabs.length > 1 && (
-                <GroupBracketLines group={group} showGroupLabel={showGroupLabel} isTabHovered={isTabHovered} />
+                <GroupBracketLines group={group} showGroupLabel={showGroupLabel} isTabHovered={isTabHovered} groupLabel={groupLabel} />
               )}
 
               {/* Collapse bar - appears on hover at the top of the group */}

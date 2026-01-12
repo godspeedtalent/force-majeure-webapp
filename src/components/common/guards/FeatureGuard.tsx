@@ -41,10 +41,10 @@ interface FeatureGuardProps {
  * @example
  * // Show fallback when feature is disabled
  * <FeatureGuard
- *   feature={FEATURE_FLAGS.MEMBER_PROFILES}
- *   fallback={<p>Member profiles unavailable</p>}
+ *   feature={FEATURE_FLAGS.SONIC_GAUNTLET}
+ *   fallback={<p>Sonic Gauntlet unavailable</p>}
  * >
- *   <MemberProfilesList />
+ *   <SonicGauntletContent />
  * </FeatureGuard>
  *
  * @example

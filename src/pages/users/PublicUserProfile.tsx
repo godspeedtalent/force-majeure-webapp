@@ -6,9 +6,8 @@ import { useQuery } from '@tanstack/react-query';
 import { Layout } from '@/components/layout/Layout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
-import { supabase, logger, useFeatureFlagHelpers, FEATURE_FLAGS, ROLES } from '@/shared';
+import { supabase, logger } from '@/shared';
 import { handleError } from '@/shared/services/errorHandler';
-import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { MobileProfileLayout } from '@/components/profile/MobileProfileLayout';
 import { DesktopProfileLayout } from '@/components/profile/DesktopProfileLayout';
@@ -27,8 +26,6 @@ const PublicUserProfile = () => {
   const { t: tCommon } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isAdmin, hasRole } = useUserPermissions();
-  const { isFeatureEnabled, isLoading: flagsLoading } = useFeatureFlagHelpers();
   const { user: currentUser } = useAuth();
 
   const [upcomingShows, setUpcomingShows] = useState<UpcomingEvent[]>([]);
@@ -36,10 +33,7 @@ const PublicUserProfile = () => {
   const [loadingShows, setLoadingShows] = useState(true);
   const [showPastShows, setShowPastShows] = useState(false);
 
-  // Check access: feature flag must be enabled OR user must be admin/developer
-  const canAccess = isFeatureEnabled(FEATURE_FLAGS.MEMBER_PROFILES) || isAdmin() || hasRole(ROLES.DEVELOPER);
-
-  // Fetch profile data
+  // Fetch profile data - use user_id to match the auth user id from the URL
   const {
     data: profileData,
     isLoading: profileLoading,
@@ -52,19 +46,19 @@ const PublicUserProfile = () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('id, user_id, display_name, avatar_url, created_at')
-        .eq('id', id)
+        .eq('user_id', id)  // Query by user_id, not id - the URL contains auth user id
         .single();
 
       if (error) throw error;
       return data as PublicProfile;
     },
-    enabled: !!id && canAccess,
+    enabled: !!id,
   });
 
   // Fetch upcoming shows for the user (only visible events)
   useEffect(() => {
     const fetchUpcomingShows = async () => {
-      if (!id || !canAccess) {
+      if (!id) {
         setLoadingShows(false);
         return;
       }
@@ -152,17 +146,10 @@ const PublicUserProfile = () => {
     };
 
     fetchUpcomingShows();
-  }, [id, canAccess, t]);
-
-  // Redirect if feature flag is off and user is not admin/developer
-  useEffect(() => {
-    if (!flagsLoading && !canAccess) {
-      navigate('/', { replace: true });
-    }
-  }, [flagsLoading, canAccess, navigate]);
+  }, [id, t]);
 
   // Loading state
-  if (flagsLoading || profileLoading) {
+  if (profileLoading) {
     return (
       <Layout>
         <div className='flex items-center justify-center min-h-[60vh]'>
@@ -170,11 +157,6 @@ const PublicUserProfile = () => {
         </div>
       </Layout>
     );
-  }
-
-  // Access denied (will redirect)
-  if (!canAccess) {
-    return null;
   }
 
   // Profile not found

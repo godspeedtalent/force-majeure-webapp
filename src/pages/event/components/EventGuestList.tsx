@@ -2,6 +2,7 @@ import { Eye, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { FmCommonCard } from '@/components/common/display/FmCommonCard';
+import { Skeleton } from '@/components/common/shadcn/skeleton';
 
 interface Attendee {
   name: string;
@@ -13,6 +14,7 @@ interface EventGuestListProps {
   ticketCount: number;
   viewCount: number;
   showViewCount: boolean;
+  isViewCountLoading?: boolean;
   isLoggedIn: boolean;
   onCardClick?: () => void;
   onPromptLogin: () => void;
@@ -28,6 +30,7 @@ export const EventGuestList = ({
   ticketCount,
   viewCount,
   showViewCount,
+  isViewCountLoading = false,
   isLoggedIn,
   onCardClick,
   onPromptLogin,
@@ -85,7 +88,11 @@ export const EventGuestList = ({
           {showViewCount && (
             <div className='flex items-center gap-2'>
               <Eye className='w-4 h-4' />
-              <span>{t('guestList.pageViews', { count: viewCount })}</span>
+              {isViewCountLoading ? (
+                <Skeleton className='h-4 w-16 rounded-none' />
+              ) : (
+                <span>{t('guestList.pageViews', { count: viewCount })}</span>
+              )}
             </div>
           )}
         </div>

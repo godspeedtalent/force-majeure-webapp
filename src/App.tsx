@@ -478,10 +478,8 @@ const AppRoutes = () => {
         <Route path='/merch' element={<Merch />} />
       )}
 
-      {/* Conditionally render member profiles route based on feature flag */}
-      {isFeatureEnabled(FEATURE_FLAGS.MEMBER_PROFILES) && (
-        <Route path='/members/home' element={<MemberHome />} />
-      )}
+      {/* Member home route - always available */}
+      <Route path='/members/home' element={<MemberHome />} />
 
       {/* Conditionally render Sonic Gauntlet route based on feature flag */}
       {isFeatureEnabled(FEATURE_FLAGS.SONIC_GAUNTLET) && (

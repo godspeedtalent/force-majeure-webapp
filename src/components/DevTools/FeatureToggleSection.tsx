@@ -369,8 +369,8 @@ export const FeatureToggleSection = () => {
                 }
               }}
             >
-              {/* Flags in group - two column grid */}
-              <div className='grid grid-cols-2 gap-2'>
+              {/* Flags in group - single column */}
+              <div className='flex flex-col gap-2'>
               {groupFlags.map(flag => {
                 const Icon = getFlagIcon(flag.flag_name);
                 const description = flag.description || getFlagDescription(flag.flag_name);

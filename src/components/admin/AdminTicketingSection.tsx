@@ -26,8 +26,7 @@ import { toast } from 'sonner';
 import { cn } from '@/shared';
 import { logger } from '@/shared';
 import { handleError } from '@/shared';
-import { useEnvironmentName, FEATURE_FLAGS } from '@/shared';
-import { useQueryClient } from '@tanstack/react-query';
+import { useEnvironmentName } from '@/shared';
 import {
   APP_SETTING_KEYS,
   fetchAppSetting,
@@ -59,12 +58,6 @@ export const AdminTicketingSection = () => {
   const [localFees, setLocalFees] = useState<
     Record<string, { type: 'flat' | 'percentage'; value: string; isActive: boolean }>
   >({});
-
-  // Feature flag state for checkout timer toggle
-  const [timerFlagEnabled, setTimerFlagEnabled] = useState(false);
-  const [originalTimerFlagEnabled, setOriginalTimerFlagEnabled] = useState(false);
-  const [timerFlagEnvId, setTimerFlagEnvId] = useState<string | null>(null);
-  const queryClient = useQueryClient();
 
   // Checkout timer state
   const [checkoutTimerMinutes, setCheckoutTimerMinutes] = useState<string>('10');
@@ -136,48 +129,9 @@ export const AdminTicketingSection = () => {
     }
   };
 
-  const fetchTimerFeatureFlag = async () => {
-    try {
-      // Get the 'all' environment id first
-      const { data: allEnvData } = await supabase
-        .from('environments')
-        .select('id')
-        .eq('name', 'all')
-        .single();
-
-      if (!allEnvData) {
-        logger.error('Failed to fetch "all" environment for feature flag');
-        return;
-      }
-
-      // Fetch the event_checkout_timer feature flag
-      const { data: flagData, error: flagError } = await supabase
-        .from('feature_flags')
-        .select('is_enabled, environment_id')
-        .eq('flag_name', FEATURE_FLAGS.EVENT_CHECKOUT_TIMER)
-        .eq('environment_id', allEnvData.id)
-        .single();
-
-      if (flagError) {
-        logger.error('Failed to fetch timer feature flag:', flagError);
-        return;
-      }
-
-      if (flagData) {
-        setTimerFlagEnabled(flagData.is_enabled);
-        setOriginalTimerFlagEnabled(flagData.is_enabled);
-        setTimerFlagEnvId(flagData.environment_id);
-      }
-    } catch (error) {
-      logger.error('Failed to fetch timer feature flag:', {
-        error: error instanceof Error ? error.message : 'Unknown',
-      });
-    }
-  };
-
   const fetchAll = async () => {
     setIsLoading(true);
-    await Promise.all([fetchFees(), fetchCheckoutTimerSetting(), fetchTimerFeatureFlag()]);
+    await Promise.all([fetchFees(), fetchCheckoutTimerSetting()]);
     setIsLoading(false);
   };
 
@@ -215,10 +169,6 @@ export const AdminTicketingSection = () => {
     }));
   };
 
-  const handleTimerFlagToggle = () => {
-    setTimerFlagEnabled(prev => !prev);
-  };
-
   const handleSave = async () => {
     setShowConfirmDialog(false);
 
@@ -251,20 +201,6 @@ export const AdminTicketingSection = () => {
         timerMinutes
       );
 
-      // Update timer feature flag if changed
-      if (timerFlagEnabled !== originalTimerFlagEnabled && timerFlagEnvId) {
-        await supabase
-          .from('feature_flags')
-          .update({ is_enabled: timerFlagEnabled })
-          .eq('flag_name', FEATURE_FLAGS.EVENT_CHECKOUT_TIMER)
-          .eq('environment_id', timerFlagEnvId);
-      }
-
-      // Invalidate feature flags query to refresh the global state
-      if (timerFlagEnabled !== originalTimerFlagEnabled) {
-        queryClient.invalidateQueries({ queryKey: ['feature-flags'] });
-      }
-
       toast.success(tToast('admin.feesUpdated'));
       await fetchAll();
     } catch (error: unknown) {
@@ -287,8 +223,7 @@ export const AdminTicketingSection = () => {
   });
 
   const hasTimerChanges = checkoutTimerMinutes !== originalCheckoutTimerMinutes;
-  const hasTimerFlagChanges = timerFlagEnabled !== originalTimerFlagEnabled;
-  const hasChanges = hasFeesChanges || hasTimerChanges || hasTimerFlagChanges;
+  const hasChanges = hasFeesChanges || hasTimerChanges;
 
   if (isLoading) {
     return <div className='text-muted-foreground text-sm'>{t('status.loading')}</div>;
@@ -336,48 +271,19 @@ export const AdminTicketingSection = () => {
           </TooltipProvider>
         </div>
 
-        <div className='p-4 bg-muted/20 rounded-none border border-border space-y-4'>
-          {/* Timer enabled toggle */}
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-3'>
-              <span className='text-foreground font-medium'>{t('admin.ticketing.timerEnabled')}</span>
-              <span
-                className={cn(
-                  'text-xs px-2 py-0.5 rounded-none',
-                  timerFlagEnabled
-                    ? 'bg-green-500/20 text-green-400'
-                    : 'bg-red-500/20 text-red-400'
-                )}
-              >
-                {timerFlagEnabled ? t('status.on') : t('status.off')}
-              </span>
-            </div>
-            <Switch
-              id='timer-enabled'
-              checked={timerFlagEnabled}
-              onCheckedChange={handleTimerFlagToggle}
-              className='data-[state=checked]:bg-fm-gold'
-            />
-          </div>
-
-          <div className={cn(!timerFlagEnabled && 'opacity-50 pointer-events-none')}>
-            <FmCommonTextField
-              label={t('admin.ticketing.defaultDuration')}
-              type='number'
-              value={checkoutTimerMinutes}
-              onChange={e => setCheckoutTimerMinutes(e.target.value)}
-              placeholder='10'
-              min={1}
-              max={60}
-              disabled={!timerFlagEnabled}
-            />
-          </div>
-
-          {!timerFlagEnabled && (
-            <p className='text-xs text-muted-foreground italic'>
-              {t('admin.ticketing.timerDisabledHint', 'Enable the timer above to configure checkout time limits.')}
-            </p>
-          )}
+        <div className='p-4 bg-muted/20 rounded-none border border-border'>
+          <FmCommonTextField
+            label={t('admin.ticketing.defaultDuration')}
+            type='number'
+            value={checkoutTimerMinutes}
+            onChange={e => setCheckoutTimerMinutes(e.target.value)}
+            placeholder='10'
+            min={1}
+            max={60}
+          />
+          <p className='text-xs text-muted-foreground mt-2'>
+            {t('admin.ticketing.timerPerEventHint', 'This is the default duration. Timer can be enabled per-event in event settings.')}
+          </p>
         </div>
       </div>
 
@@ -502,7 +408,6 @@ export const AdminTicketingSection = () => {
               {t('admin.ticketing.confirmChangesDescription')}
               {hasFeesChanges && ` ${t('admin.ticketing.feeChangesWarning')}`}
               {hasTimerChanges && ` ${t('admin.ticketing.timerChangesWarning')}`}
-              {hasTimerFlagChanges && ` ${t('admin.ticketing.timerFlagChangesWarning', 'The checkout timer feature will be toggled.')}`}
               {` ${t('admin.ticketing.continueQuestion')}`}
             </AlertDialogDescription>
           </AlertDialogHeader>

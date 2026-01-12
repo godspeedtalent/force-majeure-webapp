@@ -30,11 +30,16 @@ interface MobileMenuSection {
   items: MobileMenuItem[];
 }
 
+interface UserMenuDropdownProps {
+  /** Callback when menu open state changes (mobile only) */
+  onOpenChange?: (isOpen: boolean) => void;
+}
+
 /**
  * User menu dropdown component for authenticated users
  * Shows fullscreen menu on mobile, dropdown on desktop
  */
-export function UserMenuDropdown() {
+export function UserMenuDropdown({ onOpenChange }: UserMenuDropdownProps) {
   const { user, profile, signOut } = useAuth();
   const { hasPermission, hasRole } = useUserPermissions();
   const { isFeatureEnabled } = useFeatureFlagHelpers();
@@ -43,14 +48,20 @@ export function UserMenuDropdown() {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
 
+  // Wrapper to notify parent of open state changes
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    onOpenChange?.(open);
+  };
+
   const handleSignOut = async () => {
-    setIsOpen(false);
+    handleOpenChange(false);
     await signOut();
     navigate('/');
   };
 
   const handleNavigate = (path: string) => {
-    setIsOpen(false);
+    handleOpenChange(false);
     navigate(path);
   };
 
@@ -256,7 +267,7 @@ export function UserMenuDropdown() {
         <Button
           variant='ghost'
           className='relative h-8 w-8 p-0 z-[101] hover:bg-transparent focus:bg-transparent group'
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => handleOpenChange(!isOpen)}
         >
           <FmUserAvatar
             avatarUrl={profile?.avatar_url}
@@ -294,7 +305,7 @@ export function UserMenuDropdown() {
               {/* Backdrop - only covers area below nav, click to close */}
               <div
                 className='absolute inset-0 bg-black/60 backdrop-blur-sm cursor-pointer'
-                onClick={() => setIsOpen(false)}
+                onClick={() => handleOpenChange(false)}
               />
 
               {/* Menu Panel - expands down from nav bar */}

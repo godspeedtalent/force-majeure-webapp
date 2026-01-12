@@ -1,10 +1,8 @@
 import {
   Music,
   ShoppingBag,
-  UserCircle,
   Ticket,
   Map,
-  Clock,
   Trophy,
   FlaskConical,
   Search,
@@ -30,11 +28,9 @@ export const getFlagIcon = (flagName: string): LucideIcon => {
   const iconMap: Record<string, LucideIcon> = {
     music_player: Music,
     merch_store: ShoppingBag,
-    member_profiles: UserCircle,
     ticketing: Ticket,
     scavenger_hunt: Map,
     scavenger_hunt_active: Map,
-    event_checkout_timer: Clock,
     show_leaderboard: Trophy,
     demo_pages: FlaskConical,
     global_search: Search,
@@ -51,10 +47,8 @@ export const getFlagDescription = (flagName: string): string => {
   const descriptionMap: Record<string, string> = {
     music_player: 'Enable the music player component',
     merch_store: 'Enable the merchandise store',
-    member_profiles: 'Enable member profile pages',
     scavenger_hunt: 'Enable scavenger hunt feature',
     scavenger_hunt_active: 'Activate scavenger hunt gameplay',
-    event_checkout_timer: 'Enable checkout timer for events',
     show_leaderboard: 'Display leaderboard rankings',
     demo_pages: 'Show demo and testing pages',
     global_search: 'Enable global search functionality',
