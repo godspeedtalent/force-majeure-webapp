@@ -6,13 +6,57 @@
 
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import { Skeleton } from '@/components/common/shadcn/skeleton';
 import type { FunnelSummary } from '@/features/analytics';
 
 interface FunnelVisualizationProps {
   data: FunnelSummary[];
+  isLoading?: boolean;
 }
 
-export function FunnelVisualization({ data }: FunnelVisualizationProps) {
+export function FunnelVisualization({ data, isLoading }: FunnelVisualizationProps) {
+  // Show skeleton loading state
+  if (isLoading) {
+    return (
+      <Card className="bg-black/60 border-white/20 rounded-none backdrop-blur-sm">
+        <CardHeader>
+          <Skeleton className="h-6 w-40 rounded-none" />
+        </CardHeader>
+        <CardContent>
+          {/* Funnel stages skeleton */}
+          <div className="space-y-4">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="relative">
+                <div className="flex items-center justify-between mb-1">
+                  <Skeleton className="h-4 w-32 rounded-none" />
+                  <div className="flex items-center gap-4">
+                    <Skeleton className="h-4 w-12 rounded-none" />
+                    {i > 0 && <Skeleton className="h-3 w-24 rounded-none" />}
+                  </div>
+                </div>
+                <div className="h-8 bg-white/5 relative">
+                  <Skeleton
+                    className="h-full rounded-none"
+                    style={{ width: `${100 - i * 15}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Summary stats skeleton */}
+          <div className="grid grid-cols-3 gap-6 mt-8 pt-6 border-t border-white/10">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i}>
+                <Skeleton className="h-8 w-20 rounded-none" />
+                <Skeleton className="h-3 w-28 rounded-none mt-2" />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   // Aggregate all funnel data
   const aggregated = useMemo(() => {
     return data.reduce(

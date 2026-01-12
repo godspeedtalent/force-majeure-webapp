@@ -879,7 +879,9 @@
     "afterHoursEvent": "Evento After Hours",
     "afterHoursHelp": "Marca esto si el evento no tiene hora de fin definida (hora de fin no requerida)",
     "tbaEvent": "Evento TBA (Por Anunciar)",
-    "tbaEventHelp": "Marca esto para eventos provisionales. Los eventos TBA pueden tener lugar y fecha asignados."
+    "tbaEventHelp": "Marca esto para eventos provisionales. Los eventos TBA pueden tener lugar y fecha asignados.",
+    "noHeadliner": "Sin artista principal",
+    "noHeadlinerHelp": "Todos los artistas se listarán como artistas de apoyo sin un artista principal destacado"
   },
   "formActions": {
     "addTicketTier": "Añadir Tipo de Entrada",
@@ -1094,7 +1096,9 @@
     "addEvent": "Añadir Evento",
     "issues": "Problemas",
     "noHeadliner": "Sin Artista Principal",
-    "noIssues": "Sin problemas"
+    "noIssues": "Sin problemas",
+    "doubleClickToAutoFit": "Doble clic para ajustar automáticamente el ancho de la columna",
+    "shiftClickToMultiSort": "Shift+Clic para añadir a la ordenación múltiple"
   },
   "filters": {
     "advancedFilters": "Filtros Avanzados",
@@ -1499,7 +1503,26 @@
     "toggleColumns": "Alternar Columnas",
     "resetToDefault": "Restablecer a Predeterminado",
     "clearFiltersAndSort": "Limpiar Filtros y Ordenamiento",
-    "valuePlaceholder": "Valor..."
+    "valuePlaceholder": "Valor...",
+    "dragToReorder": "Arrastrar para reordenar",
+    "refreshSchema": "Actualizar Esquema",
+    "shortcuts": {
+      "title": "Atajos de Teclado",
+      "arrowKeys": "Navegar celdas",
+      "enter": "Editar / Guardar",
+      "escape": "Cancelar edición",
+      "space": "Alternar selección",
+      "shiftClick": "Multi-selección / Multi-ordenar",
+      "copyCell": "Copiar valor de celda",
+      "tab": "Siguiente celda",
+      "shiftTab": "Celda anterior"
+    },
+    "undo": "Deshacer",
+    "undoing": "Deshaciendo...",
+    "undoSuccessful": "Cambio deshecho",
+    "undoFailed": "Error al deshacer",
+    "undoNotSupported": "Deshacer no soportado para esta acción",
+    "cellCopied": "Valor de celda copiado al portapapeles"
   },
   "filterOperators": {
     "equals": "Igual a",
@@ -1842,6 +1865,13 @@
       "sourceRequired": "La fuente es requerida",
       "mediumRequired": "El medio es requerido",
       "campaignRequired": "La campaña es requerida"
+    },
+    "utmDescriptions": {
+      "source": "Identifica qué sitio o plataforma envió el tráfico (ej: instagram, google, newsletter)",
+      "medium": "Identifica el canal o tipo de marketing (ej: social, email, cpc, banner)",
+      "campaign": "Identifica el nombre específico de la promoción o campaña (ej: venta_verano, lanzamiento_2024)",
+      "content": "Diferencia contenido o enlaces similares dentro del mismo anuncio (ej: banner_a, enlace_texto)",
+      "term": "Identifica palabras clave de búsqueda pagada (ej: música+electrónica, eventos+techno)"
     }
   },
   "queue": {
@@ -2141,6 +2171,13 @@
       "confirmDeleteRecording": "¿Estás seguro de que quieres eliminar \"{{name}}\"?",
       "recordingDeleted": "Grabación eliminada",
       "recordingDeleteFailed": "Error al eliminar grabación",
+      "viewGuest": "Ver detalles del invitado",
+      "deleteGuest": "Eliminar invitado",
+      "guestUpdated": "Invitado actualizado",
+      "guestUpdateFailed": "Error al actualizar invitado",
+      "confirmDeleteGuest": "¿Estás seguro de que deseas eliminar al invitado \"{{email}}\"?",
+      "guestDeleted": "Invitado eliminado",
+      "guestDeleteFailed": "Error al eliminar invitado",
       "schemaRefreshSuccess": "¡Esquema actualizado exitosamente! {{count}} tablas actualizadas.",
       "schemaRefreshFailed": "Error al actualizar el esquema"
     },
@@ -2213,6 +2250,21 @@
     "updated": "Foto de perfil actualizada",
     "updatedDescription": "Tu foto de perfil ha sido actualizada exitosamente."
   },
+  "addressEdit": {
+    "title": "Editar Dirección",
+    "addressLine1": "Línea de Dirección 1",
+    "addressLine1Placeholder": "Dirección",
+    "addressLine2": "Línea de Dirección 2",
+    "addressLine2Placeholder": "Apt, suite, unidad, etc.",
+    "city": "Ciudad",
+    "cityPlaceholder": "Ciudad",
+    "state": "Estado",
+    "statePlaceholder": "TX",
+    "zipCode": "Código Postal",
+    "zipCodePlaceholder": "12345",
+    "country": "País",
+    "countryPlaceholder": "US"
+  },
   "profile": {
     "backToEvents": "Volver a Eventos",
     "editProfile": "Editar Perfil",
@@ -2234,6 +2286,9 @@
     "noUpcomingShows": "Sin shows próximos",
     "linkedArtist": "Artista Vinculado",
     "linkedSince": "Desde {{date}}",
+    "showPastShows": "Mostrar shows pasados",
+    "pastShows": "Shows Pasados",
+    "past": "Pasado",
     "preferences": "Preferencias",
     "languageDescription": "Elige tu idioma preferido para la aplicación",
     "verifyEmailTitle": "Verifica Tu Email",
@@ -2382,7 +2437,10 @@
       "artists": "Artistas",
       "genres": "Géneros",
       "status": "Estado",
-      "socials": "Redes Sociales"
+      "socials": "Redes Sociales",
+      "phone": "Teléfono",
+      "billingAddress": "Dirección de Facturación",
+      "linkedProfile": "Perfil Vinculado"
     }
   },
   "artistRegistrations": {
@@ -2519,7 +2577,47 @@
     "loadMore": "Cargar más",
     "unknownUser": "Usuario desconocido",
     "eventCount": "{{count}} eventos",
-    "totalEventsLogged": "Total de eventos registrados"
+    "totalEventsLogged": "Total de eventos registrados",
+    "clickToExpand": "Clic para detalles",
+    "clickToCollapse": "Clic para ocultar"
+  },
+  "activityLogDetail": {
+    "changes": "Cambios",
+    "created": "Creado",
+    "deleted": "Eliminado",
+    "noChangesRecorded": "Sin cambios registrados",
+    "onlySystemFieldsChanged": "Solo cambiaron campos del sistema",
+    "noDetailsRecorded": "Sin detalles registrados",
+    "ticketCode": "Código de Entrada",
+    "tierName": "Nivel",
+    "event": "Evento",
+    "price": "Precio",
+    "quantity": "Cantidad"
+  },
+  "contactSubmissions": {
+    "title": "Mensajes de contacto",
+    "description": "Gestionar mensajes del formulario de contacto",
+    "noSubmissions": "Aún no hay mensajes de contacto",
+    "unreadCount": "{{count}} sin leer",
+    "searchPlaceholder": "Buscar por nombre, correo o mensaje...",
+    "all": "Todos",
+    "message": "Mensaje",
+    "received": "Recibido",
+    "repliedOn": "Respondido",
+    "notes": "Notas del Admin",
+    "notesPlaceholder": "Agregar notas sobre este mensaje...",
+    "saveNotes": "Guardar Notas",
+    "edit": "Editar",
+    "markReplied": "Marcar como Respondido",
+    "archive": "Archivar",
+    "unarchive": "Desarchivar",
+    "delete": "Eliminar",
+    "confirmDelete": "¿Estás seguro de que deseas eliminar este mensaje?",
+    "statusUpdated": "Estado actualizado a {{status}}",
+    "notesSaved": "Notas guardadas",
+    "updateFailed": "Error al actualizar: {{error}}",
+    "deleted": "Mensaje eliminado",
+    "deleteFailed": "Error al eliminar: {{error}}"
   },
   "bulkEdit": {
     "summary": "Resumen",
@@ -2590,6 +2688,8 @@
     "setSchedulingDescription": "Habilitar para configurar horarios y duraciones de sets",
     "lookingForUndercard": "Buscando artistas de apertura.",
     "lookingForUndercardDescription": "Mostrar un aviso de \"Buscando Artistas\" en los horarios del evento, invitando a talento local a inscribirse",
+    "noHeadliner": "Sin artista principal",
+    "noHeadlinerDescription": "Todos los artistas se listarán como artistas de apoyo sin un artista principal destacado",
     "lineupSummary": "Resumen del Lineup",
     "undercard": "Apertura",
     "totalArtists": "Total de Artistas"
@@ -2657,6 +2757,7 @@
     "title": "Registros de actividad",
     "description": "Seguimiento de acciones administrativas y eventos del sistema",
     "quickFilters": "Filtros Rápidos",
+    "activityLogs": "Registros de Actividad",
     "allLogs": "Todos los Registros",
     "allLogsDescription": "Ver todos los registros de actividad",
     "accountActivity": "Actividad de Cuentas",
@@ -3110,12 +3211,16 @@
     "description": "Guarda tu información de facturación para un pago más rápido",
     "streetAddress": "Dirección",
     "streetAddressPlaceholder": "Calle Principal 123",
+    "addressLine2": "Línea de Dirección 2",
+    "addressLine2Placeholder": "Apto, suite, unidad, etc.",
     "city": "Ciudad",
     "cityPlaceholder": "Ciudad de México",
     "state": "Estado",
     "statePlaceholder": "CDMX",
     "zipCode": "Código Postal",
     "zipCodePlaceholder": "06600",
+    "country": "País",
+    "countryPlaceholder": "MX",
     "updateButton": "Actualizar Dirección de Facturación"
   },
   "eventList": {

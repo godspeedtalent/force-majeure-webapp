@@ -1,4 +1,6 @@
+import { LucideIcon } from 'lucide-react';
 import { DataGridColumn } from '../types';
+import { AddressCell } from '../components/cells/AddressCell';
 import { ImageCell } from '../components/cells/ImageCell';
 import { DateCell } from '../components/cells/DateCell';
 import { RelationCell } from '../components/cells/RelationCell';
@@ -6,6 +8,7 @@ import { RoleCell } from '../components/cells/RoleCell';
 import { BadgeListCell } from '../components/cells/BadgeListCell';
 import { JsonCell } from '../cells/JsonCell';
 import { EntityType } from '@/components/common/display/FmEntityAvatar';
+import { AddressData } from '@/components/common/modals/FmAddressEditModal';
 
 /**
  * Preset column type configurations for FmDataGrid
@@ -161,17 +164,21 @@ export const DataGridColumns = {
   }),
 
   /**
-   * Relation column - displays related entity with optional link
+   * Relation column - displays related entity with optional link and icon
    */
   relation: <T = any,>(config: {
     key: keyof T | string;
     label: string;
     getLabel?: (row: T) => string;
     getHref?: (row: T) => string;
+    /** Optional function to get the entity's image URL (displayed instead of icon if available) */
+    getImageUrl?: (row: T) => string | null | undefined;
     external?: boolean;
     sortable?: boolean;
     width?: string;
     emptyText?: string;
+    /** Optional icon to display before the label (used as fallback if no image) */
+    icon?: LucideIcon;
   }): DataGridColumn<T> => ({
     key: config.key as string,
     label: config.label,
@@ -184,6 +191,8 @@ export const DataGridColumns = {
         href={config.getHref?.(row)}
         external={config.external}
         emptyText={config.emptyText}
+        icon={config.icon}
+        imageUrl={config.getImageUrl?.(row) ?? null}
       />
     ),
   }),
@@ -255,7 +264,10 @@ export const DataGridColumns = {
   }),
 
   /**
-   * Address column - displays formatted multi-line address
+   * Address column - displays formatted multi-line address with optional edit modal
+   *
+   * When editable=true, clicking the address opens a modal to edit all address fields.
+   * The onAddressUpdate callback receives the updated AddressData object with all fields.
    */
   address: <T = any,>(config: {
     keys: {
@@ -264,32 +276,49 @@ export const DataGridColumns = {
       city?: keyof T | string;
       state?: keyof T | string;
       zipCode?: keyof T | string;
+      country?: keyof T | string;
     };
     label: string;
     sortable?: boolean;
     width?: string;
+    editable?: boolean;
+    onAddressUpdate?: (row: T, address: AddressData) => void;
   }): DataGridColumn<T> => ({
     key: config.keys.line1 as string,
     label: config.label,
     sortable: config.sortable,
     width: config.width || '250px',
     render: (_value: any, row: T) => {
-      const parts = [
-        row[config.keys.line1 as keyof T],
-        row[config.keys.line2 as keyof T],
-        [
-          row[config.keys.city as keyof T],
-          row[config.keys.state as keyof T],
-        ]
-          .filter(Boolean)
-          .join(', '),
-        row[config.keys.zipCode as keyof T],
-      ].filter(Boolean);
+      // Build address data object from row
+      const addressData: AddressData = {
+        line1: (row[config.keys.line1 as keyof T] as string) || null,
+        line2: config.keys.line2
+          ? (row[config.keys.line2 as keyof T] as string) || null
+          : null,
+        city: config.keys.city
+          ? (row[config.keys.city as keyof T] as string) || null
+          : null,
+        state: config.keys.state
+          ? (row[config.keys.state as keyof T] as string) || null
+          : null,
+        zipCode: config.keys.zipCode
+          ? (row[config.keys.zipCode as keyof T] as string) || null
+          : null,
+        country: config.keys.country
+          ? (row[config.keys.country as keyof T] as string) || null
+          : null,
+      };
 
-      return parts.length > 0 ? (
-        <span className="text-sm">{parts.join(', ')}</span>
-      ) : (
-        <span className="text-xs text-muted-foreground">—</span>
+      return (
+        <AddressCell
+          address={addressData}
+          editable={config.editable}
+          onAddressUpdate={
+            config.onAddressUpdate
+              ? (newAddress) => config.onAddressUpdate!(row, newAddress)
+              : undefined
+          }
+        />
       );
     },
   }),

@@ -61,6 +61,9 @@ export interface FmDataGridRowProps<T> {
 
   // Column widths for frozen column positioning
   columnWidths?: Record<string, number>;
+
+  // Show row numbers
+  showRowNumbers?: boolean;
 }
 
 export function FmDataGridRow<T extends Record<string, any>>({
@@ -94,6 +97,7 @@ export function FmDataGridRow<T extends Record<string, any>>({
   onUnselectAll,
   getFocusableCellProps,
   columnWidths = {},
+  showRowNumbers = false,
 }: FmDataGridRowProps<T>) {
   const navigate = useNavigate();
 
@@ -226,6 +230,13 @@ export function FmDataGridRow<T extends Record<string, any>>({
             aria-label={`Select row ${globalIndex + 1}`}
           />
         </TableCell>
+
+        {/* Row Number Cell */}
+        {showRowNumbers && (
+          <TableCell className='w-12 text-center text-muted-foreground font-mono text-xs sticky left-12 z-10 bg-background/95 backdrop-blur-sm border-r border-border/60'>
+            {globalIndex + 1}
+          </TableCell>
+        )}
 
         {/* Data Cells */}
         {columns.map(column => {

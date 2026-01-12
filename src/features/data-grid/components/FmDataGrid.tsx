@@ -16,6 +16,7 @@ import { useDataGridUI } from '../hooks/useDataGridUI';
 import { useDataGridColumnResize } from '../hooks/useDataGridColumnResize';
 import { useDataGridScrollSync } from '../hooks/useDataGridScrollSync';
 import { useDataGridGrouping } from '../hooks/useDataGridGrouping';
+import { useDataGridUndo } from '../hooks/useDataGridUndo';
 import { FmDataGridExportDialog, ExportFormat } from './FmDataGridExportDialog';
 import { FmDataGridGroupDialog } from './FmDataGridGroupDialog';
 import { FmBulkEditDialog } from './FmBulkEditDialog';
@@ -28,6 +29,7 @@ import { FmDataGridPagination } from './table/FmDataGridPagination';
 import { FmDataGridBatchDeleteDialog } from './table/FmDataGridDialogs';
 import { ContextMenuAction } from '@/components/common/modals/FmCommonContextMenu';
 import { FmMobileDataGrid } from './mobile';
+import { FmDataGridRowSkeleton } from '@/components/common/feedback/FmDataGridRowSkeleton';
 
 /**
  * Option for select-type columns
@@ -41,6 +43,7 @@ export interface SelectOption {
 export interface DataGridColumn<T = any> {
   key: string;
   label: string;
+  description?: string; // Tooltip description shown on hover over the column header
   icon?: React.ReactNode; // Icon to display when column is too narrow
   sortable?: boolean;
   filterable?: boolean;
@@ -64,6 +67,8 @@ export interface DataGridColumn<T = any> {
     | 'created_date'
     | 'select';
   options?: SelectOption[]; // Options for select type columns
+  /** Custom cell styling based on cell value - return additional class names */
+  cellStyle?: (value: any, row: T) => string | undefined;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -92,6 +97,8 @@ export interface FmDataGridProps<T = any> {
   estimateRowSize?: number;
   enableExport?: boolean;
   exportFilename?: string;
+  /** Show row numbers in the first column */
+  showRowNumbers?: boolean;
 }
 
 export function FmDataGrid<T extends Record<string, any>>({
@@ -116,6 +123,7 @@ export function FmDataGrid<T extends Record<string, any>>({
   estimateRowSize = 48,
   enableExport = true,
   exportFilename,
+  showRowNumbers = false,
 }: FmDataGridProps<T>) {
   const { t } = useTranslation('common');
   const isMobile = useIsMobile();
@@ -128,17 +136,23 @@ export function FmDataGrid<T extends Record<string, any>>({
     columns,
     sortColumn: gridState.sortColumn,
     sortDirection: gridState.sortDirection,
+    sortSpecs: gridState.sortSpecs,
   });
   const ui = useDataGridUI();
 
   // Column resize hook
-  const { columnWidths, resizingColumn, handleResizeStart } = useDataGridColumnResize();
+  const { columnWidths, resizingColumn, handleResizeStart, autoFitColumn } = useDataGridColumnResize();
 
   // Grouping hook
   const grouping = useDataGridGrouping({
     data: filters.filteredData,
     columns,
     onPageReset: () => gridState.setCurrentPage(1),
+  });
+
+  // Undo hook for cell edits
+  const undo = useDataGridUndo<T>({
+    onUpdate,
   });
 
   // Scroll sync hook for sticky scrollbar
@@ -196,6 +210,7 @@ export function FmDataGrid<T extends Record<string, any>>({
       }
     },
     onStopEditing: () => gridState.setEditingCell(null),
+    copySuccessMessage: t('dataGrid.cellCopied'),
   });
 
   // Virtualization
@@ -212,16 +227,16 @@ export function FmDataGrid<T extends Record<string, any>>({
 
 
   // Handlers
-  const handleSort = (columnKey: string) => {
-    gridState.handleSort(columnKey);
+  const handleSort = (columnKey: string, addToMultiSort = false) => {
+    gridState.handleSort(columnKey, addToMultiSort);
   };
 
   const handleSelectAll = (checked: boolean) => {
     selection.handleSelectAll(checked, paginatedData.length, gridState.currentPage, pageSize);
   };
 
-  const handleColumnFilter = (columnKey: string, value: string) => {
-    filters.handleColumnFilter(columnKey, value);
+  const handleColumnFilter = (columnKey: string, value: string, operator?: import('../hooks/useDataGridFilters').FilterOperator) => {
+    filters.handleColumnFilter(columnKey, value, operator);
     gridState.setCurrentPage(1);
   };
 
@@ -267,7 +282,20 @@ export function FmDataGrid<T extends Record<string, any>>({
     try {
       await onUpdate(row, columnKey, newValue);
       toast.dismiss(loadingToast);
-      toast.success(t('dataGrid.updated', { name: displayName }));
+
+      // Show success toast with undo action
+      undo.showSuccessWithUndo(
+        t('dataGrid.updated', { name: displayName }),
+        {
+          type: 'cell_update',
+          row,
+          columnKey,
+          oldValue,
+          newValue,
+          displayName: String(displayName),
+        }
+      );
+
       gridState.setEditingCell(null);
     } catch (error) {
       toast.dismiss(loadingToast);
@@ -525,7 +553,12 @@ export function FmDataGrid<T extends Record<string, any>>({
             onColumnReorder={onColumnReorder}
             columnWidths={columnWidths}
             onResizeStart={handleResizeStart}
+            onAutoFitColumn={autoFitColumn}
             onToggleFreeze={onToggleFreeze}
+            getSortIndex={gridState.getSortIndex}
+            getSortDirection={gridState.getSortDirection}
+            getColumnFilter={filters.getColumnFilter}
+            showRowNumbers={showRowNumbers}
           />
           <TableBody>
             {/* Virtual scrolling top spacer */}
@@ -536,17 +569,16 @@ export function FmDataGrid<T extends Record<string, any>>({
             )}
 
             {loading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length + 1 + (actions.length > 0 ? 1 : 0)}
-                  className='h-32 text-center'
-                >
-                  <div className='flex items-center justify-center gap-2'>
-                    <div className='h-4 w-4 border-2 border-fm-gold border-t-transparent rounded-full animate-spin' />
-                    <span className='text-muted-foreground'>{t('dataGrid.loading')}</span>
-                  </div>
-                </TableCell>
-              </TableRow>
+              // Skeleton loading rows
+              <>
+                {Array.from({ length: Math.min(pageSize, 10) }).map((_, index) => (
+                  <TableRow key={`skeleton-${index}`}>
+                    <TableCell colSpan={columns.length + 1 + (actions.length > 0 ? 1 : 0)} className='p-0'>
+                      <FmDataGridRowSkeleton columns={columns.length} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </>
             ) : displayData.length === 0 ? (
               <TableRow>
                 <TableCell
@@ -627,6 +659,7 @@ export function FmDataGrid<T extends Record<string, any>>({
                     onUnselectAll={() => selection.clearSelection()}
                     getFocusableCellProps={getFocusableCellProps}
                     columnWidths={columnWidths}
+                    showRowNumbers={showRowNumbers}
                   />
                 );
               })

@@ -27,6 +27,14 @@ const componentColors = {
   accent: createColorVariant('accent'),
   popover: createColorVariant('popover'),
   card: createColorVariant('card'),
+  sidebar: {
+    DEFAULT: 'hsl(var(--sidebar))',
+    foreground: 'hsl(var(--sidebar-foreground))',
+    accent: 'hsl(var(--sidebar-accent))',
+    'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+    border: 'hsl(var(--sidebar-border))',
+    ring: 'hsl(var(--sidebar-ring))',
+  },
 };
 
 // Force Majeure brand colors

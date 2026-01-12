@@ -18,7 +18,10 @@ export interface ProfileLayoutProps {
   user: User;
   profile: UserProfile | null;
   upcomingShows: UpcomingEvent[];
+  pastShows: UpcomingEvent[];
   loadingShows: boolean;
+  showPastShows: boolean;
+  onShowPastShowsChange: (value: boolean) => void;
   hasLinkedArtist: boolean;
   linkedArtistName?: string | null;
   linkedArtistDate?: string | null;

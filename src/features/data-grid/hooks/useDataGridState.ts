@@ -1,9 +1,17 @@
 import { useState, useEffect } from 'react';
 
+/** Sort specification for a single column */
+export interface SortSpec {
+  column: string;
+  direction: 'asc' | 'desc';
+}
+
 export interface DataGridState {
-  // Sorting
+  // Sorting (legacy single-column for backwards compatibility)
   sortColumn: string | null;
   sortDirection: 'asc' | 'desc';
+  // Multi-column sorting
+  sortSpecs: SortSpec[];
 
   // Pagination
   currentPage: number;
@@ -25,7 +33,13 @@ export interface DataGridStateActions {
   // Sorting
   setSortColumn: (column: string | null) => void;
   setSortDirection: (direction: 'asc' | 'desc') => void;
-  handleSort: (columnKey: string) => void;
+  handleSort: (columnKey: string, addToMultiSort?: boolean) => void;
+  setSortSpecs: (specs: SortSpec[]) => void;
+  clearSort: () => void;
+  /** Get the sort order index for a column (1-based), or null if not sorted */
+  getSortIndex: (columnKey: string) => number | null;
+  /** Get the sort direction for a column, or null if not sorted */
+  getSortDirection: (columnKey: string) => 'asc' | 'desc' | null;
 
   // Pagination
   setCurrentPage: (page: number) => void;
@@ -68,9 +82,27 @@ export interface UseDataGridStateReturn
 export function useDataGridState({
   dataLength,
 }: UseDataGridStateOptions): UseDataGridStateReturn {
-  // Sorting state
-  const [sortColumn, setSortColumn] = useState<string | null>(null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  // Multi-column sorting state
+  const [sortSpecs, setSortSpecs] = useState<SortSpec[]>([]);
+
+  // Legacy single-column computed values for backwards compatibility
+  const sortColumn = sortSpecs.length > 0 ? sortSpecs[0].column : null;
+  const sortDirection = sortSpecs.length > 0 ? sortSpecs[0].direction : 'asc';
+
+  // Legacy setters that update sortSpecs
+  const setSortColumn = (column: string | null) => {
+    if (column === null) {
+      setSortSpecs([]);
+    } else {
+      setSortSpecs([{ column, direction: 'asc' }]);
+    }
+  };
+
+  const setSortDirection = (direction: 'asc' | 'desc') => {
+    if (sortSpecs.length > 0) {
+      setSortSpecs([{ ...sortSpecs[0], direction }]);
+    }
+  };
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -97,14 +129,55 @@ export function useDataGridState({
     setCurrentPage(1);
   }, [dataLength]);
 
-  // Sort handler
-  const handleSort = (columnKey: string) => {
-    if (sortColumn === columnKey) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+  // Sort handler - supports multi-column sorting with Shift+Click
+  const handleSort = (columnKey: string, addToMultiSort = false) => {
+    const existingIndex = sortSpecs.findIndex(s => s.column === columnKey);
+
+    if (addToMultiSort) {
+      // Multi-column sort mode (Shift+Click)
+      if (existingIndex >= 0) {
+        // Column already in sort - toggle direction or remove if already desc
+        const current = sortSpecs[existingIndex];
+        if (current.direction === 'asc') {
+          // Toggle to desc
+          const newSpecs = [...sortSpecs];
+          newSpecs[existingIndex] = { ...current, direction: 'desc' };
+          setSortSpecs(newSpecs);
+        } else {
+          // Remove from sort
+          setSortSpecs(sortSpecs.filter((_, i) => i !== existingIndex));
+        }
+      } else {
+        // Add new column to sort
+        setSortSpecs([...sortSpecs, { column: columnKey, direction: 'asc' }]);
+      }
     } else {
-      setSortColumn(columnKey);
-      setSortDirection('asc');
+      // Single-column sort mode (regular click)
+      if (existingIndex === 0 && sortSpecs.length === 1) {
+        // Same column, toggle direction
+        setSortSpecs([{ column: columnKey, direction: sortDirection === 'asc' ? 'desc' : 'asc' }]);
+      } else {
+        // New column or replacing multi-sort with single sort
+        setSortSpecs([{ column: columnKey, direction: 'asc' }]);
+      }
     }
+  };
+
+  // Clear all sorting
+  const clearSort = () => {
+    setSortSpecs([]);
+  };
+
+  // Get sort index for a column (1-based for display)
+  const getSortIndex = (columnKey: string): number | null => {
+    const index = sortSpecs.findIndex(s => s.column === columnKey);
+    return index >= 0 ? index + 1 : null;
+  };
+
+  // Get sort direction for a column
+  const getSortDirection = (columnKey: string): 'asc' | 'desc' | null => {
+    const spec = sortSpecs.find(s => s.column === columnKey);
+    return spec?.direction ?? null;
   };
 
   // Editing helpers
@@ -137,6 +210,7 @@ export function useDataGridState({
     // State
     sortColumn,
     sortDirection,
+    sortSpecs,
     currentPage,
     editingCell,
     editValue,
@@ -148,7 +222,11 @@ export function useDataGridState({
     // Actions
     setSortColumn,
     setSortDirection,
+    setSortSpecs,
     handleSort,
+    clearSort,
+    getSortIndex,
+    getSortDirection,
     setCurrentPage,
     setEditingCell,
     setEditValue,

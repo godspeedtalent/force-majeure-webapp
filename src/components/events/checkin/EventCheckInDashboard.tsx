@@ -63,7 +63,7 @@ export const EventCheckInDashboard = ({ eventId }: EventCheckInDashboardProps) =
           <h2 className="text-lg font-semibold flex items-center gap-2">
             {t('ticketStatus.checkIn')}
             {liveMode && (
-              <Badge className="bg-green-500/20 text-green-500 border-green-500/30 animate-pulse">
+              <Badge className="bg-fm-success/20 text-fm-success border-fm-success/30 font-canela tracking-wider animate-pulse">
                 <Radio className="w-3 h-3 mr-1" />
                 {t('ticketStatus.live')}
               </Badge>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calendar, Mic2, Ticket } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/common/shadcn/button';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { DemoLayout } from '@/components/demo/DemoLayout';
 import { FmCommonLoadingOverlay } from '@/components/common/feedback/FmCommonLoadingOverlay';
 import { FmFormFieldGroup } from '@/components/common/forms/FmFormFieldGroup';
@@ -87,22 +87,21 @@ const DeveloperCreateEventPage = () => {
 
           {/* Form Actions */}
           <div className='flex gap-3 justify-end pt-4 border-t border-white/20'>
-            <Button
-              variant='outline'
+            <FmCommonButton
+              variant='default'
               onClick={handleCancel}
               disabled={isLoading}
-              className='bg-white/5 border-white/20 hover:bg-white/10'
             >
               {t('buttons.cancel')}
-            </Button>
-            <Button
-              variant='outline'
+            </FmCommonButton>
+            <FmCommonButton
+              variant='gold'
               onClick={handleSubmit}
               disabled={isLoading || isImageUploading}
-              className='border-white/20 hover:bg-white/10'
+              loading={isLoading}
             >
-              {isLoading ? t('developerPages.createEvent.creating') : isImageUploading ? t('developerPages.createEvent.uploadingImage') : t('developerPages.createEvent.createButton')}
-            </Button>
+              {isImageUploading ? t('developerPages.createEvent.uploadingImage') : t('developerPages.createEvent.createButton')}
+            </FmCommonButton>
           </div>
         </div>
       </DemoLayout>

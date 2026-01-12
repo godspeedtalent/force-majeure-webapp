@@ -69,10 +69,10 @@ export const ToolbarDrawer = ({
               )}
             </div>
 
-            {/* Scrollable Content */}
+            {/* Scrollable Content - no horizontal padding so scrollbar is at edge */}
             {activeTabData && (
-              <div className='flex-1 overflow-y-auto px-6 py-4'>
-                <div className='space-y-6'>{activeTabData.content}</div>
+              <div className='flex-1 overflow-y-auto py-4'>
+                <div className='space-y-6 px-10'>{activeTabData.content}</div>
               </div>
             )}
 

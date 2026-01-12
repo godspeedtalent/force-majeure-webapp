@@ -1,4 +1,4 @@
-
+import { useRef, useState, useEffect } from 'react';
 import { TableCell } from '@/components/common/shadcn/table';
 import { Input } from '@/components/common/shadcn/input';
 import { Textarea } from '@/components/common/shadcn/textarea';
@@ -17,11 +17,41 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/common/shadcn/popover';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/common/shadcn/tooltip';
 import { format as formatDate } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/shared';
 import { DataGridColumn } from '../FmDataGrid';
 import { isRelationField, getRelationConfig } from '../../utils/dataGridRelations';
+
+/** Hook to detect if text is truncated (overflowing) */
+function useIsTruncated(ref: React.RefObject<HTMLElement>) {
+  const [isTruncated, setIsTruncated] = useState(false);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const checkTruncation = () => {
+      setIsTruncated(element.scrollWidth > element.clientWidth);
+    };
+
+    checkTruncation();
+
+    // Re-check on resize
+    const resizeObserver = new ResizeObserver(checkTruncation);
+    resizeObserver.observe(element);
+
+    return () => resizeObserver.disconnect();
+  }, [ref]);
+
+  return isTruncated;
+}
 
 export interface FmDataGridCellProps<T> {
   row: T;
@@ -58,6 +88,9 @@ export function FmDataGridCell<T extends Record<string, any>>({
   frozenLeft,
   columnWidths = {},
 }: FmDataGridCellProps<T>) {
+  const textRef = useRef<HTMLSpanElement>(null);
+  const isTruncated = useIsTruncated(textRef);
+
   const relationConfig = isRelationField(column.key)
     ? getRelationConfig(column.key)
     : null;
@@ -69,8 +102,17 @@ export function FmDataGridCell<T extends Record<string, any>>({
     column.type !== 'boolean' &&
     column.type !== 'created_date';
 
+  // Get conditional cell styling if defined
+  const conditionalStyle = column.cellStyle ? column.cellStyle(value, row) : undefined;
+
+  // Get the text content for tooltip (only for simple text display)
+  const textContent = !column.render && !relationConfig && column.type !== 'boolean'
+    ? (value?.toString() || '-')
+    : null;
+
   const cellContent = (
     <TableCell
+      data-cell-column={column.key}
       className={cn(
         'font-medium transition-all duration-200 border-l border-r border-border/60',
         // Highlight entire column on hover
@@ -80,7 +122,9 @@ export function FmDataGridCell<T extends Record<string, any>>({
         // Frozen column styling
         column.frozen && 'sticky bg-background/95 backdrop-blur-sm shadow-[2px_0_4px_rgba(0,0,0,0.1)]',
         // Allow column-specific className overrides (e.g., p-0 for images)
-        column.cellClassName
+        column.cellClassName,
+        // Conditional cell styling based on value
+        conditionalStyle
       )}
       style={{
         ...(columnWidths[column.key]
@@ -268,7 +312,7 @@ export function FmDataGridCell<T extends Record<string, any>>({
             row[relationConfig.displayField] ? (
             <span
               className={cn(
-                'transition-colors',
+                'transition-colors truncate block',
                 hoveredColumn === column.key && 'text-fm-gold'
               )}
             >
@@ -276,6 +320,38 @@ export function FmDataGridCell<T extends Record<string, any>>({
                 row[relationConfig.displayField] ||
                 '-'}
             </span>
+          ) : textContent ? (
+            // Plain text with truncation tooltip
+            isTruncated ? (
+              <TooltipProvider>
+                <Tooltip delayDuration={500}>
+                  <TooltipTrigger asChild>
+                    <span
+                      ref={textRef}
+                      className={cn(
+                        'transition-colors truncate block cursor-default',
+                        hoveredColumn === column.key && 'text-fm-gold'
+                      )}
+                    >
+                      {textContent}
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent side='top' className='max-w-md break-words'>
+                    <p className='text-xs whitespace-pre-wrap'>{textContent}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : (
+              <span
+                ref={textRef}
+                className={cn(
+                  'transition-colors truncate block',
+                  hoveredColumn === column.key && 'text-fm-gold'
+                )}
+              >
+                {textContent}
+              </span>
+            )
           ) : (
             <span
               className={cn(

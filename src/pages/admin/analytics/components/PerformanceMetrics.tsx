@@ -7,11 +7,13 @@
 import { useMemo } from 'react';
 import { HelpCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import { Skeleton } from '@/components/common/shadcn/skeleton';
 import { FmPortalTooltip } from '@/components/common/feedback/FmPortalTooltip';
 import type { PerformanceSummary, PerformanceMetricType } from '@/features/analytics';
 
 interface PerformanceMetricsProps {
   data: PerformanceSummary[];
+  isLoading?: boolean;
 }
 
 const METRIC_CONFIG: Record<
@@ -110,7 +112,57 @@ function formatValue(value: number, unit: string): string {
   return `${Math.round(value)}${unit}`;
 }
 
-export function PerformanceMetrics({ data }: PerformanceMetricsProps) {
+export function PerformanceMetrics({ data, isLoading }: PerformanceMetricsProps) {
+  // Show skeleton loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        {/* Health Score skeleton */}
+        <Card className="bg-black/60 border-white/20 rounded-none backdrop-blur-sm">
+          <CardHeader>
+            <Skeleton className="h-6 w-32 rounded-none" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-4 w-full rounded-none" />
+            <div className="flex justify-between mt-2">
+              <Skeleton className="h-3 w-24 rounded-none" />
+              <Skeleton className="h-3 w-32 rounded-none" />
+              <Skeleton className="h-3 w-20 rounded-none" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Core Web Vitals skeleton */}
+        <Card className="bg-black/60 border-white/20 rounded-none backdrop-blur-sm">
+          <CardHeader>
+            <Skeleton className="h-6 w-40 rounded-none" />
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Skeleton className="h-4 w-16 rounded-none" />
+                    <Skeleton className="h-3 w-20 rounded-none" />
+                  </div>
+                  <div>
+                    <Skeleton className="h-3 w-20 rounded-none" />
+                    <Skeleton className="h-7 w-24 rounded-none mt-1" />
+                  </div>
+                  <div className="flex gap-4">
+                    <Skeleton className="h-4 w-16 rounded-none" />
+                    <Skeleton className="h-4 w-16 rounded-none" />
+                  </div>
+                  <Skeleton className="h-3 w-full rounded-none" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   // Get latest values for each metric type
   const latestMetrics = useMemo(() => {
     const byType = new Map<PerformanceMetricType, PerformanceSummary>();

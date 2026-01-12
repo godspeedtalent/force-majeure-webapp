@@ -1,4 +1,5 @@
 import { useCallback, useRef } from 'react';
+import { toast } from 'sonner';
 
 interface UseDataGridKeyboardNavProps {
   rows: any[];
@@ -8,6 +9,10 @@ interface UseDataGridKeyboardNavProps {
   onStartEditing: (rowIndex: number, columnKey: string) => void;
   onStopEditing: () => void;
   onNavigate?: (rowIndex: number, columnKey: string) => void;
+  /** Callback for when a cell value is copied */
+  onCopyCellValue?: (value: string) => void;
+  /** Translation function for copy success message */
+  copySuccessMessage?: string;
 }
 
 export interface UseDataGridKeyboardNavReturn {
@@ -37,6 +42,8 @@ export function useDataGridKeyboardNav({
   onStartEditing,
   onStopEditing,
   onNavigate,
+  onCopyCellValue,
+  copySuccessMessage = 'Cell value copied',
 }: UseDataGridKeyboardNavProps): UseDataGridKeyboardNavReturn {
   const focusedCellRef = useRef<{ rowIndex: number; columnKey: string } | null>(
     null
@@ -67,17 +74,61 @@ export function useDataGridKeyboardNav({
   };
 
   /**
+   * Copy the value of a cell to the clipboard
+   */
+  const copyCellValue = useCallback(
+    async (rowIndex: number, columnKey: string) => {
+      const row = rows[rowIndex];
+      if (!row) return;
+
+      const value = row[columnKey];
+      const stringValue = value !== null && value !== undefined ? String(value) : '';
+
+      try {
+        await navigator.clipboard.writeText(stringValue);
+        onCopyCellValue?.(stringValue);
+        toast.success(copySuccessMessage);
+      } catch (error) {
+        // Fallback for older browsers or when clipboard API is not available
+        const textArea = document.createElement('textarea');
+        textArea.value = stringValue;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+          document.execCommand('copy');
+          onCopyCellValue?.(stringValue);
+          toast.success(copySuccessMessage);
+        } catch {
+          toast.error('Failed to copy');
+        }
+        document.body.removeChild(textArea);
+      }
+    },
+    [rows, onCopyCellValue, copySuccessMessage]
+  );
+
+  /**
    * Handle keyboard navigation
    */
   const handleTableKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      // Don't handle if actively editing
-      if (isEditing) return;
-
       const currentCell = focusedCellRef.current;
       if (!currentCell) return;
 
       const { rowIndex, columnKey } = currentCell;
+
+      // Handle Ctrl+C / Cmd+C for copy (works even when editing)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+        e.preventDefault();
+        copyCellValue(rowIndex, columnKey);
+        return;
+      }
+
+      // Don't handle navigation if actively editing
+      if (isEditing) return;
+
       let newRowIndex = rowIndex;
       let newColumnKey = columnKey;
 
@@ -141,7 +192,7 @@ export function useDataGridKeyboardNav({
         cellElement?.focus();
       }
     },
-    [isEditing, rows.length, columns, onStartEditing, onStopEditing, onNavigate]
+    [isEditing, rows.length, columns, onStartEditing, onStopEditing, onNavigate, copyCellValue]
   );
 
   /**

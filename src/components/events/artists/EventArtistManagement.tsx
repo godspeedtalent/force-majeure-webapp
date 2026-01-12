@@ -64,6 +64,8 @@ interface EventArtistManagementProps {
   }) => void;
   lookingForUndercard?: boolean;
   onLookingForUndercardChange?: (checked: boolean) => void;
+  noHeadliner?: boolean;
+  onNoHeadlinerChange?: (checked: boolean) => void;
   className?: string;
 }
 
@@ -188,6 +190,8 @@ export function EventArtistManagement({
   onChange,
   lookingForUndercard = false,
   onLookingForUndercardChange,
+  noHeadliner = false,
+  onNoHeadlinerChange,
   className,
 }: EventArtistManagementProps) {
   const { t } = useTranslation('common');
@@ -388,19 +392,38 @@ export function EventArtistManagement({
 
   return (
     <div className={cn('space-y-6', className)}>
-      {/* Headliners Section */}
-      <FormSection title={t('artistManagement.headliners')}>
-        <div className='space-y-3'>
-          {headliners.length === 0 && (
-            <div className='border-2 border-dashed border-white/10 rounded-none'>
-              <FmCommonEmptyState
-                icon={Music}
-                title={t('artistManagement.noHeadlinersYet')}
-                size='sm'
-                iconClassName='opacity-30'
-              />
-            </div>
-          )}
+      {/* No Headliner Toggle */}
+      <div className='flex items-center gap-3 p-4 rounded-none bg-white/5 border border-white/20'>
+        <Users2 className='h-5 w-5 text-fm-gold' />
+        <div className='flex-1'>
+          <h3 className='font-semibold'>{t('artistManagement.noHeadliner')}</h3>
+          <p className='text-sm text-muted-foreground'>
+            {t('artistManagement.noHeadlinerDescription')}
+          </p>
+        </div>
+        <FmCommonToggle
+          id='no-headliner'
+          label={t('artistManagement.noHeadliner')}
+          checked={noHeadliner}
+          onCheckedChange={onNoHeadlinerChange ?? (() => {})}
+          hideLabel
+        />
+      </div>
+
+      {/* Headliners Section - hidden when noHeadliner is true */}
+      {!noHeadliner && (
+        <FormSection title={t('artistManagement.headliners')}>
+          <div className='space-y-3'>
+            {headliners.length === 0 && (
+              <div className='border-2 border-dashed border-white/10 rounded-none'>
+                <FmCommonEmptyState
+                  icon={Music}
+                  title={t('artistManagement.noHeadlinersYet')}
+                  size='sm'
+                  iconClassName='opacity-30'
+                />
+              </div>
+            )}
 
           {headliners.map(slot => (
             <div
@@ -503,6 +526,7 @@ export function EventArtistManagement({
           </div>
         </div>
       </FormSection>
+      )}
 
       {/* Undercard Section */}
       <FormSection title={t('artistManagement.undercardArtists')}>

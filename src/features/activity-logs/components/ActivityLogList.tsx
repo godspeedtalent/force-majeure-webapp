@@ -32,6 +32,7 @@ import {
   EVENT_TYPE_CONFIG,
   ActivityCategory,
 } from '../types';
+import { ActivityLogDetail, hasDisplayableDetails } from './ActivityLogDetail';
 
 interface ActivityLogListProps {
   logs: ActivityLog[];
@@ -119,74 +120,118 @@ function ActivityLogItem({
   isGroupChild?: boolean;
 }) {
   const { t } = useTranslation('common');
+  const [isExpanded, setIsExpanded] = useState(false);
   const categoryConfig = CATEGORY_CONFIG[log.category];
   const Icon = CATEGORY_ICONS[log.category];
   const eventConfig = EVENT_TYPE_CONFIG[log.event_type];
+  const canExpand = hasDisplayableDetails(log);
+
+  const handleClick = () => {
+    if (canExpand) {
+      setIsExpanded(!isExpanded);
+    }
+  };
 
   return (
-    <div
-      className={cn(
-        'flex items-start gap-4 p-4 transition-colors',
-        isGroupChild ? 'bg-white/5 border-l-2 border-fm-gold/30 ml-6' : '',
-        !isGroupChild && 'hover:bg-white/5'
-      )}
-    >
-      {/* Icon */}
+    <div className={cn(isGroupChild && 'ml-6')}>
       <div
+        onClick={handleClick}
         className={cn(
-          'flex-shrink-0 w-10 h-10 rounded flex items-center justify-center',
-          'bg-black/40 border border-white/10'
+          'flex items-start gap-4 p-4 transition-colors',
+          isGroupChild ? 'bg-white/5 border-l-2 border-fm-gold/30' : '',
+          !isGroupChild && 'hover:bg-white/5',
+          canExpand && 'cursor-pointer',
+          isExpanded && 'bg-white/5'
         )}
       >
-        <Icon className={cn('h-5 w-5', categoryConfig.color)} />
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2">
-          <div>
-            <p className="text-sm text-white font-medium">{log.description}</p>
-            <div className="flex items-center gap-2 mt-1">
-              <span
+        {/* Icon with expand indicator */}
+        <div
+          className={cn(
+            'flex-shrink-0 w-10 h-10 rounded flex items-center justify-center relative',
+            'bg-black/40 border border-white/10',
+            canExpand && 'group'
+          )}
+        >
+          {canExpand ? (
+            <>
+              <Icon
                 className={cn(
-                  'text-xs px-2 py-0.5 rounded',
-                  'bg-white/10',
-                  categoryConfig.color
+                  'h-5 w-5 transition-opacity duration-200',
+                  categoryConfig.color,
+                  'group-hover:opacity-0'
                 )}
-              >
-                {categoryConfig.label}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {eventConfig.label}
-              </span>
-            </div>
-          </div>
-          <div className="text-right flex-shrink-0">
-            <p className="text-xs text-muted-foreground">
-              {formatDistanceToNow(new Date(log.timestamp), { addSuffix: true })}
-            </p>
-            <p className="text-xs text-muted-foreground/60">
-              {format(new Date(log.timestamp), 'MMM d, h:mm a')}
-            </p>
-          </div>
+              />
+              <ChevronDown
+                className={cn(
+                  'h-5 w-5 absolute transition-all duration-200',
+                  'opacity-0 group-hover:opacity-100',
+                  categoryConfig.color,
+                  isExpanded && 'rotate-180'
+                )}
+              />
+            </>
+          ) : (
+            <Icon className={cn('h-5 w-5', categoryConfig.color)} />
+          )}
         </div>
 
-        {/* User info */}
-        {log.user && (
-          <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-            <User className="h-3 w-3" />
-            <span>{log.user.display_name || log.user.email || t('activityLogs.unknownUser')}</span>
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <p className="text-sm text-white font-medium">{log.description}</p>
+              <div className="flex items-center gap-2 mt-1">
+                <span
+                  className={cn(
+                    'text-xs px-2 py-0.5 rounded',
+                    'bg-white/10',
+                    categoryConfig.color
+                  )}
+                >
+                  {categoryConfig.label}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {eventConfig.label}
+                </span>
+                {canExpand && (
+                  <span className="text-xs text-fm-gold/60">
+                    {isExpanded
+                      ? t('activityLogs.clickToCollapse')
+                      : t('activityLogs.clickToExpand')}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="text-right flex-shrink-0">
+              <p className="text-xs text-muted-foreground">
+                {formatDistanceToNow(new Date(log.timestamp), { addSuffix: true })}
+              </p>
+              <p className="text-xs text-muted-foreground/60">
+                {format(new Date(log.timestamp), 'MMM d, h:mm a')}
+              </p>
+            </div>
           </div>
-        )}
 
-        {/* Resource link */}
-        {log.target_resource_name && (
-          <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-            <ExternalLink className="h-3 w-3" />
-            <span className="truncate">{log.target_resource_name}</span>
-          </div>
-        )}
+          {/* User info */}
+          {log.user && (
+            <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+              <User className="h-3 w-3" />
+              <span>{log.user.display_name || log.user.email || t('activityLogs.unknownUser')}</span>
+            </div>
+          )}
+
+          {/* Resource link */}
+          {log.target_resource_name && (
+            <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+              <ExternalLink className="h-3 w-3" />
+              <span className="truncate">{log.target_resource_name}</span>
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* Expanded detail */}
+      {isExpanded && <ActivityLogDetail log={log} />}
     </div>
   );
 }

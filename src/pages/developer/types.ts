@@ -14,17 +14,15 @@ export type DeveloperTab =
   | 'dash_recordings'
   | 'dash_users'
   | 'dash_analytics'
-  // Activity Logs
+  // Messages - Activity Logs
   | 'logs_all'
-  | 'logs_account'
-  | 'logs_event'
-  | 'logs_ticket'
   | 'logs_contact'
   // Database - Overview
   | 'db_overview'
   // Database - Tables
   | 'db_artists'
   | 'db_events'
+  | 'db_guests'
   | 'db_recordings'
   | 'db_venues'
   | 'db_organizations'
@@ -45,13 +43,11 @@ export const VALID_TABS: DeveloperTab[] = [
   'dash_users',
   'dash_analytics',
   'logs_all',
-  'logs_account',
-  'logs_event',
-  'logs_ticket',
   'logs_contact',
   'db_overview',
   'db_artists',
   'db_events',
+  'db_guests',
   'db_recordings',
   'db_venues',
   'db_organizations',

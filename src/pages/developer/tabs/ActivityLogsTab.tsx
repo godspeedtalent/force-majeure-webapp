@@ -21,7 +21,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/common/shadcn/dropdown-menu';
-import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { formatHeader } from '@/shared';
 import { ActivityLogList } from '@/features/activity-logs/components/ActivityLogList';
 import { ActivityLogSummary } from '@/features/activity-logs/components/ActivityLogSummary';
@@ -51,9 +50,6 @@ export function ActivityLogsTab({ activeTab }: ActivityLogsTabProps) {
   // Map tab to category filter
   const categoryMap: Record<string, ActivityCategory | undefined> = {
     logs_all: undefined,
-    logs_account: 'account',
-    logs_event: 'event',
-    logs_ticket: 'ticket',
     logs_contact: 'contact',
   };
 
@@ -111,12 +107,6 @@ export function ActivityLogsTab({ activeTab }: ActivityLogsTabProps) {
   // Get title based on active tab
   const getTitle = () => {
     switch (activeTab) {
-      case 'logs_account':
-        return t('activityLogsPage.accountActivity');
-      case 'logs_event':
-        return t('activityLogsPage.eventActivity');
-      case 'logs_ticket':
-        return t('activityLogsPage.ticketActivity');
       case 'logs_contact':
         return t('activityLogsPage.contactActivity');
       default:
@@ -125,83 +115,86 @@ export function ActivityLogsTab({ activeTab }: ActivityLogsTabProps) {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-[10px]">
-            <Activity className="h-6 w-6 text-fm-gold" />
-            <h1 className="text-3xl font-canela">{formatHeader(getTitle())}</h1>
+    <div className="flex flex-col h-full">
+      {/* Sticky Header Section */}
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pb-4 space-y-4">
+        {/* Header */}
+        <div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-[10px]">
+              <Activity className="h-6 w-6 text-fm-gold" />
+              <h1 className="text-3xl font-canela">{formatHeader(getTitle())}</h1>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => refreshAll()}
+                className="border-white/20 hover:border-fm-gold"
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                {t('buttons.refresh')}
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={exportMutation.isPending}
+                    className="border-white/20 hover:border-fm-gold"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    {t('table.export')}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-black/90 border-white/20">
+                  <DropdownMenuItem onClick={() => handleExport('json')}>
+                    <FileJson className="h-4 w-4 mr-2" />
+                    {t('activityLogsPage.exportAsJson')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport('csv')}>
+                    <FileSpreadsheet className="h-4 w-4 mr-2" />
+                    {t('activityLogsPage.exportAsCsv')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => refreshAll()}
-              className="border-white/20 hover:border-fm-gold"
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              {t('buttons.refresh')}
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={exportMutation.isPending}
-                  className="border-white/20 hover:border-fm-gold"
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  {t('table.export')}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-black/90 border-white/20">
-                <DropdownMenuItem onClick={() => handleExport('json')}>
-                  <FileJson className="h-4 w-4 mr-2" />
-                  {t('activityLogsPage.exportAsJson')}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleExport('csv')}>
-                  <FileSpreadsheet className="h-4 w-4 mr-2" />
-                  {t('activityLogsPage.exportAsCsv')}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <p className="text-muted-foreground text-sm mt-2">
+            {t('activityLogsPage.description')}
+          </p>
         </div>
-        <p className="text-muted-foreground text-sm mt-2">
-          {t('activityLogsPage.description')}
-        </p>
+
+        {/* Filters - Compact sticky bar */}
+        {activeTab === 'logs_all' && (
+          <div className="p-3 bg-black/60 border border-white/10 backdrop-blur-sm">
+            <ActivityLogFilters
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+              onClearFilters={handleClearFilters}
+            />
+          </div>
+        )}
+
+        {/* Results count */}
+        {logsData && (
+          <div className="text-sm text-muted-foreground">
+            {t('activityLogsPage.showingLogs', { showing: allLogs.length, total: logsData.totalCount })}
+          </div>
+        )}
       </div>
 
-      <DecorativeDivider marginTop="mt-0" marginBottom="mb-6" lineWidth="w-32" opacity={0.5} />
-
-      {/* Summary Cards */}
-      <ActivityLogSummary
-        summary={summary}
-        isLoading={isLoadingSummary}
-        onCategoryClick={handleCategoryClick}
-      />
-
-      {/* Filters */}
-      {activeTab === 'logs_all' && (
-        <div className="p-4 bg-black/40 border border-white/10">
-          <ActivityLogFilters
-            filters={filters}
-            onFiltersChange={handleFiltersChange}
-            onClearFilters={handleClearFilters}
-          />
-        </div>
-      )}
-
-      {/* Results count */}
-      {logsData && (
-        <div className="text-sm text-muted-foreground">
-          {t('activityLogsPage.showingLogs', { showing: allLogs.length, total: logsData.totalCount })}
-        </div>
-      )}
+      {/* Summary Cards - Below sticky header */}
+      <div className="py-4">
+        <ActivityLogSummary
+          summary={summary}
+          isLoading={isLoadingSummary}
+          onCategoryClick={handleCategoryClick}
+        />
+      </div>
 
       {/* Log List */}
-      <div className="bg-black/40 border border-white/10">
+      <div className="flex-1 bg-black/40 border border-white/10">
         <ActivityLogList
           logs={allLogs}
           isLoading={isLoadingLogs}

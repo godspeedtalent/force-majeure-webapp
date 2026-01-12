@@ -373,9 +373,10 @@ export class SupabaseAnalyticsAdapter implements AnalyticsAdapter {
   ): Promise<AdapterResult<PaginatedResult<StoredSession>>> {
     try {
       // Join with profiles to get username for authenticated sessions
+      // Use profiles(username) syntax for the FK join from user_id to profiles.id
       let query = (supabase as AnySupabase)
         .from('analytics_sessions')
-        .select('*, profiles:user_id(username)', { count: 'exact' })
+        .select('*, profiles(username)', { count: 'exact' })
         .order('started_at', { ascending: false });
 
       if (filters?.startDate) {

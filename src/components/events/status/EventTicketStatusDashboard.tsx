@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Package, Users } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
+import {
+  FmCommonTabs,
+  FmCommonTabsContent,
+  FmCommonTabsList,
+  FmCommonTabsTrigger,
+} from '@/components/common/navigation/FmCommonTabs';
 import { EventInventoryDashboard } from '@/components/events/inventory';
 import { EventCheckInDashboard } from '@/components/events/checkin';
-import { cn } from '@/shared';
 
 interface EventTicketStatusDashboardProps {
   eventId: string;
@@ -28,44 +32,30 @@ export const EventTicketStatusDashboard = ({
 
   return (
     <div className="space-y-6">
-      <Tabs
+      <FmCommonTabs
         value={activeTab}
         onValueChange={(value) => setActiveTab(value as StatusTab)}
         className="w-full"
       >
-        <TabsList className="grid w-full grid-cols-2 max-w-md bg-white/5 rounded-none p-1">
-          <TabsTrigger
-            value="inventory"
-            className={cn(
-              'flex items-center gap-2 rounded-none transition-all',
-              'data-[state=active]:bg-fm-gold data-[state=active]:text-black',
-              'data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground'
-            )}
-          >
+        <FmCommonTabsList className="grid w-full grid-cols-2 max-w-md">
+          <FmCommonTabsTrigger value="inventory" className="flex items-center gap-2">
             <Package className="w-4 h-4" />
             {t('ticketStatus.inventory')}
-          </TabsTrigger>
-          <TabsTrigger
-            value="checkin"
-            className={cn(
-              'flex items-center gap-2 rounded-none transition-all',
-              'data-[state=active]:bg-fm-gold data-[state=active]:text-black',
-              'data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground'
-            )}
-          >
+          </FmCommonTabsTrigger>
+          <FmCommonTabsTrigger value="checkin" className="flex items-center gap-2">
             <Users className="w-4 h-4" />
             {t('ticketStatus.checkIn')}
-          </TabsTrigger>
-        </TabsList>
+          </FmCommonTabsTrigger>
+        </FmCommonTabsList>
 
-        <TabsContent value="inventory" className="mt-6">
+        <FmCommonTabsContent value="inventory" className="mt-6">
           <EventInventoryDashboard eventId={eventId} />
-        </TabsContent>
+        </FmCommonTabsContent>
 
-        <TabsContent value="checkin" className="mt-6">
+        <FmCommonTabsContent value="checkin" className="mt-6">
           <EventCheckInDashboard eventId={eventId} />
-        </TabsContent>
-      </Tabs>
+        </FmCommonTabsContent>
+      </FmCommonTabs>
     </div>
   );
 };

@@ -147,6 +147,25 @@ export interface LineItemConfig {
 }
 
 // ============================================================================
+// GUEST ADDRESS TYPES
+// ============================================================================
+
+/**
+ * Data for guest records during import
+ * Populated from unmapped field assignments targeting the 'guests' table
+ */
+export interface GuestAddressData {
+  full_name?: string | null;
+  phone?: string | null;
+  billing_address_line_1?: string | null;
+  billing_address_line_2?: string | null;
+  billing_city?: string | null;
+  billing_state?: string | null;
+  billing_zip_code?: string | null;
+  billing_country?: string | null;
+}
+
+// ============================================================================
 // PARSED ORDER TYPES
 // ============================================================================
 
@@ -197,6 +216,8 @@ export interface ParsedOrder {
   orderDate: string;
   status: 'paid' | 'refunded' | 'cancelled';
   externalOrderId?: string;
+  // Guest address data (from unmapped field assignments)
+  guestAddress?: GuestAddressData;
   // Validation state
   validationErrors: string[];
   existingUserId: string | null;

@@ -23,11 +23,10 @@ import {
   Star,
   Users,
   LineChart,
-  // Activity Logs icons
+  // Messages icons
   Activity,
-  UserCircle,
-  Ticket,
   Mail,
+  UserCircle,
   // Database icons
   Mic2,
   Calendar,
@@ -61,6 +60,7 @@ interface UseDeveloperNavigationProps {
     artistsCount: number;
     eventsCount: number;
     recordingsCount: number;
+    guestsCount: number;
   };
 }
 
@@ -85,6 +85,7 @@ export function useDeveloperNavigation({
     artistsCount,
     eventsCount,
     recordingsCount,
+    guestsCount,
   } = counts;
 
   const navigationGroups: FmCommonSideNavGroup<DeveloperTab>[] = useMemo(() => {
@@ -152,40 +153,6 @@ export function useDeveloperNavigation({
       },
     ];
 
-    // Activity Logs group
-    const activityLogsItems: FmCommonSideNavItem<DeveloperTab>[] = [
-      {
-        id: 'logs_all',
-        label: t('activityLogsPage.allLogs'),
-        icon: Activity,
-        description: t('activityLogsPage.allLogsDescription'),
-      },
-      {
-        id: 'logs_account',
-        label: t('activityLogsPage.accountActivity'),
-        icon: UserCircle,
-        description: t('activityLogsPage.accountActivityDescription'),
-      },
-      {
-        id: 'logs_event',
-        label: t('activityLogsPage.eventActivity'),
-        icon: Calendar,
-        description: t('activityLogsPage.eventActivityDescription'),
-      },
-      {
-        id: 'logs_ticket',
-        label: t('activityLogsPage.ticketActivity'),
-        icon: Ticket,
-        description: t('activityLogsPage.ticketActivityDescription'),
-      },
-      {
-        id: 'logs_contact',
-        label: t('activityLogsPage.contactActivity'),
-        icon: Mail,
-        description: t('activityLogsPage.contactActivityDescription'),
-      },
-    ];
-
     // Database subgroups
     const dbOverviewSubgroup: FmCommonSideNavSubgroup<DeveloperTab> = {
       label: 'Overview',
@@ -217,6 +184,14 @@ export function useDeveloperNavigation({
         icon: Calendar,
         description: 'Event Management',
         badge: <span className="text-[10px] text-muted-foreground">{eventsCount}</span>,
+      },
+      {
+        id: 'db_guests',
+        label: 'Guests',
+        sortKey: 'Guests',
+        icon: UserCircle,
+        description: 'Guest Users',
+        badge: <span className="text-[10px] text-muted-foreground">{guestsCount}</span>,
       },
       {
         id: 'db_recordings',
@@ -294,6 +269,18 @@ export function useDeveloperNavigation({
     const messagesItems: FmCommonSideNavItem<DeveloperTab>[] = [];
     if (isAdmin) {
       messagesItems.push(
+        {
+          id: 'logs_all',
+          label: t('activityLogsPage.activityLogs'),
+          icon: Activity,
+          description: t('activityLogsPage.allLogsDescription'),
+        },
+        {
+          id: 'logs_contact',
+          label: t('activityLogsPage.contactActivity'),
+          icon: Mail,
+          description: t('activityLogsPage.contactActivityDescription'),
+        },
         {
           id: 'db_registrations',
           label: t('artistRegistrations.navLabel'),
@@ -377,16 +364,6 @@ export function useDeveloperNavigation({
       subgroups: dbSubgroups,
     });
 
-    // 7. Activity Logs - only show if admin
-    if (isAdmin) {
-      groups.push({
-        label: 'Activity Logs',
-        icon: Activity,
-        items: activityLogsItems,
-        adminOnly: true,
-      });
-    }
-
     return groups;
   }, [
     isAdmin,
@@ -396,6 +373,7 @@ export function useDeveloperNavigation({
     pendingUserRequestsCount,
     artistsCount,
     eventsCount,
+    guestsCount,
     recordingsCount,
     venuesCount,
     organizationsCount,

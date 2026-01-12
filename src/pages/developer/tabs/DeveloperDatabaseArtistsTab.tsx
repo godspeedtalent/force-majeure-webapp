@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Eye, Mic2, Trash2 } from 'lucide-react';
 import { DataGridAction, FmConfigurableDataGrid } from '@/features/data-grid';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
+import { FmSectionHeader } from '@/components/common/display/FmSectionHeader';
 import { artistColumns } from '@/pages/admin/config/adminGridColumns';
 import { useArtistsData, ArtistRecord } from '../hooks/useDeveloperDatabaseData';
 
@@ -48,14 +49,11 @@ export function DeveloperDatabaseArtistsTab() {
 
   return (
     <div className='space-y-6'>
-      <div>
-        <h1 className='text-3xl font-canela font-bold text-foreground mb-2'>
-          Artists Management
-        </h1>
-        <p className='text-muted-foreground'>
-          Manage artist profiles, genres, and metadata.
-        </p>
-      </div>
+      <FmSectionHeader
+        title='Artists Management'
+        description='Manage artist profiles, genres, and metadata.'
+        icon={Mic2}
+      />
 
       <FmConfigurableDataGrid
         gridId='dev-artists'

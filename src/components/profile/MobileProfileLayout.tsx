@@ -8,6 +8,7 @@ import {
   Mic2,
   Award,
   Disc,
+  History,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -23,9 +24,10 @@ import {
   FmCommonTabsTrigger,
 } from '@/components/common/navigation/FmCommonTabs';
 import { Badge } from '@/components/common/shadcn/badge';
+import { FmCommonSwitch } from '@/components/common/forms/FmCommonSwitch';
 import { UserArtistTab } from '@/components/profile/UserArtistTab';
 import { FmI18nCommon } from '@/components/common/i18n';
-import { ProfileLayoutProps } from './types';
+import { ProfileLayoutProps, UpcomingEvent } from './types';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { getImageUrl } from '@/shared/utils/imageUtils';
 
@@ -33,7 +35,10 @@ export const MobileProfileLayout = ({
   user,
   profile,
   upcomingShows,
+  pastShows,
   loadingShows,
+  showPastShows,
+  onShowPastShowsChange,
   hasLinkedArtist,
   linkedArtistName,
   linkedArtistDate,
@@ -47,6 +52,77 @@ export const MobileProfileLayout = ({
 
   // Edit profile only available to the profile owner or admins
   const canEditProfile = isAdmin() || isOwnProfile;
+
+  // Helper to render event card (mobile version)
+  const renderEventCard = (event: UpcomingEvent, isPast = false) => {
+    const eventDate = new Date(event.date);
+    const formattedDate = eventDate.toLocaleDateString(undefined, {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+    });
+    const formattedTime = eventDate.toLocaleTimeString(undefined, {
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+
+    return (
+      <FmCommonCard
+        key={event.id}
+        className={`border-border/30 backdrop-blur-sm hover:bg-card/20 transition-colors cursor-pointer ${isPast ? 'opacity-70' : ''}`}
+        onClick={() => navigate(`/events/${event.id}`)}
+      >
+        <FmCommonCardContent className='p-3'>
+          <div className='flex gap-3'>
+            {/* Event Image */}
+            <div className='w-16 h-16 rounded-md overflow-hidden bg-muted flex-shrink-0'>
+              {event.cover_image_url ? (
+                <img
+                  src={event.cover_image_url}
+                  alt={event.title}
+                  className={`w-full h-full object-cover ${isPast ? 'grayscale' : ''}`}
+                />
+              ) : (
+                <div className='w-full h-full bg-gradient-gold flex items-center justify-center'>
+                  <Music2 className='h-6 w-6 text-black' />
+                </div>
+              )}
+            </div>
+
+            {/* Event Info */}
+            <div className='flex-1 min-w-0'>
+              <h3 className='font-canela font-medium text-foreground text-sm truncate'>
+                {event.title}
+              </h3>
+              <div className='space-y-0.5 mt-1'>
+                <div className='flex items-center gap-1.5 text-xs text-muted-foreground'>
+                  <Clock className='h-3 w-3' />
+                  <span>
+                    {formattedDate} · {formattedTime}
+                  </span>
+                </div>
+                <div className='flex items-center gap-1.5 text-xs text-muted-foreground'>
+                  <MapPin className='h-3 w-3' />
+                  <span className='truncate'>{event.location}</span>
+                </div>
+              </div>
+              <div className='flex items-center gap-2 mt-1'>
+                <Badge variant='outline' className='text-[10px] px-1.5 py-0'>
+                  {t('profile.ticketCount', { count: event.ticket_count })}
+                </Badge>
+                {isPast && (
+                  <Badge variant='outline' className='text-[10px] px-1.5 py-0 text-muted-foreground'>
+                    <History className='h-2.5 w-2.5 mr-0.5' />
+                    {t('profile.past')}
+                  </Badge>
+                )}
+              </div>
+            </div>
+          </div>
+        </FmCommonCardContent>
+      </FmCommonCard>
+    );
+  };
 
   return (
     <div className='h-[calc(100vh-64px)] mt-16 flex flex-col overflow-hidden'>
@@ -174,9 +250,20 @@ export const MobileProfileLayout = ({
 
           {/* Upcoming Shows Tab */}
           <FmCommonTabsContent value='upcoming' className='space-y-3 mt-0'>
+            {/* Past Shows Toggle */}
+            {pastShows.length > 0 && (
+              <div className='flex items-center justify-end pb-2'>
+                <FmCommonSwitch
+                  label={t('profile.showPastShows')}
+                  checked={showPastShows}
+                  onCheckedChange={onShowPastShowsChange}
+                />
+              </div>
+            )}
+
             {loadingShows ? (
               <FmI18nCommon i18nKey='profile.loadingShows' as='div' className='text-center py-8 text-muted-foreground' />
-            ) : upcomingShows.length === 0 ? (
+            ) : upcomingShows.length === 0 && !showPastShows ? (
               <div className='text-center py-8'>
                 <Music2 className='h-10 w-10 text-muted-foreground mx-auto mb-3' />
                 <FmI18nCommon i18nKey='profile.noUpcomingShows' as='p' className='text-muted-foreground text-sm mb-3' />
@@ -190,78 +277,25 @@ export const MobileProfileLayout = ({
               </div>
             ) : (
               <div className='space-y-2'>
-                {upcomingShows.map(event => {
-                  const eventDate = new Date(event.date);
-                  const formattedDate = eventDate.toLocaleDateString(
-                    undefined,
-                    {
-                      weekday: 'short',
-                      month: 'short',
-                      day: 'numeric',
-                    }
-                  );
-                  const formattedTime = eventDate.toLocaleTimeString(
-                    undefined,
-                    {
-                      hour: 'numeric',
-                      minute: '2-digit',
-                    }
-                  );
+                {/* Upcoming Shows */}
+                {upcomingShows.map(event => renderEventCard(event, false))}
 
-                  return (
-                    <FmCommonCard
-                      key={event.id}
-                      className='border-border/30 backdrop-blur-sm hover:bg-card/20 transition-colors cursor-pointer'
-                      onClick={() => navigate(`/events/${event.id}`)}
-                    >
-                      <FmCommonCardContent className='p-3'>
-                        <div className='flex gap-3'>
-                          {/* Event Image */}
-                          <div className='w-16 h-16 rounded-md overflow-hidden bg-muted flex-shrink-0'>
-                            {event.cover_image_url ? (
-                              <img
-                                src={event.cover_image_url}
-                                alt={event.title}
-                                className='w-full h-full object-cover'
-                              />
-                            ) : (
-                              <div className='w-full h-full bg-gradient-gold flex items-center justify-center'>
-                                <Music2 className='h-6 w-6 text-black' />
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Event Info */}
-                          <div className='flex-1 min-w-0'>
-                            <h3 className='font-canela font-medium text-foreground text-sm truncate'>
-                              {event.title}
-                            </h3>
-                            <div className='space-y-0.5 mt-1'>
-                              <div className='flex items-center gap-1.5 text-xs text-muted-foreground'>
-                                <Clock className='h-3 w-3' />
-                                <span>
-                                  {formattedDate} · {formattedTime}
-                                </span>
-                              </div>
-                              <div className='flex items-center gap-1.5 text-xs text-muted-foreground'>
-                                <MapPin className='h-3 w-3' />
-                                <span className='truncate'>
-                                  {event.location}
-                                </span>
-                              </div>
-                            </div>
-                            <Badge
-                              variant='outline'
-                              className='text-[10px] mt-1 px-1.5 py-0'
-                            >
-                              {t('profile.ticketCount', { count: event.ticket_count })}
-                            </Badge>
-                          </div>
-                        </div>
-                      </FmCommonCardContent>
-                    </FmCommonCard>
-                  );
-                })}
+                {/* Past Shows Section */}
+                {showPastShows && pastShows.length > 0 && (
+                  <>
+                    {upcomingShows.length > 0 && (
+                      <div className='flex items-center gap-2 pt-3 pb-1'>
+                        <div className='h-px flex-1 bg-border/50' />
+                        <span className='text-[10px] text-muted-foreground uppercase tracking-wider flex items-center gap-1'>
+                          <History className='h-2.5 w-2.5' />
+                          {t('profile.pastShows')}
+                        </span>
+                        <div className='h-px flex-1 bg-border/50' />
+                      </div>
+                    )}
+                    {pastShows.map(event => renderEventCard(event, true))}
+                  </>
+                )}
               </div>
             )}
           </FmCommonTabsContent>

@@ -332,18 +332,57 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const updateProfile = async (updates: Partial<Profile>) => {
     if (!user) {
+      authLogger.warn('updateProfile called with no user');
       return { error: { message: 'No user logged in' } };
     }
 
     try {
-      const { error } = await supabase
+      authLogger.info('Attempting profile update', {
+        userId: user.id,
+        updates: Object.keys(updates),
+      });
+
+      // Use .select() to get the updated row back - this helps detect if 0 rows were affected
+      const { data, error, count } = await supabase
         .from('profiles')
         .update(updates)
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .select()
+        .single();
+
+      authLogger.info('Profile update response', {
+        userId: user.id,
+        hasData: !!data,
+        hasError: !!error,
+        errorMessage: error?.message,
+        errorCode: error?.code,
+        count,
+        updatedFields: data ? Object.keys(updates).map(k => ({ field: k, newValue: data[k as keyof typeof data] })) : null,
+      });
 
       if (error) {
+        authLogger.error('Profile update failed', {
+          userId: user.id,
+          error: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint,
+        });
         toast.error(error.message);
+      } else if (!data) {
+        // No data returned means no rows were updated (possibly RLS blocking)
+        authLogger.error('Profile update returned no data - possible RLS issue', {
+          userId: user.id,
+          updates: Object.keys(updates),
+        });
+        const noRowsError = { message: 'Profile update failed - no rows affected. Please contact support.' };
+        toast.error(noRowsError.message);
+        return { error: noRowsError };
       } else {
+        authLogger.info('Profile update successful', {
+          userId: user.id,
+          profileId: data.id,
+        });
         await refreshProfile();
         toast.success(i18n.t('profile.updateSuccess', { ns: 'toasts' }));
       }
@@ -351,6 +390,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       return { error };
     } catch (error: unknown) {
       const errorMsg = error instanceof Error ? error.message : 'An unexpected error occurred';
+      authLogger.error('Profile update exception', {
+        userId: user.id,
+        error: errorMsg,
+      });
       toast.error(errorMsg);
       return { error };
     }

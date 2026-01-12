@@ -1,3 +1,4 @@
+import { Mic2, MapPin, Building2 } from 'lucide-react';
 import { DataGridColumn, DataGridColumns } from '@/features/data-grid';
 import { BadgeListCell } from '@/features/data-grid/components/cells';
 import { updateImageField } from '@/shared/services/imageUploadService';
@@ -100,6 +101,7 @@ export const artistColumns: DataGridColumn[] = [
       key: 'city_id',
       label: t('adminGrid.columns.city'),
       sortable: true,
+      icon: MapPin,
       getLabel: (row: any) => row.city || '—',
     }),
     editable: true,
@@ -301,6 +303,7 @@ export const userColumns: DataGridColumn[] = [
     key: 'organization_id',
     label: t('adminGrid.columns.organization'),
     sortable: true,
+    icon: Building2,
     getLabel: (row: any) => row.organization_name || '—',
     getHref: (row: any) => row.organization_id ? `/organization/${row.organization_id}` : '#',
   }),
@@ -354,6 +357,7 @@ export const venueColumns: DataGridColumn[] = [
     key: 'city_id',
     label: t('adminGrid.columns.city'),
     sortable: true,
+    icon: MapPin,
     getLabel: (row: any) => row.city || '—',
   }),
   DataGridColumns.address({
@@ -404,8 +408,10 @@ export const recordingColumns: DataGridColumn[] = [
     key: 'artist_id',
     label: t('adminGrid.columns.artist'),
     sortable: true,
+    icon: Mic2,
     getLabel: (row: any) => row.artist_name || '—',
     getHref: (row: any) => row.artist_id ? `/artists/${row.artist_id}` : '#',
+    getImageUrl: (row: any) => row.artist_image_url || null,
   }),
   {
     key: 'platform',
@@ -482,6 +488,91 @@ export const recordingColumns: DataGridColumn[] = [
     sortable: true,
   }),
 ];
+
+/**
+ * Column definitions for the Guests data grid in Admin Controls
+ *
+ * Use createGuestColumns() to get columns with address editing support.
+ * Pass an onAddressUpdate callback to enable address modal editing.
+ */
+export const guestColumns: DataGridColumn[] = createGuestColumns();
+
+/**
+ * Factory function to create guest columns with optional address update handler
+ */
+export function createGuestColumns(options?: {
+  onAddressUpdate?: (row: any, address: any) => void;
+}): DataGridColumn[] {
+  return [
+    DataGridColumns.text({
+      key: 'email',
+      label: t('adminGrid.columns.email'),
+      sortable: true,
+      filterable: true,
+      editable: true,
+    }),
+    DataGridColumns.text({
+      key: 'full_name',
+      label: t('adminGrid.columns.fullName'),
+      sortable: true,
+      filterable: true,
+      editable: true,
+    }),
+    DataGridColumns.text({
+      key: 'phone',
+      label: t('adminGrid.columns.phone'),
+      sortable: true,
+      filterable: true,
+      editable: true,
+    }),
+    DataGridColumns.address({
+      keys: {
+        line1: 'billing_address_line_1',
+        line2: 'billing_address_line_2',
+        city: 'billing_city',
+        state: 'billing_state',
+        zipCode: 'billing_zip_code',
+        country: 'billing_country',
+      },
+      label: t('adminGrid.columns.billingAddress'),
+      sortable: false,
+      editable: !!options?.onAddressUpdate,
+      onAddressUpdate: options?.onAddressUpdate,
+    }),
+    {
+      key: 'profile_id',
+      label: t('adminGrid.columns.linkedProfile'),
+      sortable: true,
+      render: (value: string | null) => {
+        if (!value) return <span className='text-muted-foreground'>—</span>;
+        return (
+          <span className='inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30'>
+            Linked
+          </span>
+        );
+      },
+    },
+    {
+      key: 'stripe_customer_id',
+      label: 'Stripe',
+      sortable: true,
+      render: (value: string | null) => {
+        if (!value) return <span className='text-muted-foreground'>—</span>;
+        return (
+          <span className='text-xs text-fm-gold' title={value}>
+            {value.slice(0, 15)}...
+          </span>
+        );
+      },
+    },
+    DataGridColumns.date({
+      key: 'created_at',
+      label: t('adminGrid.columns.created'),
+      format: 'short',
+      sortable: true,
+    }),
+  ];
+}
 
 /**
  * Column definitions for the Genres data grid in Admin Controls

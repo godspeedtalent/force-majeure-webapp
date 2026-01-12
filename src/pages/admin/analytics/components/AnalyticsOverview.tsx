@@ -7,6 +7,7 @@
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/shadcn/card';
 import { Eye, Users, Clock, ArrowUpRight, Percent, Layers, Radio } from 'lucide-react';
+import { Skeleton } from '@/components/common/shadcn/skeleton';
 
 interface OverviewStats {
   totalPageViews: number;
@@ -20,6 +21,7 @@ interface OverviewStats {
 
 interface AnalyticsOverviewProps {
   stats: OverviewStats | null | undefined;
+  isLoading?: boolean;
 }
 
 function formatDuration(ms: number): string {
@@ -40,8 +42,31 @@ function formatNumber(num: number): string {
   return num.toLocaleString();
 }
 
-export function AnalyticsOverview({ stats }: AnalyticsOverviewProps) {
+export function AnalyticsOverview({ stats, isLoading }: AnalyticsOverviewProps) {
   const { t } = useTranslation('pages');
+
+  // Show skeleton cards when loading
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+        {Array.from({ length: 7 }).map((_, i) => (
+          <Card
+            key={i}
+            className="bg-black/60 border-white/20 rounded-none backdrop-blur-sm"
+          >
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <Skeleton className="h-4 w-20 rounded-none" />
+              <Skeleton className="h-4 w-4 rounded-none" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-8 w-16 rounded-none" />
+              <Skeleton className="h-3 w-24 rounded-none mt-2" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
 
   const cards = [
     {

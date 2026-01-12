@@ -29,6 +29,8 @@ import type {
   ParsedLineItem,
   ParsedSubItem,
   ResolveContext,
+  UnmappedFieldAssignment,
+  GuestAddressData,
 } from '../types';
 
 interface UseOrderValidationOptions {
@@ -40,6 +42,7 @@ interface UseOrderValidationOptions {
   ticketTiers: { id: string; name: string; price_cents: number }[] | undefined;
   eventDetails: { id: string; title: string; start_time: string | null } | null | undefined;
   defaultOrderDate: string;
+  unmappedAssignments: UnmappedFieldAssignment[];
   onValidationComplete: (orders: ParsedOrder[]) => void;
   onStepChange: (step: 'preview') => void;
 }
@@ -53,6 +56,7 @@ export function useOrderValidation({
   ticketTiers,
   eventDetails,
   defaultOrderDate,
+  unmappedAssignments,
   onValidationComplete,
   onStepChange,
 }: UseOrderValidationOptions) {
@@ -72,6 +76,32 @@ export function useOrderValidation({
 
     const tierPrice = selectedTier?.price_cents || 0;
     const eventDate = eventDetails?.start_time ?? undefined;
+
+    // Build guest field assignment map (column -> target column)
+    const guestFieldAssignments = unmappedAssignments
+      .filter(a => a.targetTable === 'guests')
+      .reduce((acc, a) => {
+        acc.set(a.csvColumn, a.targetColumn);
+        return acc;
+      }, new Map<string, string>());
+
+    // Helper to extract guest address data from a row
+    const extractGuestAddress = (row: CsvRow): GuestAddressData | undefined => {
+      if (guestFieldAssignments.size === 0) return undefined;
+
+      const address: GuestAddressData = {};
+      let hasData = false;
+
+      guestFieldAssignments.forEach((targetColumn, csvColumn) => {
+        const value = row[csvColumn]?.trim() || null;
+        if (value) {
+          hasData = true;
+          (address as Record<string, string | null>)[targetColumn] = value;
+        }
+      });
+
+      return hasData ? address : undefined;
+    };
 
     try {
       // Fetch all profiles
@@ -222,6 +252,9 @@ export function useOrderValidation({
         const isDuplicate = externalOrderId ? existingExternalIds.has(externalOrderId) : false;
         const existingUserId = email ? emailToUserId.get(email) || null : null;
 
+        // Extract guest address data from unmapped field assignments
+        const guestAddress = extractGuestAddress(row);
+
         parsed.push({
           rowIndex: i + 2,
           customerEmail: email,
@@ -233,6 +266,7 @@ export function useOrderValidation({
           orderDate,
           status,
           externalOrderId,
+          guestAddress,
           validationErrors: errors,
           existingUserId,
           isDuplicate,
@@ -250,7 +284,7 @@ export function useOrderValidation({
     } finally {
       setIsValidating(false);
     }
-  }, [csvData, columnMapping, lineItems, selectedTier, selectedTicketTierId, ticketTiers, eventDetails, defaultOrderDate, t, onValidationComplete, onStepChange]);
+  }, [csvData, columnMapping, lineItems, selectedTier, selectedTicketTierId, ticketTiers, eventDetails, defaultOrderDate, unmappedAssignments, t, onValidationComplete, onStepChange]);
 
   return { validateOrders };
 }

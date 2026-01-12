@@ -11,13 +11,14 @@ export function useEventFormValidation() {
   const { t } = useTranslation('validation');
 
   const validateForm = (state: EventFormState): string | null => {
-    const { title, headlinerId, eventDate, venueId, ticketTiers, venueCapacity, endTime, isAfterHours } = state;
+    const { title, headlinerId, noHeadliner, eventDate, venueId, ticketTiers, venueCapacity, endTime, isAfterHours } = state;
 
     // Required fields
     if (!title || title.trim() === '') {
       return t('eventTitleRequired');
     }
-    if (!headlinerId) {
+    // Headliner is required unless noHeadliner is enabled
+    if (!noHeadliner && !headlinerId) {
       return t('headlinerRequired');
     }
     if (!eventDate) {

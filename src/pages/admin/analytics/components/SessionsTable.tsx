@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/sh
 import { Input } from '@/components/common/shadcn/input';
 import { Button } from '@/components/common/shadcn/button';
 import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
-import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { Skeleton } from '@/components/common/shadcn/skeleton';
 import type { StoredSession } from '@/features/analytics';
 import {
   useSessionsFilters,
@@ -21,6 +21,7 @@ import {
 interface SessionsTableProps {
   data: StoredSession[];
   isLoading?: boolean;
+  error?: string;
 }
 
 function formatDuration(ms: number | null): string {
@@ -100,7 +101,7 @@ function SortableHeader({
   );
 }
 
-export function SessionsTable({ data, isLoading }: SessionsTableProps) {
+export function SessionsTable({ data, isLoading, error }: SessionsTableProps) {
   const { t } = useTranslation('pages');
 
   const {
@@ -183,8 +184,49 @@ export function SessionsTable({ data, isLoading }: SessionsTableProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center h-[200px]">
-            <FmCommonLoadingSpinner />
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-white/10">
+                  {['User', 'Entry Page', 'Duration', 'Pages', 'Device', 'Browser', 'Started'].map((header) => (
+                    <th key={header} className="text-left p-3 text-muted-foreground font-medium">
+                      <Skeleton className="h-4 w-16 rounded-none" />
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <tr key={i} className="border-b border-white/5">
+                    <td className="p-3"><Skeleton className="h-4 w-24 rounded-none" /></td>
+                    <td className="p-3"><Skeleton className="h-4 w-32 rounded-none" /></td>
+                    <td className="p-3"><Skeleton className="h-4 w-12 rounded-none" /></td>
+                    <td className="p-3"><Skeleton className="h-4 w-8 rounded-none" /></td>
+                    <td className="p-3"><Skeleton className="h-4 w-16 rounded-none" /></td>
+                    <td className="p-3"><Skeleton className="h-4 w-16 rounded-none" /></td>
+                    <td className="p-3"><Skeleton className="h-4 w-28 rounded-none" /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="bg-black/60 border-white/20 rounded-none backdrop-blur-sm">
+        <CardHeader>
+          <CardTitle className="font-canela">
+            {t('analytics.sessions.title', 'Recent sessions')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center justify-center h-[200px] text-muted-foreground gap-2">
+            <span className="text-fm-danger">{t('analytics.sessions.error', 'Failed to load sessions')}</span>
+            <span className="text-xs">{error}</span>
           </div>
         </CardContent>
       </Card>

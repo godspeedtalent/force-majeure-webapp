@@ -7,6 +7,7 @@
 
 import { useMemo, useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import { Skeleton } from '@/components/common/shadcn/skeleton';
 import { ArrowUpDown, ArrowUp, ArrowDown, Search, EyeOff, Eye, Filter, X, Check } from 'lucide-react';
 import { Input } from '@/components/common/shadcn/input';
 import { Button } from '@/components/common/shadcn/button';
@@ -21,6 +22,7 @@ import { getPageTypeColors, PAGE_TYPE_LABELS } from '@/shared/constants/designSy
 
 interface TopPagesTableProps {
   data: DailyPageViewSummary[];
+  isLoading?: boolean;
 }
 
 type SortField = 'views' | 'sessions' | 'avgTimeOnPage' | 'avgScrollDepth' | 'path';
@@ -48,7 +50,7 @@ function saveIgnoredPages(pages: Set<string>): void {
   }
 }
 
-export function TopPagesTable({ data }: TopPagesTableProps) {
+export function TopPagesTable({ data, isLoading }: TopPagesTableProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPageTypes, setSelectedPageTypes] = useState<Set<string>>(new Set());
   const [sortField, setSortField] = useState<SortField>('views');
@@ -56,6 +58,53 @@ export function TopPagesTable({ data }: TopPagesTableProps) {
   const [ignoredPages, setIgnoredPages] = useState<Set<string>>(() => getIgnoredPages());
   const [showIgnored, setShowIgnored] = useState(false);
   const [typeFilterOpen, setTypeFilterOpen] = useState(false);
+
+  // Show skeleton loading state
+  if (isLoading) {
+    return (
+      <Card className="bg-black/60 border-white/20 rounded-none backdrop-blur-sm">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-6 w-32 rounded-none" />
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-8 w-48 rounded-none" />
+              <Skeleton className="h-8 w-32 rounded-none" />
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-white/10">
+                  <th className="text-left py-3 px-2"><Skeleton className="h-4 w-12 rounded-none" /></th>
+                  <th className="w-10 py-3 px-2"></th>
+                  <th className="text-left py-3 px-2"><Skeleton className="h-4 w-10 rounded-none" /></th>
+                  <th className="text-right py-3 px-2"><Skeleton className="h-4 w-12 rounded-none" /></th>
+                  <th className="text-right py-3 px-2"><Skeleton className="h-4 w-16 rounded-none" /></th>
+                  <th className="text-right py-3 px-2"><Skeleton className="h-4 w-16 rounded-none" /></th>
+                  <th className="text-right py-3 px-2"><Skeleton className="h-4 w-16 rounded-none" /></th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({ length: 10 }).map((_, i) => (
+                  <tr key={i} className={`border-b border-white/5 ${i % 2 === 0 ? 'bg-white/[0.02]' : ''}`}>
+                    <td className="py-3 px-2"><Skeleton className="h-4 w-48 rounded-none" /></td>
+                    <td className="py-3 px-2"></td>
+                    <td className="py-3 px-2"><Skeleton className="h-5 w-16 rounded-none" /></td>
+                    <td className="text-right py-3 px-2"><Skeleton className="h-4 w-12 rounded-none ml-auto" /></td>
+                    <td className="text-right py-3 px-2"><Skeleton className="h-4 w-10 rounded-none ml-auto" /></td>
+                    <td className="text-right py-3 px-2"><Skeleton className="h-4 w-14 rounded-none ml-auto" /></td>
+                    <td className="text-right py-3 px-2"><Skeleton className="h-4 w-10 rounded-none ml-auto" /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   // Persist ignored pages to localStorage
   useEffect(() => {

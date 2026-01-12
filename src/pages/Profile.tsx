@@ -20,7 +20,9 @@ const Profile = () => {
   const { user, profile, loading } = useAuth();
   const navigate = useNavigate();
   const [upcomingShows, setUpcomingShows] = useState<UpcomingEvent[]>([]);
+  const [pastShows, setPastShows] = useState<UpcomingEvent[]>([]);
   const [loadingShows, setLoadingShows] = useState(true);
+  const [showPastShows, setShowPastShows] = useState(false);
   const { hasLinkedArtist, linkedArtist, isLoading: loadingArtist } = useUserLinkedArtist();
 
   // Fetch upcoming shows
@@ -57,41 +59,47 @@ const Profile = () => {
             details: 'fetchUpcomingShows',
           });
           setUpcomingShows([]);
+          setPastShows([]);
         } else {
-          // Group by event and count tickets, filtering for future events
-          const eventMap = new Map<string, UpcomingEvent>();
+          // Group by event and count tickets, separating future and past events
+          const upcomingEventMap = new Map<string, UpcomingEvent>();
+          const pastEventMap = new Map<string, UpcomingEvent>();
           const now = new Date();
 
           data?.forEach((order: any) => {
             if (order.events) {
               const event = order.events;
               const eventDate = new Date(event.date);
+              const isFutureEvent = eventDate >= now;
+              const targetMap = isFutureEvent ? upcomingEventMap : pastEventMap;
 
-              // Only include future events
-              if (eventDate >= now) {
-                if (eventMap.has(event.id)) {
-                  const existing = eventMap.get(event.id)!;
-                  existing.ticket_count += 1;
-                } else {
-                  eventMap.set(event.id, {
-                    id: event.id,
-                    title: event.title,
-                    date: event.date,
-                    location: event.location,
-                    cover_image_url: event.cover_image_url,
-                    ticket_count: 1,
-                  });
-                }
+              if (targetMap.has(event.id)) {
+                const existing = targetMap.get(event.id)!;
+                existing.ticket_count += 1;
+              } else {
+                targetMap.set(event.id, {
+                  id: event.id,
+                  title: event.title,
+                  date: event.date,
+                  location: event.location,
+                  cover_image_url: event.cover_image_url,
+                  ticket_count: 1,
+                });
               }
             }
           });
 
-          // Convert map to array and sort by date
-          const events = Array.from(eventMap.values()).sort(
+          // Convert maps to arrays and sort by date
+          const upcomingEvents = Array.from(upcomingEventMap.values()).sort(
             (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
           );
+          // Sort past events by date descending (most recent first)
+          const pastEvents = Array.from(pastEventMap.values()).sort(
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+          );
 
-          setUpcomingShows(events);
+          setUpcomingShows(upcomingEvents);
+          setPastShows(pastEvents);
         }
       } catch (error) {
         await handleError(error, {
@@ -102,6 +110,7 @@ const Profile = () => {
           showToast: false, // Don't show toast for shows loading
         });
         setUpcomingShows([]);
+        setPastShows([]);
       } finally {
         setLoadingShows(false);
       }
@@ -159,7 +168,10 @@ const Profile = () => {
     user,
     profile,
     upcomingShows,
+    pastShows,
     loadingShows,
+    showPastShows,
+    onShowPastShowsChange: setShowPastShows,
     hasLinkedArtist,
     linkedArtistName: linkedArtist?.name,
     linkedArtistDate,

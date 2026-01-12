@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Eye, ExternalLink, RefreshCw, Star, Trash2 } from 'lucide-react';
+import { Disc3, Eye, ExternalLink, RefreshCw, Star, Trash2 } from 'lucide-react';
 import { DataGridAction, FmConfigurableDataGrid } from '@/features/data-grid';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
+import { FmSectionHeader } from '@/components/common/display/FmSectionHeader';
 import { recordingColumns } from '@/pages/admin/config/adminGridColumns';
 import { useRecordingsData, RecordingRecord } from '../hooks/useDeveloperDatabaseData';
 
@@ -73,14 +74,11 @@ export function DeveloperDatabaseRecordingsTab() {
 
   return (
     <div className='space-y-6'>
-      <div>
-        <h1 className='text-3xl font-canela font-bold text-foreground mb-2'>
-          Recordings Management
-        </h1>
-        <p className='text-muted-foreground'>
-          Manage artist recordings from Spotify and SoundCloud.
-        </p>
-      </div>
+      <FmSectionHeader
+        title='Recordings Management'
+        description='Manage artist recordings from Spotify and SoundCloud.'
+        icon={Disc3}
+      />
 
       <FmConfigurableDataGrid
         gridId='dev-recordings'

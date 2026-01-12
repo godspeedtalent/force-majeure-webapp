@@ -6,14 +6,13 @@ import type { Json } from '@/integrations/supabase/types';
 import { FmDataGrid, DataGridColumn, DataGridAction } from './FmDataGrid';
 
 import { useTableSchema } from '../hooks/useTableSchema';
-import { Button } from '@/components/common/shadcn/button';
-import { GripVertical, Settings2 } from 'lucide-react';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { Settings2 } from 'lucide-react';
 import { logger } from '@/shared';
-import { DragEndEvent } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import { toast } from 'sonner';
-import { FmColumnReorderDialog } from './config/FmColumnReorderDialog';
 import { FmColumnConfigModal } from './config/FmColumnConfigModal';
+import { FmDataGridSkeleton } from '@/components/common/feedback/FmDataGridRowSkeleton';
 
 interface GridConfig {
   columns: ColumnConfig[];
@@ -80,15 +79,15 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
   const { user } = useAuth();
   const [config, setConfig] = useState<GridConfig | null>(null);
   const [isLoadingConfig, setIsLoadingConfig] = useState(true);
-  const [isReorderDialogOpen, setIsReorderDialogOpen] = useState(false);
   const [isColumnConfigOpen, setIsColumnConfigOpen] = useState(false);
-  const [recentlyMovedKey, setRecentlyMovedKey] = useState<string | null>(null);
 
   // NEW: Dynamic mode - fetch schema if tableName is provided
   const {
     columns: schemaColumns,
     isLoading: isLoadingSchema,
     error: schemaError,
+    refresh: refreshSchema,
+    isRefreshing,
   } = useTableSchema({
     tableName: tableName || '',
     excludeColumns,
@@ -236,33 +235,6 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
       .sort((a: any, b: any) => a.order - b.order);
   }, [baseColumns, initializedConfig, data]);
 
-  // Handle drag end
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (!over || active.id === over.id) return;
-
-    const oldIndex = initializedConfig.columns.findIndex(c => c.key === active.id);
-    const newIndex = initializedConfig.columns.findIndex(c => c.key === over.id);
-
-    const reorderedColumns = arrayMove(initializedConfig.columns, oldIndex, newIndex);
-
-    const newConfig: GridConfig = {
-      ...initializedConfig,
-      columns: reorderedColumns.map((col, index) => ({
-        ...col,
-        order: index,
-      })),
-    };
-
-    setConfig(newConfig);
-    saveConfig(newConfig);
-
-    setRecentlyMovedKey(active.id as string);
-    setTimeout(() => setRecentlyMovedKey(null), 600);
-  };
-
-
   // Save column configuration from modal
   const handleSaveColumnConfig = (configs: GridConfig['columns']) => {
     const newConfig: GridConfig = {
@@ -323,12 +295,6 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
 
     setConfig(newConfig);
     saveConfig(newConfig);
-
-    // Visual feedback
-    const movedColumn = reorderedColumns[toIndex];
-    setRecentlyMovedKey(movedColumn.key);
-    setTimeout(() => setRecentlyMovedKey(null), 600);
-
     toast.success(tToast('admin.columnOrderUpdated'));
   };
 
@@ -390,11 +356,8 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
   // Show loading state if config or schema is loading
   if (isLoadingConfig || (tableName && isLoadingSchema)) {
     return (
-      <div className='flex items-center justify-center p-8'>
-        <div className='h-8 w-8 border-2 border-fm-gold border-t-transparent rounded-full animate-spin' />
-        <span className='ml-3 text-muted-foreground'>
-          {isLoadingSchema ? t('dataGrid.loadingSchema') : t('dataGrid.loadingConfig')}
-        </span>
+      <div className='space-y-2'>
+        <FmDataGridSkeleton rows={Math.min(pageSize, 10)} columns={manualColumns?.length || 6} showHeader />
       </div>
     );
   }
@@ -431,25 +394,14 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
         onToggleFreeze={handleToggleFreeze}
         toolbarActions={
           <>
-            <Button
-              variant='outline'
+            <FmCommonButton
+              variant='default'
               size='sm'
-              className='gap-2'
-              onClick={() => setIsReorderDialogOpen(true)}
-            >
-              <GripVertical className='h-4 w-4' />
-              {t('dataGrid.reorder')}
-            </Button>
-
-            <Button
-              variant='outline'
-              size='sm'
-              className='gap-2'
+              icon={Settings2}
               onClick={() => setIsColumnConfigOpen(true)}
             >
-              <Settings2 className='h-4 w-4' />
               {t('dataGrid.columnsLabel')}
-            </Button>
+            </FmCommonButton>
 
             <FmColumnConfigModal
               open={isColumnConfigOpen}
@@ -458,15 +410,8 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
               columnConfigs={initializedConfig.columns}
               onSaveConfiguration={handleSaveColumnConfig}
               onResetConfiguration={resetConfiguration}
-            />
-
-            <FmColumnReorderDialog
-              open={isReorderDialogOpen}
-              onOpenChange={setIsReorderDialogOpen}
-              columns={initializedConfig.columns}
-              baseColumns={baseColumns}
-              recentlyMovedKey={recentlyMovedKey}
-              onDragEnd={handleDragEnd}
+              onRefreshSchema={tableName ? refreshSchema : undefined}
+              isRefreshing={isRefreshing}
             />
           </>
         }

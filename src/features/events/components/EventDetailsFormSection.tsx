@@ -56,15 +56,40 @@ export function EventDetailsFormSection({
         />
       </div>
 
-      <div className='space-y-2'>
-        <Label className='text-white'>
-          {t('formLabels.headliner')} <span className='text-fm-danger'>*</span>
-        </Label>
-        <FmArtistSearchDropdown
-          value={state.headlinerId}
-          onChange={actions.setHeadlinerId}
-          placeholder={t('forms.events.searchHeadliner')}
-        />
+      <div className='space-y-3'>
+        <div className='space-y-1'>
+          <div className='flex items-center gap-2'>
+            <FmCommonCheckbox
+              id='no-headliner'
+              checked={state.noHeadliner}
+              onCheckedChange={checked => {
+                actions.setNoHeadliner(checked);
+                if (checked) {
+                  actions.setHeadlinerId('');
+                }
+              }}
+            />
+            <Label htmlFor='no-headliner' className='text-white/70 cursor-pointer'>
+              {t('formLabels.noHeadliner')}
+            </Label>
+          </div>
+          <p className='text-xs text-white/50 ml-6'>
+            {t('formLabels.noHeadlinerHelp')}
+          </p>
+        </div>
+
+        {!state.noHeadliner && (
+          <div className='space-y-2'>
+            <Label className='text-white'>
+              {t('formLabels.headliner')} <span className='text-fm-danger'>*</span>
+            </Label>
+            <FmArtistSearchDropdown
+              value={state.headlinerId}
+              onChange={actions.setHeadlinerId}
+              placeholder={t('forms.events.searchHeadliner')}
+            />
+          </div>
+        )}
       </div>
 
       <div className='space-y-2'>

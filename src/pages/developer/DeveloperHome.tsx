@@ -37,12 +37,16 @@ import { GalleryManagementSection } from '@/components/DevTools/GalleryManagemen
 import {
   DeveloperDatabaseOverviewTab,
   DeveloperDatabaseArtistsTab,
+  DeveloperDatabaseGuestsTab,
   DeveloperDatabaseVenuesTab,
   DeveloperDatabaseRecordingsTab,
   ActivityLogsTab,
   DemoToolsTab,
   DocumentationViewerTab,
 } from './tabs';
+
+// Contact Submissions
+import { ContactSubmissionsTab } from '@/features/contact-submissions';
 import { useDatabaseCounts } from './hooks/useDeveloperDatabaseData';
 import { useDeveloperNavigation } from './hooks/useDeveloperNavigation';
 
@@ -124,13 +128,8 @@ export default function DeveloperHome() {
     />
   );
 
-  // Check if current tab is an activity log tab
-  const isActivityLogTab =
-    activeTab === 'logs_all' ||
-    activeTab === 'logs_account' ||
-    activeTab === 'logs_event' ||
-    activeTab === 'logs_ticket' ||
-    activeTab === 'logs_contact';
+  // Check if current tab is the activity logs tab (not contact submissions)
+  const isActivityLogTab = activeTab === 'logs_all';
 
   return (
     <SideNavbarLayout
@@ -208,6 +207,13 @@ export default function DeveloperHome() {
           </PageErrorBoundary>
         )}
 
+        {/* ======================== CONTACT SUBMISSIONS ======================== */}
+        {activeTab === 'logs_contact' && (
+          <PageErrorBoundary section="Contact Submissions">
+            <ContactSubmissionsTab />
+          </PageErrorBoundary>
+        )}
+
         {/* ======================== DATABASE ======================== */}
         {activeTab === 'db_overview' && (
           <PageErrorBoundary section="Overview">
@@ -236,6 +242,12 @@ export default function DeveloperHome() {
         {activeTab === 'db_events' && (
           <PageErrorBoundary section="Events">
             <EventsManagement />
+          </PageErrorBoundary>
+        )}
+
+        {activeTab === 'db_guests' && (
+          <PageErrorBoundary section="Guests">
+            <DeveloperDatabaseGuestsTab />
           </PageErrorBoundary>
         )}
 

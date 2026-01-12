@@ -2,6 +2,7 @@
  * BillingAddressSection Component
  *
  * Handles billing address form for faster checkout.
+ * Uses the normalized addresses table via address hooks.
  */
 
 import { useState, useEffect } from 'react';
@@ -10,41 +11,59 @@ import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/F
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { useAuth } from '@/features/auth/services/AuthContext';
+import { useProfileBillingAddress, useUpsertProfileBillingAddress } from '@/features/addresses';
+import { addressToFormData } from '@/shared/types/address';
 
 export function BillingAddressSection() {
   const { t } = useTranslation('common');
-  const { user, profile, updateProfile } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuth();
+
+  // Fetch billing address from normalized addresses table
+  const { data: billingAddress } = useProfileBillingAddress(user?.id);
+  const upsertMutation = useUpsertProfileBillingAddress();
 
   // Form state
-  const [billingAddress, setBillingAddress] = useState('');
-  const [billingCity, setBillingCity] = useState('');
-  const [billingState, setBillingState] = useState('');
-  const [billingZip, setBillingZip] = useState('');
+  const [line1, setLine1] = useState('');
+  const [line2, setLine2] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [zipCode, setZipCode] = useState('');
+  const [country, setCountry] = useState('US');
 
+  // Populate form when address data loads
   useEffect(() => {
-    if (profile) {
-      setBillingAddress(profile.billing_address_line_1 || '');
-      setBillingCity(profile.billing_city || '');
-      setBillingState(profile.billing_state || '');
-      setBillingZip(profile.billing_zip_code || '');
+    if (billingAddress) {
+      const formData = addressToFormData(billingAddress);
+      setLine1(formData.line_1);
+      setLine2(formData.line_2);
+      setCity(formData.city);
+      setState(formData.state);
+      setZipCode(formData.zip_code);
+      setCountry(formData.country);
     }
-  }, [profile]);
+  }, [billingAddress]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
-    await updateProfile({
-      billing_address_line_1: billingAddress || null,
-      billing_city: billingCity || null,
-      billing_state: billingState || null,
-      billing_zip_code: billingZip || null,
+    if (!user?.id) return;
+
+    upsertMutation.mutate({
+      profileId: user.id,
+      address: {
+        line_1: line1,
+        line_2: line2,
+        city: city,
+        state: state,
+        zip_code: zipCode,
+        country: country,
+      },
     });
-    setIsLoading(false);
   };
 
   if (!user) return null;
+
+  const isDisabled = !user.email_confirmed_at || upsertMutation.isPending;
 
   return (
     <FmCommonCard>
@@ -66,11 +85,24 @@ export function BillingAddressSection() {
                 id='billingAddress'
                 type='text'
                 placeholder={t('billingAddress.streetAddressPlaceholder')}
-                value={billingAddress}
-                onChange={e => setBillingAddress(e.target.value)}
+                value={line1}
+                onChange={e => setLine1(e.target.value)}
                 description={t('labels.optional')}
-                disabled={!user.email_confirmed_at}
-              />
+                disabled={isDisabled}
+                              />
+            </div>
+
+            <div className='md:col-span-2'>
+              <FmCommonTextField
+                label={t('billingAddress.addressLine2')}
+                id='billingAddressLine2'
+                type='text'
+                placeholder={t('billingAddress.addressLine2Placeholder')}
+                value={line2}
+                onChange={e => setLine2(e.target.value)}
+                description={t('labels.optional')}
+                disabled={isDisabled}
+                              />
             </div>
 
             <FmCommonTextField
@@ -78,40 +110,51 @@ export function BillingAddressSection() {
               id='billingCity'
               type='text'
               placeholder={t('billingAddress.cityPlaceholder')}
-              value={billingCity}
-              onChange={e => setBillingCity(e.target.value)}
+              value={city}
+              onChange={e => setCity(e.target.value)}
               description={t('labels.optional')}
-              disabled={!user.email_confirmed_at}
-            />
+              disabled={isDisabled}
+                          />
 
             <FmCommonTextField
               label={t('billingAddress.state')}
               id='billingState'
               type='text'
               placeholder={t('billingAddress.statePlaceholder')}
-              value={billingState}
-              onChange={e => setBillingState(e.target.value)}
+              value={state}
+              onChange={e => setState(e.target.value)}
               description={t('labels.optional')}
-              disabled={!user.email_confirmed_at}
-            />
+              disabled={isDisabled}
+                          />
 
             <FmCommonTextField
               label={t('billingAddress.zipCode')}
               id='billingZip'
               type='text'
               placeholder={t('billingAddress.zipCodePlaceholder')}
-              value={billingZip}
-              onChange={e => setBillingZip(e.target.value)}
+              value={zipCode}
+              onChange={e => setZipCode(e.target.value)}
               description={t('labels.optional')}
-              disabled={!user.email_confirmed_at}
-            />
+              disabled={isDisabled}
+                          />
+
+            <FmCommonTextField
+              label={t('billingAddress.country')}
+              id='billingCountry'
+              type='text'
+              placeholder={t('billingAddress.countryPlaceholder')}
+              value={country}
+              onChange={e => setCountry(e.target.value)}
+              description={t('labels.optional')}
+              disabled={isDisabled}
+                          />
           </div>
 
           <FmCommonButton
             type='submit'
             variant='default'
-            loading={isLoading}
-            disabled={!user.email_confirmed_at || isLoading}
+            loading={upsertMutation.isPending}
+            disabled={isDisabled}
           >
             {t('billingAddress.updateButton')}
           </FmCommonButton>

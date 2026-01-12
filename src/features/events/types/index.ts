@@ -104,6 +104,7 @@ export interface Event {
   end_time?: string | null; // ISO timestamp (TIMESTAMPTZ from database)
   venue_id: string;
   headliner_id: string;
+  no_headliner?: boolean; // When true, all artists are undercard with no featured headliner
   image_url?: string | null;
   status?: 'draft' | 'published' | 'invisible';
   is_tba?: boolean;     // TBA (To Be Announced) placeholder event

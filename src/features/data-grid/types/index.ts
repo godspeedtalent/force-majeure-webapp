@@ -14,6 +14,7 @@ export interface SelectOption {
 export interface DataGridColumn<T = any> {
   key: string;
   label: string;
+  description?: string; // Tooltip description shown on hover over the column header
   sortable?: boolean;
   filterable?: boolean;
   editable?: boolean;
@@ -36,6 +37,8 @@ export interface DataGridColumn<T = any> {
     | 'created_date'
     | 'select'; // Input type for editing
   options?: SelectOption[]; // Options for select type columns
+  /** Custom cell styling based on cell value - return additional class names */
+  cellStyle?: (value: any, row: T) => string | undefined;
 }
 
 /**

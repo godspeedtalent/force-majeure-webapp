@@ -53,6 +53,24 @@ export interface RecordingRecord {
   created_at: string;
   updated_at: string;
   artist_name?: string | null;
+  artist_image_url?: string | null;
+}
+
+export interface GuestRecord {
+  id: string;
+  email: string;
+  full_name: string | null;
+  phone: string | null;
+  billing_address_line_1: string | null;
+  billing_address_line_2: string | null;
+  billing_city: string | null;
+  billing_state: string | null;
+  billing_zip_code: string | null;
+  billing_country: string | null;
+  profile_id: string | null;
+  stripe_customer_id: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 // ============================================================================
@@ -60,7 +78,7 @@ export interface RecordingRecord {
 // ============================================================================
 
 export function useDatabaseCounts() {
-  const { data: pendingRegistrationsCount = 0 } = useQuery({
+  const { data: pendingRegistrationsCount = 0, isLoading: isLoadingPendingReg } = useQuery({
     queryKey: ['artist-registrations-pending-count'],
     queryFn: async () => {
       const { count, error } = await supabase
@@ -72,7 +90,7 @@ export function useDatabaseCounts() {
     },
   });
 
-  const { data: totalRegistrationsCount = 0 } = useQuery({
+  const { data: totalRegistrationsCount = 0, isLoading: isLoadingTotalReg } = useQuery({
     queryKey: ['artist-registrations-total-count'],
     queryFn: async () => {
       const { count, error } = await supabase
@@ -83,7 +101,7 @@ export function useDatabaseCounts() {
     },
   });
 
-  const { data: pendingUserRequestsCount = 0 } = useQuery({
+  const { data: pendingUserRequestsCount = 0, isLoading: isLoadingPendingReq } = useQuery({
     queryKey: ['user-requests-pending-count'],
     queryFn: async () => {
       const { count, error } = await supabase
@@ -95,7 +113,7 @@ export function useDatabaseCounts() {
     },
   });
 
-  const { data: totalUserRequestsCount = 0 } = useQuery({
+  const { data: totalUserRequestsCount = 0, isLoading: isLoadingTotalReq } = useQuery({
     queryKey: ['user-requests-total-count'],
     queryFn: async () => {
       const { count, error } = await supabase
@@ -106,7 +124,7 @@ export function useDatabaseCounts() {
     },
   });
 
-  const { data: venuesCount = 0 } = useQuery({
+  const { data: venuesCount = 0, isLoading: isLoadingVenues } = useQuery({
     queryKey: ['venues-count'],
     queryFn: async () => {
       const { count, error } = await supabase
@@ -117,7 +135,7 @@ export function useDatabaseCounts() {
     },
   });
 
-  const { data: organizationsCount = 0 } = useQuery({
+  const { data: organizationsCount = 0, isLoading: isLoadingOrgs } = useQuery({
     queryKey: ['organizations-count'],
     queryFn: async () => {
       const { count, error } = await supabase
@@ -128,7 +146,7 @@ export function useDatabaseCounts() {
     },
   });
 
-  const { data: usersCount = 0 } = useQuery({
+  const { data: usersCount = 0, isLoading: isLoadingUsers } = useQuery({
     queryKey: ['users-count'],
     queryFn: async () => {
       const { count, error } = await supabase
@@ -139,7 +157,7 @@ export function useDatabaseCounts() {
     },
   });
 
-  const { data: artistsCount = 0 } = useQuery({
+  const { data: artistsCount = 0, isLoading: isLoadingArtists } = useQuery({
     queryKey: ['artists-count'],
     queryFn: async () => {
       const { count, error } = await supabase
@@ -150,7 +168,7 @@ export function useDatabaseCounts() {
     },
   });
 
-  const { data: eventsCount = 0 } = useQuery({
+  const { data: eventsCount = 0, isLoading: isLoadingEvents } = useQuery({
     queryKey: ['events-count'],
     queryFn: async () => {
       const { count, error } = await supabase
@@ -161,7 +179,7 @@ export function useDatabaseCounts() {
     },
   });
 
-  const { data: recordingsCount = 0 } = useQuery({
+  const { data: recordingsCount = 0, isLoading: isLoadingRecordings } = useQuery({
     queryKey: ['recordings-count'],
     queryFn: async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -172,6 +190,33 @@ export function useDatabaseCounts() {
       return count ?? 0;
     },
   });
+
+  const { data: guestsCount = 0, isLoading: isLoadingGuests } = useQuery({
+    queryKey: ['guests-count'],
+    queryFn: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { count, error } = await (supabase as any)
+        .from('guests')
+        .select('*', { count: 'exact', head: true });
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
+  const { data: ordersCount = 0, isLoading: isLoadingOrders } = useQuery({
+    queryKey: ['orders-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('orders')
+        .select('*', { count: 'exact', head: true });
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
+  const isLoading = isLoadingPendingReg || isLoadingTotalReg || isLoadingPendingReq ||
+    isLoadingTotalReq || isLoadingVenues || isLoadingOrgs || isLoadingUsers ||
+    isLoadingArtists || isLoadingEvents || isLoadingRecordings || isLoadingGuests || isLoadingOrders;
 
   return {
     pendingRegistrationsCount,
@@ -184,6 +229,9 @@ export function useDatabaseCounts() {
     artistsCount,
     eventsCount,
     recordingsCount,
+    guestsCount,
+    ordersCount,
+    isLoading,
   };
 }
 
@@ -491,17 +539,18 @@ export function useRecordingsData() {
         .from('artist_recordings')
         .select(`
           id, artist_id, name, duration, url, cover_art, platform, is_primary_dj_set, created_at, updated_at,
-          artists!artist_id(name)
+          artists!artist_id(name, image_url)
         `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      // Flatten artist name for easier access
+      // Flatten artist data for easier access
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return (data ?? []).map((recording: any) => ({
         ...recording,
         artist_name: recording.artists?.name || null,
+        artist_image_url: recording.artists?.image_url || null,
       }));
     },
   });
@@ -661,5 +710,166 @@ export function useRecordingsData() {
     handleUpdate,
     handleDelete,
     handleRefreshDetails,
+  };
+}
+
+// ============================================================================
+// Guests Data Hook
+// ============================================================================
+
+export function useGuestsData() {
+  const { t } = useTranslation('common');
+  const queryClient = useQueryClient();
+
+  const { data: guests = [], isLoading } = useQuery({
+    queryKey: ['admin-guests'],
+    queryFn: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
+        .from('guests')
+        .select(`
+          id, email, full_name, phone,
+          billing_address_line_1, billing_address_line_2, billing_city,
+          billing_state, billing_zip_code, billing_country,
+          profile_id, stripe_customer_id, created_at, updated_at
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const handleUpdate = async (
+    row: GuestRecord,
+    columnKey: string,
+    newValue: unknown
+  ) => {
+    const normalizedValue =
+      typeof newValue === 'string' ? newValue.trim() : newValue;
+    const updateData: Record<string, unknown> = {
+      [columnKey]: normalizedValue === '' ? null : normalizedValue,
+    };
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase as any)
+        .from('guests')
+        .update(updateData)
+        .eq('id', row.id);
+
+      if (error) throw error;
+
+      queryClient.setQueryData(
+        ['admin-guests'],
+        (oldData: GuestRecord[] | undefined) => {
+          if (!oldData) return oldData;
+          return oldData.map(guest =>
+            guest.id === row.id
+              ? {
+                  ...guest,
+                  ...updateData,
+                  updated_at: new Date().toISOString(),
+                }
+              : guest
+          );
+        }
+      );
+
+      toast.success(t('devTools.database.guestUpdated'));
+    } catch (error) {
+      logger.error('Error updating guest:', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        source: 'useDeveloperDatabaseData',
+      });
+      toast.error(t('devTools.database.guestUpdateFailed'));
+      throw error;
+    }
+  };
+
+  const handleDelete = async (guest: GuestRecord) => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase as any)
+        .from('guests')
+        .delete()
+        .eq('id', guest.id);
+
+      if (error) throw error;
+
+      toast.success(t('devTools.database.guestDeleted'));
+      queryClient.invalidateQueries({ queryKey: ['admin-guests'] });
+    } catch (error) {
+      logger.error('Error deleting guest:', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        source: 'useDeveloperDatabaseData',
+      });
+      toast.error(t('devTools.database.guestDeleteFailed'));
+      throw error;
+    }
+  };
+
+  const handleAddressUpdate = async (
+    guest: GuestRecord,
+    address: {
+      line1: string | null;
+      line2: string | null;
+      city: string | null;
+      state: string | null;
+      zipCode: string | null;
+      country?: string | null;
+    }
+  ) => {
+    const updateData = {
+      billing_address_line_1: address.line1,
+      billing_address_line_2: address.line2,
+      billing_city: address.city,
+      billing_state: address.state,
+      billing_zip_code: address.zipCode,
+      billing_country: address.country || 'US',
+    };
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase as any)
+        .from('guests')
+        .update(updateData)
+        .eq('id', guest.id);
+
+      if (error) throw error;
+
+      queryClient.setQueryData(
+        ['admin-guests'],
+        (oldData: GuestRecord[] | undefined) => {
+          if (!oldData) return oldData;
+          return oldData.map(g =>
+            g.id === guest.id
+              ? {
+                  ...g,
+                  ...updateData,
+                  updated_at: new Date().toISOString(),
+                }
+              : g
+          );
+        }
+      );
+
+      toast.success(t('devTools.database.guestUpdated'));
+    } catch (error) {
+      logger.error('Error updating guest address:', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        source: 'useDeveloperDatabaseData',
+      });
+      toast.error(t('devTools.database.guestUpdateFailed'));
+      throw error;
+    }
+  };
+
+  return {
+    guests,
+    isLoading,
+    handleUpdate,
+    handleDelete,
+    handleAddressUpdate,
   };
 }

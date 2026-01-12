@@ -1,4 +1,4 @@
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, LucideIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export interface RelationCellProps {
@@ -7,12 +7,16 @@ export interface RelationCellProps {
   href?: string;
   external?: boolean;
   emptyText?: string;
+  /** Optional icon to display before the label (used as fallback if no imageUrl) */
+  icon?: LucideIcon;
+  /** Optional image URL to display instead of the icon */
+  imageUrl?: string | null;
 }
 
 /**
- * RelationCell - Displays a related entity with optional link
+ * RelationCell - Displays a related entity with optional link and icon
  *
- * Use for foreign key relationships (venue, organization, etc.)
+ * Use for foreign key relationships (venue, organization, artist, etc.)
  */
 export function RelationCell({
   value,
@@ -20,6 +24,8 @@ export function RelationCell({
   href,
   external = false,
   emptyText = '—',
+  icon: Icon,
+  imageUrl,
 }: RelationCellProps) {
   const displayText = label || value;
 
@@ -27,8 +33,36 @@ export function RelationCell({
     return <span className='text-muted-foreground text-sm'>{emptyText}</span>;
   }
 
+  // Render image if available, otherwise fall back to icon
+  const renderVisual = () => {
+    if (imageUrl) {
+      return (
+        <img
+          src={imageUrl}
+          alt=''
+          className='h-5 w-5 rounded-full object-cover shrink-0'
+        />
+      );
+    }
+    if (Icon) {
+      return <Icon className='h-3.5 w-3.5 shrink-0' />;
+    }
+    return null;
+  };
+
+  const content = (
+    <>
+      {renderVisual()}
+      <span className='truncate'>{displayText}</span>
+    </>
+  );
+
   if (!href) {
-    return <span className='text-sm'>{displayText}</span>;
+    return (
+      <span className='inline-flex items-center gap-1.5 text-sm'>
+        {content}
+      </span>
+    );
   }
 
   if (external) {
@@ -37,10 +71,10 @@ export function RelationCell({
         href={href}
         target='_blank'
         rel='noopener noreferrer'
-        className='inline-flex items-center gap-1 text-sm text-fm-gold hover:text-fm-gold/80 transition-colors'
+        className='inline-flex items-center gap-1.5 text-sm text-fm-gold hover:text-fm-gold/80 transition-colors'
       >
-        {displayText}
-        <ExternalLink className='h-3 w-3' />
+        {content}
+        <ExternalLink className='h-3 w-3 shrink-0' />
       </a>
     );
   }
@@ -48,9 +82,9 @@ export function RelationCell({
   return (
     <Link
       to={href}
-      className='text-sm text-fm-gold hover:text-fm-gold/80 transition-colors'
+      className='inline-flex items-center gap-1.5 text-sm text-fm-gold hover:text-fm-gold/80 transition-colors'
     >
-      {displayText}
+      {content}
     </Link>
   );
 }

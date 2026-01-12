@@ -31,7 +31,13 @@ import {
   SelectValue,
 } from '@/components/common/shadcn/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/common/shadcn/collapsible';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, HelpCircle } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/common/shadcn/tooltip';
 
 // Schema is created inside component to access translations
 const createFormSchema = (t: (key: string) => string) => z.object({
@@ -179,7 +185,19 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
                 name="utm_source"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('tracking.utmSource')} *</FormLabel>
+                    <FormLabel className="flex items-center gap-1.5">
+                      {t('tracking.utmSource')} *
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-xs">
+                            <p className="text-xs">{t('tracking.utmDescriptions.source')}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -212,7 +230,19 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
                 name="utm_medium"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('tracking.utmMedium')} *</FormLabel>
+                    <FormLabel className="flex items-center gap-1.5">
+                      {t('tracking.utmMedium')} *
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-xs">
+                            <p className="text-xs">{t('tracking.utmDescriptions.medium')}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -246,7 +276,19 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
               name="utm_campaign"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('tracking.utmCampaign')} *</FormLabel>
+                  <FormLabel className="flex items-center gap-1.5">
+                    {t('tracking.utmCampaign')} *
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-xs">
+                          <p className="text-xs">{t('tracking.utmDescriptions.campaign')}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder={t('tracking.placeholders.campaign')} {...field} />
                   </FormControl>
@@ -261,7 +303,19 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
                 name="utm_content"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('tracking.utmContent')}</FormLabel>
+                    <FormLabel className="flex items-center gap-1.5">
+                      {t('tracking.utmContent')}
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-xs">
+                            <p className="text-xs">{t('tracking.utmDescriptions.content')}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder={t('tracking.placeholders.content')} {...field} />
                     </FormControl>
@@ -275,7 +329,19 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
                 name="utm_term"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('tracking.utmTerm')}</FormLabel>
+                    <FormLabel className="flex items-center gap-1.5">
+                      {t('tracking.utmTerm')}
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-xs">
+                            <p className="text-xs">{t('tracking.utmDescriptions.term')}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder={t('tracking.placeholders.term')} {...field} />
                     </FormControl>
@@ -353,13 +419,14 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
             <div className="flex justify-end gap-2 pt-4">
               <FmCommonButton
                 type="button"
-                variant="secondary"
+                variant="default"
                 onClick={() => onOpenChange(false)}
               >
                 {t('buttons.cancel')}
               </FmCommonButton>
               <FmCommonButton
                 type="submit"
+                variant="gold"
                 loading={createLink.isPending || updateLink.isPending}
               >
                 {editingLink ? t('tracking.updateLink') : t('tracking.createLinkButton')}

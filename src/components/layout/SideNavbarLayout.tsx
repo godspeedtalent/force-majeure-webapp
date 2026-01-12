@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { cn } from '@/shared';
 import { useIsMobile } from '@/shared';
 import { Navigation } from '@/components/navigation/Navigation';
+import { Footer } from '@/components/navigation/Footer';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import {
   FmCommonSideNav,
@@ -84,7 +85,8 @@ export const SideNavbarLayout = <T extends string>({
       {/* Content area - flex row with sidebar and main content, both independently scrollable */}
       <SidebarProvider defaultOpen={defaultOpen} className='flex-1 flex min-h-0'>
         {/* Desktop sidebar - hidden on mobile when mobile tab bar is provided */}
-        <div className={cn(mobileTabBar && isMobile ? 'hidden' : 'flex')}>
+        {/* z-20 ensures sidebar appears above the fixed TopographicBackground */}
+        <div className={cn('relative z-20', mobileTabBar && isMobile ? 'hidden' : 'flex')}>
           <FmCommonSideNav
             groups={navigationGroups}
             activeItem={activeItem}
@@ -103,7 +105,7 @@ export const SideNavbarLayout = <T extends string>({
           <div className='absolute inset-0 bg-gradient-monochrome opacity-10 pointer-events-none' />
           <div
             className={cn(
-              'relative z-10 p-6',
+              'relative z-10 p-6 pb-16', // pb-16 accounts for fixed footer height
               isMobile && 'px-4 py-4',
               isMobile && mobileTabBar && 'pb-[120px]'
             )}
@@ -129,6 +131,11 @@ export const SideNavbarLayout = <T extends string>({
 
       {/* Mobile bottom tab bar */}
       {mobileTabBar}
+
+      {/* Full-width footer at bottom - fixed to span entire viewport */}
+      <div className='fixed bottom-0 left-0 right-0 z-30'>
+        <Footer />
+      </div>
     </div>
   );
 };

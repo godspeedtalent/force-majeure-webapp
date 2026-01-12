@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Search, Filter, Download, Trash2, Plus } from 'lucide-react';
 import { Input } from '@/components/common/shadcn/input';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmDataGridKeyboardShortcuts } from '../FmDataGridKeyboardShortcuts';
 
 export interface FmDataGridToolbarProps {
   // Search
@@ -140,6 +141,9 @@ export function FmDataGridToolbar({
             {hasGrouping ? t('table.grouped') : t('table.groupBy')}
           </FmCommonButton>
         )}
+
+        {/* Keyboard Shortcuts */}
+        <FmDataGridKeyboardShortcuts />
 
         {/* Additional Toolbar Actions */}
         {toolbarActions}

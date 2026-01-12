@@ -7,7 +7,7 @@ import {
 import { FmCommonAdminGridPage } from '@/components/common/layout/FmCommonAdminGridPage';
 import { useEvents } from '@/features/events/hooks/useEvents';
 import { useQueryClient } from '@tanstack/react-query';
-import { Edit, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Edit, AlertTriangle, CheckCircle2, MapPin, Mic2 } from 'lucide-react';
 import { supabase, logger } from '@/shared';
 import { FmPortalTooltip } from '@/components/common/feedback/FmPortalTooltip';
 
@@ -17,8 +17,8 @@ interface EventRow {
   start_time?: string | null;
   venue_id?: string | null;
   headliner_id?: string | null;
-  venue?: { name?: string } | null;
-  headliner?: { name?: string } | null;
+  venue?: { name?: string; image_url?: string | null } | null;
+  headliner?: { name?: string; image_url?: string | null } | null;
 }
 
 export const EventsManagement = () => {
@@ -79,15 +79,19 @@ export const EventsManagement = () => {
       key: 'venue_id',
       label: 'Venue',
       sortable: true,
+      icon: MapPin,
       getLabel: (row: EventRow) => row.venue?.name || '—',
       getHref: (row: EventRow) => row.venue_id ? `/venue/${row.venue_id}` : '#',
+      getImageUrl: (row: EventRow) => row.venue?.image_url || null,
     }),
     DataGridColumns.relation({
       key: 'headliner_id',
       label: 'Headliner',
       sortable: true,
+      icon: Mic2,
       getLabel: (row: EventRow) => row.headliner?.name || '—',
       getHref: (row: EventRow) => row.headliner_id ? `/artist/${row.headliner_id}` : '#',
+      getImageUrl: (row: EventRow) => row.headliner?.image_url || null,
     }),
     {
       key: 'issues',

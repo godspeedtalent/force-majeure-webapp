@@ -2,7 +2,8 @@
  * Order Importer Hook
  *
  * Handles the actual import of validated orders into the database.
- * Provides live progress updates for each row being imported.
+ * Provides live progress updates with concurrent batch processing.
+ * Each order is processed atomically - failures don't affect other orders.
  */
 
 import { useCallback } from 'react';
@@ -18,6 +19,9 @@ import type {
   LineItemTemplate,
 } from '../types';
 
+// Configuration for concurrent processing
+const BATCH_SIZE = 10; // Number of orders to process concurrently
+
 interface UseOrderImporterOptions {
   parsedOrders: ParsedOrder[];
   selectedEventId: string;
@@ -27,6 +31,329 @@ interface UseOrderImporterOptions {
   onResultsChange: (results: ImportResult[]) => void;
   onProcessChange: (process: ProcessRecord | null) => void;
   onStepChange: (step: 'complete') => void;
+}
+
+/**
+ * Result from importing a single order
+ * Contains all created IDs for rollback tracking
+ */
+interface SingleOrderImportResult {
+  success: boolean;
+  orderId: string | null;
+  ticketCount: number;
+  error?: string;
+  // Rollback tracking data
+  createdOrderId?: string;
+  createdOrderItemIds: string[];
+  createdTicketIds: string[];
+  createdGuestId?: string;
+  createdAddressId?: string; // Address created in normalized addresses table
+  // Partial errors (line items that failed but order succeeded)
+  partialErrors: string[];
+}
+
+/**
+ * Import a single order atomically
+ * This function handles all the database operations for one order
+ * and catches any errors without affecting other orders
+ */
+async function importSingleOrder(
+  order: ParsedOrder,
+  selectedEventId: string,
+): Promise<SingleOrderImportResult> {
+  const result: SingleOrderImportResult = {
+    success: false,
+    orderId: null,
+    ticketCount: 0,
+    createdOrderItemIds: [],
+    createdTicketIds: [],
+    partialErrors: [],
+  };
+
+  try {
+    let guestId: string | null = null;
+
+    // If no existing user, create or find a guest record
+    if (!order.existingUserId) {
+      // First, check if a guest with this email already exists
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: existingGuest } = await (supabase as any)
+        .from('guests')
+        .select('id, full_name')
+        .eq('email', order.customerEmail.toLowerCase())
+        .maybeSingle();
+
+      if (existingGuest) {
+        guestId = existingGuest.id;
+
+        // Determine the best name source:
+        // 1. From unmapped field assignment (guestAddress.full_name)
+        // 2. From main column mapping (customerName - which is attendee_name on ticket)
+        const guestFullName = order.guestAddress?.full_name || order.customerName;
+
+        // Update guest name if provided and guest doesn't have one
+        if (guestFullName && !existingGuest.full_name) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          await (supabase as any)
+            .from('guests')
+            .update({ full_name: guestFullName })
+            .eq('id', existingGuest.id);
+        }
+      } else {
+        // Determine the best name source for new guest
+        const guestFullName = order.guestAddress?.full_name || order.customerName;
+
+        // Create a new guest record (without address - address goes in addresses table)
+        const guestInsert = {
+          email: order.customerEmail.toLowerCase(),
+          full_name: guestFullName || null,
+        };
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: newGuest, error: guestError } = await (supabase as any)
+          .from('guests')
+          .insert(guestInsert)
+          .select('id')
+          .single();
+
+        if (guestError) {
+          throw new Error(`Guest creation failed: ${guestError.message}`);
+        }
+        guestId = newGuest.id;
+        result.createdGuestId = newGuest.id;
+      }
+
+      // Create address in normalized addresses table if we have address data
+      if (guestId && order.guestAddress && Object.keys(order.guestAddress).length > 0) {
+        // Use the upsert function to create/update the guest's billing address
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: addressId, error: addressError } = await (supabase as any).rpc('upsert_guest_billing_address', {
+          p_guest_id: guestId,
+          p_line_1: order.guestAddress.billing_address_line_1 || null,
+          p_line_2: order.guestAddress.billing_address_line_2 || null,
+          p_city: order.guestAddress.billing_city || null,
+          p_state: order.guestAddress.billing_state || null,
+          p_zip_code: order.guestAddress.billing_zip_code || null,
+          p_country: order.guestAddress.billing_country || 'US',
+        });
+
+        if (addressError) {
+          // Log but don't fail the order - address is optional
+          logger.warn('Failed to create guest address', {
+            error: addressError.message,
+            guestId,
+            source: 'useOrderImporter.importSingleOrder',
+          });
+        } else if (addressId) {
+          // Track the created address for rollback
+          result.createdAddressId = addressId as string;
+        }
+      }
+    }
+
+    const orderInsert = {
+      event_id: selectedEventId,
+      user_id: order.existingUserId || null,
+      guest_id: order.existingUserId ? null : guestId,
+      customer_email: order.customerEmail,
+      status: order.status,
+      subtotal_cents: order.subtotalCents,
+      fees_cents: order.feesCents,
+      total_cents: order.totalCents,
+      currency: 'usd',
+      created_at: order.orderDate,
+    };
+
+    const { data: newOrder, error: orderError } = await supabase
+      .from('orders')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .insert(orderInsert as any)
+      .select()
+      .single();
+
+    if (orderError) {
+      throw new Error(`Order creation failed: ${orderError.message}`);
+    }
+
+    result.createdOrderId = newOrder.id;
+    result.orderId = newOrder.id;
+
+    // Process line items
+    for (const lineItem of order.lineItems) {
+      const orderItemInsert = {
+        order_id: newOrder.id,
+        item_type: lineItem.type === 'ticket' ? 'ticket' : 'product',
+        ticket_tier_id: lineItem.type === 'ticket' ? lineItem.ticketTierId : null,
+        product_id: lineItem.type === 'product' ? lineItem.productId : null,
+        quantity: lineItem.quantity,
+        unit_price_cents: lineItem.unitPriceCents,
+        unit_fee_cents: lineItem.unitFeeCents,
+      };
+
+      const { data: orderItem, error: itemError } = await supabase
+        .from('order_items')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .insert(orderItemInsert as any)
+        .select()
+        .single();
+
+      if (itemError) {
+        result.partialErrors.push(`Line item "${lineItem.name}": ${itemError.message}`);
+        continue;
+      }
+
+      result.createdOrderItemIds.push(orderItem.id);
+
+      if (lineItem.type === 'ticket' && lineItem.ticketTierId) {
+        const ticketsToCreate = [];
+        for (let j = 0; j < lineItem.quantity; j++) {
+          const hasProtection = lineItem.subItems.some(si => si.type === 'product' && si.name.toLowerCase().includes('protection'));
+
+          ticketsToCreate.push({
+            order_id: newOrder.id,
+            order_item_id: orderItem.id,
+            ticket_tier_id: lineItem.ticketTierId,
+            event_id: selectedEventId,
+            attendee_name: order.customerName,
+            attendee_email: order.customerEmail,
+            qr_code_data: `IMPORT-${newOrder.id}-${lineItem.templateId}-${j}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            status: order.status === 'paid' ? 'valid' : order.status,
+            has_protection: hasProtection,
+          });
+        }
+
+        const { data: createdTickets, error: ticketsError } = await supabase
+          .from('tickets')
+          .insert(ticketsToCreate)
+          .select('id');
+
+        if (ticketsError) {
+          result.partialErrors.push(`Tickets for "${lineItem.name}": ${ticketsError.message}`);
+        } else if (createdTickets) {
+          result.createdTicketIds.push(...createdTickets.map(t => t.id));
+          result.ticketCount += createdTickets.length;
+
+          // Update ticket tier inventory to reflect sold tickets
+          // First get current inventory values
+          const { data: currentTier, error: tierFetchError } = await supabase
+            .from('ticket_tiers')
+            .select('sold_inventory, available_inventory')
+            .eq('id', lineItem.ticketTierId)
+            .single();
+
+          if (tierFetchError) {
+            logger.warn('Failed to fetch tier inventory for update', {
+              error: tierFetchError.message,
+              tierId: lineItem.ticketTierId,
+              source: 'useOrderImporter.importSingleOrder',
+            });
+          } else if (currentTier) {
+            const ticketCount = createdTickets.length;
+            const { error: tierUpdateError } = await supabase
+              .from('ticket_tiers')
+              .update({
+                sold_inventory: (currentTier.sold_inventory ?? 0) + ticketCount,
+                available_inventory: Math.max(0, (currentTier.available_inventory ?? 0) - ticketCount),
+              })
+              .eq('id', lineItem.ticketTierId);
+
+            if (tierUpdateError) {
+              logger.warn('Failed to update tier inventory', {
+                error: tierUpdateError.message,
+                tierId: lineItem.ticketTierId,
+                ticketCount,
+                source: 'useOrderImporter.importSingleOrder',
+              });
+            }
+          }
+        }
+      }
+
+      // Process sub-items
+      for (const subItem of lineItem.subItems) {
+        const subItemInsert = {
+          order_id: newOrder.id,
+          item_type: 'product',
+          product_id: subItem.productId || null,
+          quantity: subItem.quantity,
+          unit_price_cents: subItem.unitPriceCents,
+          unit_fee_cents: 0,
+        };
+
+        const { data: subOrderItem, error: subItemError } = await supabase
+          .from('order_items')
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .insert(subItemInsert as any)
+          .select()
+          .single();
+
+        if (subItemError) {
+          result.partialErrors.push(`Sub-item "${subItem.name}": ${subItemError.message}`);
+        } else if (subOrderItem) {
+          result.createdOrderItemIds.push(subOrderItem.id);
+        }
+      }
+    }
+
+    // Order created successfully (even if some line items had issues)
+    result.success = true;
+    if (result.partialErrors.length > 0) {
+      result.error = `Partial: ${result.partialErrors.join('; ')}`;
+    }
+
+    return result;
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    result.success = false;
+    result.error = errorMessage;
+
+    logger.error('Error importing order', {
+      error: errorMessage,
+      email: order.customerEmail,
+      rowIndex: order.rowIndex,
+      source: 'useOrderImporter.importSingleOrder',
+    });
+
+    return result;
+  }
+}
+
+/**
+ * Process a batch of orders concurrently using Promise.allSettled
+ * Each order is processed atomically - individual failures don't affect others
+ */
+async function processBatch(
+  orders: Array<{ order: ParsedOrder; resultIndex: number }>,
+  selectedEventId: string,
+): Promise<Array<{ resultIndex: number; result: SingleOrderImportResult }>> {
+  const promises = orders.map(async ({ order, resultIndex }) => {
+    const result = await importSingleOrder(order, selectedEventId);
+    return { resultIndex, result };
+  });
+
+  // Use Promise.allSettled to ensure all orders complete regardless of individual failures
+  const settledResults = await Promise.allSettled(promises);
+
+  return settledResults.map((settled, i) => {
+    if (settled.status === 'fulfilled') {
+      return settled.value;
+    } else {
+      // This shouldn't happen since importSingleOrder catches its own errors
+      // but handle it just in case
+      return {
+        resultIndex: orders[i].resultIndex,
+        result: {
+          success: false,
+          orderId: null,
+          ticketCount: 0,
+          createdOrderItemIds: [],
+          createdTicketIds: [],
+          partialErrors: [],
+          error: settled.reason instanceof Error ? settled.reason.message : 'Unknown error',
+        } as SingleOrderImportResult,
+      };
+    }
+  });
 }
 
 export function useOrderImporter({
@@ -61,10 +388,12 @@ export function useOrderImporter({
     }));
     onResultsChange([...results]);
 
+    // Aggregated rollback data
     const createdOrderIds: string[] = [];
     const createdOrderItemIds: string[] = [];
     const createdTicketIds: string[] = [];
     const createdGuestIds: string[] = [];
+    const createdAddressIds: string[] = []; // Addresses in normalized addresses table
     const importErrors: Array<{ rowIndex: number; error: string }> = [];
     let processId: string | null = null;
 
@@ -87,6 +416,7 @@ export function useOrderImporter({
         line_items_count: lineItems.length,
         total_orders: validOrders.length,
         total_tickets: totalTickets,
+        batch_size: BATCH_SIZE,
         // Store data for potential re-run
         rerun_data: {
           parsed_orders: validOrders,
@@ -126,246 +456,107 @@ export function useOrderImporter({
 
       let successCount = 0;
       let failedCount = 0;
+      let processedCount = 0;
 
-      for (let i = 0; i < validOrders.length; i++) {
-        const order = validOrders[i];
+      // Create batches of orders to process concurrently
+      const batches: Array<Array<{ order: ParsedOrder; resultIndex: number }>> = [];
+      for (let i = 0; i < validOrders.length; i += BATCH_SIZE) {
+        const batch = validOrders.slice(i, i + BATCH_SIZE).map((order, batchIndex) => ({
+          order,
+          resultIndex: i + batchIndex,
+        }));
+        batches.push(batch);
+      }
 
-        // Update status to importing
-        results[i] = { ...results[i], status: 'importing' };
+      logger.info('Starting concurrent import', {
+        totalOrders: validOrders.length,
+        batchSize: BATCH_SIZE,
+        totalBatches: batches.length,
+        source: 'useOrderImporter.importOrders',
+      });
+
+      // Process batches sequentially, but orders within each batch concurrently
+      for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
+        const batch = batches[batchIndex];
+
+        // Mark all orders in this batch as importing
+        for (const { resultIndex } of batch) {
+          results[resultIndex] = { ...results[resultIndex], status: 'importing' };
+        }
         onResultsChange([...results]);
 
-        try {
-          let guestId: string | null = null;
+        // Process all orders in the batch concurrently
+        const batchResults = await processBatch(batch, selectedEventId);
 
-          // If no existing user, create or find a guest record
-          if (!order.existingUserId) {
-            // First, check if a guest with this email already exists
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { data: existingGuest } = await (supabase as any)
-              .from('guests')
-              .select('id')
-              .eq('email', order.customerEmail.toLowerCase())
-              .maybeSingle();
+        // Process results and aggregate rollback data
+        for (const { resultIndex, result } of batchResults) {
+          const order = validOrders[resultIndex];
 
-            if (existingGuest) {
-              guestId = existingGuest.id;
-            } else {
-              // Create a new guest record
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const { data: newGuest, error: guestError } = await (supabase as any)
-                .from('guests')
-                .insert({
-                  email: order.customerEmail.toLowerCase(),
-                  full_name: order.customerName || null,
-                })
-                .select('id')
-                .single();
-
-              if (guestError) {
-                throw new Error(`Guest creation failed: ${guestError.message}`);
-              }
-              guestId = newGuest.id;
-              createdGuestIds.push(newGuest.id);
-            }
-          }
-
-          const orderInsert = {
-            event_id: selectedEventId,
-            user_id: order.existingUserId || null,
-            guest_id: order.existingUserId ? null : guestId,
-            customer_email: order.customerEmail,
-            status: order.status,
-            subtotal_cents: order.subtotalCents,
-            fees_cents: order.feesCents,
-            total_cents: order.totalCents,
-            currency: 'usd',
-            created_at: order.orderDate,
-          };
-
-          const { data: newOrder, error: orderError } = await supabase
-            .from('orders')
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .insert(orderInsert as any)
-            .select()
-            .single();
-
-          if (orderError) {
-            throw new Error(`Order creation failed: ${orderError.message}`);
-          }
-
-          createdOrderIds.push(newOrder.id);
-
-          let orderTicketCount = 0;
-          const lineItemErrors: string[] = [];
-
-          for (const lineItem of order.lineItems) {
-            const orderItemInsert = {
-              order_id: newOrder.id,
-              item_type: lineItem.type === 'ticket' ? 'ticket' : 'product',
-              ticket_tier_id: lineItem.type === 'ticket' ? lineItem.ticketTierId : null,
-              product_id: lineItem.type === 'product' ? lineItem.productId : null,
-              quantity: lineItem.quantity,
-              unit_price_cents: lineItem.unitPriceCents,
-              unit_fee_cents: lineItem.unitFeeCents,
-            };
-
-            const { data: orderItem, error: itemError } = await supabase
-              .from('order_items')
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              .insert(orderItemInsert as any)
-              .select()
-              .single();
-
-            if (itemError) {
-              lineItemErrors.push(`Line item "${lineItem.name}": ${itemError.message}`);
-              continue;
-            }
-
-            createdOrderItemIds.push(orderItem.id);
-
-            if (lineItem.type === 'ticket' && lineItem.ticketTierId) {
-              const ticketsToCreate = [];
-              for (let j = 0; j < lineItem.quantity; j++) {
-                const hasProtection = lineItem.subItems.some(si => si.type === 'product' && si.name.toLowerCase().includes('protection'));
-
-                ticketsToCreate.push({
-                  order_id: newOrder.id,
-                  order_item_id: orderItem.id,
-                  ticket_tier_id: lineItem.ticketTierId,
-                  event_id: selectedEventId,
-                  attendee_name: order.customerName,
-                  attendee_email: order.customerEmail,
-                  qr_code_data: `IMPORT-${newOrder.id}-${lineItem.templateId}-${j}-${Date.now()}`,
-                  status: order.status === 'paid' ? 'valid' : order.status,
-                  has_protection: hasProtection,
-                });
-              }
-
-              const { data: createdTickets, error: ticketsError } = await supabase
-                .from('tickets')
-                .insert(ticketsToCreate)
-                .select('id');
-
-              if (ticketsError) {
-                lineItemErrors.push(`Tickets for "${lineItem.name}": ${ticketsError.message}`);
-              } else if (createdTickets) {
-                createdTicketIds.push(...createdTickets.map(t => t.id));
-                orderTicketCount += createdTickets.length;
-
-                // Update ticket tier inventory to reflect sold tickets
-                // First get current inventory values
-                const { data: currentTier, error: tierFetchError } = await supabase
-                  .from('ticket_tiers')
-                  .select('sold_inventory, available_inventory')
-                  .eq('id', lineItem.ticketTierId)
-                  .single();
-
-                if (tierFetchError) {
-                  logger.warn('Failed to fetch tier inventory for update', {
-                    error: tierFetchError.message,
-                    tierId: lineItem.ticketTierId,
-                    source: 'useOrderImporter.importOrders',
-                  });
-                } else if (currentTier) {
-                  const ticketCount = createdTickets.length;
-                  const { error: tierUpdateError } = await supabase
-                    .from('ticket_tiers')
-                    .update({
-                      sold_inventory: (currentTier.sold_inventory ?? 0) + ticketCount,
-                      available_inventory: Math.max(0, (currentTier.available_inventory ?? 0) - ticketCount),
-                    })
-                    .eq('id', lineItem.ticketTierId);
-
-                  if (tierUpdateError) {
-                    logger.warn('Failed to update tier inventory', {
-                      error: tierUpdateError.message,
-                      tierId: lineItem.ticketTierId,
-                      ticketCount,
-                      source: 'useOrderImporter.importOrders',
-                    });
-                  }
-                }
-              }
-            }
-
-            for (const subItem of lineItem.subItems) {
-              const subItemInsert = {
-                order_id: newOrder.id,
-                item_type: 'product',
-                product_id: subItem.productId || null,
-                quantity: subItem.quantity,
-                unit_price_cents: subItem.unitPriceCents,
-                unit_fee_cents: 0,
-              };
-
-              const { data: subOrderItem, error: subItemError } = await supabase
-                .from('order_items')
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .insert(subItemInsert as any)
-                .select()
-                .single();
-
-              if (subItemError) {
-                lineItemErrors.push(`Sub-item "${subItem.name}": ${subItemError.message}`);
-              } else if (subOrderItem) {
-                createdOrderItemIds.push(subOrderItem.id);
-              }
-            }
-          }
-
-          // Order created successfully (even if some line items had issues)
-          if (lineItemErrors.length > 0) {
-            // Partial success - order created but some items failed
-            results[i] = {
-              ...results[i],
-              orderId: newOrder.id,
-              ticketCount: orderTicketCount,
+          if (result.success) {
+            results[resultIndex] = {
+              ...results[resultIndex],
+              orderId: result.orderId,
+              ticketCount: result.ticketCount,
               status: 'success',
-              error: `Partial: ${lineItemErrors.join('; ')}`,
+              error: result.error, // May contain partial errors
             };
-            importErrors.push({ rowIndex: order.rowIndex, error: lineItemErrors.join('; ') });
+            successCount++;
+
+            // Aggregate rollback data
+            if (result.createdOrderId) {
+              createdOrderIds.push(result.createdOrderId);
+            }
+            createdOrderItemIds.push(...result.createdOrderItemIds);
+            createdTicketIds.push(...result.createdTicketIds);
+            if (result.createdGuestId) {
+              createdGuestIds.push(result.createdGuestId);
+            }
+            if (result.createdAddressId) {
+              createdAddressIds.push(result.createdAddressId);
+            }
+
+            // Track partial errors
+            if (result.partialErrors.length > 0) {
+              importErrors.push({ rowIndex: order.rowIndex, error: result.partialErrors.join('; ') });
+            }
           } else {
-            results[i] = {
-              ...results[i],
-              orderId: newOrder.id,
-              ticketCount: orderTicketCount,
-              status: 'success',
+            results[resultIndex] = {
+              ...results[resultIndex],
+              status: 'failed',
+              error: result.error,
             };
+            failedCount++;
+            importErrors.push({ rowIndex: order.rowIndex, error: result.error || 'Unknown error' });
           }
-          successCount++;
-        } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-          results[i] = {
-            ...results[i],
-            status: 'failed',
-            error: errorMessage,
-          };
-          importErrors.push({ rowIndex: order.rowIndex, error: errorMessage });
-          failedCount++;
-
-          logger.error('Error importing order', {
-            error: errorMessage,
-            email: order.customerEmail,
-            rowIndex: order.rowIndex,
-            source: 'useOrderImporter.importOrders',
-          });
         }
 
-        // Update results after each order
+        processedCount += batch.length;
+
+        // Update UI after each batch
         onResultsChange([...results]);
 
-        // Update process progress every 5 orders or at the end
-        if (processId && (i % 5 === 0 || i === validOrders.length - 1)) {
+        // Update process progress after each batch
+        if (processId) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           await (supabase as any)
             .from('processes')
             .update({
-              processed_items: i + 1,
+              processed_items: processedCount,
               successful_items: successCount,
               failed_items: failedCount,
             })
             .eq('id', processId);
         }
+
+        logger.info('Batch completed', {
+          batchIndex: batchIndex + 1,
+          totalBatches: batches.length,
+          batchSize: batch.length,
+          processedCount,
+          successCount,
+          failedCount,
+          source: 'useOrderImporter.importOrders',
+        });
       }
 
       // Final process update with error list
@@ -375,6 +566,7 @@ export function useOrderImporter({
           order_item_ids: createdOrderItemIds,
           ticket_ids: createdTicketIds,
           guest_ids: createdGuestIds,
+          address_ids: createdAddressIds,
         };
 
         const processMetadataWithErrors = {
@@ -436,6 +628,7 @@ export function useOrderImporter({
               order_item_ids: createdOrderItemIds,
               ticket_ids: createdTicketIds,
               guest_ids: createdGuestIds,
+              address_ids: createdAddressIds,
             },
           })
           .eq('id', processId);

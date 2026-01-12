@@ -152,16 +152,29 @@ export const DATA_TYPE_DISPLAY: Record<FieldDataType, { label: string; color: st
  * Fields that can receive unmapped CSV columns
  */
 export const ASSIGNABLE_FIELDS: AssignableField[] = [
+  // guests table - for guest (non-authenticated) purchasers
+  { table: 'guests', column: 'full_name', dataType: 'text', description: 'Guest full name' },
+  { table: 'guests', column: 'phone', dataType: 'text', description: 'Guest phone number' },
+  { table: 'guests', column: 'billing_address_line_1', dataType: 'text', description: 'Guest billing address line 1' },
+  { table: 'guests', column: 'billing_address_line_2', dataType: 'text', description: 'Guest billing address line 2' },
+  { table: 'guests', column: 'billing_city', dataType: 'text', description: 'Guest billing city' },
+  { table: 'guests', column: 'billing_state', dataType: 'text', description: 'Guest billing state/province' },
+  { table: 'guests', column: 'billing_zip_code', dataType: 'text', description: 'Guest billing postal/zip code' },
+  { table: 'guests', column: 'billing_country', dataType: 'text', description: 'Guest billing country' },
   // profiles table - for matched users
-  { table: 'profiles', column: 'phone', dataType: 'text', description: 'User phone number' },
   { table: 'profiles', column: 'full_name', dataType: 'text', description: 'User full name' },
+  { table: 'profiles', column: 'display_name', dataType: 'text', description: 'User display name (public)' },
+  { table: 'profiles', column: 'phone_number', dataType: 'text', description: 'User phone number' },
+  { table: 'profiles', column: 'instagram_handle', dataType: 'text', description: 'User Instagram handle' },
+  { table: 'profiles', column: 'home_city', dataType: 'text', description: 'User home city' },
   { table: 'profiles', column: 'billing_address_line_1', dataType: 'text', description: 'User billing address line 1' },
   { table: 'profiles', column: 'billing_address_line_2', dataType: 'text', description: 'User billing address line 2' },
   { table: 'profiles', column: 'billing_city', dataType: 'text', description: 'User billing city' },
   { table: 'profiles', column: 'billing_state', dataType: 'text', description: 'User billing state/province' },
   { table: 'profiles', column: 'billing_zip_code', dataType: 'text', description: 'User billing postal/zip code' },
   { table: 'profiles', column: 'billing_country', dataType: 'text', description: 'User billing country' },
-  // orders table - order-specific billing address
+  // orders table - order-specific data
+  { table: 'orders', column: 'customer_email', dataType: 'text', description: 'Order customer email (override)' },
   { table: 'orders', column: 'billing_address_line_1', dataType: 'text', description: 'Order billing address line 1' },
   { table: 'orders', column: 'billing_address_line_2', dataType: 'text', description: 'Order billing address line 2' },
   { table: 'orders', column: 'billing_city', dataType: 'text', description: 'Order billing city' },
@@ -169,6 +182,7 @@ export const ASSIGNABLE_FIELDS: AssignableField[] = [
   { table: 'orders', column: 'billing_zip_code', dataType: 'text', description: 'Order billing postal/zip code' },
   { table: 'orders', column: 'billing_country', dataType: 'text', description: 'Order billing country' },
   // tickets table
+  { table: 'tickets', column: 'attendee_name', dataType: 'text', description: 'Attendee name on ticket' },
   { table: 'tickets', column: 'attendee_email', dataType: 'text', description: 'Attendee email (if different from purchaser)' },
   { table: 'tickets', column: 'attendee_phone', dataType: 'text', description: 'Attendee phone number' },
 ];

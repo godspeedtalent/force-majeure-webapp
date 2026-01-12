@@ -4,8 +4,9 @@
  * Provides comprehensive column management:
  * - Show/hide all columns (including hidden ones)
  * - Rename column display labels
- * - Reorder columns
+ * - Reorder columns via drag-and-drop
  * - Freeze/unfreeze columns
+ * - Refresh schema from database
  * - Reset to defaults
  */
 
@@ -18,7 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/common/shadcn/dialog';
-import { Button } from '@/components/common/shadcn/button';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { Input } from '@/components/common/shadcn/input';
 import {
   Select,
@@ -38,8 +39,27 @@ import {
   X,
   Edit2,
   Check,
+  GripVertical,
+  RefreshCw,
 } from 'lucide-react';
 import { cn } from '@/shared';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { arrayMove } from '@dnd-kit/sortable';
 
 interface ColumnConfig {
   key: string;
@@ -66,6 +86,197 @@ export interface FmColumnConfigModalProps {
   columnConfigs: ColumnConfig[];
   onSaveConfiguration: (configs: ColumnConfig[]) => void;
   onResetConfiguration: () => void;
+  /** Optional callback to refresh schema from database */
+  onRefreshSchema?: () => void;
+  /** Whether schema refresh is in progress */
+  isRefreshing?: boolean;
+}
+
+/** Sortable column row component for drag-and-drop reordering */
+interface SortableColumnRowProps {
+  column: DataGridColumn;
+  config: ColumnConfig;
+  originalLabel: string;
+  displayLabel: string;
+  isEditing: boolean;
+  editValue: string;
+  onEditValueChange: (value: string) => void;
+  onStartEditing: () => void;
+  onSaveEdit: () => void;
+  onCancelEdit: () => void;
+  onToggleVisibility: () => void;
+  onToggleFrozen: () => void;
+  onUpdateType: (type: ColumnConfig['type']) => void;
+  t: (key: string, options?: Record<string, unknown>) => string;
+}
+
+function SortableColumnRow({
+  column,
+  config,
+  originalLabel,
+  displayLabel,
+  isEditing,
+  editValue,
+  onEditValueChange,
+  onStartEditing,
+  onSaveEdit,
+  onCancelEdit,
+  onToggleVisibility,
+  onToggleFrozen,
+  onUpdateType,
+  t,
+}: SortableColumnRowProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: column.key });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  const isRenamed = config.customLabel !== undefined;
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        'flex items-center gap-3 p-3 hover:bg-muted/50 transition-all duration-200',
+        config.frozen && 'bg-fm-gold/5 border-l-2 border-l-fm-gold',
+        !config.visible && 'opacity-50',
+        isDragging && 'opacity-50 shadow-lg z-50 bg-background'
+      )}
+    >
+      {/* Drag Handle */}
+      <button
+        {...attributes}
+        {...listeners}
+        className='cursor-grab active:cursor-grabbing hover:text-fm-gold transition-colors p-1'
+        title={t('dataGrid.dragToReorder')}
+      >
+        <GripVertical className='h-4 w-4 text-muted-foreground' />
+      </button>
+
+      {/* Visibility Toggle */}
+      <button
+        onClick={onToggleVisibility}
+        className='p-1 hover:bg-muted rounded-none transition-colors'
+        title={config.visible ? t('table.hideColumn') : t('table.showColumn')}
+      >
+        {config.visible ? (
+          <Eye className='h-4 w-4 text-green-500' />
+        ) : (
+          <EyeOff className='h-4 w-4 text-muted-foreground' />
+        )}
+      </button>
+
+      {/* Freeze Toggle */}
+      <button
+        onClick={onToggleFrozen}
+        className='p-1 hover:bg-muted rounded-none transition-colors'
+        title={config.frozen ? t('table.unfreezeColumn') : t('table.freezeColumn')}
+      >
+        {config.frozen ? (
+          <Pin className='h-4 w-4 text-fm-gold' />
+        ) : (
+          <PinOff className='h-4 w-4 text-muted-foreground' />
+        )}
+      </button>
+
+      {/* Column Label/Name */}
+      <div className='flex-1 min-w-0'>
+        {isEditing ? (
+          <div className='flex items-center gap-2'>
+            <Input
+              value={editValue}
+              onChange={e => onEditValueChange(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') onSaveEdit();
+                if (e.key === 'Escape') onCancelEdit();
+              }}
+              className='h-8 text-sm'
+              autoFocus
+            />
+            <button
+              onClick={onSaveEdit}
+              className='p-1 hover:bg-green-500/10 rounded-none transition-colors'
+            >
+              <Check className='h-4 w-4 text-green-500' />
+            </button>
+            <button
+              onClick={onCancelEdit}
+              className='p-1 hover:bg-destructive/10 rounded-none transition-colors'
+            >
+              <X className='h-4 w-4 text-destructive' />
+            </button>
+          </div>
+        ) : (
+          <div className='flex flex-col'>
+            <div className='flex items-center gap-2'>
+              <span className='font-medium text-sm truncate'>
+                {displayLabel}
+              </span>
+              {isRenamed && (
+                <span className='text-xs text-blue-500 font-mono'>
+                  ({t('table.renamed').toLowerCase().replace(':', '')})
+                </span>
+              )}
+            </div>
+            {isRenamed && (
+              <span className='text-xs text-muted-foreground truncate'>
+                {t('table.original', { label: originalLabel })}
+              </span>
+            )}
+            <span className='text-xs text-muted-foreground font-mono truncate'>
+              {column.key}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Type Selector */}
+      {!isEditing && (
+        <div className='w-32'>
+          <Select
+            value={config.type || 'text'}
+            onValueChange={(value) =>
+              onUpdateType(value as ColumnConfig['type'])
+            }
+          >
+            <SelectTrigger className='h-8 text-xs'>
+              <SelectValue placeholder='Type' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='text'>{t('dataTypes.text')}</SelectItem>
+              <SelectItem value='number'>{t('dataTypes.number')}</SelectItem>
+              <SelectItem value='email'>{t('dataTypes.email')}</SelectItem>
+              <SelectItem value='url'>{t('dataTypes.url')}</SelectItem>
+              <SelectItem value='date'>{t('dataTypes.date')}</SelectItem>
+              <SelectItem value='boolean'>{t('dataTypes.boolean')}</SelectItem>
+              <SelectItem value='created_date'>{t('dataTypes.date')}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
+      {/* Edit Button */}
+      {!isEditing && (
+        <button
+          onClick={onStartEditing}
+          className='p-1 hover:bg-muted rounded-none transition-colors'
+          title={t('table.renameColumn')}
+        >
+          <Edit2 className='h-4 w-4 text-muted-foreground' />
+        </button>
+      )}
+    </div>
+  );
 }
 
 export function FmColumnConfigModal({
@@ -75,8 +286,19 @@ export function FmColumnConfigModal({
   columnConfigs,
   onSaveConfiguration,
   onResetConfiguration,
+  onRefreshSchema,
+  isRefreshing = false,
 }: FmColumnConfigModalProps) {
   const { t } = useTranslation('common');
+
+  // DnD sensors for drag-and-drop reordering
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   // Create a map of current configs
   const configMap = useMemo(() => {
     const map = new Map<string, ColumnConfig>();
@@ -245,6 +467,32 @@ export function FmColumnConfigModal({
     });
   };
 
+  // Handle drag end for reordering
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) return;
+
+    const sortedColumns = columnsWithConfigs.map(c => c.column.key);
+    const oldIndex = sortedColumns.indexOf(active.id as string);
+    const newIndex = sortedColumns.indexOf(over.id as string);
+
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const reorderedKeys = arrayMove(sortedColumns, oldIndex, newIndex);
+
+    setLocalConfigs(prev => {
+      const newMap = new Map(prev);
+      reorderedKeys.forEach((key, index) => {
+        const config = newMap.get(key);
+        if (config) {
+          newMap.set(key, { ...config, order: index });
+        }
+      });
+      return newMap;
+    });
+  };
+
   // Save changes
   const handleSave = () => {
     const configs = Array.from(localConfigs.values());
@@ -298,172 +546,91 @@ export function FmColumnConfigModal({
 
         {/* Bulk Actions */}
         <div className='flex flex-wrap gap-2'>
-          <Button variant='outline' size='sm' onClick={showAll}>
-            <Eye className='h-4 w-4 mr-2' />
+          <FmCommonButton variant='default' size='sm' icon={Eye} onClick={showAll}>
             {t('table.showAll')}
-          </Button>
-          <Button variant='outline' size='sm' onClick={hideAll}>
-            <EyeOff className='h-4 w-4 mr-2' />
+          </FmCommonButton>
+          <FmCommonButton variant='default' size='sm' icon={EyeOff} onClick={hideAll}>
             {t('table.hideAll')}
-          </Button>
-          <Button variant='outline' size='sm' onClick={unfreezeAll}>
-            <PinOff className='h-4 w-4 mr-2' />
+          </FmCommonButton>
+          <FmCommonButton variant='default' size='sm' icon={PinOff} onClick={unfreezeAll}>
             {t('table.unfreezeAll')}
-          </Button>
-          <Button variant='outline' size='sm' onClick={resetLabels}>
-            <RotateCcw className='h-4 w-4 mr-2' />
+          </FmCommonButton>
+          <FmCommonButton variant='default' size='sm' icon={RotateCcw} onClick={resetLabels}>
             {t('table.resetLabels')}
-          </Button>
+          </FmCommonButton>
+          {onRefreshSchema && (
+            <FmCommonButton
+              variant='default'
+              size='sm'
+              icon={RefreshCw}
+              onClick={onRefreshSchema}
+              disabled={isRefreshing}
+              loading={isRefreshing}
+            >
+              {t('dataGrid.refreshSchema')}
+            </FmCommonButton>
+          )}
         </div>
 
-        {/* Column List */}
-        <div className='flex-1 overflow-y-auto border border-border rounded-md'>
-          <div className='divide-y divide-border'>
-            {columnsWithConfigs.map(({ column, config, originalLabel, displayLabel }) => {
-              const isEditing = editingKey === column.key;
-              const isRenamed = config.customLabel !== undefined;
-
-              return (
-                <div
-                  key={column.key}
-                  className={cn(
-                    'flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors',
-                    config.frozen && 'bg-fm-gold/5 border-l-2 border-l-fm-gold',
-                    !config.visible && 'opacity-50'
-                  )}
-                >
-                  {/* Visibility Toggle */}
-                  <button
-                    onClick={() => toggleVisibility(column.key)}
-                    className='p-1 hover:bg-muted rounded transition-colors'
-                    title={config.visible ? t('table.hideColumn') : t('table.showColumn')}
-                  >
-                    {config.visible ? (
-                      <Eye className='h-4 w-4 text-green-500' />
-                    ) : (
-                      <EyeOff className='h-4 w-4 text-muted-foreground' />
-                    )}
-                  </button>
-
-                  {/* Freeze Toggle */}
-                  <button
-                    onClick={() => toggleFrozen(column.key)}
-                    className='p-1 hover:bg-muted rounded transition-colors'
-                    title={config.frozen ? t('table.unfreezeColumn') : t('table.freezeColumn')}
-                  >
-                    {config.frozen ? (
-                      <Pin className='h-4 w-4 text-fm-gold' />
-                    ) : (
-                      <PinOff className='h-4 w-4 text-muted-foreground' />
-                    )}
-                  </button>
-
-                  {/* Column Label/Name */}
-                  <div className='flex-1 min-w-0'>
-                    {isEditing ? (
-                      <div className='flex items-center gap-2'>
-                        <Input
-                          value={editValue}
-                          onChange={e => setEditValue(e.target.value)}
-                          onKeyDown={e => {
-                            if (e.key === 'Enter') saveEdit(column.key);
-                            if (e.key === 'Escape') cancelEdit();
-                          }}
-                          className='h-8 text-sm'
-                          autoFocus
-                        />
-                        <button
-                          onClick={() => saveEdit(column.key)}
-                          className='p-1 hover:bg-green-500/10 rounded transition-colors'
-                        >
-                          <Check className='h-4 w-4 text-green-500' />
-                        </button>
-                        <button
-                          onClick={cancelEdit}
-                          className='p-1 hover:bg-destructive/10 rounded transition-colors'
-                        >
-                          <X className='h-4 w-4 text-destructive' />
-                        </button>
-                      </div>
-                    ) : (
-                      <div className='flex flex-col'>
-                        <div className='flex items-center gap-2'>
-                          <span className='font-medium text-sm truncate'>
-                            {displayLabel}
-                          </span>
-                          {isRenamed && (
-                            <span className='text-xs text-blue-500 font-mono'>
-                              ({t('table.renamed').toLowerCase().replace(':', '')})
-                            </span>
-                          )}
-                        </div>
-                        {isRenamed && (
-                          <span className='text-xs text-muted-foreground truncate'>
-                            {t('table.original', { label: originalLabel })}
-                          </span>
-                        )}
-                        <span className='text-xs text-muted-foreground font-mono truncate'>
-                          {column.key}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Type Selector */}
-                  {!isEditing && (
-                    <div className='w-32'>
-                      <Select
-                        value={config.type || 'text'}
-                        onValueChange={(value) =>
-                          updateType(column.key, value as ColumnConfig['type'])
-                        }
-                      >
-                        <SelectTrigger className='h-8 text-xs'>
-                          <SelectValue placeholder='Type' />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value='text'>{t('dataTypes.text')}</SelectItem>
-                          <SelectItem value='number'>{t('dataTypes.number')}</SelectItem>
-                          <SelectItem value='email'>{t('dataTypes.email')}</SelectItem>
-                          <SelectItem value='url'>{t('dataTypes.url')}</SelectItem>
-                          <SelectItem value='date'>{t('dataTypes.date')}</SelectItem>
-                          <SelectItem value='boolean'>{t('dataTypes.boolean')}</SelectItem>
-                          <SelectItem value='created_date'>{t('dataTypes.date')}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-
-                  {/* Edit Button */}
-                  {!isEditing && (
-                    <button
-                      onClick={() => startEditing(column.key, displayLabel)}
-                      className='p-1 hover:bg-muted rounded transition-colors'
-                      title={t('table.renameColumn')}
-                    >
-                      <Edit2 className='h-4 w-4 text-muted-foreground' />
-                    </button>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+        {/* Column List with Drag-and-Drop Reordering */}
+        <div className='flex-1 overflow-y-auto border border-border rounded-none'>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={columnsWithConfigs.map(c => c.column.key)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className='divide-y divide-border'>
+                {columnsWithConfigs.map(({ column, config, originalLabel, displayLabel }) => (
+                  <SortableColumnRow
+                    key={column.key}
+                    column={column}
+                    config={config}
+                    originalLabel={originalLabel}
+                    displayLabel={displayLabel}
+                    isEditing={editingKey === column.key}
+                    editValue={editValue}
+                    onEditValueChange={setEditValue}
+                    onStartEditing={() => startEditing(column.key, displayLabel)}
+                    onSaveEdit={() => saveEdit(column.key)}
+                    onCancelEdit={cancelEdit}
+                    onToggleVisibility={() => toggleVisibility(column.key)}
+                    onToggleFrozen={() => toggleFrozen(column.key)}
+                    onUpdateType={(type) => updateType(column.key, type)}
+                    t={t}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
         </div>
 
         {/* Actions */}
         <div className='flex justify-between pt-4 border-t border-border'>
-          <Button variant='outline' onClick={handleReset}>
-            <RotateCcw className='h-4 w-4 mr-2' />
+          <FmCommonButton
+            variant='destructive'
+            icon={RotateCcw}
+            onClick={handleReset}
+          >
             {t('table.resetToDefault')}
-          </Button>
+          </FmCommonButton>
           <div className='flex gap-2'>
-            <Button variant='outline' onClick={() => onOpenChange(false)}>
+            <FmCommonButton
+              variant='default'
+              onClick={() => onOpenChange(false)}
+            >
               {t('buttons.cancel')}
-            </Button>
-            <Button onClick={handleSave}>
-              <Save className='h-4 w-4 mr-2' />
+            </FmCommonButton>
+            <FmCommonButton
+              variant='gold'
+              icon={Save}
+              onClick={handleSave}
+            >
               {t('formActions.saveChanges')}
-            </Button>
+            </FmCommonButton>
           </div>
         </div>
       </DialogContent>

@@ -26,6 +26,7 @@ export interface EventFormState {
   title: string;
   subtitle: string;
   headlinerId: string;
+  noHeadliner: boolean;
   eventDate: Date | undefined;
   endTime: string;
   isAfterHours: boolean;
@@ -41,6 +42,7 @@ export interface EventFormActions {
   setTitle: (title: string) => void;
   setSubtitle: (subtitle: string) => void;
   setHeadlinerId: (id: string) => void;
+  setNoHeadliner: (noHeadliner: boolean) => void;
   setEventDate: (date: Date | undefined) => void;
   setEndTime: (time: string) => void;
   setIsAfterHours: (isAfterHours: boolean) => void;
@@ -66,6 +68,7 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
   const [title, setTitle] = useState<string>(initialState?.title || '');
   const [subtitle, setSubtitle] = useState<string>(initialState?.subtitle || '');
   const [headlinerId, setHeadlinerId] = useState<string>(initialState?.headlinerId || '');
+  const [noHeadliner, setNoHeadliner] = useState<boolean>(initialState?.noHeadliner || false);
   const [eventDate, setEventDate] = useState<Date | undefined>(initialState?.eventDate);
   const [endTime, setEndTime] = useState<string>(initialState?.endTime || '02:00');
   const [isAfterHours, setIsAfterHours] = useState(initialState?.isAfterHours || false);
@@ -123,6 +126,7 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
     setTitle('');
     setSubtitle('');
     setHeadlinerId('');
+    setNoHeadliner(false);
     setEventDate(undefined);
     setEndTime('02:00');
     setIsAfterHours(false);
@@ -138,6 +142,7 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
     title,
     subtitle,
     headlinerId,
+    noHeadliner,
     eventDate,
     endTime,
     isAfterHours,
@@ -153,6 +158,7 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
     setTitle,
     setSubtitle,
     setHeadlinerId,
+    setNoHeadliner,
     setEventDate,
     setEndTime,
     setIsAfterHours,

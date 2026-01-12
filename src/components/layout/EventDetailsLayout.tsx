@@ -48,9 +48,10 @@ export function EventDetailsLayout({
       )}
 
       {/* Mobile: stacked layout with gradient fade */}
-      <div className='lg:hidden relative z-10 flex flex-col min-h-screen overflow-x-hidden'>
+      {/* pt-16 accounts for fixed navigation height */}
+      <div className='lg:hidden relative z-10 flex flex-col min-h-screen overflow-x-hidden pt-16'>
         {/* Hero section with gradient fade */}
-        <div className='relative h-[55vh] flex-shrink-0 overflow-hidden'>
+        <div className='relative h-[50vh] flex-shrink-0 overflow-hidden'>
           {/* Hero image container - slight parallax via will-change */}
           <div className='absolute inset-0 will-change-transform'>
             {leftColumn}
@@ -59,32 +60,34 @@ export function EventDetailsLayout({
           <div className='absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none' />
         </div>
         {/* Content section - transparent to show topography behind */}
-        <div className='relative z-20 flex-1 -mt-4 overflow-x-hidden max-w-full min-w-0'>
+        <div className='relative z-20 flex-1 -mt-4 overflow-x-hidden max-w-full min-w-0 pb-12'>
           {rightColumn}
-        </div>
-        <div className='relative z-20 bg-background/95 backdrop-blur-sm'>
-          <Footer />
         </div>
       </div>
 
-      {/* Desktop: two-column layout with footer below fold */}
-      <div className='hidden lg:block'>
+      {/* Desktop: two-column layout with internal scroll */}
+      {/* pt-16 accounts for fixed navigation height */}
+      <div className='hidden lg:block pt-16'>
         {/* Two-column content area - viewport height minus nav */}
         <div className='flex h-[calc(100vh-4rem)]'>
-          {/* Left Column - Hero Image (width based on aspect ratio) - z-10 */}
+          {/* Left Column - Hero Image (fixed height, fills viewport) - z-10 */}
           <div className='relative overflow-hidden z-10 h-full flex-shrink-0'>
             {leftColumn}
           </div>
 
-          {/* Right Column - Content (internal scroll) - z-20 */}
-          <div className='flex-1 overflow-y-auto relative z-20'>
-            <div className='w-full max-w-4xl mx-auto px-8'>
-              {rightColumn}
+          {/* Right Column - Content (internal scroll container) - z-20 */}
+          <div className='flex-1 overflow-y-auto relative z-20 pb-12'>
+            <div className='w-full max-w-4xl mx-auto px-8 min-h-full flex flex-col'>
+              <div className='flex-1'>
+                {rightColumn}
+              </div>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Footer - positioned directly after content */}
+      {/* Full-width footer - fixed at bottom, spans entire viewport */}
+      <div className='fixed bottom-0 left-0 right-0 z-30'>
         <Footer />
       </div>
     </div>

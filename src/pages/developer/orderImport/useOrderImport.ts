@@ -56,6 +56,7 @@ export function useOrderImport(options?: UseOrderImportOptions) {
     ticketTiers: queries.ticketTiers,
     eventDetails: queries.eventDetails,
     defaultOrderDate,
+    unmappedAssignments: state.unmappedAssignments,
     onValidationComplete: state.setParsedOrders,
     onStepChange: state.setStep,
   });

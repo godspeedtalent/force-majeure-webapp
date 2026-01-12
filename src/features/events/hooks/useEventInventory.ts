@@ -1,6 +1,24 @@
 import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/shared';
+import { logger } from '@/shared/services/logger';
 import { ticketTierService } from '@/features/ticketing/services/ticketTierService';
 import type { TicketTier } from '@/features/events/types';
+
+/**
+ * Response from the get_event_inventory_stats database function
+ */
+interface DynamicInventoryRow {
+  tier_id: string;
+  tier_name: string;
+  price_cents: number;
+  total_tickets: number;
+  sold_count: number;
+  reserved_count: number;
+  available_count: number;
+  pending_count: number;
+  is_active: boolean;
+  tier_order: number;
+}
 
 /**
  * Inventory statistics for a single ticket tier
@@ -34,9 +52,59 @@ export interface EventInventoryStats {
 }
 
 /**
- * Transform raw ticket tiers into inventory statistics
+ * Transform dynamic inventory rows into inventory statistics
+ * Uses the accurate counts from the database function
  */
-function calculateInventoryStats(tiers: TicketTier[]): EventInventoryStats {
+function calculateInventoryStatsFromDynamic(rows: DynamicInventoryRow[]): EventInventoryStats {
+  const tierStats: TierInventoryStats[] = rows.map((row) => {
+    const total = row.total_tickets ?? 0;
+    const sold = row.sold_count ?? 0;
+    const reserved = row.reserved_count ?? 0;
+    const available = row.available_count ?? Math.max(0, total - sold - reserved);
+    const percentSold = total > 0 ? Math.round((sold / total) * 100) : 0;
+
+    return {
+      tierId: row.tier_id,
+      tierName: row.tier_name,
+      totalCapacity: total,
+      sold,
+      reserved,
+      available,
+      percentSold,
+      isSoldOut: available === 0 && total > 0,
+      isLowStock: total > 0 && available > 0 && available / total < 0.1,
+      isActive: row.is_active ?? true,
+      priceCents: row.price_cents,
+    };
+  });
+
+  // Calculate event-wide totals
+  const totalCapacity = tierStats.reduce((sum, t) => sum + t.totalCapacity, 0);
+  const totalSold = tierStats.reduce((sum, t) => sum + t.sold, 0);
+  const totalReserved = tierStats.reduce((sum, t) => sum + t.reserved, 0);
+  const totalAvailable = tierStats.reduce((sum, t) => sum + t.available, 0);
+  const overallPercentSold = totalCapacity > 0 ? Math.round((totalSold / totalCapacity) * 100) : 0;
+
+  const activeTiers = tierStats.filter((t) => t.isActive);
+  const soldOutTiers = tierStats.filter((t) => t.isSoldOut && t.isActive);
+
+  return {
+    totalCapacity,
+    totalSold,
+    totalReserved,
+    totalAvailable,
+    overallPercentSold,
+    tiers: tierStats,
+    activeTiersCount: activeTiers.length,
+    soldOutTiersCount: soldOutTiers.length,
+  };
+}
+
+/**
+ * Transform raw ticket tiers into inventory statistics
+ * Fallback method using stored counters (less accurate)
+ */
+function calculateInventoryStatsFromTiers(tiers: TicketTier[]): EventInventoryStats {
   const tierStats: TierInventoryStats[] = tiers.map((tier) => {
     const total = tier.total_tickets ?? 0;
     const sold = tier.sold_inventory ?? 0;
@@ -79,6 +147,39 @@ function calculateInventoryStats(tiers: TicketTier[]): EventInventoryStats {
     activeTiersCount: activeTiers.length,
     soldOutTiersCount: soldOutTiers.length,
   };
+}
+
+/**
+ * Fetch inventory stats using the dynamic database function
+ * Falls back to stored counters if the function doesn't exist
+ */
+async function fetchEventInventory(eventId: string): Promise<EventInventoryStats> {
+  // Try the dynamic RPC function first (accurate counts)
+  // Note: Using type assertion since types are generated after migration runs
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: dynamicData, error: rpcError } = await (supabase as any)
+    .rpc('get_event_inventory_stats', { p_event_id: eventId });
+
+  if (!rpcError && dynamicData && Array.isArray(dynamicData) && dynamicData.length > 0) {
+    logger.debug('Using dynamic inventory counts from database function', {
+      eventId,
+      tierCount: dynamicData.length,
+      source: 'useEventInventory',
+    });
+    return calculateInventoryStatsFromDynamic(dynamicData as DynamicInventoryRow[]);
+  }
+
+  // Fallback to the old method using stored counters
+  if (rpcError) {
+    logger.warn('Dynamic inventory function not available, falling back to stored counters', {
+      error: rpcError.message,
+      eventId,
+      source: 'useEventInventory',
+    });
+  }
+
+  const tiers = await ticketTierService.getTiersByEventId(eventId);
+  return calculateInventoryStatsFromTiers(tiers);
 }
 
 /**
@@ -125,8 +226,9 @@ export function useEventInventory(
         throw new Error('Event ID is required');
       }
 
-      const tiers = await ticketTierService.getTiersByEventId(eventId);
-      return calculateInventoryStats(tiers);
+      // Use dynamic counting from database function (accurate)
+      // with fallback to stored counters if function not available
+      return fetchEventInventory(eventId);
     },
     enabled: enabled && !!eventId,
     refetchInterval,

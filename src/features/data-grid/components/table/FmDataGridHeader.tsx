@@ -8,6 +8,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/common/shadcn/dropdown-menu';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/common/shadcn/select';
+import { FilterOperator, ColumnFilter } from '../../hooks/useDataGridFilters';
+import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
@@ -32,14 +40,23 @@ export interface FmDataGridHeaderProps<T> {
   onSelectAll: (checked: boolean) => void;
   sortColumn: string | null;
   sortDirection: 'asc' | 'desc';
-  onSort: (columnKey: string) => void;
+  onSort: (columnKey: string, addToMultiSort?: boolean) => void;
   columnFilters: Record<string, string>;
-  onColumnFilter: (columnKey: string, value: string) => void;
+  onColumnFilter: (columnKey: string, value: string, operator?: FilterOperator) => void;
   onHideColumn?: (columnKey: string) => void;
   onColumnReorder?: (fromIndex: number, toIndex: number) => void;
   columnWidths: Record<string, number>;
   onResizeStart: (columnKey: string, e: React.MouseEvent) => void;
+  onAutoFitColumn?: (columnKey: string) => void;
   onToggleFreeze?: (columnKey: string) => void;
+  /** Get the sort order index for a column (1-based), or null if not sorted */
+  getSortIndex?: (columnKey: string) => number | null;
+  /** Get the sort direction for a column, or null if not sorted */
+  getSortDirection?: (columnKey: string) => 'asc' | 'desc' | null;
+  /** Get current filter for a column */
+  getColumnFilter?: (columnKey: string) => ColumnFilter | null;
+  /** Show row numbers column */
+  showRowNumbers?: boolean;
 }
 
 export function FmDataGridHeader<T>({
@@ -56,7 +73,12 @@ export function FmDataGridHeader<T>({
   onColumnReorder,
   columnWidths,
   onResizeStart,
+  onAutoFitColumn,
   onToggleFreeze,
+  getSortIndex,
+  getSortDirection,
+  getColumnFilter,
+  showRowNumbers = false,
 }: FmDataGridHeaderProps<T>) {
   const { t } = useTranslation('common');
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -152,10 +174,10 @@ export function FmDataGridHeader<T>({
   }, []);
 
   return (
-    <TableHeader>
-      <TableRow className='border-border/50 bg-muted/50 hover:bg-muted/50 group'>
-        {/* Checkbox Column */}
-        <TableHead className='w-12'>
+    <TableHeader className='sticky top-0 z-20'>
+      <TableRow className='border-border/50 bg-background/95 backdrop-blur-sm hover:bg-background/95 group'>
+        {/* Checkbox Column - sticky for horizontal scroll */}
+        <TableHead className='w-12 sticky left-0 z-30 bg-background/95 backdrop-blur-sm'>
           <FmCommonCheckbox
             checked={isAllSelected}
             onCheckedChange={onSelectAll}
@@ -163,11 +185,19 @@ export function FmDataGridHeader<T>({
           />
         </TableHead>
 
+        {/* Row Number Column */}
+        {showRowNumbers && (
+          <TableHead className='w-12 text-center text-muted-foreground font-mono text-xs sticky left-12 z-30 bg-background/95 backdrop-blur-sm border-r border-border/60'>
+            #
+          </TableHead>
+        )}
+
         {/* Data Columns */}
         {columns.map((column, colIndex) => (
           <ContextMenu key={column.key}>
             <ContextMenuTrigger asChild>
               <TableHead
+                data-column-key={column.key}
                 draggable={!!onColumnReorder}
                 onDragStart={e => onColumnReorder && handleDragStart(e, colIndex)}
                 onDragEnd={handleDragEnd}
@@ -178,7 +208,8 @@ export function FmDataGridHeader<T>({
                   'font-canela text-foreground font-semibold relative group/header',
                   column.width,
                   column.sortable && 'cursor-pointer select-none hover:bg-muted',
-                  sortColumn === column.key &&
+                  // Highlight sorted columns (supports multi-column sorting)
+                  (getSortDirection?.(column.key) != null || sortColumn === column.key) &&
                     'bg-fm-gold text-black hover:bg-fm-gold/90',
                   'border-l border-r border-border/60',
                   draggedIndex === colIndex && 'opacity-50',
@@ -202,7 +233,7 @@ export function FmDataGridHeader<T>({
                     zIndex: 20,
                   }),
                 }}
-                onClick={() => column.sortable && onSort(column.key)}
+                onClick={(e) => column.sortable && onSort(column.key, e.shiftKey)}
               >
                 <div className='flex items-center gap-2'>
                   {onColumnReorder && (
@@ -219,7 +250,23 @@ export function FmDataGridHeader<T>({
                           </div>
                         </TooltipTrigger>
                         <TooltipContent side='bottom'>
-                          <p className='text-xs'>{column.label}</p>
+                          <p className='text-xs font-semibold'>{column.label}</p>
+                          {column.description && (
+                            <p className='text-xs text-muted-foreground mt-1'>{column.description}</p>
+                          )}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  ) : column.description ? (
+                    <TooltipProvider>
+                      <Tooltip delayDuration={300}>
+                        <TooltipTrigger asChild>
+                          <span className='cursor-help border-b border-dotted border-muted-foreground/50'>
+                            {column.label}
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent side='bottom' className='max-w-xs'>
+                          <p className='text-xs'>{column.description}</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -227,83 +274,152 @@ export function FmDataGridHeader<T>({
                     <span>{column.label}</span>
                   )}
                   
-                  {column.sortable &&
-                    sortColumn === column.key &&
-                    (sortDirection === 'asc' ? (
-                      <ChevronUp className='h-3 w-3' />
-                    ) : (
-                      <ChevronDown className='h-3 w-3' />
-                    ))}
-                  {column.filterable && (
-                    <DropdownMenu>
-                      <TooltipProvider>
-                        <Tooltip delayDuration={300}>
-                          <TooltipTrigger asChild>
-                            <DropdownMenuTrigger asChild>
-                              <button
-                                data-filter-trigger
-                                className={cn(
-                                  'h-6 w-6 p-0 hover:bg-fm-gold/20 transition-all duration-200 rounded opacity-0 group-hover:opacity-100',
-                                  columnFilters[column.key] && 'opacity-100 bg-fm-gold/20'
-                                )}
-                                onClick={e => e.stopPropagation()}
-                              >
-                                <Filter
+                  {column.sortable && (() => {
+                    const sortIndex = getSortIndex?.(column.key);
+                    const colSortDirection = getSortDirection?.(column.key);
+                    // Use multi-column sort helpers if available, otherwise fall back to legacy
+                    const isSorted = sortIndex !== null && sortIndex !== undefined
+                      ? true
+                      : sortColumn === column.key;
+                    const direction = colSortDirection ?? (sortColumn === column.key ? sortDirection : null);
+
+                    if (!isSorted || !direction) return null;
+
+                    return (
+                      <div className='flex items-center gap-0.5'>
+                        {direction === 'asc' ? (
+                          <ChevronUp className='h-3 w-3' />
+                        ) : (
+                          <ChevronDown className='h-3 w-3' />
+                        )}
+                        {sortIndex !== null && sortIndex !== undefined && sortIndex > 0 && (
+                          <span className='text-[10px] font-bold min-w-[14px] h-[14px] rounded-full bg-black/30 flex items-center justify-center'>
+                            {sortIndex}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })()}
+                  {column.filterable && (() => {
+                    const currentFilter = getColumnFilter?.(column.key);
+                    const hasFilter = currentFilter && (currentFilter.value || currentFilter.operator === 'isEmpty' || currentFilter.operator === 'isNotEmpty');
+                    const filterOperator = currentFilter?.operator || 'contains';
+                    const filterValue = currentFilter?.value || columnFilters[column.key] || '';
+
+                    return (
+                      <DropdownMenu>
+                        <TooltipProvider>
+                          <Tooltip delayDuration={300}>
+                            <TooltipTrigger asChild>
+                              <DropdownMenuTrigger asChild>
+                                <button
+                                  data-filter-trigger
                                   className={cn(
-                                    'h-3 w-3 mx-auto',
-                                    columnFilters[column.key]
-                                      ? 'text-fm-gold'
-                                      : 'text-muted-foreground'
+                                    'h-6 w-6 p-0 hover:bg-fm-gold/20 transition-all duration-200 rounded opacity-0 group-hover:opacity-100',
+                                    hasFilter && 'opacity-100 bg-fm-gold/20'
                                   )}
+                                  onClick={e => e.stopPropagation()}
+                                >
+                                  <Filter
+                                    className={cn(
+                                      'h-3 w-3 mx-auto',
+                                      hasFilter
+                                        ? 'text-fm-gold'
+                                        : 'text-muted-foreground'
+                                    )}
+                                  />
+                                </button>
+                              </DropdownMenuTrigger>
+                            </TooltipTrigger>
+                            {hasFilter && (
+                              <TooltipContent side='bottom' className='max-w-xs'>
+                                <p className='text-xs'>
+                                  {t(`filterOperators.${filterOperator}`)}: {filterValue || '-'}
+                                </p>
+                              </TooltipContent>
+                            )}
+                          </Tooltip>
+                        </TooltipProvider>
+                        <DropdownMenuContent align='start' className='w-72'>
+                          <div className='p-2 space-y-2'>
+                            {/* Operator selector */}
+                            <Select
+                              value={filterOperator}
+                              onValueChange={(value: FilterOperator) => {
+                                onColumnFilter(column.key, filterValue, value);
+                              }}
+                            >
+                              <SelectTrigger className='h-8' onClick={e => e.stopPropagation()}>
+                                <SelectValue placeholder={t('filterOperators.contains')} />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value='contains'>{t('filterOperators.contains')}</SelectItem>
+                                <SelectItem value='equals'>{t('filterOperators.equals')}</SelectItem>
+                                <SelectItem value='startsWith'>{t('filterOperators.startsWith')}</SelectItem>
+                                <SelectItem value='endsWith'>{t('filterOperators.endsWith')}</SelectItem>
+                                <SelectItem value='greaterThan'>{t('filterOperators.greaterThan')}</SelectItem>
+                                <SelectItem value='lessThan'>{t('filterOperators.lessThan')}</SelectItem>
+                                <SelectItem value='isEmpty'>{t('filterOperators.isEmpty')}</SelectItem>
+                                <SelectItem value='isNotEmpty'>{t('filterOperators.isNotEmpty')}</SelectItem>
+                              </SelectContent>
+                            </Select>
+
+                            {/* Value input (hidden for isEmpty/isNotEmpty) */}
+                            {filterOperator !== 'isEmpty' && filterOperator !== 'isNotEmpty' && (
+                              <div className='relative'>
+                                <Input
+                                  placeholder={t('table.filterColumn', { column: column.label })}
+                                  value={filterValue}
+                                  onChange={e =>
+                                    onColumnFilter(column.key, e.target.value, filterOperator)
+                                  }
+                                  className='h-8 pr-8'
+                                  onClick={e => e.stopPropagation()}
                                 />
-                              </button>
-                            </DropdownMenuTrigger>
-                          </TooltipTrigger>
-                          {columnFilters[column.key] && (
-                            <TooltipContent side='bottom' className='max-w-xs'>
-                              <p className='text-xs'>
-                                Filter: {columnFilters[column.key]}
-                              </p>
-                            </TooltipContent>
-                          )}
-                        </Tooltip>
-                      </TooltipProvider>
-                      <DropdownMenuContent align='start' className='w-64'>
-                        <div className='p-2'>
-                          <div className='relative'>
-                            <Input
-                              placeholder={t('table.filterColumn', { column: column.label })}
-                              value={columnFilters[column.key] || ''}
-                              onChange={e =>
-                                onColumnFilter(column.key, e.target.value)
-                              }
-                              className='h-8 pr-8'
-                              onClick={e => e.stopPropagation()}
-                            />
-                            {columnFilters[column.key] && (
+                                {filterValue && (
+                                  <button
+                                    onClick={e => {
+                                      e.stopPropagation();
+                                      onColumnFilter(column.key, '', filterOperator);
+                                    }}
+                                    className='absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center hover:bg-muted rounded-sm transition-colors'
+                                  >
+                                    <X className='h-3 w-3 text-muted-foreground' />
+                                  </button>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Clear filter button */}
+                            {hasFilter && (
                               <button
                                 onClick={e => {
                                   e.stopPropagation();
                                   onColumnFilter(column.key, '');
                                 }}
-                                className='absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center hover:bg-muted rounded-sm transition-colors'
+                                className='w-full text-xs text-muted-foreground hover:text-foreground py-1 transition-colors'
                               >
-                                <X className='h-3 w-3 text-muted-foreground' />
+                                {t('buttons.clear')} {t('buttons.filter').toLowerCase()}
                               </button>
                             )}
                           </div>
-                        </div>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    );
+                  })()}
                 </div>
 
-                {/* Resize handle - wider hit area for better UX */}
+                {/* Resize handle - wider hit area for better UX, double-click to auto-fit */}
                 <div
                   className='absolute right-0 top-0 bottom-0 w-2 cursor-col-resize hover:bg-fm-gold/50 transition-colors group-hover/header:opacity-100 opacity-0 z-10'
                   onMouseDown={e => handleResizeMouseDown(column.key, e)}
+                  onDoubleClick={e => {
+                    e.stopPropagation();
+                    onAutoFitColumn?.(column.key);
+                  }}
                   onClick={e => e.stopPropagation()}
                   draggable={false}
+                  title={t('table.doubleClickToAutoFit')}
                 />
               </TableHead>
             </ContextMenuTrigger>

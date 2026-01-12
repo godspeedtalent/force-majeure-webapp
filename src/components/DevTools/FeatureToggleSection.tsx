@@ -295,7 +295,7 @@ export const FeatureToggleSection = () => {
   return (
     <>
       {/* Header with environment info - sticky */}
-      <div className='sticky top-0 z-10 -mx-6 px-6 py-3 mb-3 border-b border-white/10 bg-black/80 backdrop-blur-md'>
+      <div className='sticky top-0 z-10 -mx-10 px-10 py-3 mb-3 border-b border-white/10 bg-black/80 backdrop-blur-md'>
         <p className='text-[10px] text-white/50 mb-1.5'>
           {t('devTools.featureToggles.description')}
         </p>
@@ -369,7 +369,8 @@ export const FeatureToggleSection = () => {
                 }
               }}
             >
-              {/* Flags in group */}
+              {/* Flags in group - two column grid */}
+              <div className='grid grid-cols-2 gap-2'>
               {groupFlags.map(flag => {
                 const Icon = getFlagIcon(flag.flag_name);
                 const description = flag.description || getFlagDescription(flag.flag_name);
@@ -486,6 +487,7 @@ export const FeatureToggleSection = () => {
                   </div>
                 );
               })}
+              </div>
             </FmCollapsibleGroupHeader>
           );
         })}

@@ -14,6 +14,11 @@ import { useAuth } from '@/features/auth/services/AuthContext';
 import { useToast } from '@/shared/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/shared/services/logger';
+import { compressImage } from '@/shared/utils/imageUtils';
+
+// Storage bucket limits - must match Supabase bucket configuration
+const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024; // 2MB - bucket limit
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 export function ProfilePictureSection() {
   const { t } = useTranslation('common');
@@ -28,7 +33,7 @@ export function ProfilePictureSection() {
     const file = event.target.files?.[0];
     if (!file || !user) return;
 
-    // Validate file type
+    // Validate file type - must be an image
     if (!file.type.startsWith('image/')) {
       toast({
         title: t('imageUpload.invalidFileType'),
@@ -38,8 +43,16 @@ export function ProfilePictureSection() {
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
+    // Validate MIME type matches bucket allowed types
+    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+      logger.warn('Unsupported image type, will convert during compression', {
+        source: 'ProfilePictureSection',
+        originalType: file.type,
+      });
+    }
+
+    // Initial size check (we'll compress, but reject extremely large files)
+    if (file.size > 10 * 1024 * 1024) {
       toast({
         title: t('imageUpload.fileTooLarge'),
         description: t('imageUpload.fileTooLargeDescription'),
@@ -51,27 +64,138 @@ export function ProfilePictureSection() {
     setIsUploadingImage(true);
 
     try {
-      // Upload to Supabase Storage
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      logger.info('Starting profile picture upload', {
+        source: 'ProfilePictureSection',
+        userId: user.id,
+        profileId: profile?.id,
+        profileUserId: profile?.user_id,
+        currentAvatarUrl: profile?.avatar_url,
+        originalFileSize: file.size,
+        originalFileType: file.type,
+      });
+
+      // Compress the image to fit within bucket limits
+      logger.debug('Compressing image', {
+        source: 'ProfilePictureSection',
+        originalSize: file.size,
+      });
+
+      const compressedBlob = await compressImage(file, {
+        maxWidth: 1080,
+        maxHeight: 1080,
+        maxSizeBytes: MAX_FILE_SIZE_BYTES,
+        quality: 0.85,
+        outputFormat: 'jpeg', // Always output JPEG for consistency
+      });
+
+      logger.info('Image compressed', {
+        source: 'ProfilePictureSection',
+        originalSize: file.size,
+        compressedSize: compressedBlob.size,
+        compressionRatio: ((1 - compressedBlob.size / file.size) * 100).toFixed(1) + '%',
+      });
+
+      // Verify compressed size is within limits
+      if (compressedBlob.size > MAX_FILE_SIZE_BYTES) {
+        logger.error('Compressed image still exceeds size limit', {
+          source: 'ProfilePictureSection',
+          compressedSize: compressedBlob.size,
+          maxSize: MAX_FILE_SIZE_BYTES,
+        });
+        throw new Error('Image is too large even after compression. Please try a smaller image.');
+      }
+
+      // Upload to Supabase Storage - always use .jpg extension since we convert to JPEG
+      const fileName = `${user.id}-${Date.now()}.jpg`;
       const filePath = `avatars/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
+      logger.debug('Uploading compressed file to storage', {
+        source: 'ProfilePictureSection',
+        filePath,
+        fileSize: compressedBlob.size,
+        fileType: compressedBlob.type,
+      });
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from('profile-images')
-        .upload(filePath, file, {
+        .upload(filePath, compressedBlob, {
           cacheControl: '3600',
-          upsert: false,
+          upsert: true, // Allow overwriting in case of retry
+          contentType: 'image/jpeg',
         });
 
-      if (uploadError) throw uploadError;
+      logger.info('Storage upload response', {
+        source: 'ProfilePictureSection',
+        hasData: !!uploadData,
+        hasError: !!uploadError,
+        uploadPath: uploadData?.path,
+        errorMessage: uploadError?.message,
+      });
+
+      if (uploadError) {
+        logger.error('Storage upload failed', {
+          source: 'ProfilePictureSection',
+          error: uploadError.message,
+          errorName: uploadError.name,
+          filePath,
+          fileSize: compressedBlob.size,
+        });
+        throw uploadError;
+      }
+
+      // Verify the upload by checking if the file exists
+      const { data: fileList, error: listError } = await supabase.storage
+        .from('profile-images')
+        .list('avatars', {
+          search: fileName,
+        });
+
+      logger.info('Upload verification', {
+        source: 'ProfilePictureSection',
+        searchedFor: fileName,
+        foundFiles: fileList?.length ?? 0,
+        fileNames: fileList?.map(f => f.name),
+        listError: listError?.message,
+      });
+
+      if (listError || !fileList || fileList.length === 0) {
+        logger.error('Upload verification failed - file not found in storage', {
+          source: 'ProfilePictureSection',
+          fileName,
+          listError: listError?.message,
+        });
+        throw new Error('Upload verification failed - file not found in storage');
+      }
 
       // Get public URL
       const {
         data: { publicUrl },
       } = supabase.storage.from('profile-images').getPublicUrl(filePath);
 
+      logger.info('Storage upload successful, updating profile', {
+        source: 'ProfilePictureSection',
+        publicUrl,
+        userId: user.id,
+      });
+
       // Update profile with new avatar URL
-      await updateProfile({ avatar_url: publicUrl });
+      const { error: updateError } = await updateProfile({ avatar_url: publicUrl });
+
+      if (updateError) {
+        logger.error('Profile update failed', {
+          source: 'ProfilePictureSection',
+          error: updateError.message || JSON.stringify(updateError),
+          userId: user.id,
+          publicUrl,
+        });
+        throw new Error(updateError.message || 'Failed to update profile');
+      }
+
+      logger.info('Profile picture update completed successfully', {
+        source: 'ProfilePictureSection',
+        userId: user.id,
+        newAvatarUrl: publicUrl,
+      });
 
       toast({
         title: t('profilePicture.updated'),

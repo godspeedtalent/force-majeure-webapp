@@ -203,3 +203,85 @@ export const ALL_EVENT_TYPES: ActivityEventType[] = [
   'ticket_cancelled',
   'contact_submission',
 ];
+
+/**
+ * Metadata structure for resource update events
+ * Captured by database triggers
+ *
+ * Note: changed_fields contains only the NEW values of changed fields,
+ * NOT before/after pairs. Use before[key] and after[key] to get the actual values.
+ */
+export interface ResourceUpdateMetadata {
+  /** Full state before the update */
+  before?: Record<string, unknown>;
+  /** Full state after the update */
+  after?: Record<string, unknown>;
+  /** Keys of fields that changed, with their NEW values only */
+  changed_fields?: Record<string, unknown>;
+}
+
+/**
+ * Metadata structure for resource create events
+ */
+export interface ResourceCreateMetadata {
+  /** Full state of created resource */
+  after?: Record<string, unknown>;
+}
+
+/**
+ * Metadata structure for resource delete events
+ */
+export interface ResourceDeleteMetadata {
+  /** Full state before deletion */
+  before?: Record<string, unknown>;
+}
+
+/**
+ * Union type for all metadata structures
+ */
+export type ActivityMetadata =
+  | ResourceUpdateMetadata
+  | ResourceCreateMetadata
+  | ResourceDeleteMetadata
+  | Record<string, unknown>;
+
+/**
+ * Type guard to check if metadata is for an update
+ */
+export function isUpdateMetadata(
+  metadata: ActivityMetadata
+): metadata is ResourceUpdateMetadata {
+  return (
+    metadata !== null &&
+    typeof metadata === 'object' &&
+    'changed_fields' in metadata
+  );
+}
+
+/**
+ * Type guard to check if metadata has before state (update or delete)
+ */
+export function hasBeforeState(
+  metadata: ActivityMetadata
+): metadata is { before: Record<string, unknown> } {
+  return (
+    metadata !== null &&
+    typeof metadata === 'object' &&
+    'before' in metadata &&
+    typeof metadata.before === 'object'
+  );
+}
+
+/**
+ * Type guard to check if metadata has after state (create or update)
+ */
+export function hasAfterState(
+  metadata: ActivityMetadata
+): metadata is { after: Record<string, unknown> } {
+  return (
+    metadata !== null &&
+    typeof metadata === 'object' &&
+    'after' in metadata &&
+    typeof metadata.after === 'object'
+  );
+}

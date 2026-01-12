@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { MapPin, Trash2 } from 'lucide-react';
 import { DataGridAction, FmConfigurableDataGrid } from '@/features/data-grid';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
+import { FmSectionHeader } from '@/components/common/display/FmSectionHeader';
 import { venueColumns } from '@/pages/admin/config/adminGridColumns';
 import { useVenuesData, VenueRecord } from '../hooks/useDeveloperDatabaseData';
 
@@ -43,14 +44,11 @@ export function DeveloperDatabaseVenuesTab() {
 
   return (
     <div className='space-y-6'>
-      <div>
-        <h1 className='text-3xl font-canela font-bold text-foreground mb-2'>
-          Venues Management
-        </h1>
-        <p className='text-muted-foreground'>
-          Manage venue locations, capacities, and details.
-        </p>
-      </div>
+      <FmSectionHeader
+        title='Venues Management'
+        description='Manage venue locations, capacities, and details.'
+        icon={MapPin}
+      />
 
       <FmConfigurableDataGrid
         gridId='dev-venues'

@@ -879,7 +879,9 @@
     "afterHoursEvent": "After Hours 活动",
     "afterHoursHelp": "如果活动没有定义结束时间，请勾选此项（结束时间非必填）",
     "tbaEvent": "TBA 活动（待公布）",
-    "tbaEventHelp": "为占位活动勾选此项。TBA 活动仍可分配场馆和日期。"
+    "tbaEventHelp": "为占位活动勾选此项。TBA 活动仍可分配场馆和日期。",
+    "noHeadliner": "无主演艺术家",
+    "noHeadlinerHelp": "所有艺术家将作为暖场艺术家列出，没有主演艺术家"
   },
   "formActions": {
     "addTicketTier": "添加票种",
@@ -1094,7 +1096,9 @@
     "addEvent": "添加活动",
     "issues": "问题",
     "noHeadliner": "无主演",
-    "noIssues": "无问题"
+    "noIssues": "无问题",
+    "doubleClickToAutoFit": "双击自动调整列宽",
+    "shiftClickToMultiSort": "Shift+点击添加到多列排序"
   },
   "filters": {
     "advancedFilters": "高级筛选",
@@ -1499,7 +1503,26 @@
     "toggleColumns": "切换列显示",
     "resetToDefault": "重置为默认",
     "clearFiltersAndSort": "清除筛选和排序",
-    "valuePlaceholder": "值..."
+    "valuePlaceholder": "值...",
+    "dragToReorder": "拖动以重新排序",
+    "refreshSchema": "刷新架构",
+    "shortcuts": {
+      "title": "键盘快捷键",
+      "arrowKeys": "导航单元格",
+      "enter": "编辑 / 保存",
+      "escape": "取消编辑",
+      "space": "切换选择",
+      "shiftClick": "多选 / 多列排序",
+      "copyCell": "复制单元格值",
+      "tab": "下一个单元格",
+      "shiftTab": "上一个单元格"
+    },
+    "undo": "撤销",
+    "undoing": "撤销中...",
+    "undoSuccessful": "已撤销更改",
+    "undoFailed": "撤销失败",
+    "undoNotSupported": "此操作不支持撤销",
+    "cellCopied": "单元格值已复制到剪贴板"
   },
   "filterOperators": {
     "equals": "等于",
@@ -1842,6 +1865,13 @@
       "sourceRequired": "来源为必填项",
       "mediumRequired": "媒介为必填项",
       "campaignRequired": "活动为必填项"
+    },
+    "utmDescriptions": {
+      "source": "标识流量来源的网站或平台（例如：instagram、google、newsletter）",
+      "medium": "标识营销渠道或类型（例如：social、email、cpc、banner）",
+      "campaign": "标识具体的促销或活动名称（例如：summer_sale、launch_2024）",
+      "content": "区分同一广告中的相似内容或链接（例如：banner_a、text_link）",
+      "term": "标识付费搜索关键词（例如：电子音乐、techno活动）"
     }
   },
   "queue": {
@@ -2141,6 +2171,13 @@
       "confirmDeleteRecording": "确定要删除\"{{name}}\"吗？",
       "recordingDeleted": "录音已删除",
       "recordingDeleteFailed": "删除录音失败",
+      "viewGuest": "查看访客详情",
+      "deleteGuest": "删除访客",
+      "guestUpdated": "访客已更新",
+      "guestUpdateFailed": "更新访客失败",
+      "confirmDeleteGuest": "确定要删除访客\"{{email}}\"吗？",
+      "guestDeleted": "访客已删除",
+      "guestDeleteFailed": "删除访客失败",
       "schemaRefreshSuccess": "架构刷新成功！已更新{{count}}个表。",
       "schemaRefreshFailed": "刷新架构失败"
     },
@@ -2213,6 +2250,21 @@
     "updated": "头像已更新",
     "updatedDescription": "您的头像已成功更新。"
   },
+  "addressEdit": {
+    "title": "编辑地址",
+    "addressLine1": "地址行1",
+    "addressLine1Placeholder": "街道地址",
+    "addressLine2": "地址行2",
+    "addressLine2Placeholder": "公寓、套房、单元等",
+    "city": "城市",
+    "cityPlaceholder": "城市",
+    "state": "州/省",
+    "statePlaceholder": "TX",
+    "zipCode": "邮编",
+    "zipCodePlaceholder": "12345",
+    "country": "国家",
+    "countryPlaceholder": "US"
+  },
   "profile": {
     "backToEvents": "返回活动",
     "editProfile": "编辑资料",
@@ -2234,6 +2286,9 @@
     "noUpcomingShows": "暂无即将举行的演出",
     "linkedArtist": "关联艺人",
     "linkedSince": "自 {{date}} 起",
+    "showPastShows": "显示过去的演出",
+    "pastShows": "过去的演出",
+    "past": "已结束",
     "preferences": "偏好设置",
     "languageDescription": "选择您的首选应用语言",
     "verifyEmailTitle": "验证您的邮箱",
@@ -2382,7 +2437,10 @@
       "artists": "艺人",
       "genres": "流派",
       "status": "状态",
-      "socials": "社交媒体"
+      "socials": "社交媒体",
+      "phone": "电话",
+      "billingAddress": "账单地址",
+      "linkedProfile": "关联账户"
     }
   },
   "artistRegistrations": {
@@ -2519,7 +2577,47 @@
     "loadMore": "加载更多",
     "unknownUser": "未知用户",
     "eventCount": "{{count}} 个事件",
-    "totalEventsLogged": "已记录事件总数"
+    "totalEventsLogged": "已记录事件总数",
+    "clickToExpand": "点击查看详情",
+    "clickToCollapse": "点击隐藏"
+  },
+  "activityLogDetail": {
+    "changes": "更改内容",
+    "created": "已创建",
+    "deleted": "已删除",
+    "noChangesRecorded": "未记录更改",
+    "onlySystemFieldsChanged": "仅系统字段更改",
+    "noDetailsRecorded": "未记录详情",
+    "ticketCode": "门票代码",
+    "tierName": "等级",
+    "event": "活动",
+    "price": "价格",
+    "quantity": "数量"
+  },
+  "contactSubmissions": {
+    "title": "联系表单",
+    "description": "管理联系表单提交的消息",
+    "noSubmissions": "暂无联系消息",
+    "unreadCount": "{{count}} 条未读",
+    "searchPlaceholder": "按姓名、邮箱或消息搜索...",
+    "all": "全部",
+    "message": "消息",
+    "received": "收到时间",
+    "repliedOn": "回复时间",
+    "notes": "管理员备注",
+    "notesPlaceholder": "添加关于此消息的备注...",
+    "saveNotes": "保存备注",
+    "edit": "编辑",
+    "markReplied": "标记为已回复",
+    "archive": "归档",
+    "unarchive": "取消归档",
+    "delete": "删除",
+    "confirmDelete": "确定要删除此消息吗？",
+    "statusUpdated": "状态已更新为 {{status}}",
+    "notesSaved": "备注已保存",
+    "updateFailed": "更新失败：{{error}}",
+    "deleted": "消息已删除",
+    "deleteFailed": "删除失败：{{error}}"
   },
   "bulkEdit": {
     "summary": "摘要",
@@ -2590,6 +2688,8 @@
     "setSchedulingDescription": "启用以配置演出时间和时长",
     "lookingForUndercard": "寻找开场艺人。",
     "lookingForUndercardDescription": "在活动时间表中显示「寻找艺人」提示，邀请本地人才报名",
+    "noHeadliner": "无主演艺术家",
+    "noHeadlinerDescription": "所有艺术家将作为暖场艺术家列出，没有主演艺术家",
     "lineupSummary": "阵容摘要",
     "undercard": "开场",
     "totalArtists": "艺人总数"
@@ -2657,6 +2757,7 @@
     "title": "活动日志",
     "description": "跟踪管理操作和系统事件",
     "quickFilters": "快速筛选",
+    "activityLogs": "活动日志",
     "allLogs": "所有日志",
     "allLogsDescription": "查看所有活动日志",
     "accountActivity": "账户活动",
@@ -3110,12 +3211,16 @@
     "description": "保存您的账单信息以加快结账速度",
     "streetAddress": "街道地址",
     "streetAddressPlaceholder": "中山路123号",
+    "addressLine2": "地址第二行",
+    "addressLine2Placeholder": "公寓、套房、单元等",
     "city": "城市",
     "cityPlaceholder": "上海",
     "state": "省/州",
     "statePlaceholder": "上海市",
     "zipCode": "邮政编码",
     "zipCodePlaceholder": "200000",
+    "country": "国家",
+    "countryPlaceholder": "CN",
     "updateButton": "更新账单地址"
   },
   "eventList": {

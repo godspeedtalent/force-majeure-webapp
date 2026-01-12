@@ -1,4 +1,5 @@
 export { DeveloperDatabaseArtistsTab } from './DeveloperDatabaseArtistsTab';
+export { DeveloperDatabaseGuestsTab } from './DeveloperDatabaseGuestsTab';
 export { DeveloperDatabaseVenuesTab } from './DeveloperDatabaseVenuesTab';
 export { DeveloperDatabaseRecordingsTab } from './DeveloperDatabaseRecordingsTab';
 export { DeveloperDatabaseOverviewTab } from './DeveloperDatabaseOverviewTab';

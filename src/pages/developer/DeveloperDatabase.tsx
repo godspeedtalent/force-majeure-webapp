@@ -19,6 +19,7 @@ import {
   FileQuestion,
   BarChart3,
   List,
+  ShoppingBag,
 } from 'lucide-react';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared';
@@ -44,6 +45,7 @@ type DatabaseTab =
   | 'artists'
   | 'events'
   | 'galleries'
+  | 'orders'
   | 'organizations'
   | 'recordings'
   | 'dashboards'
@@ -58,6 +60,7 @@ const VALID_TABS: DatabaseTab[] = [
   'artists',
   'events',
   'galleries',
+  'orders',
   'organizations',
   'recordings',
   'dashboards',
@@ -85,6 +88,7 @@ export default function DeveloperDatabase() {
     artistsCount,
     eventsCount,
     recordingsCount,
+    ordersCount,
   } = useDatabaseCounts();
 
   // Get active tab from URL query string
@@ -132,6 +136,19 @@ export default function DeveloperDatabase() {
     // Add admin-only tabs
     if (isAdmin) {
       tables.push(
+        {
+          id: 'orders',
+          label: (
+            <span className="flex items-center gap-1.5">
+              Orders
+              <AdminLockIndicator position="inline" size="xs" tooltipText="Admin only" />
+            </span>
+          ),
+          sortKey: 'Orders',
+          icon: ShoppingBag,
+          description: 'Order Management',
+          badge: <span className="text-[10px] text-muted-foreground">{ordersCount}</span>,
+        },
         {
           id: 'organizations',
           label: (
@@ -196,27 +213,34 @@ export default function DeveloperDatabase() {
 
     const groups: FmCommonSideNavGroup<DatabaseTab>[] = [
       {
-        label: 'Overview',
-        icon: Database,
+        label: 'Dashboard',
+        icon: BarChart3,
         items: [
           {
             id: 'overview' as const,
-            label: 'Dashboard',
+            label: 'Overview',
             icon: Database,
             description: 'Database overview and search',
           },
+          {
+            id: 'dashboards' as const,
+            label: 'Analytics',
+            icon: BarChart3,
+            description: 'Analytics dashboards',
+          },
+        ],
+      },
+      {
+        // Tables - no label header, items shown directly
+        items: [
           {
             id: 'all_tables' as const,
             label: 'All Tables',
             icon: List,
             description: 'Browse all database tables',
           },
+          ...tables,
         ],
-      },
-      {
-        label: 'Tables',
-        icon: Database,
-        items: tables,
       },
       {
         label: 'Storage',
@@ -227,18 +251,6 @@ export default function DeveloperDatabase() {
             label: 'Galleries',
             icon: Images,
             description: 'Media gallery management',
-          },
-        ],
-      },
-      {
-        label: 'Analytics',
-        icon: BarChart3,
-        items: [
-          {
-            id: 'dashboards' as const,
-            label: 'Dashboards',
-            icon: BarChart3,
-            description: 'Analytics dashboards',
           },
         ],
       },
@@ -264,6 +276,7 @@ export default function DeveloperDatabase() {
     recordingsCount,
     venuesCount,
     organizationsCount,
+    ordersCount,
     usersCount,
   ]);
 
@@ -277,6 +290,7 @@ export default function DeveloperDatabase() {
     ];
     if (isAdmin) {
       baseTabs.push(
+        { id: 'orders', label: 'Orders', icon: ShoppingBag },
         { id: 'organizations', label: 'Orgs', icon: Building2 },
         { id: 'registrations', label: 'Regs', icon: UserPlus },
         { id: 'users', label: 'Users', icon: Users }
@@ -356,6 +370,26 @@ export default function DeveloperDatabase() {
         {activeTab === 'users' && (
           <PageErrorBoundary section='Users'>
             <UserManagement />
+          </PageErrorBoundary>
+        )}
+
+        {activeTab === 'orders' && (
+          <PageErrorBoundary section='Orders'>
+            <div className='space-y-6'>
+              <div>
+                <h1 className='text-3xl font-canela font-bold text-foreground mb-2'>
+                  Orders
+                </h1>
+                <p className='text-muted-foreground'>
+                  View and manage all orders across all events.
+                </p>
+              </div>
+              <div className='bg-black/40 border border-white/10 p-6'>
+                <p className='text-muted-foreground text-center py-8'>
+                  Orders management coming soon. Use the event-specific order management for now.
+                </p>
+              </div>
+            </div>
           </PageErrorBoundary>
         )}
 
@@ -482,6 +516,18 @@ export default function DeveloperDatabase() {
                         <span className='ml-auto text-xs text-muted-foreground'>{usersCount}</span>
                       </div>
                       <p className='text-xs text-muted-foreground'>User profiles and accounts</p>
+                    </button>
+
+                    <button
+                      onClick={() => handleTabChange('orders')}
+                      className='p-4 bg-black/40 border border-white/10 hover:border-fm-gold/50 hover:bg-black/60 transition-all text-left group'
+                    >
+                      <div className='flex items-center gap-3 mb-2'>
+                        <ShoppingBag className='h-5 w-5 text-muted-foreground group-hover:text-fm-gold transition-colors' />
+                        <span className='font-medium'>Orders</span>
+                        <span className='ml-auto text-xs text-muted-foreground'>{ordersCount}</span>
+                      </div>
+                      <p className='text-xs text-muted-foreground'>Order records and transactions</p>
                     </button>
                   </>
                 )}

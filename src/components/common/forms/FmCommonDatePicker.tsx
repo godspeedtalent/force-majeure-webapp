@@ -19,6 +19,8 @@ interface FmCommonDatePickerProps {
   label?: string;
   required?: boolean;
   className?: string;
+  /** Size variant - affects height to match other form controls */
+  size?: 'default' | 'sm';
 }
 
 /**
@@ -30,6 +32,7 @@ interface FmCommonDatePickerProps {
  * - Focus states with gold accents
  * - Optional label with required indicator
  * - Fully styled calendar dropdown
+ * - Size variants for consistent heights with other form controls
  *
  * Usage:
  * ```tsx
@@ -38,6 +41,7 @@ interface FmCommonDatePickerProps {
  *   onChange={setDate}
  *   label="Event Date"
  *   required
+ *   size="sm" // Use 'sm' for filter bars, 'default' for forms
  * />
  * ```
  */
@@ -50,6 +54,7 @@ export function FmCommonDatePicker({
   label,
   required = false,
   className,
+  size = 'default',
 }: FmCommonDatePickerProps) {
   const { t } = useTranslation('common');
   const [isOpen, setIsOpen] = useState(false);
@@ -61,6 +66,22 @@ export function FmCommonDatePicker({
   const handleSelect = (date: Date | undefined) => {
     onChange(date);
     setIsOpen(false);
+  };
+
+  // Size-based classes for consistent heights
+  const sizeClasses = {
+    default: 'h-12 px-4 py-3',
+    sm: 'h-10 px-3 py-2',
+  };
+
+  const iconSizeClasses = {
+    default: 'h-5 w-5 mr-3',
+    sm: 'h-4 w-4 mr-2',
+  };
+
+  const textSizeClasses = {
+    default: 'text-base',
+    sm: 'text-sm',
   };
 
   return (
@@ -81,9 +102,11 @@ export function FmCommonDatePicker({
             onMouseLeave={() => setIsHovered(false)}
             className={cn(
               'w-full flex items-center justify-start text-left font-canela',
-              'px-4 py-3 rounded-none',
+              'rounded-none',
               'bg-black/40 backdrop-blur-sm',
-              'border-2 transition-all duration-300',
+              'border transition-all duration-300',
+              sizeClasses[size],
+              textSizeClasses[size],
               // Default border
               !isOpen && !isHovered && 'border-white/20',
               // Hover state
@@ -107,7 +130,8 @@ export function FmCommonDatePicker({
           >
             <CalendarIcon
               className={cn(
-                'mr-3 h-5 w-5 transition-all duration-300',
+                'transition-all duration-300',
+                iconSizeClasses[size],
                 isOpen && 'text-fm-gold scale-110',
                 isHovered && !isOpen && 'text-fm-gold/80'
               )}

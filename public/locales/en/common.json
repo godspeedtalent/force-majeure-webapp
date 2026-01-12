@@ -880,7 +880,9 @@
     "afterHoursEvent": "After Hours Event",
     "afterHoursHelp": "Check this if the event has no defined end time (end time not required)",
     "tbaEvent": "TBA Event (To Be Announced)",
-    "tbaEventHelp": "Check this for placeholder events. TBA events can still have a venue and date assigned."
+    "tbaEventHelp": "Check this for placeholder events. TBA events can still have a venue and date assigned.",
+    "noHeadliner": "No event headliner",
+    "noHeadlinerHelp": "All artists will be listed as undercard artists with no featured headliner"
   },
   "formActions": {
     "addTicketTier": "Add Ticket Tier",
@@ -1099,7 +1101,9 @@
     "addEvent": "Add Event",
     "issues": "Issues",
     "noHeadliner": "No Headliner",
-    "noIssues": "No issues"
+    "noIssues": "No issues",
+    "doubleClickToAutoFit": "Double-click to auto-fit column width",
+    "shiftClickToMultiSort": "Shift+Click to add to multi-column sort"
   },
   "filters": {
     "advancedFilters": "Advanced Filters",
@@ -1504,7 +1508,26 @@
     "toggleColumns": "Toggle Columns",
     "resetToDefault": "Reset to Default",
     "clearFiltersAndSort": "Clear Filters & Sort",
-    "valuePlaceholder": "Value..."
+    "valuePlaceholder": "Value...",
+    "dragToReorder": "Drag to reorder",
+    "refreshSchema": "Refresh Schema",
+    "shortcuts": {
+      "title": "Keyboard Shortcuts",
+      "arrowKeys": "Navigate cells",
+      "enter": "Edit / Save",
+      "escape": "Cancel edit",
+      "space": "Toggle selection",
+      "shiftClick": "Multi-select / Multi-sort",
+      "copyCell": "Copy cell value",
+      "tab": "Next cell",
+      "shiftTab": "Previous cell"
+    },
+    "undo": "Undo",
+    "undoing": "Undoing...",
+    "undoSuccessful": "Change undone",
+    "undoFailed": "Failed to undo",
+    "undoNotSupported": "Undo not supported for this action",
+    "cellCopied": "Cell value copied to clipboard"
   },
   "filterOperators": {
     "equals": "Equals",
@@ -1847,6 +1870,13 @@
       "sourceRequired": "Source is required",
       "mediumRequired": "Medium is required",
       "campaignRequired": "Campaign is required"
+    },
+    "utmDescriptions": {
+      "source": "Identifies which site or platform sent the traffic (e.g., instagram, google, newsletter)",
+      "medium": "Identifies the marketing channel or type (e.g., social, email, cpc, banner)",
+      "campaign": "Identifies the specific promotion or campaign name (e.g., summer_sale, launch_2024)",
+      "content": "Differentiates similar content or links within the same ad (e.g., banner_a, text_link)",
+      "term": "Identifies paid search keywords (e.g., electronic+music, techno+events)"
     }
   },
   "queue": {
@@ -2146,6 +2176,13 @@
       "confirmDeleteRecording": "Are you sure you want to delete \"{{name}}\"?",
       "recordingDeleted": "Recording deleted",
       "recordingDeleteFailed": "Failed to delete recording",
+      "viewGuest": "View Guest Details",
+      "deleteGuest": "Delete Guest",
+      "guestUpdated": "Guest updated",
+      "guestUpdateFailed": "Failed to update guest",
+      "confirmDeleteGuest": "Are you sure you want to delete guest \"{{email}}\"?",
+      "guestDeleted": "Guest deleted",
+      "guestDeleteFailed": "Failed to delete guest",
       "schemaRefreshSuccess": "Schema refreshed successfully! {{count}} tables updated.",
       "schemaRefreshFailed": "Failed to refresh schema"
     },
@@ -2218,6 +2255,21 @@
     "updated": "Profile picture updated",
     "updatedDescription": "Your profile picture has been updated successfully."
   },
+  "addressEdit": {
+    "title": "Edit Address",
+    "addressLine1": "Address Line 1",
+    "addressLine1Placeholder": "Street address",
+    "addressLine2": "Address Line 2",
+    "addressLine2Placeholder": "Apt, suite, unit, etc.",
+    "city": "City",
+    "cityPlaceholder": "City",
+    "state": "State",
+    "statePlaceholder": "TX",
+    "zipCode": "ZIP Code",
+    "zipCodePlaceholder": "12345",
+    "country": "Country",
+    "countryPlaceholder": "US"
+  },
   "profile": {
     "backToEvents": "Back to Events",
     "editProfile": "Edit Profile",
@@ -2239,6 +2291,9 @@
     "noUpcomingShows": "No upcoming shows",
     "linkedArtist": "Linked Artist",
     "linkedSince": "Since {{date}}",
+    "showPastShows": "Show past shows",
+    "pastShows": "Past Shows",
+    "past": "Past",
     "preferences": "Preferences",
     "languageDescription": "Choose your preferred language for the application",
     "verifyEmailTitle": "Verify Your Email",
@@ -2536,7 +2591,47 @@
     "loadMore": "Load more",
     "unknownUser": "Unknown user",
     "eventCount": "{{count}} events",
-    "totalEventsLogged": "Total events logged"
+    "totalEventsLogged": "Total events logged",
+    "clickToExpand": "Click for details",
+    "clickToCollapse": "Click to hide"
+  },
+  "activityLogDetail": {
+    "changes": "Changes",
+    "created": "Created",
+    "deleted": "Deleted",
+    "noChangesRecorded": "No changes recorded",
+    "onlySystemFieldsChanged": "Only system fields changed",
+    "noDetailsRecorded": "No details recorded",
+    "ticketCode": "Ticket Code",
+    "tierName": "Tier",
+    "event": "Event",
+    "price": "Price",
+    "quantity": "Quantity"
+  },
+  "contactSubmissions": {
+    "title": "Contact submissions",
+    "description": "Manage messages from the contact form",
+    "noSubmissions": "No contact submissions yet",
+    "unreadCount": "{{count}} unread",
+    "searchPlaceholder": "Search by name, email, or message...",
+    "all": "All",
+    "message": "Message",
+    "received": "Received",
+    "repliedOn": "Replied",
+    "notes": "Admin Notes",
+    "notesPlaceholder": "Add notes about this submission...",
+    "saveNotes": "Save Notes",
+    "edit": "Edit",
+    "markReplied": "Mark as Replied",
+    "archive": "Archive",
+    "unarchive": "Unarchive",
+    "delete": "Delete",
+    "confirmDelete": "Are you sure you want to delete this submission?",
+    "statusUpdated": "Status updated to {{status}}",
+    "notesSaved": "Notes saved",
+    "updateFailed": "Update failed: {{error}}",
+    "deleted": "Submission deleted",
+    "deleteFailed": "Failed to delete: {{error}}"
   },
   "bulkEdit": {
     "summary": "Summary",
@@ -2607,6 +2702,8 @@
     "setSchedulingDescription": "Enable to configure set times and durations",
     "lookingForUndercard": "Looking for undercard.",
     "lookingForUndercardDescription": "Display a \"Looking for Artists\" prompt in the event call times, inviting local talent to sign up",
+    "noHeadliner": "No event headliner",
+    "noHeadlinerDescription": "All artists will be listed as undercard artists with no featured headliner",
     "lineupSummary": "Lineup Summary",
     "undercard": "Undercard",
     "totalArtists": "Total Artists"
@@ -2674,6 +2771,7 @@
     "title": "Activity logs",
     "description": "Track administrative actions and system events",
     "quickFilters": "Quick Filters",
+    "activityLogs": "Activity Logs",
     "allLogs": "All Logs",
     "allLogsDescription": "View all activity logs",
     "accountActivity": "Account Activity",
@@ -3127,12 +3225,16 @@
     "description": "Save your billing information for faster checkout",
     "streetAddress": "Street Address",
     "streetAddressPlaceholder": "123 Main St",
+    "addressLine2": "Address Line 2",
+    "addressLine2Placeholder": "Apt, suite, unit, etc.",
     "city": "City",
     "cityPlaceholder": "San Francisco",
     "state": "State",
     "statePlaceholder": "CA",
     "zipCode": "ZIP Code",
     "zipCodePlaceholder": "94102",
+    "country": "Country",
+    "countryPlaceholder": "US",
     "updateButton": "Update Billing Address"
   },
   "eventList": {
@@ -3402,7 +3504,10 @@
       "subgenres": "Subgenres",
       "artists": "Artists",
       "status": "Status",
-      "socials": "Socials"
+      "socials": "Socials",
+      "phone": "Phone",
+      "billingAddress": "Billing Address",
+      "linkedProfile": "Linked Profile"
     },
     "artistImageUpdated": "Artist image updated",
     "artistImageUpdateFailed": "Failed to update artist image",

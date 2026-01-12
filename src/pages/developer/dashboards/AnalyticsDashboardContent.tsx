@@ -10,7 +10,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { LineChart } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
-import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { formatHeader } from '@/shared';
@@ -82,18 +81,23 @@ export function AnalyticsDashboardContent() {
   });
 
   // Fetch recent sessions
-  const { data: sessionsData, isLoading: loadingSessions } = useQuery({
+  const {
+    data: sessionsData,
+    isLoading: loadingSessions,
+    error: sessionsError,
+  } = useQuery({
     queryKey: ['analytics-sessions', dateRange.start, dateRange.end],
     queryFn: async () => {
       const result = await adapter.getSessions(
         { startDate: dateRange.start, endDate: dateRange.end },
         { page: 1, pageSize: 20 }
       );
-      return result.success ? result.data : null;
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to load sessions');
+      }
+      return result.data;
     },
   });
-
-  const isLoading = loadingOverview || loadingPageViews || loadingFunnel || loadingPerformance;
 
   return (
     <div className="space-y-6">
@@ -118,69 +122,62 @@ export function AnalyticsDashboardContent() {
 
       <DecorativeDivider marginTop="mt-0" marginBottom="mb-6" lineWidth="w-32" opacity={0.5} />
 
-      {isLoading ? (
-        <div className="flex items-center justify-center min-h-[400px]">
-          <FmCommonLoadingSpinner size="lg" />
+      {/* Overview Cards - shows skeleton when loading */}
+      <AnalyticsOverview stats={overviewStats} isLoading={loadingOverview} />
+
+      {/* Tabs for detailed views */}
+      <Tabs defaultValue="traffic" className="mt-8">
+        {/* Sticky tab bar with frosted glass effect */}
+        <div className="sticky top-0 z-10 -mx-6 px-6 py-3 bg-black/70 backdrop-blur-md border-b border-white/10">
+          <TabsList className="bg-black/60 border border-white/20 rounded-none w-full justify-start">
+            <TabsTrigger
+              value="traffic"
+              className="rounded-none data-[state=active]:bg-fm-gold/20 data-[state=active]:text-fm-gold"
+            >
+              {t('analytics.tabs.traffic')}
+            </TabsTrigger>
+            <TabsTrigger
+              value="funnel"
+              className="rounded-none data-[state=active]:bg-fm-gold/20 data-[state=active]:text-fm-gold"
+            >
+              {t('analytics.tabs.funnel')}
+            </TabsTrigger>
+            <TabsTrigger
+              value="performance"
+              className="rounded-none data-[state=active]:bg-fm-gold/20 data-[state=active]:text-fm-gold"
+            >
+              {t('analytics.tabs.performance')}
+            </TabsTrigger>
+            <TabsTrigger
+              value="sessions"
+              className="rounded-none data-[state=active]:bg-fm-gold/20 data-[state=active]:text-fm-gold"
+            >
+              {t('analytics.tabs.sessions')}
+            </TabsTrigger>
+          </TabsList>
         </div>
-      ) : (
-        <>
-          {/* Overview Cards */}
-          <AnalyticsOverview stats={overviewStats} />
 
-          {/* Tabs for detailed views */}
-          <Tabs defaultValue="traffic" className="mt-8">
-            {/* Sticky tab bar with frosted glass effect */}
-            <div className="sticky top-0 z-10 -mx-6 px-6 py-3 bg-black/70 backdrop-blur-md border-b border-white/10">
-              <TabsList className="bg-black/60 border border-white/20 rounded-none w-full justify-start">
-                <TabsTrigger
-                  value="traffic"
-                  className="rounded-none data-[state=active]:bg-fm-gold/20 data-[state=active]:text-fm-gold"
-                >
-                  {t('analytics.tabs.traffic')}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="funnel"
-                  className="rounded-none data-[state=active]:bg-fm-gold/20 data-[state=active]:text-fm-gold"
-                >
-                  {t('analytics.tabs.funnel')}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="performance"
-                  className="rounded-none data-[state=active]:bg-fm-gold/20 data-[state=active]:text-fm-gold"
-                >
-                  {t('analytics.tabs.performance')}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="sessions"
-                  className="rounded-none data-[state=active]:bg-fm-gold/20 data-[state=active]:text-fm-gold"
-                >
-                  {t('analytics.tabs.sessions')}
-                </TabsTrigger>
-              </TabsList>
-            </div>
+        <TabsContent value="traffic" className="mt-6 space-y-6">
+          <PageViewsChart data={dailyPageViews || []} isLoading={loadingPageViews} />
+          <TopPagesTable data={dailyPageViews || []} isLoading={loadingPageViews} />
+        </TabsContent>
 
-            <TabsContent value="traffic" className="mt-6 space-y-6">
-              <PageViewsChart data={dailyPageViews || []} />
-              <TopPagesTable data={dailyPageViews || []} />
-            </TabsContent>
+        <TabsContent value="funnel" className="mt-6">
+          <FunnelVisualization data={funnelData || []} isLoading={loadingFunnel} />
+        </TabsContent>
 
-            <TabsContent value="funnel" className="mt-6">
-              <FunnelVisualization data={funnelData || []} />
-            </TabsContent>
+        <TabsContent value="performance" className="mt-6">
+          <PerformanceMetrics data={performanceData || []} isLoading={loadingPerformance} />
+        </TabsContent>
 
-            <TabsContent value="performance" className="mt-6">
-              <PerformanceMetrics data={performanceData || []} />
-            </TabsContent>
-
-            <TabsContent value="sessions" className="mt-6">
-              <SessionsTable
-                data={sessionsData?.data || []}
-                isLoading={loadingSessions}
-              />
-            </TabsContent>
-          </Tabs>
-        </>
-      )}
+        <TabsContent value="sessions" className="mt-6">
+          <SessionsTable
+            data={sessionsData?.data || []}
+            isLoading={loadingSessions}
+            error={sessionsError instanceof Error ? sessionsError.message : undefined}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

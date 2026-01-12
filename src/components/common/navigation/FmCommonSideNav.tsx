@@ -193,7 +193,7 @@ export function FmCommonSideNav<T extends string = string>({
 
   return (
     <Sidebar
-      className={cn('border-white/20 bg-black/40 relative', className)}
+      className={cn('border-sidebar-border bg-sidebar relative', className)}
       collapsible='icon'
     >
       {/* Toggle Button - floating, positioned on right edge when expanded */}

@@ -50,20 +50,24 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
         .eq('user_id', user.id)
         .single();
 
-      // Fetch headliner name for event title
-      const { data: headliner, error: headlinerError } = await supabase
-        .from('artists')
-        .select('name')
-        .eq('id', state.headlinerId)
-        .single();
+      // Fetch headliner name for event title (skip if noHeadliner is true)
+      let headliner: { name: string } | null = null;
+      if (!state.noHeadliner && state.headlinerId) {
+        const { data, error: headlinerError } = await supabase
+          .from('artists')
+          .select('name')
+          .eq('id', state.headlinerId)
+          .single();
 
-      if (headlinerError) {
-        logger.error('Error fetching headliner:', {
-          error: headlinerError, // Pass full error object
-          headlinerId: state.headlinerId,
-          source: 'useEventFormSubmit.submitEvent',
-          mode,
-        });
+        if (headlinerError) {
+          logger.error('Error fetching headliner:', {
+            error: headlinerError,
+            headlinerId: state.headlinerId,
+            source: 'useEventFormSubmit.submitEvent',
+            mode,
+          });
+        }
+        headliner = data;
       }
 
       // Fetch venue name for event title
@@ -111,7 +115,8 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
         title: eventTitle,
         subtitle: state.subtitle || null,
         description: null, // Description is managed separately in event details page
-        headliner_id: state.headlinerId || null,
+        headliner_id: state.noHeadliner ? null : (state.headlinerId || null),
+        no_headliner: state.noHeadliner,
         venue_id: state.venueId || null,
         start_time: startTimeISO,
         end_time: state.isAfterHours ? null : endTimeISO,
@@ -169,6 +174,7 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
         mode,
         formState: {
           headlinerId: state.headlinerId,
+          noHeadliner: state.noHeadliner,
           venueId: state.venueId,
           eventDate: state.eventDate?.toISOString(),
           isTba: state.isTba,

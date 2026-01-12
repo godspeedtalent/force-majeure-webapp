@@ -10,6 +10,7 @@ import { useMemo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calendar } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import { Skeleton } from '@/components/common/shadcn/skeleton';
 import { Button } from '@/components/common/shadcn/button';
 import { Input } from '@/components/common/shadcn/input';
 import {
@@ -25,6 +26,7 @@ type TimespanOption = '7d' | '30d' | '12mo' | 'custom';
 
 interface PageViewsChartProps {
   data: DailyPageViewSummary[];
+  isLoading?: boolean;
 }
 
 const TIMESPAN_OPTIONS: { value: TimespanOption; label: string; days?: number }[] = [
@@ -34,9 +36,70 @@ const TIMESPAN_OPTIONS: { value: TimespanOption; label: string; days?: number }[
   { value: 'custom', label: 'Custom' },
 ];
 
-export function PageViewsChart({ data }: PageViewsChartProps) {
+export function PageViewsChart({ data, isLoading }: PageViewsChartProps) {
   const { t } = useTranslation('pages');
   const { labels, handleLabelChange } = useChartLabels(CHART_IDS.PAGE_VIEWS);
+
+  // Show skeleton loading state
+  if (isLoading) {
+    return (
+      <Card className="bg-black/60 border-white/20 rounded-none backdrop-blur-sm">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-6 w-48 rounded-none" />
+            <div className="flex items-center gap-1">
+              <Skeleton className="h-8 w-24 rounded-none" />
+              <Skeleton className="h-8 w-24 rounded-none" />
+              <Skeleton className="h-8 w-28 rounded-none" />
+              <Skeleton className="h-8 w-20 rounded-none" />
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {/* Chart area skeleton */}
+          <div className="h-[300px] relative">
+            {/* Y-axis labels */}
+            <div className="absolute left-0 top-0 bottom-8 w-10 flex flex-col justify-between">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Skeleton key={i} className="h-3 w-8 rounded-none" />
+              ))}
+            </div>
+            {/* Chart area with grid lines */}
+            <div className="ml-12 h-full pb-8 flex flex-col justify-between border-l border-b border-white/10">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="w-full border-b border-white/5" />
+              ))}
+              {/* Simulated chart bars/area */}
+              <div className="absolute bottom-8 left-12 right-0 flex items-end justify-around gap-2 h-[250px]">
+                {Array.from({ length: 15 }).map((_, i) => (
+                  <Skeleton
+                    key={i}
+                    className="w-full rounded-none"
+                    style={{ height: `${Math.random() * 60 + 20}%` }}
+                  />
+                ))}
+              </div>
+            </div>
+            {/* X-axis labels */}
+            <div className="ml-12 flex justify-between mt-2">
+              {Array.from({ length: 7 }).map((_, i) => (
+                <Skeleton key={i} className="h-3 w-10 rounded-none" />
+              ))}
+            </div>
+          </div>
+          {/* Summary stats skeleton */}
+          <div className="flex gap-6 mt-6 pt-4 border-t border-white/10">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i}>
+                <Skeleton className="h-8 w-20 rounded-none" />
+                <Skeleton className="h-3 w-16 rounded-none mt-2" />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   // Timespan state
   const [selectedTimespan, setSelectedTimespan] = useState<TimespanOption>('30d');

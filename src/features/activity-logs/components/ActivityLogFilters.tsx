@@ -1,7 +1,7 @@
 /**
  * Activity Log Filters Component
  *
- * Sidebar component for filtering activity logs.
+ * Compact horizontal filter bar for activity logs.
  * Includes category checkboxes, date range, and search.
  */
 
@@ -81,56 +81,82 @@ export function ActivityLogFilters({
     filters.search;
 
   return (
-    <div className="flex flex-col gap-6 p-4">
-      {/* Search */}
-      <div className="space-y-2">
-        <label className="text-xs uppercase text-muted-foreground font-medium">
-          {t('activityLogFilters.search')}
-        </label>
-        <div className="flex gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              value={searchValue}
-              onChange={e => setSearchValue(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
-              placeholder={t('activityLogFilters.searchPlaceholder')}
-              className="pl-9 bg-black/40 border-white/20 focus:border-fm-gold"
+    <div className="flex flex-col gap-4">
+      {/* Top row: Search and Date Range - all controls h-10 for consistency */}
+      <div className="flex flex-wrap items-end gap-4">
+        {/* Search */}
+        <div className="flex-1 min-w-[200px] max-w-[300px]">
+          <label className="text-xs uppercase text-muted-foreground font-medium mb-1 block">
+            {t('activityLogFilters.search')}
+          </label>
+          <div className="flex gap-2 items-center">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                value={searchValue}
+                onChange={e => setSearchValue(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
+                placeholder={t('activityLogFilters.searchPlaceholder')}
+                className="pl-9 bg-black/40 border-white/20 focus:border-fm-gold h-10 py-2"
+              />
+            </div>
+            <FmCommonIconButton
+              icon={Search}
+              onClick={handleSearchSubmit}
+              tooltip={t('activityLogFilters.search')}
+              size="default"
             />
           </div>
-          <FmCommonIconButton
-            icon={Search}
-            onClick={handleSearchSubmit}
-            tooltip={t('activityLogFilters.search')}
-          />
         </div>
-      </div>
 
-      {/* Date Range */}
-      <div className="space-y-2">
-        <label className="text-xs uppercase text-muted-foreground font-medium">
-          {t('activityLogFilters.dateRange')}
-        </label>
-        <div className="space-y-2">
+        {/* Date From */}
+        <div className="min-w-[180px]">
+          <label className="text-xs uppercase text-muted-foreground font-medium mb-1 block">
+            {t('activityLogFilters.fromDate')}
+          </label>
           <FmCommonDatePicker
             value={filters.dateFrom ? new Date(filters.dateFrom) : undefined}
             onChange={handleDateFromChange}
             placeholder={t('activityLogFilters.fromDate')}
+            disablePastDates={false}
+            size="sm"
           />
+        </div>
+
+        {/* Date To */}
+        <div className="min-w-[180px]">
+          <label className="text-xs uppercase text-muted-foreground font-medium mb-1 block">
+            {t('activityLogFilters.toDate')}
+          </label>
           <FmCommonDatePicker
             value={filters.dateTo ? new Date(filters.dateTo) : undefined}
             onChange={handleDateToChange}
             placeholder={t('activityLogFilters.toDate')}
+            disablePastDates={false}
+            size="sm"
           />
         </div>
+
+        {/* Clear Filters Button */}
+        {hasActiveFilters && (
+          <FmCommonButton
+            variant="destructive-outline"
+            onClick={onClearFilters}
+            icon={X}
+            size="sm"
+            className="h-10"
+          >
+            {t('activityLogFilters.clearFilters')}
+          </FmCommonButton>
+        )}
       </div>
 
-      {/* Categories */}
-      <div className="space-y-2">
-        <label className="text-xs uppercase text-muted-foreground font-medium">
+      {/* Categories - Multi-column grid */}
+      <div>
+        <label className="text-xs uppercase text-muted-foreground font-medium mb-2 block">
           {t('activityLogFilters.categories')}
         </label>
-        <div className="space-y-2">
+        <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-1">
           {ALL_CATEGORIES.map(category => {
             const config = CATEGORY_CONFIG[category];
             const isChecked = filters.categories?.includes(category) ?? false;
@@ -139,16 +165,16 @@ export function ActivityLogFilters({
               <label
                 key={category}
                 className={cn(
-                  'flex items-center gap-3 p-2 rounded cursor-pointer transition-colors',
-                  'hover:bg-white/5',
-                  isChecked && 'bg-white/5'
+                  'flex items-center gap-2 px-2 py-1.5 cursor-pointer transition-colors',
+                  'hover:bg-white/5 border border-transparent',
+                  isChecked && 'bg-white/5 border-white/10'
                 )}
               >
                 <FmCommonCheckbox
                   checked={isChecked}
                   onCheckedChange={() => handleCategoryToggle(category)}
                 />
-                <span className={cn('text-sm', config.color)}>
+                <span className={cn('text-xs whitespace-nowrap', config.color)}>
                   {config.label}
                 </span>
               </label>
@@ -156,18 +182,6 @@ export function ActivityLogFilters({
           })}
         </div>
       </div>
-
-      {/* Clear Filters */}
-      {hasActiveFilters && (
-        <FmCommonButton
-          variant="destructive-outline"
-          onClick={onClearFilters}
-          icon={X}
-          className="w-full"
-        >
-          {t('activityLogFilters.clearFilters')}
-        </FmCommonButton>
-      )}
     </div>
   );
 }
