@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
+import { generateTicketQR } from '../_shared/qr.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -273,7 +274,102 @@ Deno.serve(async req => {
       }
     }
 
-    // Create Stripe Checkout Session
+    // Handle $0 orders (free tickets) - skip Stripe entirely
+    if (totalCents === 0) {
+      console.log('Processing free order (total = $0):', order.id);
+
+      // Update order status to completed
+      await supabase
+        .from('orders')
+        .update({ status: 'completed' })
+        .eq('id', order.id);
+
+      // Get order items for ticket creation
+      const { data: orderItems } = await supabase
+        .from('order_items')
+        .select('*')
+        .eq('order_id', order.id);
+
+      // Create tickets for each ticket item
+      if (orderItems) {
+        for (const item of orderItems) {
+          if (item.item_type !== 'ticket') continue;
+
+          // Convert hold to sale
+          const { data: holdsData } = await supabase
+            .from('ticket_holds')
+            .select('id')
+            .eq('ticket_tier_id', item.ticket_tier_id)
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(1);
+
+          if (holdsData && holdsData.length > 0) {
+            await supabase.rpc('convert_hold_to_sale', {
+              p_hold_id: holdsData[0].id,
+            });
+          }
+
+          // Create tickets with QR codes
+          for (let i = 0; i < item.quantity; i++) {
+            const ticketId = crypto.randomUUID();
+            const qrCodeData = await generateTicketQR(ticketId, eventId);
+
+            await supabase.from('tickets').insert({
+              id: ticketId,
+              order_id: order.id,
+              order_item_id: item.id,
+              event_id: eventId,
+              ticket_tier_id: item.ticket_tier_id,
+              qr_code_data: qrCodeData,
+              status: 'valid',
+              has_protection: false,
+            });
+          }
+        }
+      }
+
+      // Grant exclusive content access
+      await supabase.from('exclusive_content_grants').insert({
+        user_id: user.id,
+        event_id: eventId,
+        order_id: order.id,
+        content_type: 'event_access',
+        content_url: `/events/${eventId}/content`,
+      });
+
+      // Send order receipt email
+      try {
+        await fetch(`${supabaseUrl}/functions/v1/send-order-receipt-email`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${supabaseKey}`,
+          },
+          body: JSON.stringify({ order_id: order.id }),
+        });
+        console.log('Free order receipt email sent');
+      } catch (emailError) {
+        console.error('Failed to send free order receipt email:', emailError);
+        // Don't fail - order is complete
+      }
+
+      console.log('Free order completed successfully:', order.id);
+
+      return new Response(
+        JSON.stringify({
+          orderId: order.id,
+          isFree: true,
+          redirectUrl: `${req.headers.get('origin')}/checkout/success?order_id=${order.id}&free=true`,
+        }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // Paid orders - Create Stripe Checkout Session
     const stripe = await import('https://esm.sh/stripe@14.21.0');
     const stripeClient = new stripe.default(stripeKey, {
       apiVersion: '2023-10-16',

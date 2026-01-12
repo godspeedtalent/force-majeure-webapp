@@ -145,9 +145,9 @@ export function GlobalResourceSearch({
     const routes: Record<string, string> = {
       organization: `/admin/organizations/${id}`,
       user: `/admin/users/${id}`,
-      artist: `/admin/artists/${id}`,
-      venue: `/admin/venues/${id}`,
-      event: `/events/${id}`,
+      artist: `/artists/${id}`,
+      venue: `/venues/${id}`,
+      event: `/event/${id}`,
     };
     navigate(routes[type]);
 

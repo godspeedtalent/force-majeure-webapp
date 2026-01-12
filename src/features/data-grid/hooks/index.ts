@@ -38,3 +38,9 @@ export type { UseDataGridPersistenceReturn } from './useDataGridPersistence';
 
 export { useMobileGridPersistence } from './useMobileGridPersistence';
 export type { UseMobileGridPersistenceReturn } from './useMobileGridPersistence';
+
+export { useInfiniteScroll } from './useInfiniteScroll';
+export type {
+  UseInfiniteScrollOptions,
+  UseInfiniteScrollReturn,
+} from './useInfiniteScroll';

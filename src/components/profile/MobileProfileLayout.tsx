@@ -70,7 +70,7 @@ export const MobileProfileLayout = ({
       <FmCommonCard
         key={event.id}
         className={`border-border/30 backdrop-blur-sm hover:bg-card/20 transition-colors cursor-pointer ${isPast ? 'opacity-70' : ''}`}
-        onClick={() => navigate(`/events/${event.id}`)}
+        onClick={() => navigate(`/event/${event.id}`)}
       >
         <FmCommonCardContent className='p-3'>
           <div className='flex gap-3'>

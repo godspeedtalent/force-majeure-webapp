@@ -59,6 +59,7 @@ const CheckoutFlowTests = lazy(() => import('./pages/testing/CheckoutFlowTests')
 
 // Lazy load special pages
 const SonicGauntlet = lazy(() => import('./pages/SonicGauntlet'));
+const ClaimTicketPage = lazy(() => import('./pages/claim-ticket/ClaimTicketPage'));
 
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary';
 import { DemoProtectedRoute } from '@/components/routing/DemoProtectedRoute';
@@ -498,6 +499,16 @@ const AppRoutes = () => {
       {/* Checkout Routes */}
       <Route path='/checkout/success' element={<CheckoutSuccess />} />
       <Route path='/checkout/cancel' element={<CheckoutCancel />} />
+
+      {/* Claim Ticket Route (for comp tickets) */}
+      <Route
+        path='/claim/:claimToken'
+        element={
+          <Suspense fallback={<LazyLoadFallback />}>
+            <ClaimTicketPage />
+          </Suspense>
+        }
+      />
 
       {/* Organization Routes - gated by feature flag */}
       {isFeatureEnabled(FEATURE_FLAGS.ORGANIZATION_TOOLS) && (

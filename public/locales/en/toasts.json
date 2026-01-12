@@ -276,6 +276,19 @@
     "saved": "Social settings saved successfully",
     "saveFailed": "Failed to save social settings"
   },
+  "compTickets": {
+    "issued": "Comp ticket sent successfully",
+    "issueFailed": "Failed to send comp ticket",
+    "revoked": "Comp ticket revoked",
+    "revokeFailed": "Failed to revoke comp ticket",
+    "claimed": "Ticket claimed successfully!",
+    "claimFailed": "Failed to claim ticket"
+  },
+  "rsvp": {
+    "confirmed": "RSVP confirmed!",
+    "cancelled": "RSVP cancelled",
+    "failed": "Failed to update RSVP"
+  },
   "reports": {
     "configCreated": "Report configuration created",
     "configCreateFailed": "Failed to create configuration",

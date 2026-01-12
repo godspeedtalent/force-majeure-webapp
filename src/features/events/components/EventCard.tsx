@@ -82,7 +82,7 @@ export const EventCard = ({ event, isSingleRow = false, isPastEvent = false }: E
       label: t('table.manageEvent'),
       icon: <Settings className='w-4 h-4' />,
       onClick: eventData => {
-        navigate(`/events/edit/${eventData.id}`);
+        navigate(`/event/${eventData.id}/manage`);
       },
     },
     {

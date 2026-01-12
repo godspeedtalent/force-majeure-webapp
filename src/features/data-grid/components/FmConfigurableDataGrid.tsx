@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { supabase } from '@/shared';
 import type { Json } from '@/integrations/supabase/types';
-import { FmDataGrid, DataGridColumn, DataGridAction } from './FmDataGrid';
+import { FmDataGrid, DataGridColumn, DataGridAction, PaginationMode } from './FmDataGrid';
 
 import { useTableSchema } from '../hooks/useTableSchema';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -54,6 +54,8 @@ interface FmConfigurableDataGridProps<T> {
   onCreateButtonClick?: () => void;
   resourceName?: string;
   createButtonLabel?: string;
+  /** Pagination mode: 'infinite' (default) loads more as you scroll, 'paged' shows traditional pagination */
+  paginationMode?: PaginationMode;
 }
 
 export function FmConfigurableDataGrid<T extends Record<string, any>>({
@@ -66,13 +68,14 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
   actions = [],
   contextMenuActions = [],
   loading = false,
-  pageSize = 10,
+  pageSize = 25,
   className,
   onUpdate,
   onCreate,
   onCreateButtonClick,
   resourceName = 'Resource',
   createButtonLabel,
+  paginationMode = 'infinite',
 }: FmConfigurableDataGridProps<T>) {
   const { t } = useTranslation('common');
   const { t: tToast } = useTranslation('toasts');
@@ -392,6 +395,7 @@ export function FmConfigurableDataGrid<T extends Record<string, any>>({
         onHideColumn={hideColumn}
         onColumnReorder={handleColumnReorder}
         onToggleFreeze={handleToggleFreeze}
+        paginationMode={paginationMode}
         toolbarActions={
           <>
             <FmCommonButton

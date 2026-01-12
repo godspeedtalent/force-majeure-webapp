@@ -1,4 +1,5 @@
 import { DataGridColumn, DataGridAction } from '../../types';
+import type { PaginationMode } from '../FmDataGrid';
 
 /**
  * Configuration for which fields to show on mobile cards
@@ -49,6 +50,10 @@ export interface FmMobileDataGridProps<T = any> {
   sortColumn?: string | null;
   sortDirection?: 'asc' | 'desc';
   onSort?: (columnKey: string) => void;
+
+  // Pagination mode
+  /** Pagination mode: 'infinite' (default) loads more as you scroll, 'paged' shows traditional pagination */
+  paginationMode?: PaginationMode;
 }
 
 /**

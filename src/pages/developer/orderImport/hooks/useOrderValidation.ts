@@ -30,7 +30,7 @@ import type {
   ParsedSubItem,
   ResolveContext,
   UnmappedFieldAssignment,
-  GuestAddressData,
+  UserData,
 } from '../types';
 
 interface UseOrderValidationOptions {
@@ -77,30 +77,31 @@ export function useOrderValidation({
     const tierPrice = selectedTier?.price_cents || 0;
     const eventDate = eventDetails?.start_time ?? undefined;
 
-    // Build guest field assignment map (column -> target column)
-    const guestFieldAssignments = unmappedAssignments
-      .filter(a => a.targetTable === 'guests')
+    // Build user field assignment map (column -> target column)
+    // The 'user' virtual table routes to either profiles or guests based on existingUserId
+    const userFieldAssignments = unmappedAssignments
+      .filter(a => a.targetTable === 'user')
       .reduce((acc, a) => {
         acc.set(a.csvColumn, a.targetColumn);
         return acc;
       }, new Map<string, string>());
 
-    // Helper to extract guest address data from a row
-    const extractGuestAddress = (row: CsvRow): GuestAddressData | undefined => {
-      if (guestFieldAssignments.size === 0) return undefined;
+    // Helper to extract user data from a row
+    const extractUserData = (row: CsvRow): UserData | undefined => {
+      if (userFieldAssignments.size === 0) return undefined;
 
-      const address: GuestAddressData = {};
+      const userData: UserData = {};
       let hasData = false;
 
-      guestFieldAssignments.forEach((targetColumn, csvColumn) => {
+      userFieldAssignments.forEach((targetColumn, csvColumn) => {
         const value = row[csvColumn]?.trim() || null;
         if (value) {
           hasData = true;
-          (address as Record<string, string | null>)[targetColumn] = value;
+          (userData as Record<string, string | null>)[targetColumn] = value;
         }
       });
 
-      return hasData ? address : undefined;
+      return hasData ? userData : undefined;
     };
 
     try {
@@ -252,8 +253,8 @@ export function useOrderValidation({
         const isDuplicate = externalOrderId ? existingExternalIds.has(externalOrderId) : false;
         const existingUserId = email ? emailToUserId.get(email) || null : null;
 
-        // Extract guest address data from unmapped field assignments
-        const guestAddress = extractGuestAddress(row);
+        // Extract user data from unmapped field assignments
+        const userData = extractUserData(row);
 
         parsed.push({
           rowIndex: i + 2,
@@ -266,7 +267,8 @@ export function useOrderValidation({
           orderDate,
           status,
           externalOrderId,
-          guestAddress,
+          userData,
+          guestAddress: userData, // Backward compatibility
           validationErrors: errors,
           existingUserId,
           isDuplicate,

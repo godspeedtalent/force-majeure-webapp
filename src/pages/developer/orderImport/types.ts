@@ -147,14 +147,15 @@ export interface LineItemConfig {
 }
 
 // ============================================================================
-// GUEST ADDRESS TYPES
+// USER DATA TYPES
 // ============================================================================
 
 /**
- * Data for guest records during import
- * Populated from unmapped field assignments targeting the 'guests' table
+ * Unified user data for import
+ * Populated from unmapped field assignments targeting the 'user' virtual table.
+ * Routes to 'profiles' if user exists, 'guests' if not.
  */
-export interface GuestAddressData {
+export interface UserData {
   full_name?: string | null;
   phone?: string | null;
   billing_address_line_1?: string | null;
@@ -164,6 +165,11 @@ export interface GuestAddressData {
   billing_zip_code?: string | null;
   billing_country?: string | null;
 }
+
+/**
+ * @deprecated Use UserData instead
+ */
+export type GuestAddressData = UserData;
 
 // ============================================================================
 // PARSED ORDER TYPES
@@ -216,8 +222,13 @@ export interface ParsedOrder {
   orderDate: string;
   status: 'paid' | 'refunded' | 'cancelled';
   externalOrderId?: string;
-  // Guest address data (from unmapped field assignments)
-  guestAddress?: GuestAddressData;
+  // User data (from unmapped field assignments targeting 'user' virtual table)
+  // Routes to profiles or guests based on existingUserId
+  userData?: UserData;
+  /**
+   * @deprecated Use userData instead
+   */
+  guestAddress?: UserData;
   // Validation state
   validationErrors: string[];
   existingUserId: string | null;

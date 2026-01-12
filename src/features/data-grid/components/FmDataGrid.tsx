@@ -17,6 +17,7 @@ import { useDataGridColumnResize } from '../hooks/useDataGridColumnResize';
 import { useDataGridScrollSync } from '../hooks/useDataGridScrollSync';
 import { useDataGridGrouping } from '../hooks/useDataGridGrouping';
 import { useDataGridUndo } from '../hooks/useDataGridUndo';
+import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 import { FmDataGridExportDialog, ExportFormat } from './FmDataGridExportDialog';
 import { FmDataGridGroupDialog } from './FmDataGridGroupDialog';
 import { FmBulkEditDialog } from './FmBulkEditDialog';
@@ -74,6 +75,9 @@ export interface DataGridColumn<T = any> {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type DataGridAction<T = any> = ContextMenuAction<T>;
 
+/** Pagination mode for the data grid */
+export type PaginationMode = 'infinite' | 'paged';
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface FmDataGridProps<T = any> {
   data: T[];
@@ -99,6 +103,8 @@ export interface FmDataGridProps<T = any> {
   exportFilename?: string;
   /** Show row numbers in the first column */
   showRowNumbers?: boolean;
+  /** Pagination mode: 'infinite' (default) loads more as you scroll, 'paged' shows traditional pagination */
+  paginationMode?: PaginationMode;
 }
 
 export function FmDataGrid<T extends Record<string, any>>({
@@ -107,7 +113,7 @@ export function FmDataGrid<T extends Record<string, any>>({
   actions = [],
   contextMenuActions = [],
   loading = false,
-  pageSize = 10,
+  pageSize = 25,
   className,
   onUpdate,
   onCreate,
@@ -124,9 +130,11 @@ export function FmDataGrid<T extends Record<string, any>>({
   enableExport = true,
   exportFilename,
   showRowNumbers = false,
+  paginationMode = 'infinite',
 }: FmDataGridProps<T>) {
   const { t } = useTranslation('common');
   const isMobile = useIsMobile();
+  const isInfiniteScroll = paginationMode === 'infinite';
 
   // Custom hooks for state management - must be called before any conditional returns
   const gridState = useDataGridState({ dataLength: data.length });
@@ -160,6 +168,16 @@ export function FmDataGrid<T extends Record<string, any>>({
     deps: [data, columns, columnWidths],
   });
 
+  // Get filtered and sorted data from filters hook (needed before infinite scroll)
+  const { filteredData } = filters;
+
+  // Infinite scroll hook
+  const infiniteScroll = useInfiniteScroll({
+    totalItems: filteredData.length,
+    batchSize: pageSize,
+    enabled: isInfiniteScroll,
+  });
+
   // Render mobile view on small screens (after all hooks)
   if (isMobile) {
     return (
@@ -172,6 +190,7 @@ export function FmDataGrid<T extends Record<string, any>>({
         onUpdate={onUpdate}
         resourceName={resourceName}
         pageSize={pageSize}
+        paginationMode={paginationMode}
       />
     );
   }
@@ -180,14 +199,17 @@ export function FmDataGrid<T extends Record<string, any>>({
   const dragTimerRef = useRef<NodeJS.Timeout | null>(null);
   const rowRefs = useRef<Map<number, HTMLTableRowElement>>(new Map());
 
-  // Get filtered and sorted data from filters hook
-  const { filteredData } = filters;
-
-  // Paginate data
+  // Paginate/slice data based on pagination mode
   const paginatedData = useMemo(() => {
-    const startIndex = (gridState.currentPage - 1) * pageSize;
-    return filteredData.slice(startIndex, startIndex + pageSize);
-  }, [filteredData, gridState.currentPage, pageSize]);
+    if (isInfiniteScroll) {
+      // Infinite scroll: show items up to visibleCount
+      return filteredData.slice(0, infiniteScroll.visibleCount);
+    } else {
+      // Paged: traditional pagination
+      const startIndex = (gridState.currentPage - 1) * pageSize;
+      return filteredData.slice(startIndex, startIndex + pageSize);
+    }
+  }, [filteredData, isInfiniteScroll, infiniteScroll.visibleCount, gridState.currentPage, pageSize]);
 
   const totalPages = Math.ceil(filteredData.length / pageSize);
 
@@ -717,14 +739,34 @@ export function FmDataGrid<T extends Record<string, any>>({
         </div>
       )}
 
-      {/* Pagination */}
-      <FmDataGridPagination
-        currentPage={gridState.currentPage}
-        totalPages={totalPages}
-        pageSize={pageSize}
-        totalCount={filteredData.length}
-        onPageChange={gridState.setCurrentPage}
-      />
+      {/* Pagination or Infinite Scroll Indicator */}
+      {isInfiniteScroll ? (
+        <div className='flex items-center justify-between text-sm text-muted-foreground py-2'>
+          <span>
+            {t('dataGrid.showingCount', {
+              count: paginatedData.length,
+              total: filteredData.length,
+            })}
+          </span>
+          {infiniteScroll.hasMore && (
+            <button
+              onClick={infiniteScroll.loadMore}
+              disabled={infiniteScroll.isLoadingMore}
+              className='text-fm-gold hover:text-fm-gold/80 transition-colors disabled:opacity-50'
+            >
+              {infiniteScroll.isLoadingMore ? t('dataGrid.loading') : t('dataGrid.loadMore')}
+            </button>
+          )}
+        </div>
+      ) : (
+        <FmDataGridPagination
+          currentPage={gridState.currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          totalCount={filteredData.length}
+          onPageChange={gridState.setCurrentPage}
+        />
+      )}
 
       {/* Dialogs */}
       <FmDataGridBatchDeleteDialog

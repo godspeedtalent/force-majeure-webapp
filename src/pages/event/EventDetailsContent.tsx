@@ -6,6 +6,7 @@ import { Badge } from '@/components/common/shadcn/badge';
 
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { FmBigButton } from '@/components/common/buttons/FmBigButton';
+import { FmRsvpButton } from '@/components/events/ticketing/FmRsvpButton';
 import { FmDateBox } from '@/components/common/display/FmDateBox';
 import { FmTextLink } from '@/components/common/display/FmTextLink';
 import { FmUndercardList } from '@/components/common/display/FmUndercardList';
@@ -58,7 +59,6 @@ export const EventDetailsContent = ({
   const { hasAnyRole } = useUserPermissions();
   const navigate = useNavigate();
   const location = useLocation();
-  const [ticketCount] = useState(() => Math.floor(Math.random() * 100) + 50);
   const { viewCount, isLoading: isViewCountLoading, recordView } = useEventViews(event.id);
 
   // Use extracted hooks for date/time calculations and attendee list
@@ -76,7 +76,7 @@ export const EventDetailsContent = ({
     callTimeLineup,
   } = useEventDetailsData(event);
 
-  const { attendeeList, attendeePreview } = useAttendeeList(ticketCount);
+  const { attendeePreview, totalGoingCount } = useAttendeeList(event.id);
   const {
     isShareModalOpen,
     handleOpenShareModal,
@@ -122,6 +122,9 @@ export const EventDetailsContent = ({
 
   // Check if venue map should be shown
   const showVenueMap = (event as any).show_venue_map ?? true;
+
+  // Check if this is a free event (uses RSVP instead of ticketing)
+  const isFreeEvent = (event as any).is_free_event ?? false;
 
   // Record page view on mount
   useEffect(() => {
@@ -246,7 +249,7 @@ export const EventDetailsContent = ({
         {guestListEnabled && (
           <EventGuestList
             attendeePreview={attendeePreview}
-            ticketCount={ticketCount}
+            ticketCount={totalGoingCount}
             viewCount={viewCount}
             showViewCount={showViewCount}
             isViewCountLoading={isViewCountLoading}
@@ -438,12 +441,20 @@ export const EventDetailsContent = ({
             scrollContainerRef={contentViewportRef}
           />
 
-          {/* Only show ticket button for upcoming events */}
+          {/* Only show ticket/RSVP button for upcoming events */}
           {!isPastEvent && (
             <div className='mt-6'>
-              <FmBigButton onClick={handleOpenCheckout}>
-                {t('eventDetails.getTickets')}
-              </FmBigButton>
+              {isFreeEvent ? (
+                <FmRsvpButton
+                  eventId={event.id}
+                  eventTitle={displayTitle}
+                  isPastEvent={isPastEvent}
+                />
+              ) : (
+                <FmBigButton onClick={handleOpenCheckout}>
+                  {t('eventDetails.getTickets')}
+                </FmBigButton>
+              )}
             </div>
           )}
 
@@ -454,7 +465,7 @@ export const EventDetailsContent = ({
       <AttendeeModal
         open={isAttendeeModalOpen}
         onOpenChange={setIsAttendeeModalOpen}
-        attendeeList={attendeeList}
+        eventId={event.id}
       />
 
       <FmArtistDetailsModal

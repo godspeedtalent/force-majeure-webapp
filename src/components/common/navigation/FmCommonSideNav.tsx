@@ -131,7 +131,7 @@ export function FmCommonSideNav<T extends string = string>({
                 !isActive &&
                   !isExternal && [
                     'hover:bg-white/5 hover:translate-x-0.5',
-                    'hover:border-white',
+                    'hover:border-fm-gold hover:text-fm-gold',
                   ],
                 // Active state
                 isActive && [
@@ -148,7 +148,7 @@ export function FmCommonSideNav<T extends string = string>({
               {/* Icon with subtle animation */}
               <item.icon
                 className={cn(
-                  'h-4 w-4 shrink-0 transition-transform duration-300',
+                  'h-4 w-4 shrink-0 transition-all duration-300',
                   isActive && 'scale-110'
                 )}
               />

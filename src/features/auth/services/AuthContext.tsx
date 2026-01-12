@@ -39,6 +39,8 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
+  /** Alias for loading - preferred naming convention */
+  isLoading: boolean;
   signUp: (
     email: string,
     password: string,
@@ -490,6 +492,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     session,
     profile,
     loading,
+    isLoading: loading,
     signUp,
     signIn,
     signOut,

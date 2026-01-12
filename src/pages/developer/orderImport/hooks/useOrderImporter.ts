@@ -17,7 +17,10 @@ import type {
   ImportResult,
   ProcessRecord,
   LineItemTemplate,
+  UserData,
 } from '../types';
+
+import { USER_FIELD_MAPPING } from '../constants';
 
 // Configuration for concurrent processing
 const BATCH_SIZE = 10; // Number of orders to process concurrently
@@ -53,6 +56,26 @@ interface SingleOrderImportResult {
 }
 
 /**
+ * Translate UserData fields to profile column names using USER_FIELD_MAPPING
+ * For example: { phone: '123' } -> { phone_number: '123' }
+ */
+function translateUserDataToProfile(userData: UserData): Record<string, string | null> {
+  const profileUpdate: Record<string, string | null> = {};
+
+  for (const [userField, value] of Object.entries(userData)) {
+    if (value === undefined || value === null) continue;
+
+    const mapping = USER_FIELD_MAPPING[userField];
+    if (mapping) {
+      // Use the profile column name from the mapping
+      profileUpdate[mapping.profiles] = value;
+    }
+  }
+
+  return profileUpdate;
+}
+
+/**
  * Import a single order atomically
  * This function handles all the database operations for one order
  * and catches any errors without affecting other orders
@@ -73,9 +96,33 @@ async function importSingleOrder(
   try {
     let guestId: string | null = null;
 
-    // If no existing user, create or find a guest record
-    if (!order.existingUserId) {
-      // First, check if a guest with this email already exists
+    // Get user data (supports both new userData and legacy guestAddress)
+    const userData = order.userData || order.guestAddress;
+
+    // Route userData to correct table based on whether user exists
+    if (order.existingUserId) {
+      // User exists - update profile with userData if provided
+      if (userData && Object.keys(userData).length > 0) {
+        const profileUpdate = translateUserDataToProfile(userData);
+        if (Object.keys(profileUpdate).length > 0) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { error: profileError } = await (supabase as any)
+            .from('profiles')
+            .update(profileUpdate)
+            .eq('id', order.existingUserId);
+
+          if (profileError) {
+            // Log but don't fail the order - profile update is optional
+            logger.warn('Failed to update profile data', {
+              error: profileError.message,
+              userId: order.existingUserId,
+              source: 'useOrderImporter.importSingleOrder',
+            });
+          }
+        }
+      }
+    } else {
+      // No existing user - create or find a guest record
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: existingGuest } = await (supabase as any)
         .from('guests')
@@ -87,9 +134,9 @@ async function importSingleOrder(
         guestId = existingGuest.id;
 
         // Determine the best name source:
-        // 1. From unmapped field assignment (guestAddress.full_name)
+        // 1. From unmapped field assignment (userData.full_name)
         // 2. From main column mapping (customerName - which is attendee_name on ticket)
-        const guestFullName = order.guestAddress?.full_name || order.customerName;
+        const guestFullName = userData?.full_name || order.customerName;
 
         // Update guest name if provided and guest doesn't have one
         if (guestFullName && !existingGuest.full_name) {
@@ -101,7 +148,7 @@ async function importSingleOrder(
         }
       } else {
         // Determine the best name source for new guest
-        const guestFullName = order.guestAddress?.full_name || order.customerName;
+        const guestFullName = userData?.full_name || order.customerName;
 
         // Create a new guest record (without address - address goes in addresses table)
         const guestInsert = {
@@ -124,17 +171,17 @@ async function importSingleOrder(
       }
 
       // Create address in normalized addresses table if we have address data
-      if (guestId && order.guestAddress && Object.keys(order.guestAddress).length > 0) {
+      if (guestId && userData && Object.keys(userData).length > 0) {
         // Use the upsert function to create/update the guest's billing address
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { data: addressId, error: addressError } = await (supabase as any).rpc('upsert_guest_billing_address', {
           p_guest_id: guestId,
-          p_line_1: order.guestAddress.billing_address_line_1 || null,
-          p_line_2: order.guestAddress.billing_address_line_2 || null,
-          p_city: order.guestAddress.billing_city || null,
-          p_state: order.guestAddress.billing_state || null,
-          p_zip_code: order.guestAddress.billing_zip_code || null,
-          p_country: order.guestAddress.billing_country || 'US',
+          p_line_1: userData.billing_address_line_1 || null,
+          p_line_2: userData.billing_address_line_2 || null,
+          p_city: userData.billing_city || null,
+          p_state: userData.billing_state || null,
+          p_zip_code: userData.billing_zip_code || null,
+          p_country: userData.billing_country || 'US',
         });
 
         if (addressError) {

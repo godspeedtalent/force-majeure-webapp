@@ -275,6 +275,19 @@
     "saved": "Configuración social guardada exitosamente",
     "saveFailed": "Error al guardar configuración social"
   },
+  "compTickets": {
+    "issued": "Entrada de cortesía enviada exitosamente",
+    "issueFailed": "Error al enviar entrada de cortesía",
+    "revoked": "Entrada de cortesía revocada",
+    "revokeFailed": "Error al revocar entrada de cortesía",
+    "claimed": "¡Entrada reclamada exitosamente!",
+    "claimFailed": "Error al reclamar entrada"
+  },
+  "rsvp": {
+    "confirmed": "¡Asistencia confirmada!",
+    "cancelled": "Asistencia cancelada",
+    "failed": "Error al actualizar la asistencia"
+  },
   "reports": {
     "configCreated": "Configuración de reporte creada",
     "configCreateFailed": "Error al crear configuración",

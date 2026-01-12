@@ -7,6 +7,7 @@
 
 // Main components
 export { FmDataGrid } from './components/FmDataGrid';
+export type { PaginationMode } from './components/FmDataGrid';
 export { FmConfigurableDataGrid } from './components/FmConfigurableDataGrid';
 export { FmDataGridContextMenu } from './components/FmDataGridContextMenu';
 export { FmOrganizationDataGrid } from './components/FmOrganizationDataGrid';

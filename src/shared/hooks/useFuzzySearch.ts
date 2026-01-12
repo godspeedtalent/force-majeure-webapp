@@ -91,6 +91,19 @@ export interface EventSearchResult extends SearchableItem {
   start_time?: string | null;
   hero_image?: string | null;
   venue_id?: string | null;
+  headliner_name?: string | null;
+}
+
+/** Raw result shape from events query with headliner join */
+interface EventQueryResult {
+  id: string;
+  title: string;
+  description: string | null;
+  start_time: string | null;
+  hero_image: string | null;
+  venue_id: string | null;
+  headliner: { name: string } | null;
+  headliner_id?: string | null;
 }
 
 export interface VenueSearchResult extends SearchableItem {
@@ -229,7 +242,7 @@ export function useFuzzySearch(config: FuzzySearchConfig): UseFuzzySearchReturn 
         limit: 10,
       };
       const eventConfig: FuzzySearchOptions<EventSearchResult> = {
-        keys: ['title', 'description'],
+        keys: ['title', 'description', 'headliner_name'],
         threshold: 0.4,
         limit: 10,
       };
@@ -421,24 +434,75 @@ async function searchEvents(
       return (data || []) as EventSearchResult[];
     }
 
-    // Fallback to ILIKE
-    let queryBuilder = supabase
+    // Fallback to ILIKE - search events by title/description and by headliner name
+    // PostgREST doesn't support filtering on joined relations in .or(), so we run two queries
+    const baseQuery = {
+      select: 'id, title, description, start_time, hero_image, venue_id, headliner:artists!headliner_id(name)',
+    };
+
+    // Query 1: Search by event title/description
+    let titleQueryBuilder = supabase
       .from('events')
-      .select('id, title, description, start_time, hero_image, venue_id')
+      .select(baseQuery.select)
+      .eq('status', 'published') // Only published events
       .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
       .limit(limit);
 
     if (upcomingOnly) {
-      queryBuilder = queryBuilder.gte('start_time', new Date().toISOString());
+      titleQueryBuilder = titleQueryBuilder.gte('start_time', new Date().toISOString());
     }
 
-    const { data, error } = await queryBuilder;
+    // Query 2: Search by headliner name (get event IDs from events with matching headliner)
+    let headlinerQueryBuilder = supabase
+      .from('events')
+      .select(baseQuery.select + ', headliner_id')
+      .eq('status', 'published') // Only published events
+      .not('headliner_id', 'is', null)
+      .limit(limit * 2); // Get more to filter
 
-    if (error) throw error;
-    return (data || []).map(item => ({
-      ...item,
-      similarity_score: 0.5,
-    })) as EventSearchResult[];
+    if (upcomingOnly) {
+      headlinerQueryBuilder = headlinerQueryBuilder.gte('start_time', new Date().toISOString());
+    }
+
+    const [titleResult, headlinerResult] = await Promise.all([
+      titleQueryBuilder,
+      headlinerQueryBuilder,
+    ]);
+
+    if (titleResult.error) throw titleResult.error;
+    if (headlinerResult.error) throw headlinerResult.error;
+
+    // Cast results to known type
+    const titleData = (titleResult.data || []) as unknown as EventQueryResult[];
+    const headlinerData = (headlinerResult.data || []) as unknown as EventQueryResult[];
+
+    // Filter headliner results client-side by artist name match
+    const queryLower = query.toLowerCase();
+    const headlinerMatches = headlinerData.filter(item => {
+      return item.headliner?.name?.toLowerCase().includes(queryLower);
+    });
+
+    // Merge results, deduplicating by event ID
+    const seenIds = new Set<string>();
+    const mergedResults: EventSearchResult[] = [];
+
+    for (const item of [...titleData, ...headlinerMatches]) {
+      if (!seenIds.has(item.id)) {
+        seenIds.add(item.id);
+        mergedResults.push({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          start_time: item.start_time,
+          hero_image: item.hero_image,
+          venue_id: item.venue_id,
+          headliner_name: item.headliner?.name ?? null,
+          similarity_score: 0.5,
+        });
+      }
+    }
+
+    return mergedResults.slice(0, limit);
   } catch (error) {
     logger.error('Error searching events', { error, query });
     return [];

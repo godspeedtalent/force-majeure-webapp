@@ -150,29 +150,21 @@ export const DATA_TYPE_DISPLAY: Record<FieldDataType, { label: string; color: st
 
 /**
  * Fields that can receive unmapped CSV columns
+ *
+ * The 'user' table is a virtual abstraction that routes to either 'profiles' or 'guests'
+ * depending on whether the customer email matches an existing profile.
  */
 export const ASSIGNABLE_FIELDS: AssignableField[] = [
-  // guests table - for guest (non-authenticated) purchasers
-  { table: 'guests', column: 'full_name', dataType: 'text', description: 'Guest full name' },
-  { table: 'guests', column: 'phone', dataType: 'text', description: 'Guest phone number' },
-  { table: 'guests', column: 'billing_address_line_1', dataType: 'text', description: 'Guest billing address line 1' },
-  { table: 'guests', column: 'billing_address_line_2', dataType: 'text', description: 'Guest billing address line 2' },
-  { table: 'guests', column: 'billing_city', dataType: 'text', description: 'Guest billing city' },
-  { table: 'guests', column: 'billing_state', dataType: 'text', description: 'Guest billing state/province' },
-  { table: 'guests', column: 'billing_zip_code', dataType: 'text', description: 'Guest billing postal/zip code' },
-  { table: 'guests', column: 'billing_country', dataType: 'text', description: 'Guest billing country' },
-  // profiles table - for matched users
-  { table: 'profiles', column: 'full_name', dataType: 'text', description: 'User full name' },
-  { table: 'profiles', column: 'display_name', dataType: 'text', description: 'User display name (public)' },
-  { table: 'profiles', column: 'phone_number', dataType: 'text', description: 'User phone number' },
-  { table: 'profiles', column: 'instagram_handle', dataType: 'text', description: 'User Instagram handle' },
-  { table: 'profiles', column: 'home_city', dataType: 'text', description: 'User home city' },
-  { table: 'profiles', column: 'billing_address_line_1', dataType: 'text', description: 'User billing address line 1' },
-  { table: 'profiles', column: 'billing_address_line_2', dataType: 'text', description: 'User billing address line 2' },
-  { table: 'profiles', column: 'billing_city', dataType: 'text', description: 'User billing city' },
-  { table: 'profiles', column: 'billing_state', dataType: 'text', description: 'User billing state/province' },
-  { table: 'profiles', column: 'billing_zip_code', dataType: 'text', description: 'User billing postal/zip code' },
-  { table: 'profiles', column: 'billing_country', dataType: 'text', description: 'User billing country' },
+  // user table - unified abstraction for profile/guest data
+  // Routes to 'profiles' if user exists, 'guests' if not
+  { table: 'user', column: 'full_name', dataType: 'text', description: 'Customer full name' },
+  { table: 'user', column: 'phone', dataType: 'text', description: 'Customer phone number' },
+  { table: 'user', column: 'billing_address_line_1', dataType: 'text', description: 'Customer billing address line 1' },
+  { table: 'user', column: 'billing_address_line_2', dataType: 'text', description: 'Customer billing address line 2' },
+  { table: 'user', column: 'billing_city', dataType: 'text', description: 'Customer billing city' },
+  { table: 'user', column: 'billing_state', dataType: 'text', description: 'Customer billing state/province' },
+  { table: 'user', column: 'billing_zip_code', dataType: 'text', description: 'Customer billing postal/zip code' },
+  { table: 'user', column: 'billing_country', dataType: 'text', description: 'Customer billing country' },
   // orders table - order-specific data
   { table: 'orders', column: 'customer_email', dataType: 'text', description: 'Order customer email (override)' },
   { table: 'orders', column: 'billing_address_line_1', dataType: 'text', description: 'Order billing address line 1' },
@@ -186,6 +178,25 @@ export const ASSIGNABLE_FIELDS: AssignableField[] = [
   { table: 'tickets', column: 'attendee_email', dataType: 'text', description: 'Attendee email (if different from purchaser)' },
   { table: 'tickets', column: 'attendee_phone', dataType: 'text', description: 'Attendee phone number' },
 ];
+
+// ============================================================================
+// USER FIELD MAPPING
+// ============================================================================
+
+/**
+ * Maps unified 'user' fields to their corresponding columns in profiles and guests tables.
+ * The 'phone' field maps to different column names in each table.
+ */
+export const USER_FIELD_MAPPING: Record<string, { profiles: string; guests: string }> = {
+  full_name: { profiles: 'full_name', guests: 'full_name' },
+  phone: { profiles: 'phone_number', guests: 'phone' },
+  billing_address_line_1: { profiles: 'billing_address_line_1', guests: 'billing_address_line_1' },
+  billing_address_line_2: { profiles: 'billing_address_line_2', guests: 'billing_address_line_2' },
+  billing_city: { profiles: 'billing_city', guests: 'billing_city' },
+  billing_state: { profiles: 'billing_state', guests: 'billing_state' },
+  billing_zip_code: { profiles: 'billing_zip_code', guests: 'billing_zip_code' },
+  billing_country: { profiles: 'billing_country', guests: 'billing_country' },
+};
 
 // ============================================================================
 // AUTO-DETECT PATTERNS

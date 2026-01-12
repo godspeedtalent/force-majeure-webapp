@@ -128,6 +128,82 @@ export type Database = {
         }
         Relationships: []
       }
+      addresses: {
+        Row: {
+          address_type: Database["public"]["Enums"]["address_type"]
+          city: string | null
+          country: string | null
+          created_at: string
+          guest_id: string | null
+          id: string
+          is_default: boolean | null
+          label: string | null
+          line_1: string | null
+          line_2: string | null
+          organization_id: string | null
+          profile_id: string | null
+          state: string | null
+          updated_at: string
+          zip_code: string | null
+        }
+        Insert: {
+          address_type?: Database["public"]["Enums"]["address_type"]
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          guest_id?: string | null
+          id?: string
+          is_default?: boolean | null
+          label?: string | null
+          line_1?: string | null
+          line_2?: string | null
+          organization_id?: string | null
+          profile_id?: string | null
+          state?: string | null
+          updated_at?: string
+          zip_code?: string | null
+        }
+        Update: {
+          address_type?: Database["public"]["Enums"]["address_type"]
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          guest_id?: string | null
+          id?: string
+          is_default?: boolean | null
+          label?: string | null
+          line_1?: string | null
+          line_2?: string | null
+          organization_id?: string | null
+          profile_id?: string | null
+          state?: string | null
+          updated_at?: string
+          zip_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "addresses_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: false
+            referencedRelation: "guests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "addresses_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "addresses_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       analytics_funnel_events: {
         Row: {
           cart_id: string | null
@@ -1111,6 +1187,173 @@ export type Database = {
           },
         ]
       }
+      comp_tickets: {
+        Row: {
+          claim_token: string | null
+          claimed_at: string | null
+          claimed_by_user_id: string | null
+          created_at: string
+          event_id: string
+          expires_at: string | null
+          id: string
+          issued_at: string
+          issued_by_user_id: string
+          order_id: string | null
+          recipient_email: string
+          recipient_user_id: string | null
+          status: string
+          ticket_id: string | null
+          ticket_tier_id: string
+          updated_at: string
+        }
+        Insert: {
+          claim_token?: string | null
+          claimed_at?: string | null
+          claimed_by_user_id?: string | null
+          created_at?: string
+          event_id: string
+          expires_at?: string | null
+          id?: string
+          issued_at?: string
+          issued_by_user_id: string
+          order_id?: string | null
+          recipient_email: string
+          recipient_user_id?: string | null
+          status?: string
+          ticket_id?: string | null
+          ticket_tier_id: string
+          updated_at?: string
+        }
+        Update: {
+          claim_token?: string | null
+          claimed_at?: string | null
+          claimed_by_user_id?: string | null
+          created_at?: string
+          event_id?: string
+          expires_at?: string | null
+          id?: string
+          issued_at?: string
+          issued_by_user_id?: string
+          order_id?: string | null
+          recipient_email?: string
+          recipient_user_id?: string | null
+          status?: string
+          ticket_id?: string | null
+          ticket_tier_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comp_tickets_claimed_by_user_id_fkey"
+            columns: ["claimed_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comp_tickets_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comp_tickets_issued_by_user_id_fkey"
+            columns: ["issued_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comp_tickets_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comp_tickets_recipient_user_id_fkey"
+            columns: ["recipient_user_id"]
+            isOneToOne: false
+            referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comp_tickets_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comp_tickets_ticket_tier_id_fkey"
+            columns: ["ticket_tier_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contact_submissions: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          message: string
+          name: string
+          notes: string | null
+          replied_at: string | null
+          replied_by: string | null
+          status: string
+          subject: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          message: string
+          name: string
+          notes?: string | null
+          replied_at?: string | null
+          replied_by?: string | null
+          status?: string
+          subject?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          notes?: string | null
+          replied_at?: string | null
+          replied_by?: string | null
+          status?: string
+          subject?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_submissions_replied_by_fkey"
+            columns: ["replied_by"]
+            isOneToOne: false
+            referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contact_submissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       datagrid_configs: {
         Row: {
           config: Json
@@ -1139,6 +1382,41 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "datagrid_configs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dev_bookmarks: {
+        Row: {
+          created_at: string | null
+          id: string
+          label: string
+          path: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          label: string
+          path: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          label?: string
+          path?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dev_bookmarks_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users_complete"
@@ -1217,6 +1495,155 @@ export type Database = {
           is_active?: boolean | null
           name?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      error_logs: {
+        Row: {
+          app_version: string | null
+          created_at: string
+          details: Json | null
+          endpoint: string | null
+          environment: string | null
+          error_code: string | null
+          id: string
+          ip_address: unknown
+          level: Database["public"]["Enums"]["error_log_level"]
+          message: string
+          metadata: Json | null
+          method: string | null
+          page_url: string | null
+          request_id: string | null
+          session_id: string | null
+          source: Database["public"]["Enums"]["error_log_source"]
+          stack_trace: string | null
+          status_code: number | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          app_version?: string | null
+          created_at?: string
+          details?: Json | null
+          endpoint?: string | null
+          environment?: string | null
+          error_code?: string | null
+          id?: string
+          ip_address?: unknown
+          level?: Database["public"]["Enums"]["error_log_level"]
+          message: string
+          metadata?: Json | null
+          method?: string | null
+          page_url?: string | null
+          request_id?: string | null
+          session_id?: string | null
+          source?: Database["public"]["Enums"]["error_log_source"]
+          stack_trace?: string | null
+          status_code?: number | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          app_version?: string | null
+          created_at?: string
+          details?: Json | null
+          endpoint?: string | null
+          environment?: string | null
+          error_code?: string | null
+          id?: string
+          ip_address?: unknown
+          level?: Database["public"]["Enums"]["error_log_level"]
+          message?: string
+          metadata?: Json | null
+          method?: string | null
+          page_url?: string | null
+          request_id?: string | null
+          session_id?: string | null
+          source?: Database["public"]["Enums"]["error_log_source"]
+          stack_trace?: string | null
+          status_code?: number | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "error_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      error_logs_archive: {
+        Row: {
+          app_version: string | null
+          archived_at: string
+          created_at: string
+          details: Json | null
+          endpoint: string | null
+          environment: string | null
+          error_code: string | null
+          id: string
+          ip_address: unknown
+          level: Database["public"]["Enums"]["error_log_level"]
+          message: string
+          metadata: Json | null
+          method: string | null
+          page_url: string | null
+          request_id: string | null
+          session_id: string | null
+          source: Database["public"]["Enums"]["error_log_source"]
+          stack_trace: string | null
+          status_code: number | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          app_version?: string | null
+          archived_at?: string
+          created_at?: string
+          details?: Json | null
+          endpoint?: string | null
+          environment?: string | null
+          error_code?: string | null
+          id?: string
+          ip_address?: unknown
+          level?: Database["public"]["Enums"]["error_log_level"]
+          message: string
+          metadata?: Json | null
+          method?: string | null
+          page_url?: string | null
+          request_id?: string | null
+          session_id?: string | null
+          source?: Database["public"]["Enums"]["error_log_source"]
+          stack_trace?: string | null
+          status_code?: number | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          app_version?: string | null
+          archived_at?: string
+          created_at?: string
+          details?: Json | null
+          endpoint?: string | null
+          environment?: string | null
+          error_code?: string | null
+          id?: string
+          ip_address?: unknown
+          level?: Database["public"]["Enums"]["error_log_level"]
+          message?: string
+          metadata?: Json | null
+          method?: string | null
+          page_url?: string | null
+          request_id?: string | null
+          session_id?: string | null
+          source?: Database["public"]["Enums"]["error_log_source"]
+          stack_trace?: string | null
+          status_code?: number | null
+          user_agent?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -1361,6 +1788,48 @@ export type Database = {
           },
         ]
       }
+      event_rsvps: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_rsvps_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_rsvps_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_views: {
         Row: {
           created_at: string
@@ -1423,11 +1892,14 @@ export type Database = {
           hero_image_focal_y: number | null
           id: string
           is_after_hours: boolean
+          is_free_event: boolean
           is_tba: boolean | null
           looking_for_undercard: boolean
           min_interest_count_display: number
           min_share_count_display: number
+          no_headliner: boolean | null
           organization_id: string | null
+          rsvp_capacity: number | null
           share_count: number
           show_venue_map: boolean
           show_view_count: boolean | null
@@ -1452,11 +1924,14 @@ export type Database = {
           hero_image_focal_y?: number | null
           id?: string
           is_after_hours?: boolean
+          is_free_event?: boolean
           is_tba?: boolean | null
           looking_for_undercard?: boolean
           min_interest_count_display?: number
           min_share_count_display?: number
+          no_headliner?: boolean | null
           organization_id?: string | null
+          rsvp_capacity?: number | null
           share_count?: number
           show_venue_map?: boolean
           show_view_count?: boolean | null
@@ -1481,11 +1956,14 @@ export type Database = {
           hero_image_focal_y?: number | null
           id?: string
           is_after_hours?: boolean
+          is_free_event?: boolean
           is_tba?: boolean | null
           looking_for_undercard?: boolean
           min_interest_count_display?: number
           min_share_count_display?: number
+          no_headliner?: boolean | null
           organization_id?: string | null
+          rsvp_capacity?: number | null
           share_count?: number
           show_venue_map?: boolean
           show_view_count?: boolean | null
@@ -1800,6 +2278,65 @@ export type Database = {
           },
         ]
       }
+      guests: {
+        Row: {
+          billing_address_line_1: string | null
+          billing_address_line_2: string | null
+          billing_city: string | null
+          billing_country: string | null
+          billing_state: string | null
+          billing_zip_code: string | null
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          profile_id: string | null
+          stripe_customer_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          billing_address_line_1?: string | null
+          billing_address_line_2?: string | null
+          billing_city?: string | null
+          billing_country?: string | null
+          billing_state?: string | null
+          billing_zip_code?: string | null
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          profile_id?: string | null
+          stripe_customer_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          billing_address_line_1?: string | null
+          billing_address_line_2?: string | null
+          billing_city?: string | null
+          billing_country?: string | null
+          billing_state?: string | null
+          billing_zip_code?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          profile_id?: string | null
+          stripe_customer_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guests_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       link_clicks: {
         Row: {
           city: string | null
@@ -2061,6 +2598,7 @@ export type Database = {
           event_id: string
           fee_breakdown: Json | null
           fees_cents: number
+          guest_id: string | null
           id: string
           status: string
           stripe_checkout_session_id: string | null
@@ -2083,6 +2621,7 @@ export type Database = {
           event_id: string
           fee_breakdown?: Json | null
           fees_cents?: number
+          guest_id?: string | null
           id?: string
           status?: string
           stripe_checkout_session_id?: string | null
@@ -2105,6 +2644,7 @@ export type Database = {
           event_id?: string
           fee_breakdown?: Json | null
           fees_cents?: number
+          guest_id?: string | null
           id?: string
           status?: string
           stripe_checkout_session_id?: string | null
@@ -2123,10 +2663,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "orders_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: false
+            referencedRelation: "guests"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "orders_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -2178,6 +2732,134 @@ export type Database = {
           {
             foreignKeyName: "organizations_owner_id_fkey"
             columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      process_items: {
+        Row: {
+          created_at: string
+          created_record_id: string | null
+          created_record_type: string | null
+          error_message: string | null
+          external_id: string | null
+          id: string
+          input_data: Json | null
+          item_index: number
+          output_data: Json | null
+          process_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          created_record_id?: string | null
+          created_record_type?: string | null
+          error_message?: string | null
+          external_id?: string | null
+          id?: string
+          input_data?: Json | null
+          item_index: number
+          output_data?: Json | null
+          process_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          created_record_id?: string | null
+          created_record_type?: string | null
+          error_message?: string | null
+          external_id?: string | null
+          id?: string
+          input_data?: Json | null
+          item_index?: number
+          output_data?: Json | null
+          process_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "process_items_process_id_fkey"
+            columns: ["process_id"]
+            isOneToOne: false
+            referencedRelation: "processes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      processes: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          created_by: string
+          error_message: string | null
+          failed_items: number | null
+          id: string
+          metadata: Json | null
+          name: string | null
+          process_type: string
+          processed_items: number | null
+          rollback_data: Json | null
+          rolled_back_at: string | null
+          rolled_back_by: string | null
+          started_at: string | null
+          status: Database["public"]["Enums"]["process_status"]
+          successful_items: number | null
+          total_items: number | null
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          created_by: string
+          error_message?: string | null
+          failed_items?: number | null
+          id?: string
+          metadata?: Json | null
+          name?: string | null
+          process_type: string
+          processed_items?: number | null
+          rollback_data?: Json | null
+          rolled_back_at?: string | null
+          rolled_back_by?: string | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["process_status"]
+          successful_items?: number | null
+          total_items?: number | null
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string
+          error_message?: string | null
+          failed_items?: number | null
+          id?: string
+          metadata?: Json | null
+          name?: string | null
+          process_type?: string
+          processed_items?: number | null
+          rollback_data?: Json | null
+          rolled_back_at?: string | null
+          rolled_back_by?: string | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["process_status"]
+          successful_items?: number | null
+          total_items?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "processes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "processes_rolled_back_by_fkey"
+            columns: ["rolled_back_by"]
             isOneToOne: false
             referencedRelation: "users_complete"
             referencedColumns: ["id"]
@@ -2260,6 +2942,7 @@ export type Database = {
           email: string | null
           full_name: string | null
           gender: string | null
+          guest_list_visible: boolean
           home_city: string | null
           id: string
           instagram_handle: string | null
@@ -2288,6 +2971,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           gender?: string | null
+          guest_list_visible?: boolean
           home_city?: string | null
           id: string
           instagram_handle?: string | null
@@ -2316,6 +3000,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           gender?: string | null
+          guest_list_visible?: boolean
           home_city?: string | null
           id?: string
           instagram_handle?: string | null
@@ -3478,6 +4163,7 @@ export type Database = {
           capacity: number | null
           city: string | null
           city_id: string | null
+          country: string | null
           created_at: string | null
           description: string | null
           facebook_url: string | null
@@ -3502,6 +4188,7 @@ export type Database = {
           capacity?: number | null
           city?: string | null
           city_id?: string | null
+          country?: string | null
           created_at?: string | null
           description?: string | null
           facebook_url?: string | null
@@ -3526,6 +4213,7 @@ export type Database = {
           capacity?: number | null
           city?: string | null
           city_id?: string | null
+          country?: string | null
           created_at?: string | null
           description?: string | null
           facebook_url?: string | null
@@ -3698,6 +4386,11 @@ export type Database = {
           sessions_archived: number
         }[]
       }
+      archive_old_error_logs: {
+        Args: { p_retention_days?: number }
+        Returns: number
+      }
+      can_access_order: { Args: { p_order_id: string }; Returns: boolean }
       cleanup_old_ticketing_sessions: { Args: never; Returns: undefined }
       convert_hold_to_sale: { Args: { p_hold_id: string }; Returns: boolean }
       create_artist_gallery: {
@@ -3806,14 +4499,43 @@ export type Database = {
           is_primary: boolean
         }[]
       }
+      get_comp_ticket_by_token: {
+        Args: { p_claim_token: string }
+        Returns: {
+          event_id: string
+          event_title: string
+          expires_at: string
+          id: string
+          recipient_email: string
+          status: string
+          ticket_tier_id: string
+          tier_name: string
+        }[]
+      }
       get_event_interest_count: {
         Args: { p_event_id: string }
         Returns: number
+      }
+      get_event_inventory_stats: {
+        Args: { p_event_id: string }
+        Returns: {
+          available_count: number
+          is_active: boolean
+          pending_count: number
+          price_cents: number
+          reserved_count: number
+          sold_count: number
+          tier_id: string
+          tier_name: string
+          tier_order: number
+          total_tickets: number
+        }[]
       }
       get_event_order_count: {
         Args: { event_id_param: string }
         Returns: number
       }
+      get_event_rsvp_count: { Args: { p_event_id: string }; Returns: number }
       get_event_view_count: { Args: { p_event_id: string }; Returns: number }
       get_foreign_keys: {
         Args: { p_table_name: string }
@@ -3835,6 +4557,56 @@ export type Database = {
         }[]
       }
       get_genre_path: { Args: { genre_id_param: string }; Returns: string }
+      get_guest_billing_address: {
+        Args: { p_guest_id: string }
+        Returns: {
+          city: string
+          country: string
+          id: string
+          line_1: string
+          line_2: string
+          state: string
+          zip_code: string
+        }[]
+      }
+      get_profile_addresses: {
+        Args: { p_profile_id: string }
+        Returns: {
+          address_type: Database["public"]["Enums"]["address_type"]
+          city: string | null
+          country: string | null
+          created_at: string
+          guest_id: string | null
+          id: string
+          is_default: boolean | null
+          label: string | null
+          line_1: string | null
+          line_2: string | null
+          organization_id: string | null
+          profile_id: string | null
+          state: string | null
+          updated_at: string
+          zip_code: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "addresses"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      get_profile_billing_address: {
+        Args: { p_profile_id: string }
+        Returns: {
+          city: string
+          country: string
+          id: string
+          line_1: string
+          line_2: string
+          state: string
+          zip_code: string
+        }[]
+      }
       get_table_list: {
         Args: never
         Returns: {
@@ -3857,6 +4629,17 @@ export type Database = {
           ordinal_position: number
         }[]
       }
+      get_tier_inventory_stats: {
+        Args: { p_tier_id: string }
+        Returns: {
+          available_count: number
+          pending_count: number
+          reserved_count: number
+          sold_count: number
+          tier_id: string
+          total_tickets: number
+        }[]
+      }
       get_user_roles: {
         Args: { user_id_param: string }
         Returns: {
@@ -3871,6 +4654,10 @@ export type Database = {
       }
       has_role: {
         Args: { role_name_param: string; user_id_param: string }
+        Returns: boolean
+      }
+      has_user_rsvp: {
+        Args: { p_event_id: string; p_user_id: string }
         Returns: boolean
       }
       increment_event_share_count: {
@@ -3914,6 +4701,10 @@ export type Database = {
         Args: { p_event_id: string; p_user_id: string }
         Returns: boolean
       }
+      link_guest_to_profile: {
+        Args: { p_guest_email: string; p_profile_id: string }
+        Returns: number
+      }
       link_orders_for_user: {
         Args: { user_email: string; user_uuid: string }
         Returns: number
@@ -3928,6 +4719,29 @@ export type Database = {
           p_target_resource_id?: string
           p_target_resource_name?: string
           p_target_resource_type?: string
+          p_user_agent?: string
+          p_user_id?: string
+        }
+        Returns: string
+      }
+      log_error: {
+        Args: {
+          p_app_version?: string
+          p_details?: Json
+          p_endpoint?: string
+          p_environment?: string
+          p_error_code?: string
+          p_ip_address?: unknown
+          p_level?: Database["public"]["Enums"]["error_log_level"]
+          p_message?: string
+          p_metadata?: Json
+          p_method?: string
+          p_page_url?: string
+          p_request_id?: string
+          p_session_id?: string
+          p_source?: Database["public"]["Enums"]["error_log_source"]
+          p_stack_trace?: string
+          p_status_code?: number
           p_user_agent?: string
           p_user_id?: string
         }
@@ -4005,6 +4819,7 @@ export type Database = {
         }
         Returns: {
           description: string
+          headliner_name: string
           hero_image: string
           id: string
           similarity_score: number
@@ -4046,6 +4861,36 @@ export type Database = {
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      sync_event_inventory_counters: {
+        Args: { p_event_id: string }
+        Returns: {
+          new_available: number
+          new_sold: number
+          old_available: number
+          old_sold: number
+          tier_id: string
+          tier_name: string
+          was_updated: boolean
+        }[]
+      }
+      sync_tier_inventory_counters: {
+        Args: { p_tier_id?: string }
+        Returns: {
+          new_available: number
+          new_sold: number
+          old_available: number
+          old_sold: number
+          tier_id: string
+          was_updated: boolean
+        }[]
+      }
+      toggle_event_rsvp: {
+        Args: { p_event_id: string }
+        Returns: {
+          action: string
+          rsvp_id: string
+        }[]
+      }
       trigger_activity_log_archive: {
         Args: { p_retention_days?: number }
         Returns: Json
@@ -4057,6 +4902,30 @@ export type Database = {
           p_view_id: string
         }
         Returns: undefined
+      }
+      upsert_guest_billing_address: {
+        Args: {
+          p_city?: string
+          p_country?: string
+          p_guest_id: string
+          p_line_1?: string
+          p_line_2?: string
+          p_state?: string
+          p_zip_code?: string
+        }
+        Returns: string
+      }
+      upsert_profile_billing_address: {
+        Args: {
+          p_city?: string
+          p_country?: string
+          p_line_1?: string
+          p_line_2?: string
+          p_profile_id: string
+          p_state?: string
+          p_zip_code?: string
+        }
+        Returns: string
       }
     }
     Enums: {
@@ -4081,6 +4950,7 @@ export type Database = {
         | "ticket_scanned"
         | "ticket_refunded"
         | "ticket_cancelled"
+      address_type: "billing" | "shipping" | "headquarters" | "other"
       analytics_page_source:
         | "direct"
         | "internal"
@@ -4090,6 +4960,12 @@ export type Database = {
         | "email"
         | "advertisement"
       app_role: "user" | "admin" | "developer" | "org_admin" | "org_staff"
+      error_log_level: "debug" | "info" | "warn" | "error" | "fatal"
+      error_log_source:
+        | "client"
+        | "edge_function"
+        | "database"
+        | "external_service"
       funnel_event_type:
         | "event_view"
         | "ticket_tier_view"
@@ -4108,6 +4984,12 @@ export type Database = {
         | "cumulative_layout_shift"
         | "time_to_first_byte"
         | "api_response"
+      process_status:
+        | "pending"
+        | "running"
+        | "completed"
+        | "failed"
+        | "rolled_back"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -4258,6 +5140,7 @@ export const Constants = {
         "ticket_refunded",
         "ticket_cancelled",
       ],
+      address_type: ["billing", "shipping", "headquarters", "other"],
       analytics_page_source: [
         "direct",
         "internal",
@@ -4268,6 +5151,13 @@ export const Constants = {
         "advertisement",
       ],
       app_role: ["user", "admin", "developer", "org_admin", "org_staff"],
+      error_log_level: ["debug", "info", "warn", "error", "fatal"],
+      error_log_source: [
+        "client",
+        "edge_function",
+        "database",
+        "external_service",
+      ],
       funnel_event_type: [
         "event_view",
         "ticket_tier_view",
@@ -4287,6 +5177,13 @@ export const Constants = {
         "cumulative_layout_shift",
         "time_to_first_byte",
         "api_response",
+      ],
+      process_status: [
+        "pending",
+        "running",
+        "completed",
+        "failed",
+        "rolled_back",
       ],
     },
   },

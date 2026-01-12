@@ -275,6 +275,19 @@
     "saved": "社交设置保存成功",
     "saveFailed": "保存社交设置失败"
   },
+  "compTickets": {
+    "issued": "赠票发送成功",
+    "issueFailed": "发送赠票失败",
+    "revoked": "赠票已撤销",
+    "revokeFailed": "撤销赠票失败",
+    "claimed": "票券领取成功！",
+    "claimFailed": "领取票券失败"
+  },
+  "rsvp": {
+    "confirmed": "报名成功！",
+    "cancelled": "已取消报名",
+    "failed": "更新报名状态失败"
+  },
   "reports": {
     "configCreated": "报告配置已创建",
     "configCreateFailed": "创建配置失败",

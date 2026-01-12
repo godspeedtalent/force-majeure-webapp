@@ -138,8 +138,8 @@ export function useEventForm(options: UseEventFormOptions) {
       if (!tier.name) {
         return 'All ticket tiers must have a name';
       }
-      if (tier.priceInCents <= 0) {
-        return 'All ticket tiers must have a price greater than 0';
+      if (tier.priceInCents < 0) {
+        return 'Ticket tier price cannot be negative';
       }
       if (tier.quantity <= 0) {
         return 'All ticket tiers must have a quantity greater than 0';
