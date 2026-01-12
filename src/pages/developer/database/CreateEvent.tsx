@@ -23,9 +23,9 @@ const DeveloperCreateEventPage = () => {
   // Shared submit logic
   const { submitEvent, isLoading } = useEventFormSubmit({
     mode: 'create',
-    onSuccess: _eventId => {
+    onSuccess: eventId => {
       actions.resetForm();
-      navigate('/developer/database?table=events');
+      navigate(`/event/${eventId}/manage`);
     },
     onError: () => {
       // Stay on page on error

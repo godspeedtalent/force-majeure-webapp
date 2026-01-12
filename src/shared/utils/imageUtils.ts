@@ -1,5 +1,85 @@
 import { supabase } from '@/shared';
 import { logger } from '@/shared';
+import heic2any from 'heic2any';
+
+/**
+ * Timeout wrapper for promises
+ * Rejects with error message if promise doesn't resolve within the specified time
+ */
+const withTimeout = <T>(
+  promise: Promise<T>,
+  ms: number,
+  errorMsg: string
+): Promise<T> => {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(errorMsg)), ms)
+    ),
+  ]);
+};
+
+/**
+ * Check if file is in HEIC/HEIF format (common on iOS devices)
+ */
+export const isHeicFormat = (file: File): boolean => {
+  const heicTypes = ['image/heic', 'image/heif'];
+  const heicExtensions = ['.heic', '.heif'];
+  return (
+    heicTypes.includes(file.type.toLowerCase()) ||
+    heicExtensions.some(ext => file.name.toLowerCase().endsWith(ext))
+  );
+};
+
+/**
+ * Convert HEIC/HEIF image to JPEG
+ * iOS devices take photos in HEIC format by default, which browsers can't display in canvas
+ */
+export const convertHeicToJpeg = async (file: File): Promise<File> => {
+  logger.info('Converting HEIC to JPEG', {
+    fileName: file.name,
+    fileSize: file.size,
+    source: 'imageUtils.convertHeicToJpeg',
+  });
+
+  try {
+    const convertedBlob = await withTimeout(
+      heic2any({
+        blob: file,
+        toType: 'image/jpeg',
+        quality: 0.9,
+      }) as Promise<Blob>,
+      30000, // 30 second timeout for HEIC conversion
+      'HEIC conversion timed out. Please try a smaller image or convert to JPEG first.'
+    );
+
+    // heic2any can return a single blob or an array
+    const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+
+    const convertedFile = new File(
+      [blob],
+      file.name.replace(/\.heic$/i, '.jpg').replace(/\.heif$/i, '.jpg'),
+      { type: 'image/jpeg' }
+    );
+
+    logger.info('HEIC conversion successful', {
+      originalSize: file.size,
+      convertedSize: convertedFile.size,
+      source: 'imageUtils.convertHeicToJpeg',
+    });
+
+    return convertedFile;
+  } catch (error) {
+    logger.error('HEIC conversion failed', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      fileName: file.name,
+      source: 'imageUtils.convertHeicToJpeg',
+    });
+    throw new Error(
+      'Failed to convert HEIC image. Please try uploading a JPEG or PNG file instead.'
+    );
+  }
+};
 
 export const getImageUrl = (imagePath: string | null): string => {
   if (!imagePath) {
@@ -44,6 +124,7 @@ export interface ImageCompressionOptions {
 
 /**
  * Compresses an image file if it exceeds size or dimension limits
+ * Includes timeout handling for mobile devices where canvas operations can hang
  *
  * @param file - The original image file
  * @param options - Compression options
@@ -62,33 +143,56 @@ export const compressImage = async (
     forceResize = false,
   } = options;
 
+  // Convert HEIC to JPEG first if needed (iOS devices)
+  let processedFile = file;
+  if (isHeicFormat(file)) {
+    processedFile = await convertHeicToJpeg(file);
+  }
+
   // If file is already small enough and we're not forcing resize, return as is
-  if (file.size <= maxSizeBytes && !forceResize) {
+  if (processedFile.size <= maxSizeBytes && !forceResize) {
     logger.info('Image within size limit, skipping compression', {
-      fileSize: file.size,
+      fileSize: processedFile.size,
       maxSize: maxSizeBytes,
       source: 'imageUtils.compressImage',
     });
-    return file;
+    return processedFile;
   }
 
   logger.info('Compressing image', {
-    originalSize: file.size,
+    originalSize: processedFile.size,
     maxSize: maxSizeBytes,
     source: 'imageUtils.compressImage',
   });
 
-  return new Promise((resolve, reject) => {
+  // Wrap the compression in a timeout to prevent infinite hangs on mobile
+  const compressionPromise = new Promise<File>((resolve, reject) => {
     const img = new Image();
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
+    let imageLoadTimeout: ReturnType<typeof setTimeout>;
+    let toBlobTimeout: ReturnType<typeof setTimeout>;
+
+    const cleanup = () => {
+      clearTimeout(imageLoadTimeout);
+      clearTimeout(toBlobTimeout);
+      URL.revokeObjectURL(img.src);
+    };
 
     if (!ctx) {
       reject(new Error('Failed to get canvas context'));
       return;
     }
 
+    // Set timeout for image loading (10 seconds)
+    imageLoadTimeout = setTimeout(() => {
+      cleanup();
+      reject(new Error('Image loading timed out. Please try a smaller image.'));
+    }, 10000);
+
     img.onload = () => {
+      clearTimeout(imageLoadTimeout);
+
       try {
         // Calculate new dimensions while maintaining aspect ratio
         let { width, height } = img;
@@ -116,14 +220,23 @@ export const compressImage = async (
         // Determine output format
         const mimeType = outputFormat
           ? `image/${outputFormat}`
-          : file.type === 'image/png'
+          : processedFile.type === 'image/png'
             ? 'image/png'
             : 'image/jpeg';
+
+        // Set timeout for toBlob operation (15 seconds)
+        toBlobTimeout = setTimeout(() => {
+          cleanup();
+          reject(new Error('Image compression timed out. Please try a smaller image.'));
+        }, 15000);
 
         // Convert canvas to blob
         canvas.toBlob(
           blob => {
+            clearTimeout(toBlobTimeout);
+
             if (!blob) {
+              cleanup();
               reject(new Error('Failed to compress image'));
               return;
             }
@@ -131,27 +244,26 @@ export const compressImage = async (
             // Create new file from blob
             const compressedFile = new File(
               [blob],
-              file.name.replace(/\.[^.]+$/, mimeType === 'image/png' ? '.png' : mimeType === 'image/webp' ? '.webp' : '.jpg'),
+              processedFile.name.replace(/\.[^.]+$/, mimeType === 'image/png' ? '.png' : mimeType === 'image/webp' ? '.webp' : '.jpg'),
               { type: mimeType }
             );
 
             logger.info('Image compressed successfully', {
-              originalSize: file.size,
+              originalSize: processedFile.size,
               compressedSize: compressedFile.size,
-              reduction: `${((1 - compressedFile.size / file.size) * 100).toFixed(1)}%`,
+              reduction: `${((1 - compressedFile.size / processedFile.size) * 100).toFixed(1)}%`,
               dimensions: `${width}x${height}`,
               source: 'imageUtils.compressImage',
             });
 
+            cleanup();
             resolve(compressedFile);
           },
           mimeType,
           quality
         );
-
-        // Cleanup
-        URL.revokeObjectURL(img.src);
       } catch (error) {
+        cleanup();
         logger.error('Error compressing image', {
           error: error instanceof Error ? error.message : 'Unknown error',
           source: 'imageUtils.compressImage',
@@ -161,15 +273,19 @@ export const compressImage = async (
     };
 
     img.onerror = () => {
-      const error = new Error('Failed to load image for compression');
+      cleanup();
+      const error = new Error('Failed to load image. The format may not be supported.');
       logger.error('Failed to load image', {
         error: error.message,
+        fileType: processedFile.type,
         source: 'imageUtils.compressImage',
       });
       reject(error);
     };
 
     // Load image from file
-    img.src = URL.createObjectURL(file);
+    img.src = URL.createObjectURL(processedFile);
   });
+
+  return compressionPromise;
 };

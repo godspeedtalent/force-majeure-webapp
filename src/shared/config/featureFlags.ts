@@ -6,9 +6,6 @@
  * and no longer hardcoded here. The category comments below are for reference only.
  */
 export const FEATURE_FLAGS = {
-  // Core features
-  DEMO_PAGES: 'demo_pages',
-
   // Event features
   HERO_IMAGE_HORIZONTAL_CENTERING: 'hero_image_horizontal_centering',
 
@@ -49,10 +46,6 @@ export const FEATURE_FLAG_METADATA: Record<
     description: string;
   }
 > = {
-  [FEATURE_FLAGS.DEMO_PAGES]: {
-    displayName: 'Demo Pages',
-    description: 'Enables access to demo/testing pages',
-  },
   [FEATURE_FLAGS.HERO_IMAGE_HORIZONTAL_CENTERING]: {
     displayName: 'Hero Image Horizontal Centering',
     description: 'Enables focal point control for hero image horizontal rendering',

@@ -18,7 +18,27 @@ import { compressImage } from '@/shared/utils/imageUtils';
 
 // Storage bucket limits - must match Supabase bucket configuration
 const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024; // 2MB - bucket limit
-const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const UPLOAD_TIMEOUT_MS = 30000; // 30 second timeout for uploads
+// We accept HEIC/HEIF (iOS) but convert them to JPEG before upload
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+
+/**
+ * Wrap a promise with a timeout
+ */
+const withUploadTimeout = <T,>(
+  promise: Promise<T>,
+  timeoutMs: number = UPLOAD_TIMEOUT_MS
+): Promise<T> => {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(
+        () => reject(new Error('Upload timed out. Please check your connection and try again.')),
+        timeoutMs
+      )
+    ),
+  ]);
+};
 
 export function ProfilePictureSection() {
   const { t } = useTranslation('common');
@@ -116,13 +136,16 @@ export function ProfilePictureSection() {
         fileType: compressedBlob.type,
       });
 
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('profile-images')
-        .upload(filePath, compressedBlob, {
-          cacheControl: '3600',
-          upsert: true, // Allow overwriting in case of retry
-          contentType: 'image/jpeg',
-        });
+      // Wrap upload with timeout to prevent infinite hangs on slow/interrupted connections
+      const { data: uploadData, error: uploadError } = await withUploadTimeout(
+        supabase.storage
+          .from('profile-images')
+          .upload(filePath, compressedBlob, {
+            cacheControl: '3600',
+            upsert: true, // Allow overwriting in case of retry
+            contentType: 'image/jpeg',
+          })
+      );
 
       logger.info('Storage upload response', {
         source: 'ProfilePictureSection',
@@ -252,7 +275,7 @@ export function ProfilePictureSection() {
             <input
               ref={fileInputRef}
               type='file'
-              accept='image/*'
+              accept='image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif'
               onChange={handleImageUpload}
               className='hidden'
             />

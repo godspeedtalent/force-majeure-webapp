@@ -103,31 +103,16 @@ export const EventDetailsContent = ({
   const [isVenueModalOpen, setIsVenueModalOpen] = useState(false);
   const [isAttendeeModalOpen, setIsAttendeeModalOpen] = useState(false);
 
-  // Check feature flag and event settings for guest list
+  // Check event settings for guest list (now controlled per-event, no global feature flag)
   const { data: guestListEnabled } = useQuery({
     queryKey: ['guest-list-enabled', event.id],
     queryFn: async () => {
-      // Check feature flag
-      const { data: flagData } = await supabase
-        .from('feature_flags')
-        .select('is_enabled, environment_id, environments!inner(name)')
-        .eq('flag_name', 'guest_list')
-        .eq('environments.name', 'production')
-        .maybeSingle();
-
-      if (!flagData?.is_enabled) return false;
-
-      // Check event settings
       const { data: settingsData } = await supabase
         .from('guest_list_settings')
         .select('*')
         .eq('event_id', event.id)
         .maybeSingle();
 
-      // Guest list is enabled if:
-      // - Feature flag is on
-      // - Event has settings enabled
-      // - At least one threshold is met (for now we'll show if enabled)
       return settingsData?.is_enabled ?? false;
     },
   });

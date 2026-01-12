@@ -154,19 +154,9 @@ export const featureFlagService = {
 
   /**
    * Check if guest list is enabled for an event
-   * Checks both the global feature flag and event-specific settings
+   * Now controlled per-event only (no global feature flag)
    */
-  async isGuestListEnabledForEvent(
-    eventId: string,
-    environmentName: string = 'production'
-  ): Promise<boolean> {
-    // First check the global feature flag
-    const globalEnabled = await this.isFeatureEnabled('guest_list', environmentName);
-    if (!globalEnabled) {
-      return false;
-    }
-
-    // Then check event-specific settings
+  async isGuestListEnabledForEvent(eventId: string): Promise<boolean> {
     const settings = await this.getGuestListSettings(eventId);
     return settings?.is_enabled ?? false;
   },
