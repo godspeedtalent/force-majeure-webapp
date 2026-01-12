@@ -140,6 +140,9 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
         if (!newEvent) throw new Error('Failed to create event - no data returned');
         resultEventId = newEvent.id;
 
+        // Create default gallery for the event
+        await createEventGallery(resultEventId, eventTitle);
+
         // Create ticket tiers
         await createTicketTiers(resultEventId, state.ticketTiers);
 
@@ -301,5 +304,33 @@ async function updateTicketTiers(
       .eq('id', tierId);
 
     if (updateError) throw updateError;
+  }
+}
+
+/**
+ * Creates a default gallery for a new event using the RPC function
+ */
+async function createEventGallery(eventId: string, eventTitle: string) {
+  try {
+    const { error } = await supabase.rpc('create_event_gallery', {
+      p_event_id: eventId,
+      p_event_title: eventTitle,
+    });
+
+    if (error) {
+      // Log but don't throw - gallery creation is not critical for event creation
+      logger.error('Failed to create event gallery', {
+        error: error.message,
+        eventId,
+        source: 'useEventFormSubmit.createEventGallery',
+      });
+    }
+  } catch (error) {
+    // Log but don't throw - gallery creation is not critical for event creation
+    logger.error('Error creating event gallery', {
+      error: error instanceof Error ? error.message : 'Unknown',
+      eventId,
+      source: 'useEventFormSubmit.createEventGallery',
+    });
   }
 }

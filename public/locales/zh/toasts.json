@@ -117,7 +117,9 @@
     "updateSettingFailed": "更新设置失败",
     "updateUndercardSettingFailedDescription": "无法保存寻找开场艺人设置",
     "artistUpdateFailed": "更新艺术家失败",
-    "artistUpdateFailedDescription": "无法保存艺术家更改"
+    "artistUpdateFailedDescription": "无法保存艺术家更改",
+    "rsvpSettingsUpdated": "预约设置已更新",
+    "rsvpSettingsUpdateFailed": "更新预约设置失败"
   },
   "validation": {
     "stageNameRequired": "请输入您的艺名",

@@ -5,6 +5,7 @@ import { cn } from '@/shared';
 import { FmCommonTab } from '@/components/common/data/FmCommonTab';
 import { ToolbarTab } from '../FmToolbar';
 import { AnimatedGroupTabs } from './ToolbarGroupAnimation';
+import { HiddenTabsIndicator } from './HiddenTabsIndicator';
 
 interface TabGroup {
   group: string;
@@ -258,6 +259,15 @@ interface BottomTabGroupsProps {
   clickToExpandText: string;
   collapseGroupText: string;
   tabsContainerRef: React.RefObject<HTMLDivElement>;
+  // Hidden tabs props
+  hiddenTabs: ToolbarTab[];
+  onHideTab: (tabId: string) => void;
+  onShowTab: (tabId: string) => void;
+  onShowAllHiddenTabs: () => void;
+  hideTabText: string;
+  showTabText: string;
+  showAllTabsText: string;
+  hiddenTabsText: string;
 }
 
 /** Renders the bottom-aligned tab groups with collapse/expand functionality */
@@ -280,8 +290,16 @@ export const BottomTabGroups = ({
   clickToExpandText,
   collapseGroupText,
   tabsContainerRef,
+  hiddenTabs,
+  onHideTab,
+  onShowTab,
+  onShowAllHiddenTabs,
+  hideTabText,
+  showTabText,
+  showAllTabsText,
+  hiddenTabsText,
 }: BottomTabGroupsProps) => {
-  if (groups.length === 0) return null;
+  if (groups.length === 0 && hiddenTabs.length === 0) return null;
 
   const isGroupCollapsed = (groupName: string) => collapsedGroups.includes(groupName);
 
@@ -321,10 +339,13 @@ export const BottomTabGroups = ({
               )}
 
               {/* Collapse bar - appears on hover at the top of the group */}
+              {/* Positioned at -top-3 to match the -bottom-4 positioning of the bottom collapse button */}
+              {/* (the bottom button's -bottom-4 puts its bottom edge 16px below, while -top-3 puts top edge 12px above, */}
+              {/* accounting for the 4px gap created by the group label offset) */}
               {shouldShowLabel && groupLabel && !collapsed && group.tabs.length > 1 && (
                 <button
                   className={cn(
-                    'absolute -top-4 left-1/2 -translate-x-1/2 flex items-center justify-center',
+                    'absolute -top-3 left-1/2 -translate-x-1/2 flex items-center justify-center',
                     'w-12 h-3 bg-white/5 border border-white/10 hover:bg-white/15 hover:border-fm-gold/50',
                     'transition-all duration-300 cursor-pointer z-10',
                     isTabHovered && showGroupLabel === group.group
@@ -361,11 +382,32 @@ export const BottomTabGroups = ({
                 toggleGroupCollapsed={toggleGroupCollapsed}
                 clickToExpandText={clickToExpandText}
                 handleTabClick={handleTabClick}
+                onHideTab={onHideTab}
+                hideTabText={hideTabText}
               />
             </div>
           </React.Fragment>
         );
       })}
+
+      {/* Hidden tabs indicator - shown at the very bottom after all groups */}
+      {hiddenTabs.length > 0 && (
+        <>
+          {groups.length > 0 && (
+            <div className='my-4 h-[2px] bg-gradient-to-r from-transparent via-white/30 to-transparent w-full' />
+          )}
+          <div className='flex justify-center'>
+            <HiddenTabsIndicator
+              hiddenTabs={hiddenTabs}
+              onShowTab={onShowTab}
+              onShowAllTabs={onShowAllHiddenTabs}
+              showTabText={showTabText}
+              showAllTabsText={showAllTabsText}
+              hiddenTabsText={hiddenTabsText}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };

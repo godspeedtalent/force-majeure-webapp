@@ -1,21 +1,108 @@
 import { useState, useRef, useEffect } from 'react';
-import { ChevronUp } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { ChevronUp, EyeOff } from 'lucide-react';
 
 import { cn } from '@/shared';
 import { FmCommonTab } from '@/components/common/data/FmCommonTab';
 import { ToolbarTab } from '../FmToolbar';
 
+/** Context menu for tab actions (hide) */
+interface TabContextMenuProps {
+  x: number;
+  y: number;
+  tabId: string;
+  tabLabel: string;
+  onHide: () => void;
+  onClose: () => void;
+  hideTabText: string;
+}
+
+const TabContextMenu = ({ x, y, tabLabel: _tabLabel, onHide, onClose, hideTabText }: TabContextMenuProps) => {
+  const menuRef = useRef<HTMLDivElement>(null);
+  const isInitialRender = useRef(true);
+
+  useEffect(() => {
+    // Skip the first render to prevent immediate close from the same right-click event
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
+      return;
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Don't close on the initial mouseup from the right-click that opened the menu
+      if (isInitialRender.current) return;
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    // Use a small delay to prevent the initial right-click from closing the menu
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside);
+    }, 100);
+
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [onClose]);
+
+  // Position menu to the left of the cursor so it doesn't hang off screen
+  const menuWidth = 140; // min-w-[140px]
+  const adjustedX = x - menuWidth - 8; // 8px gap from cursor
+
+  return createPortal(
+    <div
+      ref={menuRef}
+      className={cn(
+        'fixed z-[9999] min-w-[140px] py-1',
+        'bg-black/90 backdrop-blur-xl border border-white/20',
+        'shadow-lg shadow-black/50',
+        'animate-in fade-in zoom-in-95 duration-150'
+      )}
+      style={{ left: adjustedX, top: y }}
+    >
+      <button
+        className={cn(
+          'w-full px-3 py-1.5 text-left text-xs',
+          'flex items-center gap-2',
+          'hover:bg-fm-gold/10 hover:text-fm-gold',
+          'transition-colors duration-200'
+        )}
+        onClick={() => {
+          onHide();
+          onClose();
+        }}
+      >
+        <EyeOff className='h-3 w-3' />
+        <span>{hideTabText}</span>
+      </button>
+    </div>,
+    document.body
+  );
+};
+
 // Animation states for group collapse/expand
 type AnimationState = 'idle' | 'collapsing' | 'expanding';
 
 // Group icons mapping - distinct icons for each group
-import { Building2, Wrench, Settings2, Shield, LucideIcon } from 'lucide-react';
+import { Building2, Wrench, Settings2, Key, LucideIcon } from 'lucide-react';
 
 export const GROUP_ICONS: Record<string, LucideIcon> = {
   organization: Building2,
   devTools: Wrench,
   dataConfig: Settings2,
-  admin: Shield,
+  admin: Key,
 };
 
 // Collapsed group tab component - shows stacked tabs appearance
@@ -127,6 +214,8 @@ interface ExpandedGroupWithCollapseButtonProps {
   handleTabClick: (tabId: string) => void;
   toggleGroupCollapsed: (groupName: string) => void;
   clickToExpandText: string;
+  onHideTab?: (tabId: string) => void;
+  hideTabText?: string;
 }
 
 export const ExpandedGroupWithCollapseButton = ({
@@ -136,8 +225,19 @@ export const ExpandedGroupWithCollapseButton = ({
   handleTabClick,
   toggleGroupCollapsed,
   clickToExpandText,
+  onHideTab,
+  hideTabText = 'Hide tab',
 }: ExpandedGroupWithCollapseButtonProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; tabId: string; tabLabel: string } | null>(null);
+
+  const handleContextMenu = (e: React.MouseEvent, tab: ToolbarTab) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onHideTab) {
+      setContextMenu({ x: e.clientX, y: e.clientY, tabId: tab.id, tabLabel: tab.label });
+    }
+  };
 
   return (
     <div
@@ -156,6 +256,7 @@ export const ExpandedGroupWithCollapseButton = ({
               handleTabClick(tab.id);
             }
           }}
+          onContextMenu={(e) => handleContextMenu(e, tab)}
           variant='vertical'
           badge={tab.badge}
         />
@@ -184,6 +285,18 @@ export const ExpandedGroupWithCollapseButton = ({
         className='absolute -bottom-3 left-0 right-0 h-3'
         style={{ pointerEvents: isHovered ? 'auto' : 'none' }}
       />
+      {/* Context menu */}
+      {contextMenu && onHideTab && (
+        <TabContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          tabId={contextMenu.tabId}
+          tabLabel={contextMenu.tabLabel}
+          onHide={() => onHideTab(contextMenu.tabId)}
+          onClose={() => setContextMenu(null)}
+          hideTabText={hideTabText}
+        />
+      )}
     </div>
   );
 };
@@ -197,6 +310,8 @@ interface AnimatedGroupTabsProps {
   toggleGroupCollapsed: (groupName: string) => void;
   clickToExpandText: string;
   handleTabClick: (tabId: string) => void;
+  onHideTab?: (tabId: string) => void;
+  hideTabText?: string;
 }
 
 export const AnimatedGroupTabs = ({
@@ -207,6 +322,8 @@ export const AnimatedGroupTabs = ({
   toggleGroupCollapsed,
   clickToExpandText,
   handleTabClick,
+  onHideTab,
+  hideTabText,
 }: AnimatedGroupTabsProps) => {
   const [animationState, setAnimationState] = useState<AnimationState>('idle');
   const [collapseProgress, setCollapseProgress] = useState(collapsed ? 1 : 0);
@@ -312,6 +429,8 @@ export const AnimatedGroupTabs = ({
         handleTabClick={handleTabClick}
         toggleGroupCollapsed={toggleGroupCollapsed}
         clickToExpandText={clickToExpandText}
+        onHideTab={onHideTab}
+        hideTabText={hideTabText}
       />
     );
   }

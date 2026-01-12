@@ -117,9 +117,6 @@ export const EventDetailsContent = ({
     },
   });
 
-  // Check if view count should be shown
-  const showViewCount = (event as any).show_view_count ?? true;
-
   // Check if venue map should be shown
   const showVenueMap = (event as any).show_venue_map ?? true;
 
@@ -250,9 +247,6 @@ export const EventDetailsContent = ({
           <EventGuestList
             attendeePreview={attendeePreview}
             ticketCount={totalGoingCount}
-            viewCount={viewCount}
-            showViewCount={showViewCount}
-            isViewCountLoading={isViewCountLoading}
             isLoggedIn={!!user}
             onCardClick={handleAttendeeCardClick}
             onPromptLogin={handlePromptLogin}
@@ -327,9 +321,7 @@ export const EventDetailsContent = ({
       shareCount={shareCount}
       shouldShowShareCount={shouldShowShareCount}
       viewCount={viewCount}
-      showViewCount={showViewCount}
       isViewCountLoading={isViewCountLoading}
-      guestListEnabled={guestListEnabled ?? false}
       onInterestClick={handleInterestClick}
       onShareClick={handleOpenShareModal}
       isPastEvent={isPastEvent}

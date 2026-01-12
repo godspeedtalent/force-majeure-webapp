@@ -17,6 +17,7 @@ import { AdminTicketingSection } from '@/components/admin/AdminTicketingSection'
 import { UserManagement } from './UserManagement';
 import { OrganizationsManagement } from './OrganizationsManagement';
 import { formatHeader } from '@/shared';
+import { FmContentContainer } from '@/components/common/layout/FmContentContainer';
 
 type AdminTab = 'devtools' | 'ticketing' | 'settings' | 'users' | 'organizations';
 
@@ -105,24 +106,26 @@ export default function AdminControls() {
         />
       }
     >
-      <div className='max-w-full'>
-        <div className='mb-[20px]'>
-          <div className='flex items-center gap-[10px] mb-[20px]'>
-            <Sliders className='h-6 w-6 text-fm-gold' />
-            <h1 className='text-3xl font-canela'>
-              {formatHeader(getTabTitle())}
-            </h1>
-          </div>
+      {/* Header - stays outside content container */}
+      <div className='mb-[20px]'>
+        <div className='flex items-center gap-[10px] mb-[20px]'>
+          <Sliders className='h-6 w-6 text-fm-gold' />
+          <h1 className='text-3xl font-canela'>
+            {formatHeader(getTabTitle())}
+          </h1>
         </div>
+      </div>
 
-        <DecorativeDivider
-          marginTop='mt-0'
-          marginBottom='mb-6'
-          lineWidth='w-32'
-          opacity={0.5}
-        />
+      <DecorativeDivider
+        marginTop='mt-0'
+        marginBottom='mb-6'
+        lineWidth='w-32'
+        opacity={0.5}
+      />
 
-        {activeTab === 'settings' && (
+      {/* Form tabs use READABLE (65%), Data grid tabs use WIDE with scroll */}
+      {activeTab === 'settings' && (
+        <FmContentContainer>
           <div className='space-y-8'>
             <div>
               <h3 className='text-lg font-canela font-semibold mb-2'>
@@ -134,9 +137,11 @@ export default function AdminControls() {
               <FeatureToggleSection />
             </div>
           </div>
-        )}
+        </FmContentContainer>
+      )}
 
-        {activeTab === 'ticketing' && (
+      {activeTab === 'ticketing' && (
+        <FmContentContainer>
           <div className='space-y-6'>
             <div>
               <p className='text-muted-foreground text-sm mb-4'>
@@ -145,9 +150,11 @@ export default function AdminControls() {
               <AdminTicketingSection />
             </div>
           </div>
-        )}
+        </FmContentContainer>
+      )}
 
-        {activeTab === 'users' && (
+      {activeTab === 'users' && (
+        <FmContentContainer width="WIDE" scrollable>
           <div className='space-y-6'>
             <div>
               <p className='text-muted-foreground text-sm mb-4'>
@@ -156,9 +163,11 @@ export default function AdminControls() {
               <UserManagement />
             </div>
           </div>
-        )}
+        </FmContentContainer>
+      )}
 
-        {activeTab === 'organizations' && (
+      {activeTab === 'organizations' && (
+        <FmContentContainer width="WIDE" scrollable>
           <div className='space-y-6'>
             <div>
               <p className='text-muted-foreground text-sm mb-4'>
@@ -167,10 +176,11 @@ export default function AdminControls() {
               <OrganizationsManagement />
             </div>
           </div>
-        )}
+        </FmContentContainer>
+      )}
 
-
-        {activeTab === 'devtools' && (
+      {activeTab === 'devtools' && (
+        <FmContentContainer>
           <div className='space-y-6'>
             <div>
               <h3 className='text-lg font-canela font-semibold mb-2'>
@@ -185,8 +195,8 @@ export default function AdminControls() {
               </p>
             </div>
           </div>
-        )}
-      </div>
+        </FmContentContainer>
+      )}
     </SideNavbarLayout>
   );
 }

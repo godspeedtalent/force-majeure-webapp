@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Plus, GripVertical, Copy, Trash2, Ticket } from 'lucide-react';
+import { Plus, Copy, Trash2, Ticket, Info } from 'lucide-react';
 import { FmCommonCard, FmCommonCardHeader } from '@/components/common/display/FmCommonCard';
 import { Badge } from '@/components/common/shadcn/badge';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -59,14 +59,6 @@ export function GroupDetailView({
         <FmCommonCardHeader>
           <div className='flex items-start justify-between gap-4'>
             <div className='flex items-start gap-3 flex-1'>
-              <FmCommonIconButton
-                icon={GripVertical}
-                variant='secondary'
-                size='sm'
-                className='mt-1 cursor-grab active:cursor-grabbing hover:text-fm-gold'
-                tooltip={t('ticketGroupManager.dragToReorder')}
-              />
-
               <div className='flex-1 space-y-3'>
                 <div className='flex items-center gap-2'>
                   <FmCommonTextField
@@ -124,6 +116,14 @@ export function GroupDetailView({
                     {formatPrice(getTotalRevenueInGroup(group))} {t('ticketGroupManager.revenue')}
                   </Badge>
                 </div>
+
+                {/* Info note for Ungrouped tickets */}
+                {isNoGroup && (
+                  <div className='flex items-start gap-2 p-3 bg-muted/50 rounded-md text-sm text-muted-foreground'>
+                    <Info className='h-4 w-4 mt-0.5 flex-shrink-0' />
+                    <span>{t('ticketGroupManager.ungroupedNote')}</span>
+                  </div>
+                )}
               </div>
             </div>
 

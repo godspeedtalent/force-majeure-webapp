@@ -496,6 +496,7 @@ export default function VenueManagement() {
           }}
         />
       }
+      contentWidth="READABLE"
     >
       {activeTab === 'overview' && renderOverviewTab()}
       {activeTab === 'social' && (

@@ -67,6 +67,8 @@ interface EventArtistManagementProps {
   noHeadliner?: boolean;
   onNoHeadlinerChange?: (checked: boolean) => void;
   className?: string;
+  /** Optional footer element rendered after the Looking for Undercard toggle */
+  footerAction?: React.ReactNode;
 }
 
 /** Props for the sortable undercard slot */
@@ -193,6 +195,7 @@ export function EventArtistManagement({
   noHeadliner = false,
   onNoHeadlinerChange,
   className,
+  footerAction,
 }: EventArtistManagementProps) {
   const { t } = useTranslation('common');
 
@@ -615,21 +618,28 @@ export function EventArtistManagement({
         />
       </div>
 
+      {/* Footer Action (e.g., Publish button) */}
+      {footerAction && (
+        <div className='pt-2'>
+          {footerAction}
+        </div>
+      )}
+
       {/* Summary Card */}
       {artistSlots.length > 0 && (
         <div className='p-4 rounded-none bg-fm-gold/10 border border-fm-gold/30'>
           <h3 className='font-semibold text-fm-gold mb-2'>{t('artistManagement.lineupSummary')}</h3>
           <div className='grid grid-cols-3 gap-4 text-sm'>
             <div>
-              <div className='text-2xl font-bold'>{headliners.length}</div>
+              <div className='text-xl font-bold'>{headliners.length}</div>
               <div className='text-muted-foreground'>{t('artistManagement.headliners')}</div>
             </div>
             <div>
-              <div className='text-2xl font-bold'>{undercards.length}</div>
+              <div className='text-xl font-bold'>{undercards.length}</div>
               <div className='text-muted-foreground'>{t('artistManagement.undercard')}</div>
             </div>
             <div>
-              <div className='text-2xl font-bold'>{artistSlots.length}</div>
+              <div className='text-xl font-bold'>{artistSlots.length}</div>
               <div className='text-muted-foreground'>{t('artistManagement.totalArtists')}</div>
             </div>
           </div>

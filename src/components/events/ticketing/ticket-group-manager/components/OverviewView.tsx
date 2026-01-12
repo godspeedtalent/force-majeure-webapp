@@ -30,7 +30,7 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
   return (
     <div className='space-y-6'>
       <div>
-        <FmI18nCommon i18nKey='ticketGroupManager.ticketingOverview' as='h3' className='text-2xl font-semibold mb-2' />
+        <FmI18nCommon i18nKey='ticketGroupManager.ticketingOverview' as='h3' className='text-xl font-semibold mb-2' />
         <FmI18nCommon i18nKey='ticketGroupManager.ticketingOverviewDescription' as='p' className='text-muted-foreground' />
       </div>
 
@@ -40,7 +40,7 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
           <FmCommonCardContent className='pt-6'>
             <div className='text-center'>
               <Ticket className='h-8 w-8 mx-auto mb-2 text-fm-gold' />
-              <div className='text-2xl font-bold'>
+              <div className='text-xl font-bold'>
                 {totalTickets.toLocaleString()}
               </div>
               <FmI18nCommon i18nKey='ticketGroupManager.totalTickets' as='div' className='text-xs text-muted-foreground' />
@@ -51,7 +51,7 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
           <FmCommonCardContent className='pt-6'>
             <div className='text-center'>
               <BarChart3 className='h-8 w-8 mx-auto mb-2 text-fm-gold' />
-              <div className='text-2xl font-bold'>
+              <div className='text-xl font-bold'>
                 {formatPrice(totalRevenue)}
               </div>
               <FmI18nCommon i18nKey='ticketGroupManager.potentialRevenue' as='div' className='text-xs text-muted-foreground' />
@@ -66,7 +66,7 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
                   {totalGroups}
                 </span>
               </div>
-              <div className='text-2xl font-bold'>{totalGroups}</div>
+              <div className='text-xl font-bold'>{totalGroups}</div>
               <FmI18nCommon i18nKey='ticketGroupManager.ticketGroups' as='div' className='text-xs text-muted-foreground' />
             </div>
           </FmCommonCardContent>
@@ -79,7 +79,7 @@ export function OverviewView({ groups, onGroupClick }: OverviewViewProps) {
                   {totalTiers}
                 </span>
               </div>
-              <div className='text-2xl font-bold'>{totalTiers}</div>
+              <div className='text-xl font-bold'>{totalTiers}</div>
               <FmI18nCommon i18nKey='ticketGroupManager.totalTiers' as='div' className='text-xs text-muted-foreground' />
             </div>
           </FmCommonCardContent>

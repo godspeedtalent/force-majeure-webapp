@@ -1,4 +1,4 @@
-import { Shield, User, Building2, Code } from 'lucide-react';
+import { Key, User, Building2, Code } from 'lucide-react';
 import { Badge } from '@/components/common/shadcn/badge';
 
 export interface RoleCellProps {
@@ -14,7 +14,7 @@ export interface RoleCellProps {
 }
 
 const ROLE_ICONS = {
-  admin: Shield,
+  admin: Key,
   developer: Code,
   org_admin: Building2,
   org_staff: User,

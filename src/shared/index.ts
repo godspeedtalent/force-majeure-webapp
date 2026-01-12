@@ -116,10 +116,12 @@ export {
   LABEL_STYLES,
   LIST_ITEM_STYLES,
   A11Y,
+  CONTENT_WIDTH,
   type ColorKey,
   type SpacingKey,
   type DepthLevel,
-  type PrimaryComponent
+  type PrimaryComponent,
+  type ContentWidth,
 } from './constants/designSystem';
 
 // ============================================================================

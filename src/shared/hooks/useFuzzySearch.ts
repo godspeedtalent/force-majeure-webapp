@@ -56,7 +56,8 @@ export type SearchableTable =
   | 'events'
   | 'venues'
   | 'profiles'
-  | 'organizations';
+  | 'organizations'
+  | 'recordings';
 
 export interface FuzzySearchConfig {
   /** Search query string */
@@ -92,6 +93,7 @@ export interface EventSearchResult extends SearchableItem {
   hero_image?: string | null;
   venue_id?: string | null;
   headliner_name?: string | null;
+  status?: string | null;
 }
 
 /** Raw result shape from events query with headliner join */
@@ -102,6 +104,7 @@ interface EventQueryResult {
   start_time: string | null;
   hero_image: string | null;
   venue_id: string | null;
+  status: string | null;
   headliner: { name: string } | null;
   headliner_id?: string | null;
 }
@@ -128,12 +131,23 @@ export interface OrganizationSearchResult extends SearchableItem {
   logo_url?: string | null;
 }
 
+export interface RecordingSearchResult extends SearchableItem {
+  id: string;
+  name: string;
+  url: string;
+  cover_art?: string | null;
+  platform: string;
+  artist_name?: string | null;
+  artist_id: string;
+}
+
 export interface FuzzySearchResults {
   artists: FuzzySearchResult<ArtistSearchResult>[];
   events: FuzzySearchResult<EventSearchResult>[];
   venues: FuzzySearchResult<VenueSearchResult>[];
   profiles: FuzzySearchResult<ProfileSearchResult>[];
   organizations: FuzzySearchResult<OrganizationSearchResult>[];
+  recordings: FuzzySearchResult<RecordingSearchResult>[];
 }
 
 export interface UseFuzzySearchReturn {
@@ -158,6 +172,7 @@ const EMPTY_RESULTS: FuzzySearchResults = {
   venues: [],
   profiles: [],
   organizations: [],
+  recordings: [],
 };
 
 const DEFAULT_CONFIG = {
@@ -261,6 +276,11 @@ export function useFuzzySearch(config: FuzzySearchConfig): UseFuzzySearchReturn 
         threshold: 0.4,
         limit: 10,
       };
+      const recordingConfig: FuzzySearchOptions<RecordingSearchResult> = {
+        keys: ['name', 'artist_name'],
+        threshold: 0.4,
+        limit: 10,
+      };
 
       if (tables.includes('artists')) {
         searchPromises.push(
@@ -334,6 +354,18 @@ export function useFuzzySearch(config: FuzzySearchConfig): UseFuzzySearchReturn 
               data,
               trimmedQuery,
               organizationConfig
+            );
+          })
+        );
+      }
+
+      if (tables.includes('recordings')) {
+        searchPromises.push(
+          searchRecordings(trimmedQuery, limit).then(data => {
+            searchResults.recordings = reRankWithFuse(
+              data,
+              trimmedQuery,
+              recordingConfig
             );
           })
         );
@@ -436,15 +468,16 @@ async function searchEvents(
 
     // Fallback to ILIKE - search events by title/description and by headliner name
     // PostgREST doesn't support filtering on joined relations in .or(), so we run two queries
+    // Include both published and draft events - client will filter based on permissions
     const baseQuery = {
-      select: 'id, title, description, start_time, hero_image, venue_id, headliner:artists!headliner_id(name)',
+      select: 'id, title, description, start_time, hero_image, venue_id, status, headliner:artists!headliner_id(name)',
     };
 
-    // Query 1: Search by event title/description
+    // Query 1: Search by event title/description (published + draft)
     let titleQueryBuilder = supabase
       .from('events')
       .select(baseQuery.select)
-      .eq('status', 'published') // Only published events
+      .in('status', ['published', 'draft']) // Include draft events for admin/dev filtering
       .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
       .limit(limit);
 
@@ -456,7 +489,7 @@ async function searchEvents(
     let headlinerQueryBuilder = supabase
       .from('events')
       .select(baseQuery.select + ', headliner_id')
-      .eq('status', 'published') // Only published events
+      .in('status', ['published', 'draft']) // Include draft events for admin/dev filtering
       .not('headliner_id', 'is', null)
       .limit(limit * 2); // Get more to filter
 
@@ -496,6 +529,7 @@ async function searchEvents(
           start_time: item.start_time,
           hero_image: item.hero_image,
           venue_id: item.venue_id,
+          status: item.status,
           headliner_name: item.headliner?.name ?? null,
           similarity_score: 0.5,
         });
@@ -620,6 +654,77 @@ async function searchOrganizations(
     }
   } catch (error) {
     logger.error('Error searching organizations', { error, query });
+    return [];
+  }
+}
+
+/** Raw result shape from recordings query with artist join */
+interface RecordingQueryResult {
+  id: string;
+  name: string;
+  url: string;
+  cover_art: string | null;
+  platform: string;
+  artist_id: string;
+  artist: { name: string } | null;
+}
+
+async function searchRecordings(
+  query: string,
+  limit: number
+): Promise<RecordingSearchResult[]> {
+  try {
+    // Search recordings by name or by artist name using ILIKE
+    // Query 1: Search by recording name
+    const nameQuery = supabase
+      .from('artist_recordings')
+      .select('id, name, url, cover_art, platform, artist_id, artist:artists!artist_id(name)')
+      .ilike('name', `%${query}%`)
+      .limit(limit);
+
+    // Query 2: Get all recordings to filter by artist name client-side
+    const artistQuery = supabase
+      .from('artist_recordings')
+      .select('id, name, url, cover_art, platform, artist_id, artist:artists!artist_id(name)')
+      .limit(limit * 3);
+
+    const [nameResult, artistResult] = await Promise.all([nameQuery, artistQuery]);
+
+    if (nameResult.error) throw nameResult.error;
+    if (artistResult.error) throw artistResult.error;
+
+    const nameData = (nameResult.data || []) as unknown as RecordingQueryResult[];
+    const artistData = (artistResult.data || []) as unknown as RecordingQueryResult[];
+
+    // Filter artist results client-side by artist name match
+    const queryLower = query.toLowerCase();
+    const artistMatches = artistData.filter(item => {
+      return item.artist?.name?.toLowerCase().includes(queryLower);
+    });
+
+    // Merge results, deduplicating by recording ID
+    const seenIds = new Set<string>();
+    const mergedResults: RecordingSearchResult[] = [];
+
+    for (const item of [...nameData, ...artistMatches]) {
+      if (!seenIds.has(item.id)) {
+        seenIds.add(item.id);
+        mergedResults.push({
+          id: item.id,
+          name: item.name,
+          url: item.url,
+          cover_art: item.cover_art,
+          platform: item.platform,
+          artist_id: item.artist_id,
+          artist_name: item.artist?.name ?? null,
+          similarity_score: 0.5,
+        });
+      }
+    }
+
+    return mergedResults.slice(0, limit);
+  } catch (error) {
+    logger.error('Error searching recordings', { error, query });
     return [];
   }
 }

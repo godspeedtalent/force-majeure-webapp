@@ -173,6 +173,7 @@ export default function ArtistManagement() {
         navigationGroups={navigationGroups}
         activeItem={activeTab}
         onItemChange={handleTabChange}
+        contentWidth="READABLE"
       >
         {activeTab === 'overview' && (
           <PageErrorBoundary section='Overview'>

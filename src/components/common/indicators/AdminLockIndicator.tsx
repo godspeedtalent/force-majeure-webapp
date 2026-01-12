@@ -1,4 +1,4 @@
-import { Shield } from 'lucide-react';
+import { Key } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/shared';
 
@@ -59,7 +59,7 @@ export function AdminLockIndicator({
       title={resolvedTooltipText}
       aria-label={resolvedTooltipText}
     >
-      <Shield className={sizeClasses[size]} />
+      <Key className={sizeClasses[size]} />
     </span>
   );
 }

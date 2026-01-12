@@ -7,6 +7,7 @@ interface FmCommonTabProps {
   label: string;
   isActive: boolean;
   onClick: () => void;
+  onContextMenu?: (e: React.MouseEvent) => void;
   variant?: 'vertical' | 'horizontal';
   className?: string;
   badge?: number;
@@ -17,6 +18,7 @@ export const FmCommonTab = ({
   label,
   isActive,
   onClick,
+  onContextMenu,
   variant = 'vertical',
   className = '',
   badge,
@@ -38,6 +40,7 @@ export const FmCommonTab = ({
   return (
     <button
       onClick={onClick}
+      onContextMenu={onContextMenu}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={cn(

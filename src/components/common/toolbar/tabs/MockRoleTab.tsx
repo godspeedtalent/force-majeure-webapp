@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import {
   User,
   UserCog,
-  Shield,
+  Key,
   Building2,
   Users,
   Home,
@@ -34,7 +34,7 @@ import type { RoleRecord } from '@/shared/stores/rolesStore';
  * Falls back to User icon for unknown roles
  */
 const roleIconMap: Record<string, LucideIcon> = {
-  admin: Shield,
+  admin: Key,
   developer: UserCog,
   org_admin: Building2,
   org_staff: Users,
@@ -504,7 +504,7 @@ export const MockRoleTabContent = () => {
             className='w-full flex items-center justify-between text-xs text-fm-gold uppercase tracking-wider'
           >
             <span className='flex items-center gap-2'>
-              <Shield className='h-3 w-3' />
+              <Key className='h-3 w-3' />
               {t('mockRole.combinedPermissions')}
               <span className='text-white/60 normal-case'>
                 ({activePermissions.includes('*') ? t('mockRole.allPermissions') : activePermissions.length})

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
-import { Shield, AlertCircle } from 'lucide-react';
+import { Key, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { handleError } from '@/shared/services/errorHandler';
 import { RoleManagementService } from '@/shared';
@@ -119,7 +119,7 @@ export function RoleManagementModal({
       title={t('dialogs.manageRoles')}
       description={t('dialogs.manageRolesFor', { email: userEmail })}
       className='sm:max-w-[600px]'
-      headerActions={<Shield className='h-5 w-5 text-fm-gold' />}
+      headerActions={<Key className='h-5 w-5 text-fm-gold' />}
     >
       <div className='space-y-6 py-4'>
         {/* Available Roles */}
@@ -141,7 +141,7 @@ export function RoleManagementModal({
                     key={role.role_name}
                     id={`role-${role.role_name}`}
                     label={role.display_name}
-                    icon={Shield}
+                    icon={Key}
                     checked={userHasRole}
                     onCheckedChange={(checked) => handleToggleRole(role.role_name, checked)}
                     disabled={isToggling}

@@ -474,6 +474,31 @@ export const PAGE_TYPE_LABELS: Record<string, string> = {
 };
 
 /**
+ * Content Width Presets
+ *
+ * Standardized content width options for page layouts.
+ * Use these for consistent content containment across the application.
+ *
+ * - FULL: No constraint (rare - only when absolutely necessary)
+ * - WIDE: ~1152px for data grids and analytics (with overflow-x-auto)
+ * - MEDIUM: 896px for standard forms
+ * - NARROW: 672px for simple forms
+ * - READABLE: 65% on desktop (DEFAULT for form content)
+ */
+export const CONTENT_WIDTH = {
+  /** Full width - no constraint (rare) */
+  FULL: 'max-w-full',
+  /** Wide content - ~1152px (data grids, analytics - pair with overflow-x-auto) */
+  WIDE: 'max-w-6xl',
+  /** Medium content - 896px (standard forms) */
+  MEDIUM: 'max-w-4xl',
+  /** Narrow content - 672px (simple forms, focused content) */
+  NARROW: 'max-w-2xl',
+  /** Percentage-based - 65% on large screens (DEFAULT for forms, article-style content) */
+  READABLE: 'lg:max-w-[65%]',
+} as const;
+
+/**
  * Type exports for TypeScript
  */
 export type ColorKey = keyof typeof COLORS;
@@ -481,3 +506,4 @@ export type SpacingKey = keyof typeof SPACING;
 export type DepthLevel = keyof typeof DEPTH;
 export type PrimaryComponent = (typeof PRIMARY_COMPONENTS)[number];
 export type PageTypeKey = keyof typeof CATEGORICAL_COLORS;
+export type ContentWidth = keyof typeof CONTENT_WIDTH;

@@ -16,12 +16,14 @@ import { cn } from '@/shared';
 // Wraps shadcn Card with FM branding:
 // - Default: Semi-transparent muted background with gold border, subtle hover
 // - Frosted: Glass effect background with blur (for modals, overlays)
+// - Subtle: Semi-transparent muted background with neutral border (no gold)
 // - Frosted variant has subtle gold glow + brightness increase on hover
 // - Consistent spacing and transitions
 //
 // Usage:
 //   <FmCommonCard>Content</FmCommonCard>  // default with gold border, subtle hover
 //   <FmCommonCard variant="frosted">...</FmCommonCard>  // frosted glass effect
+//   <FmCommonCard variant="subtle">...</FmCommonCard>  // subtle without gold border
 //   <FmCommonCard hoverable={false}>...</FmCommonCard>  // disable hover effects
 //   <FmCommonCard size="lg" onClick={handleClick}>...</FmCommonCard>  // clickable with padding
 
@@ -33,7 +35,7 @@ const sizeConfig = {
 
 interface FmCommonCardProps extends Omit<React.ComponentPropsWithoutRef<typeof Card>, 'variant' | 'onClick'> {
   /** Card background style. Defaults to semi-transparent with gold hover */
-  variant?: 'default' | 'frosted';
+  variant?: 'default' | 'frosted' | 'subtle';
   /** Enable hover effects (border glow, brightness). Defaults to true */
   hoverable?: boolean;
   /** Size variant for padding */
@@ -66,11 +68,15 @@ const FmCommonCard = React.forwardRef<HTMLDivElement, FmCommonCardProps>(
             'bg-muted/20 border border-fm-gold/30',
           variant === 'frosted' &&
             'bg-background/60 backdrop-blur-md border-border',
+          variant === 'subtle' &&
+            'bg-muted/20 border border-border',
           // Hover effects (when enabled)
           hoverable && variant === 'default' &&
             'hover:bg-white/5',
           hoverable && variant === 'frosted' &&
             'hover:border-white/30 hover:shadow-[0_0_8px_rgba(223,186,125,0.08)] hover:bg-background/55 hover:brightness-[1.02]',
+          hoverable && variant === 'subtle' &&
+            'hover:bg-white/5 hover:border-white/20',
           // Clickable styles
           isClickable && 'cursor-pointer',
           isClickable && hoverable && 'hover:scale-[1.005]',

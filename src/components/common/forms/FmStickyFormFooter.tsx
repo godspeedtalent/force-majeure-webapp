@@ -30,6 +30,8 @@ interface FmStickyFormFooterProps {
   saveText?: string;
   /** Custom saving text (defaults to "Saving...") */
   savingText?: string;
+  /** Whether inside a sidebar layout - adjusts left offset (default: false) */
+  hasSidebar?: boolean;
 }
 
 export function FmStickyFormFooter({
@@ -41,6 +43,7 @@ export function FmStickyFormFooter({
   className,
   saveText,
   savingText,
+  hasSidebar = false,
 }: FmStickyFormFooterProps) {
   const { t } = useTranslation('common');
   const isMobile = useIsMobile();
@@ -52,6 +55,10 @@ export function FmStickyFormFooter({
   // Mobile bottom tab bar is ~70px + safe area, so use 90px bottom offset
   const bottomOffset = isMobile ? 'bottom-[90px]' : 'bottom-6';
 
+  // Account for sidebar width (16rem = 256px) on desktop when hasSidebar is true
+  // On mobile, sidebar is hidden so use normal left offset
+  const leftOffset = hasSidebar && !isMobile ? 'left-[calc(16rem+1.5rem)]' : 'left-6';
+
   // Don't render at all when there are no unsaved changes
   if (!isDirty && !isSaving) {
     return null;
@@ -60,7 +67,8 @@ export function FmStickyFormFooter({
   return (
     <div
       className={cn(
-        'fixed left-6 z-50',
+        'fixed z-50',
+        leftOffset,
         bottomOffset,
         'flex items-center gap-3',
         'p-4 rounded-none',

@@ -15,7 +15,7 @@ export const EventStatusBadge = ({ status, className = '' }: EventStatusBadgePro
       case 'draft':
         return {
           label: t('eventStatus.draft'),
-          className: 'bg-muted text-muted-foreground border-border',
+          className: 'bg-fm-gold/10 text-fm-gold border-fm-gold/30',
           showPulse: false,
         };
       case 'published':
@@ -30,6 +30,12 @@ export const EventStatusBadge = ({ status, className = '' }: EventStatusBadgePro
           className: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
           showPulse: false,
         };
+      case 'test':
+        return {
+          label: t('eventStatus.test'),
+          className: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+          showPulse: false,
+        };
     }
   };
 
@@ -38,7 +44,7 @@ export const EventStatusBadge = ({ status, className = '' }: EventStatusBadgePro
   return (
     <Badge
       variant="outline"
-      className={`font-screamer text-xs px-3 py-1 flex items-center gap-2 ${config.className} ${className}`}
+      className={`font-canela text-sm px-3 py-1 flex items-center gap-2 ${config.className} ${className}`}
     >
       {config.showPulse && (
         <span className='relative flex h-2 w-2'>

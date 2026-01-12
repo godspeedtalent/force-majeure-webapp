@@ -10,6 +10,8 @@ import {
 } from '@/components/common/navigation/FmCommonSideNav';
 import { SidebarProvider } from '@/components/common/shadcn/sidebar';
 import { FmBackButton } from '@/components/common/buttons/FmBackButton';
+import { FmContentContainer } from '@/components/common/layout/FmContentContainer';
+import type { ContentWidth } from '@/shared/constants/designSystem';
 
 interface SideNavbarLayoutProps<T extends string> {
   children: ReactNode;
@@ -39,6 +41,14 @@ interface SideNavbarLayoutProps<T extends string> {
   backButtonLabel?: string;
   /** Optional actions to render alongside the back button */
   backButtonActions?: ReactNode;
+  /**
+   * Default content width for children (default: undefined = full width for backwards compatibility)
+   * When set, wraps children in FmContentContainer with the specified width.
+   * Use 'READABLE' for forms, 'WIDE' for data grids with scrollable content.
+   */
+  contentWidth?: ContentWidth;
+  /** Enable horizontal scrolling when contentWidth is set (default: false) */
+  contentScrollable?: boolean;
 }
 
 /**
@@ -68,6 +78,8 @@ export const SideNavbarLayout = <T extends string>({
   onBack,
   backButtonLabel,
   backButtonActions,
+  contentWidth,
+  contentScrollable = false,
 }: SideNavbarLayoutProps<T>) => {
   const isMobile = useIsMobile();
 
@@ -124,7 +136,13 @@ export const SideNavbarLayout = <T extends string>({
                 {backButtonActions}
               </div>
             )}
-            {children}
+            {contentWidth ? (
+              <FmContentContainer width={contentWidth} scrollable={contentScrollable}>
+                {children}
+              </FmContentContainer>
+            ) : (
+              children
+            )}
           </div>
         </main>
       </SidebarProvider>

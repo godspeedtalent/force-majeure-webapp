@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Eye, MapPin, AlertTriangle, FileText, Calendar } from 'lucide-react';
+import { Eye, AlertTriangle, FileText, Calendar } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmVenueSearchDropdown } from '@/components/common/search/FmVenueSearchDropdown';
 import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
@@ -25,7 +25,6 @@ interface EventOverviewFormProps {
     description?: string | null;
     about_event?: string | null;
     display_subtitle?: boolean;
-    show_venue_map?: boolean;
     status?: string;
   };
   orderCount: number;
@@ -57,7 +56,6 @@ export const EventOverviewForm = ({
     setCustomTitle,
     setEventSubtitle,
     setAboutEvent,
-    setShowVenueMap,
     isSaving,
     isDirty,
     handleSave,
@@ -82,7 +80,6 @@ export const EventOverviewForm = ({
     customTitle,
     eventSubtitle,
     aboutEvent,
-    showVenueMap,
   } = formState;
 
   // Handle date change with past date confirmation
@@ -186,21 +183,6 @@ export const EventOverviewForm = ({
               }}
               placeholder={t('placeholders.selectVenue')}
             />
-            {/* Show Venue Map Toggle */}
-            <div className='flex items-center gap-2 pt-2'>
-              <FmCommonCheckbox
-                id='show-venue-map'
-                checked={showVenueMap}
-                onCheckedChange={checked => {
-                  setShowVenueMap(checked);
-                  triggerAutoSave();
-                }}
-              />
-              <Label htmlFor='show-venue-map' className='cursor-pointer flex items-center gap-2 text-sm'>
-                <MapPin className='h-4 w-4 text-fm-gold' />
-                {t('eventOverview.showVenueMap')}
-              </Label>
-            </div>
           </div>
 
           {/* About This Event Description */}

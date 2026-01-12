@@ -19,6 +19,7 @@ import {
   Info,
   Inbox,
   AlertTriangle,
+  Shuffle,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -52,6 +53,7 @@ import { MockRoleTabContent } from './tabs/MockRoleTab';
 import { PageInfoTabContent, PageInfoTabFooter } from './tabs/PageInfoTab';
 import { AdminMessagesTabContent } from './tabs/AdminMessagesTab';
 import { ErrorLogTabContent, ErrorLogTabFooter } from './tabs/ErrorLogTab';
+import { MockDataTabContent } from './tabs/MockDataTab';
 
 export interface ToolbarTab {
   id: string;
@@ -85,6 +87,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
   const [isTabHovered, setIsTabHovered] = useState(false);
   const [showGroupLabel, setShowGroupLabel] = useState<string | null>(null);
   const [collapsedGroups, setCollapsedGroups] = useLocalStorage<string[]>('fm-toolbar-collapsed-groups', []);
+  const [hiddenTabs, setHiddenTabs] = useLocalStorage<string[]>('fm-toolbar-hidden-tabs', []);
 
   // Use context for state if available, otherwise use local state
   const toolbarContext = useFmToolbarSafe();
@@ -302,6 +305,18 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         groupLabel: t('toolbar.groups.dataConfig'),
       },
       {
+        id: 'mock-data',
+        label: t('toolbar.mockData'),
+        icon: Shuffle,
+        content: <MockDataTabContent />,
+        title: t('toolbar.mockDataTitle'),
+        visible: isDeveloperOrAdmin,
+        group: 'dataConfig',
+        groupOrder: 4,
+        alignment: 'bottom',
+        groupLabel: t('toolbar.groups.dataConfig'),
+      },
+      {
         id: 'admin-messages',
         label: t('toolbar.adminMessages'),
         icon: Inbox,
@@ -319,14 +334,35 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
   );
 
   const visibleTabs = useMemo(() => {
-    const filtered = tabs.filter(tab => tab.visible !== false);
+    const filtered = tabs.filter(tab => tab.visible !== false && !hiddenTabs.includes(tab.id));
     // Sort by groupOrder first, then by order in array
     return filtered.sort((a, b) => {
       const orderA = a.groupOrder ?? 999;
       const orderB = b.groupOrder ?? 999;
       return orderA - orderB;
     });
-  }, [tabs]);
+  }, [tabs, hiddenTabs]);
+
+  // Get hidden tabs data for display in the indicator
+  const hiddenTabsData = useMemo(() => {
+    return tabs.filter(tab => tab.visible !== false && hiddenTabs.includes(tab.id));
+  }, [tabs, hiddenTabs]);
+
+  // Hide/show tab callbacks
+  const hideTab = useCallback((tabId: string) => {
+    setHiddenTabs(prev => {
+      if (prev.includes(tabId)) return prev;
+      return [...prev, tabId];
+    });
+  }, [setHiddenTabs]);
+
+  const showTab = useCallback((tabId: string) => {
+    setHiddenTabs(prev => prev.filter(id => id !== tabId));
+  }, [setHiddenTabs]);
+
+  const showAllHiddenTabs = useCallback(() => {
+    setHiddenTabs([]);
+  }, [setHiddenTabs]);
 
   // Group tabs by their alignment and group property for rendering
   const { topGroups, bottomGroups } = useMemo(() => {
@@ -602,6 +638,14 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         clickToExpandText={t('toolbar.clickToExpand')}
         collapseGroupText={t('toolbar.collapseGroup')}
         tabsContainerRef={tabsContainerRef}
+        hiddenTabs={hiddenTabsData}
+        onHideTab={hideTab}
+        onShowTab={showTab}
+        onShowAllHiddenTabs={showAllHiddenTabs}
+        hideTabText={t('toolbar.hideTab')}
+        showTabText={t('toolbar.showTab')}
+        showAllTabsText={t('toolbar.showAllTabs')}
+        hiddenTabsText={t('toolbar.hiddenTabs')}
       />
 
       {/* Drawer content */}

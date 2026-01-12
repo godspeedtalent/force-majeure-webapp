@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import {
   User,
   UserCog,
-  Shield,
+  Key,
   UserX,
   BarChart3,
   Settings,
@@ -28,7 +28,7 @@ const roleIcons: Record<DevRole, typeof User> = {
   unauthenticated: UserX,
   fan: User,
   developer: UserCog,
-  admin: Shield,
+  admin: Key,
 };
 
 export const RoleSelectSection = ({

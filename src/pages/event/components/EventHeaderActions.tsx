@@ -12,9 +12,7 @@ interface EventHeaderActionsProps {
   shareCount: number;
   shouldShowShareCount: boolean;
   viewCount: number;
-  showViewCount: boolean;
   isViewCountLoading?: boolean;
-  guestListEnabled: boolean;
   onInterestClick: () => void;
   onShareClick: () => void;
   /** When true, disables share and interest buttons (for past events) */
@@ -36,9 +34,7 @@ export const EventHeaderActions = ({
   shareCount,
   shouldShowShareCount,
   viewCount,
-  showViewCount,
   isViewCountLoading = false,
-  guestListEnabled,
   onInterestClick,
   onShareClick,
   isPastEvent = false,
@@ -105,19 +101,17 @@ export const EventHeaderActions = ({
         />
       )}
 
-      {/* Show view count here if guest list is disabled but view count is enabled */}
-      {!guestListEnabled && showViewCount && (
-        <div className='flex items-center gap-2 px-3 py-2 h-10 bg-white/5 rounded-none border border-transparent'>
-          <Eye className='w-4 h-4 text-muted-foreground' />
-          {isViewCountLoading ? (
-            <Skeleton className='h-4 w-8 rounded-none' />
-          ) : (
-            <span className='text-sm text-muted-foreground'>
-              {viewCount.toLocaleString()}
-            </span>
-          )}
-        </div>
-      )}
+      {/* View count - always visible */}
+      <div className='flex items-center gap-2 px-3 py-2 h-10 bg-white/5 rounded-none border border-transparent'>
+        <Eye className='w-4 h-4 text-muted-foreground' />
+        {isViewCountLoading ? (
+          <Skeleton className='h-4 w-8 rounded-none' />
+        ) : (
+          <span className='text-sm text-muted-foreground'>
+            {viewCount.toLocaleString()}
+          </span>
+        )}
+      </div>
     </div>
   );
 };

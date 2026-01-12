@@ -270,6 +270,7 @@ const ProfileEdit = () => {
           onTabChange={tab => setActiveSection(tab as ProfileSection)}
         />
       }
+      contentWidth="READABLE"
     >
       <div className='space-y-6'>
         {/* Profile Section */}

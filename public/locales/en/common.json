@@ -357,6 +357,13 @@
       "last30Days": "Last 30 days",
       "last90Days": "Last 90 days"
     },
+    "totalRsvps": "Total RSVPs",
+    "rsvpCapacity": "RSVP Capacity",
+    "rsvpCapacityOf": "of {{capacity}} capacity",
+    "unlimitedCapacity": "Unlimited capacity",
+    "rsvpUtilization": "RSVP Utilization",
+    "spotsRemaining": "{{count}} spots remaining",
+    "unlimited": "Unlimited",
     "tabs": {
       "traffic": "Traffic",
       "funnel": "Conversion funnel",
@@ -402,9 +409,15 @@
     "adminMessagesTitle": "Admin Inbox",
     "errorLogs": "Error Logs",
     "errorLogsTitle": "Error Monitoring",
+    "mockData": "Mock Data",
+    "mockDataTitle": "Mock Order Generator",
     "collapseGroup": "Collapse group",
     "expandGroup": "Expand group",
     "clickToExpand": "Click to expand",
+    "hideTab": "Hide tab",
+    "showTab": "Show",
+    "showAllTabs": "Show all hidden tabs",
+    "hiddenTabs": "Hidden tabs",
     "groups": {
       "organization": "Organization",
       "developerTools": "Developer Tools",
@@ -1291,11 +1304,11 @@
     "artistsDescription": "Manage lineup and scheduling",
     "social": "Social",
     "socialDescription": "Guest list and social settings",
-    "uxDisplay": "UX Display",
-    "uxDisplayDescription": "Homepage card display settings",
+    "uxDisplay": "UX Configuration",
+    "uxDisplayDescription": "Display thresholds and settings",
     "ticketing": "Ticketing",
-    "ticketTiers": "Ticket Tiers",
-    "ticketTiersDescription": "Manage ticket pricing and inventory",
+    "ticketTiers": "Ticket Management",
+    "ticketTiersDescription": "Manage ticket groups, tiers, and inventory",
     "orders": "Orders",
     "ordersDescription": "View and manage ticket orders",
     "ticketStatus": "Ticket Status",
@@ -1352,12 +1365,18 @@
     "ticketTierManagement": "Ticket Tier Management",
     "ticketTierDescription": "Organize your ticket tiers into groups and configure pricing",
     "loadingTicketTiers": "Loading ticket tiers...",
-    "uxDisplaySettings": "UX Display Settings",
-    "uxDisplayDescription": "Customize how this event appears on the homepage",
+    "uxConfigSettings": "UX Configuration",
+    "uxConfigDescription": "Control display thresholds and public-facing settings",
     "homepageEventCard": "Homepage Event Card",
     "homepageEventCardDescription": "Control how your event card is displayed on the homepage.",
     "displaySubtitle": "Display Subtitle",
     "displaySubtitleDescription": "Show the event subtitle on the homepage event card",
+    "displayThresholds": "Display Thresholds",
+    "displayThresholdsDescription": "Set minimum counts before showing metrics publicly on the event page.",
+    "minInterestThreshold": "Interest Count Threshold",
+    "minInterestThresholdDescription": "Minimum interest count before showing publicly",
+    "minShareThreshold": "Share Count Threshold",
+    "minShareThresholdDescription": "Minimum share count before showing publicly",
     "dangerZone": "Danger Zone",
     "irreversibleActions": "Irreversible actions",
     "deleteEvent": "Delete Event",
@@ -1734,7 +1753,8 @@
   "eventStatus": {
     "draft": "DRAFT",
     "live": "LIVE",
-    "hidden": "HIDDEN"
+    "hidden": "HIDDEN",
+    "test": "TEST"
   },
   "qrScanner": {
     "scanQRCode": "Scan QR Code",
@@ -2439,7 +2459,19 @@
     "tiersSaveFailed": "Failed to save ticket tiers: {{error}}",
     "tierDeleted": "Tier deleted successfully",
     "tierDeleteFailed": "Failed to delete tier: {{error}}",
-    "tierToggleFailed": "Failed to toggle tier: {{error}}"
+    "tierToggleFailed": "Failed to toggle tier: {{error}}",
+    "rsvpSettings": "RSVP Settings",
+    "rsvpSettingsDescription": "Configure RSVP availability for this event",
+    "rsvpsAvailable": "RSVPs Available",
+    "rsvpsAvailableDescription": "When enabled, users can RSVP to this event in addition to purchasing tickets",
+    "rsvpCapacity": "RSVP Capacity",
+    "rsvpCapacityInfo": "Set an optional capacity limit for RSVPs",
+    "rsvpCapacityHint": "Leave empty for unlimited RSVPs",
+    "currentRsvps": "Current RSVPs",
+    "rsvpAtCapacity": "Event is at RSVP capacity",
+    "unlimited": "Unlimited",
+    "complimentaryTickets": "Complimentary Tickets",
+    "complimentaryTicketsDescription": "Issue free tickets to guests, VIPs, or staff"
   },
   "eventForm": {
     "validation": {
@@ -3030,7 +3062,8 @@
     "duplicateGroup": "Duplicate group",
     "deleteGroup": "Delete group",
     "ticketTiers": "Ticket Tiers",
-    "addTierToGroup": "Add Tier to {{groupName}}"
+    "addTierToGroup": "Add Tier to {{groupName}}",
+    "ungroupedNote": "Tickets in this group will not appear grouped together in the checkout flow. They will be displayed as individual ticket tiers."
   },
   "termsAndConditions": {
     "title": "Terms and Conditions",
@@ -3331,23 +3364,66 @@
     }
   },
   "globalSearch": {
-    "placeholder": "Search events, artists, venues, users...",
+    "placeholder": "Search events, artists, venues, recordings...",
     "closeSearch": "Close search",
     "searching": "Searching...",
     "noResults": "No results found for \"{{query}}\"",
     "unknownUser": "Unknown User",
     "searchFailed": "Search Failed",
     "searchFailedDescription": "Could not search database resources",
+    "opensInNewTab": "opens in new tab",
+    "draftBadge": "Draft",
     "sections": {
       "organizations": "Organizations",
       "users": "Users",
       "artists": "Artists",
       "venues": "Venues",
-      "events": "Events"
+      "events": "Events",
+      "recordings": "Recordings"
+    },
+    "contextMenu": {
+      "view": "View",
+      "manage": "Manage",
+      "adminDetails": "Admin details",
+      "listenOn": "Listen on {{platform}}"
     }
   },
   "databaseTab": {
     "goToManager": "Go to Database Manager"
+  },
+  "mockOrderGenerator": {
+    "selectEvent": "Select test event",
+    "selectEventPlaceholder": "Choose an event...",
+    "noTestEvents": "No events with 'test' status found. Set an event to 'test' status first.",
+    "autoLoadedFromPage": "Auto-loaded from current page",
+    "refreshEvents": "Refresh events",
+    "configuration": "Configuration",
+    "orderCount": "Number of orders",
+    "userRatio": "Registered user ratio",
+    "userRatioHelp": "Percentage of orders from registered users vs guests",
+    "dateRange": "Order date range",
+    "startDate": "Start",
+    "endDate": "End",
+    "includeProtection": "Include ticket protection",
+    "tierSelection": "Tier configuration",
+    "min": "Min",
+    "max": "Max",
+    "weight": "Weight",
+    "generate": "Generate mock orders",
+    "generating": "Generating...",
+    "deleteOrders": "Delete {{count}} mock orders",
+    "deleting": "Deleting...",
+    "success": "Created {{orders}} orders with {{tickets}} tickets",
+    "deleteSuccess": "Deleted {{orders}} orders and {{tickets}} tickets",
+    "resultSuccess": "Created {{orders}} orders with {{tickets}} tickets in {{time}}s",
+    "resultFailed": "Generation failed with {{errors}} errors",
+    "errors": {
+      "loadEventsFailed": "Failed to load test events",
+      "noEventSelected": "Please select an event",
+      "noTiersSelected": "Please select at least one tier",
+      "generationFailed": "Failed to generate mock orders",
+      "deleteFailed": "Failed to delete mock orders"
+    }
   },
   "organizationTab": {
     "goToOrgDashboard": "Go to Org Dashboard",

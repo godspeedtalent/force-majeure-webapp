@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import type { TicketGroup, TicketTier } from '../types';
 import { GROUP_COLORS, NO_GROUP_ID, NO_GROUP_COLOR } from '../constants';
 
-// Helper to create default No Group
+// Helper to create default Ungrouped group
 const createNoGroup = (): TicketGroup => ({
   id: NO_GROUP_ID,
-  name: 'No Group',
-  description: 'Tickets without a specific group',
+  name: 'Ungrouped',
+  description: 'Tickets that will not appear grouped in checkout',
   color: NO_GROUP_COLOR,
   tiers: [
     {

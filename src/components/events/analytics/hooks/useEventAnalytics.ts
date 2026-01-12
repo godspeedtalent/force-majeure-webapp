@@ -15,12 +15,17 @@ export interface EventAnalyticsData {
   totalFees: number;
   refundRate: number;
   revenueByTier: { tier: string; revenue: number; tickets: number }[];
-  
+
   // Traffic & Engagement
   totalViews: number;
   uniqueVisitors: number;
   conversionRate: number;
-  
+
+  // RSVP Stats
+  rsvpCount: number;
+  rsvpCapacity: number | null;
+  isRsvpEnabled: boolean;
+
   // Time-based data for charts
   salesOverTime: { date: string; revenue: number; tickets: number }[];
   viewsOverTime: { date: string; views: number }[];
@@ -59,6 +64,25 @@ export const useEventAnalytics = (eventId: string, dateRange: AnalyticsDateRange
         .lte('viewed_at', endDate);
 
       if (viewsError) throw viewsError;
+
+      // Fetch event RSVP settings and count
+      const { data: eventData } = await supabase
+        .from('events')
+        .select('is_free_event, rsvp_capacity')
+        .eq('id', eventId)
+        .single();
+
+      const isRsvpEnabled = eventData?.is_free_event ?? false;
+      const rsvpCapacity = eventData?.rsvp_capacity ?? null;
+
+      // Get RSVP count if enabled
+      let rsvpCount = 0;
+      if (isRsvpEnabled) {
+        const { data: rsvpData } = await supabase.rpc('get_event_rsvp_count', {
+          p_event_id: eventId,
+        });
+        rsvpCount = rsvpData ?? 0;
+      }
 
       // Calculate metrics
       const completedOrders = orders?.filter(o => o.status === 'completed') || [];
@@ -153,6 +177,9 @@ export const useEventAnalytics = (eventId: string, dateRange: AnalyticsDateRange
         totalViews,
         uniqueVisitors,
         conversionRate,
+        rsvpCount,
+        rsvpCapacity,
+        isRsvpEnabled,
         salesOverTime,
         viewsOverTime,
         hourlyDistribution,

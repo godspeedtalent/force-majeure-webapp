@@ -689,6 +689,45 @@ npm run lint          # Lint all files
 - Use pre-built layouts for new pages, only creating a brand new layout if there is no reasonable base layout. Create the new layout with the idea in mind that in can be implemented in other pages.
 - Use pre-built Fm\* components first before creating new components, using pre-existing ones as much as possible. Only create brand new components if absolutely necessary, and do your best to inherit base components when doing so.
 
+### Clarifying Ambiguous Component References
+
+**CRITICAL: When the user asks for enhancements to "a component" or references a component ambiguously, STOP and ASK for clarification before proceeding.**
+
+This applies when:
+
+- The user says "the component" or "this component" without a clear file path or unique name
+- Multiple components could match the description (e.g., "the event card", "the modal", "the form")
+- The user references a component by partial name that matches multiple files
+- The component name is generic (e.g., "Button", "Card", "Modal") and could refer to several implementations
+- The user has a file open in the IDE but their request might not be about that specific file
+
+**When ambiguous, ask:**
+
+1. Which specific component file they mean (provide options if you can identify candidates)
+2. Whether they're referring to the file currently open in their IDE
+3. Clarify the context (e.g., "Do you mean the FmCommonButton or a specific button in the EventCard?")
+
+**DO NOT** assume which component the user means based on:
+
+- Recently discussed files (unless explicitly referenced)
+- Files open in their IDE (unless they say "this file" or similar)
+- Common naming patterns
+
+**Example:**
+
+```text
+User: "Can you add a loading state to the card component?"
+
+✅ GOOD: "I see several card components in the codebase:
+- FmCommonCard (src/components/common/ui/FmCommonCard.tsx) - the base reusable card
+- FmEventCard (src/components/events/FmEventCard.tsx) - event-specific card
+- FmArtistCard (src/components/artists/FmArtistCard.tsx) - artist-specific card
+
+Which one would you like me to enhance?"
+
+❌ BAD: *Immediately starts editing FmCommonCard without asking*
+```
+
 ### Code Modularization & Component Creation
 
 **CRITICAL: Always search for similar patterns before implementing new features.**

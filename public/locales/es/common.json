@@ -357,6 +357,13 @@
       "last30Days": "Últimos 30 días",
       "last90Days": "Últimos 90 días"
     },
+    "totalRsvps": "Total de RSVPs",
+    "rsvpCapacity": "Capacidad de RSVP",
+    "rsvpCapacityOf": "de {{capacity}} de capacidad",
+    "unlimitedCapacity": "Capacidad ilimitada",
+    "rsvpUtilization": "Utilización de RSVP",
+    "spotsRemaining": "{{count}} lugares disponibles",
+    "unlimited": "Ilimitado",
     "tabs": {
       "traffic": "Tráfico",
       "funnel": "Embudo de conversión",
@@ -402,9 +409,15 @@
     "adminMessagesTitle": "Bandeja de Admin",
     "errorLogs": "Registro de Errores",
     "errorLogsTitle": "Monitoreo de Errores",
+    "mockData": "Datos de Prueba",
+    "mockDataTitle": "Generador de Órdenes de Prueba",
     "collapseGroup": "Contraer grupo",
     "expandGroup": "Expandir grupo",
     "clickToExpand": "Clic para expandir",
+    "hideTab": "Ocultar pestaña",
+    "showTab": "Mostrar",
+    "showAllTabs": "Mostrar todas las pestañas ocultas",
+    "hiddenTabs": "Pestañas ocultas",
     "groups": {
       "organization": "Organización",
       "developerTools": "Herramientas de Desarrollador",
@@ -1286,11 +1299,11 @@
     "artistsDescription": "Gestionar alineación y programación",
     "social": "Social",
     "socialDescription": "Lista de invitados y configuración social",
-    "uxDisplay": "Pantalla UX",
-    "uxDisplayDescription": "Configuración de tarjeta de inicio",
+    "uxDisplay": "Configuración UX",
+    "uxDisplayDescription": "Umbrales de visualización y configuración",
     "ticketing": "Entradas",
-    "ticketTiers": "Tipos de Entradas",
-    "ticketTiersDescription": "Gestionar precios e inventario",
+    "ticketTiers": "Gestión de Entradas",
+    "ticketTiersDescription": "Gestionar grupos, tipos e inventario de entradas",
     "orders": "Pedidos",
     "ordersDescription": "Ver y gestionar pedidos de entradas",
     "ticketStatus": "Estado de Entradas",
@@ -1347,12 +1360,18 @@
     "ticketTierManagement": "Gestión de Tipos de Entradas",
     "ticketTierDescription": "Organiza tus tipos de entradas en grupos y configura precios",
     "loadingTicketTiers": "Cargando tipos de entradas...",
-    "uxDisplaySettings": "Configuración de Pantalla UX",
-    "uxDisplayDescription": "Personaliza cómo aparece este evento en la página de inicio",
+    "uxConfigSettings": "Configuración UX",
+    "uxConfigDescription": "Controla umbrales de visualización y configuración pública",
     "homepageEventCard": "Tarjeta de Evento de Inicio",
     "homepageEventCardDescription": "Controla cómo se muestra la tarjeta de tu evento en la página de inicio.",
     "displaySubtitle": "Mostrar Subtítulo",
     "displaySubtitleDescription": "Mostrar el subtítulo del evento en la tarjeta de inicio",
+    "displayThresholds": "Umbrales de Visualización",
+    "displayThresholdsDescription": "Establece conteos mínimos antes de mostrar métricas públicamente en la página del evento.",
+    "minInterestThreshold": "Umbral de Conteo de Interés",
+    "minInterestThresholdDescription": "Conteo mínimo de interés antes de mostrar públicamente",
+    "minShareThreshold": "Umbral de Conteo de Compartidos",
+    "minShareThresholdDescription": "Conteo mínimo de compartidos antes de mostrar públicamente",
     "dangerZone": "Zona de Peligro",
     "irreversibleActions": "Acciones irreversibles",
     "deleteEvent": "Eliminar Evento",
@@ -1764,7 +1783,8 @@
   "eventStatus": {
     "draft": "BORRADOR",
     "live": "EN VIVO",
-    "hidden": "OCULTO"
+    "hidden": "OCULTO",
+    "test": "PRUEBA"
   },
   "qrScanner": {
     "scanQRCode": "Escanear Código QR",
@@ -2434,7 +2454,19 @@
     "tiersSaveFailed": "Error al guardar niveles de tickets: {{error}}",
     "tierDeleted": "Nivel eliminado exitosamente",
     "tierDeleteFailed": "Error al eliminar nivel: {{error}}",
-    "tierToggleFailed": "Error al cambiar estado del nivel: {{error}}"
+    "tierToggleFailed": "Error al cambiar estado del nivel: {{error}}",
+    "rsvpSettings": "Configuración de RSVP",
+    "rsvpSettingsDescription": "Configurar la disponibilidad de RSVP para este evento",
+    "rsvpsAvailable": "RSVPs Disponibles",
+    "rsvpsAvailableDescription": "Cuando está habilitado, los usuarios pueden confirmar asistencia a este evento además de comprar entradas",
+    "rsvpCapacity": "Capacidad de RSVP",
+    "rsvpCapacityInfo": "Establecer un límite de capacidad opcional para RSVPs",
+    "rsvpCapacityHint": "Dejar vacío para RSVPs ilimitados",
+    "currentRsvps": "RSVPs Actuales",
+    "rsvpAtCapacity": "El evento está al límite de capacidad de RSVP",
+    "unlimited": "Ilimitado",
+    "complimentaryTickets": "Entradas de Cortesía",
+    "complimentaryTicketsDescription": "Emitir entradas gratuitas para invitados, VIPs o personal"
   },
   "eventForm": {
     "validation": {
@@ -3016,7 +3048,8 @@
     "duplicateGroup": "Duplicar grupo",
     "deleteGroup": "Eliminar grupo",
     "ticketTiers": "Niveles de Entradas",
-    "addTierToGroup": "Agregar Nivel a {{groupName}}"
+    "addTierToGroup": "Agregar Nivel a {{groupName}}",
+    "ungroupedNote": "Las entradas en este grupo no aparecerán agrupadas en el proceso de compra. Se mostrarán como niveles de entradas individuales."
   },
   "termsAndConditions": {
     "title": "Términos y Condiciones",
@@ -3317,23 +3350,66 @@
     }
   },
   "globalSearch": {
-    "placeholder": "Buscar eventos, artistas, lugares, usuarios...",
+    "placeholder": "Buscar eventos, artistas, lugares, grabaciones...",
     "closeSearch": "Cerrar búsqueda",
     "searching": "Buscando...",
     "noResults": "No se encontraron resultados para \"{{query}}\"",
     "unknownUser": "Usuario Desconocido",
     "searchFailed": "Búsqueda Fallida",
     "searchFailedDescription": "No se pudieron buscar los recursos de la base de datos",
+    "opensInNewTab": "abre en nueva pestaña",
+    "draftBadge": "Borrador",
     "sections": {
       "organizations": "Organizaciones",
       "users": "Usuarios",
       "artists": "Artistas",
       "venues": "Lugares",
-      "events": "Eventos"
+      "events": "Eventos",
+      "recordings": "Grabaciones"
+    },
+    "contextMenu": {
+      "view": "Ver",
+      "manage": "Gestionar",
+      "adminDetails": "Detalles de admin",
+      "listenOn": "Escuchar en {{platform}}"
     }
   },
   "databaseTab": {
     "goToManager": "Ir al Gestor de Base de Datos"
+  },
+  "mockOrderGenerator": {
+    "selectEvent": "Seleccionar evento de prueba",
+    "selectEventPlaceholder": "Elegir un evento...",
+    "noTestEvents": "No se encontraron eventos con estado 'test'. Configura un evento a estado 'test' primero.",
+    "autoLoadedFromPage": "Cargado automáticamente desde la página actual",
+    "refreshEvents": "Actualizar eventos",
+    "configuration": "Configuración",
+    "orderCount": "Número de órdenes",
+    "userRatio": "Proporción de usuarios registrados",
+    "userRatioHelp": "Porcentaje de órdenes de usuarios registrados vs invitados",
+    "dateRange": "Rango de fechas de órdenes",
+    "startDate": "Inicio",
+    "endDate": "Fin",
+    "includeProtection": "Incluir protección de boletos",
+    "tierSelection": "Configuración de niveles",
+    "min": "Mín",
+    "max": "Máx",
+    "weight": "Peso",
+    "generate": "Generar órdenes de prueba",
+    "generating": "Generando...",
+    "deleteOrders": "Eliminar {{count}} órdenes de prueba",
+    "deleting": "Eliminando...",
+    "success": "Se crearon {{orders}} órdenes con {{tickets}} boletos",
+    "deleteSuccess": "Se eliminaron {{orders}} órdenes y {{tickets}} boletos",
+    "resultSuccess": "Se crearon {{orders}} órdenes con {{tickets}} boletos en {{time}}s",
+    "resultFailed": "La generación falló con {{errors}} errores",
+    "errors": {
+      "loadEventsFailed": "Error al cargar eventos de prueba",
+      "noEventSelected": "Por favor selecciona un evento",
+      "noTiersSelected": "Por favor selecciona al menos un nivel",
+      "generationFailed": "Error al generar órdenes de prueba",
+      "deleteFailed": "Error al eliminar órdenes de prueba"
+    }
   },
   "organizationTab": {
     "goToOrgDashboard": "Ir al Panel de la Organización",

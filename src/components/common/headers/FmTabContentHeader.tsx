@@ -34,6 +34,8 @@ interface FmTabContentHeaderProps {
   showDivider?: boolean;
   /** Additional elements to render on the right side (e.g., badges, buttons) */
   actions?: ReactNode;
+  /** Badge element to render centered on the divider */
+  centeredBadge?: ReactNode;
   /** Additional CSS classes */
   className?: string;
   /** Size variant: 'default' for standard pages, 'large' for main entity pages */
@@ -46,6 +48,7 @@ export const FmTabContentHeader = ({
   icon: Icon,
   showDivider = true,
   actions,
+  centeredBadge,
   className,
   size = 'default',
 }: FmTabContentHeaderProps) => {
@@ -88,7 +91,16 @@ export const FmTabContentHeader = ({
           </div>
         )}
       </div>
-      {showDivider && <FmFeatheredDivider />}
+      {showDivider && (
+        <div className='relative'>
+          <FmFeatheredDivider />
+          {centeredBadge && (
+            <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-3'>
+              {centeredBadge}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

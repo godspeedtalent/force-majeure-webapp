@@ -118,7 +118,9 @@
     "updateSettingFailed": "Failed to update setting",
     "updateUndercardSettingFailedDescription": "Could not save looking for undercard setting",
     "artistUpdateFailed": "Failed to update artists",
-    "artistUpdateFailedDescription": "Could not save artist changes"
+    "artistUpdateFailedDescription": "Could not save artist changes",
+    "rsvpSettingsUpdated": "RSVP settings updated",
+    "rsvpSettingsUpdateFailed": "Failed to update RSVP settings"
   },
   "validation": {
     "stageNameRequired": "Please enter your stage name",

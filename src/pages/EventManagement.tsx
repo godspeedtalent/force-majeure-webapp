@@ -39,7 +39,8 @@ import { EventQueueConfigForm } from '@/components/events/queue';
 import { EventGalleryTab } from '@/components/events/gallery';
 
 import { toast } from 'sonner';
-import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
+import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
+import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { Label } from '@/components/common/shadcn/label';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared';
@@ -50,6 +51,7 @@ import { PageErrorBoundary } from '@/components/common/feedback';
 import { FmStickyFormFooter } from '@/components/common/forms/FmStickyFormFooter';
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmTabContentHeader } from '@/components/common/headers/FmTabContentHeader';
+import { FmContentContainer } from '@/components/common/layout/FmContentContainer';
 
 type EventTab = 'overview' | 'gallery' | 'artists' | 'tiers' | 'orders' | 'ticket-status' | 'sales' | 'reports' | 'tracking' | 'social' | 'ux_display' | 'admin' | 'view';
 
@@ -65,6 +67,8 @@ export default function EventManagement() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [orderCount, setOrderCount] = useState(0);
   const [displaySubtitle, setDisplaySubtitle] = useState<boolean>(true);
+  const [minInterestThreshold, setMinInterestThreshold] = useState<number>(0);
+  const [minShareThreshold, setMinShareThreshold] = useState<number>(0);
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -124,10 +128,12 @@ export default function EventManagement() {
   // Extract undercard IDs for backwards compatibility
   const undercardArtists = eventArtistsData?.map(item => item.artist_id) || [];
 
-  // Sync displaySubtitle from event data (for UX Display tab)
+  // Sync UX Configuration state from event data
   useEffect(() => {
     if (event) {
       setDisplaySubtitle((event as any).display_subtitle ?? true);
+      setMinInterestThreshold((event as any).min_interest_count_display ?? 0);
+      setMinShareThreshold((event as any).min_share_count_display ?? 0);
     }
   }, [event]);
 
@@ -308,13 +314,15 @@ export default function EventManagement() {
     }
   };
 
-  const handleSaveUXDisplay = async () => {
+  const handleSaveUXConfig = async () => {
     setIsSaving(true);
     try {
       const { error } = await supabase
         .from('events')
         .update({
           display_subtitle: displaySubtitle,
+          min_interest_count_display: minInterestThreshold,
+          min_share_count_display: minShareThreshold,
         } as any)
         .eq('id', id!);
 
@@ -326,7 +334,7 @@ export default function EventManagement() {
       await handleError(error, {
         title: tToast('events.uxDisplayUpdateFailed'),
         description: tToast('events.uxDisplayUpdateFailedDescription'),
-        endpoint: 'EventManagement/ux-display',
+        endpoint: 'EventManagement/ux-config',
         method: 'UPDATE',
       });
     } finally {
@@ -409,272 +417,315 @@ export default function EventManagement() {
         />
       }
     >
-      <div className='max-w-full'>
-        {/* Top Row: Back Button + Status Badge */}
-        <div className='flex items-center justify-between mb-4'>
-          <FmBackButton
-            position='inline'
-            onClick={() => navigate(`/event/${id}`)}
-            label={t('eventNav.eventDetails')}
-          />
-          <div className='flex items-center gap-2'>
-            <EventStatusBadge status={(event as any).status || 'draft'} />
-            {((event as any).status === 'draft' || (event as any).status === 'invisible') && (
-              <PublishEventButton
-                currentStatus={(event as any).status || 'draft'}
-                onPublish={handlePublishEvent}
-              />
-            )}
-          </div>
-        </div>
-
-        {/* Title */}
-        <FmTabContentHeader
-          title={event.title || ''}
-          size="large"
-          className="mb-6"
+      {/* Top Row: Back Button */}
+      <div className='flex items-center justify-between mb-4'>
+        <FmBackButton
+          position='inline'
+          onClick={() => navigate(`/event/${id}`)}
+          label={t('eventNav.eventDetails')}
         />
+      </div>
 
-        {/* Main Content */}
-        <div className='space-y-6'>
-          {activeTab === 'overview' && id && (
-            <PageErrorBoundary section='Overview'>
-              <EventOverviewForm
-                eventId={id}
-                event={event}
-                orderCount={orderCount}
-                onMakeInvisible={handleMakeInvisible}
-                onFormStateChange={handleOverviewFormStateChange}
-              />
-            </PageErrorBoundary>
-          )}
+      {/* Title with Status Badge */}
+      <FmTabContentHeader
+        title={event.title || ''}
+        size="large"
+        className="mb-6"
+        centeredBadge={<EventStatusBadge status={(event as any).status || 'draft'} />}
+      />
 
-          {activeTab === 'gallery' && id && (
-            <PageErrorBoundary section='Gallery'>
-              <EventGalleryTab
-                eventId={id}
-                eventTitle={event.title || ''}
-                galleryId={(event as any).gallery_id || null}
-                heroImage={(event as any).hero_image || null}
-                heroImageFocalY={(event as any).hero_image_focal_y ?? null}
-              />
-            </PageErrorBoundary>
-          )}
+      {/* Main Content - Form tabs use READABLE, Data/Analytics tabs use WIDE */}
+      {activeTab === 'overview' && id && (
+        <FmContentContainer>
+          <PageErrorBoundary section='Overview'>
+            <EventOverviewForm
+              eventId={id}
+              event={event}
+              orderCount={orderCount}
+              onMakeInvisible={handleMakeInvisible}
+              onFormStateChange={handleOverviewFormStateChange}
+            />
+          </PageErrorBoundary>
+        </FmContentContainer>
+      )}
 
-          {activeTab === 'artists' && (
-            <PageErrorBoundary section='Artists'>
-              <div className='space-y-8'>
-                <EventArtistManagement
-                  headlinerId={event.headliner_id || ''}
-                  undercardIds={undercardArtists || []}
-                  initialScheduleData={eventArtistsData?.map(item => ({
-                    artistId: item.artist_id,
-                    setTime: item.set_time,
-                    setOrder: item.set_order,
-                  })) || []}
-                  lookingForUndercard={(event as any).looking_for_undercard ?? false}
-                  onLookingForUndercardChange={async (checked) => {
-                    try {
-                      if (!id) throw new Error('Event ID is required');
+      {activeTab === 'gallery' && id && (
+        <FmContentContainer>
+          <PageErrorBoundary section='Gallery'>
+            <EventGalleryTab
+              eventId={id}
+              eventTitle={event.title || ''}
+              galleryId={(event as any).gallery_id || null}
+              heroImage={(event as any).hero_image || null}
+              heroImageFocalY={(event as any).hero_image_focal_y ?? null}
+            />
+          </PageErrorBoundary>
+        </FmContentContainer>
+      )}
 
-                      const { error } = await supabase
-                        .from('events')
-                        .update({ looking_for_undercard: checked })
-                        .eq('id', id);
+      {activeTab === 'artists' && (
+        <FmContentContainer>
+          <PageErrorBoundary section='Artists'>
+            <div className='space-y-8'>
+              <EventArtistManagement
+                headlinerId={event.headliner_id || ''}
+                undercardIds={undercardArtists || []}
+                initialScheduleData={eventArtistsData?.map(item => ({
+                  artistId: item.artist_id,
+                  setTime: item.set_time,
+                  setOrder: item.set_order,
+                })) || []}
+                lookingForUndercard={(event as any).looking_for_undercard ?? false}
+                footerAction={
+                  ((event as any).status === 'draft' || (event as any).status === 'invisible') ? (
+                    <PublishEventButton
+                      currentStatus={(event as any).status || 'draft'}
+                      onPublish={handlePublishEvent}
+                    />
+                  ) : undefined
+                }
+                onLookingForUndercardChange={async (checked) => {
+                  try {
+                    if (!id) throw new Error('Event ID is required');
 
-                      if (error) throw error;
+                    const { error } = await supabase
+                      .from('events')
+                      .update({ looking_for_undercard: checked })
+                      .eq('id', id);
 
-                      toast.success(checked ? t('eventManagement.lookingForUndercardEnabled') : t('eventManagement.lookingForUndercardDisabled'));
-                      queryClient.invalidateQueries({ queryKey: ['event', id] });
-                    } catch (error) {
-                      await handleError(error, {
-                        title: tToast('events.updateSettingFailed'),
-                        description: tToast('events.updateUndercardSettingFailedDescription'),
-                        endpoint: 'EventManagement/artists',
-                        method: 'UPDATE',
+                    if (error) throw error;
+
+                    toast.success(checked ? t('eventManagement.lookingForUndercardEnabled') : t('eventManagement.lookingForUndercardDisabled'));
+                    queryClient.invalidateQueries({ queryKey: ['event', id] });
+                  } catch (error) {
+                    await handleError(error, {
+                      title: tToast('events.updateSettingFailed'),
+                      description: tToast('events.updateUndercardSettingFailedDescription'),
+                      endpoint: 'EventManagement/artists',
+                      method: 'UPDATE',
+                    });
+                  }
+                }}
+                onChange={async (data) => {
+                  try {
+                    if (!id) throw new Error('Event ID is required');
+
+                    // Update the headliner in the events table
+                    const { error: eventError } = await supabase
+                      .from('events')
+                      .update({ headliner_id: data.headlinerId || null })
+                      .eq('id', id);
+
+                    if (eventError) throw eventError;
+
+                    // Update event_artists junction table with scheduling data
+                    // First, delete existing entries
+                    const { error: deleteError } = await supabase
+                      .from('event_artists')
+                      .delete()
+                      .eq('event_id', id);
+
+                    if (deleteError) throw deleteError;
+
+                    // Insert all artists with scheduling data (undercard + co-headliners)
+                    // Filter out empty artist slots and the main headliner (stored on events table)
+                    const artistRecords = data.artistSlots
+                      .filter(slot => slot.artistId && slot.role !== 'headliner')
+                      .map((slot, index) => {
+                        // Convert time string to full timestamp if event has a date
+                        let setTime = null;
+                        if (slot.setTime && event?.start_time) {
+                          const eventDate = new Date(event.start_time);
+                          const [hours, minutes] = slot.setTime.split(':').map(Number);
+                          eventDate.setHours(hours, minutes, 0, 0);
+                          setTime = eventDate.toISOString();
+                        }
+
+                        return {
+                          event_id: id,
+                          artist_id: slot.artistId,
+                          set_time: setTime,
+                          set_order: slot.order ?? index,
+                        };
                       });
-                    }
-                  }}
-                  onChange={async (data) => {
-                    try {
-                      if (!id) throw new Error('Event ID is required');
 
-                      // Update the headliner in the events table
-                      const { error: eventError } = await supabase
-                        .from('events')
-                        .update({ headliner_id: data.headlinerId || null })
-                        .eq('id', id);
-
-                      if (eventError) throw eventError;
-
-                      // Update event_artists junction table with scheduling data
-                      // First, delete existing entries
-                      const { error: deleteError } = await supabase
+                    if (artistRecords.length > 0) {
+                      const { error: insertError } = await supabase
                         .from('event_artists')
-                        .delete()
-                        .eq('event_id', id);
+                        .insert(artistRecords);
 
-                      if (deleteError) throw deleteError;
-
-                      // Insert all artists with scheduling data (undercard + co-headliners)
-                      // Filter out empty artist slots and the main headliner (stored on events table)
-                      const artistRecords = data.artistSlots
-                        .filter(slot => slot.artistId && slot.role !== 'headliner')
-                        .map((slot, index) => {
-                          // Convert time string to full timestamp if event has a date
-                          let setTime = null;
-                          if (slot.setTime && event?.start_time) {
-                            const eventDate = new Date(event.start_time);
-                            const [hours, minutes] = slot.setTime.split(':').map(Number);
-                            eventDate.setHours(hours, minutes, 0, 0);
-                            setTime = eventDate.toISOString();
-                          }
-
-                          return {
-                            event_id: id,
-                            artist_id: slot.artistId,
-                            set_time: setTime,
-                            set_order: slot.order ?? index,
-                          };
-                        });
-
-                      if (artistRecords.length > 0) {
-                        const { error: insertError } = await supabase
-                          .from('event_artists')
-                          .insert(artistRecords);
-
-                        if (insertError) throw insertError;
-                      }
-
-                      toast.success(tToast('events.artistsUpdated'));
-                      queryClient.invalidateQueries({ queryKey: ['event', id] });
-                      queryClient.invalidateQueries({ queryKey: ['event-artists', id] });
-                    } catch (error) {
-                      await handleError(error, {
-                        title: tToast('events.artistUpdateFailed'),
-                        description: tToast('events.artistUpdateFailedDescription'),
-                        endpoint: 'EventManagement/artists',
-                        method: 'UPDATE',
-                      });
+                      if (insertError) throw insertError;
                     }
-                  }}
-                />
 
-                {/* Undercard Requests - shows artists who signed up via "Looking for Artists" */}
-                {id && <UndercardRequestsList eventId={id} />}
-              </div>
-            </PageErrorBoundary>
-          )}
+                    toast.success(tToast('events.artistsUpdated'));
+                    queryClient.invalidateQueries({ queryKey: ['event', id] });
+                    queryClient.invalidateQueries({ queryKey: ['event-artists', id] });
+                  } catch (error) {
+                    await handleError(error, {
+                      title: tToast('events.artistUpdateFailed'),
+                      description: tToast('events.artistUpdateFailedDescription'),
+                      endpoint: 'EventManagement/artists',
+                      method: 'UPDATE',
+                    });
+                  }
+                }}
+              />
 
-          {activeTab === 'tiers' && id && (
-            <PageErrorBoundary section='Ticket Tiers'>
-              <EventTicketTierManagement eventId={id} />
-            </PageErrorBoundary>
-          )}
+              {/* Undercard Requests - shows artists who signed up via "Looking for Artists" */}
+              {id && <UndercardRequestsList eventId={id} />}
+            </div>
+          </PageErrorBoundary>
+        </FmContentContainer>
+      )}
 
-          {activeTab === 'orders' && id && (
-            <PageErrorBoundary section='Orders'>
-              <EventOrderManagement eventId={id} />
-            </PageErrorBoundary>
-          )}
+      {activeTab === 'tiers' && id && (
+        <FmContentContainer>
+          <PageErrorBoundary section='Ticket Tiers'>
+            <EventTicketTierManagement eventId={id} />
+          </PageErrorBoundary>
+        </FmContentContainer>
+      )}
 
-          {activeTab === 'ticket-status' && id && (
-            <PageErrorBoundary section='Ticket Status'>
-              <EventTicketStatusDashboard eventId={id} />
-            </PageErrorBoundary>
-          )}
+      {activeTab === 'orders' && id && (
+        <FmContentContainer scrollable>
+          <PageErrorBoundary section='Orders'>
+            <EventOrderManagement eventId={id} />
+          </PageErrorBoundary>
+        </FmContentContainer>
+      )}
 
-          {activeTab === 'sales' && id && (
-            <PageErrorBoundary section='Sales Analytics'>
-              <EventAnalytics eventId={id} />
-            </PageErrorBoundary>
-          )}
+      {activeTab === 'ticket-status' && id && (
+        <FmContentContainer>
+          <PageErrorBoundary section='Ticket Status'>
+            <EventTicketStatusDashboard eventId={id} />
+          </PageErrorBoundary>
+        </FmContentContainer>
+      )}
 
-          {activeTab === 'reports' && id && (
-            <PageErrorBoundary section='Reports'>
-              <Reports eventId={id} />
-            </PageErrorBoundary>
-          )}
+      {activeTab === 'sales' && id && (
+        <FmContentContainer>
+          <PageErrorBoundary section='Sales Analytics'>
+            <EventAnalytics eventId={id} />
+          </PageErrorBoundary>
+        </FmContentContainer>
+      )}
 
-          {activeTab === 'tracking' && id && (
-            <PageErrorBoundary section='Tracking Links'>
-              <TrackingLinksManagement eventId={id} />
-            </PageErrorBoundary>
-          )}
+      {activeTab === 'reports' && id && (
+        <FmContentContainer>
+          <PageErrorBoundary section='Reports'>
+            <Reports eventId={id} />
+          </PageErrorBoundary>
+        </FmContentContainer>
+      )}
 
-          {activeTab === 'social' && id && (
-            <PageErrorBoundary section='Social Settings'>
-              <GuestListSettings eventId={id} />
-            </PageErrorBoundary>
-          )}
+      {activeTab === 'tracking' && id && (
+        <FmContentContainer>
+          <PageErrorBoundary section='Tracking Links'>
+            <TrackingLinksManagement eventId={id} />
+          </PageErrorBoundary>
+        </FmContentContainer>
+      )}
 
-          {activeTab === 'ux_display' && (
-            <PageErrorBoundary section='UX Display'>
+      {activeTab === 'social' && id && (
+        <FmContentContainer>
+          <PageErrorBoundary section='Social Settings'>
+            <GuestListSettings eventId={id} />
+          </PageErrorBoundary>
+        </FmContentContainer>
+      )}
+
+      {activeTab === 'ux_display' && (
+        <FmContentContainer>
+          <PageErrorBoundary section='UX Configuration'>
+            <div className='space-y-6'>
+              {/* Homepage Event Card Settings */}
               <FmFormSection
-                title={t('eventManagement.uxDisplaySettings')}
-                description={t('eventManagement.uxDisplayDescription')}
+                title={t('eventManagement.homepageEventCard')}
+                description={t('eventManagement.homepageEventCardDescription')}
                 icon={Palette}
               >
-                <div className='space-y-4'>
-                  <h3 className='text-sm font-semibold text-foreground'>
-                    {t('eventManagement.homepageEventCard')}
-                  </h3>
-                  <p className='text-xs text-muted-foreground'>
-                    {t('eventManagement.homepageEventCardDescription')}
-                  </p>
-
-                  <div className='flex items-center gap-3 p-4 rounded-none border border-border bg-card'>
-                    <FmCommonCheckbox
-                      id='display-subtitle'
-                      checked={displaySubtitle}
-                      onCheckedChange={checked => setDisplaySubtitle(checked)}
-                    />
-                    <div className='flex-1'>
-                      <Label htmlFor='display-subtitle' className='cursor-pointer font-medium'>
-                        {t('eventManagement.displaySubtitle')}
-                      </Label>
-                      <p className='text-xs text-muted-foreground mt-1'>
-                        {t('eventManagement.displaySubtitleDescription')}
-                      </p>
-                    </div>
+                <div className='flex items-center gap-3 p-4 rounded-none border border-border bg-card'>
+                  <Palette className='h-5 w-5 text-fm-gold' />
+                  <div className='flex-1'>
+                    <Label htmlFor='display-subtitle' className='cursor-pointer font-medium'>
+                      {t('eventManagement.displaySubtitle')}
+                    </Label>
+                    <p className='text-xs text-muted-foreground mt-1'>
+                      {t('eventManagement.displaySubtitleDescription')}
+                    </p>
                   </div>
+                  <FmCommonToggle
+                    id='display-subtitle'
+                    label={t('eventManagement.displaySubtitle')}
+                    checked={displaySubtitle}
+                    onCheckedChange={checked => setDisplaySubtitle(checked)}
+                    hideLabel
+                  />
                 </div>
               </FmFormSection>
-            </PageErrorBoundary>
-          )}
 
-          {activeTab === 'admin' && isAdmin && (
-            <PageErrorBoundary section='Admin Controls'>
-              <div className='space-y-6'>
-                {/* Queue Configuration */}
-                {id && <EventQueueConfigForm eventId={id} />}
+              {/* Display Thresholds */}
+              <FmFormSection
+                title={t('eventManagement.displayThresholds')}
+                description={t('eventManagement.displayThresholdsDescription')}
+                icon={BarChart3}
+              >
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                  <FmCommonTextField
+                    label={t('eventManagement.minInterestThreshold')}
+                    type='number'
+                    value={minInterestThreshold.toString()}
+                    onChange={e => setMinInterestThreshold(parseInt(e.target.value) || 0)}
+                    description={t('eventManagement.minInterestThresholdDescription')}
+                    min={0}
+                  />
+                  <FmCommonTextField
+                    label={t('eventManagement.minShareThreshold')}
+                    type='number'
+                    value={minShareThreshold.toString()}
+                    onChange={e => setMinShareThreshold(parseInt(e.target.value) || 0)}
+                    description={t('eventManagement.minShareThresholdDescription')}
+                    min={0}
+                  />
+                </div>
+              </FmFormSection>
+            </div>
+          </PageErrorBoundary>
+        </FmContentContainer>
+      )}
 
-                {/* Delete Event - Danger Zone */}
-                <FmFormSection
-                  title={t('eventManagement.dangerZone')}
-                  description={t('eventManagement.irreversibleActions')}
-                  icon={Trash2}
-                  className='border-fm-danger/30'
-                >
-                  <div className='p-4 bg-fm-danger/10 border border-fm-danger/20'>
-                    <p className='text-sm text-muted-foreground mb-4'>
-                      {t('eventManagement.deleteEventDescription')}
-                    </p>
-                    <FmCommonButton
-                      variant='destructive-outline'
-                      icon={Trash2}
-                      onClick={() => setShowDeleteConfirm(true)}
-                      loading={isDeleting}
-                    >
-                      {isDeleting ? t('buttons.deleting') : t('eventManagement.deleteEvent')}
-                    </FmCommonButton>
-                  </div>
-                </FmFormSection>
-              </div>
-            </PageErrorBoundary>
-          )}
-        </div>
-      </div>
+      {activeTab === 'admin' && isAdmin && (
+        <FmContentContainer>
+          <PageErrorBoundary section='Admin Controls'>
+            <div className='space-y-6'>
+              {/* Queue Configuration */}
+              {id && <EventQueueConfigForm eventId={id} />}
+
+              {/* Delete Event - Danger Zone */}
+              <FmFormSection
+                title={t('eventManagement.dangerZone')}
+                description={t('eventManagement.irreversibleActions')}
+                icon={Trash2}
+                className='border-fm-danger/30'
+              >
+                <div className='p-4 bg-fm-danger/10 border border-fm-danger/20'>
+                  <p className='text-sm text-muted-foreground mb-4'>
+                    {t('eventManagement.deleteEventDescription')}
+                  </p>
+                  <FmCommonButton
+                    variant='destructive-outline'
+                    icon={Trash2}
+                    onClick={() => setShowDeleteConfirm(true)}
+                    loading={isDeleting}
+                  >
+                    {isDeleting ? t('buttons.deleting') : t('eventManagement.deleteEvent')}
+                  </FmCommonButton>
+                </div>
+              </FmFormSection>
+            </div>
+          </PageErrorBoundary>
+        </FmContentContainer>
+      )}
 
       {/* Delete Event Confirmation Dialog */}
       <FmCommonConfirmDialog
@@ -693,7 +744,8 @@ export default function EventManagement() {
         <FmStickyFormFooter
           isDirty={activeTab === 'overview' ? overviewFormState.isDirty : false}
           isSaving={activeTab === 'overview' ? overviewFormState.isSaving : isSaving}
-          onSave={activeTab === 'overview' ? overviewFormState.onSave : handleSaveUXDisplay}
+          onSave={activeTab === 'overview' ? overviewFormState.onSave : handleSaveUXConfig}
+          hasSidebar
         />
       )}
     </SideNavbarLayout>

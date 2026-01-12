@@ -115,7 +115,7 @@ export function FmListSortFilter({
     <div className={cn('flex items-center gap-[10px] flex-wrap', className)}>
       {/* Search Input */}
       {onSearchChange && (
-        <div className='relative'>
+        <div className='relative flex items-center h-8'>
           <Search className='absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground' />
           <Input
             type='text'
@@ -149,6 +149,7 @@ export function FmListSortFilter({
           options={dateRangeOptions}
           placeholder={t('filters.dateRange.label')}
           className={cn(compact ? 'w-[120px]' : 'w-[140px]', 'h-8 text-xs')}
+          containerClassName='!space-y-0'
         />
       )}
 
@@ -160,6 +161,7 @@ export function FmListSortFilter({
           options={sortSelectOptions}
           placeholder={t('labels.sortBy')}
           className={cn(compact ? 'w-[100px]' : 'w-[120px]', 'h-8 text-xs')}
+          containerClassName='!space-y-0'
         />
         {onSortDirectionChange && (
           <button

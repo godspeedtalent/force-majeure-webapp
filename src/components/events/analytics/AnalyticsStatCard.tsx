@@ -43,7 +43,7 @@ export const AnalyticsStatCard = ({
         <Icon className="h-4 w-4 text-muted-foreground" />
       </FmCommonCardHeader>
       <FmCommonCardContent>
-        <div className="text-2xl font-bold">{formatValue()}</div>
+        <div className="text-xl font-bold">{formatValue()}</div>
         {subtitle && (
           <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
         )}

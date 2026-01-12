@@ -106,7 +106,7 @@ export interface Event {
   headliner_id: string;
   no_headliner?: boolean; // When true, all artists are undercard with no featured headliner
   image_url?: string | null;
-  status?: 'draft' | 'published' | 'invisible';
+  status?: 'draft' | 'published' | 'invisible' | 'test';
   is_tba?: boolean;     // TBA (To Be Announced) placeholder event
   is_after_hours?: boolean; // Event has no end time (runs past closing)
   looking_for_undercard?: boolean; // Event is looking for local artists to open
@@ -140,7 +140,7 @@ export interface EventFormData {
   venue_id: string;
   headliner_id: string;
   image_url?: string;
-  status?: 'draft' | 'published';
+  status?: 'draft' | 'published' | 'test';
   is_tba?: boolean;
   is_after_hours?: boolean;
   looking_for_undercard?: boolean;
@@ -156,7 +156,7 @@ export interface TicketTierFormData {
 }
 
 // Utility types
-export type EventStatus = 'draft' | 'published' | 'invisible';
+export type EventStatus = 'draft' | 'published' | 'invisible' | 'test';
 
 export interface EventFilters {
   status?: EventStatus;

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { subDays } from 'date-fns';
-import { Calendar, DollarSign, TrendingUp, Eye, Target, Download, BarChart3 } from 'lucide-react';
+import { Calendar, DollarSign, TrendingUp, Eye, Target, Download, BarChart3, Users } from 'lucide-react';
 import { useEventAnalytics } from './hooks/useEventAnalytics';
 import { AnalyticsStatCard } from './AnalyticsStatCard';
 import { SalesOverTimeChart } from './charts/SalesOverTimeChart';
@@ -43,6 +43,10 @@ export const EventAnalytics = ({ eventId }: EventAnalyticsProps) => {
       [t('analytics.totalPageViews'), analytics.totalViews.toString()],
       [t('analytics.uniqueVisitors'), analytics.uniqueVisitors.toString()],
       [t('analytics.conversionRate'), `${analytics.conversionRate.toFixed(1)}%`],
+      ...(analytics.isRsvpEnabled ? [
+        [t('analytics.totalRsvps'), analytics.rsvpCount.toString()],
+        [t('analytics.rsvpCapacity'), analytics.rsvpCapacity?.toString() || t('analytics.unlimited')],
+      ] : []),
     ];
 
     const csv = csvData.map(row => row.join(',')).join('\n');
@@ -125,6 +129,33 @@ export const EventAnalytics = ({ eventId }: EventAnalyticsProps) => {
             subtitle={t('analytics.viewsToPurchases')}
           />
         </div>
+
+        {/* RSVP Stats - only show if RSVPs are enabled */}
+        {analytics.isRsvpEnabled && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <AnalyticsStatCard
+              title={t('analytics.totalRsvps')}
+              value={analytics.rsvpCount}
+              icon={Users}
+              format="number"
+              subtitle={analytics.rsvpCapacity
+                ? t('analytics.rsvpCapacityOf', { capacity: analytics.rsvpCapacity })
+                : t('analytics.unlimitedCapacity')
+              }
+            />
+            {analytics.rsvpCapacity && (
+              <AnalyticsStatCard
+                title={t('analytics.rsvpUtilization')}
+                value={(analytics.rsvpCount / analytics.rsvpCapacity) * 100}
+                icon={Target}
+                format="percentage"
+                subtitle={t('analytics.spotsRemaining', {
+                  count: Math.max(0, analytics.rsvpCapacity - analytics.rsvpCount)
+                })}
+              />
+            )}
+          </div>
+        )}
 
         {/* Secondary Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

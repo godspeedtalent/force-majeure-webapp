@@ -57,6 +57,7 @@ export interface Order {
   stripe_checkout_session_id?: string | null;
   created_at: string;
   updated_at: string;
+  test_data?: boolean;
   profile?: OrderProfile | null;
   guest?: OrderGuest | null;
   items?: OrderItem[];
@@ -74,6 +75,7 @@ export interface CreateOrderData {
   status?: OrderStatus;
   stripe_payment_intent_id?: string;
   stripe_checkout_session_id?: string;
+  test_data?: boolean;
 }
 
 export interface CreateOrderItemData {
@@ -93,6 +95,7 @@ export interface OrderFilters {
   status?: OrderStatus;
   date_from?: string;
   date_to?: string;
+  test_data?: boolean;
 }
 
 export const orderService = {

@@ -357,6 +357,13 @@
       "last30Days": "过去30天",
       "last90Days": "过去90天"
     },
+    "totalRsvps": "总预约数",
+    "rsvpCapacity": "预约容量",
+    "rsvpCapacityOf": "共{{capacity}}个名额",
+    "unlimitedCapacity": "不限人数",
+    "rsvpUtilization": "预约使用率",
+    "spotsRemaining": "剩余{{count}}个名额",
+    "unlimited": "无限制",
     "tabs": {
       "traffic": "流量",
       "funnel": "转化漏斗",
@@ -402,9 +409,15 @@
     "adminMessagesTitle": "管理员收件箱",
     "errorLogs": "错误日志",
     "errorLogsTitle": "错误监控",
+    "mockData": "测试数据",
+    "mockDataTitle": "模拟订单生成器",
     "collapseGroup": "折叠分组",
     "expandGroup": "展开分组",
     "clickToExpand": "点击展开",
+    "hideTab": "隐藏标签",
+    "showTab": "显示",
+    "showAllTabs": "显示所有隐藏的标签",
+    "hiddenTabs": "隐藏的标签",
     "groups": {
       "organization": "组织",
       "developerTools": "开发者工具",
@@ -1286,11 +1299,11 @@
     "artistsDescription": "管理阵容和日程",
     "social": "社交",
     "socialDescription": "宾客名单和社交设置",
-    "uxDisplay": "界面显示",
-    "uxDisplayDescription": "首页卡片显示设置",
+    "uxDisplay": "界面配置",
+    "uxDisplayDescription": "显示阈值和设置",
     "ticketing": "票务",
-    "ticketTiers": "票种",
-    "ticketTiersDescription": "管理票价和库存",
+    "ticketTiers": "票务管理",
+    "ticketTiersDescription": "管理票组、票种和库存",
     "orders": "订单",
     "ordersDescription": "查看和管理门票订单",
     "ticketStatus": "门票状态",
@@ -1347,12 +1360,18 @@
     "ticketTierManagement": "票种管理",
     "ticketTierDescription": "将票种分组并配置价格",
     "loadingTicketTiers": "加载票种中...",
-    "uxDisplaySettings": "界面显示设置",
-    "uxDisplayDescription": "自定义此活动在首页的显示方式",
+    "uxConfigSettings": "界面配置",
+    "uxConfigDescription": "控制显示阈值和公开设置",
     "homepageEventCard": "首页活动卡片",
     "homepageEventCardDescription": "控制活动卡片在首页的显示方式。",
     "displaySubtitle": "显示副标题",
     "displaySubtitleDescription": "在首页活动卡片上显示副标题",
+    "displayThresholds": "显示阈值",
+    "displayThresholdsDescription": "设置活动页面公开显示指标前的最低数量。",
+    "minInterestThreshold": "关注数阈值",
+    "minInterestThresholdDescription": "公开显示前的最低关注数",
+    "minShareThreshold": "分享数阈值",
+    "minShareThresholdDescription": "公开显示前的最低分享数",
     "dangerZone": "危险区域",
     "irreversibleActions": "不可逆操作",
     "deleteEvent": "删除活动",
@@ -1764,7 +1783,8 @@
   "eventStatus": {
     "draft": "草稿",
     "live": "上线",
-    "hidden": "隐藏"
+    "hidden": "隐藏",
+    "test": "测试"
   },
   "qrScanner": {
     "scanQRCode": "扫描二维码",
@@ -2434,7 +2454,19 @@
     "tiersSaveFailed": "保存票务层级失败：{{error}}",
     "tierDeleted": "层级删除成功",
     "tierDeleteFailed": "删除层级失败：{{error}}",
-    "tierToggleFailed": "切换层级状态失败：{{error}}"
+    "tierToggleFailed": "切换层级状态失败：{{error}}",
+    "rsvpSettings": "预约设置",
+    "rsvpSettingsDescription": "配置此活动的预约功能",
+    "rsvpsAvailable": "开放预约",
+    "rsvpsAvailableDescription": "启用后，用户可以在购票的同时预约参加此活动",
+    "rsvpCapacity": "预约容量",
+    "rsvpCapacityInfo": "设置预约人数上限（可选）",
+    "rsvpCapacityHint": "留空表示不限制预约人数",
+    "currentRsvps": "当前预约数",
+    "rsvpAtCapacity": "活动预约已满",
+    "unlimited": "无限制",
+    "complimentaryTickets": "赠票",
+    "complimentaryTicketsDescription": "向嘉宾、VIP或工作人员发放免费门票"
   },
   "eventForm": {
     "validation": {
@@ -3016,7 +3048,8 @@
     "duplicateGroup": "复制分组",
     "deleteGroup": "删除分组",
     "ticketTiers": "票务层级",
-    "addTierToGroup": "添加层级到 {{groupName}}"
+    "addTierToGroup": "添加层级到 {{groupName}}",
+    "ungroupedNote": "此分组中的门票不会在结账流程中分组显示，它们将作为独立的票种显示。"
   },
   "termsAndConditions": {
     "title": "条款和条件",
@@ -3317,23 +3350,66 @@
     }
   },
   "globalSearch": {
-    "placeholder": "搜索活动、艺术家、场地、用户...",
+    "placeholder": "搜索活动、艺术家、场地、录音...",
     "closeSearch": "关闭搜索",
     "searching": "搜索中...",
     "noResults": "未找到\"{{query}}\"的结果",
     "unknownUser": "未知用户",
     "searchFailed": "搜索失败",
     "searchFailedDescription": "无法搜索数据库资源",
+    "opensInNewTab": "在新标签页中打开",
+    "draftBadge": "草稿",
     "sections": {
       "organizations": "组织",
       "users": "用户",
       "artists": "艺术家",
       "venues": "场地",
-      "events": "活动"
+      "events": "活动",
+      "recordings": "录音"
+    },
+    "contextMenu": {
+      "view": "查看",
+      "manage": "管理",
+      "adminDetails": "管理员详情",
+      "listenOn": "在{{platform}}上收听"
     }
   },
   "databaseTab": {
     "goToManager": "前往数据库管理器"
+  },
+  "mockOrderGenerator": {
+    "selectEvent": "选择测试活动",
+    "selectEventPlaceholder": "选择一个活动...",
+    "noTestEvents": "未找到处于'测试'状态的活动。请先将活动设置为'测试'状态。",
+    "autoLoadedFromPage": "从当前页面自动加载",
+    "refreshEvents": "刷新活动",
+    "configuration": "配置",
+    "orderCount": "订单数量",
+    "userRatio": "注册用户比例",
+    "userRatioHelp": "注册用户与访客订单的百分比",
+    "dateRange": "订单日期范围",
+    "startDate": "开始",
+    "endDate": "结束",
+    "includeProtection": "包含门票保护",
+    "tierSelection": "票级配置",
+    "min": "最小",
+    "max": "最大",
+    "weight": "权重",
+    "generate": "生成模拟订单",
+    "generating": "生成中...",
+    "deleteOrders": "删除 {{count}} 个模拟订单",
+    "deleting": "删除中...",
+    "success": "已创建 {{orders}} 个订单和 {{tickets}} 张门票",
+    "deleteSuccess": "已删除 {{orders}} 个订单和 {{tickets}} 张门票",
+    "resultSuccess": "在 {{time}} 秒内创建了 {{orders}} 个订单和 {{tickets}} 张门票",
+    "resultFailed": "生成失败，共 {{errors}} 个错误",
+    "errors": {
+      "loadEventsFailed": "加载测试活动失败",
+      "noEventSelected": "请选择一个活动",
+      "noTiersSelected": "请至少选择一个票级",
+      "generationFailed": "生成模拟订单失败",
+      "deleteFailed": "删除模拟订单失败"
+    }
   },
   "organizationTab": {
     "goToOrgDashboard": "前往组织仪表板",

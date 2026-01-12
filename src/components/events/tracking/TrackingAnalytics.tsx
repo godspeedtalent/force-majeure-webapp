@@ -90,7 +90,7 @@ export function TrackingAnalytics({ eventId }: TrackingAnalyticsProps) {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">{t('analytics.totalLinks')}</p>
-              <p className="text-2xl font-bold">{analytics.totalLinks}</p>
+              <p className="text-xl font-bold">{analytics.totalLinks}</p>
             </div>
           </div>
         </FmCommonCard>
@@ -102,7 +102,7 @@ export function TrackingAnalytics({ eventId }: TrackingAnalyticsProps) {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">{t('analytics.totalClicks')}</p>
-              <p className="text-2xl font-bold">{analytics.totalClicks}</p>
+              <p className="text-xl font-bold">{analytics.totalClicks}</p>
             </div>
           </div>
         </FmCommonCard>
@@ -114,7 +114,7 @@ export function TrackingAnalytics({ eventId }: TrackingAnalyticsProps) {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">{t('analytics.avgClicksPerLink')}</p>
-              <p className="text-2xl font-bold">{analytics.avgClicksPerLink}</p>
+              <p className="text-xl font-bold">{analytics.avgClicksPerLink}</p>
             </div>
           </div>
         </FmCommonCard>
