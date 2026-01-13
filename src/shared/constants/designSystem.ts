@@ -26,7 +26,7 @@ export const COLORS = {
   MUTED_NAVY: '#545E75', // Info/tertiary - informational states
   CHILI_RED: '#D64933', // Danger - errors, warnings, destructive actions
   DUSTY_SAGE: '#7D9B72', // Success - approve, confirm, success actions
-  DUSTY_PURPLE: '#8E7BAA', // Test mode - test/staging events
+  DUSTY_PURPLE: '#A78BDF', // Test mode - test/staging events
 } as const;
 
 /**

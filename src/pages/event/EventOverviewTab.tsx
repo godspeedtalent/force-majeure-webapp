@@ -175,7 +175,7 @@ export const EventOverviewTab = ({
               value={aboutEvent}
               onChange={e => handleAboutChange(e.target.value)}
               placeholder={t('eventOverview.enterEventDescription')}
-              className='w-full min-h-[120px] p-3 rounded-md border border-input bg-background text-foreground resize-y'
+              className='w-full min-h-[120px] p-3 rounded-none border border-input bg-background text-foreground resize-y'
               rows={5}
             />
           </div>

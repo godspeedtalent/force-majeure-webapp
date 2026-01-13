@@ -115,6 +115,13 @@ export interface Event {
   share_count?: number; // Number of times this event has been shared
   min_interest_count_display?: number; // Minimum interest count to display publicly
   min_share_count_display?: number; // Minimum share count to display publicly
+  display_subtitle?: boolean; // Whether to display subtitle on event cards
+  show_partners?: boolean; // Whether to display partner organizations on the event page
+  show_guest_list?: boolean; // Whether to display guest list section on the event page
+  gallery_id?: string | null; // FK to media_galleries for event images
+  hero_image?: string | null; // Hero image URL
+  hero_image_focal_x?: number | null; // Hero image focal point X (0-100)
+  hero_image_focal_y?: number | null; // Hero image focal point Y (0-100)
   created_at: string;
   updated_at: string;
   venue?: Venue;

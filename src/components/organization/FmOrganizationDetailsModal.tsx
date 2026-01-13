@@ -48,8 +48,13 @@ export const FmOrganizationDetailsModal = ({
   };
 
   const handleManage = () => {
-    if (organization?.id && onManage) {
-      onManage(organization.id);
+    if (organization?.id) {
+      onOpenChange(false);
+      if (onManage) {
+        onManage(organization.id);
+      } else {
+        navigate(`/organizations/${organization.id}/manage`);
+      }
     }
   };
 

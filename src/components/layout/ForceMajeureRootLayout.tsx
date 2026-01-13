@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 
 import { Footer } from '@/components/navigation/Footer';
 import { Navigation } from '@/components/navigation/Navigation';
-import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import { FmBackgroundLayer } from '@/components/common/layout/FmBackgroundLayer';
 
 interface ForceMajeureRootLayoutProps {
   children: ReactNode;
@@ -21,8 +21,7 @@ export const ForceMajeureRootLayout = ({
 
       {/* Main content area with topography background */}
       <div className='flex-1 relative overflow-hidden'>
-        <TopographicBackground opacity={0.35} />
-        <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
+        <FmBackgroundLayer />
 
         {/* Content */}
         <div className='relative pb-20'>{children}</div>

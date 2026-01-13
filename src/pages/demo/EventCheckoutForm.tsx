@@ -173,7 +173,7 @@ export default function EventCheckoutForm({
       checkoutFormSchema.parse(formData);
       setIsFormValid(true);
       setErrors({});
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof z.ZodError) {
         const fieldErrors: Record<string, string> = {};
         error.errors.forEach(err => {

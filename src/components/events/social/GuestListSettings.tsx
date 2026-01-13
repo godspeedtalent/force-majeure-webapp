@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Users, Save } from 'lucide-react';
+import { Users, Save, BarChart3 } from 'lucide-react';
 import { supabase } from '@/shared';
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -35,6 +35,8 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
   const [minPrivate, setMinPrivate] = useState(0);
   const [minPublic, setMinPublic] = useState(0);
   const [showViewCount, setShowViewCount] = useState(true);
+  const [minInterestThreshold, setMinInterestThreshold] = useState(0);
+  const [minShareThreshold, setMinShareThreshold] = useState(0);
 
   // Fetch existing settings
   const { data: settings, isLoading } = useQuery({
@@ -52,13 +54,13 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
     enabled: !!eventId,
   });
 
-  // Fetch event settings for view count
+  // Fetch event settings for view count and display thresholds
   const { data: event } = useQuery({
     queryKey: ['event-social-settings', eventId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('events' as any)
-        .select('show_view_count')
+        .select('show_view_count, min_interest_count_display, min_share_count_display')
         .eq('id', eventId)
         .single();
 
@@ -78,10 +80,12 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
     }
   }, [settings]);
 
-  // Populate view count setting when event loads
+  // Populate view count and display threshold settings when event loads
   useEffect(() => {
     if (event) {
       setShowViewCount((event as any).show_view_count ?? true);
+      setMinInterestThreshold((event as any).min_interest_count_display ?? 0);
+      setMinShareThreshold((event as any).min_share_count_display ?? 0);
     }
   }, [event]);
 
@@ -114,10 +118,14 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
         if (error) throw error;
       }
 
-      // Update event view count setting
+      // Update event view count and display threshold settings
       const { error: eventError } = await supabase
         .from('events' as any)
-        .update({ show_view_count: showViewCount })
+        .update({
+          show_view_count: showViewCount,
+          min_interest_count_display: minInterestThreshold,
+          min_share_count_display: minShareThreshold,
+        })
         .eq('id', eventId);
 
       if (eventError) throw eventError;
@@ -246,6 +254,35 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
             onCheckedChange={setShowViewCount}
             hideLabel
           />
+        </div>
+
+        {/* Display Thresholds Section */}
+        <div className="space-y-4 pt-4 border-t border-border">
+          <div className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5 text-fm-gold" />
+            <h3 className="text-lg font-semibold">{t('eventManagement.displayThresholds')}</h3>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {t('eventManagement.displayThresholdsDescription')}
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FmCommonTextField
+              label={t('eventManagement.minInterestThreshold')}
+              type="number"
+              value={minInterestThreshold.toString()}
+              onChange={(e) => setMinInterestThreshold(parseInt(e.target.value) || 0)}
+              description={t('eventManagement.minInterestThresholdDescription')}
+              min={0}
+            />
+            <FmCommonTextField
+              label={t('eventManagement.minShareThreshold')}
+              type="number"
+              value={minShareThreshold.toString()}
+              onChange={(e) => setMinShareThreshold(parseInt(e.target.value) || 0)}
+              description={t('eventManagement.minShareThresholdDescription')}
+              min={0}
+            />
+          </div>
         </div>
 
         {/* Info Box */}

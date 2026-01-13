@@ -9,8 +9,7 @@ import { useAuth } from '@/features/auth/services/AuthContext';
 import { supabase, logger } from '@/shared';
 import { handleError } from '@/shared/services/errorHandler';
 import { useUserLinkedArtist } from '@/shared/hooks/useUserLinkedArtist';
-import { MobileProfileLayout } from '@/components/profile/MobileProfileLayout';
-import { DesktopProfileLayout } from '@/components/profile/DesktopProfileLayout';
+import { ProfileLayout } from '@/components/profile/ProfileLayout';
 import { UpcomingEvent } from '@/components/profile/types';
 import { FmI18nPages } from '@/components/common/i18n';
 
@@ -182,15 +181,7 @@ const Profile = () => {
 
   return (
     <Layout>
-      {/* Mobile Layout */}
-      <div className='lg:hidden'>
-        <MobileProfileLayout {...layoutProps} />
-      </div>
-
-      {/* Desktop Layout */}
-      <div className='hidden lg:block'>
-        <DesktopProfileLayout {...layoutProps} />
-      </div>
+      <ProfileLayout {...layoutProps} />
     </Layout>
   );
 };

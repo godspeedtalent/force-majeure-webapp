@@ -159,6 +159,12 @@
     "updateFailed": "更新场馆失败",
     "deleteFailed": "删除场馆失败"
   },
+  "organizations": {
+    "updated": "组织更新成功",
+    "deleted": "组织删除成功",
+    "updateFailed": "更新组织失败",
+    "deleteFailed": "删除组织失败"
+  },
   "artists": {
     "updated": "艺术家更新成功",
     "deleted": "艺术家删除成功",

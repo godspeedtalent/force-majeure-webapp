@@ -20,6 +20,8 @@ import { cn } from '@/shared';
 export interface SearchDropdownOption {
   id: string;
   label: string;
+  /** Optional subtitle/footnote shown below the label */
+  subtitle?: string;
   icon?: React.ReactNode;
   data?: unknown;
 }
@@ -236,7 +238,12 @@ export function FmCommonSearchDropdown({
                   className='w-full flex items-center gap-3 px-3 py-2 hover:bg-white/10 transition-colors text-left'
                 >
                   {option.icon}
-                  <span className='text-white font-light'>{option.label}</span>
+                  <div className='flex flex-col min-w-0'>
+                    <span className='text-white font-light truncate'>{option.label}</span>
+                    {option.subtitle && (
+                      <span className='text-white/50 text-xs truncate'>{option.subtitle}</span>
+                    )}
+                  </div>
                 </button>
               ))}
             </div>
@@ -252,7 +259,12 @@ export function FmCommonSearchDropdown({
                 className='w-full flex items-center gap-3 px-3 py-2 hover:bg-white/10 transition-colors text-left'
               >
                 {option.icon}
-                <span className='text-white font-light'>{option.label}</span>
+                <div className='flex flex-col min-w-0'>
+                  <span className='text-white font-light truncate'>{option.label}</span>
+                  {option.subtitle && (
+                    <span className='text-white/50 text-xs truncate'>{option.subtitle}</span>
+                  )}
+                </div>
               </button>
             ))
           )}

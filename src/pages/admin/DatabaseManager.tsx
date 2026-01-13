@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Database, Music } from 'lucide-react';
-import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
+import { SideNavbarLayout } from '@/components/layout/SidebarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { MobileHorizontalTabs, MobileHorizontalTab } from '@/components/mobile';
 import { GenresManagement } from './GenresManagement';

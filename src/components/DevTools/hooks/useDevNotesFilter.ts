@@ -5,19 +5,8 @@ import {
   SortField,
   NOTE_TYPE_CONFIG,
   NOTE_STATUS_INDICATOR_CONFIG,
+  type DevNote,
 } from '../config/devNotesConfig';
-
-interface DevNote {
-  id: string;
-  created_at: string;
-  updated_at: string;
-  author_id: string;
-  author_name: string;
-  message: string;
-  type: NoteType;
-  status: NoteStatus;
-  priority: number;
-}
 
 interface UseDevNotesFilterOptions {
   notes: DevNote[];
@@ -76,12 +65,14 @@ export function useDevNotesFilter({
   const filteredNotes = useMemo(() => {
     // First filter
     const filtered = notes.filter(note => {
-      // Search filter - check message content
-      if (
-        searchQuery &&
-        !note.message.toLowerCase().includes(searchQuery.toLowerCase())
-      ) {
-        return false;
+      // Search filter - check title and message content
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const titleMatch = note.title?.toLowerCase().includes(query);
+        const messageMatch = note.message.toLowerCase().includes(query);
+        if (!titleMatch && !messageMatch) {
+          return false;
+        }
       }
 
       // Type filter - only filter if selections exist

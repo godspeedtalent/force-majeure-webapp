@@ -18,7 +18,7 @@ import {
   SlidersHorizontal,
   Mail,
 } from 'lucide-react';
-import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
+import { SideNavbarLayout } from '@/components/layout/SidebarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { Button } from '@/components/common/shadcn/button';

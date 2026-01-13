@@ -140,7 +140,7 @@ const TicketScanning = () => {
         success: result.success,
         reason: response.reason,
       });
-    } catch (error) {
+    } catch (error: unknown) {
       scanLogger.error('Validation error', {
         error: error instanceof Error ? error.message : 'Unknown',
       });

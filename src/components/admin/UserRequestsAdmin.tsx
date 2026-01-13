@@ -98,9 +98,7 @@ export function UserRequestsAdmin() {
     queryKey: ['admin-user-requests'],
     queryFn: async () => {
       // Fetch requests with user info
-      // Note: user_requests table may not be in generated types yet
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: requestsData, error: requestsError } = await (supabase as any)
+      const { data: requestsData, error: requestsError } = await supabase
         .from('user_requests')
         .select('*')
         .order('created_at', { ascending: false });
@@ -181,8 +179,7 @@ export function UserRequestsAdmin() {
         }
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('user_requests')
         .update({
           status: 'approved',
@@ -222,8 +219,7 @@ export function UserRequestsAdmin() {
     mutationFn: async ({ request, reason }: { request: UserRequest; reason: string }) => {
       if (!currentUser?.id) throw new Error('Not authenticated');
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('user_requests')
         .update({
           status: 'denied',

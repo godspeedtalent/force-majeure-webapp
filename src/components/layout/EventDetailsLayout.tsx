@@ -1,5 +1,5 @@
 import { cn } from '@/shared';
-import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import { FmBackgroundLayer } from '@/components/common/layout/FmBackgroundLayer';
 import { Footer } from '@/components/navigation/Footer';
 
 interface EventDetailsLayoutProps {
@@ -35,8 +35,7 @@ export function EventDetailsLayout({
     <div className={cn('bg-background relative overflow-x-hidden', className)}>
       {/* Global Background Layer - z-0 */}
       <div className='absolute inset-0 pointer-events-none overflow-hidden z-0'>
-        <TopographicBackground opacity={0.35} parallax={false} />
-        <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
+        <FmBackgroundLayer parallax={false} />
       </div>
 
       {/* Fixed action buttons - rendered at root level to avoid stacking context issues */}

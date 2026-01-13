@@ -15,7 +15,7 @@ import {
   Music,
   Image as ImageIcon,
 } from 'lucide-react';
-import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
+import { SideNavbarLayout } from '@/components/layout/SidebarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';

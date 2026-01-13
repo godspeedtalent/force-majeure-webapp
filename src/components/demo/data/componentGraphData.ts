@@ -273,7 +273,7 @@ export const COMPONENT_NODES: ComponentNode[] = [
   },
   {
     id: 'form-section',
-    label: 'FmCommonFormSection',
+    label: 'FmFormSection',
     category: 'Form System',
     x: 2,
     y: 4.8,

@@ -3,6 +3,7 @@ export { FmCommonPriceDisplay } from './FmCommonPriceDisplay';
 export { FmCommonBadgeGroup } from './FmCommonBadgeGroup';
 export { FmCommonInfoCard } from './FmCommonInfoCard';
 export { FmCommonStatCard } from './FmCommonStatCard';
+export { FmStatCard, FmStatGrid } from './FmStatCard';
 export { FmCommonPageHeader } from './FmCommonPageHeader';
 export { FmCommonDetailSection } from './FmCommonDetailSection';
 export { FmTextLink } from './FmTextLink';

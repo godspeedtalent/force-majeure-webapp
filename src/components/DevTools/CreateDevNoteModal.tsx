@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Info, Bug, HelpCircle } from 'lucide-react';
+import type { JSONContent } from '@tiptap/react';
 import {
   Dialog,
   DialogContent,
@@ -13,6 +14,7 @@ import {
   SelectOption,
 } from '@/components/common/forms/FmCommonSelect';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
+import { FmRichTextInput } from '@/components/common/forms/FmRichTextInput';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { supabase, handleError } from '@/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
@@ -40,9 +42,14 @@ export const CreateDevNoteModal = ({
 }: CreateDevNoteModalProps) => {
   const { t } = useTranslation('common');
   const { user, profile } = useAuth();
+  const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
+  const [content, setContent] = useState<JSONContent | null>(null);
   const [type, setType] = useState<NoteType>('TODO');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Check if form has content (either title, message, or rich content)
+  const hasContent = title.trim() || message.trim() || (content && content.content && content.content.length > 0);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -52,7 +59,7 @@ export const CreateDevNoteModal = ({
       // Ctrl+Enter or Cmd+Enter to submit
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
-        if (message.trim() && !isSubmitting) {
+        if (hasContent && !isSubmitting) {
           handleSubmit();
         }
       }
@@ -61,11 +68,11 @@ export const CreateDevNoteModal = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [open, message, isSubmitting]);
+  }, [open, hasContent, isSubmitting]);
 
   const handleSubmit = async () => {
-    if (!message.trim()) {
-      toast.error(t('devTools.notes.enterMessage'));
+    if (!hasContent) {
+      toast.error(t('devTools.notes.enterContent'));
       return;
     }
 
@@ -82,7 +89,9 @@ export const CreateDevNoteModal = ({
       const { error } = await supabase.from('dev_notes').insert({
         author_id: user.id,
         author_name: authorName,
+        title: title.trim() || null,
         message: message.trim(),
+        content: content,
         type,
         status: 'TODO', // Always TODO for new notes
       });
@@ -90,7 +99,9 @@ export const CreateDevNoteModal = ({
       if (error) throw error;
 
       toast.success(t('devTools.notes.createSuccess'));
+      setTitle('');
       setMessage('');
+      setContent(null);
       setType('TODO');
       onOpenChange(false);
       onNoteCreated();
@@ -132,22 +143,34 @@ export const CreateDevNoteModal = ({
         </DialogHeader>
 
         <div className='space-y-4 px-6 py-4 relative z-[5] flex-1 overflow-y-auto min-h-0'>
-          <FmCommonSelect
-            label={t('labels.type')}
-            value={type}
-            onChange={value => setType(value as NoteType)}
-            options={TYPE_OPTIONS}
-            required
-          />
+          <div className='flex gap-4'>
+            <div className='flex-1'>
+              <FmCommonTextField
+                label={t('devTools.notes.titleLabel')}
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                placeholder={t('devTools.notes.titlePlaceholder')}
+              />
+            </div>
+            <div className='w-[140px]'>
+              <FmCommonSelect
+                label={t('labels.type')}
+                value={type}
+                onChange={value => setType(value as NoteType)}
+                options={TYPE_OPTIONS}
+                required
+              />
+            </div>
+          </div>
 
-          <FmCommonTextField
-            label={t('devTools.notes.messageLabel')}
-            value={message}
-            onChange={e => setMessage(e.target.value)}
-            placeholder={t('devTools.notes.messagePlaceholder')}
-            multiline
-            rows={5}
-            required
+          <FmRichTextInput
+            label={t('devTools.notes.contentLabel')}
+            value={content}
+            onChange={setContent}
+            onTextChange={setMessage}
+            placeholder={t('devTools.notes.contentPlaceholder')}
+            minHeight={200}
+            maxHeight={300}
           />
         </div>
 
@@ -185,7 +208,7 @@ export const CreateDevNoteModal = ({
               <FmCommonButton
                 variant='default'
                 onClick={handleSubmit}
-                disabled={isSubmitting || !message.trim()}
+                disabled={isSubmitting || !hasContent}
               >
                 {isSubmitting ? t('devTools.notes.creating') : t('devTools.notes.createButton')}
               </FmCommonButton>

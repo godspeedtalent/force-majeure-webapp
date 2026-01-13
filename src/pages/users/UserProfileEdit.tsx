@@ -15,7 +15,7 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 
-import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
+import { SideNavbarLayout } from '@/components/layout/SidebarLayout';
 import { Layout } from '@/components/layout/Layout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';

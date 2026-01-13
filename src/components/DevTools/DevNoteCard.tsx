@@ -22,26 +22,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/common/shadcn/dropdown-menu';
 import { cn } from '@/shared';
-import { PRIORITY_CONFIG } from './config/devNotesConfig';
-
-type NoteType = 'TODO' | 'INFO' | 'BUG' | 'QUESTION';
-type NoteStatus =
-  | 'TODO'
-  | 'IN_PROGRESS'
-  | 'RESOLVED'
-  | 'ARCHIVED'
-  | 'CANCELLED';
-
-interface DevNote {
-  id: string;
-  type: NoteType;
-  status: NoteStatus;
-  message: string;
-  author_name: string;
-  author_id: string;
-  created_at: string;
-  priority: number;
-}
+import { PRIORITY_CONFIG, type DevNote, type NoteStatus } from './config/devNotesConfig';
 
 interface DevNoteCardProps {
   note: DevNote;
@@ -188,8 +169,15 @@ export const DevNoteCard = ({
                 </DropdownMenu>
               </div>
 
-              {/* Message */}
-              <p className='text-xs text-white leading-snug line-clamp-3 px-2 whitespace-pre-wrap'>
+              {/* Title (if exists) */}
+              {note.title && (
+                <h4 className='text-sm font-medium text-white px-2 line-clamp-1'>
+                  {note.title}
+                </h4>
+              )}
+
+              {/* Message preview */}
+              <p className='text-xs text-white/80 leading-snug line-clamp-2 px-2 whitespace-pre-wrap'>
                 {note.message}
               </p>
             </FmCommonCardContent>

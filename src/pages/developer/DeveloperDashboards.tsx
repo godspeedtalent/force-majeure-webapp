@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { Star, BarChart3, Activity, Users } from 'lucide-react';
-import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
+import { SideNavbarLayout } from '@/components/layout/SidebarLayout';
 import type { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 
 // Dashboard components - lazy loaded internally for code splitting

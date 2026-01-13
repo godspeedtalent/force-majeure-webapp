@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
+import { SideNavbarLayout } from '@/components/layout/SidebarLayout';
 import { FmCommonSideNavGroup, FmCommonSideNavItem } from '@/components/common/navigation/FmCommonSideNav';
 import { MobileHorizontalTabs, MobileHorizontalTab } from '@/components/mobile';
 import {

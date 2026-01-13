@@ -50,6 +50,25 @@ export interface MockOrderConfig {
 
   /** Percentage of test users that should mark interest (0-100) */
   interestRatio?: number;
+
+  /** Number of unique test users to create (must be >= totalOrders) */
+  testUserCount?: number;
+
+  /** Override for ticket protection price in cents */
+  ticketProtectionPriceCents?: number;
+
+  /** Fee overrides for mock data generation (percentages) */
+  feeOverrides?: {
+    sales_tax?: number;
+    processing_fee?: number;
+    platform_fee?: number;
+  };
+
+  /** Whether to randomize order timestamps within the date range */
+  randomizeOrderTimes?: boolean;
+
+  /** Number of ticket groups to generate (each with at least one tier) */
+  ticketGroupCount?: number;
 }
 
 /**

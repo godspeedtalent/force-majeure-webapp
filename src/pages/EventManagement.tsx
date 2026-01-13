@@ -19,9 +19,10 @@ import {
   Images,
   Tag,
   UserCog,
+  Handshake,
 } from 'lucide-react';
 import { supabase } from '@/shared';
-import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
+import { SidebarLayout } from '@/components/layout/SidebarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmBackButton } from '@/components/common/buttons/FmBackButton';
@@ -35,17 +36,17 @@ import Reports from './Reports';
 import { TrackingLinksManagement } from '@/components/events/tracking/TrackingLinksManagement';
 import { EventStatusBadge, PublishEventButton, EventTicketStatusDashboard } from '@/components/events/status';
 import { eventService } from '@/features/events/services/eventService';
+import type { EventStatus } from '@/features/events/types';
 import { GuestListSettings } from '@/components/events/social/GuestListSettings';
 import { EventOverviewForm } from '@/components/events/overview/EventOverviewForm';
 import { EventQueueConfigForm } from '@/components/events/queue';
 import { EventGalleryTab } from '@/components/events/gallery';
 import { TestEventConfigSection } from '@/components/events/admin';
 import { EventPromoCodeManagement } from '@/components/events/promo';
-import { EventStaffingManagement } from '@/components/events/staffing';
+import { EventStaffingManagement, EventPartnerManagement } from '@/components/events/staffing';
 
 import { toast } from 'sonner';
 import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
-import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { Label } from '@/components/common/shadcn/label';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared';
@@ -58,7 +59,7 @@ import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmTabContentHeader } from '@/components/common/headers/FmTabContentHeader';
 import { FmContentContainer } from '@/components/common/layout/FmContentContainer';
 
-type EventTab = 'overview' | 'gallery' | 'artists' | 'tiers' | 'orders' | 'ticket-status' | 'sales' | 'reports' | 'tracking' | 'promo-codes' | 'social' | 'ux_display' | 'staffing' | 'admin' | 'view';
+type EventTab = 'overview' | 'gallery' | 'artists' | 'tiers' | 'orders' | 'ticket-status' | 'sales' | 'reports' | 'tracking' | 'promo-codes' | 'social' | 'ux_display' | 'staffing' | 'partners' | 'admin' | 'view';
 
 export default function EventManagement() {
   const { t } = useTranslation('common');
@@ -71,8 +72,8 @@ export default function EventManagement() {
   const queryClient = useQueryClient();
   const [isDeleting, setIsDeleting] = useState(false);
   const [displaySubtitle, setDisplaySubtitle] = useState<boolean>(true);
-  const [minInterestThreshold, setMinInterestThreshold] = useState<number>(0);
-  const [minShareThreshold, setMinShareThreshold] = useState<number>(0);
+  const [showPartners, setShowPartners] = useState<boolean>(true);
+  const [showGuestList, setShowGuestList] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -144,12 +145,14 @@ export default function EventManagement() {
   // Extract undercard IDs for backwards compatibility
   const undercardArtists = eventArtistsData?.map(item => item.artist_id) || [];
 
-  // Sync UX Configuration state from event data
+  // Sync UX Display state from event data
+  // Note: show_partners and show_guest_list are new columns added via migration
   useEffect(() => {
     if (event) {
-      setDisplaySubtitle((event as any).display_subtitle ?? true);
-      setMinInterestThreshold((event as any).min_interest_count_display ?? 0);
-      setMinShareThreshold((event as any).min_share_count_display ?? 0);
+      setDisplaySubtitle(event.display_subtitle ?? true);
+      // Type assertion needed until Supabase types are regenerated after migration
+      setShowPartners((event as { show_partners?: boolean }).show_partners ?? true);
+      setShowGuestList((event as { show_guest_list?: boolean }).show_guest_list ?? true);
     }
   }, [event]);
 
@@ -272,6 +275,12 @@ export default function EventManagement() {
           icon: UserCog,
           description: t('eventNav.staffingDescription'),
         },
+        {
+          id: 'partners',
+          label: t('eventNav.partners'),
+          icon: Handshake,
+          description: t('eventNav.partnersDescription'),
+        },
       ],
     },
     ...(isAdmin
@@ -309,6 +318,7 @@ export default function EventManagement() {
     { id: 'sales', label: t('eventNav.salesSummary'), icon: DollarSign },
     { id: 'reports', label: t('eventNav.reports'), icon: FileText },
     { id: 'staffing', label: t('eventNav.staffing'), icon: UserCog },
+    { id: 'partners', label: t('eventNav.partners'), icon: Handshake },
     ...(isAdmin ? [{ id: 'admin' as EventTab, label: t('eventNav.adminControls'), icon: Shield }] : []),
   ];
 
@@ -319,7 +329,7 @@ export default function EventManagement() {
     try {
       // Delete ticket tiers first (foreign key constraint)
       const { error: tiersError } = await supabase
-        .from('ticket_tiers' as any)
+        .from('ticket_tiers')
         .delete()
         .eq('event_id', id);
 
@@ -356,9 +366,9 @@ export default function EventManagement() {
         .from('events')
         .update({
           display_subtitle: displaySubtitle,
-          min_interest_count_display: minInterestThreshold,
-          min_share_count_display: minShareThreshold,
-        } as any)
+          show_partners: showPartners,
+          show_guest_list: showGuestList,
+        })
         .eq('id', id!);
 
       if (error) throw error;
@@ -427,10 +437,10 @@ export default function EventManagement() {
   }
 
   // Check if event is in test mode
-  const isTestMode = (event as any)?.status === 'test';
+  const isTestMode = event?.status === 'test';
 
   return (
-    <SideNavbarLayout
+    <SidebarLayout
       navigationGroups={navigationGroups}
       activeItem={activeTab}
       onItemChange={(tab) => {
@@ -469,7 +479,7 @@ export default function EventManagement() {
         title={event.title || ''}
         size="large"
         className="mb-6"
-        centeredBadge={<EventStatusBadge status={(event as any).status || 'draft'} />}
+        centeredBadge={<EventStatusBadge status={(event.status ?? 'draft') as EventStatus} />}
       />
 
       {/* Main Content - Form tabs use READABLE, Data/Analytics tabs use WIDE */}
@@ -494,9 +504,9 @@ export default function EventManagement() {
             <EventGalleryTab
               eventId={id}
               eventTitle={event.title || ''}
-              galleryId={(event as any).gallery_id || null}
-              heroImage={(event as any).hero_image || null}
-              heroImageFocalY={(event as any).hero_image_focal_y ?? null}
+              galleryId={event.gallery_id ?? null}
+              heroImage={event.hero_image ?? null}
+              heroImageFocalY={event.hero_image_focal_y ?? null}
             />
           </PageErrorBoundary>
         </FmContentContainer>
@@ -514,11 +524,11 @@ export default function EventManagement() {
                   setTime: item.set_time,
                   setOrder: item.set_order,
                 })) || []}
-                lookingForUndercard={(event as any).looking_for_undercard ?? false}
+                lookingForUndercard={event.looking_for_undercard ?? false}
                 footerAction={
-                  ((event as any).status === 'draft' || (event as any).status === 'invisible') ? (
+                  (event.status === 'draft' || event.status === 'invisible') ? (
                     <PublishEventButton
-                      currentStatus={(event as any).status || 'draft'}
+                      currentStatus={(event.status ?? 'draft') as EventStatus}
                       onPublish={handlePublishEvent}
                     />
                   ) : undefined
@@ -642,7 +652,7 @@ export default function EventManagement() {
       )}
 
       {activeTab === 'sales' && id && (
-        <FmContentContainer>
+        <FmContentContainer width="WIDE">
           <PageErrorBoundary section='Sales Analytics'>
             <EventAnalytics eventId={id} />
           </PageErrorBoundary>
@@ -711,31 +721,52 @@ export default function EventManagement() {
                 </div>
               </FmFormSection>
 
-              {/* Display Thresholds */}
+              {/* Event Page Sections */}
               <FmFormSection
-                title={t('eventManagement.displayThresholds')}
-                description={t('eventManagement.displayThresholdsDescription')}
-                icon={BarChart3}
+                title={t('eventManagement.eventPageSections')}
+                description={t('eventManagement.eventPageSectionsDescription')}
+                icon={Eye}
               >
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  <FmCommonTextField
-                    label={t('eventManagement.minInterestThreshold')}
-                    type='number'
-                    value={minInterestThreshold.toString()}
-                    onChange={e => setMinInterestThreshold(parseInt(e.target.value) || 0)}
-                    description={t('eventManagement.minInterestThresholdDescription')}
-                    min={0}
-                  />
-                  <FmCommonTextField
-                    label={t('eventManagement.minShareThreshold')}
-                    type='number'
-                    value={minShareThreshold.toString()}
-                    onChange={e => setMinShareThreshold(parseInt(e.target.value) || 0)}
-                    description={t('eventManagement.minShareThresholdDescription')}
-                    min={0}
-                  />
+                <div className='space-y-3'>
+                  <div className='flex items-center gap-3 p-4 rounded-none border border-border bg-card'>
+                    <Handshake className='h-5 w-5 text-fm-gold' />
+                    <div className='flex-1'>
+                      <Label htmlFor='show-partners-ux' className='cursor-pointer font-medium'>
+                        {t('eventManagement.showPartners')}
+                      </Label>
+                      <p className='text-xs text-muted-foreground mt-1'>
+                        {t('eventManagement.showPartnersDescription')}
+                      </p>
+                    </div>
+                    <FmCommonToggle
+                      id='show-partners-ux'
+                      label={t('eventManagement.showPartners')}
+                      checked={showPartners}
+                      onCheckedChange={checked => setShowPartners(checked)}
+                      hideLabel
+                    />
+                  </div>
+                  <div className='flex items-center gap-3 p-4 rounded-none border border-border bg-card'>
+                    <Users className='h-5 w-5 text-fm-gold' />
+                    <div className='flex-1'>
+                      <Label htmlFor='show-guest-list-ux' className='cursor-pointer font-medium'>
+                        {t('eventManagement.showGuestList')}
+                      </Label>
+                      <p className='text-xs text-muted-foreground mt-1'>
+                        {t('eventManagement.showGuestListDescription')}
+                      </p>
+                    </div>
+                    <FmCommonToggle
+                      id='show-guest-list-ux'
+                      label={t('eventManagement.showGuestList')}
+                      checked={showGuestList}
+                      onCheckedChange={checked => setShowGuestList(checked)}
+                      hideLabel
+                    />
+                  </div>
                 </div>
               </FmFormSection>
+
             </div>
           </PageErrorBoundary>
         </FmContentContainer>
@@ -749,6 +780,18 @@ export default function EventManagement() {
         </FmContentContainer>
       )}
 
+      {activeTab === 'partners' && id && (
+        <FmContentContainer>
+          <PageErrorBoundary section='Partners'>
+            <EventPartnerManagement
+              eventId={id}
+              showPartners={showPartners}
+              onShowPartnersChange={setShowPartners}
+            />
+          </PageErrorBoundary>
+        </FmContentContainer>
+      )}
+
       {activeTab === 'admin' && isAdmin && (
         <FmContentContainer>
           <PageErrorBoundary section='Admin Controls'>
@@ -757,8 +800,8 @@ export default function EventManagement() {
               {id && (
                 <TestEventConfigSection
                   eventId={id}
-                  eventStatus={(event as any).status || 'draft'}
-                  isTestEvent={(event as any).test_data || false}
+                  eventStatus={(event.status ?? 'draft') as EventStatus}
+                  isTestEvent={event.test_data ?? false}
                   orderCount={orderCount}
                   onStatusChange={() => {
                     queryClient.invalidateQueries({ queryKey: ['event', id] });
@@ -839,6 +882,6 @@ export default function EventManagement() {
           hasSidebar
         />
       )}
-    </SideNavbarLayout>
+    </SidebarLayout>
   );
 }

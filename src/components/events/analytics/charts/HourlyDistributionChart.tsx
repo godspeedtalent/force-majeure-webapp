@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { FmCommonCard, FmCommonCardContent, FmCommonCardHeader, FmCommonCardTitle } from '@/components/common/display/FmCommonCard';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { COLORS } from '@/shared/constants/designSystem';
 
 interface HourlyDistributionChartProps {
   data: { hour: number; orders: number }[];
@@ -14,36 +15,42 @@ export const HourlyDistributionChart = ({ data }: HourlyDistributionChartProps) 
   }));
 
   return (
-    <FmCommonCard>
+    <FmCommonCard variant="subtle">
       <FmCommonCardHeader>
-        <FmCommonCardTitle>{t('analytics.salesByHour')}</FmCommonCardTitle>
+        <FmCommonCardTitle className="text-sm uppercase tracking-wider text-muted-foreground">
+          {t('analytics.salesByHour')}
+        </FmCommonCardTitle>
       </FmCommonCardHeader>
       <FmCommonCardContent>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
             <XAxis
               dataKey="hour"
-              className="text-xs"
-              stroke="hsl(var(--muted-foreground))"
+              tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+              stroke="rgba(255,255,255,0.2)"
+              tickLine={false}
               interval={2}
             />
             <YAxis
-              className="text-xs"
-              stroke="hsl(var(--muted-foreground))"
+              tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+              stroke="rgba(255,255,255,0.2)"
+              tickLine={false}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: 'hsl(var(--background))',
-                border: '1px solid hsl(var(--border))',
-                borderRadius: '6px',
+                backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: 0,
               }}
-              formatter={(value: any) => [value, t('analytics.orders')]}
+              itemStyle={{ color: 'white' }}
+              labelStyle={{ color: 'rgba(255, 255, 255, 0.7)' }}
+              formatter={(value: number) => [value, t('analytics.orders')]}
             />
             <Bar
               dataKey="orders"
-              fill="hsl(var(--primary))"
-              radius={[8, 8, 0, 0]}
+              fill={COLORS.DUSTY_GOLD}
+              radius={0}
             />
           </BarChart>
         </ResponsiveContainer>

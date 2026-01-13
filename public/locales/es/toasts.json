@@ -159,6 +159,12 @@
     "updateFailed": "Error al actualizar el local",
     "deleteFailed": "Error al eliminar el local"
   },
+  "organizations": {
+    "updated": "Organización actualizada exitosamente",
+    "deleted": "Organización eliminada exitosamente",
+    "updateFailed": "Error al actualizar la organización",
+    "deleteFailed": "Error al eliminar la organización"
+  },
   "artists": {
     "updated": "Artista actualizado exitosamente",
     "deleted": "Artista eliminado exitosamente",

@@ -47,6 +47,7 @@ const VenueDetails = lazy(() => import('./pages/venues/VenueDetails'));
 const VenueManagement = lazy(() => import('./pages/venues/VenueManagement'));
 const ArtistDetails = lazy(() => import('./pages/artists/ArtistDetails'));
 const ArtistManagement = lazy(() => import('./pages/artists/ArtistManagement'));
+const OrganizationManagement = lazy(() => import('./pages/organization/OrganizationManagement'));
 const RecordingDetails = lazy(() => import('./pages/recordings/RecordingDetails'));
 
 // Lazy load user pages
@@ -411,6 +412,18 @@ const AppRoutes = () => {
           <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
             <Suspense fallback={<LazyLoadFallback />}>
               <ArtistManagement />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Organization Management Routes - Protected by admin/developer roles */}
+      <Route
+        path='/organizations/:id/manage'
+        element={
+          <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <OrganizationManagement />
             </Suspense>
           </ProtectedRoute>
         }

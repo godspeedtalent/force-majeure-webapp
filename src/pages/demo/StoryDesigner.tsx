@@ -95,7 +95,7 @@ export default function StoryDesigner() {
     try {
       const result = await createStoryTemplate(storyData);
       setPreviewUrl(result.dataUrl);
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Failed to generate story preview', {
         error: error instanceof Error ? error.message : 'Unknown',
         source: 'StoryDesigner.generatePreview',

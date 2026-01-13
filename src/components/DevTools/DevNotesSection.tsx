@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus, Search, ArrowUpDown, Filter, X } from 'lucide-react';
+import type { JSONContent } from '@tiptap/react';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { CreateDevNoteModal } from './CreateDevNoteModal';
 import { DevNoteCard } from './DevNoteCard';
@@ -17,6 +18,7 @@ import {
   type NoteType,
   type NoteStatus,
   type SortField,
+  type DevNote,
 } from './config/devNotesConfig';
 import { Input } from '@/components/common/shadcn/input';
 import { Separator } from '@/components/common/shadcn/separator';
@@ -33,6 +35,8 @@ import {
   SelectValue,
 } from '@/components/common/shadcn/select';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
+import { FmRichTextInput } from '@/components/common/forms/FmRichTextInput';
 import {
   FmMultiCheckboxInput,
   FmMultiCheckboxOption,
@@ -40,18 +44,6 @@ import {
 import { ScrollArea } from '@/components/common/shadcn/scroll-area';
 import { cn, useModalState } from '@/shared';
 import * as React from 'react';
-
-interface DevNote {
-  id: string;
-  created_at: string;
-  updated_at: string;
-  author_id: string;
-  author_name: string;
-  message: string;
-  type: NoteType;
-  status: NoteStatus;
-  priority: number;
-}
 
 export const DevNotesSection = () => {
   const { t } = useTranslation('common');
@@ -65,16 +57,16 @@ export const DevNotesSection = () => {
   const [filterOpen, setFilterOpen] = useState(false);
 
   // Editing state for expanded note
+  const [editedTitle, setEditedTitle] = useState('');
   const [editedMessage, setEditedMessage] = useState('');
+  const [editedContent, setEditedContent] = useState<JSONContent | null>(null);
   const [editedStatus, setEditedStatus] = useState<NoteStatus>('TODO');
   const [editedType, setEditedType] = useState<NoteType>('TODO');
   const [editedPriority, setEditedPriority] = useState<number>(3);
-  const [isEditingMessage, setIsEditingMessage] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Use actions hook for CRUD operations
-  const { isLoading, loadNotes, updateStatus, updateType, updatePriority, updateMessage, deleteNote } =
+  const { isLoading, loadNotes, updateStatus, updateNote, deleteNote } =
     useDevNotesActions();
 
   // Use filter hook
@@ -138,7 +130,9 @@ export const DevNotesSection = () => {
   // Initialize editing state when expanding a note
   useEffect(() => {
     if (expandedNote) {
+      setEditedTitle(expandedNote.title || '');
       setEditedMessage(expandedNote.message);
+      setEditedContent(expandedNote.content);
       setEditedStatus(expandedNote.status);
       setEditedType(expandedNote.type);
       setEditedPriority(expandedNote.priority || 3);
@@ -150,26 +144,35 @@ export const DevNotesSection = () => {
   const handleSaveChanges = async () => {
     if (!expandedNote || !hasUnsavedChanges) return;
 
-    const promises = [];
+    // Build updates object for batch update
+    const updates: Partial<Pick<DevNote, 'title' | 'content' | 'message' | 'type' | 'status' | 'priority'>> = {};
+
+    if (editedTitle !== (expandedNote.title || '')) {
+      updates.title = editedTitle || null;
+    }
 
     if (editedMessage !== expandedNote.message) {
-      promises.push(updateMessage(expandedNote.id, editedMessage));
+      updates.message = editedMessage;
+    }
+
+    if (JSON.stringify(editedContent) !== JSON.stringify(expandedNote.content)) {
+      updates.content = editedContent;
     }
 
     if (editedStatus !== expandedNote.status) {
-      promises.push(updateStatus(expandedNote.id, editedStatus));
+      updates.status = editedStatus;
     }
 
     if (editedType !== expandedNote.type) {
-      promises.push(updateType(expandedNote.id, editedType));
+      updates.type = editedType;
     }
 
     if (editedPriority !== expandedNote.priority) {
-      promises.push(updatePriority(expandedNote.id, editedPriority));
+      updates.priority = editedPriority;
     }
 
-    if (promises.length > 0) {
-      await Promise.all(promises);
+    if (Object.keys(updates).length > 0) {
+      await updateNote(expandedNote.id, updates);
       await handleLoadNotes();
       setExpandedNote(null);
       setHasUnsavedChanges(false);
@@ -178,33 +181,22 @@ export const DevNotesSection = () => {
 
   const handleCancelChanges = () => {
     setExpandedNote(null);
-    setIsEditingMessage(false);
     setHasUnsavedChanges(false);
   };
 
-  const handleMessageClick = () => {
-    if (expandedNote && canEditNote(expandedNote)) {
-      setIsEditingMessage(true);
-      setTimeout(() => textareaRef.current?.focus(), 0);
-    }
-  };
-
-  const handleMessageChange = (value: string) => {
-    setEditedMessage(value);
+  const handleTitleChange = (value: string) => {
+    setEditedTitle(value);
     setHasUnsavedChanges(true);
   };
 
-  const handleMessageKeyDown = (
-    e: React.KeyboardEvent<HTMLTextAreaElement>
-  ) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      setIsEditingMessage(false);
-    }
+  const handleContentChange = (content: JSONContent) => {
+    setEditedContent(content);
+    setHasUnsavedChanges(true);
   };
 
-  const handleMessageBlur = () => {
-    setIsEditingMessage(false);
+  const handleTextChange = (text: string) => {
+    setEditedMessage(text);
+    // Note: hasUnsavedChanges is set by handleContentChange
   };
 
   const handleStatusChange = (value: NoteStatus) => {
@@ -570,29 +562,48 @@ export const DevNotesSection = () => {
               </button>
             </div>
 
-            {/* Message - Editable (takes remaining space) */}
-            {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-            <div
-              className={cn(
-                'flex-1 p-[20px] transition-colors overflow-auto',
-                canEditNote(expandedNote) && 'cursor-text'
-              )}
-              onClick={handleMessageClick}
-            >
-              {isEditingMessage ? (
-                <textarea
-                  ref={textareaRef}
-                  value={editedMessage}
-                  onChange={e => handleMessageChange(e.target.value)}
-                  onKeyDown={handleMessageKeyDown}
-                  onBlur={handleMessageBlur}
-                  className='w-full h-full bg-transparent text-white text-base leading-relaxed outline-none resize-none'
-                  style={{ fontFamily: 'inherit' }}
+            {/* Title and Content - Editable (takes remaining space) */}
+            <div className='flex-1 p-[20px] transition-colors overflow-auto space-y-4'>
+              {/* Title Field */}
+              {canEditNote(expandedNote) ? (
+                <FmCommonTextField
+                  label={t('devTools.notes.titleLabel')}
+                  value={editedTitle}
+                  onChange={e => handleTitleChange(e.target.value)}
+                  placeholder={t('devTools.notes.titlePlaceholder')}
+                  className='text-xl font-medium'
                 />
               ) : (
-                <p className='text-white text-base leading-relaxed whitespace-pre-wrap'>
-                  {editedMessage || <span className='text-muted-foreground italic'>{t('devNotes.clickToEdit')}</span>}
-                </p>
+                expandedNote.title && (
+                  <div>
+                    <span className='text-xs uppercase tracking-wider text-muted-foreground'>
+                      {t('devTools.notes.titleLabel')}
+                    </span>
+                    <h2 className='text-xl font-medium text-white mt-1'>{expandedNote.title}</h2>
+                  </div>
+                )
+              )}
+
+              {/* Rich Text Content */}
+              {canEditNote(expandedNote) ? (
+                <FmRichTextInput
+                  label={t('devTools.notes.contentLabel')}
+                  value={editedContent}
+                  onChange={handleContentChange}
+                  onTextChange={handleTextChange}
+                  placeholder={t('devTools.notes.contentPlaceholder')}
+                  minHeight={300}
+                  maxHeight={500}
+                />
+              ) : (
+                <div>
+                  <span className='text-xs uppercase tracking-wider text-muted-foreground'>
+                    {t('devTools.notes.contentLabel')}
+                  </span>
+                  <div className='mt-2 prose prose-invert prose-sm max-w-none'>
+                    {editedMessage || <span className='text-muted-foreground italic'>{t('devNotes.noContent')}</span>}
+                  </div>
+                </div>
               )}
             </div>
 

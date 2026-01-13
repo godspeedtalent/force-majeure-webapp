@@ -3,7 +3,7 @@ import { cn } from '@/shared';
 import { useIsMobile } from '@/shared';
 import { Footer } from '@/components/navigation/Footer';
 import { Navigation } from '@/components/navigation/Navigation';
-import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import { FmBackgroundLayer } from '@/components/common/layout/FmBackgroundLayer';
 import { FmBackButton } from '@/components/common/buttons/FmBackButton';
 
 interface LayoutProps {
@@ -49,12 +49,7 @@ export const Layout = ({
             : undefined
         }
       >
-        {!hideBackground && (
-          <>
-            <TopographicBackground opacity={0.35} />
-            <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
-          </>
-        )}
+        {!hideBackground && <FmBackgroundLayer />}
         <div className='relative'>
           {showBackButton && (
             <FmBackButton

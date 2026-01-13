@@ -3,7 +3,7 @@ import { cn } from '@/shared';
 import { useIsMobile } from '@/shared';
 import { Navigation } from '@/components/navigation/Navigation';
 import { Footer } from '@/components/navigation/Footer';
-import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import { FmBackgroundLayer } from '@/components/common/layout/FmBackgroundLayer';
 import {
   FmCommonSideNav,
   FmCommonSideNavGroup,
@@ -13,7 +13,7 @@ import { FmBackButton } from '@/components/common/buttons/FmBackButton';
 import { FmContentContainer } from '@/components/common/layout/FmContentContainer';
 import type { ContentWidth } from '@/shared/constants/designSystem';
 
-interface SideNavbarLayoutProps<T extends string> {
+interface SidebarLayoutProps<T extends string> {
   children: ReactNode;
   /** Navigation groups for the sidebar */
   navigationGroups: FmCommonSideNavGroup<T>[];
@@ -54,7 +54,7 @@ interface SideNavbarLayoutProps<T extends string> {
 }
 
 /**
- * SideNavbarLayout - Layout for pages with a collapsible sidebar navigation
+ * SidebarLayout - Layout for pages with a collapsible sidebar navigation
  *
  * Features:
  * - Top navigation bar
@@ -65,7 +65,7 @@ interface SideNavbarLayoutProps<T extends string> {
  *
  * Use this for admin panels, management pages, or any page that needs persistent sidebar navigation.
  */
-export const SideNavbarLayout = <T extends string>({
+export const SidebarLayout = <T extends string>({
   children,
   navigationGroups,
   activeItem,
@@ -83,7 +83,7 @@ export const SideNavbarLayout = <T extends string>({
   contentWidth,
   contentScrollable = false,
   rootClassName = '',
-}: SideNavbarLayoutProps<T>) => {
+}: SidebarLayoutProps<T>) => {
   const isMobile = useIsMobile();
 
   return (
@@ -116,7 +116,7 @@ export const SideNavbarLayout = <T extends string>({
             className
           )}
         >
-          <TopographicBackground opacity={backgroundOpacity} />
+          <FmBackgroundLayer opacity={backgroundOpacity} showGradient={false} />
           <div
             className={cn(
               'relative z-10 p-6 pb-16', // pb-16 accounts for fixed footer height
@@ -159,3 +159,6 @@ export const SideNavbarLayout = <T extends string>({
     </div>
   );
 };
+
+/** @deprecated Use SidebarLayout instead */
+export const SideNavbarLayout = SidebarLayout;

@@ -45,6 +45,24 @@ function useSidebar() {
   return context;
 }
 
+/**
+ * Helper to read sidebar state from cookie
+ */
+function getSidebarStateFromCookie(): boolean | null {
+  try {
+    const cookies = document.cookie.split(';');
+    for (const cookie of cookies) {
+      const [name, value] = cookie.trim().split('=');
+      if (name === SIDEBAR_COOKIE_NAME) {
+        return value === 'true';
+      }
+    }
+  } catch {
+    // Ignore cookie read errors (SSR, etc.)
+  }
+  return null;
+}
+
 const SidebarProvider = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'> & {
@@ -70,7 +88,11 @@ const SidebarProvider = React.forwardRef<
 
     // This is the internal state of the sidebar.
     // We use openProp and setOpenProp for control from outside the component.
-    const [_open, _setOpen] = React.useState(defaultOpen);
+    // Initialize from cookie if available, otherwise use defaultOpen.
+    const [_open, _setOpen] = React.useState(() => {
+      const cookieState = getSidebarStateFromCookie();
+      return cookieState !== null ? cookieState : defaultOpen;
+    });
     const open = openProp ?? _open;
     const setOpen = React.useCallback(
       (value: boolean | ((value: boolean) => boolean)) => {
@@ -393,7 +415,9 @@ const SidebarContent = React.forwardRef<
       ref={ref}
       data-sidebar='content'
       className={cn(
-        'flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden',
+        'flex min-h-0 flex-1 flex-col gap-2 overflow-auto',
+        // Allow vertical scroll in collapsed mode, hide horizontal overflow
+        'group-data-[collapsible=icon]:overflow-y-auto group-data-[collapsible=icon]:overflow-x-hidden',
         className
       )}
       {...props}

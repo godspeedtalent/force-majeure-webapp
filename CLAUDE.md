@@ -156,7 +156,7 @@ export default function MyPage() {
 #### Available Layouts
 
 - **`Layout`**: Base layout with navigation, topography, and footer. Use this for most pages.
-- **`SideNavbarLayout`**: Layout with side navigation for multi-section pages (e.g., event management).
+- **`SidebarLayout`**: Layout with side navigation for multi-section pages (e.g., event management).
 - **`SplitPageLayout`**: Two-column layout for forms or split content.
 - **`SinglePageLayout`**: Simplified layout for focused single-page content.
 - **`ForceMajeureRootLayout`**: Root-level layout wrapper (rarely used directly).

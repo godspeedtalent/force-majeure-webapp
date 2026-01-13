@@ -1,5 +1,4 @@
 export { FmCommonTextField } from './FmCommonTextField';
-export { FmCommonFormSection } from './FmCommonFormSection';
 export { FmFormSection } from './FmFormSection';
 // FmFormSectionHeader moved to display/FmSectionHeader - re-export for backwards compatibility
 export { FmFormSectionHeader, FmSectionHeader } from '@/components/common/display/FmSectionHeader';
@@ -17,4 +16,8 @@ export {
 } from './FmFormFieldGroup';
 export { FmCommonSwitch } from './FmCommonSwitch';
 export { FmCommonLabel } from './FmCommonLabel';
+export { FmRichTextEditor } from './FmRichTextEditor';
+export { FmRichTextInput } from './FmRichTextInput';
+export { FmCommonSlider } from './FmCommonSlider';
 export type { FmFormFieldGroupProps } from './FmFormFieldGroup';
+export type { FmCommonSliderProps } from './FmCommonSlider';

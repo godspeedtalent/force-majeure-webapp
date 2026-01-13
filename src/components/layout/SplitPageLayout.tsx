@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 
 import { Footer } from '@/components/navigation/Footer';
 import { Navigation } from '@/components/navigation/Navigation';
-import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import { FmBackgroundLayer } from '@/components/common/layout/FmBackgroundLayer';
 
 interface SplitPageLayoutProps {
   left: ReactNode;
@@ -30,12 +30,7 @@ export const SplitPageLayout = ({
       <div className='flex-1 flex min-h-[calc(100vh-160px)]'>
         {/* Left Panel */}
         <div className={`${leftWidthClass} relative overflow-hidden`}>
-          {leftDecor && (
-            <>
-              <TopographicBackground opacity={0.35} />
-              <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
-            </>
-          )}
+          {leftDecor && <FmBackgroundLayer />}
           {/* Content (capped width) */}
           <div className='relative h-full'>
             <div className='mx-auto w-full max-w-[500px] h-full'>{left}</div>

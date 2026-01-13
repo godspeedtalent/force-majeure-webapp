@@ -13,7 +13,7 @@
 import { useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
+import { SideNavbarLayout } from '@/components/layout/SidebarLayout';
 import { MobileHorizontalTabs } from '@/components/mobile';
 import { Sliders, Ticket, Images, FileSpreadsheet } from 'lucide-react';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';

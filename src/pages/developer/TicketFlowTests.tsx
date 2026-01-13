@@ -10,7 +10,7 @@ import {
   Send,
 } from 'lucide-react';
 
-import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
+import { SideNavbarLayout } from '@/components/layout/SidebarLayout';
 import { MobileHorizontalTabs } from '@/components/mobile';
 import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { Badge } from '@/components/common/shadcn/badge';

@@ -223,7 +223,7 @@ const Index = () => {
         if (transformedUpcoming.length === 0 && transformedPast.length > 0) {
           setShowPastEvents(true);
         }
-      } catch (error) {
+      } catch (error: unknown) {
         await handleFetchError('in initialization', error);
       } finally {
         setLoading(false);

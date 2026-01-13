@@ -10,7 +10,7 @@
  * - Supports forwardRef for scroll-to-section behavior
  *
  * **See also:**
- * - `FmCommonFormSection` - For structured layout with grids, icons, and required indicators
+ * - `FmFormSection` - For card-wrapped sections with icons and styled headers
  */
 
 import * as React from 'react';

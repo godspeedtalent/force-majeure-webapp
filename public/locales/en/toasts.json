@@ -160,6 +160,12 @@
     "updateFailed": "Failed to update venue",
     "deleteFailed": "Failed to delete venue"
   },
+  "organizations": {
+    "updated": "Organization updated successfully",
+    "deleted": "Organization deleted successfully",
+    "updateFailed": "Failed to update organization",
+    "deleteFailed": "Failed to delete organization"
+  },
   "artists": {
     "updated": "Artist updated successfully",
     "deleted": "Artist deleted successfully",

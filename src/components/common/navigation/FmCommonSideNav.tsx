@@ -196,11 +196,15 @@ export function FmCommonSideNav<T extends string = string>({
       className={cn('border-sidebar-border bg-sidebar relative', className)}
       collapsible='icon'
     >
-      {/* Toggle Button - floating, positioned on right edge when expanded */}
+      {/* Toggle Button - positioned differently based on sidebar state */}
+      {/* When expanded: floating in top-right corner inside sidebar */}
+      {/* When collapsed: hanging tab outside on the right edge of the sidebar */}
       <div
         className={cn(
-          'absolute z-20',
-          open ? 'top-2 right-2' : 'top-2 left-1/2 -translate-x-1/2'
+          'z-30 transition-all duration-300',
+          open
+            ? 'absolute top-2 right-2'
+            : 'absolute top-4 -right-3'
         )}
       >
         <SidebarTrigger
@@ -209,12 +213,19 @@ export function FmCommonSideNav<T extends string = string>({
             'hover:bg-fm-gold/20 hover:scale-105 active:scale-95',
             'hover:shadow-[0_0_16px_rgba(212,175,55,0.3)]',
             '[&>svg]:transition-colors [&>svg]:duration-300',
-            '[&:hover>svg]:text-fm-gold'
+            '[&:hover>svg]:text-fm-gold',
+            // When collapsed: style as hanging tab
+            !open && [
+              'bg-sidebar border border-sidebar-border border-l-0',
+              'rounded-none rounded-r-sm',
+              'shadow-md',
+            ]
           )}
         />
       </div>
 
-      <SidebarContent className='pt-12'>
+      {/* pb-14 accounts for fixed footer height (h-10 + buffer) */}
+      <SidebarContent className='pt-12 pb-14'>
         {/* Navigation Groups */}
         {groups.map((group, groupIndex) => {
           const groupLabel = group.label || `group-${groupIndex}`;

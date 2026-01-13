@@ -1,4 +1,5 @@
 import { CheckCircle2, Info, Bug, HelpCircle } from 'lucide-react';
+import type { JSONContent } from '@tiptap/react';
 
 export type NoteType = 'TODO' | 'INFO' | 'BUG' | 'QUESTION';
 export type NoteStatus =
@@ -9,6 +10,26 @@ export type NoteStatus =
   | 'CANCELLED';
 
 export type SortField = 'created_at' | 'type' | 'status' | 'priority';
+
+/**
+ * DevNote interface with title and rich text content support
+ */
+export interface DevNote {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  author_id: string;
+  author_name: string;
+  /** Legacy plain text message (kept for backward compatibility) */
+  message: string;
+  /** Optional note title */
+  title: string | null;
+  /** Rich text content in TipTap JSON format */
+  content: JSONContent | null;
+  type: NoteType;
+  status: NoteStatus;
+  priority: number;
+}
 
 /**
  * Configuration for note types with their associated icons and colors

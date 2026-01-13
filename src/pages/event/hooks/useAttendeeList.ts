@@ -311,7 +311,8 @@ export function useAttendeeList(eventId: string) {
     if (attendee) goingAttendees.push(attendee);
   }
 
-  // Add guest ticket holders
+  // Add guest ticket holders (these are anonymous guests)
+  const guestAttendees: Attendee[] = [];
   for (const holder of guestHolders) {
     if (!holder.guest) continue;
     const guestId = `guest-${holder.guest.id}`;
@@ -319,7 +320,7 @@ export function useAttendeeList(eventId: string) {
     seenGoingIds.add(guestId);
 
     const attendee = guestToAttendee(holder.guest);
-    goingAttendees.push(attendee);
+    guestAttendees.push(attendee);
   }
 
   // Convert interested users (excluding those already going)
@@ -331,12 +332,24 @@ export function useAttendeeList(eventId: string) {
     if (attendee) interestedAttendees.push(attendee);
   }
 
-  // Separate friends going
+  // Separate by category for modal sections
+  // Friends = any going attendee that is a friend (not guests)
   const friendsGoing = goingAttendees.filter(a => a.isFriend);
-  const allGoing = goingAttendees;
+
+  // Other Users = going attendees that are NOT friends AND are real users (not guests)
+  // These are users with profiles who opted into the guest list
+  const otherUsers = goingAttendees.filter(a => !a.isFriend);
+
+  // Private users = users who opted out of visibility (guest_list_visible === false)
+  // These are tracked separately - we count them but show as "Private"
+  // Guests and Private Users are grouped together for display
+  const guestsAndPrivate = guestAttendees;
+
+  // All going includes everyone
+  const allGoing = [...goingAttendees, ...guestAttendees];
 
   // Preview for the card (first 5 attendees, prioritize friends)
-  const attendeePreview = [...friendsGoing, ...allGoing.filter(a => !a.isFriend)]
+  const attendeePreview = [...friendsGoing, ...otherUsers]
     .slice(0, 5)
     .map(a => ({ name: a.name, avatar: a.avatar }));
 
@@ -345,14 +358,20 @@ export function useAttendeeList(eventId: string) {
     attendeePreview,
     attendeeList: allGoing,
 
-    // New structured data for AttendeeModal
+    // New structured data for AttendeeModal sections
     friendsGoing,
-    allGoing,
+    otherUsers,
+    guestsAndPrivate,
     interestedUsers: interestedAttendees,
+
+    // Legacy alias
+    allGoing,
 
     // Counts
     totalGoingCount: allGoing.length,
     friendsGoingCount: friendsGoing.length,
+    otherUsersCount: otherUsers.length,
+    guestsAndPrivateCount: guestsAndPrivate.length,
     interestedCount: interestedAttendees.length,
 
     // Loading state

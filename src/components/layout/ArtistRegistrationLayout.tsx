@@ -7,7 +7,7 @@
 
 import { ReactNode } from 'react';
 import { Navigation } from '@/components/navigation/Navigation';
-import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
+import { FmBackgroundLayer } from '@/components/common/layout/FmBackgroundLayer';
 
 interface ArtistRegistrationLayoutProps {
   children: ReactNode;
@@ -18,7 +18,7 @@ export const ArtistRegistrationLayout = ({ children }: ArtistRegistrationLayoutP
     <div className='h-screen bg-background flex flex-col relative'>
       {/* Topography Background */}
       <div className='fixed inset-0 z-0'>
-        <TopographicBackground opacity={0.35} />
+        <FmBackgroundLayer showGradient={false} />
       </div>
 
       {/* Navigation */}

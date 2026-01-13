@@ -60,7 +60,13 @@ export const useEventStaff = (eventId: string | undefined) => {
         .eq('event_id', eventId)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        // If table doesn't exist yet, return empty array
+        if (error.code === '42P01' || error.message?.includes('does not exist')) {
+          return [];
+        }
+        throw error;
+      }
       return (data || []) as unknown as EventStaffWithDetails[];
     },
     enabled: !!eventId,

@@ -51,7 +51,7 @@ export const AdminFeesSection = () => {
   const fetchFees = async () => {
     try {
       // Get 'all' environment dynamically
-      const { data: allEnvData, error: allEnvError } = await (supabase as any)
+      const { data: allEnvData, error: allEnvError } = await supabase
         .from('environments')
         .select('id')
         .eq('name', 'all')
@@ -131,7 +131,7 @@ export const AdminFeesSection = () => {
           return Promise.resolve();
         }
 
-        return (supabase as any)
+        return supabase
           .from('ticketing_fees')
           .update({
             fee_type: feeData.type,

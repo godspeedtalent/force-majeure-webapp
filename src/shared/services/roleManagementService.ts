@@ -11,6 +11,26 @@ const roleLogger = logger.createNamespace('RoleManagement');
  */
 export class RoleManagementService {
   /**
+   * Get role ID by name (private helper to reduce duplication)
+   * @param roleName - The name of the role
+   * @returns The role ID or null if not found
+   */
+  private static async getRoleIdByName(roleName: string): Promise<string | null> {
+    const { data: roleData, error: roleError } = await supabase
+      .from('roles')
+      .select('id')
+      .eq('name', roleName)
+      .single();
+
+    if (roleError) {
+      roleLogger.error('Failed to fetch role', { roleName, error: roleError });
+      return null;
+    }
+
+    return roleData?.id ?? null;
+  }
+
+  /**
    * Add a role to a user
    * @param userId - The user's ID
    * @param roleName - The name of the role to add
@@ -20,36 +40,22 @@ export class RoleManagementService {
     try {
       roleLogger.debug('Adding role to user', { userId, roleName });
 
-      // Get the role_id for the selected role name
-      const { data: roleData, error: roleError } = await supabase
-        .from('roles')
-        .select('id')
-        .eq('name', roleName)
-        .single();
-
-      if (roleError) {
-        roleLogger.error('Failed to fetch role', {
-          roleName,
-          error: roleError,
-        });
-        throw roleError;
-      }
-
-      if (!roleData) {
+      const roleId = await this.getRoleIdByName(roleName);
+      if (!roleId) {
         throw new Error(`Role "${roleName}" not found`);
       }
 
       // Insert the user_role relationship (upsert to handle duplicates gracefully)
       const payload = {
         user_id: userId,
-        role_id: roleData.id,
+        role_id: roleId,
       };
 
       const { error: insertError } = await supabase
         .from('user_roles')
-        .upsert([payload] as any, { 
+        .upsert([payload], {
           onConflict: 'user_id,role_id',
-          ignoreDuplicates: true 
+          ignoreDuplicates: true
         });
 
       if (insertError) {
@@ -86,22 +92,8 @@ export class RoleManagementService {
     try {
       roleLogger.debug('Removing role from user', { userId, roleName });
 
-      // Get the role_id for the selected role name
-      const { data: roleData, error: roleError } = await supabase
-        .from('roles')
-        .select('id')
-        .eq('name', roleName)
-        .single();
-
-      if (roleError) {
-        roleLogger.error('Failed to fetch role', {
-          roleName,
-          error: roleError,
-        });
-        throw roleError;
-      }
-
-      if (!roleData) {
+      const roleId = await this.getRoleIdByName(roleName);
+      if (!roleId) {
         throw new Error(`Role "${roleName}" not found`);
       }
 
@@ -110,7 +102,7 @@ export class RoleManagementService {
         .from('user_roles')
         .delete()
         .eq('user_id', userId)
-        .eq('role_id', roleData.id);
+        .eq('role_id', roleId);
 
       if (deleteError) {
         roleLogger.error('Failed to remove role from user', {
@@ -136,14 +128,8 @@ export class RoleManagementService {
    */
   static async hasRole(userId: string, roleName: string): Promise<boolean> {
     try {
-      // Get the role_id for the role name
-      const { data: roleData, error: roleError } = await supabase
-        .from('roles')
-        .select('id')
-        .eq('name', roleName)
-        .single();
-
-      if (roleError || !roleData) {
+      const roleId = await this.getRoleIdByName(roleName);
+      if (!roleId) {
         return false;
       }
 
@@ -152,7 +138,7 @@ export class RoleManagementService {
         .from('user_roles')
         .select('id')
         .eq('user_id', userId)
-        .eq('role_id', roleData.id)
+        .eq('role_id', roleId)
         .maybeSingle();
 
       if (error) {
