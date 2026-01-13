@@ -43,4 +43,6 @@ export interface EventDetailsRecord {
   heroImage: string;
   description: string | null;
   status: EventStatus;
+  /** Whether this event uses RSVP instead of ticketing */
+  isFreeEvent: boolean;
 }

@@ -11,7 +11,6 @@ import { useEventTicketTiers } from './hooks/useEventTicketTiers';
 import { useEventRsvpSettings } from '@/features/events/hooks/useEventRsvpSettings';
 import { CompTicketManager } from '@/features/events/components/CompTicketManager';
 import type { TicketGroup } from './ticket-group-manager/types';
-import { cn } from '@/shared';
 
 interface EventTicketTierManagementProps {
   eventId: string;
@@ -26,7 +25,6 @@ export const EventTicketTierManagement = ({ eventId }: EventTicketTierManagement
   const {
     isRsvpEnabled,
     rsvpCapacity,
-    rsvpCount,
     isLoading: isRsvpLoading,
     isSaving: isRsvpSaving,
     toggleRsvpEnabled,
@@ -112,46 +110,21 @@ export const EventTicketTierManagement = ({ eventId }: EventTicketTierManagement
                 <span>{t('ticketing.rsvpCapacityInfo')}</span>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground uppercase tracking-wider">
-                    {t('ticketing.rsvpCapacity')}
-                  </Label>
-                  <FmCommonTextField
-                    value={localCapacity}
-                    onChange={handleCapacityChange}
-                    onBlur={handleCapacityBlur}
-                    placeholder={t('ticketing.unlimited')}
-                    type="number"
-                    min={1}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {t('ticketing.rsvpCapacityHint')}
-                  </p>
-                </div>
-
-                {/* Current RSVP Count */}
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground uppercase tracking-wider">
-                    {t('ticketing.currentRsvps')}
-                  </Label>
-                  <div className={cn(
-                    'h-10 px-3 flex items-center border border-border bg-background/50',
-                    'text-sm font-medium'
-                  )}>
-                    <span className="text-fm-gold">{rsvpCount}</span>
-                    {rsvpCapacity && (
-                      <span className="text-muted-foreground ml-1">
-                        / {rsvpCapacity}
-                      </span>
-                    )}
-                  </div>
-                  {rsvpCapacity && rsvpCount >= rsvpCapacity && (
-                    <p className="text-xs text-fm-danger">
-                      {t('ticketing.rsvpAtCapacity')}
-                    </p>
-                  )}
-                </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground uppercase tracking-wider">
+                  {t('ticketing.rsvpCapacity')}
+                </Label>
+                <FmCommonTextField
+                  value={localCapacity}
+                  onChange={handleCapacityChange}
+                  onBlur={handleCapacityBlur}
+                  placeholder={t('ticketing.unlimited')}
+                  type="number"
+                  min={1}
+                />
+                <p className="text-xs text-muted-foreground">
+                  {t('ticketing.rsvpCapacityHint')}
+                </p>
               </div>
             </div>
           )}

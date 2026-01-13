@@ -4,6 +4,7 @@ import { Button } from '@/components/common/shadcn/button';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/common/shadcn/table';
+import { FmCommonEmailField, isValidEmail } from '@/components/common/forms/FmCommonEmailField';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/shared';
 import { toast } from 'sonner';
@@ -38,6 +39,7 @@ export const ReportRecipientsManager = ({ configId }: ReportRecipientsManagerPro
   const addRecipientMutation = useMutation({
     mutationFn: async () => {
       if (!newEmail) throw new Error('Email is required');
+      if (!isValidEmail(newEmail)) throw new Error('Invalid email format');
 
       const { error } = await supabase
         .from('report_recipients' as any)
@@ -81,13 +83,13 @@ export const ReportRecipientsManager = ({ configId }: ReportRecipientsManagerPro
   return (
     <div className="space-y-4">
       <div className="flex gap-2">
-        <div className="flex-1 space-y-2">
-          <Label>{t('labels.email')}</Label>
-          <Input
-            type="email"
+        <div className="flex-1">
+          <FmCommonEmailField
+            label={t('labels.email')}
             placeholder={t('placeholders.email')}
             value={newEmail}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewEmail(e.target.value)}
+            onChange={setNewEmail}
+            validateOnBlur
           />
         </div>
         <div className="flex-1 space-y-2">

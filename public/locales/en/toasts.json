@@ -120,7 +120,10 @@
     "artistUpdateFailed": "Failed to update artists",
     "artistUpdateFailedDescription": "Could not save artist changes",
     "rsvpSettingsUpdated": "RSVP settings updated",
-    "rsvpSettingsUpdateFailed": "Failed to update RSVP settings"
+    "rsvpSettingsUpdateFailed": "Failed to update RSVP settings",
+    "updateStatusFailed": "Failed to update event status",
+    "mockDataImportFailed": "Failed to import mock data",
+    "mockDataPurgeFailed": "Failed to purge test data"
   },
   "validation": {
     "stageNameRequired": "Please enter your stage name",
@@ -255,7 +258,9 @@
     "success": "Upload Successful"
   },
   "tracking": {
-    "linkCopied": "Link copied to clipboard"
+    "linkCopied": "Link copied to clipboard",
+    "qrDownloaded": "QR code downloaded",
+    "qrCopied": "QR code copied to clipboard"
   },
   "queue": {
     "loadFailed": "Failed to load queue configuration",

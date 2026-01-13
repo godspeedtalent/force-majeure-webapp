@@ -49,6 +49,8 @@ interface SideNavbarLayoutProps<T extends string> {
   contentWidth?: ContentWidth;
   /** Enable horizontal scrolling when contentWidth is set (default: false) */
   contentScrollable?: boolean;
+  /** Optional additional classes for the root layout container (e.g., 'test-mode') */
+  rootClassName?: string;
 }
 
 /**
@@ -80,11 +82,12 @@ export const SideNavbarLayout = <T extends string>({
   backButtonActions,
   contentWidth,
   contentScrollable = false,
+  rootClassName = '',
 }: SideNavbarLayoutProps<T>) => {
   const isMobile = useIsMobile();
 
   return (
-    <div className='h-screen bg-background flex flex-col overflow-hidden'>
+    <div className={cn('h-screen bg-background flex flex-col overflow-hidden', rootClassName)}>
       {/* Fixed Navigation */}
       <Navigation />
 
@@ -114,7 +117,6 @@ export const SideNavbarLayout = <T extends string>({
           )}
         >
           <TopographicBackground opacity={backgroundOpacity} />
-          <div className='absolute inset-0 bg-gradient-monochrome opacity-10 pointer-events-none' />
           <div
             className={cn(
               'relative z-10 p-6 pb-16', // pb-16 accounts for fixed footer height

@@ -10,7 +10,7 @@ export interface Attendee {
   avatar: string;
   avatarUrl?: string | null;
   isFriend: boolean;
-  type: 'ticket_holder' | 'rsvp' | 'interested';
+  type: 'ticket_holder' | 'rsvp' | 'interested' | 'guest';
 }
 
 interface ProfileData {
@@ -19,6 +19,12 @@ interface ProfileData {
   full_name: string | null;
   avatar_url: string | null;
   guest_list_visible: boolean | null;
+}
+
+interface GuestData {
+  id: string;
+  full_name: string | null;
+  email: string | null;
 }
 
 /**
@@ -57,6 +63,23 @@ function profileToAttendee(
     avatarUrl: profile?.avatar_url,
     isFriend: friendIds.includes(userId),
     type,
+  };
+}
+
+/**
+ * Convert guest data to Attendee format
+ */
+function guestToAttendee(guest: GuestData): Attendee {
+  const displayName = guest.full_name || 'Guest';
+
+  return {
+    id: guest.id,
+    userId: `guest-${guest.id}`, // Prefix to distinguish from real user IDs
+    name: displayName,
+    avatar: getInitials(displayName),
+    avatarUrl: null,
+    isFriend: false, // Guests can't be friends
+    type: 'guest',
   };
 }
 
@@ -191,6 +214,51 @@ export function useAttendeeList(eventId: string) {
     staleTime: 1000 * 60 * 5,
   });
 
+  // Fetch guest ticket holders (completed orders with guest_id)
+  const { data: guestHolders = [], isLoading: loadingGuests } = useQuery({
+    queryKey: ['event-attendees-guests', eventId],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase
+          .from('orders')
+          .select(`
+            guest_id,
+            guests!orders_guest_id_fkey (
+              id,
+              full_name,
+              email
+            )
+          `)
+          .eq('event_id', eventId)
+          .eq('status', 'completed')
+          .not('guest_id', 'is', null);
+
+        if (error) throw error;
+
+        // Deduplicate by guest_id (a guest might have multiple orders)
+        const seen = new Set<string>();
+        return (data || [])
+          .filter(order => {
+            if (!order.guest_id || seen.has(order.guest_id)) return false;
+            seen.add(order.guest_id);
+            return true;
+          })
+          .map(order => ({
+            guest: order.guests as unknown as GuestData | null,
+          }))
+          .filter(holder => holder.guest !== null);
+      } catch (error) {
+        logger.error('Failed to fetch guest ticket holders', {
+          error: error instanceof Error ? error.message : 'Unknown',
+          source: 'useAttendeeList.guestHolders',
+          event_id: eventId,
+        });
+        return [];
+      }
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+
   // Fetch user's friends (rave family connections)
   const { data: friendIds = [] } = useQuery({
     queryKey: ['user-friends', user?.id],
@@ -243,6 +311,17 @@ export function useAttendeeList(eventId: string) {
     if (attendee) goingAttendees.push(attendee);
   }
 
+  // Add guest ticket holders
+  for (const holder of guestHolders) {
+    if (!holder.guest) continue;
+    const guestId = `guest-${holder.guest.id}`;
+    if (seenGoingIds.has(guestId)) continue;
+    seenGoingIds.add(guestId);
+
+    const attendee = guestToAttendee(holder.guest);
+    goingAttendees.push(attendee);
+  }
+
   // Convert interested users (excluding those already going)
   const interestedAttendees: Attendee[] = [];
   for (const holder of interestedHolders) {
@@ -277,6 +356,6 @@ export function useAttendeeList(eventId: string) {
     interestedCount: interestedAttendees.length,
 
     // Loading state
-    isLoading: loadingTickets || loadingRsvps || loadingInterested,
+    isLoading: loadingTickets || loadingRsvps || loadingInterested || loadingGuests,
   };
 }

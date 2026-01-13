@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Plus, Copy, Trash2, Ticket, Info } from 'lucide-react';
+import { Plus, Copy, Trash2, Ticket } from 'lucide-react';
 import { FmCommonCard, FmCommonCardHeader } from '@/components/common/display/FmCommonCard';
 import { Badge } from '@/components/common/shadcn/badge';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -61,45 +61,61 @@ export function GroupDetailView({
             <div className='flex items-start gap-3 flex-1'>
               <div className='flex-1 space-y-3'>
                 <div className='flex items-center gap-2'>
-                  <FmCommonTextField
-                    value={group.name}
-                    onChange={e => onUpdateGroup({ name: e.target.value })}
-                    className='font-semibold text-lg bg-background/50'
-                    placeholder={t('ticketGroupManager.groupNamePlaceholder')}
-                  />
-                  <Select
-                    value={group.color}
-                    onValueChange={value => onUpdateGroup({ color: value })}
-                  >
-                    <SelectTrigger className='w-32'>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {GROUP_COLORS.map(color => (
-                        <SelectItem key={color.value} value={color.value}>
-                          <div className='flex items-center gap-2'>
-                            <div
-                              className={cn(
-                                'w-4 h-4 rounded-full',
-                                color.value
-                              )}
-                            />
-                            {color.name}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {isNoGroup ? (
+                    // Ungrouped: Display name as static text (non-editable)
+                    <div className='font-semibold text-lg px-3 py-2 text-muted-foreground'>
+                      {group.name}
+                    </div>
+                  ) : (
+                    <FmCommonTextField
+                      value={group.name}
+                      onChange={e => onUpdateGroup({ name: e.target.value })}
+                      className='font-semibold text-lg bg-background/50'
+                      placeholder={t('ticketGroupManager.groupNamePlaceholder')}
+                    />
+                  )}
+                  {!isNoGroup && (
+                    <Select
+                      value={group.color}
+                      onValueChange={value => onUpdateGroup({ color: value })}
+                    >
+                      <SelectTrigger className='w-32'>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {GROUP_COLORS.map(color => (
+                          <SelectItem key={color.value} value={color.value}>
+                            <div className='flex items-center gap-2'>
+                              <div
+                                className={cn(
+                                  'w-4 h-4 rounded-full',
+                                  color.value
+                                )}
+                              />
+                              {color.name}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
 
-                <FmCommonTextField
-                  value={group.description}
-                  onChange={e =>
-                    onUpdateGroup({ description: e.target.value })
-                  }
-                  className='text-sm bg-background/50'
-                  placeholder={t('ticketGroupManager.groupDescriptionPlaceholder')}
-                />
+                {isNoGroup ? (
+                  // Ungrouped: Display description as static text (non-editable)
+                  <div className='text-sm px-3 py-2 text-muted-foreground'>
+                    {group.description || t('ticketGroupManager.ungroupedNote')}
+                  </div>
+                ) : (
+                  <FmCommonTextField
+                    value={group.description}
+                    onChange={e =>
+                      onUpdateGroup({ description: e.target.value })
+                    }
+                    className='text-sm bg-background/50'
+                    placeholder={t('ticketGroupManager.groupDescriptionPlaceholder')}
+                  />
+                )}
 
                 <div className='flex items-center gap-4 text-sm'>
                   <Badge variant='outline'>
@@ -116,34 +132,29 @@ export function GroupDetailView({
                     {formatPrice(getTotalRevenueInGroup(group))} {t('ticketGroupManager.revenue')}
                   </Badge>
                 </div>
-
-                {/* Info note for Ungrouped tickets */}
-                {isNoGroup && (
-                  <div className='flex items-start gap-2 p-3 bg-muted/50 rounded-md text-sm text-muted-foreground'>
-                    <Info className='h-4 w-4 mt-0.5 flex-shrink-0' />
-                    <span>{t('ticketGroupManager.ungroupedNote')}</span>
-                  </div>
-                )}
               </div>
             </div>
 
-            <div className='flex items-center gap-1'>
-              <FmCommonIconButton
-                icon={Copy}
-                variant='secondary'
-                size='sm'
-                onClick={onDuplicateGroup}
-                tooltip={t('ticketGroupManager.duplicateGroup')}
-              />
-              <FmCommonIconButton
-                icon={Trash2}
-                variant='destructive'
-                size='sm'
-                onClick={onDeleteGroup}
-                disabled={isOnlyGroup || isNoGroup}
-                tooltip={t('ticketGroupManager.deleteGroup')}
-              />
-            </div>
+            {/* Action buttons - hide for Ungrouped group */}
+            {!isNoGroup && (
+              <div className='flex items-center gap-1'>
+                <FmCommonIconButton
+                  icon={Copy}
+                  variant='secondary'
+                  size='sm'
+                  onClick={onDuplicateGroup}
+                  tooltip={t('ticketGroupManager.duplicateGroup')}
+                />
+                <FmCommonIconButton
+                  icon={Trash2}
+                  variant='destructive'
+                  size='sm'
+                  onClick={onDeleteGroup}
+                  disabled={isOnlyGroup}
+                  tooltip={t('ticketGroupManager.deleteGroup')}
+                />
+              </div>
+            )}
           </div>
         </FmCommonCardHeader>
       </FmCommonCard>

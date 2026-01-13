@@ -6,7 +6,7 @@ import { ArrowLeft, CheckCircle } from 'lucide-react';
 import { ForceMajeureRootLayout } from '@/components/layout/ForceMajeureRootLayout';
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
+import { FmCommonEmailField } from '@/components/common/forms/FmCommonEmailField';
 import {
   FmCommonCard,
   FmCommonCardContent,
@@ -93,14 +93,14 @@ const ForgotPassword = () => {
 
           <FmCommonCardContent>
             <form onSubmit={handleSubmit} className='space-y-6'>
-              <FmCommonTextField
+              <FmCommonEmailField
                 label={t('auth.emailLabel')}
                 id='reset-email'
-                type='email'
                 placeholder={t('auth.forgotPassword.emailPlaceholder')}
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={setEmail}
                 required
+                validateOnBlur
               />
 
               <FmCommonButton

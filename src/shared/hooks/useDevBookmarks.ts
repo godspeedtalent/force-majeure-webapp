@@ -14,12 +14,17 @@ export interface DevBookmark {
   user_id: string;
   path: string;
   label: string;
+  icon?: string | null;
+  icon_color?: string | null;
   created_at: string;
   updated_at: string;
 }
 
-type DevBookmarkInsert = Pick<DevBookmark, 'path' | 'label'>;
-type DevBookmarkUpdate = Pick<DevBookmark, 'id' | 'label'>;
+type DevBookmarkInsert = Pick<DevBookmark, 'path' | 'label'> & {
+  icon?: string | null;
+  icon_color?: string | null;
+};
+type DevBookmarkUpdate = Partial<Pick<DevBookmark, 'label' | 'icon' | 'icon_color'>> & { id: string };
 
 const QUERY_KEY = ['dev-bookmarks'];
 
@@ -64,7 +69,7 @@ export function useDevBookmarks() {
 
   // Add bookmark mutation
   const addMutation = useMutation({
-    mutationFn: async ({ path, label }: DevBookmarkInsert): Promise<DevBookmark> => {
+    mutationFn: async ({ path, label, icon, icon_color }: DevBookmarkInsert): Promise<DevBookmark> => {
       if (!user?.id) {
         throw new Error('User not authenticated');
       }
@@ -75,6 +80,8 @@ export function useDevBookmarks() {
           user_id: user.id,
           path,
           label,
+          icon: icon || null,
+          icon_color: icon_color || null,
         })
         .select()
         .single();
@@ -122,12 +129,18 @@ export function useDevBookmarks() {
     },
   });
 
-  // Update bookmark label mutation
+  // Update bookmark mutation
   const updateMutation = useMutation({
-    mutationFn: async ({ id, label }: DevBookmarkUpdate): Promise<DevBookmark> => {
+    mutationFn: async ({ id, label, icon, icon_color }: DevBookmarkUpdate): Promise<DevBookmark> => {
+      // Build update object with only provided fields
+      const updateData: Record<string, string | null | undefined> = {};
+      if (label !== undefined) updateData.label = label;
+      if (icon !== undefined) updateData.icon = icon;
+      if (icon_color !== undefined) updateData.icon_color = icon_color;
+
       // Note: Table dev_bookmarks will be created by migration
       const { data, error } = await devBookmarksTable()
-        .update({ label })
+        .update(updateData)
         .eq('id', id)
         .select()
         .single();
@@ -148,8 +161,8 @@ export function useDevBookmarks() {
   });
 
   const addBookmark = useCallback(
-    (path: string, label: string) => {
-      return addMutation.mutateAsync({ path, label });
+    (path: string, label: string, icon?: string | null, icon_color?: string | null) => {
+      return addMutation.mutateAsync({ path, label, icon, icon_color });
     },
     [addMutation]
   );
@@ -164,6 +177,13 @@ export function useDevBookmarks() {
   const updateBookmarkLabel = useCallback(
     (id: string, label: string) => {
       return updateMutation.mutateAsync({ id, label });
+    },
+    [updateMutation]
+  );
+
+  const updateBookmark = useCallback(
+    (id: string, updates: { label?: string; icon?: string | null; icon_color?: string | null }) => {
+      return updateMutation.mutateAsync({ id, ...updates });
     },
     [updateMutation]
   );
@@ -210,6 +230,7 @@ export function useDevBookmarks() {
       isBookmarked,
       getBookmarkByPath,
       updateBookmarkLabel,
+      updateBookmark,
       clearBookmarks,
       isAdding: addMutation.isPending,
       isRemoving: removeMutation.isPending,
@@ -223,6 +244,7 @@ export function useDevBookmarks() {
       isBookmarked,
       getBookmarkByPath,
       updateBookmarkLabel,
+      updateBookmark,
       clearBookmarks,
       addMutation.isPending,
       removeMutation.isPending,

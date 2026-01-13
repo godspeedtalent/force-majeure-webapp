@@ -7,6 +7,7 @@ import { Layout } from '@/components/layout/Layout';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { FmI18nPages } from '@/components/common/i18n';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
+import { FmCommonEmailField, isValidEmail } from '@/components/common/forms/FmCommonEmailField';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/shared';
@@ -27,6 +28,11 @@ export default function Contact() {
 
     if (!formData.name || !formData.email || !formData.subject || !formData.message) {
       toast.error(t('contact.form.requiredFields'));
+      return;
+    }
+
+    if (!isValidEmail(formData.email)) {
+      toast.error(tCommon('validation.invalidEmail'));
       return;
     }
 
@@ -79,13 +85,13 @@ export default function Contact() {
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder={t('contact.form.namePlaceholder')}
             />
-            <FmCommonTextField
+            <FmCommonEmailField
               label={tCommon('labels.email')}
               required
-              type='email'
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(email) => setFormData({ ...formData, email })}
               placeholder={t('contact.form.emailPlaceholder')}
+              validateOnBlur
             />
           </div>
 

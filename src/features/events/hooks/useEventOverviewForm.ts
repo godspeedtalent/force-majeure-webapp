@@ -78,6 +78,8 @@ export interface UseEventOverviewFormReturn {
   handleSave: () => Promise<void>;
   triggerAutoSave: () => void;
   handleHeroImageUpload: (publicUrl: string) => Promise<void>;
+  /** Reset form to initial values (undo all changes) */
+  resetForm: () => void;
   // Validation
   canSave: boolean;
   // Derived values
@@ -379,6 +381,25 @@ export function useEventOverviewForm({
     [eventDate]
   );
 
+  // Reset form to initial values
+  const resetForm = useCallback(() => {
+    if (initialValuesRef.current) {
+      const initial = initialValuesRef.current;
+      setHeadlinerId(initial.headlinerId);
+      setVenueId(initial.venueId);
+      setEventDate(initial.eventDate);
+      setEndTime(initial.endTime);
+      setIsAfterHours(initial.isAfterHours);
+      setHeroImage(initial.heroImage);
+      setHeroImageFocalY(initial.heroImageFocalY);
+      setCustomTitle(initial.customTitle);
+      setEventSubtitle(initial.eventSubtitle);
+      setAboutEvent(initial.aboutEvent);
+      setDisplaySubtitle(initial.displaySubtitle);
+      setShowVenueMap(initial.showVenueMap);
+    }
+  }, []);
+
   // Combined form state for convenience
   const formState: EventOverviewFormState = {
     headlinerId,
@@ -414,6 +435,7 @@ export function useEventOverviewForm({
     handleSave,
     triggerAutoSave,
     handleHeroImageUpload,
+    resetForm,
     canSave,
     formattedStartTime,
     getOverviewData,

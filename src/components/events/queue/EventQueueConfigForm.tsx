@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Timer, Users, Clock, Info, RotateCcw } from 'lucide-react';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
@@ -24,11 +24,20 @@ import {
 } from '@/services/queueConfigurationService';
 import { useCheckoutTimerDefault } from '@/hooks/useAppSettings';
 
-interface EventQueueConfigFormProps {
-  eventId: string;
+interface FormState {
+  isDirty: boolean;
+  isSaving: boolean;
+  onSave: () => void;
+  onUndo: () => void;
 }
 
-export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => {
+interface EventQueueConfigFormProps {
+  eventId: string;
+  /** Callback when form state changes (for floating save footer integration) */
+  onFormStateChange?: (state: FormState) => void;
+}
+
+export const EventQueueConfigForm = ({ eventId, onFormStateChange }: EventQueueConfigFormProps) => {
   const { t } = useTranslation('common');
   const { t: tToast } = useTranslation('toasts');
   const [config, setConfig] = useState<QueueConfiguration | null>(null);
@@ -42,8 +51,24 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
   const [checkoutTimeoutMinutes, setCheckoutTimeoutMinutes] = useState('');
   const [sessionTimeoutMinutes, setSessionTimeoutMinutes] = useState('30');
 
+  // Track original values for dirty detection
+  const originalValuesRef = useRef<{
+    enableQueue: boolean;
+    maxConcurrentUsers: string;
+    checkoutTimeoutMinutes: string;
+    sessionTimeoutMinutes: string;
+  } | null>(null);
+
   // Get global default for display
   const { data: globalDefaultMinutes } = useCheckoutTimerDefault();
+
+  // Calculate if form is dirty
+  const isDirty = originalValuesRef.current !== null && (
+    enableQueue !== originalValuesRef.current.enableQueue ||
+    maxConcurrentUsers !== originalValuesRef.current.maxConcurrentUsers ||
+    checkoutTimeoutMinutes !== originalValuesRef.current.checkoutTimeoutMinutes ||
+    sessionTimeoutMinutes !== originalValuesRef.current.sessionTimeoutMinutes
+  );
 
   // Fetch existing configuration
   useEffect(() => {
@@ -54,16 +79,24 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
         setConfig(data);
 
         // Populate form with existing values
-        setEnableQueue(data.enable_queue);
-        setMaxConcurrentUsers(data.max_concurrent_users.toString());
+        const enableQueueValue = data.enable_queue;
+        const maxConcurrentUsersValue = data.max_concurrent_users.toString();
         // Only set if it's not the default (i.e., there's a custom config)
-        if (data.id) {
-          setCheckoutTimeoutMinutes(data.checkout_timeout_minutes.toString());
-        } else {
-          // No custom config - leave empty to use global default
-          setCheckoutTimeoutMinutes('');
-        }
-        setSessionTimeoutMinutes(data.session_timeout_minutes.toString());
+        const checkoutTimeoutValue = data.id ? data.checkout_timeout_minutes.toString() : '';
+        const sessionTimeoutValue = data.session_timeout_minutes.toString();
+
+        setEnableQueue(enableQueueValue);
+        setMaxConcurrentUsers(maxConcurrentUsersValue);
+        setCheckoutTimeoutMinutes(checkoutTimeoutValue);
+        setSessionTimeoutMinutes(sessionTimeoutValue);
+
+        // Store original values for dirty detection
+        originalValuesRef.current = {
+          enableQueue: enableQueueValue,
+          maxConcurrentUsers: maxConcurrentUsersValue,
+          checkoutTimeoutMinutes: checkoutTimeoutValue,
+          sessionTimeoutMinutes: sessionTimeoutValue,
+        };
       } catch (error) {
         logger.error('Failed to load queue configuration', {
           error: error instanceof Error ? error.message : 'Unknown',
@@ -76,11 +109,11 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
     };
 
     loadConfig();
-  }, [eventId]);
+  }, [eventId, tToast]);
 
   const hasCustomConfig = config?.id !== '';
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     setIsSaving(true);
     try {
       const checkoutMinutes = checkoutTimeoutMinutes
@@ -97,6 +130,14 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
 
       toast.success(tToast('queue.saved'));
 
+      // Update original values to mark form as clean
+      originalValuesRef.current = {
+        enableQueue,
+        maxConcurrentUsers,
+        checkoutTimeoutMinutes,
+        sessionTimeoutMinutes,
+      };
+
       // Reload config to get the new values
       const updatedConfig = await fetchQueueConfiguration(eventId);
       setConfig(updatedConfig);
@@ -109,7 +150,29 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [checkoutTimeoutMinutes, enableQueue, eventId, maxConcurrentUsers, sessionTimeoutMinutes, tToast]);
+
+  // Undo handler - reset to original values
+  const handleUndo = useCallback(() => {
+    if (originalValuesRef.current) {
+      setEnableQueue(originalValuesRef.current.enableQueue);
+      setMaxConcurrentUsers(originalValuesRef.current.maxConcurrentUsers);
+      setCheckoutTimeoutMinutes(originalValuesRef.current.checkoutTimeoutMinutes);
+      setSessionTimeoutMinutes(originalValuesRef.current.sessionTimeoutMinutes);
+    }
+  }, []);
+
+  // Report form state changes to parent
+  useEffect(() => {
+    if (onFormStateChange) {
+      onFormStateChange({
+        isDirty,
+        isSaving,
+        onSave: handleSave,
+        onUndo: handleUndo,
+      });
+    }
+  }, [isDirty, isSaving, handleSave, handleUndo, onFormStateChange]);
 
   const handleResetClick = () => {
     if (!hasCustomConfig) {
@@ -290,17 +353,6 @@ export const EventQueueConfigForm = ({ eventId }: EventQueueConfigFormProps) => 
             max={120}
           />
         </div>
-      </div>
-
-      {/* Save Button */}
-      <div className='pt-4 border-t border-border'>
-        <FmCommonButton
-          onClick={handleSave}
-          loading={isSaving}
-          variant='gold'
-        >
-          {t('queue.saveConfiguration')}
-        </FmCommonButton>
       </div>
 
       <FmCommonConfirmDialog

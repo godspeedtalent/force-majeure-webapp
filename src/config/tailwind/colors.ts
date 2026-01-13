@@ -39,9 +39,10 @@ const componentColors = {
 
 // Force Majeure brand colors
 // Based on design system: /src/shared/constants/designSystem.ts
+// NOTE: fm-gold uses CSS variable to support test-mode theme switching
 const brandColors = {
-  // Primary accent - Dusty Gold
-  'fm-gold': '#dfba7d',
+  // Primary accent - Dusty Gold (uses CSS variable for test-mode override)
+  'fm-gold': 'hsl(var(--fm-gold))',
 
   // Secondary - Dark Crimson
   'fm-crimson': '#520C10',
@@ -54,6 +55,9 @@ const brandColors = {
 
   // Success - Dusty Sage Green (for approve/success actions)
   'fm-success': '#7D9B72',
+
+  // Test Mode - Dusty Purple (for test/staging events)
+  'fm-purple': 'hsl(var(--fm-purple))',
 
   // Legacy colors (can be deprecated if not in use)
   'fm-charcoal': 'hsl(var(--fm-charcoal))',

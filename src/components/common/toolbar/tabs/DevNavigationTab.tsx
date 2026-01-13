@@ -20,6 +20,7 @@ import {
   ContextMenuTrigger,
 } from '@/components/common/shadcn/context-menu';
 import { useDevBookmarks, DevBookmark } from '@/shared/hooks/useDevBookmarks';
+import { FmIconPicker, IconPickerValue, renderIcon } from '@/components/common/forms/FmIconPicker';
 
 interface DevNavigationTabContentProps {
   onNavigate: (path: string) => void;
@@ -46,7 +47,9 @@ export function DevNavigationTabContent({ onNavigate, isAdmin: _isAdmin }: DevNa
   const [bookmarkToRemove, setBookmarkToRemove] = useState<DevBookmark | null>(null);
 
   // Inline add bookmark state
+  const [isCreateExpanded, setIsCreateExpanded] = useState(false);
   const [newBookmarkLabel, setNewBookmarkLabel] = useState('');
+  const [newBookmarkIcon, setNewBookmarkIcon] = useState<IconPickerValue>({ icon: '', color: '#FFFFFF' });
   const [includeQuerystring, setIncludeQuerystring] = useState(false);
   const addInputRef = useRef<HTMLInputElement>(null);
 
@@ -92,8 +95,19 @@ export function DevNavigationTabContent({ onNavigate, isAdmin: _isAdmin }: DevNa
 
   const handleAddBookmark = async () => {
     const label = newBookmarkLabel.trim() || generateLabelFromPath(currentPath);
-    await addBookmark(fullPath, label);
+    const icon = newBookmarkIcon.icon || null;
+    const iconColor = newBookmarkIcon.color || null;
+    await addBookmark(fullPath, label, icon, iconColor);
     setNewBookmarkLabel('');
+    setNewBookmarkIcon({ icon: '', color: '#FFFFFF' });
+    setIsCreateExpanded(false);
+  };
+
+  const handleCancelCreate = () => {
+    setIsCreateExpanded(false);
+    setNewBookmarkLabel('');
+    setNewBookmarkIcon({ icon: '', color: '#FFFFFF' });
+    setIncludeQuerystring(false);
   };
 
   const handleRemoveBookmark = (bookmark: DevBookmark) => {
@@ -133,57 +147,94 @@ export function DevNavigationTabContent({ onNavigate, isAdmin: _isAdmin }: DevNa
       icon: Bookmark,
       count: bookmarks.length,
       children: (
-        <div className='flex flex-col gap-2'>
-          {/* Current page info and add bookmark */}
-          <div className='p-2 border border-white/10 bg-white/5 space-y-2'>
-            <div className='flex items-center gap-2'>
-              <span className='text-xs text-muted-foreground flex-1 truncate'>
-                {t('devNavigation.currentPage')}: {fullPath}
-              </span>
-              <FmCommonIconButton
-                icon={isAdding ? Loader2 : BookmarkPlus}
-                variant={currentPageBookmarked ? 'gold' : 'default'}
-                size='sm'
-                onClick={handleAddBookmark}
-                disabled={currentPageBookmarked || isAdding}
-                aria-label={t('devNavigation.addBookmark')}
-                className={isAdding ? 'animate-spin' : ''}
-              />
-            </div>
-            {/* Inline name input and querystring toggle */}
-            {!currentPageBookmarked && (
-              <>
+        <div className='flex flex-col gap-2 w-full min-w-0'>
+          {/* Create bookmark button / expanded form */}
+          {!isCreateExpanded ? (
+            // Collapsed state - just show the create button
+            <FmCommonButton
+              variant='gold'
+              icon={BookmarkPlus}
+              iconPosition='left'
+              onClick={() => setIsCreateExpanded(true)}
+              disabled={currentPageBookmarked || isAdding}
+              className='w-full justify-center'
+            >
+              {currentPageBookmarked ? t('devNavigation.pageBookmarked') : t('devNavigation.createBookmark')}
+            </FmCommonButton>
+          ) : (
+            // Expanded state - show full form
+            <div className='p-2 border border-fm-gold/30 bg-fm-gold/5 space-y-2 overflow-hidden w-full'>
+              {/* Current page info */}
+              <div className='flex items-center gap-2'>
+                <span className='text-xs text-muted-foreground flex-1 truncate'>
+                  {t('devNavigation.currentPage')}: {fullPath}
+                </span>
+              </div>
+
+              {/* Icon picker and label input row */}
+              <div className='flex items-center gap-2'>
+                <FmIconPicker
+                  value={newBookmarkIcon}
+                  onChange={setNewBookmarkIcon}
+                  defaultIcon='Bookmark'
+                  size='default'
+                />
                 <Input
                   ref={addInputRef}
                   value={newBookmarkLabel}
                   onChange={(e) => setNewBookmarkLabel(e.target.value)}
                   placeholder={generateLabelFromPath(currentPath)}
-                  className='h-7 text-xs bg-background/50 border-white/10'
+                  className='h-12 text-xs bg-background/50 border-white/10 flex-1 min-w-0'
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       handleAddBookmark();
+                    } else if (e.key === 'Escape') {
+                      handleCancelCreate();
                     }
                   }}
                 />
-                {currentSearch && (
-                  <div className='flex items-center gap-2'>
-                    <FmCommonCheckbox
-                      id='include-querystring'
-                      checked={includeQuerystring}
-                      onCheckedChange={(checked) => setIncludeQuerystring(checked)}
-                      className='h-4 w-4'
-                    />
-                    <Label
-                      htmlFor='include-querystring'
-                      className='text-xs text-muted-foreground cursor-pointer'
-                    >
-                      {t('devNavigation.includeQuerystring')}
-                    </Label>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
+              </div>
+
+              {/* Querystring toggle */}
+              {currentSearch && (
+                <div className='flex items-center gap-2'>
+                  <FmCommonCheckbox
+                    id='include-querystring'
+                    checked={includeQuerystring}
+                    onCheckedChange={(checked) => setIncludeQuerystring(checked)}
+                    className='h-4 w-4'
+                  />
+                  <Label
+                    htmlFor='include-querystring'
+                    className='text-xs text-muted-foreground cursor-pointer'
+                  >
+                    {t('devNavigation.includeQuerystring')}
+                  </Label>
+                </div>
+              )}
+
+              {/* Action buttons */}
+              <div className='flex items-center gap-2 justify-end'>
+                <FmCommonButton
+                  variant='secondary'
+                  size='sm'
+                  onClick={handleCancelCreate}
+                >
+                  {t('buttons.cancel')}
+                </FmCommonButton>
+                <FmCommonButton
+                  variant='gold'
+                  size='sm'
+                  icon={isAdding ? Loader2 : BookmarkPlus}
+                  onClick={handleAddBookmark}
+                  disabled={isAdding}
+                  className={isAdding ? '[&_svg]:animate-spin' : ''}
+                >
+                  {t('devNavigation.addBookmark')}
+                </FmCommonButton>
+              </div>
+            </div>
+          )}
 
           {isLoading ? (
             <div className='flex items-center justify-center py-4'>
@@ -235,12 +286,18 @@ export function DevNavigationTabContent({ onNavigate, isAdmin: _isAdmin }: DevNa
                       <>
                         <FmCommonButton
                           variant='default'
-                          icon={Bookmark}
                           iconPosition='left'
                           onClick={() => onNavigate(bookmark.path)}
                           className='flex-1 justify-start'
                         >
-                          {bookmark.label}
+                          <span className='flex items-center gap-2'>
+                            {bookmark.icon ? (
+                              renderIcon(bookmark.icon, bookmark.icon_color || '#FFFFFF', 'h-4 w-4')
+                            ) : (
+                              <Bookmark className='h-4 w-4' />
+                            )}
+                            {bookmark.label}
+                          </span>
                         </FmCommonButton>
                         <FmCommonIconButton
                           icon={X}
@@ -360,7 +417,7 @@ export function DevNavigationTabContent({ onNavigate, isAdmin: _isAdmin }: DevNa
         </div>
       ),
     },
-  ], [t, onNavigate, bookmarks, currentPath, currentSearch, fullPath, currentPageBookmarked, isLoading, isAdding, newBookmarkLabel, includeQuerystring, editingBookmarkId, renameLabel]);
+  ], [t, onNavigate, bookmarks, currentPath, currentSearch, fullPath, currentPageBookmarked, isLoading, isAdding, isCreateExpanded, newBookmarkLabel, newBookmarkIcon, includeQuerystring, editingBookmarkId, renameLabel]);
 
   return (
     <div className='space-y-4'>

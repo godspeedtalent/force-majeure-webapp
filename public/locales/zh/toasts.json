@@ -119,7 +119,10 @@
     "artistUpdateFailed": "更新艺术家失败",
     "artistUpdateFailedDescription": "无法保存艺术家更改",
     "rsvpSettingsUpdated": "预约设置已更新",
-    "rsvpSettingsUpdateFailed": "更新预约设置失败"
+    "rsvpSettingsUpdateFailed": "更新预约设置失败",
+    "updateStatusFailed": "更新活动状态失败",
+    "mockDataImportFailed": "导入模拟数据失败",
+    "mockDataPurgeFailed": "清除测试数据失败"
   },
   "validation": {
     "stageNameRequired": "请输入您的艺名",
@@ -254,7 +257,9 @@
     "success": "上传成功"
   },
   "tracking": {
-    "linkCopied": "链接已复制到剪贴板"
+    "linkCopied": "链接已复制到剪贴板",
+    "qrDownloaded": "二维码已下载",
+    "qrCopied": "二维码已复制到剪贴板"
   },
   "queue": {
     "loadFailed": "加载队列配置失败",

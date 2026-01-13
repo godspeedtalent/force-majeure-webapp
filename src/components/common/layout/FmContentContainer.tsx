@@ -21,6 +21,8 @@ interface FmContentContainerProps {
   spacing?: string;
   /** Enable horizontal scrolling for wide content like data grids (default: false) */
   scrollable?: boolean;
+  /** Compact mode for database/data tab views - reduces vertical spacing (default: false) */
+  compact?: boolean;
   /** Additional CSS classes */
   className?: string;
 }
@@ -56,16 +58,19 @@ export function FmContentContainer({
   centered = true,
   spacing = 'space-y-6',
   scrollable = false,
+  compact = false,
   className,
 }: FmContentContainerProps) {
   const widthClass = customWidth || CONTENT_WIDTH[width];
+  // Compact mode uses half the spacing for database/data tab views
+  const spacingClass = compact ? 'space-y-3' : spacing;
 
   return (
     <div
       className={cn(
         widthClass,
         centered && 'mx-auto',
-        spacing,
+        spacingClass,
         scrollable && 'overflow-x-auto',
         className
       )}

@@ -4,11 +4,15 @@
  * A sticky footer component for forms with Save Changes buttons.
  * Floats at the bottom left of the viewport with a frosted glass effect.
  * Only visible when the form has unsaved changes - slides in from the left.
+ *
+ * Layout:
+ * - Top row: Undo button | Save button
+ * - Bottom row: "Unsaved changes" footnote label
  */
 
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Save, AlertCircle } from 'lucide-react';
+import { Save, Undo2 } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
 import { cn, useIsMobile } from '@/shared';
@@ -22,6 +26,8 @@ interface FmStickyFormFooterProps {
   disabled?: boolean;
   /** Called when save button is clicked */
   onSave: () => void;
+  /** Called when undo button is clicked to revert changes */
+  onUndo?: () => void;
   /** Optional secondary action (e.g., delete button) */
   secondaryAction?: ReactNode;
   /** Additional class names */
@@ -39,6 +45,7 @@ export function FmStickyFormFooter({
   isSaving = false,
   disabled = false,
   onSave,
+  onUndo,
   secondaryAction,
   className,
   saveText,
@@ -70,8 +77,8 @@ export function FmStickyFormFooter({
         'fixed z-50',
         leftOffset,
         bottomOffset,
-        'flex items-center gap-3',
-        'p-4 rounded-none',
+        'flex flex-col gap-1',
+        'p-3 rounded-none',
         'bg-black/80 backdrop-blur-lg',
         'border border-white/20',
         'shadow-lg shadow-black/50',
@@ -80,38 +87,63 @@ export function FmStickyFormFooter({
         className
       )}
     >
-      {/* Unsaved changes indicator - desktop only */}
+      {/* Button row */}
+      <div className='flex items-center gap-2'>
+        {/* Undo button */}
+        {onUndo && (
+          isMobile ? (
+            <FmCommonIconButton
+              icon={Undo2}
+              onClick={onUndo}
+              disabled={isSaving}
+              variant='secondary'
+              tooltip={t('buttons.undoChanges')}
+              aria-label={t('buttons.undoChanges')}
+            />
+          ) : (
+            <FmCommonButton
+              icon={Undo2}
+              onClick={onUndo}
+              disabled={isSaving}
+              variant='secondary'
+            >
+              {t('buttons.undoChanges')}
+            </FmCommonButton>
+          )
+        )}
+
+        {/* Secondary action (e.g., delete) */}
+        {secondaryAction}
+
+        {/* Save button - icon only on mobile, full button on desktop */}
+        {isMobile ? (
+          <FmCommonIconButton
+            icon={Save}
+            onClick={onSave}
+            disabled={disabled || isSaving}
+            loading={isSaving}
+            variant='gold'
+            tooltip={buttonText}
+            aria-label={buttonText}
+          />
+        ) : (
+          <FmCommonButton
+            icon={Save}
+            onClick={onSave}
+            disabled={disabled || isSaving}
+            loading={isSaving}
+            variant='gold'
+          >
+            {buttonText}
+          </FmCommonButton>
+        )}
+      </div>
+
+      {/* Unsaved changes footnote - desktop only */}
       {isDirty && !isMobile && (
-        <div className='flex items-center gap-2 text-fm-gold text-sm'>
-          <AlertCircle className='h-4 w-4' />
-          <span>{t('dialogs.unsavedChanges')}</span>
+        <div className='text-[10px] text-white/40 uppercase tracking-wider'>
+          {t('dialogs.unsavedChanges')}
         </div>
-      )}
-
-      {/* Secondary action (e.g., delete) */}
-      {secondaryAction}
-
-      {/* Save button - icon only on mobile, full button on desktop */}
-      {isMobile ? (
-        <FmCommonIconButton
-          icon={Save}
-          onClick={onSave}
-          disabled={disabled || isSaving}
-          loading={isSaving}
-          variant='gold'
-          tooltip={buttonText}
-          aria-label={buttonText}
-        />
-      ) : (
-        <FmCommonButton
-          icon={Save}
-          onClick={onSave}
-          disabled={disabled || isSaving}
-          loading={isSaving}
-          variant='gold'
-        >
-          {buttonText}
-        </FmCommonButton>
       )}
     </div>
   );

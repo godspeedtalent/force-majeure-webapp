@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Eye, AlertTriangle, FileText, Calendar } from 'lucide-react';
+import { Eye, AlertTriangle, FileText, Calendar, Rocket } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmVenueSearchDropdown } from '@/components/common/search/FmVenueSearchDropdown';
 import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
@@ -12,6 +12,7 @@ import { Label } from '@/components/common/shadcn/label';
 import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { useEventOverviewForm } from '@/features/events/hooks';
+import { PublishEventButton } from '@/components/events/status';
 
 interface EventOverviewFormProps {
   eventId: string;
@@ -29,8 +30,9 @@ interface EventOverviewFormProps {
   };
   orderCount: number;
   onMakeInvisible: () => Promise<void>;
+  onPublish: () => Promise<void>;
   /** Callback to expose form state for parent save button */
-  onFormStateChange?: (state: { isDirty: boolean; isSaving: boolean; onSave: () => void }) => void;
+  onFormStateChange?: (state: { isDirty: boolean; isSaving: boolean; onSave: () => void; onUndo: () => void }) => void;
 }
 
 export const EventOverviewForm = ({
@@ -38,6 +40,7 @@ export const EventOverviewForm = ({
   event,
   orderCount,
   onMakeInvisible,
+  onPublish,
   onFormStateChange,
 }: EventOverviewFormProps) => {
   const { t } = useTranslation('common');
@@ -60,6 +63,7 @@ export const EventOverviewForm = ({
     isDirty,
     handleSave,
     triggerAutoSave,
+    resetForm,
     formattedStartTime,
   } = useEventOverviewForm({
     eventId,
@@ -68,8 +72,8 @@ export const EventOverviewForm = ({
 
   // Expose form state to parent for sticky footer
   useEffect(() => {
-    onFormStateChange?.({ isDirty, isSaving, onSave: handleSave });
-  }, [isDirty, isSaving, handleSave, onFormStateChange]);
+    onFormStateChange?.({ isDirty, isSaving, onSave: handleSave, onUndo: resetForm });
+  }, [isDirty, isSaving, handleSave, resetForm, onFormStateChange]);
 
   const {
     headlinerId,
@@ -282,6 +286,26 @@ export const EventOverviewForm = ({
           </div>
         </div>
       </FmFormSection>
+
+      {/* Publish Event Section - only show for draft or invisible events */}
+      {(event.status === 'draft' || event.status === 'invisible') && (
+        <FmFormSection
+          title={t('eventOverview.publishEvent')}
+          description={t('eventOverview.publishEventDescription')}
+          icon={Rocket}
+          className='border-fm-gold/30'
+        >
+          <div className='p-4 bg-fm-gold/5 border border-fm-gold/20'>
+            <p className='text-sm text-muted-foreground mb-4'>
+              {t('eventOverview.publishEventInfo')}
+            </p>
+            <PublishEventButton
+              currentStatus={(event.status as 'draft' | 'published' | 'invisible' | 'test') || 'draft'}
+              onPublish={onPublish}
+            />
+          </div>
+        </FmFormSection>
+      )}
 
       {/* Event Visibility Control - only show if published */}
       {event.status === 'published' && (

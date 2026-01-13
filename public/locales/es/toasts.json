@@ -119,7 +119,10 @@
     "artistUpdateFailed": "Error al actualizar artistas",
     "artistUpdateFailedDescription": "No se pudieron guardar los cambios de artistas",
     "rsvpSettingsUpdated": "Configuración de RSVP actualizada",
-    "rsvpSettingsUpdateFailed": "Error al actualizar configuración de RSVP"
+    "rsvpSettingsUpdateFailed": "Error al actualizar configuración de RSVP",
+    "updateStatusFailed": "Error al actualizar el estado del evento",
+    "mockDataImportFailed": "Error al importar datos simulados",
+    "mockDataPurgeFailed": "Error al purgar datos de prueba"
   },
   "validation": {
     "stageNameRequired": "Por favor ingresa tu nombre artístico",
@@ -254,7 +257,9 @@
     "success": "Subida Exitosa"
   },
   "tracking": {
-    "linkCopied": "Enlace copiado al portapapeles"
+    "linkCopied": "Enlace copiado al portapapeles",
+    "qrDownloaded": "Código QR descargado",
+    "qrCopied": "Código QR copiado al portapapeles"
   },
   "queue": {
     "loadFailed": "Error al cargar configuración de cola",

@@ -87,7 +87,7 @@ export const FmCollapsibleGroupHeader = ({
   const isLarge = size === 'large';
 
   return (
-    <div className={cn('space-y-1.5', className)}>
+    <div className={cn('space-y-1.5 w-full min-w-0', className)}>
       {/* Group Header - Clickable */}
       {/* Using group/header to isolate hover state from other group contexts */}
       <button
@@ -148,7 +148,7 @@ export const FmCollapsibleGroupHeader = ({
           isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
         )}
       >
-        <div className="overflow-hidden">{children}</div>
+        <div className="overflow-visible w-full min-w-0">{children}</div>
       </div>
     </div>
   );
@@ -195,7 +195,7 @@ export const FmCollapsibleSubgroupHeader = ({
   };
 
   return (
-    <div className={cn('space-y-1', className)}>
+    <div className={cn('space-y-1 w-full min-w-0', className)}>
       <button
         onClick={handleToggle}
         className={cn(
@@ -234,7 +234,7 @@ export const FmCollapsibleSubgroupHeader = ({
           isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
         )}
       >
-        <div className="overflow-hidden">{children}</div>
+        <div className="overflow-visible w-full min-w-0">{children}</div>
       </div>
     </div>
   );

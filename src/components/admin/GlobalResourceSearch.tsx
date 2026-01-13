@@ -108,6 +108,7 @@ export function GlobalResourceSearch({
     debounceMs: 300,
     minQueryLength: 2,
     upcomingEventsOnly: false, // Show all published events (past and upcoming)
+    includeTestEvents: isAdminOrDev, // Include test events for admin/dev users
     enabled: isOpen && searchQuery.trim().length >= 2,
   });
 
@@ -138,7 +139,7 @@ export function GlobalResourceSearch({
         name: r.item.name,
         image_url: r.item.image_url,
       })),
-      // Filter draft events for non-admin/dev users
+      // Filter draft and test events for non-admin/dev users
       events: fuzzyResults.events
         .filter(r => isAdminOrDev || r.item.status === 'published')
         .map(r => ({
@@ -627,6 +628,12 @@ export function GlobalResourceSearch({
                                   <span className='inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-fm-gold/20 text-fm-gold border border-fm-gold/30 rounded-none uppercase tracking-wide flex-shrink-0'>
                                     <Key className='h-2.5 w-2.5' />
                                     {t('globalSearch.draftBadge')}
+                                  </span>
+                                )}
+                                {event.status === 'test' && (
+                                  <span className='inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded-none uppercase tracking-wide flex-shrink-0'>
+                                    <Key className='h-2.5 w-2.5' />
+                                    {t('globalSearch.testBadge')}
                                   </span>
                                 )}
                               </p>

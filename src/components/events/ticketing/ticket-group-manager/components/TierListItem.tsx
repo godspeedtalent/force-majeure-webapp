@@ -1,10 +1,12 @@
 import { useTranslation } from 'react-i18next';
-import { GripVertical, Copy, Trash2, AlertCircle } from 'lucide-react';
+import { GripVertical, Copy, Trash2, AlertCircle, Lock, Ticket } from 'lucide-react';
 import { Switch } from '@/components/common/shadcn/switch';
 import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
 import { FmI18nCommon } from '@/components/common/i18n';
+import { FmPortalTooltip } from '@/components/common/feedback/FmPortalTooltip';
+import { Badge } from '@/components/common/shadcn/badge';
 import type { TicketTier } from '../types';
 import { formatPrice } from '../utils';
 
@@ -31,9 +33,43 @@ export function TierListItem({
 }: TierListItemProps) {
   const { t } = useTranslation('common');
 
+  // Determine if tier is locked (has orders)
+  const hasOrders = tier.has_orders ?? false;
+  const soldCount = tier.sold_inventory ?? 0;
+  const minTickets = soldCount; // Cannot go below sold count
+
+  // Get appropriate delete tooltip
+  const getDeleteTooltip = () => {
+    if (hasOrders) return t('tierListItem.cannotDeleteHasOrders');
+    if (isProtected) return t('tierListItem.cannotDeleteLast');
+    return t('tierListItem.deleteTier');
+  };
+
+  // Handle total tickets change with validation
+  const handleTotalTicketsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = parseInt(e.target.value || '0');
+    // Cannot go below sold count
+    const clampedValue = Math.max(newValue, minTickets);
+    onUpdate({ total_tickets: clampedValue });
+  };
+
   return (
     <FmCommonCard className='bg-background/50 border-border/50'>
       <FmCommonCardContent className='pt-4 space-y-4'>
+        {/* Sold tickets indicator */}
+        {hasOrders && (
+          <div className='flex items-center gap-2 px-3 py-2 bg-fm-gold/10 border border-fm-gold/20'>
+            <Lock className='h-4 w-4 text-fm-gold' />
+            <span className='text-xs text-fm-gold'>
+              {t('tierListItem.lockedMessage', { count: soldCount })}
+            </span>
+            <Badge variant='outline' className='ml-auto text-fm-gold border-fm-gold/30'>
+              <Ticket className='h-3 w-3 mr-1' />
+              {t('tierListItem.soldCount', { count: soldCount })}
+            </Badge>
+          </div>
+        )}
+
         <div className='flex items-start gap-3'>
           <FmCommonIconButton
             icon={GripVertical}
@@ -45,32 +81,48 @@ export function TierListItem({
 
           <div className='flex-1 space-y-3'>
             <div className='grid grid-cols-2 gap-3'>
-              <FmCommonTextField
-                label={t('tierListItem.tierName')}
-                value={tier.name}
-                onChange={e =>
-                  onUpdate({
-                    name: e.target.value,
-                  })
-                }
-                placeholder={t('tierListItem.tierNamePlaceholder')}
-              />
-              <FmCommonTextField
-                label={t('tierListItem.price')}
-                type='number'
-                step='0.01'
-                min='0'
-                value={(tier.price_cents / 100).toFixed(2)}
-                onChange={e =>
-                  onUpdate({
-                    price_cents: Math.round(
-                      parseFloat(e.target.value || '0') * 100
-                    ),
-                  })
-                }
-                prepend='$'
-                placeholder='0.00'
-              />
+              <div className='relative'>
+                <FmCommonTextField
+                  label={t('tierListItem.tierName')}
+                  value={tier.name}
+                  onChange={e =>
+                    onUpdate({
+                      name: e.target.value,
+                    })
+                  }
+                  placeholder={t('tierListItem.tierNamePlaceholder')}
+                  disabled={hasOrders}
+                />
+                {hasOrders && (
+                  <FmPortalTooltip content={t('tierListItem.nameLockedTooltip')} side='top'>
+                    <Lock className='absolute right-3 top-8 h-4 w-4 text-muted-foreground' />
+                  </FmPortalTooltip>
+                )}
+              </div>
+              <div className='relative'>
+                <FmCommonTextField
+                  label={t('tierListItem.price')}
+                  type='number'
+                  step='0.01'
+                  min='0'
+                  value={(tier.price_cents / 100).toFixed(2)}
+                  onChange={e =>
+                    onUpdate({
+                      price_cents: Math.round(
+                        parseFloat(e.target.value || '0') * 100
+                      ),
+                    })
+                  }
+                  prepend='$'
+                  placeholder='0.00'
+                  disabled={hasOrders}
+                />
+                {hasOrders && (
+                  <FmPortalTooltip content={t('tierListItem.priceLockedTooltip')} side='top'>
+                    <Lock className='absolute right-3 top-8 h-4 w-4 text-muted-foreground' />
+                  </FmPortalTooltip>
+                )}
+              </div>
             </div>
 
             <FmCommonTextField
@@ -88,18 +140,25 @@ export function TierListItem({
             />
 
             <div className='grid grid-cols-2 gap-3'>
-              <FmCommonTextField
-                label={t('tierListItem.totalTickets')}
-                type='number'
-                min='0'
-                value={tier.total_tickets}
-                onChange={e =>
-                  onUpdate({
-                    total_tickets: parseInt(e.target.value || '0'),
-                  })
-                }
-                placeholder='0'
-              />
+              <div>
+                <FmCommonTextField
+                  label={
+                    soldCount > 0
+                      ? t('tierListItem.totalTicketsWithMin', { min: soldCount })
+                      : t('tierListItem.totalTickets')
+                  }
+                  type='number'
+                  min={minTickets}
+                  value={tier.total_tickets}
+                  onChange={handleTotalTicketsChange}
+                  placeholder='0'
+                />
+                {soldCount > 0 && (
+                  <p className='text-xs text-muted-foreground mt-1'>
+                    {t('tierListItem.availableCount', { count: tier.total_tickets - soldCount })}
+                  </p>
+                )}
+              </div>
               <div>
                 <label className='text-xs uppercase text-muted-foreground'>{t('tierListItem.potentialRevenue')}</label>
                 <div className='h-10 px-3 flex items-center bg-muted/50 text-sm font-semibold text-fm-gold'>
@@ -148,8 +207,8 @@ export function TierListItem({
               variant='destructive'
               size='sm'
               onClick={onDelete}
-              disabled={isOnlyTier || isProtected}
-              tooltip={isProtected ? t('tierListItem.cannotDeleteLast') : t('tierListItem.deleteTier')}
+              disabled={isOnlyTier || isProtected || hasOrders}
+              tooltip={getDeleteTooltip()}
             />
           </div>
         </div>

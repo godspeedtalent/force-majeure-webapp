@@ -19,7 +19,6 @@ import {
   Info,
   Inbox,
   AlertTriangle,
-  Shuffle,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -53,7 +52,6 @@ import { MockRoleTabContent } from './tabs/MockRoleTab';
 import { PageInfoTabContent, PageInfoTabFooter } from './tabs/PageInfoTab';
 import { AdminMessagesTabContent } from './tabs/AdminMessagesTab';
 import { ErrorLogTabContent, ErrorLogTabFooter } from './tabs/ErrorLogTab';
-import { MockDataTabContent } from './tabs/MockDataTab';
 
 export interface ToolbarTab {
   id: string;
@@ -298,18 +296,6 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         content: <ErrorLogTabContent />,
         footer: <ErrorLogTabFooter />,
         title: t('toolbar.errorLogsTitle'),
-        visible: isDeveloperOrAdmin,
-        group: 'dataConfig',
-        groupOrder: 4,
-        alignment: 'bottom',
-        groupLabel: t('toolbar.groups.dataConfig'),
-      },
-      {
-        id: 'mock-data',
-        label: t('toolbar.mockData'),
-        icon: Shuffle,
-        content: <MockDataTabContent />,
-        title: t('toolbar.mockDataTitle'),
         visible: isDeveloperOrAdmin,
         group: 'dataConfig',
         groupOrder: 4,

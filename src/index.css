@@ -134,6 +134,10 @@ All colors MUST be HSL.
     /* Danger: Chili Red #D64933 */
     --fm-danger: 9 65% 52%;
 
+    /* Test Mode: Dusty Purple #8E7BAA */
+    --fm-purple: 268 24% 58%;
+    --fm-purple-rgb: 142 123 170; /* RGB equivalent for rgba usage */
+
     /* Legacy colors (deprecated - use above instead) */
     --fm-charcoal: 0 0% 13%;
     --fm-silver: 0 0% 85%;
@@ -228,6 +232,10 @@ All colors MUST be HSL.
     /* Danger: Chili Red #D64933 */
     --fm-danger: 9 65% 52%;
 
+    /* Test Mode: Dusty Purple #8E7BAA */
+    --fm-purple: 268 24% 58%;
+    --fm-purple-rgb: 142 123 170; /* RGB equivalent for rgba usage */
+
     /* Legacy colors (deprecated - use above instead) */
     --fm-charcoal: 0 0% 13%;
     --fm-silver: 0 0% 85%;
@@ -249,6 +257,17 @@ All colors MUST be HSL.
     --shadow-elegant: 0 4px 20px -4px hsl(0 0% 0% / 0.3);
     --shadow-gold: 0 8px 30px -8px hsl(38 60% 68% / 0.3);
     --shadow-crimson: 0 8px 30px -8px hsl(var(--fm-crimson) / 0.3);
+  }
+
+  /* Test Mode Theme Override - replaces gold accents with purple */
+  .test-mode {
+    --fm-gold: 268 24% 58%;
+    --fm-gold-rgb: 142 123 170;
+    --accent: 268 24% 58%;
+    --sidebar-accent: 268 24% 58%;
+    --sidebar-ring: 268 24% 58%;
+    --gradient-gold: linear-gradient(135deg, hsl(268 24% 58%), hsl(268 30% 65%));
+    --shadow-gold: 0 8px 30px -8px hsl(268 24% 58% / 0.3);
   }
 }
 

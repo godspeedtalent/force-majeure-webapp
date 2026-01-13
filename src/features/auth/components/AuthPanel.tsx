@@ -14,6 +14,7 @@ import {
   FmCommonCardTitle,
 } from '@/components/common/display/FmCommonCard';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
+import { FmCommonEmailField } from '@/components/common/forms/FmCommonEmailField';
 import {
   FmCommonTabs,
   FmCommonTabsContent,
@@ -206,16 +207,16 @@ export const AuthPanel = ({
 
           <FmCommonTabsContent value='signin' className='space-y-6 mt-6'>
             <form onSubmit={handleSignIn} className='space-y-6'>
-              <FmCommonTextField
+              <FmCommonEmailField
                 label={t('auth.emailLabel')}
                 id='signin-email'
-                type='email'
                 placeholder={t('auth.signIn.emailPlaceholder')}
                 value={signInForm.email}
-                onChange={e =>
-                  setSignInForm({ ...signInForm, email: e.target.value })
+                onChange={(email) =>
+                  setSignInForm({ ...signInForm, email })
                 }
                 required
+                validateOnBlur
               />
 
               <FmCommonTextField
@@ -325,16 +326,16 @@ export const AuthPanel = ({
                 }
               />
 
-              <FmCommonTextField
+              <FmCommonEmailField
                 label={t('auth.emailLabel')}
                 id='signup-email'
-                type='email'
                 placeholder={t('auth.signUp.emailPlaceholder')}
                 value={signUpForm.email}
-                onChange={e =>
-                  setSignUpForm({ ...signUpForm, email: e.target.value })
+                onChange={(email) =>
+                  setSignUpForm({ ...signUpForm, email })
                 }
                 required
+                validateOnBlur
               />
 
               <div>

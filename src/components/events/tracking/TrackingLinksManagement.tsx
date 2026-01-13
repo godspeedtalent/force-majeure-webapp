@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Copy, Edit, Trash2, Power, Plus, Link2 } from 'lucide-react';
+import { Copy, Edit, Trash2, Power, Plus, Link2, QrCode } from 'lucide-react';
 import {
   FmCommonTabs,
   FmCommonTabsContent,
@@ -15,6 +15,7 @@ import { useTrackingLinks } from './hooks/useTrackingLinks';
 import { TrackingLink } from '@/types/tracking';
 import { CreateLinkDialog } from './CreateLinkDialog';
 import { TrackingAnalytics } from './TrackingAnalytics';
+import { TrackingLinkQRModal } from './TrackingLinkQRModal';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -30,6 +31,8 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
   const [editingLink, setEditingLink] = useState<TrackingLink | null>(null);
   const [linkToDelete, setLinkToDelete] = useState<TrackingLink | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [qrLink, setQrLink] = useState<TrackingLink | null>(null);
+  const [showQrModal, setShowQrModal] = useState(false);
 
   const copyToClipboard = (code: string) => {
     const url = `https://orgxcrnnecblhuxjfruy.supabase.co/functions/v1/track-link?code=${code}`;
@@ -124,6 +127,14 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
       onClick: (row) => copyToClipboard(row.code),
     },
     {
+      label: t('tracking.generateQr'),
+      icon: <QrCode className="h-4 w-4" />,
+      onClick: (row) => {
+        setQrLink(row);
+        setShowQrModal(true);
+      },
+    },
+    {
       label: t('buttons.edit'),
       icon: <Edit className="h-4 w-4" />,
       onClick: (row) => {
@@ -215,6 +226,18 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
         onConfirm={handleDeleteConfirm}
         variant="destructive"
       />
+
+      {qrLink && (
+        <TrackingLinkQRModal
+          open={showQrModal}
+          onOpenChange={(open) => {
+            setShowQrModal(open);
+            if (!open) setQrLink(null);
+          }}
+          linkName={qrLink.name}
+          linkCode={qrLink.code}
+        />
+      )}
     </FmFormSection>
   );
 }

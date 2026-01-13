@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Gift, Send, X, Check, Clock, Ban } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
+import { FmUserSearchEmail } from '@/components/common/search/FmUserSearchEmail';
+import { isValidEmail } from '@/components/common/forms/FmCommonEmailField';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import {
@@ -122,8 +123,7 @@ export function CompTicketManager({ eventId }: CompTicketManagerProps) {
     }
   };
 
-  const isValidEmail = recipientEmail.includes('@') && recipientEmail.includes('.');
-  const canIssue = isValidEmail && selectedTierId && !isIssuing;
+  const canIssue = isValidEmail(recipientEmail) && selectedTierId && !isIssuing;
 
   return (
     <div className='space-y-6'>
@@ -151,17 +151,11 @@ export function CompTicketManager({ eventId }: CompTicketManagerProps) {
         </h4>
 
         <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-          <div className='space-y-1.5'>
-            <Label className='text-xs text-muted-foreground'>
-              {t('compTickets.recipientEmail')}
-            </Label>
-            <FmCommonTextField
-              value={recipientEmail}
-              onChange={(e) => setRecipientEmail(e.target.value)}
-              placeholder='email@example.com'
-              type='email'
-            />
-          </div>
+          <FmUserSearchEmail
+            value={recipientEmail}
+            onChange={(email) => setRecipientEmail(email)}
+            label={t('compTickets.recipientEmail')}
+          />
 
           <div className='space-y-1.5'>
             <Label className='text-xs text-muted-foreground'>

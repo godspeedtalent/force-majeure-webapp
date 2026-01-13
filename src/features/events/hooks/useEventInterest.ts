@@ -3,12 +3,41 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { eventInterestService } from '../services/eventInterestService';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { logger } from '@/shared';
+import { logger, supabase } from '@/shared';
 
 export function useEventInterest(eventId: string, eventTitle?: string) {
   const { t } = useTranslation('toasts');
   const queryClient = useQueryClient();
   const { user } = useAuth();
+
+  // Query: Check if user has tickets for this event (completed orders)
+  const { data: hasTickets = false, isLoading: isCheckingTickets } = useQuery({
+    queryKey: ['user-has-tickets', eventId, user?.id],
+    queryFn: async () => {
+      if (!user?.id) return false;
+
+      // Check if user has any completed orders for this event
+      const { count, error } = await supabase
+        .from('orders')
+        .select('id', { count: 'exact', head: true })
+        .eq('event_id', eventId)
+        .eq('user_id', user.id)
+        .eq('status', 'completed');
+
+      if (error) {
+        logger.error('Failed to check user tickets', {
+          error: error.message,
+          source: 'useEventInterest.hasTickets',
+          event_id: eventId,
+        });
+        return false;
+      }
+
+      return (count ?? 0) > 0;
+    },
+    enabled: !!user,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
 
   // Query: Get interest count
   const { data: interestCount = 0 } = useQuery({
@@ -176,5 +205,8 @@ export function useEventInterest(eventId: string, eventTitle?: string) {
     toggleInterest,
     isLoading:
       markInterestedMutation.isPending || unmarkInterestedMutation.isPending,
+    // Ticket holder status - users with tickets are automatically "going"
+    hasTickets,
+    isCheckingTickets,
   };
 }

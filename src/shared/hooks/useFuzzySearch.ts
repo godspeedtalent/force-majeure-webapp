@@ -74,6 +74,8 @@ export interface FuzzySearchConfig {
   minQueryLength?: number;
   /** For events: only return upcoming events */
   upcomingEventsOnly?: boolean;
+  /** For events: include test status events (admin/dev only) */
+  includeTestEvents?: boolean;
   /** Enable/disable the search (useful for conditional searching) */
   enabled?: boolean;
 }
@@ -181,6 +183,7 @@ const DEFAULT_CONFIG = {
   debounceMs: 300,
   minQueryLength: 2,
   upcomingEventsOnly: false,
+  includeTestEvents: false,
   enabled: true,
 };
 
@@ -208,6 +211,7 @@ export function useFuzzySearch(config: FuzzySearchConfig): UseFuzzySearchReturn 
     debounceMs = DEFAULT_CONFIG.debounceMs,
     minQueryLength = DEFAULT_CONFIG.minQueryLength,
     upcomingEventsOnly = DEFAULT_CONFIG.upcomingEventsOnly,
+    includeTestEvents = DEFAULT_CONFIG.includeTestEvents,
     enabled = DEFAULT_CONFIG.enabled,
   } = config;
 
@@ -303,6 +307,7 @@ export function useFuzzySearch(config: FuzzySearchConfig): UseFuzzySearchReturn 
             threshold,
             limit,
             upcomingEventsOnly,
+            includeTestEvents,
             hasFuzzySupport
           ).then(data => {
             searchResults.events = reRankWithFuse(
@@ -451,6 +456,7 @@ async function searchEvents(
   threshold: number,
   limit: number,
   upcomingOnly: boolean,
+  includeTestEvents: boolean,
   useFuzzy: boolean
 ): Promise<EventSearchResult[]> {
   try {
@@ -460,6 +466,7 @@ async function searchEvents(
         p_threshold: threshold,
         p_limit: limit,
         p_upcoming_only: upcomingOnly,
+        p_include_test: includeTestEvents,
       });
 
       if (error) throw error;
@@ -469,15 +476,21 @@ async function searchEvents(
     // Fallback to ILIKE - search events by title/description and by headliner name
     // PostgREST doesn't support filtering on joined relations in .or(), so we run two queries
     // Include both published and draft events - client will filter based on permissions
+    // Include test events only if includeTestEvents is true (admin/dev only)
     const baseQuery = {
       select: 'id, title, description, start_time, hero_image, venue_id, status, headliner:artists!headliner_id(name)',
     };
 
-    // Query 1: Search by event title/description (published + draft)
+    // Determine which statuses to include
+    const allowedStatuses = includeTestEvents
+      ? ['published', 'draft', 'test']
+      : ['published', 'draft'];
+
+    // Query 1: Search by event title/description (published + draft + optionally test)
     let titleQueryBuilder = supabase
       .from('events')
       .select(baseQuery.select)
-      .in('status', ['published', 'draft']) // Include draft events for admin/dev filtering
+      .in('status', allowedStatuses)
       .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
       .limit(limit);
 
@@ -489,7 +502,7 @@ async function searchEvents(
     let headlinerQueryBuilder = supabase
       .from('events')
       .select(baseQuery.select + ', headliner_id')
-      .in('status', ['published', 'draft']) // Include draft events for admin/dev filtering
+      .in('status', allowedStatuses)
       .not('headliner_id', 'is', null)
       .limit(limit * 2); // Get more to filter
 

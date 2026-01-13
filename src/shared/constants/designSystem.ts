@@ -26,6 +26,7 @@ export const COLORS = {
   MUTED_NAVY: '#545E75', // Info/tertiary - informational states
   CHILI_RED: '#D64933', // Danger - errors, warnings, destructive actions
   DUSTY_SAGE: '#7D9B72', // Success - approve, confirm, success actions
+  DUSTY_PURPLE: '#8E7BAA', // Test mode - test/staging events
 } as const;
 
 /**
@@ -59,6 +60,11 @@ export const COLOR_CLASSES = {
   SUCCESS_BG: 'bg-fm-success',
   SUCCESS_TEXT: 'text-fm-success',
   SUCCESS_BORDER: 'border-fm-success',
+
+  // Dusty Purple (Test Mode)
+  PURPLE_BG: 'bg-fm-purple',
+  PURPLE_TEXT: 'text-fm-purple',
+  PURPLE_BORDER: 'border-fm-purple',
 
   // Black & White
   BLACK_BG: 'bg-black',

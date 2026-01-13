@@ -28,6 +28,7 @@ import { FmDataGridRow, FmDataGridGroupRow } from './table/FmDataGridRow';
 import { FmDataGridNewRow } from './table/FmDataGridNewRow';
 import { FmDataGridPagination } from './table/FmDataGridPagination';
 import { FmDataGridBatchDeleteDialog } from './table/FmDataGridDialogs';
+import { FmDataGridKeyboardShortcuts } from './FmDataGridKeyboardShortcuts';
 import { ContextMenuAction } from '@/components/common/modals/FmCommonContextMenu';
 import { FmMobileDataGrid } from './mobile';
 import { FmDataGridRowSkeleton } from '@/components/common/feedback/FmDataGridRowSkeleton';
@@ -740,33 +741,39 @@ export function FmDataGrid<T extends Record<string, any>>({
       )}
 
       {/* Pagination or Infinite Scroll Indicator */}
-      {isInfiniteScroll ? (
-        <div className='flex items-center justify-between text-sm text-muted-foreground py-2'>
-          <span>
-            {t('dataGrid.showingCount', {
-              count: paginatedData.length,
-              total: filteredData.length,
-            })}
-          </span>
-          {infiniteScroll.hasMore && (
-            <button
-              onClick={infiniteScroll.loadMore}
-              disabled={infiniteScroll.isLoadingMore}
-              className='text-fm-gold hover:text-fm-gold/80 transition-colors disabled:opacity-50'
-            >
-              {infiniteScroll.isLoadingMore ? t('dataGrid.loading') : t('dataGrid.loadMore')}
-            </button>
+      <div className='flex items-center justify-between'>
+        <div className='flex-1'>
+          {isInfiniteScroll ? (
+            <div className='flex items-center justify-between text-sm text-muted-foreground py-2'>
+              <span>
+                {t('dataGrid.showingCount', {
+                  count: paginatedData.length,
+                  total: filteredData.length,
+                })}
+              </span>
+              {infiniteScroll.hasMore && (
+                <button
+                  onClick={infiniteScroll.loadMore}
+                  disabled={infiniteScroll.isLoadingMore}
+                  className='text-fm-gold hover:text-fm-gold/80 transition-colors disabled:opacity-50'
+                >
+                  {infiniteScroll.isLoadingMore ? t('dataGrid.loading') : t('dataGrid.loadMore')}
+                </button>
+              )}
+            </div>
+          ) : (
+            <FmDataGridPagination
+              currentPage={gridState.currentPage}
+              totalPages={totalPages}
+              pageSize={pageSize}
+              totalCount={filteredData.length}
+              onPageChange={gridState.setCurrentPage}
+            />
           )}
         </div>
-      ) : (
-        <FmDataGridPagination
-          currentPage={gridState.currentPage}
-          totalPages={totalPages}
-          pageSize={pageSize}
-          totalCount={filteredData.length}
-          onPageChange={gridState.setCurrentPage}
-        />
-      )}
+        {/* Keyboard Shortcuts - bottom right */}
+        <FmDataGridKeyboardShortcuts />
+      </div>
 
       {/* Dialogs */}
       <FmDataGridBatchDeleteDialog

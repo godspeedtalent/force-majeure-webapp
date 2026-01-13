@@ -17,6 +17,8 @@ import {
   Share2,
   Palette,
   Images,
+  Tag,
+  UserCog,
 } from 'lucide-react';
 import { supabase } from '@/shared';
 import { SideNavbarLayout } from '@/components/layout/SideNavbarLayout';
@@ -37,6 +39,9 @@ import { GuestListSettings } from '@/components/events/social/GuestListSettings'
 import { EventOverviewForm } from '@/components/events/overview/EventOverviewForm';
 import { EventQueueConfigForm } from '@/components/events/queue';
 import { EventGalleryTab } from '@/components/events/gallery';
+import { TestEventConfigSection } from '@/components/events/admin';
+import { EventPromoCodeManagement } from '@/components/events/promo';
+import { EventStaffingManagement } from '@/components/events/staffing';
 
 import { toast } from 'sonner';
 import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
@@ -53,7 +58,7 @@ import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmTabContentHeader } from '@/components/common/headers/FmTabContentHeader';
 import { FmContentContainer } from '@/components/common/layout/FmContentContainer';
 
-type EventTab = 'overview' | 'gallery' | 'artists' | 'tiers' | 'orders' | 'ticket-status' | 'sales' | 'reports' | 'tracking' | 'social' | 'ux_display' | 'admin' | 'view';
+type EventTab = 'overview' | 'gallery' | 'artists' | 'tiers' | 'orders' | 'ticket-status' | 'sales' | 'reports' | 'tracking' | 'promo-codes' | 'social' | 'ux_display' | 'staffing' | 'admin' | 'view';
 
 export default function EventManagement() {
   const { t } = useTranslation('common');
@@ -65,22 +70,33 @@ export default function EventManagement() {
   const [activeTab, setActiveTab] = useState<EventTab>('overview');
   const queryClient = useQueryClient();
   const [isDeleting, setIsDeleting] = useState(false);
-  const [orderCount, setOrderCount] = useState(0);
   const [displaySubtitle, setDisplaySubtitle] = useState<boolean>(true);
   const [minInterestThreshold, setMinInterestThreshold] = useState<number>(0);
   const [minShareThreshold, setMinShareThreshold] = useState<number>(0);
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  // Overview form state for sticky footer
+  // Form state for sticky footer
   const [overviewFormState, setOverviewFormState] = useState<{
     isDirty: boolean;
     isSaving: boolean;
     onSave: () => void;
-  }>({ isDirty: false, isSaving: false, onSave: () => {} });
+    onUndo: () => void;
+  }>({ isDirty: false, isSaving: false, onSave: () => {}, onUndo: () => {} });
 
-  const handleOverviewFormStateChange = useCallback((state: { isDirty: boolean; isSaving: boolean; onSave: () => void }) => {
+  const [queueConfigFormState, setQueueConfigFormState] = useState<{
+    isDirty: boolean;
+    isSaving: boolean;
+    onSave: () => void;
+    onUndo: () => void;
+  }>({ isDirty: false, isSaving: false, onSave: () => {}, onUndo: () => {} });
+
+  const handleOverviewFormStateChange = useCallback((state: { isDirty: boolean; isSaving: boolean; onSave: () => void; onUndo: () => void }) => {
     setOverviewFormState(state);
+  }, []);
+
+  const handleQueueConfigFormStateChange = useCallback((state: { isDirty: boolean; isSaving: boolean; onSave: () => void; onUndo: () => void }) => {
+    setQueueConfigFormState(state);
   }, []);
 
   // Fetch event data
@@ -137,16 +153,15 @@ export default function EventManagement() {
     }
   }, [event]);
 
-  // Fetch order count for status actions
-  useEffect(() => {
-    const fetchOrderCount = async () => {
-      if (id) {
-        const count = await eventService.getEventOrderCount(id);
-        setOrderCount(count);
-      }
-    };
-    fetchOrderCount();
-  }, [id]);
+  // Fetch order count for status actions - using React Query for automatic refresh
+  const { data: orderCount = 0 } = useQuery({
+    queryKey: ['order-count', id],
+    queryFn: async () => {
+      if (!id) return 0;
+      return eventService.getEventOrderCount(id);
+    },
+    enabled: !!id,
+  });
 
   // Navigation groups configuration
   const navigationGroups: FmCommonSideNavGroup<EventTab>[] = [
@@ -221,6 +236,12 @@ export default function EventManagement() {
           icon: Link2,
           description: t('eventNav.trackingLinksDescription'),
         },
+        {
+          id: 'promo-codes',
+          label: t('eventNav.promoCodes'),
+          icon: Tag,
+          description: t('eventNav.promoCodesDescription'),
+        },
       ],
     },
     {
@@ -238,6 +259,18 @@ export default function EventManagement() {
           label: t('eventNav.reports'),
           icon: FileText,
           description: t('eventNav.reportsDescription'),
+        },
+      ],
+    },
+    {
+      label: t('eventNav.operations'),
+      icon: UserCog,
+      items: [
+        {
+          id: 'staffing',
+          label: t('eventNav.staffing'),
+          icon: UserCog,
+          description: t('eventNav.staffingDescription'),
         },
       ],
     },
@@ -272,8 +305,10 @@ export default function EventManagement() {
     { id: 'orders', label: t('eventNav.orders'), icon: ShoppingBag },
     { id: 'ticket-status', label: t('eventNav.ticketStatus'), icon: BarChart3 },
     { id: 'tracking', label: t('eventNav.trackingLinks'), icon: Link2 },
+    { id: 'promo-codes', label: t('eventNav.promoCodes'), icon: Tag },
     { id: 'sales', label: t('eventNav.salesSummary'), icon: DollarSign },
     { id: 'reports', label: t('eventNav.reports'), icon: FileText },
+    { id: 'staffing', label: t('eventNav.staffing'), icon: UserCog },
     ...(isAdmin ? [{ id: 'admin' as EventTab, label: t('eventNav.adminControls'), icon: Shield }] : []),
   ];
 
@@ -391,6 +426,9 @@ export default function EventManagement() {
     );
   }
 
+  // Check if event is in test mode
+  const isTestMode = (event as any)?.status === 'test';
+
   return (
     <SideNavbarLayout
       navigationGroups={navigationGroups}
@@ -402,7 +440,7 @@ export default function EventManagement() {
           setActiveTab(tab);
         }
       }}
-      showDividers
+      rootClassName={isTestMode ? 'test-mode' : ''}
       mobileTabBar={
         <MobileBottomTabBar
           tabs={mobileTabs}
@@ -443,6 +481,7 @@ export default function EventManagement() {
               event={event}
               orderCount={orderCount}
               onMakeInvisible={handleMakeInvisible}
+              onPublish={handlePublishEvent}
               onFormStateChange={handleOverviewFormStateChange}
             />
           </PageErrorBoundary>
@@ -626,6 +665,14 @@ export default function EventManagement() {
         </FmContentContainer>
       )}
 
+      {activeTab === 'promo-codes' && id && (
+        <FmContentContainer>
+          <PageErrorBoundary section='Promo Codes'>
+            <EventPromoCodeManagement eventId={id} />
+          </PageErrorBoundary>
+        </FmContentContainer>
+      )}
+
       {activeTab === 'social' && id && (
         <FmContentContainer>
           <PageErrorBoundary section='Social Settings'>
@@ -694,12 +741,39 @@ export default function EventManagement() {
         </FmContentContainer>
       )}
 
+      {activeTab === 'staffing' && id && (
+        <FmContentContainer>
+          <PageErrorBoundary section='Staffing'>
+            <EventStaffingManagement eventId={id} />
+          </PageErrorBoundary>
+        </FmContentContainer>
+      )}
+
       {activeTab === 'admin' && isAdmin && (
         <FmContentContainer>
           <PageErrorBoundary section='Admin Controls'>
             <div className='space-y-6'>
+              {/* Test Event Configuration */}
+              {id && (
+                <TestEventConfigSection
+                  eventId={id}
+                  eventStatus={(event as any).status || 'draft'}
+                  isTestEvent={(event as any).test_data || false}
+                  orderCount={orderCount}
+                  onStatusChange={() => {
+                    queryClient.invalidateQueries({ queryKey: ['event', id] });
+                    queryClient.invalidateQueries({ queryKey: ['order-count', id] });
+                  }}
+                />
+              )}
+
               {/* Queue Configuration */}
-              {id && <EventQueueConfigForm eventId={id} />}
+              {id && (
+                <EventQueueConfigForm
+                  eventId={id}
+                  onFormStateChange={handleQueueConfigFormStateChange}
+                />
+              )}
 
               {/* Delete Event - Danger Zone */}
               <FmFormSection
@@ -739,12 +813,29 @@ export default function EventManagement() {
         isLoading={isDeleting}
       />
 
-      {/* Sticky Save Footer - shows on overview and ux_display tabs */}
-      {(activeTab === 'overview' || activeTab === 'ux_display') && (
+      {/* Sticky Save Footer - shows on overview, ux_display, and admin tabs */}
+      {(activeTab === 'overview' || activeTab === 'ux_display' || activeTab === 'admin') && (
         <FmStickyFormFooter
-          isDirty={activeTab === 'overview' ? overviewFormState.isDirty : false}
-          isSaving={activeTab === 'overview' ? overviewFormState.isSaving : isSaving}
-          onSave={activeTab === 'overview' ? overviewFormState.onSave : handleSaveUXConfig}
+          isDirty={
+            activeTab === 'overview' ? overviewFormState.isDirty :
+            activeTab === 'admin' ? queueConfigFormState.isDirty :
+            false
+          }
+          isSaving={
+            activeTab === 'overview' ? overviewFormState.isSaving :
+            activeTab === 'admin' ? queueConfigFormState.isSaving :
+            isSaving
+          }
+          onSave={
+            activeTab === 'overview' ? overviewFormState.onSave :
+            activeTab === 'admin' ? queueConfigFormState.onSave :
+            handleSaveUXConfig
+          }
+          onUndo={
+            activeTab === 'overview' ? overviewFormState.onUndo :
+            activeTab === 'admin' ? queueConfigFormState.onUndo :
+            undefined
+          }
           hasSidebar
         />
       )}

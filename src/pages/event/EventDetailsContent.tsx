@@ -88,11 +88,12 @@ export const EventDetailsContent = ({
   });
   
   // Event interest hook
-  const { 
-    interestCount, 
-    isInterested, 
-    toggleInterest, 
-    isLoading: isInterestLoading 
+  const {
+    interestCount,
+    isInterested,
+    toggleInterest,
+    isLoading: isInterestLoading,
+    hasTickets,
   } = useEventInterest(event.id, displayTitle);
   
   const [selectedArtist, setSelectedArtist] =
@@ -119,9 +120,6 @@ export const EventDetailsContent = ({
 
   // Check if venue map should be shown
   const showVenueMap = (event as any).show_venue_map ?? true;
-
-  // Check if this is a free event (uses RSVP instead of ticketing)
-  const isFreeEvent = (event as any).is_free_event ?? false;
 
   // Record page view on mount
   useEffect(() => {
@@ -325,6 +323,7 @@ export const EventDetailsContent = ({
       onInterestClick={handleInterestClick}
       onShareClick={handleOpenShareModal}
       isPastEvent={isPastEvent}
+      hasTickets={hasTickets}
       eventData={{
         id: event.id,
         heroImage: event.heroImage,
@@ -436,7 +435,7 @@ export const EventDetailsContent = ({
           {/* Only show ticket/RSVP button for upcoming events */}
           {!isPastEvent && (
             <div className='mt-6'>
-              {isFreeEvent ? (
+              {event.isFreeEvent ? (
                 <FmRsvpButton
                   eventId={event.id}
                   eventTitle={displayTitle}

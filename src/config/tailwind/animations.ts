@@ -69,6 +69,15 @@ const brandAnimations = {
     '50%': { borderColor: 'hsl(var(--accent))' },
     '100%': { borderColor: 'hsl(var(--fm-crimson))' },
   },
+  // Badge glow animations - slow, subtle border glow
+  'glow-gold': {
+    '0%, 100%': { boxShadow: '0 0 2px 0 hsl(var(--fm-gold) / 0.3)' },
+    '50%': { boxShadow: '0 0 8px 2px hsl(var(--fm-gold) / 0.4)' },
+  },
+  'glow-purple': {
+    '0%, 100%': { boxShadow: '0 0 2px 0 hsl(var(--fm-purple) / 0.3)' },
+    '50%': { boxShadow: '0 0 8px 2px hsl(var(--fm-purple) / 0.4)' },
+  },
 };
 
 // Interactive feedback animations
@@ -252,6 +261,8 @@ export const animations = {
   'pulse-gold': createAnimation('pulse-gold', '2s', 'infinite'),
   shimmer: createAnimation('shimmer', '2s', 'infinite'),
   'border-shimmer': createAnimation('border-shimmer', '2s', 'infinite'),
+  'glow-gold': createAnimation('glow-gold', '4s', 'ease-in-out', 'infinite'),
+  'glow-purple': createAnimation('glow-purple', '4s', 'ease-in-out', 'infinite'),
 
   // Feedback animations
   'input-pulse': createAnimation('input-pulse', '0.15s'),

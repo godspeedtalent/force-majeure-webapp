@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import { Eye, Share2, Star } from 'lucide-react';
+import { Eye, Share2, Star, Ticket } from 'lucide-react';
 
 import { FmInstagramStoryButton, EventShareData } from '@/components/common/sharing';
+import { FmPortalTooltip } from '@/components/common/feedback/FmPortalTooltip';
 import { Skeleton } from '@/components/common/shadcn/skeleton';
 
 interface EventHeaderActionsProps {
@@ -19,6 +20,8 @@ interface EventHeaderActionsProps {
   isPastEvent?: boolean;
   /** Event data for Instagram Story sharing */
   eventData?: EventShareData;
+  /** When true, user has tickets for this event - shows "You're going!" state */
+  hasTickets?: boolean;
 }
 
 /**
@@ -39,36 +42,59 @@ export const EventHeaderActions = ({
   onShareClick,
   isPastEvent = false,
   eventData,
+  hasTickets = false,
 }: EventHeaderActionsProps) => {
   const { t } = useTranslation('common');
 
+  // Determine button state based on ticket ownership
+  const isTicketHolder = hasTickets;
+  const isDisabled = isInterestLoading || isPastEvent || isTicketHolder;
+
+  // Get appropriate aria label and tooltip
+  const getInterestLabel = () => {
+    if (isTicketHolder) return t('eventActions.youreGoing');
+    if (isInterested) return t('eventActions.removeInterest');
+    return t('eventActions.markAsInterested');
+  };
+
   return (
     <div className='flex items-center gap-2 flex-shrink-0'>
-      {/* Interest Button - with count inside */}
-      <button
-        type='button'
-        aria-label={isInterested ? t('eventActions.removeInterest') : t('eventActions.markAsInterested')}
-        onClick={isPastEvent ? undefined : onInterestClick}
-        disabled={isInterestLoading || isPastEvent}
-        className={`h-10 px-3 rounded-none flex items-center justify-center gap-2 bg-white/5 text-muted-foreground border border-transparent transition-all duration-200 relative overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed ${
-          isPastEvent
-            ? 'cursor-default'
-            : 'hover:bg-white/10 hover:text-fm-gold hover:border-fm-gold hover:scale-105 active:scale-95 cursor-pointer'
-        }`}
+      {/* Interest Button - shows "You're going!" for ticket holders */}
+      <FmPortalTooltip
+        content={isTicketHolder ? t('eventActions.youreGoing') : undefined}
+        side='bottom'
       >
-        <Star
-          className={`h-4 w-4 transition-all duration-300 ${
-            isInterested
-              ? 'fill-fm-gold text-fm-gold'
-              : 'text-muted-foreground'
+        <button
+          type='button'
+          aria-label={getInterestLabel()}
+          onClick={isDisabled ? undefined : onInterestClick}
+          disabled={isDisabled}
+          className={`h-10 px-3 rounded-none flex items-center justify-center gap-2 transition-all duration-200 relative overflow-hidden ${
+            isTicketHolder
+              ? 'bg-fm-gold/20 text-fm-gold border border-fm-gold cursor-default'
+              : isPastEvent
+                ? 'bg-white/5 text-muted-foreground border border-transparent cursor-default disabled:opacity-50'
+                : `bg-white/5 text-muted-foreground border border-transparent hover:bg-white/10 hover:text-fm-gold hover:border-fm-gold hover:scale-105 active:scale-95 cursor-pointer ${isInterestLoading ? 'disabled:opacity-50 disabled:cursor-not-allowed' : ''}`
           }`}
-        />
-        {shouldShowInterestCount && interestCount > 0 && (
-          <span className='text-xs text-muted-foreground'>
-            {interestCount.toLocaleString()}
-          </span>
-        )}
-      </button>
+        >
+          {isTicketHolder ? (
+            <Ticket className='h-4 w-4 text-fm-gold' />
+          ) : (
+            <Star
+              className={`h-4 w-4 transition-all duration-300 ${
+                isInterested
+                  ? 'fill-fm-gold text-fm-gold'
+                  : 'text-muted-foreground'
+              }`}
+            />
+          )}
+          {shouldShowInterestCount && interestCount > 0 && !isTicketHolder && (
+            <span className='text-xs text-muted-foreground'>
+              {interestCount.toLocaleString()}
+            </span>
+          )}
+        </button>
+      </FmPortalTooltip>
 
       {/* Share Button */}
       <div className='flex items-center gap-1'>

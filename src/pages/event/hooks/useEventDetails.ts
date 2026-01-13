@@ -35,6 +35,7 @@ interface EventRow {
   description: string | null;
   hero_image?: string | null;
   status?: EventStatus | null;
+  is_free_event?: boolean | null;
   venue?: VenueRow | null;
   headliner_artist: {
     id: string;
@@ -154,6 +155,7 @@ const transformEvent = (row: EventRow): EventDetailsRecord => {
     heroImage: getImageUrl(row.hero_image ?? row.headliner_artist?.image_url ?? null),
     description: row.description ?? null,
     status: row.status ?? 'published',
+    isFreeEvent: row.is_free_event ?? false,
   };
 };
 
@@ -175,6 +177,7 @@ const fetchEventDetails = async (
       description,
       hero_image,
       status,
+      is_free_event,
       venue:venues(id, name, description, address_line_1, address_line_2, city, state, zip_code, image_url, logo_url, website, instagram_handle, facebook_url, youtube_url, tiktok_handle),
       headliner_artist:artists!events_headliner_id_fkey(id, name, genre, image_url),
       event_artists!left(

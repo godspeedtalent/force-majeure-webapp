@@ -71,20 +71,54 @@ export const useTicketFees = () => {
     },
   });
 
+  /**
+   * Calculate fees with proper ordering:
+   * 1. Platform fee and processing fee applied to subtotal
+   * 2. Sales tax applied to subtotal + platform_fee + processing_fee
+   * This ensures sales tax is calculated on the full taxable amount including other fees
+   */
   const calculateFees = (subtotal: number): FeeCalculation[] => {
-    return fees.map(fee => {
+    const result: FeeCalculation[] = [];
+
+    // Separate sales_tax from other fees
+    const salesTaxFee = fees.find(f => f.fee_name === 'sales_tax');
+    const otherFees = fees.filter(f => f.fee_name !== 'sales_tax');
+
+    // First calculate non-tax fees (platform_fee, processing_fee)
+    let runningTotal = subtotal;
+
+    for (const fee of otherFees) {
       const amount =
         fee.fee_type === 'flat'
           ? fee.fee_value
           : (subtotal * fee.fee_value) / 100;
 
-      return {
+      result.push({
         name: fee.fee_name,
         type: fee.fee_type,
         value: fee.fee_value,
         amount,
-      };
-    });
+      });
+
+      runningTotal += amount;
+    }
+
+    // Now apply sales tax to the running total (subtotal + other fees)
+    if (salesTaxFee) {
+      const taxAmount =
+        salesTaxFee.fee_type === 'flat'
+          ? salesTaxFee.fee_value
+          : (runningTotal * salesTaxFee.fee_value) / 100;
+
+      result.push({
+        name: 'sales_tax',
+        type: salesTaxFee.fee_type,
+        value: salesTaxFee.fee_value,
+        amount: taxAmount,
+      });
+    }
+
+    return result;
   };
 
   const getTotalFees = (subtotal: number): number => {

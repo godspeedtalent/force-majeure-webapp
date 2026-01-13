@@ -1,7 +1,7 @@
 import { forwardRef, useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Check, X } from 'lucide-react';
+import { Check } from 'lucide-react';
 
 import { cn } from '@/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
@@ -26,9 +26,9 @@ interface FmRsvpButtonProps
  * Features:
  *
  * - Redirects unauthenticated users to sign in
- * - Toggle RSVP state (confirm/cancel)
+ * - RSVP to events (one-way action - shows confirmed state when done)
  * - Capacity awareness (shows "Event Full" when at capacity)
- * - Loading state during RSVP toggle
+ * - Loading state during RSVP
  * - Optimistic updates
  * - Fully accessible with keyboard support
  */
@@ -66,7 +66,8 @@ export const FmRsvpButton = forwardRef<HTMLButtonElement, FmRsvpButtonProps>(
     }, [ref]);
 
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-      if (disabled || isLoading || isCheckingRsvp) return;
+      // Don't allow clicking if already RSVP'd, disabled, or loading
+      if (disabled || isLoading || isCheckingRsvp || hasRsvp) return;
 
       // If not authenticated, redirect to login
       if (!user) {
@@ -92,7 +93,7 @@ export const FmRsvpButton = forwardRef<HTMLButtonElement, FmRsvpButtonProps>(
     };
 
     // Determine button state and text
-    const isDisabledState = isPastEvent || (isFull && !hasRsvp);
+    const isDisabledState = isPastEvent || (isFull && !hasRsvp) || hasRsvp;
     const showLoading = isLoading || isCheckingRsvp;
 
     const getButtonText = () => {
@@ -100,24 +101,24 @@ export const FmRsvpButton = forwardRef<HTMLButtonElement, FmRsvpButtonProps>(
       if (!user) return t('buttons.signInToRsvp');
       if (showLoading) return t('buttons.processing');
       if (isFull && !hasRsvp) return t('buttons.eventFull');
-      if (hasRsvp) return t('buttons.cancelRsvp');
+      if (hasRsvp) return t('buttons.rsvpConfirmed');
       return t('buttons.rsvpNow');
     };
 
     const getButtonIcon = () => {
       if (showLoading || !user || isPastEvent || (isFull && !hasRsvp)) return null;
-      if (hasRsvp) return <X className="h-4 w-4" />;
-      return <Check className="h-4 w-4" />;
+      if (hasRsvp) return <Check className="h-4 w-4" />;
+      return null;
     };
 
-    // Determine color scheme based on state
+    // Determine color scheme based on state - gold only, no green/red
     const getColorClasses = () => {
       if (isPastEvent || (isFull && !hasRsvp)) {
         return 'border-border bg-background text-muted-foreground';
       }
       if (hasRsvp) {
-        // Confirmed state - show as "active" with option to cancel
-        return 'border-green-500/50 bg-green-500/10 text-green-500 hover:border-destructive/50 hover:bg-destructive/10 hover:text-destructive';
+        // Confirmed state - frosted gold, disabled appearance
+        return 'border-fm-gold/40 bg-fm-gold/10 text-fm-gold/80';
       }
       // Default RSVP state
       return 'border-fm-gold/50 bg-background text-fm-gold hover:border-fm-gold/70 hover:bg-fm-gold/5';
@@ -127,7 +128,7 @@ export const FmRsvpButton = forwardRef<HTMLButtonElement, FmRsvpButtonProps>(
       <button
         ref={buttonRef}
         type="button"
-        disabled={disabled || showLoading || isPastEvent || (isFull && !hasRsvp && !user)}
+        disabled={disabled || showLoading || isDisabledState}
         onClick={handleClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -137,33 +138,31 @@ export const FmRsvpButton = forwardRef<HTMLButtonElement, FmRsvpButtonProps>(
           'font-canela text-base font-light tracking-[0.15em] uppercase',
           'transition-all duration-300',
           'focus:outline-none focus-visible:ring-4 focus-visible:ring-fm-gold/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-          'disabled:cursor-not-allowed',
+          'disabled:cursor-default',
           // Cursor
-          !disabled && !showLoading && 'cursor-pointer',
+          !disabled && !showLoading && !isDisabledState && 'cursor-pointer',
           // Border width
           'border-2',
           // Color scheme
           getColorClasses(),
-          // Hover transform
+          // Hover transform - only if not confirmed
           !disabled && !showLoading && !isDisabledState && 'hover:scale-[1.02]',
-          // Active state
+          // Active state - only if not confirmed
           !disabled && !showLoading && !isDisabledState && 'active:scale-[0.99]',
           className
         )}
         style={{
           boxShadow: isDisabledState
-            ? 'none'
-            : hasRsvp
-              ? isHovered
-                ? '0 0 24px rgb(220 38 38 / 0.2), inset 0 0 20px rgb(220 38 38 / 0.06)'
-                : '0 0 16px rgb(34 197 94 / 0.15), inset 0 0 12px rgb(34 197 94 / 0.04)'
-              : isHovered
-                ? '0 0 24px rgb(223 186 125 / 0.2), 0 0 12px rgb(223 186 125 / 0.1), inset 0 0 20px rgb(223 186 125 / 0.06)'
-                : '0 0 16px rgb(223 186 125 / 0.12), inset 0 0 12px rgb(223 186 125 / 0.04)',
+            ? hasRsvp
+              ? '0 0 12px rgb(223 186 125 / 0.08), inset 0 0 8px rgb(223 186 125 / 0.03)'
+              : 'none'
+            : isHovered
+              ? '0 0 24px rgb(223 186 125 / 0.2), 0 0 12px rgb(223 186 125 / 0.1), inset 0 0 20px rgb(223 186 125 / 0.06)'
+              : '0 0 16px rgb(223 186 125 / 0.12), inset 0 0 12px rgb(223 186 125 / 0.04)',
         }}
         {...props}
       >
-        {/* Animated border shimmer */}
+        {/* Animated border shimmer - only when not confirmed */}
         {!isDisabledState && !disableAnimations && (
           <div
             className={cn(
@@ -173,9 +172,7 @@ export const FmRsvpButton = forwardRef<HTMLButtonElement, FmRsvpButtonProps>(
               'transition-opacity duration-300'
             )}
             style={{
-              background: hasRsvp
-                ? 'linear-gradient(90deg, transparent, rgb(220 38 38 / 0.3), transparent) border-box'
-                : 'linear-gradient(90deg, transparent, rgb(223 186 125 / 0.3), transparent) border-box',
+              background: 'linear-gradient(90deg, transparent, rgb(223 186 125 / 0.3), transparent) border-box',
               WebkitMask:
                 'linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)',
               WebkitMaskComposite: 'xor',
@@ -188,10 +185,7 @@ export const FmRsvpButton = forwardRef<HTMLButtonElement, FmRsvpButtonProps>(
         {ripples.map(ripple => (
           <span
             key={ripple.id}
-            className={cn(
-              'absolute rounded-full pointer-events-none animate-ripple',
-              hasRsvp ? 'bg-destructive/30' : 'bg-fm-gold/30'
-            )}
+            className="absolute rounded-full pointer-events-none animate-ripple bg-fm-gold/30"
             style={{
               left: `${ripple.x}%`,
               top: `${ripple.y}%`,
@@ -206,10 +200,7 @@ export const FmRsvpButton = forwardRef<HTMLButtonElement, FmRsvpButtonProps>(
         <span className="relative z-10 flex items-center justify-center gap-2">
           {showLoading ? (
             <>
-              <div className={cn(
-                'h-4 w-4 animate-spin rounded-full border-2 border-b-transparent',
-                hasRsvp ? 'border-green-500' : 'border-fm-gold'
-              )} />
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-b-transparent border-fm-gold" />
               <span>{t('buttons.processing')}</span>
             </>
           ) : (
@@ -218,7 +209,7 @@ export const FmRsvpButton = forwardRef<HTMLButtonElement, FmRsvpButtonProps>(
               <span
                 className={cn(
                   'transition-all duration-200',
-                  isHovered && !disableAnimations && 'tracking-[0.18em]'
+                  isHovered && !disableAnimations && !isDisabledState && 'tracking-[0.18em]'
                 )}
               >
                 {getButtonText()}
@@ -226,11 +217,6 @@ export const FmRsvpButton = forwardRef<HTMLButtonElement, FmRsvpButtonProps>(
             </>
           )}
         </span>
-
-        {/* RSVP confirmed indicator */}
-        {hasRsvp && !showLoading && (
-          <span className="absolute top-0 right-0 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-        )}
       </button>
     );
   }
