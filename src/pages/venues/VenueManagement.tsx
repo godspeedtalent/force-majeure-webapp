@@ -543,6 +543,7 @@ export default function VenueManagement() {
           isSaving={isSaving}
           disabled={activeTab === 'overview' ? (isLogoUploading || !name) : false}
           onSave={activeTab === 'overview' ? handleSaveOverview : handleSaveSocial}
+          hasSidebar
         />
       )}
     </SideNavbarLayout>
