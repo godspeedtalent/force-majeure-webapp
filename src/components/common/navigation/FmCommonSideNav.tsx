@@ -50,6 +50,8 @@ export interface FmCommonSideNavProps<T = string> {
   onItemChange: (item: T) => void;
   className?: string;
   showDividers?: boolean;
+  /** Optional header content rendered at the top of the sidebar (e.g., tenant selector) */
+  sidebarHeader?: React.ReactNode;
 }
 
 /**
@@ -70,6 +72,7 @@ export function FmCommonSideNav<T extends string = string>({
   onItemChange,
   className,
   showDividers = true,
+  sidebarHeader,
 }: FmCommonSideNavProps<T>) {
   const { open } = useSidebar();
   const [clickedItem, setClickedItem] = React.useState<T | null>(null);
@@ -226,6 +229,12 @@ export function FmCommonSideNav<T extends string = string>({
 
       {/* pb-14 accounts for fixed footer height (h-10 + buffer) */}
       <SidebarContent className='pt-12 pb-14'>
+        {/* Optional Sidebar Header (e.g., tenant selector) */}
+        {sidebarHeader && open && (
+          <div className='px-3 pb-4 border-b border-sidebar-border mb-4'>
+            {sidebarHeader}
+          </div>
+        )}
         {/* Navigation Groups */}
         {groups.map((group, groupIndex) => {
           const groupLabel = group.label || `group-${groupIndex}`;

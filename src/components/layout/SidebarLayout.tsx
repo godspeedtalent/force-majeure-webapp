@@ -51,6 +51,8 @@ interface SidebarLayoutProps<T extends string> {
   contentScrollable?: boolean;
   /** Optional additional classes for the root layout container (e.g., 'test-mode') */
   rootClassName?: string;
+  /** Optional header content for the sidebar (e.g., tenant/organization selector) */
+  sidebarHeader?: ReactNode;
 }
 
 /**
@@ -83,6 +85,7 @@ export const SidebarLayout = <T extends string>({
   contentWidth,
   contentScrollable = false,
   rootClassName = '',
+  sidebarHeader,
 }: SidebarLayoutProps<T>) => {
   const isMobile = useIsMobile();
   const { setBackButton, clearBackButton } = useNavigation();
@@ -120,6 +123,7 @@ export const SidebarLayout = <T extends string>({
             activeItem={activeItem}
             onItemChange={onItemChange}
             showDividers={showDividers}
+            sidebarHeader={sidebarHeader}
           />
         </div>
 
