@@ -497,6 +497,7 @@ export default function OrganizationManagement() {
           isSaving={isSaving}
           disabled={isImageUploading || !name}
           onSave={handleSaveOverview}
+          hasSidebar
         />
       )}
     </SideNavbarLayout>
