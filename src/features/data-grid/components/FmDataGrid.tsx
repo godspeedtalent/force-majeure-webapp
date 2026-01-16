@@ -6,7 +6,7 @@ import React, {
 import { useTranslation } from 'react-i18next';
 import { Table, TableBody, TableCell, TableRow } from '@/components/common/shadcn/table';
 import { toast } from 'sonner';
-import { cn, useIsMobile } from '@/shared';
+import { cn, useIsMobile, logger } from '@/shared';
 import { useDataGridKeyboardNav } from '../hooks/useDataGridKeyboardNav';
 import { useDataGridVirtualization } from '../hooks/useDataGridVirtualization';
 import { useDataGridState } from '../hooks/useDataGridState';
