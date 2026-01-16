@@ -1428,33 +1428,39 @@ export type Database = {
         Row: {
           author_id: string
           author_name: string
+          content: Json | null
           created_at: string | null
           id: string
           message: string
           priority: number
           status: string
+          title: string | null
           type: string
           updated_at: string | null
         }
         Insert: {
           author_id: string
           author_name: string
+          content?: Json | null
           created_at?: string | null
           id?: string
           message: string
           priority?: number
           status?: string
+          title?: string | null
           type: string
           updated_at?: string | null
         }
         Update: {
           author_id?: string
           author_name?: string
+          content?: Json | null
           created_at?: string | null
           id?: string
           message?: string
           priority?: number
           status?: string
+          title?: string | null
           type?: string
           updated_at?: string | null
         }
@@ -1755,6 +1761,7 @@ export type Database = {
           display_order: number | null
           event_id: string
           id: string
+          is_hidden: boolean
           organization_id: string
         }
         Insert: {
@@ -1762,6 +1769,7 @@ export type Database = {
           display_order?: number | null
           event_id: string
           id?: string
+          is_hidden?: boolean
           organization_id: string
         }
         Update: {
@@ -1769,6 +1777,7 @@ export type Database = {
           display_order?: number | null
           event_id?: string
           id?: string
+          is_hidden?: boolean
           organization_id?: string
         }
         Relationships: [
@@ -1784,6 +1793,42 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_promo_codes: {
+        Row: {
+          created_at: string | null
+          event_id: string
+          id: string
+          promo_code_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_id: string
+          id?: string
+          promo_code_id: string
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string
+          id?: string
+          promo_code_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_promo_codes_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_promo_codes_promo_code_id_fkey"
+            columns: ["promo_code_id"]
+            isOneToOne: false
+            referencedRelation: "promo_codes"
             referencedColumns: ["id"]
           },
         ]
@@ -1823,6 +1868,58 @@ export type Database = {
           },
           {
             foreignKeyName: "event_rsvps_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_staff: {
+        Row: {
+          created_at: string | null
+          event_id: string
+          id: string
+          organization_id: string | null
+          role: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_id: string
+          id?: string
+          organization_id?: string | null
+          role: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string
+          id?: string
+          organization_id?: string | null
+          role?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_staff_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_staff_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_staff_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users_complete"
@@ -1901,6 +1998,8 @@ export type Database = {
           organization_id: string | null
           rsvp_capacity: number | null
           share_count: number
+          show_guest_list: boolean
+          show_partners: boolean
           show_venue_map: boolean
           show_view_count: boolean | null
           start_time: string | null
@@ -1910,6 +2009,7 @@ export type Database = {
           title: string
           updated_at: string | null
           venue_id: string | null
+          view_count: number
         }
         Insert: {
           about_event?: string | null
@@ -1933,6 +2033,8 @@ export type Database = {
           organization_id?: string | null
           rsvp_capacity?: number | null
           share_count?: number
+          show_guest_list?: boolean
+          show_partners?: boolean
           show_venue_map?: boolean
           show_view_count?: boolean | null
           start_time?: string | null
@@ -1942,6 +2044,7 @@ export type Database = {
           title: string
           updated_at?: string | null
           venue_id?: string | null
+          view_count?: number
         }
         Update: {
           about_event?: string | null
@@ -1965,6 +2068,8 @@ export type Database = {
           organization_id?: string | null
           rsvp_capacity?: number | null
           share_count?: number
+          show_guest_list?: boolean
+          show_partners?: boolean
           show_venue_map?: boolean
           show_view_count?: boolean | null
           start_time?: string | null
@@ -1974,6 +2079,7 @@ export type Database = {
           title?: string
           updated_at?: string | null
           venue_id?: string | null
+          view_count?: number
         }
         Relationships: [
           {
@@ -2604,6 +2710,7 @@ export type Database = {
           stripe_checkout_session_id: string | null
           stripe_payment_intent_id: string | null
           subtotal_cents: number
+          test_data: boolean
           total_cents: number
           updated_at: string
           user_id: string | null
@@ -2627,6 +2734,7 @@ export type Database = {
           stripe_checkout_session_id?: string | null
           stripe_payment_intent_id?: string | null
           subtotal_cents: number
+          test_data?: boolean
           total_cents: number
           updated_at?: string
           user_id?: string | null
@@ -2650,6 +2758,7 @@ export type Database = {
           stripe_checkout_session_id?: string | null
           stripe_payment_intent_id?: string | null
           subtotal_cents?: number
+          test_data?: boolean
           total_cents?: number
           updated_at?: string
           user_id?: string | null
@@ -3031,8 +3140,84 @@ export type Database = {
           },
         ]
       }
+      promo_code_groups: {
+        Row: {
+          created_at: string | null
+          id: string
+          promo_code_id: string
+          ticket_group_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          promo_code_id: string
+          ticket_group_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          promo_code_id?: string
+          ticket_group_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promo_code_groups_promo_code_id_fkey"
+            columns: ["promo_code_id"]
+            isOneToOne: false
+            referencedRelation: "promo_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "promo_code_groups_ticket_group_id_fkey"
+            columns: ["ticket_group_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      promo_code_tiers: {
+        Row: {
+          created_at: string | null
+          id: string
+          promo_code_id: string
+          ticket_tier_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          promo_code_id: string
+          ticket_tier_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          promo_code_id?: string
+          ticket_tier_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promo_code_tiers_promo_code_id_fkey"
+            columns: ["promo_code_id"]
+            isOneToOne: false
+            referencedRelation: "promo_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "promo_code_tiers_ticket_tier_id_fkey"
+            columns: ["ticket_tier_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       promo_codes: {
         Row: {
+          application_scope:
+            | Database["public"]["Enums"]["promo_code_scope"]
+            | null
+          applies_to_order: boolean | null
           code: string
           created_at: string
           discount_type: string
@@ -3043,6 +3228,10 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          application_scope?:
+            | Database["public"]["Enums"]["promo_code_scope"]
+            | null
+          applies_to_order?: boolean | null
           code: string
           created_at?: string
           discount_type: string
@@ -3053,6 +3242,10 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          application_scope?:
+            | Database["public"]["Enums"]["promo_code_scope"]
+            | null
+          applies_to_order?: boolean | null
           code?: string
           created_at?: string
           discount_type?: string
@@ -3817,6 +4010,7 @@ export type Database = {
           order_item_id: string
           qr_code_data: string
           status: string
+          test_data: boolean
           ticket_tier_id: string
           updated_at: string
         }
@@ -3835,6 +4029,7 @@ export type Database = {
           order_item_id: string
           qr_code_data: string
           status?: string
+          test_data?: boolean
           ticket_tier_id: string
           updated_at?: string
         }
@@ -3853,6 +4048,7 @@ export type Database = {
           order_item_id?: string
           qr_code_data?: string
           status?: string
+          test_data?: boolean
           ticket_tier_id?: string
           updated_at?: string
         }
@@ -4422,6 +4618,15 @@ export type Database = {
         Args: { p_product_id: string; p_quantity: number }
         Returns: boolean
       }
+      delete_mock_orders_by_event: {
+        Args: { p_event_id: string }
+        Returns: {
+          deleted_guests: number
+          deleted_order_items: number
+          deleted_orders: number
+          deleted_tickets: number
+        }[]
+      }
       end_analytics_session: {
         Args: { p_session_id: string }
         Returns: undefined
@@ -4664,6 +4869,7 @@ export type Database = {
         Args: { p_event_id: string }
         Returns: number
       }
+      increment_event_view: { Args: { p_event_id: string }; Returns: number }
       increment_genre_selection_count: {
         Args: { genre_id: string }
         Returns: undefined
@@ -4696,6 +4902,14 @@ export type Database = {
         Returns: string
       }
       is_dev_admin: { Args: { user_id_param: string }; Returns: boolean }
+      is_event_manager: {
+        Args: { p_event_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      is_event_staff: {
+        Args: { p_event_id: string; p_user_id: string }
+        Returns: boolean
+      }
       is_pg_trgm_available: { Args: never; Returns: boolean }
       is_user_interested: {
         Args: { p_event_id: string; p_user_id: string }
@@ -4747,14 +4961,9 @@ export type Database = {
         }
         Returns: string
       }
-      record_event_view: {
-        Args: {
-          p_event_id: string
-          p_ip_address?: unknown
-          p_session_id?: string
-          p_user_agent?: string
-        }
-        Returns: string
+      promo_code_applies_to_tier: {
+        Args: { p_promo_code_id: string; p_ticket_tier_id: string }
+        Returns: boolean
       }
       record_funnel_event: {
         Args: {
@@ -4990,6 +5199,11 @@ export type Database = {
         | "completed"
         | "failed"
         | "rolled_back"
+      promo_code_scope:
+        | "all_tickets"
+        | "specific_groups"
+        | "specific_tiers"
+        | "disabled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -5184,6 +5398,12 @@ export const Constants = {
         "completed",
         "failed",
         "rolled_back",
+      ],
+      promo_code_scope: [
+        "all_tickets",
+        "specific_groups",
+        "specific_tiers",
+        "disabled",
       ],
     },
   },
