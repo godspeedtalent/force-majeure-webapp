@@ -84,10 +84,10 @@ export const FmCommonToggle = ({
       <Switch
         id={id}
         checked={checked}
-        onCheckedChange={handleToggle}
         disabled={disabled}
+        onClick={(e) => e.stopPropagation()}
         className={cn(
-          'data-[state=checked]:bg-fm-gold transition-all duration-300',
+          'data-[state=checked]:bg-fm-gold transition-all duration-300 pointer-events-none',
           isSmall && 'scale-75',
           !disabled &&
             'group-hover:shadow-[0_0_12px_rgba(207,173,118,0.5)] group-hover:scale-110',
