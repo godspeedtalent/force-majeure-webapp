@@ -51,12 +51,12 @@ export function FmMobileDevToolbar() {
     }
   }, [location.pathname, closeMainDrawer]);
 
-  // Only show to admin/developer roles
-  const canAccessDevTools =
-    hasRole(ROLES.ADMIN) || hasRole(ROLES.DEVELOPER);
+  // Only show to admin/developer/fm_staff roles
+  const canAccessDevTools = hasRole(ROLES.ADMIN) || hasRole(ROLES.DEVELOPER);
+  const canAccessStaffTools = hasRole(ROLES.FM_STAFF) || canAccessDevTools;
 
-  // Don't render if not mobile or user doesn't have access
-  if (!isMobile || !canAccessDevTools) {
+  // Don't render if not mobile or user doesn't have any toolbar access
+  if (!isMobile || !canAccessStaffTools) {
     return null;
   }
 
@@ -87,6 +87,7 @@ export function FmMobileDevToolbar() {
         onOpenChange={handleMainDrawerChange}
         onToolSelect={openTool}
         badges={badges}
+        canAccessDevTools={canAccessDevTools}
       />
 
       {/* Nested Tool Content Drawer */}

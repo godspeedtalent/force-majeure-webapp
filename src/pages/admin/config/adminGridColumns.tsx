@@ -299,14 +299,17 @@ export const userColumns: DataGridColumn[] = [
     storagePath: 'users',
     onImageUpdate: (row, newImageUrl) => updateUserAvatar(row, newImageUrl),
   }),
-  DataGridColumns.relation({
-    key: 'organization_id',
-    label: t('adminGrid.columns.organization'),
-    sortable: true,
-    icon: Building2,
-    getLabel: (row: any) => row.organization_name || '—',
-    getHref: (row: any) => row.organization_id ? `/organization/${row.organization_id}` : '#',
-  }),
+  {
+    ...DataGridColumns.relation({
+      key: 'organization_id',
+      label: t('adminGrid.columns.organization'),
+      sortable: true,
+      icon: Building2,
+      getLabel: (row: any) => row.organization_name || '—',
+      // No getHref - clicking will enter edit mode instead of navigating
+    }),
+    editable: true,
+  },
   {
     key: 'roles',
     label: t('adminGrid.columns.roles'),

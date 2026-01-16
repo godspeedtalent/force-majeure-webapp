@@ -80,8 +80,8 @@ export const useBreadcrumbs = () => {
             .map(word => word.charAt(0).toUpperCase() + word.slice(1))
             .join(' ');
 
-          // Skip the leading "Event" breadcrumb on event detail/admin pages
-          if (currentPath === '/event') {
+          // Skip certain intermediate breadcrumbs that aren't meaningful navigation targets
+          if (['/event', '/users', '/user'].includes(currentPath)) {
             continue;
           }
 

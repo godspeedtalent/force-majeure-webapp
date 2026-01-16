@@ -15,6 +15,32 @@ interface FunnelVisualizationProps {
 }
 
 export function FunnelVisualization({ data, isLoading }: FunnelVisualizationProps) {
+  // Aggregate all funnel data - must be called before any early returns to follow React hooks rules
+  const aggregated = useMemo(() => {
+    return data.reduce(
+      (acc, item) => ({
+        eventViews: acc.eventViews + item.event_views,
+        ticketTierViews: acc.ticketTierViews + item.ticket_tier_views,
+        addToCarts: acc.addToCarts + item.add_to_carts,
+        checkoutStarts: acc.checkoutStarts + item.checkout_starts,
+        checkoutCompletes: acc.checkoutCompletes + item.checkout_completes,
+        checkoutAbandons: acc.checkoutAbandons + item.checkout_abandons,
+        cartAbandons: acc.cartAbandons + item.cart_abandons,
+        totalRevenue: acc.totalRevenue + (item.total_revenue_cents || 0),
+      }),
+      {
+        eventViews: 0,
+        ticketTierViews: 0,
+        addToCarts: 0,
+        checkoutStarts: 0,
+        checkoutCompletes: 0,
+        checkoutAbandons: 0,
+        cartAbandons: 0,
+        totalRevenue: 0,
+      }
+    );
+  }, [data]);
+
   // Show skeleton loading state
   if (isLoading) {
     return (
@@ -56,32 +82,6 @@ export function FunnelVisualization({ data, isLoading }: FunnelVisualizationProp
       </Card>
     );
   }
-
-  // Aggregate all funnel data
-  const aggregated = useMemo(() => {
-    return data.reduce(
-      (acc, item) => ({
-        eventViews: acc.eventViews + item.event_views,
-        ticketTierViews: acc.ticketTierViews + item.ticket_tier_views,
-        addToCarts: acc.addToCarts + item.add_to_carts,
-        checkoutStarts: acc.checkoutStarts + item.checkout_starts,
-        checkoutCompletes: acc.checkoutCompletes + item.checkout_completes,
-        checkoutAbandons: acc.checkoutAbandons + item.checkout_abandons,
-        cartAbandons: acc.cartAbandons + item.cart_abandons,
-        totalRevenue: acc.totalRevenue + (item.total_revenue_cents || 0),
-      }),
-      {
-        eventViews: 0,
-        ticketTierViews: 0,
-        addToCarts: 0,
-        checkoutStarts: 0,
-        checkoutCompletes: 0,
-        checkoutAbandons: 0,
-        cartAbandons: 0,
-        totalRevenue: 0,
-      }
-    );
-  }, [data]);
 
   const stages = [
     {

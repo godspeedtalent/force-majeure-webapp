@@ -82,6 +82,15 @@ export function RoleManagementModal({
   };
 
   const handleToggleRole = async (roleName: string, shouldAdd: boolean) => {
+    // Validate userId before attempting role operations
+    if (!userId) {
+      handleError(new Error('User ID is missing'), {
+        title: tToast('admin.roleUpdateFailed'),
+        context: `RoleManagementModal.handleToggleRole - userId is null/undefined`,
+      });
+      return;
+    }
+
     setTogglingRole(roleName);
     try {
       if (shouldAdd) {
@@ -121,17 +130,19 @@ export function RoleManagementModal({
       className='sm:max-w-[600px]'
       headerActions={<Key className='h-5 w-5 text-fm-gold' />}
     >
-      <div className='space-y-6 py-4'>
+      <div className='space-y-[20px]'>
         {/* Available Roles */}
-        <div className='space-y-3'>
-          <label className='text-base font-medium'>{t('labels.roles')}</label>
+        <div className='space-y-[10px]'>
+          <label className='text-xs uppercase text-muted-foreground tracking-wide'>
+            {t('labels.roles')}
+          </label>
           {loading ? (
-            <div className='flex items-center gap-2 p-4 border border-dashed bg-muted/50 text-muted-foreground'>
-              <AlertCircle className='h-4 w-4' />
+            <div className='flex items-center gap-[10px] p-[20px] bg-white/5 border border-white/10 text-muted-foreground'>
+              <AlertCircle className='h-4 w-4 animate-pulse' />
               <span className='text-sm'>{t('dialogs.loadingRoles')}</span>
             </div>
           ) : availableRoles.length > 0 ? (
-            <div className='space-y-2'>
+            <div className='space-y-[5px] border border-white/10 bg-black/20 p-[10px]'>
               {availableRoles.map(role => {
                 const userHasRole = hasRole(role.role_name);
                 const isToggling = togglingRole === role.role_name;
@@ -150,7 +161,7 @@ export function RoleManagementModal({
               })}
             </div>
           ) : (
-            <div className='flex items-center gap-2 p-4 border border-dashed bg-muted/50 text-muted-foreground'>
+            <div className='flex items-center gap-[10px] p-[20px] bg-white/5 border border-white/10 text-muted-foreground'>
               <AlertCircle className='h-4 w-4' />
               <span className='text-sm'>{t('dialogs.noRolesAvailable')}</span>
             </div>
@@ -159,9 +170,9 @@ export function RoleManagementModal({
       </div>
 
       {/* Footer */}
-      <div className='flex justify-end gap-2 pt-4 border-t'>
+      <div className='flex justify-end gap-[10px] pt-[20px] mt-[20px] border-t border-white/10'>
         <FmCommonButton
-          variant='secondary'
+          variant='default'
           onClick={() => onOpenChange(false)}
         >
           {t('dialogs.done')}

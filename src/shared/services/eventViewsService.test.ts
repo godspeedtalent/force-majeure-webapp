@@ -11,13 +11,14 @@ vi.mock('@/shared', () => ({
     rpc: mockRpc,
   },
   logger: {
+    warn: vi.fn(),
     error: vi.fn(),
     info: vi.fn(),
     debug: vi.fn(),
   },
 }));
 
-import { recordEventView, getEventViewCount } from './eventViewsService';
+import { incrementEventView, recordEventView, getEventViewCount } from './eventViewsService';
 
 describe('eventViewsService', () => {
   beforeEach(() => {
@@ -25,53 +26,36 @@ describe('eventViewsService', () => {
   });
 
   // ============================================================================
-  // recordEventView Tests
+  // incrementEventView Tests
   // ============================================================================
 
-  describe('recordEventView', () => {
-    it('should record event view with all parameters', async () => {
-      mockRpc.mockResolvedValue({ error: null });
+  describe('incrementEventView', () => {
+    it('should increment view count and return new count', async () => {
+      mockRpc.mockResolvedValue({ data: 42, error: null });
 
-      const result = await recordEventView({
-        eventId: 'event-123',
-        sessionId: 'session-456',
-        ipAddress: '192.168.1.1',
-        userAgent: 'Mozilla/5.0',
-      });
+      const result = await incrementEventView('event-123');
 
-      expect(result).toEqual({ success: true });
-      expect(mockRpc).toHaveBeenCalledWith('record_event_view', {
+      expect(result).toEqual({ success: true, newCount: 42 });
+      expect(mockRpc).toHaveBeenCalledWith('increment_event_view', {
         p_event_id: 'event-123',
-        p_session_id: 'session-456',
-        p_ip_address: '192.168.1.1',
-        p_user_agent: 'Mozilla/5.0',
       });
     });
 
-    it('should record event view with only eventId', async () => {
-      mockRpc.mockResolvedValue({ error: null });
+    it('should return 0 when data is null', async () => {
+      mockRpc.mockResolvedValue({ data: null, error: null });
 
-      const result = await recordEventView({
-        eventId: 'event-123',
-      });
+      const result = await incrementEventView('event-123');
 
-      expect(result).toEqual({ success: true });
-      expect(mockRpc).toHaveBeenCalledWith('record_event_view', {
-        p_event_id: 'event-123',
-        p_session_id: undefined,
-        p_ip_address: undefined,
-        p_user_agent: undefined,
-      });
+      expect(result).toEqual({ success: true, newCount: 0 });
     });
 
     it('should return error when RPC fails', async () => {
       mockRpc.mockResolvedValue({
+        data: null,
         error: { message: 'Database connection failed' },
       });
 
-      const result = await recordEventView({
-        eventId: 'event-123',
-      });
+      const result = await incrementEventView('event-123');
 
       expect(result).toEqual({
         success: false,
@@ -82,9 +66,7 @@ describe('eventViewsService', () => {
     it('should handle exception and return error', async () => {
       mockRpc.mockRejectedValue(new Error('Network error'));
 
-      const result = await recordEventView({
-        eventId: 'event-123',
-      });
+      const result = await incrementEventView('event-123');
 
       expect(result).toEqual({
         success: false,
@@ -95,13 +77,28 @@ describe('eventViewsService', () => {
     it('should handle non-Error exceptions', async () => {
       mockRpc.mockRejectedValue('String error');
 
-      const result = await recordEventView({
-        eventId: 'event-123',
-      });
+      const result = await incrementEventView('event-123');
 
       expect(result).toEqual({
         success: false,
         error: 'String error',
+      });
+    });
+  });
+
+  // ============================================================================
+  // recordEventView Tests (deprecated wrapper)
+  // ============================================================================
+
+  describe('recordEventView (deprecated)', () => {
+    it('should call incrementEventView internally', async () => {
+      mockRpc.mockResolvedValue({ data: 10, error: null });
+
+      const result = await recordEventView({ eventId: 'event-123' });
+
+      expect(result).toEqual({ success: true });
+      expect(mockRpc).toHaveBeenCalledWith('increment_event_view', {
+        p_event_id: 'event-123',
       });
     });
   });

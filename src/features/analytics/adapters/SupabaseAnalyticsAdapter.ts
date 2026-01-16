@@ -372,11 +372,10 @@ export class SupabaseAnalyticsAdapter implements AnalyticsAdapter {
     pagination: PaginationParams = { page: 1, pageSize: 50 }
   ): Promise<AdapterResult<PaginatedResult<StoredSession>>> {
     try {
-      // Join with profiles to get username for authenticated sessions
-      // Use profiles(username) syntax for the FK join from user_id to profiles.id
+      // Query sessions without join - username lookup done separately to avoid FK relationship issues
       let query = (supabase as AnySupabase)
         .from('analytics_sessions')
-        .select('*, profiles(username)', { count: 'exact' })
+        .select('*', { count: 'exact' })
         .order('started_at', { ascending: false });
 
       if (filters?.startDate) {
@@ -398,18 +397,31 @@ export class SupabaseAnalyticsAdapter implements AnalyticsAdapter {
         return { success: false, error: error.message };
       }
 
-      // Transform the data to flatten the profiles join
-      interface RawSessionRow {
-        profiles: { username: string | null } | null;
-        [key: string]: unknown;
+      const sessions = (data || []) as StoredSession[];
+
+      // Fetch usernames for sessions that have user_ids
+      const userIds = sessions
+        .map(s => s.user_id)
+        .filter((id): id is string => id !== null);
+
+      if (userIds.length > 0) {
+        // Select both username and display_name - use display_name as fallback
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, username, display_name')
+          .in('id', userIds);
+
+        const usernameMap = new Map(
+          (profiles || []).map(p => [p.id, p.username || p.display_name])
+        );
+
+        sessions.forEach(session => {
+          if (session.user_id) {
+            (session as StoredSession & { username?: string | null }).username =
+              usernameMap.get(session.user_id) || null;
+          }
+        });
       }
-      const sessions = ((data || []) as RawSessionRow[]).map(row => {
-        const { profiles, ...rest } = row;
-        return {
-          ...rest,
-          username: profiles?.username || null,
-        };
-      }) as StoredSession[];
 
       return {
         success: true,

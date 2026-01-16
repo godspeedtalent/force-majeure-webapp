@@ -1,8 +1,8 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { Navigation } from '@/components/navigation/Navigation';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
-import { FmBackButton } from '@/components/common/buttons/FmBackButton';
+import { useNavigation } from '@/contexts/NavigationContext';
 import { cn } from '@/shared';
 
 interface DemoLayoutProps {
@@ -28,6 +28,20 @@ export const DemoLayout = ({
   onBack,
   backButtonLabel = 'Developer Home',
 }: DemoLayoutProps) => {
+  const { setBackButton, clearBackButton } = useNavigation();
+
+  // Set back button in navigation bar
+  useEffect(() => {
+    if (showBackButton) {
+      setBackButton({
+        show: true,
+        onClick: onBack,
+        label: backButtonLabel,
+      });
+    }
+    return () => clearBackButton();
+  }, [showBackButton, onBack, backButtonLabel, setBackButton, clearBackButton]);
+
   return (
     <>
       <Navigation />
@@ -36,13 +50,6 @@ export const DemoLayout = ({
         <div className='absolute inset-0 bg-gradient-monochrome opacity-10' />
 
         <div className='container mx-auto pt-24 pb-8 px-4 relative z-10'>
-          {showBackButton && (
-            <FmBackButton
-              position='floating'
-              onClick={onBack}
-              label={backButtonLabel}
-            />
-          )}
           <div className={cn('mx-auto', condensed ? 'max-w-4xl' : 'max-w-7xl')}>
             {/* Header - Single Row */}
             <div className='mb-4'>

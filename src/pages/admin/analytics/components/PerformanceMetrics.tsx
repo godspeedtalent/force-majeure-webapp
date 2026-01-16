@@ -113,6 +113,46 @@ function formatValue(value: number, unit: string): string {
 }
 
 export function PerformanceMetrics({ data, isLoading }: PerformanceMetricsProps) {
+  // Get latest values for each metric type - must be called before any early returns to follow React hooks rules
+  const latestMetrics = useMemo(() => {
+    const byType = new Map<PerformanceMetricType, PerformanceSummary>();
+
+    data.forEach(item => {
+      const existing = byType.get(item.metric_type);
+      if (!existing || item.day > existing.day) {
+        byType.set(item.metric_type, item);
+      }
+    });
+
+    return Array.from(byType.entries())
+      .filter(([type]) => METRIC_CONFIG[type])
+      .map(([type, summary]) => ({
+        type,
+        config: METRIC_CONFIG[type],
+        ...summary,
+      }));
+  }, [data]);
+
+  // Calculate health score percentages
+  const healthScores = useMemo(() => {
+    const totals = { good: 0, needsImprovement: 0, poor: 0, total: 0 };
+
+    data.forEach(item => {
+      totals.good += item.good_count;
+      totals.needsImprovement += item.needs_improvement_count;
+      totals.poor += item.poor_count;
+      totals.total += item.sample_count;
+    });
+
+    if (totals.total === 0) return null;
+
+    return {
+      good: (totals.good / totals.total) * 100,
+      needsImprovement: (totals.needsImprovement / totals.total) * 100,
+      poor: (totals.poor / totals.total) * 100,
+    };
+  }, [data]);
+
   // Show skeleton loading state
   if (isLoading) {
     return (
@@ -162,46 +202,6 @@ export function PerformanceMetrics({ data, isLoading }: PerformanceMetricsProps)
       </div>
     );
   }
-
-  // Get latest values for each metric type
-  const latestMetrics = useMemo(() => {
-    const byType = new Map<PerformanceMetricType, PerformanceSummary>();
-
-    data.forEach(item => {
-      const existing = byType.get(item.metric_type);
-      if (!existing || item.day > existing.day) {
-        byType.set(item.metric_type, item);
-      }
-    });
-
-    return Array.from(byType.entries())
-      .filter(([type]) => METRIC_CONFIG[type])
-      .map(([type, summary]) => ({
-        type,
-        config: METRIC_CONFIG[type],
-        ...summary,
-      }));
-  }, [data]);
-
-  // Calculate health score percentages
-  const healthScores = useMemo(() => {
-    const totals = { good: 0, needsImprovement: 0, poor: 0, total: 0 };
-
-    data.forEach(item => {
-      totals.good += item.good_count;
-      totals.needsImprovement += item.needs_improvement_count;
-      totals.poor += item.poor_count;
-      totals.total += item.sample_count;
-    });
-
-    if (totals.total === 0) return null;
-
-    return {
-      good: (totals.good / totals.total) * 100,
-      needsImprovement: (totals.needsImprovement / totals.total) * 100,
-      poor: (totals.poor / totals.total) * 100,
-    };
-  }, [data]);
 
   if (latestMetrics.length === 0) {
     return (

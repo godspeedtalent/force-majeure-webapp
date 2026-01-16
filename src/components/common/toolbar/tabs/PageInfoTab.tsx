@@ -54,7 +54,7 @@ const ROUTE_TO_COMPONENT_MAP: Record<string, { page: string; layout: string; fil
   '/developer/demo/story-designer': { page: 'StoryDesigner', layout: 'Layout', file: 'src/pages/demo/StoryDesigner.tsx' },
   '/admin/statistics': { page: 'Statistics', layout: 'Layout', file: 'src/pages/admin/Statistics.tsx' },
   '/admin/products': { page: 'ProductsManagement', layout: 'Layout', file: 'src/pages/admin/ProductsManagement.tsx' },
-  '/organization/tools': { page: 'OrganizationTools', layout: 'Layout', file: 'src/pages/organization/OrganizationTools.tsx' },
+  '/organization/tools': { page: 'OrganizationTools', layout: 'SidebarLayout', file: 'src/pages/organization/OrganizationTools.tsx' },
   '/organization/scanning': { page: 'TicketScanning', layout: 'Layout', file: 'src/pages/organization/TicketScanning.tsx' },
   '/testing': { page: 'TestingIndex', layout: 'Layout', file: 'src/pages/testing/TestingIndex.tsx' },
   '/testing/checkout-flow': { page: 'CheckoutFlowTests', layout: 'Layout', file: 'src/pages/testing/CheckoutFlowTests.tsx' },

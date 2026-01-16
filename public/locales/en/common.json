@@ -411,6 +411,8 @@
     "featureToggles": "Feature Toggles",
     "todoNotes": "TODO Notes",
     "devNotes": "Dev Notes",
+    "staffNotes": "Staff Notes",
+    "staffNotesTitle": "Staff Notes",
     "mockRole": "Mock Role",
     "mockRoleSimulator": "Role Simulator",
     "gallery": "Gallery",
@@ -433,6 +435,7 @@
     "hiddenTabs": "Hidden tabs",
     "groups": {
       "organization": "Organization",
+      "staff": "Staff Tools",
       "developerTools": "Developer Tools",
       "devTools": "Dev Tools",
       "dataConfig": "Data & Config",
@@ -1137,6 +1140,12 @@
     "ticketingFeesDescription": "Configure ticketing fees applied to all ticket purchases",
     "artistManagement": "Artist Management",
     "artistDetails": "Artist Details",
+    "artistsManagement": "Artists Management",
+    "artistsManagementDescription": "Manage artist profiles, genres, and metadata.",
+    "venuesManagement": "Venues Management",
+    "venuesManagementDescription": "Manage venue locations, capacities, and details.",
+    "guestsManagement": "Guests Management",
+    "guestsManagementDescription": "Manage guest records for unauthenticated users who have made purchases.",
     "profilePreview": "Profile Preview",
     "profilePreviewDescription": "This is how your profile will look to others"
   },
@@ -1189,6 +1198,8 @@
     "deleteGenre": "Delete Genre",
     "addGenre": "Add Genre",
     "addEvent": "Add Event",
+    "addVenue": "Add Venue",
+    "addArtist": "Add Artist",
     "issues": "Issues",
     "noHeadliner": "No Headliner",
     "noIssues": "No issues",
@@ -2498,21 +2509,71 @@
     "backToHome": "Back to Home"
   },
   "organization": {
-    "dashboard": {
-      "title": "Org Dashboard",
-      "subtitle": "Manage your organization, staff, and view analytics",
-      "salesReports": "Sales Reports",
-      "salesReportsDescription": "View event sales, revenue analytics, and ticket performance",
-      "viewReports": "View Reports",
-      "venueInfo": "Venue Information",
-      "venueInfoDescription": "Update venue details, capacity, and location information",
-      "manageVenue": "Manage Venue",
-      "staffManagement": "Staff Management",
-      "staffManagementDescription": "Add, remove, and manage your organization's staff members",
-      "manageStaff": "Manage Staff",
-      "organizationProfile": "Organization Profile",
-      "organizationProfileDescription": "Edit your organization's public profile and settings",
-      "editProfile": "Edit Profile"
+    "manage": {
+      "selectOrganization": "Select an organization",
+      "nav": {
+        "organization": "Organization",
+        "overview": "Overview",
+        "overviewDescription": "Dashboard and quick stats",
+        "events": "Events",
+        "eventsDescription": "View and manage organization events",
+        "sales": "Sales",
+        "salesDescription": "Revenue analytics and ticket performance",
+        "venues": "Venues",
+        "venuesDescription": "Venue details and locations",
+        "management": "Management",
+        "staff": "Staff",
+        "staffDescription": "Manage organization staff members",
+        "settings": "Settings",
+        "settingsDescription": "Organization profile and settings"
+      },
+      "overview": {
+        "title": "Overview",
+        "description": "Dashboard and quick stats for your organization.",
+        "upcomingEvents": "Upcoming Events",
+        "pastEvents": "Past Events",
+        "totalVenues": "Total Venues",
+        "staffMembers": "Staff Members",
+        "quickActions": "Quick Actions",
+        "viewEvents": "View Events",
+        "viewSales": "View Sales",
+        "manageStaff": "Manage Staff"
+      },
+      "events": {
+        "title": "Events",
+        "description": "View and manage your organization's events.",
+        "upcoming": "Upcoming Events",
+        "past": "Past Events",
+        "noUpcoming": "No upcoming events.",
+        "andMore": "And {{count}} more..."
+      },
+      "sales": {
+        "title": "Sales Reports",
+        "description": "View event sales, revenue analytics, and ticket performance.",
+        "totalRevenue": "Total Revenue",
+        "ticketsSold": "Tickets Sold",
+        "orders": "Orders",
+        "salesByEvent": "Sales by Event",
+        "noSalesData": "No sales data available yet."
+      },
+      "venues": {
+        "title": "Venues",
+        "description": "View and manage venues associated with your organization.",
+        "capacity": "Capacity",
+        "noVenues": "No venues found."
+      },
+      "staff": {
+        "title": "Staff Management",
+        "description": "Add, remove, and manage your organization's staff members.",
+        "comingSoon": "Staff management coming soon."
+      },
+      "settings": {
+        "title": "Organization Settings",
+        "description": "Edit your organization's public profile and settings.",
+        "organizationProfile": "Organization Profile",
+        "editOrganization": "Edit Organization",
+        "selectOrgFirst": "Please select an organization to view settings."
+      }
     },
     "loadFailed": "Failed to load organization",
     "notFound": "Organization not found",
@@ -2599,7 +2660,11 @@
       "guestDeleted": "Guest deleted",
       "guestDeleteFailed": "Failed to delete guest",
       "schemaRefreshSuccess": "Schema refreshed successfully! {{count}} tables updated.",
-      "schemaRefreshFailed": "Failed to refresh schema"
+      "schemaRefreshFailed": "Failed to refresh schema",
+      "overviewTitle": "Database Overview",
+      "overviewDescription": "Manage and monitor your database tables and records.",
+      "refreshing": "Refreshing...",
+      "refreshSchema": "Refresh Schema"
     },
     "featureToggles": {
       "description": "Enable or disable features across the application per environment",
@@ -3783,7 +3848,7 @@
     }
   },
   "organizationTab": {
-    "goToOrgDashboard": "Go to Org Dashboard",
+    "goToOrgDashboard": "Manage Organization",
     "goToTicketScanner": "Go to Ticket Scanner"
   },
   "mobileDevTools": {
@@ -3795,6 +3860,7 @@
       "features": "Features",
       "session": "Session",
       "notes": "Notes",
+      "staffNotes": "Staff Notes",
       "roles": "Roles"
     },
     "toolLabels": {
@@ -3803,6 +3869,7 @@
       "features": "Feature Toggles",
       "session": "Session Overrides",
       "notes": "Developer Notes",
+      "staffNotes": "Staff Notes",
       "roles": "Role Simulation"
     },
     "fab": {

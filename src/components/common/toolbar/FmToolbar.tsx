@@ -125,6 +125,8 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
   // Check if user has actual developer or admin role
   const isDeveloperOrAdmin = hasAnyRole(ROLES.DEVELOPER, ROLES.ADMIN);
   const isAdmin = hasAnyRole(ROLES.ADMIN);
+  // Staff can access staff tools (Staff Notes) plus the toolbar itself
+  const canAccessStaffTools = hasAnyRole(ROLES.FM_STAFF, ROLES.DEVELOPER, ROLES.ADMIN);
 
   // Check if user has items in cart
   const hasCartItems = getTotalItems() > 0;
@@ -275,17 +277,18 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         alignment: 'bottom',
         groupLabel: t('toolbar.groups.dataConfig'),
       },
+      // Staff Tools group - accessible to FM_STAFF, DEVELOPER, and ADMIN
       {
         id: 'notes',
-        label: t('toolbar.todoNotes'),
+        label: t('toolbar.staffNotes'),
         icon: ClipboardList,
         content: <DevNotesTabContent />,
-        title: t('toolbar.devNotes'),
-        visible: isDeveloperOrAdmin,
-        group: 'dataConfig',
-        groupOrder: 4,
+        title: t('toolbar.staffNotesTitle'),
+        visible: canAccessStaffTools,
+        group: 'staff',
+        groupOrder: 2.5, // Between organization (2) and devTools (3)
         alignment: 'bottom',
-        groupLabel: t('toolbar.groups.dataConfig'),
+        groupLabel: t('toolbar.groups.staff'),
         resizable: true,
         maxWidth: Math.floor(window.innerWidth * 0.4), // 40vw
       },
@@ -316,7 +319,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         badge: pendingRequestsCount,
       },
     ],
-    [isDeveloperOrAdmin, isAdmin, user, profile, hasOrganizationAccess, navigate, t, isFeatureEnabled, pendingRequestsCount]
+    [isDeveloperOrAdmin, isAdmin, canAccessStaffTools, user, profile, hasOrganizationAccess, navigate, t, isFeatureEnabled, pendingRequestsCount, hasCartItems]
   );
 
   const visibleTabs = useMemo(() => {

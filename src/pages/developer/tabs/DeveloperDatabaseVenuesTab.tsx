@@ -45,8 +45,8 @@ export function DeveloperDatabaseVenuesTab() {
   return (
     <div className='space-y-6'>
       <FmSectionHeader
-        title='Venues Management'
-        description='Manage venue locations, capacities, and details.'
+        title={t('pageTitles.venuesManagement')}
+        description={t('pageTitles.venuesManagementDescription')}
         icon={MapPin}
       />
 
@@ -59,7 +59,7 @@ export function DeveloperDatabaseVenuesTab() {
         pageSize={15}
         onUpdate={(row, columnKey, newValue) => handleUpdate(row as VenueRecord, columnKey, newValue)}
         resourceName='Venue'
-        createButtonLabel='Add Venue'
+        createButtonLabel={t('table.addVenue')}
         onCreateButtonClick={() => navigate('/venues/create')}
       />
 

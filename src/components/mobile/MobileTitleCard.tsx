@@ -86,7 +86,7 @@ export function MobileTitleCard({
       className={cn(
         'flex-1 w-full',
         'flex flex-col items-center justify-center',
-        'px-[20px]',
+        'px-[20px] pb-[180px]',
         'relative'
       )}
     >
@@ -152,26 +152,26 @@ export function MobileTitleCard({
         >
           <DecorativeDivider marginTop='mt-0' marginBottom='mb-0' opacity={0.5} />
         </div>
-      </div>
 
-      {/* Scroll Hint - always in DOM, fades in to prevent layout shift */}
-      <div
-        className={cn(
-          'absolute bottom-[120px] left-1/2 -translate-x-1/2',
-          'flex flex-col items-center gap-[10px]',
-          'transition-opacity duration-500 ease-out',
-          showHint ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        )}
-      >
-        <span className='text-xs text-muted-foreground uppercase tracking-[0.15em]'>
-          Swipe up
-        </span>
-        <ChevronDown
+        {/* Scroll Hint - just below divider */}
+        <div
           className={cn(
-            'w-6 h-6 text-fm-gold/80',
-            showHint && 'animate-scroll-cue-bounce'
+            'mt-[20px]',
+            'flex flex-col items-center gap-[10px]',
+            'transition-opacity duration-500 ease-out',
+            showHint ? 'opacity-100' : 'opacity-0 pointer-events-none'
           )}
-        />
+        >
+          <span className='text-xs text-muted-foreground uppercase tracking-[0.15em]'>
+            Swipe up
+          </span>
+          <ChevronDown
+            className={cn(
+              'w-6 h-6 text-fm-gold/80',
+              showHint && 'animate-scroll-cue-bounce'
+            )}
+          />
+        </div>
       </div>
     </div>
   );

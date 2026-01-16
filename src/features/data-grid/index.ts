@@ -11,7 +11,6 @@ export type { PaginationMode } from './components/FmDataGrid';
 export { FmConfigurableDataGrid } from './components/FmConfigurableDataGrid';
 export { FmDataGridContextMenu } from './components/FmDataGridContextMenu';
 export { FmOrganizationDataGrid } from './components/FmOrganizationDataGrid';
-export { FmUserDataGrid } from './components/FmUserDataGrid';
 export { FmAdvancedFilterDialog } from './components/FmAdvancedFilterDialog';
 export { FmDataGridExportDialog } from './components/FmDataGridExportDialog';
 export { FmDataGridGroupDialog } from './components/FmDataGridGroupDialog';

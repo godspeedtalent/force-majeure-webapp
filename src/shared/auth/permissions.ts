@@ -18,6 +18,9 @@ export const PERMISSIONS = {
   ACCESS_DEV_TOOLS: 'access_dev_tools',
   ACCESS_DEMO_PAGES: 'access_demo_pages',
 
+  // Staff permissions
+  ACCESS_STAFF_TOOLS: 'access_staff_tools',
+
   // Wildcard
   ALL: '*',
 } as const;
@@ -31,6 +34,7 @@ export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
 export const ROLES = {
   ADMIN: 'admin',
   DEVELOPER: 'developer',
+  FM_STAFF: 'fm_staff',
   ORG_ADMIN: 'org_admin',
   ORG_STAFF: 'org_staff',
   VENUE_ADMIN: 'venue_admin',
@@ -52,8 +56,10 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   [ROLES.DEVELOPER]: [
     PERMISSIONS.ACCESS_DEV_TOOLS,
     PERMISSIONS.ACCESS_DEMO_PAGES,
+    PERMISSIONS.ACCESS_STAFF_TOOLS,
     PERMISSIONS.ALL, // Devs have full access in dev mode
   ],
+  [ROLES.FM_STAFF]: [PERMISSIONS.ACCESS_STAFF_TOOLS],
   [ROLES.ORG_ADMIN]: [
     PERMISSIONS.MANAGE_ORGANIZATION,
     PERMISSIONS.VIEW_ORGANIZATION,
@@ -75,6 +81,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
  */
 export const ROLE_DEPENDENCIES: Partial<Record<Role, Role[]>> = {
   [ROLES.ARTIST]: [ROLES.USER],
+  [ROLES.FM_STAFF]: [ROLES.USER],
   [ROLES.ORG_ADMIN]: [ROLES.USER],
   [ROLES.ORG_STAFF]: [ROLES.USER],
   [ROLES.VENUE_ADMIN]: [ROLES.USER],

@@ -153,7 +153,7 @@ export const ProfileLayout = ({
   return (
     <>
       {/* ===== MOBILE LAYOUT ===== */}
-      <div className='lg:hidden h-[calc(100vh-64px)] mt-16 flex flex-col overflow-hidden'>
+      <div className='lg:hidden h-[calc(100vh-64px)] flex flex-col overflow-hidden'>
         {/* Hero Section with Profile Photo */}
         <div className='relative flex-shrink-0'>
           {/* Hero Image */}

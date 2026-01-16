@@ -2,12 +2,14 @@
  * Sessions Table
  *
  * Table showing recent user sessions with filtering, sorting, and ignore functionality.
+ * Supports click-to-filter on cell values and entity name resolution for page paths.
+ * Uses shared date range from parent dashboard.
  */
 
 import { useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowUpDown, ArrowUp, ArrowDown, Search, X, Filter, EyeOff, Eye, User } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/shadcn/card';
+import { ArrowUpDown, ArrowUp, ArrowDown, Search, X, EyeOff, Eye, User } from 'lucide-react';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { Input } from '@/components/common/shadcn/input';
 import { Button } from '@/components/common/shadcn/button';
 import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
@@ -17,11 +19,15 @@ import {
   useSessionsFilters,
   type SessionSortField,
 } from '../hooks/useSessionsFilters';
+import { useEntityNames } from '../hooks/useEntityNames';
+import { DATE_RANGE_OPTIONS, type AnalyticsDateRange } from '../AnalyticsDashboard';
 
 interface SessionsTableProps {
   data: StoredSession[];
   isLoading?: boolean;
   error?: string;
+  selectedRange: AnalyticsDateRange;
+  onRangeChange: (range: AnalyticsDateRange) => void;
 }
 
 function formatDuration(ms: number | null): string {
@@ -101,8 +107,18 @@ function SortableHeader({
   );
 }
 
-export function SessionsTable({ data, isLoading, error }: SessionsTableProps) {
+export function SessionsTable({ data, isLoading, error, selectedRange, onRangeChange }: SessionsTableProps) {
   const { t } = useTranslation('pages');
+
+  // Filter data by date range using shared state from parent
+  const dateFilteredData = useMemo(() => {
+    const rangeOption = DATE_RANGE_OPTIONS.find(opt => opt.value === selectedRange);
+    if (!rangeOption) return data;
+
+    const days = rangeOption.days;
+    const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+    return data.filter(session => new Date(session.started_at).getTime() >= cutoff);
+  }, [data, selectedRange]);
 
   const {
     filteredData,
@@ -128,7 +144,19 @@ export function SessionsTable({ data, isLoading, error }: SessionsTableProps) {
     setShowIgnored,
     ignoredSourceCount,
     ignoredUserCount,
-  } = useSessionsFilters({ data });
+  } = useSessionsFilters({ data: dateFilteredData });
+
+  // Get all page paths for entity name resolution
+  const allPagePaths = useMemo(() => {
+    const paths: string[] = [];
+    data.forEach(session => {
+      if (session.entry_page) paths.push(session.entry_page);
+      if (session.exit_page) paths.push(session.exit_page);
+    });
+    return paths;
+  }, [data]);
+
+  const { formatPagePath } = useEntityNames(allPagePaths);
 
   // Helper to get source string from session
   const getSessionSource = useCallback((session: StoredSession): string => {
@@ -143,6 +171,19 @@ export function SessionsTable({ data, isLoading, error }: SessionsTableProps) {
     }
     return 'Direct';
   }, []);
+
+  // Click-to-filter handlers
+  const handleFilterByDevice = useCallback((deviceType: string) => {
+    setDeviceType(deviceType);
+  }, [setDeviceType]);
+
+  const handleFilterByBrowser = useCallback((browser: string) => {
+    setBrowser(browser);
+  }, [setBrowser]);
+
+  const handleFilterBySource = useCallback((source: string) => {
+    setSource(source);
+  }, [setSource]);
 
   const totalIgnoredCount = ignoredSourceCount + ignoredUserCount;
 
@@ -177,13 +218,13 @@ export function SessionsTable({ data, isLoading, error }: SessionsTableProps) {
 
   if (isLoading) {
     return (
-      <Card className="bg-black/60 border-white/20 rounded-none backdrop-blur-sm">
-        <CardHeader>
-          <CardTitle className="font-canela">
+      <FmCommonCard variant="subtle" hoverable={false}>
+        <div className="p-4 border-b border-white/10">
+          <h4 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
             {t('analytics.sessions.title', 'Recent sessions')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h4>
+        </div>
+        <div className="p-4">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -210,56 +251,62 @@ export function SessionsTable({ data, isLoading, error }: SessionsTableProps) {
               </tbody>
             </table>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </FmCommonCard>
     );
   }
 
   if (error) {
     return (
-      <Card className="bg-black/60 border-white/20 rounded-none backdrop-blur-sm">
-        <CardHeader>
-          <CardTitle className="font-canela">
+      <FmCommonCard variant="subtle" hoverable={false}>
+        <div className="p-4 border-b border-white/10">
+          <h4 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
             {t('analytics.sessions.title', 'Recent sessions')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h4>
+        </div>
+        <div className="p-4">
           <div className="flex flex-col items-center justify-center h-[200px] text-muted-foreground gap-2">
             <span className="text-fm-danger">{t('analytics.sessions.error', 'Failed to load sessions')}</span>
             <span className="text-xs">{error}</span>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </FmCommonCard>
     );
   }
 
   if (data.length === 0) {
     return (
-      <Card className="bg-black/60 border-white/20 rounded-none backdrop-blur-sm">
-        <CardHeader>
-          <CardTitle className="font-canela">
+      <FmCommonCard variant="subtle" hoverable={false}>
+        <div className="p-4 border-b border-white/10">
+          <h4 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
             {t('analytics.sessions.title', 'Recent sessions')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h4>
+        </div>
+        <div className="p-4">
           <div className="flex items-center justify-center h-[200px] text-muted-foreground">
             {t('analytics.sessions.empty', 'No sessions recorded yet.')}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </FmCommonCard>
     );
   }
 
+  // Date range select options
+  const dateRangeSelectOptions = useMemo(() =>
+    DATE_RANGE_OPTIONS.map(opt => ({ value: opt.value, label: opt.label })),
+  []);
+
   return (
-    <Card className="bg-black/60 border-white/20 rounded-none backdrop-blur-sm">
-      <CardHeader>
+    <FmCommonCard variant="subtle" hoverable={false} className="p-0">
+      {/* Header */}
+      <div className="p-4 border-b border-white/10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <CardTitle className="font-canela">
+            <h4 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
               {showIgnored
                 ? t('analytics.sessions.ignoredTitle', 'Ignored sessions')
                 : t('analytics.sessions.title', 'Recent sessions')}
-            </CardTitle>
+            </h4>
             {showIgnored && (
               <span className="text-xs text-muted-foreground">
                 ({totalIgnoredCount} ignored)
@@ -300,12 +347,13 @@ export function SessionsTable({ data, isLoading, error }: SessionsTableProps) {
             </div>
           </div>
         </div>
-      </CardHeader>
-      <CardContent>
-        {/* Filter Controls */}
-        <div className="mb-4 space-y-3">
-          {/* Search and Clear */}
-          <div className="flex items-center gap-3">
+      </div>
+
+      {/* Filter Controls */}
+      <div className="p-4 border-b border-white/10">
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          {/* Search (left side) */}
+          <div className="flex items-center gap-3 flex-1">
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -326,18 +374,21 @@ export function SessionsTable({ data, isLoading, error }: SessionsTableProps) {
                 className="rounded-none border-white/20 hover:bg-white/10"
               >
                 <X className="h-4 w-4 mr-1" />
-                {t('analytics.sessions.clearFilters', 'Clear filters')}
+                {t('analytics.sessions.clearFilters', 'Clear')}
                 <span className="ml-1 text-fm-gold">({activeFilterCount})</span>
               </Button>
             )}
           </div>
 
-          {/* Filter Dropdowns */}
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Filter className="h-4 w-4" />
-              {t('analytics.sessions.filterBy', 'Filter by:')}
-            </div>
+          {/* Filter Dropdowns (right side) */}
+          <div className="flex items-center gap-2">
+            {/* Date Range Filter - shared with parent dashboard */}
+            <FmCommonSelect
+              value={selectedRange}
+              onChange={v => onRangeChange(v as AnalyticsDateRange)}
+              options={dateRangeSelectOptions}
+              className="w-[160px]"
+            />
 
             {/* Device Type Filter */}
             <FmCommonSelect
@@ -345,7 +396,7 @@ export function SessionsTable({ data, isLoading, error }: SessionsTableProps) {
               onChange={v => setDeviceType(fromSelectValue(v))}
               options={deviceTypeOptions}
               placeholder={t('analytics.sessions.device', 'Device')}
-              className="w-[140px]"
+              className="w-[130px]"
             />
 
             {/* Browser Filter */}
@@ -354,7 +405,7 @@ export function SessionsTable({ data, isLoading, error }: SessionsTableProps) {
               onChange={v => setBrowser(fromSelectValue(v))}
               options={browserOptions}
               placeholder={t('analytics.sessions.browser', 'Browser')}
-              className="w-[140px]"
+              className="w-[130px]"
             />
 
             {/* Source Filter */}
@@ -363,200 +414,220 @@ export function SessionsTable({ data, isLoading, error }: SessionsTableProps) {
               onChange={v => setSource(fromSelectValue(v))}
               options={sourceOptions}
               placeholder={t('analytics.sessions.source', 'Source')}
-              className="w-[160px]"
+              className="w-[140px]"
             />
           </div>
         </div>
+      </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          {filteredData.length === 0 ? (
-            <div className="flex items-center justify-center h-[150px] text-muted-foreground">
-              {t(
-                'analytics.sessions.noResults',
-                'No sessions match your filters.'
-              )}
-            </div>
-          ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-white/10">
-                  <SortableHeader
-                    label={t('analytics.sessions.started', 'Started')}
-                    field="started_at"
-                    currentField={sortField}
-                    direction={sortDirection}
-                    onSort={handleSort}
-                  />
-                  <SortableHeader
-                    label={t('analytics.sessions.user', 'User')}
-                    field="username"
-                    currentField={sortField}
-                    direction={sortDirection}
-                    onSort={handleSort}
-                  />
-                  <SortableHeader
-                    label={t('analytics.sessions.deviceLabel', 'Device')}
-                    field="device_type"
-                    currentField={sortField}
-                    direction={sortDirection}
-                    onSort={handleSort}
-                  />
-                  <SortableHeader
-                    label={t('analytics.sessions.browserLabel', 'Browser')}
-                    field="browser"
-                    currentField={sortField}
-                    direction={sortDirection}
-                    onSort={handleSort}
-                  />
-                  <th className="text-left py-3 px-2 font-medium text-muted-foreground">
-                    {t('analytics.sessions.entry', 'Entry')}
-                  </th>
-                  <th className="text-left py-3 px-2 font-medium text-muted-foreground">
-                    {t('analytics.sessions.exit', 'Exit')}
-                  </th>
-                  <SortableHeader
-                    label={t('analytics.sessions.pages', 'Pages')}
-                    field="page_count"
-                    currentField={sortField}
-                    direction={sortDirection}
-                    onSort={handleSort}
-                    align="right"
-                  />
-                  <SortableHeader
-                    label={t('analytics.sessions.duration', 'Duration')}
-                    field="total_duration_ms"
-                    currentField={sortField}
-                    direction={sortDirection}
-                    onSort={handleSort}
-                    align="right"
-                  />
-                  <th className="text-left py-3 px-2 font-medium text-muted-foreground">
-                    {t('analytics.sessions.sourceLabel', 'Source')}
-                  </th>
-                  <th className="w-10 py-3 px-2"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredData.map((session, index) => {
-                  const source = getSessionSource(session);
-                  const isSourceIgnored = ignoredSources.has(source);
-                  const isUserIgnored = session.username ? ignoredUsers.has(session.username) : false;
+      {/* Table */}
+      <div className="overflow-x-auto bg-black/40 backdrop-blur-sm">
+        {filteredData.length === 0 ? (
+          <div className="flex items-center justify-center h-[150px] text-muted-foreground">
+            {t(
+              'analytics.sessions.noResults',
+              'No sessions match your filters.'
+            )}
+          </div>
+        ) : (
+          <table className="w-full text-sm">
+            <thead className="bg-black/30">
+              <tr className="border-b border-white/10">
+                <SortableHeader
+                  label={t('analytics.sessions.started', 'Started')}
+                  field="started_at"
+                  currentField={sortField}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+                <SortableHeader
+                  label={t('analytics.sessions.user', 'User')}
+                  field="username"
+                  currentField={sortField}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+                <SortableHeader
+                  label={t('analytics.sessions.deviceLabel', 'Device')}
+                  field="device_type"
+                  currentField={sortField}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+                <SortableHeader
+                  label={t('analytics.sessions.browserLabel', 'Browser')}
+                  field="browser"
+                  currentField={sortField}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+                <th className="text-left py-3 px-2 font-medium text-muted-foreground">
+                  {t('analytics.sessions.entry', 'Entry')}
+                </th>
+                <th className="text-left py-3 px-2 font-medium text-muted-foreground">
+                  {t('analytics.sessions.exit', 'Exit')}
+                </th>
+                <SortableHeader
+                  label={t('analytics.sessions.pages', 'Pages')}
+                  field="page_count"
+                  currentField={sortField}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                  align="right"
+                />
+                <SortableHeader
+                  label={t('analytics.sessions.duration', 'Duration')}
+                  field="total_duration_ms"
+                  currentField={sortField}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                  align="right"
+                />
+                <th className="text-left py-3 px-2 font-medium text-muted-foreground">
+                  {t('analytics.sessions.sourceLabel', 'Source')}
+                </th>
+                <th className="w-10 py-3 px-2" />
+              </tr>
+            </thead>
+            <tbody>
+              {filteredData.map((session, index) => {
+                const source = getSessionSource(session);
+                const isSourceIgnored = ignoredSources.has(source);
+                const isUserIgnored = session.username ? ignoredUsers.has(session.username) : false;
 
-                  return (
-                    <tr
-                      key={session.id}
-                      className={`border-b border-white/5 group ${
-                        index % 2 === 0 ? 'bg-white/[0.02]' : ''
-                      }`}
-                    >
-                      <td className="py-3 px-2 text-muted-foreground">
-                        {formatDate(session.started_at)}
-                      </td>
-                      <td className="py-3 px-2">
-                        {session.username ? (
-                          <div className="flex items-center gap-1">
-                            <User className="h-3 w-3 text-fm-gold" />
-                            <span className="text-xs text-fm-gold max-w-[100px] truncate" title={session.username}>
-                              {session.username}
-                            </span>
-                            <button
-                              onClick={() => toggleIgnoreUser(session.username!)}
-                              className={`p-0.5 opacity-0 group-hover:opacity-100 transition-opacity ${
-                                isUserIgnored
-                                  ? 'text-fm-gold hover:text-fm-gold/80'
-                                  : 'text-muted-foreground hover:text-white'
-                              }`}
-                              title={isUserIgnored ? t('analytics.sessions.unignoreUser', 'Unignore this user') : t('analytics.sessions.ignoreUser', 'Ignore this user')}
-                            >
-                              {isUserIgnored ? (
-                                <Eye className="h-3 w-3" />
-                              ) : (
-                                <EyeOff className="h-3 w-3" />
-                              )}
-                            </button>
-                          </div>
+                return (
+                  <tr
+                    key={session.id}
+                    className={`border-b border-white/5 group ${
+                      index % 2 === 0 ? 'bg-white/[0.04]' : ''
+                    }`}
+                  >
+                    <td className="py-3 px-2 text-muted-foreground">
+                      {formatDate(session.started_at)}
+                    </td>
+                    <td className="py-3 px-2">
+                      {session.username ? (
+                        <div className="flex items-center gap-1">
+                          <User className="h-3 w-3 text-fm-gold" />
+                          <span className="text-xs text-fm-gold max-w-[100px] truncate" title={session.username}>
+                            {session.username}
+                          </span>
+                          <button
+                            onClick={() => toggleIgnoreUser(session.username!)}
+                            className={`p-0.5 opacity-0 group-hover:opacity-100 transition-opacity ${
+                              isUserIgnored
+                                ? 'text-fm-gold hover:text-fm-gold/80'
+                                : 'text-muted-foreground hover:text-white'
+                            }`}
+                            title={isUserIgnored ? t('analytics.sessions.unignoreUser', 'Unignore this user') : t('analytics.sessions.ignoreUser', 'Ignore this user')}
+                          >
+                            {isUserIgnored ? (
+                              <Eye className="h-3 w-3" />
+                            ) : (
+                              <EyeOff className="h-3 w-3" />
+                            )}
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">
+                          {t('analytics.sessions.anonymous', 'Anonymous')}
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-3 px-2">
+                      <button
+                        onClick={() => session.device_type && handleFilterByDevice(session.device_type)}
+                        className="flex items-center gap-1 hover:text-fm-gold transition-colors cursor-pointer"
+                        title={t('analytics.sessions.filterByDevice', 'Filter by this device')}
+                      >
+                        <span>{getDeviceIcon(session.device_type)}</span>
+                        <span className="capitalize text-xs">
+                          {session.device_type || 'Unknown'}
+                        </span>
+                      </button>
+                    </td>
+                    <td className="py-3 px-2">
+                      <button
+                        onClick={() => session.browser && handleFilterByBrowser(session.browser)}
+                        className="text-xs hover:text-fm-gold transition-colors cursor-pointer"
+                        title={t('analytics.sessions.filterByBrowser', 'Filter by this browser')}
+                      >
+                        {session.browser || '-'}
+                      </button>
+                    </td>
+                    <td className="py-3 px-2">
+                      <div
+                        className="max-w-[150px] truncate font-mono text-xs"
+                        title={session.entry_page || undefined}
+                      >
+                        {session.entry_page ? formatPagePath(session.entry_page) : '-'}
+                      </div>
+                    </td>
+                    <td className="py-3 px-2">
+                      <div
+                        className="max-w-[150px] truncate font-mono text-xs"
+                        title={session.exit_page || undefined}
+                      >
+                        {session.exit_page ? formatPagePath(session.exit_page) : '-'}
+                      </div>
+                    </td>
+                    <td className="text-right py-3 px-2 font-mono">
+                      {session.page_count}
+                    </td>
+                    <td className="text-right py-3 px-2 font-mono text-muted-foreground">
+                      {formatDuration(session.total_duration_ms)}
+                    </td>
+                    <td className="py-3 px-2">
+                      <button
+                        onClick={() => handleFilterBySource(source)}
+                        className="flex items-center gap-1 hover:text-fm-gold transition-colors cursor-pointer"
+                        title={t('analytics.sessions.filterBySource', 'Filter by this source')}
+                      >
+                        {session.utm_source ? (
+                          <span className="inline-flex items-center px-2 py-0.5 text-xs bg-fm-gold/20 text-fm-gold rounded-none hover:bg-fm-gold/30 transition-colors">
+                            {session.utm_source}
+                          </span>
+                        ) : session.referrer ? (
+                          <span className="text-xs text-muted-foreground truncate max-w-[100px] block hover:text-fm-gold">
+                            {(() => {
+                              try {
+                                return new URL(session.referrer).hostname;
+                              } catch {
+                                return session.referrer;
+                              }
+                            })()}
+                          </span>
                         ) : (
-                          <span className="text-xs text-muted-foreground">
-                            {t('analytics.sessions.anonymous', 'Anonymous')}
+                          <span className="text-xs text-muted-foreground hover:text-fm-gold">
+                            {t('analytics.sessions.direct', 'Direct')}
                           </span>
                         )}
-                      </td>
-                      <td className="py-3 px-2">
-                        <span className="flex items-center gap-1">
-                          <span>{getDeviceIcon(session.device_type)}</span>
-                          <span className="capitalize text-xs">
-                            {session.device_type || 'Unknown'}
-                          </span>
-                        </span>
-                      </td>
-                      <td className="py-3 px-2">
-                        <span className="text-xs">{session.browser || '-'}</span>
-                      </td>
-                      <td className="py-3 px-2">
-                        <div className="max-w-[150px] truncate font-mono text-xs">
-                          {session.entry_page || '-'}
-                        </div>
-                      </td>
-                      <td className="py-3 px-2">
-                        <div className="max-w-[150px] truncate font-mono text-xs">
-                          {session.exit_page || '-'}
-                        </div>
-                      </td>
-                      <td className="text-right py-3 px-2 font-mono">
-                        {session.page_count}
-                      </td>
-                      <td className="text-right py-3 px-2 font-mono text-muted-foreground">
-                        {formatDuration(session.total_duration_ms)}
-                      </td>
-                      <td className="py-3 px-2">
-                        <div className="flex items-center gap-1">
-                          {session.utm_source ? (
-                            <span className="inline-flex items-center px-2 py-0.5 text-xs bg-fm-gold/20 text-fm-gold rounded-none">
-                              {session.utm_source}
-                            </span>
-                          ) : session.referrer ? (
-                            <span className="text-xs text-muted-foreground truncate max-w-[100px] block">
-                              {(() => {
-                                try {
-                                  return new URL(session.referrer).hostname;
-                                } catch {
-                                  return session.referrer;
-                                }
-                              })()}
-                            </span>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">
-                              {t('analytics.sessions.direct', 'Direct')}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="py-3 px-2">
-                        <button
-                          onClick={() => toggleIgnoreSource(source)}
-                          className={`p-1 opacity-0 group-hover:opacity-100 transition-opacity ${
-                            isSourceIgnored
-                              ? 'text-fm-gold hover:text-fm-gold/80'
-                              : 'text-muted-foreground hover:text-white'
-                          }`}
-                          title={isSourceIgnored ? t('analytics.sessions.unignoreSource', 'Unignore this source') : t('analytics.sessions.ignoreSource', 'Ignore this source')}
-                        >
-                          {isSourceIgnored ? (
-                            <Eye className="h-4 w-4" />
-                          ) : (
-                            <EyeOff className="h-4 w-4" />
-                          )}
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+                      </button>
+                    </td>
+                    <td className="py-3 px-2">
+                      <button
+                        onClick={() => toggleIgnoreSource(source)}
+                        className={`p-1 opacity-0 group-hover:opacity-100 transition-opacity ${
+                          isSourceIgnored
+                            ? 'text-fm-gold hover:text-fm-gold/80'
+                            : 'text-muted-foreground hover:text-white'
+                        }`}
+                        title={isSourceIgnored ? t('analytics.sessions.unignoreSource', 'Unignore this source') : t('analytics.sessions.ignoreSource', 'Ignore this source')}
+                      >
+                        {isSourceIgnored ? (
+                          <Eye className="h-4 w-4" />
+                        ) : (
+                          <EyeOff className="h-4 w-4" />
+                        )}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </FmCommonCard>
   );
 }

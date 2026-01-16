@@ -1,11 +1,15 @@
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { supabase, logger, useDeleteConfirmation } from '@/shared';
-import { FmConfigurableDataGrid, DataGridAction } from '@/features/data-grid';
+import { FmConfigurableDataGrid, DataGridAction, DataGridColumn } from '@/features/data-grid';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
+import { RoleManagementModal } from '@/components/admin/RoleManagementModal';
+import { FmSectionHeader } from '@/components/common/display/FmSectionHeader';
 import { userColumns } from './config/adminGridColumns';
-import { Trash2, User } from 'lucide-react';
+import { BadgeListCell } from '@/features/data-grid/components/cells';
+import { Trash2, User, UserCog } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface UserRole {
@@ -19,9 +23,13 @@ interface AdminUser {
   email: string;
   display_name?: string | null;
   full_name?: string | null;
+  avatar_url?: string | null;
+  organization_id?: string | null;
+  organization_name?: string | null;
   roles?: UserRole[];
   created_at?: string;
   updated_at?: string;
+  is_verified?: boolean;
 }
 
 export const UserManagement = () => {
@@ -29,6 +37,19 @@ export const UserManagement = () => {
   const { t: tToast } = useTranslation('toasts');
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+
+  // Role management modal state
+  const [roleModalOpen, setRoleModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
+
+  const handleOpenRoleModal = useCallback((user: AdminUser) => {
+    setSelectedUser(user);
+    setRoleModalOpen(true);
+  }, []);
+
+  const handleRolesUpdated = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+  }, [queryClient]);
 
   // Delete confirmation with custom auth deletion handler
   const {
@@ -114,11 +135,29 @@ export const UserManagement = () => {
     },
   });
 
+  // Sync selectedUser with updated users data when roles change
+  useEffect(() => {
+    if (selectedUser && roleModalOpen && users.length > 0) {
+      const updatedUser = users.find((u: AdminUser) => u.id === selectedUser.id);
+      if (updatedUser) {
+        setSelectedUser(updatedUser);
+      }
+    }
+  }, [users, selectedUser?.id, roleModalOpen]);
+
   const handleUserUpdate = async (
     row: AdminUser,
     columnKey: string,
     newValue: string | number | boolean | null
   ) => {
+    // Debug logging
+    logger.info('handleUserUpdate called', {
+      userId: row.id,
+      columnKey,
+      newValue,
+      source: 'UserManagement',
+    });
+
     const normalizedValue =
       typeof newValue === 'string' ? newValue.trim() : newValue;
     const updateData: Record<string, string | number | boolean | null> = {
@@ -134,25 +173,39 @@ export const UserManagement = () => {
         if (error) throw error;
       } else {
         // Other fields update profiles table
-        const { error } = await supabase
+        logger.info('Updating profiles table', {
+          updateData,
+          userId: row.id,
+          source: 'UserManagement',
+        });
+        const { error, count } = await supabase
           .from('profiles')
           .update(updateData)
           .eq('user_id', row.id);
 
+        logger.info('Profile update result', { error, count, source: 'UserManagement' });
         if (error) throw error;
       }
 
-      queryClient.setQueryData<AdminUser[]>(
-        ['admin-users'],
-        (oldData) => {
-          if (!oldData) return oldData;
-          return oldData.map(user =>
-            user.id === row.id
-              ? { ...user, ...updateData, updated_at: new Date().toISOString() }
-              : user
-          );
-        }
-      );
+      // For relation fields like organization_id, we need to refetch to get the display name
+      // For other fields, optimistic update is fine
+      if (columnKey === 'organization_id') {
+        // Invalidate to refetch with the organization name
+        queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      } else {
+        // Optimistic update for simple fields
+        queryClient.setQueryData<AdminUser[]>(
+          ['admin-users'],
+          (oldData) => {
+            if (!oldData) return oldData;
+            return oldData.map(user =>
+              user.id === row.id
+                ? { ...user, ...updateData, updated_at: new Date().toISOString() }
+                : user
+            );
+          }
+        );
+      }
 
       toast.success(tToast('admin.userUpdated'));
     } catch (error) {
@@ -170,6 +223,11 @@ export const UserManagement = () => {
       onClick: (user: AdminUser) => navigate(`/admin/users/${user.id}`),
     },
     {
+      label: t('dataGrid.actions.manageRoles'),
+      icon: <UserCog className='h-4 w-4' />,
+      onClick: (user: AdminUser) => handleOpenRoleModal(user),
+    },
+    {
       label: t('dialogs.deleteUser'),
       icon: <Trash2 className='h-4 w-4' />,
       onClick: handleDeleteUserClick,
@@ -177,28 +235,44 @@ export const UserManagement = () => {
     },
   ];
 
-  // Pass onRoleClick to column render context
-  const userColumnsWithHandlers = userColumns.map(col => {
-    if (col.key === 'roles' && col.render) {
-      return {
-        ...col,
-        render: (value: UserRole[], row: AdminUser) =>
-          col.render!(value, row),
-      };
-    }
-    return col;
-  });
+  // Create columns with clickable roles column
+  const userColumnsWithHandlers: DataGridColumn[] = useMemo(() =>
+    userColumns.map(col => {
+      if (col.key === 'roles') {
+        return {
+          ...col,
+          render: (value: UserRole[], row: AdminUser) => (
+            <div
+              className='cursor-pointer hover:opacity-80 transition-opacity'
+              onClick={(e) => {
+                e.stopPropagation();
+                handleOpenRoleModal(row);
+              }}
+              title={t('dataGrid.placeholders.clickToManageRoles')}
+            >
+              {!value || !Array.isArray(value) || value.length === 0 ? (
+                <BadgeListCell items={[]} emptyText={t('adminGrid.columns.noRoles')} />
+              ) : (
+                <BadgeListCell
+                  items={value.map((role: UserRole) => role.display_name || role.role_name)}
+                  variant='gold'
+                />
+              )}
+            </div>
+          ),
+        };
+      }
+      return col;
+    }),
+  [t, handleOpenRoleModal]);
 
   return (
     <div className='space-y-6'>
-      <div>
-        <h1 className='text-3xl font-canela font-bold text-foreground mb-2'>
-          {t('pageTitles.usersManagement')}
-        </h1>
-        <p className='text-muted-foreground'>
-          {t('pageTitles.usersManagementDescription')}
-        </p>
-      </div>
+      <FmSectionHeader
+        title={t('pageTitles.usersManagement')}
+        description={t('pageTitles.usersManagementDescription')}
+        icon={User}
+      />
 
       <FmConfigurableDataGrid
         gridId='admin-users'
@@ -223,6 +297,17 @@ export const UserManagement = () => {
         variant="destructive"
         isLoading={isDeleting}
       />
+
+      {selectedUser && (
+        <RoleManagementModal
+          open={roleModalOpen}
+          onOpenChange={setRoleModalOpen}
+          userId={selectedUser.id}
+          userEmail={selectedUser.email}
+          currentRoles={selectedUser.roles}
+          onRolesUpdated={handleRolesUpdated}
+        />
+      )}
     </div>
   );
 };

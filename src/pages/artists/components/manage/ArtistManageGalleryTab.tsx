@@ -3,11 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus, Trash2, Image as ImageIcon, Star } from 'lucide-react';
 import { supabase } from '@/shared';
-import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
-import { FmI18nCommon } from '@/components/common/i18n';
+import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { imageUploadService } from '@/shared';
 import { toast } from 'sonner';
 import { handleError } from '@/shared/services/errorHandler';
@@ -260,13 +259,14 @@ export function ArtistManageGalleryTab({
   // No gallery yet - show create option
   if (!gallery) {
     return (
-      <FmCommonCard size='lg' hoverable={false}>
-        <div className='text-center py-12'>
-          <ImageIcon className='h-16 w-16 text-muted-foreground mx-auto mb-4' />
+      <FmFormSection
+        title={t('gallery.pressPhotos')}
+        description={t('gallery.createGalleryDescription')}
+        icon={ImageIcon}
+      >
+        <div className='text-center py-8'>
+          <ImageIcon className='h-12 w-12 text-muted-foreground mx-auto mb-4' />
           <h3 className='text-lg font-semibold mb-2'>{t('gallery.noGalleryYet')}</h3>
-          <p className='text-muted-foreground mb-6 max-w-md mx-auto'>
-            {t('gallery.createGalleryDescription')}
-          </p>
           <FmCommonButton
             onClick={() => createGalleryMutation.mutate()}
             disabled={createGalleryMutation.isPending}
@@ -274,20 +274,19 @@ export function ArtistManageGalleryTab({
             {createGalleryMutation.isPending ? t('buttons.creating') : t('gallery.createGallery')}
           </FmCommonButton>
         </div>
-      </FmCommonCard>
+      </FmFormSection>
     );
   }
 
   return (
     <div className='space-y-6'>
-      <FmCommonCard size='lg' hoverable={false}>
-        <div className='flex items-center justify-between mb-6'>
-          <div>
-            <FmI18nCommon i18nKey='gallery.pressPhotos' as='h2' className='text-xl font-semibold' />
-            <p className='text-muted-foreground text-sm mt-1'>
-              {t('gallery.pressPhotosDescription')}
-            </p>
-          </div>
+      <FmFormSection
+        title={t('gallery.pressPhotos')}
+        description={t('gallery.pressPhotosDescription')}
+        icon={ImageIcon}
+      >
+        {/* Add Photo Button */}
+        <div className='flex justify-end mb-4'>
           <FmCommonButton
             icon={Plus}
             onClick={() => fileInputRef.current?.click()}
@@ -370,7 +369,7 @@ export function ArtistManageGalleryTab({
             ))}
           </div>
         )}
-      </FmCommonCard>
+      </FmFormSection>
 
       {/* Delete confirmation */}
       <FmCommonConfirmDialog

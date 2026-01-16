@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Calendar, ArrowLeft, Pencil, History, Clock } from 'lucide-react';
-import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { Calendar, Pencil, History, Clock } from 'lucide-react';
 import { FmCommonSlidingIconButton } from '@/components/common/buttons/FmCommonSlidingIconButton';
 import { FmArtistSpotlight } from '@/components/artist/FmArtistSpotlight';
 import { FmInstagramStoryButton } from '@/components/common/sharing';
@@ -41,22 +40,18 @@ export default function ArtistDetails() {
       onBack={handleBack}
       notFoundMessage={t('artistDetails.notFound')}
       useLayout={true}
+      layoutProps={{
+        showBackButton: true,
+        onBack: handleBack,
+        backButtonLabel: t('artistDetails.back'),
+      }}
     >
       {(artistData) => (
         <div className='min-h-screen'>
-          {/* Header */}
+          {/* Header Actions */}
           <div className='border-b border-border/40 bg-background/50 backdrop-blur-sm sticky top-0 z-10'>
             <div className='container mx-auto px-4 py-4'>
-              <div className='flex items-center justify-between'>
-                <FmCommonButton
-                  variant='secondary'
-                  size='sm'
-                  icon={ArrowLeft}
-                  onClick={handleBack}
-                >
-                  {t('artistDetails.back')}
-                </FmCommonButton>
-
+              <div className='flex items-center justify-end'>
                 <div className='flex items-center gap-2'>
                   {/* Instagram Story Button - Mobile only */}
                   <FmInstagramStoryButton
@@ -94,7 +89,7 @@ export default function ArtistDetails() {
           </div>
 
           {/* Artist Spotlight */}
-          <div className='w-full lg:w-[80%] mx-auto px-4 py-6 md:py-8'>
+          <div className='max-w-4xl mx-auto px-4 -mt-[60px] pb-6 md:pb-8'>
             <FmArtistSpotlight artist={artistData} showRecordings />
 
             {/* Events Section */}

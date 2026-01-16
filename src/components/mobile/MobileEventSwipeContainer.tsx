@@ -3,6 +3,7 @@ import {
   useRef,
   useEffect,
   useCallback,
+  useState,
   Children,
   cloneElement,
   isValidElement,
@@ -14,6 +15,8 @@ export interface MobileEventSwipeContainerProps {
   children: ReactNode;
   /** Callback when the active index changes */
   onIndexChange?: (index: number) => void;
+  /** Callback with scroll progress (0-1) for parallax effects */
+  onScrollProgress?: (progress: number) => void;
   /** Current active index (controlled) */
   currentIndex?: number;
   /** Additional className for the container */
@@ -29,6 +32,7 @@ export interface MobileEventSwipeContainerProps {
 export function MobileEventSwipeContainer({
   children,
   onIndexChange,
+  onScrollProgress,
   currentIndex,
   className,
   enabled = true,
@@ -38,6 +42,8 @@ export function MobileEventSwipeContainer({
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
   const isScrollingRef = useRef(false);
   const lastReportedIndexRef = useRef<number>(-1);
+  const rafRef = useRef<number | null>(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   const childArray = Children.toArray(children);
   const totalItems = childArray.length;
@@ -127,6 +133,47 @@ export function MobileEventSwipeContainer({
       observer.disconnect();
     };
   }, [enabled, isMobile, onIndexChange, totalItems]);
+
+  // Track scroll progress for parallax effects
+  useEffect(() => {
+    if (!enabled || !isMobile || !onScrollProgress) return;
+
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+
+      rafRef.current = requestAnimationFrame(() => {
+        const scrollTop = container.scrollTop;
+        const sectionHeight = window.innerHeight;
+        const currentSectionIndex = lastReportedIndexRef.current;
+
+        if (currentSectionIndex < 0) return;
+
+        // Calculate progress within current section (0-1)
+        const sectionStart = currentSectionIndex * sectionHeight;
+        const progressInSection = (scrollTop - sectionStart) / sectionHeight;
+
+        // Clamp to 0-1 range
+        const clampedProgress = Math.max(0, Math.min(1, progressInSection));
+
+        setScrollProgress(clampedProgress);
+        onScrollProgress(clampedProgress);
+      });
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    };
+  }, [enabled, isMobile, onScrollProgress]);
 
   // Don't apply snap behavior on desktop
   if (!isMobile) {

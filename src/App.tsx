@@ -77,6 +77,7 @@ import { FmMockRoleExitButton } from '@/components/common/buttons/FmMockRoleExit
 import { ROLES } from '@/shared';
 import { FEATURE_FLAGS } from '@/shared';
 import { CheckoutProvider } from '@/contexts/CheckoutContext';
+import { NavigationProvider } from '@/contexts/NavigationContext';
 import { ShoppingCartProvider } from '@/shared';
 import { MockRoleProvider } from '@/shared/contexts/MockRoleContext';
 import { FmToolbarProvider } from '@/shared/contexts/FmToolbarContext';
@@ -558,8 +559,9 @@ const App = () => {
                     <TooltipProvider>
                       <Sonner />
                       <BrowserRouter>
-                        <AnalyticsProvider>
-                          <CheckoutProvider>
+                        <NavigationProvider>
+                          <AnalyticsProvider>
+                            <CheckoutProvider>
                             <Suspense fallback={<LazyLoadFallback />}>
                               <AppRoutes />
                             </Suspense>
@@ -567,8 +569,9 @@ const App = () => {
                             <FmMobileDevToolbar />
                             <FmMockRoleExitButton />
                             <GlobalSearchWrapper />
-                          </CheckoutProvider>
-                        </AnalyticsProvider>
+                            </CheckoutProvider>
+                          </AnalyticsProvider>
+                        </NavigationProvider>
                       </BrowserRouter>
                     </TooltipProvider>
                   </GlobalSearchProvider>

@@ -25,7 +25,6 @@ import { supabase } from '@/shared';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { FmBackButton } from '@/components/common/buttons/FmBackButton';
 import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
 import { EventArtistManagement } from '@/components/events/artists/EventArtistManagement';
 import { UndercardRequestsList } from '@/components/events/artists/UndercardRequestsList';
@@ -450,6 +449,9 @@ export default function EventManagement() {
           setActiveTab(tab);
         }
       }}
+      showBackButton
+      onBack={() => navigate(`/event/${id}`)}
+      backButtonLabel={t('eventNav.eventDetails')}
       rootClassName={isTestMode ? 'test-mode' : ''}
       mobileTabBar={
         <MobileBottomTabBar
@@ -465,15 +467,6 @@ export default function EventManagement() {
         />
       }
     >
-      {/* Top Row: Back Button */}
-      <div className='flex items-center justify-between mb-4'>
-        <FmBackButton
-          position='inline'
-          onClick={() => navigate(`/event/${id}`)}
-          label={t('eventNav.eventDetails')}
-        />
-      </div>
-
       {/* Title with Status Badge */}
       <FmTabContentHeader
         title={event.title || ''}

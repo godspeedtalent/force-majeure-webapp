@@ -1,10 +1,10 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Calendar, LucideIcon } from 'lucide-react';
-import { Button } from '@/components/common/shadcn/button';
+import { Calendar, LucideIcon } from 'lucide-react';
 import { FmCommonCard, FmCommonCardContent, FmCommonCardHeader, FmCommonCardTitle } from '@/components/common/display/FmCommonCard';
 import { Separator } from '@/components/common/shadcn/separator';
+import { useNavigation } from '@/contexts/NavigationContext';
 import { format } from 'date-fns';
 import { cn } from '@/shared';
 
@@ -102,8 +102,21 @@ export const FmCommonDetailPageLayout = ({
 }: FmCommonDetailPageLayoutProps) => {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
+  const { setBackButton, clearBackButton } = useNavigation();
 
   const handleBack = onBack || (() => navigate(-1));
+
+  // Set back button in navigation bar
+  useEffect(() => {
+    if (!hideBackButton) {
+      setBackButton({
+        show: true,
+        onClick: handleBack,
+        label: t('buttons.back'),
+      });
+    }
+    return () => clearBackButton();
+  }, [hideBackButton, handleBack, t, setBackButton, clearBackButton]);
 
   const formatDate = (date: string | Date | null | undefined) => {
     if (!date) return null;
@@ -122,27 +135,14 @@ export const FmCommonDetailPageLayout = ({
     <div className={cn(widthClass, 'mx-auto py-8 px-4 space-y-6', className)}>
       {/* Header */}
       <div className='flex items-center justify-between'>
-        <div className='flex items-center gap-4'>
-          {!hideBackButton && (
-            <Button
-              variant='outline'
-              size='sm'
-              onClick={handleBack}
-              className='border-white/20 hover:bg-white/10'
-            >
-              <ArrowLeft className='h-4 w-4 mr-2' />
-              {t('buttons.back')}
-            </Button>
+        <div>
+          <h1 className='text-3xl font-bold flex items-center gap-3'>
+            {Icon && <Icon className='h-8 w-8 text-fm-gold' />}
+            {title}
+          </h1>
+          {subtitle && (
+            <p className='text-muted-foreground mt-1'>{subtitle}</p>
           )}
-          <div>
-            <h1 className='text-3xl font-bold flex items-center gap-3'>
-              {Icon && <Icon className='h-8 w-8 text-fm-gold' />}
-              {title}
-            </h1>
-            {subtitle && (
-              <p className='text-muted-foreground mt-1'>{subtitle}</p>
-            )}
-          </div>
         </div>
         {headerContent}
       </div>

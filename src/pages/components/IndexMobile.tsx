@@ -87,6 +87,7 @@ export function IndexMobile({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userHasInteracted, setUserHasInteracted] = useState(false);
   const [viewMode, setViewMode] = useState<MobileViewMode>('carousel');
+  const [scrollProgress, setScrollProgress] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   // Track when we're doing a programmatic scroll (timestamp-based for reliability)
   const programmaticScrollUntilRef = useRef<number>(0);
@@ -150,7 +151,7 @@ export function IndexMobile({
     cancel: cancelAutoScroll,
   } = useAutoScrollMode({
     enabled: !userHasInteracted && totalItems > 1,
-    duration: 10000,
+    duration: 5000,
     onComplete: () => {
       // Use refs to get current values
       const nextIndex = currentIndexRef.current + 1;
@@ -223,6 +224,11 @@ export function IndexMobile({
     };
   }, [userHasInteracted, cancelAutoScroll, isProgrammaticScroll]);
 
+  // Handle scroll progress for manual swipe parallax
+  const handleScrollProgress = useCallback((progress: number) => {
+    setScrollProgress(progress);
+  }, []);
+
   // Loading state
   if (!contentReady || loading) {
     return (
@@ -258,10 +264,24 @@ export function IndexMobile({
     );
   }
 
-  // Get parallax offsets for current card (only apply to active event card, not title)
+  // Get parallax offsets for current card (apply to active event card, not title)
+  // Works both during auto-scroll and manual swipe
   const getParallaxOffsets = (index: number) => {
-    if (index === currentIndex && currentIndex > 0 && isAutoScrollActive) {
-      return { imageParallaxY, imageParallaxX, contentParallaxY };
+    if (index === currentIndex && currentIndex > 0) {
+      // Use auto-scroll parallax when active, otherwise use scroll-based parallax
+      if (isAutoScrollActive) {
+        return { imageParallaxY, imageParallaxX, contentParallaxY };
+      } else {
+        // Calculate parallax from scroll progress (max 2vh/2vw movement)
+        const scrollParallaxY = scrollProgress * 2;
+        const scrollParallaxX = scrollProgress * 2;
+        const scrollContentParallaxY = scrollProgress * -2;
+        return {
+          imageParallaxY: scrollParallaxY,
+          imageParallaxX: scrollParallaxX,
+          contentParallaxY: scrollContentParallaxY,
+        };
+      }
     }
     return { imageParallaxY: 0, imageParallaxX: 0, contentParallaxY: 0 };
   };
@@ -308,7 +328,7 @@ export function IndexMobile({
             'rounded-none font-medium'
           )}
         >
-          2026 Undercard Artists
+          Are you a local DJ looking to join the undercard?
           <ArrowRight className="ml-1 h-2 w-2" />
         </Button>
       </div>
@@ -332,6 +352,7 @@ export function IndexMobile({
       {/* Swipe Container */}
       <MobileEventSwipeContainer
         onIndexChange={handleIndexChange}
+        onScrollProgress={handleScrollProgress}
         currentIndex={currentIndex}
         className='relative z-10'
       >
@@ -396,7 +417,7 @@ export function IndexMobile({
           'rounded-none font-medium'
         )}
       >
-        2026 Undercard Artists
+        Are you a local DJ looking to join the undercard?
         <ArrowRight className="ml-1 h-2 w-2" />
       </Button>
 

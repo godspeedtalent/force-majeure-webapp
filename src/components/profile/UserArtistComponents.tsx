@@ -328,10 +328,10 @@ export function LinkedArtistDisplay({
       )}
 
       {/* Artist Spotlight Card - Two Column Layout */}
-      <div className='bg-black/60 backdrop-blur-md border border-white/20 rounded-none p-4 md:p-[30px]'>
+      <div className='bg-black/60 backdrop-blur-md border border-white/20 rounded-none p-4 md:p-[30px] max-w-2xl'>
         <div className='flex gap-3 md:gap-5'>
-          {/* Left Column - Main Image with overlay (full width on mobile, 50% on desktop) */}
-          <div className='w-full md:w-1/2 flex-shrink-0'>
+          {/* Left Column - Main Image with overlay (constrained width) */}
+          <div className='w-full md:w-[200px] flex-shrink-0'>
             <div className='relative overflow-hidden border border-white/15 bg-white/5'>
               {linkedArtist.image_url ? (
                 <img
@@ -378,7 +378,7 @@ export function LinkedArtistDisplay({
           </div>
 
           {/* Right Column - Bio (hidden on mobile, shown on desktop) */}
-          <div className='hidden md:flex w-1/2 flex-col'>
+          <div className='hidden md:flex flex-1 flex-col min-w-0'>
             <div className='text-xs md:text-sm text-white/60 leading-relaxed md:leading-loose font-canela whitespace-pre-wrap italic'>
               {linkedArtist.bio || t('artistProfile.noBioAvailable')}
             </div>

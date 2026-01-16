@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Music, Calendar, ExternalLink } from 'lucide-react';
+import { Music, Calendar, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
 import { FmCommonCard, FmCommonCardContent, FmCommonCardHeader, FmCommonCardTitle } from '@/components/common/display/FmCommonCard';
 import { Badge } from '@/components/common/shadcn/badge';
@@ -17,35 +17,31 @@ export default function ArtistDetails() {
 
   const { data: artist, isLoading, error } = useArtistById(id);
 
+  const handleBack = () => navigate(-1);
+
   return (
     <DetailPageWrapper
       data={artist}
       isLoading={isLoading}
       error={error}
       entityName='Artist'
-      onBack={() => navigate(-1)}
+      onBack={handleBack}
+      layoutProps={{
+        showBackButton: true,
+        onBack: handleBack,
+        backButtonLabel: t('buttons.back'),
+      }}
     >
       {(artist) => (
         <div className='w-full lg:w-[70%] mx-auto py-8 px-4 space-y-6'>
           {/* Header */}
           <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-4'>
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={() => navigate(-1)}
-                className='border-white/20 hover:bg-white/10'
-              >
-                <ArrowLeft className='h-4 w-4 mr-2' />
-                {t('buttons.back')}
-              </Button>
-              <div>
-                <h1 className='text-3xl font-bold flex items-center gap-3'>
-                  <Music className='h-8 w-8 text-fm-gold' />
-                  {artist.name}
-                </h1>
-                <p className='text-muted-foreground mt-1'>{t('adminDetails.artistDetails')}</p>
-              </div>
+            <div>
+              <h1 className='text-3xl font-bold flex items-center gap-3'>
+                <Music className='h-8 w-8 text-fm-gold' />
+                {artist.name}
+              </h1>
+              <p className='text-muted-foreground mt-1'>{t('adminDetails.artistDetails')}</p>
             </div>
           </div>
 

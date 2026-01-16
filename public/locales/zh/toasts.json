@@ -246,6 +246,8 @@
     "roleAddFailed": "添加角色失败",
     "roleAddFailedDescription": "无法将角色\"{{roleName}}\"分配给用户",
     "roleRemoveFailed": "移除角色失败",
+    "roleUpdateFailed": "更新角色失败",
+    "userIdMissing": "无法管理角色：用户ID缺失",
     "requestApproved": "请求批准成功",
     "requestApproveFailed": "批准请求失败",
     "requestDenied": "请求已拒绝",

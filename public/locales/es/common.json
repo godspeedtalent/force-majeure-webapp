@@ -411,6 +411,8 @@
     "featureToggles": "Toggles de Funciones",
     "todoNotes": "Notas TODO",
     "devNotes": "Notas de Desarrollo",
+    "staffNotes": "Notas del Personal",
+    "staffNotesTitle": "Notas del Personal",
     "mockRole": "Rol Simulado",
     "mockRoleSimulator": "Simulador de Roles",
     "gallery": "Galería",
@@ -433,6 +435,7 @@
     "hiddenTabs": "Pestañas ocultas",
     "groups": {
       "organization": "Organización",
+      "staff": "Herramientas del Personal",
       "developerTools": "Herramientas de Desarrollador",
       "devTools": "Herramientas Dev",
       "dataConfig": "Datos y Config",
@@ -1133,7 +1136,17 @@
     "genresManagementDescription": "Administra géneros musicales y subgéneros para categorización de artistas.",
     "userDetails": "Detalles del Usuario",
     "ticketingFees": "Tarifas de Entradas",
-    "ticketingFeesDescription": "Configura las tarifas de entradas aplicadas a todas las compras"
+    "ticketingFeesDescription": "Configura las tarifas de entradas aplicadas a todas las compras",
+    "artistManagement": "Gestión de Artista",
+    "artistDetails": "Detalles del Artista",
+    "artistsManagement": "Gestión de Artistas",
+    "artistsManagementDescription": "Administra perfiles de artistas, géneros y metadatos.",
+    "venuesManagement": "Gestión de Locales",
+    "venuesManagementDescription": "Administra ubicaciones, capacidades y detalles de los locales.",
+    "guestsManagement": "Gestión de Invitados",
+    "guestsManagementDescription": "Administra registros de invitados para usuarios no autenticados que han realizado compras.",
+    "profilePreview": "Vista Previa del Perfil",
+    "profilePreviewDescription": "Así se verá tu perfil para otros"
   },
   "dataTypes": {
     "text": "Texto",
@@ -1184,6 +1197,8 @@
     "deleteGenre": "Eliminar Género",
     "addGenre": "Añadir Género",
     "addEvent": "Añadir Evento",
+    "addVenue": "Añadir Local",
+    "addArtist": "Añadir Artista",
     "issues": "Problemas",
     "noHeadliner": "Sin Artista Principal",
     "noIssues": "Sin problemas",
@@ -2493,21 +2508,71 @@
     "backToHome": "Volver al Inicio"
   },
   "organization": {
-    "dashboard": {
-      "title": "Panel de Organización",
-      "subtitle": "Administra tu organización, personal y ve analíticas",
-      "salesReports": "Reportes de Ventas",
-      "salesReportsDescription": "Ve ventas de eventos, analíticas de ingresos y rendimiento de entradas",
-      "viewReports": "Ver Reportes",
-      "venueInfo": "Información del Local",
-      "venueInfoDescription": "Actualiza detalles del local, capacidad e información de ubicación",
-      "manageVenue": "Administrar Local",
-      "staffManagement": "Gestión de Personal",
-      "staffManagementDescription": "Añade, elimina y administra los miembros del personal de tu organización",
-      "manageStaff": "Administrar Personal",
-      "organizationProfile": "Perfil de Organización",
-      "organizationProfileDescription": "Edita el perfil público y configuración de tu organización",
-      "editProfile": "Editar Perfil"
+    "manage": {
+      "selectOrganization": "Seleccionar una organización",
+      "nav": {
+        "organization": "Organización",
+        "overview": "Resumen",
+        "overviewDescription": "Panel y estadísticas rápidas",
+        "events": "Eventos",
+        "eventsDescription": "Ver y gestionar eventos de la organización",
+        "sales": "Ventas",
+        "salesDescription": "Análisis de ingresos y rendimiento de entradas",
+        "venues": "Locales",
+        "venuesDescription": "Detalles y ubicaciones de los locales",
+        "management": "Gestión",
+        "staff": "Personal",
+        "staffDescription": "Gestionar miembros del personal",
+        "settings": "Configuración",
+        "settingsDescription": "Perfil y configuración de la organización"
+      },
+      "overview": {
+        "title": "Resumen",
+        "description": "Panel y estadísticas rápidas de tu organización.",
+        "upcomingEvents": "Próximos Eventos",
+        "pastEvents": "Eventos Pasados",
+        "totalVenues": "Total de Locales",
+        "staffMembers": "Miembros del Personal",
+        "quickActions": "Acciones Rápidas",
+        "viewEvents": "Ver Eventos",
+        "viewSales": "Ver Ventas",
+        "manageStaff": "Gestionar Personal"
+      },
+      "events": {
+        "title": "Eventos",
+        "description": "Ve y gestiona los eventos de tu organización.",
+        "upcoming": "Próximos Eventos",
+        "past": "Eventos Pasados",
+        "noUpcoming": "No hay próximos eventos.",
+        "andMore": "Y {{count}} más..."
+      },
+      "sales": {
+        "title": "Reportes de Ventas",
+        "description": "Ve ventas de eventos, análisis de ingresos y rendimiento de entradas.",
+        "totalRevenue": "Ingresos Totales",
+        "ticketsSold": "Entradas Vendidas",
+        "orders": "Pedidos",
+        "salesByEvent": "Ventas por Evento",
+        "noSalesData": "No hay datos de ventas disponibles aún."
+      },
+      "venues": {
+        "title": "Locales",
+        "description": "Ve y gestiona los locales asociados con tu organización.",
+        "capacity": "Capacidad",
+        "noVenues": "No se encontraron locales."
+      },
+      "staff": {
+        "title": "Gestión de Personal",
+        "description": "Añade, elimina y administra los miembros del personal de tu organización.",
+        "comingSoon": "Gestión de personal próximamente."
+      },
+      "settings": {
+        "title": "Configuración de la Organización",
+        "description": "Edita el perfil público y configuración de tu organización.",
+        "organizationProfile": "Perfil de la Organización",
+        "editOrganization": "Editar Organización",
+        "selectOrgFirst": "Por favor selecciona una organización para ver la configuración."
+      }
     },
     "loadFailed": "Error al cargar organización",
     "notFound": "Organización no encontrada",
@@ -2594,7 +2659,11 @@
       "guestDeleted": "Invitado eliminado",
       "guestDeleteFailed": "Error al eliminar invitado",
       "schemaRefreshSuccess": "¡Esquema actualizado exitosamente! {{count}} tablas actualizadas.",
-      "schemaRefreshFailed": "Error al actualizar el esquema"
+      "schemaRefreshFailed": "Error al actualizar el esquema",
+      "overviewTitle": "Vista General de Base de Datos",
+      "overviewDescription": "Administra y monitorea las tablas y registros de tu base de datos.",
+      "refreshing": "Actualizando...",
+      "refreshSchema": "Actualizar Esquema"
     },
     "featureToggles": {
       "description": "Habilitar o deshabilitar funciones en toda la aplicación por entorno",
@@ -3769,7 +3838,7 @@
     }
   },
   "organizationTab": {
-    "goToOrgDashboard": "Ir al Panel de la Organización",
+    "goToOrgDashboard": "Gestionar Organización",
     "goToTicketScanner": "Ir al Escáner de Boletos"
   },
   "mobileDevTools": {
@@ -3781,6 +3850,7 @@
       "features": "Funciones",
       "session": "Sesión",
       "notes": "Notas",
+      "staffNotes": "Notas del Personal",
       "roles": "Roles"
     },
     "toolLabels": {
@@ -3789,6 +3859,7 @@
       "features": "Alternar Funciones",
       "session": "Anulaciones de Sesión",
       "notes": "Notas de Desarrollo",
+      "staffNotes": "Notas del Personal",
       "roles": "Simulación de Roles"
     },
     "fab": {

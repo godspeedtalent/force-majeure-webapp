@@ -5,9 +5,9 @@
  */
 
 import { useTranslation } from 'react-i18next';
-import { FmCommonCard } from '@/components/common/display/FmCommonCard';
+import { Disc3 } from 'lucide-react';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
-import { FmI18nCommon } from '@/components/common/i18n';
+import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmRecordingsGrid } from '@/components/artist/FmRecordingsGrid';
 import { AddRecordingModal } from '@/features/artists/components/AddRecordingModal';
 import { EditRecordingModal } from '@/features/artists/components/EditRecordingModal';
@@ -59,12 +59,11 @@ export function ArtistMusicTab({
 
   return (
     <div className='space-y-6'>
-      <FmCommonCard size='lg' hoverable={false}>
-        <div className='mb-6'>
-          <FmI18nCommon i18nKey='sections.recordings' as='h2' className='text-xl font-semibold' />
-          <FmI18nCommon i18nKey='sections.recordingsDescription' as='p' className='text-muted-foreground text-sm mt-1' />
-        </div>
-
+      <FmFormSection
+        title={t('sections.recordings')}
+        description={t('sections.recordingsDescription')}
+        icon={Disc3}
+      >
         {/* Recordings Grid */}
         <FmRecordingsGrid
           recordings={recordings}
@@ -79,38 +78,38 @@ export function ArtistMusicTab({
           isLoading={isRecordingsLoading}
           className='mt-0'
         />
+      </FmFormSection>
 
-        {/* Add Recording Modal */}
-        <AddRecordingModal
-          open={isAddRecordingModalOpen}
-          onOpenChange={onAddRecordingModalChange}
-          artistId={artistId}
-          onAddRecording={onAddRecording}
-        />
+      {/* Add Recording Modal */}
+      <AddRecordingModal
+        open={isAddRecordingModalOpen}
+        onOpenChange={onAddRecordingModalChange}
+        artistId={artistId}
+        onAddRecording={onAddRecording}
+      />
 
-        {/* Edit Recording Modal */}
-        <EditRecordingModal
-          recording={editingRecording}
-          onClose={() => onEditingRecordingChange(null)}
-          onSave={(data) => {
-            if (editingRecording) {
-              onUpdateRecording(editingRecording.id, data);
-            }
-          }}
-        />
+      {/* Edit Recording Modal */}
+      <EditRecordingModal
+        recording={editingRecording}
+        onClose={() => onEditingRecordingChange(null)}
+        onSave={(data) => {
+          if (editingRecording) {
+            onUpdateRecording(editingRecording.id, data);
+          }
+        }}
+      />
 
-        {/* Delete Confirmation Dialog */}
-        <FmCommonConfirmDialog
-          open={!!recordingToDelete}
-          onOpenChange={(open) => !open && onRecordingToDeleteChange(null)}
-          title={t('dialogs.deleteRecording')}
-          description={t('dialogs.deleteRecordingConfirm', { name: recordingToDelete?.name })}
-          confirmText={t('buttons.delete')}
-          onConfirm={onConfirmDeleteRecording}
-          variant='destructive'
-          isLoading={isDeleting}
-        />
-      </FmCommonCard>
+      {/* Delete Confirmation Dialog */}
+      <FmCommonConfirmDialog
+        open={!!recordingToDelete}
+        onOpenChange={(open) => !open && onRecordingToDeleteChange(null)}
+        title={t('dialogs.deleteRecording')}
+        description={t('dialogs.deleteRecordingConfirm', { name: recordingToDelete?.name })}
+        confirmText={t('buttons.delete')}
+        onConfirm={onConfirmDeleteRecording}
+        variant='destructive'
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

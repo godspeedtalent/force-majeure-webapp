@@ -1,19 +1,18 @@
 import { useTranslation } from 'react-i18next';
+import { Building2 } from 'lucide-react';
 import { FmOrganizationDataGrid } from '@/features/data-grid';
+import { FmSectionHeader } from '@/components/common/display/FmSectionHeader';
 
 export const OrganizationsManagement = () => {
   const { t } = useTranslation('common');
 
   return (
     <div className='space-y-6'>
-      <div>
-        <h1 className='text-3xl font-canela font-bold text-foreground mb-2'>
-          {t('organizationsManagement.title')}
-        </h1>
-        <p className='text-muted-foreground'>
-          {t('organizationsManagement.description')}
-        </p>
-      </div>
+      <FmSectionHeader
+        title={t('organizationsManagement.title')}
+        description={t('organizationsManagement.description')}
+        icon={Building2}
+      />
 
       <FmOrganizationDataGrid />
     </div>

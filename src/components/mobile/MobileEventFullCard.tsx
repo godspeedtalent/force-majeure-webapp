@@ -109,11 +109,11 @@ export function MobileEventFullCard({
         )}
         onClick={handleCardClick}
       >
-        {/* Hero Image - fills available space with parallax, top padding for nav bar */}
+        {/* Hero Image - fills available space with parallax, extends behind nav bar */}
         {/* Oversized to 106vw/106vh with -3vw/-3vh offset to prevent blank space during parallax movement */}
         {/* Parallax can move image up to +2vw right/+2vh down, so we need extra buffer on all sides */}
         <div
-          className='absolute transition-transform duration-100 ease-linear pt-[64px]'
+          className='absolute transition-transform duration-100 ease-linear'
           style={{
             // Start offset by -3vw/-3vh to account for max parallax movement of +2vw/+2vh
             // Size is 106vw/106vh to fully cover viewport at any parallax position
@@ -143,7 +143,7 @@ export function MobileEventFullCard({
 
         {/* Content - anchored to bottom with parallax */}
         <div
-          className='relative z-10 mt-auto p-[20px] pb-[100px] transition-transform duration-100 ease-linear'
+          className='relative z-10 mt-auto p-[20px] pb-[180px] transition-transform duration-100 ease-linear'
           style={{ transform: `translateY(${contentParallaxY}vh)` }}
         >
           <div className='flex items-end gap-[20px]'>

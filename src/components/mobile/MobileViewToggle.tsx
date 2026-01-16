@@ -41,8 +41,9 @@ export function MobileViewToggle({
       onClick={handleToggle}
       className={cn(
         // Fixed position at top-right (only if not overridden)
+        // Positioned below nav bar (64px) + past events header (~48px) = 120px
         // z-40 ensures this stays below nav bar (z-50) and menu dropdowns (z-[110])
-        !hasCustomPosition && 'fixed top-[86px] right-[20px] z-40',
+        !hasCustomPosition && 'fixed top-[120px] right-[20px] z-40',
         // Frosted glass styling (Level 2)
         'bg-black/70 backdrop-blur-md',
         'border border-white/20',

@@ -2,8 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/shared';
-import { ArrowLeft, User, Mail, Calendar, Shield, Building2, ExternalLink } from 'lucide-react';
-import { Button } from '@/components/common/shadcn/button';
+import { User, Mail, Calendar, Shield, Building2, ExternalLink } from 'lucide-react';
 import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { FmFormSectionHeader } from '@/components/common/display/FmSectionHeader';
 import { Badge } from '@/components/common/shadcn/badge';
@@ -73,9 +72,11 @@ export default function UserDetails() {
     enabled: !!id,
   });
 
+  const handleBack = () => navigate(-1);
+
   if (isLoading) {
     return (
-      <Layout>
+      <Layout showBackButton onBack={handleBack} backButtonLabel={t('buttons.back')}>
         <div className='flex items-center justify-center min-h-[400px]'>
           <FmCommonLoadingSpinner size='lg' />
         </div>
@@ -86,39 +87,25 @@ export default function UserDetails() {
   if (error || !user) {
     toast.error(tToast('admin.userNotFound'));
     return (
-      <Layout>
+      <Layout showBackButton onBack={handleBack} backButtonLabel={t('buttons.back')}>
         <div className='text-center py-12'>
           <p className='text-muted-foreground'>{t('empty.noResults')}</p>
-          <Button onClick={() => navigate(-1)} className='mt-4'>
-            {t('buttons.goBack')}
-          </Button>
         </div>
       </Layout>
     );
   }
 
   return (
-    <Layout>
+    <Layout showBackButton onBack={handleBack} backButtonLabel={t('buttons.back')}>
       <div className='container mx-auto py-8 space-y-6'>
       {/* Header */}
       <div className='flex items-center justify-between'>
-        <div className='flex items-center gap-4'>
-          <Button
-            variant='outline'
-            size='sm'
-            onClick={() => navigate(-1)}
-            className='border-white/20 hover:bg-white/10'
-          >
-            <ArrowLeft className='h-4 w-4 mr-2' />
-            {t('buttons.back')}
-          </Button>
-          <div>
-            <h1 className='text-3xl font-bold flex items-center gap-3'>
-              <User className='h-8 w-8 text-fm-gold' />
-              {user.display_name}
-            </h1>
-            <p className='text-muted-foreground mt-1'>{t('pageTitles.userDetails')}</p>
-          </div>
+        <div>
+          <h1 className='text-3xl font-bold flex items-center gap-3'>
+            <User className='h-8 w-8 text-fm-gold' />
+            {user.display_name}
+          </h1>
+          <p className='text-muted-foreground mt-1'>{t('pageTitles.userDetails')}</p>
         </div>
       </div>
 

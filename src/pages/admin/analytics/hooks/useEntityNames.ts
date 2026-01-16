@@ -78,6 +78,26 @@ export function useEntityNames(pagePaths: string[]): UseEntityNamesResult {
         map[v.id] = v.name;
       });
 
+      // Fetch profiles (users)
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, display_name, username')
+        .in('id', uuids);
+
+      profiles?.forEach(p => {
+        map[p.id] = p.display_name || p.username || 'User';
+      });
+
+      // Fetch organizations
+      const { data: orgs } = await supabase
+        .from('organizations')
+        .select('id, name')
+        .in('id', uuids);
+
+      orgs?.forEach(o => {
+        map[o.id] = o.name;
+      });
+
       return map;
     },
     enabled: uuids.length > 0,

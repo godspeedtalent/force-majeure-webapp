@@ -87,7 +87,6 @@ export const TopographicBackground = ({
           top: `-${(gridRows * superTileSize - window.innerHeight) / 2}px`,
           transform: `translateY(${scrollY}px) rotate(${rotation}deg) scaleX(${flipHorizontal ? -1 : 1}) scaleY(${flipVertical ? -1 : 1})`,
           transformOrigin: 'center center',
-          transition: 'transform 0.3s ease-out',
           willChange: 'transform',
         }}
       >

@@ -43,7 +43,7 @@ export function FmMobileDevToolContent({
     navigation: t('mobileDevTools.toolLabels.navigation'),
     database: t('mobileDevTools.toolLabels.database'),
     features: t('mobileDevTools.toolLabels.features'),
-    notes: t('mobileDevTools.toolLabels.notes'),
+    notes: t('mobileDevTools.toolLabels.staffNotes'),
     roles: t('mobileDevTools.toolLabels.roles'),
   };
 

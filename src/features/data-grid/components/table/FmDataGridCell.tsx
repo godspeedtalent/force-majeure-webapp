@@ -25,7 +25,7 @@ import {
 } from '@/components/common/shadcn/tooltip';
 import { format as formatDate } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
-import { cn } from '@/shared';
+import { cn, logger } from '@/shared';
 import { DataGridColumn } from '../FmDataGrid';
 import { isRelationField, getRelationConfig } from '../../utils/dataGridRelations';
 
@@ -148,6 +148,21 @@ export function FmDataGridCell<T extends Record<string, any>>({
       onMouseEnter={() => {}}
       onMouseLeave={() => {}}
       onClick={e => {
+        // Debug logging for organization_id
+        if (column.key === 'organization_id') {
+          logger.info('Organization cell clicked', {
+            columnKey: column.key,
+            editable: column.editable,
+            readonly: column.readonly,
+            hasOnUpdate: !!onUpdate,
+            columnType: column.type,
+            isEditableCell,
+            isEditing,
+            hasRelationConfig: !!relationConfig,
+            source: 'FmDataGridCell',
+          });
+        }
+
         // Don't interfere with interactive elements (selects, buttons, inputs, etc.)
         const target = e.target as HTMLElement;
         const isInteractiveElement =
@@ -163,10 +178,16 @@ export function FmDataGridCell<T extends Record<string, any>>({
 
         if (isInteractiveElement) {
           // Let the interactive element handle the event
+          if (column.key === 'organization_id') {
+            logger.info('Organization cell click blocked - interactive element', { source: 'FmDataGridCell' });
+          }
           return;
         }
 
         if (isEditableCell) {
+          if (column.key === 'organization_id') {
+            logger.info('Organization cell entering edit mode', { source: 'FmDataGridCell' });
+          }
           onStartEdit();
         }
       }}
@@ -175,10 +196,21 @@ export function FmDataGridCell<T extends Record<string, any>>({
         // Editing mode
         relationConfig ? (
           <div onClick={e => e.stopPropagation()}>
+            {column.key === 'organization_id' && logger.info('Rendering organization dropdown', { editValue, source: 'FmDataGridCell' })}
             {relationConfig.component({
               value: editValue,
-              onChange: onEditValueChange,
-              onComplete: () => onSaveEdit(),
+              onChange: (newValue) => {
+                if (column.key === 'organization_id') {
+                  logger.info('Organization dropdown onChange', { newValue, source: 'FmDataGridCell' });
+                }
+                onEditValueChange(newValue);
+              },
+              onComplete: () => {
+                if (column.key === 'organization_id') {
+                  logger.info('Organization dropdown onComplete - calling onSaveEdit', { source: 'FmDataGridCell' });
+                }
+                onSaveEdit();
+              },
             })}
           </div>
         ) : column.type === 'boolean' ? (

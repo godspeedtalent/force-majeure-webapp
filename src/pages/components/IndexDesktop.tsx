@@ -100,14 +100,14 @@ export function IndexDesktop({
   // Single row layout (3 or fewer events) - combined hero + events on one screen
   if (isSingleRow) {
     return (
-      <div className='flex flex-col justify-between py-8 pb-[100px] px-4 relative z-10'>
+      <div className='flex flex-col justify-between pt-8 pb-[60px] px-4 relative z-10'>
         {/* Logo Section - Top Row */}
         <div className='flex items-center justify-center'>
           <div className='max-w-7xl mx-auto'>
             <div className='flex flex-col items-center text-center'>
               <ForceMajeureLogo size='lg' className='mb-4 h-32 w-32' />
               <h1
-                className='text-2xl lg:text-4xl font-screamer leading-none mb-8'
+                className='text-2xl lg:text-4xl font-screamer leading-none'
                 style={{ fontWeight: 475 }}
               >
                 <span className='text-foreground'>FORCE </span>
@@ -116,7 +116,7 @@ export function IndexDesktop({
                 </span>
               </h1>
               {/* Decorative Divider */}
-              <DecorativeDivider />
+              <DecorativeDivider marginTop='mt-6' marginBottom='mb-6' />
             </div>
           </div>
         </div>
@@ -243,7 +243,7 @@ export function IndexDesktop({
   const heroContent = (
     <section
       ref={heroRef}
-      className='min-h-screen pt-24 pb-32 flex items-center justify-center px-4'
+      className='pt-16 pb-12 flex items-center justify-center px-4'
       data-section-id='hero'
     >
       <div
@@ -256,9 +256,9 @@ export function IndexDesktop({
         }}
       >
         <div className='flex flex-col items-center text-center'>
-          <ForceMajeureLogo size='xl' className='mb-8 h-40 w-40' />
+          <ForceMajeureLogo size='xl' className='mb-4 h-32 w-32' />
           <h1
-            className='text-3xl lg:text-5xl font-screamer leading-none mb-10'
+            className='text-3xl lg:text-5xl font-screamer leading-none'
             style={{ fontWeight: 475 }}
           >
             <span className='text-foreground'>FORCE </span>
@@ -267,7 +267,7 @@ export function IndexDesktop({
             </span>
           </h1>
         </div>
-        <DecorativeDivider />
+        <DecorativeDivider marginTop='mt-6' marginBottom='mb-4' />
       </div>
     </section>
   );
@@ -275,7 +275,7 @@ export function IndexDesktop({
   const eventsContent = (
     <section
       ref={eventsRef}
-      className='min-h-screen py-24 px-4'
+      className='py-8 px-4'
       data-section-id='events'
     >
       <div className='max-w-7xl mx-auto animate-fade-in w-full'>

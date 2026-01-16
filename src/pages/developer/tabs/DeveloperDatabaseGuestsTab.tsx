@@ -53,8 +53,8 @@ export function DeveloperDatabaseGuestsTab() {
   return (
     <div className='space-y-6'>
       <FmSectionHeader
-        title='Guests Management'
-        description='Manage guest records for unauthenticated users who have made purchases.'
+        title={t('pageTitles.guestsManagement')}
+        description={t('pageTitles.guestsManagementDescription')}
         icon={Users}
       />
 

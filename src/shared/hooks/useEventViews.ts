@@ -1,16 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '@/shared';
 import { logger } from '@/shared';
 
 /**
- * Hook to fetch and track event view count
+ * Hook to fetch and track event view count.
+ * Uses simple counter on events table (not row-per-view).
+ * Every page load increments the counter - cumulative across all users.
  */
 export function useEventViews(eventId: string | undefined) {
   const [viewCount, setViewCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [hasRecorded, setHasRecorded] = useState(false);
+  const hasRecordedRef = useRef(false);
 
+  // Fetch current view count from events.view_count column
   useEffect(() => {
     if (!eventId) {
       setIsLoading(false);
@@ -23,25 +26,33 @@ export function useEventViews(eventId: string | undefined) {
       try {
         setIsLoading(true);
 
-        // Fetch view count using raw query
-        const { count, error: countError } = await supabase
-          .from('event_views')
-          .select('*', { count: 'exact', head: true })
-          .eq('event_id', eventId);
+        const { data, error: fetchError } = await supabase
+          .from('events')
+          .select('view_count')
+          .eq('id', eventId)
+          .single();
 
         if (!isMounted) return;
 
-        if (countError) {
-          logger.error('Error fetching view count:', { error: countError });
-          setError(countError.message);
+        if (fetchError) {
+          logger.warn('Error fetching view count', {
+            eventId,
+            error: fetchError.message,
+            source: 'useEventViews',
+          });
+          setError(fetchError.message);
           setViewCount(0);
         } else {
-          setViewCount(count || 0);
+          setViewCount(data?.view_count ?? 0);
           setError(null);
         }
       } catch (err) {
         if (!isMounted) return;
-        logger.error('Error fetching view count:', { error: err });
+        logger.warn('Error fetching view count', {
+          eventId,
+          error: err instanceof Error ? err.message : String(err),
+          source: 'useEventViews',
+        });
         setError(String(err));
         setViewCount(0);
       } finally {
@@ -58,33 +69,34 @@ export function useEventViews(eventId: string | undefined) {
     };
   }, [eventId]);
 
-  const recordView = async () => {
-    if (!eventId || hasRecorded) return;
+  // Increment view count - call once per page load
+  const recordView = useCallback(async () => {
+    if (!eventId || hasRecordedRef.current) return;
+    hasRecordedRef.current = true;
 
     try {
-      const sessionId =
-        sessionStorage.getItem('session_id') || crypto.randomUUID();
-      sessionStorage.setItem('session_id', sessionId);
+      const { data, error: rpcError } = await supabase.rpc('increment_event_view', {
+        p_event_id: eventId,
+      });
 
-      const { error: insertError } = await supabase
-        .from('event_views')
-        .insert({
-          event_id: eventId,
-          session_id: sessionId,
-          user_agent: navigator.userAgent,
+      if (rpcError) {
+        logger.warn('Failed to increment event view', {
+          eventId,
+          error: rpcError.message,
+          source: 'useEventViews',
         });
-
-      if (insertError) {
-        logger.error('Error recording view:', { error: insertError });
-      } else {
-        setHasRecorded(true);
-        // Increment the local count
-        setViewCount(prev => prev + 1);
+      } else if (data) {
+        // Update local count with the new value from DB
+        setViewCount(Number(data));
       }
     } catch (err) {
-      logger.error('Error recording view:', { error: err });
+      logger.warn('Failed to increment event view', {
+        eventId,
+        error: err instanceof Error ? err.message : String(err),
+        source: 'useEventViews',
+      });
     }
-  };
+  }, [eventId]);
 
   return {
     viewCount,

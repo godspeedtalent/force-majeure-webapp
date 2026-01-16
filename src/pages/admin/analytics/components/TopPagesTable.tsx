@@ -59,54 +59,7 @@ export function TopPagesTable({ data, isLoading }: TopPagesTableProps) {
   const [showIgnored, setShowIgnored] = useState(false);
   const [typeFilterOpen, setTypeFilterOpen] = useState(false);
 
-  // Show skeleton loading state
-  if (isLoading) {
-    return (
-      <Card className="bg-black/60 border-white/20 rounded-none backdrop-blur-sm">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <Skeleton className="h-6 w-32 rounded-none" />
-            <div className="flex items-center gap-3">
-              <Skeleton className="h-8 w-48 rounded-none" />
-              <Skeleton className="h-8 w-32 rounded-none" />
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-white/10">
-                  <th className="text-left py-3 px-2"><Skeleton className="h-4 w-12 rounded-none" /></th>
-                  <th className="w-10 py-3 px-2"></th>
-                  <th className="text-left py-3 px-2"><Skeleton className="h-4 w-10 rounded-none" /></th>
-                  <th className="text-right py-3 px-2"><Skeleton className="h-4 w-12 rounded-none" /></th>
-                  <th className="text-right py-3 px-2"><Skeleton className="h-4 w-16 rounded-none" /></th>
-                  <th className="text-right py-3 px-2"><Skeleton className="h-4 w-16 rounded-none" /></th>
-                  <th className="text-right py-3 px-2"><Skeleton className="h-4 w-16 rounded-none" /></th>
-                </tr>
-              </thead>
-              <tbody>
-                {Array.from({ length: 10 }).map((_, i) => (
-                  <tr key={i} className={`border-b border-white/5 ${i % 2 === 0 ? 'bg-white/[0.02]' : ''}`}>
-                    <td className="py-3 px-2"><Skeleton className="h-4 w-48 rounded-none" /></td>
-                    <td className="py-3 px-2"></td>
-                    <td className="py-3 px-2"><Skeleton className="h-5 w-16 rounded-none" /></td>
-                    <td className="text-right py-3 px-2"><Skeleton className="h-4 w-12 rounded-none ml-auto" /></td>
-                    <td className="text-right py-3 px-2"><Skeleton className="h-4 w-10 rounded-none ml-auto" /></td>
-                    <td className="text-right py-3 px-2"><Skeleton className="h-4 w-14 rounded-none ml-auto" /></td>
-                    <td className="text-right py-3 px-2"><Skeleton className="h-4 w-10 rounded-none ml-auto" /></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // Persist ignored pages to localStorage
+  // Persist ignored pages to localStorage - must be called before any early returns to follow React hooks rules
   useEffect(() => {
     saveIgnoredPages(ignoredPages);
   }, [ignoredPages]);
@@ -264,6 +217,53 @@ export function TopPagesTable({ data, isLoading }: TopPagesTableProps) {
 
     return filtered.slice(0, 50); // Show more results when filtering
   }, [aggregatedPages, searchQuery, selectedPageTypes, sortField, sortDirection, formatPagePath, ignoredPages, showIgnored]);
+
+  // Show skeleton loading state
+  if (isLoading) {
+    return (
+      <Card className="bg-black/60 border-white/20 rounded-none backdrop-blur-sm">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-6 w-32 rounded-none" />
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-8 w-48 rounded-none" />
+              <Skeleton className="h-8 w-32 rounded-none" />
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-white/10">
+                  <th className="text-left py-3 px-2"><Skeleton className="h-4 w-12 rounded-none" /></th>
+                  <th className="w-10 py-3 px-2"></th>
+                  <th className="text-left py-3 px-2"><Skeleton className="h-4 w-10 rounded-none" /></th>
+                  <th className="text-right py-3 px-2"><Skeleton className="h-4 w-12 rounded-none" /></th>
+                  <th className="text-right py-3 px-2"><Skeleton className="h-4 w-16 rounded-none" /></th>
+                  <th className="text-right py-3 px-2"><Skeleton className="h-4 w-16 rounded-none" /></th>
+                  <th className="text-right py-3 px-2"><Skeleton className="h-4 w-16 rounded-none" /></th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({ length: 10 }).map((_, i) => (
+                  <tr key={i} className={`border-b border-white/5 ${i % 2 === 0 ? 'bg-white/[0.02]' : ''}`}>
+                    <td className="py-3 px-2"><Skeleton className="h-4 w-48 rounded-none" /></td>
+                    <td className="py-3 px-2"></td>
+                    <td className="py-3 px-2"><Skeleton className="h-5 w-16 rounded-none" /></td>
+                    <td className="text-right py-3 px-2"><Skeleton className="h-4 w-12 rounded-none ml-auto" /></td>
+                    <td className="text-right py-3 px-2"><Skeleton className="h-4 w-10 rounded-none ml-auto" /></td>
+                    <td className="text-right py-3 px-2"><Skeleton className="h-4 w-14 rounded-none ml-auto" /></td>
+                    <td className="text-right py-3 px-2"><Skeleton className="h-4 w-10 rounded-none ml-auto" /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   // Toggle sort
   const handleSort = (field: SortField) => {

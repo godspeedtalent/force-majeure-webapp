@@ -211,6 +211,7 @@
     "languagePreference": "语言偏好",
     "languageDescription": "选择您偏好的应用语言",
     "languageSaved": "语言偏好已保存。",
+    "apply": "应用",
     "updateProfile": "更新资料",
     "updateBillingAddress": "更新账单地址",
     "changePassword": "更改密码",

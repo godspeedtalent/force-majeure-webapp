@@ -411,6 +411,8 @@
     "featureToggles": "功能开关",
     "todoNotes": "待办笔记",
     "devNotes": "开发笔记",
+    "staffNotes": "员工笔记",
+    "staffNotesTitle": "员工笔记",
     "mockRole": "模拟角色",
     "mockRoleSimulator": "角色模拟器",
     "gallery": "图库",
@@ -433,6 +435,7 @@
     "hiddenTabs": "隐藏的标签",
     "groups": {
       "organization": "组织",
+      "staff": "员工工具",
       "developerTools": "开发者工具",
       "devTools": "开发工具",
       "dataConfig": "数据与配置",
@@ -1133,7 +1136,17 @@
     "genresManagementDescription": "管理艺术家分类的音乐风格和子风格。",
     "userDetails": "用户详情",
     "ticketingFees": "票务费用",
-    "ticketingFeesDescription": "配置适用于所有门票购买的票务费用"
+    "ticketingFeesDescription": "配置适用于所有门票购买的票务费用",
+    "artistManagement": "艺术家管理",
+    "artistDetails": "艺术家详情",
+    "artistsManagement": "艺术家管理",
+    "artistsManagementDescription": "管理艺术家个人资料、风格和元数据。",
+    "venuesManagement": "场地管理",
+    "venuesManagementDescription": "管理场地位置、容量和详情。",
+    "guestsManagement": "访客管理",
+    "guestsManagementDescription": "管理已购买商品的未认证用户的访客记录。",
+    "profilePreview": "个人资料预览",
+    "profilePreviewDescription": "这是您的个人资料对他人的显示效果"
   },
   "dataTypes": {
     "text": "文本",
@@ -1184,6 +1197,8 @@
     "deleteGenre": "删除风格",
     "addGenre": "添加风格",
     "addEvent": "添加活动",
+    "addVenue": "添加场地",
+    "addArtist": "添加艺术家",
     "issues": "问题",
     "noHeadliner": "无主演",
     "noIssues": "无问题",
@@ -2493,21 +2508,71 @@
     "backToHome": "返回首页"
   },
   "organization": {
-    "dashboard": {
-      "title": "组织面板",
-      "subtitle": "管理您的组织、员工并查看分析",
-      "salesReports": "销售报告",
-      "salesReportsDescription": "查看活动销售、收入分析和门票表现",
-      "viewReports": "查看报告",
-      "venueInfo": "场馆信息",
-      "venueInfoDescription": "更新场馆详情、容量和位置信息",
-      "manageVenue": "管理场馆",
-      "staffManagement": "员工管理",
-      "staffManagementDescription": "添加、删除和管理您组织的员工",
-      "manageStaff": "管理员工",
-      "organizationProfile": "组织资料",
-      "organizationProfileDescription": "编辑您组织的公开资料和设置",
-      "editProfile": "编辑资料"
+    "manage": {
+      "selectOrganization": "选择一个组织",
+      "nav": {
+        "organization": "组织",
+        "overview": "概览",
+        "overviewDescription": "仪表板和快速统计",
+        "events": "活动",
+        "eventsDescription": "查看和管理组织活动",
+        "sales": "销售",
+        "salesDescription": "收入分析和门票表现",
+        "venues": "场馆",
+        "venuesDescription": "场馆详情和位置",
+        "management": "管理",
+        "staff": "员工",
+        "staffDescription": "管理组织员工",
+        "settings": "设置",
+        "settingsDescription": "组织资料和设置"
+      },
+      "overview": {
+        "title": "概览",
+        "description": "您组织的仪表板和快速统计。",
+        "upcomingEvents": "即将举行的活动",
+        "pastEvents": "过去的活动",
+        "totalVenues": "场馆总数",
+        "staffMembers": "员工成员",
+        "quickActions": "快捷操作",
+        "viewEvents": "查看活动",
+        "viewSales": "查看销售",
+        "manageStaff": "管理员工"
+      },
+      "events": {
+        "title": "活动",
+        "description": "查看和管理您组织的活动。",
+        "upcoming": "即将举行的活动",
+        "past": "过去的活动",
+        "noUpcoming": "没有即将举行的活动。",
+        "andMore": "还有 {{count}} 个..."
+      },
+      "sales": {
+        "title": "销售报告",
+        "description": "查看活动销售、收入分析和门票表现。",
+        "totalRevenue": "总收入",
+        "ticketsSold": "已售门票",
+        "orders": "订单",
+        "salesByEvent": "按活动销售",
+        "noSalesData": "暂无销售数据。"
+      },
+      "venues": {
+        "title": "场馆",
+        "description": "查看和管理与您组织关联的场馆。",
+        "capacity": "容量",
+        "noVenues": "未找到场馆。"
+      },
+      "staff": {
+        "title": "员工管理",
+        "description": "添加、删除和管理您组织的员工。",
+        "comingSoon": "员工管理即将推出。"
+      },
+      "settings": {
+        "title": "组织设置",
+        "description": "编辑您组织的公开资料和设置。",
+        "organizationProfile": "组织资料",
+        "editOrganization": "编辑组织",
+        "selectOrgFirst": "请选择一个组织以查看设置。"
+      }
     },
     "loadFailed": "加载组织失败",
     "notFound": "未找到组织",
@@ -2594,7 +2659,11 @@
       "guestDeleted": "访客已删除",
       "guestDeleteFailed": "删除访客失败",
       "schemaRefreshSuccess": "架构刷新成功！已更新{{count}}个表。",
-      "schemaRefreshFailed": "刷新架构失败"
+      "schemaRefreshFailed": "刷新架构失败",
+      "overviewTitle": "数据库概览",
+      "overviewDescription": "管理和监控您的数据库表和记录。",
+      "refreshing": "刷新中...",
+      "refreshSchema": "刷新架构"
     },
     "featureToggles": {
       "description": "切换功能标志以启用或禁用应用程序功能",
@@ -3769,7 +3838,7 @@
     }
   },
   "organizationTab": {
-    "goToOrgDashboard": "前往组织仪表板",
+    "goToOrgDashboard": "管理组织",
     "goToTicketScanner": "前往票务扫描器"
   },
   "mobileDevTools": {
@@ -3781,6 +3850,7 @@
       "features": "功能",
       "session": "会话",
       "notes": "笔记",
+      "staffNotes": "员工笔记",
       "roles": "角色"
     },
     "toolLabels": {
@@ -3789,6 +3859,7 @@
       "features": "功能开关",
       "session": "会话覆盖",
       "notes": "开发者笔记",
+      "staffNotes": "员工笔记",
       "roles": "角色模拟"
     },
     "fab": {

@@ -20,6 +20,8 @@ interface FmMobileDevDrawerProps {
   onOpenChange: (open: boolean) => void;
   onToolSelect: (toolId: MobileDevToolId) => void;
   badges: Record<MobileDevToolId, number>;
+  /** Whether user has full dev tools access (admin/developer) or just staff tools */
+  canAccessDevTools: boolean;
 }
 
 interface ToolCardProps {
@@ -105,40 +107,51 @@ export function FmMobileDevDrawer({
   onOpenChange,
   onToolSelect,
   badges,
+  canAccessDevTools,
 }: FmMobileDevDrawerProps) {
   const { t } = useTranslation('common');
 
-  const tools: Array<{
+  const allTools: Array<{
     id: MobileDevToolId;
     label: string;
     icon: React.ReactNode;
+    /** If true, only visible to admin/developer roles */
+    devOnly?: boolean;
   }> = [
     {
       id: 'navigation',
       label: t('mobileDevTools.tools.navigation'),
       icon: <Compass className="h-[24px] w-[24px]" strokeWidth={2} />,
+      devOnly: true,
     },
     {
       id: 'database',
       label: t('mobileDevTools.tools.database'),
       icon: <Database className="h-[24px] w-[24px]" strokeWidth={2} />,
+      devOnly: true,
     },
     {
       id: 'features',
       label: t('mobileDevTools.tools.features'),
       icon: <ToggleLeft className="h-[24px] w-[24px]" strokeWidth={2} />,
+      devOnly: true,
     },
     {
       id: 'notes',
-      label: t('mobileDevTools.tools.notes'),
+      label: t('mobileDevTools.tools.staffNotes'),
       icon: <ClipboardList className="h-[24px] w-[24px]" strokeWidth={2} />,
+      devOnly: false, // Staff can access this
     },
     {
       id: 'roles',
       label: t('mobileDevTools.tools.roles'),
       icon: <UserCog className="h-[24px] w-[24px]" strokeWidth={2} />,
+      devOnly: true,
     },
   ];
+
+  // Filter tools based on access level
+  const tools = allTools.filter(tool => !tool.devOnly || canAccessDevTools);
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>

@@ -7,7 +7,7 @@ interface OrganizationTabContentProps {
   onNavigate: (path: string) => void;
 }
 
-export function OrgDashboardTabContent({ onNavigate }: OrganizationTabContentProps) {
+export function ManageOrganizationTabContent({ onNavigate }: OrganizationTabContentProps) {
   const { t } = useTranslation('common');
 
   return (
@@ -27,6 +27,9 @@ export function OrgDashboardTabContent({ onNavigate }: OrganizationTabContentPro
     </div>
   );
 }
+
+/** @deprecated Use ManageOrganizationTabContent instead */
+export const OrgDashboardTabContent = ManageOrganizationTabContent;
 
 export function ScanTicketsTabContent({ onNavigate }: OrganizationTabContentProps) {
   const { t } = useTranslation('common');

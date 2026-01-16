@@ -246,6 +246,8 @@
     "roleAddFailed": "Error al añadir rol",
     "roleAddFailedDescription": "No se pudo asignar el rol \"{{roleName}}\" al usuario",
     "roleRemoveFailed": "Error al eliminar rol",
+    "roleUpdateFailed": "Error al actualizar rol",
+    "userIdMissing": "No se pueden gestionar roles: Falta el ID del usuario",
     "requestApproved": "Solicitud aprobada exitosamente",
     "requestApproveFailed": "Error al aprobar solicitud",
     "requestDenied": "Solicitud denegada",

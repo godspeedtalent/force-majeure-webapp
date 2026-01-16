@@ -162,14 +162,14 @@ export function FmArtistSpotlight({
           {/* Mobile: Image section */}
           {hasSecondaryImages ? (
             /* Mobile with gallery: Two columns */
-            <div className='flex gap-2'>
+            <div className='flex gap-2 max-h-[320px]'>
               {/* Main image with compact overlay */}
-              <div className='w-1/2 flex-shrink-0'>
-                <div className='relative overflow-hidden border border-white/15 bg-white/5'>
+              <div className='w-1/2 flex-shrink-0 max-h-[320px]'>
+                <div className='relative overflow-hidden border border-white/15 bg-white/5 h-full max-h-[320px]'>
                   <img
                     src={mainImage}
                     alt={artist.name}
-                    className='w-full aspect-[3/4] object-cover'
+                    className='w-full h-full object-cover'
                   />
                   {/* Gradient overlay */}
                   <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent' />
@@ -184,8 +184,8 @@ export function FmArtistSpotlight({
               </div>
 
               {/* Thumbnail grid */}
-              <div className='w-1/2 flex flex-col'>
-                <div className='grid grid-cols-2 gap-1.5 auto-rows-fr'>
+              <div className='w-1/2 flex flex-col max-h-[320px]'>
+                <div className='grid grid-cols-2 gap-1.5 auto-rows-fr h-full'>
                   {thumbnailImages.map(img => {
                     const originalIndex = galleryImages.findIndex(
                       g => g.id === img.id
@@ -216,11 +216,11 @@ export function FmArtistSpotlight({
             </div>
           ) : (
             /* Mobile without gallery: Horizontal hero image */
-            <div className='relative overflow-hidden border border-white/15 bg-white/5'>
+            <div className='relative overflow-hidden border border-white/15 bg-white/5 max-h-[280px]'>
               <img
                 src={mainImage}
                 alt={artist.name}
-                className='w-full aspect-[16/9] object-cover'
+                className='w-full aspect-[16/9] max-h-[280px] object-cover'
               />
               {/* Gradient overlay */}
               <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent' />
@@ -269,11 +269,11 @@ export function FmArtistSpotlight({
         <div className='hidden md:flex gap-5'>
           {/* Left Column - Main Image with overlay (50% width) */}
           <div className='w-1/2 flex-shrink-0'>
-            <div className='relative overflow-hidden border border-white/15 bg-white/5'>
+            <div className='relative overflow-hidden border border-white/15 bg-white/5 max-h-[500px]'>
               <img
                 src={mainImage}
                 alt={artist.name}
-                className='w-full aspect-[3/4] object-cover'
+                className='w-full h-full max-h-[500px] object-cover'
               />
               {/* Gradient overlay for text legibility */}
               <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent' />

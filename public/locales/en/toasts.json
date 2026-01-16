@@ -247,6 +247,8 @@
     "roleAddFailed": "Failed to add role",
     "roleAddFailedDescription": "Could not assign role \"{{roleName}}\" to user",
     "roleRemoveFailed": "Failed to remove role",
+    "roleUpdateFailed": "Failed to update role",
+    "userIdMissing": "Cannot manage roles: User ID is missing",
     "requestApproved": "Request approved successfully",
     "requestApproveFailed": "Failed to approve request",
     "requestDenied": "Request denied",

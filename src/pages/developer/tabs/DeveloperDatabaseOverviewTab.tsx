@@ -122,10 +122,10 @@ export function DeveloperDatabaseOverviewTab() {
       <div className='flex items-center justify-between'>
         <div>
           <h1 className='text-3xl font-canela font-bold text-foreground mb-2'>
-            Database Overview
+            {t('devTools.database.overviewTitle')}
           </h1>
           <p className='text-muted-foreground'>
-            Manage and monitor your database tables and records.
+            {t('devTools.database.overviewDescription')}
           </p>
         </div>
         <FmCommonButton
@@ -136,7 +136,7 @@ export function DeveloperDatabaseOverviewTab() {
           icon={RefreshCw}
           className={isRefreshingSchema ? '[&_svg]:animate-spin' : ''}
         >
-          {isRefreshingSchema ? 'Refreshing...' : 'Refresh Schema'}
+          {isRefreshingSchema ? t('devTools.database.refreshing') : t('devTools.database.refreshSchema')}
         </FmCommonButton>
       </div>
 

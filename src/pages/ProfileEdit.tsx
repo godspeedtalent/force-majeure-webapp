@@ -35,6 +35,61 @@ import { LanguageSelector } from '@/components/common/i18n/LanguageSelector';
 import { useLocaleSync } from '@/hooks/useLocaleSync';
 import type { SupportedLocale } from '@/i18n';
 
+/**
+ * LocaleSettingField - Locale selector with Apply button
+ *
+ * This field applies immediately when clicking Apply, separate from
+ * other form fields that might use a floating save button pattern.
+ */
+function LocaleSettingField() {
+  const { t } = useTranslation('pages');
+  const { currentLocale, changeLocale, isSyncing } = useLocaleSync();
+  const [selectedLocale, setSelectedLocale] = useState<SupportedLocale>(currentLocale);
+  const [isApplying, setIsApplying] = useState(false);
+
+  // Track if the selection differs from the current applied locale
+  const hasChanges = selectedLocale !== currentLocale;
+
+  const handleApply = async () => {
+    if (!hasChanges) return;
+
+    setIsApplying(true);
+    try {
+      await changeLocale(selectedLocale);
+      toast.success(t('profile.languageSaved'));
+    } finally {
+      setIsApplying(false);
+    }
+  };
+
+  // Sync selected locale when current locale changes externally
+  useEffect(() => {
+    setSelectedLocale(currentLocale);
+  }, [currentLocale]);
+
+  return (
+    <div className='flex items-end gap-[10px]'>
+      <div className='max-w-xs flex-1'>
+        <LanguageSelector
+          value={selectedLocale}
+          onChange={setSelectedLocale}
+          disabled={isApplying || isSyncing}
+        />
+      </div>
+      <FmCommonButton
+        variant='default'
+        size='sm'
+        onClick={handleApply}
+        loading={isApplying}
+        disabled={!hasChanges || isApplying}
+        className='mb-[2px]'
+      >
+        {t('profile.apply')}
+      </FmCommonButton>
+    </div>
+  );
+}
+
 type ProfileSection = 'profile' | 'account' | 'artist';
 
 interface LocationState {
@@ -47,7 +102,6 @@ const ProfileEdit = () => {
   const location = useLocation();
   const { t } = useTranslation('pages');
   const { t: tCommon } = useTranslation('common');
-  const { currentLocale, changeLocale } = useLocaleSync();
   const { getRoles } = useUserPermissions();
 
   // Read initial active section from navigation state
@@ -525,15 +579,7 @@ const ProfileEdit = () => {
               description={t('profile.languageDescription')}
               icon={Globe}
             >
-              <div className='max-w-xs'>
-                <LanguageSelector
-                  value={currentLocale}
-                  onChange={async (locale: SupportedLocale) => {
-                    await changeLocale(locale);
-                    toast.success(t('profile.languageSaved'));
-                  }}
-                />
-              </div>
+              <LocaleSettingField />
             </FmFormSection>
 
             {/* Password Change Section */}

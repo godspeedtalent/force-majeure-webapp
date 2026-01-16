@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { Calendar, Settings, ArrowLeft, MapPin, Users } from 'lucide-react';
+import { Calendar, Settings, MapPin, Users } from 'lucide-react';
 import { supabase, ROLES, PERMISSIONS, cn } from '@/shared';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonSlidingIconButton } from '@/components/common/buttons/FmCommonSlidingIconButton';
@@ -111,9 +111,11 @@ export default function VenueDetails() {
     hasAnyRole(ROLES.ADMIN, ROLES.DEVELOPER) ||
     hasPermission(PERMISSIONS.MANAGE_VENUES);
 
+  const handleBack = () => navigate(-1);
+
   if (isLoading) {
     return (
-      <Layout>
+      <Layout showBackButton onBack={handleBack} backButtonLabel={t('buttons.back')}>
         <div className='flex items-center justify-center min-h-[400px]'>
           <FmCommonLoadingSpinner size='lg' />
         </div>
@@ -123,7 +125,7 @@ export default function VenueDetails() {
 
   if (!venue) {
     return (
-      <Layout>
+      <Layout showBackButton onBack={handleBack} backButtonLabel={t('buttons.back')}>
         <div className='text-center py-12'>
           <h1 className='text-2xl font-canela mb-4'>{t('venueDetails.notFound')}</h1>
           <FmCommonButton onClick={() => navigate('/')}>
@@ -163,7 +165,7 @@ export default function VenueDetails() {
   const hasAddressData = venue.address_line_1 || venue.city || venue.state;
 
   return (
-    <Layout>
+    <Layout showBackButton onBack={handleBack} backButtonLabel={t('buttons.back')}>
       <div className='w-full'>
         {/* Hero Section with Horizontal Image */}
         <div className='relative w-full h-[400px] md:h-[500px] lg:h-[600px]'>
@@ -180,20 +182,8 @@ export default function VenueDetails() {
 
         </div>
 
-        {/* Navigation Controls - Fixed to viewport */}
-        <div className='fixed top-20 left-4 right-4 z-30 flex items-center justify-between pointer-events-none'>
-          <div className='pointer-events-auto'>
-            <FmCommonButton
-              variant='secondary'
-              size='sm'
-              icon={ArrowLeft}
-              onClick={() => navigate(-1)}
-              className='bg-black/60 backdrop-blur-sm text-white hover:bg-black/80 border border-white/30'
-            >
-              {t('buttons.back')}
-            </FmCommonButton>
-          </div>
-
+        {/* Action Controls - Fixed to viewport */}
+        <div className='fixed top-20 right-4 z-30 flex items-center pointer-events-none'>
           <div className='flex items-center gap-2 pointer-events-auto'>
             {/* Instagram Story Button */}
             <FmInstagramStoryButton

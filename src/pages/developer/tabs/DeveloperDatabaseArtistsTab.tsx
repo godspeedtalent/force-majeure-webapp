@@ -50,8 +50,8 @@ export function DeveloperDatabaseArtistsTab() {
   return (
     <div className='space-y-6'>
       <FmSectionHeader
-        title='Artists Management'
-        description='Manage artist profiles, genres, and metadata.'
+        title={t('pageTitles.artistsManagement')}
+        description={t('pageTitles.artistsManagementDescription')}
         icon={Mic2}
       />
 

@@ -22,6 +22,7 @@ import { FmDataGridExportDialog, ExportFormat } from './FmDataGridExportDialog';
 import { FmDataGridGroupDialog } from './FmDataGridGroupDialog';
 import { FmBulkEditDialog } from './FmBulkEditDialog';
 import { exportData } from '../utils/dataExport';
+import { isRelationField } from '../utils/dataGridRelations';
 import { FmDataGridToolbar } from './table/FmDataGridToolbar';
 import { FmDataGridHeader } from './table/FmDataGridHeader';
 import { FmDataGridRow, FmDataGridGroupRow } from './table/FmDataGridRow';
@@ -277,7 +278,36 @@ export function FmDataGrid<T extends Record<string, any>>({
     columnKey: string,
     overrideValue?: any
   ) => {
-    if (!onUpdate || !gridState.editingCell) return;
+    // Debug logging
+    if (columnKey === 'organization_id') {
+      logger.info('handleCellSave called', {
+        columnKey,
+        overrideValue,
+        editValue: gridState.editValue,
+        hasOnUpdate: !!onUpdate,
+        editingCell: gridState.editingCell,
+        source: 'FmDataGrid',
+      });
+    }
+
+    // For relation fields with override value, don't require editingCell to still be set
+    // (the dropdown may have closed before onComplete fires)
+    const isRelationWithValue = isRelationField(columnKey) && overrideValue === undefined && gridState.editValue;
+
+    if (!onUpdate) {
+      if (columnKey === 'organization_id') {
+        logger.info('handleCellSave returning early - no onUpdate', { source: 'FmDataGrid' });
+      }
+      return;
+    }
+
+    // Only check editingCell for non-relation fields or if no value is being saved
+    if (!gridState.editingCell && !isRelationWithValue) {
+      if (columnKey === 'organization_id') {
+        logger.info('handleCellSave returning early - no editingCell', { source: 'FmDataGrid' });
+      }
+      return;
+    }
 
     const column = columns.find(col => col.key === columnKey);
     let newValue = overrideValue !== undefined ? overrideValue : gridState.editValue;

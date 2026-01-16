@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import {
+  ArrowLeft,
   Instagram,
   ShoppingCart,
   User,
@@ -21,6 +22,7 @@ import {
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { cn, useIsMobile, FEATURE_FLAGS } from '@/shared';
 import { useCheckoutTimer } from '@/contexts/CheckoutContext';
+import { useNavigation } from '@/contexts/NavigationContext';
 import { SOCIAL_LINKS } from '@/shared';
 import { FeatureGuard } from '@/components/common/guards/FeatureGuard';
 
@@ -29,8 +31,17 @@ export const Navigation = () => {
   const navigate = useNavigate();
   const { t } = useTranslation('common');
   const { isCheckoutActive, endCheckout, redirectUrl } = useCheckoutTimer();
+  const { backButton } = useNavigation();
   const isMobile = useIsMobile();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const handleBackClick = () => {
+    if (backButton.onClick) {
+      backButton.onClick();
+    } else {
+      navigate(-1);
+    }
+  };
 
   return (
     <nav
@@ -44,8 +55,39 @@ export const Navigation = () => {
     >
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='flex justify-between items-center h-16'>
-          {/* Logo and Breadcrumbs */}
+          {/* Back Button, Logo, and Breadcrumbs */}
           <div className='flex items-center'>
+            {/* Back Button */}
+            {backButton.show && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={handleBackClick}
+                      className={cn(
+                        'flex items-center gap-2 mr-3 px-3 py-1.5',
+                        'text-foreground hover:text-fm-gold',
+                        'border border-white/20 hover:border-fm-gold/50',
+                        'bg-black/40 hover:bg-black/60 backdrop-blur-sm',
+                        'transition-all duration-200',
+                        'rounded-none'
+                      )}
+                    >
+                      <ArrowLeft className='h-4 w-4' />
+                      {backButton.label && (
+                        <span className='text-sm hidden sm:inline'>
+                          {backButton.label}
+                        </span>
+                      )}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{backButton.label || t('buttons.back')}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+
             <Link
               to='/'
               className='transition-transform duration-200 hover:scale-110'

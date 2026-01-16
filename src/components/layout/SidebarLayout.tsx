@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { cn } from '@/shared';
 import { useIsMobile } from '@/shared';
 import { Navigation } from '@/components/navigation/Navigation';
@@ -9,8 +9,8 @@ import {
   FmCommonSideNavGroup,
 } from '@/components/common/navigation/FmCommonSideNav';
 import { SidebarProvider } from '@/components/common/shadcn/sidebar';
-import { FmBackButton } from '@/components/common/buttons/FmBackButton';
 import { FmContentContainer } from '@/components/common/layout/FmContentContainer';
+import { useNavigation } from '@/contexts/NavigationContext';
 import type { ContentWidth } from '@/shared/constants/designSystem';
 
 interface SidebarLayoutProps<T extends string> {
@@ -85,6 +85,19 @@ export const SidebarLayout = <T extends string>({
   rootClassName = '',
 }: SidebarLayoutProps<T>) => {
   const isMobile = useIsMobile();
+  const { setBackButton, clearBackButton } = useNavigation();
+
+  // Set back button in navigation bar when showBackButton is true
+  useEffect(() => {
+    if (showBackButton) {
+      setBackButton({
+        show: true,
+        onClick: onBack,
+        label: backButtonLabel,
+      });
+    }
+    return () => clearBackButton();
+  }, [showBackButton, onBack, backButtonLabel, setBackButton, clearBackButton]);
 
   return (
     <div className={cn('h-screen bg-background flex flex-col overflow-hidden', rootClassName)}>
@@ -124,17 +137,8 @@ export const SidebarLayout = <T extends string>({
               isMobile && mobileTabBar && 'pb-[120px]'
             )}
           >
-            {(showBackButton || backButtonActions) && (
-              <div className='mb-[20px] flex items-center justify-between'>
-                {showBackButton ? (
-                  <FmBackButton
-                    position='inline'
-                    onClick={onBack}
-                    label={backButtonLabel}
-                  />
-                ) : (
-                  <div />
-                )}
+            {backButtonActions && (
+              <div className='mb-[20px] flex items-center justify-end'>
                 {backButtonActions}
               </div>
             )}

@@ -19,16 +19,23 @@ import { PerformanceMetrics } from './components/PerformanceMetrics';
 import { TopPagesTable } from './components/TopPagesTable';
 import { SessionsTable } from './components/SessionsTable';
 
-const DATE_RANGE_OPTIONS = [
-  { value: '7d', label: 'Last 7 days' },
-  { value: '30d', label: 'Last 30 days' },
-  { value: '90d', label: 'Last 90 days' },
+// Shared date range type used across all analytics components
+export type AnalyticsDateRange = '1h' | '24h' | '7d' | '30d' | '90d' | '12mo';
+
+export const DATE_RANGE_OPTIONS: { value: AnalyticsDateRange; label: string; days: number }[] = [
+  { value: '1h', label: 'Last hour', days: 1 / 24 },
+  { value: '24h', label: 'Last 24 hours', days: 1 },
+  { value: '7d', label: 'Last 7 days', days: 7 },
+  { value: '30d', label: 'Last 30 days', days: 30 },
+  { value: '90d', label: 'Last 90 days', days: 90 },
+  { value: '12mo', label: 'Last 12 months', days: 365 },
 ];
 
 export default function AnalyticsDashboard() {
-  const [selectedRange, setSelectedRange] = useState('7d');
+  const [selectedRange, setSelectedRange] = useState<AnalyticsDateRange>('7d');
   const dateRange = useMemo(() => {
-    const days = selectedRange === '7d' ? 7 : selectedRange === '30d' ? 30 : 90;
+    const option = DATE_RANGE_OPTIONS.find(o => o.value === selectedRange);
+    const days = option?.days || 7;
     return {
       start: new Date(Date.now() - days * 24 * 60 * 60 * 1000),
       end: new Date(),
@@ -129,7 +136,11 @@ export default function AnalyticsDashboard() {
               </FmCommonTabsList>
 
               <FmCommonTabsContent value="traffic" className="mt-6 space-y-6">
-                <PageViewsChart data={dailyPageViews || []} />
+                <PageViewsChart
+                  data={dailyPageViews || []}
+                  selectedRange={selectedRange}
+                  onRangeChange={setSelectedRange}
+                />
                 <TopPagesTable data={dailyPageViews || []} />
               </FmCommonTabsContent>
 
@@ -145,6 +156,8 @@ export default function AnalyticsDashboard() {
                 <SessionsTable
                   data={sessionsData?.data || []}
                   isLoading={loadingSessions}
+                  selectedRange={selectedRange}
+                  onRangeChange={setSelectedRange}
                 />
               </FmCommonTabsContent>
             </FmCommonTabs>

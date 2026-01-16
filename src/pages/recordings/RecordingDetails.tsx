@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, ExternalLink, Music2, User, Calendar, RefreshCw, Star } from 'lucide-react';
+import { ExternalLink, Music2, User, Calendar, RefreshCw, Star } from 'lucide-react';
 import { SiSoundcloud, SiSpotify, SiYoutube } from 'react-icons/si';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmRecordingLink } from '@/components/common/links/FmRecordingLink';
@@ -178,22 +178,18 @@ export default function RecordingDetails() {
       onBack={handleBack}
       notFoundMessage="Recording not found"
       useLayout={true}
+      layoutProps={{
+        showBackButton: true,
+        onBack: handleBack,
+        backButtonLabel: t('buttons.back'),
+      }}
     >
       {(recording) => (
         <div className='min-h-screen'>
-          {/* Header */}
+          {/* Header Actions */}
           <div className='border-b border-border/40 bg-background/50 backdrop-blur-sm sticky top-0 z-10'>
             <div className='container mx-auto px-4 py-4'>
-              <div className='flex items-center justify-between'>
-                <FmCommonButton
-                  variant='secondary'
-                  size='sm'
-                  icon={ArrowLeft}
-                  onClick={handleBack}
-                >
-                  {t('buttons.back')}
-                </FmCommonButton>
-                
+              <div className='flex items-center justify-end'>
                 <div className='flex items-center gap-2'>
                   {canEdit && (
                     <FmCommonButton
