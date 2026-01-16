@@ -25,6 +25,7 @@ import { FunnelVisualization } from '../../admin/analytics/components/FunnelVisu
 import { PerformanceMetrics } from '../../admin/analytics/components/PerformanceMetrics';
 import { TopPagesTable } from '../../admin/analytics/components/TopPagesTable';
 import { SessionsTable } from '../../admin/analytics/components/SessionsTable';
+import { type AnalyticsDateRange } from '../../admin/analytics/AnalyticsDashboard';
 
 export function AnalyticsDashboardContent() {
   const { t } = useTranslation('common');
@@ -37,7 +38,7 @@ export function AnalyticsDashboardContent() {
     ],
     [t]
   );
-  const [selectedRange, setSelectedRange] = useState('7d');
+  const [selectedRange, setSelectedRange] = useState<AnalyticsDateRange>('7d');
 
   const dateRange = useMemo(() => {
     const days = selectedRange === '7d' ? 7 : selectedRange === '30d' ? 30 : 90;
@@ -115,7 +116,7 @@ export function AnalyticsDashboardContent() {
           </div>
           <FmCommonSelect
             value={selectedRange}
-            onChange={setSelectedRange}
+            onChange={(value) => setSelectedRange(value as AnalyticsDateRange)}
             options={dateRangeOptions}
             className="w-[160px]"
           />
@@ -150,7 +151,12 @@ export function AnalyticsDashboardContent() {
         </div>
 
         <FmCommonTabsContent value="traffic" className="mt-6 space-y-6">
-          <PageViewsChart data={dailyPageViews || []} isLoading={loadingPageViews} />
+          <PageViewsChart
+            data={dailyPageViews || []}
+            isLoading={loadingPageViews}
+            selectedRange={selectedRange}
+            onRangeChange={setSelectedRange}
+          />
           <TopPagesTable data={dailyPageViews || []} isLoading={loadingPageViews} />
         </FmCommonTabsContent>
 
@@ -167,6 +173,8 @@ export function AnalyticsDashboardContent() {
             data={sessionsData?.data || []}
             isLoading={loadingSessions}
             error={sessionsError instanceof Error ? sessionsError.message : undefined}
+            selectedRange={selectedRange}
+            onRangeChange={setSelectedRange}
           />
         </FmCommonTabsContent>
       </FmCommonTabs>

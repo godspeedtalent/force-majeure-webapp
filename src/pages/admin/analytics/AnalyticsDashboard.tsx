@@ -103,7 +103,7 @@ export default function AnalyticsDashboard() {
           {/* Date range selector */}
           <FmCommonSelect
             value={selectedRange}
-            onChange={setSelectedRange}
+            onChange={(value) => setSelectedRange(value as AnalyticsDateRange)}
             options={DATE_RANGE_OPTIONS}
             className="w-[160px]"
           />
