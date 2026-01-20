@@ -13,6 +13,7 @@ import { FmSocialLinks } from '@/components/common/display/FmSocialLinks';
 import { FmCommonExpandableText } from '@/components/common/display/FmCommonExpandableText';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/shared';
+import { useVenueCoverImage } from '@/shared/hooks/useGalleryCoverImage';
 
 export interface FmVenueDetailsModalProps {
   venue: {
@@ -63,6 +64,12 @@ export const FmVenueDetailsModal = ({
   const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [showPastEvents, setShowPastEvents] = useState(false);
+
+  // Fetch gallery cover image for this venue (preferred over deprecated image_url)
+  const { coverImageUrl: galleryCoverImage } = useVenueCoverImage(venue?.id);
+
+  // Use gallery cover image first, fall back to deprecated image prop
+  const heroImageUrl = galleryCoverImage || venue?.image || null;
 
   // Fetch upcoming events for this venue
   const { data: upcomingEvents = [] } = useQuery({
@@ -230,10 +237,10 @@ export const FmVenueDetailsModal = ({
 
             {/* Hero image */}
             <div className='w-full h-full overflow-hidden border-b-2 border-fm-gold'>
-              {venue?.image ? (
+              {heroImageUrl ? (
                 <img
-                  src={venue.image}
-                  alt={venue.name}
+                  src={heroImageUrl}
+                  alt={venue?.name}
                   className='w-full h-full object-cover'
                 />
               ) : (

@@ -43,7 +43,7 @@ export function MobileEventSwipeContainer({
   const isScrollingRef = useRef(false);
   const lastReportedIndexRef = useRef<number>(-1);
   const rafRef = useRef<number | null>(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const [_scrollProgress, setScrollProgress] = useState(0);
 
   const childArray = Children.toArray(children);
   const totalItems = childArray.length;

@@ -206,7 +206,7 @@ export function useDeveloperNavigation({
         label: 'Venues',
         sortKey: 'Venues',
         icon: MapPin,
-        description: 'Venue Management',
+        description: 'Venue management',
         badge: <span className="text-[10px] text-muted-foreground">{venuesCount}</span>,
       },
     ];

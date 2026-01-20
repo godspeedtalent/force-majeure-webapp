@@ -4,6 +4,7 @@ import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadi
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonEmptyState } from '@/components/common/display/FmCommonEmptyState';
 import { FmArtistUndercardCard } from '@/components/common/display/FmArtistUndercardCard';
+import { FmSectionHeader } from '@/components/common/display/FmSectionHeader';
 import { FmListSortFilter, SortDirection, DateRange } from '@/components/common/filters/FmListSortFilter';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
@@ -103,7 +104,7 @@ export function IndexDesktop({
       <div className='flex flex-col justify-between pt-8 pb-[60px] px-4 relative z-10'>
         {/* Logo Section - Top Row */}
         <div className='flex items-center justify-center'>
-          <div className='max-w-7xl mx-auto'>
+          <div className='max-w-4xl mx-auto'>
             <div className='flex flex-col items-center text-center'>
               <ForceMajeureLogo size='lg' className='mb-4 h-32 w-32' />
               <h1
@@ -123,8 +124,8 @@ export function IndexDesktop({
 
         {/* Events Section - Bottom Row */}
         <div ref={eventsRef} className='flex items-center justify-center' data-section-id='events'>
-          <div className='max-w-7xl mx-auto animate-fade-in w-full'>
-            <div className='grid grid-cols-3 gap-8 justify-items-center'>
+          <div className='max-w-4xl mx-auto animate-fade-in w-full'>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center'>
               {loading ? (
                 Array.from({ length: 3 }).map((_, idx) => (
                   <EventCardSkeleton key={`skeleton-${idx}`} />
@@ -183,10 +184,12 @@ export function IndexDesktop({
             {/* Past Events Section - auto-shown when no upcoming events, toggleable otherwise */}
             {!loading && showPastEvents && totalPastEventsCount > 0 && (
               <div className='mt-[60px]'>
-                <div className='flex items-center justify-between mb-[40px]'>
-                  <h2 className='text-2xl lg:text-3xl font-canela text-foreground'>
-                    {t('home.pastEventsTitle')}
-                  </h2>
+                <div className='flex items-center justify-between mb-[20px]'>
+                  <FmSectionHeader
+                    title={t('home.pastEventsTitle')}
+                    icon={History}
+                    showDivider={false}
+                  />
                   <FmListSortFilter
                     sortBy={pastEventsSortBy}
                     onSortChange={onPastEventsSortChange}
@@ -247,7 +250,7 @@ export function IndexDesktop({
       data-section-id='hero'
     >
       <div
-        className='max-w-7xl mx-auto'
+        className='max-w-4xl mx-auto'
         style={{
           transform: `translateY(${parallaxOffset}px)`,
           opacity: fadeOpacity,
@@ -278,7 +281,7 @@ export function IndexDesktop({
       className='py-8 px-4'
       data-section-id='events'
     >
-      <div className='max-w-7xl mx-auto animate-fade-in w-full'>
+      <div className='max-w-4xl mx-auto animate-fade-in w-full'>
         {/* Upcoming Events */}
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center'>
           {loading ? (
@@ -333,10 +336,12 @@ export function IndexDesktop({
         {/* Past Events Section - auto-shown when no upcoming events, toggleable otherwise */}
         {!loading && showPastEvents && totalPastEventsCount > 0 && (
           <div className='mt-[60px]'>
-            <div className='flex items-center justify-between mb-[40px]'>
-              <h2 className='text-2xl lg:text-3xl font-canela text-foreground'>
-                {t('home.pastEventsTitle')}
-              </h2>
+            <div className='flex items-center justify-between mb-[20px]'>
+              <FmSectionHeader
+                title={t('home.pastEventsTitle')}
+                icon={History}
+                showDivider={false}
+              />
               <FmListSortFilter
                 sortBy={pastEventsSortBy}
                 onSortChange={onPastEventsSortChange}

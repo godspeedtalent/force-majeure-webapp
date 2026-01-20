@@ -222,24 +222,20 @@ const OrganizationTools = () => {
     return null;
   }
 
-  // Organization selector for users with multiple organizations
-  const renderOrgSelector = () => {
+  // Organization selector for sidebar header
+  const renderSidebarOrgSelector = () => {
     if (!userOrganizations || userOrganizations.length <= 1) return null;
 
     return (
-      <div className='mb-[20px]'>
-        <FmCommonCard className='p-4'>
-          <div className='flex items-center gap-4'>
-            <Building2 className='h-5 w-5 text-fm-gold' />
-            <div className='flex-1'>
-              <FmOrganizationSearchDropdown
-                value={selectedOrgId}
-                onChange={(value) => setSelectedOrgId(value || null)}
-                placeholder={t('organization.manage.selectOrganization')}
-              />
-            </div>
-          </div>
-        </FmCommonCard>
+      <div className='space-y-2'>
+        <div className='text-[10px] uppercase tracking-wider text-muted-foreground'>
+          {t('organization.manage.selectOrganization')}
+        </div>
+        <FmOrganizationSearchDropdown
+          value={selectedOrgId}
+          onChange={(value) => setSelectedOrgId(value || null)}
+          placeholder={t('organization.manage.selectOrganization')}
+        />
       </div>
     );
   };
@@ -698,8 +694,8 @@ const OrganizationTools = () => {
       onBack={() => navigate('/')}
       mobileTabBar={mobileTabBar}
       contentWidth='READABLE'
+      sidebarHeader={renderSidebarOrgSelector()}
     >
-      {renderOrgSelector()}
       {renderTabContent()}
     </SidebarLayout>
   );

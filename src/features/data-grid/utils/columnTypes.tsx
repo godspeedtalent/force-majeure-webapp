@@ -119,7 +119,6 @@ export const DataGridColumns = {
     label: config.label,
     width: config.width || '75px',
     isImage: true, // Mark as image column for mobile layout
-    cellClassName: 'p-0', // No padding for image cells
     render: (value: any, row: T) => (
       <ImageCell
         value={value as string}
