@@ -39,6 +39,8 @@ export interface DataGridColumn<T = any> {
   options?: SelectOption[]; // Options for select type columns
   /** Custom cell styling based on cell value - return additional class names */
   cellStyle?: (value: any, row: T) => string | undefined;
+  /** Static className to apply to all cells in this column */
+  cellClassName?: string;
 }
 
 /**

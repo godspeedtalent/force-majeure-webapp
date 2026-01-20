@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/shared';
 import { User, Mail, Calendar, Shield, Building2, ExternalLink } from 'lucide-react';
+import { Button } from '@/components/common/shadcn/button';
 import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { FmFormSectionHeader } from '@/components/common/display/FmSectionHeader';
 import { Badge } from '@/components/common/shadcn/badge';

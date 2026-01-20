@@ -196,7 +196,7 @@ export function FmDataGridCell<T extends Record<string, any>>({
         // Editing mode
         relationConfig ? (
           <div onClick={e => e.stopPropagation()}>
-            {column.key === 'organization_id' && logger.info('Rendering organization dropdown', { editValue, source: 'FmDataGridCell' })}
+            {(() => { if (column.key === 'organization_id') logger.info('Rendering organization dropdown', { editValue, source: 'FmDataGridCell' }); return null; })()}
             {relationConfig.component({
               value: editValue,
               onChange: (newValue) => {

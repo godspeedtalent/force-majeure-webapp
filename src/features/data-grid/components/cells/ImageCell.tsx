@@ -82,7 +82,7 @@ export function ImageCell({
             entityType={entityType}
             size='xl'
             shape={shape}
-            className='h-full w-full'
+            className='h-full w-full opacity-80' // Semi-transparent per design system
           />
           
           {editable && isHovered && (
@@ -130,7 +130,8 @@ export function ImageCell({
           className={cn(
             'h-full w-full object-cover',
             'rounded-none',
-            'border-none'
+            'border-none',
+            'opacity-80' // Semi-transparent per design system
           )}
           style={{ objectPosition: 'center' }}
         />

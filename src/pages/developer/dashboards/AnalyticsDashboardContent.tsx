@@ -5,7 +5,7 @@
  * Extracted from the standalone AnalyticsDashboard page.
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { LineChart } from 'lucide-react';
@@ -25,22 +25,21 @@ import { FunnelVisualization } from '../../admin/analytics/components/FunnelVisu
 import { PerformanceMetrics } from '../../admin/analytics/components/PerformanceMetrics';
 import { TopPagesTable } from '../../admin/analytics/components/TopPagesTable';
 import { SessionsTable } from '../../admin/analytics/components/SessionsTable';
+import { DATE_RANGE_OPTIONS, type AnalyticsDateRange } from '../../admin/analytics/AnalyticsDashboard';
 
 export function AnalyticsDashboardContent() {
   const { t } = useTranslation('common');
 
-  const dateRangeOptions = useMemo(
-    () => [
-      { value: '7d', label: t('analytics.dateRange.last7Days') },
-      { value: '30d', label: t('analytics.dateRange.last30Days') },
-      { value: '90d', label: t('analytics.dateRange.last90Days') },
-    ],
-    [t]
-  );
-  const [selectedRange, setSelectedRange] = useState('7d');
+  const [selectedRange, setSelectedRange] = useState<AnalyticsDateRange>('7d');
+
+  // Handler for child components to update range
+  const handleRangeChange = useCallback((range: AnalyticsDateRange) => {
+    setSelectedRange(range);
+  }, []);
 
   const dateRange = useMemo(() => {
-    const days = selectedRange === '7d' ? 7 : selectedRange === '30d' ? 30 : 90;
+    const option = DATE_RANGE_OPTIONS.find(o => o.value === selectedRange);
+    const days = option?.days || 7;
     return {
       start: new Date(Date.now() - days * 24 * 60 * 60 * 1000),
       end: new Date(),
@@ -115,8 +114,8 @@ export function AnalyticsDashboardContent() {
           </div>
           <FmCommonSelect
             value={selectedRange}
-            onChange={setSelectedRange}
-            options={dateRangeOptions}
+            onChange={(v) => setSelectedRange(v as AnalyticsDateRange)}
+            options={DATE_RANGE_OPTIONS}
             className="w-[160px]"
           />
         </div>
@@ -150,7 +149,12 @@ export function AnalyticsDashboardContent() {
         </div>
 
         <FmCommonTabsContent value="traffic" className="mt-6 space-y-6">
-          <PageViewsChart data={dailyPageViews || []} isLoading={loadingPageViews} />
+          <PageViewsChart
+            data={dailyPageViews || []}
+            isLoading={loadingPageViews}
+            selectedRange={selectedRange}
+            onRangeChange={handleRangeChange}
+          />
           <TopPagesTable data={dailyPageViews || []} isLoading={loadingPageViews} />
         </FmCommonTabsContent>
 
@@ -167,6 +171,8 @@ export function AnalyticsDashboardContent() {
             data={sessionsData?.data || []}
             isLoading={loadingSessions}
             error={sessionsError instanceof Error ? sessionsError.message : undefined}
+            selectedRange={selectedRange}
+            onRangeChange={handleRangeChange}
           />
         </FmCommonTabsContent>
       </FmCommonTabs>

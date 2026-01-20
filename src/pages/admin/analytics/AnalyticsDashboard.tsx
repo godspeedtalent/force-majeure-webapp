@@ -5,7 +5,7 @@
  * and performance metrics.
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Layout } from '@/components/layout/Layout';
 import { FmCommonTabs, FmCommonTabsContent, FmCommonTabsList, FmCommonTabsTrigger } from '@/components/common/navigation/FmCommonTabs';
@@ -41,6 +41,11 @@ export default function AnalyticsDashboard() {
       end: new Date(),
     };
   }, [selectedRange]);
+
+  // Handler for child components to update range
+  const handleRangeChange = useCallback((range: AnalyticsDateRange) => {
+    setSelectedRange(range);
+  }, []);
 
   const adapter = useMemo(() => new SupabaseAnalyticsAdapter(), []);
 
@@ -103,7 +108,7 @@ export default function AnalyticsDashboard() {
           {/* Date range selector */}
           <FmCommonSelect
             value={selectedRange}
-            onChange={setSelectedRange}
+            onChange={(v) => setSelectedRange(v as AnalyticsDateRange)}
             options={DATE_RANGE_OPTIONS}
             className="w-[160px]"
           />
@@ -139,7 +144,7 @@ export default function AnalyticsDashboard() {
                 <PageViewsChart
                   data={dailyPageViews || []}
                   selectedRange={selectedRange}
-                  onRangeChange={setSelectedRange}
+                  onRangeChange={handleRangeChange}
                 />
                 <TopPagesTable data={dailyPageViews || []} />
               </FmCommonTabsContent>
@@ -157,7 +162,7 @@ export default function AnalyticsDashboard() {
                   data={sessionsData?.data || []}
                   isLoading={loadingSessions}
                   selectedRange={selectedRange}
-                  onRangeChange={setSelectedRange}
+                  onRangeChange={handleRangeChange}
                 />
               </FmCommonTabsContent>
             </FmCommonTabs>

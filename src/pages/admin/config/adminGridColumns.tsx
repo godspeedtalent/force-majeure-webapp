@@ -292,7 +292,7 @@ export const userColumns: DataGridColumn[] = [
   DataGridColumns.image({
     key: 'avatar_url',
     label: t('adminGrid.columns.avatar'),
-    shape: 'circle',
+    shape: 'square',
     entityType: 'user',
     editable: true,
     bucket: 'entity-images',
